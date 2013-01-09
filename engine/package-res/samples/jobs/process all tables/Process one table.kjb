@@ -1,0 +1,680 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job>
+  <name>Process one table</name>
+  <directory>&#47;</directory>
+  <modified_user>-</modified_user>
+  <modified_date>2007&#47;01&#47;19 11:40:47.281</modified_date>
+  <connection>
+    <name>MySQL Local test</name>
+    <server>localhost</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>test</database>
+    <port>3306</port>
+    <username>matt</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>MAXIMUM_POOL_SIZE</code><attribute>10</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>3306</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>MySQL EC2</name>
+    <server>domU-12-31-33-00-02-58.usma1.compute.amazonaws.com</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>test</database>
+    <port>3306</port>
+    <username>matt</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>CLUSTER_DBNAME_0</code><attribute>test</attribute></attribute>
+      <attribute><code>CLUSTER_DBNAME_1</code><attribute>test</attribute></attribute>
+      <attribute><code>CLUSTER_DBNAME_2</code><attribute>test</attribute></attribute>
+      <attribute><code>CLUSTER_DBNAME_3</code><attribute>test</attribute></attribute>
+      <attribute><code>CLUSTER_DBNAME_4</code><attribute>test</attribute></attribute>
+      <attribute><code>CLUSTER_HOSTNAME_0</code><attribute>domU-12-31-33-00-03-96.usma1.compute.amazonaws.com</attribute></attribute>
+      <attribute><code>CLUSTER_HOSTNAME_1</code><attribute>domU-12-31-33-00-03-9A.usma1.compute.amazonaws.com</attribute></attribute>
+      <attribute><code>CLUSTER_HOSTNAME_2</code><attribute>domU-12-31-33-00-03-A5.usma1.compute.amazonaws.com</attribute></attribute>
+      <attribute><code>CLUSTER_HOSTNAME_3</code><attribute>domU-12-31-33-00-03-9B.usma1.compute.amazonaws.com</attribute></attribute>
+      <attribute><code>CLUSTER_HOSTNAME_4</code><attribute>domU-12-31-33-00-03-B8.usma1.compute.amazonaws.com</attribute></attribute>
+      <attribute><code>CLUSTER_PARTITION_0</code><attribute>P2</attribute></attribute>
+      <attribute><code>CLUSTER_PARTITION_1</code><attribute>P3</attribute></attribute>
+      <attribute><code>CLUSTER_PARTITION_2</code><attribute>P4</attribute></attribute>
+      <attribute><code>CLUSTER_PARTITION_3</code><attribute>P5</attribute></attribute>
+      <attribute><code>CLUSTER_PARTITION_4</code><attribute>P6</attribute></attribute>
+      <attribute><code>CLUSTER_PASSWORD_0</code><attribute>Encrypted </attribute></attribute>
+      <attribute><code>CLUSTER_PASSWORD_1</code><attribute>Encrypted </attribute></attribute>
+      <attribute><code>CLUSTER_PASSWORD_2</code><attribute>Encrypted </attribute></attribute>
+      <attribute><code>CLUSTER_PASSWORD_3</code><attribute>Encrypted </attribute></attribute>
+      <attribute><code>CLUSTER_PASSWORD_4</code><attribute>Encrypted </attribute></attribute>
+      <attribute><code>CLUSTER_PORT_0</code><attribute>3306</attribute></attribute>
+      <attribute><code>CLUSTER_PORT_1</code><attribute>3306</attribute></attribute>
+      <attribute><code>CLUSTER_PORT_2</code><attribute>3306</attribute></attribute>
+      <attribute><code>CLUSTER_PORT_3</code><attribute>3306</attribute></attribute>
+      <attribute><code>CLUSTER_PORT_4</code><attribute>3306</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>Y</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>3306</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>Oracle ORCL Acer8104</name>
+    <server>192.168.1.10</server>
+    <type>ORACLE</type>
+    <access>Native</access>
+    <database>orcl</database>
+    <port>1521</port>
+    <username>matt</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>MAXIMUM_POOL_SIZE</code><attribute>10</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
+      <attribute><code>STREAM_RESULTS</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>Generic</name>
+    <server/>
+    <type>GENERIC</type>
+    <access>Native</access>
+    <database/>
+    <port>-1</port>
+    <username>ss</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10be96abde</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>CUSTOM_DRIVER_CLASS</code><attribute>GenericClass</attribute></attribute>
+      <attribute><code>CUSTOM_URL</code><attribute>GenericURL</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>MAXIMUM_POOL_SIZE</code><attribute>10</attribute></attribute>
+      <attribute><code>POOLING_defaultCatalog</code><attribute>catalog</attribute></attribute>
+      <attribute><code>POOLING_removeAbandoned</code><attribute>true</attribute></attribute>
+      <attribute><code>POOLING_testOnReturn</code><attribute>false</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>-1</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>Y</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>Generic test</name>
+    <server/>
+    <type>GENERIC</type>
+    <access>Native</access>
+    <database/>
+    <port>0</port>
+    <username>FPO_MIS_STAR</username>
+    <password>Encrypted 2be98afc82cf7bdbb86309d4feda68ee8</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>CUSTOM_DRIVER_CLASS</code><attribute>oracle.jdbc.driver.OracleDriver</attribute></attribute>
+      <attribute><code>CUSTOM_URL</code><attribute>jdbc:oracle:thin:@10.192.2.135:1525:FPOREPD</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>0</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>Hypersonic Pentaho</name>
+    <server>localhost</server>
+    <type>HYPERSONIC</type>
+    <access>Native</access>
+    <database>sampledata</database>
+    <port>9001</port>
+    <username>sa</username>
+    <password>Encrypted </password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>PORT_NUMBER</code><attribute>9001</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>Interbase</name>
+    <server>localhost</server>
+    <type>INTERBASE</type>
+    <access>Native</access>
+    <database>D:\Interbase\rep.dbf</database>
+    <port>3050</port>
+    <username>matt</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>PORT_NUMBER</code><attribute>3050</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>Local cluster</name>
+    <server>192.168.1.10</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>db1</database>
+    <port>3306</port>
+    <username>cluster</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>CLUSTER_DBNAME_0</code><attribute>db1</attribute></attribute>
+      <attribute><code>CLUSTER_DBNAME_1</code><attribute>db2</attribute></attribute>
+      <attribute><code>CLUSTER_DBNAME_2</code><attribute>db3</attribute></attribute>
+      <attribute><code>CLUSTER_DBNAME_3</code><attribute>db4</attribute></attribute>
+      <attribute><code>CLUSTER_DBNAME_4</code><attribute>db5</attribute></attribute>
+      <attribute><code>CLUSTER_HOSTNAME_0</code><attribute>192.168.1.10</attribute></attribute>
+      <attribute><code>CLUSTER_HOSTNAME_1</code><attribute>192.168.1.10</attribute></attribute>
+      <attribute><code>CLUSTER_HOSTNAME_2</code><attribute>192.168.1.10</attribute></attribute>
+      <attribute><code>CLUSTER_HOSTNAME_3</code><attribute>192.168.1.10</attribute></attribute>
+      <attribute><code>CLUSTER_HOSTNAME_4</code><attribute>192.168.1.10</attribute></attribute>
+      <attribute><code>CLUSTER_PARTITION_0</code><attribute>PartDB1</attribute></attribute>
+      <attribute><code>CLUSTER_PARTITION_1</code><attribute>PartDB2</attribute></attribute>
+      <attribute><code>CLUSTER_PARTITION_2</code><attribute>PartDB3</attribute></attribute>
+      <attribute><code>CLUSTER_PARTITION_3</code><attribute>PartDB4</attribute></attribute>
+      <attribute><code>CLUSTER_PARTITION_4</code><attribute>PartDB5</attribute></attribute>
+      <attribute><code>CLUSTER_PASSWORD_0</code><attribute>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</attribute></attribute>
+      <attribute><code>CLUSTER_PASSWORD_1</code><attribute>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</attribute></attribute>
+      <attribute><code>CLUSTER_PASSWORD_2</code><attribute>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</attribute></attribute>
+      <attribute><code>CLUSTER_PASSWORD_3</code><attribute>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</attribute></attribute>
+      <attribute><code>CLUSTER_PASSWORD_4</code><attribute>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</attribute></attribute>
+      <attribute><code>CLUSTER_PORT_0</code><attribute>3306</attribute></attribute>
+      <attribute><code>CLUSTER_PORT_1</code><attribute>3306</attribute></attribute>
+      <attribute><code>CLUSTER_PORT_2</code><attribute>3306</attribute></attribute>
+      <attribute><code>CLUSTER_PORT_3</code><attribute>3306</attribute></attribute>
+      <attribute><code>CLUSTER_PORT_4</code><attribute>3306</attribute></attribute>
+      <attribute><code>CLUSTER_USERNAME_0</code><attribute>cluster</attribute></attribute>
+      <attribute><code>CLUSTER_USERNAME_1</code><attribute>cluster</attribute></attribute>
+      <attribute><code>CLUSTER_USERNAME_2</code><attribute>cluster</attribute></attribute>
+      <attribute><code>CLUSTER_USERNAME_3</code><attribute>cluster</attribute></attribute>
+      <attribute><code>CLUSTER_USERNAME_4</code><attribute>cluster</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>Y</attribute></attribute>
+      <attribute><code>MAXIMUM_POOL_SIZE</code><attribute>10</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>3306</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>Localhost mysql</name>
+    <server>localhost</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>test</database>
+    <port>3307</port>
+    <username>matt</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>3307</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>MySQL 5</name>
+    <server>localhost</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>test</database>
+    <port>3306</port>
+    <username>matt</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>PORT_NUMBER</code><attribute>3306</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>MySQL laptop</name>
+    <server>localhost</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>test</database>
+    <port>3306</port>
+    <username>matt</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>PORT_NUMBER</code><attribute>3306</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>MySQL localhost</name>
+    <server>localhost</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>test</database>
+    <port>3306</port>
+    <username>matt</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_SYBASE.SQLINITSTRING</code><attribute>SET CHAINED OFF</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>MAXIMUM_POOL_SIZE</code><attribute>1</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>3306</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>Y</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>MySQL Sources</name>
+    <server>localhost</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>sources</database>
+    <port>3306</port>
+    <username>matt</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>3306</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>MySQL Test @ Localhost</name>
+    <server>localhost</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>test</database>
+    <port>3306</port>
+    <username>matt</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>PORT_NUMBER</code><attribute>3306</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>mysql&#47;test@sam</name>
+    <server>192.168.1.186</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>test</database>
+    <port>3306</port>
+    <username>matt</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>EXTRA_OPTION_MYSQL.rewriteBatchedStatements</code><attribute>false</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>3306</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>ORACLE_TEST</name>
+    <server>p300097</server>
+    <type>ORACLE</type>
+    <access>Native</access>
+    <database>THAI</database>
+    <port>1521</port>
+    <username>acsprd</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79af73cd82bdde</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>ORCL 8104</name>
+    <server>192.168.1.10</server>
+    <type>ORACLE</type>
+    <access>Native</access>
+    <database>orcl</database>
+    <port>1521</port>
+    <username>matt</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>MAXIMUM_POOL_SIZE</code><attribute>10</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>Postgres TEST</name>
+    <server>localhost</server>
+    <type>POSTGRESQL</type>
+    <access>Native</access>
+    <database>test</database>
+    <port>5432</port>
+    <username>matt</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>PORT_NUMBER</code><attribute>5432</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>Rep5</name>
+    <server>localhost</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>rep5</database>
+    <port>3306</port>
+    <username>root</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>MAXIMUM_POOL_SIZE</code><attribute>10</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>3306</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>Routers</name>
+    <server>fonesmaq02</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>routers</database>
+    <port>3306</port>
+    <username>aclaver</username>
+    <password>Encrypted 2be98afc86aa79387a718b875ccc4f694</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.zeroDateTimeBehavior</code><attribute>convertToNull</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>3306</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>Sample shared connection</name>
+    <server/>
+    <type>GENERIC</type>
+    <access>Native</access>
+    <database/>
+    <port>-1</port>
+    <username>someuser</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb0aa17ddb82b8de</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>CUSTOM_DRIVER_CLASS</code><attribute>com.ibm.u2.jdbc.UniJDBCDriver</attribute></attribute>
+      <attribute><code>CUSTOM_URL</code><attribute>jdbc:universe:&#47;&#47;localhost&#47;database</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>MAXIMUM_POOL_SIZE</code><attribute>10</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>-1</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>SQL Server</name>
+    <server>localhost</server>
+    <type>MSSQL</type>
+    <access>Native</access>
+    <database>test</database>
+    <port>1433</port>
+    <username>matt</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>PORT_NUMBER</code><attribute>1433</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>SQLite</name>
+    <server/>
+    <type>SQLITE</type>
+    <access>Native</access>
+    <database>C:\Temp\pmp.db</database>
+    <port>-1</port>
+    <username/>
+    <password>Encrypted </password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>MAXIMUM_POOL_SIZE</code><attribute>10</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>-1</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>SQLServer 2005 test</name>
+    <server>localhost</server>
+    <type>MSSQL</type>
+    <access>Native</access>
+    <database>model</database>
+    <port>1433</port>
+    <username>sa</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>PORT_NUMBER</code><attribute>1433</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>SQLServer test</name>
+    <server>192.168.1.2</server>
+    <type>MSSQL</type>
+    <access>Native</access>
+    <database>test</database>
+    <port>1433</port>
+    <username>matt</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>PORT_NUMBER</code><attribute>1433</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>TestConnection</name>
+    <server>localhost</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>test</database>
+    <port>3307</port>
+    <username>matt</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>3307</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>TIC</name>
+    <server>hercules</server>
+    <type>ORACLE</type>
+    <access>Native</access>
+    <database>TIC</database>
+    <port>1521</port>
+    <username>tic</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10be86a6d9</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>MAXIMUM_POOL_SIZE</code><attribute>10</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>Webinar dwh</name>
+    <server>localhost</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>dwh</database>
+    <port>3306</port>
+    <username>matt</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>3306</attribute></attribute>
+    </attributes>
+  </connection>
+  <logconnection/>
+  <logtable/>
+   <use_batchid>N</use_batchid>
+   <pass_batchid>N</pass_batchid>
+   <use_logfield>N</use_logfield>
+   <shared_objects_file/>
+  <entries>
+    <entry>
+      <name>Start</name>
+      <description/>
+      <type>SPECIAL</type>
+      <start>Y</start>
+      <dummy>N</dummy>
+      <repeat>N</repeat>
+      <schedulerType>0</schedulerType>
+      <interval>60</interval>
+      <hour>12</hour>
+      <minutes>0</minutes>
+      <weekDay>1</weekDay>
+      <DayOfMonth>1</DayOfMonth>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>91</xloc>
+      <yloc>76</yloc>
+      </entry>
+    <entry>
+      <name>Define TABLE variable</name>
+      <description/>
+      <type>TRANS</type>
+      <filename>${Internal.Job.Filename.Directory}&#47;set variables.ktr</filename>
+      <transname>Define TABLE variable</transname>
+      <directory>&#47;</directory>
+      <arg_from_previous>N</arg_from_previous>
+      <exec_per_row>N</exec_per_row>
+      <clear_rows>N</clear_rows>
+      <clear_files>N</clear_files>
+      <set_logfile>N</set_logfile>
+      <logfile/>
+      <logext/>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <loglevel>Error</loglevel>
+      <cluster>N</cluster>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>250</xloc>
+      <yloc>76</yloc>
+      </entry>
+    <entry>
+      <name>Get amount of rows from table</name>
+      <description/>
+      <type>TRANS</type>
+      <filename>${Internal.Job.Filename.Directory}&#47;Process one table.ktr</filename>
+      <transname>Get amount of rows from table</transname>
+      <directory>&#47;</directory>
+      <arg_from_previous>N</arg_from_previous>
+      <exec_per_row>N</exec_per_row>
+      <clear_rows>N</clear_rows>
+      <clear_files>N</clear_files>
+      <set_logfile>N</set_logfile>
+      <logfile/>
+      <logext/>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <loglevel>Error</loglevel>
+      <cluster>N</cluster>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>409</xloc>
+      <yloc>76</yloc>
+      </entry>
+    </entries>
+  <hops>
+    <hop>
+      <from>Start</from>
+      <to>Define TABLE variable</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
+      </hop>
+    <hop>
+      <from>Define TABLE variable</from>
+      <to>Get amount of rows from table</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+      </hop>
+    </hops>
+  <notepads>
+    </notepads>
+  </job>

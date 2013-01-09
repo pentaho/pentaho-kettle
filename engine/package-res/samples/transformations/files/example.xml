@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<levelOne>
+  <levelTwo id="first">
+    <level3 id="1" value="0.5"/>
+    <level3 id="2" value="1.5"/>
+    <level3 id="3" value="2.5"/>
+  </levelTwo>
+  <levelTwo id="second">
+    <level3 id="1" value="3.5"/>
+    <level3 id="2" value="4.5"/>
+    <level3 id="3" value="5.5"/>
+  </levelTwo>
+  <levelTwo id="third">
+    <level3 id="1" value="6.5"/>
+    <level3 id="2" value="7.5"/>
+    <level3 id="3" value="8.5"/>
+  </levelTwo>
+</levelOne>

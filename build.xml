@@ -10,228 +10,33 @@
            <format property="compile.timestamp" pattern="yyyy-MM-dd HH.mm.ss" />
         </tstamp>
 
-        <!-- Look for user-override properties file first -->        
+  	<property name="kettle.ivydist.dir"
+	            value="${basedir}/ivydist"
+	            description="Directory that hosts Jar files required to compile project source.  (IVY will populate this directory with required jars)" />
+
+    <property name="plugins.publish-local"
+              value="true"
+	            description="Whether to publish plugins locally during the build process. CI should override this or call publish-local-plugins"/>
+	
+	  <property name="modules.publish-local"
+	              value="true"
+	              description="Whether to publish modules locally during the build process. CI should override this"/>
+	
+    <!-- Look for user-override properties file first -->        
 		<property file="override.properties"/>
         <!-- set global properties for this build -->
 		<property file="build.properties"/>
-		  
-	  <target name="init" description="create timestamp and directories">
-    	<echo>Init...</echo>
-	  	
-	    <tstamp/>
-	    <mkdir dir="${build}"/>
-	    <mkdir dir="${classes}"/>
-	    <mkdir dir="${classes}/META-INF"/>
-	    <mkdir dir="${classes-ui}"/>
-	    <mkdir dir="${classes-ui}/ui"/>
-	    <mkdir dir="${classes-core}"/>
-	    <mkdir dir="${classes-db}"/>
-	    <mkdir dir="${classes-jdbc}"/>
-	  	<mkdir dir="${classes-dbdialog}"/>
-	  	<mkdir dir="${testClasses}"/>
-	    <mkdir dir="${lib}"/>
-		<mkdir dir="${distrib}"/>
-	  	<mkdir dir="${macdistrib}"/>
-		<mkdir dir="${docs}"/>
-		<mkdir dir="${api}"/>
-		<mkdir dir="${webstart}"/>
-		<mkdir dir="${junit}"/>
-	  	<mkdir dir="${pdice.package.basedir}"/>
-	  	
-	  	<!-- used by the nightly build. we can build zips directly to this location -->
-	  	<mkdir dir="${dist.dir}"/>
-
-	  	<exec executable="get-revision.sh" 
-	  	 	   os="Linux,OSX" 
-	  	 	   outputproperty="svn-revision"
-	  	       failonerror="false"
-	  	 	   timeout="20000"
-	  	 	   failifexecutionfails="false"
-	  	 	   resolveexecutable="true"
-	  		   spawn="false"
-	  	 />
-	  	
-	  	<condition property="revision" value="${svn-revision}" else="1">
-	  		<length string="${svn-revision}" length="7" when="less"/>
-	  	</condition>
-	  	
-	  	<echo message="Revision set to r${revision}"/>
-	  	
-	  </target>
-
-	  <!--
-	       ==========================
-	            Compile the code
-	       ==========================
-	  -->
-		
-	  <target name="compile-core" depends="init" description="compile the core source code " >
-	  	<echo>Compiling Kettle CORE...</echo>
-        <javac fork="true"
-            destdir="${classes-core}"
-            target="6"
-            source="6"
-            deprecation="off"
-            debug="${debug}"
-            optimize="${optimize}"
-            memorymaximumsize="256m"
-        	includeantruntime="false">
-	    	<src path="${src-core}"/>
-	    	
-	    	<classpath id="cp-kettle-core">
-				<fileset dir="${libext}" 		includes="*.jar *.zip"/>
-				<fileset dir="${libext}/"	    includes="**/*.jar *.zip"/>
-		  		</classpath>
-	    </javac>
-	  </target>
 	
-	  <target name="generate-parser-for-edi2xml-step" depends="compile-core" description="">
-	  	<echo>Generating parser java classes for the  edi2xml step...</echo>
-		<java classname="org.antlr.Tool" fork="true" failonerror="true">
-			<classpath refid="cp-kettle-core" />
-			<arg value="-make"/>
-			<arg value="-verbose"/>
-			<arg value="-o"/>
-			<arg path="src/org/pentaho/di/trans/steps/edi2xml/grammar"/>
-			<arg path="src/org/pentaho/di/trans/steps/edi2xml/grammar/FastSimpleGenericEdifactDirectXML.g"/>
-		</java>
-	  </target>
-	
-	  <target name="compile-db" depends="generate-parser-for-edi2xml-step" description="compile the db source code " >
-	  	<echo>Compiling Kettle DB...</echo>
-      <javac fork="true"
-          destdir="${classes-db}"
-          target="6"
-          source="6"
-          deprecation="true"
-          debug="${debug}"
-          optimize="${optimize}"
-          memorymaximumsize="256m"
-	      includeantruntime="false">
-	    	<src path="${src-db}"/>
-	    	
-	    	<classpath id="cp-kettle-db">
-                <pathelement path="${classes-core}"/>
-	    		<pathelement path="${classes-db}"/>
-				<fileset dir="${libext}" 		includes="*.jar *.zip"/>
-				<fileset dir="${libext}/"	    includes="**/*.jar *.zip"/>
-		  		</classpath>
-	    </javac>
-	  </target>
+	  <!--Import Open Assembly ant file -->
+	  <import file="build-res/subfloor.xml" />
 
-	  <target name="compile-dbdialog" depends="compile-db" description="compile the db dialogsource code " >
-	  	<echo>Compiling Kettle DB...</echo>
-      <javac fork="true"
-        destdir="${classes-dbdialog}"
-        target="6"
-        source="6"
-        deprecation="true"
-        debug="${debug}"
-        optimize="${optimize}"
-        memorymaximumsize="256m"
-	      includeantruntime="false">
-	    	<src path="${src-dbdialog}"/>
-	    	<classpath id="cp-kettle-dbdialog">
-              <pathelement path="${classes-core}"/>
-	    	  <pathelement path="${classes-db}"/>
-	          <pathelement path="${classes-dbdialog}"/>
-			  <fileset dir="${libext}" 		includes="*.jar *.zip"/>
-			  <fileset dir="${libext}/"	    includes="**/*.jar *.zip"/>
-			  <fileset dir="${libswt}" 		includes="*.jar *.zip"/>
-	    	  <fileset dir="${libswt}/win32/" includes="*.jar *.zip"/>
-		  	</classpath>
-	    </javac>
-	  </target>
-	
-	  <target name="compile" depends="compile-db" description="compile the source " >
-	  	<echo>Compiling Kettle...</echo>
-        <javac fork="true"
-            destdir="${classes}"
-            target="6"
-            source="6"
-            deprecation="true"
-            debug="${debug}"
-            optimize="${optimize}"
-            memorymaximumsize="256m"
-        	includeantruntime="false">
-            <src path="${src}"/>
-
-            <classpath id="cp-kettle">
-                <pathelement path="${classes-core}"/>
-	    		<pathelement path="${classes-db}"/>
-                <fileset dir="${libext}" 		includes="*.jar *.zip"/>
-                <fileset dir="${libext}/"	    includes="**/*.jar *.zip"/>
-            </classpath>
-        </javac>
-	  </target>
-
-	  <target name="compile-jdbc" depends="compile" description="compile the JDBC driver" >
-	  	<echo>Compiling the Kettle JDBC driver...</echo>
-      <javac fork="true"
-          destdir="${classes-jdbc}"
-          target="6"
-          source="6"
-          deprecation="true"
-          debug="${debug}"
-          optimize="${optimize}"
-          memorymaximumsize="256m"
-      	includeantruntime="false">
-          <src path="${src-jdbc}"/>
-
-          <classpath id="cp-kettle-jdbc">
-              <pathelement path="${classes-core}"/>
-	    	  <pathelement path="${classes-db}"/>
-    		  <pathelement path="${classes}"/>
-              <fileset dir="${libext}" 		includes="*.jar *.zip"/>
-              <fileset dir="${libext}/"	    includes="**/*.jar *.zip"/>
-          </classpath>
-      </javac>
-	  </target>
-
-	
-	  <target name="compile-ui" depends="compile-dbdialog, compile-db, compile, compile-jdbc" description="compile the UI source " >
-	  	<echo>Compiling Kettle UI...</echo>
-	    <javac 
-	    	   destdir="${classes-ui}"
-	    	   target="6"
-	    	   source="6"
-	           deprecation="true"
-	    	   debug="${debug}"
-               optimize="${optimize}"
-	    	   excludes="be/ibridge/kettle/schema/**/* be/ibridge/kettle/menu/**/*"
-	    	   memorymaximumsize="256M"
-	    	   fork="true"
-        	   includeantruntime="false"
-	    	>
-	    	<src path="${src-ui}"/>
-	    	
-	    	<classpath id="cp-kettle-ui">
-				<fileset dir="${lib}" 			includes="kettle-core.jar"/>
-				<fileset dir="${lib}" 			includes="kettle-db.jar"/>
-	    		<fileset dir="${lib}" 			includes="kettle-dbdialog.jar"/>
-				<fileset dir="${lib}" 			includes="kettle-engine.jar"/>
-				<fileset dir="${libext}" 		includes="*.jar *.zip"/>
-				<fileset dir="${libext}/"	    includes="**/*.jar *.zip"/>
-				<fileset dir="${libswt}" 		includes="*.jar *.zip"/>
-				<fileset dir="${libswt}/win32/" includes="*.jar *.zip"/>
-		  		</classpath>
-	    </javac>
-	    <copy todir="${classes-ui}">
-	    	<fileset dir="${src-ui}" includes="**/*.png **/*.xml **/*.xul **/*txt **/*properties"/>
-	  	    </copy>
-        <!-- embedd the UI definition files in the jar so that webstart will work -->
-	    <copy todir="${classes-ui}/ui">
-	    	<fileset dir="${ui}" includes="**/*.png **/*.xml **/*.xul **/*.properties"/>
-	  	    </copy>
-	  </target>
-	  
 		<!--
 		       ==========================
 		          Compile the test code
 		       ==========================
 		  -->
 
-		  <target name="compileTests" depends="compile" description="compile the tests" >
+		  <target name="compileTests" description="compile the tests" >
 		  	<echo>Compiling Kettle tests...</echo>
 		    <javac fork="true"
 		    	   srcdir="${test}" 
@@ -244,64 +49,14 @@
 		    	>
 
 		    	<classpath id="cp-kettle-test">
-		    		<fileset dir="${lib}" 	  		includes="**/*.jar"/>
-		    		<fileset dir="${testlibext}" 	includes="*.jar"/>
-		    		<fileset dir="${libext}" 	    includes="**/*.jar"/>
-		    		<fileset dir="${libswt}"                includes="*.jar *.zip"/>
-		    		<fileset dir="${libswt}/win32/" includes="*.jar *.zip"/>
-		    		<fileset dir="${libswt}" 		includes="common.jar"/>
+		    		<fileset dir="${assembly.dir}/${lib}" 	  		includes="**/*.jar"/>
+		    		<fileset dir="${assembly.dir}/${testlibext}" 	includes="*.jar"/>
+		    		<fileset dir="${assembly.dir}/${libswt}"                includes="*.jar *.zip"/>
+		    		<fileset dir="${assembly.dir}/${libswt}/win32/" includes="*.jar *.zip"/>
+		    		<fileset dir="${assembly.dir}/${libswt}" 		includes="common.jar"/>
 			</classpath>
 		    </javac>
 		  </target>
-	
-	  <!--
-	       ==========================
-	          Copy additional files
-	       ==========================
-	  -->
-	
-	  <target name="copy-core" depends="compile-core" description="copy images etc from the src-core to the classes-core directory" >
-	  	<echo>Copying core images etc to classes directory...</echo>
-	    <copy todir="${classes-core}">
-	    	<fileset dir="${src-core}" includes="**/*.xml **/*.xsl **/*properties"/>
-	  	    </copy>
-	  </target>
-	
-	  <target name="copy-db" depends="compile-db" description="copy images etc from the src-db to the classes-db directory" >
-	  	<echo>Copying db images etc to classes-db directory...</echo>
-	    <copy todir="${classes-db}">
-	    	<fileset dir="${src-db}" includes="**/*.xml **/*properties"/>
-	  	    </copy>
-	  </target>
-
-	  <target name="copy-dbdialog" depends="compile-dbdialog" description="copy images etc from the src-dbdialog to the classes-dbdialog directory" >
-	  	<echo>Copying db images etc to classes-dbdialog directory...</echo>
-	    <copy todir="${classes-dbdialog}">
-	    	<fileset dir="${src-dbdialog}" includes="**/*.xml **/*.xul **/*properties"/>
-	  	    </copy>
-	  </target>
-	
-	  <target name="copy-jdbc" depends="compile-jdbc" description="copy additional files from the src-jdbc to the classes-jdbc directory" >
-	  	<echo>Copying additional files from the src-jdbc to the classes-jdbc directory...</echo>
-	    <copy todir="${classes-jdbc}">
-	    	<fileset dir="${src-jdbc}" includes="**/*.xml **/*.xul **/*properties **/*config"/>
-	  	    </copy>
-	  </target>
-
-	  <target name="copy" depends="compile" description="copy images etc to the classes directory" >
-	  	<echo>Copying images etc to classes directory...</echo>
-	    <copy todir="${classes}">
-	    	<fileset dir="${src}" includes="**/*.xml **/*.xsl **/*properties"/>
-	  	    </copy>
-	    <copy todir="${classes}">
-	    	<fileset file="${version.file}"/>
-	  	    </copy>
-	    <copy todir="${classes}/META-INF">
-	    	<fileset file="${src}/kettle-partition-plugins.xml"/>
-	  	    </copy>
-	  	
-	  </target>
-	
 	
 	  <!--
 	       ==========================
@@ -309,30 +64,8 @@
 	       ==========================
 	  -->
 
-	  <target name="javadoc" depends="compile" description="compile the javadoc api" >
-	  	<echo>Compiling the Kettle core API javadocs...</echo>
-        
-	  	<javadoc 
-	  		      	destdir="${api}" 
-	  		      	access="public" 
-	  		      	source="1.5" 
-	  		      	use="true" 
-	  		      	notree="false" 
-	  		      	nonavbar="false" 
-	  		      	noindex="false" 
-	  		      	splitindex="true" 
-	  		      	author="true" 
-	  		      	version="true" 
-	  		      	maxmemory="512M"
-	  		      	nodeprecatedlist="false" 
-	  		      	nodeprecated="false" 
-	  		      	packagenames ="org.pentaho.di.*" 
-	  		      	sourcepath="${src}:${src-core}:${src-db}:${src-dbdialog}:${src-ui}:${src-jdbc}:${test}" 
-	  		      	doctitle="Kettle ${version} API documentation">
-	  		              <link href="http://java.sun.com/j2se/1.5.0/docs/api/"/>
-	  		      	<classpath refid="cp-kettle"/>
-	  	</javadoc>
-	
+	  <target name="javadoc" depends="build-all" description="compile the javadoc api" >
+	  	<echo>Compiling the Kettle API javadocs...</echo>	
 	  </target>
 
 	  <target name="javadoc_zip" depends="javadoc" description="generate a zip file containing the Kettle javadoc">
@@ -344,126 +77,6 @@
 	  		/>
 	  </target>
 	
-	  <!--
-	       ==========================
-	             Kettle library
-	       ==========================
-	  -->
-	
-	  <target name="kettle-core" depends="compile-core, copy-core" description="generate the kettle core library kettle-core.jar">
-	  	<echo>Generating the Kettle core library kettle-core.jar ...</echo>
-	  	<jar jarfile="${lib}/kettle-core.jar" 
-	    	 basedir="${classes-core}" 
-	    	 includes="**/* ${version.file.path}"
-	  	     excludes="**/Thumbs.db **/*.jar **/*.swp"
-	  		>
-          <manifest>
-              <attribute name="Implementation-Title" value="${impl.title.engine}" />
-              <attribute name="Implementation-Version" value="${impl.version}" />
-              <attribute name="Specification-Version" value="${revision}" />
-              <attribute name="Implementation-Vendor" value="${impl.vendor}" />
-			  <attribute name="Implementation-ProductID" value="${impl.productID}" />
-              <attribute name="Compile-Timestamp" value="${compile.timestamp}" />
-              <attribute name="Compile-User" value="${user.name}" />
-          </manifest>
-        </jar>
-	  </target>
-		
-	  <target name="kettle-db" depends="compile-db, copy-db" description="generate the kettle db library kettle-db.jar">
-	  	<echo>Generating the Kettle DB library kettle-db.jar ...</echo>
-	  	<jar jarfile="${lib}/kettle-db.jar" 
-	    	 basedir="${classes-db}" 
-	    	 includes="**/* ${version.file.path}"
-	  	     excludes="**/Thumbs.db **/*.jar **/*.swp"
-	  		>
-        <manifest>
-            <attribute name="Implementation-Title" value="${impl.title.engine}" />
-            <attribute name="Implementation-Version" value="${impl.version}" />
-            <attribute name="Specification-Version" value="${revision}" />
-            <attribute name="Implementation-Vendor" value="${impl.vendor}" />
-			<attribute name="Implementation-ProductID" value="${impl.productID}" />
-            <attribute name="Compile-Timestamp" value="${compile.timestamp}" />
-            <attribute name="Compile-User" value="${user.name}" />
-        </manifest>
-      </jar>
-	  </target>
-	
-	  <target name="kettle-dbdialog" depends="compile-dbdialog, copy-dbdialog" description="generate the kettle dbdialog library kettle-dbdialog.jar">
-	  	<echo>Generating the Kettle DB library kettle-dbdialog.jar ...</echo>
-	  	<jar jarfile="${lib}/kettle-dbdialog.jar" 
-	    	 basedir="${classes-dbdialog}" 
-	    	 includes="**/* ${version.file.path}"
-	  	     excludes="**/Thumbs.db **/*.jar **/*.swp"
-	  		>
-        <manifest>
-          <attribute name="Implementation-Title" value="${impl.title.engine}" />
-          <attribute name="Implementation-Version" value="${impl.version}" />
-          <attribute name="Specification-Version" value="${revision}" />
-          <attribute name="Implementation-Vendor" value="${impl.vendor}" />
-          <attribute name="Implementation-ProductID" value="${impl.productID}" />
-          <attribute name="Compile-Timestamp" value="${compile.timestamp}" />
-          <attribute name="Compile-User" value="${user.name}" />
-        </manifest>
-      </jar>
-	  </target>
-
-	  <target name="kettle-jdbc" depends="compile-jdbc, copy-jdbc" description="Generate the kettle JDBC driver kettle-jdbc.jar">
-	  	<echo>Generating the Kettle JDBC driver kettle-jdbc.jar ...</echo>
-	  	<jar jarfile="${lib}/kettle-jdbc.jar" 
-	    	 basedir="${classes-jdbc}" 
-	    	 includes="**/* ${version.file.path}"
-	  	     excludes="**/Thumbs.db **/kettle.jar">
-            <manifest>
-                <attribute name="Implementation-Title" value="${impl.title.ui}" />
-                <attribute name="Implementation-Version" value="${impl.version}" />
-                <attribute name="Specification-Version" value="${revision}" />
-                <attribute name="Implementation-Vendor" value="${impl.vendor}" />
-				<attribute name="Implementation-ProductID" value="${impl.productID}" />
-                <attribute name="Compile-Timestamp" value="${compile.timestamp}" />
-                <attribute name="Compile-User" value="${user.name}" />
-            </manifest>
-	  	</jar>
-	  </target>
-
-	
-	  <target name="kettle" depends="compile, copy" description="generate the kettle library kettle-engine.jar">
-	  	<echo>Generating the Kettle library kettle-engine.jar ...</echo>
-	  	<jar jarfile="${lib}/kettle-engine.jar" 
-	    	 basedir="${classes}" 
-	    	 includes="**/* ${version.file.path}"
-	  	     excludes="**/Thumbs.db **/*.jar **/derbyOld/* **/derbyNew/* org/pentaho/di/run/**/*.ktr org/pentaho/di/run/**/*.txt org/pentaho/di/run/**/*.xls org/pentaho/di/run/**/*.swp org/pentaho/di/ui/**/*"
-	  		>
-            <manifest>
-                <attribute name="Implementation-Title" value="${impl.title.engine}" />
-                <attribute name="Implementation-Version" value="${impl.version}" />
-                <attribute name="Specification-Version" value="${revision}" />
-                <attribute name="Implementation-Vendor" value="${impl.vendor}" />
-				<attribute name="Implementation-ProductID" value="${impl.productID}" />
-                <attribute name="Compile-Timestamp" value="${compile.timestamp}" />
-                <attribute name="Compile-User" value="${user.name}" />
-            </manifest>
-        </jar>
-	  </target>	
-
-	
-	  <target name="kettle-ui" depends="compile-ui" description="generate the kettle library kettle-ui-swt.jar">
-	  	<echo>Generating the Kettle library kettle-ui-swt.jar ...</echo>
-	  	<jar jarfile="${lib}/kettle-ui-swt.jar" 
-	    	 basedir="${classes-ui}" 
-	    	 includes="**/* ${version.file.path}"
-	  	     excludes="**/Thumbs.db **/kettle.jar">
-                <manifest>
-                    <attribute name="Implementation-Title" value="${impl.title.ui}" />
-                    <attribute name="Implementation-Version" value="${impl.version}" />
-                    <attribute name="Specification-Version" value="${revision}" />
-                    <attribute name="Implementation-Vendor" value="${impl.vendor}" />
-    				<attribute name="Implementation-ProductID" value="${impl.productID}" />
-                    <attribute name="Compile-Timestamp" value="${compile.timestamp}" />
-                    <attribute name="Compile-User" value="${user.name}" />
-                </manifest>
-	  	</jar>
-	  </target>
-
 	  <target name="kettle-test" depends="compileTests" description="generate the kettle library kettle-test.jar">
         <echo>Generating the Kettle library kettle-test.jar ...</echo>
 		<jar jarfile="${lib}/kettle-test.jar" 
@@ -482,415 +95,6 @@
         </jar>
 	  </target>	
 
-	<!--
-	       ==========================
-	        Distribution jar package
-	       ==========================
-	  -->
-	<target name="distrib" depends="kettle-core, kettle-db, kettle, kettle-dbdialog, kettle-ui, kettle-jdbc, kettle-plugins, kettle-jdbc, kettle-test, distrib-nodeps" description="compile and copy jar files to distribution directory" />
-
-	<target name="distrib-nodeps" description="copy jar files to distribution directory" >
-	  	<echo>Construct the distribution package...</echo>
-	  	
-	        <!-- root directory -->
-	  		<mkdir dir="${distrib}"/>
-	  		<copy todir="${distrib}">
-	  			<fileset dir="${bin}" includes="**/*" excludes="**/.vpn .project .classpath"/>
-	  			</copy>
-
-	  		<!-- base lib -->
-	  		<mkdir dir="${distrib}/lib"/>
-			<copy todir="${distrib}/lib"  file="${lib}/kettle-core.jar"/>
-		    <copy todir="${distrib}/lib"  file="${lib}/kettle-db.jar"/>
-  			<copy todir="${distrib}/lib"  file="${lib}/kettle-engine.jar"/>
-		    <copy todir="${distrib}/lib"  file="${lib}/kettle-dbdialog.jar"/>
-  			<copy todir="${distrib}/lib"  file="${lib}/kettle-ui-swt.jar"/>
-	  		<copy todir="${distrib}/lib"  file="${lib}/kettle-test.jar"/>
-			<copy todir="${distrib}/lib"  file="${lib}/kettle-jdbc.jar"/>
-
-  	        <!-- external libs (jdbc etc) -->
-	  		<mkdir dir="${distrib}/libext"/>
-	  		<copy todir="${distrib}/libext">
-	  			<fileset dir="${libext}" includes="**/*.jar **/*.zip **/*.properties **/*.xml" excludes="**/.vpn"/>
-	  			</copy>
-
-	        <!-- swt libs (jdbc etc) -->
-	  		<mkdir dir="${distrib}/libswt"/>
-	  		<copy todir="${distrib}/libswt">
-	  			<fileset dir="${libswt}" includes="**/*" excludes="**/.vpn **/sapjco*.dll"/>
-	  			</copy>
-
-	        <!-- plugins -->
-	  		<mkdir dir="${distrib}/plugins"/>
-	  		<copy todir="${distrib}/plugins">
-	  			<fileset dir="${plugins}" includes="**/*" excludes="**/.vpn **/sapjco.jar **/VTVLInput **/VTVLInput/*"/>
-	  		</copy>
-	  	
-	  		<for list="${plugin-ids}" param="plugin" trim="true">
-  		  		<sequential>
-  		  			<copy todir="${distrib}/plugins">
-  		  				<fileset dir="src-plugins/@{plugin}/bin/stage" includes="**/*" />
-  		  			</copy>
-	  			</sequential>
-	  		</for>	
-
-        		<!-- ui -->
-  			<mkdir dir="${distrib}/ui"/>
-  			<copy todir="${distrib}/ui">
-  				<fileset dir="${ui}" includes="**/*" excludes="**/.vpn"/>
-  				</copy>
-
-	        <!-- documentation -->
-	  		<mkdir dir="${distrib}/docs"/>
-	  		<copy todir="${distrib}/docs">
-	  			<fileset dir="${docs}" 
-	  				     includes="**/*.pdf **/*.htm **/*.html **/*.png **/*.PNG **/*.swf **/cn_ZN.zip **/*.css **/*.gif **/*.jpg"
-	  			         excludes="**/*.dot **/*.doc **/*.sxw **/*.odt **/*.vpn **/*feature list*" />
-	  			</copy>
-
-	        <!-- pwd -->
-	  		<mkdir dir="${distrib}/pwd"/>
-	  		<copy todir="${distrib}/pwd">
-	  			<fileset dir="${pwd}" 
-	  				     includes="**/*.pwd **/*.xml"
-	  			         excludes="**/*.vpn" />
-	  			</copy>
-
-	        <!-- launcher -->
-	  		<mkdir dir="${distrib}/launcher"/>
-	  		<copy todir="${distrib}/launcher">
-	  			<fileset dir="launcher" 
-	  				     includes="**/*.*"
-	  			         excludes="**/*.vpn" />
-	  			</copy>
-
-	        <!-- simple-jndi -->
-	  		<mkdir dir="${distrib}/simple-jndi"/>
-	  		<copy todir="${distrib}/simple-jndi">
-	  			<fileset dir="${simple-jndi}" 
-	  				     includes="**/*.properties"
-	  			         excludes="**/*.vpn" />
-	  			</copy>
-
-	        <!-- samples -->
-	  		<mkdir dir="${distrib}/samples"/>
-	  		<mkdir dir="${distrib}/samples/transformations"/>
-	  		<mkdir dir="${distrib}/samples/jobs"/>
-	  		<mkdir dir="${distrib}/samples/transformations/output"/>
-	  		<mkdir dir="${distrib}/samples/jobs/output"/>
-	  		<copy todir="${distrib}/samples">
-	  			<fileset dir="${samples}" 
-	  				     includes="**/*.*"
-	  				     excludes="**/.svn"/>
-	  			</copy>
-	  	
-	  	    <!-- make JavaApplicationStub executable for OSX -->
-	  	    <chmod file="${distrib}/Data Integration 32-bit.app/Contents/MacOS/JavaApplicationStub" perm="ugo+rx"/>
-  	        <chmod file="${distrib}/Data Integration 64-bit.app/Contents/MacOS/JavaApplicationStub" perm="ugo+rx"/>
-
-	        <!-- LICENSE.txt -->
-	  		<copy todir="${distrib}/" file="LICENSE.txt" />
-
-	  </target>
-	
-	  <!--
-	       ==========================
-	        PDI-CE Distribution jar package
-	       ==========================
-	  -->
-	<target name="pdice-distrib" depends="kettle-core, kettle-db, kettle, kettle-dbdialog, kettle-ui, kettle-plugins, kettle-test, pdice-assemble" description="create and copy jar files to PDI-CE distribution directory" />
-
-	  <!--
-	       ==========================
-	        PDI-CE jar
-	       ==========================
-	  -->
-
-	<target name="pdice-jar" depends="kettle-core, kettle-db, kettle, kettle-dbdialog, kettle-ui, kettle-plugins, kettle-test" description="creates PDI-CE jar files" />
-
-	  <!--
-	       ==========================
-	        PDI-CE assemble
-	       ==========================
-	  -->
-
-    <target name="pdice-assemble" depends="install-antcontrib" description="copy jars created by pdice-jar to PDI-CE distribution directory" >
-		  	<echo>Construct the PDI-CE distribution package...</echo>
-    	<antcall target="distrib-nodeps">
-            <param name="distrib" value="${pdice.distrib}" />
-        </antcall>
-	</target>	
-	
-	<!--
-			   ==========================
-			         pdice-package
-			   ==========================
-			   pdice-package target, which produces a zip and targz file in the naming convention and structure used by the PDI-CE release artifacts
-	-->
-	  <target name="pdice-package" depends="pdice-zip, pdice-targz" description="create packages for PDI-CE distribution" />
-
-		
-	<!--
-			   ==========================
-			         kettle-package
-			   ==========================
-			   kettle-package target, which produces a zip and targz file in the naming convention and structure used by the kettle community
-	-->
-		
-	  <target name="kettle-package" depends="kettle-zip, kettle-targz" description="create packages for kettle community distribution" />
-
-	<!--
-		   ==========================
-		         pdice-zip file
-		   ==========================
-		   pdice-zip target, which produces a zip file in the naming convention used by the PDI-CE release artifacts
-	-->
-			
-	  <target name="pdice-zip" description="generate the ${impl.productID}-${pdice.package.version}.zip file">
-	  	<echo>Generating the PDI-CE distribution package ${impl.productID}-${pdice.package.version}.zip ...</echo>
-	  	<zip destfile="${dist.dir}/${impl.productID}-${pdice.package.version}.zip" 
-	    	 basedir="${pdice.package.basedir}" 
-	    	 includes="**/*"
-	  	     excludes="docs/api/** docs/api-core/** **/Thumbs.db"
-	  		/>
-	  </target>	
-	  
-	<!--
-	       ==========================
-	             kettle-zip file
-	       ==========================
-	       New zip target, which produces a zip file in the naming convention desired by the Kettle community, but does not call distrib
-    -->
-		
-	  <target name="kettle-zip" description="generate the ${impl.productID}-${version}-r${revision}.zip file">
-	  	<echo>Generating the Kettle distribution package ${impl.productID}-${version}-r${revision}.zip ...</echo>
-	  	<zip destfile="${dist.dir}/${impl.productID}-${version}-r${revision}.zip" 
-	    	 basedir="${distrib}" 
-	    	 includes="**/*"
-	  	     excludes="docs/api/** docs/api-core/** **/Thumbs.db"
-	  		/>
-	  </target>
-		
-	  <!--
-	       ==========================
-	             zip file
-	       ==========================
-	       Original zip target, which calls distrib and then produces a zip file in the naming convention desired by the Kettle community
-	  -->
-		
-	  <target name="zip" depends="distrib, kettle-zip" description="calls distrib then generates the ${impl.productID}-${version}-r${revision}.zip file" />
-	  			
-	<!--
-	       ==========================
-	             pdice-targz file
-	       ==========================
-	       pdice-targz target, which produces a targz file in the naming convention used by the PDI-CE release artifacts
-	       
-  	-->
-		
-	  <target name="pdice-targz"  description="generate the ${impl.productID}-${pdice.package.version}.tar.gz file">
-	  	<echo>Generating the PDI-CE distribution package ${impl.productID}-${pdice.package.version}.tar.gz ...</echo>
-	    <tar destfile="${dist.dir}/${impl.productID}-${pdice.package.version}.tar.gz" longfile="gnu" compression="gzip">
-	      <tarfileset dir="${pdice.package.basedir}" mode="755" excludes="docs/api/** docs/api-core/** **/Thumbs.db">
-	        <include name="**/*.sh" />
-	      	<include name="**/JavaApplicationStub" />
-	      </tarfileset>
-	      <tarfileset dir="${pdice.package.basedir}" excludes="docs/api/** docs/api-core/** **/Thumbs.db">
-	        <exclude name="**/*.sh" />
-	      	<exclude name="**/JavaApplicationStub" />
-	      </tarfileset>
-	    </tar>
-	  </target>
-
-	<!--
-	       ==========================
-	             kettle-targz file
-	       ==========================
-	       kettle-targz target, which produces a targz file in the naming convention desired by the Kettle community, but does not call distrib
-  	-->
-		
-	  <target name="kettle-targz"  description="generate the ${impl.productID}-${version}-r${revision}.tar.gz file">
-	  	<echo>Generating the Kettle distribution package ${impl.productID}-${version}-r${revision}.tar.gz ...</echo>
-	    <tar destfile="${dist.dir}/${impl.productID}-${version}-r${revision}.tar.gz" longfile="gnu" compression="gzip">
-	      <tarfileset dir="${distrib}" mode="755" excludes="docs/api/** docs/api-core/** **/Thumbs.db">
-	        <include name="**/*.sh" />
-	      	<include name="**/JavaApplicationStub" />
-	      </tarfileset>
-	      <tarfileset dir="${distrib}" excludes="docs/api/** docs/api-core/** **/Thumbs.db">
-	        <exclude name="**/*.sh" />
-	      	<exclude name="**/JavaApplicationStub" />
-	      </tarfileset>
-	    </tar>
-	  </target>
-
-
-	<!--
-	       ==========================
-	             targz file
-	       ==========================
-	       Original targz target, which produces a targz file in the naming convention desired by the Kettle community
-  	-->
-		
-	  <target name="targz" depends="distrib, kettle-targz" description="calls distrib then generates the ${impl.productID}-${version}-r${revision}.tar.gz file" />
-	  	
-	
-	  <!--
-	       ==========================
-	             Source zipfile
-	       ==========================
-	  -->
-		
-	  <target name="sourcezip" depends="init" description="generate the Kettle-src-${version}-${release.build.number}-r${revision}.zip file">
-	  	<echo>Generating the Kettle source packge zip file (${impl.productID}-src-${version}-r${revision}.zip) ...</echo>
-	  	<jar jarfile="${dist.dir}/${impl.productID}-src-${version}-r${revision}.zip" 
-	  		 basedir="."
-	    	 includes="**/*"
-	  	     excludes="*.zip ${classes}/**/* ${distrib}/**/* homepage/**/* Licenses/**/* ${lib}/**/* ${webstart}/**/* docs/api/** docs/api-core/**"
-	  		/>
-	  </target>
-
-	<!--
-	       ==========================
-	            Webstart part...
-	       ==========================
-	  -->
-
-	
-	<target name="copy2webstart" depends="init, kettle, kettle-ui" description="Copy resources to webstart">
-    	<echo>Copying resources to webstart...</echo>
-
-		<copy todir="${webstart}/libext">
-			<fileset dir="${libext}" includes="**/*.jar" excludes="mail.jar web/activation.jar"/>
-			</copy>
-
-		<copy todir="${webstart}/libswt">
-			<fileset dir="${libswt}" includes="**/*.jar" excludes="commands.jar common.jar jface.jar runtime.jar"/>
-		</copy>
-
-		<copy todir="${webstart}/">
-			<fileset dir="${bin}" includes="**/*.xml"/>
-		</copy>
-
-		<copy todir="${webstart}/lib">
-			<fileset dir="${lib}" includes="**/*.jar"/>
-		</copy>
-		
-		<copy todir="${webstart}/ui">
-			<fileset dir="${ui}" includes="**/*" excludes="**/.vpn"/>
-		</copy>
-	
-		<copy todir="${webstart}/plugins">
-			<fileset dir="${plugins}" includes="**/*"/>
-		</copy>
-
-		<copy todir="${webstart}">
-			<fileset dir="${src}/org/pentaho/di/images/" includes="kettle_logo.png"/>
-		</copy>
-
-		<jar destfile="${webstart}/libswt/win32/libs.jar">
-			<fileset dir="${libswt}/win32" includes="**/*.dll"/>
-			<fileset dir="${libswt}/win32" includes="**/*.manifest"/>
-		</jar>
-			
-		<jar destfile="${webstart}/libswt/linux/libs.jar">
-			<fileset dir="${libswt}/linux" includes="**/*.so"/>
-		</jar>
-
-		<jar destfile="${webstart}/libswt/solaris/libs.jar">
-			<fileset dir="${libswt}/solaris" includes="**/*.so"/>
-		</jar>
-
-		<jar destfile="${webstart}/libswt/aix/libs.jar">
-			<fileset dir="${libswt}/aix" includes="**/*.a"/>
-		</jar>
-
-		<jar destfile="${webstart}/libswt/osx/libs.jar">
-			<fileset dir="${libswt}/osx" includes="**/*.jnilib"/>
-			<fileset dir="${libswt}/osx" includes="**/java_swt"/>
-		</jar>
-		
-	</target>
-
-	<!---
-	
-	   src 
-	   src-ui 
-	   lib/ 
-	   libswt/win32 
-	   libswt/linux 
-	   libswt/*.jar 
-	   libext/log4j-1.2.8.jar 
-	   libext/spring 
-	   libext/commons/commons-vfs* 
-	   libext/commons/commons-logging* 
-	   ui 
-	   Translator.bat 
-	   translator.sh
-	--> 
-	
-	<target name="i18n" depends="kettle-ui" description="generate the Kettle-i18n-${version}-r${revision}.zip file">
-		  	<echo>Generating the Kettle i18n distribution package Kettle-i18n-${version}-r${revision}.zip ...</echo>
-		  	<jar jarfile="${dist.dir}/Kettle-i18n-${version}-r${revision}.zip" 
-		    	 basedir="." 
-		    	 includes="src/**/*.java src/**/*.properties src-ui/**/*.java src-ui/**/*.properties lib/*.jar libswt/win32/*.jar libswt/linux/x86/*.jar libswt/*.jar libext/log4j-1.2.8.jar libext/spring/spring-core.jar libext/commons/commons-vfs*.jar libext/commons/commons-logging*.jar ui/*.xul Translator.bat translator.sh translator.xml"
-		  	     excludes="**/Thumbs.db **/.svn"
-		  		/>
-	</target>
-	
-	
-	<target name="keystore" depends="copy2webstart" description="Create the keystore...">
-    	<echo>Create the keystore...</echo>
-
-		<exec executable="keytool">
-			<arg line="-genkey -keyalg RSA -alias kettle -keystore &quot;${keystore}&quot; -storepass &quot;${keystorePassword}&quot; -keypass &quot;${keystorePassword}&quot; -dname &quot;CN=Matt Casters, OU=Pentaho Corporation, O=Pentaho Data Integration, L=Orlando, S=FL, C=US&quot;"/>
-		</exec>
-	</target>
-	
-    <target name="sign-jars" depends="keystore" description="Sign all used jars">
-    	<echo>Signing JARS...</echo>
-    	
-    	<signjar keystore="${keystore}" alias="kettle" storepass="${keystorePassword}">
-    		<fileset dir="${webstart}" includes="**/*.jar"/>
-	    </signjar>
-    	<!-- for jars that are already signed by other parties, copy the originals back over -->
-
-    	<echo>Copying third-party signed jars</echo>
-    	
-		<copy todir="${webstart}/libext">
-			<fileset dir="${libext}" includes="mail.jar web/activation.jar"/>
-			</copy>
-
-		<copy todir="${webstart}/libswt">
-			<fileset dir="${libswt}" includes="commands.jar common.jar jface.jar runtime.jar"/>
-		</copy>
-    	
-    </target> 
-
-    <target name="webstart" depends="sign-jars" description="Package WAR">
-    	<echo>Create the webstart WAR file...</echo>
-
-        <war destfile="${webstart}/${impl.productID}-${version}.war" webxml="${web}/web.xml" compress="true">
-            
-        	<fileset dir="${web}">
-		      <include name="**/*.html"/>
-		      <include name="**/*.jnlp"/>
-		      <exclude name="**/*.xml"/>
-	    	</fileset>
-
-            <fileset dir="${webstart}">
-			  <include name="**/*.jar"/>
-    		  <include name="**/*.properties"/>
-			  <include name="**/repositories.xml"/>
-              <include name="**/*.xul"/>
-              <include name="images/*"/>
-  			  <include name="kettle_logo.png"/>
-              <exclude name="${keystore}"/>
-              <exclude name="kettle.war"/>
-	    	</fileset>
-        	
-        </war>
-	</target>
-	
 	<target name="junit-report" depends="tests-all" description="Create an HTML report of ALL unit tests">
 		<junitreport todir="${junit}">
 		  <fileset dir="${junit}">
@@ -1128,55 +332,23 @@
 	       ==========================
 	  -->
 
-	<target name="default" depends="distrib" description="default = build distribution package"/>
+	<target name="default" depends="dist" description="default = build distribution package"/>
 
-	<!--
-	       ==========================
-	              C L E A N
-	       ==========================
-	  -->
-
-	  <target name="cleandirs" description="clean up generated files">
-	    <delete dir="${classes}"/>
-	    <delete dir="${classes-ui}"/>
-	    <delete dir="${classes-core}"/>
-	    <delete dir="${classes-db}"/>
-	    <delete dir="${classes-jdbc}"/>
-	    <delete dir="${testClasses}"/>
-	    <delete dir="${lib}"/>
-	    <delete dir="${junit}"/>
-	    <delete dir="${distrib}"/>
-	  	<delete dir="${api}"/>
-	  	<delete dir="${webstart}"/>
-	  	<delete dir="libvars"/>
-	  	<delete dir="test/derbyOld"/>
-	  	<delete dir="test/derbyNew"/>
-	  	<delete>
-	        <fileset dir=".">
-			  <include name="*.zip"/>
-			  <include name="*.gz"/>
-	    	</fileset>
-	  	</delete>
-	    <delete dir="${macdistrib}"/>
-	  	<delete dir="${pdice.package.basedir}"/>
-	  </target>
-
-	  <target name="clean" depends="cleandirs, clean-plugins"/>
 	
-	 <target name="coverage" depends="clean, compileTests" > <!-- , tests-core, tests-resource, tests-trans, tests-run -->
+	<target name="coverage" depends="clean, compileTests" > <!-- , tests-core, tests-resource, tests-trans, tests-run -->
 	 	<ant antfile="build_coverage.xml" dir="." target="coverage" />
-	 </target>
+	</target>
 	
-	 <target name="nightly" depends="clean, zip, sourcezip, javadoc_zip, compileTests" > <!-- , tests-core, tests-resource, tests-trans, tests-run -->
+	<target name="nightly" depends="clean, build-all" > <!-- , tests-core, tests-resource, tests-trans, tests-run -->
 	 	<ant antfile="build_coverage.xml" dir="." target="zip-reports" />
-	 </target>
+	</target>
 	
 	<!--
 		BEFORE USING : Please download JarBundler version 1.9 and unzip it in tools/libant/
 		http://informagen.com/JarBundler/	
 	-->
 	
-	<target name="macapplication" depends="distrib" description="Build OS X executable">
+	<target name="macapplication" depends="build-all" description="Build OS X executable">
 		
 	  	        <delete dir="${macdistrib}/${ant.project.name}.app"/>
 			  	<delete>
@@ -1214,8 +386,8 @@
 	  	        		<include name="simple-jndi/**/*"/>
 	  	        		<include name="pwd/**/*"/>
 	  	        		<include name="plugins/**/*"/>
-	  	        		<include name="${ui}/*"/>
-	  	        		<include name="${ui}/**/*"/>
+	  	        		<include name="ui/*"/>
+	  	        		<include name="ui/**/*"/>
 	  	        	</jarfileset>
 	  	        </jarbundler>
 	  			<!-- patch Info.plist with StartOnMainThread property need to make sure that the token is in the right place-->
@@ -1301,15 +473,15 @@
 	     the "-standalone" ant targets related to the plugins.  If you'd like to just build a single plugin, 
 	     you can do that by overriding the plugins property to just reference your plugin.
 	     
-	     Please see src-plugins/readme.txt for more details.
+	     Please see plugins/readme.txt for more details.
 	-->
 
 	<target name="clean-plugins" depends="install-antcontrib">
 	    <for list="${plugin-ids}" param="plugin" trim="true">
 	      <sequential>
-	      	<delete dir="src-plugins/@{plugin}/bin"/>
-	      	<delete dir="src-plugins/@{plugin}/dist"/>
-		  </sequential>
+	      	<delete dir="plugins/@{plugin}/bin"/>
+	      	<delete dir="plugins/@{plugin}/dist"/>
+	    </sequential>
 		</for>
 	</target>
 	
@@ -1317,9 +489,9 @@
 	    <for list="${plugin-ids}" param="plugin" trim="true">
 	      <sequential>		
 	  			<echo>Compiling Kettle Plugin @{plugin}...</echo>
-	      		<mkdir dir="src-plugins/@{plugin}/bin/classes"/>
+	      		<mkdir dir="plugins/@{plugin}/bin/classes"/>
 			    <javac 
-			    	   destdir="src-plugins/@{plugin}/bin/classes"
+			    	   destdir="plugins/@{plugin}/bin/classes"
 			    	   target="6"
 			    	   source="6"
 			           deprecation="true"
@@ -1328,32 +500,30 @@
 			    	   fork="true"
 		        	   includeantruntime="false"
 			    	>
-			    	<src path="src-plugins/@{plugin}/src"/>
+			    	<src path="plugins/@{plugin}/src"/>
 			    	
 			    	<classpath>
 						<fileset dir="${lib}" 			includes="**/*.jar"/>
 						<fileset dir="${libext}"	    includes="**/*.jar **/*.zip"/>
 						<fileset dir="${libswt}" 		includes="*.jar *.zip"/>
 						<fileset dir="${libswt}/win32/" includes="*.jar *.zip"/>
-			    		<fileset dir="src-plugins/@{plugin}/lib" includes="*.jar *.zip"/>
+			    		<fileset dir="plugins/@{plugin}/lib" includes="*.jar *.zip"/>
 			  		</classpath>
 			    </javac>
-			    <copy todir="src-plugins/@{plugin}/bin/classes">
-			    	<fileset dir="src-plugins/@{plugin}/src" includes="**/*.png **/*.xml **/*.xul **/*txt **/*properties"/>
+			    <copy todir="plugins/@{plugin}/bin/classes">
+			    	<fileset dir="plugins/@{plugin}/src" includes="**/*.png **/*.xml **/*.xul **/*txt **/*properties"/>
 		  	    </copy>
 	      	</sequential>
       	</for>
 	</target>
 	
-	<target name="compile-plugins" depends="compile-ui, compile-plugins-standalone"  description="compile the core plugins"/>
-	
 	<target name="kettle-plugins-jar-standalone" depends="compile-plugins-standalone" description="generate all the kettle plugin jars">
 	  	<for list="${plugin-ids}" param="plugin" trim="true">
 	  		<sequential>	
 			  	<echo>Generating the Kettle Plugin Jar ${plugin} ...</echo>
-	  			<mkdir dir="src-plugins/@{plugin}/dist"/>
-			  	<jar jarfile="src-plugins/@{plugin}/dist/@{plugin}.jar" 
-			    	 basedir="src-plugins/@{plugin}/bin/classes" 
+	  			<mkdir dir="plugins/@{plugin}/dist"/>
+			  	<jar jarfile="plugins/@{plugin}/dist/@{plugin}.jar" 
+			    	 basedir="plugins/@{plugin}/bin/classes" 
 			    	 includes="**/*" 
 			  	     excludes="**/Thumbs.db">
 		              <manifest>
@@ -1377,25 +547,25 @@
 	  		<sequential>	
 			  	<echo>Staging the Kettle plugin @{plugin} ...</echo>
 	  			<!-- copy plugin jar -->
-	  			<mkdir dir="src-plugins/@{plugin}/bin/stage/@{plugin}"/>
-		  		<copy todir="src-plugins/@{plugin}/bin/stage/@{plugin}"  file="src-plugins/@{plugin}/dist/@{plugin}.jar"/>
+	  			<mkdir dir="plugins/@{plugin}/bin/stage/@{plugin}"/>
+		  		<copy todir="plugins/@{plugin}/bin/stage/@{plugin}"  file="plugins/@{plugin}/dist/@{plugin}.jar"/>
 
 	  	        <!-- external libs (jdbc etc) -->
-		  		<mkdir dir="src-plugins/@{plugin}/bin/stage/@{plugin}/lib"/>
-		  		<copy todir="src-plugins/@{plugin}/bin/stage/@{plugin}/lib">
-		  			<fileset dir="src-plugins/@{plugin}/lib" includes="**/*.jar **/*.zip" excludes="**/.vpn"/>
+		  		<mkdir dir="plugins/@{plugin}/bin/stage/@{plugin}/lib"/>
+		  		<copy todir="plugins/@{plugin}/bin/stage/@{plugin}/lib">
+		  			<fileset dir="plugins/@{plugin}/lib" includes="**/*.jar **/*.zip" excludes="**/.vpn"/>
 	  			</copy>
 
 	  			<!-- any other res files -->
-		  		<copy todir="src-plugins/@{plugin}/bin/stage/@{plugin}">
-		  			<fileset dir="src-plugins/@{plugin}/res" includes="**/*" excludes="**/.vpn"/>
+		  		<copy todir="plugins/@{plugin}/bin/stage/@{plugin}">
+		  			<fileset dir="plugins/@{plugin}/res" includes="**/*" excludes="**/.vpn"/>
 	  			</copy>
 	  			
 	  		    <!-- Update the version.xml with the current version of this plugin -->
 	  		    <if>
-	  		      <available file="$src-plugins/@{plugin}/bin/stage/@{plugin}/version.xml" />
+	  		      <available file="$plugins/@{plugin}/bin/stage/@{plugin}/version.xml" />
 	  		      <then>
-		  		    <replace file="src-plugins/@{plugin}/bin/stage/@{plugin}/version.xml" token="@TRUNK@" value="${project.revision}"/>
+		  		    <replace file="plugins/@{plugin}/bin/stage/@{plugin}/version.xml" token="@TRUNK@" value="${project.revision}"/>
 	  		      </then>
 	  		    </if>
 			</sequential>
@@ -1408,8 +578,8 @@
 	  	<for list="${plugin-ids}" param="plugin" trim="true">
 	  		<sequential>
 			  	<echo>Creating the Kettle plugin zip for @{plugin} ...</echo>
-	  		  	<zip destfile="src-plugins/@{plugin}/dist/@{plugin}.zip" 
-	  		  		 basedir="src-plugins/@{plugin}/bin/stage"
+	  		  	<zip destfile="plugins/@{plugin}/dist/@{plugin}.zip" 
+	  		  		 basedir="plugins/@{plugin}/bin/stage"
 	  		    	 includes="**/*"/>
 			</sequential>
 	  	</for>
@@ -1422,9 +592,9 @@
 	    <for list="${plugin-ids}" param="plugin" trim="true">
 	      <sequential>		
 	  			<echo>Compiling Kettle Plugin @{plugin}...</echo>
-	      		<mkdir dir="src-plugins/@{plugin}/bin/test-classes"/>
+	      		<mkdir dir="plugins/@{plugin}/bin/test-classes"/>
 			    <javac 
-			    	   destdir="src-plugins/@{plugin}/bin/test-classes"
+			    	   destdir="plugins/@{plugin}/bin/test-classes"
 			    	   target="6"
 			    	   source="6"
 			           deprecation="true"
@@ -1433,19 +603,19 @@
 			    	   fork="true"
 		        	   includeantruntime="false"
 			    	>
-			    	<src path="src-plugins/@{plugin}/test"/>
+			    	<src path="plugins/@{plugin}/test"/>
 			    	
 			    	<classpath>
 						<fileset dir="${lib}" 			includes="**/*.jar"/>
 						<fileset dir="${libext}"	    includes="**/*.jar **/*.zip"/>
 						<fileset dir="${libswt}" 		includes="*.jar *.zip"/>
 						<fileset dir="${libswt}/win32/" includes="*.jar *.zip"/>
-			    		<fileset dir="src-plugins/@{plugin}/lib" includes="*.jar *.zip"/>
-			    		<pathelement path="src-plugins/@{plugin}/bin/classes"/>
+			    		<fileset dir="plugins/@{plugin}/lib" includes="*.jar *.zip"/>
+			    		<pathelement path="plugins/@{plugin}/bin/classes"/>
 			  		</classpath>
 			    </javac>
-			    <copy todir="src-plugins/@{plugin}/bin/testclasses">
-			    	<fileset dir="src-plugins/@{plugin}/test" includes="**/*.png **/*.xml **/*.xul **/*txt **/*properties"/>
+			    <copy todir="plugins/@{plugin}/bin/testclasses">
+			    	<fileset dir="plugins/@{plugin}/test" includes="**/*.png **/*.xml **/*.xul **/*txt **/*properties"/>
 		  	    </copy>
 	      	</sequential>
       	</for>
@@ -1458,9 +628,9 @@
 			    	<classpath>
 						<fileset dir="${lib}" includes="**/*.jar"/>
 						<fileset dir="test/libext/" includes="jetty-servlet-tester-*.jar"/>
-			    		<pathelement path="src-plugins/@{plugin}/bin/test-classes"/>
-			    		<pathelement path="src-plugins/@{plugin}/bin/classes"/>
-			    		<fileset dir="src-plugins/@{plugin}/lib" includes="*.jar *.zip"/>
+			    		<pathelement path="plugins/@{plugin}/bin/test-classes"/>
+			    		<pathelement path="plugins/@{plugin}/bin/classes"/>
+			    		<fileset dir="plugins/@{plugin}/lib" includes="*.jar *.zip"/>
 						<fileset dir="${libext}" 		includes="**/*.jar **/*.zip"/>
 						<fileset dir="${libswt}" 		includes="*.jar *.zip"/>
 						<fileset dir="${libswt}/win32/" includes="*.jar *.zip"/>
@@ -1469,7 +639,7 @@
 					<formatter type="xml"/>
 		
 				  	<batchtest todir="${junit}" haltonerror="false">
-				  		<fileset dir="src-plugins/@{plugin}/test">
+				  		<fileset dir="plugins/@{plugin}/test">
 				  		      <include name="**/*Test*.java"/>
 			  		    </fileset>
 			  		</batchtest>
@@ -1477,5 +647,466 @@
 			</sequential>
 		</for>
 	</target>
+	
+	<target name="build-nodeps"
+	        description="Build all projects."
+	        depends="install-antcontrib, build-modules, build-plugins">
+  </target>
+	
+	<target name="build-all"
+	          description="Build all projects."
+	          depends="install-antcontrib, build-publish-modules, build-publish-plugins">
+	</target>
+	  
+	<target name="compile" depends="install-antcontrib,compile-modules,compile-plugins" description="compile the Kettle source code"/>
+		
+	<target name="compile-modules" depends="install-antcontrib" description="compile the source code for the Kettle modules">
+	  <for list="${dev-project.list}" param="module" trim="true">
+      <sequential>
+        <ant antfile="build.xml" dir="@{module}" inheritall="false" >
+          <property name="src.dir" value="src"/>
+          <property name="lib.dir" value="../${lib}"/>
+          <target name="compile" />
+        </ant>
+      </sequential>
+    </for>
+	</target>
+	
+	<target name="compile-plugins" depends="install-antcontrib" description="compile the core plugins">
+    <for list="${plugin-ids}" param="plugin" trim="true">
+      <sequential>
+        <ant antfile="build.xml" dir="plugins/@{plugin}" inheritall="false" >
+          <property name="src.dir" value="src"/>
+          <property name="lib.dir" value="../../${lib}"/>
+        </ant>
+      </sequential>
+    </for>
+  </target>
+	
+	<target name="clean" depends="install-antcontrib,subfloor.clean" description="compile the source code">
+    <for list="${dev-project.list}" param="module" trim="true">
+      <sequential>
+        <ant antfile="build.xml" dir="@{module}" inheritall="false" >
+          <target name="clean" />
+        </ant>
+      </sequential>
+    </for>
+		<for list="${plugin-ids}" param="plugin" trim="true">
+      <sequential>
+        <ant antfile="build.xml" dir="plugins/@{plugin}" inheritall="false" >
+          <target name="clean" />
+        </ant>
+      </sequential>
+    </for>
+  </target>
+	
+	<target name="clean-all" depends="install-antcontrib,subfloor.clean-all" description="compile the source code">
+    <for list="${dev-project.list}" param="module" trim="true">
+      <sequential>
+        <ant antfile="build.xml" dir="@{module}" inheritall="false" >
+          <target name="clean-all" />
+        </ant>
+      </sequential>
+    </for>
+		<for list="${plugin-ids}" param="plugin" trim="true">
+      <sequential>
+        <ant antfile="build.xml" dir="plugins/@{plugin}" inheritall="false" >
+          <target name="clean-all" />
+        </ant>
+      </sequential>
+    </for>
+  </target>
+	
+  <!--=======================================================================
+        create-dot-classpath
+ 
+        Creates the Eclipse .classpath file from the resolved
+        classpath from Ant.
+      ====================================================================-->
+  <target name="create-dot-classpath" depends="install-pentaho-ant-tasks,init,resolve,unzip-swtlibs,remove-kettle-jars,update-launch-config">
+    <dot-classpath>
+      <classpath>
+          <fileset dir="${lib.dir}">
+          	<include name="*.jar" />
+          </fileset>
+      	  <fileset dir="${testlib.dir}">
+            <include name="*.jar" />
+          </fileset>
+      </classpath>
+    </dot-classpath>
+  	<echo message="NOTE: If your OS is not 64-bit Linux, edit your classpath to point to the appropriate SWT jar under the libswt folder."/>
+  </target>
+	
+	<!--=======================================================================
+	        update-launch-config
+	 
+	        Creates an Eclipse launch configuration from a template using the
+	        project directory name as the project name, location, etc.
+	      ====================================================================-->
+	<target name="update-launch-config" depends="install-antcontrib">
+	  <basename property="project.dir.name" file="${basedir}"/>
+		<available file="${basedir}/${project.dir.name}.launch" property="launch.config.exists"/>
+		<available file="${basedir}/project.launch" property="project-dot-launch.exists"/>
+		<if>
+			<and>
+		    <isfalse value="${launch.config.exists}"/>
+				<istrue  value="${project-dot-launch.exists}"/>
+			</and>
+		  <then>
+		  	<copy file="${basedir}/project.launch" tofile="${basedir}/${project.dir.name}.launch"/>
+		 	  <replace file="${basedir}/${project.dir.name}.launch" token="@@@" value="${project.dir.name}"/>
+		 	  <echo message="NOTE: You must restart Eclipse to enable the use of the launch configuration."/>
+		  </then>
+		  <else>
+		    <echo message="The launch configuration already exists, or no project.launch file exists." />
+		  </else>
+		</if>
+	</target>
+	
+	<target name="assemble-full"
+	              description="Calls assemble-all in assembly"
+	              depends="install-antcontrib, build-all">
+	     <ant antfile="build.xml" dir="${assembly.dir}" inheritall="false" >
+	          <target name="clean" />
+	          <target name="init" />
+	          <target name="resolve" />
+	     	  <target name="assemble-full" />
+	     </ant>
+	 </target>
+	
+	  <!--=======================================================================
+	      dist-source
+	      
+	      Generates zip and targz distributions of the javadoc
+	      ====================================================================-->
+	  <target name="dist-source" depends="source.jar, source.zip" />
 
+
+	  <!--=======================================================================
+	      source.jar
+	      
+	      Creates a jar of the project source for distribution
+	      ====================================================================-->
+	  <target name="source.jar" depends="init,install-antcontrib">
+	  	<delete file="${dist.dir}/${ivy.artifact.id}-${project.revision}-sources.jar"/>
+	  	<for list="${dev-project.list}" param="module" trim="true">
+	  		<sequential>
+	  		  <jar jarfile="${dist.dir}/${ivy.artifact.id}-${project.revision}-sources.jar" basedir="@{module}/src" update="true"/>
+        </sequential>
+      </for>
+	    	
+	    <if>
+	      <equals arg1="${tests.publish}" arg2="true" />
+	      <then>
+	      	<delete file="${dist.dir}/${ivy.artifact.id}-test-${project.revision}-sources.jar"/>
+  	      <for list="${dev-project.list}" param="module" trim="true">
+  	        <sequential>
+  	          <jar jarfile="${dist.dir}/${ivy.artifact.id}-test-${project.revision}-sources.jar" basedir="@{module}/src" update="true"/>
+  	        </sequential>
+  	      </for>
+	      </then>
+	    </if>
+	  </target>
+
+	  <!--=======================================================================
+	      source.zip
+	      
+	      Creates a zip of the project source for distribution
+	      ====================================================================-->
+	  <target name="source.zip" depends="init,install-antcontrib">
+	  	<delete file="${dist.dir}/${ivy.artifact.id}-${project.revision}-sources.jar"/>
+	      <for list="${dev-project.list}" param="module" trim="true">
+	  	    <sequential>
+	          <jar jarfile="${dist.dir}/${source.zip.filename}" basedir="@{module}/src" update="true" />
+	  	    </sequential>
+	  	  </for>
+	  </target>
+
+	<target name="build-modules"
+	              description="Builds each Kettle module."
+	              depends="install-antcontrib">
+	      
+      <for list="${dev-project.list}" param="module" trim="true">
+        <sequential>
+          <ant antfile="build.xml" dir="@{module}" inheritall="false" >
+            <!--<property name="src.dir" value="src"/>-->
+            <property name="lib.dir" value="../${lib}"/>
+          	<property name="dist.dir" value="../${lib}"/>
+          	<target name="dist" />
+          </ant>
+        </sequential>
+      </for>
+    </target>
+	
+	  <target name="build-publish-modules"
+	            description="Builds each Kettle module and publishes the artifacts."
+	            depends="install-antcontrib">
+	  	
+	  	<for list="${dev-project.list}" param="module" trim="true">
+        <sequential>
+        	<if>
+             <equals arg1="${modules.publish-local}" arg2="true" />
+             <then>
+    	          <ant antfile="build.xml" dir="@{module}" inheritall="false" >
+    	          	<property name="src.dir" value="src"/>
+          	      <property name="lib.dir" value="../${lib}"/>
+          	      <property name="ivy.local.default.root" value="${ivy.default.ivy.user.dir}/local-dev" />
+    	          	<target name="resolve" />
+    	            <target name="publish-local" />
+    	          </ant>
+          	 </then>
+          	 <else>
+          	 	<ant antfile="build.xml" dir="@{module}" inheritall="false" >
+          	 		<property name="src.dir" value="src"/>
+    	 		      <property name="lib.dir" value="../${lib}"/>
+          	 		<target name="resolve" />
+          	 		<target name="publish" />
+              </ant>
+          	 </else>
+          	</if>
+        </sequential>
+      </for>
+    </target>
+	
+	  <target name="build-plugins"
+	          description="Builds each Kettle plugin (in the source tree) and publishes the artifacts."
+	          depends="install-antcontrib">
+	    <for list="${plugin-ids}" param="plugin" trim="true">
+	      <sequential>
+	      	<ant antfile="build.xml" dir="plugins/@{plugin}" inheritall="false" >
+	      		<property name="src.dir" value="src"/>
+            <property name="lib.dir" value="../../${lib}"/>
+            <property name="ivy.local.default.root" value="${ivy.default.ivy.user.dir}/local-dev" />
+	      		<target name="resolve"/>
+            <target name="dist" />
+	      	</ant>
+	      </sequential>
+	    </for>
+	  </target>
+	
+	  <target name="build-publish-plugins" depends="build-plugins">
+	  	<if>
+      <equals arg1="${plugins.publish-local}" arg2="true" />
+      <then>
+      	<antcall target="publish-local-plugins" >
+      		<param name="ivy.local.default.root" value="${ivy.default.ivy.user.dir}/local-dev" />
+      	</antcall>
+      </then>
+	  	<else>
+	  		<antcall target="publish-plugins" />
+      </else>
+      </if>
+	  </target>
+	
+	  <target name="publish-plugins" depends="install-antcontrib">
+	    <for list="${plugin-ids}" param="plugin" trim="true">
+	      <sequential>
+	        <!-- publish jar -->
+	        <antcall target="publish-plugin-task">
+	          <param name="ivy.artifact.id" value="@{plugin}-${version}" />
+	          <param name="pluginfolder" value="plugins/@{plugin}"/>
+	          <param name="artifact.type" value="jar"/>
+	        </antcall>
+	        <!-- publish zip - TODO - put back in?
+	        <antcall target="publish-plugin-task">
+	          <param name="ivy.artifact.id" value="@{plugin}-${version}" />
+	          <param name="pluginfolder" value="plugins/@{plugin}"/>
+	          <param name="artifact.type" value="zip"/>
+	        </antcall>-->
+	      </sequential>
+	    </for>
+
+	  </target>
+	    
+	  <target name="publish-local-plugins" depends="install-antcontrib">
+	    <for list="${plugin-ids}" param="module" trim="true">
+	      <sequential>
+	        <!-- publish jar -->
+	        <antcall target="publish-local-plugin-task">
+	        	<param name="ivy.local.default.root" value="${ivy.default.ivy.user.dir}/local-dev" />
+	          <param name="ivy.artifact.id" value="@{module}" />
+	          <param name="pluginfolder" value="plugins/@{module}"/>
+	          <param name="artifact.type" value="jar"/>
+	        </antcall>
+	      </sequential>
+	    </for>
+	  </target>
+	    
+	  <target name="publish-local-plugin-task" depends="install-ivy">
+	    <ivy:resolve file="${pluginfolder}/ivy.xml" />
+	    <ivy:publish resolver="local" srcivypattern="${pluginfolder}/ivy.xml" pubrevision="${project.revision}" overwrite="true" forcedeliver="true">
+	      <artifacts pattern="${pluginfolder}/dist/[artifact]-[revision].[ext]" />
+	    </ivy:publish>
+	  </target>
+	
+	<target name="publish-task" depends="install-ivy">
+	    <ivy:resolve file="${ivyfilename}" />
+	    <ivy:makepom ivyfile="${ivyfilename}" pomfile="${kettle.ivydist.dir}/pom-${ivy.artifact.id}.xml">
+	      <mapping conf="default" scope="compile" />
+	      <mapping conf="runtime" scope="runtime" />
+	    </ivy:makepom>
+	    <ivy:deliver conf="*(public)" deliverpattern="${kettle.ivydist.dir}/ivy-${ivy.artifact.id}.xml" />
+	    
+	    <antcall target="maven-publish-dependencies">
+	      <param name="publish.groupId" value="${ivy.artifact.group}" />
+	      <param name="publish.artifactId" value="${ivy.artifact.id}" />
+	      <param name="publish.version" value="${project.revision}" />
+	      <param name="publish.file" value="${kettle.ivydist.dir}/ivy-${ivy.artifact.id}.xml" />
+	    </antcall>
+	    
+	    <antcall target="maven-publish-artifact">
+	      <param name="publish.pomFile" value="${kettle.ivydist.dir}/pom-${ivy.artifact.id}.xml" />
+	      <param name="publish.file" value="${kettle.libdist.dir}/${ivy.artifact.id}.jar" />
+	    </antcall>
+	  </target>
+	  
+	  <target name="publish-plugin-task" depends="install-ivy">
+	    <copy overwrite="true" file="${pluginfolder}/ivy.xml" tofile="${pluginfolder}/dist/ivy-${artifact.type}.xml"/>
+	    <ivy:resolve file="${pluginfolder}/dist/ivy-${artifact.type}.xml" />
+	    <ivy:makepom ivyfile="${pluginfolder}/dist/ivy-${artifact.type}.xml" pomfile="${pluginfolder}/dist/pom-${artifact.type}.xml">
+	      <mapping conf="default" scope="compile" />
+	      <mapping conf="runtime" scope="runtime" />
+	    </ivy:makepom>
+
+	    <replace file="${pluginfolder}/dist/pom-${artifact.type}.xml" token="&lt;packaging&gt;jar&lt;/packaging&gt;" value="&lt;packaging&gt;${artifact.type}&lt;/packaging&gt;" />
+
+	    <ivy:deliver conf="*(public)" deliverpattern="${pluginfolder}/dist/ivy-${artifact.type}.xml" />
+	    
+	    <antcall target="maven-publish-dependencies">
+	      <param name="publish.groupId" value="${ivy.artifact.group}" />
+	      <param name="publish.artifactId" value="${ivy.artifact.id}" />
+	      <param name="publish.version" value="${project.revision}" />
+	      <param name="publish.file" value="${pluginfolder}/dist/ivy-${artifact.type}.xml" />
+	    </antcall>
+
+	    <antcall target="maven-publish-artifact">
+	      <param name="publish.pomFile" value="${pluginfolder}/dist/pom-${artifact.type}.xml" />
+	      <param name="publish.file" value="${pluginfolder}/dist/${ivy.artifact.id}.${artifact.type}" />
+	    </antcall>
+
+	  </target>
+	
+	<target name="remove-kettle-jars" depends="init,install-antcontrib">
+		<for list="${dev-project.list}" param="module" trim="true">
+      <sequential>
+      	<delete>
+      		<fileset dir="${lib.dir}" includes="kettle-@{module}*.jar"/>      			 
+      	</delete>
+      </sequential>
+		</for>
+		<for list="${plugin-ids}" param="plugin" trim="true">
+      <sequential>
+        <delete>
+          <fileset dir="${lib.dir}" includes="@{plugin}*.jar"/>             
+        </delete>
+      </sequential>
+    </for>
+	</target>
+	
+	<!-- Unzip the libswt package into the libswt folder of the distribution -->
+	<target name="unzip-swtlibs" depends="init">
+    <unzip dest="${libswt}/.." overwrite="true">
+      <fileset dir="${lib.dir}">
+        <include name="swtlibs*.zip"/>
+      </fileset>
+    </unzip>
+	</target>
+	
+	<target name="copy-package-res">
+	  <copy todir="${distrib}" overwrite="true">
+	    <fileset dir="${package-res.dir}" />
+	  </copy>
+	</target>
+	<!--=======================================================================
+      dist
+      
+      Creates a distribution of this project
+      ====================================================================-->
+	<target name="dist" 
+		      depends="install-antcontrib,build-all,resolve,copy-package-res,dist-final" 
+		      description="Creates a distribution">
+	  <echo message="To avoid library resolution on your next build, use the dist-nodeps Ant target"/>
+	</target>
+	
+	<!--=======================================================================
+      dist-nodeps
+      
+      Creates a distribution of this project without resolving dependencies
+      ====================================================================-->
+	<target name="dist-nodeps" 
+		      depends="install-antcontrib,build-nodeps,copy-package-res,dist-final" 
+		      description="Creates a distribution without resolving dependencies"/>
+		      
+	<!--=======================================================================
+      dist-final
+      
+      Performs any final processing to produce the distibution directory
+      ====================================================================-->
+	  <target name="dist-final" depends="install-antcontrib,build-nodeps">
+  	
+    <chmod perm="a+x" dir="${distrib}" includes="**/*.sh" />
+  	
+  	<!-- make JavaApplicationStub executable for OSX -->
+    <chmod file="${distrib}/Data Integration 32-bit.app/Contents/MacOS/JavaApplicationStub" perm="ugo+rx"/>
+    <chmod file="${distrib}/Data Integration 64-bit.app/Contents/MacOS/JavaApplicationStub" perm="ugo+rx"/>
+    
+  	<!-- Copy dependencies to distribution folder -->
+  	<copy todir="${distrib}/${lib.dir}" overwrite="true">
+      <fileset dir="${lib.dir}" />
+    </copy>
+	  	
+	  <!-- Move launcher jar to launcher folder -->
+	  <move todir="${distrib}/launcher">
+	  	<fileset dir="${distrib}/${lib}" includes="launcher*.jar"/>
+	  </move>
+  	
+    <!-- Unzip the libswt package into the libswt folder of the distribution -->
+	  	<antcall target="unzip-swtlibs">
+	  		<param name="libswt" value="${distrib}/${libswt}"/>
+	  	</antcall>
+    <!--<unzip dest="${distrib}" overwrite="true">
+      <fileset dir="${lib.dir}">
+        <include name="**/swtlibs*.zip"/>
+      </fileset>
+    </unzip>-->
+    
+  	<!-- Remove the SWT JAR used for compilation -->
+    <delete quiet="true">
+      <fileset dir="${distrib}/${lib.dir}" includes="swt*.*" />
+    </delete>
+  	
+  	<!-- Insert launcher revision number into batch files -->
+    <replace dir="${distrib}">
+      <include name="**/*.bat"/>
+      <include name="**/*.sh"/>
+      <include name="**/*.plist"/>
+      <replacefilter token="launcher.jar" value="launcher-${launcher.revision}.jar"/>     
+    </replace>
+  </target>
+	
+	<!--=======================================================================
+        package-dev-env
+        
+        Creates a distribution of this project that contains all resolved JARs
+        ====================================================================-->
+  <target name="package-dev-env" depends="clean, create-dot-classpath">
+    <jar jarfile="${dist.dir}/${product.name}-${product.release.type}-dev-env-${version}.zip">
+        <fileset dir=".">
+            <exclude name="bin/**" />
+            <exclude name="classes/**" />
+        </fileset>
+    </jar>     
+  </target>
+	
+	<!--=======================================================================
+	      ivy-clean-local-dev
+	      
+	      Completely cleans your local development repository of any modules or
+	      plugins published locally by various Ant tasks.
+	      ====================================================================-->
+	<target name="ivy-clean-local-dev" depends="install-ivy,install-antcontrib">
+		<property name="ivy.local.default.root" value="${ivy.default.ivy.user.dir}/local-dev" />
+		<delete dir="${ivy.local.default.root}/" />
+	</target>
+	
 </project>

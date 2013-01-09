@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0">
+  <info organisation="${ivy.artifact.group}" module="${ivy.artifact.id}" revision="${project.revision}" />
+  <configurations>
+    <conf name="default" />
+    <conf name="test" visibility="private" />
+    <conf name="swtlibs"/>
+    <conf name="launcher" />
+  </configurations>
+  
+  <publications>
+    <artifact name="${ivy.artifact.id}" type="zip"/>
+  </publications>
+  
+  <dependencies defaultconf="default->default">
+    <!-- Kettle module dependencies-->
+    <dependency org="${ivy.artifact.group}" name="kettle-core"          rev="${project.revision}" changing="true"/>
+    <dependency org="${ivy.artifact.group}" name="kettle-db"            rev="${project.revision}" changing="true"/>
+    <dependency org="${ivy.artifact.group}" name="kettle-engine"        rev="${project.revision}" changing="true"/>
+    <dependency org="${ivy.artifact.group}" name="kettle-dbdialog"      rev="${project.revision}" changing="true"/>
+    <dependency org="${ivy.artifact.group}" name="kettle-jdbc"          rev="${project.revision}" changing="true"/>
+    <dependency org="${ivy.artifact.group}" name="kettle-ui-swt"        rev="${project.revision}" changing="true"/>
+    
+    <!-- Pentaho dependencies (non-Kettle), launcher, shim, etc. -->
+    <dependency org="pentaho"               name="launcher"             rev="${launcher.revision}" conf="launcher->default"/>
+    <dependency org="pentaho"               name="pentaho-hadoop-hive-jdbc-shim" rev="${pentaho.hadoop.hive.shim.version}"/>
+       
+    <!-- The OS-specific libraries are bundled together, unzip them all for assembly -->
+    <dependency org="org.eclipse"          name="swtlibs"               rev="3.7" conf="swtlibs->default" transitive="false">
+      <artifact name="swtlibs" type="zip"/>
+    </dependency>
+      
+    <!-- Third-party JDBC dependencies -->
+    <dependency org="org.apache.derby"     name="derby"                 rev="10.2.1.6"      transitive="false"/>
+    <dependency org="org.apache.derby"     name="derbyclient"           rev="10.2.1.6"      transitive="false"/>
+    <dependency org="com.h2database"       name="h2"                    rev="1.2.131"       transitive="false"/>
+    <dependency org="hsqldb"               name="hsqldb"                rev="1.8.0.7"       transitive="false"/>
+    <dependency org="infobright"           name="infobright-core"       rev="3.4"           transitive="false"/>
+    <dependency org="interbase"            name="interclient"           rev="20050506"      transitive="false"/>
+    <dependency org="javassist"            name="javassist"             rev="3.4.GA"        transitive="false"/>
+    <dependency org="org.firebirdsql.jdbc" name="jaybird"               rev="2.1.6"         transitive="false"/>
+    <dependency org="net.sf.jt400"         name="jt400"                 rev="6.1"           transitive="false"/>  
+    <dependency org="jtds"                 name="jtds"                  rev="1.2.5"         transitive="false"/>
+    <dependency org="luciddb"              name="LucidDbClient-minimal" rev="0.9.4"         transitive="false"/>
+    <dependency org="monetdb"              name="monetdb-jdbc"          rev="2.1"           transitive="false"/>
+    <dependency org="postgresql"           name="postgresql"            rev="8.4-702.jdbc3" transitive="false"/>
+    <dependency org="com.sap"              name="sapdbc"                rev="7.4.4"         transitive="false"/>
+    <dependency org="org.xerial"           name="sqlite-jdbc"           rev="3.7.2"         transitive="false"/>
+    <dependency org="jaxen"                name="jaxen"                 rev="1.1.1"         transitive="false"/>
+    
+    <!-- Other third-party dependencies -->
+    <dependency org="asm"                  name="asm"                   rev="3.2"           transitive="false"/>
+    <dependency org="net.sf.saxon"         name="saxon-dom"             rev="9.1.0.8"       transitive="false"/>
+    
+  </dependencies>
+</ivy-module>

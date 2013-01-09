@@ -1,0 +1,7 @@
+supervisor_id;employee_id;name
+;1;Frank
+1;2;Bill
+2;3;Eric
+1;4;Jane
+3;5;Mark
+2;6;Carla

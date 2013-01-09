@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name>Generate customer data</name>
+    <description/>
+    <extended_description/>
+    <trans_version/>
+  <filename>&#47;home&#47;matt&#47;workspace&#47;Kettle trunk&#47;samples&#47;transformations&#47;data-generator&#47;Generate customer data.ktr</filename>
+    <trans_status>0</trans_status>
+    <directory>&#47;</directory>
+    <log>
+      <read/>
+      <write/>
+      <input/>
+      <output/>
+      <update/>
+      <rejected/>
+      <connection/>
+      <table/>
+      <use_batchid>Y</use_batchid>
+      <use_logfield>N</use_logfield>
+    </log>
+    <maxdate>
+      <connection/>
+      <table/>
+      <field/>
+      <offset>0.0</offset>
+      <maxdiff>0.0</maxdiff>
+    </maxdate>
+    <size_rowset>50000</size_rowset>
+    <sleep_time_empty>1</sleep_time_empty>
+    <sleep_time_full>1</sleep_time_full>
+    <unique_connections>N</unique_connections>
+    <feedback_shown>Y</feedback_shown>
+    <feedback_size>250000</feedback_size>
+    <using_thread_priorities>N</using_thread_priorities>
+    <shared_objects_file/>
+    <dependencies>
+    </dependencies>
+    <partitionschemas>
+    </partitionschemas>
+    <slaveservers>
+    </slaveservers>
+    <clusterschemas>
+    </clusterschemas>
+  <modified_user>-</modified_user>
+  <modified_date>2007&#47;04&#47;11 16:04:17.734</modified_date>
+  </info>
+  <notepads>
+  </notepads>
+  <order>
+  <hop> <from>Generate Rows</from><to>id</to><enabled>Y</enabled> </hop>  <hop> <from>id</from><to>Modified Java Script Value</to><enabled>Y</enabled> </hop>  <hop> <from>Modified Java Script Value</from><to>Sorted Merge</to><enabled>Y</enabled> </hop>  <hop> <from>Sorted Merge</from><to>customers-random.txt</to><enabled>Y</enabled> </hop>  </order>
+  <step>
+    <name>Generate Rows</name>
+    <type>RowGenerator</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <fields>
+    </fields>
+    <limit>${NR_OF_ROWS}</limit>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>58</xloc>
+      <yloc>106</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Modified Java Script Value</name>
+    <type>ScriptValueMod</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>2</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <compatible>N</compatible>
+    <jsScripts>      <jsScript>        <jsScript_type>0</jsScript_type>
+        <jsScript_name>Script 1</jsScript_name>
+        <jsScript_script>java;
+
+var name=Packages.org.pentaho.di.core.util.StringUtil.generateRandomString(5, &quot;&quot;, &quot;-name&quot;, false);
+var firstname=Packages.org.pentaho.di.core.util.StringUtil.generateRandomString(3, &quot;&quot;, &quot;-firstname&quot;, false);
+var zip=10000 + Math.round( Math.random() * 500 )*20;
+var city=Packages.org.pentaho.di.core.util.StringUtil.generateRandomString(3, &quot;&quot;, &quot;-city&quot;, false);
+var street=Packages.org.pentaho.di.core.util.StringUtil.generateRandomString(4, &quot;&quot;, &quot;-street&quot;, false);
+var housenr=1 + Math.random() * 200;
+var birthdate = new Date(1950+Math.round( Math.random() * 10 )*4, Math.round( Math.random() * 12 ), Math.round( Math.random() * 31 ));
+
+var states;
+
+if (states == null)
+{
+  states = new Array(
+  &quot;ALABAMA&quot;,&quot;AL&quot;,
+  &quot;ALASKA&quot;,&quot;AK&quot;,
+  &quot;AMERICAN SAMOA&quot;,&quot;AS&quot;,
+  &quot;ARIZONA&quot;,&quot;AZ&quot;,
+  &quot;ARKANSAS&quot;,&quot;AR&quot;,
+  &quot;CALIFORNIA&quot;,&quot;CA&quot;,
+  &quot;COLORADO&quot;,&quot;CO&quot;,
+  &quot;CONNECTICUT&quot;,&quot;CT&quot;,
+  &quot;DELAWARE&quot;,&quot;DE&quot;,
+  &quot;DISTRICT OF COLUMBIA&quot;,&quot;DC&quot;,
+  &quot;FEDERATED STATES OF MICRONESIA&quot;,&quot;FM&quot;,
+  &quot;FLORIDA&quot;,&quot;FL&quot;,
+  &quot;GEORGIA&quot;,&quot;GA&quot;,
+  &quot;GUAM&quot;,&quot;GU&quot;,
+  &quot;HAWAII&quot;,&quot;HI&quot;,
+  &quot;IDAHO&quot;,&quot;ID&quot;,
+  &quot;ILLINOIS&quot;,&quot;IL&quot;,
+  &quot;INDIANA&quot;,&quot;IN&quot;,
+  &quot;IOWA&quot;,&quot;IA&quot;,
+  &quot;KANSAS&quot;,&quot;KS&quot;,
+  &quot;KENTUCKY&quot;,&quot;KY&quot;,
+  &quot;LOUISIANA&quot;,&quot;LA&quot;,
+  &quot;MAINE&quot;,&quot;ME&quot;,
+  &quot;MARSHALL ISLANDS&quot;,&quot;MH&quot;,
+  &quot;MARYLAND&quot;,&quot;MD&quot;,
+  &quot;MASSACHUSETTS&quot;,&quot;MA&quot;,
+  &quot;MICHIGAN&quot;,&quot;MI&quot;,
+  &quot;MINNESOTA&quot;,&quot;MN&quot;,
+  &quot;MISSISSIPPI&quot;,&quot;MS&quot;,
+  &quot;MISSOURI&quot;,&quot;MO&quot;,
+  &quot;MONTANA&quot;,&quot;MT&quot;,
+  &quot;NEBRASKA&quot;,&quot;NE&quot;,
+  &quot;NEVADA&quot;,&quot;NV&quot;,
+  &quot;NEW HAMPSHIRE&quot;,&quot;NH&quot;,
+  &quot;NEW JERSEY&quot;,&quot;NJ&quot;,
+  &quot;NEW MEXICO&quot;,&quot;NM&quot;,
+  &quot;NEW YORK&quot;,&quot;NY&quot;,
+  &quot;NORTH CAROLINA&quot;,&quot;NC&quot;,
+  &quot;NORTH DAKOTA&quot;,&quot;ND&quot;,
+  &quot;NORTHERN MARIANA ISLANDS&quot;,&quot;MP&quot;,
+  &quot;OHIO&quot;,&quot;OH&quot;,
+  &quot;OKLAHOMA&quot;,&quot;OK&quot;,
+  &quot;OREGON&quot;,&quot;OR&quot;,
+  &quot;PALAU&quot;,&quot;PW&quot;,
+  &quot;PENNSYLVANIA&quot;,&quot;PA&quot;,
+  &quot;PUERTO RICO&quot;,&quot;PR&quot;,
+  &quot;RHODE ISLAND&quot;,&quot;RI&quot;,
+  &quot;SOUTH CAROLINA&quot;,&quot;SC&quot;,
+  &quot;SOUTH DAKOTA&quot;,&quot;SD&quot;,
+  &quot;TENNESSEE&quot;,&quot;TN&quot;,
+  &quot;TEXAS&quot;,&quot;TX&quot;,
+  &quot;UTAH&quot;,&quot;UT&quot;,
+  &quot;VERMONT&quot;,&quot;VT&quot;,
+  &quot;VIRGIN ISLANDS&quot;,&quot;VI&quot;,
+  &quot;VIRGINIA&quot;,&quot;VA&quot;,
+  &quot;WASHINGTON&quot;,&quot;WA&quot;,
+  &quot;WEST VIRGINIA&quot;,&quot;WV&quot;,
+  &quot;WISCONSIN&quot;,&quot;WI&quot;,
+  &quot;WYOMING&quot;,&quot;WY&quot;
+)
+}
+
+var stateNr = Math.round( Math.random() * states.length&#47;2 ) * 2;
+var state = states[stateNr];
+var stateCode = states[stateNr+1];
+
+
+</jsScript_script>
+      </jsScript>    </jsScripts>    <fields>      <field>        <name>name</name>
+        <rename>name</rename>
+        <type>String</type>
+        <length>30</length>
+        <precision>-1</precision>
+      </field>      <field>        <name>firstname</name>
+        <rename>firstname</rename>
+        <type>String</type>
+        <length>30</length>
+        <precision>-1</precision>
+      </field>      <field>        <name>zip</name>
+        <rename>zip</rename>
+        <type>Integer</type>
+        <length>5</length>
+        <precision>0</precision>
+      </field>      <field>        <name>city</name>
+        <rename>city</rename>
+        <type>String</type>
+        <length>30</length>
+        <precision>-1</precision>
+      </field>      <field>        <name>birthdate</name>
+        <rename>birthdate</rename>
+        <type>Date</type>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>      <field>        <name>street</name>
+        <rename>street</rename>
+        <type>String</type>
+        <length>30</length>
+        <precision>-1</precision>
+      </field>      <field>        <name>housenr</name>
+        <rename>housenr</rename>
+        <type>Integer</type>
+        <length>3</length>
+        <precision>-1</precision>
+      </field>      <field>        <name>stateCode</name>
+        <rename>stateCode</rename>
+        <type>String</type>
+        <length>2</length>
+        <precision>-1</precision>
+      </field>      <field>        <name>state</name>
+        <rename>state</rename>
+        <type>String</type>
+        <length>40</length>
+        <precision>-1</precision>
+      </field>    </fields>     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>388</xloc>
+      <yloc>106</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Sorted Merge</name>
+    <type>SortedMerge</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <fields>
+      <field>
+        <name>id</name>
+        <ascending>Y</ascending>
+        </field>
+      </fields>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>553</xloc>
+      <yloc>106</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>customers-random.txt</name>
+    <type>TextFileOutput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <separator>;</separator>
+    <enclosure>&quot;</enclosure>
+    <enclosure_forced>N</enclosure_forced>
+    <header>Y</header>
+    <footer>N</footer>
+    <format>DOS</format>
+    <compression>None</compression>
+    <encoding/>
+    <endedLine/>
+    <file>
+      <name>&#47;tmp&#47;customers-10M</name>
+      <is_command>N</is_command>
+      <extention>txt</extention>
+      <append>N</append>
+      <split>N</split>
+      <haspartno>N</haspartno>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <pad>N</pad>
+      <fast_dump>N</fast_dump>
+      <splitevery>0</splitevery>
+      </file>
+    <fields>
+      <field>
+        <name>id</name>
+        <type>Integer</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>name</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>firstname</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>zip</name>
+        <type>Integer</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>city</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>birthdate</name>
+        <type>Date</type>
+        <format>yyyy&#47;MM&#47;dd</format>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>street</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>housenr</name>
+        <type>Integer</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>stateCode</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>state</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      </fields>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>718</xloc>
+      <yloc>106</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>id</name>
+    <type>Sequence</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+      <valuename>id</valuename>
+      <use_database>N</use_database>
+      <connection/>
+      <schema/>
+      <seqname>SEQ_</seqname>
+      <use_counter>Y</use_counter>
+      <counter_name>Customer ID</counter_name>
+      <start_at>1</start_at>
+      <increment_by>1</increment_by>
+      <max_value>9999999</max_value>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>223</xloc>
+      <yloc>106</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step_error_handling>
+  </step_error_handling>
+   <slave-step-copy-partition-distribution>
+</slave-step-copy-partition-distribution>
+   <slave_transformation>N</slave_transformation>
+</transformation>
