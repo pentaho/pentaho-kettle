@@ -530,7 +530,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 					String msg = BaseMessages.getString(PKG, "SelectValuesDialog.DoMapping.UnableToFindInput");
 					logError(msg);
 				}
-				String[] prevStepFieldNames = prevFields.getFieldNames();
+				String[] prevStepFieldNames = prevFields!=null ? prevFields.getFieldNames() : new String[0];
 				Arrays.sort(prevStepFieldNames);
 				bPreviousFieldsLoaded = true;
 				for (int i = 0; i < fieldColumns.size(); i++) {

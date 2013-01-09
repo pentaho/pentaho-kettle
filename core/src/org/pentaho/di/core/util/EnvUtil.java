@@ -274,11 +274,11 @@ public class EnvUtil
       return resultLocale;
     }
 
-    public static TimeZone createTimeZone(String timeZoneCode) {
+    public static TimeZone createTimeZone(String timeZoneId) {
       
       TimeZone resultTimeZone = null;
-      if (!Const.isEmpty(timeZoneCode)) {
-        return TimeZone.getTimeZone(timeZoneCode);
+      if (!Const.isEmpty(timeZoneId)) {
+        return TimeZone.getTimeZone(timeZoneId);
       } else {
         resultTimeZone = TimeZone.getDefault();
       }

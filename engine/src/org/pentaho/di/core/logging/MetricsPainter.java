@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.gui.GCInterface;
-import org.pentaho.di.core.gui.GCInterface.EColor;
-import org.pentaho.di.core.gui.GCInterface.EFont;
 import org.pentaho.di.core.gui.Point;
+import org.pentaho.di.core.gui.PrimitiveGCInterface.EColor;
+import org.pentaho.di.core.gui.PrimitiveGCInterface.EFont;
 import org.pentaho.di.core.gui.Rectangle;
 import org.pentaho.di.core.metrics.MetricsDuration;
 
@@ -48,7 +48,7 @@ public class MetricsPainter {
       return areas; // nothing to do;
     }
     double pixelsPerMs = (double)width/((double)(periodEnd-periodStart));
-    int barHeight = ((height-10)/durations.size())-2;
+    int barHeight = Math.round(((height-10)/durations.size()))-2;
     
     
     // Draw some lines in the background.
@@ -102,7 +102,7 @@ public class MetricsPainter {
       
       gc.setFont(EFont.GRAPH);
       gc.textExtent(message);
-      gc.drawText(message, x+4, y+4, true);
+      gc.drawText(message, x+2, y+2, true);
       
       y+=barHeight+2;
     }

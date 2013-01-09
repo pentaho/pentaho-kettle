@@ -476,7 +476,9 @@ public class PluginRegistry {
       
       // Clear the jar file cache so that we don't waste memory...
       //
-      JarFileCache.getInstance().clear();
+      if (!keepCache) {
+        JarFileCache.getInstance().clear();
+      }
     }
 
     private void registerType(PluginTypeInterface pluginType) throws KettlePluginException {

@@ -46,6 +46,7 @@ import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.gui.PrimitiveGCInterface;
 import org.pentaho.di.core.row.ValueDataUtil;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
@@ -2096,7 +2097,7 @@ public class ValueMetaBase implements ValueMetaInterface {
    * @return A String describing the type of value.
    */
   public String getTypeDesc() {
-    return typeCodes[type];
+    return getTypeDesc(type);
   }
 
   /**
@@ -2721,7 +2722,7 @@ public class ValueMetaBase implements ValueMetaInterface {
     xml.append(XMLHandler.addTagValue("date_format_lenient", dateFormatLenient));
     xml.append(XMLHandler.addTagValue("date_format_locale", dateFormatLocale.toString()));
     xml.append(XMLHandler.addTagValue("date_format_timezone",
-        dateFormatTimeZone != null ? dateFormatTimeZone.toString() : null));
+        dateFormatTimeZone != null ? dateFormatTimeZone.getID() : null));
     xml.append(XMLHandler.addTagValue("lenient_string_to_number", lenientStringToNumber));
 
     xml.append(XMLHandler.closeTag(XML_META_TAG));
@@ -2964,9 +2965,14 @@ public class ValueMetaBase implements ValueMetaInterface {
    * @return an array of String describing the possible types a Value can have.
    */
   public static final String[] getTypes() {
-    String retval[] = new String[typeCodes.length - 1];
-    System.arraycopy(typeCodes, 1, retval, 0, typeCodes.length - 1);
-    return retval;
+    
+    return ValueMetaFactory.getValueMetaNames();
+
+    /*
+      String retval[] = new String[typeCodes.length - 1];
+      System.arraycopy(typeCodes, 1, retval, 0, typeCodes.length - 1);
+      return retval;
+    */
   }
 
   /**
@@ -2975,9 +2981,14 @@ public class ValueMetaBase implements ValueMetaInterface {
    * @return an array of String describing the possible types a Value can have.
    */
   public static final String[] getAllTypes() {
-    String retval[] = new String[typeCodes.length];
-    System.arraycopy(typeCodes, 0, retval, 0, typeCodes.length);
-    return retval;
+    
+    return ValueMetaFactory.getAllValueMetaNames();
+
+    /*
+      String retval[] = new String[typeCodes.length];
+      System.arraycopy(typeCodes, 0, retval, 0, typeCodes.length);
+      return retval;
+    */
   }
 
   /**
@@ -2989,7 +3000,10 @@ public class ValueMetaBase implements ValueMetaInterface {
    * @return the description (code) of the type
    */
   public static final String getTypeDesc(int type) {
-    return typeCodes[type];
+    
+    return ValueMetaFactory.getValueMetaName(type);
+    
+    // return typeCodes[type];
   }
 
   /**
@@ -3000,13 +3014,18 @@ public class ValueMetaBase implements ValueMetaInterface {
    * @return The integer type of the given String. (ValueMetaInterface.TYPE_...)
    */
   public static final int getType(String desc) {
-    for (int i = 1; i < typeCodes.length; i++) {
-      if (typeCodes[i].equalsIgnoreCase(desc)) {
-        return i;
+    
+    return ValueMetaFactory.getIdForValueMeta(desc);
+    
+    /*
+      for (int i = 1; i < typeCodes.length; i++) {
+        if (typeCodes[i].equalsIgnoreCase(desc)) {
+          return i;
+        }
       }
-    }
-
-    return TYPE_NONE;
+  
+      return TYPE_NONE;
+    */
   }
 
   /**
@@ -4035,5 +4054,12 @@ public class ValueMetaBase implements ValueMetaInterface {
   public void setDateFormatTimeZone(TimeZone dateFormatTimeZone) {
     this.dateFormatTimeZone = dateFormatTimeZone;
     dateFormatChanged = true;
+  }
+  
+  @Override
+  public void drawValue(PrimitiveGCInterface gc, Object value) throws KettleValueException {
+    // Just draw the string by default.
+    //
+    gc.drawText(getString(value), 0, 0);
   }
 }

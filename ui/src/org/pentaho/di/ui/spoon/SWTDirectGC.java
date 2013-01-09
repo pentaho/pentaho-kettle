@@ -22,6 +22,7 @@
 
 package org.pentaho.di.ui.spoon;
 
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.LineAttributes;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
@@ -41,6 +43,7 @@ import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.util.ImageUtil;
 
 /**
  * SWTGC draws on an Image.  This class draws directly on an SWT GC.
@@ -367,5 +370,13 @@ public class SWTDirectGC implements GCInterface {
   @Override
   public Object getImage() {
     return null;
+  }
+  
+  @Override
+  public void drawImage(BufferedImage image, int x, int y) {
+    ImageData imageData = ImageUtil.convertToSWT(image);
+    Image swtImage = new Image(gc.getDevice(), imageData);
+    gc.drawImage(swtImage, x,  y);
+    swtImage.dispose();
   }
 }

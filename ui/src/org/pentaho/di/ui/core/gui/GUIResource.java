@@ -368,7 +368,6 @@ public class GUIResource
 
 	/**
 	 * reloads all colors, fonts and images.  
-	 * @deprecated because you can't guarantee that all the disposed colors and fonts are no longer used in the GUI.
 	 */
 	public void reload()
 	{

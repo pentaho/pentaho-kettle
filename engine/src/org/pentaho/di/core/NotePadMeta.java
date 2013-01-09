@@ -46,9 +46,9 @@ public class NotePadMeta implements Cloneable, XMLInterface, GUIPositionInterfac
 	public static final int COLOR_RGB_BLACK_GREEN = 0;
 	public static final int COLOR_RGB_BLACK_BLUE = 0;
 	
-	public static final int COLOR_RGB_DEFAULT_BG_RED   = 0xFF;
-	public static final int COLOR_RGB_DEFAULT_BG_GREEN = 0xA5;
-	public static final int COLOR_RGB_DEFAULT_BG_BLUE  = 0x00;
+	public static final int COLOR_RGB_DEFAULT_BG_RED   = 255;
+	public static final int COLOR_RGB_DEFAULT_BG_GREEN = 205;
+	public static final int COLOR_RGB_DEFAULT_BG_BLUE  = 112;
 	
 	public static final int COLOR_RGB_DEFAULT_BORDER_RED   = 100;
 	public static final int COLOR_RGB_DEFAULT_BORDER_GREEN = 100;

@@ -176,6 +176,7 @@ public abstract class BasePluginType implements PluginTypeInterface{
 	}
 	
 	protected static String getTranslation(String string, String packageName, String altPackageName, Class<?> resourceClass) {
+		if (string==null) return null;
 		
 		if (string.startsWith("i18n:")) {
 			String[] parts = string.split(":");

@@ -602,4 +602,9 @@ public class SwingDirectGC implements GCInterface {
   public void setDrawingPixelatedImages(boolean drawingPixelatedImages) {
     this.drawingPixelatedImages = drawingPixelatedImages;
   }
+  
+  @Override
+  public void drawImage(BufferedImage image, int x, int y) {
+    gc.drawImage(image, x, y, observer);
+  }
 }

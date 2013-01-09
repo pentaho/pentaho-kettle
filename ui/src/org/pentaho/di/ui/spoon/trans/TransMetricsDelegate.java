@@ -239,6 +239,7 @@ public class TransMetricsDelegate extends SpoonDelegate {
       }
     });
     
+    /*
     canvas.addControlListener(new ControlAdapter() {
       
       @Override
@@ -246,6 +247,7 @@ public class TransMetricsDelegate extends SpoonDelegate {
         lastRefreshTime=0; // force a refresh
       }
     });
+    */
   }
 
   public void showMetricsView() {
@@ -278,7 +280,7 @@ public class TransMetricsDelegate extends SpoonDelegate {
 		});
 	}
 	
-	private long lastRefreshTime=0;
+	private long lastRefreshTime;
 	
 	private void refreshImage(GC canvasGc) {
 		Rectangle bounds = canvas.getBounds();

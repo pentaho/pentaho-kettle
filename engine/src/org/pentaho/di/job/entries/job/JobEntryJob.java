@@ -904,7 +904,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             }
 
             try {
-              Thread.sleep(10000);
+              Thread.sleep(1000);
             } catch (InterruptedException e) {
             }
             ; // sleep for 10 seconds

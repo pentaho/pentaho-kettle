@@ -27,9 +27,9 @@ import java.util.List;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.gui.AreaOwner.AreaType;
-import org.pentaho.di.core.gui.GCInterface.EColor;
-import org.pentaho.di.core.gui.GCInterface.EImage;
-import org.pentaho.di.core.gui.GCInterface.ELineStyle;
+import org.pentaho.di.core.gui.PrimitiveGCInterface.EColor;
+import org.pentaho.di.core.gui.PrimitiveGCInterface.EImage;
+import org.pentaho.di.core.gui.PrimitiveGCInterface.ELineStyle;
 import org.pentaho.di.trans.step.errorhandling.StreamIcon;
 
 public class BasePainter {
@@ -41,8 +41,6 @@ public class BasePainter {
 	protected static final int	MINI_ICON_TRIANGLE_BASE = 10;
 	protected static final int	MINI_ICON_DISTANCE = 7;
 	protected static final int	MINI_ICON_SKEW = 0;
-	
-	
 	
     protected Point        area;
     

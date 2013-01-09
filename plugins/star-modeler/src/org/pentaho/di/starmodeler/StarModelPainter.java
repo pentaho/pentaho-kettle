@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.gui.GCInterface;
-import org.pentaho.di.core.gui.GCInterface.EColor;
 import org.pentaho.di.core.gui.Point;
+import org.pentaho.di.core.gui.PrimitiveGCInterface.EColor;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.LogicalRelationship;
 import org.pentaho.metadata.model.LogicalTable;

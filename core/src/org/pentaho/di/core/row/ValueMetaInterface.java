@@ -38,6 +38,7 @@ import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.gui.PrimitiveGCInterface;
 import org.w3c.dom.Node;
 
 
@@ -238,7 +239,7 @@ public interface ValueMetaInterface extends Cloneable
      *
      * @param type the new type
      * 
-     * @param This method is deprecated.  The same code is still used underneath.
+     * @deprecated This method is deprecated.  The same code is still used underneath.
      */
     public void     setType(int type);
 
@@ -933,4 +934,10 @@ public interface ValueMetaInterface extends Cloneable
 	 */
 	public void setLenientStringToNumber(boolean lenientStringToNumber);
 
+	/**
+	 * This method draws the value using the supplied graphical context.
+	 * 
+	 * @param gc The graphical context to draw on.
+	 */
+	public void drawValue(PrimitiveGCInterface gc, Object value) throws KettleValueException;
 }

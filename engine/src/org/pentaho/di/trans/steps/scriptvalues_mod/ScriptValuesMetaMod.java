@@ -50,6 +50,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -323,54 +324,56 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 		optimizationLevel = OPTIMIZATION_LEVEL_DEFAULT;
 	}
 	
-	public void getFields(RowMetaInterface row, String originStepname, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
-	{
-		for (int i=0;i<fieldname.length;i++)
-		{
-			if (!Const.isEmpty(fieldname[i]))
-			{
-				ValueMetaInterface v;
-				if (replace[i]) {
-					// Look up the field to replace using the "name" field
-					v = row.searchValueMeta(fieldname[i]);
-					if (v==null) {
-					  // The field was not found using the "name" field
-					  if(Const.isEmpty(rename[i])) {
-					    // There is no "rename" field to try; Therefore we cannot find the field to replace 
-					    throw new KettleStepException(BaseMessages.getString(PKG, "ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", fieldname[i]));
-					  } else {
-					    // Lookup the field to replace using the "rename" field
-					    v = row.searchValueMeta(rename[i]);
-					    
-					    if(v == null) {
-					      // The field was not found using the "rename" field"; Therefore we cannot find the field to replace
-		            throw new KettleStepException(BaseMessages.getString(PKG, "ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", rename[i]));
-		          }
-					  }
-					}
-					
-					// Change the data type to match what's specified...
-					//
-					v.setType(type[i]);
-				} else {
-					if (rename[i]!=null && rename[i].length()!=0) 
-					{
-						v = new ValueMeta(rename[i], type[i]);
-					} 
-					else
-					{
-						v = new ValueMeta(this.fieldname[i], type[i]); 
-					} 
-				}
-				v.setLength(length[i]);
-                v.setPrecision(precision[i]);
-				v.setOrigin(originStepname);
-				if (!replace[i]) {
-					row.addValueMeta( v );
-				}
-			}
-		}
-	}
+  public void getFields(RowMetaInterface row, String originStepname, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException {
+    try {
+      for (int i = 0; i < fieldname.length; i++) {
+        if (!Const.isEmpty(fieldname[i])) {
+          int valueIndex=-1;
+          ValueMetaInterface v;
+          if (replace[i]) {
+            valueIndex = row.indexOfValue(fieldname[i]);
+            if (valueIndex<0) {
+              // The field was not found using the "name" field
+              if (Const.isEmpty(rename[i])) {
+                // There is no "rename" field to try; Therefore we cannot find the
+                // field to replace
+                throw new KettleStepException(BaseMessages.getString(PKG, "ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", fieldname[i]));
+              } else {
+                // Lookup the field to replace using the "rename" field
+                valueIndex = row.indexOfValue(rename[i]);
+                if (valueIndex<0) {
+                  // The field was not found using the "rename" field"; Therefore
+                  // we cannot find the field to replace
+                  //
+                  throw new KettleStepException(BaseMessages.getString(PKG, "ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", rename[i]));
+                }
+              }
+            }
+  
+            // Change the data type to match what's specified...
+            //
+            ValueMetaInterface source = row.getValueMeta(valueIndex);
+            v = ValueMetaFactory.cloneValueMeta(source, type[i]);
+            row.setValueMeta(valueIndex, v);
+          } else {
+            if (!Const.isEmpty(rename[i])) {
+              v = ValueMetaFactory.createValueMeta(rename[i], type[i]);
+            } else {
+              v = ValueMetaFactory.createValueMeta(fieldname[i], type[i]);
+            }
+          }
+          v.setLength(length[i]);
+          v.setPrecision(precision[i]);
+          v.setOrigin(originStepname);
+          if (!replace[i]) {
+            row.addValueMeta(v);
+          }
+        }
+      }
+    } catch(KettleException e) {
+      throw new KettleStepException(e);
+    }
+  }
 
 	public String getXML()
     {
