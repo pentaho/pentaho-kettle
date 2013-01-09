@@ -1,0 +1,86 @@
+ICONS
+------
+Waarschijnlijk is het zéér cool om over te gaan naar 
+48x48 of zelfs 64x64 pixels voor de icons.
+We kunnen dan i.p.v. de eenvoudige iconen kleine 
+fotokes nemen of duidelijkere beelden.
+Sequence: nummerkesmachine: niet gebruikt in alle landen! --> 
+ bij beenhouwer
+Lookup in't algemeen: 
+vergrootglas en pijp? (Sherlock Holmes?)
+Database in't algemeent: mooi getekende trommel
+JavaScript: Papyrus Scroll
+Etc.
+--> Dit kunnen we best laten doen van't moment dat we weer wat geld hebben.
+
+PIJLEN
+-------
+Zoals we met PMenu gedaan hebben, kunnen we ook hier de connectoren aan de kant laten vertrekken.
+Beter nog, we kunnen ze laten vertrekken op enkele pixels links/rechts/boven/onder van het Icon.
+
+LOGGING
+-------
+We moeten de logging beter integreren in de GUI.
+Als we rechts klikken op een step dan moeten we kunnen zien: "Details of last run..."
+Je moet dan een overzichtsscherm krijgen met alle mogelijke details van de laatste run zoals:
+--> Log
+--> Aantal lijnen read/writte/input/output/updated
+--> snelheid, en de andere parameters uit log view
+
+STATISTIEKEN
+------------
+In het log venster kan je een vinkje maken: [x] gather statistics 
+En dan natuurlijk ook een knopje show statistics.
+Dan kan je statistieken zien per stap in de vorm van een bar-chart of line chart
+van de verschillende stappen, in de tijd.
+Bij de refresh voegen we gewoon de statistieken per step per tijd toe. (een row met veld 0: tijd, 1: naam, 2-... parameters)
+
+
+REPOSITORY EXPLORER
+-------------------
+* Transformatie of job rechtstreeks uitvoeren vanuit de explorer... De log stuur je naar de applicatie die explorer uitvoert.
+* Import from directory: importeer alle transformaties uit een directory. (onder export)
+
+SPOON
+--------
+Bij het splitsen van een informatieve hop moet je kijken of de informatieve 
+link van StreamLookup of TableInput niet moet worden aangepast!
+
+NIEUWE OBJECTEN
+----------------
+Na Connection, Transformation, Job & Schema definiëren we de volgende extra objecten...
+
+--> Logging table: centrally defined logging table.  
+    Mark one as the default in the repository...
+    Add a Listbox in the TransDialog or JobDialog to allow the selection of one of these.
+    Indicate the default as the default...
+
+--> Slowly Changing Dimension: centrally defined Dimension.
+    Hierin definiëren we alle opties die we in DimensionLookup geplaatst hebben:
+	* Database Connection (id)
+	* Target Table
+	* Commit size
+	* Technical key
+	* Sequence or Auto incr?
+	* Version field
+	* Date range start field and -oo year
+	* Date range end field   and +oo year
+	* Keys in dimension field
+    Hierarchiën zijn niet direct nodig omdat we ze toch nog niet gebruiken in Kettle...
+	--> We hebben een extra tab nodig in DimensionLookupDialog die je toelaat 
+          om van de bestaande dimensie een centraal object te maken.
+          Ook moeten we op die tab kunnen kiezen voor een centrale dimensie om updates/lookups te doen.
+
+--> Fact: centrally defined Fact table
+    Hierin definiëren we alle opties die het aanmaken en opvullen van een fact-tabel toelaten:
+	* Database Connection (id)
+	* Target Table
+	* Commit size
+	* Field list: name, type, indication of type (Technical key, fact, degenerate dimension)
+      * Partition on date or technical key
+	* Partition by day/week/month/quarter
+
+
+
+
+

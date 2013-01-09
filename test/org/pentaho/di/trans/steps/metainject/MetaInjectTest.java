@@ -48,7 +48,7 @@ public class MetaInjectTest extends TestCase {
    */
   public void testMetaInjectCsvInput() throws Exception {
     KettleEnvironment.init();
-    TransMeta transMeta = new TransMeta("test-src/org/pentaho/di/trans/steps/metainject/read_csv_file.ktr");
+    TransMeta transMeta = new TransMeta("test/org/pentaho/di/trans/steps/metainject/read_csv_file.ktr");
     String[][] fields = new String[][] {
       new String[] { "id", "Integer", null, "3", "0", null, ",", ".", "left", },  
       new String[] { "name", "String", null, "10", null, null, null, null, "none", },  
@@ -72,7 +72,7 @@ public class MetaInjectTest extends TestCase {
         "FIELD_GROUP",
         "FIELD_TRIM_TYPE",
       };
-    String filename = "test-src/org/pentaho/di/trans/steps/metainject/customers-100.txt";
+    String filename = "test/org/pentaho/di/trans/steps/metainject/customers-100.txt";
 
     String stepname = "CSV file input";
     StepMeta stepMeta = transMeta.findStep(stepname);

@@ -1,0 +1,28 @@
+New step type to be built by friday!
+
+Grid with following colums:
+-----------------------------
+- Fieldname
+- Function
+- Arg A
+- Arg B
+- Arg C
+- New Type
+- New Length
+- New Precision
+
+Function list:
+----------------
+-> add               A + B 
+-> subtract          A - B 
+-> multiply          A * B 
+-> divide            A / B 
+-> Square            A * A 
+-> Square root       SQRT( A ) 
+-> Percent 1         100 * A / B 
+-> Percent 2         A - ( A * B / 100 ) 
+-> Percent 3         A + ( A * B / 100 ) 
+-> Combination  1    A + B * C 
+-> Combination  2    SQRT( A*A + B*B ) 
+-> Round 1           ROUND( A )
+-> Round 2           ROUND( A , B )

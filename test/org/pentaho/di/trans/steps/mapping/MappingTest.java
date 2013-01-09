@@ -112,7 +112,7 @@ public class MappingTest extends TestCase {
     String mappingName = "mapping"; //$NON-NLS-1$
     MappingMeta mappingMeta = new MappingMeta();
     mappingMeta.setSpecificationMethod(ObjectLocationSpecificationMethod.FILENAME);
-    mappingMeta.setFileName("test-src/org/pentaho/di/trans/steps/mapping/subtrans.ktr"); //$NON-NLS-1$
+    mappingMeta.setFileName("test/org/pentaho/di/trans/steps/mapping/subtrans.ktr"); //$NON-NLS-1$
     String mappingInputStepName = "input"; //$NON-NLS-1$
     mappingMeta
         .setInputMappings(Collections.singletonList(createMappingDef(rowGenerator.getName(), mappingInputStepName, "string", "a"))); //$NON-NLS-1$ //$NON-NLS-2$
@@ -183,7 +183,7 @@ public class MappingTest extends TestCase {
     String mappingName = "mapping"; //$NON-NLS-1$
     MappingMeta mappingMeta = new MappingMeta();
     mappingMeta.setSpecificationMethod(ObjectLocationSpecificationMethod.FILENAME);
-    mappingMeta.setFileName("test-src/org/pentaho/di/trans/steps/mapping/subtrans.ktr"); //$NON-NLS-1$
+    mappingMeta.setFileName("test/org/pentaho/di/trans/steps/mapping/subtrans.ktr"); //$NON-NLS-1$
     List<MappingIODefinition> inputMappings = new ArrayList<MappingIODefinition>();
     String mappingInputStepName = "input"; //$NON-NLS-1$
     inputMappings.add(createMappingDef(rowGenerator.getName(), mappingInputStepName, "string", "a")); //$NON-NLS-1$ //$NON-NLS-2$

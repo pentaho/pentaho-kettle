@@ -1,0 +1,40 @@
+Manifest-Version: 1.0
+Bundle-ClassPath: lib/flute.jar
+Bundle-Vendor: Eclipse.org
+Bundle-Localization: plugin
+Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Bundle-Name: W3C Sac
+Bundle-SymbolicName: org.w3c.sac
+Require-Bundle: org.w3c.css.sac;bundle-version="[1.3.0,2.0.0)"
+Bundle-Version: 1.3.0.v20100915
+Export-Package: org.w3c.flute.parser,org.w3c.flute.parser.selectors,or
+ g.w3c.flute.util
+Bundle-ManifestVersion: 2
+
+Name: eclipse32.png
+SHA1-Digest: eCk/A3/COXL3S6qAVDOSrlsqmLw=
+
+Name: lib/flute.jar
+SHA1-Digest: 7xOLrUUSAR94X104eWFJXpbsAic=
+
+Name: about.ini
+SHA1-Digest: 2w8BfdBzQbbWHJNbazxzu9YMYwo=
+
+Name: META-INF/eclipse.inf
+SHA1-Digest: KyT9FF7C7t86NoBoa2kZT3ZJBfw=
+
+Name: about.properties
+SHA1-Digest: b9o9hf3/JNJGJ6WjGuGWHR/pBvY=
+
+Name: about.mappings
+SHA1-Digest: aaipUwNYbtpqHD+N5B2TAEtroVU=
+
+Name: about_files/copyright-software-20021231_files/base.css
+SHA1-Digest: Ku5eFn8rDgc1RsAHfYVI3aLl8Ao=
+
+Name: about_files/copyright-software-20021231.htm
+SHA1-Digest: FHUquFwe8TInXZXB0NBtwibDhAk=
+
+Name: about.html
+SHA1-Digest: v230ZZWP0nNv6WRdcVcQGfMp3I0=
+
