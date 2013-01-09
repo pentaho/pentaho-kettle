@@ -127,7 +127,25 @@ public class PentahoMapRunnable<K1, V1, K2, V2> implements MapRunnable<K1, V1, K
    String taskId = job.get("mapred.task.id");
    variableSpace.setVariable("Internal.Hadoop.TaskId", taskId);
    // TODO: Verify if the string range holds true for all Hadoop distributions
-   String nodeNumber = taskId==null || taskId.length()<34 ? "0" : taskId.substring(28, 34); 
+   // Extract the node number from the task ID. 
+   // The consensus currently is that it's the part after the last underscore. 
+   // 
+   // Examples: 
+   // job_201208090841_9999 
+   // job_201208090841_10000 
+   // 
+   String nodeNumber; 
+   if (Const.isEmpty(taskId)) { 
+     nodeNumber="0"; 
+   } else { 
+     int lastUnderscoreIndex = taskId.lastIndexOf("_"); 
+     if (lastUnderscoreIndex>=0) { 
+       nodeNumber = taskId.substring(lastUnderscoreIndex+1); 
+     } else { 
+       nodeNumber = "0"; 
+     } 
+   } 
+
    // get rid of zeroes.
    variableSpace.setVariable("Internal.Hadoop.NodeNumber", Integer.toString(Integer.valueOf(nodeNumber))); 
       
