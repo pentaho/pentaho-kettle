@@ -1,0 +1,114 @@
+<project name="kettle-engine" default="default" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
+
+	  <description>
+	      Kettle Engine build file
+	  </description>
+	 
+	 <import file="build-res/subfloor.xml" />
+	  
+	  <tstamp prefix="start"/>
+	
+        <tstamp>
+           <format property="compile.timestamp" pattern="yyyy-MM-dd HH.mm.ss" />
+        </tstamp>
+
+        <!-- Look for user-override properties file first -->        
+		<property file="override.properties"/>
+        <!-- set global properties for this build -->
+		<property file="build.properties"/>
+	  		
+		
+	  <!--=======================================================================
+	      install-antcontrib (borrowed from subfloor.xml)
+	      
+	      (Fetches and) installs ant-contrib tasks.
+	      ====================================================================-->
+	  <target name="install-antcontrib" depends="antcontrib.download-check">
+	    <taskdef resource="net/sf/antcontrib/antlib.xml">
+	      <classpath>
+	        <fileset dir="${user.home}/.subfloor/ant-contrib">
+	          <include name="*.jar" />
+	        </fileset>
+	      </classpath>
+	    </taskdef>
+	  </target>
+	
+	  <!--=======================================================================
+	      antcontrib.download-check (borrowed from subfloor.xml)
+	      
+	      Fetches ant-contrib from sourceforge if it is not already present
+	      ====================================================================-->
+	  <target name="antcontrib.download-check">
+	    <condition property="antcontrib.available">
+	      <and>
+	        <available file="${user.home}/.subfloor/ant-contrib" />
+	        <available classname="net.sf.antcontrib.logic.IfTask">
+	          <classpath>
+	            <fileset dir="${user.home}/.subfloor/ant-contrib">
+	              <include name="*.jar" />
+	            </fileset>
+	          </classpath>
+	        </available>
+	      </and>
+	    </condition>
+	    <antcall target="antcontrib.download" />
+	  </target>
+	
+	
+	  <!--=======================================================================
+	      antcontrib.download (borrowed from subfloor.xml)
+	      
+	      Fetches ant-contrib from sourceforge
+	      ====================================================================-->
+	  <target name="antcontrib.download" unless="antcontrib.available">
+	    <mkdir dir="${user.home}/.subfloor/tmp" />
+	    <get src="http://downloads.sourceforge.net/ant-contrib/ant-contrib-1.0b3-bin.zip"
+	         dest="${user.home}/.subfloor/tmp/antcontrib.zip"
+	         usetimestamp="true" />
+	    <unzip src="${user.home}/.subfloor/tmp/antcontrib.zip" dest="${user.home}/.subfloor/tmp">
+	      <patternset>
+	        <include name="**/*.jar" />
+	      </patternset>
+	    </unzip>
+	    <copy todir="${user.home}/.subfloor/ant-contrib">
+	      <fileset dir="${user.home}/.subfloor/tmp/ant-contrib">
+	        <include name="**/*.jar" />
+	      </fileset>
+	    </copy>
+	  </target>
+	
+	  <target name="set-revision">
+	    <condition property="revision" value="${svn-revision}" else="1">
+	        <length string="${svn-revision}" length="7" when="less"/>
+	    </condition>
+	    
+	    <echo message="Revision set to r${revision}"/>
+	  </target>
+	
+	  <!--=======================================================================
+	      generate.manifest
+	      
+	      Creates a new manifest file if one is not specified, or updates
+	      an existing manifest file if one is specified.
+	      ====================================================================-->
+	  <target name="generate.manifest" depends="init,set-build.id,set-revision">
+	    <delete file="${dist.manifest.file}" />
+	    <touch file="${dist.manifest.file}" />
+	    <copy file="${manifest.file}" tofile="${dist.manifest.file}" overwrite="true" failonerror="false" />
+
+	    <manifest file="${dist.manifest.file}" mode="update">
+	      <attribute name="Implementation-Title" value="${impl.title}" />
+	        <attribute name="Implementation-Version" value="${impl.version}" />
+	        <attribute name="Specification-Version" value="${revision}" />
+	      <attribute name="Implementation-Vendor" value="${impl.vendor}" />
+	      <attribute name="Implementation-ProductID" value="${impl.productID}" />
+	        <attribute name="Compile-Timestamp" value="${compile.timestamp}" />
+	        <attribute name="Compile-User" value="${user.name}" />
+	    </manifest>
+	  </target>
+
+	<target name="create-dot-classpath" depends="init,resolve,subfloor.create-dot-classpath"/>
+
+	<target name="default" depends="clean,init, resolve, dist" />
+	
+</project>

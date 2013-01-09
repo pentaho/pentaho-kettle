@@ -1,0 +1,69 @@
+<Session_header Code="xmltest">
+   <InfoSession>
+      <InfoSessionData User="Username1">
+         <Data>Data1</Data>
+      </InfoSessionData>
+   </InfoSession>
+
+   <InfoSession>
+      <InfoSessionData User="Username2">
+         <Data>Data2</Data>
+      </InfoSessionData>
+   </InfoSession>
+
+   <InfoSession>
+      <InfoSessionData User="Username3">
+         <Data>Data3</Data>
+      </InfoSessionData>
+   </InfoSession>
+
+   <Session>
+      <SessionData>
+         <Parameter>
+            <User>Username1</User>
+
+            <Password>password123</Password>
+
+         </Parameter>
+
+         <OutputData>
+            <Step>
+               <Error_Message>Please have transaction ID and related information ready. Timestamp : 20070731 01:50:06 Session : 0201</Error_Message>
+            </Step>
+         </OutputData>
+      </SessionData>
+
+      <SessionData>
+         <Parameter>
+            <User>Username2</User>
+
+            <Password>password345</Password>
+
+         </Parameter>
+
+         <OutputData>
+            <Step>
+               <Error_Message>error occurred Timestamp : 20070731 01:53:25</Error_Message>
+            </Step>
+         </OutputData>
+      </SessionData>
+
+      <SessionData>
+         <Parameter>
+            <User>Username3</User>
+
+            <Password>password567</Password>
+
+         </Parameter>
+
+         <OutputData>
+            <Step>
+               <Error_Message>Transaction Id :361163328</Error_Message>
+
+               <Status>Processed according to contract/plan provisions</Status>
+            </Step>
+         </OutputData>
+      </SessionData>
+   </Session>
+</Session_header>
+

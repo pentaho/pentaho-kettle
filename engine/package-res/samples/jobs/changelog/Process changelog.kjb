@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job>
+  <name/>
+  <directory>/</directory>
+  <modified_user>-</modified_user>
+  <modified_date>2006/10/19 10:21:11.187</modified_date>
+  <connection>
+    <name>H2</name>
+    <server>localhost</server>
+    <type>H2</type>
+    <access>Native</access>
+    <database>test</database>
+    <port/>
+    <username>sa</username>
+    <password>Encrypted </password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
+      <attribute><code>MAXIMUM_POOL_SIZE</code><attribute>10</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
+  <logconnection/>
+  <logtable/>
+   <use_batchid>N</use_batchid>
+   <pass_batchid>N</pass_batchid>
+   <use_logfield>N</use_logfield>
+  <entries>
+    <entry>
+      <name>START</name>
+      <description>A job starts to process here.</description>
+      <type>SPECIAL</type>
+      <start>Y</start>
+      <dummy>N</dummy>
+      <repeat>N</repeat>
+      <schedulerType>0</schedulerType>
+      <interval>60</interval>
+      <hour>12</hour>
+      <minutes>0</minutes>
+      <weekDay>1</weekDay>
+      <DayOfMonth>1</DayOfMonth>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>96</xloc>
+      <yloc>22</yloc>
+      </entry>
+    <entry>
+      <name>DUMMY</name>
+      <description>A dummy entry.</description>
+      <type>SPECIAL</type>
+      <start>N</start>
+      <dummy>Y</dummy>
+      <repeat>N</repeat>
+      <schedulerType>0</schedulerType>
+      <interval>60</interval>
+      <hour>12</hour>
+      <minutes>0</minutes>
+      <weekDay>1</weekDay>
+      <DayOfMonth>1</DayOfMonth>
+      <parallel>N</parallel>
+      <draw>N</draw>
+      <nr>0</nr>
+      <xloc>19</xloc>
+      <yloc>3</yloc>
+      </entry>
+    <entry>
+      <name>OK</name>
+      <description>This comparisson is true when no errors have occured.</description>
+      <type>EVAL</type>
+      <script>errors == 0</script>
+      <parallel>N</parallel>
+      <draw>N</draw>
+      <nr>0</nr>
+      <xloc>0</xloc>
+      <yloc>0</yloc>
+      </entry>
+    <entry>
+      <name>ERROR</name>
+      <description>This comparisson is true when one or more errors have occured.</description>
+      <type>EVAL</type>
+      <script>errors != 0</script>
+      <parallel>N</parallel>
+      <draw>N</draw>
+      <nr>0</nr>
+      <xloc>0</xloc>
+      <yloc>0</yloc>
+      </entry>
+    <entry>
+      <name>Table CHANGELOG exists?</name>
+      <description/>
+      <type>TABLE_EXISTS</type>
+      <tablename>CHANGELOG</tablename>
+      <connection>H2</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>253</xloc>
+      <yloc>61</yloc>
+      </entry>
+    <entry>
+      <name>Create table changelog</name>
+      <description/>
+      <type>SQL</type>
+      <sql>create table changelog
+(
+  id int
+, foo varchar(100)
+, primary key(id)
+)</sql>
+      <connection>H2</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>253</xloc>
+      <yloc>248</yloc>
+      </entry>
+    <entry>
+      <name>General - Change log processing</name>
+      <description/>
+      <type>TRANS</type>
+      <filename>${Internal.Job.Filename.Directory}/../../transformations/General - Change log processing.ktr</filename>
+      <transname/>
+      <directory>/</directory>
+      <arg_from_previous>N</arg_from_previous>
+      <exec_per_row>N</exec_per_row>
+      <clear_rows>Y</clear_rows>
+      <clear_files>Y</clear_files>
+      <set_logfile>N</set_logfile>
+      <logfile/>
+      <logext/>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <loglevel>Error</loglevel>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>253</xloc>
+      <yloc>357</yloc>
+      </entry>
+    <entry>
+      <name>General - Change log processing 2</name>
+      <description/>
+      <type>TRANS</type>
+      <filename>${Internal.Job.Filename.Directory}/../../transformations/General - Change log processing 2.ktr</filename>
+      <transname/>
+      <directory>/</directory>
+      <arg_from_previous>N</arg_from_previous>
+      <exec_per_row>Y</exec_per_row>
+      <clear_rows>Y</clear_rows>
+      <clear_files>Y</clear_files>
+      <set_logfile>N</set_logfile>
+      <logfile/>
+      <logext/>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <loglevel>Error</loglevel>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>253</xloc>
+      <yloc>505</yloc>
+      </entry>
+    <entry>
+      <name>Drop table changelog</name>
+      <description/>
+      <type>SQL</type>
+      <sql>drop table changelog
+</sql>
+      <connection>H2</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>350</xloc>
+      <yloc>148</yloc>
+      </entry>
+    </entries>
+  <hops>
+    <hop>
+      <from>START</from>
+      <to>Table CHANGELOG exists?</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
+      </hop>
+    <hop>
+      <from>Table CHANGELOG exists?</from>
+      <to>Create table changelog</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>N</evaluation>
+      <unconditional>N</unconditional>
+      </hop>
+    <hop>
+      <from>Create table changelog</from>
+      <to>General - Change log processing</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+      </hop>
+    <hop>
+      <from>General - Change log processing</from>
+      <to>General - Change log processing 2</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+      </hop>
+    <hop>
+      <from>Table CHANGELOG exists?</from>
+      <to>Drop table changelog</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+      </hop>
+    <hop>
+      <from>Drop table changelog</from>
+      <to>Create table changelog</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+      </hop>
+    </hops>
+  <notepads>
+    </notepads>
+  </job>

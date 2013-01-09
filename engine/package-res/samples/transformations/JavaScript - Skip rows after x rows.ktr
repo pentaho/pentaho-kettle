@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name>JavaScriptMod - skip rows after x rows</name>
+    <description/>
+    <extended_description/>
+    <trans_version/>
+    <trans_status>0</trans_status>
+    <directory>&#47;</directory>
+    <log>
+      <read/>
+      <write/>
+      <input/>
+      <output/>
+      <update/>
+      <rejected/>
+      <connection/>
+      <table/>
+      <use_batchid>Y</use_batchid>
+      <use_logfield>N</use_logfield>
+    </log>
+    <maxdate>
+      <connection/>
+      <table/>
+      <field/>
+      <offset>0.0</offset>
+      <maxdiff>0.0</maxdiff>
+    </maxdate>
+    <size_rowset>350</size_rowset>
+    <sleep_time_empty>1</sleep_time_empty>
+    <sleep_time_full>1</sleep_time_full>
+    <unique_connections>N</unique_connections>
+    <feedback_shown>Y</feedback_shown>
+    <feedback_size>5000</feedback_size>
+    <using_thread_priorities>Y</using_thread_priorities>
+    <shared_objects_file/>
+    <dependencies>
+    </dependencies>
+    <partitionschemas>
+    </partitionschemas>
+    <slaveservers>
+    </slaveservers>
+    <clusterschemas>
+    </clusterschemas>
+  <modified_user/>
+  <modified_date>2007&#47;04&#47;27 16:36:10.509</modified_date>
+  </info>
+  <notepads>
+    <notepad>
+      <note>This transformation demonstrates how to skip rows on a certain condition.
+In this example the rows will be skipped after 5 rows.</note>
+      <xloc>33</xloc>
+      <yloc>28</yloc>
+      <width>365</width>
+      <heigth>36</heigth>
+    </notepad>
+    <notepad>
+      <note>To see the result, do a preview on this Dummy step
+... or add an output step.
+
+--&gt; 10 rows were created and only 5 rows will be here.</note>
+      <xloc>350</xloc>
+      <yloc>175</yloc>
+      <width>274</width>
+      <heigth>62</heigth>
+    </notepad>
+    <notepad>
+      <note>Revision notes:
+2007-04-27 Jens Bleuel: created</note>
+      <xloc>11</xloc>
+      <yloc>567</yloc>
+      <width>166</width>
+      <heigth>36</heigth>
+    </notepad>
+  </notepads>
+  <order>
+  <hop> <from>Generate some test rows</from><to>Modified Java Script Value</to><enabled>Y</enabled> </hop>  <hop> <from>Modified Java Script Value</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  </order>
+  <step>
+    <name>Dummy (do nothing)</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+     <cluster_schema/>
+    <GUI>
+      <xloc>469</xloc>
+      <yloc>101</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Generate some test rows</name>
+    <type>RowGenerator</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+    <fields>
+      <field>
+        <name>FieldString1</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>QWERTZ</nullif>
+        <length>50</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>FieldString2</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>ABCDEF</nullif>
+        <length>50</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>FieldNumber</name>
+        <type>Number</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>123</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>FieldString3</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>UZTERTZE</nullif>
+        <length>50</length>
+        <precision>-1</precision>
+        </field>
+      </fields>
+    <limit>10</limit>
+     <cluster_schema/>
+    <GUI>
+      <xloc>85</xloc>
+      <yloc>101</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Modified Java Script Value</name>
+    <type>ScriptValueMod</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+    <script/>
+    <jsScripts>      <jsScript>        <jsScript_type>0</jsScript_type>
+        <jsScript_name>Script 1</jsScript_name>
+        <jsScript_script>trans_Status = CONTINUE_TRANSFORMATION;
+if(getProcessCount(&quot;r&quot;)&gt;5) {
+	trans_Status = SKIP_TRANSFORMATION;
+}</jsScript_script>
+      </jsScript>    </jsScripts>    <fields>    </fields>     <cluster_schema/>
+    <GUI>
+      <xloc>278</xloc>
+      <yloc>101</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step_error_handling>
+  </step_error_handling>
+</transformation>

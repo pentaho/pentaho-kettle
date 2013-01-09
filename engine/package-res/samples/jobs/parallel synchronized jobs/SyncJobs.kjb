@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job>
+  <name>SyncJobs</name>
+    <description/>
+    <extended_description/>
+    <job_version/>
+  <directory>&#47;</directory>
+  <created_user>-</created_user>
+  <created_date>2007&#47;09&#47;06 08:17:59.989</created_date>
+  <modified_user>-</modified_user>
+  <modified_date>2007&#47;09&#47;06 08:17:59.989</modified_date>
+  <logconnection/>
+  <logtable/>
+   <use_batchid>Y</use_batchid>
+   <pass_batchid>N</pass_batchid>
+   <use_logfield>Y</use_logfield>
+   <shared_objects_file/>
+  <entries>
+    <entry>
+      <name>Wait for file &quot;Job1Ready.tmp&quot;</name>
+      <description/>
+      <type>WAIT_FOR_FILE</type>
+      <filename>${Internal.Job.Filename.Directory}&#47;Job1Ready.tmp</filename>
+      <maximum_timeout>0</maximum_timeout>
+      <check_cycle_time>5</check_cycle_time>
+      <success_on_timeout>N</success_on_timeout>
+      <file_size_check>N</file_size_check>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>382</xloc>
+      <yloc>363</yloc>
+      </entry>
+    <entry>
+      <name>Start</name>
+      <description/>
+      <type>SPECIAL</type>
+      <start>Y</start>
+      <dummy>N</dummy>
+      <repeat>N</repeat>
+      <schedulerType>0</schedulerType>
+      <interval>60</interval>
+      <hour>12</hour>
+      <minutes>0</minutes>
+      <weekDay>1</weekDay>
+      <DayOfMonth>1</DayOfMonth>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>80</xloc>
+      <yloc>268</yloc>
+      </entry>
+    <entry>
+      <name>Delete file &quot;Job1Ready.tmp&quot;</name>
+      <description/>
+      <type>DELETE_FILE</type>
+      <filename>${Internal.Job.Filename.Directory}&#47;Job1Ready.tmp</filename>
+      <fail_if_file_not_exists>N</fail_if_file_not_exists>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>206</xloc>
+      <yloc>264</yloc>
+      </entry>
+    <entry>
+      <name>Delete file &quot;Job2Ready.tmp&quot;</name>
+      <description/>
+      <type>DELETE_FILE</type>
+      <filename>${Internal.Job.Filename.Directory}&#47;Job2Ready.tmp</filename>
+      <fail_if_file_not_exists>N</fail_if_file_not_exists>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>379</xloc>
+      <yloc>265</yloc>
+      </entry>
+    <entry>
+      <name>Wait for file &quot;Job2Ready.tmp&quot;</name>
+      <description/>
+      <type>WAIT_FOR_FILE</type>
+      <filename>${Internal.Job.Filename.Directory}&#47;Job2Ready.tmp</filename>
+      <maximum_timeout>0</maximum_timeout>
+      <check_cycle_time>5</check_cycle_time>
+      <success_on_timeout>N</success_on_timeout>
+      <file_size_check>N</file_size_check>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>382</xloc>
+      <yloc>461</yloc>
+      </entry>
+    <entry>
+      <name>Dummy</name>
+      <description/>
+      <type>SPECIAL</type>
+      <start>N</start>
+      <dummy>Y</dummy>
+      <repeat>N</repeat>
+      <schedulerType>0</schedulerType>
+      <interval>60</interval>
+      <hour>12</hour>
+      <minutes>0</minutes>
+      <weekDay>1</weekDay>
+      <DayOfMonth>1</DayOfMonth>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>381</xloc>
+      <yloc>554</yloc>
+      </entry>
+  </entries>
+  <hops>
+    <hop>
+      <from>Start</from>
+      <to>Delete file &quot;Job1Ready.tmp&quot;</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>Delete file &quot;Job1Ready.tmp&quot;</from>
+      <to>Delete file &quot;Job2Ready.tmp&quot;</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>Delete file &quot;Job2Ready.tmp&quot;</from>
+      <to>Wait for file &quot;Job1Ready.tmp&quot;</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>Wait for file &quot;Job1Ready.tmp&quot;</from>
+      <to>Wait for file &quot;Job2Ready.tmp&quot;</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>Wait for file &quot;Job2Ready.tmp&quot;</from>
+      <to>Dummy</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+  </hops>
+  <notepads>
+    <notepad>
+      <note>By design Jobs can not be run in parallel. 
+If you need this, you might start multiple job processes by the operating system
+or the Shell job entry.
+To synchronize multiple jobs you can use the File job entries.</note>
+      <xloc>40</xloc>
+      <yloc>33</yloc>
+      <width>429</width>
+      <heigth>70</heigth>
+    </notepad>
+    <notepad>
+      <note>This Job will wait for two other Jobs (SyncJobs - Example 1 and 2) to be finished.
+If you want to test this with Spoon, you need to run the other Jobs after
+this Job. Note: In the log view you see enries of all Jobs.</note>
+      <xloc>40</xloc>
+      <yloc>149</yloc>
+      <width>430</width>
+      <heigth>55</heigth>
+    </notepad>
+    <notepad>
+      <note>Do other things here after the two Jobs are finished.</note>
+      <xloc>458</xloc>
+      <yloc>551</yloc>
+      <width>281</width>
+      <heigth>25</heigth>
+    </notepad>
+    <notepad>
+      <note>Make sure the timing is enough for this job to start and delete the two files
+before the other Jobs will be finished. Otherwise you could run into
+race conditions.</note>
+      <xloc>454</xloc>
+      <yloc>314</yloc>
+      <width>402</width>
+      <heigth>55</heigth>
+    </notepad>
+    <notepad>
+      <note>Note: In our example Job2 will be faster then Job1.
+If the Jobs are started parallel this Job entry has no delay.</note>
+      <xloc>457</xloc>
+      <yloc>446</yloc>
+      <width>307</width>
+      <heigth>40</heigth>
+    </notepad>
+  </notepads>
+</job>

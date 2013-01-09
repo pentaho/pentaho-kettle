@@ -156,8 +156,8 @@ TYPICAL TARGET SEQUENCE
   <property name="javac.deprecation"
             value="true"
             description="Indicates whether source should be compiled with deprecation information" />
-  <property name="javac.source" value="1.5" description="Provide source compatibility with specified release" />
-  <property name="javac.target" value="1.5" description="Generate class files for specific VM version" />
+  <property name="javac.source" value="6" description="Provide source compatibility with specified release" />
+  <property name="javac.target" value="6" description="Generate class files for specific VM version" />
   <property name="javac.maxmemory" value="256M" description="Max memory alloted to java compile" />
 
   <!-- Third party Ant tasks and tools properties -->
@@ -1147,6 +1147,7 @@ TYPICAL TARGET SEQUENCE
            deprecation="${javac.deprecation}"
            fork="true"
            memorymaximumsize="${javac.maxmemory}"
+           includeantruntime="false"
            source="${javac.source}"
            target="${javac.target}">
       <classpath>
@@ -1457,7 +1458,8 @@ TYPICAL TARGET SEQUENCE
   <target name="javadoc" depends="javadoc.init, compile">
     <javadoc destdir="${javadoc.dir}/docs/api"
              access="public"
-             source="1.5"
+             source="6"
+             target="6"
              use="true"
              notree="false"
              nonavbar="false"
@@ -1471,7 +1473,7 @@ TYPICAL TARGET SEQUENCE
              packagenames="${javadoc.packagenames}"
              sourcepath="${src.dir}"
              doctitle="${impl.title} documentation">
-      <link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+      <link href="http://java.sun.com/j2se/6.0/docs/api/" />
       <classpath refid="classpath" />
     </javadoc>
   </target>

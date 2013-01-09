@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job>
+  <name>Process all tables</name>
+  <directory>&#47;</directory>
+  <modified_user>admin</modified_user>
+  <modified_date>2007&#47;01&#47;22 17:39:39.156</modified_date>
+  <logconnection/>
+  <logtable/>
+   <use_batchid>N</use_batchid>
+   <pass_batchid>N</pass_batchid>
+   <use_logfield>N</use_logfield>
+   <shared_objects_file/>
+  <entries>
+    <entry>
+      <name>Start</name>
+      <description/>
+      <type>SPECIAL</type>
+      <start>Y</start>
+      <dummy>N</dummy>
+      <repeat>N</repeat>
+      <schedulerType>0</schedulerType>
+      <interval>60</interval>
+      <hour>12</hour>
+      <minutes>0</minutes>
+      <weekDay>1</weekDay>
+      <DayOfMonth>1</DayOfMonth>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>97</xloc>
+      <yloc>87</yloc>
+      </entry>
+    <entry>
+      <name>Get list of tables as result</name>
+      <description/>
+      <type>TRANS</type>
+      <filename>${Internal.Job.Filename.Directory}&#47;Get list of tables.ktr</filename>
+      <transname>Get list of tables as result</transname>
+      <directory>&#47;</directory>
+      <arg_from_previous>N</arg_from_previous>
+      <exec_per_row>N</exec_per_row>
+      <clear_rows>Y</clear_rows>
+      <clear_files>Y</clear_files>
+      <set_logfile>N</set_logfile>
+      <logfile/>
+      <logext/>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <loglevel>Error</loglevel>
+      <cluster>N</cluster>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>266</xloc>
+      <yloc>87</yloc>
+      </entry>
+    <entry>
+      <name>Process a table</name>
+      <description/>
+      <type>JOB</type>
+      <filename>${Internal.Job.Filename.Directory}&#47;Process one table.kjb</filename>
+      <jobname>Process a table</jobname>
+      <directory>&#47;</directory>
+      <arg_from_previous>N</arg_from_previous>
+      <exec_per_row>Y</exec_per_row>
+      <set_logfile>N</set_logfile>
+      <logfile/>
+      <logext/>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <loglevel>Error</loglevel>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>435</xloc>
+      <yloc>87</yloc>
+      </entry>
+    <entry>
+      <name>save list of all result files</name>
+      <description/>
+      <type>TRANS</type>
+      <filename>${Internal.Job.Filename.Directory}&#47;save list of all result files.ktr</filename>
+      <transname/>
+      <directory>&#47;</directory>
+      <arg_from_previous>N</arg_from_previous>
+      <exec_per_row>N</exec_per_row>
+      <clear_rows>Y</clear_rows>
+      <clear_files>Y</clear_files>
+      <set_logfile>N</set_logfile>
+      <logfile/>
+      <logext/>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <loglevel>Error</loglevel>
+      <cluster>N</cluster>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>634</xloc>
+      <yloc>85</yloc>
+      </entry>
+    </entries>
+  <hops>
+    <hop>
+      <from>Start</from>
+      <to>Get list of tables as result</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
+      </hop>
+    <hop>
+      <from>Get list of tables as result</from>
+      <to>Process a table</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+      </hop>
+    <hop>
+      <from>Process a table</from>
+      <to>save list of all result files</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+      </hop>
+    </hops>
+  <notepads>
+    </notepads>
+  </job>
