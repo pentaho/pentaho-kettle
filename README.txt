@@ -1,4 +1,4 @@
-As of January 8, 2013 the Kettle project has changed:
+As of January TBD, 2013 the Kettle project has changed:
 
   - Apache Ivy support has been added to resolve dependencies.  This has eliminated
     the need to commit JAR files into the version control system. It will also help with conflict management,
@@ -8,12 +8,62 @@ As of January 8, 2013 the Kettle project has changed:
     subprojects that can be built independently.  These sub projects contain 
     their own IVY files.
     
-    For example, "src-ui" has become the "ui" project.  Inside the "ui" project is the src folder that was "src-ui".  It also 
-    has a build.xml, build.properties file, etc.
+    For example, "src-ui" has become the "ui" project.  Inside the "ui" project is the src folder that was "src-ui".  
+    It also has a build.xml, build.properties file, etc.
     
-    
-    
-What is that "assembly" folder?
+        
+        
+Getting the source:
+ 
+     The source for TRUNK development can be found in the same place as before:  
+     
+         svn://source.pentaho.org/svnkettleroot/Kettle/trunk
+         
+         
+         
+I already have that checked out.
+
+     That would be the old structure.  DO NOT DO an svn update or commit from this.
+     An svn update will bring in the new structure but then also create tree conflicts
+     on the files that have been changed in your project.  The tree conflicts will prevent
+     successful commits.
+     
+     If you were to do a commit of files that have been moved without doing an 
+     update then the commit will fail with a message stating that the repository 
+     path does not exist.
+     
+     
+     
+What is the best way to get my code into the new structure?
+
+     Check this project out:  svn://source.pentaho.org/svnkettleroot/Kettle/branches/trunk-restruct.
+     Merge the uncommitted code you have into it and stop committing into trunk.  
+     This branch will become trunk when we cutover.
+     
+     Changes committed into trunk before the cutover will be merged if those
+     changes were not committed into the trunk-restruct branch.
+     
+          
+          
+What if I have outstanding commits that can't be committed into trunk before the cutover?
+
+     You are going to have to merge them into the new structure after the cutover.
+     
+     
+     
+What is the best way to merge?
+
+     Whichever way you are comfortable.
+
+     If you are using svn patches then they will have to be done on a per file basis.
+     Eclipse compare works but would be on a per file basis as well.
+     
+     If you have changes to multiple files in the same folder then a tool like Meld
+     would allow for multiple file differences.
+     
+     
+       
+I got the source.  What is that "assembly" folder?
 
      The assembly folder serves two purposes:
      
@@ -22,7 +72,7 @@ What is that "assembly" folder?
         
 
         
-What is "package-res"?
+What is "package-res" in assembly?
 
      If you take a look in "package-res" you will see a folder structure that 
      once was under the root of the Kettle project.  These folders are packaged up 
@@ -30,19 +80,11 @@ What is "package-res"?
      
      Changes to shell scripts, launcher, images, and docs are made here.
      
-     
- 
-Getting the source:
- 
-     The source for TRUNK development can be found in the same place as before:  
-     
-         svn://source.pentaho.org/svnkettleroot/Kettle/trunk
 
-         
+
+So now what can I do?
  
-I got the source, so now what can I do?
- 
-     The default Ant target will build Spoon which can then be run from the projects "dist" folder.
+     The default Ant target will build Spoon which can then be run from the projects dist folder.
      
      Linux example:
         
@@ -50,6 +92,7 @@ I got the source, so now what can I do?
          cd dist
          sh spoon.sh     
          
+     
      
 What about that .classpath file that Eclipse needs?
  
@@ -92,7 +135,7 @@ OK.  I just want to add a new property to a step using Eclipse as my IDE.  What 
      
 If I want to build the project with Ant should I always use the default target?
 
-     I would right after checking out the project but would avoid that target from that
+     I would right after checking out the project but would avoid the target from that
      point on. The default target does quite a bit with cleaning and resolving.
      
      Consider the previous scenario with adding a new property to a step.  You checked out the project 
@@ -181,12 +224,12 @@ Why does the build output appear to download JARs multiple times?
      
 
      
-After checking out Kettle, why does the first build take so long?
+After checking out Kettle for the first time, why does the first build take so long?
 
      This is an effect of the use of Ivy for dependency management. Instead of the checkout itself taking a long time (as all JARs used to be checked into 
      version control), instead the initial checkout should be much faster but the first build will be much longer. This is due to Ivy downloading all the 
      dependencies to its local cache. You should see significant improvement in the time it takes to build every time after that.
-     
+      
      
      
 I seem to be getting Ivy-related errors while running Ant targets. What should I do?
@@ -211,6 +254,3 @@ I'm making a change to Kettle that requires a new (or newer version of a) third-
      IMPORTANT: If a new dependency (JAR) is being introduced, make sure the license is _not_ GPL or AGPL. These licenses are not "Pentaho-friendly" and we cannot
      distribute these JARs without all Kettle source code becoming GPL.  LGPL licensing is ok for JARs but not for code. The most "Pentaho-friendly" licenses are
      permissive licenses such as Apache or MIT. If you have any questions about licensing, please contact Pentaho.
-     
-     
-     
