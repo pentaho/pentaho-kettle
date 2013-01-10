@@ -1,0 +1,40 @@
+
+2.2.1 - 2.2.2
+
+Preliminary support for Borland Interbase (read is OK), trying to get repository to work. 
+Text file output step now can write to text file in any available encoding 
+Text file input step now can read in any available encoding and ignore & report on parsing errors 
+New Constant step (to add constants with) TRACKER:1407 
+More agressive timing (less sleeping for 'fast' transformations with little I/O) 
+New HTTP job entry, see also TRACKER:1400 
+Chef documentation including new HTTP job entry description 
+TableInput can execute queries for each input row (by Hawk) TRACKER:1408 
+Logging finaly moved to Log4j (was actually very easy to do) 
+Fixed bug in Hypersonic database support 
+Fixed bug in TableOutput dialog: truncate could no longer be checked TRACKER:1403 
+Fixed bug TRACKER:1399 : Lack of carriage return / line feed characters causes line to be ignored. 
+Added support for auto-login into Kettle repository using environment variables KETTLE_REPOSITORY, KETTLE_USER, KETTLE_PASSWORD 
+Implemented change Request TRACKER:1398 : Added support for escaped separators (ignored now) and the replacement after getting the value. 
+
+2.2.0 - 2.2.1
+
+Added SFTP job to Chef
+Adding support for help texts in plugins (HTML) after plugin crashes + created new browser dialog
+SQL Server / Sybase: Upgraded to jTDS version 1.2
+fixed bug with rip database wizard
+Fixed serious bug with table output without using the tablename-in-field options
+Implemented change Request - [# 1368] New step: Merge - Detect changed records + new Icon
+Fixed Bug - [# 1370] SelectValues: metadata change to BigNumber causes Exception
+XMLInput proof of concept work in Experimental.
+Updated Spoon documentation
+Added code to optionally make UniqueRows case sensitive
+Implemented Change Request - [# 1355] GroupBy: cache rows so result can be added to original row
+Implemented Change Request - [# 1338] TableOutput: take name of table from a field in a row
+Replace environment variables in table output name
+Fixed Change Request - [# 1321] Tips: complete the tip on creating new hops
+Completed the conceptual setup of Mapping code. Mapping input parameters is done and output parameters can be renamed.
+Added support for XML files in Mappings
+Fixed documentation for : Bug - [# 1314] Pan documentation correction
+Fixed Bug - [# 1320] Hidden steps can't be put back on the canvas
+Leave the default font to the OS (same for grid font), easier to keep cross platform 
+Solved Update and InsertUpdate problem when auto-commit is on

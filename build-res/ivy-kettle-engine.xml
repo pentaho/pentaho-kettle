@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
+  <info organisation="pentaho-kettle" module="kettle-engine" revision="${project.revision}"/>
+  <publications>
+    <artifact name="kettle-engine" type="jar" conf="default"/>
+  </publications>  
+  
+  <dependencies defaultconf="default->default">
+    <dependency org="xerces" name="xercesImpl" rev="2.9.1"/>
+  </dependencies>
+</ivy-module>

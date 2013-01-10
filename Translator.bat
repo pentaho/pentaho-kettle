@@ -9,10 +9,10 @@ set CLASSPATH=.
 REM ******************
 REM   KETTLE Library
 REM ******************
-set CLASSPATH=%CLASSPATH%;lib\kettle-core-TRUNK-SNAPSHOT.jar
-set CLASSPATH=%CLASSPATH%;lib\kettle-db-TRUNK-SNAPSHOT.jar
-set CLASSPATH=%CLASSPATH%;lib\kettle-engine-TRUNK-SNAPSHOT.jar
-set CLASSPATH=%CLASSPATH%;lib\kettle-ui-swt-TRUNK-SNAPSHOT.jar
+set CLASSPATH=%CLASSPATH%;lib\kettle-core.jar
+set CLASSPATH=%CLASSPATH%;lib\kettle-db.jar
+set CLASSPATH=%CLASSPATH%;lib\kettle-engine.jar
+set CLASSPATH=%CLASSPATH%;lib\kettle-ui-swt.jar
 
 REM *****************
 REM   SWT Libraries
@@ -24,10 +24,10 @@ set CLASSPATH=%CLASSPATH%;libswt\win32\swt.jar
 set CLASSPATH=%CLASSPATH%;libswt\common.jar
 set CLASSPATH=%CLASSPATH%;libswt\commands.jar
 
-set CLASSPATH=%CLASSPATH%;lib/kettle-vfs-20091118.jar
-set CLASSPATH=%CLASSPATH%;lib/commons-logging-1.1.jar
-set CLASSPATH=%CLASSPATH%;lib/log4j-1.2.14.jar
-set CLASSPATH=%CLASSPATH%;lib/spring-core-2.5.6.jar
+set CLASSPATH=%CLASSPATH%;libext/pentaho/kettle-vfs-20091118.jar
+set CLASSPATH=%CLASSPATH%;libext/commons/commons-logging-1.1.jar
+set CLASSPATH=%CLASSPATH%;libext/log4j-1.2.14.jar
+set CLASSPATH=%CLASSPATH%;libext/spring/spring-core-2.5.6.jar
 
 REM ******************************************************************
 REM ** Set java runtime options                                     **

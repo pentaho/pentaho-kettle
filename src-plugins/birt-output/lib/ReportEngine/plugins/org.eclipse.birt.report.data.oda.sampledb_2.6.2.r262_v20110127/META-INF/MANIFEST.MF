@@ -1,0 +1,43 @@
+Manifest-Version: 1.0
+Bundle-Localization: plugin
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-SymbolicName: org.eclipse.birt.report.data.oda.sampledb;singlet
+ on:=true
+Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.2.0,4.0.0)
+ ",org.eclipse.datatools.connectivity.oda;bundle-version="[3.1.0,4.0.0
+ )",org.eclipse.birt.report.data.oda.jdbc;bundle-version="[2.2.0,3.0.0
+ )",org.eclipse.birt.core;bundle-version="[2.1.0,3.0.0)",org.apache.de
+ rby.core;bundle-version="[10.1.2,11.0.0)",org.eclipse.datatools.conne
+ ctivity.oda.profile;bundle-version="[3.0.4,4.0.0)";resolution:=option
+ al
+Bundle-Activator: org.eclipse.birt.report.data.oda.sampledb.SampledbPl
+ ugin
+Export-Package: org.eclipse.birt.report.data.oda.sampledb
+Bundle-Version: 2.6.2.r262_v20110127
+Bundle-ClassPath: sampledb.jar
+Bundle-ActivationPolicy: lazy
+Bundle-Vendor: Eclipse.org
+Bundle-Name: BIRT Sample Database
+Bundle-ManifestVersion: 2
+
+Name: .options
+SHA1-Digest: 2jmj7l5rSw0yVb/vlWAYkK/YBwk=
+
+Name: db/BirtSample.jar
+SHA1-Digest: TrjYWP6g8En1us+su7zhMtTC1Fo=
+
+Name: META-INF/eclipse.inf
+SHA1-Digest: M1yh6ypEH7aiF3JiaBs2vAuNi54=
+
+Name: sampledb.jar
+SHA1-Digest: 9+EsuOSDxy442WMYZe63RMo+N74=
+
+Name: plugin.xml
+SHA1-Digest: Nmw9MemQsEm3/EOFZw5LFvgwC64=
+
+Name: about.html
+SHA1-Digest: ObsP47Fq6CSfBimdpGOcNnxQyPA=
+
+Name: plugin.properties
+SHA1-Digest: Q1/ei6eXX9Cw0yRjj6Up+BieAAY=
+

@@ -1,0 +1,76 @@
+KETTLE CHANGE LOG
+------------------
+
+2.1.0. Changes
+--------------
+* General:
+	* A lot of bug-fixes
+      * Tables: (grids) corrected delete/cursor positioning problems
+	* Tables: Filtered selection
+	* Core reorganisation of packages
+	* Core reorganisation of java Exception handling & error reporting
+	* Support for Firebird databases
+	* Move to jDTS JDBC driver for SQL Server & Sybas databases
+	* Support for Java Webstart, tested on Windows, Solaris, Linux, OSX
+	* Support for logging to be stored in the logging table in a CLOB type of field.
+	* Progress dialogs in a lot of places: load, save, repository create/upgrade, check, impact, sql, fields, ...
+* Repositories:
+      * directory trees
+      * upgrade repository from previous version
+* Modified steps:
+      * Select Values: RemoveValues & MetaData tabs to speed up processing
+      * Text File Input: read multiple files with multiple wildcards
+      * Dimension Lookup Rename technical key bug fix
+      * Filter rows: complete rework : added "condition" widget
+* New step types:
+      * Excel Input: read directly from a Microsoft Excel worksheet. (.xls file)
+	* XBase: read directly from .DBF files
+* Environment Variable support in steps:
+      * Text File Input
+      * XBase Input
+      * Excel Input
+      * Text File Output
+      * Sort rows
+* Spoon:
+      * Database Caching made persistent in Kettle home directory
+      * Recal last preview results with F8
+      * Generate SQL for transformation, including ALTER TABLE commands to change tables
+      * plugin support for transformation steps & grouping into categories
+      * Auto-save option before running a transformation
+	* Impact analyses
+	* Progress dialog for getting input/output fields for steps (can be slow with complex SQL queries)
+	* Table copy wizard
+	* Kettle Splash screen
+	* Remember/retrieve last check or impact analyses.
+	* Generate 
+* Chef:
+      * Complete rewrite of jobs
+      * Complete Repository support
+      * Database ripper tool with wizard and progress dialog
+      * Use and load connections from repository
+	* Kettle Splash screen
+* New job entry types:
+      * Table exists
+      * File exists
+      * SQL
+      * Mail
+	* FTP
+
+2.0.3. Changes
+--------------
+* DBJoin: usefull when doing complex lookups etc. (oldest customer, best selling product, etc.)
+* a number of smaller bug-fixes.
+* Move to SWT version 3.0 libraries.
+* Repository export in Repository explorer + rename transformations using F2
+
+2.0.2. Changes
+--------------
+* Database Explorer: add function: generate DDL from table
+* Transformation option: first performance tuning parameter: nr of rows in rowsets
+
+2.0.1. Changes
+--------------
+* SQL Editor: small bug when only 1 statement is entered and no ; or CR behind statement: last character of statement is not taken into account.
+* Security:  Using read-only user, it shouldn't be possible to create/change database connections in the repository, also for Repository Explorer
+
+2.0.0 release : 2004/06/09
