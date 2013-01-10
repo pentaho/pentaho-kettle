@@ -588,7 +588,7 @@
 	  	<for list="${plugin-ids}" param="plugin" trim="true">
 	  		<sequential>
 			  	<echo>Creating the Kettle plugin zip for @{plugin} ...</echo>
-	  		  	<zip destfile="plugins/@{plugin}/dist/@{plugin}.zip" 
+	  		  	<zip destfile="plugins/@{plugin}/dist/@{plugin}-${project.revision}.zip" 
 	  		  		 basedir="plugins/@{plugin}/bin/stage"
 	  		    	 includes="**/*"/>
 			</sequential>
@@ -918,12 +918,12 @@
 	          <param name="pluginfolder" value="plugins/@{plugin}"/>
 	          <param name="artifact.type" value="jar"/>
 	        </antcall>
-	        <!-- publish zip -->
-	        <antcall target="publish-plugin-task">
-	          <param name="ivy.artifact.id" value="@{plugin}-${version}" />
-	          <param name="pluginfolder" value="plugins/@{plugin}"/>
-	          <param name="artifact.type" value="zip"/>
-	        </antcall>
+	        <!-- publish zip - TODO: put back in if kettle-plugins-dist-standalone is called
+          <antcall target="publish-plugin-task">
+            <param name="ivy.artifact.id" value="@{plugin}-${version}" />
+            <param name="pluginfolder" value="plugins/@{plugin}"/>
+            <param name="artifact.type" value="zip"/>
+          </antcall>-->
 	      </sequential>
 	    </for>
 
