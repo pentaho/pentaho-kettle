@@ -553,9 +553,9 @@
 	  	    <!-- external libs (jdbc etc) -->
 	  			<mkdir dir="plugins/@{plugin}/bin/stage/@{plugin}/lib"/>
 	  			<if>
-            <available file="$plugins/@{plugin}/bin/stage/@{plugin}/version.xml" />
+            <available file="plugins/@{plugin}/lib" />
             <then>
-            	<copy todir="plugins/@{plugin}/lib" >
+            	<copy todir="plugins/@{plugin}/bin/stage/@{plugin}/lib" >
     		  			<fileset dir="plugins/@{plugin}/lib" includes="**/*.jar **/*.zip" excludes="**/.vpn"/>
     	  			</copy>
             </then>
@@ -563,7 +563,7 @@
 
 	  			<!-- any other res files -->
 	  			<if>
-            <available file="$plugins/@{plugin}/bin/stage/@{plugin}/version.xml" />
+            <available file="plugins/@{plugin}/res" />
             <then>
             	<copy todir="plugins/@{plugin}/bin/stage/@{plugin}" >
     		  			<fileset dir="plugins/@{plugin}/res" includes="**/*" excludes="**/.vpn"/>
@@ -573,9 +573,9 @@
 	  			
   		    <!-- Update the version.xml with the current version of this plugin -->
   		    <if>
-  		      <available file="$plugins/@{plugin}/bin/stage/@{plugin}/version.xml" />
+  		      <available file="plugins/@{plugin}/bin/stage/@{plugin}/version.xml" />
   		      <then>
-	  		    <replace file="plugins/@{plugin}/bin/stage/@{plugin}/version.xml" token="@TRUNK@" value="${project.revision}"/>
+  		        <replace file="plugins/@{plugin}/bin/stage/@{plugin}/version.xml" token="@TRUNK@" value="${project.revision}"/>
   		      </then>
   		    </if>
 			</sequential>
