@@ -724,6 +724,7 @@
         classpath from Ant.
       ====================================================================-->
   <target name="create-dot-classpath" depends="install-pentaho-ant-tasks,init,resolve,unzip-swtlibs,remove-kettle-jars,update-launch-config">
+  	<copy file="classpath.template" tofile=".classpath" overwrite="true" force="true"/>
     <dot-classpath>
       <classpath>
           <fileset dir="${lib.dir}">
