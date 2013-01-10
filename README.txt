@@ -97,18 +97,17 @@ So now what can I do?
 What about that .classpath file that Eclipse needs?
  
      With the use of Ivy it is no longer necessary to edit the .classpath file and check it into version control.
-     There is a .classpath file checked in which contains references to Kettle source code and output folder(s).  
-     You can generate a "full" .classpath file (including Kettle's dependencies) with the "create-dot-classpath" Ant target.
+     There is a file called classpath.template in the root folder in which contains references to Kettle source code and output folders.  
+     You can generate a full .classpath file (including Kettle's dependencies) with the "create-dot-classpath" Ant target. 
      
      Linux example:
      
          /workspace/Kettle-trunk/ant create-dot-classpath
          
-     The Ant target will resolve the dependencies and generate the .classpath file.
-     After generating the .classpath file, refresh your Eclipse project and have Eclipse
-     build the project.
+     The Ant target will will copy classpath.template to .classpath, resolve the dependencies and generate the .classpath file.
+     After generating the .classpath file, refresh your Eclipse project and have Eclipse build the project.
      
-     Please do not check in the .classpath back into version control.
+     Please do not commit the .classpath into the version control system.
      
      
 
