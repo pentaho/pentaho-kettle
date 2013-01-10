@@ -1,4 +1,4 @@
-/*******************************************************************************
+\/*******************************************************************************
  *
  * Pentaho Data Integration
  *
@@ -21,16 +21,13 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.monetdbbulkloader;
 
-import java.io.ByteArrayOutputStream;
-import java.util.Date;
-import java.util.List;
-
 import nl.cwi.monetdb.mcl.io.BufferedMCLReader;
 import nl.cwi.monetdb.mcl.io.BufferedMCLWriter;
 import nl.cwi.monetdb.mcl.net.MapiSocket;
-
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.SQLStatement;
+import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.MonetDBDatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -42,13 +39,13 @@ import org.pentaho.di.core.util.StreamLogger;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStep;
-import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepInterface;
-import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.*;
 import org.pentaho.di.trans.steps.monetdbagilemart.MonetDBRowLimitException;
 import org.pentaho.di.trans.steps.tableagilemart.AgileMartUtil;
+
+import java.io.ByteArrayOutputStream;
+import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -69,7 +66,8 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 	private TransMeta localTransMeta;
 	protected long rowsWritten = -1;
 	private AgileMartUtil util = new AgileMartUtil();
-	
+	private RowMetaInterface physicalTableRowMeta;
+
 	public String getMessage() {
 		return message;
 	}
@@ -113,6 +111,11 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 
        		if (log.isDetailed()) logDetailed("Auto String Length flag: "+meta.isAutoStringWidths() );
         	
+          DatabaseMeta dm = meta.getDatabaseMeta();
+
+          String user = environmentSubstitute(Const.NVL(dm.getUsername(), ""));
+          String password = environmentSubstitute(Const.NVL(dm.getPassword(), ""));
+
           MapiSocket mserver = getMonetDBConnection();
           data.mserver = mserver;
 
@@ -126,6 +129,24 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
         	
           data.outputLogger = new StreamLogger(log, mserver.getInputStream(), "OUTPUT");
 
+          // If the truncate table checkbox is checked, we can do the truncate here.
+          if(meta.isTruncate()) {
+            truncate();
+        }
+
+          Database db = null;
+          // get table metadata, will be used later for date type identification (DATE, TIMESTAMP, ...)
+          try {
+            db = new Database(dm);
+            db.connect(user, password);
+            physicalTableRowMeta = db.getTableFields(data.schemaTable);
+          } catch (Exception e) {
+            logBasic("Could not get metadata for the physical table " + data.schemaTable + ".");
+          } finally {
+            if(db != null) {
+              db.disconnect();
+            }
+          }
         }
         catch ( Exception ex )
         {
@@ -263,19 +284,44 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 		    				}
 		    			}
 		    			break;
+		    			//
+		    			// TODO: Check MonetDB API for true column types and help set or suggest the correct formatter pattern to the user.
+		    			//
 		    		case ValueMetaInterface.TYPE_DATE:
 		    			// Keep the data format as indicated.
-		    			//
 		    			if (valueMeta.isStorageBinaryString() && meta.getFieldFormatOk()[i]) {
 		    				line.write((byte[])valueData);
 		    			} else {
+
+
+                ValueMetaInterface colMeta = null;
+                if(physicalTableRowMeta != null) {
+                  colMeta = physicalTableRowMeta.getValueMeta(index);
+                }
+
 		    				Date value = valueMeta.getDate(valueData);
-		    				// Convert it to the MonetDB date format "yyyy/MM/dd HH:mm:ss"
 		    				if( value == null ) {
 		    					line.write("null".getBytes());
 		    				} else {
+
+                  // MonetDB makes a distinction between the acceptable incoming string formats for
+                  // the type DATE and TIMESTAMP.
+                  //
+                  //    DATE - for date values (e.g., 2012-12-21)
+                  //    TIME - for time values (e.g., 15:51:36)
+                  //    TIMESTAMP - DATE and TIME put together (e.g., 2012-12-21  15:51:36)
+
+                  if (colMeta != null && colMeta.getOriginalColumnTypeName().equalsIgnoreCase("date")) {
 		    					line.write(data.monetDateMeta.getString(value).getBytes());
+                  } else if (colMeta != null && colMeta.getOriginalColumnTypeName().equalsIgnoreCase("time")) {
+                    line.write(data.monetTimeMeta.getString(value).getBytes());
+                  } else {
+                    //colMeta.getOriginalColumnTypeName().equalsIgnoreCase("timestamp")
+                    line.write(data.monetTimestampMeta.getString(value).getBytes());
 		    				}
+
+		    			}
+
 		    			}
 		    			break;
 		    		case ValueMetaInterface.TYPE_BOOLEAN:
@@ -333,7 +379,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
     	}
     	catch(Exception e)
     	{
-    		throw new KettleException("Error serializing rows of data to the psql command", e);
+    		throw new KettleException("Error serializing rows of data to the MonetDB API (MAPI).", e);
     	}
 		
 	}
@@ -392,9 +438,10 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
     	if (data.bufferIndex==0) return;
     	
     	try {
+    		StringBuffer cmdBuff = new StringBuffer();
+
 	    	// first write the COPY INTO command...
 	    	//
-    		StringBuffer cmdBuff = new StringBuffer();
     		cmdBuff.append( "COPY " )
     		.append(data.bufferIndex)
     		.append(" RECORDS INTO ")
@@ -403,7 +450,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
     		.append(new String(data.separator))
     		.append("','" + Const.CR + "','")
     		.append(new String(data.quote))
-    		.append("';");
+    		.append("' NULL AS '" + new String(data.nullrepresentation) + "';");
     		String cmd = cmdBuff.toString();
 	    	if (log.isDetailed()) logDetailed(cmd);
 
@@ -445,7 +492,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 	    	data.bufferIndex=0;
     	}
     	catch(Exception e) {
-    		throw new KettleException("An error occurred writing data to the mclient process", e);
+    		throw new KettleException("An error occurred writing data to the MonetDB API (MAPI) process", e);
     	}
 	}
 
@@ -456,13 +503,26 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 
 		if (super.init(smi, sdi))
 		{			
-			data.quote = "\"".getBytes();
-			data.separator = "|".getBytes();
+			data.quote = meta.getFieldEnclosure().getBytes();
+			data.separator = meta.getFieldSeparator().getBytes();
+			if(meta.getNULLrepresentation() == null) {
+				data.nullrepresentation = new String().getBytes();
+			} else {
+				data.nullrepresentation = meta.getNULLrepresentation().getBytes();
+			}
 			data.newline = Const.CR.getBytes();
 
 			data.monetDateMeta = new ValueMeta("dateMeta", ValueMetaInterface.TYPE_DATE);
-			data.monetDateMeta.setConversionMask("yyyy/MM/dd HH:mm:ss");
+			data.monetDateMeta.setConversionMask("yyyy/MM/dd");
 			data.monetDateMeta.setStringEncoding(meta.getEncoding());
+
+      data.monetTimestampMeta = new ValueMeta("timestampMeta", ValueMetaInterface.TYPE_DATE);
+      data.monetTimestampMeta.setConversionMask("yyyy/MM/dd HH:mm:ss");
+      data.monetTimestampMeta.setStringEncoding(meta.getEncoding());
+
+      data.monetTimeMeta = new ValueMeta("timeMeta", ValueMetaInterface.TYPE_DATE);
+      data.monetTimeMeta.setConversionMask("HH:mm:ss");
+      data.monetTimeMeta.setStringEncoding(meta.getEncoding());
 
 			data.monetNumberMeta = new ValueMeta("numberMeta", ValueMetaInterface.TYPE_NUMBER);
 			data.monetNumberMeta.setConversionMask("#.#");
@@ -477,7 +537,14 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 			data.rowBuffer = new String[data.bufferSize]; //new byte[data.bufferSize][];
 			data.bufferIndex = 0;
 			
-			//
+			if(meta.isFullyQuoteSQL()) {
+				meta.getDatabaseMeta(this).setQuoteAllFields(true);
+			} else {
+				meta.getDatabaseMeta(this).setQuoteAllFields(false);
+			}
+
+
+			// Support parameterized database connection names
 			String connectionName = meta.getDbConnectionName();
 			if (!Const.isEmpty(connectionName) && connectionName.startsWith("${") && connectionName.endsWith("}")) {
 				meta.setDatabaseMeta(localTransMeta.findDatabase(environmentSubstitute(connectionName)));	
@@ -534,7 +601,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 
     try {
 
-      List<?> warnings = mserver.connect(host, port, user, password);
+      List warnings = mserver.connect(host, port, user, password);
       if(warnings != null) {
         for (Object warning : warnings) {
           if(log != null) {
@@ -568,6 +635,17 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 
   }
 
+  /*
+   * executeSQL
+   *   Uses the MonetDB API to create a new server connection and
+   *   the associated buffered Reader and Writer to execute a single query.
+   *   @param Query string
+   *   @param Host URI
+   *   @param Numerical port
+   *   @param Username for establishing the connection
+   *   @param Password for establishing the connection
+   *   @param database to connect to
+   */
   protected static void executeSql(String query, String host, int port, String user, String password, String db) throws Exception {
     MapiSocket mserver = null;
     try {
