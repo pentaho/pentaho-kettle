@@ -542,39 +542,49 @@
 	  	
 	<target name="kettle-plugins-jar" depends="compile-plugins, kettle-plugins-jar-standalone" description="generate all the kettle plugin jars"/>
 	
-	<target name="kettle-plugins-standalone" depends="kettle-plugins-jar-standalone" description="generate all the kettle plugin jars">
+	<target name="kettle-plugins-standalone" depends="build-plugins" description="generate all the kettle plugin jars">
 	  	<for list="${plugin-ids}" param="plugin" trim="true">
 	  		<sequential>	
 			  	<echo>Staging the Kettle plugin @{plugin} ...</echo>
 	  			<!-- copy plugin jar -->
 	  			<mkdir dir="plugins/@{plugin}/bin/stage/@{plugin}"/>
-		  		<copy todir="plugins/@{plugin}/bin/stage/@{plugin}"  file="plugins/@{plugin}/dist/@{plugin}.jar"/>
+		  		<copy todir="plugins/@{plugin}/bin/stage/@{plugin}"  file="plugins/@{plugin}/dist/@{plugin}-${project.revision}.jar"/>
 
-	  	        <!-- external libs (jdbc etc) -->
-		  		<mkdir dir="plugins/@{plugin}/bin/stage/@{plugin}/lib"/>
-		  		<copy todir="plugins/@{plugin}/bin/stage/@{plugin}/lib">
-		  			<fileset dir="plugins/@{plugin}/lib" includes="**/*.jar **/*.zip" excludes="**/.vpn"/>
-	  			</copy>
+	  	    <!-- external libs (jdbc etc) -->
+	  			<mkdir dir="plugins/@{plugin}/bin/stage/@{plugin}/lib"/>
+	  			<if>
+            <available file="$plugins/@{plugin}/bin/stage/@{plugin}/version.xml" />
+            <then>
+            	<copy todir="plugins/@{plugin}/lib" >
+    		  			<fileset dir="plugins/@{plugin}/lib" includes="**/*.jar **/*.zip" excludes="**/.vpn"/>
+    	  			</copy>
+            </then>
+	  			</if>
 
 	  			<!-- any other res files -->
-		  		<copy todir="plugins/@{plugin}/bin/stage/@{plugin}">
-		  			<fileset dir="plugins/@{plugin}/res" includes="**/*" excludes="**/.vpn"/>
-	  			</copy>
+	  			<if>
+            <available file="$plugins/@{plugin}/bin/stage/@{plugin}/version.xml" />
+            <then>
+            	<copy todir="plugins/@{plugin}/bin/stage/@{plugin}" >
+    		  			<fileset dir="plugins/@{plugin}/res" includes="**/*" excludes="**/.vpn"/>
+    	  			</copy>
+            </then>
+          </if>
 	  			
-	  		    <!-- Update the version.xml with the current version of this plugin -->
-	  		    <if>
-	  		      <available file="$plugins/@{plugin}/bin/stage/@{plugin}/version.xml" />
-	  		      <then>
-		  		    <replace file="plugins/@{plugin}/bin/stage/@{plugin}/version.xml" token="@TRUNK@" value="${project.revision}"/>
-	  		      </then>
-	  		    </if>
+  		    <!-- Update the version.xml with the current version of this plugin -->
+  		    <if>
+  		      <available file="$plugins/@{plugin}/bin/stage/@{plugin}/version.xml" />
+  		      <then>
+	  		    <replace file="plugins/@{plugin}/bin/stage/@{plugin}/version.xml" token="@TRUNK@" value="${project.revision}"/>
+  		      </then>
+  		    </if>
 			</sequential>
 	  	</for>
 	</target>
 
 	<target name="kettle-plugins" depends="kettle-plugins-jar, kettle-plugins-standalone" description="generate all the kettle plugin jars"/>
 		
-  	<target name="kettle-plugins-dist-standalone" depends="kettle-plugins-standalone" description="generate all the kettle plugin jars">
+  <target name="kettle-plugins-dist-standalone" depends="kettle-plugins-standalone" description="generate all the kettle plugin jars">
 	  	<for list="${plugin-ids}" param="plugin" trim="true">
 	  		<sequential>
 			  	<echo>Creating the Kettle plugin zip for @{plugin} ...</echo>
@@ -908,12 +918,12 @@
 	          <param name="pluginfolder" value="plugins/@{plugin}"/>
 	          <param name="artifact.type" value="jar"/>
 	        </antcall>
-	        <!-- publish zip - TODO - put back in?
+	        <!-- publish zip -->
 	        <antcall target="publish-plugin-task">
 	          <param name="ivy.artifact.id" value="@{plugin}-${version}" />
 	          <param name="pluginfolder" value="plugins/@{plugin}"/>
 	          <param name="artifact.type" value="zip"/>
-	        </antcall>-->
+	        </antcall>
 	      </sequential>
 	    </for>
 
@@ -987,7 +997,9 @@
 
 	  </target>
 	
-	<target name="remove-kettle-jars" depends="init,install-antcontrib">
+	<target name="remove-kettle-jars" depends="remove-kettle-module-jars,remove-kettle-plugin-jars"/>
+	
+	<target name="remove-kettle-module-jars" depends="init,install-antcontrib">
 		<for list="${dev-project.list}" param="module" trim="true">
       <sequential>
       	<delete>
@@ -995,14 +1007,17 @@
       	</delete>
       </sequential>
 		</for>
-		<for list="${plugin-ids}" param="plugin" trim="true">
-      <sequential>
-        <delete>
-          <fileset dir="${lib.dir}" includes="@{plugin}*.jar"/>             
-        </delete>
-      </sequential>
-    </for>
 	</target>
+	
+	<target name="remove-kettle-plugin-jars" depends="init,install-antcontrib">
+	    <for list="${plugin-ids}" param="plugin" trim="true">
+	      <sequential>
+	        <delete>
+	          <fileset dir="${lib.dir}" includes="@{plugin}*.jar"/>             
+	        </delete>
+	      </sequential>
+	    </for>
+	  </target>
 	
 	<!-- Unzip the libswt package into the libswt folder of the distribution -->
 	<target name="unzip-swtlibs" depends="init">
@@ -1024,7 +1039,7 @@
       Creates a distribution of this project
       ====================================================================-->
 	<target name="dist" 
-		      depends="install-antcontrib,build-all,resolve,copy-package-res,dist-final" 
+		      depends="install-antcontrib,build-all,kettle-plugins-standalone,resolve,copy-package-res,dist-final" 
 		      description="Creates a distribution">
 	  <echo message="To avoid library resolution on your next build, use the dist-nodeps Ant target"/>
 	</target>
@@ -1043,7 +1058,7 @@
       
       Performs any final processing to produce the distibution directory
       ====================================================================-->
-	  <target name="dist-final" depends="install-antcontrib,build-nodeps">
+  <target name="dist-final" depends="install-antcontrib,build-nodeps">
   	
     <chmod perm="a+x" dir="${distrib}" includes="**/*.sh" />
   	
@@ -1056,6 +1071,15 @@
       <fileset dir="${lib.dir}" />
     </copy>
 	  	
+	  <!-- Copy plugins' staging areas to distribution -->
+		<for list="${plugin-ids}" param="plugin" trim="true">
+        <sequential>
+          <copy todir="${distrib}/plugins">
+            <fileset dir="plugins/@{plugin}/bin/stage" includes="**/*" />
+          </copy>
+      </sequential>
+    </for>
+	  	
 	  <!-- Move launcher jar to launcher folder -->
 	  <move todir="${distrib}/launcher">
 	  	<fileset dir="${distrib}/${lib}" includes="launcher*.jar"/>
@@ -1065,11 +1089,6 @@
 	  	<antcall target="unzip-swtlibs">
 	  		<param name="libswt" value="${distrib}/${libswt}"/>
 	  	</antcall>
-    <!--<unzip dest="${distrib}" overwrite="true">
-      <fileset dir="${lib.dir}">
-        <include name="**/swtlibs*.zip"/>
-      </fileset>
-    </unzip>-->
     
   	<!-- Remove the SWT JAR used for compilation -->
     <delete quiet="true">
