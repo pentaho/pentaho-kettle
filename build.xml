@@ -1105,6 +1105,33 @@
   </target>
 	
 	<!--=======================================================================
+        stage-dist
+        
+        Copies the distribution to the assembly staging area
+        ====================================================================-->
+  <target name="stage-dist" >
+  	<copy todir="${assembly.stage.pdi-client.dir}" overwrite="true">
+  		<fileset dir="${distrib}"/>
+  	</copy>
+	</target>
+	
+	<!--=======================================================================
+        stage-clean
+        
+        Cleans the assembly staging area
+        ====================================================================-->
+  <target name="stage-clean" >
+    <delete dir="${assembly.stage.pdi-client.dir}" />
+  </target>
+  
+	<!--=======================================================================
+        stage-full
+        
+        Cleans and builds the assembly staging area
+        ====================================================================-->
+  <target name="stage-full" depends="stage-clean,stage-dist" />
+	
+	<!--=======================================================================
         package-dev-env
         
         Creates a distribution of this project that contains all resolved JARs
