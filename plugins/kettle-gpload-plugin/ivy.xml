@@ -4,6 +4,7 @@
 
   <configurations>
     <conf name="default" />
+    <conf name="dev" />
     <conf name="test" visibility="private" />
     <conf name="source" />
   </configurations>
@@ -13,7 +14,7 @@
     <artifact name="${ivy.artifact.id}" m:classifier="sources" type="source" ext="jar" conf="source"/>
   </publications>
 
-  <dependencies defaultconf="default->default">
+  <dependencies defaultconf="dev->default">
     <dependency org="${ivy.artifact.group}"  name="kettle-core"      rev="${dependency.kettle.revision}" changing="true"/>
     <dependency org="${ivy.artifact.group}"  name="kettle-db"        rev="${dependency.kettle.revision}" changing="true"/>
     <dependency org="${ivy.artifact.group}"  name="kettle-engine"    rev="${dependency.kettle.revision}" changing="true"/>
@@ -22,7 +23,7 @@
     <dependency org="commons-vfs"     name="commons-vfs"      rev="20091118-pentaho" transitive="false" />
     <!-- SWT it required to compile any version of any architecture will work -->
     <dependency org="org.eclipse.swt" name="swt-linux-x86_64" rev="3.6"              transitive="false" />
-    <dependency org="org.eclipse"     name="jface"            rev="3.3.0-I20070606-0010" transitive="false" conf="default->default" />
+    <dependency org="org.eclipse"     name="jface"            rev="3.3.0-I20070606-0010" transitive="false" />
     
     <dependency org="junit"           name="junit"            rev="4.7" transitive="false" conf="test->default"/>            
     

@@ -4,6 +4,7 @@
 
   <configurations>
     <conf name="default" />
+    <conf name="dev" />
     <conf name="test" visibility="private" />
     <conf name="source" />
   </configurations>
@@ -12,7 +13,7 @@
     <artifact name="${ivy.artifact.id}" type="${artifact.type}" conf="default" />
   </publications>
 
-  <dependencies defaultconf="default->default">
+  <dependencies defaultconf="dev->default">
     <dependency org="${ivy.artifact.group}" name="kettle-core"      rev="${dependency.kettle.revision}" changing="true"/>
     <dependency org="${ivy.artifact.group}" name="kettle-engine"    rev="${dependency.kettle.revision}" changing="true"/>
     <dependency org="${ivy.artifact.group}" name="kettle-db"        rev="${dependency.kettle.revision}" changing="true"/>

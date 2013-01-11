@@ -4,6 +4,7 @@
 
   <configurations>
     <conf name="default" />
+    <conf name="dev" />
     <conf name="test" visibility="private" />
     <conf name="source" />
   </configurations>
@@ -12,7 +13,7 @@
     <artifact name="${ivy.artifact.id}" type="${artifact.type}" conf="default" />
   </publications>
 
-  <dependencies defaultconf="default->default">
+  <dependencies defaultconf="dev->default">
     <dependency org="commons-io"             name="commons-io"       rev="1.4"              transitive="false"/>
     <dependency org="commons-vfs"            name="commons-vfs"      rev="20091118-pentaho" transitive="false"/>
     <dependency org="org.apache.xmlgraphics" name="batik-xml"        rev="1.7"              transitive="false"/>
