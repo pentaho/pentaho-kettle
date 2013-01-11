@@ -141,7 +141,12 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
             db.connect(user, password);
             physicalTableRowMeta = db.getTableFields(data.schemaTable);
           } catch (Exception e) {
-            logBasic("Could not get metadata for the physical table " + data.schemaTable + ".");
+            // try again, with the unquoted table...
+            try {
+            physicalTableRowMeta = db.getTableFields(meta.getTableName());
+            } catch (Exception e1) {
+              logBasic("Could not get metadata for the physical table " + data.schemaTable + ".");
+            }
           } finally {
             if(db != null) {
               db.disconnect();
@@ -243,15 +248,20 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 	    		int index = data.keynrs[i];
 	    		ValueMetaInterface valueMeta = rowMeta.getValueMeta(index);
 	    		Object valueData = r[index];
-	    		
+	    		String nullRep = new String(data.nullrepresentation);
 	    		if (valueData!=null) {
 		    		switch(valueMeta.getType()) {
 		    		case ValueMetaInterface.TYPE_STRING :
+              String str = valueMeta.getString(valueData);
+              if(str == null || str.equals(nullRep)) {
+                // don't quote our null representation
+                line.write(str.getBytes());
+                break;
+              }
 		    			line.write(data.quote);
 		    			// we have to convert to strings to escape '\'s
-	    				String str = valueMeta.getString(valueData);
 	    				if( str == null ) {
-	    					line.write("null".getBytes());
+                line.write(data.nullrepresentation);
 	    				} else {
 		    				// escape any backslashes
 			    			str = str.replace("\\", "\\\\");
@@ -278,8 +288,8 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 		    			} else {
 		    				Long value = valueMeta.getInteger(valueData);
 		    				if( value == null ) {
-		    					line.write("null".getBytes());
-		    				} else {
+                  line.write(data.nullrepresentation);
+                } else {
 		    					line.write(Long.toString(value).getBytes());
 		    				}
 		    			}
@@ -301,8 +311,8 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 
                 Date value = valueMeta.getDate(valueData);
 		    				if( value == null ) {
-		    					line.write("null".getBytes());
-		    				} else {
+                  line.write(data.nullrepresentation);
+                } else {
 
                   // MonetDB makes a distinction between the acceptable incoming string formats for
                   // the type DATE and TIMESTAMP.
@@ -328,8 +338,8 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 	    				{
 		    				Boolean value = valueMeta.getBoolean(valueData);
 		    				if( value == null ) {
-		    					line.write("null".getBytes());
-		    				} else {
+                  line.write(data.nullrepresentation);
+                } else {
 		    					if( value.booleanValue() ) {
 		    						line.write("Y".getBytes());
 		    					} else {
@@ -344,8 +354,8 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 		    			} else {
 		    				Double value = valueMeta.getNumber(valueData);
 		    				if( value == null ) {
-		    					line.write("null".getBytes());
-		    				} else {
+                  line.write(data.nullrepresentation);
+                } else {
 		    					line.write(Double.toString(value).getBytes());
 		    				}
 		    			}
@@ -356,16 +366,16 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 		    			} else {
 		    				String value = valueMeta.getString(valueData);
 		    				if( value == null ) {
-		    					line.write("null".getBytes());
-		    				} else {
+                  line.write(data.nullrepresentation);
+                } else {
 		    					line.write(value.getBytes());
 		    				}
 		    			}
 		    			break;
 		    		}
 	    		} else {
-    				line.write("null".getBytes());
-	    		}
+            line.write(data.nullrepresentation);
+          }
 	    	}
 			
 			// finally write a newline
@@ -442,6 +452,12 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 
 	    	// first write the COPY INTO command...
 	    	//
+
+        String nullRep = meta.getNULLrepresentation();
+        if (nullRep == null) {
+          nullRep = new String(data.nullrepresentation);
+        }
+
     		cmdBuff.append( "COPY " )
     		.append(data.bufferIndex)
     		.append(" RECORDS INTO ")
@@ -450,7 +466,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
     		.append(new String(data.separator))
     		.append("','" + Const.CR + "','")
     		.append(new String(data.quote))
-    		.append("' NULL AS '" + new String(data.nullrepresentation) + "';");
+    		.append("' NULL AS '" + nullRep + "';");
     		String cmd = cmdBuff.toString();
 	    	if (log.isDetailed()) logDetailed(cmd);
 

@@ -293,7 +293,7 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 			}						
 			NULLrepresentation 	= XMLHandler.getTagValue(stepnode, "null_representation"); 	//$NON-NLS-1$
 			if(NULLrepresentation == null) {
-				NULLrepresentation = "";   			//$NON-NLS-1$
+				NULLrepresentation = "null";   			//$NON-NLS-1$
 			}						
 			encoding       		= XMLHandler.getTagValue(stepnode, "encoding");         	//$NON-NLS-1$
 			if(encoding == null) { 
