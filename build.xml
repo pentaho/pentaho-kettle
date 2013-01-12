@@ -888,8 +888,8 @@
 	      		<property name="src.dir" value="src"/>
             <property name="lib.dir" value="../../${lib}"/>
             <property name="ivy.local.default.root" value="${ivy.default.ivy.user.dir}/local-dev" />
-	      		<target name="resolve"/>
-            <target name="dist" />
+	      		<target name="resolve-dev"/>
+	      		<target name="dist" />
 	      	</ant>
 	      </sequential>
 	    </for>
