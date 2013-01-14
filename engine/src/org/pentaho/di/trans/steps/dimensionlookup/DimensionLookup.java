@@ -43,6 +43,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -760,7 +761,8 @@ public class DimensionLookup extends BaseStep implements StepInterface
        if (log.isDebug()){ 
           log.logDebug("Changing the type of the technical key from TYPE_BIGNUMBER to an TYPE_INTEGER");
        }
-       data.returnRowMeta.getValueMeta(0).setType(ValueMetaInterface.TYPE_INTEGER);
+       ValueMetaInterface tkValueMeta = data.returnRowMeta.getValueMeta(0);
+       data.returnRowMeta.setValueMeta(0, ValueMetaFactory.cloneValueMeta(tkValueMeta, ValueMetaInterface.TYPE_INTEGER));
     }
     
     outputRow[outputIndex++] = data.returnRowMeta.getInteger(returnRow, inputIndex++);

@@ -366,6 +366,7 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
+	  try {
 		List<CheckResultInterface> remarks = new ArrayList<CheckResultInterface>();
 		RowMetaAndData rowMetaAndData = RowGenerator.buildRow(this, remarks, origin);
 		if (!remarks.isEmpty()) {
@@ -381,6 +382,9 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		
 		row.mergeRowMeta(rowMetaAndData.getRowMeta());
+	  } catch(Exception e) {
+	    throw new KettleStepException(e);
+	  }
 	}
 	
 	public String getXML()

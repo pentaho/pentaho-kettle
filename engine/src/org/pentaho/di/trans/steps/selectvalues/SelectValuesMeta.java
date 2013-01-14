@@ -34,6 +34,7 @@ import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.KettleAttributeInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -41,6 +42,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -364,76 +366,82 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface,
 		}
 	}
 	
-	public void getMetadataFields(RowMetaInterface inputRowMeta, String name)
-	{
-		if (meta!=null && meta.length>0) // METADATA mode: change the meta-data of the values mentioned...
-		{
-			for (int i=0;i<meta.length;i++)
-			{
-				SelectMetadataChange metaChange = meta[i];
-				
-				int idx = inputRowMeta.indexOfValue(metaChange.getName());
-				if (idx>=0)  // We found the value
-				{
-					// This is the value we need to change:
-					ValueMetaInterface v = inputRowMeta.getValueMeta(idx);
-					
-					// Do we need to rename ?
-					if (!v.getName().equals(metaChange.getRename()) && !Const.isEmpty(metaChange.getRename()))
-					{
-						v.setName(metaChange.getRename());
-						v.setOrigin(name);
-					}
-					// Change the type?
-					if (metaChange.getType()!=ValueMetaInterface.TYPE_NONE && v.getType()!=metaChange.getType())
-					{
-						v.setType(metaChange.getType());
-						
-						// This also moves the data to normal storage type
-						//
-						v.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
-					}
-					if (metaChange.getLength()     != -2) { v.setLength(metaChange.getLength());       v.setOrigin(name); } 
-					if (metaChange.getPrecision()  != -2) { v.setPrecision(metaChange.getPrecision()); v.setOrigin(name); }
-					if (metaChange.getStorageType() >= 0) { v.setStorageType(metaChange.getStorageType()); v.setOrigin(name); }
-					if (!Const.isEmpty(metaChange.getConversionMask())) 
-					{ 
-						v.setConversionMask(metaChange.getConversionMask());
-						v.setOrigin(name);
-					}
-
-					v.setDateFormatLenient(metaChange.isDateFormatLenient());
-					v.setDateFormatLocale(EnvUtil.createLocale(metaChange.getDateFormatLocale()));
-          v.setDateFormatTimeZone(EnvUtil.createTimeZone(metaChange.getDateFormatTimeZone()));
-					v.setLenientStringToNumber(metaChange.isLenientStringToNumber());
-					
-					if (!Const.isEmpty(metaChange.getEncoding())) 
-					{ 
-					  v.setStringEncoding(metaChange.getEncoding());
-					  v.setOrigin(name);
-					}
-					if (!Const.isEmpty(metaChange.getDecimalSymbol())) 
-					{ 
-						v.setDecimalSymbol(metaChange.getDecimalSymbol());
-						v.setOrigin(name);
-					}
-					if (!Const.isEmpty(metaChange.getGroupingSymbol())) 
-					{ 
-						v.setGroupingSymbol(metaChange.getGroupingSymbol());
-						v.setOrigin(name);
-					}
-					if (!Const.isEmpty(metaChange.getCurrencySymbol())) 
-					{ 
-						v.setCurrencySymbol(metaChange.getCurrencySymbol());
-						v.setOrigin(name);
-					}
-				}
-			}
-		}
-	}
+    public void getMetadataFields(RowMetaInterface inputRowMeta, String name) throws KettlePluginException {
+      if (meta != null && meta.length > 0) // METADATA mode: change the meta-data
+                                           // of the values mentioned...
+      {
+        for (int i = 0; i < meta.length; i++) {
+          SelectMetadataChange metaChange = meta[i];
+  
+          int idx = inputRowMeta.indexOfValue(metaChange.getName());
+          if (idx >= 0) // We found the value
+          {
+            // This is the value we need to change:
+            ValueMetaInterface v = inputRowMeta.getValueMeta(idx);
+  
+            // Do we need to rename ?
+            if (!v.getName().equals(metaChange.getRename()) && !Const.isEmpty(metaChange.getRename())) {
+              v.setName(metaChange.getRename());
+              v.setOrigin(name);
+            }
+            // Change the type?
+            if (metaChange.getType() != ValueMetaInterface.TYPE_NONE && v.getType() != metaChange.getType()) {
+              v = ValueMetaFactory.cloneValueMeta(v, metaChange.getType());
+  
+              // This is now a copy, replace it in the row!
+              //
+              inputRowMeta.setValueMeta(idx, v);
+  
+              // This also moves the data to normal storage type
+              //
+              v.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
+            }
+            if (metaChange.getLength() != -2) {
+              v.setLength(metaChange.getLength());
+              v.setOrigin(name);
+            }
+            if (metaChange.getPrecision() != -2) {
+              v.setPrecision(metaChange.getPrecision());
+              v.setOrigin(name);
+            }
+            if (metaChange.getStorageType() >= 0) {
+              v.setStorageType(metaChange.getStorageType());
+              v.setOrigin(name);
+            }
+            if (!Const.isEmpty(metaChange.getConversionMask())) {
+              v.setConversionMask(metaChange.getConversionMask());
+              v.setOrigin(name);
+            }
+  
+            v.setDateFormatLenient(metaChange.isDateFormatLenient());
+            v.setDateFormatLocale(EnvUtil.createLocale(metaChange.getDateFormatLocale()));
+            v.setDateFormatTimeZone(EnvUtil.createTimeZone(metaChange.getDateFormatTimeZone()));
+            v.setLenientStringToNumber(metaChange.isLenientStringToNumber());
+  
+            if (!Const.isEmpty(metaChange.getEncoding())) {
+              v.setStringEncoding(metaChange.getEncoding());
+              v.setOrigin(name);
+            }
+            if (!Const.isEmpty(metaChange.getDecimalSymbol())) {
+              v.setDecimalSymbol(metaChange.getDecimalSymbol());
+              v.setOrigin(name);
+            }
+            if (!Const.isEmpty(metaChange.getGroupingSymbol())) {
+              v.setGroupingSymbol(metaChange.getGroupingSymbol());
+              v.setOrigin(name);
+            }
+            if (!Const.isEmpty(metaChange.getCurrencySymbol())) {
+              v.setCurrencySymbol(metaChange.getCurrencySymbol());
+              v.setOrigin(name);
+            }
+          }
+        }
+      }
+    }
 
 	public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
+	  try {
 	    RowMetaInterface rowMeta = inputRowMeta.clone();
 	    inputRowMeta.clear();
 	    inputRowMeta.addRowMeta(rowMeta);
@@ -441,6 +449,9 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface,
         getSelectFields(inputRowMeta, name);
 		getDeleteFields(inputRowMeta);
 		getMetadataFields(inputRowMeta, name);
+	  } catch(Exception e) {
+	    throw new KettleStepException(e);
+	  }
 	}
 
 	public String getXML()

@@ -35,6 +35,7 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -412,110 +413,110 @@ public class Validator extends BaseStep implements StepInterface
 		}
 		return true;
 	}
-
-	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
-	{
-		meta=(ValidatorMeta)smi;
-		data=(ValidatorData)sdi;
-		
-		if (super.init(smi, sdi))
-		{
-		    //  initialize arrays of validation data
-			data.constantsMeta = new ValueMetaInterface[meta.getValidations().size()];
-			data.minimumValueAsString = new String[meta.getValidations().size()];
-            data.maximumValueAsString = new String[meta.getValidations().size()];
-            data.fieldsMinimumLengthAsInt = new int[meta.getValidations().size()];
-            data.fieldsMaximumLengthAsInt = new int[meta.getValidations().size()];
-            data.minimumValue = new Object[meta.getValidations().size()];
-			data.maximumValue = new Object[meta.getValidations().size()];
-			data.listValues = new Object[meta.getValidations().size()][];
-			data.errorCode = new String[meta.getValidations().size()];
-		    data.errorDescription = new String[meta.getValidations().size()];
-		    data.conversionMask = new String[meta.getValidations().size()];
-		    data.decimalSymbol = new String[meta.getValidations().size()];
-		    data.groupingSymbol = new String[meta.getValidations().size()];
-		    data.maximumLength = new String[meta.getValidations().size()];
-		    data.minimumLength = new String[meta.getValidations().size()];
-		    data.startString = new String[meta.getValidations().size()];
-		    data.endString = new String[meta.getValidations().size()];
-		    data.startStringNotAllowed = new String[meta.getValidations().size()];
-		    data.endStringNotAllowed = new String[meta.getValidations().size()];
-		    data.regularExpression = new String[meta.getValidations().size()];
-		    data.regularExpressionNotAllowed = new String[meta.getValidations().size()];
-		    data.patternExpected = new Pattern[meta.getValidations().size()];
-            data.patternDisallowed = new Pattern[meta.getValidations().size()];
-            
-			for (int i=0;i<meta.getValidations().size();i++) {
-			    
-				Validation field = meta.getValidations().get(i);
-				data.constantsMeta[i] = new ValueMeta(field.getFieldName(), field.getDataType());
-				data.constantsMeta[i].setConversionMask(field.getConversionMask());
-				data.constantsMeta[i].setDecimalSymbol(field.getDecimalSymbol());
-				data.constantsMeta[i].setGroupingSymbol(field.getGroupingSymbol());
-		        data.errorCode[i] = environmentSubstitute(Const.NVL(field.getErrorCode(), ""));
-		        data.errorDescription[i] = environmentSubstitute(Const.NVL(field.getErrorDescription(), ""));
-		        data.conversionMask[i] = environmentSubstitute(Const.NVL(field.getConversionMask(), ""));
-		        data.decimalSymbol[i] = environmentSubstitute(Const.NVL(field.getDecimalSymbol(), ""));
-		        data.groupingSymbol[i] = environmentSubstitute(Const.NVL(field.getGroupingSymbol(), ""));
-		        data.maximumLength[i] = environmentSubstitute(Const.NVL(field.getMaximumLength(), ""));
-		        data.minimumLength[i] = environmentSubstitute(Const.NVL(field.getMinimumLength(), ""));
-		        data.maximumValueAsString[i] = environmentSubstitute(Const.NVL(field.getMaximumValue(), ""));
-                data.minimumValueAsString[i] = environmentSubstitute(Const.NVL(field.getMinimumValue(), ""));
-                data.startString[i] = environmentSubstitute(Const.NVL(field.getStartString(), ""));
-		        data.endString[i] = environmentSubstitute(Const.NVL(field.getEndString(), ""));
-		        data.startStringNotAllowed[i] = environmentSubstitute(Const.NVL(field.getStartStringNotAllowed(), ""));
-		        data.endStringNotAllowed[i] = environmentSubstitute(Const.NVL(field.getEndStringNotAllowed(), ""));
-		        data.regularExpression[i] = environmentSubstitute(Const.NVL(field.getRegularExpression(), ""));
-		        data.regularExpressionNotAllowed[i] = environmentSubstitute(Const.NVL(field.getRegularExpressionNotAllowed(), ""));
-				
-				ValueMetaInterface stringMeta = data.constantsMeta[i].clone();
-				stringMeta.setType(ValueMetaInterface.TYPE_STRING);
-				
-				try {
-					data.minimumValue[i] = Const.isEmpty(data.minimumValueAsString[i]) ? null : data.constantsMeta[i].convertData(stringMeta, data.minimumValueAsString[i]);
-                    data.maximumValue[i] = Const.isEmpty(data.maximumValueAsString[i]) ? null : data.constantsMeta[i].convertData(stringMeta, data.maximumValueAsString[i]);
-                    
-                    try {
-                        data.fieldsMinimumLengthAsInt[i] = Integer.valueOf(Const.NVL(data.minimumLength[i], "-1"));
-                    }
-                    catch (NumberFormatException nfe) {
-                        throw new KettleValueException("Caught a number format exception converting minimum length with value "+data.minimumLength[i]+" to an int.", nfe);
-                    }
-                    
-                    try {
-                        data.fieldsMaximumLengthAsInt[i] = Integer.valueOf(Const.NVL(data.maximumLength[i], "-1"));
-                    }
-                    catch (NumberFormatException nfe) {
-                        throw new KettleValueException("Caught a number format exception converting minimum length with value "+data.maximumLength[i]+" to an int.", nfe);
-                    }
-                    
-                    int listSize = field.getAllowedValues()!=null ? field.getAllowedValues().length : 0;
-					data.listValues[i] = new Object[listSize];
-					for (int s=0;s<listSize;s++) {
-						data.listValues[i][s] = Const.isEmpty(field.getAllowedValues()[s]) ? null : data.constantsMeta[i].convertData(stringMeta, environmentSubstitute(field.getAllowedValues()[s]));
-					}
-				} catch (KettleValueException e) {
-					if (field.getDataType()==ValueMetaInterface.TYPE_NONE) {
-						logError(BaseMessages.getString(PKG, "Validator.Exception.SpecifyDataType"), e);
-					}
-					else {
-						logError(BaseMessages.getString(PKG, "Validator.Exception.DataConversionErrorEncountered"), e);
-					}
-					return false;
-				}
-				
-				if (!Const.isEmpty(data.regularExpression[i])) {
-					data.patternExpected[i] = Pattern.compile(field.getRegularExpression());
-				}
-				if (!Const.isEmpty(data.regularExpressionNotAllowed[i])) {
-					data.patternDisallowed[i] = Pattern.compile(field.getRegularExpressionNotAllowed());
-				}
-				
-			}
-			
-		    return true;
-		}
-		return false;
-	}
+  
+    public boolean init(StepMetaInterface smi, StepDataInterface sdi) {
+      meta = (ValidatorMeta) smi;
+      data = (ValidatorData) sdi;
+  
+      if (super.init(smi, sdi)) {
+        // initialize arrays of validation data
+        data.constantsMeta = new ValueMetaInterface[meta.getValidations().size()];
+        data.minimumValueAsString = new String[meta.getValidations().size()];
+        data.maximumValueAsString = new String[meta.getValidations().size()];
+        data.fieldsMinimumLengthAsInt = new int[meta.getValidations().size()];
+        data.fieldsMaximumLengthAsInt = new int[meta.getValidations().size()];
+        data.minimumValue = new Object[meta.getValidations().size()];
+        data.maximumValue = new Object[meta.getValidations().size()];
+        data.listValues = new Object[meta.getValidations().size()][];
+        data.errorCode = new String[meta.getValidations().size()];
+        data.errorDescription = new String[meta.getValidations().size()];
+        data.conversionMask = new String[meta.getValidations().size()];
+        data.decimalSymbol = new String[meta.getValidations().size()];
+        data.groupingSymbol = new String[meta.getValidations().size()];
+        data.maximumLength = new String[meta.getValidations().size()];
+        data.minimumLength = new String[meta.getValidations().size()];
+        data.startString = new String[meta.getValidations().size()];
+        data.endString = new String[meta.getValidations().size()];
+        data.startStringNotAllowed = new String[meta.getValidations().size()];
+        data.endStringNotAllowed = new String[meta.getValidations().size()];
+        data.regularExpression = new String[meta.getValidations().size()];
+        data.regularExpressionNotAllowed = new String[meta.getValidations().size()];
+        data.patternExpected = new Pattern[meta.getValidations().size()];
+        data.patternDisallowed = new Pattern[meta.getValidations().size()];
+  
+        for (int i = 0; i < meta.getValidations().size(); i++) {
+  
+          Validation field = meta.getValidations().get(i);
+          data.constantsMeta[i] = new ValueMeta(field.getFieldName(), field.getDataType());
+          data.constantsMeta[i].setConversionMask(field.getConversionMask());
+          data.constantsMeta[i].setDecimalSymbol(field.getDecimalSymbol());
+          data.constantsMeta[i].setGroupingSymbol(field.getGroupingSymbol());
+          data.errorCode[i] = environmentSubstitute(Const.NVL(field.getErrorCode(), ""));
+          data.errorDescription[i] = environmentSubstitute(Const.NVL(field.getErrorDescription(), ""));
+          data.conversionMask[i] = environmentSubstitute(Const.NVL(field.getConversionMask(), ""));
+          data.decimalSymbol[i] = environmentSubstitute(Const.NVL(field.getDecimalSymbol(), ""));
+          data.groupingSymbol[i] = environmentSubstitute(Const.NVL(field.getGroupingSymbol(), ""));
+          data.maximumLength[i] = environmentSubstitute(Const.NVL(field.getMaximumLength(), ""));
+          data.minimumLength[i] = environmentSubstitute(Const.NVL(field.getMinimumLength(), ""));
+          data.maximumValueAsString[i] = environmentSubstitute(Const.NVL(field.getMaximumValue(), ""));
+          data.minimumValueAsString[i] = environmentSubstitute(Const.NVL(field.getMinimumValue(), ""));
+          data.startString[i] = environmentSubstitute(Const.NVL(field.getStartString(), ""));
+          data.endString[i] = environmentSubstitute(Const.NVL(field.getEndString(), ""));
+          data.startStringNotAllowed[i] = environmentSubstitute(Const.NVL(field.getStartStringNotAllowed(), ""));
+          data.endStringNotAllowed[i] = environmentSubstitute(Const.NVL(field.getEndStringNotAllowed(), ""));
+          data.regularExpression[i] = environmentSubstitute(Const.NVL(field.getRegularExpression(), ""));
+          data.regularExpressionNotAllowed[i] = environmentSubstitute(Const.NVL(field.getRegularExpressionNotAllowed(),
+              ""));
+  
+          try {
+            ValueMetaInterface stringMeta = ValueMetaFactory.cloneValueMeta(data.constantsMeta[i],
+                ValueMetaInterface.TYPE_STRING);
+            data.minimumValue[i] = Const.isEmpty(data.minimumValueAsString[i]) ? null : data.constantsMeta[i]
+                .convertData(stringMeta, data.minimumValueAsString[i]);
+            data.maximumValue[i] = Const.isEmpty(data.maximumValueAsString[i]) ? null : data.constantsMeta[i]
+                .convertData(stringMeta, data.maximumValueAsString[i]);
+  
+            try {
+              data.fieldsMinimumLengthAsInt[i] = Integer.valueOf(Const.NVL(data.minimumLength[i], "-1"));
+            } catch (NumberFormatException nfe) {
+              throw new KettleValueException("Caught a number format exception converting minimum length with value "
+                  + data.minimumLength[i] + " to an int.", nfe);
+            }
+  
+            try {
+              data.fieldsMaximumLengthAsInt[i] = Integer.valueOf(Const.NVL(data.maximumLength[i], "-1"));
+            } catch (NumberFormatException nfe) {
+              throw new KettleValueException("Caught a number format exception converting minimum length with value "
+                  + data.maximumLength[i] + " to an int.", nfe);
+            }
+  
+            int listSize = field.getAllowedValues() != null ? field.getAllowedValues().length : 0;
+            data.listValues[i] = new Object[listSize];
+            for (int s = 0; s < listSize; s++) {
+              data.listValues[i][s] = Const.isEmpty(field.getAllowedValues()[s]) ? null : data.constantsMeta[i]
+                  .convertData(stringMeta, environmentSubstitute(field.getAllowedValues()[s]));
+            }
+          } catch (KettleException e) {
+            if (field.getDataType() == ValueMetaInterface.TYPE_NONE) {
+              logError(BaseMessages.getString(PKG, "Validator.Exception.SpecifyDataType"), e);
+            } else {
+              logError(BaseMessages.getString(PKG, "Validator.Exception.DataConversionErrorEncountered"), e);
+            }
+            return false;
+          }
+  
+          if (!Const.isEmpty(data.regularExpression[i])) {
+            data.patternExpected[i] = Pattern.compile(field.getRegularExpression());
+          }
+          if (!Const.isEmpty(data.regularExpressionNotAllowed[i])) {
+            data.patternDisallowed[i] = Pattern.compile(field.getRegularExpressionNotAllowed());
+          }
+  
+        }
+  
+        return true;
+      }
+      return false;
+    }
 
 }

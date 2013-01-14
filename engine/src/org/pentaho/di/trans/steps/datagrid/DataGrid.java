@@ -28,7 +28,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -81,10 +80,7 @@ public class DataGrid extends BaseStep implements StepInterface
 
         	// Use these metadata values to convert data...
         	//
-        	data.convertMeta = new RowMeta();
-        	for (ValueMetaInterface outputValueMeta : data.outputRowMeta.getValueMetaList()) {
-        	  data.convertMeta.addValueMeta( ValueMetaFactory.cloneValueMeta(outputValueMeta, ValueMetaInterface.TYPE_STRING));
-        	}
+        	data.convertMeta = data.outputRowMeta.cloneToType(ValueMetaInterface.TYPE_STRING);
         }
         
         Object[] outputRowData = RowDataUtil.allocateRowData(data.outputRowMeta.size());

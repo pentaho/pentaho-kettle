@@ -47,6 +47,7 @@ import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -323,15 +324,14 @@ public class GetXMLData extends BaseStep implements StepInterface
 	            data.totalpreviousfields=data.inputRowMeta.size();
 
 				// Create convert meta-data objects that will contain Date & Number formatters
-	            data.convertRowMeta = data.outputRowMeta.clone();
-	            for (int i=0;i<data.convertRowMeta.size();i++) data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
+	            data.convertRowMeta = new RowMeta();
+	            for (ValueMetaInterface valueMeta : data.convertRowMeta.getValueMetaList()) {
+	              data.convertRowMeta.addValueMeta( ValueMetaFactory.cloneValueMeta(valueMeta, ValueMetaInterface.TYPE_STRING) );
+	            }
 	  
 	            // For String to <type> conversions, we allocate a conversion meta data row as well...
 				//
-				data.convertRowMeta = data.outputRowMeta.clone();
-				for (int i=0;i<data.convertRowMeta.size();i++) {
-					data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);            
-				}
+				data.convertRowMeta = data.outputRowMeta.cloneToType(ValueMetaInterface.TYPE_STRING);
 				
 				// Check is XML field is provided
 				if (Const.isEmpty(meta.getXMLField()))
@@ -643,15 +643,9 @@ public class GetXMLData extends BaseStep implements StepInterface
 			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 			
 			// Create convert meta-data objects that will contain Date & Number formatters
-            data.convertRowMeta = data.outputRowMeta.clone();
-            for (int i=0;i<data.convertRowMeta.size();i++) data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
-  
             // For String to <type> conversions, we allocate a conversion meta data row as well...
 			//
-			data.convertRowMeta = data.outputRowMeta.clone();
-			for (int i=0;i<data.convertRowMeta.size();i++) {
-				data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);            
-			}
+            data.convertRowMeta = data.outputRowMeta.cloneToType(ValueMetaInterface.TYPE_STRING);
 		}
 		 // Grab a row
 		Object[] r=getXMLRow();

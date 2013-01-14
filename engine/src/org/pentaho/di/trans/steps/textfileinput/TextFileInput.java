@@ -924,8 +924,7 @@ public class TextFileInput extends BaseStep implements StepInterface
             meta.getFields(data.outputRowMeta, getStepname(), infoStep, null, this); // get the metadata populated.  Simple and easy.
             // Create convert meta-data objects that will contain Date & Number formatters
             //
-            data.convertRowMeta = data.outputRowMeta.clone();
-            for (int i=0;i<data.convertRowMeta.size();i++) data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
+            data.convertRowMeta = data.outputRowMeta.cloneToType(ValueMetaInterface.TYPE_STRING);
 
             
             handleMissingFiles();

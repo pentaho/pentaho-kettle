@@ -845,20 +845,22 @@ public class LDAPConnection {
           if (!fieldsl.contains(fieldName)) {
             fieldsl.add(fieldName);
 
-            // Get fieldname
-            ValueMetaInterface value = new ValueMeta(fieldName);
-
             String attributeValue = attr.get().toString();
-            // Try to get the Type
+            int valueType;
+            
+            // Try to determine the data type
+            //
             if (IsDate(attributeValue)) {
-              value.setType(ValueMeta.TYPE_DATE);
+              valueType = ValueMeta.TYPE_DATE;
             } else if (IsInteger(attributeValue)) {
-              value.setType(ValueMeta.TYPE_INTEGER);
+              valueType=ValueMeta.TYPE_INTEGER;
             } else if (IsNumber(attributeValue)) {
-              value.setType(ValueMeta.TYPE_NUMBER);
+              valueType=ValueMeta.TYPE_NUMBER;
             } else {
-              value.setType(ValueMeta.TYPE_STRING);
+              valueType=ValueMeta.TYPE_STRING;
             }
+            
+            ValueMetaInterface value = new ValueMeta(fieldName, valueType);
             fields.addValueMeta(value);
           }
         }

@@ -334,8 +334,11 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface
 	        {
 	            if (!Const.isEmpty(fieldName[i]))
 	            {
-	                ValueMetaInterface v=new ValueMeta(fieldName[i], fieldType[i]);
-	                if (v.getType()==ValueMetaInterface.TYPE_NONE) v.setType(ValueMetaInterface.TYPE_STRING);
+	                int valueType = fieldType[i];
+	                if (valueType==ValueMetaInterface.TYPE_NONE) {
+	                  valueType = ValueMetaInterface.TYPE_STRING;
+	                }
+	                ValueMetaInterface v=new ValueMeta(fieldName[i], valueType);
 	                v.setLength(fieldLength[i]);
 	                v.setPrecision(fieldPrecision[i]);
 	                v.setOrigin(origin);

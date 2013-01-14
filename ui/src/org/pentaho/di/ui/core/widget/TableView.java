@@ -1167,7 +1167,7 @@ public class TableView extends Composite {
         rowMeta.addValueMeta(valueMeta);
       }
 
-      final RowMetaInterface sourceRowMeta = rowMeta.clone();
+      final RowMetaInterface sourceRowMeta = rowMeta.cloneToType(ValueMetaInterface.TYPE_STRING);
       final RowMetaInterface conversionRowMeta = rowMeta.clone();
 
       // Set it all to string...
@@ -1176,18 +1176,14 @@ public class TableView extends Composite {
       //
       for (int i = 0; i < sourceRowMeta.size(); i++) {
         ValueMetaInterface sourceValueMeta = sourceRowMeta.getValueMeta(i);
-        sourceValueMeta.setType(ValueMetaInterface.TYPE_STRING);
         sourceValueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
 
         ValueMetaInterface conversionMetaData = conversionRowMeta.getValueMeta(i);
         conversionMetaData.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
-        sourceRowMeta.getValueMeta(i).setConversionMetadata(conversionMetaData); // Meaning:
-                                                                                 // this
-                                                                                 // string
-                                                                                 // comes
-                                                                                 // from
-                                                                                 // an
-                                                                                 // Integer/Number/Date/etc.
+
+        // Meaning: this string comes from an Integer/Number/Date/etc.
+        //
+        sourceRowMeta.getValueMeta(i).setConversionMetadata(conversionMetaData); 
       }
 
       // Now populate a list of data rows...

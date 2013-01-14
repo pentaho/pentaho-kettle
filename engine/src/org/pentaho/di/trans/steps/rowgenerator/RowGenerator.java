@@ -30,12 +30,14 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -68,7 +70,7 @@ public class RowGenerator extends BaseStep implements StepInterface
 		data=(RowGeneratorData)stepDataInterface;
 	}
 	
-    public static final RowMetaAndData buildRow(RowGeneratorMeta meta, List<CheckResultInterface> remarks, String origin)
+    public static final RowMetaAndData buildRow(RowGeneratorMeta meta, List<CheckResultInterface> remarks, String origin) throws KettlePluginException
     {
         RowMetaInterface rowMeta=new RowMeta();
         Object[] rowData = RowDataUtil.allocateRowData(meta.getFieldName().length);
@@ -87,9 +89,7 @@ public class RowGenerator extends BaseStep implements StepInterface
                 valueMeta.setDecimalSymbol(meta.getDecimal()[i]);
                 valueMeta.setOrigin(origin);
 
-                ValueMetaInterface stringMeta = valueMeta.clone();
-                stringMeta.setType(ValueMetaInterface.TYPE_STRING);
-                
+                ValueMetaInterface stringMeta = ValueMetaFactory.cloneValueMeta(valueMeta, ValueMetaInterface.TYPE_STRING);
                 
                 if(meta.isSetEmptyString() != null && meta.isSetEmptyString()[i])
                 {
@@ -207,6 +207,7 @@ public class RowGenerator extends BaseStep implements StepInterface
 
     public boolean init(StepMetaInterface smi, StepDataInterface sdi)
     {
+      try {
         meta=(RowGeneratorMeta)smi;
         data=(RowGeneratorData)sdi;
         
@@ -239,6 +240,11 @@ public class RowGenerator extends BaseStep implements StepInterface
             return true;
         }
         return false;
+      } catch(Exception e) {
+        setErrors(1L);
+        logError("Error initializing step", e);
+        return false;
+      }
     }
     
     @Override

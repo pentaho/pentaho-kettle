@@ -164,6 +164,9 @@ public class MessagesSourceCrawler {
 	  // System.out.println("Adding key occurrence : folder="+occ.getSourceFolder()+", pkg="+occ.getMessagesPackage()+", key="+occ.getKey());
 	  
 	  String sourceFolder = occ.getSourceFolder();
+	  if (sourceFolder==null) {
+	    throw new RuntimeException("No source folder found for key: "+occ.getKey()+" in package "+occ.getMessagesPackage());
+	  }
 	  String messagesPackage = occ.getMessagesPackage();
 	  
 	  // Do we have a map for the source folders?

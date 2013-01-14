@@ -38,6 +38,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -281,6 +282,7 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public void getFields(RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
+	  try {
 		for (int i=0;i<fieldDefinition.length;i++) {
 			FixedFileInputField field = fieldDefinition[i];
 			
@@ -298,8 +300,7 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 			
 			// In case we want to convert Strings...
 			//
-			ValueMetaInterface storageMetadata = valueMeta.clone();
-			storageMetadata.setType(ValueMetaInterface.TYPE_STRING);
+			ValueMetaInterface storageMetadata = ValueMetaFactory.cloneValueMeta(valueMeta, ValueMetaInterface.TYPE_STRING);
 			storageMetadata.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
 			
 			valueMeta.setStorageMetadata(storageMetadata);
@@ -308,6 +309,9 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 			
 			rowMeta.addValueMeta(valueMeta);
 		}
+	  } catch(Exception e) {
+	    throw new KettleStepException(e);
+	  }
 	}
 	
 	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)

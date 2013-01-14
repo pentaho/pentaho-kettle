@@ -47,6 +47,7 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -410,25 +411,28 @@ public class EnterValueDialog extends Dialog {
   }
 
   private ValueMetaAndData getValue(String valuename) throws KettleValueException {
-    int valtype = ValueMeta.getType(wValueType.getText());
-    ValueMetaAndData val = new ValueMetaAndData(valuename, wInputString.getText());
-
-    ValueMetaInterface valueMeta = val.getValueMeta();
-    Object valueData = val.getValueData();
-
-    valueMeta.setType(valtype);
-    int formatIndex = wFormat.getSelectionIndex();
-    valueMeta.setConversionMask(formatIndex >= 0 ? wFormat.getItem(formatIndex) : wFormat.getText());
-    valueMeta.setLength(Const.toInt(wLength.getText(), -1));
-    valueMeta.setPrecision(Const.toInt(wPrecision.getText(), -1));
-
-    ValueMetaInterface stringValueMeta = new ValueMeta(valuename, ValueMetaInterface.TYPE_STRING);
-    stringValueMeta.setConversionMetadata(valueMeta);
-
-    Object targetData = stringValueMeta.convertDataUsingConversionMetaData(valueData);
-    val.setValueData(targetData);
-
-    return val;
+    try {
+      int valtype = ValueMeta.getType(wValueType.getText());
+      ValueMetaAndData val = new ValueMetaAndData(valuename, wInputString.getText());
+  
+      ValueMetaInterface valueMeta = ValueMetaFactory.cloneValueMeta(val.getValueMeta(), valtype);
+      Object valueData = val.getValueData();
+  
+      int formatIndex = wFormat.getSelectionIndex();
+      valueMeta.setConversionMask(formatIndex >= 0 ? wFormat.getItem(formatIndex) : wFormat.getText());
+      valueMeta.setLength(Const.toInt(wLength.getText(), -1));
+      valueMeta.setPrecision(Const.toInt(wPrecision.getText(), -1));
+  
+      ValueMetaInterface stringValueMeta = new ValueMeta(valuename, ValueMetaInterface.TYPE_STRING);
+      stringValueMeta.setConversionMetadata(valueMeta);
+  
+      Object targetData = stringValueMeta.convertDataUsingConversionMetaData(valueData);
+      val.setValueData(targetData);
+  
+      return val;
+    } catch(Exception e) {
+      throw new KettleValueException(e);
+    }
   }
 
   private void ok() {

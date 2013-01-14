@@ -79,10 +79,7 @@ public class SetValueConstant extends BaseStep implements StepInterface
             
             // For String to <type> conversions, we allocate a conversion meta data row as well...
 			//
-			data.convertRowMeta = data.outputRowMeta.clone();
-			for (int i=0;i<data.convertRowMeta.size();i++) {
-				data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);            
-			}
+			data.convertRowMeta = data.outputRowMeta.cloneToType(ValueMetaInterface.TYPE_STRING);            
 			
 			// Consider only selected fields
 			if(meta.getFieldName()!=null && meta.getFieldName().length>0)

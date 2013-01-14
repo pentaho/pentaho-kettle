@@ -33,6 +33,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -85,12 +86,12 @@ public class GaInputStep extends BaseStep implements StepInterface {
             	// get output and from-string conversion format for each field
                 ValueMetaInterface returnMeta = data.outputRowMeta.getValueMeta(i);
                 
-                ValueMetaInterface conversionMeta = returnMeta.clone();
+                ValueMetaInterface conversionMeta;
                 if (meta.getFeedFieldType()[i].equals(GaInputStepMeta.FIELD_TYPE_CONFIDENCE_INTERVAL)){
-                	conversionMeta.setType(ValueMetaInterface.TYPE_NUMBER);
+                	conversionMeta = ValueMetaFactory.cloneValueMeta(returnMeta, ValueMetaInterface.TYPE_NUMBER);
                 }
                 else{
-                	conversionMeta.setType(ValueMetaInterface.TYPE_STRING);	
+                	conversionMeta = ValueMetaFactory.cloneValueMeta(returnMeta, ValueMetaInterface.TYPE_STRING);	
                 }
                 
                 conversionMeta.setConversionMask(meta.getConversionMask()[i]);

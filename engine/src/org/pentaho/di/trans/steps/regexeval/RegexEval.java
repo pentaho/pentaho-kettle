@@ -134,11 +134,8 @@ public class RegexEval extends BaseStep implements StepInterface {
 			}
 
 			// Now create objects to do string to data type conversion...
-			data.conversionRowMeta = data.outputRowMeta.clone();
-			for (ValueMetaInterface valueMeta : data.conversionRowMeta.getValueMetaList()) {
-				valueMeta.setType(ValueMetaInterface.TYPE_STRING);
-			}
-
+			//
+			data.conversionRowMeta = data.outputRowMeta.cloneToType(ValueMetaInterface.TYPE_STRING);
 		}
 
 		// reserve room

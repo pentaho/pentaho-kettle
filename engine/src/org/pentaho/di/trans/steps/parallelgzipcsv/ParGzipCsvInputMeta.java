@@ -38,6 +38,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -296,6 +297,7 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
 	
 	public void getFields(RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
+	  try {
 		rowMeta.clear(); // Start with a clean slate, eats the input
 		
 		for (int i=0;i<inputFields.length;i++) {
@@ -318,8 +320,7 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
 			// Preview will show the data the same way as we read it.
 			// This layout is then taken further down the road by the metadata through the transformation.
 			//
-			ValueMetaInterface storageMetadata = valueMeta.clone();
-			storageMetadata.setType(ValueMetaInterface.TYPE_STRING);
+			ValueMetaInterface storageMetadata = ValueMetaFactory.cloneValueMeta(valueMeta, ValueMetaInterface.TYPE_STRING);
 			storageMetadata.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
 			storageMetadata.setLength(-1,-1); // we don't really know the lengths of the strings read in advance.
 			valueMeta.setStorageMetadata(storageMetadata);
@@ -345,6 +346,9 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
 			rowNumMeta.setOrigin(origin);
 			rowMeta.addValueMeta(rowNumMeta);
 		}
+	  } catch(Exception e) {
+	    throw new KettleStepException(e);
+	  }
 		
 	}
 	

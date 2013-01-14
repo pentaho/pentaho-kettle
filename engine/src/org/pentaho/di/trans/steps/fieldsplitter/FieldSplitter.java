@@ -57,7 +57,7 @@ public class FieldSplitter extends BaseStep implements StepInterface
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
 	
-	private Object[] splitField(Object[] r) throws KettleValueException
+	private Object[] splitField(Object[] r) throws KettleException
 	{
 		if (first)
 		{
@@ -85,10 +85,7 @@ public class FieldSplitter extends BaseStep implements StepInterface
 			
 			// Now create objects to do string to data type conversion...
 			//
-			data.conversionMeta = data.outputMeta.clone();
-			for (ValueMetaInterface valueMeta : data.conversionMeta.getValueMetaList()) {
-				valueMeta.setType(ValueMetaInterface.TYPE_STRING);
-			}
+			data.conversionMeta = data.outputMeta.cloneToType(ValueMetaInterface.TYPE_STRING);
 			
 			data.delimiter = environmentSubstitute(meta.getDelimiter());
 		}

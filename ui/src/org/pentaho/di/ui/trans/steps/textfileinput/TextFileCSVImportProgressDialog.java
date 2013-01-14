@@ -167,8 +167,7 @@ public class TextFileCSVImportProgressDialog
         	valueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
         }
 
-        RowMetaInterface convertRowMeta = outputRowMeta.clone();
-        for (int i=0;i<convertRowMeta.size();i++) convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
+        RowMetaInterface convertRowMeta = outputRowMeta.cloneToType(ValueMetaInterface.TYPE_STRING);
 
         // How many null values?
         int nrnull[] = new int[nrfields]; // How many times null value?

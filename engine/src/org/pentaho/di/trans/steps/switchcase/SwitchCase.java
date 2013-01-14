@@ -29,6 +29,7 @@ import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -189,8 +190,11 @@ public class SwitchCase extends BaseStep implements StepInterface
         	data.valueMeta.setGroupingSymbol(meta.getCaseValueGroup());
         	data.valueMeta.setDecimalSymbol(meta.getCaseValueDecimal());
         	
-        	data.stringValueMeta = data.valueMeta.clone();
-        	data.stringValueMeta.setType(ValueMetaInterface.TYPE_STRING);
+        	try {
+        	  data.stringValueMeta = ValueMetaFactory.cloneValueMeta(data.valueMeta, ValueMetaInterface.TYPE_STRING);
+        	} catch(Exception e) {
+        	  logError(BaseMessages.getString(PKG, "SwitchCase.Log.UnexpectedError", e));
+        	}
         	
         	return true;
         }

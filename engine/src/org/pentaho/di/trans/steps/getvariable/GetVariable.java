@@ -92,10 +92,7 @@ public class GetVariable extends BaseStep implements StepInterface
             
             // Create a copy of the output row metadata to do the data conversion...
             //
-            data.conversionMeta = data.outputRowMeta.clone();
-            for (ValueMetaInterface valueMeta : data.conversionMeta.getValueMetaList()) {
-            	valueMeta.setType(ValueMetaInterface.TYPE_STRING);
-            }
+            data.conversionMeta = data.outputRowMeta.cloneToType(ValueMetaInterface.TYPE_STRING);
 
             // Add the variables to the row...
             //

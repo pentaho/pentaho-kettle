@@ -73,6 +73,10 @@ public class MessagesStore extends ChangedFlag {
     this.locale = locale;
     this.messagesPackage = messagesPackage;
     this.sourcePackageOccurrences = sourcePackageOccurrences;
+    
+    if (sourceFolder==null) {
+      throw new RuntimeException("Source folder can not be null, messages package : "+messagesPackage+", locale: "+locale);
+    }
   }
 
   public void read(List<String> directories) throws KettleException {

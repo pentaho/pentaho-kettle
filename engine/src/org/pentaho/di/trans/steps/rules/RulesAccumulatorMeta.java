@@ -135,11 +135,11 @@ public class RulesAccumulatorMeta extends BaseStepMeta implements StepMetaInterf
 
       ValueMetaInterface vm = null;
       for (int i = 0; i < nrfields; i++) {
-        vm = new ValueMeta();
         Node fnode = XMLHandler.getSubNodeByNr(fields, StorageKeys.SUBNODE_FIELD.toString(), i);
 
-        vm.setName(XMLHandler.getTagValue(fnode, StorageKeys.COLUMN_NAME.toString()));
-        vm.setType(ValueMeta.getType(XMLHandler.getTagValue(fnode, StorageKeys.COLUMN_TYPE.toString())));
+        String name = XMLHandler.getTagValue(fnode, StorageKeys.COLUMN_NAME.toString());
+        int type = ValueMeta.getType(XMLHandler.getTagValue(fnode, StorageKeys.COLUMN_TYPE.toString()));
+        vm = new ValueMeta(name, type);
 
         getRuleResultColumns().add(vm);
       }
@@ -178,11 +178,11 @@ public class RulesAccumulatorMeta extends BaseStepMeta implements StepMetaInterf
 
     ValueMetaInterface vm = null;
     for (int i = 0; i < nrfields; i++) {
-      vm = new ValueMeta();
 
-      vm.setName(rep.getStepAttributeString(idStep, i, StorageKeys.COLUMN_NAME.toString()));
-      vm.setType(ValueMeta.getType(rep.getStepAttributeString(idStep, i, StorageKeys.COLUMN_TYPE.toString())));
+      String name = rep.getStepAttributeString(idStep, i, StorageKeys.COLUMN_NAME.toString());
+      int type = ValueMeta.getType(rep.getStepAttributeString(idStep, i, StorageKeys.COLUMN_TYPE.toString()));
 
+      vm = new ValueMeta(name, type);
       getRuleResultColumns().add(vm);
     }
 

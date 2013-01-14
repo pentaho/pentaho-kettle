@@ -225,19 +225,20 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
           fields.add(field);
           if (!field.isLogField()) {
             ColumnInfo column = new ColumnInfo(field.getName(), ColumnInfo.COLUMN_TYPE_TEXT, false, true);
-            ValueMetaInterface valueMeta = new ValueMeta(field.getFieldName(), field.getDataType(), field.getLength(), -1);
-
+            int valueType = field.getDataType();
+            String conversionMask = null;
+            
             switch (field.getDataType()) {
               case ValueMetaInterface.TYPE_INTEGER:
-                valueMeta.setConversionMask("###,###,##0"); //$NON-NLS-1$
+                conversionMask = "###,###,##0";
                 column.setAllignement(SWT.RIGHT);
                 break;
               case ValueMetaInterface.TYPE_DATE:
-                valueMeta.setConversionMask("yyyy/MM/dd HH:mm:ss"); //$NON-NLS-1$
+                conversionMask = "yyyy/MM/dd HH:mm:ss";
                 column.setAllignement(SWT.CENTER);
                 break;
               case ValueMetaInterface.TYPE_NUMBER:
-                valueMeta.setConversionMask(" ###,###,##0.00;-###,###,##0.00"); //$NON-NLS-1$
+                conversionMask = " ###,###,##0.00;-###,###,##0.00";
                 column.setAllignement(SWT.RIGHT);
                 break;
               case ValueMetaInterface.TYPE_STRING:
@@ -249,10 +250,15 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
                   if (!databaseMeta.supportsBooleanDataType()) {
                     // Boolean gets converted to String!
                     //
-                    valueMeta.setType(ValueMetaInterface.TYPE_STRING);
+                    valueType = ValueMetaInterface.TYPE_STRING;
                   }
                 }
                 break;
+            }
+            
+            ValueMetaInterface valueMeta = new ValueMeta(field.getFieldName(), valueType, field.getLength(), -1);
+            if (conversionMask!=null) {
+              valueMeta.setConversionMask(conversionMask);
             }
             column.setValueMeta(valueMeta);
             columnList.add(column);

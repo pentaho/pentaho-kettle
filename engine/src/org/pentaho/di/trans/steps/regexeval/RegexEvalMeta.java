@@ -31,11 +31,13 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -463,63 +465,72 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
         allocate(0);
     }
 
-    public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface info[], StepMeta nextStep,
-            VariableSpace space) throws KettleStepException
-    {
-        if (!Const.isEmpty(resultfieldname))
-        {
-            ValueMetaInterface v = null;
-          
-        	if (replacefields){
-        		v = inputRowMeta.searchValueMeta(resultfieldname);
-        	}
-        	
-        	if ( v != null ) {
-            v.setOrigin(name);
-        		v.setType(ValueMeta.TYPE_BOOLEAN);
-        	} else {
-            	v = new ValueMeta(space.environmentSubstitute(resultfieldname), ValueMeta.TYPE_BOOLEAN);
-                v.setOrigin(name);
-            inputRowMeta.addValueMeta(v);
+  public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException {
+    try {
+      if (!Const.isEmpty(resultfieldname)) {
+        if (replacefields) {
+          int replaceIndex = inputRowMeta.indexOfValue(resultfieldname);
+          if (replaceIndex < 0) {
+            throw new KettleStepException(BaseMessages.getString(PKG, "RegexEvalMeta.Exception.ResultFieldToReplaceNotFound", resultfieldname));
+          }
+          ValueMetaInterface valueMeta = inputRowMeta.getValueMeta(replaceIndex);
+          ValueMetaInterface replaceMeta = ValueMetaFactory.cloneValueMeta(valueMeta, ValueMetaInterface.TYPE_BOOLEAN);
+          replaceMeta.setOrigin(name);
+          inputRowMeta.setValueMeta(replaceIndex, replaceMeta);
+        } else {
+          ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(resultfieldname), ValueMeta.TYPE_BOOLEAN);
+          v.setOrigin(name);
+          inputRowMeta.addValueMeta(v);
         }
-        }
-        
-        if (allowcapturegroups == true)
-        {
-            for (int i = 0; i < fieldName.length; i++)
-            {
-            	if ( fieldName[i] == null || fieldName[i].length() == 0)
-            		continue;
-            	
-        		ValueMetaInterface v = null;
+      }
 
-            	if (replacefields){
-            		v = inputRowMeta.searchValueMeta(fieldName[i]);
-            	}
-        		if ( v != null ){
-                   	setValueMeta(v, i, name);
-        		} else {
-                    v = new ValueMeta(fieldName[i]);
-                	setValueMeta(v, i, name);
-                    inputRowMeta.addValueMeta(v);
-                }
+      if (allowcapturegroups == true) {
+        for (int i = 0; i < fieldName.length; i++) {
+          if (Const.isEmpty(fieldName[i])) {
+            continue;
+          }
+
+          if (replacefields) {
+            int replaceIndex = inputRowMeta.indexOfValue(fieldName[i]);
+            if (replaceIndex < 0) {
+              throw new KettleStepException(BaseMessages.getString(PKG, "RegexEvalMeta.Exception.ResultFieldToReplaceNotFound", fieldName[i]));
             }
+            ValueMetaInterface valueMeta = inputRowMeta.getValueMeta(replaceIndex);
+            ValueMetaInterface replaceMeta = constructValueMeta(valueMeta, fieldName[i], i, name);
+            inputRowMeta.setValueMeta(replaceIndex, replaceMeta);
+          } else {
+            ValueMetaInterface valueMeta = constructValueMeta(null, fieldName[i], i, name);
+            inputRowMeta.addValueMeta(valueMeta);
+          }
         }
+      }
+    } catch (Exception e) {
+      throw new KettleStepException(e);
     }
-    
-    private void setValueMeta(ValueMetaInterface v, int i, String name){
-                    int type = fieldType[i];
-                    if (type == ValueMetaInterface.TYPE_NONE) type = ValueMetaInterface.TYPE_STRING;
-        v.setType(type);
-                    v.setLength(fieldLength[i]);
-                    v.setPrecision(fieldPrecision[i]);
-                    v.setOrigin(name);
-                    v.setConversionMask(fieldFormat[i]);
-                    v.setDecimalSymbol(fieldDecimal[i]);
-                    v.setGroupingSymbol(fieldGroup[i]);
-                    v.setCurrencySymbol(fieldCurrency[i]);
-                    v.setTrimType(fieldTrimType[i]);
-                }
+  }
+  
+  private ValueMetaInterface constructValueMeta(ValueMetaInterface sourceValueMeta, String fieldName, int i, String name) throws KettlePluginException {
+    int type = fieldType[i];
+    if (type == ValueMetaInterface.TYPE_NONE) {
+      type = ValueMetaInterface.TYPE_STRING;
+    }
+    ValueMetaInterface v;
+    if (sourceValueMeta == null) {
+      v = ValueMetaFactory.createValueMeta(fieldName, type);
+    } else {
+      v = ValueMetaFactory.cloneValueMeta(sourceValueMeta, type);
+    }
+    v.setLength(fieldLength[i]);
+    v.setPrecision(fieldPrecision[i]);
+    v.setOrigin(name);
+    v.setConversionMask(fieldFormat[i]);
+    v.setDecimalSymbol(fieldDecimal[i]);
+    v.setGroupingSymbol(fieldGroup[i]);
+    v.setCurrencySymbol(fieldCurrency[i]);
+    v.setTrimType(fieldTrimType[i]);
+
+    return v;
+  }
 
     public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters)
             throws KettleXMLException

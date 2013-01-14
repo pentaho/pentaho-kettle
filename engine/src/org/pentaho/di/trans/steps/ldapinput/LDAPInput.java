@@ -77,11 +77,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 	            
 	            // Create convert meta-data objects that will contain Date & Number formatters
 	            //
-	
-				data.convertRowMeta = data.outputRowMeta.clone();
-				for (int i=0;i<data.convertRowMeta.size();i++) {
-						data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);           
-				}
+				data.convertRowMeta = data.outputRowMeta.cloneToType(ValueMetaInterface.TYPE_STRING);           
 	
 			    // Search records once
 				search(data.staticSearchBase, data.staticFilter);
@@ -161,11 +157,8 @@ public class LDAPInput extends BaseStep implements StepInterface
             
             // Create convert meta-data objects that will contain Date & Number formatters
             //
+			data.convertRowMeta = data.outputRowMeta.cloneToType(ValueMetaInterface.TYPE_STRING);           
 
-			data.convertRowMeta = data.outputRowMeta.clone();
-			for (int i=0;i<data.convertRowMeta.size();i++) {
-				data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);           
-			}
 			if(meta.isDynamicSearch()) {
 				data.indexOfSearchBaseField =getInputRowMeta().indexOfValue(meta.getDynamicSearchFieldName());
 				if (data.indexOfSearchBaseField<0) {
