@@ -1,0 +1,26 @@
+invoice: 1234
+date   : 2010-01-20
+bill-to: 
+    given  : Alexandre
+    family : Dumas
+    address:
+        lines: |
+            Appt 14
+            12 Main Street
+        city    : Rouen
+        state   : France
+        postal  : 76000
+product:
+    - ref         : KH234
+      quantity    : 2
+      description : Basketball
+      price       : 250.00
+    - ref         : PO448
+      quantity    : 1
+      description : Super Hoop
+      price       : 2392.00
+tax  : 678.67
+total: 987.34
+comments: >
+    Please contact Alain
+    @ 345-567-456

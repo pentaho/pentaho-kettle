@@ -61,7 +61,7 @@ public class RunMapping extends TestCase
     {
     	KettleEnvironment.init();
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "test/org/pentaho/di/trans/steps/mapping/filereader/use filereader.ktr", 
+                "engine/test-src/org/pentaho/di/trans/steps/mapping/filereader/use filereader.ktr", 
                 LogLevel.ERROR, 
                 getTargetDatabase(),
                 1000
@@ -76,7 +76,7 @@ public class RunMapping extends TestCase
     {
     	KettleEnvironment.init();
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "test/org/pentaho/di/trans/steps/mapping/filewriter/use filewriter.ktr", 
+                "engine/test-src/org/pentaho/di/trans/steps/mapping/filewriter/use filewriter.ktr", 
                 LogLevel.ERROR, 
                 getTargetDatabase(),
                 1000
@@ -91,7 +91,7 @@ public class RunMapping extends TestCase
     {
     	KettleEnvironment.init();
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "test/org/pentaho/di/trans/steps/mapping/multi_output/use filereader.ktr", 
+                "engine/test-src/org/pentaho/di/trans/steps/mapping/multi_output/use filereader.ktr", 
                 LogLevel.ERROR, 
                 getTargetDatabase(),
                 1000

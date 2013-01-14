@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ProductInformation ExportTime="2010-11-23 23:56:40"
+	ExportContext="german" ContextID="german" WorkspaceID="Test" id="1"
+	parent="0">
+	<Products>
+		<Product id="1" name="Product Group A">
+			<Product id="2" name="Product A" />
+			<Product id="3" name="Product B" />
+		</Product>
+		<Product id="4" name="Product Group B">
+			<Product id="5" name="Product Line Sample X">
+				<Product id="6" name="Product C" />
+				<Product id="7" name="Product D" />
+			</Product>
+			<Product id="8" name="Product Line Sample Y">
+				<Product id="9" name="Product E" />
+				<Product id="10" name="Product F" />
+			</Product>
+		</Product>
+	</Products>
+</ProductInformation>

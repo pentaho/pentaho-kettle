@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name/>
+    <directory>/</directory>
+    <log>
+      <read/>
+      <write/>
+      <input/>
+      <output/>
+      <update/>
+      <connection/>
+      <table/>
+      <use_batchid>Y</use_batchid>
+      <use_logfield>N</use_logfield>
+      </log>
+    <maxdate>
+      <connection/>
+      <table/>
+      <field/>
+      <offset>0.0</offset>
+      <maxdiff>0.0</maxdiff>
+      </maxdate>
+    <size_rowset>1000</size_rowset>
+    <sleep_time_empty>1</sleep_time_empty>
+    <sleep_time_full>1</sleep_time_full>
+    <dependencies>
+      </dependencies>
+  <modified_user>-</modified_user>
+  <modified_date>2006/10/19 12:11:54.453</modified_date>
+    </info>
+  <notepads>
+    </notepads>
+  <connection>
+    <name>H2</name>
+    <server>localhost</server>
+    <type>H2</type>
+    <access>Native</access>
+    <database>samples</database>
+    <port>-1</port>
+    <username>sa</username>
+    <password>Encrypted </password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
+      <attribute><code>MAXIMUM_POOL_SIZE</code><attribute>10</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>-1</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
+  <order>
+  <hop> <from>Get rows from result</from><to>TMP_CHANGELOG</to><enabled>Y</enabled> </hop>  <hop> <from>TMP_CHANGELOG</from><to>New?</to><enabled>Y</enabled> </hop>  <hop> <from>New?</from><to>Table output Mapping</to><enabled>Y</enabled> </hop>  <hop> <from>Table output Mapping</from><to>Insert</to><enabled>Y</enabled> </hop>  <hop> <from>New?</from><to>Update?</to><enabled>Y</enabled> </hop>  <hop> <from>Update?</from><to>Update</to><enabled>Y</enabled> </hop>  <hop> <from>Update?</from><to>Delete?</to><enabled>Y</enabled> </hop>  <hop> <from>Delete?</from><to>Delete</to><enabled>Y</enabled> </hop>  <hop> <from>Delete?</from><to>Sink</to><enabled>Y</enabled> </hop>  </order>
+
+  <step>
+    <name>Delete</name>
+    <type>Delete</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <connection>H2</connection>
+    <commit>0</commit>
+    <lookup>
+      <table>CHANGELOG</table>
+      <key>
+        <name>ID</name>
+        <field>ID</field>
+        <condition>=</condition>
+        <name2/>
+        </key>
+      </lookup>
+    <GUI>
+      <xloc>607</xloc>
+      <yloc>425</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Delete?</name>
+    <type>FilterRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+<send_true_to>Delete</send_true_to>
+<send_false_to>Sink</send_false_to>
+    <compare>
+<condition>
+ <negated>N</negated>
+ <leftvalue>FLAG</leftvalue>
+ <function>=</function>
+ <rightvalue/>
+<value>   <name>constant</name><type>String</type><text>D</text><length>-1</length><precision>-1</precision><isnull>N</isnull>  </value> </condition>
+    </compare>
+    <GUI>
+      <xloc>333</xloc>
+      <yloc>425</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Get rows from result</name>
+    <type>RowsFromResult</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <fields>      <field>        <name>subnr</name>
+        <type>Integer</type>
+        <length>5</length>
+        <precision>0</precision>
+        </field>      </fields>    <GUI>
+      <xloc>111</xloc>
+      <yloc>72</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Insert</name>
+    <type>TableOutput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <connection>H2</connection>
+    <table>CHANGELOG</table>
+    <commit>0</commit>
+    <truncate>N</truncate>
+    <ignore_errors>N</ignore_errors>
+    <use_batch>Y</use_batch>
+    <partitioning_enabled>N</partitioning_enabled>
+    <partitioning_field/>
+    <partitioning_daily>N</partitioning_daily>
+    <partitioning_monthly>Y</partitioning_monthly>
+    <tablename_in_field>N</tablename_in_field>
+    <tablename_field/>
+    <tablename_in_table>Y</tablename_in_table>
+    <return_keys>N</return_keys>
+    <return_field/>
+    <GUI>
+      <xloc>607</xloc>
+      <yloc>169</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>New?</name>
+    <type>FilterRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+<send_true_to>Table output Mapping</send_true_to>
+<send_false_to>Update?</send_false_to>
+    <compare>
+<condition>
+ <negated>N</negated>
+ <leftvalue>FLAG</leftvalue>
+ <function>=</function>
+ <rightvalue/>
+<value>   <name>constant</name><type>String</type><text>N</text><length>-1</length><precision>-1</precision><isnull>N</isnull>  </value> </condition>
+    </compare>
+    <GUI>
+      <xloc>333</xloc>
+      <yloc>169</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Sink</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>333</xloc>
+      <yloc>553</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>TMP_CHANGELOG</name>
+    <type>TableInput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <connection>H2</connection>
+    <sql>SELECT
+  FLAG
+, ID
+, FOO
+, NR
+, SUBNR
+FROM TMP_CHANGELOG
+WHERE subnr = ?
+ORDER BY NR
+</sql>
+    <limit>0</limit>
+    <lookup>Get rows from result</lookup>
+    <execute_each_row>N</execute_each_row>
+    <variables_active>N</variables_active>
+    <GUI>
+      <xloc>196</xloc>
+      <yloc>169</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Table output Mapping</name>
+    <type>SelectValues</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <fields>      <field>        <name>ID</name>
+        <rename>ID</rename>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>      <field>        <name>FOO</name>
+        <rename>FOO</rename>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>      </fields>    <GUI>
+      <xloc>470</xloc>
+      <yloc>169</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Update</name>
+    <type>Update</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <connection>H2</connection>
+    <commit>0</commit>
+    <error_ignored>N</error_ignored>
+    <ignore_flag_field/>
+    <lookup>
+      <table>CHANGELOG</table>
+      <key>
+        <name>ID</name>
+        <field>ID</field>
+        <condition>=</condition>
+        <name2/>
+        </key>
+      <value>
+        <name>FOO</name>
+        <rename>FOO</rename>
+        </value>
+      </lookup>
+    <GUI>
+      <xloc>607</xloc>
+      <yloc>297</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Update?</name>
+    <type>FilterRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+<send_true_to>Update</send_true_to>
+<send_false_to>Delete?</send_false_to>
+    <compare>
+<condition>
+ <negated>N</negated>
+ <leftvalue>FLAG</leftvalue>
+ <function>=</function>
+ <rightvalue/>
+<value>   <name>constant</name><type>String</type><text>C</text><length>-1</length><precision>-1</precision><isnull>N</isnull>  </value> </condition>
+    </compare>
+    <GUI>
+      <xloc>333</xloc>
+      <yloc>297</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+</transformation>

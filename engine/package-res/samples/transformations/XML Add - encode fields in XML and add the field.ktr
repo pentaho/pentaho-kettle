@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name>xml demo</name>
+    <directory>/</directory>
+    <log>
+      <read/>
+      <write/>
+      <input/>
+      <output/>
+      <update/>
+      <connection/>
+      <table/>
+      <use_batchid>Y</use_batchid>
+      <use_logfield>N</use_logfield>
+      </log>
+    <maxdate>
+      <connection/>
+      <table/>
+      <field/>
+      <offset>0.0</offset>
+      <maxdiff>0.0</maxdiff>
+      </maxdate>
+    <size_rowset>1000</size_rowset>
+    <sleep_time_empty>1</sleep_time_empty>
+    <sleep_time_full>1</sleep_time_full>
+    <dependencies>
+      </dependencies>
+  <modified_user>admin</modified_user>
+  <modified_date>2006/10/12 21:32:22.963</modified_date>
+    </info>
+  <notepads>
+    <notepad>
+      <note>Make a collection of Circle and Rectangle objects.
+Then save them in a single XML column</note>
+      <xloc>509</xloc>
+      <yloc>9</yloc>
+      <width>256</width>
+      <heigth>37</heigth>
+      </notepad>
+    <notepad>
+      <note>CHANGE LOG
+-----------------
+
+2006/10/12 - Initial version by David Zverina
+2006/10/13 - Modified by Matt Casters: removed Table Output step, used a dummy instead</note>
+      <xloc>57</xloc>
+      <yloc>378</yloc>
+      <width>455</width>
+      <heigth>76</heigth>
+      </notepad>
+    </notepads>
+  <order>
+  <hop> <from>Generate Rows</from><to>Add sequence</to><enabled>Y</enabled> </hop>  <hop> <from>Add sequence</from><to>Create random shape classes</to><enabled>Y</enabled> </hop>  <hop> <from>Add radius to circles</from><to>Convert circle to XML class</to><enabled>Y</enabled> </hop>  <hop> <from>Convert circle to XML class</from><to>Remove fluff from circles</to><enabled>Y</enabled> </hop>  <hop> <from>Add dimensions to rectangles</from><to>Convert rectangle to XML</to><enabled>Y</enabled> </hop>  <hop> <from>Convert rectangle to XML</from><to>Remove fluff from rectangles</to><enabled>Y</enabled> </hop>  <hop> <from>Create random shape classes</from><to>Split rectangles and circles</to><enabled>Y</enabled> </hop>  <hop> <from>Split rectangles and circles</from><to>Add radius to circles</to><enabled>Y</enabled> </hop>  <hop> <from>Split rectangles and circles</from><to>Add dimensions to rectangles</to><enabled>Y</enabled> </hop>  <hop> <from>Remove fluff from circles</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  <hop> <from>Remove fluff from rectangles</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  </order>
+
+  <step>
+    <name>Add dimensions to rectangles</name>
+    <type>Constant</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <fields>
+      <field>
+        <name>LENGTH</name>
+        <type>Integer</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>6</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>WIDTH</name>
+        <type>Integer</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>4</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      </fields>
+    <GUI>
+      <xloc>244</xloc>
+      <yloc>25</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Add radius to circles</name>
+    <type>Constant</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <fields>
+      <field>
+        <name>RADIUS</name>
+        <type>Integer</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>5</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      </fields>
+    <GUI>
+      <xloc>254</xloc>
+      <yloc>254</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Add sequence</name>
+    <type>Sequence</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+      <valuename>id</valuename>
+      <use_database>N</use_database>
+      <connection/>
+      <seqname>SEQ_</seqname>
+      <use_counter>Y</use_counter>
+      <start_at>1</start_at>
+      <increment_by>1</increment_by>
+      <max_value>9999999</max_value>
+    <GUI>
+      <xloc>139</xloc>
+      <yloc>129</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Convert circle to XML class</name>
+    <type>AddXML</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <encoding>UTF-8</encoding>
+    <valueName>class_data</valueName>
+    <xml_repeat_element>SHAPE</xml_repeat_element>
+    <file>
+      <omitXMLheader>N</omitXMLheader>
+      </file>
+    <fields>
+      <field>
+        <name>SHAPE</name>
+        <element>type</element>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <attribute>Y</attribute>
+        </field>
+      <field>
+        <name>COLOUR</name>
+        <element/>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <attribute>N</attribute>
+        </field>
+      <field>
+        <name>RADIUS</name>
+        <element/>
+        <type>Integer</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <attribute>N</attribute>
+        </field>
+      </fields>
+    <GUI>
+      <xloc>400</xloc>
+      <yloc>253</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Convert rectangle to XML</name>
+    <type>AddXML</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <encoding>UTF-8</encoding>
+    <valueName>class_data</valueName>
+    <xml_repeat_element>SHAPE</xml_repeat_element>
+    <file>
+      <omitXMLheader>N</omitXMLheader>
+      </file>
+    <fields>
+      <field>
+        <name>SHAPE</name>
+        <element>type</element>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <attribute>Y</attribute>
+        </field>
+      <field>
+        <name>COLOUR</name>
+        <element/>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <attribute>N</attribute>
+        </field>
+      <field>
+        <name>WIDTH</name>
+        <element/>
+        <type>Integer</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <attribute>N</attribute>
+        </field>
+      <field>
+        <name>LENGTH</name>
+        <element/>
+        <type>Integer</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <attribute>N</attribute>
+        </field>
+      </fields>
+    <GUI>
+      <xloc>394</xloc>
+      <yloc>24</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Create random shape classes</name>
+    <type>ScriptValue</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <script>A.setValue(Math.floor(Math.random() * 10))
+B.setValue(Math.floor(Math.random() * 10))
+SHAPE.setValue(Math.random()&gt;.5 ? &quot;circle&quot; : &quot;rectangle&quot;);
+COLOUR.setValue(Math.random()&gt;.5 ? &quot;red&quot; : &quot;blue&quot;);
+</script>
+    <fields>      <field>        <name>A</name>
+        <rename>X</rename>
+        <type>Integer</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>      <field>        <name>B</name>
+        <rename>Y</rename>
+        <type>Integer</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>      </fields>    <GUI>
+      <xloc>248</xloc>
+      <yloc>131</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Dummy (do nothing)</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>719</xloc>
+      <yloc>156</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Generate Rows</name>
+    <type>RowGenerator</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <fields>
+      <field>
+        <name>A</name>
+        <type>Integer</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>1</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>B</name>
+        <type>Integer</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>1</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>SHAPE</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>rectangle</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>COLOUR</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>blue</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      </fields>
+    <limit>29</limit>
+    <GUI>
+      <xloc>34</xloc>
+      <yloc>128</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Remove fluff from circles</name>
+    <type>SelectValues</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <fields>      <remove>        <name>A</name>
+        </remove>      <remove>        <name>B</name>
+        </remove>      <remove>        <name>SHAPE</name>
+        </remove>      <remove>        <name>COLOUR</name>
+        </remove>      <remove>        <name>RADIUS</name>
+        </remove>      </fields>    <GUI>
+      <xloc>556</xloc>
+      <yloc>196</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Remove fluff from rectangles</name>
+    <type>SelectValues</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <fields>      <remove>        <name>A</name>
+        </remove>      <remove>        <name>B</name>
+        </remove>      <remove>        <name>SHAPE</name>
+        </remove>      <remove>        <name>COLOUR</name>
+        </remove>      <remove>        <name>LENGTH</name>
+        </remove>      <remove>        <name>WIDTH</name>
+        </remove>      </fields>    <GUI>
+      <xloc>569</xloc>
+      <yloc>73</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Split rectangles and circles</name>
+    <type>FilterRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+<send_true_to>Add radius to circles</send_true_to>
+<send_false_to>Add dimensions to rectangles</send_false_to>
+    <compare>
+<condition>
+ <negated>N</negated>
+ <leftvalue>SHAPE</leftvalue>
+ <function>=</function>
+ <rightvalue/>
+<value>   <name>constant</name><type>String</type><text>circle</text><length>-1</length><precision>-1</precision><isnull>N</isnull>  </value> </condition>
+    </compare>
+    <GUI>
+      <xloc>405</xloc>
+      <yloc>129</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+</transformation>

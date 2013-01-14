@@ -569,9 +569,7 @@ public class ValueDataUtilTest extends TestCase
     }
         
     private ValueMeta createValueMeta(String name, int valueType) {
-    	ValueMeta valueMeta = new ValueMeta();
-    	valueMeta.setName(name);
-    	valueMeta.setType(valueType);
+    	ValueMeta valueMeta = new ValueMeta(name, valueType);
     	return valueMeta;	
     }
 }

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0">
+    <info organisation="${ivy.artifact.group}" module="${package.id}" revision="${project.revision}" />
+    
+    <configurations>
+        <conf name="default"/>
+      <conf name="runtime"/>
+        <conf name="test"          visibility="private"/>
+    </configurations>
+    
+    <publications>
+        <artifact name="${package.id}" type="zip"/>
+    </publications>
+    
+    <dependencies defaultconf="default->default"/>
+</ivy-module>

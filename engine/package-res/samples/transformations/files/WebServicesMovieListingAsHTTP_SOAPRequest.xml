@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns="http://www.ignyte.com/whatsshowing">
+
+  <soapenv:Header/>
+ 
+ <soapenv:Body>
+   
+ <ns:GetTheatersAndMovies>
+          <ns:zipCode>32771</ns:zipCode>
+          <ns:radius>10</ns:radius>
+    </ns:GetTheatersAndMovies>
+
+  </soapenv:Body>
+
+</soapenv:Envelope>
