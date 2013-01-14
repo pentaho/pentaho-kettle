@@ -529,31 +529,33 @@ public class RowMeta implements RowMetaInterface
 
     }
     
-    public RowMeta(DataInputStream inputStream) throws KettleFileException, KettleEOFException, SocketTimeoutException
-    {
-        this();
-        
-        int nr;
-        try
-        {
-            nr = inputStream.readInt();
+    public RowMeta(DataInputStream inputStream) throws KettleFileException, KettleEOFException, SocketTimeoutException {
+      this();
+  
+      int nr;
+      try {
+        nr = inputStream.readInt();
+      } catch (SocketTimeoutException e) {
+        throw e;
+      } catch (EOFException e) {
+        throw new KettleEOFException("End of file while reading the number of metadata values in the row metadata", e);
+      } catch (IOException e) {
+        throw new KettleFileException("Unable to read nr of metadata values: " + e.toString(), e);
+      }
+      
+      for (int i = 0; i < nr; i++) {
+        try {
+          int type = inputStream.readInt();
+          ValueMetaInterface valueMeta = ValueMetaFactory.createValueMeta(type);
+          valueMeta.readMetaData(inputStream);
+          addValueMeta(valueMeta);
+        } catch (EOFException e) {
+          throw new KettleEOFException(e);
+        } catch (Exception e) {
+          throw new KettleFileException(toString() + " : Unable to read row metadata from input stream", e);
         }
-        catch(SocketTimeoutException e)
-        {
-        	throw e;
-        }
-        catch (EOFException e) 
-        {
-        	throw new KettleEOFException("End of file while reading the number of metadata values in the row metadata", e);
-        }
-        catch (IOException e)
-        {
-            throw new KettleFileException("Unable to read nr of metadata values: "+e.toString(), e);
-        }
-        for (int i=0;i<nr;i++)
-        {
-            addValueMeta( new ValueMeta(inputStream) );
-        }
+  
+      }
     }
 
 	public Object[] readData(DataInputStream inputStream) throws KettleFileException, KettleEOFException, SocketTimeoutException

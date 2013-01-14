@@ -2513,12 +2513,39 @@ public class ValueMetaBase implements ValueMetaInterface {
     }
   }
 
+  /**
+   * Create a new Value meta object.  
+   * @param inputStream
+   * @throws KettleFileException
+   * @throws KettleEOFException
+   * @deprecated in favor of a combination of {@link ValueMetaFactory}.createValueMeta() and the loadMetaData() method.
+   */
   public ValueMetaBase(DataInputStream inputStream) throws KettleFileException, KettleEOFException {
     this();
-
     try {
-      // Handle type
       type = inputStream.readInt();
+    } catch (EOFException e) {
+      throw new KettleEOFException(e);
+    } catch (IOException e) {
+      throw new KettleFileException(toString() + " : Unable to read value metadata from input stream", e);
+    }
+    
+    readMetaData(inputStream);
+  }
+
+  /**
+   * Load the attributes of this particular value meta object from the input stream.
+   * Loading the type is not handled here, this should be read from the stream previously!
+   * 
+   * @param inputStream the input stream to read from
+   * @throws KettleFileException In case there was a IO problem
+   * @throws KettleEOFException If we reached the end of the stream
+   */
+  public void readMetaData(DataInputStream inputStream) throws KettleFileException, KettleEOFException {
+
+    // Loading the type is not handled here, this should be read from the stream previously!
+    //
+    try {
 
       // Handle storage type
       storageType = inputStream.readInt();
@@ -2635,6 +2662,8 @@ public class ValueMetaBase implements ValueMetaInterface {
     } catch (IOException e) {
       throw new KettleFileException(toString() + " : Unable to read value metadata from input stream", e);
     }
+
+    
   }
 
   public String getMetaXML() throws IOException {

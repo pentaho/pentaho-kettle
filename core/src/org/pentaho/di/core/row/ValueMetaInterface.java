@@ -735,6 +735,16 @@ public interface ValueMetaInterface extends Cloneable
     public Object readData(DataInputStream inputStream) throws KettleFileException, KettleEOFException, SocketTimeoutException;
     
     /**
+     * Read the attributes of this particular value meta object from the specified input stream.
+     * Loading the type is not handled here, this should be read from the stream previously!
+     * 
+     * @param inputStream the input stream to read from
+     * @throws KettleFileException In case there was a IO problem
+     * @throws KettleEOFException If we reached the end of the stream
+     */
+    public void readMetaData(DataInputStream inputStream) throws KettleFileException, KettleEOFException;
+
+    /**
      * Compare 2 values of the same data type
      * @param data1 the first value
      * @param data2 the second value

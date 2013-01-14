@@ -39,6 +39,11 @@ public class KeyOccurrence implements Comparable<KeyOccurrence> {
 	private FileObject fileObject;
 	
 	/**
+	 * The source folder the messages and java file live in 
+	 */
+	private String sourceFolder;
+	
+	/**
 	 * The location of the messages file, derived from "^import .*Messages;"
 	 */
 	private String messagesPackage;
@@ -87,9 +92,10 @@ public class KeyOccurrence implements Comparable<KeyOccurrence> {
 	 * @param key The i18n key 
 	 * @param arguments The arguments from the source code
 	 */
-	public KeyOccurrence(FileObject fileObject, String messagesPackage, int row, int column, String key, String arguments, String sourceLine) {
+	public KeyOccurrence(FileObject fileObject, String sourceFolder, String messagesPackage, int row, int column, String key, String arguments, String sourceLine) {
 		this();
 		this.fileObject = fileObject;
+		this.sourceFolder = sourceFolder;
 		this.messagesPackage = messagesPackage;
 		this.row = row;
 		this.column = column;
@@ -100,13 +106,15 @@ public class KeyOccurrence implements Comparable<KeyOccurrence> {
 	}
 	
 	public String toString() {
-		return "[key="+key+", messages package="+messagesPackage+"]";
+		return "[source="+sourceFolder+", key="+key+", messages package="+messagesPackage+"]";
 	}
 
 	public boolean equals(Object occ) {
 		if (occ==null) return false;
 		if (this==occ) return true;
-		return key.equals(((KeyOccurrence)occ).key) && messagesPackage.equals(((KeyOccurrence)occ).messagesPackage);
+		return sourceFolder.equals(((KeyOccurrence)occ).sourceFolder) && 
+		       key.equals(((KeyOccurrence)occ).key) && 
+		       messagesPackage.equals(((KeyOccurrence)occ).messagesPackage);
 	}
 	 
     public int compareTo(KeyOccurrence occ) {
@@ -145,7 +153,15 @@ public class KeyOccurrence implements Comparable<KeyOccurrence> {
 		this.messagesPackage = messagesPackage;
 	}
 
-	/**
+	public String getSourceFolder() {
+    return sourceFolder;
+  }
+
+  public void setSourceFolder(String sourceFolder) {
+    this.sourceFolder = sourceFolder;
+  }
+
+  /**
 	 * @return The row on which the occurrence takes place
 	 */
 	public int getRow() {

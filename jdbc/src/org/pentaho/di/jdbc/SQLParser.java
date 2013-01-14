@@ -321,9 +321,7 @@ public class SQLParser {
 	 */
 	private void copyParam(String name, int pos) throws SQLException {
 //		if (params == null) {
-//			throw new SQLException(BaseMessages.getString(PKG, 
-//					"error.parsesql.unexpectedparam", String.valueOf(s)),
-//					"2A000");
+//			throw new SQLException(BaseMessages.getString(PKG, "error.parsesql.unexpectedparam", String.valueOf(s)), "2A000");
 //		}
 //
 //		ParamInfo pi = new ParamInfo(pos, connection.getUseUnicode());
@@ -436,9 +434,7 @@ public class SQLParser {
 				}
 			} else if ("ts".equals(esc)) {
 				if (!getDateTimeField(timestampMask)) {
-					throw new SQLException(BaseMessages.getString(PKG, 
-							"error.parsesql.syntax", "timestamp", String
-									.valueOf(s)), "22019");
+					throw new SQLException(BaseMessages.getString(PKG, "error.parsesql.syntax", "timestamp", String.valueOf(s)), "22019");
 				}
 			} else {
 				throw new SQLException(BaseMessages.getString(PKG, "error.parsesql.badesc",

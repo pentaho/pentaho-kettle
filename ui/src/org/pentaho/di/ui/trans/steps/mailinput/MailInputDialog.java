@@ -847,7 +847,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 	          // ////////////////////////////////
              // START OF Batch Settings GROUP///
             // 
-		    wBatchSettingsGroup = createGroup(wSettingsComp, wIMAPSettings, "MailInputDialog.BatchSettingsGroup.Label");
+		    wBatchSettingsGroup = createGroup(wSettingsComp, wIMAPSettings, BaseMessages.getString(PKG,"MailInputDialog.BatchSettingsGroup.Label"));
 		    
 		    //Batch size
 		    Label wlBatchSize = new Label(wBatchSettingsGroup, SWT.RIGHT);
@@ -1839,10 +1839,10 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 			wEndMessage.setEnabled(enabled);
 		}
 	 
-		private Group createGroup(Composite parentTab, Control top, String labelKey){
+		private Group createGroup(Composite parentTab, Control top, String label){
 			Group group = new Group(parentTab, SWT.SHADOW_NONE);
 			props.setLook(group);
-			group.setText(BaseMessages.getString(PKG,labelKey));
+			group.setText(label);
 			
 			FormLayout groupLayout = new FormLayout();
 			groupLayout.marginWidth = 10;

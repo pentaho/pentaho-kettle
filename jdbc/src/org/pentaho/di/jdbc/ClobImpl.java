@@ -112,9 +112,7 @@ public class ClobImpl implements Clob {
             byte data[] = blobBuffer.getBytes((pos - 1) * 2 + 1, length * 2);
             return new String(data, "UTF-16LE");
         } catch (IOException e) {
-            throw new SQLException(BaseMessages.getString(PKG, "error.generic.ioerror",
-                    e.getMessage()),
-                    "HY000");
+            throw new SQLException(BaseMessages.getString(PKG, "error.generic.ioerror", e.getMessage()), "HY000");
         }
     }
 
@@ -175,8 +173,7 @@ public class ClobImpl implements Clob {
     public int setString(long pos, String str, int offset, int len)
             throws SQLException {
         if (offset < 0 || offset > str.length()) {
-            throw new SQLException(BaseMessages.getString(PKG, 
-                    "error.blobclob.badoffset"), "HY090");
+            throw new SQLException(BaseMessages.getString(PKG, "error.blobclob.badoffset"), "HY090");
         }
         if (len < 0 || offset + len > str.length()) {
             throw new SQLException(

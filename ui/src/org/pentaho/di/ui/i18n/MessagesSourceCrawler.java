@@ -28,9 +28,9 @@ import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -41,16 +41,16 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSelectInfo;
+import org.apache.commons.vfs.FileSelector;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.fileinput.FileInputList;
-import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.i18n.LanguageChoice;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -70,15 +70,11 @@ public class MessagesSourceCrawler {
 	 */
 	private List<String> sourceDirectories;
 
-	/**
-	 * The key occurrences, sorted by
-	 */
-	private List<KeyOccurrence> occurrences;
 	
 	/**
-	 * A map between the package name and all the occurrences in there *
+	 * Source folder - package name - all the key occurrences in there
 	 */
-	private Map<String, List<KeyOccurrence>> packageOccurrences;
+	private Map<String, Map<String, List<KeyOccurrence>>> sourcePackageOccurrences;
 
 	/**
 	 * The file names to avoid (base names)
@@ -101,6 +97,7 @@ public class MessagesSourceCrawler {
 
 	private LogChannelInterface	log;
 
+
 	/**
 	 * @param sourceDirectories
 	 *            The source directories to crawl through
@@ -112,11 +109,10 @@ public class MessagesSourceCrawler {
 		this.log = log;
 		this.sourceDirectories = sourceDirectories;
 		this.singleMessagesFile = singleMessagesFile;
-		this.occurrences = new ArrayList<KeyOccurrence>();
 		this.filesToAvoid = new ArrayList<String>();
 		this.xmlFolders = xmlFolders;
 		
-		this.packageOccurrences = new Hashtable<String, List<KeyOccurrence>>();
+		this.sourcePackageOccurrences = new HashMap<String, Map<String, List<KeyOccurrence>>>();
 		
 		packagePattern = Pattern.compile("^\\s*package .*;[ \t]*$");
 		importPattern = Pattern.compile("^\\s*import [a-z\\._0-9]*\\.[A-Z].*;[ \t]*$");
@@ -138,21 +134,6 @@ public class MessagesSourceCrawler {
 	 */
 	public void setSourceDirectories(List<String> sourceDirectories) {
 		this.sourceDirectories = sourceDirectories;
-	}
-
-	/**
-	 * @return the occurrences
-	 */
-	public List<KeyOccurrence> getOccurrences() {
-		return occurrences;
-	}
-
-	/**
-	 * @param occurrences
-	 *            the occurrences to set
-	 */
-	public void setOccurrences(List<KeyOccurrence> occurrences) {
-		this.occurrences = occurrences;
 	}
 
 	/**
@@ -179,59 +160,75 @@ public class MessagesSourceCrawler {
 	 *            The key occurrence to add
 	 */
 	public void addKeyOccurrence(KeyOccurrence occ) {
-		int index = Collections.binarySearch(occurrences, occ);
-		if (index < 0) {
-			// Add it to the list, keep it sorted...
-			//
-			occurrences.add(-index - 1, occ);
-			
-			// Also add it to the packages occurrences map...
-			//
-			List<KeyOccurrence> list = packageOccurrences.get(occ.getMessagesPackage());
-			if (list==null) {
-				list = new ArrayList<KeyOccurrence>();
-				packageOccurrences.put(occ.getMessagesPackage(), list);
-			}
-			list.add(occ);
-		} else {
-			KeyOccurrence keyOccurrence = occurrences.get(index);
-			keyOccurrence.incrementOccurrences();
-		}
+	  
+	  // System.out.println("Adding key occurrence : folder="+occ.getSourceFolder()+", pkg="+occ.getMessagesPackage()+", key="+occ.getKey());
+	  
+	  String sourceFolder = occ.getSourceFolder();
+	  String messagesPackage = occ.getMessagesPackage();
+	  
+	  // Do we have a map for the source folders?
+	  // If not, add one...
+	  //
+	  Map<String, List<KeyOccurrence>> packageOccurrences = sourcePackageOccurrences.get(sourceFolder);
+	  if (packageOccurrences==null) {
+	    packageOccurrences=new HashMap<String, List<KeyOccurrence>>();
+	    sourcePackageOccurrences.put(sourceFolder, packageOccurrences);
+	  }
+	  
+	  // Do we have a map entry for the occurrences list in the source folder?
+	  // If not, add a list for the messages package
+	  //
+	  List<KeyOccurrence> occurrences = packageOccurrences.get(messagesPackage);
+	  if (occurrences==null) {
+	    occurrences = new ArrayList<KeyOccurrence>();
+	    occurrences.add(occ);
+	    packageOccurrences.put(messagesPackage, occurrences);
+	  } else {
+	    int index = Collections.binarySearch(occurrences, occ);
+	    if (index < 0) {
+	      // Add it to the list, keep it sorted...
+	      //
+	      occurrences.add(-index - 1, occ);
+        } 
+      }
 	}
 
 	public void crawl() throws Exception {
-		String[] dirs = new String[sourceDirectories.size()];
-		String[] masks = new String[sourceDirectories.size()];
-		String[] req = new String[sourceDirectories.size()];
-		boolean[] subdirs = new boolean[sourceDirectories.size()];
-
-		for (int i = 0; i < masks.length; i++) {
-			dirs[i] = sourceDirectories.get(i);
-			masks[i] = ".*\\.java$";
-			req[i] = "N";
-			subdirs[i] = true;
-		}
-		FileInputList fileInputList = FileInputList.createFileList(
-				new Variables(), dirs, masks, req, subdirs);
-
-		/**
-		 * We don't want the Messages.java files, there is nothing in there for
-		 * us.
-		 */
-		for (FileObject fileObject : new ArrayList<FileObject>(fileInputList
-				.getFiles())) {
-			for (String filename : filesToAvoid) {
-				if (fileObject.getName().getBaseName().equals(filename)) {
-					fileInputList.getFiles().remove(fileObject);
-				}
-			}
-		}
-
-		for (FileObject fileObject : fileInputList.getFiles()) {
-
+	  
+	  for (final String sourceDirectory : sourceDirectories) {
+	    FileObject folder = KettleVFS.getFileObject(sourceDirectory);
+	    FileObject[] javaFiles = folder.findFiles(new FileSelector() {
+            @Override
+            public boolean traverseDescendents(FileSelectInfo info) throws Exception {
+              return true;
+            }
+            
+            @Override
+            public boolean includeFile(FileSelectInfo info) throws Exception {
+              return info.getFile().getName().getExtension().equals("java");
+            }
+          } );
+	    
+	      for (FileObject javaFile : javaFiles) {
+	        
+      		/**
+      		 * We don't want the Messages.java files, there is nothing in there for
+      		 * us.
+      		 */
+	        boolean skip=false;
+	        for (String filename : filesToAvoid) {
+      		  if (javaFile.getName().getBaseName().equals(filename)) {
+      		    skip=true;
+      		  }
+      		}
+      		if (skip) {
+      		  continue; // don't process this file.
+      		}
+      		
 			// For each of these files we look for keys...
 			//
-			lookForOccurrencesInFile(fileObject);
+			lookForOccurrencesInFile(sourceDirectory, javaFile);
+	      }
 		}
 
 		// Also search for keys in the XUL files...
@@ -253,6 +250,7 @@ public class MessagesSourceCrawler {
 					for (SourceCrawlerXMLElement xmlElement : xmlFolder.getElements()) {
 					
 						addLabelOccurrences(
+						        xmlFolder.getDefaultSourceFolder(),
 								fileObject, 
 								doc.getElementsByTagName(xmlElement.getSearchElement()), 
 								xmlFolder.getKeyPrefix(), 
@@ -269,7 +267,7 @@ public class MessagesSourceCrawler {
 		}
 	}
 
-	private void addLabelOccurrences(FileObject fileObject, NodeList nodeList,
+	private void addLabelOccurrences(String sourceFolder, FileObject fileObject, NodeList nodeList,
 			String keyPrefix, String tag, String attribute,
 			String defaultPackage,
 			List<SourceCrawlerPackageException> packageExcpeptions)
@@ -311,28 +309,26 @@ public class MessagesSourceCrawler {
 				transformer.transform(new DOMSource(node), new StreamResult(bodyXML));
 				String xml = bodyXML.getBuffer().toString();
 
-				KeyOccurrence keyOccurrence = new KeyOccurrence(fileObject,messagesPackage, -1, -1, key, "?", xml);
-				if (!occurrences.contains(keyOccurrence)) {
-					occurrences.add(keyOccurrence);
-				}
+				KeyOccurrence keyOccurrence = new KeyOccurrence(fileObject, sourceFolder, messagesPackage, -1, -1, key, "?", xml);
+				addKeyOccurrence(keyOccurrence);
 			}
 		}
 	}
 
 	/**
 	 * Look for additional occurrences of keys in the specified file.
+	 * @param sourceFolder The folder the java file and messages files live in
 	 * 
-	 * @param fileObject
+	 * @param javaFile
 	 *            The java source file to examine
 	 * @throws IOException
 	 *             In case there is a problem accessing the specified source
 	 *             file.
 	 */
-	public void lookForOccurrencesInFile(FileObject fileObject)
+	public void lookForOccurrencesInFile(String sourceFolder, FileObject javaFile)
 			throws IOException {
 
-		BufferedReader reader = new BufferedReader(new InputStreamReader(
-				KettleVFS.getInputStream(fileObject)));
+		BufferedReader reader = new BufferedReader(new InputStreamReader( KettleVFS.getInputStream(javaFile)));
 
 		String messagesPackage = null;
 		int row = 0;
@@ -450,7 +446,7 @@ public class MessagesSourceCrawler {
 					// Otherwise we're looking at BaseMessages.getString(), etc.
 					//
 					if (index==0 || (index>0 & !Character.isJavaIdentifierPart(line.charAt(index-1)))) {
-						addLineOccurrence(fileObject, messagesPackage, line, row, index, scanPhrase);
+						addLineOccurrence(sourceFolder, javaFile, messagesPackage, line, row, index, scanPhrase);
 					}
 					index = line.indexOf(scanPhrase, index + 1);
 				}
@@ -465,6 +461,7 @@ public class MessagesSourceCrawler {
 	/**
 	 * Extract the needed information from the line and the index on which
 	 * Messages.getString() occurs.
+	 * @param sourceFolder The source folder the messages and java files live in
 	 * 
 	 * @param fileObject
 	 *            the file we're reading
@@ -478,7 +475,7 @@ public class MessagesSourceCrawler {
 	 *            the index in the line on which "Messages.getString(" is
 	 *            located.
 	 */
-	private void addLineOccurrence(FileObject fileObject,
+	private void addLineOccurrence(String sourceFolder, FileObject fileObject,
 			String messagesPackage, String line, int row, int index, String scanPhrase) {
 		// Right after the "Messages.getString(" string is the key, quoted (")
 		// until the next comma...
@@ -535,8 +532,7 @@ public class MessagesSourceCrawler {
 		//
 		if (key.startsWith("System.")) {
 			String i18nPackage = BaseMessages.class.getPackage().getName();
-			KeyOccurrence keyOccurrence = new KeyOccurrence(fileObject,
-					i18nPackage, row, column, key, arguments, line);
+			KeyOccurrence keyOccurrence = new KeyOccurrence(fileObject, sourceFolder, i18nPackage, row, column, key, arguments, line);
 
 			// If we just add this key, we'll get doubles in the i18n package
 			//
@@ -546,129 +542,62 @@ public class MessagesSourceCrawler {
 			} else {
 				// Adjust the line of code...
 				//
-				lookup.setSourceLine(lookup.getSourceLine() + Const.CR
-						+ keyOccurrence.getSourceLine());
+				lookup.setSourceLine(lookup.getSourceLine() + Const.CR + keyOccurrence.getSourceLine());
 				lookup.incrementOccurrences();
 			}
 		} else {
-			KeyOccurrence keyOccurrence = new KeyOccurrence(fileObject,
-					messagesPackage, row, column, key, arguments, line);
+			KeyOccurrence keyOccurrence = new KeyOccurrence(fileObject, sourceFolder, messagesPackage, row, column, key, arguments, line);
 			addKeyOccurrence(keyOccurrence);
 		}
 	}
 
 	/**
-	 * @return A sorted list of distinct occurrences of the used message package
-	 *         names
+	 * @return A sorted list of distinct occurrences of the used message package names
 	 */
-	public List<String> getMessagesPackagesList() {
-		Map<String, String> table = new Hashtable<String, String>();
-
-		for (KeyOccurrence keyOccurrence : occurrences) {
-			table.put(keyOccurrence.getMessagesPackage(), keyOccurrence
-					.getMessagesPackage());
-		}
-
-		List<String> list = new ArrayList<String>(table.keySet());
-		Collections.sort(list);
-
-		return list;
+	public List<String> getMessagesPackagesList(String sourceFolder) {
+	  Map<String, List<KeyOccurrence>> packageOccurrences = sourcePackageOccurrences.get(sourceFolder);
+	  List<String> list = new ArrayList<String>(packageOccurrences.keySet());
+	  Collections.sort(list);
+	  return list;
 	}
 
 	/**
-	 * Get all the key occurrences for a certain messsages package.
-	 * 
-	 * @param messagesPackage
-	 *            the package to hunt for
+	 * Get all the key occurrences for a certain messages package.
+	 *
+	 * @param sourceFolder the source folder to reference
+	 * @param messagesPackage the package to hunt for
 	 * @return all the key occurrences for a certain messages package.
 	 */
 	public List<KeyOccurrence> getOccurrencesForPackage(String messagesPackage) {
-		List<KeyOccurrence> list = new ArrayList<KeyOccurrence>();
-		for (KeyOccurrence keyOccurrence : occurrences) {
-			if (keyOccurrence.getMessagesPackage().equals(messagesPackage)) {
-				list.add(keyOccurrence);
-			}
-		}
-
-		return list;
+	  List<KeyOccurrence> list = new ArrayList<KeyOccurrence>();
+	  
+	  for (String sourceFolder : sourcePackageOccurrences.keySet()) {
+    	  Map<String, List<KeyOccurrence>> po = sourcePackageOccurrences.get(sourceFolder);
+    	  List<KeyOccurrence> occurrences = po.get(messagesPackage);
+    	  if (occurrences!=null) {
+    	    list.addAll(occurrences);
+    	  }
+	  }
+	  return list;
 	}
 
-	public static void main(String[] args) throws Exception {
-		List<String> directories = new ArrayList<String>();
-		directories.add("src-core");
-		directories.add("src");
-		directories.add("src-ui");
-
-		List<String> filesToAvoid = new ArrayList<String>();
-		filesToAvoid.add("MessagesSourceCrawler.java");
-		filesToAvoid.add("KeyOccurence.java");
-		filesToAvoid.add("TransLator.java");
-		filesToAvoid.add("MenuHelper.java");
-		filesToAvoid.add("Messages.java");
-		filesToAvoid.add("XulMessages.java");
-		filesToAvoid.add("AnnotatedStepsConfigManager.java");
-		filesToAvoid.add("AnnotatedJobConfigManager.java");
-		filesToAvoid.add("JobEntryValidatorUtils.java");
-		filesToAvoid.add("Const.java");
-		filesToAvoid.add("XulHelper.java");
-
-		List<SourceCrawlerXMLFolder> xmlFolders = new ArrayList<SourceCrawlerXMLFolder>();
-		SourceCrawlerXMLFolder xmlFolder = new SourceCrawlerXMLFolder("ui",
-				".*\\.xul$", "%");
-		xmlFolder.getElements().add(
-				new SourceCrawlerXMLElement("menu", null, "label"));
-		xmlFolder.getElements().add(
-				new SourceCrawlerXMLElement("menuitem", null, "label"));
-		xmlFolder.getElements().add(
-				new SourceCrawlerXMLElement("toolbar", null, "label"));
-		xmlFolder.getElements().add(
-				new SourceCrawlerXMLElement("toolbarbutton", null, "label"));
-		xmlFolders.add(xmlFolder);
-
-		MessagesSourceCrawler crawler = new MessagesSourceCrawler(new LogChannel("Source crawler"), directories, null, xmlFolders);
-		crawler.setFilesToAvoid(filesToAvoid);
-		crawler.crawl();
-		int mis = 0;
-		LanguageChoice.getInstance().setDefaultLocale(Locale.US);
-		for (KeyOccurrence occ : crawler.getOccurrences()) {
-
-			// Try to get a value attached to each of these >6k occurrences...
-			//
-			String translation = BaseMessages.getString(occ
-					.getMessagesPackage(), occ.getKey());
-
-			if (translation.startsWith("!")) {
-				mis++;
-				System.out.println(mis + "\t" + occ.getKey() + "\t"
-						+ occ.getRow() + "\t" + occ.getMessagesPackage() + "\t"
-						+ occ.getFileObject().getName().getBaseName() + "\t"
-						+ occ.getFileObject().getParent());
-			}
-		}
-		System.out.println("-------------------------------------------------");
-		System.out.println("Found " + crawler.getOccurrences().size());
-		System.out.println("-------------------------------------------------");
-
-		List<String> packageNames = crawler.getMessagesPackagesList();
-
-		System.out.println("Packages found : " + packageNames.size());
-		/*
-		 * for (String packageName : packageNames) {
-		 * System.out.println("["+packageName+"]"); }
-		 */
-	}
-
-	public KeyOccurrence getKeyOccurrence(String key,
-			String selectedMessagesPackage) {
-		for (KeyOccurrence keyOccurrence : occurrences) {
-			if (keyOccurrence.getKey().equals(key)
-					&& keyOccurrence.getMessagesPackage().equals(
-							selectedMessagesPackage)) {
-				return keyOccurrence;
-			}
-		}
-		return null;
-	}
+	public KeyOccurrence getKeyOccurrence(String key, String selectedMessagesPackage) {
+	  for (String sourceFolder : sourcePackageOccurrences.keySet()) {
+        Map<String, List<KeyOccurrence>> po = sourcePackageOccurrences.get(sourceFolder);
+        if (po!=null) {
+          List<KeyOccurrence> occurrences = po.get(selectedMessagesPackage);
+          if (occurrences!=null) {
+            for (KeyOccurrence keyOccurrence : occurrences) {
+              if (keyOccurrence.getKey().equals(key)  && 
+                  keyOccurrence.getMessagesPackage().equals(selectedMessagesPackage)) {
+                return keyOccurrence;
+              }
+            }
+          }
+        }
+	  }
+	  return null;
+    }
 
 	/**
 	 * @return the singleMessagesFile
@@ -699,18 +628,30 @@ public class MessagesSourceCrawler {
 		this.scanPhrases = scanPhrases;
 	}
 
-	/**
-	 * @return the packageOccurrences
-	 */
-	public Map<String, List<KeyOccurrence>> getPackageOccurrences() {
-		return packageOccurrences;
-	}
+  public Map<String, Map<String, List<KeyOccurrence>>> getSourcePackageOccurrences() {
+    return sourcePackageOccurrences;
+  }
 
-	/**
-	 * @param packageOccurrences the packageOccurrences to set
-	 */
-	public void setPackageOccurrences(Map<String, List<KeyOccurrence>> packageOccurrences) {
-		this.packageOccurrences = packageOccurrences;
-	}
+  public void setSourcePackageOccurrences(Map<String, Map<String, List<KeyOccurrence>>> sourcePackageOccurrences) {
+    this.sourcePackageOccurrences = sourcePackageOccurrences;
+  }
 
+  /**
+   * Get the unique package-key
+   * @param sourceFolder
+   */
+  public List<KeyOccurrence> getKeyOccurrences(String sourceFolder) {
+    Map<String, KeyOccurrence> map = new HashMap<String, KeyOccurrence>();
+    Map<String, List<KeyOccurrence>> po = sourcePackageOccurrences.get(sourceFolder);
+    if (po!=null) {
+      for (List<KeyOccurrence> keyOccurrences : po.values()) {
+        for (KeyOccurrence keyOccurrence : keyOccurrences) {
+          String key = keyOccurrence.getMessagesPackage() + " - " + keyOccurrence.getKey();
+          map.put(key, keyOccurrence);
+        }
+      }
+    }
+    
+    return new ArrayList<KeyOccurrence>(map.values());    
+  }
 }

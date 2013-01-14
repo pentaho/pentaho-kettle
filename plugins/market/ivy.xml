@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="${ivy.artifact.group}" module="${ivy.artifact.id}" revision="${project.revision}" />
+  <info organisation="pentaho-kettle" module="market" revision="TRUNK-SNAPSHOT" status="integration" publication="20130114114432"/>
 
   <configurations>
-    <conf name="default" />
-    <conf name="dev" />
-    <conf name="test" visibility="private" />
-    <conf name="source" />
+    <conf name="default"/>
+    <conf name="dev"/>
+    <conf name="test" visibility="private"/>
+    <conf name="source"/>
   </configurations>
 
   <publications>
-    <artifact name="${ivy.artifact.id}" type="${artifact.type}" conf="default" />
+    <artifact name="market" type="jar" conf="default"/>
   </publications>
 
   <dependencies defaultconf="dev->default">
-    <dependency org="commons-io"             name="commons-io"       rev="1.4"              transitive="false"/>
-    <dependency org="commons-vfs"            name="commons-vfs"      rev="20091118-pentaho" transitive="false"/>
-    <dependency org="org.apache.xmlgraphics" name="batik-xml"        rev="1.7"              transitive="false"/>
+    <dependency org="commons-io" name="commons-io" rev="1.4" transitive="false"/>
+    <dependency org="commons-vfs" name="commons-vfs" rev="20091118-pentaho" transitive="false"/>
+    <dependency org="org.apache.xmlgraphics" name="batik-xml" rev="1.7" transitive="false"/>
                 
-    <dependency org="${ivy.artifact.group}"  name="kettle-core"      rev="${dependency.kettle.revision}" changing="true"/>  
-    <dependency org="${ivy.artifact.group}"  name="kettle-engine"    rev="${dependency.kettle.revision}" changing="true"/>
-    <dependency org="${ivy.artifact.group}"  name="kettle-db"        rev="${dependency.kettle.revision}" changing="true"/>
-    <dependency org="${ivy.artifact.group}"  name="kettle-ui-swt"    rev="${dependency.kettle.revision}" changing="true"/>
-    <dependency org="pentaho"                name="pentaho-xul-core" rev="${dependency.pentaho-xul.revision}" changing="true"/>
-    <dependency org="pentaho"                name="pentaho-xul-swt"  rev="${dependency.pentaho-xul.revision}" changing="true"/>
+    <dependency org="pentaho-kettle" name="kettle-core" rev="TRUNK-SNAPSHOT" changing="true"/>  
+    <dependency org="pentaho-kettle" name="kettle-engine" rev="TRUNK-SNAPSHOT" changing="true"/>
+    <dependency org="pentaho-kettle" name="kettle-db" rev="TRUNK-SNAPSHOT" changing="true"/>
+    <dependency org="pentaho-kettle" name="kettle-ui-swt" rev="TRUNK-SNAPSHOT" changing="true"/>
+    <dependency org="pentaho" name="pentaho-xul-core" rev="TRUNK-SNAPSHOT" changing="true"/>
+    <dependency org="pentaho" name="pentaho-xul-swt" rev="TRUNK-SNAPSHOT" changing="true"/>
     
-    <dependency org="junit"                  name="junit"            rev="4.7" transitive="false" conf="test->default"/>
+    <dependency org="junit" name="junit" rev="4.7" transitive="false" conf="test->default"/>
   </dependencies>
 </ivy-module>
