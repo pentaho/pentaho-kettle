@@ -21,11 +21,15 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.monetdbbulkloader;
 
+import java.io.ByteArrayOutputStream;
+import java.util.Date;
+import java.util.List;
+
 import nl.cwi.monetdb.mcl.io.BufferedMCLReader;
 import nl.cwi.monetdb.mcl.io.BufferedMCLWriter;
 import nl.cwi.monetdb.mcl.net.MapiSocket;
+
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -39,13 +43,13 @@ import org.pentaho.di.core.util.StreamLogger;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.*;
+import org.pentaho.di.trans.step.BaseStep;
+import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.monetdbagilemart.MonetDBRowLimitException;
 import org.pentaho.di.trans.steps.tableagilemart.AgileMartUtil;
-
-import java.io.ByteArrayOutputStream;
-import java.util.Date;
-import java.util.List;
 
 
 /**
@@ -137,7 +141,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
           Database db = null;
           // get table metadata, will be used later for date type identification (DATE, TIMESTAMP, ...)
           try {
-            db = new Database(dm);
+            db = new Database(this, dm);
             db.connect(user, password);
             physicalTableRowMeta = db.getTableFields(data.schemaTable);
           } catch (Exception e) {
@@ -228,171 +232,166 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 		addRowToBuffer(rowMeta, r);
   }
 
-	protected void addRowToBuffer(RowMetaInterface rowMeta, Object[] r) throws KettleException {
-
-    	ByteArrayOutputStream line = new ByteArrayOutputStream(25000);
-    	
-    	try {
-	    	// So, we have this output stream to which we can write CSV data to.
-	    	// Basically, what we need to do is write the binary data (from strings to it as part of this proof of concept)
-	    	//
-    		// The data format required is essentially:
-    		//
-    		for (int i=0;i<data.keynrs.length;i++) {
-				if (i>0) {
-		    		// Write a separator 
-		    		//
-		    		line.write(data.separator);
-				}
-				
-	    		int index = data.keynrs[i];
-	    		ValueMetaInterface valueMeta = rowMeta.getValueMeta(index);
-	    		Object valueData = r[index];
-	    		String nullRep = new String(data.nullrepresentation);
-	    		if (valueData!=null) {
-		    		switch(valueMeta.getType()) {
-		    		case ValueMetaInterface.TYPE_STRING :
+    protected void addRowToBuffer(RowMetaInterface rowMeta, Object[] r) throws KettleException {
+  
+      ByteArrayOutputStream line = new ByteArrayOutputStream(25000);
+  
+      try {
+        // So, we have this output stream to which we can write CSV data to.
+        // Basically, what we need to do is write the binary data (from strings to
+        // it as part of this proof of concept)
+        //
+        // The data format required is essentially:
+        //
+        for (int i = 0; i < data.keynrs.length; i++) {
+          if (i > 0) {
+            // Write a separator
+            //
+            line.write(data.separator);
+          }
+  
+          int index = data.keynrs[i];
+          ValueMetaInterface valueMeta = rowMeta.getValueMeta(index);
+          Object valueData = r[index];
+          String nullRep = new String(data.nullrepresentation);
+          if (valueData != null) {
+            switch (valueMeta.getType()) {
+            case ValueMetaInterface.TYPE_STRING:
               String str = valueMeta.getString(valueData);
-              if(str == null || str.equals(nullRep)) {
+              if (str == null || str.equals(nullRep)) {
                 // don't quote our null representation
                 line.write(str.getBytes());
                 break;
               }
-		    			line.write(data.quote);
-		    			// we have to convert to strings to escape '\'s
-	    				if( str == null ) {
-                line.write(data.nullrepresentation);
-	    				} else {
-		    				// escape any backslashes
-			    			str = str.replace("\\", "\\\\");
-			    			str = str.replace("\"", "\\\"");
-			    			if(meta.isAutoStringWidths()) {
-			    				int len = valueMeta.getLength();
-			    				if( len < 1 ) {
-			    					len = MonetDBDatabaseMeta.DEFAULT_VARCHAR_LENGTH;
-			    				}
-			    				if( str.length() > len ) {
-			    					// TODO log this event
-			    					str = str.substring(0, len);
-			    				}
-			    				line.write(str.getBytes(meta.getEncoding()));
-			    			} else {
-			    				line.write(str.getBytes(meta.getEncoding()));
-			    			}
-	    				}
-		    			line.write(data.quote);
-		    			break;
-		    		case ValueMetaInterface.TYPE_INTEGER:
-		    			if (valueMeta.isStorageBinaryString() && meta.getFieldFormatOk()[i]) {
-		    				line.write((byte[])valueData);
-		    			} else {
-		    				Long value = valueMeta.getInteger(valueData);
-		    				if( value == null ) {
+              line.write(data.quote);
+              // we have to convert to strings to escape '\'s              
+              // also escape any backslashes
+              str = str.replace("\\", "\\\\");
+              str = str.replace("\"", "\\\"");
+              if (meta.isAutoStringWidths()) {
+                int len = valueMeta.getLength();
+                if (len < 1) {
+                  len = MonetDBDatabaseMeta.DEFAULT_VARCHAR_LENGTH;
+                }
+                if (str.length() > len) {
+                  // TODO log this event
+                  str = str.substring(0, len);
+                }
+                line.write(str.getBytes(meta.getEncoding()));
+              } 
+              line.write(data.quote);
+              break;
+            case ValueMetaInterface.TYPE_INTEGER:
+              if (valueMeta.isStorageBinaryString() && meta.getFieldFormatOk()[i]) {
+                line.write((byte[]) valueData);
+              } else {
+                Long value = valueMeta.getInteger(valueData);
+                if (value == null) {
                   line.write(data.nullrepresentation);
-		    				} else {
-		    					line.write(Long.toString(value).getBytes());
-		    				}
-		    			}
-		    			break;
-		    			//
-		    			// TODO: Check MonetDB API for true column types and help set or suggest the correct formatter pattern to the user.
-		    			//
-		    		case ValueMetaInterface.TYPE_DATE:
-		    			// Keep the data format as indicated.
-		    			if (valueMeta.isStorageBinaryString() && meta.getFieldFormatOk()[i]) {
-		    				line.write((byte[])valueData);
-		    			} else {
-
-
+                } else {
+                  line.write(Long.toString(value).getBytes());
+                }
+              }
+              break;
+            //
+            // TODO: Check MonetDB API for true column types and help set or
+            // suggest the correct formatter pattern to the user.
+            //
+            case ValueMetaInterface.TYPE_DATE:
+              // Keep the data format as indicated.
+              if (valueMeta.isStorageBinaryString() && meta.getFieldFormatOk()[i]) {
+                line.write((byte[]) valueData);
+              } else {
+  
                 ValueMetaInterface colMeta = null;
-                if(physicalTableRowMeta != null) {
+                if (physicalTableRowMeta != null) {
                   colMeta = physicalTableRowMeta.getValueMeta(index);
                 }
-
-		    				Date value = valueMeta.getDate(valueData);
-		    				if( value == null ) {
+  
+                Date value = valueMeta.getDate(valueData);
+                if (value == null) {
                   line.write(data.nullrepresentation);
-		    				} else {
-
-                  // MonetDB makes a distinction between the acceptable incoming string formats for
+                } else {
+  
+                  // MonetDB makes a distinction between the acceptable incoming
+                  // string formats for
                   // the type DATE and TIMESTAMP.
                   //
-                  //    DATE - for date values (e.g., 2012-12-21)
-                  //    TIME - for time values (e.g., 15:51:36)
-                  //    TIMESTAMP - DATE and TIME put together (e.g., 2012-12-21  15:51:36)
-
+                  // DATE - for date values (e.g., 2012-12-21)
+                  // TIME - for time values (e.g., 15:51:36)
+                  // TIMESTAMP - DATE and TIME put together (e.g., 2012-12-21
+                  // 15:51:36)
+  
                   if (colMeta != null && colMeta.getOriginalColumnTypeName().equalsIgnoreCase("date")) {
-		    					line.write(data.monetDateMeta.getString(value).getBytes());
+                    line.write(data.monetDateMeta.getString(value).getBytes());
                   } else if (colMeta != null && colMeta.getOriginalColumnTypeName().equalsIgnoreCase("time")) {
                     line.write(data.monetTimeMeta.getString(value).getBytes());
                   } else {
-                    //colMeta.getOriginalColumnTypeName().equalsIgnoreCase("timestamp")
+                    // colMeta.getOriginalColumnTypeName().equalsIgnoreCase("timestamp")
                     line.write(data.monetTimestampMeta.getString(value).getBytes());
-		    				}
-
-		    			}
-
-		    			}
-		    			break;
-		    		case ValueMetaInterface.TYPE_BOOLEAN:
-	    				{
-		    				Boolean value = valueMeta.getBoolean(valueData);
-		    				if( value == null ) {
+                  }
+  
+                }
+  
+              }
+              break;
+            case ValueMetaInterface.TYPE_BOOLEAN: {
+              Boolean value = valueMeta.getBoolean(valueData);
+              if (value == null) {
+                line.write(data.nullrepresentation);
+              } else {
+                if (value.booleanValue()) {
+                  line.write("Y".getBytes());
+                } else {
+                  line.write("N".getBytes());
+                }
+              }
+            }
+              break;
+            case ValueMetaInterface.TYPE_NUMBER:
+              if (valueMeta.isStorageBinaryString() && meta.getFieldFormatOk()[i]) {
+                line.write((byte[]) valueData);
+              } else {
+                Double value = valueMeta.getNumber(valueData);
+                if (value == null) {
                   line.write(data.nullrepresentation);
-		    				} else {
-		    					if( value.booleanValue() ) {
-		    						line.write("Y".getBytes());
-		    					} else {
-		    						line.write("N".getBytes());
-		    					}
-		    				}
-		    			}
-		    			break;
-		    		case ValueMetaInterface.TYPE_NUMBER:
-		    			if (valueMeta.isStorageBinaryString() && meta.getFieldFormatOk()[i]) {
-		    				line.write((byte[])valueData);
-		    			} else {
-		    				Double value = valueMeta.getNumber(valueData);
-		    				if( value == null ) {
+                } else {
+                  line.write(Double.toString(value).getBytes());
+                }
+              }
+              break;
+            case ValueMetaInterface.TYPE_BIGNUMBER:
+              if (valueMeta.isStorageBinaryString() && meta.getFieldFormatOk()[i]) {
+                line.write((byte[]) valueData);
+              } else {
+                String value = valueMeta.getString(valueData);
+                if (value == null) {
                   line.write(data.nullrepresentation);
-		    				} else {
-		    					line.write(Double.toString(value).getBytes());
-		    				}
-		    			}
-		    			break;
-		    		case ValueMetaInterface.TYPE_BIGNUMBER:
-		    			if (valueMeta.isStorageBinaryString() && meta.getFieldFormatOk()[i]) {
-		    				line.write((byte[])valueData);
-		    			} else {
-		    				String value = valueMeta.getString(valueData);
-		    				if( value == null ) {
-                  line.write(data.nullrepresentation);
-		    				} else {
-		    					line.write(value.getBytes());
-		    				}
-		    			}
-		    			break;
-		    		}
-	    		} else {
+                } else {
+                  line.write(value.getBytes());
+                }
+              }
+              break;
+            }
+          } else {
             line.write(data.nullrepresentation);
-	    		}
-	    	}
-			
-			// finally write a newline
-			//
-			line.write(data.newline);
-
-			// Now that we have the line, grab the content and store it in the buffer...
-			//
-			data.rowBuffer[data.bufferIndex] = line.toString(); //line.toByteArray();
-			data.bufferIndex++;
-    	}
-    	catch(Exception e)
-    	{
-    		throw new KettleException("Error serializing rows of data to the MonetDB API (MAPI).", e);
-    	}
-		
-	}
+          }
+        }
+  
+        // finally write a newline
+        //
+        line.write(data.newline);
+  
+        // Now that we have the line, grab the content and store it in the
+        // buffer...
+        //
+        data.rowBuffer[data.bufferIndex] = line.toString(); // line.toByteArray();
+        data.bufferIndex++;
+      } catch (Exception e) {
+        throw new KettleException("Error serializing rows of data to the MonetDB API (MAPI).", e);
+      }
+  
+    }
 	
 	public void truncate() throws KettleException {
     String cmd;
@@ -617,7 +616,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 
     try {
 
-      List warnings = mserver.connect(host, port, user, password);
+      List<?> warnings = mserver.connect(host, port, user, password);
       if(warnings != null) {
         for (Object warning : warnings) {
           if(log != null) {
