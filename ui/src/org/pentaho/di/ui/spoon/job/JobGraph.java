@@ -1226,16 +1226,30 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
 					}
 				}
 			}
-
-            jobMeta.addJobHop(hop_candidate);
-            spoon.addUndoNew(jobMeta, new JobHopMeta[] { hop_candidate }, new int[] { jobMeta.indexOfJobHop(hop_candidate) });
-            spoon.refreshTree();
-
-            clearSettings();
-            redraw();
+			
+			if (checkIfHopAlreadyExists(jobMeta, hop_candidate)) {
+				jobMeta.addJobHop(hop_candidate);
+				spoon.addUndoNew(jobMeta, new JobHopMeta[] { hop_candidate }, new int[] { jobMeta.indexOfJobHop(hop_candidate) });
+				spoon.refreshTree();
+				clearSettings();
+				redraw();
+			}
 		}
 	}
 
+	public boolean checkIfHopAlreadyExists(JobMeta jobMeta, JobHopMeta newHop) {
+		boolean ok = true;		
+		if (jobMeta.findJobHop(newHop.getFromEntry(), newHop.getToEntry(), true) != null) {			
+			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+			mb.setMessage(BaseMessages.getString(PKG, "JobGraph.Dialog.HopExists.Message"));// "This hop already exists!"
+	        mb.setText(BaseMessages.getString(PKG, "JobGraph.Dialog.HopExists.Title"));// Error!
+		    mb.open();
+		    ok = false;
+		}	
+
+		return ok;
+	}	
+	
   public AreaOwner getVisibleAreaOwner(int x, int y) {
 		for (int i=areaOwners.size()-1;i>=0;i--) {
 			AreaOwner areaOwner = areaOwners.get(i);
