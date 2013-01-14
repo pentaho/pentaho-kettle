@@ -1188,106 +1188,106 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 	}
 	
 
-	/**
-	 * Returns kettle type from Microsoft Access database
-	 * also convert data to prepare kettle value
-	 * @param : MS Access column
-	 * @param : destination field name
-	 * @param : MS Access column value
-	 * @return valuemeta and data 
-	 */
-	public static ValueMetaAndData getValueMetaAndData(Column c, String name, Object data)
-	{
-		
-		ValueMetaAndData valueMetaData= new ValueMetaAndData();
-		// get data
-		Object o = data;
-	
-		// Get column type
-		DataType type= c.getType();
-		
-		// Build a value Meta
-		// set default value
-		ValueMetaInterface sourceValueMeta= new ValueMeta(name==null?c.getName():name, ValueMeta.TYPE_STRING);
-		sourceValueMeta.setLength(c.getLength(), c.getPrecision());
-	
-		// Find corresponding Kettle type for each MS Access type
-		// We have to take of Meta AND data
-		switch(type)   {
-            case BINARY: 
-            	sourceValueMeta.setType(ValueMeta.TYPE_BINARY);	
-                break;
-            case BOOLEAN:
-            	sourceValueMeta.setType(ValueMeta.TYPE_BOOLEAN);
-    			if(o!=null) {
-    				o = Boolean.valueOf(o.toString());
-    			}
-            	
-                break;
-            case DOUBLE:
-            	sourceValueMeta.setType(ValueMeta.TYPE_NUMBER);
-            	
-                break;
-            case FLOAT:
-            	sourceValueMeta.setType(ValueMeta.TYPE_BIGNUMBER);
-    			if(o!=null) {
-    				o= new BigDecimal(Float.toString((Float)o)); 
-    			}
-            	
-                break;
-            case INT:
-     
-            	sourceValueMeta.setType(ValueMeta.TYPE_NUMBER);
-    			if(o!=null) {
-    				o = Double.parseDouble(o.toString());
-    			}
-                break;
-            case BYTE:
-            	sourceValueMeta.setType(ValueMeta.TYPE_NUMBER);
-    			if(o!=null) {
-    				o = Double.parseDouble(o.toString());
-    			}
-                break;
-            case LONG:
-        		sourceValueMeta.setType(ValueMeta.TYPE_INTEGER);
-    			if(o!=null) {
-    				Integer i=(Integer)o;
-    				o =  i.longValue();
-    			}
-            	
-                break;
-            case MEMO:
-    			// Should be considered as String
-            	
-                break;
-            case MONEY:
-            	sourceValueMeta.setType(ValueMeta.TYPE_BIGNUMBER);
-            	
-                break;
-            case NUMERIC:
-        		sourceValueMeta.setType(ValueMeta.TYPE_BIGNUMBER);
-            	
-                break;
-            case SHORT_DATE_TIME:
-            	sourceValueMeta.setType(ValueMeta.TYPE_DATE);
-            	
-                break;
-            default:
-            	// Default it's string
-    			if(o!=null) {
-    				o = o.toString();
-    			}
-            	break;
-          }
-		
-	
-		// set value meta data and return it
-		valueMetaData.setValueMeta(sourceValueMeta);
-		if(o!=null)  valueMetaData.setValueData(o);
-		
-		return valueMetaData;
-	}
-	
+    /**
+     * Returns kettle type from Microsoft Access database also convert data to
+     * prepare kettle value
+     * 
+     * @param : MS Access column
+     * @param : destination field name
+     * @param : MS Access column value
+     * @return valuemeta and data
+     */
+    public static ValueMetaAndData getValueMetaAndData(Column c, String name, Object data) {
+  
+      ValueMetaAndData valueMetaData = new ValueMetaAndData();
+      // get data
+      Object o = data;
+  
+      // Get column type
+      DataType type = c.getType();
+  
+      int sourceValueType = ValueMetaInterface.TYPE_STRING;
+  
+      // Find corresponding Kettle type for each MS Access type
+      // We have to take of Meta AND data
+      switch (type) {
+      case BINARY:
+        sourceValueType = ValueMeta.TYPE_BINARY;
+        break;
+      case BOOLEAN:
+        sourceValueType = ValueMeta.TYPE_BOOLEAN;
+        if (o != null) {
+          o = Boolean.valueOf(o.toString());
+        }
+  
+        break;
+      case DOUBLE:
+        sourceValueType = ValueMeta.TYPE_NUMBER;
+  
+        break;
+      case FLOAT:
+        sourceValueType = ValueMeta.TYPE_BIGNUMBER;
+        if (o != null) {
+          o = new BigDecimal(Float.toString((Float) o));
+        }
+  
+        break;
+      case INT:
+        sourceValueType = ValueMeta.TYPE_NUMBER;
+        if (o != null) {
+          o = Double.parseDouble(o.toString());
+        }
+        break;
+      case BYTE:
+        sourceValueType = ValueMeta.TYPE_NUMBER;
+        if (o != null) {
+          o = Double.parseDouble(o.toString());
+        }
+        break;
+      case LONG:
+        sourceValueType = ValueMeta.TYPE_INTEGER;
+        if (o != null) {
+          Integer i = (Integer) o;
+          o = i.longValue();
+        }
+  
+        break;
+      case MEMO:
+        // Should be considered as String
+  
+        break;
+      case MONEY:
+        sourceValueType = ValueMeta.TYPE_BIGNUMBER;
+  
+        break;
+      case NUMERIC:
+        sourceValueType = ValueMeta.TYPE_BIGNUMBER;
+  
+        break;
+      case SHORT_DATE_TIME:
+        sourceValueType = ValueMeta.TYPE_DATE;
+  
+        break;
+      default:
+        // Default it's string
+        if (o != null) {
+          o = o.toString();
+        }
+        break;
+      }
+  
+      ValueMetaInterface sourceValueMeta = new ValueMeta(name == null ? c.getName() : name, sourceValueType);
+      sourceValueMeta.setLength(c.getLength(), c.getPrecision());
+  
+      // set value meta data and return it
+      valueMetaData.setValueMeta(sourceValueMeta);
+      if (o != null) {
+        valueMetaData.setValueData(o);
+      }
+  
+      return valueMetaData;
+    }
+
 	@Override
 	public StepMetaInjectionInterface getStepMetaInjectionInterface() {
 	  return new AccessInputMetaInjection(this);

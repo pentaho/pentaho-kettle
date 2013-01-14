@@ -25,7 +25,6 @@ package org.pentaho.di.trans.steps.aggregaterows;
 import java.util.List;
 import java.util.Map;
 
-import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -36,6 +35,7 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -234,7 +234,7 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 	}
 
 	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException {
-
+	  try {
 		// Remember the types of the row.
 		int fieldnrs[] = new int[fieldName.length];
 		ValueMetaInterface[] values = new ValueMetaInterface[fieldName.length];
@@ -243,15 +243,16 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			fieldnrs[i] = row.indexOfValue(fieldName[i]);
 			ValueMetaInterface v = row.getValueMeta(fieldnrs[i]);
-			values[i] = v.clone(); // copy value : default settings!
 			switch(aggregateType[i])
 			{
 			case TYPE_AGGREGATE_AVERAGE:
 			case TYPE_AGGREGATE_COUNT:
 			case TYPE_AGGREGATE_SUM:
-				values[i].setType(Value.VALUE_TYPE_NUMBER);
+			    values[i] = ValueMetaFactory.cloneValueMeta(v, ValueMetaInterface.TYPE_NUMBER); 
 				values[i].setLength(-1, -1);
 				break;
+			default:
+			  values[i] = ValueMetaFactory.cloneValueMeta(v);
 			}
 		}
 		
@@ -265,6 +266,9 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 			v.setOrigin(name);
 			row.addValueMeta(v);
 		}
+	  } catch(Exception e) {
+	    throw new KettleStepException(e);
+	  }
 	}
 
 	public String getXML()

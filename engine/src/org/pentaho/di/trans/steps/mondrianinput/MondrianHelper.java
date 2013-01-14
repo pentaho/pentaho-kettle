@@ -225,41 +225,43 @@ public class MondrianHelper {
               continue; // we have this value already
             }
   
-            ValueMetaInterface valueMeta = new ValueMeta(headings.get(c));
             Object valueData = rowValues.get(c);
   
             if (valueData == null) {
               continue; // skip this row and look for the metadata in a new one
             }
   
+            int valueType;
+            
             if (valueData instanceof String) {
-              valueMeta.setType(ValueMetaInterface.TYPE_STRING);
+              valueType=ValueMetaInterface.TYPE_STRING;
             } else if (valueData instanceof Date) {
-              valueMeta.setType(ValueMetaInterface.TYPE_DATE);
+              valueType=ValueMetaInterface.TYPE_DATE;
             } else if (valueData instanceof Boolean) {
-              valueMeta.setType(ValueMetaInterface.TYPE_BOOLEAN);
+              valueType=ValueMetaInterface.TYPE_BOOLEAN;
             } else if (valueData instanceof Integer) {
-              valueMeta.setType(ValueMetaInterface.TYPE_INTEGER);
+              valueType=ValueMetaInterface.TYPE_INTEGER;
               valueData = Long.valueOf(((Integer) valueData).longValue());
             } else if (valueData instanceof Short) {
-              valueMeta.setType(ValueMetaInterface.TYPE_INTEGER);
+              valueType=ValueMetaInterface.TYPE_INTEGER;
               valueData = Long.valueOf(((Short) valueData).longValue());
             } else if (valueData instanceof Byte) {
-              valueMeta.setType(ValueMetaInterface.TYPE_INTEGER);
+              valueType=ValueMetaInterface.TYPE_INTEGER;
               valueData = Long.valueOf(((Byte) valueData).longValue());
             } else if (valueData instanceof Long) {
-              valueMeta.setType(ValueMetaInterface.TYPE_INTEGER);
+              valueType=ValueMetaInterface.TYPE_INTEGER;
             } else if (valueData instanceof Double) {
-              valueMeta.setType(ValueMetaInterface.TYPE_NUMBER);
+              valueType=ValueMetaInterface.TYPE_NUMBER;
             } else if (valueData instanceof Float) {
-              valueMeta.setType(ValueMetaInterface.TYPE_NUMBER);
+              valueType=ValueMetaInterface.TYPE_NUMBER;
               valueData = Double.valueOf(((Float) valueData).doubleValue());
             } else if (valueData instanceof BigDecimal) {
-              valueMeta.setType(ValueMetaInterface.TYPE_BIGNUMBER);
+              valueType=ValueMetaInterface.TYPE_BIGNUMBER;
             } else {
               throw new KettleDatabaseException("Unhandled data type found '" + valueData.getClass().toString() + "'");
             }
   
+            ValueMetaInterface valueMeta = new ValueMeta(headings.get(c), valueType);
             valueMetaHash.put(c, valueMeta);
           }
   
@@ -336,37 +338,39 @@ public class MondrianHelper {
         	List<Object> rowValues = rows.get(i);
         	
             for (int c=0 ;c<rowValues.size();c++) {
-        		ValueMetaInterface valueMeta = new ValueMeta(headings.get(c));
             	Object             valueData = rowValues.get(c);
-
+            	
+            	int valueType;
+            	
                 if (valueData instanceof String) {
-                  valueMeta.setType(ValueMetaInterface.TYPE_STRING);
+                  valueType=ValueMetaInterface.TYPE_STRING;
                 } else if (valueData instanceof Date) {
-                  valueMeta.setType(ValueMetaInterface.TYPE_DATE);
+                  valueType=ValueMetaInterface.TYPE_DATE;
                 } else if (valueData instanceof Boolean) {
-                  valueMeta.setType(ValueMetaInterface.TYPE_BOOLEAN);
+                  valueType=ValueMetaInterface.TYPE_BOOLEAN;
                 } else if (valueData instanceof Integer) {
-                  valueMeta.setType(ValueMetaInterface.TYPE_INTEGER);
+                  valueType=ValueMetaInterface.TYPE_INTEGER;
                   valueData = Long.valueOf(((Integer) valueData).longValue());
                 } else if (valueData instanceof Short) {
-                  valueMeta.setType(ValueMetaInterface.TYPE_INTEGER);
+                  valueType=ValueMetaInterface.TYPE_INTEGER;
                   valueData = Long.valueOf(((Short) valueData).longValue());
                 } else if (valueData instanceof Byte) {
-                  valueMeta.setType(ValueMetaInterface.TYPE_INTEGER);
+                  valueType=ValueMetaInterface.TYPE_INTEGER;
                   valueData = Long.valueOf(((Byte) valueData).longValue());
                 } else if (valueData instanceof Long) {
-                  valueMeta.setType(ValueMetaInterface.TYPE_INTEGER);
+                  valueType=ValueMetaInterface.TYPE_INTEGER;
                 } else if (valueData instanceof Double) {
-                  valueMeta.setType(ValueMetaInterface.TYPE_NUMBER);
+                  valueType=ValueMetaInterface.TYPE_NUMBER;
                 } else if (valueData instanceof Float) {
-                  valueMeta.setType(ValueMetaInterface.TYPE_NUMBER);
+                  valueType=ValueMetaInterface.TYPE_NUMBER;
                   valueData = Double.valueOf(((Float) valueData).doubleValue());
                 } else if (valueData instanceof BigDecimal) {
-                  valueMeta.setType(ValueMetaInterface.TYPE_BIGNUMBER);
+                  valueType=ValueMetaInterface.TYPE_BIGNUMBER;
                 } else {
                   throw new KettleDatabaseException("Unhandled data type found '" + valueData.getClass().toString() + "'");
                 }
             	
+                ValueMetaInterface valueMeta = new ValueMeta(headings.get(c), valueType);
             	outputRowMeta.addValueMeta(valueMeta);
             	rowValues.set(i, valueData);
             }

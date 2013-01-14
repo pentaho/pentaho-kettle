@@ -38,6 +38,10 @@ public class ValueMetaFactory {
     return createValueMeta(null, type, -1, -1);
   }
 
+  public static ValueMetaInterface cloneValueMeta(ValueMetaInterface source) throws KettlePluginException {
+    return cloneValueMeta(source, source.getType());
+  }
+
   public static ValueMetaInterface cloneValueMeta(ValueMetaInterface source, int targetType) throws KettlePluginException {
     ValueMetaInterface target = createValueMeta(source.getName(), targetType, source.getLength(), source.getPrecision());
     target.setConversionMask(source.getConversionMask());

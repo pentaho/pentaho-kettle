@@ -289,7 +289,6 @@ public class AccessInput extends BaseStep implements StepInterface
 					//
 					data.convertRowMeta = data.outputRowMeta.clone();
 					for (int i=0;i<data.convertRowMeta.size();i++) {
-						data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);  
 						ValueMetaInterface valueMeta = data.convertRowMeta.getValueMeta(i);
 	                    data.convertRowMeta.setValueMeta(i, ValueMetaFactory.cloneValueMeta(valueMeta, ValueMetaInterface.TYPE_STRING));
 					}

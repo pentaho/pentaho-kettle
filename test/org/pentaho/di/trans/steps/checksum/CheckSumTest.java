@@ -84,9 +84,7 @@ public class CheckSumTest extends TestCase {
 
   private RowMeta createStringRowMeta() throws Exception {
     RowMeta rowMeta = new RowMeta();
-    ValueMeta meta = new ValueMeta();
-    meta.setType(ValueMeta.TYPE_STRING);
-    meta.setName("test"); //$NON-NLS-1$
+    ValueMeta meta = new ValueMeta("test", ValueMeta.TYPE_STRING);
     rowMeta.addValueMeta(meta);
     return rowMeta;
   }

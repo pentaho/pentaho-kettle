@@ -41,6 +41,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -459,22 +460,24 @@ public class DatabaseLookup extends BaseStep implements StepInterface
             {
                 if (data.keynrs[i]>=0)
                 {
-                    ValueMetaInterface value = getInputRowMeta().getValueMeta(data.keynrs[i]).clone();
-                    
+                    ValueMetaInterface inputValueMeta = getInputRowMeta().getValueMeta(data.keynrs[i]); 
+  
                     // Try to convert type if needed in a clone, we don't want to
                     // change the type in the original row
-
-                    value.setType(data.keytypes[i]);
+                    //
+                    ValueMetaInterface value = ValueMetaFactory.cloneValueMeta(inputValueMeta, data.keytypes[i]);
+                    
                     data.lookupMeta.addValueMeta( value );
                 }
                 if (data.keynrs2[i]>=0)
                 {
-                    ValueMetaInterface value = getInputRowMeta().getValueMeta(data.keynrs2[i]).clone();
+                    ValueMetaInterface inputValueMeta = getInputRowMeta().getValueMeta(data.keynrs2[i]);
 
                     // Try to convert type if needed in a clone, we don't want to
                     // change the type in the original row
-                    
-                    value.setType(data.keytypes[i]);
+                    //
+                    ValueMetaInterface value = ValueMetaFactory.cloneValueMeta(inputValueMeta, data.keytypes[i]);
+
                     data.lookupMeta.addValueMeta( value );
                 }
             }

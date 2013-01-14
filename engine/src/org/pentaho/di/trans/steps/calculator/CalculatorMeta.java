@@ -176,14 +176,6 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
     private ValueMetaInterface getValueMeta(CalculatorMetaFunction fn, String origin)
     {
         ValueMetaInterface v = new ValueMeta(fn.getFieldName(), fn.getValueType());
-        v.setLength(fn.getValueLength());
-        v.setPrecision(fn.getValuePrecision());
-        v.setOrigin(origin);
-        v.setComments(fn.getCalcTypeDesc());
-        v.setConversionMask(fn.getConversionMask());
-        v.setDecimalSymbol(fn.getDecimalSymbol());
-        v.setGroupingSymbol(fn.getGroupingSymbol());
-        v.setCurrencySymbol(fn.getCurrencySymbol());
         
         // What if the user didn't specify a data type?
         // In that case we look for the default data type
@@ -424,9 +416,18 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
                 break;
             }
             
-            v.setType(defaultResultType);
+            v = new ValueMeta(fn.getFieldName(), defaultResultType);
         }
-        
+
+        v.setLength(fn.getValueLength());
+        v.setPrecision(fn.getValuePrecision());
+        v.setOrigin(origin);
+        v.setComments(fn.getCalcTypeDesc());
+        v.setConversionMask(fn.getConversionMask());
+        v.setDecimalSymbol(fn.getDecimalSymbol());
+        v.setGroupingSymbol(fn.getGroupingSymbol());
+        v.setCurrencySymbol(fn.getCurrencySymbol());
+
         return v;
     }
 

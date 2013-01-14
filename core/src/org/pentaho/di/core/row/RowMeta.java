@@ -62,13 +62,17 @@ public class RowMeta implements RowMetaInterface
     
     public RowMeta clone()
     {
+      try {
         RowMeta rowMeta = new RowMeta();
         for (int i=0;i<size();i++)
         {
             ValueMetaInterface valueMeta = getValueMeta(i);
-            rowMeta.addValueMeta( valueMeta.clone() );
+            rowMeta.addValueMeta( ValueMetaFactory.cloneValueMeta(valueMeta ) );
         }
         return rowMeta;
+      } catch(Exception e) {
+        throw new RuntimeException(e);
+      }
     }
     
     /**
