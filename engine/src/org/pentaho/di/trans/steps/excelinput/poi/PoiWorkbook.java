@@ -48,7 +48,8 @@ public class PoiWorkbook implements KWorkbook {
       if (fileObject instanceof LocalFile) {
         // This supposedly shaves off a little bit of memory usage by allowing POI to randomly access data in the file
         //
-        workbook = org.apache.poi.ss.usermodel.WorkbookFactory.create(new File(filename));
+        String localFilename=KettleVFS.getFilename(fileObject);
+        workbook = org.apache.poi.ss.usermodel.WorkbookFactory.create(new File(localFilename));
       } else {
         workbook = org.apache.poi.ss.usermodel.WorkbookFactory.create(KettleVFS.getInputStream(filename));
       }
