@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.excelinput.poi;
 
 import java.io.File;
+import java.net.URI;
 
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.provider.local.LocalFile;
@@ -46,7 +47,8 @@ public class PoiWorkbook implements KWorkbook {
     try {
       FileObject fileObject = KettleVFS.getFileObject(filename);
       if (fileObject instanceof LocalFile) {
-        workbook = org.apache.poi.ss.usermodel.WorkbookFactory.create(new File(filename));
+        String localFilename=KettleVFS.getFilename(fileObject);
+        workbook = org.apache.poi.ss.usermodel.WorkbookFactory.create(new File(localFilename));
       } else {
         workbook = org.apache.poi.ss.usermodel.WorkbookFactory.create(KettleVFS.getInputStream(filename));
       }
