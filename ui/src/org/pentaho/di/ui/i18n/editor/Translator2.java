@@ -788,13 +788,14 @@ public class Translator2 {
 
       StringBuffer msg = new StringBuffer();
       for (MessagesStore messagesStore : changedMessagesStores) {
-        // Find the main locale variation for this messages store...
-        //
-        MessagesStore mainLocaleMessagesStore = store.findMainLocaleMessagesStore(messagesStore.getSourceFolder(), messagesStore.getMessagesPackage());
-        String sourceDirectory = mainLocaleMessagesStore.getSourceDirectory(rootDirectories);
-        String filename = messagesStore.getSaveFilename(sourceDirectory);
+        String filename = messagesStore.getSaveFilename(messagesStore.getSourceFolder());
         messagesStore.setFilename(filename);
-        msg.append(filename).append(Const.CR);
+        
+        msg.append(messagesStore.getFilename());
+        if (!new File(filename).exists()) {
+          msg.append(" (NEW!)");
+        }
+        msg.append(Const.CR);
       }
 
       EnterTextDialog dialog = new EnterTextDialog(shell, BaseMessages.getString(PKG, "i18nDialog.ChangedFiles"), BaseMessages.getString(PKG, "i18nDialog.ChangedMessagesFiles"), msg.toString());
