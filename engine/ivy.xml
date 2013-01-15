@@ -65,6 +65,7 @@
     <dependency org="org.apache.poi"                   name="poi"                  rev="3.9"             transitive="false"/>
     <dependency org="org.apache.poi"                   name="poi-ooxml"            rev="3.9"             transitive="false"/>
     <dependency org="org.apache.poi"                   name="poi-ooxml-schemas"    rev="3.9"             transitive="false"/>
+    <dependency org="org.apache.xmlbeans"              name="xmlbeans"             rev="2.5.0"           transitive="false"/>
     <dependency org="postgresql"                       name="postgresql"           rev="8.4-702.jdbc3"   transitive="false"/>
     <dependency org="rome"                             name="rome"                 rev="1.0"             transitive="false"/>
     <dependency org="org.eobjects.sassyreader"         name="SassyReader"          rev="0.5"             transitive="false"/>
@@ -88,11 +89,9 @@
     <dependency org="org.codehaus.jackson"             name="jackson-jaxrs"        rev="1.9.2"           transitive="false"/>
     <dependency org="stax"                             name="stax"                 rev="1.2.0"           transitive="false"/>
     <dependency org="org.springframework"              name="spring"               rev="2.5.6"           transitive="false"/>
-    <dependency org="org.apache.xbean"                 name="xbean"                rev="3.12"            transitive="false"/>
 
     <!--  for testing -->
     <dependency org="com.h2database"      name="h2"            rev="1.2.131" conf="test->default" transitive="false"/>
-    <dependency org="org.apache.xmlbeans" name="xmlbeans"      rev="2.5.0"   conf="test->default" transitive="false"/>
     <dependency org="org.slf4j"           name="slf4j-api"     rev="1.6.1"   conf="test->default" transitive="false"/>
     <dependency org="org.slf4j"           name="slf4j-log4j12" rev="1.6.1"   conf="test->default" transitive="false"/>
     <dependency org="oro"                 name="oro"           rev="2.0.8"   conf="test->default" transitive="false"/>
