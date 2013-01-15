@@ -1,43 +1,89 @@
-@echo off
+@echo on
 
 REM **************************************************
 REM ** Libraries used by Kettle:                    **
 REM **************************************************
 
-set CLASSPATH=.
+set RUNDIR=%CD%\dist
+set XMLFILE=%CD%\%1%
+set SRCDIR=%CD%\%2%
 
-REM ******************
-REM   KETTLE Library
-REM ******************
-set CLASSPATH=%CLASSPATH%;lib\kettle-core-TRUNK-SNAPSHOT.jar
-set CLASSPATH=%CLASSPATH%;lib\kettle-db-TRUNK-SNAPSHOT.jar
-set CLASSPATH=%CLASSPATH%;lib\kettle-engine-TRUNK-SNAPSHOT.jar
-set CLASSPATH=%CLASSPATH%;lib\kettle-ui-swt-TRUNK-SNAPSHOT.jar
+echo RUNDIR=%RUNDIR%
+echo XMLFILE=%XMLFILE%
+echo SRCDIR=%SRCDIR%
 
-REM *****************
-REM   SWT Libraries
-REM *****************
+cd dist
 
-set CLASSPATH=%CLASSPATH%;libswt\runtime.jar
-set CLASSPATH=%CLASSPATH%;libswt\jface.jar
-set CLASSPATH=%CLASSPATH%;libswt\win32\swt.jar
-set CLASSPATH=%CLASSPATH%;libswt\common.jar
-set CLASSPATH=%CLASSPATH%;libswt\commands.jar
+set IS64BITJAVA=0
 
-set CLASSPATH=%CLASSPATH%;lib/kettle-vfs-20091118.jar
-set CLASSPATH=%CLASSPATH%;lib/commons-logging-1.1.jar
-set CLASSPATH=%CLASSPATH%;lib/log4j-1.2.14.jar
-set CLASSPATH=%CLASSPATH%;lib/spring-core-2.5.6.jar
+REM **************************************************
+REM   Platform Specific SWT       **
+REM **************************************************
+
+REM The following line is predicated on the 64-bit Sun
+REM java output from -version which
+REM looks like this (at the time of this writing):
+REM
+REM java version "1.6.0_17"
+REM Java(TM) SE Runtime Environment (build 1.6.0_17-b04)
+REM Java HotSpot(TM) 64-Bit Server VM (build 14.3-b01, mixed mode)
+REM
+REM Below is a logic to find the directory where java can found. We will
+REM temporarily change the directory to that folder where we can run java there
+
+FOR /F %%a IN ('java -version 2^>^&1^|find /C "64-Bit"') DO (SET /a IS64BITJAVA=%%a)
+GOTO CHECK32VS64BITJAVA
+:CHECK32VS64BITJAVA
+
+IF %IS64BITJAVA% == 1 GOTO :USE64
+
+:USE32
+REM ===========================================
+REM Using 32bit Java, so include 32bit SWT Jar
+REM ===========================================
+set LIBSPATH=libswt\win32
+
+GOTO :CONTINUE
+:USE64
+REM ===========================================
+REM Using 64bit java, so include 64bit SWT Jar
+REM ===========================================
+set LIBSPATH=libswt\win64
+set SWTJAR=..\libswt\win64
+
+:CONTINUE
+
+
+REM **********************
+REM   Collect arguments
+REM **********************
+
+set _cmdline=
+:TopArg
+if %1!==! goto EndArg
+set _cmdline=%_cmdline% %1
+shift
+goto TopArg
+:EndArg
 
 REM ******************************************************************
 REM ** Set java runtime options                                     **
-REM ** Change 128m to higher values in case you run out of memory.  **
+REM ** Change 512m to higher values in case you run out of memory   **
+REM ** or set the PENTAHO_DI_JAVA_OPTIONS environment variable      **
 REM ******************************************************************
 
-set OPT=-Xmx256m -cp %CLASSPATH% -Djava.library.path=libswt\win32\
+set PENTAHO_DI_JAVA_OPTIONS="-Xmx512m" "-XX:MaxPermSize=256m"
+set OPT="-Djava.library.path=%LIBSPATH%" "-DKETTLE_HOME=%KETTLE_HOME%" "-DKETTLE_REPOSITORY=%KETTLE_REPOSITORY%" "-DKETTLE_USER=%KETTLE_USER%" "-DKETTLE_PASSWORD=%KETTLE_PASSWORD%" "-DKETTLE_PLUGIN_PACKAGES=%KETTLE_PLUGIN_PACKAGES%" "-DKETTLE_LOG_SIZE_LIMIT=%KETTLE_LOG_SIZE_LIMIT%" "-DKETTLE_JNDI_ROOT=%KETTLE_JNDI_ROOT%"
 
 REM ***************
 REM ** Run...    **
 REM ***************
 
-java %OPT% org.pentaho.di.ui.i18n.editor.Translator2 %1 %2 %3 %4 %5 %6 %7 %8 %9
+REM Eventually call java instead of javaw and do not run in a separate window
+set TRANSLATOR_START_OPTION=start "Translator"
+
+@echo on
+%TRANSLATOR_START_OPTION% java %OPT% -jar launcher\launcher-1.0.0.jar -lib ..\%LIBSPATH% -main org.pentaho.di.ui.i18n.editor.Translator2 %XMLFILE% %SRCDIR%
+@echo off
+
+cd %RUNDIR%\..
