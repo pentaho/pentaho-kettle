@@ -22,6 +22,10 @@
 
 package org.pentaho.di.trans.steps.excelinput.poi;
 
+import java.io.File;
+
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.provider.local.LocalFile;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.pentaho.di.core.exception.KettleException;
@@ -40,7 +44,14 @@ public class PoiWorkbook implements KWorkbook {
     this.encoding = encoding;
     
     try {
-      workbook = org.apache.poi.ss.usermodel.WorkbookFactory.create(KettleVFS.getInputStream(filename));
+      FileObject fileObject = KettleVFS.getFileObject(filename);
+      if (fileObject instanceof LocalFile) {
+        // This supposedly shaves off a little bit of memory usage by allowing POI to randomly access data in the file
+        //
+        workbook = org.apache.poi.ss.usermodel.WorkbookFactory.create(new File(filename));
+      } else {
+        workbook = org.apache.poi.ss.usermodel.WorkbookFactory.create(KettleVFS.getInputStream(filename));
+      }
     } catch(Exception e) {
       throw new KettleException(e);
     }
