@@ -4,12 +4,22 @@
   <reference-locale>en_US</reference-locale>
 
   <source-directories>
+
     <root>core/src</root>
     <root>engine/src</root>
     <root>ui/src</root>
     <root>db/src</root>
-    <root>dbdialog/src</root>
-    <root>jdbc/src</root>
+
+    <!--- <root>dbdialog/src</root>
+    <root>jdbc/src</root> -->
+
+    <root>plugins/kettle-gpload-plugin/src</root>
+    <root>plugins/star-modeler/src</root>
+    <root>plugins/market/src</root>
+    <root>plugins/kettle-palo-plugin/src</root>
+    <root>plugins/kettle-openerp-plugin/src</root>
+    <root>plugins/kettle-hl7-plugin/src</root>
+
   </source-directories>
   
   <scan-phrases>
@@ -59,10 +69,11 @@
   
   <xml-folders-to-scan>
     <xml-folder-to-scan> 
-       <folder>assembly/package-res/</folder> 
+       <folder>assembly/package-res/ui</folder> 
        <wildcard>.*\.xul$</wildcard>
        <key-prefix>%</key-prefix>
        <package-default>org.pentaho.di.ui.spoon</package-default>
+       <package-source-folder>ui/src</package-source-folder>
        <package-exceptions>
          <package-exception>  
            <starts-with>JobGraph.</starts-with>  

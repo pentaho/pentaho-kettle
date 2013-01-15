@@ -18,7 +18,7 @@ export LD_LIBRARY_PATH=${MOZILLA_FIVE_HOME}:${LD_LIBRARY_PATH}
 
 BASEDIR=${KETTLE_HOME}
 if [ -z "$KETTLE_HOME" ]; then
-  BASEDIR=$(dirname $0)/assembly/bin/stage/data-integration/
+  BASEDIR=$(dirname $0)/dist/
 fi
 CLASSPATH=$BASEDIR
 CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-core-TRUNK-SNAPSHOT.jar
@@ -27,7 +27,7 @@ CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-engine-TRUNK-SNAPSHOT.jar
 CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-ui-swt-TRUNK-SNAPSHOT.jar
 CLASSPATH=$CLASSPATH:lib/saxon-dom-9.1.0.8.jar
 
-echo $CLASSPATH
+# echo $CLASSPATH
 
 CLASSPATH=$CLASSPATH:$BASEDIR/libswt/jface.jar
 CLASSPATH=$CLASSPATH:$BASEDIR/libswt/runtime.jar
@@ -144,11 +144,11 @@ fi
 # ** Change 256m to higher values in case you run out of memory.  **
 # ******************************************************************
 
-OPT="-Xmx256m -cp $CLASSPATH -Djava.library.path=$LIBPATH -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD"
+OPT="-Xmx512m -cp $CLASSPATH -Djava.library.path=$LIBPATH -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD"
 
 # ***************
 # ** Run...    **
 # ***************
 
-$JAVA_BIN $OPT org.pentaho.di.ui.i18n.editor.Translator2 "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9"
+$JAVA_BIN $OPT org.pentaho.di.ui.i18n.editor.Translator2 "${1+$@}"
 
