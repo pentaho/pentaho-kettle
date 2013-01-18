@@ -180,9 +180,10 @@ public class Market implements SpoonPluginInterface {
       return new File(plugin.getPluginDirectory().getFile()).getParent();
     } else {
       String subfolder = getInstallationSubfolder(marketEntry);
-      // ~/.kettle/plugins/steps
-      // ~/.kettle/plugins
-      return Const.getKettleDirectory() + Const.FILE_SEPARATOR + "plugins" + (subfolder == null ? "" : Const.FILE_SEPARATOR + subfolder);
+      
+      // Use current directory (should be the Kettle distribution directory) as the root folder to install plugins
+      // This is because plugin types are not guaranteed to search the ~/.kettle folder for plugins. 
+      return "plugins" + (subfolder == null ? "" : Const.FILE_SEPARATOR + subfolder);
     }
   }    
     
