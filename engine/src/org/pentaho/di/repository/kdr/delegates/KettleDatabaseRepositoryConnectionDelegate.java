@@ -1536,7 +1536,8 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
   }
 
   public RowMetaAndData getOneRow(String tablename, String keyfield, ObjectId id) throws KettleException {
-    String sql = "SELECT * FROM " + tablename + " WHERE " + keyfield + " = ?";
+	String schemaAndTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+    String sql = "SELECT * FROM " + schemaAndTable + " WHERE " + keyfield + " = ?";
 
     // Get the prepared statement
     //
