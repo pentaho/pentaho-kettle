@@ -21,6 +21,12 @@
  ******************************************************************************/
 
 package org.pentaho.di.ui.spoon.dialog;
+
+import java.lang.reflect.InvocationTargetException;
+
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -57,6 +63,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class MarketplaceDialog extends Dialog {
   private static Class<?> MARKET_PKG = Market.class; // for i18n purposes, needed by Translator2!!
+  
   private Label wlMarketplaces;
   private Button wClose;
   private Shell shell;
@@ -109,7 +116,7 @@ public class MarketplaceDialog extends Dialog {
     //
     MarketEntries marketEntries = new MarketEntries();
     for (final MarketEntry marketEntry : marketEntries) {
-      Composite composite = new Composite(bar, SWT.NONE);
+      final Composite composite = new Composite(bar, SWT.NONE);
       FormLayout layout = new FormLayout();
       layout.marginHeight = margin;
       layout.marginWidth = margin;
@@ -196,26 +203,47 @@ public class MarketplaceDialog extends Dialog {
       final Button button = new Button(composite, SWT.PUSH);
       final ExpandItem expandItem = new ExpandItem(bar, SWT.NONE, 0);
       setButtonLabel(button, marketEntry.isInstalled());
-      button.addSelectionListener(new SelectionAdapter() {
+      
+      // Create ProgressMonitorDialog for long-running operations
+      final ProgressMonitorDialog pmd = new ProgressMonitorDialog(shell);
+      
+      // Allow for upgrade
+	  final Button upgradeButton = new Button(composite, SWT.PUSH);
+      upgradeButton.setText(BaseMessages.getString(MARKET_PKG, "MarketplacesDialog.UpgradeTo.button", marketEntry.getVersion()));
+      upgradeButton.addSelectionListener(new SelectionAdapter() {
         public void widgetSelected(SelectionEvent e) {
           try {
             if (marketEntry.getId().equals("market")) {
               // prompt for a confirmation
               MessageBox mb = new MessageBox(shell, SWT.NO | SWT.YES | SWT.ICON_WARNING);
               // "This file already exists.  Do you want to overwrite it?"
-              mb.setMessage(BaseMessages.getString(MARKET_PKG, "MarketplacesDialog.UninstallMarket.Message"));
+              mb.setMessage(BaseMessages.getString(MARKET_PKG, "MarketplacesDialog.UpgradeMarket.Message"));
               // "This file already exists!"
-              mb.setText(BaseMessages.getString(MARKET_PKG, "MarketplacesDialog.UninstallMarket.Title"));
+              mb.setText(BaseMessages.getString(MARKET_PKG, "MarketplacesDialog.UpgradeMarket.Title"));
               int id = mb.open();
               if (id == SWT.YES) {
                 dispose();
-                Market.uninstallMarket();
+                Market.upgradeMarket(marketEntry);
               }
             } else {
-              Market.installUninstall(marketEntry, marketEntry.isInstalled());
-              Market.discoverInstalledVersion(marketEntry);
-              setButtonLabel(button, marketEntry.isInstalled());
-              setPluginName(expandItem, marketEntry.getName(), marketEntry.isInstalled());
+          	  try {
+          		// Create runner for upgrade and run it
+        			pmd.run(true, true, new ProgressMonitorRunner(new Runnable() {
+        	    	  public void run() {
+        	    		  try {
+        	    			  Market.install(marketEntry);
+        	    			  upgradeButton.setEnabled(false);
+        	    		  }
+        	    		  catch(KettleException ke) {
+        	    			  new ErrorDialog(shell, BaseMessages.getString(MARKET_PKG, "Market.error"),
+        	    					  BaseMessages.getString(MARKET_PKG, "Market.installUninstall.error"), ke);
+        	    		  }
+        	    	  }
+        	      }));
+        		}
+        		catch (Exception ex) {
+        			new ErrorDialog(shell, "Error with Progress Monitor Dialog", "Error with Progress Monitor Dialog", ex);
+        		}
             }
           } catch (KettleException ke) {
             new ErrorDialog(shell, BaseMessages.getString(MARKET_PKG, "Market.error"),
@@ -223,53 +251,68 @@ public class MarketplaceDialog extends Dialog {
           }
         }
       });
-
-//      FormData fdButton = new FormData();
-//      fdButton.top = new FormAttachment(lastControl, 4 * margin);
-//      fdButton.left = new FormAttachment(middle, margin);
-//      button.setLayoutData(fdButton);
-
-      if (marketEntry.getInstalledVersion() != marketEntry.getVersion()) {
-        // Allow for upgrade
-        final Button upgradeButton = new Button(composite, SWT.PUSH);
-        upgradeButton.setText(BaseMessages.getString(MARKET_PKG, "MarketplacesDialog.UpgradeTo.button", marketEntry.getVersion()));
-        upgradeButton.addSelectionListener(new SelectionAdapter() {
+      
+      BaseStepDialog.positionBottomButtons(composite, new Button[] {button,  upgradeButton}, margin, lastControl);
+      boolean showUpgradeButton = marketEntry.getInstalledVersion() != marketEntry.getVersion() && marketEntry.isInstalled();
+      upgradeButton.setVisible(showUpgradeButton);
+      
+      
+      // Create runner for installation/uninstallation
+      final ProgressMonitorRunner installRunner = new ProgressMonitorRunner(new Runnable() {
+    	  public void run() {
+    		  try {
+    			  Market.installUninstall(marketEntry, marketEntry.isInstalled());
+			      Market.discoverInstalledVersion(marketEntry);
+			      setButtonLabel(button, marketEntry.isInstalled());
+			      setPluginName(expandItem, marketEntry.getName(), marketEntry.isInstalled());
+			      if(upgradeButton != null) {
+			    	  upgradeButton.setVisible(marketEntry.isInstalled());
+			      }
+			  }
+    		  catch(KettleException ke) {
+    			  new ErrorDialog(shell, BaseMessages.getString(MARKET_PKG, "Market.error"),
+    					  BaseMessages.getString(MARKET_PKG, "Market.installUninstall.error"), ke);
+    		  }
+    	  }
+      });
+      
+      // Create runner for market uninstallation
+      final ProgressMonitorRunner uninstallMarketRunner = new ProgressMonitorRunner(new Runnable() {
+    	  public void run() {
+    		  try {
+    			  Market.uninstallMarket();
+			  }
+    		  catch(KettleException ke) {
+    			  new ErrorDialog(shell, BaseMessages.getString(MARKET_PKG, "Market.error"),
+    					  BaseMessages.getString(MARKET_PKG, "Market.installUninstall.error"), ke);
+    		  }
+    	  }
+      });
+      
+      button.addSelectionListener(new SelectionAdapter() {
           public void widgetSelected(SelectionEvent e) {
             try {
               if (marketEntry.getId().equals("market")) {
                 // prompt for a confirmation
                 MessageBox mb = new MessageBox(shell, SWT.NO | SWT.YES | SWT.ICON_WARNING);
                 // "This file already exists.  Do you want to overwrite it?"
-                mb.setMessage(BaseMessages.getString(MARKET_PKG, "MarketplacesDialog.UpgradeMarket.Message"));
+                mb.setMessage(BaseMessages.getString(MARKET_PKG, "MarketplacesDialog.UninstallMarket.Message"));
                 // "This file already exists!"
-                mb.setText(BaseMessages.getString(MARKET_PKG, "MarketplacesDialog.UpgradeMarket.Title"));
+                mb.setText(BaseMessages.getString(MARKET_PKG, "MarketplacesDialog.UninstallMarket.Title"));
                 int id = mb.open();
                 if (id == SWT.YES) {
                   dispose();
-                  Market.upgradeMarket(marketEntry);
+                  pmd.run(true, true, uninstallMarketRunner);
                 }
               } else {
-                Market.install(marketEntry);
-                upgradeButton.setEnabled(false);
+          		pmd.run(true, true, installRunner);
               }
-            } catch (KettleException ke) {
+            } catch (Throwable ke) {
               new ErrorDialog(shell, BaseMessages.getString(MARKET_PKG, "Market.error"),
                   BaseMessages.getString(MARKET_PKG, "Market.installUninstall.error"), ke);
             }
           }
         });
-        
-//        FormData fdUpgradeButton = new FormData();
-//        fdUpgradeButton.top = new FormAttachment(lastControl, 4 * margin);
-//        fdUpgradeButton.left = new FormAttachment(button, margin);
-//        upgradeButton.setLayoutData(fdUpgradeButton);
-        
-        BaseStepDialog.positionBottomButtons(composite, new Button[] {button,  upgradeButton}, margin, lastControl);
-        
-      } else {
-        BaseStepDialog.positionBottomButtons(composite, new Button[] {button}, margin, lastControl);
-        
-      }
 
       Label wlName = new Label(composite, SWT.LEFT);
       props.setLook(wlName);
@@ -416,5 +459,26 @@ public class MarketplaceDialog extends Dialog {
 	{
 		props.setScreen(new WindowProperty(shell));
 		shell.dispose();
-	}		
+	}
+  
+  private class ProgressMonitorRunner implements IRunnableWithProgress {
+	  
+	  private Runnable runnable;
+	  
+	  public ProgressMonitorRunner(Runnable runnable) {
+		  this.runnable = runnable;
+	  }
+	  
+	  public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
+		{
+			try
+			{
+				Spoon.getInstance().getDisplay().asyncExec(runnable);
+			}
+			catch(Exception e)
+			{
+				throw new InvocationTargetException(e, "Error during install: "+e.toString());
+			}
+		}
+  }
 }
