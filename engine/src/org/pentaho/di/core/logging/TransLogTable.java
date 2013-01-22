@@ -26,10 +26,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.KettleClientEnvironment;
+import org.pentaho.di.core.KettleClientEnvironment.ClientType;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.JobLogTable.ID;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -55,6 +58,9 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
 
 	public static final String	XML_TAG	= "trans-log-table";
 
+	/** The client executing the transformation */
+	private String client;
+	
 	public enum ID {
 		
 		ID_BATCH("ID_BATCH"),
@@ -76,6 +82,7 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
 		LOG_FIELD("LOG_FIELD"),
     EXECUTING_SERVER("EXECUTING_SERVER"),
     EXECUTING_USER("EXECUTING_USER"),
+    CLIENT("CLIENT")
     ;
 		
 		private String id;
@@ -212,6 +219,7 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
 		table.fields.add( new LogTableField(ID.LOG_FIELD.id, true, false, "LOG_FIELD", BaseMessages.getString(PKG, "TransLogTable.FieldName.LogField"), BaseMessages.getString(PKG, "TransLogTable.FieldDescription.LogField"), ValueMetaInterface.TYPE_STRING, DatabaseMeta.CLOB_LENGTH) );
     table.fields.add( new LogTableField(ID.EXECUTING_SERVER.id, true, false, "EXECUTING_SERVER", BaseMessages.getString(PKG, "TransLogTable.FieldName.ExecutingServer"), BaseMessages.getString(PKG, "TransLogTable.FieldDescription.ExecutingServer"), ValueMetaInterface.TYPE_STRING, 255) );
     table.fields.add( new LogTableField(ID.EXECUTING_USER.id, true, false, "EXECUTING_USER", BaseMessages.getString(PKG, "TransLogTable.FieldName.ExecutingUser"), BaseMessages.getString(PKG, "TransLogTable.FieldDescription.ExecutingUser"), ValueMetaInterface.TYPE_STRING, 255) );
+    table.fields.add( new LogTableField(ID.CLIENT.id, true, false, "CLIENT", BaseMessages.getString(PKG, "TransLogTable.FieldName.Client"), BaseMessages.getString(PKG, "TransLogTable.FieldDescription.Client"), ValueMetaInterface.TYPE_STRING, 255) );
 		
 		table.findField(ID.ID_BATCH).setKey(true);
 		table.findField(ID.LOGDATE).setLogDateField(true);
@@ -378,6 +386,7 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
               break;
             case EXECUTING_SERVER: value = trans.getExecutingServer(); break;
             case EXECUTING_USER: value = trans.getExecutingUser(); break;
+            case CLIENT: value = KettleClientEnvironment.getInstance().getClient() != null ? KettleClientEnvironment.getInstance().getClient().toString() : "unknown"; break;
 						}
 					}
 

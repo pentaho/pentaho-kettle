@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.Log4jFileAppender;
@@ -60,6 +61,7 @@ public class Pan {
 
   public static void main(String[] a) throws KettleException {
     KettleEnvironment.init();
+    KettleClientEnvironment.getInstance().setClient(KettleClientEnvironment.ClientType.PAN);
 
     List<String> args = new ArrayList<String>();
     for (int i = 0; i < a.length; i++) {

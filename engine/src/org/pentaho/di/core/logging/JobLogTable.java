@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -76,6 +77,7 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
     EXECUTING_SERVER("EXECUTING_SERVER"),
     EXECUTING_USER("EXECUTING_USER"),
     START_JOB_ENTRY("START_JOB_ENTRY"),
+    CLIENT("CLIENT")
     ;
 		
 		private String id;
@@ -177,6 +179,7 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
     table.fields.add( new LogTableField(ID.EXECUTING_SERVER.id, true, false, "EXECUTING_SERVER", BaseMessages.getString(PKG, "JobLogTable.FieldName.ExecutingServer"), BaseMessages.getString(PKG, "JobLogTable.FieldDescription.ExecutingServer"), ValueMetaInterface.TYPE_STRING, 255) );
     table.fields.add( new LogTableField(ID.EXECUTING_USER.id, true, false, "EXECUTING_USER", BaseMessages.getString(PKG, "JobLogTable.FieldName.ExecutingUser"), BaseMessages.getString(PKG, "JobLogTable.FieldDescription.ExecutingUser"), ValueMetaInterface.TYPE_STRING, 255) );
     table.fields.add( new LogTableField(ID.START_JOB_ENTRY.id, true, false, "START_JOB_ENTRY", BaseMessages.getString(PKG, "JobLogTable.FieldName.StartingJobEntry"), BaseMessages.getString(PKG, "JobLogTable.FieldDescription.StartingJobEntry"), ValueMetaInterface.TYPE_STRING, 255) );
+    table.fields.add( new LogTableField(ID.CLIENT.id, true, false, "CLIENT", BaseMessages.getString(PKG, "JobLogTable.FieldName.Client"), BaseMessages.getString(PKG, "JobLogTable.FieldDescription.Client"), ValueMetaInterface.TYPE_STRING, 255) );
 
 		table.findField(ID.ID_JOB).setKey(true);
 		table.findField(ID.LOGDATE).setLogDateField(true);
@@ -318,6 +321,7 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
             case EXECUTING_SERVER: value = job.getExecutingServer(); break;
             case EXECUTING_USER: value = job.getExecutingUser(); break;
             case START_JOB_ENTRY: value = job.getCheckpointJobEntry()!=null ? job.getCheckpointJobEntry().getName() : null; break;
+            case CLIENT: value = KettleClientEnvironment.getInstance().getClient()!= null ? KettleClientEnvironment.getInstance().getClient().toString() : "unknown"; break;
 						}
 					}
 

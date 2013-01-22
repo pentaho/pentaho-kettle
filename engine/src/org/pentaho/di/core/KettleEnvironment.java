@@ -38,6 +38,8 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.IUser;
+import org.pentaho.di.repository.Repository;
 
 /**
  * The KettleEnvironment class contains settings and properties for all of Kettle. Initialization of the 
@@ -166,5 +168,20 @@ public class KettleEnvironment {
 	 */
 	public void loadPluginRegistry() throws KettlePluginException {
 		
+	}
+	
+	/**
+	 * Sets the executor's user and Server information
+	 */
+	public static void setExecutionInformation(ExecutorInterface executor, Repository repository) {
+	    // Capture the executing user and server name... 
+		executor.setExecutingUser(System.getProperty("user.name"));
+	    if (repository!=null) {
+	      IUser userInfo = repository.getUserInfo();
+	      if (userInfo!=null) {
+	    	  executor.setExecutingUser(userInfo.getLogin());
+	      }
+	    }
+	    executor.setExecutingServer(Const.getHostname());
 	}
 }

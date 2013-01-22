@@ -29,6 +29,7 @@ import java.util.List;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.LogChannel;
@@ -117,6 +118,8 @@ public class Carte
     public static void main(String[] args) throws Exception
     {
       KettleEnvironment.init();
+      KettleClientEnvironment.getInstance().setClient(KettleClientEnvironment.ClientType.CARTE);
+      
       
     	// Load from an xml file that describes the complete configuration...
     	//

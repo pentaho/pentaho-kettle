@@ -40,6 +40,8 @@ import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.ExecutorInterface;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
@@ -86,7 +88,6 @@ import org.pentaho.di.job.entries.special.JobEntrySpecial;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
-import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
@@ -111,7 +112,7 @@ import org.w3c.dom.Node;
  * @since  07-apr-2003
  * 
  */
-public class Job extends Thread implements VariableSpace, NamedParams, HasLogChannelInterface, LoggingObjectInterface
+public class Job extends Thread implements VariableSpace, NamedParams, HasLogChannelInterface, LoggingObjectInterface, ExecutorInterface
 {
 	private static Class<?> PKG = Job.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -368,7 +369,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 		
 		return jobMeta.getName();
 	}
-
+	
 	/**
 	 * Sets the repository.
 	 * @param rep the new repository
@@ -446,7 +447,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       
       finished.set(false);
       stopped.set(false);
-      captureSystemEnvironment();
+      KettleEnvironment.setExecutionInformation(this, rep);
   
       // Calculate the transaction ID prior to execution
       //
@@ -534,7 +535,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     finished.set(false);
     active.set(true);
     initialized.set(true);
-    captureSystemEnvironment();
+    KettleEnvironment.setExecutionInformation(this, rep);
 
     // Calculate the transaction ID prior to execution
     //
@@ -1589,7 +1590,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 		return jobMeta;
 	}
 		
-	/**
+    /**
 	 * Gets the rep (repository).
 	 * @return Returns the rep
 	 */
@@ -2385,7 +2386,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
   public void setStartJobEntryCopy(JobEntryCopy startJobEntryCopy) {
     this.startJobEntryCopy = startJobEntryCopy;
   }
-
+   
   /**
    * Gets the executing server.
    * @return the executingServer
@@ -2417,22 +2418,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
   public void setExecutingUser(String executingUser) {
     this.executingUser = executingUser;
   }
-  
-  /**
-   * Sets the executing user and host from the environment.
-   */
-  public void captureSystemEnvironment() {
-    // Capture the executing user and server name... 
-    setExecutingUser(System.getProperty("user.name"));
-    if (rep!=null) {
-      IUser userInfo = rep.getUserInfo();
-      if (userInfo!=null) {
-        setExecutingUser(userInfo.getLogin());
-      }
-    }
-    setExecutingServer(Const.getHostname());
-  }
- 
+   
   @Override
   public boolean isGatheringMetrics() {
     return log!=null && log.isGatheringMetrics();

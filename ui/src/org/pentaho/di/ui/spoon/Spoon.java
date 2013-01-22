@@ -121,6 +121,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.JndiUtil;
+import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.NotePadMeta;
@@ -561,6 +562,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       registerUIPluginObjectTypes();
 
       KettleEnvironment.init();
+      
+      KettleClientEnvironment.getInstance().setClient(KettleClientEnvironment.ClientType.SPOON);
 
       List<String> args = new ArrayList<String>(java.util.Arrays.asList(a));
 

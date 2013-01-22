@@ -49,6 +49,8 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.BlockingBatchingRowSet;
 import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.ExecutorInterface;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.QueueRowSet;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
@@ -133,7 +135,7 @@ import org.pentaho.di.www.WebResult;
  * @since 07-04-2003
  *
  */
-public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface, LoggingObjectInterface
+public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface, LoggingObjectInterface, ExecutorInterface
 {
 	
 	/** The package name, used for internationalization of messages. */
@@ -157,7 +159,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	/** The transformation metadata to execute. */
 	private TransMeta transMeta;
 	
-	/**
+    /** 
 	 * The repository we are referencing.
 	 */
 	private Repository repository;
@@ -349,7 +351,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   
   /** The name of the executing user */
   private String executingUser;
-  
+    
 	/**
 	 * Instantiates a new transformation.
 	 */
@@ -1005,6 +1007,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     log.snap(Metrics.METRIC_TRANSFORMATION_INIT_STOP);
 
+    KettleEnvironment.setExecutionInformation(this, repository);
+    
     readyToStart = true;
   }
 

@@ -20,14 +20,24 @@ import org.pentaho.di.i18n.BaseMessages;
 public class KettleClientEnvironment {
 	/** For i18n purposes, needed by Translator2!! */
 	private static Class<?> PKG = Const.class; 
+	
+	private static KettleClientEnvironment instance = null;
 
 	private static Boolean initialized;
+	
+	public enum ClientType {SPOON, PAN, KITCHEN, CARTE, DI_SERVER};
+	
+	private ClientType client;
 	
 	public static synchronized void init() throws KettleException {
 		if (initialized!=null) {
 			return;
 		}
 		
+		if (KettleClientEnvironment.instance == null) {
+			KettleClientEnvironment.instance = new KettleClientEnvironment();
+		}
+				
 		createKettleHome();
 		
 		// Read the kettle.properties file before anything else
@@ -104,5 +114,26 @@ public class KettleClientEnvironment {
 				}
 			}
 		}
+	}
+	
+	public void setClient(ClientType client) {
+		this.client = client;
+	}
+	
+	public ClientType getClient() {
+		return this.client;
+	}
+	
+	/**
+	 * Return this singleton.  Craete it if it hasn't been.
+	 * @return
+	 */
+	public static KettleClientEnvironment getInstance() {
+		
+		if (KettleClientEnvironment.instance == null) {
+			KettleClientEnvironment.instance = new KettleClientEnvironment();
+		}
+		
+		return KettleClientEnvironment.instance;
 	}
 }
