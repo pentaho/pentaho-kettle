@@ -32,7 +32,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -127,14 +126,14 @@ public class GetRepositoryNamesDialog extends BaseStepDialog implements StepDial
     };
     changed = input.hasChanged();
 
-    shell.setLayout(new FillLayout());
+    shell.setLayout(new FormLayout());
     shell.setText(BaseMessages.getString(PKG, "GetRepositoryNamesDialog.DialogTitle"));
 
     middle = props.getMiddlePct();
     margin = Const.MARGIN;
     
     sComp = new ScrolledComposite(shell, SWT.V_SCROLL | SWT.H_SCROLL );
-    sComp.setLayout(new FillLayout());
+    sComp.setLayout(new FormLayout());
     
     comp = new Composite(sComp, SWT.NONE );
     props.setLook(comp);

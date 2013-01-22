@@ -45,7 +45,6 @@ import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -247,14 +246,14 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
     backupAutoInc = input.isAutoIncrement();
     ci = input.getDatabaseMeta();
 
-    shell.setLayout(new FillLayout());
+    shell.setLayout(new FormLayout());
     shell.setText(BaseMessages.getString(PKG, "DimensionLookupDialog.Shell.Title")); //$NON-NLS-1$
 
     int middle = props.getMiddlePct();
     int margin = Const.MARGIN;
 
     sComp = new ScrolledComposite(shell, SWT.V_SCROLL | SWT.H_SCROLL);
-    sComp.setLayout(new FillLayout());
+    sComp.setLayout(new FormLayout());
 
     comp = new Composite(sComp, SWT.NONE);
     props.setLook(comp);
