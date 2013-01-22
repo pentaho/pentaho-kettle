@@ -2628,4 +2628,10 @@ public class Const
 		  }
 		  return valueToPad;
 	  }
+	
+	public static boolean classIsOrExtends(Class<?> clazz, Class<?> superClass) {
+		if(clazz.equals(Object.class)) return false;
+		if(clazz.equals(superClass)) return true;
+		return classIsOrExtends(clazz.getSuperclass(),superClass);
+	}
 }

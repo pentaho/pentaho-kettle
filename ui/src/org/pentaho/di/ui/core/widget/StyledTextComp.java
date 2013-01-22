@@ -431,4 +431,12 @@ public class StyledTextComp extends Composite {
 	public StyledText getStyledText() {
 		return styledText;
 	}
+	
+	public boolean isEditable() {
+		return styledText.getEditable();
+	}
+	
+	public void setEditable(boolean canEdit) {
+		styledText.setEditable(canEdit);
+	}
 }

@@ -30,6 +30,20 @@ public class StepDefinition implements Cloneable {
 	public StepMeta stepMeta;
 	public String description;
 	
+	public StepDefinition() {
+		this.tag = "";
+		this.stepName = "";
+		this.stepMeta = null;
+		this.description = "";
+	}
+	
+	public StepDefinition(String tag, String stepName, StepMeta stepMeta, String description) {
+		this.tag = tag;
+		this.stepName = stepName;
+		this.stepMeta = stepMeta;
+		this.description = description;
+	}
+	
 	public Object clone() throws CloneNotSupportedException{
 		StepDefinition retval;
 		retval = (StepDefinition) super.clone();

@@ -198,21 +198,29 @@ public class PluginRegistry {
 		return Collections.unmodifiableList(new ArrayList<Class<? extends PluginTypeInterface>>(pluginMap.keySet()));
 	}	
 	
+	
 	/**
 	 * @param type The plugin type to query
 	 * @return The list of plugins
 	 */
 	@SuppressWarnings("unchecked")
-  public <T extends PluginInterface, K extends PluginTypeInterface> List<T> getPlugins(Class<K> type) {
-	  List<T> list = new ArrayList<T>();
-	  List<PluginInterface> mapList = pluginMap.get(type);
-	  if(mapList != null){
-  	  for(PluginInterface p : mapList){
-  	    list.add((T) p);
-  	  }
-	  }
+	public <T extends PluginInterface, K extends PluginTypeInterface> List<T> getPlugins(Class<K> type) {
+		List<T> list = new ArrayList<T>();
+		for(Class<? extends PluginTypeInterface> pi : pluginMap.keySet()) {
+		  if(Const.classIsOrExtends(pi, type)) {
+			  List<PluginInterface> mapList = pluginMap.get(pi);
+			  if(mapList != null){
+			  	  for(PluginInterface p : mapList){
+			  		  T t = (T)p;
+			  		  if(!list.contains(t)) {
+			  			  list.add((T) p);
+			  		  }
+			  	  }
+		  	  }
+		  }
+		}
+
 	  return list;
-//		return pluginMap.get(type);
 	}
 
 	/**
@@ -262,7 +270,7 @@ public class PluginRegistry {
 	/**
 	 * Retrieve a list of all categories for a certain plugin type.
 	 * @param pluginType The plugin type to search categories for.
-	 * @return The list of categories for thihttp:// commons.apache.org/vfs/filesystems.htmls plugin type.  The list can be modified (sorted etc) but will not impact the registry in any way.
+	 * @return The list of categories for this plugin type.  The list can be modified (sorted etc) but will not impact the registry in any way.
 	 */
 	public List<String> getCategories(Class<? extends PluginTypeInterface> pluginType) {
 		List<String> categories = categoryMap.get(pluginType);
@@ -638,9 +646,11 @@ public class PluginRegistry {
 		{
 			for (String className : plugin.getClassMap().values()) {
 				int lastIndex = className.lastIndexOf(".");
+				if(lastIndex > -1) {
 				String packageName = className.substring(0, lastIndex); 
 				if (!list.contains(packageName)) list.add(packageName);
 			}
+		}
 		}
 		Collections.sort(list);
 		return list;
@@ -867,7 +877,15 @@ public class PluginRegistry {
     if(list.contains(listener) == false){
       list.add(listener);
     }
+  }
 
+  public void addClassLoader(URLClassLoader ucl, PluginInterface plugin) {
+	  Map<PluginInterface, URLClassLoader> classLoaders = classLoaderMap.get(plugin.getPluginType());
+	  if (classLoaders == null) {
+          classLoaders = new HashMap<PluginInterface, URLClassLoader>();
+          classLoaderMap.put(plugin.getPluginType(), classLoaders);
+	  }
+	  classLoaders.put(plugin, ucl);
   }
 
   protected List<PluginTypeListener> getListenersForType(Class<? extends PluginTypeInterface> clazz){

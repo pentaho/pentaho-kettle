@@ -37,6 +37,7 @@ import org.pentaho.di.core.plugins.PartitionerPluginType;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.plugins.StepPluginType;
+import org.pentaho.di.core.plugins.UDJCStepPluginType;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.Repository;
@@ -107,14 +108,15 @@ public class KettleEnvironment {
 			// Register the native types and the plugins for the various plugin types...
 			//
 			PluginRegistry.addPluginType(StepPluginType.getInstance());
+			PluginRegistry.addPluginType(UDJCStepPluginType.getInstance());
 			PluginRegistry.addPluginType(PartitionerPluginType.getInstance());
 			PluginRegistry.addPluginType(JobEntryPluginType.getInstance());
 			PluginRegistry.addPluginType(RepositoryPluginType.getInstance());
 			PluginRegistry.addPluginType(DatabasePluginType.getInstance());
 			PluginRegistry.addPluginType(LifecyclePluginType.getInstance());
 			PluginRegistry.addPluginType(KettleLifecyclePluginType.getInstance());
-      PluginRegistry.addPluginType(ImportRulePluginType.getInstance());
-      PluginRegistry.addPluginType(CartePluginType.getInstance());
+			PluginRegistry.addPluginType(ImportRulePluginType.getInstance());
+			PluginRegistry.addPluginType(CartePluginType.getInstance());
 			PluginRegistry.init();
 			
 			// Also read the list of variables.

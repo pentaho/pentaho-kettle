@@ -1,0 +1,2346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeSnippits language="us">
+	<codeSnippit>
+		<name>Main</name>
+		<category>COMMON</category>
+		<code><![CDATA[public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
+{
+	Object[] r = getRow();
+	if (r == null) {
+		setOutputDone();
+		return false;
+	}
+
+    if (first)
+    {
+        first = false;
+    }
+
+	// It is always safest to call createOutputRow() to ensure that your output row's Object[] is large
+    // enough to handle any new fields you are creating in this step.
+    r = createOutputRow(r, outputRowSize);
+	
+    /* TODO: Your code here. (See Sample)
+    
+    // Get the value from an input field
+    String foobar = get(Fields.In, "a_fieldname").getString(r);
+
+    foobar += "bar";
+    
+    // Set a value in a new output field
+    get(Fields.Out, "output_fieldname").setValue(r, foobar);
+
+	*/
+	// Send the row on to the next step.
+    putRow(data.outputRowMeta, r);
+
+	return true;
+}
+]]></code>
+		<sample><![CDATA[import java.math.*;
+import java.util.*;
+import java.util.Map.Entry;
+
+/* All this Manipulator/FieldsUpdater stuff is just some magic to let me show you an example
+ * when I have no idea what input or output fields you are going to connect to the step.
+ * It looks for all the output fields and fiddles with them in some field type appropriate way.
+ * Hopefully your code will look a lot simpler and be more useful. ;) -Daniel
+ */
+private interface Manipulator {
+	public Object manipulate(Object in);
+	public Object create();
+}
+public static final class FieldsUpdater {
+	public static final FieldsUpdater NUMBER = new FieldsUpdater(new Manipulator() {
+		double numRecords = 0;
+		long startTime = System.currentTimeMillis();
+		public Object manipulate(Object in) {
+			if (in == null) return create();
+			return (Double)in + Math.random();
+		}
+		public Object create() {
+			return numRecords++ / (System.currentTimeMillis() - startTime);
+		}
+	});
+	public static final FieldsUpdater STRING = new FieldsUpdater(new Manipulator() {
+		public Object manipulate(Object in) {
+			if (in == null) return create();
+			return "Input was "+((String)in).length()+" characters.";
+		}
+		public Object create() { return "Hello World!"; }
+	});
+	public static final FieldsUpdater DATE = new FieldsUpdater(new Manipulator() {
+		Calendar cal = Calendar.getInstance();
+		Date myBirthday = new Date(156517500000L);
+		public Object manipulate(Object in) {
+			if (in == null) return create();
+			cal.setTime((Date)in);
+			cal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+			return cal.getTime();
+		}
+		public Object create() {
+			return myBirthday;
+		}
+	});
+	public static final FieldsUpdater BOOLEAN = new FieldsUpdater(new Manipulator() {
+		Boolean curBool = Boolean.FALSE;
+		public Object manipulate(Object in) {
+			if (in == null) return create();
+			return (Boolean)in ? Boolean.TRUE : Boolean.FALSE;
+		}
+		public Object create() {
+			curBool = curBool ? Boolean.FALSE : Boolean.TRUE;
+			return curBool;
+		}
+	});
+	public static final FieldsUpdater INTEGER = new FieldsUpdater(new Manipulator() {
+		int numRows = 0;
+		public Object manipulate(Object in) {
+			if (in == null) return create();
+			return ((Long)in) * -1;
+		}
+		public Object create() {
+			return numRows++;
+		}
+	});
+	public static final FieldsUpdater BIGNUMBER = new FieldsUpdater(new Manipulator() {
+		final BigDecimal three = new BigDecimal(3);
+		BigDecimal frac = new BigDecimal(Integer.MAX_VALUE, MathContext.DECIMAL128);
+		public Object manipulate(Object in) {
+			if (in == null) return create();
+			return ((BigDecimal)in).movePointLeft(1);
+		}
+		public Object create() {
+			frac = frac.divide(three);
+			return frac;
+		}
+	});
+	
+	private final Manipulator m;
+	FieldsUpdater(Manipulator m) {
+		this.m = m;
+	}
+	public Object manipulate(Object in) { return m.manipulate(in); }
+	public static FieldsUpdater valueOf(String name) throws KettleStepException {
+		if ("Number".equals(name)) return NUMBER;
+		else if ("String".equals(name)) return STRING;
+		else if ("Date".equals(name)) return DATE;
+		else if ("Boolean".equals(name)) return BOOLEAN;
+		else if ("Integer".equals(name)) return INTEGER;
+		else if ("BigNumber".equals(name)) return BIGNUMBER;
+		else throw new KettleStepException("Unknown field data type "+name);
+	}
+}
+private final HashMap fieldsToUpdate = new HashMap();
+private int rowsLeftForGenerateMode = -1;
+private int outputRowSize = 0;
+
+public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
+{
+    // First, get a row from the default input hop
+	Object[] r = getRow();
+
+    // If the row object is null, we are done processing.
+	if (r == null && !first) {
+		setOutputDone();
+		return false;
+	}
+
+    // If the global "first" flag is true, perform some initialization that can only happen
+    // once we have read the first row of input data
+    if (first) {
+        first = false;
+
+        // Set up the list of fields that will be available after this step
+        // Normally, this is simpler, but in the HelloWorld sample, I don't know if
+        // there is an input step connected or not.
+        if (r == null) {
+        	rowsLeftForGenerateMode = 100;
+        }
+		outputRowSize = data.outputRowMeta.size();
+		
+		// Again, an extra complicated block of code to make up for the fact that I don't know
+		// how you are connecting this sample to an existing transformation.
+		for (int i = 0; i < outputRowSize; i++) {
+			ValueMetaInterface valueMeta = data.outputRowMeta.getValueMeta(i);
+			
+			FieldsUpdater mapKey = FieldsUpdater.valueOf(valueMeta.getTypeDesc());
+
+			List fieldsForType = (List)fieldsToUpdate.get(mapKey);
+			if (fieldsForType == null) {
+				fieldsForType = new ArrayList();
+				fieldsToUpdate.put(mapKey, fieldsForType);
+			}
+			fieldsForType.add(valueMeta.getName());
+		}
+	}
+
+    // It is always safest to call createOutputRow() to ensure that your output row's Object[] is large
+    // enough to handle any new fields you are creating in this step.
+    r = createOutputRow(r, outputRowSize);
+    
+    /* Now for the last piece of HellowWorld magic.  We will loop through all the fields
+     * that we will be outputing, and call the appropriate manipulate() for that type of field.
+     * In the real world, this is *much* simpler:
+     * 
+     * FieldHelper fh = get(Field.Out, "myinputfield");
+     * String oldFieldValue = fh.getString(r);
+     * fh.setValue(r, "Adding to value: "+oldFieldValue);
+     * 
+     * get(Field.Out, "mynewfield").setValue(r,"Hello World!");
+     */
+    Set entrySet = fieldsToUpdate.entrySet();
+    for (Iterator entryIter = entrySet.iterator(); entryIter.hasNext();) {
+		Entry entry = (Entry)entryIter.next();
+		FieldsUpdater fieldsUpdater = (FieldsUpdater)entry.getKey();
+		for (Iterator listIter = ((List)entry.getValue()).iterator(); listIter.hasNext();) {
+			String fieldName = (String)listIter.next();
+			FieldHelper fieldHelper = get(Fields.Out, fieldName);
+			fieldHelper.setValue(r, fieldsUpdater.manipulate(fieldHelper.getObject(r)));
+		}
+	}
+    
+    // putRow will send the row on to the default output hop.
+    putRow(data.outputRowMeta, r);
+
+    // This method will be continuously called until it returns false (i.e. when all rows are processed).
+    // Normally, you'd just return true if you are handling input rows or you'd return false when you are done
+    // generating new rows.  In this case, we have the below fancy test to figure out when to stop in either case.
+	return (rowsLeftForGenerateMode == -1 || rowsLeftForGenerateMode-- > 0);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Implement init</name>
+		<category>COMMON</category>
+		<code><![CDATA[public boolean init(StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface)
+{
+    return parent.initImpl(stepMetaInterface, stepDataInterface);
+}
+]]></code>
+		<sample><![CDATA[public boolean init(StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface)
+{
+    return parent.initImpl(stepMetaInterface, stepDataInterface);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Implement dispose</name>
+		<category>COMMON</category>
+		<code><![CDATA[public void dispose(StepMetaInterface smi, StepDataInterface sdi)
+{
+    parent.disposeImpl(smi, sdi);
+}
+]]></code>
+		<sample><![CDATA[public void dispose(StepMetaInterface smi, StepDataInterface sdi)
+{
+    parent.disposeImpl(smi, sdi);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>getRow</name>
+		<category>COMMON</category>
+		<code><![CDATA[Object[] r = getRow();
+]]></code>
+		<sample><![CDATA[Object[] r = getRow();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>getRowFrom</name>
+		<category>COMMON</category>
+		<code><![CDATA[Object[] row = getRowFrom(rowSet);
+]]></code>
+		<sample><![CDATA[Object[] row = getRowFrom(rowSet);
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>putRow</name>
+		<category>COMMON</category>
+		<code><![CDATA[putRow(row, data);
+]]></code>
+		<sample><![CDATA[putRow(row, data);
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>putRowTo</name>
+		<category>COMMON</category>
+		<code><![CDATA[putRowTo(rowMeta, row, rowSet);
+]]></code>
+		<sample><![CDATA[putRowTo(rowMeta, row, rowSet);
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>putError</name>
+		<category>COMMON</category>
+		<code><![CDATA[putError(rowMeta, row, nrErrors, errorDescriptions, fieldNames, errorCodes);
+]]></code>
+		<sample><![CDATA[putError(rowMeta, row, nrErrors, errorDescriptions, fieldNames, errorCodes);
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>setErrors</name>
+		<category>COMMON</category>
+		<code><![CDATA[setErrors(1);
+]]></code>
+		<sample><![CDATA[setErrors(1);
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>stopAll</name>
+		<category>COMMON</category>
+		<code><![CDATA[stopAll();
+]]></code>
+		<sample><![CDATA[stopAll();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>setOutputDone</name>
+		<category>COMMON</category>
+		<code><![CDATA[setOutputDone();
+]]></code>
+		<sample><![CDATA[setOutputDone();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>getVariable</name>
+		<category>COMMON</category>
+		<code><![CDATA[String getVariable = getVariable(variableName, defaultValue);
+]]></code>
+		<sample><![CDATA[String getVariable = getVariable(variableName, defaultValue);
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>checkFeedback</name>
+		<category>COMMON</category>
+		<code><![CDATA[boolean checkFeedback = checkFeedback(lines);
+]]></code>
+		<sample><![CDATA[boolean checkFeedback = checkFeedback(lines);
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>addResultFile</name>
+		<category>COMMON</category>
+		<code><![CDATA[addResultFile(resultFile);
+]]></code>
+		<sample><![CDATA[addResultFile(resultFile);
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>getResultFiles</name>
+		<category>COMMON</category>
+		<code><![CDATA[Map getResultFiles = getResultFiles();
+]]></code>
+		<sample><![CDATA[Map getResultFiles = getResultFiles();
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>logBasic</name>
+		<category>LOGGING</category>
+		<code><![CDATA[logBasic(msg);
+]]></code>
+		<sample><![CDATA[logBasic(msg);
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>logDebug</name>
+		<category>LOGGING</category>
+		<code><![CDATA[logDebug(msg);
+]]></code>
+		<sample><![CDATA[logDebug(msg);
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>logDetailed</name>
+		<category>LOGGING</category>
+		<code><![CDATA[logDetailed(msg);
+]]></code>
+		<sample><![CDATA[logDetailed(msg);
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>logError(msg)</name>
+		<category>LOGGING</category>
+		<code><![CDATA[logError(msg);
+]]></code>
+		<sample><![CDATA[logError(msg);
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>logError(msg,e)</name>
+		<category>LOGGING</category>
+		<code><![CDATA[logError(msg, e);
+]]></code>
+		<sample><![CDATA[logError(msg, e);
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>logMinimal</name>
+		<category>LOGGING</category>
+		<code><![CDATA[logMinimal(msg);
+]]></code>
+		<sample><![CDATA[logMinimal(msg);
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>logRowlevel</name>
+		<category>LOGGING</category>
+		<code><![CDATA[logRowlevel(msg);
+]]></code>
+		<sample><![CDATA[logRowlevel(msg);
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>logSummary</name>
+		<category>LOGGING</category>
+		<code><![CDATA[logSummary();
+]]></code>
+		<sample><![CDATA[logSummary();
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>incrementLinesInput</name>
+		<category>STATUS</category>
+		<code><![CDATA[long incrementLinesInput = incrementLinesInput();
+]]></code>
+		<sample><![CDATA[long incrementLinesInput = incrementLinesInput();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>incrementLinesOutput</name>
+		<category>STATUS</category>
+		<code><![CDATA[long incrementLinesOutput = incrementLinesOutput();
+]]></code>
+		<sample><![CDATA[long incrementLinesOutput = incrementLinesOutput();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>incrementLinesRead</name>
+		<category>STATUS</category>
+		<code><![CDATA[long incrementLinesRead = incrementLinesRead();
+]]></code>
+		<sample><![CDATA[long incrementLinesRead = incrementLinesRead();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>incrementLinesRejected</name>
+		<category>STATUS</category>
+		<code><![CDATA[long incrementLinesRejected = incrementLinesRejected();
+]]></code>
+		<sample><![CDATA[long incrementLinesRejected = incrementLinesRejected();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>incrementLinesSkipped</name>
+		<category>STATUS</category>
+		<code><![CDATA[long incrementLinesSkipped = incrementLinesSkipped();
+]]></code>
+		<sample><![CDATA[long incrementLinesSkipped = incrementLinesSkipped();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>incrementLinesUpdated</name>
+		<category>STATUS</category>
+		<code><![CDATA[long incrementLinesUpdated = incrementLinesUpdated();
+]]></code>
+		<sample><![CDATA[long incrementLinesUpdated = incrementLinesUpdated();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>incrementLinesWritten</name>
+		<category>STATUS</category>
+		<code><![CDATA[long incrementLinesWritten = incrementLinesWritten();
+]]></code>
+		<sample><![CDATA[long incrementLinesWritten = incrementLinesWritten();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>getLinesInput</name>
+		<category>STATUS</category>
+		<code><![CDATA[long getLinesInput = getLinesInput();
+]]></code>
+		<sample><![CDATA[long getLinesInput = getLinesInput();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>getLinesOutput</name>
+		<category>STATUS</category>
+		<code><![CDATA[long getLinesOutput = getLinesOutput();
+]]></code>
+		<sample><![CDATA[long getLinesOutput = getLinesOutput();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>getLinesRead</name>
+		<category>STATUS</category>
+		<code><![CDATA[long getLinesRead = getLinesRead();
+]]></code>
+		<sample><![CDATA[long getLinesRead = getLinesRead();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>getLinesRejected</name>
+		<category>STATUS</category>
+		<code><![CDATA[long getLinesRejected = getLinesRejected();
+]]></code>
+		<sample><![CDATA[long getLinesRejected = getLinesRejected();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>getLinesSkipped</name>
+		<category>STATUS</category>
+		<code><![CDATA[long getLinesSkipped = getLinesSkipped();
+]]></code>
+		<sample><![CDATA[long getLinesSkipped = getLinesSkipped();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>getLinesUpdated</name>
+		<category>STATUS</category>
+		<code><![CDATA[long getLinesUpdated = getLinesUpdated();
+]]></code>
+		<sample><![CDATA[long getLinesUpdated = getLinesUpdated();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>getLinesWritten</name>
+		<category>STATUS</category>
+		<code><![CDATA[long getLinesWritten = getLinesWritten();
+]]></code>
+		<sample><![CDATA[long getLinesWritten = getLinesWritten();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>getProcessed</name>
+		<category>STATUS</category>
+		<code><![CDATA[long getProcessed = getProcessed();
+]]></code>
+		<sample><![CDATA[long getProcessed = getProcessed();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>getStatus</name>
+		<category>STATUS</category>
+		<code><![CDATA[StepExecutionStatus getStatus = getStatus();
+]]></code>
+		<sample><![CDATA[StepExecutionStatus getStatus = getStatus();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>getStatusDescription</name>
+		<category>STATUS</category>
+		<code><![CDATA[String getStatusDescription = getStatusDescription();
+]]></code>
+		<sample><![CDATA[String getStatusDescription = getStatusDescription();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>decrementLinesRead</name>
+		<category>STATUS</category>
+		<code><![CDATA[long decrementLinesRead = decrementLinesRead();
+]]></code>
+		<sample><![CDATA[long decrementLinesRead = decrementLinesRead();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>decrementLinesWritten</name>
+		<category>STATUS</category>
+		<code><![CDATA[long decrementLinesWritten = decrementLinesWritten();
+]]></code>
+		<sample><![CDATA[long decrementLinesWritten = decrementLinesWritten();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>setLinesInput</name>
+		<category>STATUS</category>
+		<code><![CDATA[setLinesInput(newLinesInputValue);
+]]></code>
+		<sample><![CDATA[setLinesInput(newLinesInputValue);
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>setLinesOutput</name>
+		<category>STATUS</category>
+		<code><![CDATA[setLinesOutput(newLinesOutputValue);
+]]></code>
+		<sample><![CDATA[setLinesOutput(newLinesOutputValue);
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>setLinesRead</name>
+		<category>STATUS</category>
+		<code><![CDATA[setLinesRead(newLinesReadValue);
+]]></code>
+		<sample><![CDATA[setLinesRead(newLinesReadValue);
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>setLinesRejected</name>
+		<category>STATUS</category>
+		<code><![CDATA[setLinesRejected(linesRejected);
+]]></code>
+		<sample><![CDATA[setLinesRejected(linesRejected);
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>setLinesSkipped</name>
+		<category>STATUS</category>
+		<code><![CDATA[setLinesSkipped(newLinesSkippedValue);
+]]></code>
+		<sample><![CDATA[setLinesSkipped(newLinesSkippedValue);
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>setLinesUpdated</name>
+		<category>STATUS</category>
+		<code><![CDATA[setLinesUpdated(newLinesUpdatedValue);
+]]></code>
+		<sample><![CDATA[setLinesUpdated(newLinesUpdatedValue);
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>setLinesWritten</name>
+		<category>STATUS</category>
+		<code><![CDATA[setLinesWritten(newLinesWrittenValue);
+]]></code>
+		<sample><![CDATA[setLinesWritten(newLinesWrittenValue);
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>getInputRowMeta</name>
+		<category>ROW</category>
+		<code><![CDATA[RowMetaInterface getInputRowMeta = getInputRowMeta();
+]]></code>
+		<sample><![CDATA[RowMetaInterface getInputRowMeta = getInputRowMeta();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>getErrorRowMeta</name>
+		<category>ROW</category>
+		<code><![CDATA[RowMetaInterface getErrorRowMeta = getErrorRowMeta();
+]]></code>
+		<sample><![CDATA[RowMetaInterface getErrorRowMeta = getErrorRowMeta();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>getInputRowSets</name>
+		<category>ROW</category>
+		<code><![CDATA[List getInputRowSets = getInputRowSets();
+]]></code>
+		<sample><![CDATA[List getInputRowSets = getInputRowSets();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>getOutputRowSets</name>
+		<category>ROW</category>
+		<code><![CDATA[List getOutputRowSets = getOutputRowSets();
+]]></code>
+		<sample><![CDATA[List getOutputRowSets = getOutputRowSets();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>findInputRowSet(sourceStep)</name>
+		<category>ROW</category>
+		<code><![CDATA[RowSet findInputRowSet = findInputRowSet(sourceStep);
+]]></code>
+		<sample><![CDATA[RowSet findInputRowSet = findInputRowSet(sourceStep);
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>findInputRowSet(from, fromcopy, to tocopy)</name>
+		<category>ROW</category>
+		<code><![CDATA[RowSet findInputRowSet = findInputRowSet(from, fromcopy, to, tocopy);
+]]></code>
+		<sample><![CDATA[RowSet findInputRowSet = findInputRowSet(from, fromcopy, to, tocopy);
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>findOutputRowSet(targetStep)</name>
+		<category>ROW</category>
+		<code><![CDATA[RowSet findOutputRowSet = findOutputRowSet(targetStep);
+]]></code>
+		<sample><![CDATA[RowSet findOutputRowSet = findOutputRowSet(targetStep);
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>findOutputRowSet(from, fromcopy, to tocopy)</name>
+		<category>ROW</category>
+		<code><![CDATA[RowSet findOutputRowSet = findOutputRowSet(from, fromcopy, to, tocopy);
+]]></code>
+		<sample><![CDATA[RowSet findOutputRowSet = findOutputRowSet(from, fromcopy, to, tocopy);
+]]></sample>
+	</codeSnippit>
+
+
+	<codeSnippit>
+		<name>addRowListener</name>
+		<category>LISTENERS</category>
+		<code><![CDATA[addRowListener(rowListener);
+]]></code>
+		<sample><![CDATA[addRowListener(rowListener);
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>addStepListener</name>
+		<category>LISTENERS</category>
+		<code><![CDATA[addStepListener(stepListener);
+]]></code>
+		<sample><![CDATA[addStepListener(stepListener);
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>getRowListeners</name>
+		<category>LISTENERS</category>
+		<code><![CDATA[List getRowListeners = getRowListeners();
+]]></code>
+		<sample><![CDATA[List getRowListeners = getRowListeners();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>getStepListeners</name>
+		<category>LISTENERS</category>
+		<code><![CDATA[List getStepListeners = getStepListeners();
+]]></code>
+		<sample><![CDATA[List getStepListeners = getStepListeners();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>removeRowListener</name>
+		<category>LISTENERS</category>
+		<code><![CDATA[removeRowListener(rowListener);
+]]></code>
+		<sample><![CDATA[removeRowListener(rowListener);
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>getStepMeta</name>
+		<category>OTHER</category>
+		<code><![CDATA[StepMeta getStepMeta = getStepMeta();
+]]></code>
+		<sample><![CDATA[StepMeta getStepMeta = getStepMeta();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>getTrans</name>
+		<category>OTHER</category>
+		<code><![CDATA[Trans getTrans = getTrans();
+]]></code>
+		<sample><![CDATA[Trans getTrans = getTrans();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>getTransMeta</name>
+		<category>OTHER</category>
+		<code><![CDATA[TransMeta getTransMeta = getTransMeta();
+]]></code>
+		<sample><![CDATA[TransMeta getTransMeta = getTransMeta();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>getStepDataInterface</name>
+		<category>OTHER</category>
+		<code><![CDATA[StepDataInterface getStepDataInterface = getStepDataInterface();
+]]></code>
+		<sample><![CDATA[StepDataInterface getStepDataInterface = getStepDataInterface();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>getPartitionID</name>
+		<category>OTHER</category>
+		<code><![CDATA[String getPartitionID = getPartitionID();
+]]></code>
+		<sample><![CDATA[String getPartitionID = getPartitionID();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>getPartitionTargets</name>
+		<category>OTHER</category>
+		<code><![CDATA[Map getPartitionTargets = getPartitionTargets();
+]]></code>
+		<sample><![CDATA[Map getPartitionTargets = getPartitionTargets();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>getRepartitioning</name>
+		<category>OTHER</category>
+		<code><![CDATA[int getRepartitioning = getRepartitioning();
+]]></code>
+		<sample><![CDATA[int getRepartitioning = getRepartitioning();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>isPartitioned</name>
+		<category>OTHER</category>
+		<code><![CDATA[boolean isPartitioned = isPartitioned();
+]]></code>
+		<sample><![CDATA[boolean isPartitioned = isPartitioned();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>getClusterSize</name>
+		<category>OTHER</category>
+		<code><![CDATA[int getClusterSize = getClusterSize();
+]]></code>
+		<sample><![CDATA[int getClusterSize = getClusterSize();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>getCopy</name>
+		<category>OTHER</category>
+		<code><![CDATA[int getCopy = getCopy();
+]]></code>
+		<sample><![CDATA[int getCopy = getCopy();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>getErrors</name>
+		<category>OTHER</category>
+		<code><![CDATA[long getErrors = getErrors();
+]]></code>
+		<sample><![CDATA[long getErrors = getErrors();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>getRuntime</name>
+		<category>OTHER</category>
+		<code><![CDATA[long getRuntime = getRuntime();
+]]></code>
+		<sample><![CDATA[long getRuntime = getRuntime();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>getSlaveNr</name>
+		<category>OTHER</category>
+		<code><![CDATA[int getSlaveNr = getSlaveNr();
+]]></code>
+		<sample><![CDATA[int getSlaveNr = getSlaveNr();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>getSocketRepository</name>
+		<category>OTHER</category>
+		<code><![CDATA[SocketRepository getSocketRepository = getSocketRepository();
+]]></code>
+		<sample><![CDATA[SocketRepository getSocketRepository = getSocketRepository();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>getStepname</name>
+		<category>OTHER</category>
+		<code><![CDATA[String getStepname = getStepname();
+]]></code>
+		<sample><![CDATA[String getStepname = getStepname();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>getTypeId</name>
+		<category>OTHER</category>
+		<code><![CDATA[String getTypeId = getTypeId();
+]]></code>
+		<sample><![CDATA[String getTypeId = getTypeId();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>getUniqueStepCountAcrossSlaves</name>
+		<category>OTHER</category>
+		<code><![CDATA[int getUniqueStepCountAcrossSlaves = getUniqueStepCountAcrossSlaves();
+]]></code>
+		<sample><![CDATA[int getUniqueStepCountAcrossSlaves = getUniqueStepCountAcrossSlaves();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>getUniqueStepNrAcrossSlaves</name>
+		<category>OTHER</category>
+		<code><![CDATA[int getUniqueStepNrAcrossSlaves = getUniqueStepNrAcrossSlaves();
+]]></code>
+		<sample><![CDATA[int getUniqueStepNrAcrossSlaves = getUniqueStepNrAcrossSlaves();
+]]></sample>
+	</codeSnippit>
+	<codeSnippit>
+		<name>isDistributed</name>
+		<category>OTHER</category>
+		<code><![CDATA[boolean isDistributed = isDistributed();
+]]></code>
+		<sample><![CDATA[boolean isDistributed = isDistributed();
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>setVariable</name>
+		<category>OTHER</category>
+		<code><![CDATA[setVariable(variableName, variableValue);
+]]></code>
+		<sample><![CDATA[setVariable(variableName, variableValue);
+]]></sample>
+	</codeSnippit>
+
+
+
+
+	<codeSnippit>
+		<name>Override addResultFile</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void addResultFile(ResultFile resultFile)
+{
+    parent.addResultFileImpl(resultFile);
+}
+]]></code>
+		<sample><![CDATA[public void addResultFile(ResultFile resultFile)
+{
+    parent.addResultFileImpl(resultFile);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override addRowListener</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void addRowListener(RowListener rowListener)
+{
+    parent.addRowListenerImpl(rowListener);
+}
+]]></code>
+		<sample><![CDATA[public void addRowListener(RowListener rowListener)
+{
+    parent.addRowListenerImpl(rowListener);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override addStepListener</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void addStepListener(StepListener stepListener)
+{
+    parent.addStepListenerImpl(stepListener);
+}
+]]></code>
+		<sample><![CDATA[public void addStepListener(StepListener stepListener)
+{
+    parent.addStepListenerImpl(stepListener);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override checkFeedback</name>
+		<category>OTHER</category>
+		<code><![CDATA[public boolean checkFeedback(long lines)
+{
+    return parent.checkFeedbackImpl(lines);
+}
+]]></code>
+		<sample><![CDATA[public boolean checkFeedback(long lines)
+{
+    return parent.checkFeedbackImpl(lines);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override cleanup</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void cleanup()
+{
+    parent.cleanupImpl();
+}
+]]></code>
+		<sample><![CDATA[public void cleanup()
+{
+    parent.cleanupImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override decrementLinesRead</name>
+		<category>OTHER</category>
+		<code><![CDATA[public long decrementLinesRead()
+{
+    return parent.decrementLinesReadImpl();
+}
+]]></code>
+		<sample><![CDATA[public long decrementLinesRead()
+{
+    return parent.decrementLinesReadImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override decrementLinesWritten</name>
+		<category>OTHER</category>
+		<code><![CDATA[public long decrementLinesWritten()
+{
+    return parent.decrementLinesWrittenImpl();
+}
+]]></code>
+		<sample><![CDATA[public long decrementLinesWritten()
+{
+    return parent.decrementLinesWrittenImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override findInputRowSet(sourceStep)</name>
+		<category>OTHER</category>
+		<code><![CDATA[public RowSet findInputRowSet(String sourceStep) throws KettleStepException
+{
+    return parent.findInputRowSetImpl(sourceStep);
+}
+]]></code>
+		<sample><![CDATA[public RowSet findInputRowSet(String sourceStep) throws KettleStepException
+{
+    return parent.findInputRowSetImpl(sourceStep);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override findInputRowSet(from, fromcopy, to tocopy)</name>
+		<category>OTHER</category>
+		<code><![CDATA[public RowSet findInputRowSet(String from, int fromcopy, String to, int tocopy)
+{
+    return parent.findInputRowSetImpl(from, fromcopy, to, tocopy);
+}
+]]></code>
+		<sample><![CDATA[public RowSet findInputRowSet(String from, int fromcopy, String to, int tocopy)
+{
+    return parent.findInputRowSetImpl(from, fromcopy, to, tocopy);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override findOutputRowSet(targetStep)</name>
+		<category>OTHER</category>
+		<code><![CDATA[public RowSet findOutputRowSet(String targetStep) throws KettleStepException
+{
+    return parent.findOutputRowSetImpl(targetStep);
+}
+]]></code>
+		<sample><![CDATA[public RowSet findOutputRowSet(String targetStep) throws KettleStepException
+{
+    return parent.findOutputRowSetImpl(targetStep);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override findOutputRowSet(from, fromcopy, to tocopy)</name>
+		<category>OTHER</category>
+		<code><![CDATA[public RowSet findOutputRowSet(String from, int fromcopy, String to, int tocopy)
+{
+    return parent.findOutputRowSetImpl(from, fromcopy, to, tocopy);
+}
+]]></code>
+		<sample><![CDATA[public RowSet findOutputRowSet(String from, int fromcopy, String to, int tocopy)
+{
+    return parent.findOutputRowSetImpl(from, fromcopy, to, tocopy);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override getClusterSize</name>
+		<category>OTHER</category>
+		<code><![CDATA[public int getClusterSize()
+{
+    return parent.getClusterSizeImpl();
+}
+]]></code>
+		<sample><![CDATA[public int getClusterSize()
+{
+    return parent.getClusterSizeImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override getCopy</name>
+		<category>OTHER</category>
+		<code><![CDATA[public int getCopy()
+{
+    return parent.getCopyImpl();
+}
+]]></code>
+		<sample><![CDATA[public int getCopy()
+{
+    return parent.getCopyImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override getErrorRowMeta</name>
+		<category>OTHER</category>
+		<code><![CDATA[public RowMetaInterface getErrorRowMeta()
+{
+    return parent.getErrorRowMetaImpl();
+}
+]]></code>
+		<sample><![CDATA[public RowMetaInterface getErrorRowMeta()
+{
+    return parent.getErrorRowMetaImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	public long getErrors()
+	{
+	return parent.getErrorsImpl();
+	}
+
+	public RowMetaInterface getInputRowMeta()
+	{
+	return parent.getInputRowMetaImpl();
+	}
+
+	public List getInputRowSets()
+	{
+	return parent.getInputRowSetsImpl();
+	}
+
+	public long getLinesInput()
+	{
+	return parent.getLinesInputImpl();
+	}
+
+	<codeSnippit>
+		<name>Override getLinesOutput</name>
+		<category>OTHER</category>
+		<code><![CDATA[public long getLinesOutput()
+{
+    return parent.getLinesOutputImpl();
+}
+]]></code>
+		<sample><![CDATA[public long getLinesOutput()
+{
+    return parent.getLinesOutputImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override getLinesRead</name>
+		<category>OTHER</category>
+		<code><![CDATA[public long getLinesRead()
+{
+    return parent.getLinesReadImpl();
+}
+]]></code>
+		<sample><![CDATA[public long getLinesRead()
+{
+    return parent.getLinesReadImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override getLinesRejected</name>
+		<category>OTHER</category>
+		<code><![CDATA[public long getLinesRejected()
+{
+    return parent.getLinesRejectedImpl();
+}
+]]></code>
+		<sample><![CDATA[public long getLinesRejected()
+{
+    return parent.getLinesRejectedImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override getLinesSkipped</name>
+		<category>OTHER</category>
+		<code><![CDATA[public long getLinesSkipped()
+{
+    return parent.getLinesSkippedImpl();
+}
+]]></code>
+		<sample><![CDATA[public long getLinesSkipped()
+{
+    return parent.getLinesSkippedImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override getLinesUpdated</name>
+		<category>OTHER</category>
+		<code><![CDATA[public long getLinesUpdated()
+{
+    return parent.getLinesUpdatedImpl();
+}
+]]></code>
+		<sample><![CDATA[public long getLinesUpdated()
+{
+    return parent.getLinesUpdatedImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override getLinesWritten</name>
+		<category>OTHER</category>
+		<code><![CDATA[public long getLinesWritten()
+{
+    return parent.getLinesWrittenImpl();
+}
+]]></code>
+		<sample><![CDATA[public long getLinesWritten()
+{
+    return parent.getLinesWrittenImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	public List getOutputRowSets()
+	{
+	return parent.getOutputRowSetsImpl();
+	}
+
+	public String getPartitionID()
+	{
+	return parent.getPartitionIDImpl();
+	}
+
+	public Map getPartitionTargets()
+	{
+	return parent.getPartitionTargetsImpl();
+	}
+
+	<codeSnippit>
+		<name>Override getProcessed</name>
+		<category>OTHER</category>
+		<code><![CDATA[public long getProcessed()
+{
+    return parent.getProcessedImpl();
+}
+]]></code>
+		<sample><![CDATA[public long getProcessed()
+{
+    return parent.getProcessedImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override getRepartitioning</name>
+		<category>OTHER</category>
+		<code><![CDATA[public int getRepartitioning()
+{
+    return parent.getRepartitioningImpl();
+}
+]]></code>
+		<sample><![CDATA[public int getRepartitioning()
+{
+    return parent.getRepartitioningImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override getResultFiles</name>
+		<category>OTHER</category>
+		<code><![CDATA[public Map getResultFiles()
+{
+    return parent.getResultFilesImpl();
+}
+]]></code>
+		<sample><![CDATA[public Map getResultFiles()
+{
+    return parent.getResultFilesImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override getRow</name>
+		<category>OTHER</category>
+		<code><![CDATA[public Object[] getRow() throws KettleException
+{
+    return parent.getRowImpl();
+}
+]]></code>
+		<sample><![CDATA[public Object[] getRow() throws KettleException
+{
+    return parent.getRowImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override getRowFrom</name>
+		<category>OTHER</category>
+		<code><![CDATA[public Object[] getRowFrom(RowSet rowSet) throws KettleStepException
+{
+    return parent.getRowFromImpl(rowSet);
+}
+]]></code>
+		<sample><![CDATA[public Object[] getRowFrom(RowSet rowSet) throws KettleStepException
+{
+    return parent.getRowFromImpl(rowSet);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override getRowListeners</name>
+		<category>OTHER</category>
+		<code><![CDATA[public List getRowListeners()
+{
+    return parent.getRowListenersImpl();
+}
+]]></code>
+		<sample><![CDATA[public List getRowListeners()
+{
+    return parent.getRowListenersImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override getRuntime</name>
+		<category>OTHER</category>
+		<code><![CDATA[public long getRuntime()
+{
+    return parent.getRuntimeImpl();
+}
+]]></code>
+		<sample><![CDATA[public long getRuntime()
+{
+    return parent.getRuntimeImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override getSlaveNr</name>
+		<category>OTHER</category>
+		<code><![CDATA[public int getSlaveNr()
+{
+    return parent.getSlaveNrImpl();
+}
+]]></code>
+		<sample><![CDATA[public int getSlaveNr()
+{
+    return parent.getSlaveNrImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override getSocketRepository</name>
+		<category>OTHER</category>
+		<code><![CDATA[public SocketRepository getSocketRepository()
+{
+    return parent.getSocketRepositoryImpl();
+}
+]]></code>
+		<sample><![CDATA[public SocketRepository getSocketRepository()
+{
+    return parent.getSocketRepositoryImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override getStatus</name>
+		<category>OTHER</category>
+		<code><![CDATA[public StepExecutionStatus getStatus()
+{
+    return parent.getStatusImpl();
+}
+]]></code>
+		<sample><![CDATA[public StepExecutionStatus getStatus()
+{
+    return parent.getStatusImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override getStatusDescription</name>
+		<category>OTHER</category>
+		<code><![CDATA[public String getStatusDescription()
+{
+    return parent.getStatusDescriptionImpl();
+}
+]]></code>
+		<sample><![CDATA[public String getStatusDescription()
+{
+    return parent.getStatusDescriptionImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override getStepDataInterface</name>
+		<category>OTHER</category>
+		<code><![CDATA[public StepDataInterface getStepDataInterface()
+{
+    return parent.getStepDataInterfaceImpl();
+}
+]]></code>
+		<sample><![CDATA[public StepDataInterface getStepDataInterface()
+{
+    return parent.getStepDataInterfaceImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override getStepID</name>
+		<category>OTHER</category>
+		<code><![CDATA[public String getStepID()
+{
+    return parent.getStepIDImpl();
+}
+]]></code>
+		<sample><![CDATA[public String getStepID()
+{
+    return parent.getStepIDImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override getStepListeners</name>
+		<category>OTHER</category>
+		<code><![CDATA[public List getStepListeners()
+{
+    return parent.getStepListenersImpl();
+}
+]]></code>
+		<sample><![CDATA[public List getStepListeners()
+{
+    return parent.getStepListenersImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override getStepMeta</name>
+		<category>OTHER</category>
+		<code><![CDATA[public StepMeta getStepMeta()
+{
+    return parent.getStepMetaImpl();
+}
+]]></code>
+		<sample><![CDATA[public StepMeta getStepMeta()
+{
+    return parent.getStepMetaImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override getStepMetaInterface</name>
+		<category>OTHER</category>
+		<code><![CDATA[public StepMetaInterface getStepMetaInterface()
+{
+    return parent.getStepMetaInterfaceImpl();
+}
+]]></code>
+		<sample><![CDATA[public StepMetaInterface getStepMetaInterface()
+{
+    return parent.getStepMetaInterfaceImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override getStepname</name>
+		<category>OTHER</category>
+		<code><![CDATA[public String getStepname()
+{
+    return parent.getStepnameImpl();
+}
+]]></code>
+		<sample><![CDATA[public String getStepname()
+{
+    return parent.getStepnameImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override getTrans</name>
+		<category>OTHER</category>
+		<code><![CDATA[public Trans getTrans()
+{
+    return parent.getTransImpl();
+}
+]]></code>
+		<sample><![CDATA[public Trans getTrans()
+{
+    return parent.getTransImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override getTransMeta</name>
+		<category>OTHER</category>
+		<code><![CDATA[public TransMeta getTransMeta()
+{
+    return parent.getTransMetaImpl();
+}
+]]></code>
+		<sample><![CDATA[public TransMeta getTransMeta()
+{
+    return parent.getTransMetaImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override getTypeId</name>
+		<category>OTHER</category>
+		<code><![CDATA[public String getTypeId()
+{
+    return parent.getTypeIdImpl();
+}
+]]></code>
+		<sample><![CDATA[public String getTypeId()
+{
+    return parent.getTypeIdImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override getUniqueStepCountAcrossSlaves</name>
+		<category>OTHER</category>
+		<code><![CDATA[public int getUniqueStepCountAcrossSlaves()
+{
+    return parent.getUniqueStepCountAcrossSlavesImpl();
+}
+]]></code>
+		<sample><![CDATA[public int getUniqueStepCountAcrossSlaves()
+{
+    return parent.getUniqueStepCountAcrossSlavesImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override getUniqueStepNrAcrossSlaves</name>
+		<category>OTHER</category>
+		<code><![CDATA[public int getUniqueStepNrAcrossSlaves()
+{
+    return parent.getUniqueStepNrAcrossSlavesImpl();
+}
+]]></code>
+		<sample><![CDATA[public int getUniqueStepNrAcrossSlaves()
+{
+    return parent.getUniqueStepNrAcrossSlavesImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override getVariable(name)</name>
+		<category>OTHER</category>
+		<code><![CDATA[public String getVariable(String variableName)
+{
+    return parent.getVariableImpl(variableName);
+}
+]]></code>
+		<sample><![CDATA[public String getVariable(String variableName)
+{
+    return parent.getVariableImpl(variableName);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override getVariable(name, default)</name>
+		<category>OTHER</category>
+		<code><![CDATA[public String getVariable(String variableName, String defaultValue)
+{
+    return parent.getVariableImpl(variableName, defaultValue);
+}
+]]></code>
+		<sample><![CDATA[public String getVariable(String variableName, String defaultValue)
+{
+    return parent.getVariableImpl(variableName, defaultValue);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override incrementLinesInput</name>
+		<category>OTHER</category>
+		<code><![CDATA[public long incrementLinesInput()
+{
+    return parent.incrementLinesInputImpl();
+}
+]]></code>
+		<sample><![CDATA[public long incrementLinesInput()
+{
+    return parent.incrementLinesInputImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override incrementLinesOutput</name>
+		<category>OTHER</category>
+		<code><![CDATA[public long incrementLinesOutput()
+{
+    return parent.incrementLinesOutputImpl();
+}
+]]></code>
+		<sample><![CDATA[public long incrementLinesOutput()
+{
+    return parent.incrementLinesOutputImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override incrementLinesRead</name>
+		<category>OTHER</category>
+		<code><![CDATA[public long incrementLinesRead()
+{
+    return parent.incrementLinesReadImpl();
+}
+]]></code>
+		<sample><![CDATA[public long incrementLinesRead()
+{
+    return parent.incrementLinesReadImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override incrementLinesRejected</name>
+		<category>OTHER</category>
+		<code><![CDATA[public long incrementLinesRejected()
+{
+    return parent.incrementLinesRejectedImpl();
+}
+]]></code>
+		<sample><![CDATA[public long incrementLinesRejected()
+{
+    return parent.incrementLinesRejectedImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override incrementLinesSkipped</name>
+		<category>OTHER</category>
+		<code><![CDATA[public long incrementLinesSkipped()
+{
+    return parent.incrementLinesSkippedImpl();
+}
+]]></code>
+		<sample><![CDATA[public long incrementLinesSkipped()
+{
+    return parent.incrementLinesSkippedImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override incrementLinesUpdated</name>
+		<category>OTHER</category>
+		<code><![CDATA[public long incrementLinesUpdated()
+{
+    return parent.incrementLinesUpdatedImpl();
+}
+]]></code>
+		<sample><![CDATA[public long incrementLinesUpdated()
+{
+    return parent.incrementLinesUpdatedImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override incrementLinesWritten</name>
+		<category>OTHER</category>
+		<code><![CDATA[public long incrementLinesWritten()
+{
+    return parent.incrementLinesWrittenImpl();
+}
+]]></code>
+		<sample><![CDATA[public long incrementLinesWritten()
+{
+    return parent.incrementLinesWrittenImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override initBeforeStart</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void initBeforeStart() throws KettleStepException
+{
+    parent.initBeforeStartImpl();
+}
+]]></code>
+		<sample><![CDATA[public void initBeforeStart() throws KettleStepException
+{
+    parent.initBeforeStartImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override isDistributed</name>
+		<category>OTHER</category>
+		<code><![CDATA[public boolean isDistributed()
+{
+    return parent.isDistributedImpl();
+}
+]]></code>
+		<sample><![CDATA[public boolean isDistributed()
+{
+    return parent.isDistributedImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override isInitialising</name>
+		<category>OTHER</category>
+		<code><![CDATA[public boolean isInitialising()
+{
+    return parent.isInitialisingImpl();
+}
+]]></code>
+		<sample><![CDATA[public boolean isInitialising()
+{
+    return parent.isInitialisingImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override isPartitioned</name>
+		<category>OTHER</category>
+		<code><![CDATA[public boolean isPartitioned()
+{
+    return parent.isPartitionedImpl();
+}
+]]></code>
+		<sample><![CDATA[public boolean isPartitioned()
+{
+    return parent.isPartitionedImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override isSafeModeEnabled</name>
+		<category>OTHER</category>
+		<code><![CDATA[public boolean isSafeModeEnabled()
+{
+    return parent.isSafeModeEnabledImpl();
+}
+]]></code>
+		<sample><![CDATA[public boolean isSafeModeEnabled()
+{
+    return parent.isSafeModeEnabledImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override isStopped</name>
+		<category>OTHER</category>
+		<code><![CDATA[public boolean isStopped()
+{
+    return parent.isStoppedImpl();
+}
+]]></code>
+		<sample><![CDATA[public boolean isStopped()
+{
+    return parent.isStoppedImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override isUsingThreadPriorityManagment</name>
+		<category>OTHER</category>
+		<code><![CDATA[public boolean isUsingThreadPriorityManagment()
+{
+    return parent.isUsingThreadPriorityManagmentImpl();
+}
+]]></code>
+		<sample><![CDATA[public boolean isUsingThreadPriorityManagment()
+{
+    return parent.isUsingThreadPriorityManagmentImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override logBasic</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void logBasic(String s)
+{
+    parent.logBasicImpl(s);
+}
+]]></code>
+		<sample><![CDATA[public void logBasic(String s)
+{
+    parent.logBasicImpl(s);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override logDebug</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void logDebug(String s)
+{
+    parent.logDebugImpl(s);
+}
+]]></code>
+		<sample><![CDATA[public void logDebug(String s)
+{
+    parent.logDebugImpl(s);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override logDetailed</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void logDetailed(String s)
+{
+    parent.logDetailedImpl(s);
+}
+]]></code>
+		<sample><![CDATA[public void logDetailed(String s)
+{
+    parent.logDetailedImpl(s);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override logError(msg)</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void logError(String s)
+{
+    parent.logErrorImpl(s);
+}
+]]></code>
+		<sample><![CDATA[public void logError(String s)
+{
+    parent.logErrorImpl(s);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override logError(msg, e)</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void logError(String s, Throwable e)
+{
+    parent.logErrorImpl(s, e);
+}
+]]></code>
+		<sample><![CDATA[public void logError(String s, Throwable e)
+{
+    parent.logErrorImpl(s, e);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override logMinimal</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void logMinimal(String s)
+{
+    parent.logMinimalImpl(s);
+}
+]]></code>
+		<sample><![CDATA[public void logMinimal(String s)
+{
+    parent.logMinimalImpl(s);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override logRowlevel</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void logRowlevel(String s)
+{
+    parent.logRowlevelImpl(s);
+}
+]]></code>
+		<sample><![CDATA[public void logRowlevel(String s)
+{
+    parent.logRowlevelImpl(s);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override logSummary</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void logSummary()
+{
+    parent.logSummaryImpl();
+}
+]]></code>
+		<sample><![CDATA[public void logSummary()
+{
+    parent.logSummaryImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override markStart</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void markStart()
+{
+    parent.markStartImpl();
+}
+]]></code>
+		<sample><![CDATA[public void markStart()
+{
+    parent.markStartImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override markStop</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void markStop()
+{
+    parent.markStopImpl();
+}
+]]></code>
+		<sample><![CDATA[public void markStop()
+{
+    parent.markStopImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override openRemoteInputStepSocketsOnce</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void openRemoteInputStepSocketsOnce() throws KettleStepException
+{
+    parent.openRemoteInputStepSocketsOnceImpl();
+}
+]]></code>
+		<sample><![CDATA[public void openRemoteInputStepSocketsOnce() throws KettleStepException
+{
+    parent.openRemoteInputStepSocketsOnceImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override openRemoteOutputStepSocketsOnce</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void openRemoteOutputStepSocketsOnce() throws KettleStepException
+{
+    parent.openRemoteOutputStepSocketsOnceImpl();
+}
+]]></code>
+		<sample><![CDATA[public void openRemoteOutputStepSocketsOnce() throws KettleStepException
+{
+    parent.openRemoteOutputStepSocketsOnceImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override outputIsDone</name>
+		<category>OTHER</category>
+		<code><![CDATA[public boolean outputIsDone()
+{
+    return parent.outputIsDoneImpl();
+}
+]]></code>
+		<sample><![CDATA[public boolean outputIsDone()
+{
+    return parent.outputIsDoneImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override putError</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void putError(RowMetaInterface rowMeta, Object[] row, long nrErrors, String errorDescriptions, String fieldNames, String errorCodes)
+        throws KettleStepException
+]]></code>
+		<sample><![CDATA[public void putError(RowMetaInterface rowMeta, Object[] row, long nrErrors, String errorDescriptions, String fieldNames, String errorCodes)
+        throws KettleStepException
+]]></sample>
+	</codeSnippit>
+	{
+	parent.putErrorImpl(rowMeta, row, nrErrors, errorDescriptions, fieldNames, errorCodes);
+	}
+
+	<codeSnippit>
+		<name>Override putRow</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void putRow(RowMetaInterface row, Object[] data) throws KettleStepException
+{
+    parent.putRowImpl(row, data);
+}
+]]></code>
+		<sample><![CDATA[public void putRow(RowMetaInterface row, Object[] data) throws KettleStepException
+{
+    parent.putRowImpl(row, data);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override putRowTo</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void putRowTo(RowMetaInterface rowMeta, Object[] row, RowSet rowSet) throws KettleStepException
+{
+    parent.putRowToImpl(rowMeta, row, rowSet);
+}
+]]></code>
+		<sample><![CDATA[public void putRowTo(RowMetaInterface rowMeta, Object[] row, RowSet rowSet) throws KettleStepException
+{
+    parent.putRowToImpl(rowMeta, row, rowSet);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override removeRowListener</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void removeRowListener(RowListener rowListener)
+{
+    parent.removeRowListenerImpl(rowListener);
+}
+]]></code>
+		<sample><![CDATA[public void removeRowListener(RowListener rowListener)
+{
+    parent.removeRowListenerImpl(rowListener);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override rowsetInputSize</name>
+		<category>OTHER</category>
+		<code><![CDATA[public int rowsetInputSize()
+{
+    return parent.rowsetInputSizeImpl();
+}
+]]></code>
+		<sample><![CDATA[public int rowsetInputSize()
+{
+    return parent.rowsetInputSizeImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override rowsetOutputSize</name>
+		<category>OTHER</category>
+		<code><![CDATA[public int rowsetOutputSize()
+{
+    return parent.rowsetOutputSizeImpl();
+}
+]]></code>
+		<sample><![CDATA[public int rowsetOutputSize()
+{
+    return parent.rowsetOutputSizeImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override safeModeChecking</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void safeModeChecking(RowMetaInterface row) throws KettleRowException
+{
+    parent.safeModeCheckingImpl(row);
+}
+]]></code>
+		<sample><![CDATA[public void safeModeChecking(RowMetaInterface row) throws KettleRowException
+{
+    parent.safeModeCheckingImpl(row);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override setErrors</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void setErrors(long errors)
+{
+    parent.setErrorsImpl(errors);
+}
+]]></code>
+		<sample><![CDATA[public void setErrors(long errors)
+{
+    parent.setErrorsImpl(errors);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override setInputRowMeta</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void setInputRowMeta(RowMetaInterface rowMeta)
+{
+    parent.setInputRowMetaImpl(rowMeta);
+}
+]]></code>
+		<sample><![CDATA[public void setInputRowMeta(RowMetaInterface rowMeta)
+{
+    parent.setInputRowMetaImpl(rowMeta);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override setInputRowSets</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void setInputRowSets(List inputRowSets)
+{
+    parent.setInputRowSetsImpl(inputRowSets);
+}
+]]></code>
+		<sample><![CDATA[public void setInputRowSets(List inputRowSets)
+{
+    parent.setInputRowSetsImpl(inputRowSets);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override setLinesInput</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void setLinesInput(long newLinesInputValue)
+{
+    parent.setLinesInputImpl(newLinesInputValue);
+}
+]]></code>
+		<sample><![CDATA[public void setLinesInput(long newLinesInputValue)
+{
+    parent.setLinesInputImpl(newLinesInputValue);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override setLinesOutput</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void setLinesOutput(long newLinesOutputValue)
+{
+    parent.setLinesOutputImpl(newLinesOutputValue);
+}
+]]></code>
+		<sample><![CDATA[public void setLinesOutput(long newLinesOutputValue)
+{
+    parent.setLinesOutputImpl(newLinesOutputValue);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override setLinesRead</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void setLinesRead(long newLinesReadValue)
+{
+    parent.setLinesReadImpl(newLinesReadValue);
+}
+]]></code>
+		<sample><![CDATA[public void setLinesRead(long newLinesReadValue)
+{
+    parent.setLinesReadImpl(newLinesReadValue);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override setLinesRejected</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void setLinesRejected(long linesRejected)
+{
+    parent.setLinesRejectedImpl(linesRejected);
+}
+]]></code>
+		<sample><![CDATA[public void setLinesRejected(long linesRejected)
+{
+    parent.setLinesRejectedImpl(linesRejected);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override setLinesSkipped</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void setLinesSkipped(long newLinesSkippedValue)
+{
+    parent.setLinesSkippedImpl(newLinesSkippedValue);
+}
+]]></code>
+		<sample><![CDATA[public void setLinesSkipped(long newLinesSkippedValue)
+{
+    parent.setLinesSkippedImpl(newLinesSkippedValue);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override setLinesUpdated</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void setLinesUpdated(long newLinesUpdatedValue)
+{
+    parent.setLinesUpdatedImpl(newLinesUpdatedValue);
+}
+]]></code>
+		<sample><![CDATA[public void setLinesUpdated(long newLinesUpdatedValue)
+{
+    parent.setLinesUpdatedImpl(newLinesUpdatedValue);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override setLinesWritten</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void setLinesWritten(long newLinesWrittenValue)
+{
+    parent.setLinesWrittenImpl(newLinesWrittenValue);
+}
+]]></code>
+		<sample><![CDATA[public void setLinesWritten(long newLinesWrittenValue)
+{
+    parent.setLinesWrittenImpl(newLinesWrittenValue);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override setOutputDone</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void setOutputDone()
+{
+    parent.setOutputDoneImpl();
+}
+]]></code>
+		<sample><![CDATA[public void setOutputDone()
+{
+    parent.setOutputDoneImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override setOutputRowSets</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void setOutputRowSets(List outputRowSets)
+{
+    parent.setOutputRowSetsImpl(outputRowSets);
+}
+]]></code>
+		<sample><![CDATA[public void setOutputRowSets(List outputRowSets)
+{
+    parent.setOutputRowSetsImpl(outputRowSets);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override setStepListeners</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void setStepListeners(List stepListeners)
+{
+    parent.setStepListenersImpl(stepListeners);
+}
+]]></code>
+		<sample><![CDATA[public void setStepListeners(List stepListeners)
+{
+    parent.setStepListenersImpl(stepListeners);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override setVariable</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void setVariable(String variableName, String variableValue)
+{
+    parent.setVariableImpl(variableName, variableValue);
+}
+]]></code>
+		<sample><![CDATA[public void setVariable(String variableName, String variableValue)
+{
+    parent.setVariableImpl(variableName, variableValue);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override stopAll</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void stopAll()
+{
+    parent.stopAllImpl();
+}
+]]></code>
+		<sample><![CDATA[public void stopAll()
+{
+    parent.stopAllImpl();
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override stopRunning</name>
+		<category>OTHER</category>
+		<code><![CDATA[public void stopRunning(StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface) throws KettleException
+{
+    parent.stopRunningImpl(stepMetaInterface, stepDataInterface);
+}
+]]></code>
+		<sample><![CDATA[public void stopRunning(StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface) throws KettleException
+{
+    parent.stopRunningImpl(stepMetaInterface, stepDataInterface);
+}
+]]></sample>
+	</codeSnippit>
+
+	<codeSnippit>
+		<name>Override toString</name>
+		<category>OTHER</category>
+		<code><![CDATA[public String toString()
+{
+    return parent.toStringImpl();
+}
+]]></code>
+		<sample><![CDATA[public String toString()
+{
+    return parent.toStringImpl();
+}
+]]></sample>
+	</codeSnippit>
+</codeSnippits>
+

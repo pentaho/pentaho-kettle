@@ -79,9 +79,13 @@ public class StepPluginType extends BasePluginType implements PluginTypeInterfac
 	
 	private static StepPluginType stepPluginType;
 	
-	private StepPluginType() {
+	protected StepPluginType() {
 		super(Step.class, "STEP", "Step");
 		populateFolders("steps");
+	}
+	
+	protected StepPluginType(Class<? extends Annotation> pluginType, String id, String name) {
+		super(pluginType, id, name);
 	}
 	
 	public static StepPluginType getInstance() {

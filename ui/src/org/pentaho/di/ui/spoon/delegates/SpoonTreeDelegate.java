@@ -34,6 +34,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.dnd.DragAndDropContainer;
 import org.pentaho.di.core.dnd.XMLTransfer;
@@ -315,7 +316,8 @@ public class SpoonTreeDelegate extends SpoonDelegate
 				} else if (object instanceof PluginInterface)
 				{
 					PluginInterface plugin = (PluginInterface) object;
-					if (plugin.getPluginType().equals(StepPluginType.class)) {
+					Class<? extends PluginTypeInterface> pluginType = plugin.getPluginType(); 
+					if (Const.classIsOrExtends(pluginType,StepPluginType.class)) {
 						type = DragAndDropContainer.TYPE_BASE_STEP_TYPE;
 						data = plugin.getName(); // Step type name
 					} else {

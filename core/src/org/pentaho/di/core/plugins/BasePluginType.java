@@ -50,7 +50,7 @@ import org.scannotation.AnnotationDB;
 import org.w3c.dom.Node;
 
 public abstract class BasePluginType implements PluginTypeInterface{
-	private static Class<?> PKG = BasePluginType.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	protected static Class<?> PKG = BasePluginType.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	protected String id;
 	protected String name;
@@ -265,6 +265,11 @@ public abstract class BasePluginType implements PluginTypeInterface{
 	
 	protected List<FileObject> findPluginXmlFiles(String folder) {
 		
+		return findPluginFiles(folder,".*\\/plugin\\.xml$");
+	}
+	
+	protected List<FileObject> findPluginFiles(String folder, final String regex) {
+		
 		List<FileObject> list = new ArrayList<FileObject>();
 		try {
 			FileObject folderObject = KettleVFS.getFileObject(folder);
@@ -276,7 +281,7 @@ public abstract class BasePluginType implements PluginTypeInterface{
 					}
 					
 					public boolean includeFile(FileSelectInfo fileSelectInfo) throws Exception {
-						return fileSelectInfo.getFile().toString().matches(".*\\/plugin\\.xml$");
+						return fileSelectInfo.getFile().toString().matches(regex);
 					}
 				}
 			);
@@ -389,7 +394,7 @@ public abstract class BasePluginType implements PluginTypeInterface{
         }
     }
 
-    private String getTagOrAttribute(Node pluginNode, String tag) {
+    protected String getTagOrAttribute(Node pluginNode, String tag) {
 		String string = XMLHandler.getTagValue(pluginNode, tag);
 		if (string==null) {
             string = XMLHandler.getTagAttribute(pluginNode, tag); //$NON-NLS-1$
@@ -403,7 +408,7 @@ public abstract class BasePluginType implements PluginTypeInterface{
      * @param localizedMap
      * @return
      */
-	private String getAlternativeTranslation(String input, Map<String, String> localizedMap) {
+	protected String getAlternativeTranslation(String input, Map<String, String> localizedMap) {
 		
 		if (Const.isEmpty(input)) {
 			return null;
@@ -429,7 +434,7 @@ public abstract class BasePluginType implements PluginTypeInterface{
 		}
 	}
 
-	private Map<String, String> readPluginLocale(Node pluginNode, String localizedTag, String translationTag) {
+	protected Map<String, String> readPluginLocale(Node pluginNode, String localizedTag, String translationTag) {
 		Map<String, String> map = new Hashtable<String, String>();
         
         Node locTipsNode = XMLHandler.getSubNode(pluginNode, localizedTag);

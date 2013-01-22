@@ -20,19 +20,10 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.ui.trans.steps.userdefinedjavaclass;
+package org.pentaho.di.ui.trans.steps.udjcstep;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.EnumMap;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -84,41 +75,30 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.plugins.PluginRegistry;
-import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.trans.Trans;
-import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
+import org.pentaho.di.trans.steps.udjcstep.UDJCStepDef;
+import org.pentaho.di.trans.steps.udjcstep.UDJCStepDef.ClassType;
+import org.pentaho.di.trans.steps.udjcstep.UDJCStepMetaBase;
+import org.pentaho.di.trans.steps.udjcstep.UDJCStepMetaBase.FieldInfo;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.FieldHelper;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.StepDefinition;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UsageParameter;
-import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta;
-import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef.ClassType;
-import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta.FieldInfo;
-import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
-import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
-import org.pentaho.di.ui.core.dialog.ShowMessageDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.StyledTextComp;
 import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.ui.spoon.Spoon;
-import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.trans.steps.userdefinedjavaclass.UserDefinedJavaClassCodeSnippits.Category;
-import org.pentaho.di.ui.trans.steps.userdefinedjavaclass.UserDefinedJavaClassCodeSnippits.Snippit;
 
-public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDialogInterface {
+public class UDJCStepDialog extends BaseStepDialog implements StepDialogInterface {
 	private static Class<?>	PKG					= UserDefinedJavaClassMeta.class;
 	
 	private ModifyListener	lsMod;
@@ -131,12 +111,6 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 	private Button			wClearResultFields;
 
 	private Text			wlHelpLabel;
-
-	private Button			wTest;
-	private Listener		lsTest;
-	
-	private Button			wCreatePlugin;
-	private Listener		lsCreatePlugin;
 
 	private Tree			wTree;
 	private TreeItem		wTreeClassesItem;
@@ -161,8 +135,8 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 
 	private String								strActiveScript;
 
-	private UserDefinedJavaClassMeta			input;
-	private UserDefinedJavaClassCodeSnippits	snippitsHelper;
+	private UDJCStepMetaBase			input;
+	private UDJCStepCodeSnippits	snippitsHelper;
 
 	private static GUIResource					guiResource	= GUIResource.getInstance();
 
@@ -171,8 +145,6 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 	private TreeItem							itemWaitFieldsIn, itemWaitFieldsInfo, itemWaitFieldsOut;
 
 	private RowMetaInterface					inputRowMeta, infoRowMeta, outputRowMeta;
-
-	private RowGeneratorMeta					genMeta;
 
 	private CTabItem							fieldsTab;
 
@@ -183,11 +155,10 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 
 	private String[]							prevStepNames, nextStepNames;
 
-	public UserDefinedJavaClassDialog(Shell parent, Object in, TransMeta transMeta, String sname) {
+	public UDJCStepDialog(Shell parent, Object in, TransMeta transMeta, String sname) {
 
 		super(parent, (BaseStepMeta) in, transMeta, sname);
-		input = (UserDefinedJavaClassMeta) in;
-		genMeta = null;
+		input = (UDJCStepMetaBase) in;
 		try {
 			// ImageLoader xl = new ImageLoader();
 			imageUnderGreen = guiResource.getImage("ui/images/underGreen.png");
@@ -208,7 +179,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 		}
 
 		try {
-			snippitsHelper = UserDefinedJavaClassCodeSnippits.getSnippitsHelper();
+			snippitsHelper = UDJCStepCodeSnippits.getSnippitsHelper();
 		} catch (Exception e) {
 			new ErrorDialog(shell, "Unexpected error", "There was an unexpected error reading the code snippits file",
 							e);
@@ -227,7 +198,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 
 		lsMod = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				input.setChanged();
+				//input.setChanged();
 			}
 		};
 		changed = input.hasChanged();
@@ -387,23 +358,14 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 
 		wOK = new Button(shell, SWT.PUSH);
 		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
-		wTest = new Button(shell, SWT.PUSH);
-		wTest.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.TestClass.Button")); //$NON-NLS-1$
-		wCreatePlugin = new Button(shell, SWT.PUSH);
-		wCreatePlugin.setText("Create Plug-in"); //$NON-NLS-1$
 		wCancel = new Button(shell, SWT.PUSH);
 		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
-		setButtonPositions(new Button[] { wOK, wCancel, wTest, wCreatePlugin }, margin, null);
+		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 
 		lsCancel = new Listener() {
 			public void handleEvent(Event e) {
 				cancel();
-			}
-		};
-		lsTest = new Listener() {
-			public void handleEvent(Event e) {
-				test();
 			}
 		};
 		lsOK = new Listener() {
@@ -416,16 +378,9 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 				treeDblClick(e);
 			}
 		};
-		lsCreatePlugin = new Listener() {
-			public void handleEvent(Event e) {
-				createPlugin();
-			}
-		};
-
+		
 		wCancel.addListener(SWT.Selection, lsCancel);
-		wTest.addListener(SWT.Selection, lsTest);
 		wOK.addListener(SWT.Selection, lsOK);
-		wCreatePlugin.addListener(SWT.Selection, lsCreatePlugin);
 		wTree.addListener(SWT.MouseDoubleClick, lsTree);
 
 		lsDef = new SelectionAdapter() {
@@ -478,7 +433,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 		getData();
 
 		// Adding the Rest (Functions, InputItems, etc.) to the Tree
-		buildSnippitsTree();
+		//buildSnippitsTree();
 
 		// Input Fields
 		itemInput = new TreeItem(wTree, SWT.NULL);
@@ -573,52 +528,6 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 			if (!display.readAndDispatch()) display.sleep();
 		}
 		return stepname;
-	}
-
-	protected boolean createPlugin() {
-		
-		// Create a step with the information in this dialog
-		UserDefinedJavaClassMeta udjcMeta = new UserDefinedJavaClassMeta();
-		getInfo(udjcMeta);
-		
-		try {
-			String pluginName = "Processor";
-			for(UserDefinedJavaClassDef def : udjcMeta.getDefinitions()) {
-				if(def.isTransformClass()) {
-					pluginName = def.getClassName();
-				}
-			}
-			File pluginFile = new File(String.format("plugins/steps/%s/%s.step.xml",pluginName,pluginName));
-			pluginFile.getParentFile().mkdirs();
-			PrintWriter pw = new PrintWriter(new FileWriter(pluginFile));
-			StringBuffer outXML = new StringBuffer("<step>\n");
-			outXML.append(String.format("\t<name>%s</name>\n",stepname));
-			outXML.append("\t<type>UserDefinedJavaClass</type>\n");
-			outXML.append("\t<description/>\n\t");
-			outXML.append(udjcMeta.getXML());
-			outXML.append("</step>");
-			pw.println(outXML.toString());
-			pw.flush();
-			pw.close();
-			ShowMessageDialog msgDialog =
-				new ShowMessageDialog(
-					shell, 
-					SWT.ICON_INFORMATION | SWT.OK, 
-					BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Plugin.CreateSuccess"), 
-					BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Plugin.CreatedFile", pluginFile.getPath()), 
-					false); //$NON-NLS-1$
-		    msgDialog.open();
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-			new ErrorDialog(
-					shell, 
-					BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Plugin.CreateErrorTitle"), 
-					BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Plugin.CreateErrorMessage",stepname), 
-					e); //$NON-NLS-1$ //$NON-NLS-2$
-		}
-
-		return true;	
 	}
 
 	private void addFieldsTab() {
@@ -856,6 +765,9 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 		}
 		StyledTextComp wScript = new StyledTextComp(transMeta, item.getParent(), SWT.MULTI | SWT.LEFT | SWT.H_SCROLL
 						| SWT.V_SCROLL, item.getText(), false);
+		
+		wScript.setEditable(false); // Disable changing of source code
+		
 		if ((tabCode != null) && tabCode.length() > 0)
 			wScript.setText(tabCode);
 		else
@@ -898,7 +810,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 		wScript.addModifyListener(lsMod);
 
 		// Text Higlighting
-		wScript.addLineStyleListener(new UserDefinedJavaClassHighlight());
+		wScript.addLineStyleListener(new UDJCStepHighlight());
 		item.setControl(wScript);
 
 		// Adding new Item to Tree
@@ -1031,7 +943,8 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 			posnr--;
 			colnr++;
 		}
-		wlPosition.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Position.Label2") + linenr + ", " + colnr); //$NON-NLS-1$ //$NON-NLS-2$
+		wlPosition
+						.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Position.Label2") + linenr + ", " + colnr); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/**
@@ -1048,24 +961,20 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 			if (fi.precision >= 0) item.setText(4, "" + fi.precision); //$NON-NLS-1$
 		}
 
-		List<UserDefinedJavaClassDef> definitions = input.getDefinitions();
+		List<UDJCStepDef> definitions = input.getDefinitions();
 		if (definitions.size() == 0) {
 	        try {
-	        	definitions = new ArrayList<UserDefinedJavaClassDef>();
+	        	definitions = new ArrayList<UDJCStepDef>();
 	        	// Note the tab name isn't i18n because it is a Java Class name and i18n characters might make it choke.
-				definitions.add(new UserDefinedJavaClassDef(UserDefinedJavaClassDef.ClassType.TRANSFORM_CLASS, "Processor",
-				        UserDefinedJavaClassCodeSnippits.getSnippitsHelper().getDefaultCode()));
+				definitions.add(new UDJCStepDef(UDJCStepDef.ClassType.TRANSFORM_CLASS, "Processor",
+				        UDJCStepCodeSnippits.getSnippitsHelper().getDefaultCode()));
 				input.replaceDefinitions(definitions);
 			} catch (KettleXMLException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
-				new ErrorDialog(
-						shell, 
-						BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Plugin.CreateErrorTitle"), 
-						BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Plugin.CreateErrorMessage",stepname), 
-						e); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
-		for (UserDefinedJavaClassDef def : definitions) {
+		for (UDJCStepDef def : definitions) {
 			if (def.isTransformClass()) strActiveScript = def.getClassName();
 			addCtab(def.getClassName(), def.getSource(), TabAddActions.ADD_DEFAULT);
 		}
@@ -1141,7 +1050,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 		return true;
 	}
 
-	private void getInfo(UserDefinedJavaClassMeta meta) {
+	private void getInfo(UDJCStepMetaBase meta) {
 		int nrfields = wFields.nrNonEmpty();
 		List<FieldInfo> newFields = new ArrayList<FieldInfo>(nrfields);
 		for (int i = 0; i < nrfields; i++) {
@@ -1153,9 +1062,9 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 
 		CTabItem[] cTabs = folder.getItems();
 		if (cTabs.length > 0) {
-			List<UserDefinedJavaClassDef> definitions = new ArrayList<UserDefinedJavaClassDef>(cTabs.length);
+			List<UDJCStepDef> definitions = new ArrayList<UDJCStepDef>(cTabs.length);
 			for (int i = 0; i < cTabs.length; i++) {
-				UserDefinedJavaClassDef def = new UserDefinedJavaClassDef(ClassType.NORMAL_CLASS, cTabs[i].getText(),
+				UDJCStepDef def = new UDJCStepDef(ClassType.NORMAL_CLASS, cTabs[i].getText(),
 								getStyledTextComp(cTabs[i]).getText());
 				if (cTabs[i].getImage().equals(imageActiveScript)) def.setClassType(ClassType.TRANSFORM_CLASS);
 				definitions.add(def);
@@ -1237,188 +1146,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 		return hasTransformClass;
 	}
 
-	private boolean test() {
-		PluginRegistry registry = PluginRegistry.getInstance();
-		String scriptStepName = wStepname.getText();
-
-		if (!checkForTransformClass()) return false;
-		
-		// Create a step with the information in this dialog
-		UserDefinedJavaClassMeta udjcMeta = new UserDefinedJavaClassMeta();
-		getInfo(udjcMeta);
-
-		try {
-			// First, before we get into the trial run, just see if the classes
-			// all compile.
-			udjcMeta.cookClasses();
-			if (udjcMeta.cookErrors.size() == 1) {
-				Exception e = udjcMeta.cookErrors.get(0);
-				new ErrorDialog(shell, "Error during class compilation", e.toString(), e); //$NON-NLS-1$ //$NON-NLS-2$
-				return false;
-			} else if (udjcMeta.cookErrors.size() > 1) {
-				Exception e = udjcMeta.cookErrors.get(0);
-				new ErrorDialog(
-								shell,
-								"Errors during class compilation", String.format("Multiple errors during class compilation. First error:\n%s", e.toString()), e); //$NON-NLS-1$ //$NON-NLS-2$
-				return false;
-			}
-
-			// What fields are coming into the step?
-			RowMetaInterface rowMeta = transMeta.getPrevStepFields(stepname).clone();
-			if (rowMeta != null) {
-				// Create a new RowGenerator step to generate rows for the test
-				// data...
-				// Only create a new instance the first time to help the user.
-				// Otherwise he/she has to key in the same test data all the
-				// time
-				if (genMeta == null) {
-					genMeta = new RowGeneratorMeta();
-					genMeta.setRowLimit("10");
-					genMeta.allocate(rowMeta.size());
-					for (int i = 0; i < rowMeta.size(); i++) {
-						ValueMetaInterface valueMeta = rowMeta.getValueMeta(i);
-						if (valueMeta.isStorageBinaryString()) {
-							valueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
-						}
-						genMeta.getFieldName()[i] = valueMeta.getName();
-						genMeta.getFieldType()[i] = valueMeta.getTypeDesc();
-						genMeta.getFieldLength()[i] = valueMeta.getLength();
-						genMeta.getFieldPrecision()[i] = valueMeta.getPrecision();
-						genMeta.getCurrency()[i] = valueMeta.getCurrencySymbol();
-						genMeta.getDecimal()[i] = valueMeta.getDecimalSymbol();
-						genMeta.getGroup()[i] = valueMeta.getGroupingSymbol();
-
-						String string = null;
-						switch (valueMeta.getType()) {
-							case ValueMetaInterface.TYPE_DATE:
-								genMeta.getFieldFormat()[i] = "yyyy/MM/dd HH:mm:ss";
-								valueMeta.setConversionMask(genMeta.getFieldFormat()[i]);
-								string = valueMeta.getString(new Date());
-								break;
-							case ValueMetaInterface.TYPE_STRING:
-								string = "test value test value"; //$NON-NLS-1$
-								break;
-							case ValueMetaInterface.TYPE_INTEGER:
-								genMeta.getFieldFormat()[i] = "#";
-								valueMeta.setConversionMask(genMeta.getFieldFormat()[i]);
-								string = valueMeta.getString(Long.valueOf(0L));
-								break;
-							case ValueMetaInterface.TYPE_NUMBER:
-								genMeta.getFieldFormat()[i] = "#.#";
-								valueMeta.setConversionMask(genMeta.getFieldFormat()[i]);
-								string = valueMeta.getString(Double.valueOf(0.0D));
-								break;
-							case ValueMetaInterface.TYPE_BIGNUMBER:
-								genMeta.getFieldFormat()[i] = "#.#";
-								valueMeta.setConversionMask(genMeta.getFieldFormat()[i]);
-								string = valueMeta.getString(BigDecimal.ZERO);
-								break;
-							case ValueMetaInterface.TYPE_BOOLEAN:
-								string = valueMeta.getString(Boolean.TRUE);
-								break;
-							case ValueMetaInterface.TYPE_BINARY:
-								string = valueMeta.getString(new byte[] { 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, });
-								break;
-							default:
-								break;
-						}
-
-						genMeta.getValue()[i] = string;
-					}
-				}
-				StepMeta genStep = new StepMeta(registry.getPluginId(StepPluginType.class, genMeta), "## TEST DATA ##",
-								genMeta);
-				genStep.setLocation(50, 50);
-
-				StepMeta scriptStep = new StepMeta(registry.getPluginId(StepPluginType.class, udjcMeta), Const.NVL(
-								scriptStepName, "## SCRIPT ##"), udjcMeta);
-				scriptStepName = scriptStep.getName();
-				scriptStep.setLocation(150, 50);
-
-				// Create a hop between both steps...
-				//
-				TransHopMeta hop = new TransHopMeta(genStep, scriptStep);
-
-				// Generate a new test transformation...
-				//
-        TransMeta transMeta =  new TransMeta();
-				transMeta.setName(wStepname.getText() + " - PREVIEW"); // $NON-NLS-1$
-				transMeta.addStep(genStep);
-				transMeta.addStep(scriptStep);
-				transMeta.addTransHop(hop);
-
-				// OK, now we ask the user to edit this dialog...
-				//
-				if (Spoon.getInstance().editStep(transMeta, genStep) != null) {
-					// Now run this transformation and grab the results...
-					//
-					TransPreviewProgressDialog progressDialog = new TransPreviewProgressDialog(shell, transMeta,
-									new String[] { scriptStepName, }, new int[] { Const
-													.toInt(genMeta.getRowLimit(), 10), });
-					progressDialog.open();
-
-					Trans trans = progressDialog.getTrans();
-					String loggingText = progressDialog.getLoggingText();
-
-					if (!progressDialog.isCancelled()) {
-						if (trans.getResult() != null && trans.getResult().getNrErrors() > 0) {
-							EnterTextDialog etd = new EnterTextDialog(shell, BaseMessages
-											.getString("System.Dialog.PreviewError.Title"), BaseMessages
-											.getString("System.Dialog.PreviewError.Message"), loggingText, true);
-							etd.setReadOnly();
-							etd.open();
-						}
-					}
-
-					RowMetaInterface previewRowsMeta = progressDialog.getPreviewRowsMeta(wStepname.getText());
-					List<Object[]> previewRows = progressDialog.getPreviewRows(wStepname.getText());
-
-					if (previewRowsMeta != null && previewRows != null && previewRows.size() > 0) {
-						PreviewRowsDialog prd = new PreviewRowsDialog(shell, transMeta, SWT.NONE, wStepname.getText(),
-										previewRowsMeta, previewRows, loggingText);
-						prd.open();
-					}
-				}
-
-				return true;
-			} else {
-				throw new KettleException(BaseMessages.getString(PKG,
-								"UserDefinedJavaClassDialog.Exception.CouldNotGetFields")); //$NON-NLS-1$
-			}
-		} catch (Exception e) {
-			new ErrorDialog(
-							shell,
-							BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.TestFailed.DialogTitle"), BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.TestFailed.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
-			return false;
-		}
-
-	}
-
-	private void buildSnippitsTree() {
-
-		TreeItem item = new TreeItem(wTree, SWT.NULL);
-		item.setImage(guiResource.getImageBol());
-		item.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Snippits.Label"));
-
-		Map<Category, TreeItem> categoryTreeItems = new EnumMap<Category, TreeItem>(Category.class);
-		for (Category cat : Category.values()) {
-			TreeItem itemGroup = new TreeItem(item, SWT.NULL);
-			itemGroup.setImage(imageUnderGreen);
-			itemGroup.setText(cat.getDescription());
-			itemGroup.setData("Snippits Category");
-			categoryTreeItems.put(cat, itemGroup);
-		}
-
-		Collection<Snippit> snippits = snippitsHelper.getSnippits();
-		for (Snippit snippit : snippits) {
-			TreeItem itemGroup = categoryTreeItems.get(snippit.category);
-			TreeItem itemSnippit = new TreeItem(itemGroup, SWT.NULL);
-			itemSnippit.setText(snippit.name);
-			itemSnippit.setImage(imageArrowGreen);
-			itemSnippit.setData(snippit.code);
-		}
-	}
-
+	
 	public boolean TreeItemExist(TreeItem itemToCheck, String strItemName) {
 		boolean bRC = false;
 		if (itemToCheck.getItemCount() > 0) {
