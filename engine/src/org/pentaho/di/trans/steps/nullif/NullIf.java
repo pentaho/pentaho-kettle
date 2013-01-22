@@ -73,7 +73,7 @@ public class NullIf extends BaseStep implements StepInterface
             data.outputRowMeta = getInputRowMeta().clone(); 
 		    data.keynr     = new int[meta.getFieldValue().length];
 		    data.nullValue = new Object[meta.getFieldValue().length];
-		    data.nullValueMeta = new ValueMeta[meta.getFieldValue().length];
+		    data.nullValueMeta = new ValueMetaInterface[meta.getFieldValue().length];
 		    for (int i=0;i<meta.getFieldValue().length;i++)
 		    {
 		        data.keynr[i] = data.outputRowMeta.indexOfValue(meta.getFieldName()[i]);
