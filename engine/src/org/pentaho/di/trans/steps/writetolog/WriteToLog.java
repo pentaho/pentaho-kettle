@@ -47,6 +47,8 @@ public class WriteToLog extends BaseStep implements StepInterface
 
 	private WriteToLogMeta meta;
 	private WriteToLogData data;
+        private int rowCounter = 0;
+        private boolean rowCounterLimitHit = false;
 	
 	public WriteToLog(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
@@ -55,6 +57,9 @@ public class WriteToLog extends BaseStep implements StepInterface
 	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
+            
+
+            
 		meta=(WriteToLogMeta)smi;
 		data=(WriteToLogData)sdi;
 
@@ -65,6 +70,12 @@ public class WriteToLog extends BaseStep implements StepInterface
 			return false;
 		}
 		
+                // Limit hit? skip
+                if(rowCounterLimitHit){
+                    putRow(getInputRowMeta(), r); // copy row to output
+                    return true;
+                }
+                
 		if(first)
 		{
 			first=false;
@@ -127,7 +138,13 @@ public class WriteToLog extends BaseStep implements StepInterface
 		
 		setLog(data.loglevel, out);
 		
-		putRow(getInputRowMeta(), r); // copy row to output
+                
+                // Increment counter
+                if(meta.isLimitRows() && ++rowCounter >= meta.getLimitRowsNumber()){
+                    rowCounterLimitHit = true;
+                }
+
+                putRow(getInputRowMeta(), r); // copy row to output
 
 		return true;
 	}

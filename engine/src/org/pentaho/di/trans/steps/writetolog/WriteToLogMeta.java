@@ -74,6 +74,10 @@ public class WriteToLogMeta extends BaseStepMeta implements StepMetaInterface
     
     private boolean displayHeader;
     
+    private boolean limitRows;
+    
+    private int limitRowsNumber;
+    
     private String logmessage;
     
     private String loglevel;
@@ -155,6 +159,22 @@ public class WriteToLogMeta extends BaseStepMeta implements StepMetaInterface
     	this.displayHeader=displayheader;
     }
     
+     public boolean isLimitRows() {
+        return limitRows;
+    }
+
+    public void setLimitRows(boolean limitRows) {
+        this.limitRows = limitRows;
+    }
+
+    public int getLimitRowsNumber() {
+        return limitRowsNumber;
+    }
+
+    public void setLimitRowsNumber(int limitRowsNumber) {
+        this.limitRowsNumber = limitRowsNumber;
+    }
+    
 	public String getLogMessage()
 	{
 		if (logmessage == null)
@@ -176,6 +196,11 @@ public class WriteToLogMeta extends BaseStepMeta implements StepMetaInterface
 		  loglevel = XMLHandler.getTagValue(stepnode, "loglevel");
 		  displayHeader = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "displayHeader"));
 		  
+                  limitRows = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "limitRows"));
+                  String limitRowsNumberString = XMLHandler.getTagValue(stepnode, "limitRowsNumber");
+                  limitRowsNumber = Const.toInt(limitRowsNumberString, 5);
+
+                  
 		  logmessage = XMLHandler.getTagValue(stepnode, "logmessage");
 		  
 		  Node fields = XMLHandler.getSubNode(stepnode, "fields");
@@ -199,6 +224,8 @@ public class WriteToLogMeta extends BaseStepMeta implements StepMetaInterface
         StringBuffer retval = new StringBuffer();
         retval.append("      " + XMLHandler.addTagValue("loglevel", loglevel));
         retval.append("      " + XMLHandler.addTagValue("displayHeader", displayHeader));
+        retval.append("      " + XMLHandler.addTagValue("limitRows", limitRows));
+        retval.append("      " + XMLHandler.addTagValue("limitRowsNumber", limitRowsNumber));
         
         retval.append("      " + XMLHandler.addTagValue("logmessage", logmessage));
         

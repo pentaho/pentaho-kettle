@@ -90,7 +90,16 @@ public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterf
 	private Label        wlFields;
 	private TableView    wFields;
 	private FormData     fdlFields, fdFields;
-	
+
+   
+    private Label wlLimitRows;
+    private Button wLimitRows;
+    private FormData fdlLimitRows, fdLimitRows;
+    
+    private Label wlLimitRowsNumber;
+    private Text wLimitRowsNumber;
+    private FormData fdlLimitRowsNumber, fdLimitRowsNumber;
+    
     private Map<String, Integer> inputFields;
 	
     private ColumnInfo[] colinf;
@@ -185,6 +194,53 @@ public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterf
 		fdPrintHeader.top   = new FormAttachment(wLoglevel, margin);
 		fdPrintHeader.right = new FormAttachment(100, 0);
 		wPrintHeader.setLayoutData(fdPrintHeader);
+                
+                
+                // Limit output?
+                		// Cache?
+		wlLimitRows=new Label(shell, SWT.RIGHT);
+		wlLimitRows.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.LimitRows.Label")); //$NON-NLS-1$
+ 		props.setLook(wlLimitRows);
+		fdlLimitRows=new FormData();
+		fdlLimitRows.left = new FormAttachment(0, 0);
+		fdlLimitRows.right= new FormAttachment(middle, -margin);
+		fdlLimitRows.top  = new FormAttachment(wPrintHeader, margin);
+		wlLimitRows.setLayoutData(fdlLimitRows);
+		wLimitRows=new Button(shell, SWT.CHECK);
+ 		props.setLook(wLimitRows);
+		fdLimitRows=new FormData();
+		fdLimitRows.left = new FormAttachment(middle, 0);
+		fdLimitRows.top  = new FormAttachment(wPrintHeader, margin);
+		wLimitRows.setLayoutData(fdLimitRows);
+		wLimitRows.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					input.setChanged();
+					enableFields();
+				}
+			}
+		);
+
+		// LimitRows size line
+		wlLimitRowsNumber=new Label(shell, SWT.RIGHT);
+		wlLimitRowsNumber.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.LimitRowsNumber.Label")); //$NON-NLS-1$
+ 		props.setLook(wlLimitRowsNumber);
+		wlLimitRowsNumber.setEnabled(input.isLimitRows());
+		fdlLimitRowsNumber=new FormData();
+		fdlLimitRowsNumber.left   = new FormAttachment(0, 0);
+		fdlLimitRowsNumber.right  = new FormAttachment(middle, -margin);
+		fdlLimitRowsNumber.top    = new FormAttachment(wLimitRows, margin);
+		wlLimitRowsNumber.setLayoutData(fdlLimitRowsNumber);
+		wLimitRowsNumber=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wLimitRowsNumber);
+		wLimitRowsNumber.setEnabled(input.isLimitRows());
+		wLimitRowsNumber.addModifyListener(lsMod);
+		fdLimitRowsNumber=new FormData();
+		fdLimitRowsNumber.left   = new FormAttachment(middle, 0);
+		fdLimitRowsNumber.right  = new FormAttachment(100, 0);
+		fdLimitRowsNumber.top    = new FormAttachment(wLimitRows, margin);
+		wLimitRowsNumber.setLayoutData(fdLimitRowsNumber);
 		
         // Log message to display
 		wlLogMessage = new Label(shell, SWT.RIGHT);
@@ -192,7 +248,7 @@ public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterf
         props.setLook(wlLogMessage);
         fdlLogMessage = new FormData();
         fdlLogMessage.left = new FormAttachment(0, 0);
-        fdlLogMessage.top = new FormAttachment(wPrintHeader, margin);
+        fdlLogMessage.top = new FormAttachment(wLimitRowsNumber, margin);
 		fdlLogMessage.right = new FormAttachment(middle, -margin);
         wlLogMessage.setLayoutData(fdlLogMessage);
 
@@ -201,7 +257,7 @@ public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterf
         wLogMessage.addModifyListener(lsMod);
         fdLogMessage = new FormData();
         fdLogMessage.left = new FormAttachment(middle, 0);
-        fdLogMessage.top = new FormAttachment(wPrintHeader, margin);
+        fdLogMessage.top = new FormAttachment(wLimitRowsNumber, margin);
         fdLogMessage.right = new FormAttachment(100, -2*margin);
         fdLogMessage.height = 125;
         wLogMessage.setLayoutData(fdLogMessage);
@@ -356,6 +412,8 @@ public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterf
 		wLoglevel.select(input.getLogLevelByDesc().getLevel());
 
 		wPrintHeader.setSelection(input.isdisplayHeader());
+                wLimitRows.setSelection(input.isLimitRows());
+                wLimitRowsNumber.setText(""+input.getLimitRowsNumber());
 		
         if (input.getLogMessage() != null)
             wLogMessage.setText(input.getLogMessage());
@@ -388,6 +446,8 @@ public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterf
 		stepname = wStepname.getText(); // return value
 		
 		input.setdisplayHeader(wPrintHeader.getSelection());
+                input.setLimitRows(wLimitRows.getSelection());
+                input.setLimitRowsNumber(Const.toInt(wLimitRowsNumber.getText(), 0) );
 		
 		if(wLoglevel.getSelectionIndex()<0)
 			input.setLogLevel(3); // Basic
@@ -408,4 +468,12 @@ public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterf
 		}
 		dispose();
 	}
+        
+        		  
+        private void enableFields() {
+
+        wLimitRowsNumber.setEnabled(wLimitRows.getSelection());
+        wlLimitRowsNumber.setEnabled(wLimitRows.getSelection());
+
+    }
 }
