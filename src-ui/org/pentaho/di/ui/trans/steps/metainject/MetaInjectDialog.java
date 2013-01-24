@@ -491,9 +491,9 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
       RepositoryDirectoryInterface repdir = sod.getDirectory();
       if (transName != null && repdir != null) {
         loadRepositoryTrans(transName, repdir);
+        wFilename.setText("");
         wTransname.setText(injectTransMeta.getName());
         wDirectory.setText(injectTransMeta.getRepositoryDirectory().getPath());
-        wFilename.setText("");
         radioByName.setSelection(true);
         radioFilename.setSelection(false);
       }
