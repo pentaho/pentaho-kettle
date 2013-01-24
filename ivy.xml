@@ -65,7 +65,8 @@
     <!-- Test dependencies -->
     <dependency org="junit"                    name="junit"                rev="4.7"    transitive="false" conf="test->default"/>          
     <dependency org="org.mortbay.jetty"        name="jetty-servlet-tester" rev="6.1.21" transitive="false" conf="test->default"/>
-    <dependency org="net.sourceforge.nekohtml" name="nekohtml"             rev="1.9.7"  transitive="false" conf="test->default"/>            
+    <dependency org="net.sourceforge.nekohtml" name="nekohtml"             rev="1.9.7"  transitive="false" conf="test->default"/>    
+    <dependency org="org.mockito"              name="mockito-all"          rev="1.8.4"  transitive="false" conf="test->default"/>        
                          
   </dependencies>
 </ivy-module>
