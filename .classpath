@@ -239,5 +239,6 @@
 	<classpathentry kind="lib" path="libext/jersey/jersey-core-1.7.jar"/>
 	<classpathentry kind="lib" path="libext/jersey/jersey-json-1.7.jar"/>
 	<classpathentry kind="lib" path="libext/feeds/xml-apis-2.0.2.jar"/>
+	<classpathentry kind="lib" path="test/libext/mockito-all-1.8.4.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
