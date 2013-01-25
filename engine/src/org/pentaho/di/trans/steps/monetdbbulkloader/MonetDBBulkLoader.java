@@ -21,15 +21,11 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.monetdbbulkloader;
 
-import java.io.ByteArrayOutputStream;
-import java.util.Date;
-import java.util.List;
-
 import nl.cwi.monetdb.mcl.io.BufferedMCLReader;
 import nl.cwi.monetdb.mcl.io.BufferedMCLWriter;
 import nl.cwi.monetdb.mcl.net.MapiSocket;
-
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -43,13 +39,13 @@ import org.pentaho.di.core.util.StreamLogger;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStep;
-import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepInterface;
-import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.*;
 import org.pentaho.di.trans.steps.monetdbagilemart.MonetDBRowLimitException;
 import org.pentaho.di.trans.steps.tableagilemart.AgileMartUtil;
+
+import java.io.ByteArrayOutputStream;
+import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -141,7 +137,8 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
           Database db = null;
           // get table metadata, will be used later for date type identification (DATE, TIMESTAMP, ...)
           try {
-            db = new Database(this, dm);
+
+            db = new Database(meta.getParent(), dm);
             db.connect(user, password);
             physicalTableRowMeta = db.getTableFields(data.schemaTable);
           } catch (Exception e) {
@@ -238,8 +235,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
   
       try {
         // So, we have this output stream to which we can write CSV data to.
-        // Basically, what we need to do is write the binary data (from strings to
-        // it as part of this proof of concept)
+	    	// Basically, what we need to do is write the binary data (from strings to it as part of this proof of concept)
         //
         // The data format required is essentially:
         //
@@ -265,7 +261,10 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
               }
               line.write(data.quote);
               // we have to convert to strings to escape '\'s              
-              // also escape any backslashes
+	    				if( str == null ) {
+                line.write(data.nullrepresentation);
+	    				} else {
+		    				// escape any backslashes
               str = str.replace("\\", "\\\\");
               str = str.replace("\"", "\\\"");
               if (meta.isAutoStringWidths()) {
@@ -278,7 +277,10 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
                   str = str.substring(0, len);
                 }
                 line.write(str.getBytes(meta.getEncoding()));
-              } 
+			    			} else {
+			    				line.write(str.getBytes(meta.getEncoding()));
+                }
+	    				}
               line.write(data.quote);
               break;
             case ValueMetaInterface.TYPE_INTEGER:
@@ -294,8 +296,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
               }
               break;
             //
-            // TODO: Check MonetDB API for true column types and help set or
-            // suggest the correct formatter pattern to the user.
+		    		// TODO: Check MonetDB API for true column types and help set or suggest the correct formatter pattern to the user.
             //
             case ValueMetaInterface.TYPE_DATE:
               // Keep the data format as indicated.
@@ -313,14 +314,12 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
                   line.write(data.nullrepresentation);
                 } else {
   
-                  // MonetDB makes a distinction between the acceptable incoming
-                  // string formats for
+                  // MonetDB makes a distinction between the acceptable incoming string formats for
                   // the type DATE and TIMESTAMP.
                   //
                   // DATE - for date values (e.g., 2012-12-21)
                   // TIME - for time values (e.g., 15:51:36)
-                  // TIMESTAMP - DATE and TIME put together (e.g., 2012-12-21
-                  // 15:51:36)
+                  // TIMESTAMP - DATE and TIME put together (e.g., 2012-12-21  15:51:36)
   
                   if (colMeta != null && colMeta.getOriginalColumnTypeName().equalsIgnoreCase("date")) {
                     line.write(data.monetDateMeta.getString(value).getBytes());
@@ -382,8 +381,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
         //
         line.write(data.newline);
   
-        // Now that we have the line, grab the content and store it in the
-        // buffer...
+			  // Now that we have the line, grab the content and store it in the buffer...
         //
         data.rowBuffer[data.bufferIndex] = line.toString(); // line.toByteArray();
         data.bufferIndex++;
@@ -451,6 +449,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 
 	    	// first write the COPY INTO command...
 	    	//
+
 
         String nullRep = meta.getNULLrepresentation();
         if (nullRep == null) {
@@ -552,11 +551,9 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 			data.rowBuffer = new String[data.bufferSize]; //new byte[data.bufferSize][];
 			data.bufferIndex = 0;
 			
-			if(meta.isFullyQuoteSQL()) {
-				meta.getDatabaseMeta(this).setQuoteAllFields(true);
-			} else {
-				meta.getDatabaseMeta(this).setQuoteAllFields(false);
-			}
+			// Make sure our database connection settings are consistent with our dialog settings by
+			// altering the connection with an updated answer depending on the dialog setting.
+			meta.getDatabaseMeta().setQuoteAllFields(meta.isFullyQuoteSQL());
 
 
 			// Support parameterized database connection names

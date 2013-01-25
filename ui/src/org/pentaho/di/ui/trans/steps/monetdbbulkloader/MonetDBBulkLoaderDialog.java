@@ -31,6 +31,8 @@ import java.util.Set;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
@@ -45,8 +47,8 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
-import org.pentaho.di.ui.core.widget.ComboVar;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -57,7 +59,11 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.graphics.FontMetrics;
+import org.eclipse.swt.graphics.GC;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.DBCache;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.SourceToTargetMapping;
 import org.pentaho.di.core.database.Database;
@@ -80,6 +86,7 @@ import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
@@ -94,6 +101,15 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 {
 	private static Class<?> PKG = MonetDBBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
+	private CTabFolder 			wTabFolder;
+	private CTabItem 			wGeneralSettingsTab, wMonetDBmclientSettingsTab, wOutputFieldsTab;
+	private Composite 			wGeneralSettingsComp, wMonetDBmclientSettingsComp, wOutputFieldsComp;
+	private Group 				wMonetDBmclientParamGroup;
+	private FormData			fdgMonetDBmclientParamGroup;
+
+
+	//
+	// General Settings tab - Widgets and FormData
 	private ComboVar   		    wConnection;
 	
     private Label               wlSchema;
@@ -114,22 +130,35 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 	private TextVar				wLogFile;
 	private FormData			fdlLogFile, fdbLogFile, fdLogFile;
 
+    private Label               wlTruncate;
+    private Button              wTruncate;
+    private FormData            fdlTruncate, fdTruncate;
+
+    private Label				wlFullyQuoteSQL;
+    private Button				wFullyQuoteSQL;
+    private FormData			fdlFullyQuoteSQL, fdFullyQuoteSQL;
+
+	//
+	// MonetDB API Settings tab - Widgets and FormData
+	private Label				wlFieldSeparator;
+	private Combo				wFieldSeparator;
+	private FormData			fdlFieldSeparator, fdFieldSeparator;
+
+	private Label				wlFieldEnclosure;
+	private Combo				wFieldEnclosure;
+	private FormData			fdlFieldEnclosure, fdFieldEnclosure;
+
+	private Label				wlNULLrepresentation;
+	private Combo				wNULLrepresentation;
+	private FormData			fdlNULLrepresentation, fdNULLrepresentation;
+
+
     private Label               wlEncoding;
     private Combo               wEncoding;
     private FormData            fdlEncoding, fdEncoding;
 
-    private Label               wlTruncate;
-    private Button              wTruncate;
-    private FormData            fdlTruncate, fdTruncate;
-/*
-    private Label               wlAutoSchema;
-    private Button              wAutoSchema;
-    private FormData            fdlAutoSchema, fdAutoSchema;
-
-    private Label               wlAutoStringWidths;
-    private Button              wAutoStringWidths;
-    private FormData            fdlAutoStringWidths, fdAutoStringWidths;
-*/
+    //
+    // Output Fields tab - Widgets and FormData
     private Label               wlReturn;
     private TableView           wReturn;
     private FormData            fdlReturn, fdReturn;
@@ -138,6 +167,10 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 	private FormData			fdGetLU;
 	private Listener			lsGetLU;
 	
+	private Button				wClearDBCache;
+	private FormData			fdClearDBCache;
+	private Listener			lsClearDBCache;
+
 	private Button     wDoMapping;
 	private FormData   fdDoMapping;
 
@@ -152,6 +185,19 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 	 */
 	private List<ColumnInfo> tableFieldColumns = new ArrayList<ColumnInfo>();
 	
+	// Commonly used field delimiters (separators)
+	private static String[] fieldSeparators = { "",			//$NON-NLS-1$
+												"|",		//$NON-NLS-1$
+												","	};		//$NON-NLS-1$
+	// Commonly used enclosure characters
+	private static String[] fieldEnclosures = { "",			//$NON-NLS-1$
+												"\"" };		//$NON-NLS-1$
+
+	// In MonetDB when streaming fields over, you can specify how to alert the database of a truly empty field i.e. NULL
+	// The user can put anything they want or leave it blank.
+	private static String[] nullRepresentations = { "",		  //$NON-NLS-1$
+													"null" }; //$NON-NLS-1$
+
     // These should not be translated, they are required to exist on all
     // platforms according to the documentation of "Charset".
     private static String[] encodings = { "",                //$NON-NLS-1$
@@ -203,208 +249,241 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 		shell.setLayout(formLayout);
 		shell.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Shell.Title")); //$NON-NLS-1$
 
+		// The right side of all the labels is available as a user-defined percentage: props.getMiddlePct()
+		// Page 610 - Pentaho Kettle Solutions
 		int middle = props.getMiddlePct();
-		int margin = Const.MARGIN;
+		int margin = Const.MARGIN;  // Default 4 pixel margin around components.
 
-		// Stepname line
-		wlStepname = new Label(shell, SWT.RIGHT);
+		//
+		// Dialog Box Contents (Organized from dialog top to bottom, dialog left to right.)
+		// Label - Step name
+		wlStepname = new Label(shell, SWT.LEFT);
 		wlStepname.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Stepname.Label")); //$NON-NLS-1$
- 		props.setLook(wlStepname);
-		fdlStepname = new FormData();
-		fdlStepname.left = new FormAttachment(0, 0);
-		fdlStepname.right = new FormAttachment(middle, -margin);
-		fdlStepname.top = new FormAttachment(0, margin);
-		wlStepname.setLayoutData(fdlStepname);
+ 		props.setLook(wlStepname);             // Puts the user-selected background color and font on the widget.
+
+		// Text box for editing the step name
 		wStepname = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		wStepname.setText(stepname);
  		props.setLook(wStepname);
 		wStepname.addModifyListener(lsMod);
-		fdStepname = new FormData();
-		fdStepname.left = new FormAttachment(middle, 0);
-		fdStepname.top = new FormAttachment(0, margin);
-		fdStepname.right = new FormAttachment(100, 0);
-		wStepname.setLayoutData(fdStepname);
 
-		// Connection line
-		wConnection = addConnectionLine(shell, wStepname, middle, margin, null, transMeta);
+
+		////////////////////////////////////////////////
+		// Prepare the Folder that will contain tabs. //
+		////////////////////////////////////////////////
+		wTabFolder = new CTabFolder(shell, SWT.BORDER);
+		props.setLook(wTabFolder, Props.WIDGET_STYLE_TAB);
+
+		//////////////////////////
+		// General Settings tab //
+		//////////////////////////
+
+		wGeneralSettingsTab = new CTabItem(wTabFolder, SWT.NONE);
+		wGeneralSettingsTab.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Tab.GeneralSettings.Label"));
+
+		wGeneralSettingsComp = new Composite(wTabFolder, SWT.NONE);
+		props.setLook(wGeneralSettingsComp);
+
+		FormLayout tabLayout = new FormLayout();
+		tabLayout.marginWidth = 3;
+		tabLayout.marginHeight = 3;
+		wGeneralSettingsComp.setLayout(tabLayout);
+
+		wGeneralSettingsComp.layout();
+		wGeneralSettingsTab.setControl(wGeneralSettingsComp);
+
+		//////////////////////////////////
+		// MonetDB Settings tab         //
+		//////////////////////////////////
+
+		wMonetDBmclientSettingsTab = new CTabItem(wTabFolder, SWT.NONE);
+		wMonetDBmclientSettingsTab.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Tab.MonetDBmclientSettings.Label"));
+
+		wMonetDBmclientSettingsComp = new Composite(wTabFolder, SWT.NONE);
+		props.setLook(wMonetDBmclientSettingsComp);
+		wMonetDBmclientSettingsComp.setLayout(tabLayout);
+		wMonetDBmclientSettingsComp.layout();
+		wMonetDBmclientSettingsTab.setControl(wMonetDBmclientSettingsComp);
+
+		wMonetDBmclientParamGroup = new Group(wMonetDBmclientSettingsComp, SWT.SHADOW_IN);
+		wMonetDBmclientParamGroup.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Tab.MonetDBmclientSettings.ParameterGroup"));
+		props.setLook(wMonetDBmclientParamGroup);
+		wMonetDBmclientParamGroup.setLayout(tabLayout);
+		wMonetDBmclientParamGroup.layout();
+
+
+		///////////////////////
+		// Output Fields tab //
+		///////////////////////
+
+		wOutputFieldsTab = new CTabItem(wTabFolder, SWT.NONE);
+		wOutputFieldsTab.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Tab.OutputFields"));
+
+		wOutputFieldsComp = new Composite(wTabFolder, SWT.NONE);
+		props.setLook(wOutputFieldsComp);
+
+		wOutputFieldsComp.setLayout(tabLayout);
+
+		wOutputFieldsComp.layout();
+		wOutputFieldsTab.setControl(wOutputFieldsComp);
+
+		// Activate the "General Settings" tab
+		wTabFolder.setSelection(0);
+
+		wTabFolder.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				wTabFolder.layout(true, true);
+			}
+		});
+
+		//
+		// Connection line (General Settings tab)
+		//
+		wConnection = addConnectionLine(wGeneralSettingsComp, wTabFolder, middle, margin, null, transMeta);
 		if (input.getDatabaseMeta()==null && transMeta.nrDatabases()==1) wConnection.select(0);
 		wConnection.addModifyListener(lsMod);
 
-        // Schema line...
-        wlSchema=new Label(shell, SWT.RIGHT);
+		//
+		// Schema line (General Settings tab)
+		//
+        wlSchema=new Label(wGeneralSettingsComp, SWT.LEFT);
         wlSchema.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.TargetSchema.Label")); //$NON-NLS-1$
         props.setLook(wlSchema);
-        fdlSchema=new FormData();
-        fdlSchema.left = new FormAttachment(0, 0);
-        fdlSchema.right= new FormAttachment(middle, -margin);
-        fdlSchema.top  = new FormAttachment(wConnection, margin*2);
-        wlSchema.setLayoutData(fdlSchema);
-
-        wSchema=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wSchema=new TextVar(transMeta, wGeneralSettingsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wSchema);
         wSchema.addModifyListener(lsMod);
     	wSchema.addFocusListener(lsFocusLost);
-        fdSchema=new FormData();
-        fdSchema.left = new FormAttachment(middle, 0);
-        fdSchema.top  = new FormAttachment(wConnection, margin*2);
-        fdSchema.right= new FormAttachment(100, 0);
-        wSchema.setLayoutData(fdSchema);
 
-		// Table line...
-		wlTable = new Label(shell, SWT.RIGHT);
+    	//
+		// Table line (General Settings tab)
+    	//
+		wlTable = new Label(wGeneralSettingsComp, SWT.LEFT);
 		wlTable.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.TargetTable.Label")); //$NON-NLS-1$
  		props.setLook(wlTable);
-		fdlTable = new FormData();
-		fdlTable.left = new FormAttachment(0, 0);
-		fdlTable.right = new FormAttachment(middle, -margin);
-		fdlTable.top = new FormAttachment(wSchema, margin);
-		wlTable.setLayoutData(fdlTable);
-		
-		wbTable = new Button(shell, SWT.PUSH | SWT.CENTER);
+
+		wbTable = new Button(wGeneralSettingsComp, SWT.PUSH | SWT.CENTER);
  		props.setLook(wbTable);
 		wbTable.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
-		fdbTable = new FormData();
-		fdbTable.right = new FormAttachment(100, 0);
-		fdbTable.top = new FormAttachment(wSchema, margin);
-		wbTable.setLayoutData(fdbTable);
-		wTable = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+
+		wTable = new TextVar(transMeta, wGeneralSettingsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wTable);
 		wTable.addModifyListener(lsMod);
 		wTable.addFocusListener(lsFocusLost);
-		fdTable = new FormData();
-		fdTable.left = new FormAttachment(middle, 0);
-		fdTable.top = new FormAttachment(wSchema, margin);
-		fdTable.right = new FormAttachment(wbTable, -margin);
-		wTable.setLayoutData(fdTable);
-
-		// Buffer size file line
-		wlBufferSize = new Label(shell, SWT.RIGHT);
-		wlBufferSize.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.BufferSize.Label")); //$NON-NLS-1$
- 		props.setLook(wlBufferSize);
-		fdlBufferSize = new FormData();
-		fdlBufferSize.left = new FormAttachment(0, 0);
-		fdlBufferSize.top = new FormAttachment(wbTable, margin);
-		fdlBufferSize.right = new FormAttachment(middle, -margin);
-		wlBufferSize.setLayoutData(fdlBufferSize);
-		wBufferSize = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wBufferSize);
-		wBufferSize.addModifyListener(lsMod);
-		fdBufferSize = new FormData();
-		fdBufferSize.left = new FormAttachment(middle, 0);
-		fdBufferSize.top = new FormAttachment(wbTable, margin);
-		fdBufferSize.right = new FormAttachment(100, 0);
-		wBufferSize.setLayoutData(fdBufferSize);						
-
-		// Log file line
-		wlLogFile = new Label(shell, SWT.RIGHT);
-		wlLogFile.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.LogFile.Label")); //$NON-NLS-1$
- 		props.setLook(wlLogFile);
-		fdlLogFile = new FormData();
-		fdlLogFile.left = new FormAttachment(0, 0);
-		fdlLogFile.top = new FormAttachment(wBufferSize, margin);
-		fdlLogFile.right = new FormAttachment(middle, -margin);
-		wlLogFile.setLayoutData(fdlLogFile);
-		wbLogFile = new Button(shell, SWT.PUSH | SWT.CENTER);
- 		props.setLook(wbLogFile);
-		wbLogFile.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
-		fdbLogFile = new FormData();
-		fdbLogFile.right = new FormAttachment(100, 0);
-		fdbLogFile.top = new FormAttachment(wBufferSize, margin);
-		wbLogFile.setLayoutData(fdbLogFile);
-		wLogFile = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wLogFile);
-		wLogFile.addModifyListener(lsMod);
-		fdLogFile = new FormData();
-		fdLogFile.left = new FormAttachment(middle, 0);
-		fdLogFile.top = new FormAttachment(wBufferSize, margin);
-		fdLogFile.right = new FormAttachment(wbLogFile, -margin);
-		wLogFile.setLayoutData(fdLogFile);		
 
 		//
-        // Control encoding line
-        //
-        // The drop down is editable as it may happen an encoding may not be present
-        // on one machine, but you may want to use it on your execution server
-        //
-        wlEncoding=new Label(shell, SWT.RIGHT);
-        wlEncoding.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Encoding.Label"));
-        props.setLook(wlEncoding);
-        fdlEncoding=new FormData();
-        fdlEncoding.left  = new FormAttachment(0, 0);
-        fdlEncoding.top   = new FormAttachment(wLogFile, 3*margin);
-        fdlEncoding.right = new FormAttachment(middle, -margin);
-        wlEncoding.setLayoutData(fdlEncoding);
-        wEncoding=new Combo(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        wEncoding.setToolTipText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Encoding.Tooltip"));
-        wEncoding.setItems(encodings);
-        props.setLook(wEncoding);
-        fdEncoding=new FormData();
-        fdEncoding.left = new FormAttachment(middle, 0);
-        fdEncoding.top  = new FormAttachment(wlLogFile, 3*margin);
-        fdEncoding.right= new FormAttachment(100, 0);        
-        wEncoding.setLayoutData(fdEncoding);
-        wEncoding.addModifyListener(lsMod);
+		// Buffer size line (General Settings tab)
+		//
+		wlBufferSize = new Label(wGeneralSettingsComp, SWT.RIGHT);
+		wlBufferSize.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.BufferSize.Label")); //$NON-NLS-1$
+ 		props.setLook(wlBufferSize);
 
-		wlTruncate=new Label(shell, SWT.RIGHT);
+ 		wBufferSize = new TextVar(transMeta, wGeneralSettingsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wBufferSize);
+		wBufferSize.addModifyListener(lsMod);
+
+		//
+		// Log file line (General Settings tab)
+		//
+		wlLogFile = new Label(wGeneralSettingsComp, SWT.LEFT);
+		wlLogFile.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.LogFile.Label")); //$NON-NLS-1$
+ 		props.setLook(wlLogFile);
+
+ 		wbLogFile = new Button(wGeneralSettingsComp, SWT.PUSH | SWT.CENTER);
+ 		props.setLook(wbLogFile);
+		wbLogFile.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
+
+		wLogFile = new TextVar(transMeta, wGeneralSettingsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wLogFile);
+		wLogFile.addModifyListener(lsMod);
+
+		//
+		// Truncate before loading check box (General Settings tab)
+        //
+		wlTruncate=new Label(wGeneralSettingsComp, SWT.LEFT);
 		wlTruncate.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Truncate.Label"));
  		props.setLook(wlTruncate);
-		fdlTruncate=new FormData();
-		fdlTruncate.left  = new FormAttachment(0, 0);
-		fdlTruncate.top   = new FormAttachment(wEncoding, margin);
-		fdlTruncate.right = new FormAttachment(middle, -margin);
-		wlTruncate.setLayoutData(fdlTruncate);
-		wTruncate=new Button(shell, SWT.CHECK);
+		wTruncate=new Button(wGeneralSettingsComp, SWT.CHECK);
  		props.setLook(wTruncate);
-		fdTruncate=new FormData();
-		fdTruncate.left  = new FormAttachment(middle, 0);
-		fdTruncate.top   = new FormAttachment(wlEncoding, margin);
-		fdTruncate.right = new FormAttachment(100, 0);
-		wTruncate.setLayoutData(fdTruncate);
 		SelectionAdapter lsSelMod = new SelectionAdapter()
         {
             public void widgetSelected(SelectionEvent arg0)
             {
                 input.setChanged();
+				input.setTruncate(wTruncate.getSelection());
             }
         };
 		wTruncate.addSelectionListener(lsSelMod);
 
-/*
-		wlAutoSchema=new Label(shell, SWT.RIGHT);
-		wlAutoSchema.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.AutoSchema.Label"));
- 		props.setLook(wlAutoSchema);
-		fdlAutoSchema=new FormData();
-		fdlAutoSchema.left  = new FormAttachment(0, 0);
-		fdlAutoSchema.top   = new FormAttachment(wTruncate, margin);
-		fdlAutoSchema.right = new FormAttachment(middle, -margin);
-		wlAutoSchema.setLayoutData(fdlAutoSchema);
-		wAutoSchema=new Button(shell, SWT.CHECK);
- 		props.setLook(wAutoSchema);
-		fdAutoSchema=new FormData();
-		fdAutoSchema.left  = new FormAttachment(middle, 0);
-		fdAutoSchema.top   = new FormAttachment(wlTruncate, margin);
-		fdAutoSchema.right = new FormAttachment(100, 0);
-		wAutoSchema.setLayoutData(fdAutoSchema);
-		wAutoSchema.addSelectionListener(lsSelMod);
+		//
+		// Fully Quote SQL during the run. (This setting will persist into the database connection definition.)
+		//
+		wlFullyQuoteSQL = new Label(wGeneralSettingsComp, SWT.LEFT);
+		wlFullyQuoteSQL.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.FullyQuoteSQL.Label"));
+		props.setLook(wlFullyQuoteSQL);
 		
-		wlAutoStringWidths=new Label(shell, SWT.RIGHT);
-		wlAutoStringWidths.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.AutoStringWidths.Label"));
- 		props.setLook(wlAutoStringWidths);
-		fdlAutoStringWidths=new FormData();
-		fdlAutoStringWidths.left  = new FormAttachment(0, 0);
-		fdlAutoStringWidths.top   = new FormAttachment(wlAutoSchema, margin);
-		fdlAutoStringWidths.right = new FormAttachment(middle, -margin);
-		wlAutoStringWidths.setLayoutData(fdlAutoStringWidths);
-		wAutoStringWidths=new Button(shell, SWT.CHECK);
- 		props.setLook(wAutoStringWidths);
-		fdAutoStringWidths=new FormData();
-		fdAutoStringWidths.left  = new FormAttachment(middle, 0);
-		fdAutoStringWidths.top   = new FormAttachment(wlAutoSchema, margin);
-		fdAutoStringWidths.right = new FormAttachment(100, 0);
-		wAutoStringWidths.setLayoutData(fdAutoStringWidths);
-		wAutoStringWidths.addSelectionListener(lsSelMod);		
-*/		
-		// THE BUTTONS
+		wFullyQuoteSQL = new Button(wGeneralSettingsComp, SWT.CHECK);
+		props.setLook(wFullyQuoteSQL);
+		SelectionAdapter lsFullyQuoteSQL = new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				input.setChanged();
+				input.getDatabaseMeta().setQuoteAllFields(wFullyQuoteSQL.getSelection());
+			}
+		};
+		wFullyQuoteSQL.addSelectionListener(lsFullyQuoteSQL);
+
+		///////////////////////////////////////////////////////////
+		// MonetDB API Settings tab widget declarations follow
+		///////////////////////////////////////////////////////////
+
+		// (Sub-group within the "MonetDB mclient Settings" tab)
+		// Widgets for setting the parameters that are sent to the mclient software when the step executes
+		wlFieldSeparator = new Label(wMonetDBmclientParamGroup, SWT.LEFT);
+		wlFieldSeparator.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Tab.MonetDBmclientSettings.ParameterGroup.FieldSeparator.Label"));
+		props.setLook(wlFieldSeparator);
+
+		wFieldSeparator = new Combo(wMonetDBmclientParamGroup, SWT.SINGLE | SWT.CENTER | SWT.BORDER);
+		wFieldSeparator.setItems(fieldSeparators);
+		props.setLook(wFieldSeparator);
+		wFieldSeparator.addModifyListener(lsMod);
+
+		wlFieldEnclosure = new Label(wMonetDBmclientParamGroup, SWT.LEFT);
+		wlFieldEnclosure.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Tab.MonetDBmclientSettings.ParameterGroup.FieldEnclosure.Label"));
+		props.setLook(wlFieldEnclosure);
+
+		wFieldEnclosure = new Combo(wMonetDBmclientParamGroup, SWT.SINGLE | SWT.CENTER | SWT.BORDER);
+		wFieldEnclosure.setItems(fieldEnclosures);
+		wFieldEnclosure.addModifyListener(lsMod);
+
+		wlNULLrepresentation = new Label(wMonetDBmclientParamGroup, SWT.LEFT);
+		wlNULLrepresentation.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Tab.MonetDBmclientSettings.ParameterGroup.NULLrepresentation.Label"));
+		props.setLook(wlNULLrepresentation);
+
+		wNULLrepresentation = new Combo(wMonetDBmclientParamGroup, SWT.SINGLE | SWT.CENTER | SWT.BORDER);
+		wNULLrepresentation.setItems(nullRepresentations);
+		wNULLrepresentation.addModifyListener(lsMod);
+
+		//
+		// Control encoding line (MonetDB API Settings tab -> Parameter Group)
+		//
+		// The drop down is editable as it may happen an encoding may not be present
+		// on one machine, but you may want to use it on your execution server
+		//
+		wlEncoding=new Label(wMonetDBmclientParamGroup, SWT.RIGHT);
+		wlEncoding.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Encoding.Label"));
+		props.setLook(wlEncoding);
+
+		wEncoding=new Combo(wMonetDBmclientParamGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wEncoding.setToolTipText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Encoding.Tooltip"));
+		wEncoding.setItems(encodings);
+		props.setLook(wEncoding);
+		wEncoding.addModifyListener(lsMod);
+
+		//
+		// OK (Button), Cancel (Button) and SQL (Button)
+		// - these appear at the bottom of the dialog window.
 		wOK = new Button(shell, SWT.PUSH);
 		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
 		wSQL = new Button(shell, SWT.PUSH);
@@ -415,13 +494,9 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 		setButtonPositions(new Button[] { wOK, wCancel , wSQL }, margin, null);
 
 		// The field Table
-		wlReturn = new Label(shell, SWT.NONE);
+		wlReturn = new Label(wOutputFieldsComp, SWT.NONE);
 		wlReturn.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Fields.Label")); //$NON-NLS-1$
  		props.setLook(wlReturn);
-		fdlReturn = new FormData();
-		fdlReturn.left = new FormAttachment(0, 0);
-		fdlReturn.top = new FormAttachment(wTruncate, margin);
-		wlReturn.setLayoutData(fdlReturn);
 
 		int UpInsCols = 3;
 		int UpInsRows = (input.getFieldTable() != null ? input.getFieldTable().length : 1);
@@ -431,33 +506,277 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 		ciReturn[1] = new ColumnInfo(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.ColumnInfo.StreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
 		ciReturn[2] = new ColumnInfo(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.ColumnInfo.FormatOK"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {"Y","N",}, true); // $NON-NLS-1$ $NON-NLS-2$ $NON-NLS-3$
 		tableFieldColumns.add(ciReturn[0]);
-		wReturn = new TableView(transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
+		wReturn = new TableView(transMeta, wOutputFieldsComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
 				ciReturn, UpInsRows, lsMod, props);
+		wReturn.optWidth(true);
 
-		wGetLU = new Button(shell, SWT.PUSH);
+		//wReturn.table.pack();  // Force columns to take up the size they need.  Make it easy for the user to see what values are in the field.
+
+		wGetLU = new Button(wOutputFieldsComp, SWT.PUSH);
 		wGetLU.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.GetFields.Label")); //$NON-NLS-1$
-		fdGetLU = new FormData();
-		fdGetLU.top   = new FormAttachment(wlReturn, margin);
-		fdGetLU.right = new FormAttachment(100, 0);
-		wGetLU.setLayoutData(fdGetLU);
 
-		wDoMapping = new Button(shell, SWT.PUSH);
+		wDoMapping = new Button(wOutputFieldsComp, SWT.PUSH);
 		wDoMapping.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.EditMapping.Label")); //$NON-NLS-1$
-		fdDoMapping = new FormData();
-		fdDoMapping.top   = new FormAttachment(wGetLU, margin);
-		fdDoMapping.right = new FormAttachment(100, 0);
-		wDoMapping.setLayoutData(fdDoMapping);
 
 		wDoMapping.addListener(SWT.Selection, new Listener() { 	public void handleEvent(Event arg0) { generateMappings();}});
 
+		wClearDBCache = new Button(wOutputFieldsComp, SWT.PUSH);
+		wClearDBCache.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Tab.ClearDbCache"));  //$NON-NLS-1$
+
+		lsClearDBCache = new Listener()
+		{
+			public void handleEvent(Event e)
+			{
+				DBCache.getInstance().clear(input.getDbConnectionName());
+				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
+				mb.setMessage(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Tab.ClearedDbCacheMsg")); //$NON-NLS-1$
+				mb.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Tab.ClearedDbCacheTitle")); //$NON-NLS-1$
+				mb.open();
+			}
+		};
+		wClearDBCache.addListener(SWT.Selection, lsClearDBCache);
+
+	//
+	// Visual Layout Definition
+	//
+	// FormLayout (org.eclipse.swt.layout.FormLayout) is being used to compose the dialog box.
+	//  The layout works by creating FormAttachments for each side of the widget and storing them in the layout data.
+	//  An attachment 'attaches' a specific side of the widget either to a position in the parent Composite or to another
+	//  widget within the layout.
+
+		//
+		//	Step name (Label and Edit Box)
+		//	 - Location: top of the dialog box
+		//
+	    fdlStepname = new FormData();
+	    fdlStepname.top = new FormAttachment(0, 15);
+	    fdlStepname.left = new FormAttachment(0, margin);
+	    fdlStepname.right = new FormAttachment(20, 0);
+	    wlStepname.setLayoutData(fdlStepname);
+
+	    fdStepname = new FormData();
+	    fdStepname.top = new FormAttachment(0, 15);
+	    fdStepname.left = new FormAttachment(wlStepname, margin);  // FormAttachment(middle, 0);
+	    fdStepname.right = new FormAttachment(100, -margin);  // 100% of the form component (length of edit box)
+	    wStepname.setLayoutData(fdStepname);
+
+
+		//
+		// Tabs will appear below the "Step Name" area and above the buttons at the bottom of the dialog.
+		//
+		FormData fdTabFolder = new FormData();
+		fdTabFolder.left = new FormAttachment(0, 0);
+		fdTabFolder.top = new FormAttachment(wStepname, margin+20);
+		fdTabFolder.right = new FormAttachment(100, 0);
+		fdTabFolder.bottom = new FormAttachment(100, -50);
+		wTabFolder.setLayoutData(fdTabFolder);
+
+		//
+		// Positioning for the Database Connection line happened above in the function call
+		//  - wConnection = addConnectionLine(wGeneralSettingsComp, wTabFolder, middle, margin, null, transMeta);
+		//
+
+
+		// Database Schema Line - (General Settings Tab)
+	    //
+		// Database Schema (Label layout)
+		fdlSchema=new FormData();
+	    fdlSchema.top  = new FormAttachment(wConnection, margin*2);
+		fdlSchema.left = new FormAttachment(wGeneralSettingsComp, margin);
+	    wlSchema.setLayoutData(fdlSchema);
+
+	    // Database schema (Edit box layout)
+		fdSchema = new FormData();
+		fdSchema.top  = new FormAttachment(wConnection, margin*2);
+		fdSchema.left = new FormAttachment(middle, margin);
+		fdSchema.right= new FormAttachment(100, -margin);
+		wSchema.setLayoutData(fdSchema);
+
+		// Target Table Line - (General Settings Tab)
+		//
+		// Target table (Label layout)
+		// - tied to the left wall of the general settings tab (composite)
+	    fdlTable = new FormData();
+	    fdlTable.top = new FormAttachment(wSchema, margin);
+	    fdlTable.left = new FormAttachment(0, margin);
+	    wlTable.setLayoutData(fdlTable);
+
+		// Target table browse (Button layout)
+	    // - tied to the right wall of the general settings tab (composite)
+		fdbTable = new FormData();
+		fdbTable.top = new FormAttachment(wSchema, 0);
+		fdbTable.right = new FormAttachment(100, -margin);
+		wbTable.setLayoutData(fdbTable);
+
+	    // Target table (Edit box layout)
+		// Between the label and button.
+		// - tied to the right edge of the general Browse tables button
+	    fdTable = new FormData();
+		fdTable.top = new FormAttachment(wSchema, margin);
+		fdTable.left = new FormAttachment(middle, margin);
+	    fdTable.right = new FormAttachment(wbTable, -margin);
+	    wTable.setLayoutData(fdTable);
+
+	    // Buffer size (Label layout)
+	    fdlBufferSize = new FormData();
+	    fdlBufferSize.top = new FormAttachment(wTable, margin);
+	    fdlBufferSize.left = new FormAttachment(0, margin);
+	    wlBufferSize.setLayoutData(fdlBufferSize);
+
+	    fdBufferSize = new FormData();
+	    fdBufferSize.top = new FormAttachment(wTable, margin);
+	    fdBufferSize.left = new FormAttachment(middle, margin);
+	    fdBufferSize.right = new FormAttachment(100, -margin);
+	    wBufferSize.setLayoutData(fdBufferSize);
+
+	    fdlLogFile = new FormData();
+	    fdlLogFile.top = new FormAttachment(wBufferSize, margin);
+	    fdlLogFile.left = new FormAttachment(0, margin);
+	    wlLogFile.setLayoutData(fdlLogFile);
+
+	    // Log file Browse (button)
+	    fdbLogFile = new FormData();
+	    fdbLogFile.top = new FormAttachment(wBufferSize, 0);
+	    fdbLogFile.right = new FormAttachment(100, -margin);
+	    wbLogFile.setLayoutData(fdbLogFile);
+
+	    fdLogFile = new FormData();
+	    fdLogFile.left = new FormAttachment(middle, margin);
+	    fdLogFile.top = new FormAttachment(wBufferSize, margin);
+	    fdLogFile.right = new FormAttachment(wbLogFile, -margin);
+	    wLogFile.setLayoutData(fdLogFile);
+
+	    fdlTruncate = new FormData();
+	    fdlTruncate.top   = new FormAttachment(wLogFile, margin*2);
+	    fdlTruncate.left  = new FormAttachment(0, margin);
+	    wlTruncate.setLayoutData(fdlTruncate);
+
+	    fdTruncate = new FormData();
+	    fdTruncate.top   = new FormAttachment(wLogFile, margin*2);
+	    fdTruncate.left  = new FormAttachment(wlTruncate, margin);
+	    fdTruncate.right = new FormAttachment(100, -margin);
+	    wTruncate.setLayoutData(fdTruncate);
+
+	    fdlFullyQuoteSQL = new FormData();
+	    fdlFullyQuoteSQL.top = new FormAttachment(wlTruncate, margin*2);
+	    fdlFullyQuoteSQL.left = new FormAttachment(0, margin);
+	    wlFullyQuoteSQL.setLayoutData(fdlFullyQuoteSQL);
+
+	    fdFullyQuoteSQL = new FormData();
+	    fdFullyQuoteSQL.top   = new FormAttachment(wTruncate, margin*2);
+	    fdFullyQuoteSQL.left  = new FormAttachment(wlFullyQuoteSQL, margin);
+	    fdFullyQuoteSQL.right = new FormAttachment(100, -margin);
+	    wFullyQuoteSQL.setLayoutData(fdFullyQuoteSQL);
+	    //
+	    // MonetDB Settings tab layout
+	    //
+
+	    //
+	    // mclient parameter grouping (Group composite)
+	    // - Visually we make it clear what is being fed to mclient as parameters.
+	    fdgMonetDBmclientParamGroup = new FormData();
+	    fdgMonetDBmclientParamGroup.top = new FormAttachment(wMonetDBmclientSettingsComp, margin*3);
+	    fdgMonetDBmclientParamGroup.left = new FormAttachment(0, margin);
+	    fdgMonetDBmclientParamGroup.right = new FormAttachment(100, -margin);
+	    wMonetDBmclientParamGroup.setLayoutData(fdgMonetDBmclientParamGroup);
+
+	    // Figure out font width in pixels, then set the combo boxes to a standard width of 20 characters.
+	    Text text = new Text(shell, SWT.NONE);
+	    GC gc = new GC(text);
+	    FontMetrics fm = gc.getFontMetrics();
+	    int charWidth = fm.getAverageCharWidth();
+	    int fieldWidth = text.computeSize(charWidth * 20, SWT.DEFAULT).x;
+	    gc.dispose();
+
+	    fdlFieldSeparator = new FormData();
+	    fdlFieldSeparator.top = new FormAttachment(wMonetDBmclientSettingsComp, 3*margin);
+	    fdlFieldSeparator.left  = new FormAttachment(0, 3*margin);
+	    wlFieldSeparator.setLayoutData(fdlFieldSeparator);
+
+	    fdFieldSeparator = new FormData();
+	    fdFieldSeparator.top = new FormAttachment(wMonetDBmclientSettingsComp, 3*margin);
+	    fdFieldSeparator.left = new FormAttachment(middle, margin);
+	    fdFieldSeparator.width = fieldWidth;
+	    wFieldSeparator.setLayoutData(fdFieldSeparator);
+
+	    fdlFieldEnclosure = new FormData();
+	    fdlFieldEnclosure.top = new FormAttachment(wFieldSeparator, 2*margin);
+	    fdlFieldEnclosure.left = new FormAttachment(0, 3*margin);
+	    wlFieldEnclosure.setLayoutData(fdlFieldEnclosure);
+
+	    fdFieldEnclosure = new FormData();
+	    fdFieldEnclosure.top = new FormAttachment(wFieldSeparator, 2*margin);
+	    fdFieldEnclosure.left = new FormAttachment(middle, margin);
+	    fdFieldEnclosure.width = fieldWidth;
+	    wFieldEnclosure.setLayoutData(fdFieldEnclosure);
+
+	    fdlNULLrepresentation = new FormData();
+	    fdlNULLrepresentation.top = new FormAttachment(wFieldEnclosure, 2*margin);
+	    fdlNULLrepresentation.left = new FormAttachment(0, 3*margin);
+	    wlNULLrepresentation.setLayoutData(fdlNULLrepresentation);
+
+	    fdNULLrepresentation = new FormData();
+	    fdNULLrepresentation.top = new FormAttachment(wFieldEnclosure, 2*margin);
+	    fdNULLrepresentation.left = new FormAttachment(middle, margin);
+	    fdNULLrepresentation.width = fieldWidth;
+	    wNULLrepresentation.setLayoutData(fdNULLrepresentation);
+
+
+	    // Stream encoding parameter sent to mclient (Label layout)
+	    fdlEncoding=new FormData();
+	    fdlEncoding.top   = new FormAttachment(wNULLrepresentation, 2*margin);
+	    fdlEncoding.left  = new FormAttachment(0, 3*margin);
+	    wlEncoding.setLayoutData(fdlEncoding);
+
+	    fdEncoding=new FormData();
+	    fdEncoding.top  = new FormAttachment(wNULLrepresentation, 2*margin);
+	    fdEncoding.left = new FormAttachment(middle, margin);
+	    fdEncoding.width = fieldWidth;
+	    wEncoding.setLayoutData(fdEncoding);
+
+	    //
+	    // Output Fields tab layout
+	    //
+	    // Label at the top left of the tab
+	    fdlReturn = new FormData();
+	    fdlReturn.top = new FormAttachment(wOutputFieldsComp, 2*margin);
+	    fdlReturn.left = new FormAttachment(0, margin);
+	    wlReturn.setLayoutData(fdlReturn);
+
+	    // button right, top of the tab
+		fdDoMapping = new FormData();
+	    fdDoMapping.top   = new FormAttachment(wOutputFieldsComp, 2*margin);
+	    fdDoMapping.right = new FormAttachment(100, -margin);
+		wDoMapping.setLayoutData(fdDoMapping);
+
+	    // to the left of the button above
+	    fdGetLU = new FormData();
+	    fdGetLU.top = new FormAttachment(wOutputFieldsComp, 2*margin);
+	    fdGetLU.right = new FormAttachment(wDoMapping, -margin);
+	    wGetLU.setLayoutData(fdGetLU);
+
+	    // to the left of the button above
+	    fdClearDBCache = new FormData();
+	    fdClearDBCache.top = new FormAttachment(wOutputFieldsComp, 2*margin);
+	    fdClearDBCache.right = new FormAttachment(wGetLU, -margin);
+	    wClearDBCache.setLayoutData(fdClearDBCache);
+
+
+	    // Table of results
 		fdReturn = new FormData();
-		fdReturn.left = new FormAttachment(0, 0);
-		fdReturn.top = new FormAttachment(wlReturn, margin);
-		fdReturn.right = new FormAttachment(wGetLU, -margin);
-		fdReturn.bottom = new FormAttachment(wOK, -2*margin);
+	    fdReturn.top = new FormAttachment(wGetLU, 3*margin);
+	    fdReturn.left = new FormAttachment(0, margin);
+	    fdReturn.right = new FormAttachment(100, -margin);
+	    fdReturn.bottom = new FormAttachment(100, -2*margin);
 		wReturn.setLayoutData(fdReturn);
 		
 	    // 
+    // Layout section ends
+
+
+
+
+	    //
         // Search the fields in the background
         //
         
@@ -524,6 +843,7 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 				getUpdate();
 			}
 		};
+
 		lsSQL = new Listener()
 		{
 			public void handleEvent(Event e)
@@ -552,6 +872,7 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
         wBufferSize.addSelectionListener(lsDef);
         wLogFile.addSelectionListener(lsDef);
 
+        wFieldSeparator.addSelectionListener(lsDef);
 
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(new ShellAdapter()
@@ -629,13 +950,13 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 	}
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
+	 *
+	 * This method is called each time the dialog is opened.
 	 */
 	public void getData()
 	{
 		int i;
 		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
-
-		wBufferSize.setText("" + input.getBufferSize());   //$NON-NLS-1$
 
 		if (input.getFieldTable() != null) {
 			for (i = 0; i < input.getFieldTable().length; i++)
@@ -658,14 +979,20 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 				wConnection.setText(transMeta.getDatabase(0).getName());
 			}
 		}
+		// General Settings Tab values from step meta-data configuration.
         if (input.getSchemaName() != null) wSchema.setText(input.getSchemaName());
 		if (input.getTableName() != null) wTable.setText(input.getTableName());
+		wBufferSize.setText("" + input.getBufferSize());   //$NON-NLS-1$
 		if (input.getLogFile() != null) wLogFile.setText(input.getLogFile());
-		if (input.getEncoding() != null) wEncoding.setText(input.getEncoding());
 		wTruncate.setSelection(input.isTruncate());
-//		wAutoSchema.setSelection(input.isAutoSchema());
-//		wAutoStringWidths.setSelection(input.isAutoStringWidths());
+		wFullyQuoteSQL.setSelection(input.isFullyQuoteSQL());
 		
+		// MonetDB mclient Settings tab
+		if (input.getFieldSeparator() != null) wFieldSeparator.setText(input.getFieldSeparator());
+		if (input.getFieldEnclosure() != null) wFieldEnclosure.setText(input.getFieldEnclosure());
+		if (input.getNULLrepresentation() != null) wNULLrepresentation.setText(input.getNULLrepresentation());
+		if (input.getEncoding() != null) wEncoding.setText(input.getEncoding());
+
 		wStepname.selectAll();
 		wReturn.setRowNums();
 		wReturn.optWidth(true);
@@ -697,13 +1024,15 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
         }
     }
 	
+	/*
+	 *  When the OK button is pressed, this method is called to take all values from the dialog and save them in the
+	 *  step meta data.
+	 */
 	protected void getInfo(MonetDBBulkLoaderMeta inf)
 	{
 		int nrfields = wReturn.nrNonEmpty();
 
 		inf.allocate(nrfields);
-
-		inf.setBufferSize( wBufferSize.getText() );
 
 		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Log.FoundFields", "" + nrfields)); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i = 0; i < nrfields; i++)
@@ -713,18 +1042,21 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 			inf.getFieldStream()[i] = item.getText(2);
 			inf.getFieldFormatOk()[i] = "Y".equalsIgnoreCase(item.getText(3));
 		}
-
+		// General Settings Tab values from step meta-data configuration.
+		inf.setDbConnectionName(wConnection.getText());
         inf.setSchemaName( wSchema.getText() );
 		inf.setTableName( wTable.getText() );
 		inf.setDatabaseMeta(  transMeta.findDatabase(wConnection.getText()) );
+		inf.setBufferSize(wBufferSize.getText());
 		inf.setLogFile( wLogFile.getText() );
-		inf.setEncoding( wEncoding.getText() );
 		inf.setTruncate(wTruncate.getSelection());
-		inf.setAutoSchema(false);
-		inf.setAutoStringWidths(false);
-		inf.setDbConnectionName(wConnection.getText());
-//		inf.setAutoSchema(wAutoSchema.getSelection());
-//		inf.setAutoStringWidths(wAutoStringWidths.getSelection());
+		inf.setFullyQuoteSQL(wFullyQuoteSQL.getSelection());
+
+		// MonetDB API Settings tab
+		inf.setFieldSeparator(wFieldSeparator.getText());
+		inf.setFieldEnclosure(wFieldEnclosure.getText());
+		inf.setNULLrepresentation(wNULLrepresentation.getText());
+		inf.setEncoding( wEncoding.getText() );
 
 		stepname = wStepname.getText(); // return value
 	}
@@ -881,10 +1213,14 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 			wReturn.optWidth(true);
 		}
 	}
+	/*
+	 * Runs when the "Get Fields" button is pressed on the Output Fields dialog tab.
+	 */
 	private void getUpdate()
 	{
 		try
 		{
+
 			RowMetaInterface r = transMeta.getPrevStepFields(stepname);
 			if (r != null)
 			{
@@ -968,20 +1304,16 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 
 	    addDatabases(wConnection, null);
 
-	    Label wlConnection = new Label(parent, SWT.RIGHT);
+	    //
+	    // Database connection (Label)
+	    //
+	    Label wlConnection = new Label(parent, SWT.LEFT);
 	    wlConnection.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Connection.Label")); //$NON-NLS-1$
 	    props.setLook(wlConnection);
-	    fdlConnection = new FormData();
-	    fdlConnection.left = new FormAttachment(0, 0);
-	    fdlConnection.right = new FormAttachment(middle, -margin);
-	    if (previous != null)
-	      fdlConnection.top = new FormAttachment(previous, margin);
-	    else
-	      fdlConnection.top = new FormAttachment(0, 0);
-	    wlConnection.setLayoutData(fdlConnection);
 
-	    // 
-	    // NEW button
+
+	    //
+	    // New (Button)
 	    //
 	    Button wbnConnection = new Button(parent, SWT.RIGHT);
 	    wbnConnection.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.NewConnectionButton.Label")); //$NON-NLS-1$
@@ -1000,16 +1332,9 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 	        }
 	      }
 	    });
-	    fdbConnection = new FormData();
-	    fdbConnection.right = new FormAttachment(100, 0);
-	    if (previous != null)
-	      fdbConnection.top = new FormAttachment(previous, margin);
-	    else
-	      fdbConnection.top = new FormAttachment(0, 0);
-	    wbnConnection.setLayoutData(fdbConnection);
 
 	    //
-	    // Edit button
+	    // Edit (Button)
 	    //
 	    Button wbeConnection = new Button(parent, SWT.RIGHT);
 	    wbeConnection.setText(BaseMessages.getString(PKG, "BaseStepDialog.EditConnectionButton.Label")); //$NON-NLS-1$
@@ -1030,6 +1355,32 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 	        }
 	      }
 	    });
+
+	    //
+	    // Database connection (Label layout)
+	    //
+	    fdlConnection = new FormData();
+	    fdlConnection.left = new FormAttachment(0, margin);  // attaches to the left of the bounding container
+	    if (previous != null)
+	      fdlConnection.top = new FormAttachment(previous, margin+10);
+	    else
+	      fdlConnection.top = new FormAttachment(0, 0);
+	    wlConnection.setLayoutData(fdlConnection);
+
+	    //
+	    // New (Button layout)
+	    //
+	    fdbConnection = new FormData();
+	    fdbConnection.right = new FormAttachment(100, -margin);
+	    if (previous != null)
+	      fdbConnection.top = new FormAttachment(previous, margin);
+	    else
+	      fdbConnection.top = new FormAttachment(0, 0);
+	    wbnConnection.setLayoutData(fdbConnection);
+
+	    //
+	    // Edit (Button layout)
+	    //
 	    fdeConnection = new FormData();
 	    fdeConnection.right = new FormAttachment(wbnConnection, -margin);
 	    if (previous != null)
@@ -1039,15 +1390,20 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 	    wbeConnection.setLayoutData(fdeConnection);
 
 	    //
-	    // what's left of the line: combo box
+	    // Connection (Combo Box layout)
 	    //
+	    //	The right side of the Combo Box is attached to the Edit button
+	    //  The left side of the Combo Box is attached to the side of the database connection label
+	    //  Effectively, it resizes the combo box between the two components.
 	    fdConnection = new FormData();
-	    fdConnection.left = new FormAttachment(middle, 0);
-	    if (previous != null)
-	      fdConnection.top = new FormAttachment(previous, margin);
-	    else
-	      fdConnection.top = new FormAttachment(0, 0);
+	    //fdConnection.height = fieldHeight;
+	    fdConnection.left = new FormAttachment(middle, margin);
 	    fdConnection.right = new FormAttachment(wbeConnection, -margin);
+	    if (previous != null)
+	      fdConnection.top = new FormAttachment(previous, margin+10);
+	    else
+	      fdConnection.top = new FormAttachment(wlConnection, margin);
+
 	    wConnection.setLayoutData(fdConnection);
 
 	    return wConnection;
