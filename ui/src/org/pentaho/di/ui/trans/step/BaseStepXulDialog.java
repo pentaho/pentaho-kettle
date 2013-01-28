@@ -23,7 +23,6 @@
 package org.pentaho.di.ui.trans.step;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -37,22 +36,13 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.SourceToTargetMapping;
-import org.pentaho.di.core.database.DatabaseInterface;
-import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogChannel;
-import org.pentaho.di.core.logging.LoggingObjectInterface;
-import org.pentaho.di.core.logging.LoggingObjectType;
-import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.laf.BasePropertyHandler;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepInterface;
@@ -65,67 +55,28 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ComboVar;
-import org.pentaho.di.ui.spoon.XulSpoonResourceBundle;
-import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
-import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
-import org.pentaho.ui.xul.XulRunner;
-import org.pentaho.ui.xul.binding.BindingFactory;
-import org.pentaho.ui.xul.components.XulButton;
-import org.pentaho.ui.xul.components.XulLabel;
-import org.pentaho.ui.xul.components.XulMenuList;
-import org.pentaho.ui.xul.components.XulTextbox;
-import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.containers.XulTreeRow;
-import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
-import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.ui.xul.swt.SwtBindingFactory;
 import org.pentaho.ui.xul.swt.SwtXulLoader;
 import org.pentaho.ui.xul.swt.SwtXulRunner;
 
 /**
- * Created by IntelliJ IDEA.
  * User: nbaker
  * Date: Jun 7, 2010
- * Time: 9:02:06 AM
- * To change this template use File | Settings | File Templates.
  */
-public abstract class BaseStepXulDialog extends AbstractXulEventHandler {
+public abstract class BaseStepXulDialog extends BaseStepGenericXulDialog {
+
   private static Class<?> PKG = StepInterface.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-  public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject("Step dialog",
-      LoggingObjectType.STEPDIALOG, null);
-
-  protected static VariableSpace variables = new Variables();
-
-  protected String stepname;
-
-  protected XulLabel wlStepname;
-
-  protected XulTextbox wStepname;
-
-  protected XulButton wOK, wGet, wPreview, wSQL, wCreate, wCancel;
-
   protected Listener lsOK, lsGet, lsPreview, lsSQL, lsCreate, lsCancel;
-
-  protected TransMeta transMeta;
-
-  protected Shell parentShell;
 
   protected Listener lsResize;
 
   protected boolean changed, backupChanged;
 
-  protected BaseStepMeta baseStepMeta;
-
   protected PropsUI props;
-
-  protected Repository repository;
-
-  protected StepMeta stepMeta;
-
-  protected LogChannel log;
 
   protected static final int BUTTON_ALIGNMENT_CENTER = 0;
 
@@ -137,17 +88,7 @@ public abstract class BaseStepXulDialog extends AbstractXulEventHandler {
 
   protected DatabaseDialog databaseDialog;
 
-  private String xulFile;
-
-  private XulDomContainer container;
-
-  private XulRunner runner;
-
-  protected XulDialog xulDialog;
-
   protected Shell dialogShell;
-
-  protected BindingFactory bf = new SwtBindingFactory();
 
   static {
     // Get the button alignment
@@ -156,15 +97,10 @@ public abstract class BaseStepXulDialog extends AbstractXulEventHandler {
 
   public BaseStepXulDialog( String xulFile, Shell parent, BaseStepMeta baseStepMeta, TransMeta transMeta, String stepname ) {
 
-    this.log = new LogChannel(baseStepMeta);
-    this.transMeta = transMeta;
-    this.stepname = stepname;
-    this.stepMeta = transMeta.findStep(stepname);
-    this.baseStepMeta = baseStepMeta;
+    super(xulFile, parent, baseStepMeta, transMeta, stepname);
+    
     this.backupChanged = baseStepMeta.hasChanged();
     this.props = PropsUI.getInstance();
-    this.xulFile = xulFile;
-    this.parentShell = parent;
 
     try {
       initializeXul();
@@ -175,58 +111,10 @@ public abstract class BaseStepXulDialog extends AbstractXulEventHandler {
     }
   }
 
-  public BaseStepXulDialog( String xulFile, Shell parent, int nr, BaseStepMeta in, TransMeta tr) {
-    this(xulFile, parent, in, tr, null);
-  }
-
-  private void initializeXul() throws XulException {
-    SwtXulLoader loader = new SwtXulLoader();
-    loader.registerClassLoader(getClass().getClassLoader());
-    loader.setSettingsManager(XulSpoonSettingsManager.getInstance());
-    loader.setOuterContext(parentShell);
-    container = loader.loadXul( xulFile, new XulSpoonResourceBundle(getClassForMessages()));
-    bf.setDocument(container.getDocumentRoot());
-    
-    for(XulEventHandler h : getEventHandlers()){
-      container.addEventHandler(h); 
-    }
-
-    runner = new SwtXulRunner();
-    runner.addContainer(container);
-
-    // try and get the dialog
-    xulDialog = (XulDialog) container.getDocumentRoot().getRootElement();
+  protected void initializeXul() throws XulException {
+    initializeXul(new SwtXulLoader(), new SwtBindingFactory(), new SwtXulRunner(), parent);
     dialogShell = (Shell) xulDialog.getRootObject();
-
-    runner.initialize();
   }
-
-  protected BindingFactory getBindingFactory(){
-    return bf;
-  }
-
-  protected List<XulEventHandler> getEventHandlers(){
-    return Collections.singletonList((XulEventHandler) this);
-  }
-
-  public String getName(){
-    return "handler";
-  }
-
-  public String open(){
-    xulDialog.show();
-    return stepname;
-  }
-
-  public void close(){
-    xulDialog.hide();
-  }
-
-  public abstract void onAccept();
-
-  public abstract void onCancel();
-
-  protected abstract Class<?> getClassForMessages();
 
   public void setShellImage( Shell shell, StepMetaInterface stepMetaInterface ) {
     try {
@@ -286,28 +174,6 @@ public abstract class BaseStepXulDialog extends AbstractXulEventHandler {
     }
   }
 
-
-  public void addDatabases( XulMenuList<?> wConnection ) {
-    addDatabases(wConnection, null);
-  }
-
-  @SuppressWarnings({ "rawtypes", "unchecked" })
-  public void addDatabases( XulMenuList wConnection, Class<? extends DatabaseInterface> databaseType ) {
-    List<String> databases = new ArrayList<String>();
-    for (int i = 0; i < transMeta.nrDatabases(); i++) {
-      DatabaseMeta ci = transMeta.getDatabase(i);
-      if (databaseType == null || ci.getDatabaseInterface().getClass().equals(databaseType)) {
-        databases.add(ci.getName());
-      }
-    }
-    wConnection.setElements(databases);
-  }
-
-  @SuppressWarnings({ "unchecked", "rawtypes" })
-  public void selectDatabase( XulMenuList wConnection, String name ) {
-    wConnection.setSelectedItem(wConnection);
-  }
-
   protected DatabaseDialog getDatabaseDialog( Shell shell ) {
     if (databaseDialog == null) {
       databaseDialog = new DatabaseDialog(shell);
@@ -317,20 +183,6 @@ public abstract class BaseStepXulDialog extends AbstractXulEventHandler {
 
   public void storeScreenSize() {
     props.setScreen(new WindowProperty(dialogShell));
-  }
-
-  /**
-   * @return Returns the repository.
-   */
-  public Repository getRepository() {
-    return repository;
-  }
-
-  /**
-   * @param repository The repository to set.
-   */
-  public void setRepository( Repository repository ) {
-    this.repository = repository;
   }
 
   public static void setSize( Shell shell ) {
@@ -534,75 +386,6 @@ public abstract class BaseStepXulDialog extends AbstractXulEventHandler {
       fieldMapping.addAll(newMapping);
     }
   }
-
-  public boolean isBasic() {
-    return log.isBasic();
-  }
-
-  public boolean isDetailed() {
-    return log.isDetailed();
-  }
-
-  public boolean isDebug() {
-    return log.isDebug();
-  }
-
-  public boolean isRowLevel() {
-    return log.isRowLevel();
-  }
-
-  public void logMinimal( String message ) {
-    log.logMinimal(message);
-  }
-
-  public void logMinimal( String message, Object... arguments ) {
-    log.logMinimal(message, arguments);
-  }
-
-  public void logBasic( String message ) {
-    log.logBasic(message);
-  }
-
-  public void logBasic( String message, Object... arguments ) {
-    log.logBasic(message, arguments);
-  }
-
-  public void logDetailed( String message ) {
-    log.logDetailed(message);
-  }
-
-  public void logDetailed( String message, Object... arguments ) {
-    log.logDetailed(message, arguments);
-  }
-
-  public void logDebug( String message ) {
-    log.logDebug(message);
-  }
-
-  public void logDebug( String message, Object... arguments ) {
-    log.logDebug(message, arguments);
-  }
-
-  public void logRowlevel( String message ) {
-    log.logRowlevel(message);
-  }
-
-  public void logRowlevel( String message, Object... arguments ) {
-    log.logRowlevel(message, arguments);
-  }
-
-  public void logError( String message ) {
-    log.logError(message);
-  }
-
-  public void logError( String message, Throwable e ) {
-    log.logError(message, e);
-  }
-
-  public void logError( String message, Object... arguments ) {
-    log.logError(message, arguments);
-  }
-
 
   public static void getFieldsFromPrevious( RowMetaInterface row, XulTree tableView, List<Object> fields,
                                             StepTableDataObject field, TableItemInsertXulListener listener ) {
