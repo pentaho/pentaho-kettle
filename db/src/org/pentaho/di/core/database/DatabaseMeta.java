@@ -80,6 +80,8 @@ public class DatabaseMeta
   private static Class<?> PKG = Database.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   public static final String XML_TAG = "connection";
+  
+  public static final String KETTLE_PRESERVE_RESERVED_WORD_CASE = "KETTLE_PRESERVE_RESERVED_WORD_CASE";
 
   private static final Log logger = LogFactory.getLog(DatabaseMeta.class);
   
@@ -1648,6 +1650,9 @@ public class DatabaseMeta
     
     private String handleCase(String field)
     {
+      if (Boolean.parseBoolean(getVariable(KETTLE_PRESERVE_RESERVED_WORD_CASE))) {
+        return field;
+      } else {
         if (databaseInterface.isDefaultingToUppercase()) 
         {
             return field.toUpperCase();
@@ -1656,6 +1661,7 @@ public class DatabaseMeta
         {
             return field.toLowerCase();
         }
+      }
     }
 	
     /**
