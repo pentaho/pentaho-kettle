@@ -32,6 +32,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.owasp.esapi.ESAPI;
+import org.owasp.esapi.Encoder;
+
 /**
  * This servlet allows a client (TransSplitter in our case) to ask for a port number.<br>
  * This port number will be allocated in such a way that the port number is unique for a given hostname.<br>
@@ -70,19 +73,21 @@ public class ListServerSocketServlet extends BaseHttpServlet implements CartePlu
     response.setContentType("text/html");
     PrintStream out = new PrintStream(response.getOutputStream());
 
+    Encoder encoder = ESAPI.encoder();
+    
     out.println("<HTML>");
-    out.println("<HEAD><TITLE>List of server sockets on server '"+hostname+"'</TITLE></HEAD>");
+    out.println("<HEAD><TITLE>List of server sockets on server '"+encoder.encodeForHTML(hostname)+"'</TITLE></HEAD>");
     out.println("<BODY>");
-    out.println("<H1>Ports for host '"+hostname+"'</H1>");
+    out.println("<H1>Ports for host '"+encoder.encodeForHTML(hostname)+"'</H1>");
 
     Map<String, List<SocketPortAllocation>> portsMap = getTransformationMap().getHostServerSocketPortsMap();
     List<SocketPortAllocation> allocations = portsMap.get(hostname);
     if (allocations==null) {
-      out.println("No port allocations found for host '"+hostname+"'");
+      out.println("No port allocations found for host '"+encoder.encodeForHTML(hostname)+"'");
       return;
     }
 
-    out.println("Found "+allocations.size()+" ports for host '"+hostname+"'<p>");
+    out.println("Found "+allocations.size()+" ports for host '"+encoder.encodeForHTML(hostname)+"'<p>");
     
     Iterator<SocketPortAllocation> iterator = allocations.iterator();
     while (iterator.hasNext()) {

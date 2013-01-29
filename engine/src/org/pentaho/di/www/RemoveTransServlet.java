@@ -29,6 +29,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.owasp.esapi.ESAPI;
+import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -95,6 +97,8 @@ public class RemoveTransServlet extends BaseHttpServlet implements CartePluginIn
     	trans = getTransformationMap().getTransformation(entry);
     }
     
+    Encoder encoder = ESAPI.encoder();
+    
     if (trans != null) {
       
       CentralLogStore.discardLines(trans.getLogChannelId(), true);
@@ -114,7 +118,7 @@ public class RemoveTransServlet extends BaseHttpServlet implements CartePluginIn
         out.println("<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">");
         out.println("</HEAD>");
         out.println("<BODY>");
-        out.println("<H3>" + BaseMessages.getString(PKG, "RemoveTransServlet.TheTransWasRemoved", transName, id) + "</H3>");
+        out.println("<H3>" + encoder.encodeForHTML(BaseMessages.getString(PKG, "RemoveTransServlet.TheTransWasRemoved", transName, id)) + "</H3>");
         out.print("<a href=\"" + convertContextPath(GetStatusServlet.CONTEXT_PATH) + "\">" + BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage") + "</a><br>");
         out.println("<p>");
         out.println("</BODY>");
@@ -124,7 +128,7 @@ public class RemoveTransServlet extends BaseHttpServlet implements CartePluginIn
       if (useXML) {
         out.println(new WebResult(WebResult.STRING_ERROR, BaseMessages.getString(PKG, "TransStatusServlet.Log.CoundNotFindSpecTrans", transName)));
       } else {
-        out.println("<H1>" + BaseMessages.getString(PKG, "RemoveTransServlet.TransRemoved.Log.CoundNotFindTrans", transName, id) + "</H1>");
+        out.println("<H1>" + encoder.encodeForHTML(BaseMessages.getString(PKG, "RemoveTransServlet.TransRemoved.Log.CoundNotFindTrans", transName, id)) + "</H1>");
         out.println("<a href=\"" + convertContextPath(GetStatusServlet.CONTEXT_PATH) + "\">" + BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage") + "</a><p>");
       }
     }

@@ -30,6 +30,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.owasp.esapi.ESAPI;
+import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -75,7 +77,7 @@ public class PauseTransServlet extends BaseHttpServlet implements CartePluginInt
         out.println("<HEAD>");
         out.println("<TITLE>" + BaseMessages.getString(PKG, "PauseTransServlet.PauseTrans") + "</TITLE>");
         out.println("<META http-equiv=\"Refresh\" content=\"2;url=" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name="
-            + URLEncoder.encode(transName, "UTF-8") + "&id="+id+"\">");
+            + URLEncoder.encode(transName, "UTF-8") + "&id="+URLEncoder.encode(id, "UTF-8")+"\">");
         out.println("<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">");
         out.println("</HEAD>");
         out.println("<BODY>");
@@ -102,6 +104,8 @@ public class PauseTransServlet extends BaseHttpServlet implements CartePluginInt
       	trans = getTransformationMap().getTransformation(entry);
       }
 
+      Encoder encoder = ESAPI.encoder();
+      
       if (trans != null) {
         String message;
         if (trans.isPaused()) {
@@ -115,8 +119,8 @@ public class PauseTransServlet extends BaseHttpServlet implements CartePluginInt
         if (useXML) {
           out.println(new WebResult(WebResult.STRING_OK, message).getXML());
         } else {
-          out.println("<H1>" + message + "</H1>");
-          out.println("<a href=\"" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "&id="+id+"\">"
+          out.println("<H1>" + encoder.encodeForHTML(message) + "</H1>");
+          out.println("<a href=\"" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "&id="+URLEncoder.encode(id, "UTF-8")+"\">"
               + BaseMessages.getString(PKG, "TransStatusServlet.BackToTransStatusPage") + "</a><p>");
         }
       } else {
@@ -125,7 +129,7 @@ public class PauseTransServlet extends BaseHttpServlet implements CartePluginInt
         if (useXML) {
           out.println(new WebResult(WebResult.STRING_ERROR, message).getXML());
         } else {
-          out.println("<H1>" + message + "</H1>");
+          out.println("<H1>" + encoder.encodeForHTML(message) + "</H1>");
           out.println("<a href=\"" + convertContextPath(GetStatusServlet.CONTEXT_PATH) + "\">"
               + BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage") + "</a><p>");
         }
@@ -136,7 +140,7 @@ public class PauseTransServlet extends BaseHttpServlet implements CartePluginInt
       } else {
         out.println("<p>");
         out.println("<pre>");
-        ex.printStackTrace(out);
+        out.println(Const.getStackTracker(ex));
         out.println("</pre>");
       }
     }

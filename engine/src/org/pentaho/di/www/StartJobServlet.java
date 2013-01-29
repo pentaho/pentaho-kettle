@@ -31,6 +31,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.owasp.esapi.ESAPI;
+import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.CentralLogStore;
@@ -71,6 +73,8 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
 
     response.setStatus(HttpServletResponse.SC_OK);
 
+    Encoder encoder = ESAPI.encoder();
+    
     PrintWriter out = response.getWriter();
     if (useXML) {
       response.setContentType("text/xml");
@@ -152,8 +156,8 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
           out.println(new WebResult(WebResult.STRING_OK, message, id).getXML());
         } else {
 
-          out.println("<H1>" + message + "</H1>");
-          out.println("<a href=\"" + convertContextPath(GetJobStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(jobName, "UTF-8") + "&id="+id+"\">"
+          out.println("<H1>" + encoder.encodeForHTML(message) + "</H1>");
+          out.println("<a href=\"" + convertContextPath(GetJobStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(jobName, "UTF-8") + "&id="+URLEncoder.encode(id, "UTF-8")+"\">"
               + BaseMessages.getString(PKG, "JobStatusServlet.BackToJobStatusPage") + "</a><p>");
         }
       } else {
@@ -161,7 +165,7 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
         if (useXML) {
           out.println(new WebResult(WebResult.STRING_ERROR, message));
         } else {
-          out.println("<H1>" + message + "</H1>");
+          out.println("<H1>" + encoder.encodeForHTML(message) + "</H1>");
           out.println("<a href=\"" + convertContextPath(GetStatusServlet.CONTEXT_PATH) + "\">"
               + BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage") + "</a><p>");
         }
@@ -173,7 +177,7 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
       } else {
         out.println("<p>");
         out.println("<pre>");
-        ex.printStackTrace(out);
+        out.println(encoder.encodeForHTML(Const.getStackTracker(ex)));
         out.println("</pre>");
       }
     }

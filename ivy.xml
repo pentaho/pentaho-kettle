@@ -61,6 +61,7 @@
     <!-- Other third-party dependencies -->
     <dependency org="asm"                  name="asm"                   rev="3.2"           transitive="false"/>
     <dependency org="net.sf.saxon"         name="saxon-dom"             rev="9.1.0.8"       transitive="false"/>
+    <dependency org="org.owasp.esapi"      name="esapi"                 rev="2.0GA"         transitive="false"/>
     
     <!-- Test dependencies -->
     <dependency org="junit"                    name="junit"                rev="4.7"    transitive="false" conf="test->default"/>          

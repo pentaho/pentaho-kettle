@@ -53,6 +53,8 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
+import org.owasp.esapi.ESAPI;
+import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleAttributeInterface;
 import org.pentaho.di.core.exception.KettleException;
@@ -728,38 +730,28 @@ public class XMLHandler
 	public static final String addTagValue(String tag, String val, boolean cr,String... attributes)
 	{
 		StringBuffer value;
-        
-        if (val!=null && val.length()>0)
-		{
-            value = new StringBuffer("<");
-            value.append(tag);
-            
-            for (int i=0;i<attributes.length;i+=2)
-        	   value.append(" ").append(attributes[i]).append("=\"").append(attributes[i+1]).append("\" ");
-           
-            value.append('>');
-            
-            appendReplacedChars(value, val);
-            
-            value.append("</");
-            value.append(tag);
-            value.append('>');
-		}
-		else
-		{
-			value = new StringBuffer("<");
-            value.append(tag);
-            
-            for (int i=0;i<attributes.length;i+=2)
-         	   value.append(" ").append(attributes[i]).append("=\"").append(attributes[i+1]).append("\" ");
-            
-            value.append("/>");
+    Encoder encoder = ESAPI.encoder();
+    value = new StringBuffer("<");
+    value.append(tag);
+    
+    for (int i=0;i<attributes.length;i+=2) {
+      value.append(" ").append(encoder.encodeForXMLAttribute(attributes[i])).append("=\"").append(attributes[i+1]).append("\" ");
+    }
+    
+    if (val!=null && val.length()>0) {
+      value.append('>');
+      value.append(encoder.encodeForXML(val));
+      
+      value.append("</");
+      value.append(tag);
+      value.append('>');
+		} else {       
+      value.append("/>");
 		}
         
-        if (cr)
-        {
-            value.append(Const.CR);
-        }
+    if (cr) {
+      value.append(Const.CR);
+    }
         
 		return value.toString();
 	}
@@ -771,56 +763,10 @@ public class XMLHandler
      * @param value the stringbuffer to append to
      * @param string the string to "encode"
      */
-	public static void appendReplacedChars(StringBuffer value, String string)
-    {
-        // If it's a CDATA content block, leave those parts alone.
-        //
-        boolean isCDATA = string.startsWith("<![CDATA[") && string.endsWith("]]>");
-        
-        for (int i=0;i<string.length();i++)
-        {
-            char c = string.charAt(i);
-            switch(c)
-            {
-            case '&'  : value.append("&amp;"); break;
-            case '\'' : value.append("&apos;"); break;
-            case '<'  :
-                if (i!=0 || !isCDATA)
-                {
-                    value.append("&lt;"); 
-                }
-                else
-                {
-                    value.append(c);
-                }
-                break;
-            case '>'  :
-                if (i!=string.length()-1 || !isCDATA)
-                {
-                    value.append("&gt;"); 
-                }
-                else
-                {
-                    value.append(c);
-                }
-                break;
-            case '"'  : value.append("&quot;"); break;
-            case '/'  :
-                if (isCDATA) // Don't replace slashes in a CDATA block, it's just not right.
-                {
-                    value.append(c);
-                }
-                else
-                {
-                    value.append("&#47;"); 
-                }
-                break;
-            case 0x1A : value.append("{ILLEGAL XML CHARACTER 0x1A}"); break;
-            default: 
-                value.append(c);
-            }
-        }        
-    }
+	public static void appendReplacedChars(StringBuffer value, String string) {
+    Encoder encoder = ESAPI.encoder();
+    value.append(encoder.encodeForXML(string));
+  }
 
     /**
      * Build an XML string (including a carriage return) for a certain tag String value
