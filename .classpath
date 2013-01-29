@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="resources"/>
 	<classpathentry kind="src" path="src-plugins/kettle-hl7-plugin/src"/>
 	<classpathentry kind="src" output="classes-ui" path="src-ui"/>
 	<classpathentry kind="src" path="test"/>
@@ -240,5 +241,6 @@
 	<classpathentry kind="lib" path="libext/jersey/jersey-json-1.7.jar"/>
 	<classpathentry kind="lib" path="libext/feeds/xml-apis-2.0.2.jar"/>
 	<classpathentry kind="lib" path="test/libext/mockito-all-1.8.4.jar"/>
+	<classpathentry kind="lib" path="libext/esapi-2.0GA.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

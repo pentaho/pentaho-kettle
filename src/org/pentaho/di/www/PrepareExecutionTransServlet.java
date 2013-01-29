@@ -30,6 +30,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.owasp.esapi.ESAPI;
+import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -81,6 +83,8 @@ public class PrepareExecutionTransServlet extends BaseHttpServlet implements Car
       out.println("</HEAD>");
       out.println("<BODY>");
     }
+    
+    Encoder encoder = ESAPI.encoder();
 
     try {
       // ID is optional...
@@ -122,7 +126,7 @@ public class PrepareExecutionTransServlet extends BaseHttpServlet implements Car
           } else {
 
             out.println("<H1>" + BaseMessages.getString(PKG, "PrepareExecutionTransServlet.TransPrepared", transName) + "</H1>");
-            out.println("<a href=\"" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "&id="+id+"\">" + BaseMessages.getString(PKG, "TransStatusServlet.BackToTransStatusPage") + "</a><p>");
+            out.println("<a href=\"" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "&id="+URLEncoder.encode(id, "UTF-8")+"\">" + BaseMessages.getString(PKG, "TransStatusServlet.BackToTransStatusPage") + "</a><p>");
           }
         } catch (Exception e) {
 
@@ -130,20 +134,20 @@ public class PrepareExecutionTransServlet extends BaseHttpServlet implements Car
           if (useXML) {
             out.println(new WebResult(WebResult.STRING_ERROR, BaseMessages.getString(PKG, "PrepareExecutionTransServlet.Error.TransInitFailed", Const.CR + logText + Const.CR + Const.getStackTracker(e))));
           } else {
-            out.println("<H1>" + BaseMessages.getString(PKG, "PrepareExecutionTransServlet.Log.TransNotInit", transName) + "</H1>");
+            out.println("<H1>" + encoder.encodeForHTML(BaseMessages.getString(PKG, "PrepareExecutionTransServlet.Log.TransNotInit", transName)) + "</H1>");
 
             out.println("<pre>");
-            out.println(logText);
-            out.println(Const.getStackTracker(e));
+            out.println(encoder.encodeForHTML(logText));
+            out.println(encoder.encodeForHTML(Const.getStackTracker(e)));
             out.println("</pre>");
-            out.println("<a href=\"" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "&id="+id+"\">" + BaseMessages.getString(PKG, "TransStatusServlet.BackToTransStatusPage") + "</a><p>");
+            out.println("<a href=\"" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "&id="+URLEncoder.encode(id, "UTF-8")+"\">" + BaseMessages.getString(PKG, "TransStatusServlet.BackToTransStatusPage") + "</a><p>");
           }
         }
       } else {
         if (useXML) {
           out.println(new WebResult(WebResult.STRING_ERROR, BaseMessages.getString(PKG, "TransStatusServlet.Log.CoundNotFindSpecTrans", transName)));
         } else {
-          out.println("<H1>" + BaseMessages.getString(PKG, "TransStatusServlet.Log.CoundNotFindTrans", transName) + "</H1>");
+          out.println("<H1>" + encoder.encodeForHTML(BaseMessages.getString(PKG, "TransStatusServlet.Log.CoundNotFindTrans", transName)) + "</H1>");
           out.println("<a href=\"" + convertContextPath(GetStatusServlet.CONTEXT_PATH) + "\">" + BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage") + "</a><p>");
         }
       }
@@ -154,7 +158,7 @@ public class PrepareExecutionTransServlet extends BaseHttpServlet implements Car
       } else {
         out.println("<p>");
         out.println("<pre>");
-        ex.printStackTrace(out);
+        out.println(encoder.encodeForHTML(Const.getStackTracker(ex)));
         out.println("</pre>");
       }
     }

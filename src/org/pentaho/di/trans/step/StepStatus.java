@@ -24,6 +24,8 @@ package org.pentaho.di.trans.step;
 
 import java.text.DecimalFormat;
 
+import org.owasp.esapi.ESAPI;
+import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.w3c.dom.Document;
@@ -87,8 +89,9 @@ public class StepStatus
     
     public String getHTMLTableRow()
     {
+      Encoder encoder = ESAPI.encoder();
         return "<tr> " +
-                    "<th>"+stepname+"</th> " +
+                    "<th>"+encoder.encodeForHTML(stepname)+"</th> " +
                     "<th>"+copy+"</th> " +
                     "<th>"+linesRead+"</th> " +
                     "<th>"+linesWritten+"</th> " +
@@ -97,10 +100,10 @@ public class StepStatus
                     "<th>"+linesUpdated+"</th> " +
                     "<th>"+linesRejected+"</th> " +
                     "<th>"+errors+"</th> " +
-                    "<th>"+statusDescription+"</th> " +
+                    "<th>"+encoder.encodeForHTML(statusDescription)+"</th> " +
                     "<th>"+seconds+"</th> " +
-                    "<th>"+speed+"</th> " +
-                    "<th>"+priority+"</th> " +
+                    "<th>"+encoder.encodeForHTML(speed)+"</th> " +
+                    "<th>"+encoder.encodeForHTML(priority)+"</th> " +
                 "</tr>";
     }
 
