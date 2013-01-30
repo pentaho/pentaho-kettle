@@ -1,4 +1,4 @@
-As of January TBD, 2013 the Kettle project has changed:
+As of January 14, 2013 the Kettle project has changed:
 
   - Apache Ivy support has been added to resolve dependencies.  This has eliminated
     the need to commit JAR files into the version control system. It will also help with conflict management,
@@ -8,8 +8,8 @@ As of January TBD, 2013 the Kettle project has changed:
     subprojects that can be built independently.  These sub projects contain 
     their own IVY files.
     
-    For example, "src-ui" has become the "ui" project.  Inside the "ui" project is the src folder that was "src-ui".  
-    It also has a build.xml, build.properties file, etc.
+    For example, "src-ui" has become the "ui" module.  Inside the "ui" project is the src folder that was "src-ui".  
+    It also has files such as build.xml, build.properties, ivy.xml, etc.
     
         
         
@@ -21,12 +21,13 @@ Getting the source:
          
          
          
-I already have that checked out.
+What if I already have that checked out?
 
-     That would be the old structure.  DO NOT DO an svn update or commit from this.
-     An svn update will bring in the new structure but then also create tree conflicts
-     on the files that have been changed in your project.  The tree conflicts will prevent
-     successful commits.
+     If you checked out trunk before January 14, 2013, your project has the old structure.  
+     
+     _DO NOT_ do an SVN update or commit from a project with the old structure. An SVN update 
+     will bring in the new structure but then also create tree conflicts on the files that 
+     have been changed in your project.  The tree conflicts will prevent successful commits.
      
      If you were to do a commit of files that have been moved without doing an 
      update then the commit will fail with a message stating that the repository 
@@ -34,77 +35,49 @@ I already have that checked out.
      
      
      
-What is the best way to get my code into the new structure?
+I have code changes against the old structure. What is the best way to get my code into the new structure?
 
-     Check this project out:  svn://source.pentaho.org/svnkettleroot/Kettle/branches/trunk-restruct.
-     Merge the uncommitted code you have into it and stop committing into trunk.  
-     This branch will become trunk when we cutover.
-     
-     Changes committed into trunk before the cutover will be merged if those
-     changes were not committed into the trunk-restruct branch.
+     Checkout the latest trunk as a separate project.  Merge the uncommitted code you have into 
+     it and commit (after testing of course). You can then remove your old project.
      
           
-          
-What if I have outstanding commits that can't be committed into trunk before the cutover?
-
-     You are going to have to merge them into the new structure after the cutover.
-     
-     
      
 What is the best way to merge?
 
      Whichever way you are comfortable.
 
-     If you are using svn patches then they will have to be done on a per file basis.
-     Eclipse compare works but would be on a per file basis as well.
+     If you are using SVN patches then they will have to be done on a per-file basis.
+     Eclipse compare works but would be on a per-file basis as well.
      
-     If you have changes to multiple files in the same folder then a tool like Meld
+     If you have changes to multiple files in the same folder then a tool like Meld or WinMerge
      would allow for multiple file differences.
      
      
-       
-I got the source.  What is that "assembly" folder?
+    
+OK, I have the new project structure checked out. So now what can I do?
 
-     The assembly folder serves two purposes:
-     
-        1- It provides a staging area for building Kettle.
-        2- It contains resources needed for a Kettle distribution. The resources are contained in the "package-res" folder.        
-        
-
-        
-What is "package-res" in assembly?
-
-     If you take a look in "package-res" you will see a folder structure that 
-     once was under the root of the Kettle project.  These folders are packaged up 
-     into the distributable product.
-     
-     Changes to shell scripts, launcher, images, and docs are made here.
-     
-
-
-So now what can I do?
- 
-     The default Ant target will build Spoon which can then be run from the projects dist folder.
+    If you are using Ant, the default Ant target will build Spoon which can then be run from 
+    the project's dist/ folder.
      
      Linux example:
         
-         Ant 
+         ant 
          cd dist
          sh spoon.sh     
          
-     
-     
-What about that .classpath file that Eclipse needs?
- 
-     With the use of Ivy it is no longer necessary to edit the .classpath file and check it into version control.
-     There is a file called classpath.template in the root folder in which contains references to Kettle source code and output folders.  
-     You can generate a full .classpath file (including Kettle's dependencies) with the "create-dot-classpath" Ant target. 
+     If you are using Eclipse, you may notice that there is no .classpath file in the 
+     repository. With the use of Ivy, it is no longer necessary to edit the .classpath file 
+     and check it into version control. There is a file called classpath.template in the root 
+     folder in which contains references to Kettle source code and output folders. You can 
+     generate a full .classpath file (including Kettle's dependencies) with the 
+     "create-dot-classpath" Ant target. 
      
      Linux example:
      
          /workspace/Kettle-trunk/ant create-dot-classpath
          
-     The Ant target will will copy classpath.template to .classpath, resolve the dependencies and generate the .classpath file.
+     The Ant target will will copy classpath.template to .classpath, resolve the dependencies 
+     into the lib/ folder, and generate the .classpath file.
      After generating the .classpath file, refresh your Eclipse project and have Eclipse build the project.
      
      Please do not commit the .classpath into the version control system.
@@ -121,7 +94,7 @@ How do I set up Run and Debug configurations in Eclipse?
 
 
 
-OK.  I just want to add a new property to a step using Eclipse as my IDE.  What do I have to do?
+Let's say I just want to add a new property to a step using Eclipse as my IDE.  What do I have to do?
 
      - Check out the project and set it up as an Eclipse Java project.
      - Run the create-dot-classpath Ant target
@@ -134,14 +107,15 @@ OK.  I just want to add a new property to a step using Eclipse as my IDE.  What 
      
 If I want to build the project with Ant should I always use the default target?
 
-     I would right after checking out the project but would avoid the target from that
-     point on. The default target does quite a bit with cleaning and resolving.
+     The default target should be run first after checking out the project, but if no changes have
+     been made that would affect the dependencies, you can run the "dist-nodeps" which skips the 
+     resolution task(s).
      
      Consider the previous scenario with adding a new property to a step.  You checked out the project 
-     and ran the default Ant target.  You change only the steps meta, dialog and execution java source.  Do you 
-     want to clean the project and resolve the dependencies again?  Probably not.  
+     and ran the default Ant target.  You change only the steps meta, dialog and execution java source.  
+     You likely do not need to clean the project and resolve the dependencies again.  
      
-     Running the Ant "compile" target in the project's root folder will compile changed source
+     Also, running the Ant "compile" target in the project's root folder will compile changed source
      code for all the modules.
      
 
@@ -156,7 +130,7 @@ My code changes were just in the engine module.  Can I run Ant from there?
 
 I get compile errors!  Cannot find symbols and packages that don't exist!
 
-     When you did that default build from the projects root folder you resolved dependencies into it's 
+     When you did that default build from the projects root folder you resolved dependencies into its 
      lib folder.  You need to resolve engine's dependencies and then compile:
      
          Kettle>cd engine
@@ -165,15 +139,15 @@ I get compile errors!  Cannot find symbols and packages that don't exist!
 
 That seems redundant.
 
-     Yes but we are building modules now.  Since your ivy cache should already have 
-     the dependencies the resolve should be quick.
+     Yes but we are building modules now.  If your Ivy cache already contains the dependencies,
+     the resolve should be fairly quick.
 
 
 
 I ran Spoon from the project's dist folder.  Why can't I see my changes I just compiled?
 
      You need to do a an "ant dist" at the project level.  In the scenario of adding a new
-     property to a step we do not need to resolve dependencies so the dist_nodeps target is 
+     property to a step we do not need to resolve dependencies so the dist-nodeps target is 
      even quicker:
      
          Here is an example of compiling engine source and then "disting" the project:
@@ -197,16 +171,16 @@ I ran Spoon from the project's dist folder.  Why can't I see my changes I just c
 If I needed to change something in DB, like the default port for PostgreSQL, do I need to check out all
 of Kettle and build it?
 
-     No you don't.  You can check out the db module.  Run it's default ant target.  If
-     you are using Eclipse run the create-dot-classpath and refresh the project in Eclipse.
-     Make your code change in PostgreSQLDatabaseMeta and run the dist ant target.  
-     A kettle-db jar will be built and placed in the project's dist folder.
+     No you don't. In this example you can check out only the "db" module.  Run the module's 
+     default Ant target. If you are using Eclipse, run the "create-dot-classpath" Ant target and refresh
+     the project in Eclipse. Then make your code change in PostgreSQLDatabaseMeta and run the "dist" ant target.  
+     A kettle-db JAR will be built and placed in the project's dist/ folder.
      
      To test out your changes you can grab a Kettle build from CI:
         http://ci.pentaho.com/view/Data Integration/job/Kettle/
         
-     Replace the kettle-db jar in the CI build's lib folder and run Spoon.  Create
-     a new DB connection with PostgreSQL as the connection yype.  You should see
+     Replace the kettle-db jar in the CI build's lib/ folder and run Spoon.  Create
+     a new DB connection with PostgreSQL as the connection type.  You should see
      your new default port number.
      
     
@@ -253,3 +227,20 @@ I'm making a change to Kettle that requires a new (or newer version of a) third-
      IMPORTANT: If a new dependency (JAR) is being introduced, make sure the license is _not_ GPL or AGPL. These licenses are not "Pentaho-friendly" and we cannot
      distribute these JARs without all Kettle source code becoming GPL.  LGPL licensing is ok for JARs but not for code. The most "Pentaho-friendly" licenses are
      permissive licenses such as Apache or MIT. If you have any questions about licensing, please contact Pentaho.
+     
+
+What is that "assembly" folder?
+
+     The assembly folder serves two purposes:
+     
+        1- It provides a staging area for building Kettle.
+        2- It contains resources needed for a Kettle distribution. The resources are contained in the "package-res" folder.        
+        
+        
+What is "package-res" in assembly?
+
+     If you take a look in "package-res" you will see a folder structure that 
+     once was under the root of the Kettle project.  These folders are packaged up 
+     into the distributable product.
+     
+     Changes to shell scripts, launcher, images, and docs are made here.     
