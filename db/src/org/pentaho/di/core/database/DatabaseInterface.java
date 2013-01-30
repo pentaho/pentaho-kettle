@@ -534,6 +534,16 @@ public interface DatabaseInterface extends Cloneable
      * @param b Set to true if the database supports a boolean, bit, logical, ... datatype
      */
 	public void setSupportsBooleanDataType(boolean b);
+	
+  /**
+   * @return true if reserved words' case should be preserved
+   */
+  public boolean preserveReservedCase();
+  
+  /**
+   * @param b Set to true if reserved words' case should be preserved
+   */
+  public void setPreserveReservedCase(boolean b);
 
     /**
      * @return true if the database defaults to naming tables and fields in upper case.

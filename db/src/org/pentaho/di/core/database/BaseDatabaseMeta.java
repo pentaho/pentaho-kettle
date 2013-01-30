@@ -162,6 +162,11 @@ public abstract class BaseDatabaseMeta implements Cloneable
      */
     public static final String ATTRIBUTE_SUPPORTS_BOOLEAN_DATA_TYPE = "SUPPORTS_BOOLEAN_DATA_TYPE";
     
+    /**
+     * Checkbox to allow you to configure if the reserved words will have their case changed during the handleCase call 
+     */
+    public static final String ATTRIBUTE_PRESERVE_RESERVED_WORD_CASE = "PRESERVE_RESERVED_WORD_CASE";
+    
     public static final String SEQUENCE_FOR_BATCH_ID = "SEQUENCE_FOR_BATCH_ID";
     public static final String AUTOINCREMENT_SQL_FOR_BATCH_ID = "AUTOINCREMENT_SQL_FOR_BATCH_ID";
     
@@ -981,6 +986,23 @@ public abstract class BaseDatabaseMeta implements Cloneable
 	{
 		attributes.setProperty(ATTRIBUTE_SUPPORTS_BOOLEAN_DATA_TYPE, b?"Y":"N");
 	}
+	
+
+  
+  /**
+   * @return true if reserved words' case should be preserved
+   */
+  public boolean preserveReservedCase() {
+    String usePool = attributes.getProperty(ATTRIBUTE_PRESERVE_RESERVED_WORD_CASE, "N");
+    return "Y".equalsIgnoreCase(usePool);
+  }
+  
+  /**
+   * @param b Set to true if reserved words' case should be preserved
+   */
+  public void setPreserveReservedCase(boolean b) {
+    attributes.setProperty(ATTRIBUTE_PRESERVE_RESERVED_WORD_CASE, b?"Y":"N");
+  }
 
     /**
      * @return true if the database defaults to naming tables and fields in uppercase.

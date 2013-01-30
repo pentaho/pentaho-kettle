@@ -188,6 +188,8 @@ public class DataHandler extends AbstractXulEventHandler {
 
   XulCheckbox upperCaseIdentifiersCheck;
   
+  XulCheckbox preserveReservedCaseCheck;
+  
   XulCheckbox useIntegratedSecurityCheck;
   
   XulTextbox preferredSchemaName;
@@ -615,6 +617,10 @@ public class DataHandler extends AbstractXulEventHandler {
     if (upperCaseIdentifiersCheck != null) {
       meta.setForcingIdentifiersToUpperCase(upperCaseIdentifiersCheck.isChecked());
     }
+    
+    if (preserveReservedCaseCheck != null) {
+      meta.setPreserveReservedCase(preserveReservedCaseCheck.isChecked());
+    }
 
     if (preferredSchemaName != null) {
         meta.setPreferredSchemaName(preferredSchemaName.getValue());
@@ -762,6 +768,10 @@ public class DataHandler extends AbstractXulEventHandler {
 
     if (upperCaseIdentifiersCheck != null) {
       upperCaseIdentifiersCheck.setChecked(meta.isForcingIdentifiersToUpperCase());
+    }
+    
+    if (preserveReservedCaseCheck != null) {
+      preserveReservedCaseCheck.setChecked(meta.preserveReservedCase());
     }
 
     if (preferredSchemaName != null) {
@@ -1263,6 +1273,7 @@ public class DataHandler extends AbstractXulEventHandler {
     quoteIdentifiersCheck = (XulCheckbox) document.getElementById("quote-identifiers-check"); //$NON-NLS-1$;
     lowerCaseIdentifiersCheck = (XulCheckbox) document.getElementById("force-lower-case-check"); //$NON-NLS-1$;
     upperCaseIdentifiersCheck = (XulCheckbox) document.getElementById("force-upper-case-check"); //$NON-NLS-1$;
+    preserveReservedCaseCheck = (XulCheckbox) document.getElementById("preserve-reserved-case"); //$NON-NLS-1$;
     preferredSchemaName = (XulTextbox) document.getElementById("preferred-schema-name-text"); //$NON-NLS-1$;
     sqlBox = (XulTextbox) document.getElementById("sql-text"); //$NON-NLS-1$;
     useIntegratedSecurityCheck = (XulCheckbox) document.getElementById("use-integrated-security-check"); //$NON-NLS-1$;
