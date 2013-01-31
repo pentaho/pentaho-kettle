@@ -807,6 +807,14 @@ public class Const
 
 	public static final double round(double f, int places)
 	{
+	  // We can't round non-numbers or infinite values
+	  //
+	  if (f==Double.NaN || f==Double.NEGATIVE_INFINITY || f==Double.POSITIVE_INFINITY) {
+	    return f;
+	  }
+
+	  // Do the rounding...
+	  //
 		java.math.BigDecimal bdtemp = java.math.BigDecimal.valueOf(f);
 		bdtemp = bdtemp.setScale(places, java.math.BigDecimal.ROUND_HALF_EVEN);
 		return bdtemp.doubleValue();
