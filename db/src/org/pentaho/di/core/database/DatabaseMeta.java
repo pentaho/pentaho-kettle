@@ -987,20 +987,25 @@ public class DatabaseMeta
 		}
 		
         String baseUrl;
+        String hostname;
+        String port;
+        String databaseName;
+        
         if (isPartitioned() && !Const.isEmpty(partitionId))
         {
             // Get the cluster information...
             PartitionDatabaseMeta partition = getPartitionMeta(partitionId);
-            String hostname = partition.getHostname();
-            String port = partition.getPort();
-            String databaseName = partition.getDatabaseName();
-            
-            baseUrl = databaseInterface.getURL(hostname, port, databaseName);
+            hostname = environmentSubstitute(partition.getHostname());
+            port = environmentSubstitute(partition.getPort());
+            databaseName = environmentSubstitute(partition.getDatabaseName());
         }
         else
         {
-            baseUrl = databaseInterface.getURL(getHostname(), getDatabasePortNumberString(), getDatabaseName());
+            hostname = environmentSubstitute(getHostname());
+            port = environmentSubstitute(getDatabasePortNumberString());
+            databaseName = environmentSubstitute(getDatabaseName());
         }
+        baseUrl = databaseInterface.getURL(hostname, port, databaseName);
 		StringBuffer url=new StringBuffer( environmentSubstitute(baseUrl) );
         
         if (databaseInterface.supportsOptionsInURL())
