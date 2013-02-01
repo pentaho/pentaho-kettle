@@ -126,13 +126,13 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 					(databaseName.startsWith("/") || databaseName.startsWith(":"))) {
 				return "jdbc:oracle:thin:@"+hostname+":"+port+databaseName;
 			}
-			else if (Const.isEmpty(getHostname()) && 
-					(Const.isEmpty(getDatabasePortNumberString()) || getDatabasePortNumberString().equals("-1"))) {  //-1 when file based stored connection
+			else if (Const.isEmpty(hostname) && 
+					(Const.isEmpty(port) || port.equals("-1"))) {  //-1 when file based stored connection
 				// support RAC with a self defined URL in databaseName like
 				// (DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = host1-vip)(PORT = 1521))(ADDRESS = (PROTOCOL = TCP)(HOST = host2-vip)(PORT = 1521))(LOAD_BALANCE = yes)(CONNECT_DATA =(SERVER = DEDICATED)(SERVICE_NAME = db-service)(FAILOVER_MODE =(TYPE = SELECT)(METHOD = BASIC)(RETRIES = 180)(DELAY = 5))))
 				// or (DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=PRIMARY_NODE_HOSTNAME)(PORT=1521))(ADDRESS=(PROTOCOL=TCP)(HOST=SECONDARY_NODE_HOSTNAME)(PORT=1521)))(CONNECT_DATA=(SERVICE_NAME=DATABASE_SERVICENAME)))
 				// or (DESCRIPTION=(FAILOVER=ON)(ADDRESS_LIST=(LOAD_BALANCE=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=xxxxx)(PORT=1526))(ADDRESS=(PROTOCOL=TCP)(HOST=xxxx)(PORT=1526)))(CONNECT_DATA=(SERVICE_NAME=somesid)))
-				return "jdbc:oracle:thin:@"+getDatabaseName();
+				return "jdbc:oracle:thin:@"+databaseName;
 			}
 			else {
 				// by default we assume a SID
@@ -142,15 +142,15 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 		else // OCI
 		{
 		    // Let's see if we have an database name
-            if (getDatabaseName()!=null && getDatabaseName().length()>0)
+            if (databaseName!=null && databaseName.length()>0)
             {
                 // Has the user specified hostname & port number?
-                if (getHostname()!=null && getHostname().length()>0 && getDatabasePortNumberString()!=null && getDatabasePortNumberString().length()>0) {
+                if (hostname!=null && hostname.length()>0 && port!=null && port.length()>0) {
                     // User wants the full url
-                    return "jdbc:oracle:oci:@(description=(address=(host="+getHostname()+")(protocol=tcp)(port="+getDatabasePortNumberString()+"))(connect_data=(sid="+getDatabaseName()+")))";
+                    return "jdbc:oracle:oci:@(description=(address=(host="+hostname+")(protocol=tcp)(port="+port+"))(connect_data=(sid="+databaseName+")))";
                 } else {
                     // User wants the shortcut url
-                    return "jdbc:oracle:oci:@"+getDatabaseName();
+                    return "jdbc:oracle:oci:@"+databaseName;
                 }               
             }
             else
