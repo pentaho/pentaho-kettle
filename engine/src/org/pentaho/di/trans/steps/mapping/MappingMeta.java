@@ -612,6 +612,10 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
       String realTransname = space.environmentSubstitute(mappingMeta.getTransName());
       String realDirectory = space.environmentSubstitute(mappingMeta.getDirectoryPath());
       
+      if(rep==null) { // hardening because TransMeta.setRepositoryOnMappingSteps(); might be missing in special situations
+    	  throw new KettleException(BaseMessages.getString(PKG, "MappingMeta.Exception.InternalErrorRepository.Message"));    	  
+      }
+      
       if (!Const.isEmpty(realTransname) && !Const.isEmpty(realDirectory) && rep != null) {
         RepositoryDirectoryInterface repdir = rep.findDirectory(realDirectory);
         if (repdir != null) {
@@ -626,17 +630,25 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
         } else {
           throw new KettleException(BaseMessages.getString(PKG, "MappingMeta.Exception.UnableToLoadTransformation", realTransname) + realDirectory); //$NON-NLS-1$ //$NON-NLS-2$
         }
+      } else {
+    	  throw new KettleException(BaseMessages.getString(PKG, "MappingMeta.Exception.UnableToLoadTransformationNameOrDirNotGiven"));
       }
       break;
       
     case REPOSITORY_BY_REFERENCE:
       // Read the last revision by reference...
+      if(rep==null) { // hardening because TransMeta.setRepositoryOnMappingSteps(); might be missing in special situations
+    	  throw new KettleException(BaseMessages.getString(PKG, "MappingMeta.Exception.InternalErrorRepository.Message"));    	  
+      }    	
       mappingTransMeta = rep.loadTransformation(mappingMeta.getTransObjectId(), null);
       break;
     }
     
     // Pass some important information to the mapping transformation metadata:
     //
+    if(mappingTransMeta==null) { // hardening because TransMeta might have issues in special situations
+  	  throw new KettleException(BaseMessages.getString(PKG, "MappingMeta.Exception.InternalErrorTransMetaIsNULL.Message"));    	  
+    }      
     mappingTransMeta.copyVariablesFrom(space);
     mappingTransMeta.setRepository(rep); 
     mappingTransMeta.setFilename(mappingTransMeta.getFilename());
