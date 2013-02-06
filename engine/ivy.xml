@@ -60,7 +60,7 @@
     <dependency org="org.kohsuke.jinterop"             name="j-interopdeps"        rev="2.0.8-kohsuke-1" transitive="false"/>
     <dependency org="jexcelapi"                        name="jxl"                  rev="2.6.12"          transitive="false"/>     
     <dependency org="ldapjdk"                          name="ldapjdk"              rev="20000524"        transitive="false"/>
-    <dependency org="monetdb"                          name="monetdb-jdbc"         rev="2.1"             transitive="false"/>
+    <dependency org="monetdb"                          name="monetdb-jdbc"         rev="2.8"             transitive="false"/>
     <dependency org="org.odftoolkit"                   name="odfdom-java"          rev="0.8.6"           transitive="false"/>
     <dependency org="org.apache.poi"                   name="poi"                  rev="3.9"             transitive="false"/>
     <dependency org="org.apache.poi"                   name="poi-ooxml"            rev="3.9"             transitive="false"/>
