@@ -228,6 +228,7 @@
 	  	<echo>Copying core images etc to classes directory...</echo>
 	    <copy todir="${classes-core}">
 	    	<fileset dir="${src-core}" includes="**/*.xml **/*.xsl **/*properties"/>
+	    	<fileset dir="${resources}" includes="**/*.xml **/*.xsl **/*properties"/>
 	  	    </copy>
 	  </target>
 	
