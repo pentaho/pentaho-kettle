@@ -22,12 +22,16 @@
 
 package org.pentaho.di.core.database.map;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.database.DatabaseTransactionListener;
 
 /**
  * This class contains a map between on the one hand
@@ -48,6 +52,7 @@ public class DatabaseConnectionMap
 {
     private Map<String,Database> map;
     private AtomicInteger transactionId; 
+    private Map<String, List<DatabaseTransactionListener>> transactionListenersMap;
     
     private static DatabaseConnectionMap connectionMap;
     
@@ -62,6 +67,7 @@ public class DatabaseConnectionMap
     {
         map = new Hashtable<String,Database>();
         transactionId = new AtomicInteger(0);
+        transactionListenersMap = new HashMap<String, List<DatabaseTransactionListener>>();
     }
     
     public synchronized void storeDatabase(String connectionGroup, String partitionID, Database database)
@@ -102,5 +108,28 @@ public class DatabaseConnectionMap
     
   public String getNextTransactionId() {
     return Integer.toString( transactionId.incrementAndGet() );
+  }
+
+  public void addTransactionListener(String transactionId, DatabaseTransactionListener listener) {
+    List<DatabaseTransactionListener> transactionListeners = getTransactionListeners(transactionId);
+    transactionListeners.add(listener);
+  }
+  
+  public void removeTransactionListener(String transactionId, DatabaseTransactionListener listener) {
+    List<DatabaseTransactionListener> transactionListeners = getTransactionListeners(transactionId);
+    transactionListeners.remove(listener);
+  }
+  
+  public List<DatabaseTransactionListener> getTransactionListeners(String transactionId) {
+    List<DatabaseTransactionListener> transactionListeners = transactionListenersMap.get(transactionId);
+    if (transactionListeners==null) {
+      transactionListeners = new ArrayList<DatabaseTransactionListener>();
+      transactionListenersMap.put(transactionId, transactionListeners);
+    }
+    return transactionListeners;
+  }
+
+  public void removeTransactionListeners(String transactionId) {
+    transactionListenersMap.remove(transactionId);
   }
 }
