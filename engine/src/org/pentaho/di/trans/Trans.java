@@ -58,6 +58,7 @@ import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.SingleRowRowSet;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.database.DatabaseTransactionListener;
 import org.pentaho.di.core.database.map.DatabaseConnectionMap;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
@@ -2535,6 +2536,30 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           }
         }
       }
+      
+      // Who else needs to be informed of the rollback or commit?
+      //
+      List<DatabaseTransactionListener> transactionListeners = map.getTransactionListeners(getTransactionId());
+      if (result.getNrErrors()>0) {
+        for (DatabaseTransactionListener listener : transactionListeners) {
+          try {
+            listener.rollback();
+          } catch(Exception e) {
+            log.logError(BaseMessages.getString(PKG, "Trans.Exception.ErrorHandlingTransactionListenerRollback"), e);
+            result.setNrErrors(result.getNrErrors() + 1);
+          }
+        }
+      } else {
+        for (DatabaseTransactionListener listener : transactionListeners) {
+          try {
+            listener.commit();
+          } catch(Exception e) {
+            log.logError(BaseMessages.getString(PKG, "Trans.Exception.ErrorHandlingTransactionListenerCommit"), e);
+            result.setNrErrors(result.getNrErrors() + 1);
+          }
+        }
+      }
+      
     }
   }
 

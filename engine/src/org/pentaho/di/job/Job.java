@@ -46,6 +46,7 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.database.DatabaseTransactionListener;
 import org.pentaho.di.core.database.map.DatabaseConnectionMap;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
@@ -2462,12 +2463,14 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       for (Database database : databaseList) {
         if (database.getConnectionGroup().equals(getTransactionId())) {
           try {
+
             // This database connection belongs to this transformation.
             // Let's roll it back if there is an error...
             //
             if (result.getNrErrors() > 0) {
               try {
                 database.rollback(true);
+                
                 log.logBasic(BaseMessages.getString(PKG, "Job.Exception.TransactionsRolledBackOnConnection", database.toString()));
               } catch (Exception e) {
                 throw new KettleDatabaseException(BaseMessages.getString(PKG, "Job.Exception.ErrorRollingBackUniqueConnection", database.toString()), e);
@@ -2475,6 +2478,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
             } else {
               try {
                 database.commit(true);
+
                 log.logBasic(BaseMessages.getString(PKG, "Job.Exception.TransactionsCommittedOnConnection", database.toString()));
               } catch (Exception e) {
                 throw new KettleDatabaseException(BaseMessages.getString(PKG, "Job.Exception.ErrorCommittingUniqueConnection", database.toString()), e);
@@ -2494,10 +2498,38 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
               // Remove the database from the list...
               //
               map.removeConnection(database.getConnectionGroup(), database.getPartitionId(), database);
+              
+              // Remove the listeners
+              //
+              map.removeTransactionListeners(transactionId);
             }
           }
         }
       }
+      
+      // Who else needs to be informed of the rollback or commit?
+      //
+      List<DatabaseTransactionListener> transactionListeners = map.getTransactionListeners(getTransactionId());
+      if (result.getNrErrors()>0) {
+        for (DatabaseTransactionListener listener : transactionListeners) {
+          try {
+            listener.rollback();
+          } catch(Exception e) {
+            log.logError(BaseMessages.getString(PKG, "Job.Exception.ErrorHandlingTransactionListenerRollback"), e);
+            result.setNrErrors(result.getNrErrors() + 1);
+          }
+        }
+      } else {
+        for (DatabaseTransactionListener listener : transactionListeners) {
+          try {
+            listener.commit();
+          } catch(Exception e) {
+            log.logError(BaseMessages.getString(PKG, "Job.Exception.ErrorHandlingTransactionListenerCommit"), e);
+            result.setNrErrors(result.getNrErrors() + 1);
+          }
+        }
+      }
+      
     }
   }
 
