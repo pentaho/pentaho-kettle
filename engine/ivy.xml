@@ -91,7 +91,7 @@
     <dependency org="org.springframework"              name="spring"               rev="2.5.6"           transitive="false"/>
     <dependency org="org.hibernate"                    name="hibernate"            rev="3.2.6.ga"        transitive="false"/>
     <dependency org="cglib"                            name="cglib"                rev="2.2"             transitive="false"/>
-    <dependency org="org.owasp.esapi"      name="esapi"                 rev="2.0GA"         transitive="false"/>
+    <dependency org="org.owasp.esapi"      name="esapi"                 rev="2.0.1"         transitive="false"/>
 
     <!--  for testing -->
     <dependency org="com.h2database"      name="h2"            rev="1.2.131" conf="test->default" transitive="false"/>
