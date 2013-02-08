@@ -783,6 +783,11 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			executionConfiguration = spoon.getTransExecutionConfiguration();
 		}
 		
+	  // Set repository and safe mode information in both the exec config and the metadata
+		transMeta.setRepository(spoon.rep);
+		executionConfiguration.setRepository(spoon.rep);
+    executionConfiguration.setSafeModeEnabled(safe);
+		  
 		if (debug) {
 			// See if we have debugging information stored somewhere?
 			//
@@ -832,9 +837,6 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			}
 		}
 		
-		executionConfiguration.setRepository(spoon.rep);
-		executionConfiguration.setSafeModeEnabled(safe);
-
 		int debugAnswer = TransDebugDialog.DEBUG_CONFIG;
 		
 		if (debug || preview) {
