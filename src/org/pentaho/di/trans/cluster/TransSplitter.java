@@ -110,6 +110,10 @@ public class TransSplitter
         this.originalTransformation = new TransMeta(XMLHandler.getSubNode(XMLHandler.loadXMLString(transXML), TransMeta.XML_TAG), null);
         this.originalTransformation.shareVariablesWith(transMeta);
         this.originalTransformation.copyParametersFrom(transMeta);
+        
+        // Retain repository information
+        this.originalTransformation.setRepository(transMeta.getRepository());
+        this.originalTransformation.setRepositoryDirectory(transMeta.getRepositoryDirectory());
 
         checkClusterConfiguration();
         
@@ -309,6 +313,10 @@ public class TransSplitter
 
         // Unique connections
         transMeta.setUsingUniqueConnections(originalTransformation.isUsingUniqueConnections());
+        
+        // Repository
+        transMeta.setRepository(originalTransformation.getRepository());
+        transMeta.setRepositoryDirectory(originalTransformation.getRepositoryDirectory());
         
         // Also set the logging details...
         transMeta.setTransLogTable( (TransLogTable) originalTransformation.getTransLogTable().clone() );
