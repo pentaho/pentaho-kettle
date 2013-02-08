@@ -67,7 +67,8 @@ public class TransFileListener implements FileListener {
             	}
             	
 			});
-            transMeta.setRepositoryDirectory(Spoon.getInstance().getDefaultSaveLocation(transMeta));
+            transMeta.setRepositoryDirectory(spoon.getDefaultSaveLocation(transMeta));
+            transMeta.setRepository(spoon.getRepository());
             spoon.setTransMetaVariables(transMeta);
             spoon.getProperties().addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION, fname, null, false, null);
             spoon.addMenuLast();
