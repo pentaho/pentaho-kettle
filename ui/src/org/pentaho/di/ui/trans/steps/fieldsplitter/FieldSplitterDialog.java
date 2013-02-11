@@ -70,6 +70,8 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 	private TextVar      wDelimiter;
 	private FormData     fdlDelimiter, fdDelimiter;
 	
+	private TextVar wEnclosure;
+	
 	private Label        wlFields;
 	private TableView    wFields;
 	private FormData     fdlFields, fdFields;
@@ -177,6 +179,7 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 		fdlDelimiter.top  = new FormAttachment(wSplitfield, margin);
 		wlDelimiter.setLayoutData(fdlDelimiter);
 		wDelimiter=new TextVar(transMeta,shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wDelimiter.setToolTipText(BaseMessages.getString(PKG, "FieldSplitterDialog.Delimiter.Tooltip"));
 		wDelimiter.setText(""); //$NON-NLS-1$
  		props.setLook(wDelimiter);
 		wDelimiter.addModifyListener(lsMod);
@@ -185,13 +188,32 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 		fdDelimiter.top  = new FormAttachment(wSplitfield, margin);
 		fdDelimiter.right= new FormAttachment(100, 0);
 		wDelimiter.setLayoutData(fdDelimiter);
-
+		
+		// enclosure
+    Label wlEnclosure = new Label(shell, SWT.RIGHT);
+    wlEnclosure.setText(BaseMessages.getString(PKG, "FieldSplitterDialog.Enclosure.Label")); //$NON-NLS-1$
+    props.setLook(wlEnclosure);
+    FormData fdlEnclosure = new FormData();
+    fdlEnclosure.top = new FormAttachment(wDelimiter, margin);
+    fdlEnclosure.left = new FormAttachment(0, 0);
+    fdlEnclosure.right = new FormAttachment(middle, -margin);
+    wlEnclosure.setLayoutData(fdlEnclosure);
+    wEnclosure = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+    wEnclosure.setToolTipText(BaseMessages.getString(PKG, "FieldSplitterDialog.Enclosure.Tooltip"));
+    props.setLook(wEnclosure);
+    wEnclosure.addModifyListener(lsMod);
+    FormData fdEnclosure = new FormData();
+    fdEnclosure.top = new FormAttachment(wDelimiter, margin);
+    fdEnclosure.left = new FormAttachment(middle, 0);
+    fdEnclosure.right = new FormAttachment(100, 0);
+    wEnclosure.setLayoutData(fdEnclosure);
+    
 		wlFields=new Label(shell, SWT.RIGHT);
 		wlFields.setText(BaseMessages.getString(PKG, "FieldSplitterDialog.Fields.Label")); //$NON-NLS-1$
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
-		fdlFields.top  = new FormAttachment(wDelimiter, margin);
+		fdlFields.top  = new FormAttachment(wEnclosure, margin);
 		wlFields.setLayoutData(fdlFields);
 
 		wOK=new Button(shell, SWT.PUSH);
@@ -292,6 +314,7 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 		
 		if (input.getSplitField()!=null) wSplitfield.setText(input.getSplitField());
 		if (input.getDelimiter()!=null)  wDelimiter.setText(input.getDelimiter());
+		if (input.getEnclosure()!=null)  wEnclosure.setText(input.getEnclosure());
 		
         for (i = 0; i < input.getFieldName().length; i++)
 		{
@@ -331,6 +354,7 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 
 		input.setSplitField( wSplitfield.getText() );
 		input.setDelimiter( wDelimiter.getText() );
+		input.setEnclosure( wEnclosure.getText() );
 		
 		//Table table = wFields.table;
 		int nrfields = wFields.nrNonEmpty();

@@ -110,6 +110,9 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
 
     /** Split fields based upon this delimiter.*/
     private String  delimiter;
+    
+    /** Ignore delimiter inside pairs of the enclosure string*/
+    private String  enclosure;
 
     /** new field names */
     private String  fieldName[];
@@ -173,6 +176,14 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
     public void setDelimiter(final String delimiter)
     {
         this.delimiter = delimiter;
+    }
+    
+    public String getEnclosure() {
+      return enclosure;
+    }
+
+    public void setEnclosure(final String enclosure) {
+      this.enclosure = enclosure;
     }
 
     public String[] getFieldName()
@@ -365,6 +376,7 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
             {
                 splitField = XMLHandler.getTagValue(stepnode, "splitfield"); //$NON-NLS-1$
                 delimiter  = XMLHandler.getTagValue(stepnode, "delimiter"); //$NON-NLS-1$
+                enclosure  = XMLHandler.getTagValue(stepnode, "enclosure"); //$NON-NLS-1$
 
                 final Node fields = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
                 final int nrfields = XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
@@ -406,6 +418,7 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
     {
         splitField = ""; //$NON-NLS-1$
         delimiter  = ","; //$NON-NLS-1$
+        enclosure  = null; //$NON-NLS-1$
         allocate(0);
     }
 
@@ -453,6 +466,7 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
 
         retval.append("   ").append(XMLHandler.addTagValue("splitfield", splitField)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("   ").append(XMLHandler.addTagValue("delimiter", delimiter)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("   ").append(XMLHandler.addTagValue("enclosure", enclosure)); //$NON-NLS-1$ //$NON-NLS-2$
 
         retval.append("    <fields>"); //$NON-NLS-1$
         for (int i = 0; i < fieldName.length; i++)
@@ -484,6 +498,7 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
             {
                 splitField  = rep.getStepAttributeString(id_step, "splitfield"); //$NON-NLS-1$
                 delimiter   = rep.getStepAttributeString(id_step, "delimiter"); //$NON-NLS-1$
+                enclosure   = rep.getStepAttributeString(id_step, "enclosure"); //$NON-NLS-1$
 
                 int nrfields = rep.countNrStepAttributes(id_step, "field_name"); //$NON-NLS-1$
 
@@ -518,6 +533,7 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
             {
                 rep.saveStepAttribute(id_transformation, id_step, "splitfield", splitField); //$NON-NLS-1$
                 rep.saveStepAttribute(id_transformation, id_step, "delimiter",  delimiter); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, "enclosure",  enclosure); //$NON-NLS-1$
 
                 for (int i = 0; i < fieldName.length; i++)
                 {

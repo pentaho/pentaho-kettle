@@ -22,16 +22,17 @@
 
 package org.pentaho.di.core;
 
+import org.junit.Test;
+
 import junit.framework.TestCase;
 
 /**
  * Test class for the basic functionality of Const.
  *
- * @author Sven Boden
  */
 public class ConstTest extends TestCase
 {
-	private boolean isArraySorted(String [] arr)
+	protected boolean isArraySorted(String [] arr)
 	{
 		if ( arr.length < 2) return true;
 
@@ -45,9 +46,10 @@ public class ConstTest extends TestCase
 	}
 	
 	/**
-	 * Test initCap. Regressiontest for PDI-1338: "javascript initcap() can't deal correctly 
+	 * Test initCap. Regression test for PDI-1338: "javascript initcap() can't deal correctly 
 	 * with special non-ASCII chars".
 	 */
+	@Test
 	public void testInitCap()
 	{
 	    assertEquals("Sven", Const.initCap("Sven"));	    
@@ -65,6 +67,7 @@ public class ConstTest extends TestCase
 	/**
 	 * Test sortString().
 	 */
+	@Test
 	public void testSortStrings()
 	{
 		String arr1[] = { "Red", "Blue", "Black", "Black", "Green" };
@@ -84,6 +87,7 @@ public class ConstTest extends TestCase
 		assertTrue(isArraySorted(results));		
 	}
 
+	@Test
 	public void testIsEmpty()
 	{
 	    assertEquals(true, Const.isEmpty((String)null));
@@ -91,6 +95,7 @@ public class ConstTest extends TestCase
 	    assertEquals(false, Const.isEmpty("test"));
 	}
 
+	@Test
 	public void testIsEmptyStringBuffer()
 	{
 	    assertEquals(true, Const.isEmpty((StringBuffer)null));
@@ -98,6 +103,7 @@ public class ConstTest extends TestCase
 	    assertEquals(false, Const.isEmpty(new StringBuffer("test")));
 	}
 
+	@Test
 	public void testNVL()
 	{
 		assertNull(Const.NVL(null, null));
@@ -106,6 +112,7 @@ public class ConstTest extends TestCase
 	    assertEquals("test1", Const.NVL(null, "test1"));	    
 	}	
 
+	@Test
 	public void testNrSpacesBefore()
 	{
 		try  
@@ -125,6 +132,7 @@ public class ConstTest extends TestCase
 		assertEquals(4, Const.nrSpacesBefore("    test  "));
 	}
 
+	@Test
 	public void testNrSpacesAfter()
 	{	
 		try  
@@ -144,6 +152,7 @@ public class ConstTest extends TestCase
 		assertEquals(2, Const.nrSpacesAfter("    test  "));
 	}
 
+	@Test
 	public void testLtrim()
 	{
 		assertEquals(null, Const.ltrim(null));
@@ -153,6 +162,7 @@ public class ConstTest extends TestCase
 		assertEquals("test ", Const.ltrim("  test "));
 	}	
 
+	@Test
 	public void testRtrim()
 	{
 		assertEquals(null, Const.rtrim(null));
@@ -160,8 +170,9 @@ public class ConstTest extends TestCase
 		assertEquals("", Const.rtrim("  "));
 		assertEquals("test", Const.rtrim("test "));
 		assertEquals("test ", Const.ltrim("  test "));
-	}		
-
+	}
+	
+	@Test
 	public void testTrim()
 	{
 		assertEquals(null, Const.trim(null));
@@ -171,6 +182,7 @@ public class ConstTest extends TestCase
 		assertEquals("test", Const.trim("  test "));
 	}		
 
+	@Test
 	public void testOnlySpaces()
 	{
 		try  
@@ -188,6 +200,7 @@ public class ConstTest extends TestCase
 	/**
 	 *  Test splitString with String separator.
 	 */
+	@Test
 	public void testSplitString()
 	{
 		assertEquals(0, Const.splitString("", ";").length);
@@ -236,6 +249,7 @@ public class ConstTest extends TestCase
 	/**
 	 *  Test splitString with char separator.
 	 */	
+	@Test
 	public void testSplitStringChar()
 	{
 		assertEquals(0, Const.splitString("", ';').length);
@@ -282,8 +296,84 @@ public class ConstTest extends TestCase
 	}
 	
 	/**
+	 * Test splitString with delimiter and enclosure
+	 */
+	@Test
+	public void testSplitStringWithDelimiterAndEnclosure() {
+	  String[] result = null;
+	  
+	  result = Const.splitString(null, null, null);
+	  assertNull(result);
+	  
+	  result = Const.splitString("Hello, world", null, null);
+	  assertNotNull(result);
+    assertEquals(result.length,1);
+    assertEquals(result[0],"Hello, world");
+    
+	  result = Const.splitString("Hello, world", ",", null);
+	  assertNotNull(result);
+    assertEquals(result.length,2);
+    assertEquals(result[0],"Hello");
+    assertEquals(result[1]," world");
+	  
+	  result = Const.splitString("Hello, world", ",", "");
+	  assertNotNull(result);
+    assertEquals(result.length,2);
+    assertEquals(result[0],"Hello");
+    assertEquals(result[1]," world");
+    
+    result = Const.splitString("\"Hello, world\"", ",", "\"");
+    assertNotNull(result);
+    assertEquals(result.length,1);
+    assertEquals(result[0],"\"Hello, world\"");
+    
+    result = Const.splitString("\"Hello, world\",\"I\",\"am\",\"here\"", ",", "\"");
+    assertNotNull(result);
+    assertEquals(result.length,4);
+    assertEquals(result[0],"\"Hello, world\"");
+    assertEquals(result[1],"\"I\"");
+    assertEquals(result[2],"\"am\"");
+    assertEquals(result[3],"\"here\"");
+    
+    result = Const.splitString("\"Hello, world\",\"I,\",\"am,,\",\", here\"", ",", "\"");
+    assertNotNull(result);
+    assertEquals(result.length,4);
+    assertEquals(result[0],"\"Hello, world\"");
+    assertEquals(result[1],"\"I,\"");
+    assertEquals(result[2],"\"am,,\"");
+    assertEquals(result[3],"\", here\"");
+    
+    // Try a different delimiter and enclosure
+    result = Const.splitString("a;'b;c;d';'e,f';'g';h", ";","'");
+    assertNotNull(result);
+    assertEquals(result.length,5);
+    assertEquals(result[0],"a");
+    assertEquals(result[1],"'b;c;d'");
+    assertEquals(result[2],"'e,f'");
+    assertEquals(result[3],"'g'");
+    assertEquals(result[4],"h");
+    
+    // Check for null and empty as the last split
+    result = Const.splitString("a;b;c;", ";", null);
+    assertNotNull(result);
+    assertEquals(result.length,3);
+    
+    result = Const.splitString("a;b;c;''", ";", "'");
+    assertNotNull(result);
+    assertEquals(result.length,4);
+    
+    // Check for multiple-character strings
+    result = Const.splitString("html this is a web page html</newpage>html and so is this html","</newpage>","html");
+    assertNotNull(result);
+    assertEquals(result.length,2);
+    assertEquals(result[0],"html this is a web page html");
+    assertEquals(result[1],"html and so is this html");
+	}
+	
+	/**
 	 *  Test splitPath.
 	 */
+	@Test
 	public void testSplitPath()
 	{
 		String a[] = Const.splitPath("", "/");

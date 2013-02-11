@@ -88,6 +88,7 @@ public class FieldSplitter extends BaseStep implements StepInterface
 			data.conversionMeta = data.outputMeta.cloneToType(ValueMetaInterface.TYPE_STRING);
 			
 			data.delimiter = environmentSubstitute(meta.getDelimiter());
+			data.enclosure = environmentSubstitute(meta.getEnclosure());
 		}
 		
 		String v=data.previousMeta.getString(r, data.fieldnr);
@@ -107,58 +108,21 @@ public class FieldSplitter extends BaseStep implements StepInterface
 		boolean use_ids = meta.getFieldID().length>0 && meta.getFieldID()[0]!=null && meta.getFieldID()[0].length()>0;
 		
 		Object value=null;
+		String[] splits = Const.splitString(v, data.delimiter, data.enclosure);
 		if (use_ids)
 		{
 			if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "FieldSplitter.Log.UsingIds")); //$NON-NLS-1$
 			
-			// pol all split fields
-			// Loop over the specified field list
-			// If we spot the corresponding id[] entry in pol, add the value
-			//
-            int polSize = 0;
-            if (v != null)
-            {
-                polSize++;
-                for (int i = 0; i < v.length(); i++)
-                {
-                    i = v.indexOf(data.delimiter, i);
-                    if (i == -1) break;
-                    else polSize++;
-                }
-            }
-            final String pol[] = new String[polSize];
-			int prev=0;
-			int i=0;
-			while(v!=null && prev<v.length() && i<pol.length)
-			{
-                pol[i] = polNext(v, data.delimiter, prev);
-                if (log.isDebug())
-                    logDebug(BaseMessages.getString(PKG, "FieldSplitter.Log.SplitFieldsInfo", pol[i], String.valueOf(prev))); //$NON-NLS-1$ //$NON-NLS-2$
-                prev += pol[i].length() + data.delimiter.length();
-				i++;
-			}
-
 			// We have to add info.field.length variables!
-            for (i = 0; i < meta.getFieldName().length; i++)
+			for(int i=0; i < meta.getFieldName().length; i++)
 			{
-				// We have a field, search the corresponding pol[] entry.
-				String split=null;
-
-				for (int p=0; p<pol.length && split==null; p++) 
+				String split = (i>= splits.length) ? null : splits[i];
+        
+				// Optionally remove the indicator			
+				if (split != null && meta.getFieldRemoveID()[i])
 				{
-					// With which line does pol[p] correspond?
-                    if (pol[p] != null)
-                    {
-                        if (Const.trimToType(pol[p], meta.getFieldTrimType()[i]).indexOf(meta.getFieldID()[i]) == 0)
-                            split = pol[p];
-                    }
-                }
-				
-				// Optionally remove the indicator				
-                if (split != null && meta.getFieldRemoveID()[i])
-				{
-                    final StringBuilder sb = new StringBuilder(split);
-                    final int idx = sb.indexOf(meta.getFieldID()[i]);
+				  final StringBuilder sb = new StringBuilder(split);
+          final int idx = sb.indexOf(meta.getFieldID()[i]);
 					sb.delete(idx, idx+meta.getFieldID()[i].length());
 					split=sb.toString();
 				}
@@ -192,7 +156,7 @@ public class FieldSplitter extends BaseStep implements StepInterface
 			int prev=0;
 			for (int i=0;i<meta.getFieldName().length;i++)
 			{
-				String pol = polNext(v, data.delimiter, prev);
+				String pol = (i>= splits.length) ? null : splits[i];
 				if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "FieldSplitter.Log.SplitFieldsInfo",pol,String.valueOf(prev))); //$NON-NLS-1$ //$NON-NLS-2$
 				prev+=(pol==null?0:pol.length()) + data.delimiter.length();
 				
@@ -218,29 +182,6 @@ public class FieldSplitter extends BaseStep implements StepInterface
 		}
 		
 		return outputRow;
-	}
-	
-	private static final String polNext(String str, String del, int start)
-	{
-		String retval;
-		
-		if (str==null || start>=str.length()) return ""; //$NON-NLS-1$
-		
-		int next = str.indexOf(del, start);
-		if (next == start) // ;; or ,, : two consecutive delimiters
-		{
-			retval=""; //$NON-NLS-1$
-		}
-		else 
-		if (next > start) // part of string
-		{
-			retval=str.substring(start, next);
-		}
-		else // Last field in string
-		{
-			retval=str.substring(start);
-		}
-		return retval;
 	}
 	
 	public synchronized boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException

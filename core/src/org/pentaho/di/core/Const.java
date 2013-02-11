@@ -52,6 +52,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
@@ -1821,6 +1822,98 @@ public class Const
 		}
 
 		return spath;
+	}
+	
+	/**
+	 * Split the given string using the given delimiter and enclosure strings.
+	 * 
+	 * The delimiter and enclosures are not regular expressions (regexes); rather they are 
+	 * literal strings that will be quoted so as not to be treated like regexes.
+	 * 
+	 * This method expects that the data contains an even number of enclosure strings in the input;
+	 * otherwise the results are undefined
+	 *
+	 * @param stringToSplit the String to split
+	 * @param delimiter the delimiter string
+	 * @param enclosure the enclosure string
+	 * @return an array of strings split on the delimiter (ignoring those in enclosures), or null if
+	 * the string to split is null.
+	 */
+	public static String[] splitString(String stringToSplit, String delimiter, String enclosure) {
+	  
+	  ArrayList<String> splitList = null;
+	  
+	  // Handle "bad input" cases
+	  if(stringToSplit == null) return null;
+	  if(delimiter == null) return (new String[] {stringToSplit});
+	  	  
+	  // Split the string on the delimiter, we'll build the "real" results from the partial results
+	  String[] delimiterSplit = stringToSplit.split(Pattern.quote(delimiter));
+	  
+	  // At this point, if the enclosure is null or empty, we will return the delimiter split
+	  if(isEmpty(enclosure)) return delimiterSplit;
+	  
+	  // Keep track of partial splits and concatenate them into a legit split
+	  StringBuffer concatSplit = null;
+	  
+	  if(delimiterSplit != null && delimiterSplit.length > 0) {
+	    
+	    // We'll have at least one result so create the result list object
+	    splitList = new ArrayList<String>();
+	    
+	    // Proceed through the partial splits, concatenating if the splits are within the enclosure
+	    for(String currentSplit : delimiterSplit) {
+	      if(!currentSplit.contains(enclosure)) {
+	        
+	        // If we are currently concatenating a split, we are inside an enclosure. Since this 
+	        // split doesn't contain an enclosure, we can concatenate it (with a delimiter in front). 
+	        // If we're not concatenating, the split is fine so add it to the result list.
+	        if(concatSplit != null) {
+	          concatSplit.append(delimiter);
+	          concatSplit.append(currentSplit);
+	        }
+	        else {
+	          splitList.add(currentSplit);
+	        }
+	      }
+	      else {
+	        // Find number of enclosures in the split, and whether that number is odd or even.
+          int numEnclosures = StringUtils.countMatches(currentSplit, enclosure);
+          boolean oddNumberOfEnclosures = (numEnclosures % 2 != 0);
+          boolean addSplit = false;
+	        
+	        // This split contains an enclosure, so either start or finish concatenating
+	        if(concatSplit == null) {
+	          concatSplit = new StringBuffer(currentSplit); // start concatenation
+	          addSplit = !oddNumberOfEnclosures;
+	        }
+	        else {
+	          // Check to make sure a new enclosure hasn't started within this split. This method expects
+	          // that there are no non-delimiter characters between a delimiter and a starting enclosure.
+	          
+	          
+	          
+	          // At this point in the code, the split shouldn't start with the enclosure, so add a delimiter
+	          concatSplit.append(delimiter);
+	          
+	          // Add the current split to the concatenated split
+            concatSplit.append(currentSplit);
+            
+	          // If the number of enclosures is odd, the enclosure is closed so add the split to the list 
+            // and reset the "concatSplit" buffer. Otherwise continue
+	          addSplit = oddNumberOfEnclosures;
+	        }
+	        if(addSplit) {
+            splitList.add(concatSplit.toString());
+            concatSplit = null;
+            addSplit = false;
+          }
+	      }
+	    }
+	  }
+	  
+	  // Return list as array
+	  return splitList.toArray(new String[splitList.size()]);
 	}
 
 
