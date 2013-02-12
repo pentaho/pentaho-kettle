@@ -105,9 +105,11 @@ public class JobTracker {
   }
 
   public void addJobTracker(JobTracker jobTracker) {
-    jobTrackers.add(jobTracker);
-    if (jobTrackers.size()>maxChildren+50) {
-      jobTrackers = jobTrackers.subList(50, jobTrackers.size());
+    synchronized(this) {
+      jobTrackers.add(jobTracker);
+      if (jobTrackers.size()>maxChildren+50) {
+        jobTrackers = jobTrackers.subList(50, jobTrackers.size());
+      }
     }
   }
 

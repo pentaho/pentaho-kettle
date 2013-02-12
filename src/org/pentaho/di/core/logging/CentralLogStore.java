@@ -23,11 +23,9 @@
 package org.pentaho.di.core.logging;
 
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.log4j.spi.LoggingEvent;
 import org.pentaho.di.core.Const;
@@ -57,27 +55,20 @@ public class CentralLogStore {
 			logCleanerTimer.cancel();
 		}
 		logCleanerTimer = new Timer(true);
-		final AtomicBoolean busy = new AtomicBoolean(false);
+		
 		TimerTask timerTask = new TimerTask() {
 			public void run() {
-				if (!busy.get()) {
-					busy.set(true);
-					if (maxLogTimeoutMinutes>0) {
-						long minTimeBoundary = new Date().getTime() - maxLogTimeoutMinutes*60*1000;
-						synchronized(appender) {
-							Iterator<BufferLine> i = appender.getBufferIterator();
-							while (i.hasNext()) {
-								BufferLine bufferLine = i.next();
-	
-								if (bufferLine.getEvent().timeStamp < minTimeBoundary) {
-									i.remove();
-								} else {
-									break;
-								}
-							}
-						}
-					}
-					busy.set(false);
+
+				if (maxLogTimeoutMinutes>0) {
+					long minTimeBoundary = new Date().getTime() - maxLogTimeoutMinutes*60*1000;
+
+					// Get the old lines to be removed
+					//
+					List<BufferLine> linesToRemove = appender.getBufferLinesBefore(minTimeBoundary);
+					
+					// Remove all lines at once to prevent concurrent modification problems.
+					//
+					appender.removeBufferLines(linesToRemove);
 				}
 			}
 		};
