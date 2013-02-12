@@ -326,4 +326,25 @@ public class Log4jBufferAppender implements Appender
     	}		
     	return buf.toString();
 	}
+	
+  public void removeBufferLines(List<BufferLine> linesToRemove) {
+    synchronized(buffer) {
+      buffer.removeAll(linesToRemove);
+    }    
+  }
+
+  public List<BufferLine> getBufferLinesBefore(long minTimeBoundary) {
+    List<BufferLine> linesToRemove = new ArrayList<BufferLine>();
+    synchronized(buffer) {
+      for(Iterator<BufferLine> i = buffer.iterator(); i.hasNext() ; ) {
+        BufferLine bufferLine = i.next();
+        if (bufferLine.getEvent().timeStamp < minTimeBoundary) {
+          linesToRemove.add(bufferLine);
+        } else {
+          break;
+        }
+      }
+    }
+    return linesToRemove;
+  }
 }

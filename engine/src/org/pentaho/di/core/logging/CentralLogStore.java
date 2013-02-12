@@ -23,11 +23,9 @@
 package org.pentaho.di.core.logging;
 
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.log4j.spi.LoggingEvent;
 import org.pentaho.di.core.Const;
@@ -52,46 +50,35 @@ public class CentralLogStore {
 		replaceLogCleaner(maxLogTimeoutMinutes);
 	}
 	
-	public void replaceLogCleaner(final int maxLogTimeoutMinutes) {
-		if (logCleanerTimer!=null) {
-			logCleanerTimer.cancel();
-		}
-		logCleanerTimer = new Timer(true);
-		final AtomicBoolean busy = new AtomicBoolean(false);
-		TimerTask timerTask = new TimerTask() {
-			public void run() {
-				if (!busy.get()) {
-					busy.set(true);
-					if (maxLogTimeoutMinutes>0) {
-						long minTimeBoundary = new Date().getTime() - maxLogTimeoutMinutes*60*1000;
-						synchronized(appender) {
-						  long cleanStart = System.currentTimeMillis();
-							Iterator<BufferLine> i = appender.getBufferIterator();
-							while (i.hasNext()) {
-								BufferLine bufferLine = i.next();
-	
-								if (bufferLine.getEvent().timeStamp < minTimeBoundary) {
-									i.remove();
-								} else {
-									break;
-								}
-							}
-              long cleanEnd = System.currentTimeMillis();
-              LogChannel.GENERAL.snap(Metrics.METRIC_CENTRAL_LOG_STORE_TIMEOUT_CLEAN_TIME, cleanEnd-cleanStart);
-              LogChannel.GENERAL.snap(Metrics.METRIC_CENTRAL_LOG_STORE_TIMEOUT_CLEAN_COUNT);
-						}
-					}
-					busy.set(false);
-				}
-			}
-		};
+  public void replaceLogCleaner(final int maxLogTimeoutMinutes) {
+    if (logCleanerTimer!=null) {
+      logCleanerTimer.cancel();
+    }
+    logCleanerTimer = new Timer(true);
+    
+    TimerTask timerTask = new TimerTask() {
+      public void run() {
 
-		// Clean out the rows every 10 seconds to get a nice steady purge operation...
-		//
-		logCleanerTimer.schedule(timerTask, 10000, 10000);
+        if (maxLogTimeoutMinutes>0) {
+          long minTimeBoundary = new Date().getTime() - maxLogTimeoutMinutes*60*1000;
 
-	}
+          // Get the old lines to be removed
+          //
+          List<BufferLine> linesToRemove = appender.getBufferLinesBefore(minTimeBoundary);
+          
+          // Remove all lines at once to prevent concurrent modification problems.
+          //
+          appender.removeBufferLines(linesToRemove);
+        }
+      }
+    };
 
+    // Clean out the rows every 10 seconds to get a nice steady purge operation...
+    //
+    logCleanerTimer.schedule(timerTask, 10000, 10000);
+
+  }
+  
 	/**
 	 * Initialize the central log store with optional limitation to the size
 	 * 

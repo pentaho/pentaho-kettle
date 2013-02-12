@@ -27,12 +27,10 @@ import java.util.List;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleClientEnvironment;
-import org.pentaho.di.core.KettleClientEnvironment.ClientType;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.JobLogTable.ID;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -59,7 +57,7 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
 	public static final String	XML_TAG	= "trans-log-table";
 
 	/** The client executing the transformation */
-	private String client;
+	// private String client;
 	
 	public enum ID {
 		

@@ -654,7 +654,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
           BaseMessages.getString(PKG, "Job.Comment.JobRestartAtCheckpoint"), null, jobEntryCopy.getName(), jobEntryCopy.getNr(), environmentSubstitute(jobEntryCopy.getEntry().getFilename()));
       jerCheckpoint.setCheckpoint(true);
       jobTracker.addJobTracker(new JobTracker(jobMeta, jerCheckpoint));
-      jobEntryResults.add(jerCheckpoint);
+      synchronized(this) {
+        jobEntryResults.add(jerCheckpoint);
+      }
       
       log.logBasic("Restarting from checkpoint job entry: "+checkpointJobEntry.toString());
 
@@ -729,8 +731,10 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       JobEntryResult jerAfter = new JobEntryResult(result, cloneJei.getLogChannel().getLogChannelId(), BaseMessages.getString(PKG, "Job.Comment.JobFinished"), null, jobEntryCopy.getName(), jobEntryCopy.getNr(), environmentSubstitute(jobEntryCopy
           .getEntry().getFilename()));
       jobTracker.addJobTracker(new JobTracker(jobMeta, jerAfter));
-      jobEntryResults.add(jerAfter);
-  
+      synchronized(this) {
+        jobEntryResults.add(jerAfter);
+      }
+
       // Only keep the last X job entry results in memory
       //
       if (maxJobEntriesLogged > 0 && jobEntryResults.size() > maxJobEntriesLogged + 50) {
