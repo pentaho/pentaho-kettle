@@ -60,7 +60,7 @@ import org.pentaho.ui.xul.impl.XulEventHandler;
  * User: gmoran
  * Date: Jan 28, 2013
  */
-public abstract class BaseStepGenericXulDialog extends AbstractXulEventHandler implements XulStepDialogInterface {
+public abstract class BaseStepGenericXulDialog extends AbstractXulEventHandler {
   private static Class<?> PKG = StepInterface.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject("Step dialog",
