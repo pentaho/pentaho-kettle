@@ -28,6 +28,7 @@ import org.pentaho.di.core.lifecycle.KettleLifecycleSupport;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.plugins.CartePluginType;
+import org.pentaho.di.core.plugins.DataFactoryPluginType;
 import org.pentaho.di.core.plugins.DatabasePluginType;
 import org.pentaho.di.core.plugins.ImportRulePluginType;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
@@ -117,6 +118,7 @@ public class KettleEnvironment {
 			PluginRegistry.addPluginType(KettleLifecyclePluginType.getInstance());
 			PluginRegistry.addPluginType(ImportRulePluginType.getInstance());
 			PluginRegistry.addPluginType(CartePluginType.getInstance());
+			PluginRegistry.addPluginType(DataFactoryPluginType.getInstance());
 			PluginRegistry.init();
 			
 			// Also read the list of variables.

@@ -24,6 +24,7 @@ package org.pentaho.di.ui.trans.step;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.TableViewer;
@@ -55,7 +56,10 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ComboVar;
+import org.pentaho.di.ui.spoon.XulSpoonResourceBundle;
+import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
 import org.pentaho.ui.xul.XulException;
+import org.pentaho.ui.xul.XulSettingsManager;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.containers.XulTreeRow;
 import org.pentaho.ui.xul.swt.SwtBindingFactory;
@@ -67,6 +71,16 @@ import org.pentaho.ui.xul.swt.SwtXulRunner;
  * Date: Jun 7, 2010
  */
 public abstract class BaseStepXulDialog extends BaseStepGenericXulDialog {
+
+  @Override
+  public XulSettingsManager getSettingsManager() {
+    return XulSpoonSettingsManager.getInstance();
+  }
+
+  @Override
+  public ResourceBundle getResourceBundle() {
+    return new XulSpoonResourceBundle(getClassForMessages());
+  }
 
   private static Class<?> PKG = StepInterface.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 

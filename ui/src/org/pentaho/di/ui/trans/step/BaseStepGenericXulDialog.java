@@ -25,6 +25,7 @@ package org.pentaho.di.ui.trans.step;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -45,6 +46,7 @@ import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulLoader;
 import org.pentaho.ui.xul.XulRunner;
+import org.pentaho.ui.xul.XulSettingsManager;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulLabel;
@@ -58,7 +60,7 @@ import org.pentaho.ui.xul.impl.XulEventHandler;
  * User: gmoran
  * Date: Jan 28, 2013
  */
-public abstract class BaseStepGenericXulDialog extends AbstractXulEventHandler {
+public abstract class BaseStepGenericXulDialog extends AbstractXulEventHandler implements XulStepDialogInterface {
   private static Class<?> PKG = StepInterface.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject("Step dialog",
@@ -101,7 +103,9 @@ public abstract class BaseStepGenericXulDialog extends AbstractXulEventHandler {
     this.log = new LogChannel(baseStepMeta);
     this.transMeta = transMeta;
     this.stepname = stepname;
-    this.stepMeta = transMeta.findStep(stepname);
+    if (transMeta != null){
+      this.stepMeta = transMeta.findStep(stepname);
+    }
     this.baseStepMeta = baseStepMeta;
     this.xulFile = xulFile;
     this.parent = parent;
@@ -127,9 +131,9 @@ public abstract class BaseStepGenericXulDialog extends AbstractXulEventHandler {
     bf = bindingFactory;
     this.runner = runner;
     loader.registerClassLoader(getClass().getClassLoader());
-    loader.setSettingsManager(XulSpoonSettingsManager.getInstance());
+    loader.setSettingsManager(getSettingsManager());
     loader.setOuterContext(parent);
-    container = loader.loadXul( xulFile, new XulSpoonResourceBundle(getClassForMessages()));
+    container = loader.loadXul( xulFile, getResourceBundle());
     bf.setDocument(container.getDocumentRoot());
     
     for(XulEventHandler h : getEventHandlers()){
@@ -142,6 +146,9 @@ public abstract class BaseStepGenericXulDialog extends AbstractXulEventHandler {
     xulDialog = (XulDialog) container.getDocumentRoot().getRootElement();
     runner.initialize();
   }
+  
+  public abstract XulSettingsManager getSettingsManager();
+  public abstract ResourceBundle getResourceBundle();
   
   protected BindingFactory getBindingFactory(){
     return bf;
