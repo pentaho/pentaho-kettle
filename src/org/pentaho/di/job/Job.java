@@ -624,8 +624,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         environmentSubstitute(jobEntryCopy.getEntry().getFilename())
         );
     jobTracker.addJobTracker(new JobTracker(jobMeta, jerAfter));
-    jobEntryResults.add(jerAfter);
-
+    synchronized(this) {
+      jobEntryResults.add(jerAfter);
+    }
     // Only keep the last X job entry results in memory
     //
     if (maxJobEntriesLogged>0 && jobEntryResults.size()>maxJobEntriesLogged+50) {
