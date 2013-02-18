@@ -889,7 +889,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	 * @throws KettleXMLException the kettle xml exception
 	 */
 	public JobMeta(InputStream inputStream, Repository rep, OverwritePrompter prompter) throws KettleXMLException {
-	  loadXML(XMLHandler.loadXMLFile(inputStream, null, false, false), rep, prompter);
+    Document doc = XMLHandler.loadXMLFile(inputStream, null, false, false);
+    loadXML(XMLHandler.getSubNode(doc, JobMeta.XML_TAG), rep, prompter);
 	}
 
   /**
