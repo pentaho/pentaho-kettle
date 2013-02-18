@@ -64,6 +64,7 @@ import org.w3c.dom.Node;
     ,"JobCategory.Category.FileEncryption"
     ,"JobCategory.Category.Palo"
     ,"JobCategory.Category.Experimental"
+    ,"JobCategory.Category.Deprecated"    
 },
    i18nPackageClass = JobMeta.class)
 @PluginMainClassType(JobEntryInterface.class)
