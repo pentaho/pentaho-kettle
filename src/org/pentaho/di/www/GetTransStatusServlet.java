@@ -135,6 +135,7 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CarteServl
         GZIPOutputStream gzos = new GZIPOutputStream(baos);
         gzos.write(logText.getBytes());
         gzos.close();
+        baos.close();
 
         String loggingString = new String(Base64.encodeBase64(baos.toByteArray()));
         transStatus.setLoggingString(loggingString);

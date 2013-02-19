@@ -125,6 +125,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
     private String  remoteSlaveServerName;
 	private boolean	passingAllParameters=true;
+	
+	private boolean loggingRemoteWork;
 
 	private Trans	trans;
 
@@ -263,6 +265,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     retval.append("      ").append(XMLHandler.addTagValue("wait_until_finished", waitingToFinish));
     retval.append("      ").append(XMLHandler.addTagValue("follow_abort_remote", followingAbortRemotely));
     retval.append("      ").append(XMLHandler.addTagValue("create_parent_folder", createParentFolder));
+    retval.append("      ").append(XMLHandler.addTagValue("logging_remote_work", loggingRemoteWork));
 
     if (arguments != null)
       for (int i = 0; i < arguments.length; i++) {
@@ -339,6 +342,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
       logFileLevel = LogLevel.getLogLevelForCode(XMLHandler.getTagValue(entrynode, "loglevel"));
       clustering = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "cluster"));
       createParentFolder = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "create_parent_folder"));
+      loggingRemoteWork = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "logging_remote_work"));
 
       remoteSlaveServerName = XMLHandler.getTagValue(entrynode, "slave_server_name");
 
@@ -419,6 +423,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
       setAppendLogfile = rep.getJobEntryAttributeBoolean(id_jobentry, "set_append_logfile");
       waitingToFinish = rep.getJobEntryAttributeBoolean(id_jobentry, "wait_until_finished", true);
       followingAbortRemotely = rep.getJobEntryAttributeBoolean(id_jobentry, "follow_abort_remote");
+      loggingRemoteWork = rep.getJobEntryAttributeBoolean(id_jobentry, "logging_remote_work");
 
       // How many arguments?
       int argnr = rep.countNrJobEntryAttributes(id_jobentry, "argument");
@@ -475,6 +480,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "wait_until_finished", waitingToFinish);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "follow_abort_remote", followingAbortRemotely);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "create_parent_folder", createParentFolder);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "logging_remote_work", loggingRemoteWork);
 			
 			// Save the arguments...
 			if (arguments != null) {
@@ -898,7 +904,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                     result.clear();
 
                     if (transSplitter!=null) {
-                      Result clusterResult = Trans.getClusteredTransformationResult(log, transSplitter, parentJob); 
+                      Result clusterResult = Trans.getClusteredTransformationResult(log, transSplitter, parentJob, loggingRemoteWork); 
                       result.add(clusterResult);
                     }
                     
@@ -1375,7 +1381,15 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	public void setFollowingAbortRemotely(boolean followingAbortRemotely) {
 		this.followingAbortRemotely = followingAbortRemotely;
 	}
-	
+
+  public boolean isLoggingRemoteWork() {
+    return loggingRemoteWork;
+  }
+  
+  public void setLoggingRemoteWork(boolean loggingRemoteWork) {
+    this.loggingRemoteWork = loggingRemoteWork;
+  }
+
 	/**
 	 * @return the passingAllParameters
 	 */

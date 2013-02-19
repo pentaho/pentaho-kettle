@@ -114,64 +114,66 @@ public class SlaveServerTransStatus
         return xml.toString();
     }
     
-    public SlaveServerTransStatus(Node transStatusNode)
-    {
-        this();
-        id = XMLHandler.getTagValue(transStatusNode, "id");
-        transName = XMLHandler.getTagValue(transStatusNode, "transname");
-        statusDescription = XMLHandler.getTagValue(transStatusNode, "status_desc");
-        errorDescription = XMLHandler.getTagValue(transStatusNode, "error_desc");
-        paused = "Y".equalsIgnoreCase(XMLHandler.getTagValue(transStatusNode, "paused"));
-        
-        Node statusListNode = XMLHandler.getSubNode(transStatusNode, "stepstatuslist");
-        int nr = XMLHandler.countNodes(statusListNode, StepStatus.XML_TAG);
-        for (int i=0;i<nr;i++)
-        {
-            Node stepStatusNode = XMLHandler.getSubNodeByNr(statusListNode, StepStatus.XML_TAG, i);
-            StepStatus stepStatus = new StepStatus(stepStatusNode);
-            stepStatusList.add(stepStatus);
-        }
-        
-        firstLoggingLineNr = Const.toInt(XMLHandler.getTagValue(transStatusNode, "first_log_line_nr"), 0);
-        lastLoggingLineNr = Const.toInt(XMLHandler.getTagValue(transStatusNode, "last_log_line_nr"), 0);
-        
-        String loggingString64 = XMLHandler.getTagValue(transStatusNode, "logging_string");
-        // This is a Base64 encoded GZIP compressed stream of data.
-        try
-        {
-            byte[] bytes = new byte[] {};
-            if (loggingString64!=null) bytes = Base64.decodeBase64(loggingString64.getBytes());
-            if (bytes.length>0)
-            {
-                ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-                GZIPInputStream gzip = new GZIPInputStream(bais);
-                int c;
-                StringBuffer buffer = new StringBuffer();
-                while ( (c=gzip.read())!=-1) buffer.append((char)c);
-                gzip.close();
-                loggingString = buffer.toString();
-            }
-            else
-            {
-                loggingString="";
-            }
-        }
-        catch(IOException e)
-        {
-            loggingString = "Unable to decode logging from remote server : "+e.toString()+Const.CR+Const.getStackTracker(e);
-        }
-        
-        // get the result object, if there is any...
+    public SlaveServerTransStatus(Node transStatusNode) {
+      this();
+      id = XMLHandler.getTagValue(transStatusNode, "id");
+      transName = XMLHandler.getTagValue(transStatusNode, "transname");
+      statusDescription = XMLHandler.getTagValue(transStatusNode, "status_desc");
+      errorDescription = XMLHandler.getTagValue(transStatusNode, "error_desc");
+      paused = "Y".equalsIgnoreCase(XMLHandler.getTagValue(transStatusNode, "paused"));
+  
+      Node statusListNode = XMLHandler.getSubNode(transStatusNode, "stepstatuslist");
+      int nr = XMLHandler.countNodes(statusListNode, StepStatus.XML_TAG);
+      for (int i = 0; i < nr; i++) {
+        Node stepStatusNode = XMLHandler.getSubNodeByNr(statusListNode, StepStatus.XML_TAG, i);
+        StepStatus stepStatus = new StepStatus(stepStatusNode);
+        stepStatusList.add(stepStatus);
+      }
+  
+      firstLoggingLineNr = Const.toInt(XMLHandler.getTagValue(transStatusNode, "first_log_line_nr"), 0);
+      lastLoggingLineNr = Const.toInt(XMLHandler.getTagValue(transStatusNode, "last_log_line_nr"), 0);
+  
+      String loggingString64 = XMLHandler.getTagValue(transStatusNode, "logging_string");
+  
+      if (!Const.isEmpty(loggingString64)) {
+        // This is a CDATA block with a Base64 encoded GZIP compressed stream of data.
         //
-        Node resultNode = XMLHandler.getSubNode(transStatusNode, Result.XML_TAG);
-        if (resultNode!=null)
-        {
-        	try {
-				result = new Result(resultNode);
-			} catch (KettleException e) {
-				loggingString+="Unable to serialize result object as XML"+Const.CR+Const.getStackTracker(e)+Const.CR;
-			}
+        String dataString64 = loggingString64.substring("<![CDATA[".length(), loggingString64.length() - "]]>".length());
+  
+        try {
+          byte[] bytes = new byte[] {};
+          if (!Const.isEmpty(dataString64))
+            bytes = Base64.decodeBase64(dataString64.getBytes());
+          if (bytes.length > 0) {
+            ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+            GZIPInputStream gzip = new GZIPInputStream(bais);
+            int c;
+            StringBuffer buffer = new StringBuffer();
+            while ((c = gzip.read()) != -1)
+              buffer.append((char) c);
+            gzip.close();
+            loggingString = buffer.toString();
+          } else {
+            loggingString = "";
+          }
+        } catch (IOException e) {
+          loggingString = "Unable to decode logging from remote server : " + e.toString() + Const.CR
+              + Const.getStackTracker(e);
         }
+      } else {
+        loggingString = "";
+      }
+  
+      // get the result object, if there is any...
+      //
+      Node resultNode = XMLHandler.getSubNode(transStatusNode, Result.XML_TAG);
+      if (resultNode != null) {
+        try {
+          result = new Result(resultNode);
+        } catch (KettleException e) {
+          loggingString += "Unable to serialize result object as XML" + Const.CR + Const.getStackTracker(e) + Const.CR;
+        }
+      }
     }
     
     public static SlaveServerTransStatus fromXML(String xml) throws KettleXMLException
