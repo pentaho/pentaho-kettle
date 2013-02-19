@@ -3681,8 +3681,20 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
      * @param parentJob the parent job
      * @return the clustered transformation result
      */
-    public static final Result getClusteredTransformationResult(LogChannelInterface log, TransSplitter transSplitter, Job parentJob)
-    {
+    public static final Result getClusteredTransformationResult(LogChannelInterface log, TransSplitter transSplitter, Job parentJob) {
+      return getClusteredTransformationResult(log, transSplitter, parentJob, false);
+    }
+    
+    /**
+     * Gets the clustered transformation result.
+     *
+     * @param log the log channel interface
+     * @param transSplitter the TransSplitter object
+     * @param parentJob the parent job
+     * @param loggingRemoteWork log remote execution logs locally
+     * @return the clustered transformation result
+     */
+    public static final Result getClusteredTransformationResult(LogChannelInterface log, TransSplitter transSplitter, Job parentJob, boolean loggingRemoteWork) {
     	Result result = new Result();
         //
         // See if the remote transformations have finished.
@@ -3714,6 +3726,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             	Result transResult = transStatus.getResult(slaves[s]);
             	
             	result.add(transResult);
+            	
+              if (loggingRemoteWork) {
+                log.logBasic("-- Slave : "+slaveServers[s].getName());
+                log.logBasic(transStatus.getLoggingString());
+              }
             }
             catch(Exception e)
             {
@@ -3734,6 +3751,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             	Result transResult = transStatus.getResult(master);
             	
             	result.add(transResult);
+            	
+              if (loggingRemoteWork) {
+                log.logBasic("-- Master : "+masterServer.getName());
+                log.logBasic(transStatus.getLoggingString());
+              }
             }
             catch(Exception e)
             {

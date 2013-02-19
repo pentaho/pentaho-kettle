@@ -161,6 +161,9 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
   private Label            wlCluster;
   private Button           wCluster;
 
+  private Label            wlLogRemoteWork;
+  private Button           wLogRemoteWork;
+
   private TableView        wFields;
 
   private TableView        wParameters;
@@ -593,6 +596,24 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
         setActive();
       }
     });
+    
+    // Log clustering logging results locally?
+    //
+    wlLogRemoteWork = new Label(wAdvanced, SWT.RIGHT);
+    wlLogRemoteWork.setText(BaseMessages.getString(PKG, "JobTrans.LogRemoteWork.Label"));
+    props.setLook(wlLogRemoteWork);
+    FormData fdlLogRemoteWork = new FormData();
+    fdlLogRemoteWork.left = new FormAttachment(0, 0);
+    fdlLogRemoteWork.top = new FormAttachment(wCluster, margin);
+    fdlLogRemoteWork.right = new FormAttachment(middle, -margin);
+    wlLogRemoteWork.setLayoutData(fdlLogRemoteWork);
+    wLogRemoteWork = new Button(wAdvanced, SWT.CHECK);
+    props.setLook(wLogRemoteWork);
+    FormData fdLogRemoteWork = new FormData();
+    fdLogRemoteWork.left = new FormAttachment(middle, 0);
+    fdLogRemoteWork.top = new FormAttachment(wCluster, margin);
+    fdLogRemoteWork.right = new FormAttachment(100, 0);
+    wLogRemoteWork.setLayoutData(fdLogRemoteWork);
 
     // The remote slave server
     //
@@ -603,7 +624,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
     FormData fdlSlaveServer = new FormData();
     fdlSlaveServer.left = new FormAttachment(0, 0);
     fdlSlaveServer.right = new FormAttachment(middle, -margin);
-    fdlSlaveServer.top = new FormAttachment(wCluster, margin);
+    fdlSlaveServer.top = new FormAttachment(wLogRemoteWork, margin);
     wlSlaveServer.setLayoutData(fdlSlaveServer);
     wSlaveServer = new ComboVar(jobMeta, wAdvanced, SWT.SINGLE | SWT.BORDER);
     wSlaveServer.setItems(SlaveServer.getSlaveServerNames(jobMeta.getSlaveServers()));
@@ -611,7 +632,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
     props.setLook(wSlaveServer);
     FormData fdSlaveServer = new FormData();
     fdSlaveServer.left = new FormAttachment(middle, 0);
-    fdSlaveServer.top = new FormAttachment(wCluster, margin);
+    fdSlaveServer.top = new FormAttachment(wLogRemoteWork, margin);
     fdSlaveServer.right = new FormAttachment(100, 0);
     wSlaveServer.setLayoutData(fdSlaveServer);
     wSlaveServer.addSelectionListener(new SelectionAdapter() {
@@ -1277,6 +1298,9 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 
     wlFollowingAbortRemotely.setEnabled(!wCluster.getSelection() && wWaitingToFinish.getSelection() && !Const.isEmpty(wSlaveServer.getText()));
     wFollowingAbortRemotely.setEnabled(!wCluster.getSelection() && wWaitingToFinish.getSelection() && !Const.isEmpty(wSlaveServer.getText()));
+    
+    wlLogRemoteWork.setEnabled(wCluster.getSelection());
+    wLogRemoteWork.setEnabled(wCluster.getSelection());
   }
 
   public void getData() {
@@ -1352,6 +1376,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
     wClearRows.setSelection(jobEntry.clearResultRows);
     wClearFiles.setSelection(jobEntry.clearResultFiles);
     wCluster.setSelection(jobEntry.isClustering());
+    wLogRemoteWork.setSelection(jobEntry.isLoggingRemoteWork());
     if (jobEntry.getRemoteSlaveServerName() != null) {
       wSlaveServer.setText(jobEntry.getRemoteSlaveServerName());
     }
@@ -1477,6 +1502,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
     jet.clearResultRows = wClearRows.getSelection();
     jet.clearResultFiles = wClearFiles.getSelection();
     jet.setClustering(wCluster.getSelection());
+    jet.setLoggingRemoteWork(wLogRemoteWork.getSelection());
     jet.createParentFolder = wCreateParentFolder.getSelection();
 
     jet.setRemoteSlaveServerName(wSlaveServer.getText());

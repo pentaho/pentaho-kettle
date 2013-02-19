@@ -129,14 +129,21 @@ public class SlaveServerTransStatus
         lastLoggingLineNr = Const.toInt(XMLHandler.getTagValue(transStatusNode, "last_log_line_nr"), 0);
         
         String loggingString64 = XMLHandler.getTagValue(transStatusNode, "logging_string");
-        // This is a Base64 encoded GZIP compressed stream of data.
-        try
-        {
-          loggingString = HttpUtil.decodeBase64ZippedString(loggingString64);
-        }
-        catch(IOException e)
-        {
-          loggingString = "Unable to decode logging from remote server : "+e.toString()+Const.CR+Const.getStackTracker(e);
+        
+        if (!Const.isEmpty(loggingString64)) {
+          // This is a CDATA block with a Base64 encoded GZIP compressed stream of data.
+          //
+          String dataString64 = loggingString64.substring("<![CDATA[".length(), loggingString64.length() - "]]>".length());
+          try
+          {
+            loggingString = HttpUtil.decodeBase64ZippedString(dataString64);
+          }
+          catch(IOException e)
+          {
+            loggingString = "Unable to decode logging from remote server : "+e.toString()+Const.CR+Const.getStackTracker(e);
+          }
+        } else {
+          loggingString = "";
         }
         
         // get the result object, if there is any...
