@@ -2638,7 +2638,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 	        for (int i = 0; i < nrTransHops(); i++)
 	        {
 	            TransHopMeta transHopMeta = getTransHop(i);
-	            retval.append(transHopMeta.getXML());
+	            retval.append(transHopMeta.getXML()).append(Const.CR);
 	        }
 	        retval.append("  ").append(XMLHandler.closeTag(XML_TAG_ORDER)).append(Const.CR); //$NON-NLS-1$
 	
