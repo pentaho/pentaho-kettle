@@ -54,6 +54,7 @@ public class DataFactoryPluginType extends BasePluginType implements PluginTypeI
 	
 	private DataFactoryPluginType() {
 		super(DataFactoryPlugin.class, "DATA_FACTORY_TYPE", "Datafactory type");
+		this.populateFolders(null);
 	}
 	
 	public static DataFactoryPluginType getInstance() {
