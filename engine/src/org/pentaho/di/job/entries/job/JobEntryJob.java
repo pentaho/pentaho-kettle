@@ -1117,7 +1117,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         return new JobMeta((space != null ? space.environmentSubstitute(getFilename()) : getFilename()), rep, null);
       case REPOSITORY_BY_NAME:
         if (rep != null) {
-          String realDirectory = environmentSubstitute(getDirectory());
+          String realDirectory = (space != null ? space.environmentSubstitute(getDirectory()) : getDirectory());
           RepositoryDirectoryInterface repositoryDirectory = rep.loadRepositoryDirectoryTree().findDirectory(realDirectory);
           if (repositoryDirectory==null) {
             throw new KettleException("Unable to find repository directory ["+Const.NVL(realDirectory, "")+"]");
