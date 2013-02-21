@@ -33,6 +33,7 @@ public class KettleDependencies
 {
     public static final String[] generalLibs = new String[] 
         { 
+    		// see PDI-1859: this was a proof of concept and is no longer valid
             "log4j-1.2.8.jar",             // Logging
             "js.jar",                      // JavaScript / Rhino
             "pentaho-1.2.0.jar",           // JNDI database connections
