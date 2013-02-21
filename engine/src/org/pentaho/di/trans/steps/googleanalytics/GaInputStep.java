@@ -115,7 +115,7 @@ public class GaInputStep extends BaseStep implements StepInterface {
 	        for (int i = 0;i<meta.getFeedField().length;i++){
 	        	
 	        	String value = null;
-	        	String fieldName = meta.getFeedField()[i];
+	        	String fieldName = environmentSubstitute(meta.getFeedField()[i]);
 	        	String fieldType = meta.getFeedFieldType()[i];
 	        	
 	        	// confidence intervals

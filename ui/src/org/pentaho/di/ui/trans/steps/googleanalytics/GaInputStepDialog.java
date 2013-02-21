@@ -809,6 +809,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 		ColumnInfo[] ciKeys = new ColumnInfo[fieldWidgetCols];
 		ciKeys[0] = new ColumnInfo(BaseMessages.getString(PKG, "GoogleAnalyticsDialog.ColumnInfo.FeedFieldType"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[]{GaInputStepMeta.FIELD_TYPE_DIMENSION, GaInputStepMeta.FIELD_TYPE_METRIC, GaInputStepMeta.FIELD_TYPE_CONFIDENCE_INTERVAL, GaInputStepMeta.FIELD_TYPE_DATA_SOURCE_PROPERTY, GaInputStepMeta.FIELD_TYPE_DATA_SOURCE_FIELD}, true);
 		ciKeys[1] = new ColumnInfo(BaseMessages.getString(PKG, "GoogleAnalyticsDialog.ColumnInfo.FeedField"), ColumnInfo.COLUMN_TYPE_TEXT, false, false);
+		ciKeys[1].setUsingVariables(true);
 		ciKeys[2] = new ColumnInfo(BaseMessages.getString(PKG, "GoogleAnalyticsDialog.ColumnInfo.RenameTo"), ColumnInfo.COLUMN_TYPE_TEXT, false, false);
 		ciKeys[3] = new ColumnInfo(BaseMessages.getString(PKG, "GoogleAnalyticsDialog.ColumnInfo.Type"), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes());
         ciKeys[4] = new ColumnInfo(BaseMessages.getString(PKG, "GoogleAnalyticsDialog.ColumnInfo.Format"), ColumnInfo.COLUMN_TYPE_FORMAT, 4);
