@@ -136,6 +136,11 @@ public class MappingInputDialog extends BaseStepDialog implements StepDialogInte
 		fdUnspecified.right = new FormAttachment(100, 0);
 		fdUnspecified.bottom = new FormAttachment(wOK, -margin*2);
 		wUnspecified.setLayoutData(fdUnspecified);
+		wUnspecified.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				input.setChanged();
+			}
+		} );		
 		
 		// The grid goes in between the step name and the check box...
 		//
