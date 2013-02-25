@@ -38,10 +38,11 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
 
-    public static ThreadLocal<Boolean> safeModeLocal = new ThreadLocal<Boolean>();
+  public static ThreadLocal<Boolean> safeModeLocal = new ThreadLocal<Boolean>();
 		
 	public static final int DEFAULT_VARCHAR_LENGTH = 100;
-	
+	public static final int MAX_VARCHAR_LENGTH     = Integer.MAX_VALUE;
+
 	private static final String FIELDNAME_PROTECTOR = "_";
 
 	private static Collection<String> reservedWordAlt = new HashSet<String>();
@@ -350,7 +351,7 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 			}
 			break;
 		case ValueMetaInterface.TYPE_STRING:
-			if (length>=DatabaseMeta.CLOB_LENGTH)
+			if (length > getMaxVARCHARLength())
 			{
 				retval.append("CLOB");
 			}
@@ -399,6 +400,17 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
   @Override
   public boolean supportsResultSetMetadataRetrievalOnly() {
     return true;
+  }
+
+  /**
+   * Get the maximum length of a text field (VARCHAR) for this database connection.
+   * If this size is exceeded use a CLOB.
+   * @return The maximum VARCHAR field length for this database type. (mostly identical to getMaxTextFieldLength() - CLOB_LENGTH)
+   */
+  @Override
+  public int getMaxVARCHARLength()
+  {
+    return MAX_VARCHAR_LENGTH;
   }
 
 }
