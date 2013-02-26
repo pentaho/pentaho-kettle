@@ -861,8 +861,7 @@
     	          <ant antfile="build.xml" dir="@{module}" inheritall="false" >
     	          	<property name="src.dir" value="src"/>
           	      <property name="lib.dir" value="../${lib}"/>
-          	      <property name="ivy.local.default.root" value="${ivy.default.ivy.user.dir}/local-dev" />
-    	          	<target name="resolve" />
+          	      	<target name="resolve" />
     	            <target name="publish-local" />
     	          </ant>
           	 </then>
@@ -887,8 +886,7 @@
 	      	<ant antfile="build.xml" dir="plugins/@{plugin}" inheritall="false" >
 	      		<property name="src.dir" value="src"/>
             <property name="lib.dir" value="../../${lib}"/>
-            <property name="ivy.local.default.root" value="${ivy.default.ivy.user.dir}/local-dev" />
-	      		<target name="resolve-dev"/>
+            	<target name="resolve-dev"/>
 	      		<target name="dist" />
 	      	</ant>
 	      </sequential>
@@ -899,9 +897,7 @@
 	  	<if>
       <equals arg1="${plugins.publish-local}" arg2="true" />
       <then>
-      	<antcall target="publish-local-plugins" >
-      		<param name="ivy.local.default.root" value="${ivy.default.ivy.user.dir}/local-dev" />
-      	</antcall>
+      	<antcall target="publish-local-plugins" />
       </then>
 	  	<else>
 	  		<antcall target="publish-plugins" />
@@ -934,7 +930,6 @@
 	      <sequential>
 	        <!-- publish jar -->
 	        <antcall target="publish-local-plugin-task">
-	        	<param name="ivy.local.default.root" value="${ivy.default.ivy.user.dir}/local-dev" />
 	          <param name="ivy.artifact.id" value="@{module}" />
 	          <param name="pluginfolder" value="plugins/@{module}"/>
 	          <param name="artifact.type" value="jar"/>
@@ -1144,16 +1139,5 @@
         </fileset>
     </jar>     
   </target>
-	
-	<!--=======================================================================
-	      ivy-clean-local-dev
-	      
-	      Completely cleans your local development repository of any modules or
-	      plugins published locally by various Ant tasks.
-	      ====================================================================-->
-	<target name="ivy-clean-local-dev" depends="install-ivy,install-antcontrib">
-		<property name="ivy.local.default.root" value="${ivy.default.ivy.user.dir}/local-dev" />
-		<delete dir="${ivy.local.default.root}/" />
-	</target>
 	
 </project>
