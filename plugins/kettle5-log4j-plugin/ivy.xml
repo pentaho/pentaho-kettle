@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="pentaho-kettle" module="market" revision="TRUNK-SNAPSHOT" status="integration" publication="20130227212543"/>
+  <info organisation="pentaho-kettle" module="kettle5-log4j-plugin" revision="TRUNK-SNAPSHOT" status="integration" publication="20130227212550"/>
 
   <configurations>
     <conf name="default"/>
@@ -10,20 +10,18 @@
   </configurations>
 
   <publications>
-    <artifact name="market" type="jar" conf="default"/>
+    <!--- <artifact name="kettle5-log4j-plugin" type="jar" conf="default"/> -->
   </publications>
 
   <dependencies defaultconf="dev->default">
     <dependency org="commons-io" name="commons-io" rev="1.4" transitive="false"/>
     <dependency org="commons-vfs" name="commons-vfs" rev="20091118-pentaho" transitive="false"/>
-    <dependency org="org.apache.xmlgraphics" name="batik-xml" rev="1.7" transitive="false"/>
                 
     <dependency org="pentaho-kettle" name="kettle-core" rev="TRUNK-SNAPSHOT" changing="true"/>  
     <dependency org="pentaho-kettle" name="kettle-engine" rev="TRUNK-SNAPSHOT" changing="true"/>
     <dependency org="pentaho-kettle" name="kettle-db" rev="TRUNK-SNAPSHOT" changing="true"/>
     <dependency org="pentaho-kettle" name="kettle-ui-swt" rev="TRUNK-SNAPSHOT" changing="true"/>
-    <dependency org="pentaho" name="pentaho-xul-core" rev="TRUNK-SNAPSHOT" changing="true"/>
-    <dependency org="pentaho" name="pentaho-xul-swt" rev="TRUNK-SNAPSHOT" changing="true"/>
+    <dependency org="log4j" name="log4j" rev="1.2.16" transitive="false"/>
     
     <dependency org="junit" name="junit" rev="4.7" transitive="false" conf="test->default"/>
   </dependencies>
