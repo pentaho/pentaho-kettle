@@ -325,7 +325,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
       }
 
       try {
-        loggingEventListener = new FileLoggingEventListener(realLogFilename, setAppendLogfile);
+        loggingEventListener = new FileLoggingEventListener(getLogChannelId(), realLogFilename, setAppendLogfile);
         CentralLogStore.getAppender().addLoggingEventListener(loggingEventListener);
       } catch (KettleException e) {
         logError(BaseMessages.getString(PKG, "JobEntryShell.Error.UnableopenAppenderFile", getLogFilename(),

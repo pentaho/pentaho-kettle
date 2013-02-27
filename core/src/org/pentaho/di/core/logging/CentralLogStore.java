@@ -43,8 +43,7 @@ public class CentralLogStore {
 
 	private Timer logCleanerTimer;
 	
-	private static 
-	AtomicBoolean initialized = new AtomicBoolean(false); 
+	private static AtomicBoolean initialized = new AtomicBoolean(false); 
 		
 	/**
 	 * Create the central log store with optional limitation to the size
