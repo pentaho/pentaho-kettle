@@ -306,6 +306,7 @@ public class GUIResource
     private Image imageCheckpoint;
     
     private Image imageGantt;
+    private Image imageHelpWeb;
     
 
     /**
@@ -530,6 +531,7 @@ public class GUIResource
         imageBalance.dispose();
         imageCheckpoint.dispose();
         imageGantt.dispose();
+        imageHelpWeb.dispose();
         
 		    disposeImage(imageNoteSmall);
 		    disposeImage(imageColor);
@@ -778,6 +780,7 @@ public class GUIResource
     imageBalance = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("LoadBalance_image")); // , "ui/images/scales.png
     imageCheckpoint = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("CheckeredFlag_image")); // , "ui/images/scales.png
     imageGantt = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Gantt_image")); // , "ui/images/gantt.png
+    imageHelpWeb = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("HelpWeb_image")); // , "ui/images/help_web.png
     
     imageEmpty16x16 = new Image(display, 16, 16);
     
@@ -1950,6 +1953,10 @@ public class GUIResource
 
   public Image getImageGantt() {
     return imageGantt;
+  }
+
+  public Image getImageHelpWeb() {
+    return imageHelpWeb;
   }
 
 }

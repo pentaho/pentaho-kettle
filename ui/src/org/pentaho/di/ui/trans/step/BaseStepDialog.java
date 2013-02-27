@@ -1210,7 +1210,8 @@ public class BaseStepDialog extends Dialog {
     
     public static Button createHelpButton(final Shell shell, final String title, final PluginInterface plugin) {
       Button button = new Button(shell, SWT.PUSH);
-      button.setImage(shell.getDisplay().getSystemImage(SWT.ICON_INFORMATION));
+      button.setImage(GUIResource.getInstance().getImageHelpWeb());
+      button.setText(BaseMessages.getString(PKG, "System.Button.Help"));
       button.setToolTipText(BaseMessages.getString(PKG, "System.Tooltip.Help"));
       FormData fdButton = new FormData();
       fdButton.left = new FormAttachment(0,0);

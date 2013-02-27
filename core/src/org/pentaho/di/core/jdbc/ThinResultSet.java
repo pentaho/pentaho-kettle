@@ -530,11 +530,13 @@ public class ThinResultSet implements ResultSet {
   }
 
   @Override
+  @Deprecated
   public BigDecimal getBigDecimal(int index, int arg1) throws SQLException {
     return getBigDecimal(index);
   }
 
   @Override
+  @Deprecated
   public BigDecimal getBigDecimal(String columnName, int arg1) throws SQLException {
     return getBigDecimal(rowMeta.indexOfValue(columnName));
   }
@@ -836,11 +838,13 @@ public class ThinResultSet implements ResultSet {
   }
 
   @Override
+  @Deprecated
   public InputStream getUnicodeStream(int arg0) throws SQLException {
     throw new SQLException("Unicode streams are not supported");
   }
 
   @Override
+  @Deprecated
   public InputStream getUnicodeStream(String arg0) throws SQLException {
     throw new SQLException("Unicode streams are not supported");
   }

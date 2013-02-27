@@ -114,7 +114,6 @@
 		<junit printsummary="no" fork="yes" forkmode="perTest" jvm="java" maxmemory="512M" showoutput="yes">
 	    	<classpath>
 				<fileset dir="${lib}" includes="kettle-core.jar"/>
-				<fileset dir="${lib}" includes="kettle-db.jar"/>
 				<fileset dir="${lib}" includes="kettle-engine.jar"/>
 				<fileset dir="test/libext/" includes="kettle.jar"/>
 	    		<pathelement path="${testClasses}"/>
@@ -193,7 +192,6 @@
 		<junit printsummary="no" fork="yes" forkmode="perTest" jvm="java" maxmemory="512M" showoutput="yes">
 	    	<classpath>
 				<fileset dir="${lib}" includes="kettle-core.jar"/>
-				<fileset dir="${lib}" includes="kettle-db.jar"/>
 				<fileset dir="${lib}" includes="kettle-engine.jar"/>
 				<fileset dir="test/libext/" includes="kettle.jar"/>
 	    		<pathelement path="${testClasses}"/>
@@ -270,7 +268,6 @@
 		<junit printsummary="no" fork="yes" forkmode="perTest" jvm="java" maxmemory="512M" showoutput="yes">
 	    	<classpath>
 				<fileset dir="${lib}" includes="kettle-core.jar"/>
-				<fileset dir="${lib}" includes="kettle-db.jar"/>
 				<fileset dir="${lib}" includes="kettle-engine.jar"/>
 				<!-- fileset dir="test/libext/" includes="junit.jar"/ -->
 	    		<pathelement path="${testClasses}"/>
@@ -298,7 +295,6 @@
 		<junit printsummary="no" fork="yes" forkmode="perTest" jvm="java" maxmemory="512M" showoutput="yes">
 	    	<classpath>
 				<fileset dir="${lib}" includes="kettle-core.jar"/>
-				<fileset dir="${lib}" includes="kettle-db.jar"/>
 				<fileset dir="${lib}" includes="kettle-engine.jar"/>
 	    		<fileset dir="${lib}" includes="kettle-dbdialog.jar"/>
 	    		<fileset dir="${lib}" includes="kettle-ui-swt.jar"/>

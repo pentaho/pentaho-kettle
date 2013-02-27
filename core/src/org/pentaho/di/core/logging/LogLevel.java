@@ -34,7 +34,8 @@ public enum LogLevel {
   DEBUG(5, "Debug"),
   ROWLEVEL(6, "Rowlevel");
   
-  private static Class<?> PKG = LogWriter.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  /** for i18n purposes, needed by Translator2!! */
+  private static Class<?> PKG = LogLevel.class; 
 
   public static final String logLevelDescriptions[] = { 
     BaseMessages.getString(PKG, "LogWriter.Level.Nothing.LongDesc"), 

@@ -36,7 +36,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -62,17 +61,7 @@ public class CopyTableWizardPage2 extends WizardPage
 	
 	private List      wListSource;
 	private Label     wlListSource;
-	
-    /** @deprecated */
-    public CopyTableWizardPage2(String arg, LogWriter log, PropsUI props)
-    {
-        super(arg);
-        this.props=props;
-
-        setTitle(BaseMessages.getString(PKG, "CopyTableWizardPage2.Dialog.Title")); //$NON-NLS-1$
-        setDescription(BaseMessages.getString(PKG, "CopyTableWizardPage2.Dialog.Description")); //$NON-NLS-1$
-    }
-    
+	  
 	public CopyTableWizardPage2(String arg)
 	{
 		super(arg);

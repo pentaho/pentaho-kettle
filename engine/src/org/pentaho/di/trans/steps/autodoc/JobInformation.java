@@ -28,6 +28,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.pentaho.di.core.Const;
@@ -63,6 +64,7 @@ public class JobInformation {
 	private class JobInformationValues {
 		public BufferedImage image;
 		public JobMeta jobMeta;
+    public List<AreaOwner> areaOwners;
 	}
 
 	private Map<ReportSubjectLocation, JobInformationValues>	map;
@@ -79,6 +81,11 @@ public class JobInformation {
 		return getValues(location).jobMeta;
 	}
 
+
+  public List<AreaOwner> getImageAreaList(ReportSubjectLocation location) throws KettleException {
+    return getValues(location).areaOwners;
+  }
+  
 	private JobInformationValues getValues(ReportSubjectLocation location) throws KettleException {
 		JobInformationValues values = map.get(location);
 		if (values==null) {
@@ -118,7 +125,8 @@ public class JobInformation {
 		// Paint the transformation...
 		//
 		GCInterface gc = new SwingGC(null, area, iconsize, 50, 20);
-		JobPainter painter = new JobPainter(gc, jobMeta, area, bar, bar, null, null, null, new ArrayList<AreaOwner>(), new ArrayList<JobEntryCopy>(), iconsize, 1, 0, 0, true, "FreeSans", 10);
+		List<AreaOwner> areaOwners = new ArrayList<AreaOwner>();
+		JobPainter painter = new JobPainter(gc, jobMeta, area, bar, bar, null, null, null, areaOwners, new ArrayList<JobEntryCopy>(), iconsize, 1, 0, 0, true, "FreeSans", 10);
 		painter.setMagnification(0.25f);
 		painter.drawJob();
 	    BufferedImage bufferedImage = (BufferedImage)gc.getImage();
@@ -135,6 +143,7 @@ public class JobInformation {
 	    JobInformationValues values = new JobInformationValues();
 	    values.jobMeta = jobMeta;
 	    values.image = image;
+	    values.areaOwners = areaOwners;
 	    
 		return values;
 	}
@@ -163,7 +172,8 @@ public class JobInformation {
     
     SwingGC gc = new SwingGC(g2d, rect, iconsize, 0, 0);
     gc.setDrawingPixelatedImages(pixelateImages);
-    JobPainter painter = new JobPainter(gc, jobMeta, area, bar, bar, null, null, null, new ArrayList<AreaOwner>(), new ArrayList<JobEntryCopy>(), iconsize, 1, 0, 0, true, "FreeSans", 10);
+    List<AreaOwner> areaOwners = new ArrayList<AreaOwner>();
+    JobPainter painter = new JobPainter(gc, jobMeta, area, bar, bar, null, null, null, areaOwners, new ArrayList<JobEntryCopy>(), iconsize, 1, 0, 0, true, "FreeSans", 10);
     painter.setMagnification((float)Math.min(magnification, 1));
     if (pixelateImages) {
       painter.setTranslationX(100+min.x);
@@ -171,5 +181,6 @@ public class JobInformation {
     }
     painter.drawJob();
   }
+
 
 }

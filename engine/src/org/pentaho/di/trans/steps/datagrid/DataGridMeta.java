@@ -37,6 +37,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.ObjectId;
@@ -360,22 +361,27 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public void getFields(RowMetaInterface rowMeta, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
-		for (int i=0;i<fieldName.length;i++) {
-			if (!Const.isEmpty(fieldName[i])) {
-				int type=ValueMeta.getType(fieldType[i]);
-				if (type==ValueMetaInterface.TYPE_NONE) type=ValueMetaInterface.TYPE_STRING;
-				ValueMetaInterface v=new ValueMeta(fieldName[i], type);
-				v.setLength(fieldLength[i]);
-                v.setPrecision(fieldPrecision[i]);
-				v.setOrigin(name);
-				v.setConversionMask(fieldFormat[i]);
-				v.setCurrencySymbol(currency[i]);
-				v.setGroupingSymbol(group[i]);
-				v.setDecimalSymbol(decimal[i]);
-				
-				rowMeta.addValueMeta(v);
-			}
-		}
+    for (int i = 0; i < fieldName.length; i++) {
+      try {
+        if (!Const.isEmpty(fieldName[i])) {
+          int type = ValueMeta.getType(fieldType[i]);
+          if (type == ValueMetaInterface.TYPE_NONE)
+            type = ValueMetaInterface.TYPE_STRING;
+          ValueMetaInterface v = ValueMetaFactory.createValueMeta(fieldName[i], type);
+          v.setLength(fieldLength[i]);
+          v.setPrecision(fieldPrecision[i]);
+          v.setOrigin(name);
+          v.setConversionMask(fieldFormat[i]);
+          v.setCurrencySymbol(currency[i]);
+          v.setGroupingSymbol(group[i]);
+          v.setDecimalSymbol(decimal[i]);
+
+          rowMeta.addValueMeta(v);
+        }
+      } catch (Exception e) {
+        throw new KettleStepException("Unable to create value of type " + fieldType[i], e);
+      }
+    }
 	}
 		
 	public String getXML()

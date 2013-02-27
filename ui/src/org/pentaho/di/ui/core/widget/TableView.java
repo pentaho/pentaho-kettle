@@ -2295,7 +2295,7 @@ public class TableView extends Composite {
         }
       }
       try {
-        int extra = 5;
+        int extra = 15;
         // Platform specific code not needed any more with current version SWT
         // if (Const.isOSX() || Const.isLinux()) max*=1.25;
         if (tc.getWidth() != max + extra) {

@@ -434,6 +434,7 @@ public class ThinPreparedStatement extends ThinStatement implements PreparedStat
   }
 
   @Override
+  @Deprecated
   public void setUnicodeStream(int nr, InputStream value, int arg2) throws SQLException {
     throw new SQLException("Unicode stream parameters are not supported");
   }

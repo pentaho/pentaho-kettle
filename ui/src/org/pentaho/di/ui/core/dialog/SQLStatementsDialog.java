@@ -43,7 +43,6 @@ import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
@@ -87,15 +86,6 @@ public class SQLStatementsDialog extends Dialog
 	private String stepname;
 	
 	private VariableSpace variables;
-    
-    /**
-     * @deprecated Use CT without <i>props</i> parameter
-     */
-    public SQLStatementsDialog(Shell parent, VariableSpace space, int style, LogWriter log, PropsUI props, List<SQLStatement> stats)
-    {
-        this(parent, space, style, stats);
-        this.props = props;
-    }
     
     public SQLStatementsDialog(Shell parent, VariableSpace space, int style, List<SQLStatement> stats)
     {

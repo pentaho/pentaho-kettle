@@ -5,6 +5,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LoggingPluginType;
+import org.pentaho.di.core.plugins.DatabasePluginType;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.value.ValueMetaPluginType;
 import org.pentaho.di.core.util.EnvUtil;
@@ -46,7 +48,9 @@ public class KettleClientEnvironment {
 		
 		// Load value meta data plugins
 		//
+    PluginRegistry.addPluginType(LoggingPluginType.getInstance());
 		PluginRegistry.addPluginType(ValueMetaPluginType.getInstance());
+    PluginRegistry.addPluginType(DatabasePluginType.getInstance());
 		PluginRegistry.init(true);
 		
 		initialized=new Boolean(true);

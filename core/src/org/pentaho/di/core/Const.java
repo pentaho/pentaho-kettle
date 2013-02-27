@@ -741,7 +741,17 @@ public class Const
   * The name of the environment variable that will contain the alternative location of the kettle-valuemeta-plugins.xml file
   */
 	public static final String   KETTLE_VALUEMETA_PLUGINS_FILE = "KETTLE_VALUEMETA_PLUGINS_FILE";
- 
+
+	 /**
+   * The XML file that contains the list of native Kettle logging plugins
+   */
+  public static final String  XML_FILE_KETTLE_LOGGING_PLUGINS = "kettle-logging-plugins.xml";
+  
+   /**
+  * The name of the environment variable that will contain the alternative location of the kettle-logging-plugins.xml file
+  */
+  public static final String   KETTLE_LOGGING_PLUGINS_FILE = "KETTLE_LOGGING_PLUGINS_FILE";
+
   /**
    * The name of the environment variable that will contain the alternative location of the kettle-servlets.xml file
    */

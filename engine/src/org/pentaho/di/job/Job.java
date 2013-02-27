@@ -60,7 +60,7 @@ import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.JobEntryLogTable;
 import org.pentaho.di.core.logging.JobLogTable;
-import org.pentaho.di.core.logging.Log4jBufferAppender;
+import org.pentaho.di.core.logging.LoggingBuffer;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogLevel;
@@ -491,16 +491,21 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       if (startpoint.isStart()) {
         // Perform optional looping in the special Start job entry...
         //
-        long iteration = 0;
+        // long iteration = 0;
+        
         boolean isFirst = true;
         JobEntrySpecial jes = (JobEntrySpecial) startpoint.getEntry();
         while ((jes.isRepeat() || isFirst) && !isStopped()) {
           isFirst = false;
           res = execute(0, null, startpoint, null, BaseMessages.getString(PKG, "Job.Reason.Started"));
-          if (iteration > 0 && (iteration % 500) == 0) {
-            System.out.println("other 500 iterations: " + iteration);
-          }
-          iteration++;
+          
+          //
+          // if (iteration > 0 && (iteration % 500) == 0) {
+          //   System.out.println("other 500 iterations: " + iteration);
+          // }
+          
+          // iteration++;
+          // 
         }
         jerEnd = new JobEntryResult(res, jes.getLogChannelId(), BaseMessages.getString(PKG, "Job.Comment.JobFinished"), BaseMessages.getString(PKG, "Job.Reason.Finished"), null, 0, null);
       } else {
@@ -722,8 +727,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
   
       // Also capture the logging text after the execution...
       //
-      Log4jBufferAppender appender = CentralLogStore.getAppender();
-      StringBuffer logTextBuffer = appender.getBuffer(cloneJei.getLogChannel().getLogChannelId(), false);
+      LoggingBuffer loggingBuffer = CentralLogStore.getAppender();
+      StringBuffer logTextBuffer = loggingBuffer.getBuffer(cloneJei.getLogChannel().getLogChannelId(), false);
       result.setLogText(logTextBuffer.toString());
   
       // Save this result as well...

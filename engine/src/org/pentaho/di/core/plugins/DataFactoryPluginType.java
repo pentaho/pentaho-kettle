@@ -22,23 +22,12 @@
 
 package org.pentaho.di.core.plugins;
 
-import java.io.InputStream;
 import java.lang.annotation.Annotation;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.vfs.FileObject;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.DataFactoryPlugin;
-import org.pentaho.di.core.annotations.RepositoryPlugin;
 import org.pentaho.di.core.exception.KettlePluginException;
-import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.vfs.KettleVFS;
-import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.datafactory.DynamicDatasource;
-import org.pentaho.di.repository.RepositoryMeta;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
 /**
  * This class represents the datafactory plugin type. 

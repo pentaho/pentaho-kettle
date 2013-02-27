@@ -22,22 +22,30 @@
 
 package org.pentaho.di.core.logging;
 
+import java.io.PrintStream;
 import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.log4j.spi.LoggingEvent;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.EnvUtil;
 
 public class CentralLogStore {
+  
+  public static final PrintStream OriginalSystemOut = System.out;
+  public static final PrintStream OriginalSystemErr = System.err;
+  
 	private static CentralLogStore store;
 	
-	private Log4jBufferAppender appender;
+	private LoggingBuffer appender;
 
 	private Timer logCleanerTimer;
 	
+	private static 
+	AtomicBoolean initialized = new AtomicBoolean(false); 
+		
 	/**
 	 * Create the central log store with optional limitation to the size
 	 * 
@@ -45,9 +53,11 @@ public class CentralLogStore {
 	 * @param maxLogTimeoutMinutes The maximum time that a log line times out in Minutes.
 	 */
 	private CentralLogStore(int maxSize, int maxLogTimeoutMinutes) {
-		this.appender = new Log4jBufferAppender(maxSize);
-		LogWriter.getInstance().addAppender(this.appender);
+		this.appender = new LoggingBuffer(maxSize);
 		replaceLogCleaner(maxLogTimeoutMinutes);
+		
+		System.setOut(new LoggingPrintStream(OriginalSystemOut));
+		System.setErr(new LoggingPrintStream(OriginalSystemErr));
 	}
 	
   public void replaceLogCleaner(final int maxLogTimeoutMinutes) {
@@ -114,6 +124,7 @@ public class CentralLogStore {
     } else  {
       store = new CentralLogStore(maxSize, maxLogTimeoutMinutes);
     }
+    initialized.set(true);
 	}
 	
 	private static CentralLogStore getInstance() {
@@ -162,7 +173,7 @@ public class CentralLogStore {
     /**
      * @return The appender that represents the central logging store.  It is capable of giving back log rows in an incremental fashion, etc. 
      */
-    public static Log4jBufferAppender getAppender() {
+    public static LoggingBuffer getAppender() {
 		return getInstance().appender;
 	}
 
@@ -177,7 +188,7 @@ public class CentralLogStore {
 
 		// Remove all the rows for these ids
 		//
-		Log4jBufferAppender bufferAppender = getInstance().appender;
+		LoggingBuffer bufferAppender = getInstance().appender;
 		// int beforeSize = bufferAppender.size();
 		for (String id : ids) {
 			// Remove it from the central log buffer
@@ -200,4 +211,8 @@ public class CentralLogStore {
 		// System.out.println("Left over lines:");
 		// System.out.println(bufferAppender.getBuffer().toString());
 	}
+
+    public static boolean isInitialized() {
+      return initialized.get();
+    }
 }

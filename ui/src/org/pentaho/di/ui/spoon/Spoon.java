@@ -151,11 +151,10 @@ import org.pentaho.di.core.lifecycle.LifecycleException;
 import org.pentaho.di.core.lifecycle.LifecycleSupport;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.DefaultLogLevel;
-import org.pentaho.di.core.logging.Log4jFileAppender;
+import org.pentaho.di.core.logging.FileLoggingEventListener;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogLevel;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
@@ -166,6 +165,7 @@ import org.pentaho.di.core.plugins.PartitionerPluginType;
 import org.pentaho.di.core.plugins.PluginFolder;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.PluginTypeInterface;
 import org.pentaho.di.core.plugins.PluginTypeListener;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.plugins.StepPluginType;
@@ -244,6 +244,7 @@ import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.dialog.ShowBrowserDialog;
 import org.pentaho.di.ui.core.dialog.ShowMessageDialog;
 import org.pentaho.di.ui.core.dialog.Splash;
+import org.pentaho.di.ui.core.dialog.SubjectDataBrowserDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.OsHelper;
@@ -376,6 +377,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   private Shell shell;
 
   private static Splash splash;
+
+  private static FileLoggingEventListener fileLoggingEventListener;
 
   private boolean destroy;
 
@@ -626,16 +629,14 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     // Set default Locale:
     Locale.setDefault(Const.DEFAULT_LOCALE);
 
-    Log4jFileAppender fileAppender;
-    if (Const.isEmpty(optionLogfile)) {
-      fileAppender = LogWriter.createFileAppender(Const.SPOON_LOG_FILE, false);
+    if (!Const.isEmpty(optionLogfile)) {
+      fileLoggingEventListener = new FileLoggingEventListener(optionLogfile.toString(), true);
+      if (log.isBasic()) {
+        log.logBasic(BaseMessages.getString(PKG, "Spoon.Log.LoggingToFile") + fileLoggingEventListener.getFilename());
+      }
+      CentralLogStore.getAppender().addLoggingEventListener(fileLoggingEventListener);
     } else {
-      fileAppender = LogWriter.createFileAppender(optionLogfile.toString(), true);
-    }
-    LogWriter.getInstance().addAppender(fileAppender);
-
-    if (log.isBasic()) {
-      log.logBasic(BaseMessages.getString(PKG, "Spoon.Log.LoggingToFile") + fileAppender.getFile().toString());// "Logging goes to "
+      fileLoggingEventListener = null;
     }
 
     if (!Const.isEmpty(optionLoglevel)) {
@@ -5282,27 +5283,36 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   /**
-   * Show a dialog containing information on the different step plugins.
+   * Show a plugin browser
    */
-  public void helpShowStepPlugins() {
-    RowBuffer rowBuffer = PluginRegistry.getInstance().getPluginInformation(StepPluginType.class);
-    PreviewRowsDialog dialog = new PreviewRowsDialog(shell, null, SWT.NONE, null, rowBuffer.getRowMeta(), rowBuffer
-        .getBuffer());
-    dialog.setTitleMessage(BaseMessages.getString(PKG, "Spoon.Dialog.StepPluginList.Title"), BaseMessages.getString(
-        PKG, "Spoon.Dialog.StepPluginList.Message"));
-    dialog.open();
-  }
-
-  /**
-   * Show a dialog containing information on the different job entry plugins.
-   */
-  public void helpShowJobEntryPlugins() {
-    RowBuffer rowBuffer = PluginRegistry.getInstance().getPluginInformation(JobEntryPluginType.class);
-    PreviewRowsDialog dialog = new PreviewRowsDialog(shell, null, SWT.NONE, null, rowBuffer.getRowMeta(), rowBuffer
-        .getBuffer());
-    dialog.setTitleMessage(BaseMessages.getString(PKG, "Spoon.Dialog.JobEntryPluginList.Title"), BaseMessages
-        .getString(PKG, "Spoon.Dialog.JobEntryPluginList.Message"));
-    dialog.open();
+  public void showPluginInfo() {
+    try {
+      // First we collect information concerning all the plugin types...
+      //
+      Map<String, RowMetaInterface> metaMap = new HashMap<String, RowMetaInterface>();
+      Map<String, List<Object[]>> dataMap = new HashMap<String, List<Object[]>>();
+      
+      PluginRegistry registry = PluginRegistry.getInstance();
+      List<Class<? extends PluginTypeInterface>> pluginTypeClasses = registry.getPluginTypes();
+      for (Class<? extends PluginTypeInterface> pluginTypeClass : pluginTypeClasses) {
+        PluginTypeInterface pluginTypeInterface = registry.getPluginType(pluginTypeClass);
+        
+        String subject = pluginTypeInterface.getName();
+        RowBuffer pluginInformation = registry.getPluginInformation(pluginTypeClass);
+        metaMap.put(subject, pluginInformation.getRowMeta());
+        dataMap.put(subject, pluginInformation.getBuffer());
+      }
+      
+      // Now push it all to a subject data browser...
+      //
+      SubjectDataBrowserDialog dialog = new SubjectDataBrowserDialog(shell, metaMap, dataMap, "Plugin browser", "Plugin type");
+      dialog.open();
+      
+    } catch(Exception e) {
+      new ErrorDialog(shell, "Error", "Error listing plugins", e);
+    }
+    
+    
   }
 
   public void editUnselectAll() {
@@ -6098,8 +6108,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 	        
 	        ((XulMenuitem) doc.getElementById("help-tip")).setVisible(etlPerspective);
 	        ((XulMenuitem) doc.getElementById("help-welcome")).setVisible(etlPerspective);
-	        ((XulMenuitem) doc.getElementById("help-step-plugins")).setVisible(etlPerspective);
-	        ((XulMenuitem) doc.getElementById("help-jobentry-plugins")).setVisible(etlPerspective);
+	        
+	        ((XulMenuitem) doc.getElementById("help-plugins")).setVisible(true);
 	        
     	}
         // Only enable certain menu-items if we need to.
@@ -6420,7 +6430,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     props.setScreen(winprop);
 
     props.setLogLevel(DefaultLogLevel.getLogLevel().getCode());
-    props.setLogFilter(LogWriter.getInstance().getFilter());
     props.setSashWeights(sashform.getWeights());
 
     // Also save the open files...
@@ -6460,7 +6469,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     LogLevel logLevel = LogLevel.getLogLevelForCode(props.getLogLevel());
     DefaultLogLevel.setLogLevel(logLevel);
     log.setLogLevel(logLevel);
-    LogWriter.getInstance().setFilter(props.getLogFilter());
     CentralLogStore.getAppender().setMaxNrLines(props.getMaxNrLinesInLog());
 
     // transMeta.setMaxUndo(props.getMaxUndo());
@@ -7187,7 +7195,14 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       log.logBasic(APP_NAME + " " + BaseMessages.getString(PKG, "Spoon.Log.AppHasEnded"));// " has ended."
 
     // Close the logfile
-    LogWriter.getInstance().close();
+    if (fileLoggingEventListener!=null) {
+      try {
+      fileLoggingEventListener.close();
+      } catch(Exception e) {
+        e.printStackTrace(System.err);
+      }
+      CentralLogStore.getAppender().removeLoggingEventListener(fileLoggingEventListener);
+    }
   }
 
   // public Splash splash;

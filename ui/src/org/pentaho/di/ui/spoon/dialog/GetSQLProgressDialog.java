@@ -30,10 +30,8 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.ProgressMonitorAdapter;
-import org.pentaho.di.core.Props;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -55,15 +53,6 @@ public class GetSQLProgressDialog
 	private TransMeta transMeta;
 	private List<SQLStatement> stats;
 
-    /**
-     * Creates a new dialog that will handle the wait while getting the SQL for a transformation...
-     * @deprecated please use the constructor version without log or props
-     */
-    public GetSQLProgressDialog(LogWriter log, Props props, Shell shell, TransMeta transMeta)
-    {
-        this(shell, transMeta);
-    }
-    
 	/**
 	 * Creates a new dialog that will handle the wait while getting the SQL for a transformation...
 	 */

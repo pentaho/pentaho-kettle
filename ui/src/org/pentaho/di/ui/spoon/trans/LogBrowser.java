@@ -30,8 +30,6 @@ import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
@@ -49,7 +47,9 @@ import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.Log4jKettleLayout;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LogParentProvidedInterface;
+import org.pentaho.di.core.logging.LoggingEvent;
 import org.pentaho.di.core.logging.LoggingRegistry;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.ConstUI;
@@ -133,7 +133,7 @@ public class LogBrowser {
 										text.append(line);
 										text.append(Const.CR);
 	
-										if (event.getLevel()==Level.ERROR) {
+										if (event.getLevel()==LogLevel.ERROR) {
 											StyleRange styleRange = new StyleRange();
 											styleRange.foreground = GUIResource.getInstance().getColorRed();
 											styleRange.start = start;

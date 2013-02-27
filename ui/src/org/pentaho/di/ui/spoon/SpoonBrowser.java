@@ -37,7 +37,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 import org.pentaho.di.core.EngineMetaInterface;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.GlobalMessages;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -58,7 +57,6 @@ import org.pentaho.ui.xul.swt.SwtXulLoader;
  */
 
 public class SpoonBrowser implements TabItemInterface, XulEventHandler {
-  protected static final LogWriter log = LogWriter.getInstance();
   
   private static final Class<?> PKG = SpoonBrowser.class;
 

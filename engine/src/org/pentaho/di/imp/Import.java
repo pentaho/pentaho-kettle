@@ -33,7 +33,6 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.row.ValueMeta;
@@ -369,9 +368,6 @@ public class Import {
   }
 
   private static final void exitJVM(int status) {
-    // Close the open appenders...
-    //
-    LogWriter.getInstance().close();
 
     System.exit(status);
   }

@@ -37,7 +37,6 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleRepositoryNotSupportedException;
 import org.pentaho.di.core.logging.LogChannel;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -72,12 +71,6 @@ public class RepositoriesMeta
 		clear();
 	}
 	
-	@Deprecated
-	public RepositoriesMeta(LogWriter log)
-	{
-		clear();
-	}
-
 	public void clear() {
 	  errorMessage = null;
 		databases = new ArrayList<DatabaseMeta>();

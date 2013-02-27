@@ -54,7 +54,6 @@ import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -88,15 +87,6 @@ public class EnterListDialog extends Dialog
     
     private boolean opened;
 	
-    /**
-     * @deprecated Use CT without <i>log</i> and <i>props</i> parameter
-     */
-    public EnterListDialog(Shell parent, int style, LogWriter log, PropsUI props, String input[])
-    {
-        this(parent, style, input);
-        this.props = props;
-    }
-
 	public EnterListDialog(Shell parent, int style, String input[])
 	{
 		super(parent, style);

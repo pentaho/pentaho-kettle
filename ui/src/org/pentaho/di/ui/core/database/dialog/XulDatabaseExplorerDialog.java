@@ -27,11 +27,10 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.spoon.SpoonPluginManager;
 import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
@@ -52,7 +51,6 @@ public class XulDatabaseExplorerDialog {
 	private XulDatabaseExplorerController controller;
 	private DatabaseMeta databaseMeta;
 	private List<DatabaseMeta> databases;
-	private static Log logger = LogFactory.getLog(XulDatabaseExplorerDialog.class);
 	private static final String XUL = "org/pentaho/di/ui/core/database/dialog/database_explorer.xul";
 	private boolean look;
 	private String schemaName;
@@ -94,8 +92,7 @@ public class XulDatabaseExplorerDialog {
 			theExplorerDialog.show();
 
 		} catch (Exception e) {
-			logger.info(e);
-			e.printStackTrace();
+			LogChannel.GENERAL.logError("Error exploring database", e);
 		}
 		return this.controller.getSelectedTable() != null;
 	}

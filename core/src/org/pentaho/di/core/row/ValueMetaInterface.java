@@ -27,6 +27,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.SocketTimeoutException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -34,6 +37,9 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import org.pentaho.di.compatibility.Value;
+import org.pentaho.di.core.database.DatabaseInterface;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -102,9 +108,12 @@ public interface ValueMetaInterface extends Cloneable
     /** Value type indicating that the value contains binary data: BLOB, CLOB, ... */
     public static final int TYPE_BINARY      = 8;
 
+    /** Value type indicating that the value contains a timestamp with nanosecond precision */
+    public static final int TYPE_TIMESTAMP   = 9;
+
 
     /** The Constant typeCodes. */
-    public static final String[] typeCodes = new String[] { "-", "Number", "String", "Date", "Boolean", "Integer", "BigNumber", "Serializable", "Binary", }; 
+    public static final String[] typeCodes = new String[] { "-", "Number", "String", "Date", "Boolean", "Integer", "BigNumber", "Serializable", "Binary", "Timestamp", }; 
 
     
     
@@ -950,4 +959,39 @@ public interface ValueMetaInterface extends Cloneable
 	 * @param gc The graphical context to draw on.
 	 */
 	public void drawValue(PrimitiveGCInterface gc, Object value) throws KettleValueException;
+	
+	/**
+	 * Investigate JDBC result set metadata at the specified index. If this value metadata is interested in handling this SQL type, it should return the value meta.  Otherwise it should return null.
+	 * @param databaseMeta the database metadata to reference capabilities and so on.
+	 * @param name The name of the new value
+	 * @param rm The result metadata to investigate
+	 * @param index The index to look at (1-based)
+	 * @param ignoreLength Don't look at the length
+	 * @param lazyConversion use lazy conversion
+	 * @return The value metadata if this value should handle the SQL type at the specified index. 
+	 * @throws KettleDatabaseException In case something went wrong.
+	 */
+	public ValueMetaInterface getValueFromSQLType(DatabaseMeta databaseMeta, String name, ResultSetMetaData rm, int index, boolean ignoreLength, boolean lazyConversion) throws KettleDatabaseException;
+
+  /**
+   * Get a value from a result set column based on the current value metadata
+   * @param databaseInterface the database metadata to use
+   * @param resultSet The JDBC result set to read from
+   * @param index The column index (0-based)
+   * @return The Kettle native data type based on the value metadata
+   * @throws KettleDatabaseException in case something goes wrong.
+   */
+  public Object getValueFromResultSet(DatabaseInterface databaseInterface, ResultSet resultSet, int index) throws KettleDatabaseException;
+
+  /**
+   * Set a value on a JDBC prepared statement on the specified position
+   * 
+   * @param databaseMeta the database metadata to reference
+   * @param preparedStatement The prepared statement
+   * @param index the column index (1-based)
+   * @param data the value to set
+   * @throws KettleDatabaseException in case something goes wrong
+   */
+  public void setPreparedStatementValue(DatabaseMeta databaseMeta, PreparedStatement preparedStatement, int index, Object data) throws KettleDatabaseException;
+  
 }

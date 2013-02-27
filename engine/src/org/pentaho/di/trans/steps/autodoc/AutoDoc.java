@@ -25,12 +25,14 @@ package org.pentaho.di.trans.steps.autodoc;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.gui.AreaOwner;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
@@ -219,10 +221,13 @@ public class AutoDoc extends BaseStep implements StepInterface
 		  Object[] outputRow = RowDataUtil.resizeArray(row, data.outputRowMeta.size());
 		  int outputIndex = getInputRowMeta().size();
 		  
+		  List<AreaOwner> imageAreaList = null;
+		  
 		  switch(location.getObjectType()) {
 		  case TRANSFORMATION:
   		  TransformationInformation ti = TransformationInformation.getInstance();
   		  TransMeta transMeta = ti.getTransMeta(location);
+  		  imageAreaList = ti.getImageAreaList(location);
   		  
   		  // TransMeta
   		  outputRow[outputIndex++] = transMeta;
@@ -231,6 +236,7 @@ public class AutoDoc extends BaseStep implements StepInterface
 		  case JOB:
         JobInformation ji = JobInformation.getInstance();
         JobMeta jobMeta = ji.getJobMeta(location);
+        imageAreaList = ji.getImageAreaList(location);
         
         // TransMeta
         outputRow[outputIndex++] = jobMeta;
@@ -287,6 +293,10 @@ public class AutoDoc extends BaseStep implements StepInterface
 
       if (meta.isIncludingLastExecutionResult()) {
         outputRow[outputIndex++] = KettleFileTableModel.getLogging(location);
+      }
+      
+      if (meta.isIncludingImageAreaList()) {
+        outputRow[outputIndex++] = imageAreaList;
       }
       
       putRow(data.outputRowMeta, outputRow);

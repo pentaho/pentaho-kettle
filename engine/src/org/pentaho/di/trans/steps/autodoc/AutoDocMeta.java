@@ -82,8 +82,17 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
 	private boolean includingImage;
 	private boolean includingLoggingConfiguration;
 	private boolean includingLastExecutionResult;
+  private boolean includingImageAreaList;
 	
-	public AutoDocMeta()
+	public boolean isIncludingImageAreaList() {
+    return includingImageAreaList;
+  }
+
+  public void setIncludingImageAreaList(boolean includingImageAreaList) {
+    this.includingImageAreaList = includingImageAreaList;
+  }
+
+  public AutoDocMeta()
 	{
 		super(); // allocate BaseStepMeta
 		
@@ -113,6 +122,7 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
 	  includingImage=true;
 	  includingLoggingConfiguration=true;
 	  includingLastExecutionResult=true;
+    includingLastExecutionResult=false;
 	}
 	
 	private void readData(Node stepnode) throws KettleXMLException
@@ -130,6 +140,7 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
 			includingImage = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "include_image"));
 			includingLoggingConfiguration = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "include_logging_config"));
 			includingLastExecutionResult = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "include_last_exec_result"));
+      includingImageAreaList = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "include_image_area_list"));
 
 			try {
 				outputType = KettleReportBuilder.OutputType.valueOf( XMLHandler.getTagValue(stepnode, "output_type") );
@@ -162,6 +173,7 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
 		retval.append("    ").append(XMLHandler.addTagValue("include_image", includingImage));
 		retval.append("    ").append(XMLHandler.addTagValue("include_logging_config", includingLoggingConfiguration));
 		retval.append("    ").append(XMLHandler.addTagValue("include_last_exec_result", includingLastExecutionResult));
+    retval.append("    ").append(XMLHandler.addTagValue("include_image_area_list", includingImageAreaList));
 
 		return retval.toString();
 	}
@@ -187,6 +199,7 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
 			includingImage = rep.getStepAttributeBoolean(id_step, "include_image");
 			includingLoggingConfiguration = rep.getStepAttributeBoolean(id_step, "include_logging_config");
 			includingLastExecutionResult = rep.getStepAttributeBoolean(id_step, "include_last_exec_result");
+      includingImageAreaList = rep.getStepAttributeBoolean(id_step, "include_image_area_list");
 		}
 		catch (Exception e)
 		{
@@ -210,6 +223,7 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
 			rep.saveStepAttribute(id_transformation, id_step, "include_image", includingImage);
 			rep.saveStepAttribute(id_transformation, id_step, "include_logging_config", includingLoggingConfiguration);
 			rep.saveStepAttribute(id_transformation, id_step, "include_last_exec_result", includingLastExecutionResult);
+      rep.saveStepAttribute(id_transformation, id_step, "include_image_area_list", includingImageAreaList);
 		}
 		catch (Exception e)
 		{
@@ -264,6 +278,11 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
       }
       if (includingLastExecutionResult) {
         valueMeta = new ValueMeta("last_result", ValueMetaInterface.TYPE_STRING);
+        valueMeta.setOrigin(origin);
+        rowMeta.addValueMeta(valueMeta);
+      }
+      if (includingImageAreaList) {
+        valueMeta = new ValueMeta("area", ValueMetaInterface.TYPE_SERIALIZABLE);
         valueMeta.setOrigin(origin);
         rowMeta.addValueMeta(valueMeta);
       }

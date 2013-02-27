@@ -179,8 +179,7 @@
         <menuitem id="help-tip" label="${Spoon.Menu.Help.Tip}" command="spoon.showTips()" />
         <menuitem id="help-welcome" label="${Spoon.Menu.Help.Welcome}" command="spoon.showWelcomePage()" />
         <menuseparator id="help-separator-1"/>
-        <menuitem id="help-step-plugins" label="${Spoon.Menu.StepPlugins}" command="spoon.helpShowStepPlugins()" />
-        <menuitem id="help-jobentry-plugins" label="${Spoon.Menu.JobEntryPlugins}" command="spoon.helpShowJobEntryPlugins()" />
+        <menuitem id="help-plugins" label="${Spoon.Menu.ShowPluginInfo}" command="spoon.showPluginInfo()" />
         <menuitem id="help-about" label="${Spoon.Menu.About}" command="spoon.helpAbout()" />
       </menupopup>
     </menu>

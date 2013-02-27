@@ -22,10 +22,9 @@
 
 package org.pentaho.di.ui.core.database.dialog;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.ui.xul.binding.Binding;
@@ -50,8 +49,6 @@ public class XulStepFieldsController extends AbstractXulEventHandler {
 	private XulStepFieldsModel model;
 	private Boolean showAcceptButton;
 	private RowMetaInterface rowMetaInterface;
-
-	private static Log logger = LogFactory.getLog(XulStepFieldsController.class);
 
 	public XulStepFieldsController(Shell aShell, DatabaseMeta aDatabaseMeta, String schemaTableCombo, RowMetaInterface anInput) {
 		this.shell = aShell;
@@ -156,7 +153,7 @@ public class XulStepFieldsController extends AbstractXulEventHandler {
 			this.stepNameBinding.fireSourceChanged();
 			this.acceptButtonBinding.fireSourceChanged();
 		} catch (Exception e) {
-			logger.info(e);
+			LogChannel.GENERAL.logError("Error firing bindings", e);
 		}
 	}
 }

@@ -90,6 +90,7 @@
 				<groupbox id="identifier-group-box" orient="vertical">
 					<caption label="${DatabaseDialog.USER_IDENTIFIERS}" />
 					<checkbox id="supports-boolean-data-type" label="${DatabaseDialog.label.SupportsBooleanDataType}" checked="false" />
+					<checkbox id="supports-timestamp-data-type" label="${DatabaseDialog.label.SupportsTimestampDataType}" checked="false" />
 					<checkbox id="quote-identifiers-check" label="${DatabaseDialog.label.AdvancedQuoteAllFields}" checked="false" />
 					<checkbox id="force-lower-case-check" label="${DatabaseDialog.label.AdvancedForceIdentifiersLowerCase}" checked="false" />
 					<checkbox id="force-upper-case-check" label="${DatabaseDialog.label.AdvancedForceIdentifiersUpperCase}" checked="false" />

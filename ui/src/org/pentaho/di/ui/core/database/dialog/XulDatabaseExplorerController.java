@@ -28,8 +28,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
@@ -39,6 +37,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.DatabaseMetaInformation;
 import org.pentaho.di.core.database.Schema;
 import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LoggingObject;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
@@ -49,6 +48,7 @@ import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
+import org.pentaho.di.ui.core.dialog.StepFieldsDialog;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
@@ -96,13 +96,11 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
   private static final String STRING_VIEWS = BaseMessages.getString(PKG, "DatabaseExplorerDialog.Views.Label");
   private static final String STRING_SYNONYMS = BaseMessages.getString(PKG, "DatabaseExplorerDialog.Synonyms.Label");
 
-  private static Log logger = LogFactory.getLog(XulDatabaseExplorerController.class);
-
-  public XulDatabaseExplorerController(Shell aShell, DatabaseMeta aMeta, List<DatabaseMeta> aDataBases, boolean aLook) {
-    this.model = new XulDatabaseExplorerModel(aMeta);
-    this.shell = aShell;
+  public XulDatabaseExplorerController(Shell shell, DatabaseMeta databaseMeta, List<DatabaseMeta> databases, boolean aLook) {
+    this.model = new XulDatabaseExplorerModel(databaseMeta);
+    this.shell = shell;
     this.bf = new DefaultBindingFactory();
-    this.databases = aDataBases;
+    this.databases = databases;
     this.dbcache = DBCache.getInstance();
     this.isJustLook = aLook;
   }
@@ -226,8 +224,19 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
   }
 
   public void showLayout() {
-    XulStepFieldsDialog theStepFieldsDialog = new XulStepFieldsDialog(this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), this.model.getTable(), null, model.getSchema());
-    theStepFieldsDialog.open(false);
+    
+    DatabaseMeta databaseMeta = model.getDatabaseMeta();
+    String schemaTable = databaseMeta.getQuotedSchemaTableCombination(model.getSchema(), model.getTable());
+    
+    String theSql = databaseMeta.getSQLQueryFields(schemaTable);
+    GetQueryFieldsProgressDialog theProgressDialog = new GetQueryFieldsProgressDialog(this.shell, databaseMeta, theSql);
+    RowMetaInterface fields = theProgressDialog.open();
+    
+    StepFieldsDialog stepFieldsDialog = new StepFieldsDialog(shell, databaseMeta, SWT.NONE, schemaTable, fields);
+    stepFieldsDialog.setShellText(BaseMessages.getString(PKG, "DatabaseExplorerDialog.TableLayout.ShellText"));
+    stepFieldsDialog.setOriginText(BaseMessages.getString(PKG, "DatabaseExplorerDialog.TableLayout.OriginText"));
+    stepFieldsDialog.setShowEditButton(false);
+    stepFieldsDialog.open();
   }
 
   public void displayRowCount() {
@@ -245,7 +254,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
         theMessageBox.open();
       }
     } catch (XulException e) {
-      logger.error(e);
+      LogChannel.GENERAL.logError("Error displaying row count", e);
     }
   }
 
@@ -259,7 +268,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
       // this.selectedSchemaBinding.fireSourceChanged();
       // }
     } catch (Exception e) {
-      logger.info(e);
+      LogChannel.GENERAL.logError("Error firing bindings in database explorer", e);
     }
   }
 
@@ -311,8 +320,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
       }
 
     } catch (Exception e) {
-      logger.error(e);
-      e.printStackTrace();
+      LogChannel.GENERAL.logError("Error previewing rows", e);
     }
   }
 
@@ -590,7 +598,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
         try {
           this.limit = Integer.parseInt(aRetVal.toString());
         } catch (NumberFormatException e) {
-          logger.equals(e);
+          LogChannel.GENERAL.logError("Error parsing string '"+aRetVal.toString()+"'", e);
         }
       }
     }

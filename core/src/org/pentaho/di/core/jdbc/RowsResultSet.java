@@ -201,11 +201,13 @@ public class RowsResultSet implements ResultSet {
   }
 
   @Override
+  @Deprecated
   public BigDecimal getBigDecimal(int index, int arg1) throws SQLException {
     return getBigDecimal(index);
   }
 
   @Override
+  @Deprecated
   public BigDecimal getBigDecimal(String columnName, int arg1) throws SQLException {
     return getBigDecimal(rowMeta.indexOfValue(columnName)+1);
   }
@@ -433,6 +435,7 @@ public class RowsResultSet implements ResultSet {
   }
 
   @Override
+  @Deprecated
   public String getString(int index) throws SQLException {
     try {
       String string = rowMeta.getString(rows.get(currentIndex), index-1);
@@ -505,11 +508,13 @@ public class RowsResultSet implements ResultSet {
   }
 
   @Override
+  @Deprecated
   public InputStream getUnicodeStream(int arg0) throws SQLException {
     throw new SQLException("Unicode streams are not supported");
   }
 
   @Override
+  @Deprecated
   public InputStream getUnicodeStream(String arg0) throws SQLException {
     throw new SQLException("Unicode streams are not supported");
   }
@@ -838,6 +843,7 @@ public class RowsResultSet implements ResultSet {
   }
 
   @Override
+  @Deprecated
   public void updateNull(int arg0) throws SQLException {
     throw new SQLException("Updates are not supported");
   }

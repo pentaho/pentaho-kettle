@@ -24,8 +24,6 @@ package org.pentaho.di.core.logging;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.log4j.spi.LoggingEvent;
-
 public class BufferLine {
 	private static AtomicInteger sequence = new AtomicInteger(0);
 	

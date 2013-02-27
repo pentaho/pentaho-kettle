@@ -40,8 +40,7 @@
         <menuitem id="help-tip" visible="true"/>
         <menuitem id="help-welcome" visible="true"/>
         <menuseparator id="help-separator-1" visible="true"/>
-        <menuitem id="help-step-plugins" visible="true"/>
-        <menuitem id="help-jobentry-plugins" visible="true"/>
+        <menuitem id="help-plugins" visible="true"/>
         <menuitem id="help-about" visible="true"/>
     
     <!--   

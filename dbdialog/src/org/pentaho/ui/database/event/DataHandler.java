@@ -182,6 +182,8 @@ public class DataHandler extends AbstractXulEventHandler {
 
   XulCheckbox supportBooleanDataType;
 
+  XulCheckbox supportTimestampDataType;
+
   XulCheckbox quoteIdentifiersCheck;
 
   XulCheckbox lowerCaseIdentifiersCheck;
@@ -605,6 +607,10 @@ public class DataHandler extends AbstractXulEventHandler {
     if (supportBooleanDataType != null) {
         meta.setSupportsBooleanDataType(supportBooleanDataType.isChecked());
     }
+    
+    if (supportTimestampDataType != null) {
+      meta.setSupportsTimestampDataType(supportTimestampDataType.isChecked());
+  }
 
     if (quoteIdentifiersCheck != null) {
       meta.setQuoteAllFields(quoteIdentifiersCheck.isChecked());
@@ -756,6 +762,10 @@ public class DataHandler extends AbstractXulEventHandler {
 
     if (supportBooleanDataType != null) {
       supportBooleanDataType.setChecked(meta.supportsBooleanDataType());
+    }
+
+    if (supportTimestampDataType != null) {
+      supportTimestampDataType.setChecked(meta.supportsTimestampDataType());
     }
 
     if (quoteIdentifiersCheck != null) {
@@ -1270,6 +1280,7 @@ public class DataHandler extends AbstractXulEventHandler {
     poolingParameterDescriptionLabel = (XulLabel) document.getElementById("pool-parameter-description-label"); //$NON-NLS-1$ 
     poolingDescriptionLabel = (XulLabel) document.getElementById("pooling-description-label"); //$NON-NLS-1$ 
     supportBooleanDataType = (XulCheckbox) document.getElementById("supports-boolean-data-type"); //$NON-NLS-1$;
+    supportTimestampDataType = (XulCheckbox) document.getElementById("supports-timestamp-data-type"); //$NON-NLS-1$;
     quoteIdentifiersCheck = (XulCheckbox) document.getElementById("quote-identifiers-check"); //$NON-NLS-1$;
     lowerCaseIdentifiersCheck = (XulCheckbox) document.getElementById("force-lower-case-check"); //$NON-NLS-1$;
     upperCaseIdentifiersCheck = (XulCheckbox) document.getElementById("force-upper-case-check"); //$NON-NLS-1$;

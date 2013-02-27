@@ -22,7 +22,6 @@
 
 package org.pentaho.di.core.database;
 
-import java.sql.Blob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -55,7 +54,7 @@ import org.pentaho.di.repository.ObjectId;
  * @author Matt
  * @since  11-mrt-2005
  */
-public abstract class BaseDatabaseMeta implements Cloneable
+public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 {
     /**
      * The port number of the database as string: allows for parameterization.
@@ -161,7 +160,13 @@ public abstract class BaseDatabaseMeta implements Cloneable
      * Defaults to "false" for backward compatibility! 
      */
     public static final String ATTRIBUTE_SUPPORTS_BOOLEAN_DATA_TYPE = "SUPPORTS_BOOLEAN_DATA_TYPE";
-    
+
+    /**
+     * Checkbox to allow you to configure if the database supports the Timestamp data type or not.
+     * Defaults to "false" for backward compatibility! 
+     */
+    public static final String ATTRIBUTE_SUPPORTS_TIMESTAMP_DATA_TYPE = "SUPPORTS_TIMESTAMP_DATA_TYPE";
+
     /**
      * Checkbox to allow you to configure if the reserved words will have their case changed during the handleCase call 
      */
@@ -987,7 +992,22 @@ public abstract class BaseDatabaseMeta implements Cloneable
 		attributes.setProperty(ATTRIBUTE_SUPPORTS_BOOLEAN_DATA_TYPE, b?"Y":"N");
 	}
 	
+  /**
+   * @return true if the database supports the Timestamp data type (nanosecond precision and all)
+   */
+  public boolean supportsTimestampDataType() {
+    String supportsTimestamp = attributes.getProperty(ATTRIBUTE_SUPPORTS_TIMESTAMP_DATA_TYPE, "N");
+    return "Y".equalsIgnoreCase(supportsTimestamp);
+  }
 
+  /**
+   * 
+   * @param b Set to true if the database supports the Timestamp data type (nanosecond precision and all)
+   */
+  public void setSupportsTimestampDataType(boolean b) {
+    attributes.setProperty(ATTRIBUTE_SUPPORTS_TIMESTAMP_DATA_TYPE, b?"Y":"N");
+  }
+  
   
   /**
    * @return true if reserved words' case should be preserved
@@ -1887,60 +1907,9 @@ public abstract class BaseDatabaseMeta implements Cloneable
    * @throws KettleDatabaseException
    */
   public Object getValueFromResultSet(ResultSet rs, ValueMetaInterface val, int i) throws KettleDatabaseException {
-    Object data = null;
     
-    try {
-      switch (val.getType()) {
-      case ValueMetaInterface.TYPE_BOOLEAN:
-        data = Boolean.valueOf(rs.getBoolean(i + 1));
-        break;
-      case ValueMetaInterface.TYPE_NUMBER:
-        data = new Double(rs.getDouble(i + 1));
-        break;
-      case ValueMetaInterface.TYPE_BIGNUMBER:
-        data = rs.getBigDecimal(i + 1);
-        break;
-      case ValueMetaInterface.TYPE_INTEGER:
-        data = Long.valueOf(rs.getLong(i + 1));
-        break;
-      case ValueMetaInterface.TYPE_STRING: 
-        if (val.isStorageBinaryString()) {
-          data = rs.getBytes(i + 1);
-        } else {
-          data = rs.getString(i + 1);
-        }
-        break;
-      case ValueMetaInterface.TYPE_BINARY:
-        if (supportsGetBlob()) {
-          Blob blob = rs.getBlob(i + 1);
-          if (blob != null) {
-            data = blob.getBytes(1L, (int) blob.length());
-          } else {
-            data = null;
-          }
-        } else {
-          data = rs.getBytes(i + 1);
-        }
-        break;
-      case ValueMetaInterface.TYPE_DATE:
-        if (val.getPrecision() != 1 && supportsTimeStampToDateConversion()) {
-          data = rs.getTimestamp(i + 1);
-          break; // Timestamp extends java.util.Date
-        } else {
-          data = rs.getDate(i + 1);
-          break;
-        }
-      default:
-        break;
-      }
-      if (rs.wasNull()) {
-        data = null; 
-      }
-    } catch(SQLException e) {
-      throw new KettleDatabaseException("Unable to get value '"+val.toStringMeta()+"' from database resultset, index "+i, e);
-    }
-
-    return data;
+    return val.getValueFromResultSet(this, rs, i);
+    
   }
 
   /**

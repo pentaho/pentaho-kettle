@@ -987,4 +987,14 @@ public interface DatabaseInterface extends Cloneable
    */
   public boolean supportsResultSetMetadataRetrievalOnly();
 
+  /**
+   * @return true if the database supports the Timestamp data type (nanosecond precision and all)
+   */
+  public boolean supportsTimestampDataType();
+
+  /**
+   * 
+   * @param b Set to true if the database supports the Timestamp data type (nanosecond precision and all)
+   */
+  public void setSupportsTimestampDataType(boolean b);
 }

@@ -245,26 +245,33 @@ public class SharedObjects
         objectsMap.remove(key);
     }
 
-    public void saveToFile() throws IOException, KettleException
-    {
-        OutputStream outputStream = KettleVFS.getOutputStream(filename, false);
-        
-        PrintStream out = new PrintStream(outputStream);
-        
-        out.print(XMLHandler.getXMLHeader(Const.XML_ENCODING));
-        out.println("<"+XML_TAG+">");
-        
-        Collection<SharedObjectInterface> collection = objectsMap.values();
-        for (SharedObjectInterface sharedObject : collection)
-        {
-            out.println(sharedObject.getXML());
-        }
-
-        out.println("</"+XML_TAG+">");
-        
-        out.flush();
-        out.close();
-        outputStream.close();
+    public void saveToFile() throws IOException, KettleException {
+      FileObject fileObject = KettleVFS.getFileObject(filename);
+  
+      if (fileObject.exists()) {
+        // Create a backup before overwriting...
+        //
+        FileObject backupFile = KettleVFS.getFileObject(filename + ".backup");
+        fileObject.moveTo(backupFile);
+      }
+  
+      OutputStream outputStream = KettleVFS.getOutputStream(fileObject, false);
+  
+      PrintStream out = new PrintStream(outputStream);
+  
+      out.print(XMLHandler.getXMLHeader(Const.XML_ENCODING));
+      out.println("<" + XML_TAG + ">");
+  
+      Collection<SharedObjectInterface> collection = objectsMap.values();
+      for (SharedObjectInterface sharedObject : collection) {
+        out.println(sharedObject.getXML());
+      }
+  
+      out.println("</" + XML_TAG + ">");
+  
+      out.flush();
+      out.close();
+      outputStream.close();
     }
 
 	/**

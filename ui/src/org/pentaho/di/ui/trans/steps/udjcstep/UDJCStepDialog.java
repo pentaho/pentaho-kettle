@@ -116,7 +116,7 @@ public class UDJCStepDialog extends BaseStepDialog implements StepDialogInterfac
 	private TreeItem		wTreeClassesItem;
 	private Listener		lsTree;
 
-	private Image			imageActiveScript, imageInactiveScript, imageInputFields, imageOutputFields, imageArrowOrange, imageArrowGreen, imageUnderGreen;
+	protected Image			imageActiveScript, imageInactiveScript, imageInputFields, imageOutputFields, imageArrowOrange, imageArrowGreen, imageUnderGreen;
 
 	private CTabFolder		folder, wTabFolder;
 	private Menu			cMenu, tMenu;

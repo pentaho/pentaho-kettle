@@ -43,6 +43,10 @@ public interface LogChannelInterface {
    * @param containerObjectId the containerObjectId to set
    */
   public void setContainerObjectId(String containerObjectId);
+  
+  public String getFilter();
+  
+  public void setFilter(String filter);
     
   public boolean isBasic();
 

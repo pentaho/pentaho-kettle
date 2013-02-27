@@ -28,7 +28,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.StringTokenizer;
 
-import org.apache.log4j.Logger;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
 
 import com.enterprisedt.net.ftp.FTPFile;
@@ -65,7 +65,6 @@ import com.enterprisedt.net.ftp.FTPFileParser;
 public class MVSFileParser extends FTPFileParser {
 
   private static Class<?> PKG = MVSFileParser.class; // for i18n purposes, needed by Translator2!! 
-  private static Logger log4j = Logger.getLogger(MVSFileParser.class);
 
   /*** DO NOT TRANSLATE THESE ***/
   private static final String PARSER_KEY = "MVS"; //$NON-NLS-1$
@@ -86,6 +85,12 @@ public class MVSFileParser extends FTPFileParser {
   private SimpleDateFormat dateTimeFormat; // The DateFormat object to parse "last modified" date+time with.
   
   private boolean partitionedDataset = false; // If true, It's a partitioned data set listing
+  
+  private LogChannelInterface log;
+  
+  public MVSFileParser(LogChannelInterface log) {
+    this.log = log;
+  }
   
   /************************ Abstract Class Implementations *************************/
   
@@ -119,17 +124,18 @@ public class MVSFileParser extends FTPFileParser {
   @Override
   public boolean isValidFormat(String[] listing) {
 
-    if (log4j.isDebugEnabled()) {log4j.debug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Checking.Parser"));} //$NON-NLS-1$
+    if (log.isDebug()) {
+      log.logDebug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Checking.Parser"));} //$NON-NLS-1$
     if (listing.length > 0) {
       String[] header = splitMVSLine(listing[0]); // first line of MVS listings is a header
       if ( (header.length == FOLDER_LISTING_LENGTH_NORMAL) || (header.length == FOLDER_LISTING_LENGTH_ARCIVE) ) {
         if (header[FOLDER_HEADER_TYPE_IDX].equals(HEADER_VOLUME) ) { 
           this.partitionedDataset = false; // This is a directory listing, not PDS listing
-          if (log4j.isInfoEnabled()) {log4j.debug(BaseMessages.getString(PKG, "MVSFileParser.INFO.Detected.Dir"));} //$NON-NLS-1$
+          if (log.isDebug()) {log.logDebug(BaseMessages.getString(PKG, "MVSFileParser.INFO.Detected.Dir"));} //$NON-NLS-1$
           return isValidDirectoryFormat(listing);
         } else if (header[FOLDER_HEADER_TYPE_IDX].equals(HEADER_NAME)) { 
           this.partitionedDataset = true; // Suspect PDS listing.
-          if (log4j.isInfoEnabled()) {log4j.debug(BaseMessages.getString(PKG, "MVSFileParser.INFO.Detected.PDS"));} //$NON-NLS-1$
+          if (log.isDebug()) {log.logDebug(BaseMessages.getString(PKG, "MVSFileParser.INFO.Detected.PDS"));} //$NON-NLS-1$
           return isValidPDSFormat(listing);
         }
       }
@@ -164,7 +170,7 @@ public class MVSFileParser extends FTPFileParser {
   @Override
   public void setLocale(Locale arg0) {
     //
-    if (log4j.isDebugEnabled()) {log4j.debug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Ignore.Locale"));} //$NON-NLS-1$
+    if (log.isDebug()) {log.logDebug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Ignore.Locale"));} //$NON-NLS-1$
   }
 
   /**
@@ -187,7 +193,7 @@ public class MVSFileParser extends FTPFileParser {
   protected FTPFile parsePDSLine(String[] aLine, String raw) throws ParseException {
     FTPFile rtn = null;
     if (aLine[0].equals(HEADER_NAME)) {
-      if (log4j.isDebugEnabled()) {log4j.debug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Skip.Header"));} //$NON-NLS-1$
+      if (log.isDebug()) {log.logDebug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Skip.Header"));} //$NON-NLS-1$
       return null;
     }
     rtn = new FTPFile(raw);
@@ -215,24 +221,24 @@ public class MVSFileParser extends FTPFileParser {
    */
   protected FTPFile parseFolder(String[] aLine, String raw) {
     if (aLine[0].equals(HEADER_VOLUME)) {
-      if (log4j.isDebugEnabled()) {log4j.debug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Skip.Header"));} //$NON-NLS-1$
+      if (log.isDebug()) {log.logDebug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Skip.Header"));} //$NON-NLS-1$
       return null;
     }
     // Directory format
     if (aLine[0].equals(LINE_TYPE_ARCIVE)) { // It's on tape somewhere
-      if (log4j.isDebugEnabled()) {log4j.debug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Skip.ARCIVE"));} //$NON-NLS-1$
+      if (log.isDebug()) {log.logDebug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Skip.ARCIVE"));} //$NON-NLS-1$
       return null;
     }
     if (aLine[0].equals(LINE_TYPE_MIGRATED)) { // It's been moved.
-      if (log4j.isDebugEnabled()) {log4j.debug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Skip.Migrated"));} //$NON-NLS-1$
+      if (log.isDebug()) {log.logDebug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Skip.Migrated"));} //$NON-NLS-1$
       return null;
     }
     if (aLine[5].charAt(0) != 'F' && aLine[5].charAt(0) != 'V') {
-      if (log4j.isDebugEnabled()) {log4j.debug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Skip.recf"));} //$NON-NLS-1$
+      if (log.isDebug()) {log.logDebug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Skip.recf"));} //$NON-NLS-1$
       return null;
     }
     if (aLine[8].charAt(0) != 'P') { // Only handle PO, PS, or PO-E
-      if (log4j.isDebugEnabled()) {log4j.debug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Skip.dso"));} //$NON-NLS-1$
+      if (log.isDebug()) {log.logDebug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Skip.dso"));} //$NON-NLS-1$
       return null;
     }
     // OK, I think I can handle this.
@@ -242,7 +248,7 @@ public class MVSFileParser extends FTPFileParser {
     rtn.setCreated(new Date());
     rtn.setLastModified(new Date());
     if (aLine[8].equals(ENTRY_FILE_TYPE)) {
-      if (log4j.isDebugEnabled()) {log4j.debug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Found.File", aLine[9]));} //$NON-NLS-1$
+      if (log.isDebug()) {log.logDebug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Found.File", aLine[9]));} //$NON-NLS-1$
       // This is a file...
       rtn.setDir(false);
       long l = -1;
@@ -251,7 +257,7 @@ public class MVSFileParser extends FTPFileParser {
       } catch (Exception ignored) { }
       rtn.setSize(l);
     } else {
-      if (log4j.isDebugEnabled()) {log4j.debug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Found.Folder", aLine[9]));} //$NON-NLS-1$
+      if (log.isDebug()) {log.logDebug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Found.Folder", aLine[9]));} //$NON-NLS-1$
       rtn.setDir(true);
     }
     // Left this code here in case last time accessed becomes important.
@@ -299,9 +305,9 @@ public class MVSFileParser extends FTPFileParser {
     for (int i=1; i<listing.length; i++) {
       aLine = splitMVSLine(listing[i]);
       if ( (aLine.length == 2) && (aLine[0].equals(LINE_TYPE_MIGRATED))) {
-        if (log4j.isDebugEnabled()) {log4j.debug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Detected.Migrated"));} //$NON-NLS-1$
+        if (log.isDebug()) {log.logDebug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Detected.Migrated"));} //$NON-NLS-1$
       } else if (aLine.length != 10 && ( !aLine[0].equals(LINE_TYPE_ARCIVE))) { // 10 = regular, ARCIVE=on tape
-        log4j.error(BaseMessages.getString(PKG, "MVSFileParser.ERROR.Invalid.Folder.Line", listing[i])); //$NON-NLS-1$
+        log.logError(BaseMessages.getString(PKG, "MVSFileParser.ERROR.Invalid.Folder.Line", listing[i])); //$NON-NLS-1$
         return false;
       }
       if (dateFormatString != null) {
@@ -330,7 +336,7 @@ public class MVSFileParser extends FTPFileParser {
     for (int i=1; i<listing.length; i++) {
       aLine = splitMVSLine(listing[i]);
       if (aLine.length != 9) { // 9 because there are two fields for changed...
-        log4j.error(BaseMessages.getString(PKG, "MVSFileParser.ERROR.Invalid.PDS.Line", listing[i])); //$NON-NLS-1$
+        log.logError(BaseMessages.getString(PKG, "MVSFileParser.ERROR.Invalid.PDS.Line", listing[i])); //$NON-NLS-1$
         return false;
       }
       if (dateFormatString != null) {
@@ -368,12 +374,12 @@ public class MVSFileParser extends FTPFileParser {
     try {
       dateFormat.parse(dateStr);
     } catch (ParseException ex) {
-      if (log4j.isDebugEnabled()) {
-        if (log4j.isDebugEnabled()) {log4j.debug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Date.Parse.Error"));} //$NON-NLS-1$
+      if (log.isDebug()) {
+        if (log.isDebug()) {log.logDebug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Date.Parse.Error"));} //$NON-NLS-1$
       }
       if ( (alternateFormatString != null) ) {
-        if (log4j.isDebugEnabled()) {
-          if (log4j.isDebugEnabled()) {log4j.debug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Date.Parse.Choose.Alt"));} //$NON-NLS-1$
+        if (log.isDebug()) {
+          if (log.isDebug()) {log.logDebug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Date.Parse.Choose.Alt"));} //$NON-NLS-1$
         }
         dateFormatString = alternateFormatString;
         dateFormat = new SimpleDateFormat(dateFormatString);
@@ -384,7 +390,7 @@ public class MVSFileParser extends FTPFileParser {
           return false;
         }
       } else {
-        log4j.error(BaseMessages.getString(PKG, "MVSFileParser.ERROR.Date.Parse.Fail", dateStr)); //$NON-NLS-1$
+        log.logError(BaseMessages.getString(PKG, "MVSFileParser.ERROR.Date.Parse.Fail", dateStr)); //$NON-NLS-1$
         return false;
       }
     }
@@ -408,7 +414,7 @@ public class MVSFileParser extends FTPFileParser {
    * @param dateStr
    */
   protected void guessDateFormat(String dateStr) {
-    if (log4j.isDebugEnabled()) {log4j.debug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Guess.Date"));} //$NON-NLS-1$
+    if (log.isDebug()) {log.logDebug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Guess.Date"));} //$NON-NLS-1$
     String[] dateSplit = dateStr.split("/"); //$NON-NLS-1$
     String yrFmt = null;
     int yrPos = -1;
@@ -439,7 +445,7 @@ public class MVSFileParser extends FTPFileParser {
           fmt.append(i>0?"/":""); //$NON-NLS-1$ //$NON-NLS-2$
           fmt.append(tmp[i] == null ? "MM":tmp[i]); //$NON-NLS-1$
         }
-        if (log4j.isDebugEnabled()) {log4j.debug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Guess.Date.Obvious"));} //$NON-NLS-1$
+        if (log.isDebug()) {log.logDebug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Guess.Date.Obvious"));} //$NON-NLS-1$
       } else {
         // OK, we have something like 2010/01/01 - I can't
         // tell month from day. So, we'll guess. If it doesn't work on a later
@@ -454,19 +460,19 @@ public class MVSFileParser extends FTPFileParser {
           altFmt.append("dd/MM/").append(yrFmt); //$NON-NLS-1$
         }
         this.alternateFormatString = altFmt.toString();
-        if (log4j.isDebugEnabled()) {log4j.debug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Guess.Date.Ambiguous"));} //$NON-NLS-1$
+        if (log.isDebug()) {log.logDebug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Guess.Date.Ambiguous"));} //$NON-NLS-1$
       }
       this.dateFormatString = fmt.toString();
       this.dateFormat = new SimpleDateFormat(dateFormatString);
-      if (log4j.isDebugEnabled()) {log4j.debug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Guess.Date.Decided", this.dateFormatString));} //$NON-NLS-1$
+      if (log.isDebug()) {log.logDebug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Guess.Date.Decided", this.dateFormatString));} //$NON-NLS-1$
       try {
         dateFormat.parse(dateStr);
       } catch (ParseException ex) {
-        if (log4j.isDebugEnabled()) {log4j.debug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Guess.Date.Unparsable", dateStr));} //$NON-NLS-1$
+        if (log.isDebug()) {log.logDebug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Guess.Date.Unparsable", dateStr));} //$NON-NLS-1$
       }
     } else {
       // looks ilke something like 01/02/05 - where's the year?
-      if (log4j.isDebugEnabled()) {log4j.debug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Guess.Date.Year.Ambiguous"));} //$NON-NLS-1$
+      if (log.isDebug()) {log.logDebug(BaseMessages.getString(PKG, "MVSFileParser.DEBUG.Guess.Date.Year.Ambiguous"));} //$NON-NLS-1$
       return;
     }
     

@@ -38,10 +38,7 @@ import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
-import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.ui.spoon.XulSpoonResourceBundle;
-import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulLoader;
@@ -61,7 +58,7 @@ import org.pentaho.ui.xul.impl.XulEventHandler;
  * Date: Jan 28, 2013
  */
 public abstract class BaseStepGenericXulDialog extends AbstractXulEventHandler {
-  private static Class<?> PKG = StepInterface.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  // private static Class<?> PKG = StepInterface.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject("Step dialog",
       LoggingObjectType.STEPDIALOG, null);

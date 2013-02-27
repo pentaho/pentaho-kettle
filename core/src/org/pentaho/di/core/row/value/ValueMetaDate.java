@@ -15,6 +15,10 @@ public class ValueMetaDate extends ValueMetaBase implements ValueMetaInterface {
 		super(name, ValueMetaInterface.TYPE_DATE);
 	}
 	
+	public ValueMetaDate(String name, int type) {
+	  super(name, type);
+	}
+	
 	@Override
 	public Date getDate(Object object) throws KettleValueException {
 		return super.getDate(object);

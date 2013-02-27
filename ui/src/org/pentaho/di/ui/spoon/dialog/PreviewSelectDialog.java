@@ -38,7 +38,6 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -63,18 +62,20 @@ public class PreviewSelectDialog extends Dialog
 	private Listener lsPreview, lsCancel;
 
 	private Shell         shell;
-	private TransMeta     trans;
+	private TransMeta     transMeta;
 	
 	public String previewSteps[];
 	public int    previewSizes[];
 	
 	private PropsUI props;
 	
-	public PreviewSelectDialog(Shell parent, int style, LogWriter l, PropsUI props, TransMeta tr)
+	public PreviewSelectDialog(Shell parent, int style, TransMeta transMeta)
 	{
 		super(parent, style);
-		trans=tr;
-		this.props=props;
+		
+		this.transMeta=transMeta;
+		this.props=PropsUI.getInstance();
+		
 		previewSteps=null;
 		previewSizes=null;
 	}
@@ -106,7 +107,7 @@ public class PreviewSelectDialog extends Dialog
 		fdlFields.top  = new FormAttachment(0, margin);
 		wlFields.setLayoutData(fdlFields);
 		
-		List<StepMeta> usedSteps = trans.getUsedSteps(); 
+		List<StepMeta> usedSteps = transMeta.getUsedSteps(); 
 		final int FieldsRows=usedSteps.size();
 		
 		ColumnInfo[] colinf = {
@@ -114,7 +115,7 @@ public class PreviewSelectDialog extends Dialog
 		  new ColumnInfo( BaseMessages.getString(PKG, "PreviewSelectDialog.Column.PreviewSize"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //Preview size
 		};
 		
-		wFields=new TableView(trans, shell, 
+		wFields=new TableView(transMeta, shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
 						      colinf, 
 						      FieldsRows,  
@@ -172,8 +173,8 @@ public class PreviewSelectDialog extends Dialog
 		String prSteps[] = props.getLastPreview();
 		int    prSizes[] = props.getLastPreviewSize();
 		String name;
-		List<StepMeta> selectedSteps = trans.getSelectedSteps();
-		List<StepMeta> usedSteps = trans.getUsedSteps();
+		List<StepMeta> selectedSteps = transMeta.getSelectedSteps();
+		List<StepMeta> usedSteps = transMeta.getUsedSteps();
 		
 		if (selectedSteps.size()==0) {
 		

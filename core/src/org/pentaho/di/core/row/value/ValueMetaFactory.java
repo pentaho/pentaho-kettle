@@ -116,4 +116,17 @@ public class ValueMetaFactory {
     }
     return ValueMetaInterface.TYPE_NONE;
   }
+  
+  public static List<ValueMetaInterface> getValueMetaPluginClasses() throws KettlePluginException {
+    
+    List<ValueMetaInterface> list = new ArrayList<ValueMetaInterface>();
+    
+    List<PluginInterface> plugins = pluginRegistry.getPlugins(ValueMetaPluginType.class);
+    for (PluginInterface plugin : plugins) {
+      ValueMetaInterface valueMetaInterface = (ValueMetaInterface)pluginRegistry.loadClass(plugin);
+      list.add(valueMetaInterface);
+    }
+    
+    return list;
+  }
 }

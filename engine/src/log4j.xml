@@ -48,8 +48,20 @@
        <priority value="WARN"/>
    </category>
    
+   <category name="org.apache.commons.vfs">
+       <priority value="WARN"/>
+   </category>
+   
    <category name="org.mortbay">
       <priority value="ERR"/>
+   </category>
+   
+   <category name="org.slf4">
+      <priority value="ERR"/>
+   </category>
+   
+   <category name="org.owasp.esapi">
+     <priority value="NONE" />
    </category>
 
    <category name="java.net">

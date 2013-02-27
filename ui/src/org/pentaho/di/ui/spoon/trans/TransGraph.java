@@ -35,7 +35,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
-import org.apache.log4j.spi.LoggingEvent;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -109,6 +108,7 @@ import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogMessage;
 import org.pentaho.di.core.logging.LogParentProvidedInterface;
+import org.pentaho.di.core.logging.LoggingEvent;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.LoggingRegistry;

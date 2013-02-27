@@ -27,7 +27,9 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
  * Verify the {@link BaseDatabaseMeta} can properly parse a script for individual statements
@@ -43,7 +45,40 @@ public class SQLStatementParserTest extends TestCase {
   private class BaseDatabaseMetaForTest extends BaseDatabaseMeta {
     @Override
     public int[] getAccessTypeList() {
+      return new int[0];
+    }
+
+    @Override
+    public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc,
+        boolean add_fieldname, boolean add_cr) {
       return null;
+    }
+
+    @Override
+    public String getDriverClass() {
+      return "";
+    }
+
+    @Override
+    public String getURL(String hostname, String port, String databaseName) throws KettleDatabaseException {
+      return null;
+    }
+
+    @Override
+    public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
+        String pk, boolean semicolon) {
+      return null;
+    }
+
+    @Override
+    public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
+        String pk, boolean semicolon) {
+      return null;
+    }
+
+    @Override
+    public String[] getUsedLibraries() {
+      return new String[0];
     }
   };
 

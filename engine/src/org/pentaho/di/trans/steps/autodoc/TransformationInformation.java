@@ -28,6 +28,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.pentaho.di.core.Const;
@@ -63,6 +64,7 @@ public class TransformationInformation {
 	private class TransformationInformationValues {
 		public BufferedImage image;
 		public TransMeta transMeta;
+		public List<AreaOwner> areaOwners;
 	}
 
 	private Map<ReportSubjectLocation, TransformationInformationValues>	map;
@@ -78,6 +80,11 @@ public class TransformationInformation {
 	public TransMeta getTransMeta(ReportSubjectLocation location) throws KettleException {
 		return getValues(location).transMeta;
 	}
+
+  public List<AreaOwner> getImageAreaList(ReportSubjectLocation location) throws KettleException {
+    return getValues(location).areaOwners;
+  }
+
 
 	private TransformationInformationValues getValues(ReportSubjectLocation location) throws KettleException {
 		TransformationInformationValues values = map.get(location);
@@ -122,7 +129,8 @@ public class TransformationInformation {
 		// Paint the transformation...
 		//
 		GCInterface gc = new SwingGC(null, area, iconsize, 50, 20);
-		TransPainter painter = new TransPainter(gc, transMeta, area, bar, bar, null, null, null, new ArrayList<AreaOwner>(), new ArrayList<StepMeta>(), 
+		List<AreaOwner> areaOwners = new ArrayList<AreaOwner>();
+		TransPainter painter = new TransPainter(gc, transMeta, area, bar, bar, null, null, null, areaOwners, new ArrayList<StepMeta>(), 
 		    iconsize, 1, 0, 0, true, "FreeSans", 10);
     painter.setMagnification(0.5f);
     painter.setTranslationX(min.x);
@@ -142,6 +150,7 @@ public class TransformationInformation {
 	  TransformationInformationValues values = new TransformationInformationValues();
 	  values.transMeta = transMeta;
 	  values.image = image;
+	  values.areaOwners =  areaOwners;
 	    
 		return values;
 	}

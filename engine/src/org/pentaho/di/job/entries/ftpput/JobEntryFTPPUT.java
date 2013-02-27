@@ -886,7 +886,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 	    protected void hookInOtherParsers(FTPClient ftpClient) throws FTPException, IOException {
 	      if (log.isDebug()) {logDebug(BaseMessages.getString(PKG, "JobEntryFTP.DEBUG.Hooking.Parsers"));}
 	      String system = ftpClient.system();
-	      MVSFileParser parser = new MVSFileParser();
+	      MVSFileParser parser = new MVSFileParser(log);
 	      if (log.isDebug()) {logDebug(BaseMessages.getString(PKG, "JobEntryFTP.DEBUG.Created.MVS.Parser"));}
 	      FTPFileFactory factory = new FTPFileFactory(system);
 	      if (log.isDebug()) {logDebug(BaseMessages.getString(PKG, "JobEntryFTP.DEBUG.Created.Factory"));}

@@ -24,6 +24,7 @@ package org.pentaho.di.core.plugins;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -37,6 +38,7 @@ import java.util.Map;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettlePluginException;
+import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.Metrics;
@@ -511,18 +513,30 @@ public class PluginRegistry {
               // What annotation does the plugin type have?
               //
               PluginAnnotationType annotationType = pluginType.getClass().getAnnotation(PluginAnnotationType.class);
-              Class<? extends Annotation> annotationClass = annotationType.value();
-
-              Class<?> clazz = Class.forName(className);
-              Annotation annotation = clazz.getAnnotation(annotationClass);
-
-              if (annotation!=null) {
-                // Register this one!
-                //
-                pluginType.handlePluginAnnotation(clazz, annotation, new ArrayList<String>(), true, null);
+              if (annotationType!=null) {
+                Class<? extends Annotation> annotationClass = annotationType.value();
+  
+                Class<?> clazz = Class.forName(className);
+                Annotation annotation = clazz.getAnnotation(annotationClass);
+  
+                if (annotation!=null) {
+                  // Register this one!
+                  //
+                  pluginType.handlePluginAnnotation(clazz, annotation, new ArrayList<String>(), true, null);
+                } else {
+                  if (CentralLogStore.isInitialized()) {
+                    LogChannel.GENERAL.logDebug("Plugin class "+className+" doesn't contain annotation for plugin type "+pluginType.getName());
+                  }
+                }
+              } else {
+                if (CentralLogStore.isInitialized()) {
+                  LogChannel.GENERAL.logDebug("Plugin class "+className+" doesn't contain valid class for plugin type "+pluginType.getName());
+                }
               }
             } catch(Exception e) {
-              LogChannel.GENERAL.logError("Error registring plugin class from KETTLE_PLUGIN_CLASSES: "+className, e);
+              if (CentralLogStore.isInitialized()) {
+                LogChannel.GENERAL.logError("Error registring plugin class from KETTLE_PLUGIN_CLASSES: "+className+Const.CR+Const.getStackTracker(e));
+              }
             }
           }
         }
@@ -674,8 +688,9 @@ public class PluginRegistry {
 	/**
 	 * @param the type of plugin to get information for
 	 * @return a row buffer containing plugin information for the given plugin type
+	 * @throws KettlePluginException 
 	 */
-	public RowBuffer getPluginInformation(Class<? extends PluginTypeInterface> pluginType)
+	public RowBuffer getPluginInformation(Class<? extends PluginTypeInterface> pluginType) throws KettlePluginException
 	{
 		RowBuffer rowBuffer = new RowBuffer(getPluginInformationRowMeta());
 		for (PluginInterface plugin : getPlugins(pluginType)) {
@@ -683,14 +698,14 @@ public class PluginRegistry {
 	    	Object[] row = new Object[getPluginInformationRowMeta().size()];
 	    	int rowIndex=0;
 	    	
-	    	row[rowIndex++] = plugin.getPluginType().getName();
+	    	row[rowIndex++] = getPluginType(plugin.getPluginType()).getName();
 	    	row[rowIndex++] = plugin.getIds()[0];
 	    	row[rowIndex++] = plugin.getName();
-	    	row[rowIndex++] = plugin.getDescription();
-	    	row[rowIndex++] = plugin.getLibraries().toString();
-	    	row[rowIndex++] = plugin.getImageFile();
+	    	row[rowIndex++] = Const.NVL(plugin.getDescription(), "");
+	    	row[rowIndex++] = Const.isEmpty(plugin.getLibraries()) ? "" : plugin.getLibraries().toString();
+	    	row[rowIndex++] = Const.NVL(plugin.getImageFile(), "");
 	    	row[rowIndex++] = plugin.getClassMap().values().toString();
-	    	row[rowIndex++] = plugin.getCategory();
+	    	row[rowIndex++] = Const.NVL(plugin.getCategory(), "");
 
 	        rowBuffer.getBuffer().add(row);			
 		}
@@ -890,5 +905,19 @@ public class PluginRegistry {
 
   protected List<PluginTypeListener> getListenersForType(Class<? extends PluginTypeInterface> clazz){
     return listeners.get(clazz);
+  }
+  
+  public PluginTypeInterface getPluginType(Class<? extends PluginTypeInterface> pluginTypeClass) throws KettlePluginException {
+    try {
+      // All these plugin type interfaces are singletons...
+      // So we should call a static getInstance() method...
+      //
+      Method method = pluginTypeClass.getMethod("getInstance", new Class[0]);
+      PluginTypeInterface pluginTypeInterface = (PluginTypeInterface) method.invoke(null, new Object[0]);
+      
+      return pluginTypeInterface;
+    } catch(Exception e) {
+      throw new KettlePluginException("Unable to get instance of plugin type: "+pluginTypeClass.getName(), e);
+    }
   }
 }

@@ -25,12 +25,10 @@ package org.pentaho.di.core.logging;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.apache.log4j.Layout;
-import org.apache.log4j.spi.LoggingEvent;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.version.BuildVersion;
 
-public class Log4jKettleLayout extends Layout implements Log4JLayoutInterface {
+public class Log4jKettleLayout {
   private static final ThreadLocal<SimpleDateFormat> LOCAL_SIMPLE_DATE_PARSER = new ThreadLocal<SimpleDateFormat>() {
     protected SimpleDateFormat initialValue() {
       return new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");

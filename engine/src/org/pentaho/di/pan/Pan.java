@@ -33,11 +33,11 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.Log4jFileAppender;
+import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.FileLoggingEventListener;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogLevel;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.plugins.PluginRegistry;
@@ -59,6 +59,8 @@ public class Pan {
 
   private static final String STRING_PAN = "Pan";
 
+  private static FileLoggingEventListener fileLoggingEventListener;
+  
   public static void main(String[] a) throws KettleException {
     KettleEnvironment.init();
     KettleClientEnvironment.getInstance().setClient(KettleClientEnvironment.ClientType.PAN);
@@ -137,12 +139,13 @@ public class Pan {
       optionLogfile = optionLogfileOld;
     }
 
-    Log4jFileAppender fileAppender  = null; 
     if (!Const.isEmpty(optionLogfile)) {
-      fileAppender = LogWriter.createFileAppender(optionLogfile.toString(), true);
-      LogWriter.getInstance().addAppender(fileAppender);
+      fileLoggingEventListener = new FileLoggingEventListener(optionLogfile.toString(), true);
+      CentralLogStore.getAppender().addLoggingEventListener(fileLoggingEventListener);
+    } else {
+      fileLoggingEventListener = null;
     }
-
+    
     if (!Const.isEmpty(optionLoglevel)) {
       log.setLogLevel(LogLevel.getLogLevelForCode(optionLoglevel.toString()));
       log.logMinimal(BaseMessages.getString(PKG, "Pan.Log.Loglevel", log.getLogLevel().getDescription()));
@@ -505,11 +508,7 @@ public class Pan {
       System.out.println(BaseMessages.getString(PKG, "Pan.Log.ErrorOccurred", "" + ke.getMessage()));
 
       log.logError(BaseMessages.getString(PKG, "Pan.Log.UnexpectedErrorOccurred", "" + ke.getMessage()));
-
-      // Close the file appender if any...
-      //
-      LogWriter.closeAndRemoveFileAppender();
-
+  
       exitJVM(2);
     } finally {
       if (rep != null)
@@ -519,9 +518,18 @@ public class Pan {
   }
 
   private static final void exitJVM(int status) {
-    // Close the open appenders...
+    
+    // Let's not forget to close the log file we're writing to...
     //
-    LogWriter.getInstance().close();
+    if (fileLoggingEventListener != null) {
+      try {
+        fileLoggingEventListener.close();
+      } catch(Exception e) {
+        e.printStackTrace(System.err);
+        status = 1;
+      }
+      CentralLogStore.getAppender().removeLoggingEventListener(fileLoggingEventListener);
+    }
 
     System.exit(status);
   }

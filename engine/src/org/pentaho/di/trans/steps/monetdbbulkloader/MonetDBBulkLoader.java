@@ -21,11 +21,15 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.monetdbbulkloader;
 
+import java.io.ByteArrayOutputStream;
+import java.util.Date;
+import java.util.List;
+
 import nl.cwi.monetdb.mcl.io.BufferedMCLReader;
 import nl.cwi.monetdb.mcl.io.BufferedMCLWriter;
 import nl.cwi.monetdb.mcl.net.MapiSocket;
+
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -39,13 +43,13 @@ import org.pentaho.di.core.util.StreamLogger;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.*;
+import org.pentaho.di.trans.step.BaseStep;
+import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.monetdbagilemart.MonetDBRowLimitException;
 import org.pentaho.di.trans.steps.tableagilemart.AgileMartUtil;
-
-import java.io.ByteArrayOutputStream;
-import java.util.Date;
-import java.util.List;
 
 
 /**
@@ -260,11 +264,9 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
                 break;
               }
               line.write(data.quote);
-              // we have to convert to strings to escape '\'s              
-	    				if( str == null ) {
-                line.write(data.nullrepresentation);
-	    				} else {
-		    				// escape any backslashes
+              
+              // escape any backslashes
+              //
               str = str.replace("\\", "\\\\");
               str = str.replace("\"", "\\\"");
               if (meta.isAutoStringWidths()) {
@@ -277,10 +279,10 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
                   str = str.substring(0, len);
                 }
                 line.write(str.getBytes(meta.getEncoding()));
-			    			} else {
-			    				line.write(str.getBytes(meta.getEncoding()));
-                }
-	    				}
+              } else {
+                line.write(str.getBytes(meta.getEncoding()));
+              }
+
               line.write(data.quote);
               break;
             case ValueMetaInterface.TYPE_INTEGER:

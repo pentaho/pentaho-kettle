@@ -33,7 +33,7 @@ public class XulDatabaseExplorerModel extends XulEventSourceAdapter {
 
   // TODO can this be renamed?  it's actually just the root node
 	private XulDatabaseExplorerNode database;
-	private DatabaseMeta databaseMeta;
+	protected DatabaseMeta databaseMeta;
 	private DatabaseExplorerNode selectedNode;
 
 	public XulDatabaseExplorerModel(DatabaseMeta aDatabaseMeta) {
