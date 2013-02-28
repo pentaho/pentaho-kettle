@@ -25,6 +25,5 @@
     <dependency org="pentaho-kettle" name="kettle-ui-swt" rev="TRUNK-SNAPSHOT" changing="true"/>
     <dependency org="log4j" name="log4j" rev="1.2.16" transitive="false"/>
     
-    <dependency org="junit" name="junit" rev="4.7" transitive="false" conf="test->default"/>
   </dependencies>
 </ivy-module>
