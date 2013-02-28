@@ -9,12 +9,11 @@
     <conf name="source"/>
   </configurations>
 
- <!--
+ 
   <publications>
      <artifact name="kettle5-log4j-plugin" type="jar" conf="default"/> 
   </publications>
- -->
-
+ 
   <dependencies defaultconf="dev->default">
     <dependency org="commons-io" name="commons-io" rev="1.4" transitive="false"/>
     <dependency org="commons-vfs" name="commons-vfs" rev="20091118-pentaho" transitive="false"/>
