@@ -1,6 +1,6 @@
 package org.pentaho.di.core.logging;
 
-public class LoggingEvent {
+public class KettleLoggingEvent {
 
   private Object message;
 
@@ -8,11 +8,11 @@ public class LoggingEvent {
 
   private LogLevel level;
 
-  public LoggingEvent() {
+  public KettleLoggingEvent() {
     this(null, System.currentTimeMillis(), LogLevel.BASIC);
   }
 
-  public LoggingEvent(Object message, long timeStamp, LogLevel level) {
+  public KettleLoggingEvent(Object message, long timeStamp, LogLevel level) {
     super();
     this.message = message;
     this.timeStamp = timeStamp;

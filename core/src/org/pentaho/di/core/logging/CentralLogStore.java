@@ -151,7 +151,7 @@ public class CentralLogStore {
      * @param to
      * @return the log lines found
      */
-    public static List<LoggingEvent> getLogBufferFromTo(String parentLogChannelId, boolean includeGeneral, int from, int to) {
+    public static List<KettleLoggingEvent> getLogBufferFromTo(String parentLogChannelId, boolean includeGeneral, int from, int to) {
     	return getInstance().appender.getLogBufferFromTo(parentLogChannelId, includeGeneral, from, to);
     }
 
@@ -165,7 +165,7 @@ public class CentralLogStore {
      * @param to
      * @return
      */
-    public static List<LoggingEvent> getLogBufferFromTo(List<String> channelId, boolean includeGeneral, int from, int to) {
+    public static List<KettleLoggingEvent> getLogBufferFromTo(List<String> channelId, boolean includeGeneral, int from, int to) {
     	return getInstance().appender.getLogBufferFromTo(channelId, includeGeneral, from, to);
     }
     

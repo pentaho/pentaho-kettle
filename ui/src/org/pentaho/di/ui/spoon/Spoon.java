@@ -286,7 +286,6 @@ import org.pentaho.di.version.BuildVersion;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulEventSource;
-import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.components.WaitBoxRunnable;
@@ -588,7 +587,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       String pId = null;
       StringBuffer perspectiveIdBuff = Spoon.getCommandLineOption(commandLineOptions, "perspective").getArgument();
       pId = perspectiveIdBuff.toString();
-      if( !pId.equals("") ) {
+      if( !Const.isEmpty(pId) ) {
     	  Spoon.staticSpoon.startupPerspective = pId;
       }
       SpoonFactory.setSpoonInstance(staticSpoon);
@@ -826,15 +825,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     	  SpoonPerspectiveManager.getInstance().setForcePerspective(true);
       }
 
-    } catch (IllegalArgumentException e1) {
-      // TODO Auto-generated catch block
-      e1.printStackTrace();
-    } catch (XulException e1) {
-      // TODO Auto-generated catch block
-      e1.printStackTrace();
-    } catch (KettleException e1) {
-		// TODO Auto-generated catch block
-		e1.printStackTrace();
+    } catch (Exception e) {
+      LogChannel.GENERAL.logError("Error initializing transformation", e);
     } 
     // addBar();
 
@@ -1287,14 +1279,14 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   /**
    * @param destroy
-   *            Whether or not to distroy the display.
+   *            Whether or not to destroy the display.
    */
   public void setDestroy(boolean destroy) {
     this.destroy = destroy;
   }
 
   /**
-   * @return Returns whether or not we should distroy the display.
+   * @return Returns whether or not we should destroy the display.
    */
   public boolean doDestroy() {
     return destroy;
@@ -1445,7 +1437,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 						  Menu swtm = (Menu) menu.getManagedObject();
 						  swtm.getItems()[swtm.getItemCount()-1].dispose();
 					  }
-					  catch(Throwable t){t.printStackTrace();}
+					  catch(Throwable t){
+					    LogChannel.GENERAL.logError("Error removing XUL menu item", t);
+					  }
 				  }
 			  }
 			  
@@ -1497,7 +1491,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       menuMap.put("slave-server-inst", mainSpoonContainer //$NON-NLS-1$
           .getDocumentRoot().getElementById("slave-server-inst")); //$NON-NLS-1$
     } catch (Throwable t) {
-      t.printStackTrace();
       new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), //$NON-NLS-1$
           BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_MAIN), //$NON-NLS-1$
           new Exception(t));
@@ -5097,7 +5090,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       initialFile = KettleVFS.getFileObject(getLastFileOpened());
       rootFile = KettleVFS.getFileObject(getLastFileOpened()).getFileSystem().getRoot();
     } catch (Exception e) {
-      e.printStackTrace();
       MessageBox messageDialog = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
       messageDialog.setText("Error");
       messageDialog.setMessage(e.getMessage());
@@ -7199,7 +7191,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       try {
       fileLoggingEventListener.close();
       } catch(Exception e) {
-        e.printStackTrace(System.err);
+        LogChannel.GENERAL.logError("Error closing logging file", e);
       }
       CentralLogStore.getAppender().removeLoggingEventListener(fileLoggingEventListener);
     }
@@ -8436,7 +8428,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       	waitForDispose();
 //      	runEventLoop2(getShell());
       } catch (Throwable e) {
-      	e.printStackTrace();
+      	LogChannel.GENERAL.logError("Error starting Spoon shell", e);
       }
       System.out.println("stopping");
   }
@@ -8449,7 +8441,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 	        	//event.doit = quitFile();
 	          } catch (KettleException e1) {
 	            // TODO Auto-generated catch block
-	            e1.printStackTrace();
+	            LogChannel.GENERAL.logError("Error closing Spoon down", e1);
 	          }
 		
 	}    

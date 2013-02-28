@@ -108,7 +108,7 @@ import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogMessage;
 import org.pentaho.di.core.logging.LogParentProvidedInterface;
-import org.pentaho.di.core.logging.LoggingEvent;
+import org.pentaho.di.core.logging.KettleLoggingEvent;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.LoggingRegistry;
@@ -3920,9 +3920,9 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           for (StepMetaDataCombi combi : trans.getSteps()) {
             if (combi.step.getErrors() > 0) {
               String channelId = combi.step.getLogChannel().getLogChannelId();
-              List<LoggingEvent> eventList = CentralLogStore.getLogBufferFromTo(channelId, false, 0, CentralLogStore.getLastBufferLineNr());
+              List<KettleLoggingEvent> eventList = CentralLogStore.getLogBufferFromTo(channelId, false, 0, CentralLogStore.getLastBufferLineNr());
               StringBuilder logText = new StringBuilder();
-              for (LoggingEvent event : eventList) {
+              for (KettleLoggingEvent event : eventList) {
                 Object message = event.getMessage();
                 if (message instanceof LogMessage) {
                   LogMessage logMessage = (LogMessage) message;

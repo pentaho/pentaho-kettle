@@ -28,7 +28,7 @@ import java.util.Date;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.version.BuildVersion;
 
-public class Log4jKettleLayout {
+public class KettleLogLayout {
   private static final ThreadLocal<SimpleDateFormat> LOCAL_SIMPLE_DATE_PARSER = new ThreadLocal<SimpleDateFormat>() {
     protected SimpleDateFormat initialValue() {
       return new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -39,15 +39,15 @@ public class Log4jKettleLayout {
 
   private boolean timeAdded;
 
-  public Log4jKettleLayout() {
+  public KettleLogLayout() {
     this(true);
   }
 
-  public Log4jKettleLayout(boolean addTime) {
+  public KettleLogLayout(boolean addTime) {
     this.timeAdded = addTime;
   }
 
-  public String format(LoggingEvent event) {
+  public String format(KettleLoggingEvent event) {
     // OK, perhaps the logging information has multiple lines of data.
     // We need to split this up into different lines and all format these
     // lines...

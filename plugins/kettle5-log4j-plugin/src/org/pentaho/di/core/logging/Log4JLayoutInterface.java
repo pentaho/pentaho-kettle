@@ -22,29 +22,13 @@
 
 package org.pentaho.di.core.logging;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import org.apache.log4j.spi.LoggingEvent;
 
-public class BufferLine {
-	private static AtomicInteger sequence = new AtomicInteger(0);
-	
-	private int nr;
-	private KettleLoggingEvent event;
-	
-	public BufferLine(KettleLoggingEvent event) {
-		this.event = event;
-		this.nr = sequence.incrementAndGet();
-	}
-	
-	public int getNr() {
-		return nr;
-	}
-
-	public KettleLoggingEvent getEvent() {
-		return event;
-	}	
-	
-	@Override
-	public String toString() {
-		return event.toString();
-	}
+public interface Log4JLayoutInterface
+{
+    public String format(LoggingEvent event);
+    public boolean ignoresThrowable();
+    public void activateOptions();
+    public boolean isTimeAdded();
+    public void setTimeAdded(boolean addTime);
 }

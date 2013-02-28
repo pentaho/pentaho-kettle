@@ -31,6 +31,7 @@ import java.sql.Blob;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
@@ -77,6 +78,9 @@ import org.pentaho.di.core.logging.LogTableInterface;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.Metrics;
+import org.pentaho.di.core.plugins.DatabasePluginType;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -443,7 +447,12 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
     try {
       synchronized (java.sql.DriverManager.class) {
-        Class.forName(classname);
+        PluginInterface plugin = PluginRegistry.getInstance().getPlugin(DatabasePluginType.class, databaseMeta.getDatabaseInterface());
+        
+        ClassLoader classLoader = PluginRegistry.getInstance().getClassLoader(plugin);
+        Class<?> driverClass = classLoader.loadClass(classname);
+        
+        DriverManager.registerDriver(new DelegatingDriver((Driver)driverClass.newInstance()));
       }
     } catch (NoClassDefFoundError e) {
       throw new KettleDatabaseException("Exception while loading class", e);

@@ -115,6 +115,10 @@ public class MarketEntry implements XMLInterface {
       throw new KettleException("The market entry type can't be null");
     }
   }
+  
+  public MarketEntry(String id, MarketEntryType type) throws KettleException {
+    this(id, type, null, null, null, null, null, null, null, null, null, null, null, SupportLevel.NOT_SUPPORTED, null, null, null, null, null);
+  }
 
   @Override
   public boolean equals(Object obj) {
@@ -128,6 +132,12 @@ public class MarketEntry implements XMLInterface {
   public int hashCode() {
     return id.hashCode();
   }
+  
+  @Override
+  public String toString() {
+    return "MarketEntry:"+getType().name()+":"+id;
+  }
+  
   @Override
   public String getXML() throws KettleException {
     StringBuilder xml = new StringBuilder();

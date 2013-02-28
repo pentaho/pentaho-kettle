@@ -45,12 +45,12 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
-import org.pentaho.di.core.logging.Log4jKettleLayout;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LogParentProvidedInterface;
-import org.pentaho.di.core.logging.LoggingEvent;
+import org.pentaho.di.core.logging.KettleLoggingEvent;
 import org.pentaho.di.core.logging.LoggingRegistry;
+import org.pentaho.di.core.logging.KettleLogLayout;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -77,7 +77,7 @@ public class LogBrowser {
 		//
 		final AtomicInteger lastLogId = new AtomicInteger(-1);
 		final AtomicBoolean busy = new AtomicBoolean(false);
-		final Log4jKettleLayout logLayout = new Log4jKettleLayout(true);
+		final KettleLogLayout logLayout = new KettleLogLayout(true);
 		
 		final StyleRange normalLogLineStyle = new StyleRange();
 		normalLogLineStyle.foreground = GUIResource.getInstance().getColorBlue();
@@ -112,7 +112,7 @@ public class LogBrowser {
 							//
 							int lastNr = CentralLogStore.getLastBufferLineNr();
 							if (lastNr>lastLogId.get()) {
-								List<LoggingEvent> logLines = CentralLogStore.getLogBufferFromTo(childIds, true, lastLogId.get(), lastNr);
+								List<KettleLoggingEvent> logLines = CentralLogStore.getLogBufferFromTo(childIds, true, lastLogId.get(), lastNr);
 
 								// The maximum size of the log buffer
 								//
@@ -124,7 +124,7 @@ public class LogBrowser {
 								synchronized(text) {
 									
 									for (int i=0;i<logLines.size();i++) {
-										LoggingEvent event = logLines.get(i);
+										KettleLoggingEvent event = logLines.get(i);
 										String line = logLayout.format(event);
 
 										int start = text.getText().length();

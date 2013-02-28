@@ -116,7 +116,7 @@ public class LogChannel implements LogChannelInterface {
     // Let's not keep everything...
     //
     if (channelLogLevel.getLevel() >= logLevel.getLevel()) {
-      LoggingEvent loggingEvent = new LoggingEvent(logMessage, System.currentTimeMillis(), logLevel);
+      KettleLoggingEvent loggingEvent = new KettleLoggingEvent(logMessage, System.currentTimeMillis(), logLevel);
       CentralLogStore.getAppender().addLogggingEvent(loggingEvent);
     }
   }

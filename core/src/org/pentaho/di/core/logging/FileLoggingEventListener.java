@@ -6,9 +6,10 @@ import java.util.List;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.KettleLogLayout;
 import org.pentaho.di.core.vfs.KettleVFS;
 
-public class FileLoggingEventListener implements LoggingEventListener {
+public class FileLoggingEventListener implements KettleLoggingEventListener {
 
   private String filename;
   private FileObject file;
@@ -17,7 +18,7 @@ public class FileLoggingEventListener implements LoggingEventListener {
   }
 
   private OutputStream outputStream;
-  private Log4jKettleLayout layout;
+  private KettleLogLayout layout;
   
   private KettleException exception;
   private String logChannelId;
@@ -43,7 +44,7 @@ public class FileLoggingEventListener implements LoggingEventListener {
   public FileLoggingEventListener(String logChannelId, String filename, boolean append) throws KettleException {
     this.logChannelId = logChannelId;
     this.filename = filename;
-    this.layout = new Log4jKettleLayout(true);
+    this.layout = new KettleLogLayout(true);
     this.exception = null;
     
     file = KettleVFS.getFileObject(filename);
@@ -56,7 +57,7 @@ public class FileLoggingEventListener implements LoggingEventListener {
   }
   
   @Override
-  public void eventAdded(LoggingEvent event) {
+  public void eventAdded(KettleLoggingEvent event) {
 
     try {
       Object messageObject = event.getMessage();

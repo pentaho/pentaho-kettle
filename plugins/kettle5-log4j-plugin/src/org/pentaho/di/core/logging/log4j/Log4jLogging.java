@@ -3,7 +3,7 @@ package org.pentaho.di.core.logging.log4j;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.pentaho.di.core.logging.CentralLogStore;
-import org.pentaho.di.core.logging.LoggingEvent;
+import org.pentaho.di.core.logging.KettleLoggingEvent;
 import org.pentaho.di.core.logging.LoggingPluginInterface;
 
 public class Log4jLogging implements LoggingPluginInterface {
@@ -20,7 +20,7 @@ public class Log4jLogging implements LoggingPluginInterface {
   }
 
   @Override
-  public void eventAdded(LoggingEvent event) {
+  public void eventAdded(KettleLoggingEvent event) {
     switch(event.getLevel()) {
       case ERROR: 
         pentahoLogger.log(Level.ERROR, event.getMessage()); 

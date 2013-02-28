@@ -344,7 +344,7 @@ public class MarketplaceDialog extends Dialog {
         image = GUIResource.getInstance().getImageConnection();
         break;
       default:
-        image = GUIResource.getInstance().getImageSpoon();
+        image = GUIResource.getInstance().getImageArrow();
         break;
       }
       expandItem.setImage(image);

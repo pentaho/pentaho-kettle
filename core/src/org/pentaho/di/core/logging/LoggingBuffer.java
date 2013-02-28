@@ -29,6 +29,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.logging.KettleLogLayout;
 
 /**
  * This class keeps the last N lines in a buffer
@@ -42,15 +43,15 @@ public class LoggingBuffer {
 
   private int bufferSize;
 
-  private Log4jKettleLayout layout;
+  private KettleLogLayout layout;
   
-  private List<LoggingEventListener> eventListeners;
+  private List<KettleLoggingEventListener> eventListeners;
 
   public LoggingBuffer(int bufferSize) {
     this.bufferSize = bufferSize;
     buffer = Collections.synchronizedList(new LinkedList<BufferLine>());
-    layout = new Log4jKettleLayout(true);
-    eventListeners = new ArrayList<LoggingEventListener>();
+    layout = new KettleLogLayout(true);
+    eventListeners = new ArrayList<KettleLoggingEventListener>();
   }
 
   /**
@@ -75,8 +76,8 @@ public class LoggingBuffer {
    * @param to
    * @return
    */
-  public List<LoggingEvent> getLogBufferFromTo(List<String> channelId, boolean includeGeneral, int from, int to) {
-    List<LoggingEvent> lines = new ArrayList<LoggingEvent>();
+  public List<KettleLoggingEvent> getLogBufferFromTo(List<String> channelId, boolean includeGeneral, int from, int to) {
+    List<KettleLoggingEvent> lines = new ArrayList<KettleLoggingEvent>();
 
     synchronized (buffer) {
       for (BufferLine line : buffer) {
@@ -139,7 +140,7 @@ public class LoggingBuffer {
    * @param to
    * @return
    */
-  public List<LoggingEvent> getLogBufferFromTo(String parentLogChannelId, boolean includeGeneral, int from, int to) {
+  public List<KettleLoggingEvent> getLogBufferFromTo(String parentLogChannelId, boolean includeGeneral, int from, int to) {
 
     // Typically, the log channel id is the one from the transformation or job running currently.
     // However, we also want to see the details of the steps etc.
@@ -153,8 +154,8 @@ public class LoggingBuffer {
   public StringBuffer getBuffer(String parentLogChannelId, boolean includeGeneral, int startLineNr, int endLineNr) {
     StringBuffer stringBuffer = new StringBuffer(10000);
 
-    List<LoggingEvent> events = getLogBufferFromTo(parentLogChannelId, includeGeneral, startLineNr, endLineNr);
-    for (LoggingEvent event : events) {
+    List<KettleLoggingEvent> events = getLogBufferFromTo(parentLogChannelId, includeGeneral, startLineNr, endLineNr);
+    for (KettleLoggingEvent event : events) {
       stringBuffer.append(layout.format(event)).append(Const.CR);
     }
 
@@ -176,7 +177,7 @@ public class LoggingBuffer {
   public void close() {
   }
 
-  public void doAppend(LoggingEvent event) {
+  public void doAppend(KettleLoggingEvent event) {
     buffer.add(new BufferLine(event));
     if (bufferSize > 0 && buffer.size() > bufferSize) {
       buffer.remove(0);
@@ -191,11 +192,11 @@ public class LoggingBuffer {
     return name;
   }
 
-  public void setLayout(Log4jKettleLayout layout) {
+  public void setLayout(KettleLogLayout layout) {
     this.layout = layout;
   }
 
-  public Log4jKettleLayout getLayout() {
+  public KettleLogLayout getLayout() {
     return layout;
   }
 
@@ -311,20 +312,20 @@ public class LoggingBuffer {
     return linesToRemove;
   }
   
-  public void addLogggingEvent(LoggingEvent loggingEvent) {
+  public void addLogggingEvent(KettleLoggingEvent loggingEvent) {
     synchronized(buffer) {
       buffer.add( new BufferLine(loggingEvent) );
-      for (LoggingEventListener listener : eventListeners) {
+      for (KettleLoggingEventListener listener : eventListeners) {
         listener.eventAdded(loggingEvent);
       }
     }
   }
   
-  public void addLoggingEventListener(LoggingEventListener listener) {
+  public void addLoggingEventListener(KettleLoggingEventListener listener) {
     eventListeners.add(listener);
   }
   
-  public void removeLoggingEventListener(LoggingEventListener listener) {
+  public void removeLoggingEventListener(KettleLoggingEventListener listener) {
     eventListeners.remove(listener);
   }
 }

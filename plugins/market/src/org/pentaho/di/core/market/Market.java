@@ -43,7 +43,9 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.market.entry.MarketEntry;
+import org.pentaho.di.core.market.entry.MarketEntryType;
 import org.pentaho.di.core.plugins.KettleURLClassLoader;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
@@ -127,44 +129,47 @@ public class Market implements SpoonPluginInterface {
    */
   public static String discoverInstalledVersion(MarketEntry marketEntry) {
 
-    PluginInterface plugin = getPluginObject(marketEntry.getId());
-    if (plugin == null) {
-      marketEntry.setInstalled(false);
-      return "Unknown";
-    }
-    marketEntry.setInstalled(true);
+    String pluginFolder = buildPluginsFolderPath(marketEntry)+File.separator+marketEntry.getId();
+    File pluginFolderFile = new File(pluginFolder);
+    if (pluginFolderFile.exists()) {
+      marketEntry.setInstalled(true);
 
-    String versionPath = plugin.getPluginDirectory().getFile() + "/version.xml";
-    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-    FileReader reader = null;
-    try {
-      File file = new File(versionPath);
-      if (!file.exists()) {
-        return "Unknown";
-      }
-      DocumentBuilder db = dbf.newDocumentBuilder();
-      reader = new FileReader(versionPath);
-      Document dom = db.parse(new InputSource(reader));
-      NodeList versionElements = dom.getElementsByTagName("version");
-      if (versionElements.getLength() >= 1) {
-        Element versionElement = (Element) versionElements.item(0);
-
-        marketEntry.setInstalledBuildId(versionElement.getAttribute("buildId"));
-        marketEntry.setInstalledBranch(versionElement.getAttribute("branch"));
-        marketEntry.setInstalledVersion(versionElement.getTextContent());
-
-        return versionElement.getTextContent();
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-    } finally {
+      String versionPath = pluginFolder + File.separator + "version.xml";
+      DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+      FileReader reader = null;
       try {
-        if (reader != null) {
-          reader.close();
+        File file = new File(versionPath);
+        if (!file.exists()) {
+          return "Unknown";
         }
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        reader = new FileReader(versionPath);
+        Document dom = db.parse(new InputSource(reader));
+        NodeList versionElements = dom.getElementsByTagName("version");
+        if (versionElements.getLength() >= 1) {
+          Element versionElement = (Element) versionElements.item(0);
+  
+          marketEntry.setInstalledBuildId(versionElement.getAttribute("buildId"));
+          marketEntry.setInstalledBranch(versionElement.getAttribute("branch"));
+          marketEntry.setInstalledVersion(versionElement.getTextContent());
+  
+          return versionElement.getTextContent();
+        }
+        
       } catch (Exception e) {
+        e.printStackTrace();
+      } finally {
+        try {
+          if (reader != null) {
+            reader.close();
+          }
+        } catch (Exception e) {
+        }
       }
-    }
+
+    } else {
+      marketEntry.setInstalled(false);
+    }    
     return "Unknown";
   }
 
@@ -176,7 +181,7 @@ public class Market implements SpoonPluginInterface {
    */
   private static String buildPluginsFolderPath(final MarketEntry marketEntry) {
     PluginInterface plugin = getPluginObject(marketEntry.getId());
-    if (plugin != null) {
+    if (plugin != null && plugin.getPluginDirectory()!=null) {
       return new File(plugin.getPluginDirectory().getFile()).getParent();
     } else {
       String subfolder = getInstallationSubfolder(marketEntry);
@@ -199,7 +204,7 @@ public class Market implements SpoonPluginInterface {
    */
   public static void installUninstall(final MarketEntry marketEntry, boolean isInstalled) throws KettleException {
     if (isInstalled) {
-      Market.uninstall(marketEntry.getId());
+      Market.uninstall(marketEntry);
     } else {
       Market.install(marketEntry);
     }
@@ -219,6 +224,7 @@ public class Market implements SpoonPluginInterface {
   public static void install(final MarketEntry marketEntry) throws KettleException {
     String parentFolderName = buildPluginsFolderPath(marketEntry);
     File pluginFolder = new File(parentFolderName + File.separator + marketEntry.getId());
+    LogChannel.GENERAL.logBasic("Installing plugin in folder: "+pluginFolder.getAbsolutePath());
     if (pluginFolder.exists()) {
       MessageBox mb = new MessageBox(Spoon.getInstance().getShell(), SWT.NO | SWT.YES | SWT.ICON_WARNING);
       mb.setMessage(BaseMessages.getString(PKG, "Marketplace.Dialog.PromptOverwritePlugin.Message", pluginFolder.getAbsolutePath()));
@@ -301,22 +307,16 @@ public class Market implements SpoonPluginInterface {
    * @param marketEntry
    * @throws KettleException
    */
-  public static void uninstall(final String pluginId) throws KettleException {
-    PluginInterface plugin = getPluginObject(pluginId);
-    if (plugin == null) {
-      throw new KettleException("No Plugin!");
+  public static void uninstall(final MarketEntry marketEntry) throws KettleException {
+    
+    String parentFolderName = buildPluginsFolderPath(marketEntry);
+    File pluginFolder = new File(parentFolderName + File.separator + marketEntry.getId());
+    LogChannel.GENERAL.logBasic("Installing plugin in folder: "+pluginFolder.getAbsolutePath());
+    if (!pluginFolder.exists()) {
+        throw new KettleException("No plugin was found in the expected folder : "+pluginFolder.getAbsolutePath());
     }
-    String pluginFolderName = plugin.getPluginDirectory().getFile();
-    File folder = new File(pluginFolderName);
-    try {
-      ClassLoader cl = PluginRegistry.getInstance().getClassLoader(getPluginObject(pluginId));
-      if (cl instanceof KettleURLClassLoader) {
-        ((KettleURLClassLoader)cl).closeClassLoader();
-      }
-    } catch (Throwable t) {
-      t.printStackTrace();
-    }
-    deleteDirectory(folder);
+
+    deleteDirectory(pluginFolder);
 
     if (!Display.getDefault().getThread().equals(Thread.currentThread()) ) {
       Spoon.getInstance().getDisplay().asyncExec(new Runnable() {
@@ -335,7 +335,7 @@ public class Market implements SpoonPluginInterface {
   
   public static void uninstallMarketInSeparateClassLoader(final File path) throws Exception {
     try {
-      uninstall("market");
+      uninstall(new MarketEntry("market", MarketEntryType.Mixed));
       Spoon.getInstance().getDisplay().asyncExec(new Runnable() {
         public void run() {
          try {
@@ -525,6 +525,16 @@ public class Market implements SpoonPluginInterface {
    * @throws KettleException
    */
   private static void refreshSpoon() throws KettleException {
+    
+    MessageBox box = new MessageBox(Spoon.getInstance().getShell(), SWT.ICON_QUESTION | SWT.YES | SWT.NO);
+    box.setText(BaseMessages.getString(PKG, "MarketplacesDialog.RestartUpdate.Title"));
+    box.setMessage(BaseMessages.getString(PKG, "MarketplacesDialog.RestartUpdate.Message"));
+    int i = box.open();
+    if ((i&SWT.YES)!=0) {
+      Spoon.getInstance().dispose();
+      return;
+    }
+
     PluginRegistry.init();
     Spoon spoon = Spoon.getInstance();
     spoon.refreshCoreObjects();

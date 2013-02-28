@@ -53,6 +53,24 @@ public class Plugin implements PluginInterface {
 	private String documentationUrl;
   private String casesUrl;
   private String forumUrl;
+  
+  /**
+   * @param ids
+   * @param pluginType
+   * @param category
+   * @param name
+   * @param description
+   * @param imageFile
+   * @param separateClassLoaderNeeded
+   * @param nativePlugin
+   * @param classMap
+   * @param libraries
+   */
+  public Plugin(String[] ids, Class<? extends PluginTypeInterface> pluginType, Class<?> mainType, 
+      String category, String name, String description, String imageFile, boolean separateClassLoaderNeeded, boolean nativePlugin, Map<Class<?>, String> classMap, List<String> libraries, 
+      String errorHelpFile, URL pluginFolder) {
+    this(ids, pluginType, mainType, category, name, description, imageFile, separateClassLoaderNeeded, nativePlugin, classMap, libraries,errorHelpFile, pluginFolder, null, null, null);
+  }
 
 	/**
 	 * @param ids
