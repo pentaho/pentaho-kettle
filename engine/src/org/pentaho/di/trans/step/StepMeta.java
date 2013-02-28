@@ -435,6 +435,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 	{
 		if (obj==null) return false;
 		StepMeta stepMeta = (StepMeta)obj;
+		// getName() is returning stepname, matching the hashCode() algorithm
 		return getName().equalsIgnoreCase(stepMeta.getName());
 	}
 	

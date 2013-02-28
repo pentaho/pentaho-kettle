@@ -50,4 +50,9 @@
     <classname>org.pentaho.di.core.row.value.ValueMetaTimestamp</classname> 
   </valuemeta-plugin>
   
+  <valuemeta-plugin id="10"> 
+    <description>Internet Address</description> 
+    <classname>org.pentaho.di.core.row.value.ValueMetaInternetAddress</classname> 
+  </valuemeta-plugin>
+  
 </valuemeta-plugins>

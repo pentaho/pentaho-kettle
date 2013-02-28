@@ -4574,4 +4574,17 @@ public class ValueMetaBase implements ValueMetaInterface {
       throw new KettleDatabaseException("Error setting value #" + index + " [" + toStringMeta() + "] on prepared statement", e);
     }
   }
+  
+  
+  @Override
+  public Object getNativeDataType(Object object) throws KettleValueException {
+    return object;
+  }
+
+  @Override
+  public String getDatabaseColumnTypeDefinition(DatabaseInterface databaseInterface, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr) {
+   return null; // No default suggestions...
+  }
+
 }
+  

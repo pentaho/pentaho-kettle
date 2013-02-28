@@ -1345,6 +1345,12 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc,
       boolean add_fieldname, boolean add_cr) {
+    
+    String definition = v.getDatabaseColumnTypeDefinition(databaseInterface, tk, pk, use_autoinc, add_fieldname, add_cr);
+    if (!Const.isEmpty(definition)) {
+      return definition;
+    }
+    
     return databaseInterface.getFieldDefinition(v, tk, pk, use_autoinc, add_fieldname, add_cr);
   }
 

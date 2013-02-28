@@ -23,4 +23,9 @@ public class ValueMetaDate extends ValueMetaBase implements ValueMetaInterface {
 	public Date getDate(Object object) throws KettleValueException {
 		return super.getDate(object);
 	}
+	
+	@Override
+	public Object getNativeDataType(Object object) throws KettleValueException {
+	  return getDate(object);
+	}
 }

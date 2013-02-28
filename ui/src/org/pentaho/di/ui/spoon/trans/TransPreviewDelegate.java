@@ -255,13 +255,19 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
         item = new TableItem(tableView.table, SWT.NONE);
       }
       for (int colNr=0;colNr<rowMeta.size();colNr++) {
-        String string = rowMeta.getString(rowData, colNr);
+        String string;
+        try {
+          string = rowMeta.getString(rowData, colNr);
+        } catch(Exception e) {
+          string = "Conversion error: "+e.getMessage(); 
+        }
         if (string == null) {
           item.setText(colNr+1, "<null>");
           item.setForeground(colNr+1, GUIResource.getInstance().getColorBlue());
         } else {
           item.setText(colNr+1, string);
         }
+        
       }
     }
     tableView.setRowNums();
@@ -375,7 +381,7 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
     
       for (StepMeta stepMeta : stepMetas) {
         
-        final RowMetaInterface rowMeta = transMeta.getStepFields(stepMeta);
+        final RowMetaInterface rowMeta = transMeta.getStepFields(stepMeta).clone();
         previewMetaMap.put(stepMeta, rowMeta);
         final List<Object[]> rowsData = new ArrayList<Object[]>();
         previewDataMap.put(stepMeta, rowsData);
@@ -389,7 +395,11 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
             @Override
             public void rowWrittenEvent(RowMetaInterface rowMeta, Object[] row) throws KettleStepException {
               if (rowsData.size()<PropsUI.getInstance().getDefaultPreviewSize()) {
-                rowsData.add(row);
+                try {
+                  rowsData.add(rowMeta.cloneRow(row));
+                } catch(Exception e) {
+                  throw new KettleStepException("Unable to clone row for metadata : "+rowMeta, e);
+                }
               }
             }
           });

@@ -11,4 +11,5 @@ public class ValueMetaSerializable extends ValueMetaBase implements ValueMetaInt
 	public ValueMetaSerializable(String name) {
 		super(name, ValueMetaInterface.TYPE_SERIALIZABLE);
 	}
+
 }

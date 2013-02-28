@@ -108,12 +108,15 @@ public interface ValueMetaInterface extends Cloneable
     /** Value type indicating that the value contains binary data: BLOB, CLOB, ... */
     public static final int TYPE_BINARY      = 8;
 
-    /** Value type indicating that the value contains a timestamp with nanosecond precision */
+    /** Value type indicating that the value contains a date-time with nanosecond precision */
     public static final int TYPE_TIMESTAMP   = 9;
+
+    /** Value type indicating that the value contains a Internet address */
+    public static final int TYPE_INET = 10;
 
 
     /** The Constant typeCodes. */
-    public static final String[] typeCodes = new String[] { "-", "Number", "String", "Date", "Boolean", "Integer", "BigNumber", "Serializable", "Binary", "Timestamp", }; 
+    public static final String[] typeCodes = new String[] { "-", "Number", "String", "Date", "Boolean", "Integer", "BigNumber", "Serializable", "Binary", "Timestamp", "Internet Address", }; 
 
     
     
@@ -993,5 +996,27 @@ public interface ValueMetaInterface extends Cloneable
    * @throws KettleDatabaseException in case something goes wrong
    */
   public void setPreparedStatementValue(DatabaseMeta databaseMeta, PreparedStatement preparedStatement, int index, Object data) throws KettleDatabaseException;
+
+  /**
+   * This method gives you the native Java data type corresponding to the value meta-data.
+   * Conversions from other storage types and other operations are done automatically according to the specified value meta-data.
+   *  
+   * @param object The input data
+   * @return The native data type
+   * @throws KettleValueException in case there is an unexpected data conversion error.
+   */
+  public Object getNativeDataType(Object object) throws KettleValueException;
   
+  /**
+   * Ask for suggestions as to how this plugin data type should be represented in the specified database interface 
+   * @param databaseInterface The database type/dialect to get the column type definition for
+   * @param tk Is this a technical key field?
+   * @param pk Is this a primary key field?
+   * @param use_autoinc Use auto-increment?
+   * @param add_fieldname add the fieldname to the column type definition?
+   * @param add_cr add a cariage return to the string?
+   * @return The field type definition
+   */
+  public String getDatabaseColumnTypeDefinition(DatabaseInterface databaseInterface, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr);
+
 }

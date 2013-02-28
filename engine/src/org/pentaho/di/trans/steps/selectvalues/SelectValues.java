@@ -324,36 +324,24 @@ public class SelectValues extends BaseStep implements StepInterface
 			}
 		}
 
-		//
-		// Change the data too 
-		//
-		for (int i=0;i<data.metanrs.length;i++)
-		{
-			int index = data.metanrs[i];
-			ValueMetaInterface fromMeta = rowMeta.getValueMeta(index);
-            ValueMetaInterface toMeta   = data.metadataRowMeta.getValueMeta(index);
-			
-			// If we need to change from BINARY_STRING storage type to NORMAL...
-			//
-			if (fromMeta.isStorageBinaryString() && meta.getMeta()[i].getStorageType()==ValueMetaInterface.STORAGE_TYPE_NORMAL)
-			{
-				rowData[index] = fromMeta.convertBinaryStringToNativeType((byte[]) rowData[index]);
-			}
-			if (meta.getMeta()[i].getType()!=ValueMetaInterface.TYPE_NONE && fromMeta.getType()!=toMeta.getType())
-            {
-                switch(toMeta.getType())
-                {
-                case ValueMetaInterface.TYPE_STRING    : rowData[index] = fromMeta.getString(rowData[index]); break;
-                case ValueMetaInterface.TYPE_NUMBER    : rowData[index] = fromMeta.getNumber(rowData[index]); break;
-                case ValueMetaInterface.TYPE_INTEGER   : rowData[index] = fromMeta.getInteger(rowData[index]); break;
-                case ValueMetaInterface.TYPE_DATE      : rowData[index] = fromMeta.getDate(rowData[index]); break;
-                case ValueMetaInterface.TYPE_BIGNUMBER : rowData[index] = fromMeta.getBigNumber(rowData[index]); break;
-                case ValueMetaInterface.TYPE_BOOLEAN   : rowData[index] = fromMeta.getBoolean(rowData[index]); break;
-                case ValueMetaInterface.TYPE_BINARY    : rowData[index] = fromMeta.getBinary(rowData[index]); break;
-                default: throw new KettleValueException("Unable to convert data type of value '"+fromMeta+"' to data type "+toMeta.getType());
-                }
-            }
-		}
+    //
+    // Change the data too 
+    //
+    for (int i = 0; i < data.metanrs.length; i++) {
+      int index = data.metanrs[i];
+      ValueMetaInterface fromMeta = rowMeta.getValueMeta(index);
+      ValueMetaInterface toMeta = data.metadataRowMeta.getValueMeta(index);
+
+      // If we need to change from BINARY_STRING storage type to NORMAL...
+      //
+      if (fromMeta.isStorageBinaryString()
+          && meta.getMeta()[i].getStorageType() == ValueMetaInterface.STORAGE_TYPE_NORMAL) {
+        rowData[index] = fromMeta.convertBinaryStringToNativeType((byte[]) rowData[index]);
+      }
+      if (meta.getMeta()[i].getType() != ValueMetaInterface.TYPE_NONE && fromMeta.getType() != toMeta.getType()) { 
+        rowData[index] = toMeta.convertData(fromMeta, rowData[index]);
+      }
+    }
 
 		return rowData;
 	}
