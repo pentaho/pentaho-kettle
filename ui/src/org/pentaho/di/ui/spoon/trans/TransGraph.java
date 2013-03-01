@@ -2787,6 +2787,18 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
     Image img = getTransformationImage(disp, area.x, area.y, magnification);
     e.gc.drawImage(img, 0, 0);
+    if (transMeta.nrSteps()==0) {
+      e.gc.setForeground(GUIResource.getInstance().getColorDarkGray());
+      e.gc.setFont(GUIResource.getInstance().getFontBold());
+      
+      String message = BaseMessages.getString(PKG, "TransGraph.EmptyTrans.Message");
+      Image pentahoImage = GUIResource.getInstance().getImagePentahoSwirl();
+      org.eclipse.swt.graphics.Point messageSize = e.gc.textExtent(message);
+      int leftPosition = (area.x-messageSize.x-pentahoImage.getBounds().width-10)/2;
+      int topPosition = (area.y-messageSize.y)/2;
+      e.gc.drawText(message, leftPosition, topPosition);
+      e.gc.drawImage(pentahoImage, leftPosition-pentahoImage.getBounds().width-10, topPosition+messageSize.y/2-pentahoImage.getBounds().height/2);
+    }
     img.dispose();
 
     // spoon.setShellText();

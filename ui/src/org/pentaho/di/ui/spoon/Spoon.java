@@ -4238,6 +4238,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         nr++;
         jobMeta.setName(STRING_JOB + " " + nr); // rename
       }
+      
+      jobMeta.clearChanged();
 
       addJobGraph(jobMeta);
       applyVariables();

@@ -93,6 +93,8 @@ public class LogWriter {
 
     layout = new Log4jKettleLayout();
 
+    /*
+     * The console output is provided for by Kettle5 itself
     // Add a console logger to see something on the console as well...
     //
     boolean consoleAppenderFound = false;
@@ -114,6 +116,10 @@ public class LogWriter {
       pentahoLogger.addAppender(consoleAppender);
     }
 
+    // BELOW : This is covered in log4j.xml
+    // Doing it here is not really the right location.
+    //
+     
     // Get rid of the VFS info messages...
     //
     LogManager.getLogger("org.apache.commons.vfs").setLevel(Level.WARN);
@@ -122,6 +128,7 @@ public class LogWriter {
     //
     // LogManager.getLogger("org.mortbay.log").setLevel(Level.WARN);
     // LogManager.getLogger("org.slf4j").setLevel(Level.WARN);
+     */
 
   }
 
