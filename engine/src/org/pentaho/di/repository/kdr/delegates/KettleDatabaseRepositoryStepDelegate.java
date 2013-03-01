@@ -31,7 +31,7 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleStepLoaderException;
+import org.pentaho.di.core.exception.KettlePluginLoaderException;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
@@ -131,7 +131,7 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
         if (sp != null) {
           stepMeta.setStepMetaInterface((StepMetaInterface) registry.loadClass(sp));
         } else {
-          throw new KettleStepLoaderException(BaseMessages.getString(PKG, "StepMeta.Exception.UnableToLoadClass", stepMeta.getStepID() + Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+          throw new KettlePluginLoaderException(stepMeta.getStepID(), BaseMessages.getString(PKG, "StepMeta.Exception.UnableToLoadClass", stepMeta.getStepID() + Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
 
         if (stepMeta.getStepMetaInterface() != null) {

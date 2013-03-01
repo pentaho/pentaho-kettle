@@ -28,7 +28,7 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.changed.ChangedFlagInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettleStepLoaderException;
+import org.pentaho.di.core.exception.KettlePluginLoaderException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.Point;
@@ -113,7 +113,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 			PluginRegistry registry = PluginRegistry.getInstance();
 			PluginInterface jobPlugin = registry.findPluginWithId(JobEntryPluginType.class, stype);
 			if (jobPlugin == null)
-				throw new KettleStepLoaderException("No valid step/plugin specified (jobPlugin=null) for " + stype);
+				throw new KettlePluginLoaderException(stype, "No valid step/plugin specified (jobPlugin=null) for " + stype);
 
 			// Get an empty JobEntry of the appropriate class...
 			entry = (JobEntryInterface) registry.loadClass(jobPlugin, JobEntryInterface.class);

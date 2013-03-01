@@ -59,6 +59,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.exception.KettleMissingPluginsException;
+import org.pentaho.di.core.exception.KettlePluginLoaderException;
 import org.pentaho.di.core.exception.KettleRowException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -85,6 +87,7 @@ import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.parameters.UnknownParamException;
+import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.reflection.StringSearchResult;
 import org.pentaho.di.core.reflection.StringSearcher;
 import org.pentaho.di.core.row.RowMeta;
@@ -2684,8 +2687,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      *
      * @param fname The filename
      * @throws KettleXMLException if any errors occur during parsing of the specified file
+     * @throws KettleMissingPluginsException in case missing plugins were found (details are in the exception in that case)
      */
-    public TransMeta(String fname) throws KettleXMLException
+    public TransMeta(String fname) throws KettleXMLException, KettleMissingPluginsException
     {
         this(fname, true);
     }
@@ -2698,8 +2702,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      * @param fname The filename
      * @param parentVariableSpace the parent variable space
      * @throws KettleXMLException if any errors occur during parsing of the specified file
+     * @throws KettleMissingPluginsException in case missing plugins were found (details are in the exception in that case)
      */
-    public TransMeta(String fname, VariableSpace parentVariableSpace) throws KettleXMLException
+    public TransMeta(String fname, VariableSpace parentVariableSpace) throws KettleXMLException, KettleMissingPluginsException
     {
         this(fname, null, true, parentVariableSpace);
     }
@@ -2711,8 +2716,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      * @param fname The filename
      * @param setInternalVariables true if you want to set the internal variables based on this transformation information
      * @throws KettleXMLException if any errors occur during parsing of the specified file
+     * @throws KettleMissingPluginsException in case missing plugins were found (details are in the exception in that case)
      */
-    public TransMeta(String fname, boolean setInternalVariables) throws KettleXMLException
+    public TransMeta(String fname, boolean setInternalVariables) throws KettleXMLException, KettleMissingPluginsException
     {
         this(fname, null, setInternalVariables);
     }
@@ -2723,8 +2729,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      * @param fname The filename
      * @param rep The repository to load the default set of connections from, null if no repository is available
      * @throws KettleXMLException if any errors occur during parsing of the specified file
+     * @throws KettleMissingPluginsException in case missing plugins were found (details are in the exception in that case)
      */
-    public TransMeta(String fname, Repository rep) throws KettleXMLException
+    public TransMeta(String fname, Repository rep) throws KettleXMLException, KettleMissingPluginsException
     {
         this(fname, rep, true);
     }
@@ -2736,8 +2743,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      * @param rep The repository to load the default set of connections from, null if no repository is available
      * @param setInternalVariables true if you want to set the internal variables based on this transformation information
      * @throws KettleXMLException if any errors occur during parsing of the specified file
+     * @throws KettleMissingPluginsException in case missing plugins were found (details are in the exception in that case)
      */
-    public TransMeta(String fname, Repository rep, boolean setInternalVariables ) throws KettleXMLException
+    public TransMeta(String fname, Repository rep, boolean setInternalVariables ) throws KettleXMLException, KettleMissingPluginsException
     {
     	this(fname, rep, setInternalVariables, null);
     }
@@ -2750,8 +2758,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      * @param setInternalVariables true if you want to set the internal variables based on this transformation information
      * @param parentVariableSpace the parent variable space to use during TransMeta construction
      * @throws KettleXMLException if any errors occur during parsing of the specified file
+     * @throws KettleMissingPluginsException in case missing plugins were found (details are in the exception in that case)
      */
-    public TransMeta(String fname, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace ) throws KettleXMLException
+    public TransMeta(String fname, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace ) throws KettleXMLException, KettleMissingPluginsException
     {
     	this(fname, rep, setInternalVariables, parentVariableSpace, null);
     }
@@ -2765,8 +2774,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      * @param parentVariableSpace the parent variable space to use during TransMeta construction
      * @param prompter the changed/replace listener or null if there is none
      * @throws KettleXMLException if any errors occur during parsing of the specified file
+     * @throws KettleMissingPluginsException in case missing plugins were found (details are in the exception in that case)
      */
-    public TransMeta(String fname, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace, OverwritePrompter prompter ) throws KettleXMLException
+    public TransMeta(String fname, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace, OverwritePrompter prompter ) throws KettleXMLException, KettleMissingPluginsException
     {
         // OK, try to load using the VFS stuff...
         Document doc=null;
@@ -2807,8 +2817,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      * @param parentVariableSpace the parent variable space
      * @param prompter a GUI component that will prompt the user if the new transformation will overwrite an existing one
      * @throws KettleXMLException if any errors occur during parsing of the specified stream
+     * @throws KettleMissingPluginsException in case missing plugins were found (details are in the exception in that case)
      */
-    public TransMeta(InputStream xmlStream, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace, OverwritePrompter prompter) throws KettleXMLException {
+    public TransMeta(InputStream xmlStream, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace, OverwritePrompter prompter) throws KettleXMLException, KettleMissingPluginsException {
       Document doc = XMLHandler.loadXMLFile(xmlStream, null, false, false);
       Node transnode = XMLHandler.getSubNode(doc, XML_TAG); //$NON-NLS-1$
       loadXML(transnode, rep, setInternalVariables, parentVariableSpace, prompter);
@@ -2821,8 +2832,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      * @param transnode The XML node to load from
      * @param rep the repository to reference.
      * @throws KettleXMLException if any errors occur during parsing of the specified file
+     * @throws KettleMissingPluginsException in case missing plugins were found (details are in the exception in that case)
      */
-    public TransMeta(Node transnode, Repository rep) throws KettleXMLException
+    public TransMeta(Node transnode, Repository rep) throws KettleXMLException, KettleMissingPluginsException
     {
     	loadXML(transnode, rep, false);
     }
@@ -2834,8 +2846,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      * @param rep The repository to load the default list of database connections from (null if no repository is available)
      * @param setInternalVariables true if you want to set the internal variables based on this transformation information
      * @throws KettleXMLException if any errors occur during parsing of the specified file
+     * @throws KettleMissingPluginsException in case missing plugins were found (details are in the exception in that case)
      */
-    public void loadXML(Node transnode, Repository rep, boolean setInternalVariables ) throws KettleXMLException
+    public void loadXML(Node transnode, Repository rep, boolean setInternalVariables ) throws KettleXMLException, KettleMissingPluginsException
     {
     	loadXML(transnode, rep, setInternalVariables, null);
     }
@@ -2848,8 +2861,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      * @param setInternalVariables true if you want to set the internal variables based on this transformation information
      * @param parentVariableSpace the parent variable space to use during TransMeta construction
      * @throws KettleXMLException if any errors occur during parsing of the specified file
+     * @throws KettleMissingPluginsException in case missing plugins were found (details are in the exception in that case)
      */
-    public void loadXML(Node transnode, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace ) throws KettleXMLException
+    public void loadXML(Node transnode, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace ) throws KettleXMLException, KettleMissingPluginsException
     {
     	loadXML(transnode, rep, setInternalVariables, parentVariableSpace, null);
     }
@@ -2863,488 +2877,483 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      * @param parentVariableSpace the parent variable space to use during TransMeta construction
      * @param prompter the changed/replace listener or null if there is none
      * @throws KettleXMLException if any errors occur during parsing of the specified file
+     * @throws KettleMissingPluginsException in case missing plugins were found (details are in the exception in that case)
      */
-    public void loadXML(Node transnode, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace, OverwritePrompter prompter ) throws KettleXMLException
+    public void loadXML(Node transnode, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace, OverwritePrompter prompter ) throws KettleXMLException, KettleMissingPluginsException
     {
     	loadXML(transnode, null, rep, setInternalVariables, parentVariableSpace, prompter);
     }
     
-    /**
-     * Parses an XML DOM (starting at the specified Node) that describes the transformation.
-     *
-     * @param transnode The XML node to load from
-     * @param fname The filename
-     * @param rep The repository to load the default list of database connections from (null if no repository is available)
-     * @param setInternalVariables true if you want to set the internal variables based on this transformation information
-     * @param parentVariableSpace the parent variable space to use during TransMeta construction
-     * @param prompter the changed/replace listener or null if there is none
-     * @throws KettleXMLException if any errors occur during parsing of the specified file
-     */
-    public void loadXML(Node transnode, String fname, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace, OverwritePrompter prompter ) throws KettleXMLException
-    {
-        Props props = null;
-        if (Props.isInitialized())
-        {
-            props=Props.getInstance();
-        }
-        
-        initializeVariablesFrom(parentVariableSpace);
-        
-        try
-        {
-            // Clear the transformation
-            clear();
-            
-            // If we are not using a repository, we are getting the transformation from a file
-            // Set the filename here so it can be used in variables for ALL aspects of the transformation FIX: PDI-8890
-            if(null == rep) {
-            	setFilename(fname);
-            }
-            
-            // Read all the database connections from the repository to make sure that we don't overwrite any there by loading from XML.
-            try
-            {
-                sharedObjectsFile = XMLHandler.getTagValue(transnode, "info", "shared_objects_file"); //$NON-NLS-1$ //$NON-NLS-2$
-                sharedObjects = rep!=null ? rep.readTransSharedObjects(this) : readSharedObjects();
-            }
-            catch(Exception e)
-            {
-                log.logError(BaseMessages.getString(PKG, "TransMeta.ErrorReadingSharedObjects.Message", e.toString()));
-                log.logError(Const.getStackTracker(e));
-            }
-
-            // Handle connections
-            int n = XMLHandler.countNodes(transnode, DatabaseMeta.XML_TAG); //$NON-NLS-1$
-            if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.WeHaveConnections", String.valueOf(n) )); //$NON-NLS-1$ //$NON-NLS-2$
-            for (int i = 0; i < n; i++)
-            {
-            	if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.LookingAtConnection") + i); //$NON-NLS-1$
-                Node nodecon = XMLHandler.getSubNodeByNr(transnode, DatabaseMeta.XML_TAG, i); //$NON-NLS-1$
-
-                DatabaseMeta dbcon = new DatabaseMeta(nodecon);
-                dbcon.shareVariablesWith(this);
-
-                DatabaseMeta exist = findDatabase(dbcon.getName());
-                if (exist == null)
-                {
-                    addDatabase(dbcon);
-                }
-                else
-                {
-                    if (!exist.isShared()) // otherwise, we just keep the shared connection.
-                    {
-                        boolean askOverwrite = Props.isInitialized() ? props.askAboutReplacingDatabaseConnections() : false;
-                        boolean overwrite = Props.isInitialized() ? props.replaceExistingDatabaseConnections() : true;
-                        if (askOverwrite)
-                        {
-                        	if (prompter!=null) {
-	                        	overwrite = prompter.overwritePrompt(
-	                        			BaseMessages.getString(PKG, "TransMeta.Message.OverwriteConnectionYN",dbcon.getName()),
-	                        			BaseMessages.getString(PKG, "TransMeta.Message.OverwriteConnection.DontShowAnyMoreMessage"),
-	                        			Props.STRING_ASK_ABOUT_REPLACING_DATABASES
-	                        		);
-                        	}
-                        }
+  /**
+   * Parses an XML DOM (starting at the specified Node) that describes the transformation.
+   *
+   * @param transnode The XML node to load from
+   * @param fname The filename
+   * @param rep The repository to load the default list of database connections from (null if no repository is available)
+   * @param setInternalVariables true if you want to set the internal variables based on this transformation information
+   * @param parentVariableSpace the parent variable space to use during TransMeta construction
+   * @param prompter the changed/replace listener or null if there is none
+   * @throws KettleXMLException if any errors occur during parsing of the specified file
+   * @throws KettleMissingPluginsException in case missing plugins were found (details are in the exception in that case)
+   */
+  public void loadXML(Node transnode, String fname, Repository rep, boolean setInternalVariables,
+      VariableSpace parentVariableSpace, OverwritePrompter prompter) throws KettleXMLException, KettleMissingPluginsException {
     
-                        if (overwrite)
-                        {
-                            int idx = indexOfDatabase(exist);
-                            removeDatabase(idx);
-                            addDatabase(idx, dbcon);
-                        }
-                    }
-                }
-            }
-            
-            // Read data service metadata
-            //
-            Node dataServiceNode = XMLHandler.getSubNode(transnode, DataServiceMeta.XML_TAG);
-            dataService = new DataServiceMeta(dataServiceNode);
-
-            // Read the notes...
-            Node notepadsnode = XMLHandler.getSubNode(transnode, XML_TAG_NOTEPADS); //$NON-NLS-1$
-            int nrnotes = XMLHandler.countNodes(notepadsnode, NotePadMeta.XML_TAG); //$NON-NLS-1$
-            for (int i = 0; i < nrnotes; i++)
-            {
-                Node notepadnode = XMLHandler.getSubNodeByNr(notepadsnode, NotePadMeta.XML_TAG, i); //$NON-NLS-1$
-                NotePadMeta ni = new NotePadMeta(notepadnode);
-                notes.add(ni);
-            }
-
-            // Handle Steps
-            int s = XMLHandler.countNodes(transnode, StepMeta.XML_TAG); //$NON-NLS-1$
-
-            if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.ReadingSteps") + s + " steps..."); //$NON-NLS-1$ //$NON-NLS-2$
-            for (int i = 0; i < s; i++)
-            {
-                Node stepnode = XMLHandler.getSubNodeByNr(transnode, StepMeta.XML_TAG, i); //$NON-NLS-1$
-
-                if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.LookingAtStep") + i); //$NON-NLS-1$
-                StepMeta stepMeta = new StepMeta(stepnode, databases, counters);
-                stepMeta.setParentTransMeta(this); // for tracing, retain hierarchy
-                
-                // Check if the step exists and if it's a shared step.
-                // If so, then we will keep the shared version, not this one.
-                // The stored XML is only for backup purposes.
-                //
-                StepMeta check = findStep(stepMeta.getName());
-                if (check!=null)
-                {
-                    if (!check.isShared()) // Don't overwrite shared objects
-                    {
-                        addOrReplaceStep(stepMeta);
-                    }
-                    else
-                    {
-                        check.setDraw(stepMeta.isDrawn()); // Just keep the drawn flag and location
-                        check.setLocation(stepMeta.getLocation());
-                    }
-                }
-                else
-                {
-                    addStep(stepMeta); // simply add it.
-                }
-            }
-            
-            // Read the error handling code of the steps...
-            //
-            Node errorHandlingNode = XMLHandler.getSubNode(transnode, XML_TAG_STEP_ERROR_HANDLING);
-            int nrErrorHandlers = XMLHandler.countNodes(errorHandlingNode, StepErrorMeta.XML_TAG);
-            for (int i=0;i<nrErrorHandlers;i++)
-            {
-                Node stepErrorMetaNode = XMLHandler.getSubNodeByNr(errorHandlingNode, StepErrorMeta.XML_TAG, i);
-                StepErrorMeta stepErrorMeta = new StepErrorMeta(this, stepErrorMetaNode, steps);
-                if (stepErrorMeta.getSourceStep()!=null) {
-                	stepErrorMeta.getSourceStep().setStepErrorMeta(stepErrorMeta); // a bit of a trick, I know.
-                }
-            }
-
-            // Have all StreamValueLookups, etc. reference the correct source steps...
-            //
-            for (int i = 0; i < nrSteps(); i++)
-            {
-                StepMeta stepMeta = getStep(i);
-                StepMetaInterface sii = stepMeta.getStepMetaInterface();
-                if (sii != null) sii.searchInfoAndTargetSteps(steps);
-            }
-
-            // Handle Hops
-            //
-            Node ordernode = XMLHandler.getSubNode(transnode, XML_TAG_ORDER); //$NON-NLS-1$
-            n = XMLHandler.countNodes(ordernode, TransHopMeta.XML_TAG); //$NON-NLS-1$
-
-            if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.WeHaveHops") + n + " hops..."); //$NON-NLS-1$ //$NON-NLS-2$
-            for (int i = 0; i < n; i++)
-            {
-            	if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.LookingAtHop") + i); //$NON-NLS-1$
-                Node hopnode = XMLHandler.getSubNodeByNr(ordernode, TransHopMeta.XML_TAG, i); //$NON-NLS-1$
-
-                TransHopMeta hopinf = new TransHopMeta(hopnode, steps);
-                addTransHop(hopinf);
-            }
-
-            //
-            // get transformation info:
-            //
-            Node infonode = XMLHandler.getSubNode(transnode, XML_TAG_INFO); //$NON-NLS-1$
-
-            // Name
-            //
-            setName( XMLHandler.getTagValue(infonode, "name") ); //$NON-NLS-1$
-
-			// description
-            //
-			description = XMLHandler.getTagValue(infonode, "description"); 
-
-			// extended description
-			//
-			extended_description = XMLHandler.getTagValue(infonode, "extended_description"); 
-
-			// trans version
-			//
-			trans_version = XMLHandler.getTagValue(infonode, "trans_version"); 
-
-			// trans status
-			//
-			trans_status = Const.toInt(XMLHandler.getTagValue(infonode, "trans_status"),-1); 
-			
-			String transTypeCode = XMLHandler.getTagValue(infonode, "trans_type");
-			transformationType = TransformationType.getTransformationTypeByCode(transTypeCode);
-
-            // Optionally load the repository directory...
-			//
-			if (rep!=null) {
-				String directoryPath = XMLHandler.getTagValue(infonode, "directory");
-				if (directoryPath!=null) {
-					directory = rep.findDirectory(directoryPath);
-					if (directory==null) { // not found
-						directory = new RepositoryDirectory(); // The root as default
-					}
-				}
-			}
-
-            // Read logging table information
-			//
-			Node logNode = XMLHandler.getSubNode(infonode, "log");
-			if (logNode!=null) {
-				
-				// Backward compatibility...
-				//
-				Node transLogNode = XMLHandler.getSubNode(logNode, TransLogTable.XML_TAG);
-				if (transLogNode==null) {
-					// Load the XML
-					//
-					transLogTable.findField(TransLogTable.ID.LINES_READ).setSubject(findStep(XMLHandler.getTagValue(infonode, "log", "read"))); //$NON-NLS-1$ //$NON-NLS-2$
-		            transLogTable.findField(TransLogTable.ID.LINES_WRITTEN).setSubject(findStep(XMLHandler.getTagValue(infonode, "log", "write"))); //$NON-NLS-1$ //$NON-NLS-2$
-		            transLogTable.findField(TransLogTable.ID.LINES_INPUT).setSubject(findStep(XMLHandler.getTagValue(infonode, "log", "input"))); //$NON-NLS-1$ //$NON-NLS-2$
-		            transLogTable.findField(TransLogTable.ID.LINES_OUTPUT).setSubject(findStep(XMLHandler.getTagValue(infonode, "log", "output"))); //$NON-NLS-1$ //$NON-NLS-2$
-		            transLogTable.findField(TransLogTable.ID.LINES_UPDATED).setSubject(findStep(XMLHandler.getTagValue(infonode, "log", "update"))); //$NON-NLS-1$ //$NON-NLS-2$
-		            transLogTable.findField(TransLogTable.ID.LINES_REJECTED).setSubject(findStep(XMLHandler.getTagValue(infonode, "log", "rejected"))); //$NON-NLS-1$ //$NON-NLS-2$
-		            
-		            transLogTable.setConnectionName(XMLHandler.getTagValue(infonode, "log", "connection")); //$NON-NLS-1$ //$NON-NLS-2$
-		            transLogTable.setSchemaName(XMLHandler.getTagValue(infonode, "log", "schema")); //$NON-NLS-1$ //$NON-NLS-2$
-		            transLogTable.setTableName(XMLHandler.getTagValue(infonode, "log", "table")); //$NON-NLS-1$ //$NON-NLS-2$
-		            transLogTable.findField(TransLogTable.ID.ID_BATCH).setEnabled( "Y".equalsIgnoreCase(XMLHandler.getTagValue(infonode, "log", "use_batchid")) ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		            transLogTable.findField(TransLogTable.ID.LOG_FIELD).setEnabled( "Y".equalsIgnoreCase(XMLHandler.getTagValue(infonode, "log", "USE_LOGFIELD")) ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		            transLogTable.setLogSizeLimit( XMLHandler.getTagValue(infonode, "log", "size_limit_lines") ); //$NON-NLS-1$ //$NON-NLS-2$
-		            transLogTable.setLogInterval( XMLHandler.getTagValue(infonode, "log", "interval") ); //$NON-NLS-1$ //$NON-NLS-2$
-		            transLogTable.findField(TransLogTable.ID.CHANNEL_ID).setEnabled(false);
-		            transLogTable.findField(TransLogTable.ID.LINES_REJECTED).setEnabled(false);
-		            performanceLogTable.setConnectionName(transLogTable.getConnectionName());
-					performanceLogTable.setTableName( XMLHandler.getTagValue(infonode, "log", "step_performance_table")); //$NON-NLS-1$ //$NON-NLS-2$
-				} else {
-					transLogTable.loadXML(transLogNode, databases, steps);
-				}
-				Node perfLogNode = XMLHandler.getSubNode(logNode, PerformanceLogTable.XML_TAG);
-				if (perfLogNode!=null) {
-					performanceLogTable.loadXML(perfLogNode, databases);
-				}
-				Node channelLogNode = XMLHandler.getSubNode(logNode, ChannelLogTable.XML_TAG);
-				if (channelLogNode!=null) {
-					channelLogTable.loadXML(channelLogNode, databases);
-				}
-				Node stepLogNode = XMLHandler.getSubNode(logNode, StepLogTable.XML_TAG);
-				if (stepLogNode!=null) {
-					stepLogTable.loadXML(stepLogNode, databases);
-				}
-        Node metricsLogNode = XMLHandler.getSubNode(logNode, MetricsLogTable.XML_TAG);
-        if (metricsLogNode!=null) {
-          metricsLogTable.loadXML(metricsLogNode, databases);
-			}
-			}
-
-
-            // Maxdate range options...
-            String maxdatcon = XMLHandler.getTagValue(infonode, "maxdate", "connection"); //$NON-NLS-1$ //$NON-NLS-2$
-            maxDateConnection = findDatabase(maxdatcon);
-            maxDateTable = XMLHandler.getTagValue(infonode, "maxdate", "table"); //$NON-NLS-1$ //$NON-NLS-2$
-            maxDateField = XMLHandler.getTagValue(infonode, "maxdate", "field"); //$NON-NLS-1$ //$NON-NLS-2$
-            String offset = XMLHandler.getTagValue(infonode, "maxdate", "offset"); //$NON-NLS-1$ //$NON-NLS-2$
-            maxDateOffset = Const.toDouble(offset, 0.0);
-            String mdiff = XMLHandler.getTagValue(infonode, "maxdate", "maxdiff"); //$NON-NLS-1$ //$NON-NLS-2$
-            maxDateDifference = Const.toDouble(mdiff, 0.0);
-
-            // Check the dependencies as far as dates are concerned...
-            // We calculate BEFORE we run the MAX of these dates
-            // If the date is larger then enddate, startdate is set to MIN_DATE
-            //
-            Node depsNode = XMLHandler.getSubNode(infonode, XML_TAG_DEPENDENCIES);
-            int nrDeps = XMLHandler.countNodes(depsNode, TransDependency.XML_TAG);
-
-            for (int i = 0; i < nrDeps; i++)
-            {
-                Node depNode = XMLHandler.getSubNodeByNr(depsNode, TransDependency.XML_TAG, i);
-
-                TransDependency transDependency = new TransDependency(depNode, databases);
-                if (transDependency.getDatabase() != null && transDependency.getFieldname() != null)
-                {
-                    addDependency(transDependency);
-                }
-            }
-
-            // Read the named parameters.
-            Node paramsNode = XMLHandler.getSubNode(infonode, XML_TAG_PARAMETERS);
-            int nrParams = XMLHandler.countNodes(paramsNode, "parameter"); //$NON-NLS-1$
-
-            for (int i = 0; i < nrParams; i++)
-            {
-                Node paramNode = XMLHandler.getSubNodeByNr(paramsNode, "parameter", i); //$NON-NLS-1$
-
-                String paramName = XMLHandler.getTagValue(paramNode, "name"); //$NON-NLS-1$
-                String defaultValue = XMLHandler.getTagValue(paramNode, "default_value"); //$NON-NLS-1$
-                String descr = XMLHandler.getTagValue(paramNode, "description"); //$NON-NLS-1$
-                
-                addParameterDefinition(paramName, defaultValue, descr);
-            }            
-
-            // Read the partitioning schemas
-            // 
-            Node partSchemasNode = XMLHandler.getSubNode(infonode, XML_TAG_PARTITIONSCHEMAS); //$NON-NLS-1$
-            int nrPartSchemas = XMLHandler.countNodes(partSchemasNode, PartitionSchema.XML_TAG); //$NON-NLS-1$
-            for (int i = 0 ; i < nrPartSchemas ; i++)
-            {
-                Node partSchemaNode = XMLHandler.getSubNodeByNr(partSchemasNode, PartitionSchema.XML_TAG, i);
-                PartitionSchema partitionSchema = new PartitionSchema(partSchemaNode);
-                
-                // Check if the step exists and if it's a shared step.
-                // If so, then we will keep the shared version, not this one.
-                // The stored XML is only for backup purposes.
-                //
-                PartitionSchema check = findPartitionSchema(partitionSchema.getName());
-                if (check!=null)
-                {
-                    if (!check.isShared()) // we don't overwrite shared objects.
-                    {
-                        addOrReplacePartitionSchema(partitionSchema);
-                    }
-                }
-                else
-                {
-                    partitionSchemas.add(partitionSchema);
-                }
-                
-            }
-            
-            // Have all step partitioning meta-data reference the correct schemas that we just loaded
-            // 
-            for (int i = 0; i < nrSteps(); i++)
-            {
-                StepPartitioningMeta stepPartitioningMeta = getStep(i).getStepPartitioningMeta();
-                if (stepPartitioningMeta!=null)
-                {
-                    stepPartitioningMeta.setPartitionSchemaAfterLoading(partitionSchemas);
-                }
-                StepPartitioningMeta targetStepPartitioningMeta = getStep(i).getTargetStepPartitioningMeta();
-                if (targetStepPartitioningMeta!=null)
-                {
-                    targetStepPartitioningMeta.setPartitionSchemaAfterLoading(partitionSchemas);
-                }
-            }
-
-            // Read the slave servers...
-            // 
-            Node slaveServersNode = XMLHandler.getSubNode(infonode, XML_TAG_SLAVESERVERS); //$NON-NLS-1$
-            int nrSlaveServers = XMLHandler.countNodes(slaveServersNode, SlaveServer.XML_TAG); //$NON-NLS-1$
-            for (int i = 0 ; i < nrSlaveServers ; i++)
-            {
-                Node slaveServerNode = XMLHandler.getSubNodeByNr(slaveServersNode, SlaveServer.XML_TAG, i);
-                SlaveServer slaveServer = new SlaveServer(slaveServerNode);
-                slaveServer.shareVariablesWith(this);
-                
-                // Check if the object exists and if it's a shared object.
-                // If so, then we will keep the shared version, not this one.
-                // The stored XML is only for backup purposes.
-                SlaveServer check = findSlaveServer(slaveServer.getName());
-                if (check!=null)
-                {
-                    if (!check.isShared()) // we don't overwrite shared objects.
-                    {
-                        addOrReplaceSlaveServer(slaveServer);
-                    }
-                }
-                else
-                {
-                    slaveServers.add(slaveServer);
-                }
-            }
-
-            // Read the cluster schemas
-            // 
-            Node clusterSchemasNode = XMLHandler.getSubNode(infonode, XML_TAG_CLUSTERSCHEMAS); //$NON-NLS-1$
-            int nrClusterSchemas = XMLHandler.countNodes(clusterSchemasNode, ClusterSchema.XML_TAG); //$NON-NLS-1$
-            for (int i = 0 ; i < nrClusterSchemas ; i++)
-            {
-                Node clusterSchemaNode = XMLHandler.getSubNodeByNr(clusterSchemasNode, ClusterSchema.XML_TAG, i);
-                ClusterSchema clusterSchema = new ClusterSchema(clusterSchemaNode, slaveServers);
-                clusterSchema.shareVariablesWith(this);
-                
-                // Check if the object exists and if it's a shared object.
-                // If so, then we will keep the shared version, not this one.
-                // The stored XML is only for backup purposes.
-                ClusterSchema check = findClusterSchema(clusterSchema.getName());
-                if (check!=null)
-                {
-                    if (!check.isShared()) // we don't overwrite shared objects.
-                    {
-                        addOrReplaceClusterSchema(clusterSchema);
-                    }
-                }
-                else
-                {
-                    clusterSchemas.add(clusterSchema);
-                }
-            }
-            
-            // Have all step clustering schema meta-data reference the correct cluster schemas that we just loaded
-            // 
-            for (int i = 0; i < nrSteps(); i++)
-            {
-                getStep(i).setClusterSchemaAfterLoading(clusterSchemas);
-            }
-           
-            String srowset = XMLHandler.getTagValue(infonode, "size_rowset"); //$NON-NLS-1$
-            sizeRowset = Const.toInt(srowset, Const.ROWS_IN_ROWSET);
-            sleepTimeEmpty = Const.toInt(XMLHandler.getTagValue(infonode, "sleep_time_empty"), Const.TIMEOUT_GET_MILLIS); //$NON-NLS-1$
-            sleepTimeFull  = Const.toInt(XMLHandler.getTagValue(infonode, "sleep_time_full"), Const.TIMEOUT_PUT_MILLIS); //$NON-NLS-1$
-            usingUniqueConnections = "Y".equalsIgnoreCase( XMLHandler.getTagValue(infonode, "unique_connections") ); //$NON-NLS-1$
-
-            feedbackShown = !"N".equalsIgnoreCase( XMLHandler.getTagValue(infonode, "feedback_shown") ); //$NON-NLS-1$
-            feedbackSize = Const.toInt(XMLHandler.getTagValue(infonode, "feedback_size"), Const.ROWS_UPDATE); //$NON-NLS-1$
-            usingThreadPriorityManagment = !"N".equalsIgnoreCase( XMLHandler.getTagValue(infonode, "using_thread_priorities") ); //$NON-NLS-1$ 
-
-            // Performance monitoring for steps...
-            //
-            capturingStepPerformanceSnapShots = "Y".equalsIgnoreCase(XMLHandler.getTagValue(infonode, "capture_step_performance")); // $NON-NLS-1$ $NON-NLS-2$
-            stepPerformanceCapturingDelay = Const.toLong(XMLHandler.getTagValue(infonode, "step_performance_capturing_delay"), 1000); // $NON-NLS-1$
-            stepPerformanceCapturingSizeLimit = XMLHandler.getTagValue(infonode, "step_performance_capturing_size_limit"); // $NON-NLS-1$
-
-			// Created user/date
-			createdUser = XMLHandler.getTagValue(infonode, "created_user");
-			String createDate = XMLHandler.getTagValue(infonode, "created_date");
-			if (createDate!=null)
-			{
-				createdDate = XMLHandler.stringToDate(createDate);
-			}
-
-            // Changed user/date
-            modifiedUser = XMLHandler.getTagValue(infonode, "modified_user");
-            String modDate = XMLHandler.getTagValue(infonode, "modified_date");
-            if (modDate!=null)
-            {
-                modifiedDate = XMLHandler.stringToDate(modDate);
-            }
-            
-            Node partitionDistNode = XMLHandler.getSubNode(transnode, SlaveStepCopyPartitionDistribution.XML_TAG);
-            if (partitionDistNode!=null) {
-            	slaveStepCopyPartitionDistribution = new SlaveStepCopyPartitionDistribution(partitionDistNode);
-            }
-            else {
-            	slaveStepCopyPartitionDistribution = new SlaveStepCopyPartitionDistribution(); // leave empty
-            }
-            
-            // Is this a slave transformation?
-            //
-            slaveTransformation = "Y".equalsIgnoreCase(XMLHandler.getTagValue(transnode, "slave_transformation"));
-            if(log.isDebug()) 
-            {
-            	log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.NumberOfStepsReaded") + nrSteps()); //$NON-NLS-1$
-            	log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.NumberOfHopsReaded") + nrTransHops()); //$NON-NLS-1$
-            }
-            sortSteps();
+    KettleMissingPluginsException missingPluginsException = new KettleMissingPluginsException(BaseMessages.getString(PKG, "TransMeta.MissingPluginsFoundWhileLoadingTransformation.Exception"));
+    
+    try {
+    
+      Props props = null;
+      if (Props.isInitialized()) {
+        props = Props.getInstance();
+      }
+  
+      initializeVariablesFrom(parentVariableSpace);
+  
+      try {
+        // Clear the transformation
+        clear();
+  
+        // If we are not using a repository, we are getting the transformation from a file
+        // Set the filename here so it can be used in variables for ALL aspects of the transformation FIX: PDI-8890
+        if (null == rep) {
+          setFilename(fname);
         }
-        catch (KettleXMLException xe)
-        {
-            throw new KettleXMLException(BaseMessages.getString(PKG, "TransMeta.Exception.ErrorReadingTransformation"), xe); //$NON-NLS-1$
-        } catch (KettleException e) {
-        	throw new KettleXMLException(e);
-		}
-        finally
-        {
-        	initializeVariablesFrom(null);
-            if (setInternalVariables) setInternalKettleVariables();
+  
+        // Read all the database connections from the repository to make sure that we don't overwrite any there by loading from XML.
+        try {
+          sharedObjectsFile = XMLHandler.getTagValue(transnode, "info", "shared_objects_file"); //$NON-NLS-1$ //$NON-NLS-2$
+          sharedObjects = rep != null ? rep.readTransSharedObjects(this) : readSharedObjects();
+        } catch (Exception e) {
+          log.logError(BaseMessages.getString(PKG, "TransMeta.ErrorReadingSharedObjects.Message", e.toString()));
+          log.logError(Const.getStackTracker(e));
         }
+  
+        // Handle connections
+        int n = XMLHandler.countNodes(transnode, DatabaseMeta.XML_TAG); //$NON-NLS-1$
+        if (log.isDebug())
+          log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.WeHaveConnections", String.valueOf(n))); //$NON-NLS-1$ //$NON-NLS-2$
+        for (int i = 0; i < n; i++) {
+          if (log.isDebug())
+            log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.LookingAtConnection") + i); //$NON-NLS-1$
+          Node nodecon = XMLHandler.getSubNodeByNr(transnode, DatabaseMeta.XML_TAG, i); //$NON-NLS-1$
+  
+          DatabaseMeta dbcon = new DatabaseMeta(nodecon);
+          dbcon.shareVariablesWith(this);
+  
+          DatabaseMeta exist = findDatabase(dbcon.getName());
+          if (exist == null) {
+            addDatabase(dbcon);
+          } else {
+            if (!exist.isShared()) // otherwise, we just keep the shared connection.
+            {
+              boolean askOverwrite = Props.isInitialized() ? props.askAboutReplacingDatabaseConnections() : false;
+              boolean overwrite = Props.isInitialized() ? props.replaceExistingDatabaseConnections() : true;
+              if (askOverwrite) {
+                if (prompter != null) {
+                  overwrite = prompter.overwritePrompt(
+                      BaseMessages.getString(PKG, "TransMeta.Message.OverwriteConnectionYN", dbcon.getName()),
+                      BaseMessages.getString(PKG, "TransMeta.Message.OverwriteConnection.DontShowAnyMoreMessage"),
+                      Props.STRING_ASK_ABOUT_REPLACING_DATABASES);
+                }
+              }
+  
+              if (overwrite) {
+                int idx = indexOfDatabase(exist);
+                removeDatabase(idx);
+                addDatabase(idx, dbcon);
+              }
+            }
+          }
+        }
+  
+        // Read data service metadata
+        //
+        Node dataServiceNode = XMLHandler.getSubNode(transnode, DataServiceMeta.XML_TAG);
+        dataService = new DataServiceMeta(dataServiceNode);
+  
+        // Read the notes...
+        Node notepadsnode = XMLHandler.getSubNode(transnode, XML_TAG_NOTEPADS); //$NON-NLS-1$
+        int nrnotes = XMLHandler.countNodes(notepadsnode, NotePadMeta.XML_TAG); //$NON-NLS-1$
+        for (int i = 0; i < nrnotes; i++) {
+          Node notepadnode = XMLHandler.getSubNodeByNr(notepadsnode, NotePadMeta.XML_TAG, i); //$NON-NLS-1$
+          NotePadMeta ni = new NotePadMeta(notepadnode);
+          notes.add(ni);
+        }
+  
+        // Handle Steps
+        int s = XMLHandler.countNodes(transnode, StepMeta.XML_TAG); //$NON-NLS-1$
+  
+        if (log.isDebug())
+          log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.ReadingSteps") + s + " steps..."); //$NON-NLS-1$ //$NON-NLS-2$
+        for (int i = 0; i < s; i++) {
+          Node stepnode = XMLHandler.getSubNodeByNr(transnode, StepMeta.XML_TAG, i); //$NON-NLS-1$
+  
+          if (log.isDebug())
+            log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.LookingAtStep") + i); //$NON-NLS-1$
+          
+          try {
+            StepMeta stepMeta = new StepMeta(stepnode, databases, counters);
+            stepMeta.setParentTransMeta(this); // for tracing, retain hierarchy
+    
+            // Check if the step exists and if it's a shared step.
+            // If so, then we will keep the shared version, not this one.
+            // The stored XML is only for backup purposes.
+            //
+            StepMeta check = findStep(stepMeta.getName());
+            if (check != null) {
+              if (!check.isShared()) // Don't overwrite shared objects
+              {
+                addOrReplaceStep(stepMeta);
+              } else {
+                check.setDraw(stepMeta.isDrawn()); // Just keep the drawn flag and location
+                check.setLocation(stepMeta.getLocation());
+              }
+            } else {
+              addStep(stepMeta); // simply add it.
+            }
+          } catch(KettlePluginLoaderException e) {
+            // We only register missing step plugins, nothing else.
+            //
+            missingPluginsException.addMissingPluginDetails(StepPluginType.class, e.getPluginId());
+          }
+        }
+  
+        // Read the error handling code of the steps...
+        //
+        Node errorHandlingNode = XMLHandler.getSubNode(transnode, XML_TAG_STEP_ERROR_HANDLING);
+        int nrErrorHandlers = XMLHandler.countNodes(errorHandlingNode, StepErrorMeta.XML_TAG);
+        for (int i = 0; i < nrErrorHandlers; i++) {
+          Node stepErrorMetaNode = XMLHandler.getSubNodeByNr(errorHandlingNode, StepErrorMeta.XML_TAG, i);
+          StepErrorMeta stepErrorMeta = new StepErrorMeta(this, stepErrorMetaNode, steps);
+          if (stepErrorMeta.getSourceStep() != null) {
+            stepErrorMeta.getSourceStep().setStepErrorMeta(stepErrorMeta); // a bit of a trick, I know.
+          }
+        }
+  
+        // Have all StreamValueLookups, etc. reference the correct source steps...
+        //
+        for (int i = 0; i < nrSteps(); i++) {
+          StepMeta stepMeta = getStep(i);
+          StepMetaInterface sii = stepMeta.getStepMetaInterface();
+          if (sii != null)
+            sii.searchInfoAndTargetSteps(steps);
+        }
+  
+        // Handle Hops
+        //
+        Node ordernode = XMLHandler.getSubNode(transnode, XML_TAG_ORDER); //$NON-NLS-1$
+        n = XMLHandler.countNodes(ordernode, TransHopMeta.XML_TAG); //$NON-NLS-1$
+  
+        if (log.isDebug())
+          log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.WeHaveHops") + n + " hops..."); //$NON-NLS-1$ //$NON-NLS-2$
+        for (int i = 0; i < n; i++) {
+          if (log.isDebug())
+            log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.LookingAtHop") + i); //$NON-NLS-1$
+          Node hopnode = XMLHandler.getSubNodeByNr(ordernode, TransHopMeta.XML_TAG, i); //$NON-NLS-1$
+  
+          TransHopMeta hopinf = new TransHopMeta(hopnode, steps);
+          addTransHop(hopinf);
+        }
+  
+        //
+        // get transformation info:
+        //
+        Node infonode = XMLHandler.getSubNode(transnode, XML_TAG_INFO); //$NON-NLS-1$
+  
+        // Name
+        //
+        setName(XMLHandler.getTagValue(infonode, "name")); //$NON-NLS-1$
+  
+        // description
+        //
+        description = XMLHandler.getTagValue(infonode, "description");
+  
+        // extended description
+        //
+        extended_description = XMLHandler.getTagValue(infonode, "extended_description");
+  
+        // trans version
+        //
+        trans_version = XMLHandler.getTagValue(infonode, "trans_version");
+  
+        // trans status
+        //
+        trans_status = Const.toInt(XMLHandler.getTagValue(infonode, "trans_status"), -1);
+  
+        String transTypeCode = XMLHandler.getTagValue(infonode, "trans_type");
+        transformationType = TransformationType.getTransformationTypeByCode(transTypeCode);
+  
+        // Optionally load the repository directory...
+        //
+        if (rep != null) {
+          String directoryPath = XMLHandler.getTagValue(infonode, "directory");
+          if (directoryPath != null) {
+            directory = rep.findDirectory(directoryPath);
+            if (directory == null) { // not found
+              directory = new RepositoryDirectory(); // The root as default
+            }
+          }
+        }
+  
+        // Read logging table information
+        //
+        Node logNode = XMLHandler.getSubNode(infonode, "log");
+        if (logNode != null) {
+  
+          // Backward compatibility...
+          //
+          Node transLogNode = XMLHandler.getSubNode(logNode, TransLogTable.XML_TAG);
+          if (transLogNode == null) {
+            // Load the XML
+            //
+            transLogTable.findField(TransLogTable.ID.LINES_READ).setSubject(
+                findStep(XMLHandler.getTagValue(infonode, "log", "read"))); //$NON-NLS-1$ //$NON-NLS-2$
+            transLogTable.findField(TransLogTable.ID.LINES_WRITTEN).setSubject(
+                findStep(XMLHandler.getTagValue(infonode, "log", "write"))); //$NON-NLS-1$ //$NON-NLS-2$
+            transLogTable.findField(TransLogTable.ID.LINES_INPUT).setSubject(
+                findStep(XMLHandler.getTagValue(infonode, "log", "input"))); //$NON-NLS-1$ //$NON-NLS-2$
+            transLogTable.findField(TransLogTable.ID.LINES_OUTPUT).setSubject(
+                findStep(XMLHandler.getTagValue(infonode, "log", "output"))); //$NON-NLS-1$ //$NON-NLS-2$
+            transLogTable.findField(TransLogTable.ID.LINES_UPDATED).setSubject(
+                findStep(XMLHandler.getTagValue(infonode, "log", "update"))); //$NON-NLS-1$ //$NON-NLS-2$
+            transLogTable.findField(TransLogTable.ID.LINES_REJECTED).setSubject(
+                findStep(XMLHandler.getTagValue(infonode, "log", "rejected"))); //$NON-NLS-1$ //$NON-NLS-2$
+  
+            transLogTable.setConnectionName(XMLHandler.getTagValue(infonode, "log", "connection")); //$NON-NLS-1$ //$NON-NLS-2$
+            transLogTable.setSchemaName(XMLHandler.getTagValue(infonode, "log", "schema")); //$NON-NLS-1$ //$NON-NLS-2$
+            transLogTable.setTableName(XMLHandler.getTagValue(infonode, "log", "table")); //$NON-NLS-1$ //$NON-NLS-2$
+            transLogTable.findField(TransLogTable.ID.ID_BATCH).setEnabled(
+                "Y".equalsIgnoreCase(XMLHandler.getTagValue(infonode, "log", "use_batchid"))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            transLogTable.findField(TransLogTable.ID.LOG_FIELD).setEnabled(
+                "Y".equalsIgnoreCase(XMLHandler.getTagValue(infonode, "log", "USE_LOGFIELD"))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            transLogTable.setLogSizeLimit(XMLHandler.getTagValue(infonode, "log", "size_limit_lines")); //$NON-NLS-1$ //$NON-NLS-2$
+            transLogTable.setLogInterval(XMLHandler.getTagValue(infonode, "log", "interval")); //$NON-NLS-1$ //$NON-NLS-2$
+            transLogTable.findField(TransLogTable.ID.CHANNEL_ID).setEnabled(false);
+            transLogTable.findField(TransLogTable.ID.LINES_REJECTED).setEnabled(false);
+            performanceLogTable.setConnectionName(transLogTable.getConnectionName());
+            performanceLogTable.setTableName(XMLHandler.getTagValue(infonode, "log", "step_performance_table")); //$NON-NLS-1$ //$NON-NLS-2$
+          } else {
+            transLogTable.loadXML(transLogNode, databases, steps);
+          }
+          Node perfLogNode = XMLHandler.getSubNode(logNode, PerformanceLogTable.XML_TAG);
+          if (perfLogNode != null) {
+            performanceLogTable.loadXML(perfLogNode, databases);
+          }
+          Node channelLogNode = XMLHandler.getSubNode(logNode, ChannelLogTable.XML_TAG);
+          if (channelLogNode != null) {
+            channelLogTable.loadXML(channelLogNode, databases);
+          }
+          Node stepLogNode = XMLHandler.getSubNode(logNode, StepLogTable.XML_TAG);
+          if (stepLogNode != null) {
+            stepLogTable.loadXML(stepLogNode, databases);
+          }
+          Node metricsLogNode = XMLHandler.getSubNode(logNode, MetricsLogTable.XML_TAG);
+          if (metricsLogNode != null) {
+            metricsLogTable.loadXML(metricsLogNode, databases);
+          }
+        }
+  
+        // Maxdate range options...
+        String maxdatcon = XMLHandler.getTagValue(infonode, "maxdate", "connection"); //$NON-NLS-1$ //$NON-NLS-2$
+        maxDateConnection = findDatabase(maxdatcon);
+        maxDateTable = XMLHandler.getTagValue(infonode, "maxdate", "table"); //$NON-NLS-1$ //$NON-NLS-2$
+        maxDateField = XMLHandler.getTagValue(infonode, "maxdate", "field"); //$NON-NLS-1$ //$NON-NLS-2$
+        String offset = XMLHandler.getTagValue(infonode, "maxdate", "offset"); //$NON-NLS-1$ //$NON-NLS-2$
+        maxDateOffset = Const.toDouble(offset, 0.0);
+        String mdiff = XMLHandler.getTagValue(infonode, "maxdate", "maxdiff"); //$NON-NLS-1$ //$NON-NLS-2$
+        maxDateDifference = Const.toDouble(mdiff, 0.0);
+  
+        // Check the dependencies as far as dates are concerned...
+        // We calculate BEFORE we run the MAX of these dates
+        // If the date is larger then enddate, startdate is set to MIN_DATE
+        //
+        Node depsNode = XMLHandler.getSubNode(infonode, XML_TAG_DEPENDENCIES);
+        int nrDeps = XMLHandler.countNodes(depsNode, TransDependency.XML_TAG);
+  
+        for (int i = 0; i < nrDeps; i++) {
+          Node depNode = XMLHandler.getSubNodeByNr(depsNode, TransDependency.XML_TAG, i);
+  
+          TransDependency transDependency = new TransDependency(depNode, databases);
+          if (transDependency.getDatabase() != null && transDependency.getFieldname() != null) {
+            addDependency(transDependency);
+          }
+        }
+  
+        // Read the named parameters.
+        Node paramsNode = XMLHandler.getSubNode(infonode, XML_TAG_PARAMETERS);
+        int nrParams = XMLHandler.countNodes(paramsNode, "parameter"); //$NON-NLS-1$
+  
+        for (int i = 0; i < nrParams; i++) {
+          Node paramNode = XMLHandler.getSubNodeByNr(paramsNode, "parameter", i); //$NON-NLS-1$
+  
+          String paramName = XMLHandler.getTagValue(paramNode, "name"); //$NON-NLS-1$
+          String defaultValue = XMLHandler.getTagValue(paramNode, "default_value"); //$NON-NLS-1$
+          String descr = XMLHandler.getTagValue(paramNode, "description"); //$NON-NLS-1$
+  
+          addParameterDefinition(paramName, defaultValue, descr);
+        }
+  
+        // Read the partitioning schemas
+        // 
+        Node partSchemasNode = XMLHandler.getSubNode(infonode, XML_TAG_PARTITIONSCHEMAS); //$NON-NLS-1$
+        int nrPartSchemas = XMLHandler.countNodes(partSchemasNode, PartitionSchema.XML_TAG); //$NON-NLS-1$
+        for (int i = 0; i < nrPartSchemas; i++) {
+          Node partSchemaNode = XMLHandler.getSubNodeByNr(partSchemasNode, PartitionSchema.XML_TAG, i);
+          PartitionSchema partitionSchema = new PartitionSchema(partSchemaNode);
+  
+          // Check if the step exists and if it's a shared step.
+          // If so, then we will keep the shared version, not this one.
+          // The stored XML is only for backup purposes.
+          //
+          PartitionSchema check = findPartitionSchema(partitionSchema.getName());
+          if (check != null) {
+            if (!check.isShared()) // we don't overwrite shared objects.
+            {
+              addOrReplacePartitionSchema(partitionSchema);
+            }
+          } else {
+            partitionSchemas.add(partitionSchema);
+          }
+  
+        }
+  
+        // Have all step partitioning meta-data reference the correct schemas that we just loaded
+        // 
+        for (int i = 0; i < nrSteps(); i++) {
+          StepPartitioningMeta stepPartitioningMeta = getStep(i).getStepPartitioningMeta();
+          if (stepPartitioningMeta != null) {
+            stepPartitioningMeta.setPartitionSchemaAfterLoading(partitionSchemas);
+          }
+          StepPartitioningMeta targetStepPartitioningMeta = getStep(i).getTargetStepPartitioningMeta();
+          if (targetStepPartitioningMeta != null) {
+            targetStepPartitioningMeta.setPartitionSchemaAfterLoading(partitionSchemas);
+          }
+        }
+  
+        // Read the slave servers...
+        // 
+        Node slaveServersNode = XMLHandler.getSubNode(infonode, XML_TAG_SLAVESERVERS); //$NON-NLS-1$
+        int nrSlaveServers = XMLHandler.countNodes(slaveServersNode, SlaveServer.XML_TAG); //$NON-NLS-1$
+        for (int i = 0; i < nrSlaveServers; i++) {
+          Node slaveServerNode = XMLHandler.getSubNodeByNr(slaveServersNode, SlaveServer.XML_TAG, i);
+          SlaveServer slaveServer = new SlaveServer(slaveServerNode);
+          slaveServer.shareVariablesWith(this);
+  
+          // Check if the object exists and if it's a shared object.
+          // If so, then we will keep the shared version, not this one.
+          // The stored XML is only for backup purposes.
+          SlaveServer check = findSlaveServer(slaveServer.getName());
+          if (check != null) {
+            if (!check.isShared()) // we don't overwrite shared objects.
+            {
+              addOrReplaceSlaveServer(slaveServer);
+            }
+          } else {
+            slaveServers.add(slaveServer);
+          }
+        }
+  
+        // Read the cluster schemas
+        // 
+        Node clusterSchemasNode = XMLHandler.getSubNode(infonode, XML_TAG_CLUSTERSCHEMAS); //$NON-NLS-1$
+        int nrClusterSchemas = XMLHandler.countNodes(clusterSchemasNode, ClusterSchema.XML_TAG); //$NON-NLS-1$
+        for (int i = 0; i < nrClusterSchemas; i++) {
+          Node clusterSchemaNode = XMLHandler.getSubNodeByNr(clusterSchemasNode, ClusterSchema.XML_TAG, i);
+          ClusterSchema clusterSchema = new ClusterSchema(clusterSchemaNode, slaveServers);
+          clusterSchema.shareVariablesWith(this);
+  
+          // Check if the object exists and if it's a shared object.
+          // If so, then we will keep the shared version, not this one.
+          // The stored XML is only for backup purposes.
+          ClusterSchema check = findClusterSchema(clusterSchema.getName());
+          if (check != null) {
+            if (!check.isShared()) // we don't overwrite shared objects.
+            {
+              addOrReplaceClusterSchema(clusterSchema);
+            }
+          } else {
+            clusterSchemas.add(clusterSchema);
+          }
+        }
+  
+        // Have all step clustering schema meta-data reference the correct cluster schemas that we just loaded
+        // 
+        for (int i = 0; i < nrSteps(); i++) {
+          getStep(i).setClusterSchemaAfterLoading(clusterSchemas);
+        }
+  
+        String srowset = XMLHandler.getTagValue(infonode, "size_rowset"); //$NON-NLS-1$
+        sizeRowset = Const.toInt(srowset, Const.ROWS_IN_ROWSET);
+        sleepTimeEmpty = Const.toInt(XMLHandler.getTagValue(infonode, "sleep_time_empty"), Const.TIMEOUT_GET_MILLIS); //$NON-NLS-1$
+        sleepTimeFull = Const.toInt(XMLHandler.getTagValue(infonode, "sleep_time_full"), Const.TIMEOUT_PUT_MILLIS); //$NON-NLS-1$
+        usingUniqueConnections = "Y".equalsIgnoreCase(XMLHandler.getTagValue(infonode, "unique_connections")); //$NON-NLS-1$
+  
+        feedbackShown = !"N".equalsIgnoreCase(XMLHandler.getTagValue(infonode, "feedback_shown")); //$NON-NLS-1$
+        feedbackSize = Const.toInt(XMLHandler.getTagValue(infonode, "feedback_size"), Const.ROWS_UPDATE); //$NON-NLS-1$
+        usingThreadPriorityManagment = !"N".equalsIgnoreCase(XMLHandler.getTagValue(infonode, "using_thread_priorities")); //$NON-NLS-1$ 
+  
+        // Performance monitoring for steps...
+        //
+        capturingStepPerformanceSnapShots = "Y".equalsIgnoreCase(XMLHandler.getTagValue(infonode,
+            "capture_step_performance")); // $NON-NLS-1$ $NON-NLS-2$
+        stepPerformanceCapturingDelay = Const.toLong(
+            XMLHandler.getTagValue(infonode, "step_performance_capturing_delay"), 1000); // $NON-NLS-1$
+        stepPerformanceCapturingSizeLimit = XMLHandler.getTagValue(infonode, "step_performance_capturing_size_limit"); // $NON-NLS-1$
+  
+        // Created user/date
+        createdUser = XMLHandler.getTagValue(infonode, "created_user");
+        String createDate = XMLHandler.getTagValue(infonode, "created_date");
+        if (createDate != null) {
+          createdDate = XMLHandler.stringToDate(createDate);
+        }
+  
+        // Changed user/date
+        modifiedUser = XMLHandler.getTagValue(infonode, "modified_user");
+        String modDate = XMLHandler.getTagValue(infonode, "modified_date");
+        if (modDate != null) {
+          modifiedDate = XMLHandler.stringToDate(modDate);
+        }
+  
+        Node partitionDistNode = XMLHandler.getSubNode(transnode, SlaveStepCopyPartitionDistribution.XML_TAG);
+        if (partitionDistNode != null) {
+          slaveStepCopyPartitionDistribution = new SlaveStepCopyPartitionDistribution(partitionDistNode);
+        } else {
+          slaveStepCopyPartitionDistribution = new SlaveStepCopyPartitionDistribution(); // leave empty
+        }
+  
+        // Is this a slave transformation?
+        //
+        slaveTransformation = "Y".equalsIgnoreCase(XMLHandler.getTagValue(transnode, "slave_transformation"));
+        if (log.isDebug()) {
+          log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.NumberOfStepsReaded") + nrSteps()); //$NON-NLS-1$
+          log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.NumberOfHopsReaded") + nrTransHops()); //$NON-NLS-1$
+        }
+        sortSteps();
+      } catch (KettleXMLException xe) {
+        throw new KettleXMLException(BaseMessages.getString(PKG, "TransMeta.Exception.ErrorReadingTransformation"), xe); //$NON-NLS-1$
+      } catch (KettleException e) {
+        throw new KettleXMLException(e);
+      } finally {
+        initializeVariablesFrom(null);
+        if (setInternalVariables)
+          setInternalKettleVariables();
+      }
+    } catch(Exception e) {
+      // See if we have missing plugins to report, those take precedence!
+      //
+      if (!missingPluginsException.getMissingPluginDetailsList().isEmpty()) {
+        throw missingPluginsException;
+      } else {
+        throw new KettleXMLException(BaseMessages.getString(PKG, "TransMeta.Exception.ErrorReadingTransformation"), e);
+      }
+    } finally {
+      if (!missingPluginsException.getMissingPluginDetailsList().isEmpty()) {
+        throw missingPluginsException;
+      }
     }
-    
+  }
+
     /**
      * Reads the shared objects (steps, connections, etc.).
      *

@@ -34,7 +34,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleStepLoaderException;
+import org.pentaho.di.core.exception.KettlePluginLoaderException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.Point;
@@ -231,89 +231,93 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 	 * @param counters A map with all defined counters.
 	 * 
 	 */
-	public StepMeta(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleXMLException
-	{
-        this();
-        PluginRegistry registry = PluginRegistry.getInstance();
-        
-		try
-		{
-			stepname = XMLHandler.getTagValue(stepnode, "name"); //$NON-NLS-1$
-			stepid   = XMLHandler.getTagValue(stepnode, "type"); //$NON-NLS-1$
-	
-			// Create a new StepMetaInterface object...
-			PluginInterface sp = registry.findPluginWithId(StepPluginType.class, stepid);
-            if (sp!=null)
-            {
-                setStepMetaInterface( (StepMetaInterface) registry.loadClass(sp) );
-                stepid=sp.getIds()[0]; // revert to the default in case we loaded an alternate version
-            }
-            else
-            {
-                throw new KettleStepLoaderException(BaseMessages.getString(PKG, "StepMeta.Exception.UnableToLoadClass",stepid)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-            }
-			
-			// Load the specifics from XML...
-			if (stepMetaInterface!=null)
-			{
-				stepMetaInterface.loadXML(stepnode, databases, counters);
-			}
-			
-			/* Handle info general to all step types...*/
-			description    = XMLHandler.getTagValue(stepnode, "description"); //$NON-NLS-1$
-			copiesString   = XMLHandler.getTagValue(stepnode, "copies"); //$NON-NLS-1$
-			String sdistri = XMLHandler.getTagValue(stepnode, "distribute"); //$NON-NLS-1$
-			distributes     = "Y".equalsIgnoreCase(sdistri); //$NON-NLS-1$
-			if (sdistri==null) distributes=true; // default=distribute
-      String sloadb = XMLHandler.getTagValue(stepnode, "loadbalance"); //$NON-NLS-1$
-      loadBalancing = "Y".equalsIgnoreCase(sloadb); //$NON-NLS-1$
-      if (sloadb==null) loadBalancing=false; // defaults to round robin distribution
-	
-			// Handle GUI information: location & drawstep?
-			String xloc, yloc;
-			int x,y;
-			xloc=XMLHandler.getTagValue(stepnode, "GUI", "xloc"); //$NON-NLS-1$ //$NON-NLS-2$
-			yloc=XMLHandler.getTagValue(stepnode, "GUI", "yloc"); //$NON-NLS-1$ //$NON-NLS-2$
-			try{ x=Integer.parseInt(xloc); } catch(Exception e) { x=0; }
-			try{ y=Integer.parseInt(yloc); } catch(Exception e) { y=0; }
-			location=new Point(x,y);
-			
-			drawstep = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "GUI", "draw")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-            
-            // The partitioning information?
-			//
-            Node partNode = XMLHandler.getSubNode(stepnode, "partitioning");
-            stepPartitioningMeta = new StepPartitioningMeta(partNode);
-            
-            // Target partitioning information?
-            //
-            Node targetPartNode = XMLHandler.getSubNode(stepnode, "target_step_partitioning");
-            partNode = XMLHandler.getSubNode(targetPartNode, "partitioning");
-            if (partNode!=null) {
-            	targetStepPartitioningMeta = new StepPartitioningMeta(partNode);
-            }
-            
-            clusterSchemaName = XMLHandler.getTagValue(stepnode, "cluster_schema"); // resolve to clusterSchema later
+  public StepMeta(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleXMLException, KettlePluginLoaderException {
+    this();
+    PluginRegistry registry = PluginRegistry.getInstance();
 
-            // The remote input and output steps...
-            Node remotestepsNode = XMLHandler.getSubNode(stepnode, "remotesteps");
-            Node inputNode = XMLHandler.getSubNode(remotestepsNode, "input");
-            int nrInput = XMLHandler.countNodes(inputNode, RemoteStep.XML_TAG);
-            for (int i=0;i<nrInput;i++) {
-            	remoteInputSteps.add( new RemoteStep( XMLHandler.getSubNodeByNr(inputNode, RemoteStep.XML_TAG, i) ) );
-            	
-            }
-            Node outputNode = XMLHandler.getSubNode(remotestepsNode, "output");
-            int nrOutput = XMLHandler.countNodes(outputNode, RemoteStep.XML_TAG);
-            for (int i=0;i<nrOutput;i++) {
-            	remoteOutputSteps.add( new RemoteStep( XMLHandler.getSubNodeByNr(outputNode, RemoteStep.XML_TAG, i) ) );
-            }
-		}
-		catch(Exception e)
-		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "StepMeta.Exception.UnableToLoadStepInfo")+e.toString(), e); //$NON-NLS-1$
-		}
-	}
+    try {
+      stepname = XMLHandler.getTagValue(stepnode, "name");
+      stepid = XMLHandler.getTagValue(stepnode, "type");
+
+      // Create a new StepMetaInterface object...
+      PluginInterface sp = registry.findPluginWithId(StepPluginType.class, stepid);
+      if (sp != null) {
+        setStepMetaInterface((StepMetaInterface) registry.loadClass(sp));
+        stepid = sp.getIds()[0]; // revert to the default in case we loaded an alternate version
+      } else {
+        throw new KettlePluginLoaderException(stepid, BaseMessages.getString(PKG, "StepMeta.Exception.UnableToLoadClass", stepid));
+      }
+
+      // Load the specifics from XML...
+      if (stepMetaInterface != null) {
+        stepMetaInterface.loadXML(stepnode, databases, counters);
+      }
+
+      /* Handle info general to all step types...*/
+      description = XMLHandler.getTagValue(stepnode, "description");
+      copiesString = XMLHandler.getTagValue(stepnode, "copies");
+      String sdistri = XMLHandler.getTagValue(stepnode, "distribute");
+      distributes = "Y".equalsIgnoreCase(sdistri);
+      if (sdistri == null)
+        distributes = true; // default=distribute
+      String sloadb = XMLHandler.getTagValue(stepnode, "loadbalance");
+      loadBalancing = "Y".equalsIgnoreCase(sloadb);
+      if (sloadb == null)
+        loadBalancing = false; // defaults to round robin distribution
+
+      // Handle GUI information: location & drawstep?
+      String xloc, yloc;
+      int x, y;
+      xloc = XMLHandler.getTagValue(stepnode, "GUI", "xloc");
+      yloc = XMLHandler.getTagValue(stepnode, "GUI", "yloc");
+      try {
+        x = Integer.parseInt(xloc);
+      } catch (Exception e) {
+        x = 0;
+      }
+      try {
+        y = Integer.parseInt(yloc);
+      } catch (Exception e) {
+        y = 0;
+      }
+      location = new Point(x, y);
+
+      drawstep = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "GUI", "draw"));
+
+      // The partitioning information?
+      //
+      Node partNode = XMLHandler.getSubNode(stepnode, "partitioning");
+      stepPartitioningMeta = new StepPartitioningMeta(partNode);
+
+      // Target partitioning information?
+      //
+      Node targetPartNode = XMLHandler.getSubNode(stepnode, "target_step_partitioning");
+      partNode = XMLHandler.getSubNode(targetPartNode, "partitioning");
+      if (partNode != null) {
+        targetStepPartitioningMeta = new StepPartitioningMeta(partNode);
+      }
+
+      clusterSchemaName = XMLHandler.getTagValue(stepnode, "cluster_schema");
+
+      // The remote input and output steps...
+      Node remotestepsNode = XMLHandler.getSubNode(stepnode, "remotesteps");
+      Node inputNode = XMLHandler.getSubNode(remotestepsNode, "input");
+      int nrInput = XMLHandler.countNodes(inputNode, RemoteStep.XML_TAG);
+      for (int i = 0; i < nrInput; i++) {
+        remoteInputSteps.add(new RemoteStep(XMLHandler.getSubNodeByNr(inputNode, RemoteStep.XML_TAG, i)));
+
+      }
+      Node outputNode = XMLHandler.getSubNode(remotestepsNode, "output");
+      int nrOutput = XMLHandler.countNodes(outputNode, RemoteStep.XML_TAG);
+      for (int i = 0; i < nrOutput; i++) {
+        remoteOutputSteps.add(new RemoteStep(XMLHandler.getSubNodeByNr(outputNode, RemoteStep.XML_TAG, i)));
+      }
+    } catch(KettlePluginLoaderException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new KettleXMLException(BaseMessages.getString(PKG, "StepMeta.Exception.UnableToLoadStepInfo") + e.toString(), e);
+    }
+  }
     
     /**
      * Resolves the name of the cluster loaded from XML/Repository to the correct clusterSchema object

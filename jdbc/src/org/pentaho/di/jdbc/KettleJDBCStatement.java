@@ -32,6 +32,7 @@ import org.apache.commons.logging.LogFactory;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleMissingPluginsException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.i18n.BaseMessages;
@@ -263,7 +264,7 @@ public class KettleJDBCStatement implements Statement {
 				try {
 					if(files[i].getName().lastIndexOf("ktr")!=-1)
 					addMetadata(files[i]);
-				} catch (KettleXMLException e) {
+				} catch (KettleException e) {
 					
 					e.printStackTrace();
 					return false;
@@ -274,7 +275,7 @@ public class KettleJDBCStatement implements Statement {
 		
 	}
 
-	private static void addMetadata(File file) throws KettleXMLException {
+	private static void addMetadata(File file) throws KettleXMLException, KettleMissingPluginsException {
 		TransMeta tm = new TransMeta(file.getAbsolutePath());
 		log.debug(java.util.Arrays.toString(tm.getStepNames()));;
 		stepsMap.put(file.getName(),tm.getStepNames());

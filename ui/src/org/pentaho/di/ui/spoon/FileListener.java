@@ -25,11 +25,12 @@ package org.pentaho.di.ui.spoon;
 import java.util.Locale;
 
 import org.pentaho.di.core.EngineMetaInterface;
+import org.pentaho.di.core.exception.KettleMissingPluginsException;
 import org.w3c.dom.Node;
 
 public interface FileListener {
 
-  public boolean open(Node transNode, String fname, boolean importfile);
+  public boolean open(Node transNode, String fname, boolean importfile) throws KettleMissingPluginsException;
 
   public boolean save(EngineMetaInterface meta, String fname,boolean isExport);
   

@@ -87,7 +87,8 @@ public class Splash {
     licFont = new Font(display, "Helvetica", licFontSize, SWT.NORMAL); //$NON-NLS-1$
     devWarningFont = new Font(display, "Helvetica", 10, SWT.NORMAL); //$NON-NLS-1$
     
-    versionWarningBackgroundColor = new Color(display, 255, 253, 213);
+    // versionWarningBackgroundColor = new Color(display, 255, 253, 213);
+    versionWarningBackgroundColor = new Color(display, 255, 255, 255);
     versionWarningForegroundColor = new Color(display, 220, 177, 20);
     
     splash = new Shell(display, SWT.APPLICATION_MODAL);
@@ -195,8 +196,8 @@ public class Splash {
   private void drawVersionWarning(GC gc, Display display) {
     gc.setBackground(versionWarningBackgroundColor);
     gc.setForeground(versionWarningForegroundColor);
-    gc.fillRectangle(290, 231, 367, 49);
-    gc.drawRectangle(290, 231, 367, 49);
+    // gc.fillRectangle(290, 231, 367, 49);
+    // gc.drawRectangle(290, 231, 367, 49);
     gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
     gc.drawImage(exclamation_image, 304, 243);
 
