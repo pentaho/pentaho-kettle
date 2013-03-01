@@ -203,4 +203,12 @@
 		<default-value></default-value>
 	</kettle-variable>
 
+	<kettle-variable>
+		<description>Set this variable to Y to disable standard Kettle logging to the console. (stdout)</description>
+		<variable>KETTLE_DISABLE_CONSOLE_LOGGING</variable>
+		<default-value>N</default-value>
+	</kettle-variable>
+
+
+
 </kettle-variables>

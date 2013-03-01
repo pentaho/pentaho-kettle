@@ -25,6 +25,8 @@ package org.pentaho.di.ui.core.dialog;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Calendar;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
@@ -171,6 +173,27 @@ public class Splash {
     splash.setLocation(x, y);
 
     splash.open();
+    
+    TimerTask timerTask = new TimerTask() {
+      
+      @Override
+      public void run() {
+        try {
+          splash.redraw();
+          LogChannel.UI.logBasic("Redraw!");
+        } catch(Throwable e) {
+          // ignore.
+        }
+      }
+    };
+    final Timer timer = new Timer();
+    timer.schedule(timerTask, 0, 100);
+    
+    splash.addDisposeListener(new DisposeListener() {
+      public void widgetDisposed(DisposeEvent arg0) {
+        timer.cancel();
+      }
+    });
   }
   
   // determine if the license text will fit the allocated space

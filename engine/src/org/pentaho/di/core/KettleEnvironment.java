@@ -91,19 +91,6 @@ public class KettleEnvironment {
 				KettleClientEnvironment.init();
 			}
 			
-			// Initialize the logging back-end.
-			//
-			CentralLogStore.init();
-			
-			// Add console output so that folks see what's going on...
-			// TODO: make this configurable...
-			//
-			CentralLogStore.getAppender().addLoggingEventListener(new ConsoleLoggingEventListener());
-			
-			// Configure Log4j console logging, set it to DEBUG
-			// 
-			// LogWriter.setConsoleAppenderDebug();
-			
 			// Configure Simple JNDI when we run in stand-alone mode (spoon, pan, kitchen, carte, ... NOT on the platform
 			//
 			if (simpleJndi) {

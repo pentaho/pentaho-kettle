@@ -56,6 +56,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -1118,6 +1119,8 @@ public class Translator2 {
       System.err.println("sh translator.sh translator.xml .");
       System.exit(1);
     }
+    
+    KettleClientEnvironment.init();
     
     String configFile = args[0];
     String sourceFolder = args[1];

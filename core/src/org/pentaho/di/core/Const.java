@@ -774,6 +774,11 @@ public class Const
    */
   public static final String KETTLE_BATCHING_ROWSET = "KETTLE_BATCHING_ROWSET";
 
+  /**
+   * Set this variable to Y to disable standard Kettle logging to the console. (stdout)
+   */
+  public static final String KETTLE_DISABLE_CONSOLE_LOGGING = "KETTLE_DISABLE_CONSOLE_LOGGING";
+  
 	/**
 	 * The XML file that contains the list of native Kettle job entries
 	 */
