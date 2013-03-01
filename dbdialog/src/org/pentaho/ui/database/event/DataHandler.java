@@ -51,10 +51,7 @@ import org.pentaho.ui.util.Launch;
 import org.pentaho.ui.util.Launch.Status;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
-import org.pentaho.ui.xul.components.XulCheckbox;
-import org.pentaho.ui.xul.components.XulLabel;
-import org.pentaho.ui.xul.components.XulMessageBox;
-import org.pentaho.ui.xul.components.XulTextbox;
+import org.pentaho.ui.xul.components.*;
 import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulListbox;
@@ -217,6 +214,8 @@ public class DataHandler extends AbstractXulEventHandler {
   private XulLabel poolingDescriptionLabel;
 
   protected XulTree poolParameterTree;
+
+  private XulButton acceptButton;
 
   public DataHandler() {
   }
@@ -817,6 +816,10 @@ public class DataHandler extends AbstractXulEventHandler {
 
       setPoolProperties(meta.getConnectionPoolingProperties());
     }
+
+    // don't allow the dialog to be OK'd if it is marked as read only
+    acceptButton.setDisabled(meta.isReadOnly());
+
     setDeckChildIndex();
     onPoolingCheck();
     onClusterCheck();
@@ -1149,7 +1152,7 @@ public class DataHandler extends AbstractXulEventHandler {
       Boolean useIntegratedSecurity = useIntegratedSecurityCheck.isChecked();
       meta.getAttributes().put(MSSQLServerNativeDatabaseMeta.ATTRIBUTE_USE_INTEGRATED_SECURITY,
           useIntegratedSecurity != null ? useIntegratedSecurity.toString(): "false"); //$NON-NLS-1$
-    }    
+    }
   }
 
   private void setConnectionSpecificInfo(DatabaseMeta meta) {
@@ -1237,7 +1240,7 @@ public class DataHandler extends AbstractXulEventHandler {
       } else {
         useIntegratedSecurityCheck.setChecked(false);
       }
-    }  
+    }
   }
 
   protected void getControls() {
@@ -1288,6 +1291,7 @@ public class DataHandler extends AbstractXulEventHandler {
     preferredSchemaName = (XulTextbox) document.getElementById("preferred-schema-name-text"); //$NON-NLS-1$;
     sqlBox = (XulTextbox) document.getElementById("sql-text"); //$NON-NLS-1$;
     useIntegratedSecurityCheck = (XulCheckbox) document.getElementById("use-integrated-security-check"); //$NON-NLS-1$;
+    acceptButton = (XulButton) document.getElementById("general-datasource-window_accept"); //$NON-NLS-1$;
   }
 
   protected void showMessage(String message, boolean scroll){

@@ -94,6 +94,8 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   private ObjectRevision objectRevision;
 
+  private boolean readOnly = false;
+
   /**
    * Indicates that the connections doesn't point to a type of database yet.
    * @deprecated
@@ -835,6 +837,8 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
       setDataTablespace(XMLHandler.getTagValue(con, "data_tablespace"));
       setIndexTablespace(XMLHandler.getTagValue(con, "index_tablespace"));
 
+      setReadOnly(Boolean.valueOf(XMLHandler.getTagValue(con, "read_only")));
+
       // Also, read the database attributes...
       Node attrsnode = XMLHandler.getSubNode(con, "attributes");
       if (attrsnode != null) {
@@ -868,6 +872,11 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     retval.append("    ").append(XMLHandler.addTagValue("servername", getServername()));
     retval.append("    ").append(XMLHandler.addTagValue("data_tablespace", getDataTablespace()));
     retval.append("    ").append(XMLHandler.addTagValue("index_tablespace", getIndexTablespace()));
+
+    // only write the tag out if it is set to true
+    if(isReadOnly()) {
+      retval.append("    ").append(XMLHandler.addTagValue("read_only", Boolean.toString(isReadOnly())));
+    }
 
     retval.append("    <attributes>").append(Const.CR);
 
@@ -2524,6 +2533,23 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   public Object getValueFromResultSet(ResultSet rs, ValueMetaInterface val, int i) throws KettleDatabaseException {
     return databaseInterface.getValueFromResultSet(rs, val, i);
+  }
+
+  /**
+   * Marker used to determine if the DatabaseMeta should be allowed to be modified/saved. It does NOT prevent object modification.
+   * @return
+   */
+  public boolean isReadOnly() {
+    return readOnly;
+  }
+
+  /**
+   * Sets the marker used to determine if the DatabaseMeta should be allowed to be modified/saved.
+   * Setting to true does NOT prevent object modification.
+   * @return
+   */
+  public void setReadOnly(boolean readOnly) {
+    this.readOnly = readOnly;
   }
 
 }
