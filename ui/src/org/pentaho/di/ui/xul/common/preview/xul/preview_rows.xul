@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+
+<dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+		xmlns:HTML="http://www.w3.org/Profiles/XHTML-transitional" 
+		xmlns:pen="http://www.pentaho.org/2008/xul"
+		width="600" height="400" 
+		resizable="true"
+		id="previewRowsDialog" 
+		title="${dialog-title}"
+		onload="handler.init()" 
+		buttonlabelaccept="${accept-button-text}"
+		buttons="accept" 
+		ondialogaccept="handler.onAccept()">
+	
+	<vbox flex="1">
+		<!-- <label id="rowCountLabel" value="" pen:binding="rowCount"/> -->
+		<tree flex="1" editable="false" id="tableData">
+			<treecols>
+				<treecol label="#" flex="1" editable="false" />
+				<treecol label="col_a" flex="1" editable="false" />
+				<treecol label="col_b" flex="1" editable="false" />
+			</treecols>
+			<treechildren/>
+			<!-- 
+			
+				<treecol label="#" flex="1" editable="false" />
+				<treecol label="col_a" flex="1" editable="false" />
+				<treecol label="col_b" flex="1" editable="false" />
+			</treecols>
+			<treechildren>
+				<treeitem>
+					<treerow>
+						<treecell label="1" />
+						<treecell label="a" />
+						<treecell label="b" />
+					</treerow>
+				</treeitem>
+				<treeitem>
+					<treerow>
+						<treecell label="2" />
+						<treecell label="c" />
+						<treecell label="d" />
+					</treerow>
+				</treeitem>
+				<treeitem>
+					<treerow>
+						<treecell label="3" />
+						<treecell label="e" />
+						<treecell label="f" />
+					</treerow>
+				</treeitem>
+			</treechildren>
+			-->
+		</tree>
+		<hbox>
+	    	<progressmeter id="progress" mode="determined" flex="1"/>
+	    </hbox>
+	</vbox>
+	
+</dialog>
