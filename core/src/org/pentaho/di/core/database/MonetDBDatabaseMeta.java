@@ -23,8 +23,11 @@
 package org.pentaho.di.core.database;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.SetUtils;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
@@ -254,14 +257,27 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
 	public String getSafeFieldname( String fieldname ) {
 
-		if( reservedWordAlt.contains(fieldname.toUpperCase() ) ) {
-			fieldname = fieldname + FIELDNAME_PROTECTOR;
-		}
-		fieldname = fieldname.replace(" ", "_");
-		return fieldname;
-	}
+    StringBuffer newName = new StringBuffer(fieldname.length());
 
-	public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr )
+    for (int idx = 0; idx < fieldname.length(); idx++) {
+      char c = fieldname.charAt(idx);
+      if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')) {
+        newName.append(c);
+      } else if (c == ' ') {
+        newName.append('_');
+      } else {
+        // swallow this character
+      }
+    }
+    return super.getSafeFieldname(newName.toString());
+
+  }
+
+  public String[] getReservedWords() {
+     return reservedWordAlt.toArray(new String[]{});
+  }
+
+  public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr )
 	{
 		StringBuffer retval = new StringBuffer();
 		

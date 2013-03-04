@@ -25,15 +25,10 @@ package org.pentaho.di.core.database;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
+import org.apache.commons.collections.SetUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.encryption.Encr;
@@ -215,6 +210,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
            new DatabaseConnectionPoolParameter("removeAbandonedTimeout", "300", "Timeout in seconds before an abandoned connection can be removed."), 
            new DatabaseConnectionPoolParameter("logAbandoned", "false", "Flag to log stack traces for application code which abandoned a Statement or Connection.\nLogging of abandoned Statements and Connections adds overhead for every Connection open or new Statement because a stack trace has to be generated."), 
         };
+
+  private static final String FIELDNAME_PROTECTOR = "_";
 
 	private String name;
 	private int    accessType;        // Database.TYPE_ODBC / NATIVE / OCI
@@ -1968,6 +1965,33 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     
     return ins.toString();
   }
-  
-  
-} 
+
+  protected String getFieldnameProtector() {
+    return FIELDNAME_PROTECTOR;
+  }
+
+  /**
+   * Sanitize a string for usage as a field name
+   * <ul>
+   *   <li>Append an underscore to any field name that matches a reserved word</li>
+   *   <li>Replaces spaces with underscores</li>
+   *   <li>Prefixes a string with underscore that begins with a number</li>
+   * </ul>
+   *
+   * @param fieldname value to sanitize
+   * @return
+   */
+  public String getSafeFieldname(String fieldname) {
+
+    for(String reservedWord : getReservedWords()) {
+      if(fieldname.equalsIgnoreCase(reservedWord)) {
+        fieldname = fieldname + getFieldnameProtector();
+      }
+    }
+    fieldname = fieldname.replace(" ", getFieldnameProtector());
+    if(fieldname.matches("^[0-9].*")) {
+      fieldname = getFieldnameProtector() + fieldname;
+    }
+    return fieldname;
+  }
+}

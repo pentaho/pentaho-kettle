@@ -997,4 +997,11 @@ public interface DatabaseInterface extends Cloneable
    * @param b Set to true if the database supports the Timestamp data type (nanosecond precision and all)
    */
   public void setSupportsTimestampDataType(boolean b);
+
+  /**
+   * Given a String, this will sanitize and return a value safe for usage as a column name
+   * @param fieldname value to sanitize
+   * @return a String safe for usage as a column name without the need for quoting
+   */
+  public String getSafeFieldname(String fieldname);
 }
