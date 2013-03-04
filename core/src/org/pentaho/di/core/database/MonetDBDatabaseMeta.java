@@ -38,11 +38,13 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
 
-    public static ThreadLocal<Boolean> safeModeLocal = new ThreadLocal<Boolean>();
+  public static ThreadLocal<Boolean> safeModeLocal = new ThreadLocal<Boolean>();
 		
 	public static final int DEFAULT_VARCHAR_LENGTH = 100;
 	
 	private static final String FIELDNAME_PROTECTOR = "_";
+
+  private static final int MAX_VARCHAR_LENGTH = Integer.MAX_VALUE;
 
 	private static Collection<String> reservedWordAlt = new HashSet<String>();
 
@@ -350,7 +352,7 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 			}
 			break;
 		case ValueMetaInterface.TYPE_STRING:
-			if (length>=DatabaseMeta.CLOB_LENGTH)
+			if (length > getMaxVARCHARLength())
 			{
 				retval.append("CLOB");
 			}
@@ -382,7 +384,7 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
     public String[] getUsedLibraries()
     {
-        return new String[] { "monetdb-jdbc-2.1.jar", };
+        return new String[] { "monetdb-jdbc-2.8.jar", };
     }
 
 	/**
@@ -401,5 +403,8 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
     return true;
   }
 
+  public int getMaxVARCHARLength() {
+    return MAX_VARCHAR_LENGTH;
+  }
 }
 
