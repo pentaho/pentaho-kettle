@@ -27,14 +27,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.TransMeta.TransformationType;
 import org.pentaho.di.trans.TransPreviewFactory;
 import org.pentaho.di.trans.debug.BreakPointListener;
 import org.pentaho.di.trans.debug.StepDebugMeta;
@@ -42,7 +40,6 @@ import org.pentaho.di.trans.debug.TransDebugMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.ui.xul.common.preview.models.PreviewDataModel;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulLoader;
@@ -73,8 +70,6 @@ public abstract class AbstractPreviewRowsXulDialog extends AbstractXulEventHandl
   protected BindingFactory bf;
   
   protected LogChannel log;
-  
-  protected PreviewDataModel model = null;
   
   private BaseStepMeta meta = null;
   
