@@ -445,9 +445,10 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       return;
     }
 
+    PluginInterface plugin = PluginRegistry.getInstance().getPlugin(DatabasePluginType.class, databaseMeta.getDatabaseInterface());
+    
     try {
       synchronized (java.sql.DriverManager.class) {
-        PluginInterface plugin = PluginRegistry.getInstance().getPlugin(DatabasePluginType.class, databaseMeta.getDatabaseInterface());
         
         ClassLoader classLoader = PluginRegistry.getInstance().getClassLoader(plugin);
         Class<?> driverClass = classLoader.loadClass(classname);
@@ -455,9 +456,9 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         DriverManager.registerDriver(new DelegatingDriver((Driver)driverClass.newInstance()));
       }
     } catch (NoClassDefFoundError e) {
-      throw new KettleDatabaseException("Exception while loading class", e);
+      throw new KettleDatabaseException(BaseMessages.getString(PKG, "Database.Exception.UnableToFindClassMissingDriver", databaseMeta.getDriverClass(), plugin.getName()), e);
     } catch (ClassNotFoundException e) {
-      throw new KettleDatabaseException("Exception while loading class", e);
+      throw new KettleDatabaseException(BaseMessages.getString(PKG, "Database.Exception.UnableToFindClassMissingDriver", databaseMeta.getDriverClass(), plugin.getName()), e);
     } catch (Exception e) {
       throw new KettleDatabaseException("Exception while loading class", e);
     }
