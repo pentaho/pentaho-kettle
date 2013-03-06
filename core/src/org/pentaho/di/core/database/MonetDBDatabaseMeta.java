@@ -255,24 +255,6 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 		return "ALTER TABLE "+tablename+" MODIFY "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
 
-	public String getSafeFieldname( String fieldname ) {
-
-    StringBuffer newName = new StringBuffer(fieldname.length());
-
-    for (int idx = 0; idx < fieldname.length(); idx++) {
-      char c = fieldname.charAt(idx);
-      if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')) {
-        newName.append(c);
-      } else if (c == ' ') {
-        newName.append('_');
-      } else {
-        // swallow this character
-      }
-    }
-    return super.getSafeFieldname(newName.toString());
-
-  }
-
   public String[] getReservedWords() {
      return reservedWordAlt.toArray(new String[]{});
   }

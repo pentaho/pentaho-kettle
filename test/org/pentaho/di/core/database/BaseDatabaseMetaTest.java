@@ -50,5 +50,13 @@ public class BaseDatabaseMetaTest {
     assertEquals(expected, result);
   }
 
+  @Test
+  public void testGetSafeFieldname_nonAlphaNumericChars() throws Exception {
+    BaseDatabaseMeta meta = mock(BaseDatabaseMeta.class, Mockito.CALLS_REAL_METHODS);
+    String expected = "what_the_";
+    String fieldname = "what the *#&@(@!?";
+    String result = meta.getSafeFieldname(fieldname);
 
+    assertEquals(expected, result);
+  }
 }

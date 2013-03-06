@@ -1981,14 +1981,31 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
    * @param fieldname value to sanitize
    * @return
    */
-  public String getSafeFieldname(String fieldname) {
+  public String getSafeFieldname(String fieldname) {    StringBuffer newName = new StringBuffer(fieldname.length());
 
+    // alpha numerics only
+    for (int idx = 0; idx < fieldname.length(); idx++) {
+      char c = fieldname.charAt(idx);
+      if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')) {
+        newName.append(c);
+      } else if (c == ' ') {
+        newName.append('_');
+      } else {
+        // swallow this character
+      }
+    }
+    fieldname = newName.toString();
+
+    // don't allow reserved words
     for(String reservedWord : getReservedWords()) {
       if(fieldname.equalsIgnoreCase(reservedWord)) {
         fieldname = fieldname + getFieldnameProtector();
       }
     }
+
     fieldname = fieldname.replace(" ", getFieldnameProtector());
+
+    // can't start with a number
     if(fieldname.matches("^[0-9].*")) {
       fieldname = getFieldnameProtector() + fieldname;
     }
