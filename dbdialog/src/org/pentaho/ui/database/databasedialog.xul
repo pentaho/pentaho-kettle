@@ -21,6 +21,9 @@
 	<script id="dataHandler" src="org.pentaho.ui.database.event.DataHandler" />
 	
 	<vbox flex="1">
+    <hbox id="notice-box">
+        <label id="notice-label" flex="1" visible="false" />
+    </hbox>
 	<hbox id="all-box" flex="1">
 
 	<!--  ###############################################################################  -->

@@ -216,6 +216,9 @@ public class DataHandler extends AbstractXulEventHandler {
   protected XulTree poolParameterTree;
 
   private XulButton acceptButton;
+  private XulButton cancelButton;
+  private XulButton testButton;
+  private XulLabel noticeLabel;
 
   public DataHandler() {
   }
@@ -817,12 +820,39 @@ public class DataHandler extends AbstractXulEventHandler {
       setPoolProperties(meta.getConnectionPoolingProperties());
     }
 
-    // don't allow the dialog to be OK'd if it is marked as read only
-    acceptButton.setDisabled(meta.isReadOnly());
+    setReadOnly(meta.isReadOnly());
 
     setDeckChildIndex();
     onPoolingCheck();
     onClusterCheck();
+  }
+
+  private void traverseDomSetReadOnly(XulComponent component, boolean readonly) {
+    component.setDisabled(readonly);
+    List<XulComponent> children = component.getChildNodes();
+    if(children != null && children.size() > 0) {
+      for (XulComponent child : children) {
+        child.setDisabled(readonly);
+        traverseDomSetReadOnly(child, readonly);
+      }
+    }
+  }
+
+  private void setReadOnly(boolean readonly) {
+    // set the readonly status of EVERYTHING!
+    traverseDomSetReadOnly(document.getRootElement(), readonly);
+    noticeLabel.setVisible(readonly);
+
+    if(readonly) {
+      // now turn back on the cancel and test buttons
+      if(cancelButton != null) {
+        cancelButton.setDisabled(false);
+      }
+      if(testButton != null) {
+        testButton.setDisabled(false);
+      }
+      noticeLabel.setValue(Messages.getString("DatabaseDialog.label.ConnectionIsReadOnly"));
+    }
   }
 
   /**
@@ -1292,6 +1322,9 @@ public class DataHandler extends AbstractXulEventHandler {
     sqlBox = (XulTextbox) document.getElementById("sql-text"); //$NON-NLS-1$;
     useIntegratedSecurityCheck = (XulCheckbox) document.getElementById("use-integrated-security-check"); //$NON-NLS-1$;
     acceptButton = (XulButton) document.getElementById("general-datasource-window_accept"); //$NON-NLS-1$;
+    cancelButton = (XulButton) document.getElementById("general-datasource-window_cancel"); //$NON-NLS-1$;
+    testButton = (XulButton) document.getElementById("test-button"); //$NON-NLS-1$;
+    noticeLabel = (XulLabel) document.getElementById("notice-label"); //$NON-NLS-1$;
   }
 
   protected void showMessage(String message, boolean scroll){
