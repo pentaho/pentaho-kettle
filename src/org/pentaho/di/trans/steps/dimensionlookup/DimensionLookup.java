@@ -608,7 +608,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
               // the right column to the right column.
               for (int j=2; j<data.returnRowMeta.size(); j++) { // starting at 2 because I know that 0 and 1 are poked in by Kettle.
                 v2 = data.returnRowMeta.getValueMeta(j);
-                if ( (v2.getName() != null) && (v2.getName().equals(findColumn)) ) { // is this the right column?
+                if ( (v2.getName() != null) && (v2.getName().equalsIgnoreCase(findColumn)) ) { // is this the right column?
                   columnLookupArray[i] = j; // yes - record the "j" into the columnLookupArray at [i] for the next time through the loop
                   valueData2 = returnRow[j]; // get the valueData2 for comparison
                   break; // get outta here.
