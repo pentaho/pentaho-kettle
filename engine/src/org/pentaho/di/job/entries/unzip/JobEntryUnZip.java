@@ -689,119 +689,117 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 					  return false;
 				  }
 					
-					 FileObject newFileObject=null;
-				  try{
-					  if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobUnZip.Log.ProcessingZipEntry",item.getName().getURI(), sourceFileObject.toString()));
-						
-					  // get real destination filename
-					  //
-					  String newFileName = unzipToFolder + Const.FILE_SEPARATOR + getTargetFilename(item);
-					  newFileObject = KettleVFS.getFileObject(newFileName, this);
-		
-					  if( item.getType().equals(FileType.FOLDER))
-					  {
-						 // Directory 
-						 //
-			             if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobUnZip.CreatingDirectory.Label",newFileName));
-		
-			             // Create Directory if necessary ...
-			             //
-			             if(!newFileObject.exists()) newFileObject.createFolder();
-					  }
-					  else
-					  {
-						// File
-						//
-						boolean getIt = true;
-						boolean getItexclude = false;
-							
-					    // First see if the file matches the regular expression!
-						//
-						if (pattern!=null)
-						{
-							Matcher matcher = pattern.matcher(item.getName().getURI());
-							getIt = matcher.matches();
-						}
-		
-						if (patternexclude!=null)
-						{
-							Matcher matcherexclude = patternexclude.matcher(item.getName().getURI());
-							getItexclude = matcherexclude.matches();
-						}
-	
-						boolean take=takeThisFile(item, newFileName);
-						
-						if (getIt && !getItexclude && take)
-						{
-							if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobUnZip.ExtractingEntry.Label",item.getName().getURI(),newFileName));
-							
-							if(iffileexist==IF_FILE_EXISTS_UNIQ)
-							{
-				        		// Create file with unique name
-				        		
-				        		int lenstring=newFileName.length();
-				        		int lastindexOfDot=newFileName.lastIndexOf('.');
-				        		if(lastindexOfDot==-1) lastindexOfDot=lenstring;
-				        		
-				        		newFileName=newFileName.substring(0, lastindexOfDot)
-				        		+ StringUtil.getFormattedDateTimeNow(true) 
-				        		+ newFileName.substring(lastindexOfDot, lenstring);
-				        		
-				        		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "JobUnZip.Log.CreatingUniqFile",newFileName));
-							}
-							
-							// See if the folder to the target file exists...
-							//
-							if (!newFileObject.getParent().exists()) {
-								newFileObject.getParent().createFolder(); // creates the whole path.
-							}
-							InputStream is = null;
-							OutputStream os = null;
-							
-							try {
-			                  is = KettleVFS.getInputStream(item);
-			                  os = KettleVFS.getOutputStream(newFileObject, false);
-			                
-				              if(is!=null)
-				              {
-					                byte[] buff=new byte[2048];
-				                	int len;
-				                	
-				                	while((len=is.read(buff))>0)
-				                	{
-				                		os.write(buff,0,len);
-				                	}
-				                  
-					                // Add filename to result filenames
-					                addFilenameToResultFilenames(result, parentJob, newFileName);
-				              }
-							} finally {
-			                    if(is!=null) is.close();
-				                if(os!=null) os.close();
-							}
-						}// end if take    		
-					 }
-				  } catch(Exception e)
-				  {
-					  updateErrors();
-					  logError(BaseMessages.getString(PKG, "JobUnZip.Error.CanNotProcessZipEntry",item.getName().getURI(), sourceFileObject.toString()), e);
-				  }
-				  finally {
-					  if(newFileObject!=null) {
-						  try {
-							  newFileObject.close();
-							  if(setOriginalModificationDate) {
-								  // Change last modification date
-								  newFileObject.getContent().setLastModifiedTime(item.getContent().getLastModifiedTime());
-							  }
-						 }catch(Exception e){};// ignore this
-					  }
-					  // Close file object
-					  // close() does not release resources!
-					  KettleVFS.getInstance().getFileSystemManager().closeFileSystem(item.getFileSystem()); 
-					  if(items!=null) items=null;
-				  }
-	         }// End for
+					synchronized(KettleVFS.getInstance().getFileSystemManager()) {
+  					FileObject newFileObject=null;
+  				  try {
+  					  if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobUnZip.Log.ProcessingZipEntry",item.getName().getURI(), sourceFileObject.toString()));
+  						
+  					  // get real destination filename
+  					  //
+  					  String newFileName = unzipToFolder + Const.FILE_SEPARATOR + getTargetFilename(item);
+  					  newFileObject = KettleVFS.getFileObject(newFileName, this);
+  		
+  					  if( item.getType().equals(FileType.FOLDER)) {
+  						 // Directory 
+  						 //
+  			             if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobUnZip.CreatingDirectory.Label",newFileName));
+  		
+  			             // Create Directory if necessary ...
+  			             //
+  			             if(!newFileObject.exists()) newFileObject.createFolder();
+  					  } else {
+  						// File
+  						//
+  						boolean getIt = true;
+  						boolean getItexclude = false;
+  							
+  					    // First see if the file matches the regular expression!
+  						//
+  						if (pattern!=null)
+  						{
+  							Matcher matcher = pattern.matcher(item.getName().getURI());
+  							getIt = matcher.matches();
+  						}
+  		
+  						if (patternexclude!=null)
+  						{
+  							Matcher matcherexclude = patternexclude.matcher(item.getName().getURI());
+  							getItexclude = matcherexclude.matches();
+  						}
+  	
+  						boolean take=takeThisFile(item, newFileName);
+  						
+  						if (getIt && !getItexclude && take)
+  						{
+  							if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobUnZip.ExtractingEntry.Label",item.getName().getURI(),newFileName));
+  							
+  							if(iffileexist==IF_FILE_EXISTS_UNIQ)
+  							{
+  				        		// Create file with unique name
+  				        		
+  				        		int lenstring=newFileName.length();
+  				        		int lastindexOfDot=newFileName.lastIndexOf('.');
+  				        		if(lastindexOfDot==-1) lastindexOfDot=lenstring;
+  				        		
+  				        		newFileName=newFileName.substring(0, lastindexOfDot)
+  				        		+ StringUtil.getFormattedDateTimeNow(true) 
+  				        		+ newFileName.substring(lastindexOfDot, lenstring);
+  				        		
+  				        		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "JobUnZip.Log.CreatingUniqFile",newFileName));
+  							}
+  							
+  							// See if the folder to the target file exists...
+  							//
+  							if (!newFileObject.getParent().exists()) {
+  								newFileObject.getParent().createFolder(); // creates the whole path.
+  							}
+  							InputStream is = null;
+  							OutputStream os = null;
+  							
+  							try {
+  			                  is = KettleVFS.getInputStream(item);
+  			                  os = KettleVFS.getOutputStream(newFileObject, false);
+  			                
+  				              if(is!=null)
+  				              {
+  					                byte[] buff=new byte[2048];
+  				                	int len;
+  				                	
+  				                	while((len=is.read(buff))>0)
+  				                	{
+  				                		os.write(buff,0,len);
+  				                	}
+  				                  
+  					                // Add filename to result filenames
+  					                addFilenameToResultFilenames(result, parentJob, newFileName);
+  				              }
+  							} finally {
+  			                    if(is!=null) is.close();
+  				                if(os!=null) os.close();
+  							}
+  						}// end if take    		
+  					 }
+  				  } catch(Exception e) {
+  					  updateErrors();
+  					  logError(BaseMessages.getString(PKG, "JobUnZip.Error.CanNotProcessZipEntry",item.getName().getURI(), sourceFileObject.toString()), e);
+  				  } finally {
+  					  if(newFileObject!=null) {
+  						  try {
+  							  newFileObject.close();
+  							  if(setOriginalModificationDate) {
+  								  // Change last modification date
+  								  newFileObject.getContent().setLastModifiedTime(item.getContent().getLastModifiedTime());
+  							  }
+  						 }catch(Exception e){};// ignore this
+  					  }
+  					  // Close file object
+  					  // close() does not release resources!
+  					  KettleVFS.getInstance().getFileSystemManager().closeFileSystem(item.getFileSystem()); 
+  					  if(items!=null) items=null;
+  				  }
+  	      } // Synchronized block on KettleVFS.getInstance().getFileSystemManager()
+			  } // End for
+			
 
 		     // Here gc() is explicitly called if e.g. createfile is used in the same
 			 // job for the same file. The problem is that after creating the file the
