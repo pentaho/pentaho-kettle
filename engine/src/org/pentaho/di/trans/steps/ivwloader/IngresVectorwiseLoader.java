@@ -81,9 +81,10 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
       if (!fifoFile.exists()) {
         // MKFIFO!
         //
-        String mkFifoCmd = "mkfifo " + data.fifoFilename;
+        String mkFifoCmd = "mkfifo -m 666 [" + data.fifoFilename + "]";
+        String[] args = new String[] {"mkfifo", "-m", "666", data.fifoFilename}; // handle spaces and permissions all at once.
         logDetailed("Creating FIFO file using this command : " + mkFifoCmd);
-        Process mkFifoProcess = rt.exec(mkFifoCmd);
+        Process mkFifoProcess = rt.exec(args);
         StreamLogger errorLogger = new StreamLogger(log, mkFifoProcess.getErrorStream(), "mkFifoError");
         StreamLogger outputLogger = new StreamLogger(log, mkFifoProcess.getInputStream(), "mkFifoOuptut");
         new Thread(errorLogger).start();
@@ -93,17 +94,17 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
           throw new Exception("Return code " + result + " received from statement : " + mkFifoCmd);
         }
 
-        String chmodCmd = "chmod 666 " + data.fifoFilename;
-        logDetailed("Setting FIFO file permissings using this command : " + chmodCmd);
-        Process chmodProcess = rt.exec(chmodCmd);
-        errorLogger = new StreamLogger(log, chmodProcess.getErrorStream(), "chmodError");
-        outputLogger = new StreamLogger(log, chmodProcess.getInputStream(), "chmodOuptut");
-        new Thread(errorLogger).start();
-        new Thread(outputLogger).start();
-        result = chmodProcess.waitFor();
-        if (result != 0) {
-          throw new Exception("Return code " + result + " received from statement : " + chmodCmd);
-        }
+//        String chmodCmd = "chmod 666 " + data.fifoFilename;
+//        logDetailed("Setting FIFO file permissings using this command : " + chmodCmd);
+//        Process chmodProcess = rt.exec(chmodCmd);
+//        errorLogger = new StreamLogger(log, chmodProcess.getErrorStream(), "chmodError");
+//        outputLogger = new StreamLogger(log, chmodProcess.getInputStream(), "chmodOuptut");
+//        new Thread(errorLogger).start();
+//        new Thread(outputLogger).start();
+//        result = chmodProcess.waitFor();
+//        if (result != 0) {
+//          throw new Exception("Return code " + result + " received from statement : " + chmodCmd);
+//        }
       }
 
       // 2) Execute the Ingres "sql" command...
