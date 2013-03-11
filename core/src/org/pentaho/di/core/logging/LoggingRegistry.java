@@ -104,6 +104,9 @@ public class LoggingRegistry
             if ((o1 == null) && (o2 != null)) return -1;
             if ((o1 != null) && (o2 == null)) return 1;
             if ((o1 == null) && (o2 == null)) return 0;
+            if (o1.getRegistrationDate() == null && o2.getRegistrationDate() != null) return -1; 
+            if (o1.getRegistrationDate() != null && o2.getRegistrationDate() == null) return 1; 
+            if (o1.getRegistrationDate() == null && o2.getRegistrationDate() == null) return 0;
             return (o1.getRegistrationDate().compareTo(o2.getRegistrationDate()));
           }
         });
