@@ -205,9 +205,23 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
       loadCommand += Const.CR;
     }
     loadCommand += ") FROM '" + environmentSubstitute(meta.getFifoFileName()) + "'";
+    boolean withDone = false;
+    
     if (meta.isContinueOnError()) {
-      loadCommand += "WITH ON_ERROR=CONTINUE, LOG='" + environmentSubstitute(meta.getErrorFileName()) + "'";
+      loadCommand += "WITH ON_ERROR=CONTINUE";
+      withDone = true;
     }
+
+    // If error file is available, add it to the log 
+    if (meta.getErrorFileName() != null && meta.getErrorFileName().trim().length() != 0) { 
+      if (withDone) { 
+        loadCommand += ", "; 
+      } else { 
+        loadCommand += "WITH "; 
+      } 
+      loadCommand += "LOG='" + environmentSubstitute(meta.getErrorFileName()) + "'"; 
+    } 
+    
     loadCommand += " \\g" + Const.CR;
 
     // Also quite this session after the load
