@@ -291,24 +291,23 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
     wContinueOnError.addSelectionListener(lsSelMod);
     wErrorFile = addStandardTextVar(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.ErrorFile.Label"), wContinueOnError);
     wErrorFile.addModifyListener(lsMod);
-    //standard is disabled
-    wErrorFile.setEnabled(false);
+    wErrorFile.setEnabled(true); // reset default to true
     wMaxErrors = addStandardTextVar(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.MaxErrors.Label"), wErrorFile);
-    wContinueOnError.addSelectionListener(
-            new SelectionAdapter()
-            {
-                public void widgetSelected(SelectionEvent se)
-                {
-                    if (wContinueOnError.getSelection())  {
-                      wErrorFile.setEnabled(true);
-                      wMaxErrors.setEnabled(true);
-                    }else{
-                      wErrorFile.setEnabled(false);
-                      wMaxErrors.setEnabled(false);
-                    }
-                }
-            }
-        );
+//    wContinueOnError.addSelectionListener(
+//            new SelectionAdapter()
+//            {
+//                public void widgetSelected(SelectionEvent se)
+//                {
+//                    if (wContinueOnError.getSelection())  {
+//                      wErrorFile.setEnabled(true);
+//                      wMaxErrors.setEnabled(true);
+//                    }else{
+//                      wErrorFile.setEnabled(false);
+//                      wMaxErrors.setEnabled(false);
+//                    }
+//                }
+//            }
+//        );
    
     
     return wMaxErrors;
@@ -491,9 +490,9 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
     wUseDynamicVNode.setSelection(input.isUseDynamicVNode());
     wContinueOnError.setSelection(input.isContinueOnError());
     wErrorFile.setText(Const.NVL(input.getErrorFileName(),""));
-    if(input.isContinueOnError()){
-      wErrorFile.setEnabled(true);
-    }
+//    if(input.isContinueOnError()){
+//      wErrorFile.setEnabled(true);
+//    }
     wMaxErrors.setText(Const.NVL(input.getMaxNrErrors(),""));
     
 
