@@ -209,6 +209,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
     
     if (meta.isContinueOnError()) {
       loadCommand += "WITH ON_ERROR=CONTINUE";
+      withDone = true;
     }
 
     // If error file is available, add it to the log 
