@@ -90,7 +90,7 @@ public class Marketplace implements XMLInterface {
   public static final List<Marketplace> getDefaultMarketplaces() {
     List<Marketplace> marketplaces = new ArrayList<Marketplace>();
     marketplaces.add( new Marketplace("Pentaho Data Integration Marketplace", 
-            "https://raw.github.com/mattcasters/marketplace-metadata/master/marketplace.xml"));
+            "https://raw.github.com/pentaho/marketplace-metadata/master/marketplace.xml"));
     return marketplaces;
   }
   
