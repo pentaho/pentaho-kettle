@@ -25,10 +25,15 @@ package org.pentaho.di.core.database;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
-import org.apache.commons.collections.SetUtils;
-import org.apache.commons.lang.ArrayUtils;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.encryption.Encr;
@@ -1495,7 +1500,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	}
 
 	/**
-	 * @return true if we need to append the PRIMARY KEY block in the create table block after the fields, required for Caché.
+	 * @return true if we need to append the PRIMARY KEY block in the create table block after the fields, required for Cache.
 	 */
 	public boolean requiresCreateTablePrimaryKeyAppend() {
 		return false;
