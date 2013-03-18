@@ -784,7 +784,7 @@ public interface DatabaseInterface extends Cloneable
 	public boolean supportsSequenceNoMaxValueOption();
 
 	/**
-	 * @return true if we need to append the PRIMARY KEY block in the create table block after the fields, required for Caché.
+	 * @return true if we need to append the PRIMARY KEY block in the create table block after the fields, required for Cache.
 	 */
 	public boolean requiresCreateTablePrimaryKeyAppend();
 
