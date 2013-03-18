@@ -35,7 +35,7 @@ import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
 /**
- * @author <a href="mailto:thomas.hoedl@aschauer-edv.at">Thomas Hodl</a>
+ * @author <a href="mailto:thomas.hoedl@aschauer-edv.at">Thomas Hoedl</a>
  * 
  */
 public class StringListPluginProperty extends KeyValue<List<String>> implements PluginProperty, Iterable<String> {
