@@ -18,7 +18,6 @@
   
     <!-- Kettle dependencies -->  
     <dependency org="${ivy.artifact.group}"                name="kettle-core"          rev="${dependency.kettle.revision}"   changing="true"/>   
-    <dependency org="${ivy.artifact.group}"                name="kettle-db"            rev="${dependency.kettle.revision}"   changing="true"/>
     
     <!--  Pentaho (internal, non-Kettle) dependencies -->
     <dependency org="pentaho"                              name="mondrian"                              rev="${dependency.mondrian.revision}" changing="true"/>
@@ -26,6 +25,7 @@
     <dependency org="pentaho"                              name="salesforce-partner"                    rev="24.0"/>
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-core" rev="${dependency.pentaho-reporting.revision}" changing="true"/>
     <dependency org="pentaho"                              name="pentaho-metadata"                      rev="${dependency.pentaho-metadata.revision}" changing="true"/>
+    <dependency org="pentaho"                              name="metastore"                             rev="${dependency.pentaho-metastore.revision}" transitive="false"/>
     
     <!-- Third-party (external) dependencies -->
     <dependency org="org.antlr"                        name="antlr"                rev="3.4-complete"    transitive="false"/>

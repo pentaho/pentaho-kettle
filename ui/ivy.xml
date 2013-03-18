@@ -18,7 +18,6 @@
     <!-- Kettle dependencies -->
     <dependency org="${ivy.artifact.group}" name="kettle-core"         rev="${dependency.kettle.revision}" changing="true"/>  
     <dependency org="${ivy.artifact.group}" name="kettle-engine"       rev="${dependency.kettle.revision}" changing="true"/>
-    <dependency org="${ivy.artifact.group}" name="kettle-db"           rev="${dependency.kettle.revision}" changing="true"/>
     <dependency org="${ivy.artifact.group}" name="kettle-dbdialog"     rev="${dependency.kettle.revision}" changing="true"/>
     
     <!-- Pentaho (non-Kettle) dependencies -->
