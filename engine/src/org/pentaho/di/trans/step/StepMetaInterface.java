@@ -87,7 +87,7 @@ import org.w3c.dom.Node;
  * <p>
  * <i><a href="#loadXML(org.w3c.dom.Node, java.util.List, java.util.Map)">public void loadXML(...)</a></i>
  * <p>
- * This method is called by PDI whenever a step needs to read its settings from XML. The XML node containing the step’s settings is passed 
+ * This method is called by PDI whenever a step needs to read its settings from XML. The XML node containing the step's settings is passed 
  * in as an argument. Again, the helper class org.pentaho.di.core.xml.XMLHandler is typically used to conveniently read the step settings from the XML node.
  * <p>
  * <i><a href="#saveRep(org.pentaho.di.repository.Repository, org.pentaho.di.repository.ObjectId, org.pentaho.di.repository.ObjectId)">public void saveRep(...)</a></i>

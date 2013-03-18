@@ -65,7 +65,7 @@ import org.w3c.dom.Node;
  * <p>
  * <i><a href="#loadXML(org.w3c.dom.Node)">public void loadXML(...)</a></i>
  * <p>
- * This method is called by PDI whenever a plugin needs to read its settings from XML. The XML node containing the plugin’s 
+ * This method is called by PDI whenever a plugin needs to read its settings from XML. The XML node containing the plugin's 
  * settings is passed in as an argument. Again, the helper class org.pentaho.di.core.xml.XMLHandler is typically used to 
  * conveniently read the settings from the XML node.
  * <p>
