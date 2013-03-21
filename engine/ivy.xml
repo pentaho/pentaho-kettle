@@ -24,7 +24,7 @@
     <dependency org="pentaho"                              name="pentaho-hadoop-hive-jdbc-shim"         rev="${dependency.pentaho-hadoop-hive-jdbc-shim.revision}"/>
     <dependency org="pentaho"                              name="salesforce-partner"                    rev="24.0"/>
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-core" rev="${dependency.pentaho-reporting.revision}" changing="true"/>
-    <dependency org="pentaho"                              name="pentaho-metadata"                      rev="${dependency.pentaho-metadata.revision}" changing="true"/>
+    <dependency org="pentaho"                              name="pentaho-metadata"                      rev="${dependency.pentaho-metadata.revision}" changing="true" />
     <dependency org="pentaho"                              name="metastore"                             rev="${dependency.pentaho-metastore.revision}" transitive="false"/>
     
     <!-- Third-party (external) dependencies -->
@@ -100,5 +100,8 @@
     <dependency org="oro"                 name="oro"           rev="2.0.8"   conf="test->default" transitive="false"/>
     <dependency org="jaxen"               name="jaxen"         rev="1.1.1"     conf="test->default" transitive="false"/>
     <dependency org="junit"               name="junit"         rev="4.7"     conf="test->default" transitive="false"/>
+    
+    <!-- excludes -->
+    <exclude org="pentaho-kettle" module="kettle-db"/>
   </dependencies>
 </ivy-module>
