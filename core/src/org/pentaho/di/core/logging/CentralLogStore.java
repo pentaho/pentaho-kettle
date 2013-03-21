@@ -51,12 +51,17 @@ public class CentralLogStore {
 	 * @param maxSize the maximum size
 	 * @param maxLogTimeoutMinutes The maximum time that a log line times out in Minutes.
 	 */
-	private CentralLogStore(int maxSize, int maxLogTimeoutMinutes) {
+	private CentralLogStore(int maxSize, int maxLogTimeoutMinutes, boolean redirectStdOut, boolean redirectStdErr) {
 		this.appender = new LoggingBuffer(maxSize);
 		replaceLogCleaner(maxLogTimeoutMinutes);
 		
-		System.setOut(new LoggingPrintStream(OriginalSystemOut));
-		System.setErr(new LoggingPrintStream(OriginalSystemErr));
+		if (redirectStdOut) {
+		  System.setOut(new LoggingPrintStream(OriginalSystemOut));
+		}
+		
+		if (redirectStdErr) {
+	  	System.setErr(new LoggingPrintStream(OriginalSystemErr));
+		}
 	}
 	
   public void replaceLogCleaner(final int maxLogTimeoutMinutes) {
@@ -96,16 +101,20 @@ public class CentralLogStore {
 	 */
 	public static void init(int maxSize, int maxLogTimeoutMinutes) {
 		if (maxSize>0 || maxLogTimeoutMinutes>0) {
-		  init0(maxSize, maxLogTimeoutMinutes);
+		  init0(maxSize, maxLogTimeoutMinutes, true, true);
 		} else {
 			init();
 		}
 	}
 	
 	public static void init() {
+	  init(true, true);
+	}
+	
+	public static void init(boolean redirectStdOut, boolean redirectStdErr) {
 		int maxSize = Const.toInt(EnvUtil.getSystemProperty(Const.KETTLE_MAX_LOG_SIZE_IN_LINES), 5000); 
 		int maxLogTimeoutMinutes = Const.toInt(EnvUtil.getSystemProperty(Const.KETTLE_MAX_LOG_TIMEOUT_IN_MINUTES), 1440); 
-		init0(maxSize, maxLogTimeoutMinutes);
+		init0(maxSize, maxLogTimeoutMinutes, redirectStdOut, redirectStdErr);
 	}
 
 	/**
@@ -115,13 +124,13 @@ public class CentralLogStore {
 	 * @param maxSize the maximum size of the log buffer
 	 * @param maxLogTimeoutMinutes The maximum time that a log line times out in minutes
 	 */
-	private synchronized static void init0(int maxSize, int maxLogTimeoutMinutes) {
+	private synchronized static void init0(int maxSize, int maxLogTimeoutMinutes, boolean redirectStdOut, boolean redirectStdErr) {
     if (store != null) {
       // CentralLogStore already initialized.  Just update the values.
       store.appender.setMaxNrLines(maxSize);
       store.replaceLogCleaner(maxLogTimeoutMinutes);
     } else  {
-      store = new CentralLogStore(maxSize, maxLogTimeoutMinutes);
+      store = new CentralLogStore(maxSize, maxLogTimeoutMinutes, redirectStdOut, redirectStdErr);
     }
     initialized.set(true);
 	}
