@@ -209,6 +209,16 @@
 		<default-value>N</default-value>
 	</kettle-variable>
 
-
+	<kettle-variable>
+		<description>Set this variable to Y to redirect stderr to Kettle logging.</description>
+		<variable>KETTLE_REDIRECT_STDERR</variable>
+		<default-value>Y</default-value>
+	</kettle-variable>
+	
+	<kettle-variable>
+		<description>Set this variable to Y to redirect stdout to Kettle logging.</description>
+		<variable>KETTLE_REDIRECT_STDOUT</variable>
+		<default-value>Y</default-value>
+	</kettle-variable>
 
 </kettle-variables>

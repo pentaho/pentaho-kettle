@@ -646,6 +646,18 @@ public class Const
 	 * Set to 0 to keep all rows indefinitely (default)
 	 */
 	public static final String KETTLE_MAX_LOG_TIMEOUT_IN_MINUTES = "KETTLE_MAX_LOG_TIMEOUT_IN_MINUTES";
+	
+	/**
+	 * System wide flag to determine whether standard error will be redirected to Kettle logging facilities.
+	 * Will redirect if the value is unset or equal ignoring case to the string "Y"
+	 */
+	public static final String KETTLE_REDIRECT_STDERR = "KETTLE_REDIRECT_STDERR";
+	
+	/**
+   * System wide flag to determine whether standard out will be redirected to Kettle logging facilities.
+   * Will redirect if the value is unset or equal ignoring case to the string "Y"
+   */
+	public static final String KETTLE_REDIRECT_STDOUT = "KETTLE_REDIRECT_STDOUT";
 
 	/**
 	 * This environment variable will set a time-out after which waiting, completed or stopped transformations and jobs will be automatically cleaned up.

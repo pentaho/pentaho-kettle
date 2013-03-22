@@ -108,7 +108,8 @@ public class CentralLogStore {
 	}
 	
 	public static void init() {
-	  init(true, true);
+	  init(EnvUtil.getSystemProperty(Const.KETTLE_REDIRECT_STDOUT, "Y").equalsIgnoreCase("Y"), 
+	      EnvUtil.getSystemProperty(Const.KETTLE_REDIRECT_STDERR, "Y").equalsIgnoreCase("Y"));
 	}
 	
 	public static void init(boolean redirectStdOut, boolean redirectStdErr) {
