@@ -29,7 +29,7 @@
     <dependency org="commons-dbcp"        name="commons-dbcp"        rev="1.2.1"            transitive="false"/>
     <dependency org="commons-pool"        name="commons-pool"        rev="1.5.7"            transitive="false"/>
 
-    <dependency org="pentaho"                              name="metastore"                             rev="TRUNK-SNAPSHOT" />
+    <dependency org="pentaho"             name="metastore"           rev="${dependency.pentaho-metastore.revision}"   changing="true" />
     
     <dependency org="org.apache.commons"  name="commons-compress"    rev="1.4"              transitive="false"/>
     <dependency org="dom4j"               name="dom4j"               rev="1.6.1"            transitive="false"/>

@@ -48,7 +48,7 @@ public class DatabaseMetaStoreUtil {
     
     // generate a new database element and populate it with metadata
     //
-    IMetaStoreElement element = metaStore.newElement(MetaStoreConst.PENTAHO_NAMESPACE, elementType);
+    IMetaStoreElement element = metaStore.newElement(elementType, databaseMeta.getName(), null);
 
     element.addChild(metaStore.newAttribute(MetaStoreConst.DB_ATTR_ID_PLUGIN_ID, databaseMeta.getPluginId()));
     
