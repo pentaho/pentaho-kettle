@@ -22,8 +22,6 @@
 
 package org.pentaho.di.trans.steps.xmlinputstream;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Iterator;
 
@@ -34,8 +32,6 @@ import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.Namespace;
 import javax.xml.stream.events.XMLEvent;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.vfs.FileSystemException;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
@@ -112,14 +108,13 @@ public class XMLInputStream extends BaseStep implements StepInterface
 			data.fileObject = KettleVFS.getFileObject(data.filename, getTransMeta());
 
 			try {
-				data.fileInputStream = new FileInputStream(FileUtils.toFile(data.fileObject.getURL()));
-			} catch (FileNotFoundException e) { // by FileInputStream
-				throw new KettleException(e);
-			} catch (FileSystemException e) { // by fileObject.getURL()
+				data.inputStream = KettleVFS.getInputStream(data.fileObject);
+			} catch (IOException e) { // by FileInputStream
 				throw new KettleException(e);
 			}
+			
 			try {
-				data.xmlEventReader = data.staxInstance.createXMLEventReader(data.fileInputStream, data.encoding);
+				data.xmlEventReader = data.staxInstance.createXMLEventReader(data.inputStream, data.encoding);
 			} catch (XMLStreamException e) {
 				throw new KettleException(e);
 			}
@@ -403,13 +398,13 @@ public class XMLInputStream extends BaseStep implements StepInterface
 			}
 			data.xmlEventReader = null;
 		}
-		if(data.fileInputStream!=null) {
+		if(data.inputStream!=null) {
 			try {
-				data.fileInputStream.close();
+				data.inputStream.close();
 			} catch (IOException e) {
 				// intentionally ignored on closing
 			}
-			data.fileInputStream = null;
+			data.inputStream = null;
 		}
 		if(data.fileObject!=null) {
 			try {

@@ -22,7 +22,7 @@
 
 package org.pentaho.di.trans.steps.xmlinputstream;
 
-import java.io.FileInputStream;
+import java.io.InputStream;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -44,7 +44,7 @@ public class XMLInputStreamData extends BaseStepData implements StepDataInterfac
 	public XMLInputFactory staxInstance;
 
 	public FileObject fileObject;
-	public FileInputStream fileInputStream;
+	public InputStream inputStream;
 	public XMLEventReader xmlEventReader;
 
 	// from meta data but replaced by variables
