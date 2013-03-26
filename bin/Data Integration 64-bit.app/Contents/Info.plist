@@ -41,5 +41,8 @@
 		<string>-Xmx512m -Xms512m -XX:MaxPermSize=256m</string>
 
 	</dict>
+
+	<key>NSHighResolutionCapable</key> 
+	<true/> 
 </dict>
 </plist>
