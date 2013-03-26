@@ -38,7 +38,9 @@
     <dependency org="org.apache.xmlrpc"          name="xmlrpc-common"        rev="3.1.3"    transitive="false"/>
     <dependency org="com.debortoliwines.openerp" name="openerp-java-api"     rev="1.0.0"    transitive="false"/>
     <dependency org="pentaho"                    name="pentaho-palo-core"    rev="${dependency.pdi-palo-plugin.revision}" transitive="false"/>
-    
+    <dependency org="pentaho" name="pentaho-big-data-plugin" rev="${dependency.pentaho-big-data-plugin.revision}" changing="true" transitive="false">
+      <artifact name="pentaho-big-data-plugin" type="zip"/>
+    </dependency>
     <!-- Third-party JDBC dependencies -->
     <dependency org="org.apache.derby"     name="derby"                 rev="10.2.1.6"      transitive="false"/>
     <dependency org="org.apache.derby"     name="derbyclient"           rev="10.2.1.6"      transitive="false"/>

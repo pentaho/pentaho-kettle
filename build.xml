@@ -1019,6 +1019,15 @@
     </unzip>
 	</target>
 	
+	<!-- Unzip the libswt package into the libswt folder of the distribution -->
+    <target name="unzip-big-data-plugin" depends="init">
+    <unzip dest="${distrib}/plugins" overwrite="true">
+      <fileset dir="${big.data.plugin.location}">
+        <include name="pentaho-big-data-plugin*.zip"/>
+      </fileset>
+    </unzip>
+    </target>
+	
 	<target name="copy-package-res">
 	  <copy todir="${distrib}" overwrite="true">
 	    <fileset dir="${package-res.dir}" />
@@ -1077,13 +1086,19 @@
 	  </move>
   	
     <!-- Unzip the libswt package into the libswt folder of the distribution -->
-	  	<antcall target="unzip-swtlibs">
-	  		<param name="libswt" value="${distrib}/${libswt}"/>
-	  	</antcall>
+  	<antcall target="unzip-swtlibs">
+  		<param name="libswt" value="${distrib}/${libswt}"/>
+  	</antcall>
+  	
+  	<!-- Unzip the libswt package into the libswt folder of the distribution -->
+    <antcall target="unzip-big-data-plugin">
+        <param name="big.data.plugin.location" value="${lib.dir}"/>
+    </antcall> 	
+  	
     
-  	<!-- Remove the SWT JAR used for compilation -->
+  	<!-- Remove artifacts used for compilation -->
     <delete quiet="true">
-      <fileset dir="${distrib}/${lib.dir}" includes="swt*.*" />
+      <fileset dir="${distrib}/${lib.dir}" includes="swt*.*,pentaho-big-data-plugin*.zip" />
     </delete>
   	
   	<!-- Insert launcher revision number into batch files -->
