@@ -24,6 +24,7 @@ package org.pentaho.di.trans.step;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -356,8 +357,9 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
    * @param databases
    * @throws KettleXMLException 
    */
+  @SuppressWarnings("deprecation")
   private void loadXmlCompatibleStepMeta(StepMetaInterface stepMetaInterface2, Node stepnode, List<DatabaseMeta> databases) throws KettleXMLException {
-    stepMetaInterface.loadXML(stepnode, databases, (IMetaStore) null);
+    stepMetaInterface.loadXML(stepnode, databases, new HashMap<String, Counter>());
   }
 
   /**
