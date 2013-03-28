@@ -53,7 +53,7 @@ public class MarketEntries extends ArrayList<MarketEntry> {
         List<Node> entryNodes = XMLHandler.getNodes(marketNode, MarketEntry.XML_TAG);
         for (Node entryNode : entryNodes) {
           MarketEntry entry = new MarketEntry(entryNode);
-          if (entry.getType() != MarketEntryType.Platform) {
+          if (entry.getType() != null && entry.getType() != MarketEntryType.Platform) {
             add(new MarketEntry(entryNode));
           }
         }
