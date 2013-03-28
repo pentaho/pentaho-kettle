@@ -105,7 +105,14 @@ public class EnvUtil
         // Copy the data over to the system properties...
         //
         for (String variable : variables.listVariables()) {
-          System.setProperty(variable, variables.getVariable(variable));
+          // Too many developers bump into the issue of the kettle.properties editor setting 
+          // an empty string in the kettle.properties file...
+          // 
+          if (variable.equals(Const.KETTLE_PLUGIN_CLASSES)) {
+            System.out.println("Not overwriting KETTLE_PLUGIN_CLASSES");
+          } else {
+            System.setProperty(variable, variables.getVariable(variable));
+          }
         }
         
         // Also put some default values for obscure environment variables in there...
