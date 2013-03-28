@@ -237,11 +237,8 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
       password = Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString(id_jobentry, "password") );
 
       proxyHostname = rep.getJobEntryAttributeString(id_jobentry, "proxy_host");
-      int intPort = (int) rep.getJobEntryAttributeInteger(id_jobentry, "proxy_port");
       proxyPort = rep.getJobEntryAttributeString(id_jobentry, "proxy_port"); // backward compatible.
-      if (intPort > 0 && Const.isEmpty(proxyPort))
-        proxyPort = Integer.toString(intPort);
-
+     
       nonProxyHosts = rep.getJobEntryAttributeString(id_jobentry, "non_proxy_hosts");
       addfilenameresult = "Y".equalsIgnoreCase(Const.NVL(rep.getJobEntryAttributeString(id_jobentry, "addfilenameresult"), "Y"));
       
