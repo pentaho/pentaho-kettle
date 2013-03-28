@@ -26,9 +26,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.swt.widgets.Shell;
-import org.pentaho.di.ui.xul.KettleXulLoader;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
+import org.pentaho.ui.xul.swt.SwtXulLoader;
 
 public class DatabaseConnectionDialog {
 
@@ -46,7 +46,7 @@ public class DatabaseConnectionDialog {
   public XulDomContainer getSwtInstance(Shell shell) throws XulException {
 
     XulDomContainer container = null;
-    KettleXulLoader loader = new KettleXulLoader();
+    SwtXulLoader loader = new SwtXulLoader();
 
     Iterable<String> keyIterable = extendedClasses.keySet();
     for (Object key : keyIterable) {
