@@ -82,6 +82,7 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.metastore.api.IMetaStore;
 
 /**
  * This class provides functionality common to Step Dialogs.
@@ -141,6 +142,9 @@ public class BaseStepDialog extends Dialog {
 
   /** The associated repository. */
   protected Repository repository;
+  
+  /** The MetaStore to use */
+  protected IMetaStore metaStore;
 
   /** The step meta for this dialog. */
   protected StepMeta stepMeta;
@@ -1263,4 +1267,11 @@ public class BaseStepDialog extends Dialog {
       return button;
     }
 
+    public IMetaStore getMetaStore() {
+      return metaStore;
+    }
+
+    public void setMetaStore(IMetaStore metaStore) {
+      this.metaStore = metaStore;
+    }
 }

@@ -40,6 +40,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulLoader;
@@ -81,6 +82,8 @@ public abstract class BaseStepGenericXulDialog extends AbstractXulEventHandler i
   protected BaseStepMeta baseStepMeta;
 
   protected Repository repository;
+  
+  protected IMetaStore metaStore;
 
   protected StepMeta stepMeta;
 
@@ -272,6 +275,14 @@ public abstract class BaseStepGenericXulDialog extends AbstractXulEventHandler i
 
   public void logError( String message, Object... arguments ) {
     log.logError(message, arguments);
+  }
+
+  public IMetaStore getMetaStore() {
+    return metaStore;
+  }
+
+  public void setMetaStore(IMetaStore metaStore) {
+    this.metaStore = metaStore;
   }
 
 }

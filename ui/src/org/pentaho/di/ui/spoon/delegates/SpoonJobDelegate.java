@@ -216,8 +216,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 	{
 		PluginRegistry registry = PluginRegistry.getInstance();
 		String dialogClassName = jobEntryInterface.getDialogClassName();
-		try
-		{
+		try {
 			Class<?> dialogClass;
 			Class<?>[] paramClasses = new Class[] { spoon.getShell().getClass(), JobEntryInterface.class,
 					Repository.class, JobMeta.class };
@@ -227,13 +226,14 @@ public class SpoonJobDelegate extends SpoonDelegate
 			PluginInterface plugin = registry.getPlugin(JobEntryPluginType.class, jobEntryInterface);
 			dialogClass = PluginRegistry.getInstance().getClass(plugin, dialogClassName);
 			dialogConstructor = dialogClass.getConstructor(paramClasses);
-			return (JobEntryDialogInterface) dialogConstructor.newInstance(paramArgs);
-		} catch (Throwable t)
-		{
+			JobEntryDialogInterface entryDialogInterface = (JobEntryDialogInterface) dialogConstructor.newInstance(paramArgs);
+			entryDialogInterface.setMetaStore(spoon.getMetaStore());
+			return entryDialogInterface;
+		} catch (Throwable t) {
 			t.printStackTrace();
 			spoon.getLog().logError(spoon.toString(), "Could not create dialog for " + dialogClassName, t);
+			return null;
 		}
-		return null;
 	}
 
 	public StepDialogInterface getStepEntryDialog(StepMetaInterface stepMeta, TransMeta transMeta,

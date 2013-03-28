@@ -76,5 +76,7 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
     }
   }
   
+  // TODO: complete implementation of element types and elements.
+  //
   
 }

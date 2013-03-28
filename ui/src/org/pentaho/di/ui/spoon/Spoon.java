@@ -7937,7 +7937,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public StepDialogInterface getStepEntryDialog(StepMetaInterface stepMeta, TransMeta transMeta, String stepName) {
     try {
-      return delegates.steps.getStepEntryDialog(stepMeta, transMeta, stepName);
+      return delegates.steps.getStepDialog(stepMeta, transMeta, stepName);
     } catch (Throwable t) {
       log.logError("Could not create dialog for " + stepMeta.getDialogClassName(), t);
     }

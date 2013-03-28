@@ -46,6 +46,7 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.database.wizard.CreateDatabaseWizard;
+import org.pentaho.metastore.api.IMetaStore;
 
 /**
  * The JobEntryDialog class is responsible for constructing and opening the settings dialog for the job entry. 
@@ -66,6 +67,9 @@ public class JobEntryDialog extends Dialog {
 	
 	/** The repository */
 	protected Repository rep;
+	
+	/** the MetaStore */
+  protected IMetaStore metaStore;
 	
 	/** The job metadata object. */
 	protected JobMeta jobMeta;
@@ -100,7 +104,6 @@ public class JobEntryDialog extends Dialog {
         this.jobMeta = jobMeta;
         this.shell=parent;
     }
- 
 
   /**
    * Gets the database dialog.
@@ -278,6 +281,14 @@ public class JobEntryDialog extends Dialog {
     if (idx >= 0) {
       wConnection.select(idx);
     }
+  }
+
+  public IMetaStore getMetaStore() {
+    return metaStore;
+  }
+
+  public void setMetaStore(IMetaStore metaStore) {
+    this.metaStore = metaStore;
   }
 
 

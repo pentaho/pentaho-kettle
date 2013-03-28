@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.step;
 
 import org.pentaho.di.repository.Repository;
+import org.pentaho.metastore.api.IMetaStore;
 
 
 /**
@@ -48,4 +49,9 @@ public interface StepDialogInterface
      * @param repository the new repository
      */
     public void setRepository(Repository repository);
+
+    /**
+     * @param metaStore The MetaStore to pass
+     */
+    public void setMetaStore(IMetaStore metaStore);
 }

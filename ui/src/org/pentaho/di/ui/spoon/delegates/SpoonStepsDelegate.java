@@ -133,6 +133,7 @@ public class SpoonStepsDelegate extends SpoonDelegate
 			if (dialog != null)
 			{
 				dialog.setRepository(spoon.getRepository());
+				dialog.setMetaStore(spoon.getMetaStore());
 				stepname = dialog.open();
 			}
 
@@ -237,8 +238,7 @@ public class SpoonStepsDelegate extends SpoonDelegate
 		spoon.refreshGraph();
 	}
 
-	public StepDialogInterface getStepEntryDialog(StepMetaInterface stepMeta, TransMeta transMeta,
-			String stepName) throws KettleException
+	public StepDialogInterface getStepDialog(StepMetaInterface stepMeta, TransMeta transMeta, String stepName) throws KettleException
 	{
 		String dialogClassName = stepMeta.getDialogClassName();
 
