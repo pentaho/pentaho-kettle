@@ -98,7 +98,8 @@ public class PluginRegistry {
 	}
 	
 	public synchronized void registerPluginType(Class<? extends PluginTypeInterface> pluginType) {
-		pluginMap.put(pluginType, new ArrayList<PluginInterface>());
+	  if(pluginMap.get(pluginType) == null) 
+	    pluginMap.put(pluginType, new ArrayList<PluginInterface>());
 		
 		// Keep track of the categories separately for performance reasons...
 		//
@@ -122,6 +123,8 @@ public class PluginRegistry {
 
 	public synchronized void registerPlugin(Class<? extends PluginTypeInterface> pluginType, PluginInterface plugin) throws KettlePluginException {
 		
+	  boolean changed = false; // Is this an add or an update?
+	  
 		if (plugin.getIds()[0]==null) {
 			throw new KettlePluginException("Not a valid id specified in plugin :"+plugin);
 		}
@@ -134,9 +137,10 @@ public class PluginRegistry {
 		
 		int index = list.indexOf(plugin);
 		if (index<0) {
-			list.add(plugin);
+		  list.add(plugin);
 		} else {
-			list.set(index, plugin); // replace with the new one
+		  list.set(index, plugin); // replace with the new one
+			changed = true;
 		}		
 		
 		// Keep the list of plugins sorted by name...
@@ -188,7 +192,13 @@ public class PluginRegistry {
 		List<PluginTypeListener> listeners = this.getListenersForType(pluginType);
         if (listeners != null) {
           for (PluginTypeListener listener : listeners) {
-            listener.pluginAdded(plugin);
+            // Changed or added?
+            if(changed) {
+              listener.pluginChanged(plugin);
+            }
+            else {
+              listener.pluginAdded(plugin);
+            }
           }
         }
 	}
