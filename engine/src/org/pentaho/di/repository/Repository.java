@@ -35,8 +35,8 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.shared.SharedObjects;
-import org.pentaho.di.trans.DataServiceMeta;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.metastore.api.IMetaStore;
 
 public interface Repository {
    
@@ -576,8 +576,7 @@ public interface Repository {
   public IRepositoryExporter getExporter();
 
   /**
-  * @return A list of all the defined data services 
-  * @throws KettleException
-  */
-  public List<DataServiceMeta> listDataServices() throws KettleException;
+   * @return the Metastore that is implemented in this Repository. Return null if this repository doesn't implement a Metastore.
+   */
+  public IMetaStore getMetaStore();
 }
