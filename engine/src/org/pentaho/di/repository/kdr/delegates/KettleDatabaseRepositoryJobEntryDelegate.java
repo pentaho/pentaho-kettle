@@ -41,6 +41,7 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
+import org.pentaho.di.repository.kdr.delegates.metastore.KettleDatabaseRepositoryMetaStore;
 
 public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepositoryBaseDelegate {
 //	private static Class<?> PKG = JobEntryCopy.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
@@ -148,7 +149,7 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
 							if (jobEntry instanceof JobEntryBase) {
 								loadJobEntryBase((JobEntryBase)jobEntry, id_jobentry, databases, slaveServers);
 							}
-							jobEntry.loadRep(repository, id_jobentry, databases, slaveServers);
+							jobEntry.loadRep(repository, repository.metaStore, id_jobentry, databases, slaveServers);
 							jobEntryCopy.getEntry().setObjectId(id_jobentry);
 							
 							jobentries.add(jobEntryCopy.getEntry());
@@ -177,7 +178,7 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
 		}
 	}
 
-	public void saveJobEntryCopy(JobEntryCopy copy, ObjectId id_job) throws KettleException
+	public void saveJobEntryCopy(JobEntryCopy copy, ObjectId id_job, KettleDatabaseRepositoryMetaStore metaStore) throws KettleException
 	{
 		try
 		{
@@ -195,7 +196,7 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
 				
 				// THIS IS THE PLUGIN/JOB-ENTRY BEING SAVED!
 				//
-				entry.saveRep(repository, id_job);  
+				entry.saveRep(repository, metaStore, id_job);  
 				id_jobentry = entry.getObjectId();
 			}
 

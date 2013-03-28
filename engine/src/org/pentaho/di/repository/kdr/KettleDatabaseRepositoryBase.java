@@ -389,9 +389,29 @@ public class KettleDatabaseRepositoryBase {
   public static final String FIELD_TRANS_DATA_SERVICE_ALLOW_OPTIMIZATION = "ALLOW_OPTIMIZATION";
   public static final String FIELD_TRANS_DATA_SERVICE_CACHE_METHOD = "CACHE_METHOD";
 
+  public static final String TABLE_R_NAMESPACE = "R_NAMESPACE";
+  public static final String FIELD_NAMESPACE_ID_NAMESPACE= "ID_NAMESPACE";
+  public static final String FIELD_NAMESPACE_NAME= "NAME";
 
-    public static final String repositoryTableNames[] = new String[] 
-         { 
+  public static final String TABLE_R_ELEMENT_TYPE = "R_ELEMENT_TYPE";
+  public static final String FIELD_ELEMENT_TYPE_ID_ELEMENT_TYPE = "ID_ELEMENT_TYPE";
+  public static final String FIELD_ELEMENT_TYPE_ID_NAMESPACE = "ID_NAMESPACE";
+  public static final String FIELD_ELEMENT_TYPE_NAME = "NAME";
+  public static final String FIELD_ELEMENT_TYPE_DESCRIPTION = "DESCRIPTION";
+  
+  public static final String TABLE_R_ELEMENT = "R_ELEMENT";
+  public static final String FIELD_ELEMENT_ID_ELEMENT = "ID_ELEMENT";
+  public static final String FIELD_ELEMENT_ID_ELEMENT_TYPE = "ID_ELEMENT_TYPE";
+  public static final String FIELD_ELEMENT_NAME = "NAME";
+
+  public static final String TABLE_R_ELEMENT_ATTRIBUTE = "R_ELEMENT_ATTRIBUTE";
+  public static final String FIELD_ELEMENT_ATTRIBUTE_ID_ELEMENT_ATTRIBUTE = "ID_ELEMENT_ATTRIBUTE";
+  public static final String FIELD_ELEMENT_ATTRIBUTE_ID_ELEMENT = "ID_ELEMENT";
+  public static final String FIELD_ELEMENT_ATTRIBUTE_ID_ELEMENT_ATTRIBUTE_PARENT = "ID_ELEMENT_ATTRIBUTE_PARENT";
+  public static final String FIELD_ELEMENT_ATTRIBUTE_KEY = "ATTR_KEY";
+  public static final String FIELD_ELEMENT_ATTRIBUTE_VALUE = "ATTR_VALUE";
+  
+  public static final String repositoryTableNames[] = new String[] { 
               TABLE_R_CLUSTER
             , TABLE_R_CLUSTER_SLAVE
             , TABLE_R_CONDITION
@@ -435,6 +455,10 @@ public class KettleDatabaseRepositoryBase {
             , TABLE_R_USER
             , TABLE_R_VALUE
             , TABLE_R_VERSION
+            , TABLE_R_NAMESPACE
+            , TABLE_R_ELEMENT_TYPE
+            , TABLE_R_ELEMENT
+            , TABLE_R_ELEMENT_ATTRIBUTE
          }
          ;
 

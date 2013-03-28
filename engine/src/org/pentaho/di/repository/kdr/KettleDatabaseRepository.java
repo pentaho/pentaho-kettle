@@ -80,6 +80,7 @@ import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryDatabaseD
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryDirectoryDelegate;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryJobDelegate;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryJobEntryDelegate;
+import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryMetaStoreDelegate;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryNotePadDelegate;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryPartitionSchemaDelegate;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositorySlaveServerDelegate;
@@ -87,8 +88,8 @@ import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryStepDeleg
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryTransDelegate;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryUserDelegate;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryValueDelegate;
+import org.pentaho.di.repository.kdr.delegates.metastore.KettleDatabaseRepositoryMetaStore;
 import org.pentaho.di.shared.SharedObjects;
-import org.pentaho.di.trans.DataServiceMeta;
 import org.pentaho.di.trans.TransMeta;
 
 /**
@@ -116,13 +117,17 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
   public KettleDatabaseRepositoryNotePadDelegate                       notePadDelegate;
   public KettleDatabaseRepositoryStepDelegate                          stepDelegate;
   public KettleDatabaseRepositoryJobEntryDelegate                      jobEntryDelegate;
+  public KettleDatabaseRepositoryMetaStoreDelegate                     metaStoreDelegate;
+  
   private KettleDatabaseRepositorySecurityProvider                     securityProvider;
   private Map<Class<? extends IRepositoryService>, IRepositoryService> serviceMap;
   private List<Class<? extends IRepositoryService>>                    serviceList;
+  
+  public KettleDatabaseRepositoryMetaStore metaStore;
 
   public KettleDatabaseRepository() {
     super();
-
+    metaStore = null;
   }
 
   /**
@@ -202,6 +207,10 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
       //
       connectionDelegate.closeReadTransaction();
 
+      // Open the metaStore for business too...
+      //
+      metaStore = new KettleDatabaseRepositoryMetaStore(this);
+      
     } catch (KettleDatabaseException e) {
       // if we fail to log in, disconnect and then rethrow the exception
       connectionDelegate.disconnect();
@@ -1392,6 +1401,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
   }
 
   public synchronized void disconnect() {
+    metaStore = null;
     connectionDelegate.disconnect();
   }
 
@@ -1815,8 +1825,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
     return new RepositoryImporter(this);
   }
 
-  @Override
-  public List<DataServiceMeta> listDataServices() throws KettleException {
-    return connectionDelegate.listDataServices();
+  public KettleDatabaseRepositoryMetaStore getMetaStore() {
+    return metaStore;
   }
 }

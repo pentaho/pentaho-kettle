@@ -22,6 +22,7 @@
 
 package org.pentaho.di.repository.filerep;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -32,8 +33,6 @@ import java.util.Map;
 
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileSelectInfo;
-import org.apache.commons.vfs.FileSelector;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileType;
 import org.pentaho.di.cluster.ClusterSchema;
@@ -75,9 +74,9 @@ import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
-import org.pentaho.di.trans.DataServiceMeta;
 import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.metastore.stores.xml.XmlMetaStore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -104,9 +103,40 @@ public class KettleFileRepository implements Repository {
 
 	private Map<Class<? extends IRepositoryService>, IRepositoryService> serviceMap;
 	private List<Class<? extends IRepositoryService>> serviceList;
-	public void connect(String username, String password) throws KettleException { connected=true;}
+	
+  public XmlMetaStore metaStore;
+  
+	public void connect(String username, String password) throws KettleException {
+	  try {
+	    String metaStoreRootFolder = this.repositoryMeta.getBaseDirectory()+File.separator+".meta";
+	    File metaStoreRootFolderFile = new File(this.repositoryMeta.getBaseDirectory()+File.separator+".meta");
+      if (!metaStoreRootFolderFile.exists()) {
+        if (this.repositoryMeta.isReadOnly()) {
+          this.metaStore = null;
+        } else {
+          if (metaStoreRootFolderFile.mkdirs()) {
+            this.metaStore = new XmlMetaStore(metaStoreRootFolder);
+          } else {
+            this.metaStore = null;
+          }
+        }
+      } else {
+        this.metaStore = new XmlMetaStore(metaStoreRootFolder);
+      }
+	  } catch(Exception e) {
+	    throw new KettleException(e);
+	  }
+	  if (this.metaStore!=null) {
+	    this.metaStore.setName(this.repositoryMeta.getName());
+      this.metaStore.setDescription(this.repositoryMeta.getDescription());
+	  }
+	  connected=true;
+	}
 
-	public void disconnect() { connected = false; }
+  public void disconnect() {
+    this.metaStore = null;
+    connected = false;
+  }
 
 	public void init(RepositoryMeta repositoryMeta) {
 	  this.serviceMap = new HashMap<Class<? extends IRepositoryService>, IRepositoryService>(); 
@@ -115,6 +145,7 @@ public class KettleFileRepository implements Repository {
 		this.securityProvider = new KettleFileRepositorySecurityProvider(repositoryMeta);
     this.serviceMap.put(RepositorySecurityProvider.class, securityProvider);
     this.serviceList.add(RepositorySecurityProvider.class);
+    this.metaStore = null;
 		this.log = new LogChannel(this);
 	}
 
@@ -1299,63 +1330,12 @@ public class KettleFileRepository implements Repository {
   public IRepositoryImporter getImporter() {
     return new RepositoryImporter(this);
   }
-  
-  public synchronized List<RepositoryElementMetaInterface> listAllDataServiceTransformations() throws KettleException {
-    List<RepositoryElementMetaInterface> list = new ArrayList<RepositoryElementMetaInterface>();
-    return list;
+
+  public XmlMetaStore getMetaStore() {
+    return metaStore;
   }
 
-  public List<String> findDataServiceNames() {
-    List<String> list = new ArrayList<String>();
-    return list;
-  }
-  
-  @Override
-  public List<DataServiceMeta> listDataServices() throws KettleException {
-    try {
-      // RepositoryDirectoryInterface tree = loadRepositoryDirectoryTree();
-      
-      List<DataServiceMeta> list = new ArrayList<DataServiceMeta>();
-      // Find all .das files in the tree...
-      //
-      FileObject rootFolder = KettleVFS.getFileObject(repositoryMeta.getBaseDirectory());
-      FileObject[] dataServiceFiles = rootFolder.findFiles(new FileSelector() {
-        
-        @Override
-        public boolean traverseDescendents(FileSelectInfo arg0) throws Exception {
-          return true;
-        }
-        
-        @Override
-        public boolean includeFile(FileSelectInfo fsi) throws Exception {
-          return EXT_DATA_SERVICE.substring(1).equalsIgnoreCase(fsi.getFile().getName().getExtension());
-        }
-      });
-      
-      for (FileObject dataServiceFile : dataServiceFiles) {
-        Document dataServiceDocument = XMLHandler.loadXMLFile(dataServiceFile);
-        Node dataServiceNode = XMLHandler.getSubNode(dataServiceDocument, DataServiceMeta.XML_TAG);
-        DataServiceMeta dataService = new DataServiceMeta(dataServiceNode);
-        
-        // Path relative to the root folder
-        //
-        String dirPath = dataServiceFile.getParent().toString().substring(rootFolder.toString().length());
-        
-        // Strip .das from name
-        //
-        String name = dataServiceFile.getName().getBaseName();
-        name = name.substring(0, name.length()-4);
-        
-        // Object ID
-        //
-        dataService.setObjectId(new StringObjectId(dirPath+"/"+name+EXT_TRANSFORMATION));
-        
-        list.add(dataService);
-      }
-      
-      return list;
-    } catch(Exception e) {
-      throw new KettleException("Error listing data services", e);
-    }
-  }
+  public void setMetaStore(XmlMetaStore metaStore) {
+    this.metaStore = metaStore;
+  } 
 }

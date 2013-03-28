@@ -23,10 +23,8 @@
 package org.pentaho.di.repository.kdr.delegates;
 
 import java.util.List;
-import java.util.Map;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -96,7 +94,7 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
    * @param partitionSchemas
    * @throws KettleException
    */
-  public StepMeta loadStepMeta(ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters, List<PartitionSchema> partitionSchemas) throws KettleException {
+  public StepMeta loadStepMeta(ObjectId id_step, List<DatabaseMeta> databases, List<PartitionSchema> partitionSchemas) throws KettleException {
     StepMeta stepMeta = new StepMeta();
     PluginRegistry registry = PluginRegistry.getInstance();
 
@@ -136,7 +134,8 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
 
         if (stepMeta.getStepMetaInterface() != null) {
           // Read the step info from the repository!
-          stepMeta.getStepMetaInterface().readRep(repository, stepMeta.getObjectId(), databases, counters);
+          stepMeta.getStepMetaInterface().readRep(repository, repository.metaStore, stepMeta.getObjectId(), databases);
+          readRepCompatibleStepMeta(stepMeta.getStepMetaInterface(), repository, stepMeta.getObjectId(), databases);
         }
 
         // Get the partitioning as well...
@@ -163,7 +162,21 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
     }
   }
 
-	public void saveStepMeta(StepMeta stepMeta, ObjectId id_transformation) throws KettleException
+  /**
+   * Compatible loading of metadata for v4 style plugins using deprecated methods.
+   * @param stepMetaInterface
+   * @param repository
+   * @param objectId
+   * @param databases
+   * @throws KettleException
+   */
+	@SuppressWarnings("deprecation")
+  private void readRepCompatibleStepMeta(StepMetaInterface stepMetaInterface, KettleDatabaseRepository repository,
+      ObjectId objectId, List<DatabaseMeta> databases) throws KettleException {
+    stepMetaInterface.readRep(repository, objectId, databases, null);
+  }
+
+  public void saveStepMeta(StepMeta stepMeta, ObjectId id_transformation) throws KettleException
 	{
         try
 		{
@@ -190,7 +203,8 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
 			// This means we can now save the attributes of the step...
 			//
 			log.logDebug(BaseMessages.getString(PKG, "StepMeta.Log.SaveStepDetails")); //$NON-NLS-1$
-			stepMeta.getStepMetaInterface().saveRep(repository, id_transformation, stepMeta.getObjectId());
+			stepMeta.getStepMetaInterface().saveRep(repository, repository.metaStore, id_transformation, stepMeta.getObjectId());
+      compatibleSaveRep(stepMeta.getStepMetaInterface(), repository, id_transformation, stepMeta.getObjectId());
             
       // Save the name of the clustering schema that was chosen.
 			//
@@ -206,6 +220,12 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
 		}
 	}
 
+
+    @SuppressWarnings("deprecation")
+    private void compatibleSaveRep(StepMetaInterface stepMetaInterface, KettleDatabaseRepository repository,
+        ObjectId id_transformation, ObjectId objectId) throws KettleException {
+      stepMetaInterface.saveRep(repository, id_transformation, objectId);
+    }
 
     public void saveStepErrorMeta(StepErrorMeta meta, ObjectId id_transformation, ObjectId id_step) throws KettleException
     {

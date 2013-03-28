@@ -179,7 +179,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 				if (monitor != null)
 					monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.SavingJobEntryNr") + (i + 1) + "/" + jobMeta.nrJobEntries()); //$NON-NLS-1$ //$NON-NLS-2$
 				JobEntryCopy cge = jobMeta.getJobEntry(i);
-				repository.jobEntryDelegate.saveJobEntryCopy(cge, jobMeta.getObjectId());
+				repository.jobEntryDelegate.saveJobEntryCopy(cge, jobMeta.getObjectId(), repository.metaStore);
 				if (monitor != null)
 					monitor.worked(1);
 			}

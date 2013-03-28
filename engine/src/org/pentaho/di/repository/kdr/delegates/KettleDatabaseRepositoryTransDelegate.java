@@ -23,13 +23,11 @@
 package org.pentaho.di.repository.kdr.delegates;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
 
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.RowMetaAndData;
@@ -352,6 +350,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
    public TransMeta loadTransformation(TransMeta transMeta, String transname, RepositoryDirectoryInterface repdir, ProgressMonitorListener monitor, boolean setInternalVariables) throws KettleException
    {
        transMeta.setRepository(repository);
+       transMeta.setMetaStore(repository.metaStore);
        
        synchronized(repository) 
        {
@@ -413,7 +412,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
 	                {
 	                	if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "TransMeta.Log.LoadingStepWithID") + stepids[i]); //$NON-NLS-1$
 	                    if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.ReadingStepTask.Title") + (i + 1) + "/" + (stepids.length)); //$NON-NLS-1$ //$NON-NLS-2$
-	                    StepMeta stepMeta = repository.stepDelegate.loadStepMeta(stepids[i], transMeta.getDatabases(), transMeta.getCounters(), transMeta.getPartitionSchemas());
+	                    StepMeta stepMeta = repository.stepDelegate.loadStepMeta(stepids[i], transMeta.getDatabases(), transMeta.getPartitionSchemas());
 	                    // In this case, we just add or replace the shared steps.
 	                    // The repository is considered "more central"
 	                    transMeta.addOrReplaceStep(stepMeta);
@@ -945,7 +944,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
         // Simply load this, we only want the name, we don't care about the
         // rest...
         //
-        StepMeta stepMeta = repository.stepDelegate.loadStepMeta(new LongObjectId(id_step_from), new ArrayList<DatabaseMeta>(), new Hashtable<String, Counter>(), new ArrayList<PartitionSchema>());
+        StepMeta stepMeta = repository.stepDelegate.loadStepMeta(new LongObjectId(id_step_from), new ArrayList<DatabaseMeta>(), new ArrayList<PartitionSchema>());
         fromStep = StepMeta.findStep(steps, stepMeta.getName());
       }
 
@@ -964,7 +963,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
       if (hopTransMeta.getToStep() == null && id_step_to > 0) {
         // Simply load this, we only want the name, we don't care about
         // the rest...
-        StepMeta stepMeta = repository.stepDelegate.loadStepMeta(new LongObjectId(id_step_to), new ArrayList<DatabaseMeta>(), new Hashtable<String, Counter>(), new ArrayList<PartitionSchema>());
+        StepMeta stepMeta = repository.stepDelegate.loadStepMeta(new LongObjectId(id_step_to), new ArrayList<DatabaseMeta>(), new ArrayList<PartitionSchema>());
         hopTransMeta.setToStep(StepMeta.findStep(steps, stepMeta.getName()));
       }
       

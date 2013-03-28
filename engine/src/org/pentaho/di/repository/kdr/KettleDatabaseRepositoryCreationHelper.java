@@ -1868,6 +1868,116 @@ public class KettleDatabaseRepositoryCreationHelper {
     }
     if (monitor!=null) monitor.worked(1);
 
+    ///////////////////////////////////////////////////////////////////////////////////
+    //
+    //  MetaStore tables...
+    //
+    ///////////////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    //
+    // R_NAMESPACE
+    //
+    table = new RowMeta();
+    tablename = KettleDatabaseRepository.TABLE_R_NAMESPACE;
+    schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+    if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
+    table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_NAMESPACE_ID_NAMESPACE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+    table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_NAMESPACE_NAME, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_LENGTH, 0));
+    sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_NAMESPACE_ID_NAMESPACE, false);
+
+    if (!Const.isEmpty(sql)) {
+      statements.add(sql);
+      if (!dryrun) {
+        if (log.isDetailed()) log.logDetailed("executing SQL statements: " + Const.CR + sql);
+        database.execStatements(sql);
+        if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
+      }
+    } else {
+      if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
+    }
+    if (monitor!=null) monitor.worked(1);
+
+    //////////////////////////////////////////////////////////////////////////////////
+    //
+    // R_ELEMENT_TYPE
+    //
+    table = new RowMeta();
+    tablename = KettleDatabaseRepository.TABLE_R_ELEMENT_TYPE;
+    schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+    if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
+    table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_ELEMENT_TYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+    table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_NAMESPACE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+    table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_ELEMENT_TYPE_NAME, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_LENGTH, 0));
+    table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_ELEMENT_TYPE_DESCRIPTION, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_LENGTH, 0));
+    sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_ELEMENT_TYPE, false);
+
+    if (!Const.isEmpty(sql)) {
+      statements.add(sql);
+      if (!dryrun) {
+        if (log.isDetailed()) log.logDetailed("executing SQL statements: " + Const.CR + sql);
+        database.execStatements(sql);
+        if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
+      }
+    } else {
+      if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
+    }
+    if (monitor!=null) monitor.worked(1);
+    
+    //////////////////////////////////////////////////////////////////////////////////
+    //
+    // R_ELEMENT
+    //
+    table = new RowMeta();
+    tablename = KettleDatabaseRepository.TABLE_R_ELEMENT;
+    schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+    if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
+    table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_ELEMENT_ID_ELEMENT, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+    table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_ELEMENT_ID_ELEMENT_TYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+    table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_ELEMENT_NAME, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_LENGTH, 0));
+    sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_ELEMENT_ID_ELEMENT, false);
+
+    if (!Const.isEmpty(sql)) {
+      statements.add(sql);
+      if (!dryrun) {
+        if (log.isDetailed()) log.logDetailed("executing SQL statements: " + Const.CR + sql);
+        database.execStatements(sql);
+        if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
+      }
+    } else {
+      if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
+    }
+    if (monitor!=null) monitor.worked(1);
+    
+    //////////////////////////////////////////////////////////////////////////////////
+    //
+    // R_ELEMENT_ATTRIBUTE
+    //
+    table = new RowMeta();
+    tablename = KettleDatabaseRepository.TABLE_R_ELEMENT_ATTRIBUTE;
+    schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+    if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
+    
+    table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_ID_ELEMENT_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+    table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_ID_ELEMENT, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+    table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_ID_ELEMENT_ATTRIBUTE_PARENT, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+    table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_KEY, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_LENGTH, 0));
+    table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_VALUE, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_LENGTH, 0));
+    sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_ID_ELEMENT_ATTRIBUTE, false);
+
+    if (!Const.isEmpty(sql)) {
+      statements.add(sql);
+      if (!dryrun) {
+        if (log.isDetailed()) log.logDetailed("executing SQL statements: " + Const.CR + sql);
+        database.execStatements(sql);
+        if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
+      }
+    } else {
+      if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
+    }
+    if (monitor!=null) monitor.worked(1);
+    
+    
 		///////////////////////////////////////////////////////////////////////////////////
 		//
 		//  User tables...

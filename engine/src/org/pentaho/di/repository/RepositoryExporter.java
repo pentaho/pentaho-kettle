@@ -257,7 +257,7 @@ public class RepositoryExporter implements IRepositoryExporter {
             //
             if (mappingMeta.getSpecificationMethod()==ObjectLocationSpecificationMethod.FILENAME) {
               try {
-                TransMeta meta = MappingMeta.loadMappingMeta(mappingMeta, repository, transMeta);
+                TransMeta meta = MappingMeta.loadMappingMeta(mappingMeta, fileRep, fileRep.metaStore, transMeta);
                 FileObject fileObject = KettleVFS.getFileObject(meta.getFilename());
                 mappingMeta.setSpecificationMethod(ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME);
                 mappingMeta.setFileName(null);
