@@ -5,6 +5,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
@@ -20,7 +21,6 @@ import org.pentaho.metastore.api.IMetaStoreElementType;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.util.MetaStoreUtil;
 import org.pentaho.metastore.util.PentahoDefaults;
-import org.pentaho.pms.util.Const;
 
 public class DatabaseMetaStoreUtil extends MetaStoreUtil {
   
@@ -195,7 +195,7 @@ public class DatabaseMetaStoreUtil extends MetaStoreUtil {
       for (IMetaStoreAttribute attr : attributesChild.getChildren()) {
         String code = attr.getId();
         String value = getAttributeString(attr);
-        attributes.put(code,  Const.NVL(value, ""));
+        attributes.put(code, Const.NVL(value, ""));
         
       }
     }
