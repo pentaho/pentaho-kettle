@@ -29,6 +29,7 @@ import org.apache.commons.collections.FunctorException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 /**
@@ -169,15 +170,20 @@ public final class PluginPropertyHandler {
 
         private final Repository repository;
 
+        private final IMetaStore metaStore;
+
         private final ObjectId transformationId;
 
         private final ObjectId stepId;
+
 
         /**
          * Constructor.
          * 
          * @param repository
          *            repository to use.
+         * @param metaStore
+         *            the MetaStore
          * @param transformationId
          *            transformation ID to set.
          * @param stepId
@@ -185,11 +191,12 @@ public final class PluginPropertyHandler {
          * @throws IllegalArgumentException
          *             if repository is null.
          */
-        public SaveToRepository(final Repository repository, final ObjectId transformationId, final ObjectId stepId)
+        public SaveToRepository(final Repository repository, final IMetaStore metaStore, final ObjectId transformationId, final ObjectId stepId)
                 throws IllegalArgumentException {
             super();
             Assert.assertNotNull(repository, "Repository cannot be null");
             this.repository = repository;
+            this.metaStore = metaStore;
             this.transformationId = transformationId;
             this.stepId = stepId;
         }
@@ -201,7 +208,7 @@ public final class PluginPropertyHandler {
          */
         @Override
         protected void handle(final PluginProperty property) throws KettleException {
-            property.saveToRepositoryStep(this.repository, this.transformationId, this.stepId);
+            property.saveToRepositoryStep(this.repository, this.metaStore, this.transformationId, this.stepId);
         }
 
     }
@@ -213,6 +220,8 @@ public final class PluginPropertyHandler {
     public static class ReadFromRepository extends AbstractHandler {
 
         private final Repository repository;
+        
+        private final IMetaStore metaStore;
 
         private final ObjectId stepId;
 
@@ -221,15 +230,18 @@ public final class PluginPropertyHandler {
          * 
          * @param repository
          *            the repository.
+         * @param metaStore
+         *            the MetaStore
          * @param stepId
          *            the step ID.
          * @throws IllegalArgumentException
          *             if repository is null.
          */
-        public ReadFromRepository(final Repository repository, final ObjectId stepId) throws IllegalArgumentException {
+        public ReadFromRepository(final Repository repository, final IMetaStore metaStore, final ObjectId stepId) throws IllegalArgumentException {
             super();
             Assert.assertNotNull(repository, "Repository cannot be null");
             this.repository = repository;
+            this.metaStore = metaStore;
             this.stepId = stepId;
         }
 
@@ -240,7 +252,7 @@ public final class PluginPropertyHandler {
          */
         @Override
         protected void handle(final PluginProperty property) throws KettleException {
-            property.readFromRepositoryStep(this.repository, this.stepId);
+            property.readFromRepositoryStep(this.repository, this.metaStore, this.stepId);
         }
 
     }

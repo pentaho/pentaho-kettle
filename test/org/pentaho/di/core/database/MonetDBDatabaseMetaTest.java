@@ -8,12 +8,9 @@
 
 package org.pentaho.di.core.database;
 
-import org.junit.Test;
-import org.mockito.Mockito;
-
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+
+import org.junit.Test;
 
 /**
  * User: RFellows

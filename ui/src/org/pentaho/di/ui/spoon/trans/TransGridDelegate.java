@@ -53,11 +53,11 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
+import org.pentaho.di.ui.xul.KettleXulLoader;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulLoader;
 import org.pentaho.ui.xul.containers.XulToolbar;
 import org.pentaho.ui.xul.impl.XulEventHandler;
-import org.pentaho.ui.xul.swt.SwtXulLoader;
 import org.pentaho.ui.xul.swt.tags.SwtToolbarbutton;
 
 public class TransGridDelegate extends SpoonDelegate implements XulEventHandler {
@@ -227,7 +227,7 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
   private void addToolBar() {
 
     try {
-      XulLoader loader = new SwtXulLoader();
+      XulLoader loader = new KettleXulLoader();
       loader.setSettingsManager(XulSpoonSettingsManager.getInstance());
       ResourceBundle bundle = GlobalMessages.getBundle("org/pentaho/di/ui/spoon/messages/messages");
       XulDomContainer xulDomContainer = loader.loadXul(XUL_FILE_TRANS_GRID_TOOLBAR, bundle);

@@ -177,7 +177,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
     this.bf.createBinding(this.databaseTree, "selectedItem", "buttonMenuPopUp", "disabled", isDisabledConvertor);
     this.bf.createBinding(this.databaseTree, "selectedItem", "buttonMenuPopUpImg", "disabled", isDisabledConvertor);
     this.bf.createBinding(this.databaseTree, "selectedItem", "action_popup", "disabled", isDisabledConvertor);
-    fireBindings();
+    fireBindings();     
   }
 
   public void setSelectedSchemaAndTable(String aSchema, String aTable) {

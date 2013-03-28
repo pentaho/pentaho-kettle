@@ -56,7 +56,7 @@ public class RowsFromResult extends BaseStep implements StepInterface
 
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
-		Result previousResult = getTransMeta().getPreviousResult();
+		Result previousResult = getTrans().getPreviousResult();
 		if (previousResult == null || getLinesRead() >= previousResult.getRows().size())
 		{
 			setOutputDone();

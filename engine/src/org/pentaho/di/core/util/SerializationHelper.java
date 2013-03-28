@@ -30,13 +30,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -447,7 +445,7 @@ public static void write(Object object, int indentLevel, StringBuffer buffer) {
    * @param counters
    * @throws KettleException
    */
-  public static void readStepRep(Object object, Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException {
+  public static void readStepRep(Object object, Repository rep, ObjectId id_step, List<DatabaseMeta> databases) throws KettleException {
     try {
       String stepXML = rep.getStepAttributeString(id_step, "step-xml");
       ByteArrayInputStream bais = new ByteArrayInputStream(stepXML.getBytes());

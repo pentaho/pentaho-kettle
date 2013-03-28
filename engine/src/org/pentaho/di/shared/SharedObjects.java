@@ -44,6 +44,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -156,7 +157,7 @@ public class SharedObjects
         
                         if (nodeName.equals(StepMeta.XML_TAG))        
                         { 
-                            StepMeta stepMeta = new StepMeta(node, privateDatabases, null);
+                            StepMeta stepMeta = new StepMeta(node, privateDatabases, (IMetaStore)null);
                             stepMeta.setDraw(false); // don't draw it, keep it in the tree.
                             isShared = stepMeta;
                         }

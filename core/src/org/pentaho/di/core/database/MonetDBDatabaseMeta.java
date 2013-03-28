@@ -23,11 +23,8 @@
 package org.pentaho.di.core.database;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.SetUtils;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
@@ -45,7 +42,7 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 		
 	public static final int DEFAULT_VARCHAR_LENGTH = 100;
 	
-	private static final String FIELDNAME_PROTECTOR = "_";
+	protected static final String FIELDNAME_PROTECTOR = "_";
 
   private static final int MAX_VARCHAR_LENGTH = Integer.MAX_VALUE;
 

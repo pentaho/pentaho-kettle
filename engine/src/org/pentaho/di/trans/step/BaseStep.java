@@ -110,222 +110,222 @@ import org.pentaho.di.www.SocketRepository;
  * Steps are required to deallocate resources allocated during init() or subsequent row processing. This typically means to clear all fields of the StepDataInterface object, and to ensure that all open files or connections are properly closed. For any steps derived from BaseStep it is mandatory that super.dispose() is called to ensure correct deallocation.
  * </ul>
  */
-public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInterface
-{
-	private static Class<?> PKG = BaseStep.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInterface {
+  private static Class<?> PKG = BaseStep.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	private VariableSpace variables = new Variables();
-	
-    private TransMeta                    transMeta;
+  private VariableSpace variables = new Variables();
 
-    private StepMeta                     stepMeta;
+  private TransMeta transMeta;
 
-    private String                       stepname;
+  private StepMeta stepMeta;
 
-    protected LogChannelInterface        log;
-    
-    private LogLevel                     logLevel;
+  private String stepname;
 
-    private String containerObjectId;
+  protected LogChannelInterface log;
 
-    private Trans                        trans;
+  private LogLevel logLevel;
 
-    private Object statusCountersLock = new Object();
-    
-    /**  nr of lines read from previous step(s)
-     * @deprecated please use the supplied getters, setters and increment/decrement methods 
-     */
-    public long                          linesRead;
-    
-    /** nr of lines written to next step(s)
-     * @deprecated please use the supplied getters, setters and increment/decrement methods 
-     */
-    public long                          linesWritten;
-    
-    /** nr of lines read from file or database
-     * @deprecated please use the supplied getters, setters and increment/decrement methods 
-     */
-    public long                          linesInput;
-    
-    /** nr of lines written to file or database
-     * @deprecated please use the supplied getters, setters and increment/decrement methods 
-     */
-    public long                          linesOutput;
-    
-    /** nr of updates in a database table or file
-     * @deprecated please use the supplied getters, setters and increment/decrement methods 
-     */
-    public long                          linesUpdated;
-    
-    /** nr of lines skipped
-     * @deprecated please use the supplied getters, setters and increment/decrement methods 
-     */
-    public long                          linesSkipped;
-    
-    /** total sleep time in ns caused by an empty input buffer (previous step is slow)
-     * @deprecated please use the supplied getters, setters and increment/decrement methods 
-     */
-    public long                          linesRejected;
+  private String containerObjectId;
 
-    
-    private boolean                      distributed;
-    private boolean                      loadBalancing;
-    
-    private long                         errors;
+  private Trans trans;
 
-    private StepMeta                     nextSteps[];
+  private Object statusCountersLock = new Object();
 
-    private StepMeta                     prevSteps[];
+  /**  nr of lines read from previous step(s)
+   * @deprecated please use the supplied getters, setters and increment/decrement methods 
+   */
+  public long linesRead;
 
-    private int                          currentInputRowSetNr, currentOutputRowSetNr;
+  /** nr of lines written to next step(s)
+   * @deprecated please use the supplied getters, setters and increment/decrement methods 
+   */
+  public long linesWritten;
 
-    /** The rowsets on the input, size() == nr of source steps */
-    private List<RowSet> inputRowSets;
+  /** nr of lines read from file or database
+   * @deprecated please use the supplied getters, setters and increment/decrement methods 
+   */
+  public long linesInput;
 
-    /** the rowsets on the output, size() == nr of target steps */
-    private List<RowSet> outputRowSets;
-    
-    /** The remote input steps. */
-    private List<RemoteStep> remoteInputSteps;
+  /** nr of lines written to file or database
+   * @deprecated please use the supplied getters, setters and increment/decrement methods 
+   */
+  public long linesOutput;
 
-    /** The remote output steps. */
-    private List<RemoteStep> remoteOutputSteps;
+  /** nr of updates in a database table or file
+   * @deprecated please use the supplied getters, setters and increment/decrement methods 
+   */
+  public long linesUpdated;
 
-    /** the rowset for the error rows */
-    private RowSet errorRowSet;
+  /** nr of lines skipped
+   * @deprecated please use the supplied getters, setters and increment/decrement methods 
+   */
+  public long linesSkipped;
 
-    private AtomicBoolean                 running;
+  /** total sleep time in ns caused by an empty input buffer (previous step is slow)
+   * @deprecated please use the supplied getters, setters and increment/decrement methods 
+   */
+  public long linesRejected;
 
-    private AtomicBoolean                 stopped;
+  private boolean distributed;
 
-    private AtomicBoolean                 paused;
-    
-    private boolean                       init;
+  private boolean loadBalancing;
 
-    /** the copy number of this thread */
-    private int                          stepcopy;
+  private long errors;
 
-    private Date                         start_time, stop_time;
+  private StepMeta nextSteps[];
 
-    /** if true then the row being processed is the first row */
-    public boolean                       first;
+  private StepMeta prevSteps[];
 
-    /**   */
-    public boolean                       terminator;
+  private int currentInputRowSetNr, currentOutputRowSetNr;
 
-    public List<Object[]>                     terminator_rows;
+  /** The rowsets on the input, size() == nr of source steps */
+  private List<RowSet> inputRowSets;
 
-    private StepMetaInterface            stepMetaInterface;
+  /** the rowsets on the output, size() == nr of target steps */
+  private List<RowSet> outputRowSets;
 
-    private StepDataInterface            stepDataInterface;
+  /** The remote input steps. */
+  private List<RemoteStep> remoteInputSteps;
 
-    /** The list of RowListener interfaces */
-    private List<RowListener>                         rowListeners;
+  /** The remote output steps. */
+  private List<RemoteStep> remoteOutputSteps;
 
-    /**
-     * Map of files that are generated or used by this step. After execution, these can be added to result.
-     * The entry to the map is the filename
-     */
-    private Map<String,ResultFile>                          resultFiles;
+  /** the rowset for the error rows */
+  private RowSet errorRowSet;
 
-    /**
-     * This contains the first row received and will be the reference row. We used it to perform extra checking: see if
-     * we don't get rows with "mixed" contents.
-     */
-    private RowMetaInterface             inputReferenceRow;
+  private AtomicBoolean running;
 
-    /**
-     * This field tells the putRow() method that we are in partitioned mode
-     */
-    private boolean                      partitioned;
+  private AtomicBoolean stopped;
 
-    /**
-     * The partition ID at which this step copy runs, or null if this step is not running partitioned.
-     */
-    private String                       partitionID;
+  private AtomicBoolean paused;
 
-    /**
-     * This field tells the putRow() method to re-partition the incoming data, See also StepPartitioningMeta.PARTITIONING_METHOD_*
-     */
-    private int                          repartitioning;
+  private boolean init;
 
-    /**
-     * The partitionID to rowset mapping
-     */
-    private Map<String,BlockingRowSet>                         partitionTargets;
-    private RowMetaInterface inputRowMeta;
+  /** the copy number of this thread */
+  private int stepcopy;
 
-    /**
-     * step partitioning information of the NEXT step
-     */
-    private StepPartitioningMeta  nextStepPartitioningMeta;
+  private Date start_time, stop_time;
 
-    /** The metadata information of the error output row.  There is only one per step so we cache it */
-    private RowMetaInterface errorRowMeta = null;
-    private RowMetaInterface previewRowMeta;
+  /** if true then the row being processed is the first row */
+  public boolean first;
 
-    private boolean checkTransRunning;
+  /**   */
+  public boolean terminator;
 
-	private int slaveNr;
+  public List<Object[]> terminator_rows;
 
-	private int clusterSize;
+  private StepMetaInterface stepMetaInterface;
 
-	private int uniqueStepNrAcrossSlaves;
+  private StepDataInterface stepDataInterface;
 
-	private int uniqueStepCountAcrossSlaves;
+  /** The list of RowListener interfaces */
+  private List<RowListener> rowListeners;
 
-	private boolean remoteOutputStepsInitialized;
+  /**
+   * Map of files that are generated or used by this step. After execution, these can be added to result.
+   * The entry to the map is the filename
+   */
+  private Map<String, ResultFile> resultFiles;
 
-	private boolean remoteInputStepsInitialized;
+  /**
+   * This contains the first row received and will be the reference row. We used it to perform extra checking: see if
+   * we don't get rows with "mixed" contents.
+   */
+  private RowMetaInterface inputReferenceRow;
 
-	private RowSet[] partitionNrRowSetList;
-	
-    /** A list of server sockets that need to be closed during transformation cleanup. */
-    private List<ServerSocket> serverSockets;
+  /**
+   * This field tells the putRow() method that we are in partitioned mode
+   */
+  private boolean partitioned;
 
-    private static int NR_OF_ROWS_IN_BLOCK = 500;
+  /**
+   * The partition ID at which this step copy runs, or null if this step is not running partitioned.
+   */
+  private String partitionID;
 
-    private int blockPointer;
-    
-    
-    /**
-     * A flag to indicate that clustered partitioning was not yet initialized
-     */
-    private boolean clusteredPartitioningFirst;
-    
-    /**
-     * A flag to determine whether or not we are doing local or clustered (remote) par
-     */
-    private boolean clusteredPartitioning;
+  /**
+   * This field tells the putRow() method to re-partition the incoming data, See also StepPartitioningMeta.PARTITIONING_METHOD_*
+   */
+  private int repartitioning;
 
-	private boolean usingThreadPriorityManagment;
-	
-	private List<StepListener> stepListeners;
-	
-	/** The socket repository to use when opening server side sockets in clustering mode */
-	private SocketRepository socketRepository;
-	
-	/** The upper buffer size boundary after which we manage the thread priority a little bit to prevent excessive locking */
-	private int upperBufferBoundary;
-	
-	/** The lower buffer size boundary after which we manage the thread priority a little bit to prevent excessive locking */
-	private int lowerBufferBoundary;
+  /**
+   * The partitionID to rowset mapping
+   */
+  private Map<String, BlockingRowSet> partitionTargets;
 
-	/** maximum number of errors to allow */
-	private Long maxErrors = -1L;
-	
-	/** maximum percent of errors to allow */
-	private int maxPercentErrors = -1;
-	
-	/** minumum number of rows to process before using maxPercentErrors in calculation */
-	private long minRowsForMaxErrorPercent = -1L;
-	
-	/**
-	 * Keeps track of the number of rows read for input deadlock verification.
-	 */
-	protected long deadLockCounter;
-	
-	/**
+  private RowMetaInterface inputRowMeta;
+
+  /**
+   * step partitioning information of the NEXT step
+   */
+  private StepPartitioningMeta nextStepPartitioningMeta;
+
+  /** The metadata information of the error output row.  There is only one per step so we cache it */
+  private RowMetaInterface errorRowMeta = null;
+
+  private RowMetaInterface previewRowMeta;
+
+  private boolean checkTransRunning;
+
+  private int slaveNr;
+
+  private int clusterSize;
+
+  private int uniqueStepNrAcrossSlaves;
+
+  private int uniqueStepCountAcrossSlaves;
+
+  private boolean remoteOutputStepsInitialized;
+
+  private boolean remoteInputStepsInitialized;
+
+  private RowSet[] partitionNrRowSetList;
+
+  /** A list of server sockets that need to be closed during transformation cleanup. */
+  private List<ServerSocket> serverSockets;
+
+  private static int NR_OF_ROWS_IN_BLOCK = 500;
+
+  private int blockPointer;
+
+  /**
+   * A flag to indicate that clustered partitioning was not yet initialized
+   */
+  private boolean clusteredPartitioningFirst;
+
+  /**
+   * A flag to determine whether or not we are doing local or clustered (remote) par
+   */
+  private boolean clusteredPartitioning;
+
+  private boolean usingThreadPriorityManagment;
+
+  private List<StepListener> stepListeners;
+
+  /** The socket repository to use when opening server side sockets in clustering mode */
+  private SocketRepository socketRepository;
+
+  /** The upper buffer size boundary after which we manage the thread priority a little bit to prevent excessive locking */
+  private int upperBufferBoundary;
+
+  /** The lower buffer size boundary after which we manage the thread priority a little bit to prevent excessive locking */
+  private int lowerBufferBoundary;
+
+  /** maximum number of errors to allow */
+  private Long maxErrors = -1L;
+
+  /** maximum percent of errors to allow */
+  private int maxPercentErrors = -1;
+
+  /** minumum number of rows to process before using maxPercentErrors in calculation */
+  private long minRowsForMaxErrorPercent = -1L;
+
+  /**
+   * Keeps track of the number of rows read for input deadlock verification.
+   */
+  protected long deadLockCounter;
+
+  /**
      * This is the base step that forms that basis for all steps. You can derive from this class to implement your own
      * steps.
      *
@@ -336,1069 +336,1008 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
      * @param transMeta The TransInfo of which the step stepMeta is part of.
      * @param trans The (running) transformation to obtain information shared among the steps.
      */
-    public BaseStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
-    {
-        this.stepMeta = stepMeta;
-        this.stepDataInterface = stepDataInterface;
-        this.stepcopy = copyNr;
-        this.transMeta = transMeta;
-        this.trans = trans;
-        this.stepname = stepMeta.getName();
-        this.socketRepository = trans.getSocketRepository();
-        
-        // Set the name of the thread
-        if (stepMeta.getName() == null)
-        {
-            throw new RuntimeException("A step in transformation [" + transMeta.toString() + "] doesn't have a name.  A step should always have a name to identify it by.");
-        }
+  public BaseStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans) {
+    this.stepMeta = stepMeta;
+    this.stepDataInterface = stepDataInterface;
+    this.stepcopy = copyNr;
+    this.transMeta = transMeta;
+    this.trans = trans;
+    this.stepname = stepMeta.getName();
+    this.socketRepository = trans.getSocketRepository();
 
-        log = new LogChannel(this, trans);
-        logLevel = log.getLogLevel();
-        
-        first = true;
-        clusteredPartitioningFirst=true;
-        
-        running = new AtomicBoolean(false);
-        stopped = new AtomicBoolean(false);
-        paused = new AtomicBoolean(false);
-        
-        init = false;
-
-        synchronized(statusCountersLock) {
-            linesRead = 0L; // new AtomicLong(0L); // Keep some statistics!
-            linesWritten = 0L; // new AtomicLong(0L);
-            linesUpdated = 0L; // new AtomicLong(0L);
-            linesSkipped = 0L; // new AtomicLong(0L);
-            linesRejected = 0L; // new AtomicLong(0L);
-            linesInput = 0L; // new AtomicLong(0L);
-            linesOutput = 0L; //new AtomicLong(0L);
-        }
-        
-        inputRowSets = null;
-        outputRowSets = null;
-        nextSteps = null;
-
-        terminator = stepMeta.hasTerminator();
-        if (terminator)
-        {
-            terminator_rows = new ArrayList<Object[]>();
-        }
-        else
-        {
-            terminator_rows = null;
-        }    
-
-        // debug="-"; //$NON-NLS-1$
-
-        start_time = null;
-        stop_time = null;
-
-        distributed = stepMeta.isDistributes();
-        loadBalancing = stepMeta.isLoadBalancing();
-
-        if (distributed) {
-          if (loadBalancing) {
-            if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.LoadBalancingActivated")); //$NON-NLS-1$
-          } else {
-            if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.DistributionActivated")); //$NON-NLS-1$
-          }
-        } else {
-            if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.DistributionDeactivated")); //$NON-NLS-1$
-        }
-
-        rowListeners = new ArrayList<RowListener>();
-        resultFiles = new Hashtable<String,ResultFile>();
-
-        repartitioning = StepPartitioningMeta.PARTITIONING_METHOD_NONE;
-        partitionTargets = new Hashtable<String,BlockingRowSet>();
-
-        serverSockets = new ArrayList<ServerSocket>();
-        
-        // tuning parameters
-	    // putTimeOut = 10; //s
-	    // getTimeOut = 500; //s
-	    // timeUnit = TimeUnit.MILLISECONDS;
-	    // the smaller singleWaitTime, the faster the program run but cost CPU
-	    // singleWaitTime = 1; //ms
-	    // maxPutWaitCount = putTimeOut*1000/singleWaitTime; 
-	    // maxGetWaitCount = getTimeOut*1000/singleWaitTime; 
-	    
-	    //worker = Executors.newFixedThreadPool(10);
-	    checkTransRunning = false;
-	    
-	    blockPointer = 0; 
-	    
-	    stepListeners = new ArrayList<StepListener>();
-        
-        dispatch();
-        
-        upperBufferBoundary = (int)(transMeta.getSizeRowset() * 0.99);
-        lowerBufferBoundary = (int)(transMeta.getSizeRowset() * 0.01);
+    // Set the name of the thread
+    if (stepMeta.getName() == null) {
+      throw new RuntimeException("A step in transformation [" + transMeta.toString()
+          + "] doesn't have a name.  A step should always have a name to identify it by.");
     }
 
-    /* (non-Javadoc)
-     * @see org.pentaho.di.trans.step.StepInterface#init(org.pentaho.di.trans.step.StepMetaInterface, org.pentaho.di.trans.step.StepDataInterface)
-     */
-    public boolean init(StepMetaInterface smi, StepDataInterface sdi)
-    {
-        sdi.setStatus(StepExecutionStatus.STATUS_INIT);
-        
-        String slaveNr = transMeta.getVariable(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NUMBER);
-        String clusterSize = transMeta.getVariable(Const.INTERNAL_VARIABLE_CLUSTER_SIZE);
-        boolean master = "Y".equalsIgnoreCase(transMeta.getVariable(Const.INTERNAL_VARIABLE_CLUSTER_MASTER));
-        
-        if (!Const.isEmpty(slaveNr) && !Const.isEmpty(clusterSize) && !master)
-        {
-            this.slaveNr = Integer.parseInt(slaveNr);
-            this.clusterSize = Integer.parseInt(clusterSize);
-            
-            if (log.isDetailed()) logDetailed("Running on slave server #"+slaveNr+"/"+clusterSize+"."); 
-        }
-        else
-        {
-            this.slaveNr = 0;
-            this.clusterSize = 0;
-        }
+    log = new LogChannel(this, trans);
+    logLevel = log.getLogLevel();
 
-        // Also set the internal variable for the partition
-        //
-    	SlaveStepCopyPartitionDistribution partitionDistribution = transMeta.getSlaveStepCopyPartitionDistribution();
-    	
-        if (stepMeta.isPartitioned()) 
-        {
-        	// See if we are partitioning remotely
-        	//
-        	if (partitionDistribution!=null && !partitionDistribution.getDistribution().isEmpty())
-        	{
-	        	String slaveServerName = getVariable(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME);
-	        	int stepCopyNr = stepcopy;
-	        	
-	        	// Look up the partition nr...
-	        	// Set the partition ID (string) as well as the partition nr [0..size[
-	        	//
-	        	PartitionSchema partitionSchema = stepMeta.getStepPartitioningMeta().getPartitionSchema();
-	        	int partitionNr = partitionDistribution.getPartition(slaveServerName, partitionSchema.getName(), stepCopyNr);
-	        	if (partitionNr>=0) {
-	        		String partitionNrString = new DecimalFormat("000").format(partitionNr);
-	        		setVariable(Const.INTERNAL_VARIABLE_STEP_PARTITION_NR, partitionNrString);
-	        		
-	        		if (partitionDistribution.getOriginalPartitionSchemas()!=null) {
-		        		// What is the partition schema name?
-		        		//
-		        		String partitionSchemaName = stepMeta.getStepPartitioningMeta().getPartitionSchema().getName();
-		
-		        		// Search the original partition schema in the distribution...
-		        		//
-		        		for (PartitionSchema originalPartitionSchema : partitionDistribution.getOriginalPartitionSchemas()) {
-		        			String slavePartitionSchemaName = TransSplitter.createSlavePartitionSchemaName(originalPartitionSchema.getName());
-		        			if (slavePartitionSchemaName.equals(partitionSchemaName)) {
-		        				PartitionSchema schema = (PartitionSchema) originalPartitionSchema.clone();
-		        				
-		        				// This is the one...
-		        				//
-		        				if (schema.isDynamicallyDefined()) {
-		        					schema.expandPartitionsDynamically(this.clusterSize, this);
-		        				}
-		        				
-		    	        		String partID = schema.getPartitionIDs().get(partitionNr);
-		    	        		setVariable(Const.INTERNAL_VARIABLE_STEP_PARTITION_ID, partID);
-		        				break;
-		        			}
-		        		}
-	        		}	
-	        	}
-        	}
-        	else 
-        	{
-        		// This is a locally partitioned step...
-        		//
-        		int partitionNr = stepcopy;
-        		String partitionNrString = new DecimalFormat("000").format(partitionNr);
-        		setVariable(Const.INTERNAL_VARIABLE_STEP_PARTITION_NR, partitionNrString);
-        		String partitionID = stepMeta.getStepPartitioningMeta().getPartitionSchema().getPartitionIDs().get(partitionNr);
-        		setVariable(Const.INTERNAL_VARIABLE_STEP_PARTITION_ID, partitionID);
-        	}
-        }
-        else if (!Const.isEmpty(partitionID))
-        {
-            setVariable(Const.INTERNAL_VARIABLE_STEP_PARTITION_ID, partitionID);
-        }
-        
-        // Set a unique step number across all slave servers
-        //
-        //   slaveNr * nrCopies + copyNr
-        //
-        uniqueStepNrAcrossSlaves = this.slaveNr * getStepMeta().getCopies() + stepcopy;
-        uniqueStepCountAcrossSlaves = this.clusterSize<=1 ? getStepMeta().getCopies() : this.clusterSize * getStepMeta().getCopies();
-        if (uniqueStepCountAcrossSlaves==0) uniqueStepCountAcrossSlaves = 1;
-        
-        setVariable(Const.INTERNAL_VARIABLE_STEP_UNIQUE_NUMBER, Integer.toString(uniqueStepNrAcrossSlaves));
-        setVariable(Const.INTERNAL_VARIABLE_STEP_UNIQUE_COUNT, Integer.toString(uniqueStepCountAcrossSlaves));
-        setVariable(Const.INTERNAL_VARIABLE_STEP_COPYNR, Integer.toString(stepcopy));
-        
-        // Now that these things have been done, we also need to start a number of server sockets.
-        // One for each of the remote output steps that we're going to write to.
-        // 
-        try
-        {
-			// If this is on the master, separate logic applies.
-			//
-			// boolean isMaster = "Y".equalsIgnoreCase(getVariable(Const.INTERNAL_VARIABLE_CLUSTER_MASTER));
+    first = true;
+    clusteredPartitioningFirst = true;
 
-        	remoteOutputSteps = new ArrayList<RemoteStep>();
-	        for (int i=0;i<stepMeta.getRemoteOutputSteps().size();i++) {
-	        	RemoteStep remoteStep = stepMeta.getRemoteOutputSteps().get(i);
-	        	
-	        	// If the step run in multiple copies, we only want to open every socket once.
-	        	// 
-				if (getCopy()==remoteStep.getSourceStepCopyNr()) { 
-		        	// Open a server socket to allow the remote output step to connect.
-		        	// 
-		        	RemoteStep copy = (RemoteStep) remoteStep.clone();
-		        	try {
-		        		if (log.isDetailed()) logDetailed("Selected remote output step ["+copy+"] to open a server socket to remote step ["+copy.getTargetStep()+"]."+copy.getTargetStepCopyNr()+" on port "+copy.getPort());
-		        		copy.openServerSocket(this);
-		        		if (log.isDetailed()) logDetailed("Opened a server socket connection to "+copy);
-		        	}
-		        	catch(Exception e) {
-		            	logError("Unable to open server socket during step initialisation: "+copy.toString(), e);
-		            	throw e;
-		        	}
-		        	remoteOutputSteps.add(copy);
-				}
-	        }
-        }
-        catch(Exception e) {
-	        for (RemoteStep remoteStep : remoteOutputSteps) {
-	        	if (remoteStep.getServerSocket()!=null) {
-					try {
-						ServerSocket serverSocket = remoteStep.getServerSocket();
-						getTrans().getSocketRepository().releaseSocket(serverSocket.getLocalPort());
-					} catch (IOException e1) {
-			        	logError("Unable to close server socket after error during step initialisation", e);
-					} 
-	        	}
-	        }
-        	return false;
-        }
-        
-        // For the remote input steps to read from, we do the same: make a list and initialize what we can...
-        //
-        try
-        {
-        	remoteInputSteps = new ArrayList<RemoteStep>();
-        	
-        	if ((stepMeta.isPartitioned()  && getClusterSize()>1) || stepMeta.getCopies() > 1) {
-        		// If the step is partitioned or has multiple copies and clustered, we only want to take one remote input step per copy.
-        		// This is where we make that selection...
-        		//
-        		for (int i=0;i<stepMeta.getRemoteInputSteps().size();i++) {
-    	        	RemoteStep remoteStep = stepMeta.getRemoteInputSteps().get(i);
-    	        	if (remoteStep.getTargetStepCopyNr()==stepcopy) {
-	    	        	RemoteStep copy = (RemoteStep) remoteStep.clone();
-	    	        	remoteInputSteps.add(copy);
-    	        	}
-    	        }
-        	}
-        	else {
-    	        for (RemoteStep remoteStep : stepMeta.getRemoteInputSteps()) {
-    	        	RemoteStep copy = (RemoteStep) remoteStep.clone();
-    	        	remoteInputSteps.add(copy);
-    	        }
-        	}
-        	
-        }
-        catch(Exception e) {
-        	logError("Unable to initialize remote input steps during step initialisation", e);
-        	return false;
-        }
-        
-        //  Getting ans setting the error handling values
-        //    first, get the step meta
-        StepErrorMeta stepErrorMeta = stepMeta.getStepErrorMeta();
-        if (stepErrorMeta !=null) { 
-      
-           //  do an environment substitute for stepErrorMeta.getMaxErrors(), stepErrorMeta.getMinPercentRows()
-           //  and stepErrorMeta.getMaxPercentErrors()
-           //  Catch NumberFormatException since the user can enter anything in the dialog- the value
-           //  they enter must be a number or a variable set to a number
-           
-           //  We will use a boolean to indicate failure so that we can log all errors - not just the first one caught
-           boolean envSubFailed = false;
-           try {
-              maxErrors = (!Const.isEmpty(stepErrorMeta.getMaxErrors()) ? Long.valueOf(trans.environmentSubstitute(stepErrorMeta.getMaxErrors())) : -1L);
-           }
-           catch (NumberFormatException nfe) {
-              log.logError(BaseMessages.getString(PKG, "BaseStep.Log.NumberFormatException", 
-                           BaseMessages.getString(PKG, "BaseStep.Property.MaxErrors.Name"), 
-                           this.stepname, (stepErrorMeta.getMaxErrors()!=null?stepErrorMeta.getMaxErrors():"")));
-              envSubFailed = true;
-           }
-           
-           try {
-              minRowsForMaxErrorPercent = (!Const.isEmpty(stepErrorMeta.getMinPercentRows()) ? Long.valueOf(trans.environmentSubstitute(stepErrorMeta.getMinPercentRows())) : -1L);
-           }
-           catch (NumberFormatException nfe) {
-              log.logError(BaseMessages.getString(PKG, "BaseStep.Log.NumberFormatException", 
-                           BaseMessages.getString(PKG, "BaseStep.Property.MinRowsForErrorsPercentCalc.Name"), 
-                           this.stepname, (stepErrorMeta.getMinPercentRows()!=null?stepErrorMeta.getMinPercentRows():"")));
-              envSubFailed = true;
-           }
-           
-           try {
-              maxPercentErrors = (!Const.isEmpty(stepErrorMeta.getMaxPercentErrors()) ? Integer.valueOf(trans.environmentSubstitute(stepErrorMeta.getMaxPercentErrors())) : -1);
-           }
-           catch (NumberFormatException nfe) {
-              log.logError(BaseMessages.getString(PKG, "BaseStep.Log.NumberFormatException",
-                           BaseMessages.getString(PKG, "BaseStep.Property.MaxPercentErrors.Name"), 
-                           this.stepname, (stepErrorMeta.getMaxPercentErrors()!=null?stepErrorMeta.getMaxPercentErrors():"")));
-              envSubFailed = true;
-           }
-           
-           //  if we failed and environment subsutitue
-           if (envSubFailed) {
-              return false;
-           }
-        }
-        
-        return true;
+    running = new AtomicBoolean(false);
+    stopped = new AtomicBoolean(false);
+    paused = new AtomicBoolean(false);
+
+    init = false;
+
+    synchronized (statusCountersLock) {
+      linesRead = 0L; // new AtomicLong(0L); // Keep some statistics!
+      linesWritten = 0L; // new AtomicLong(0L);
+      linesUpdated = 0L; // new AtomicLong(0L);
+      linesSkipped = 0L; // new AtomicLong(0L);
+      linesRejected = 0L; // new AtomicLong(0L);
+      linesInput = 0L; // new AtomicLong(0L);
+      linesOutput = 0L; //new AtomicLong(0L);
     }
 
-    /* (non-Javadoc)
-     * @see org.pentaho.di.trans.step.StepInterface#dispose(org.pentaho.di.trans.step.StepMetaInterface, org.pentaho.di.trans.step.StepDataInterface)
-     */
-    public void dispose(StepMetaInterface smi, StepDataInterface sdi)
-    {
-        sdi.setStatus(StepExecutionStatus.STATUS_DISPOSED);
+    inputRowSets = null;
+    outputRowSets = null;
+    nextSteps = null;
+
+    terminator = stepMeta.hasTerminator();
+    if (terminator) {
+      terminator_rows = new ArrayList<Object[]>();
+    } else {
+      terminator_rows = null;
     }
 
-    /* (non-Javadoc)
-     * @see org.pentaho.di.trans.step.StepInterface#cleanup()
-     */
-    public void cleanup() {
-      for (ServerSocket serverSocket : serverSockets) {
-        try {
-  
-          socketRepository.releaseSocket(serverSocket.getLocalPort());
-  
-          logDetailed("Released server socket on port " + serverSocket.getLocalPort());
-        } catch (IOException e) {
-          logError("Cleanup: Unable to release server socket (" + serverSocket.getLocalPort() + ")", e);
-        }
+    // debug="-"; //$NON-NLS-1$
+
+    start_time = null;
+    stop_time = null;
+
+    distributed = stepMeta.isDistributes();
+    loadBalancing = stepMeta.isLoadBalancing();
+
+    if (distributed) {
+      if (loadBalancing) {
+        if (log.isDetailed())
+          logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.LoadBalancingActivated")); //$NON-NLS-1$
+      } else {
+        if (log.isDetailed())
+          logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.DistributionActivated")); //$NON-NLS-1$
       }
-      
-      for (RemoteStep remoteStep : getRemoteInputSteps()) {
-        remoteStep.cleanup();
-      }
-      for (RemoteStep remoteStep : getRemoteOutputSteps()) {
-        remoteStep.cleanup();
-      }
+    } else {
+      if (log.isDetailed())
+        logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.DistributionDeactivated")); //$NON-NLS-1$
     }
 
-    /* (non-Javadoc)
-     * @see org.pentaho.di.trans.step.StepInterface#getProcessed()
-     */
-    public long getProcessed()
-    {
-    	if (getLinesRead()>getLinesWritten()) {
-    		return getLinesRead();
-    	} else {
-    		return getLinesWritten();
-    	}
-    }
-    
+    rowListeners = new ArrayList<RowListener>();
+    resultFiles = new Hashtable<String, ResultFile>();
 
-    /**
-     * Sets the copy.
-     *
-     * @param cop the new copy
-     */
-    public void setCopy(int cop)
-    {
-        stepcopy = cop;
-    }
+    repartitioning = StepPartitioningMeta.PARTITIONING_METHOD_NONE;
+    partitionTargets = new Hashtable<String, BlockingRowSet>();
 
-    /**
-     * @return The steps copy number (default 0)
-     */
-    public int getCopy()
-    {
-        return stepcopy;
-    }
+    serverSockets = new ArrayList<ServerSocket>();
 
-    /* (non-Javadoc)
-     * @see org.pentaho.di.trans.step.StepInterface#getErrors()
-     */
-    public long getErrors()
-    {
-        return errors;
-    }
+    // tuning parameters
+    // putTimeOut = 10; //s
+    // getTimeOut = 500; //s
+    // timeUnit = TimeUnit.MILLISECONDS;
+    // the smaller singleWaitTime, the faster the program run but cost CPU
+    // singleWaitTime = 1; //ms
+    // maxPutWaitCount = putTimeOut*1000/singleWaitTime; 
+    // maxGetWaitCount = getTimeOut*1000/singleWaitTime; 
 
-    /* (non-Javadoc)
-     * @see org.pentaho.di.trans.step.StepInterface#setErrors(long)
-     */
-    public void setErrors(long e)
-    {
-        errors = e;
-    }
+    //worker = Executors.newFixedThreadPool(10);
+    checkTransRunning = false;
 
+    blockPointer = 0;
 
-    /**
-     * @return Returns the number of lines read from previous steps
-     */
-    public long getLinesRead()
-    {
-        synchronized(statusCountersLock) {
-            return linesRead;
-        }
-    }
-    
-    /**
-     * Increments the number of lines read from previous steps by one
-     * @return Returns the new value
-     */
-    public long incrementLinesRead()
-    {
-        synchronized(statusCountersLock) {
-            return ++linesRead;
-        }
-    }
-    
-    
-    /**
-     * Decrements the number of lines read from previous steps by one
-     * @return Returns the new value
-     */
-    public long decrementLinesRead()
-    {
-        synchronized(statusCountersLock) {
-            return --linesRead;
-        }
-    }
-    
-    /**
-     * @param newLinesReadValue the new number of lines read from previous steps
-     */
-    public void setLinesRead(long newLinesReadValue)
-    {
-        synchronized(statusCountersLock) {
-            linesRead = newLinesReadValue;
-        }
-    }
-    
-    /**
-     * @return Returns the number of lines read from an input source: database, file, socket, etc.
-     */
-    public long getLinesInput()
-    {
-        synchronized(statusCountersLock) {
-            return linesInput;
-        }
-    }
-    
-    /**
-     * Increments the number of lines read from an input source: database, file, socket, etc.
-     * @return the new incremented value
-     */
-    public long incrementLinesInput()
-    {
-        synchronized(statusCountersLock) {
-            return ++linesInput;
-        }
-    }
-    
-    /**
-     * @param newLinesInputValue the new number of lines read from an input source: database, file, socket, etc.
-     */
-    public void setLinesInput(long newLinesInputValue)
-    {
-        synchronized(statusCountersLock) {
-            linesInput = newLinesInputValue;
-        }
+    stepListeners = new ArrayList<StepListener>();
+
+    dispatch();
+
+    upperBufferBoundary = (int) (transMeta.getSizeRowset() * 0.99);
+    lowerBufferBoundary = (int) (transMeta.getSizeRowset() * 0.01);
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepInterface#init(org.pentaho.di.trans.step.StepMetaInterface, org.pentaho.di.trans.step.StepDataInterface)
+   */
+  public boolean init(StepMetaInterface smi, StepDataInterface sdi) {
+    sdi.setStatus(StepExecutionStatus.STATUS_INIT);
+
+    String slaveNr = transMeta.getVariable(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NUMBER);
+    String clusterSize = transMeta.getVariable(Const.INTERNAL_VARIABLE_CLUSTER_SIZE);
+    boolean master = "Y".equalsIgnoreCase(transMeta.getVariable(Const.INTERNAL_VARIABLE_CLUSTER_MASTER));
+
+    if (!Const.isEmpty(slaveNr) && !Const.isEmpty(clusterSize) && !master) {
+      this.slaveNr = Integer.parseInt(slaveNr);
+      this.clusterSize = Integer.parseInt(clusterSize);
+
+      if (log.isDetailed())
+        logDetailed("Running on slave server #" + slaveNr + "/" + clusterSize + ".");
+    } else {
+      this.slaveNr = 0;
+      this.clusterSize = 0;
     }
 
-    /**
-     * @return Returns the number of lines written to an output target: database, file, socket, etc.
-     */
-    public long getLinesOutput()
-    {
-        synchronized(statusCountersLock) {
-            return linesOutput;
-        }
-    }
-    
-    /**
-     * Increments the number of lines written to an output target: database, file, socket, etc.
-     * @return the new incremented value
-     */
-    public long incrementLinesOutput()
-    {
-        synchronized(statusCountersLock) {
-            return ++linesOutput;
-        }
-    }
-    
-    /**
-     * @param newLinesOutputValue the new number of lines written to an output target: database, file, socket, etc.
-     */
-    public void setLinesOutput(long newLinesOutputValue)
-    {
-        synchronized(statusCountersLock) {
-            linesOutput = newLinesOutputValue;
-        }
-    }
+    // Also set the internal variable for the partition
+    //
+    SlaveStepCopyPartitionDistribution partitionDistribution = transMeta.getSlaveStepCopyPartitionDistribution();
 
-    /**
-     * @return Returns the linesWritten.
-     */
-    public long getLinesWritten()
-    {
-        synchronized(statusCountersLock) {
-            return linesWritten;
-        }
-    }
-    
-    /**
-     * Increments the number of lines written to next steps by one
-     * @return Returns the new value
-     */
-    public long incrementLinesWritten()
-    {
-        synchronized(statusCountersLock) {
-            return ++linesWritten;
-        }
-    }
-
-    /**
-     * Decrements the number of lines written to next steps by one
-     * @return Returns the new value
-     */
-    public long decrementLinesWritten()
-    {
-        synchronized(statusCountersLock) {
-            return --linesWritten;
-        }
-    }
-
-    /**
-     * @param newLinesWrittenValue the new number of lines written to next steps
-     */
-    public void setLinesWritten(long newLinesWrittenValue)
-    {
-        synchronized(statusCountersLock) {
-            linesWritten = newLinesWrittenValue;
-        }
-    }
-
-    /**
-     * @return Returns the number of lines updated in an output target: database, file, socket, etc.
-     */
-    public long getLinesUpdated()
-    {
-        synchronized(statusCountersLock) {
-            return linesUpdated;
-        }
-    }
-    
-    /**
-     * Increments the number of lines updated in an output target: database, file, socket, etc.
-     * @return the new incremented value
-     */
-    public long incrementLinesUpdated()
-    {
-        synchronized(statusCountersLock) {
-            return ++linesUpdated;
-        }
-    }
-    
-    /**
-     * @param newLinesOutputValue the new number of lines updated in an output target: database, file, socket, etc.
-     */
-    public void setLinesUpdated(long newLinesUpdatedValue)
-    {
-        synchronized(statusCountersLock) {
-            linesUpdated = newLinesUpdatedValue;
-        }
-    }
-
-    /**
-     * @return the number of lines rejected to an error handling step
-     */
-    public long getLinesRejected()
-    {
-        synchronized(statusCountersLock) {
-            return linesRejected;
-        }
-    }
-    
-    /**
-     * Increments the number of lines rejected to an error handling step
-     * @return the new incremented value
-     */
-    public long incrementLinesRejected()
-    {
-        synchronized(statusCountersLock) {
-            return ++linesRejected;
-        }
-    }
-
-    /**
-     * @param newLinesRejectedValue lines number of lines rejected to an error handling step
-     */
-    public void setLinesRejected(long newLinesRejectedValue)
-    {
-        synchronized(statusCountersLock) {
-            linesRejected = newLinesRejectedValue;
-        }
-    }
-
-    /**
-     * @return the number of lines skipped
-     */
-    public long getLinesSkipped()
-    {
-        synchronized(statusCountersLock) {
-            return linesSkipped;
-        }
-    }
-    
-    /**
-     * Increments the number of lines skipped
-     * @return the new incremented value
-     */
-    public long incrementLinesSkipped()
-    {
-        synchronized(statusCountersLock) {
-            return ++linesSkipped;
-        }
-    }
-
-    /**
-     * @param newLinesSkippedValue lines number of lines skipped
-     */
-    public void setLinesSkipped(long newLinesSkippedValue)
-    {
-        synchronized(statusCountersLock) {
-            linesSkipped = newLinesSkippedValue;
-        }
-    }
-
-
-    /* (non-Javadoc)
-     * @see org.pentaho.di.trans.step.StepInterface#getStepname()
-     */
-    public String getStepname()
-    {
-        return stepname;
-    }
-
-    /**
-     * Sets the stepname.
-     *
-     * @param stepname the new stepname
-     */
-    public void setStepname(String stepname)
-    {
-        this.stepname = stepname;
-    }
-
-    /**
-     * Gets the dispatcher.
-     *
-     * @return the dispatcher
-     */
-    public Trans getDispatcher()
-    {
-        return trans;
-    }
-
-    /**
-     * Gets the status description.
-     *
-     * @return the status description
-     */
-    public String getStatusDescription()
-    {
-        return getStatus().getDescription();
-    }
-
-    /**
-     * @return Returns the stepMetaInterface.
-     */
-    public StepMetaInterface getStepMetaInterface()
-    {
-        return stepMetaInterface;
-    }
-
-    /**
-     * @param stepMetaInterface The stepMetaInterface to set.
-     */
-    public void setStepMetaInterface(StepMetaInterface stepMetaInterface)
-    {
-        this.stepMetaInterface = stepMetaInterface;
-    }
-
-    /**
-     * @return Returns the stepDataInterface.
-     */
-    public StepDataInterface getStepDataInterface()
-    {
-        return stepDataInterface;
-    }
-
-    /**
-     * @param stepDataInterface The stepDataInterface to set.
-     */
-    public void setStepDataInterface(StepDataInterface stepDataInterface)
-    {
-        this.stepDataInterface = stepDataInterface;
-    }
-
-    /**
-     * @return Returns the stepMeta.
-     */
-    public StepMeta getStepMeta()
-    {
-        return stepMeta;
-    }
-
-    /**
-     * @param stepMeta The stepMeta to set.
-     */
-    public void setStepMeta(StepMeta stepMeta)
-    {
-        this.stepMeta = stepMeta;
-    }
-
-    /**
-     * @return Returns the transMeta.
-     */
-    public TransMeta getTransMeta()
-    {
-        return transMeta;
-    }
-
-    /**
-     * @param transMeta The transMeta to set.
-     */
-    public void setTransMeta(TransMeta transMeta)
-    {
-        this.transMeta = transMeta;
-    }
-
-    /**
-     * @return Returns the trans.
-     */
-    public Trans getTrans()
-    {
-        return trans;
-    }
-
-    /**
-     * putRow is used to copy a row, to the alternate rowset(s) This should get priority over everything else!
-     * (synchronized) If distribute is true, a row is copied only once to the output rowsets, otherwise copies are sent
-     * to each rowset!
-     *
-     * @param row The row to put to the destination rowset(s).
-     * @throws KettleStepException
-     */
-    public void putRow(RowMetaInterface rowMeta, Object[] row) throws KettleStepException
-    {
-      // Are we pausing the step? If so, stall forever...
+    if (stepMeta.isPartitioned()) {
+      // See if we are partitioning remotely
       //
-      while (paused.get() && !stopped.get()) {
+      if (partitionDistribution != null && !partitionDistribution.getDistribution().isEmpty()) {
+        String slaveServerName = getVariable(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME);
+        int stepCopyNr = stepcopy;
+
+        // Look up the partition nr...
+        // Set the partition ID (string) as well as the partition nr [0..size[
+        //
+        PartitionSchema partitionSchema = stepMeta.getStepPartitioningMeta().getPartitionSchema();
+        int partitionNr = partitionDistribution.getPartition(slaveServerName, partitionSchema.getName(), stepCopyNr);
+        if (partitionNr >= 0) {
+          String partitionNrString = new DecimalFormat("000").format(partitionNr);
+          setVariable(Const.INTERNAL_VARIABLE_STEP_PARTITION_NR, partitionNrString);
+
+          if (partitionDistribution.getOriginalPartitionSchemas() != null) {
+            // What is the partition schema name?
+            //
+            String partitionSchemaName = stepMeta.getStepPartitioningMeta().getPartitionSchema().getName();
+
+            // Search the original partition schema in the distribution...
+            //
+            for (PartitionSchema originalPartitionSchema : partitionDistribution.getOriginalPartitionSchemas()) {
+              String slavePartitionSchemaName = TransSplitter.createSlavePartitionSchemaName(originalPartitionSchema
+                  .getName());
+              if (slavePartitionSchemaName.equals(partitionSchemaName)) {
+                PartitionSchema schema = (PartitionSchema) originalPartitionSchema.clone();
+
+                // This is the one...
+                //
+                if (schema.isDynamicallyDefined()) {
+                  schema.expandPartitionsDynamically(this.clusterSize, this);
+                }
+
+                String partID = schema.getPartitionIDs().get(partitionNr);
+                setVariable(Const.INTERNAL_VARIABLE_STEP_PARTITION_ID, partID);
+                break;
+              }
+            }
+          }
+        }
+      } else {
+        // This is a locally partitioned step...
+        //
+        int partitionNr = stepcopy;
+        String partitionNrString = new DecimalFormat("000").format(partitionNr);
+        setVariable(Const.INTERNAL_VARIABLE_STEP_PARTITION_NR, partitionNrString);
+        String partitionID = stepMeta.getStepPartitioningMeta().getPartitionSchema().getPartitionIDs().get(partitionNr);
+        setVariable(Const.INTERNAL_VARIABLE_STEP_PARTITION_ID, partitionID);
+      }
+    } else if (!Const.isEmpty(partitionID)) {
+      setVariable(Const.INTERNAL_VARIABLE_STEP_PARTITION_ID, partitionID);
+    }
+
+    // Set a unique step number across all slave servers
+    //
+    //   slaveNr * nrCopies + copyNr
+    //
+    uniqueStepNrAcrossSlaves = this.slaveNr * getStepMeta().getCopies() + stepcopy;
+    uniqueStepCountAcrossSlaves = this.clusterSize <= 1 ? getStepMeta().getCopies() : this.clusterSize
+        * getStepMeta().getCopies();
+    if (uniqueStepCountAcrossSlaves == 0)
+      uniqueStepCountAcrossSlaves = 1;
+
+    setVariable(Const.INTERNAL_VARIABLE_STEP_UNIQUE_NUMBER, Integer.toString(uniqueStepNrAcrossSlaves));
+    setVariable(Const.INTERNAL_VARIABLE_STEP_UNIQUE_COUNT, Integer.toString(uniqueStepCountAcrossSlaves));
+    setVariable(Const.INTERNAL_VARIABLE_STEP_COPYNR, Integer.toString(stepcopy));
+
+    // Now that these things have been done, we also need to start a number of server sockets.
+    // One for each of the remote output steps that we're going to write to.
+    // 
+    try {
+      // If this is on the master, separate logic applies.
+      //
+      // boolean isMaster = "Y".equalsIgnoreCase(getVariable(Const.INTERNAL_VARIABLE_CLUSTER_MASTER));
+
+      remoteOutputSteps = new ArrayList<RemoteStep>();
+      for (int i = 0; i < stepMeta.getRemoteOutputSteps().size(); i++) {
+        RemoteStep remoteStep = stepMeta.getRemoteOutputSteps().get(i);
+
+        // If the step run in multiple copies, we only want to open every socket once.
+        // 
+        if (getCopy() == remoteStep.getSourceStepCopyNr()) {
+          // Open a server socket to allow the remote output step to connect.
+          // 
+          RemoteStep copy = (RemoteStep) remoteStep.clone();
+          try {
+            if (log.isDetailed())
+              logDetailed("Selected remote output step [" + copy + "] to open a server socket to remote step ["
+                  + copy.getTargetStep() + "]." + copy.getTargetStepCopyNr() + " on port " + copy.getPort());
+            copy.openServerSocket(this);
+            if (log.isDetailed())
+              logDetailed("Opened a server socket connection to " + copy);
+          } catch (Exception e) {
+            logError("Unable to open server socket during step initialisation: " + copy.toString(), e);
+            throw e;
+          }
+          remoteOutputSteps.add(copy);
+        }
+      }
+    } catch (Exception e) {
+      for (RemoteStep remoteStep : remoteOutputSteps) {
+        if (remoteStep.getServerSocket() != null) {
+          try {
+            ServerSocket serverSocket = remoteStep.getServerSocket();
+            getTrans().getSocketRepository().releaseSocket(serverSocket.getLocalPort());
+          } catch (IOException e1) {
+            logError("Unable to close server socket after error during step initialisation", e);
+          }
+        }
+      }
+      return false;
+    }
+
+    // For the remote input steps to read from, we do the same: make a list and initialize what we can...
+    //
+    try {
+      remoteInputSteps = new ArrayList<RemoteStep>();
+
+      if ((stepMeta.isPartitioned() && getClusterSize() > 1) || stepMeta.getCopies() > 1) {
+        // If the step is partitioned or has multiple copies and clustered, we only want to take one remote input step per copy.
+        // This is where we make that selection...
+        //
+        for (int i = 0; i < stepMeta.getRemoteInputSteps().size(); i++) {
+          RemoteStep remoteStep = stepMeta.getRemoteInputSteps().get(i);
+          if (remoteStep.getTargetStepCopyNr() == stepcopy) {
+            RemoteStep copy = (RemoteStep) remoteStep.clone();
+            remoteInputSteps.add(copy);
+          }
+        }
+      } else {
+        for (RemoteStep remoteStep : stepMeta.getRemoteInputSteps()) {
+          RemoteStep copy = (RemoteStep) remoteStep.clone();
+          remoteInputSteps.add(copy);
+        }
+      }
+
+    } catch (Exception e) {
+      logError("Unable to initialize remote input steps during step initialisation", e);
+      return false;
+    }
+
+    //  Getting ans setting the error handling values
+    //    first, get the step meta
+    StepErrorMeta stepErrorMeta = stepMeta.getStepErrorMeta();
+    if (stepErrorMeta != null) {
+
+      //  do an environment substitute for stepErrorMeta.getMaxErrors(), stepErrorMeta.getMinPercentRows()
+      //  and stepErrorMeta.getMaxPercentErrors()
+      //  Catch NumberFormatException since the user can enter anything in the dialog- the value
+      //  they enter must be a number or a variable set to a number
+
+      //  We will use a boolean to indicate failure so that we can log all errors - not just the first one caught
+      boolean envSubFailed = false;
+      try {
+        maxErrors = (!Const.isEmpty(stepErrorMeta.getMaxErrors()) ? Long.valueOf(trans
+            .environmentSubstitute(stepErrorMeta.getMaxErrors())) : -1L);
+      } catch (NumberFormatException nfe) {
+        log.logError(BaseMessages.getString(PKG, "BaseStep.Log.NumberFormatException",
+            BaseMessages.getString(PKG, "BaseStep.Property.MaxErrors.Name"), this.stepname,
+            (stepErrorMeta.getMaxErrors() != null ? stepErrorMeta.getMaxErrors() : "")));
+        envSubFailed = true;
+      }
+
+      try {
+        minRowsForMaxErrorPercent = (!Const.isEmpty(stepErrorMeta.getMinPercentRows()) ? Long.valueOf(trans
+            .environmentSubstitute(stepErrorMeta.getMinPercentRows())) : -1L);
+      } catch (NumberFormatException nfe) {
+        log.logError(BaseMessages.getString(PKG, "BaseStep.Log.NumberFormatException",
+            BaseMessages.getString(PKG, "BaseStep.Property.MinRowsForErrorsPercentCalc.Name"), this.stepname,
+            (stepErrorMeta.getMinPercentRows() != null ? stepErrorMeta.getMinPercentRows() : "")));
+        envSubFailed = true;
+      }
+
+      try {
+        maxPercentErrors = (!Const.isEmpty(stepErrorMeta.getMaxPercentErrors()) ? Integer.valueOf(trans
+            .environmentSubstitute(stepErrorMeta.getMaxPercentErrors())) : -1);
+      } catch (NumberFormatException nfe) {
+        log.logError(BaseMessages.getString(PKG, "BaseStep.Log.NumberFormatException",
+            BaseMessages.getString(PKG, "BaseStep.Property.MaxPercentErrors.Name"), this.stepname,
+            (stepErrorMeta.getMaxPercentErrors() != null ? stepErrorMeta.getMaxPercentErrors() : "")));
+        envSubFailed = true;
+      }
+
+      //  if we failed and environment subsutitue
+      if (envSubFailed) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepInterface#dispose(org.pentaho.di.trans.step.StepMetaInterface, org.pentaho.di.trans.step.StepDataInterface)
+   */
+  public void dispose(StepMetaInterface smi, StepDataInterface sdi) {
+    sdi.setStatus(StepExecutionStatus.STATUS_DISPOSED);
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepInterface#cleanup()
+   */
+  public void cleanup() {
+    for (ServerSocket serverSocket : serverSockets) {
+      try {
+
+        socketRepository.releaseSocket(serverSocket.getLocalPort());
+
+        logDetailed("Released server socket on port " + serverSocket.getLocalPort());
+      } catch (IOException e) {
+        logError("Cleanup: Unable to release server socket (" + serverSocket.getLocalPort() + ")", e);
+      }
+    }
+
+    for (RemoteStep remoteStep : getRemoteInputSteps()) {
+      remoteStep.cleanup();
+    }
+    for (RemoteStep remoteStep : getRemoteOutputSteps()) {
+      remoteStep.cleanup();
+    }
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepInterface#getProcessed()
+   */
+  public long getProcessed() {
+    if (getLinesRead() > getLinesWritten()) {
+      return getLinesRead();
+    } else {
+      return getLinesWritten();
+    }
+  }
+
+  /**
+   * Sets the copy.
+   *
+   * @param cop the new copy
+   */
+  public void setCopy(int cop) {
+    stepcopy = cop;
+  }
+
+  /**
+   * @return The steps copy number (default 0)
+   */
+  public int getCopy() {
+    return stepcopy;
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepInterface#getErrors()
+   */
+  public long getErrors() {
+    return errors;
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepInterface#setErrors(long)
+   */
+  public void setErrors(long e) {
+    errors = e;
+  }
+
+  /**
+   * @return Returns the number of lines read from previous steps
+   */
+  public long getLinesRead() {
+    synchronized (statusCountersLock) {
+      return linesRead;
+    }
+  }
+
+  /**
+   * Increments the number of lines read from previous steps by one
+   * @return Returns the new value
+   */
+  public long incrementLinesRead() {
+    synchronized (statusCountersLock) {
+      return ++linesRead;
+    }
+  }
+
+  /**
+   * Decrements the number of lines read from previous steps by one
+   * @return Returns the new value
+   */
+  public long decrementLinesRead() {
+    synchronized (statusCountersLock) {
+      return --linesRead;
+    }
+  }
+
+  /**
+   * @param newLinesReadValue the new number of lines read from previous steps
+   */
+  public void setLinesRead(long newLinesReadValue) {
+    synchronized (statusCountersLock) {
+      linesRead = newLinesReadValue;
+    }
+  }
+
+  /**
+   * @return Returns the number of lines read from an input source: database, file, socket, etc.
+   */
+  public long getLinesInput() {
+    synchronized (statusCountersLock) {
+      return linesInput;
+    }
+  }
+
+  /**
+   * Increments the number of lines read from an input source: database, file, socket, etc.
+   * @return the new incremented value
+   */
+  public long incrementLinesInput() {
+    synchronized (statusCountersLock) {
+      return ++linesInput;
+    }
+  }
+
+  /**
+   * @param newLinesInputValue the new number of lines read from an input source: database, file, socket, etc.
+   */
+  public void setLinesInput(long newLinesInputValue) {
+    synchronized (statusCountersLock) {
+      linesInput = newLinesInputValue;
+    }
+  }
+
+  /**
+   * @return Returns the number of lines written to an output target: database, file, socket, etc.
+   */
+  public long getLinesOutput() {
+    synchronized (statusCountersLock) {
+      return linesOutput;
+    }
+  }
+
+  /**
+   * Increments the number of lines written to an output target: database, file, socket, etc.
+   * @return the new incremented value
+   */
+  public long incrementLinesOutput() {
+    synchronized (statusCountersLock) {
+      return ++linesOutput;
+    }
+  }
+
+  /**
+   * @param newLinesOutputValue the new number of lines written to an output target: database, file, socket, etc.
+   */
+  public void setLinesOutput(long newLinesOutputValue) {
+    synchronized (statusCountersLock) {
+      linesOutput = newLinesOutputValue;
+    }
+  }
+
+  /**
+   * @return Returns the linesWritten.
+   */
+  public long getLinesWritten() {
+    synchronized (statusCountersLock) {
+      return linesWritten;
+    }
+  }
+
+  /**
+   * Increments the number of lines written to next steps by one
+   * @return Returns the new value
+   */
+  public long incrementLinesWritten() {
+    synchronized (statusCountersLock) {
+      return ++linesWritten;
+    }
+  }
+
+  /**
+   * Decrements the number of lines written to next steps by one
+   * @return Returns the new value
+   */
+  public long decrementLinesWritten() {
+    synchronized (statusCountersLock) {
+      return --linesWritten;
+    }
+  }
+
+  /**
+   * @param newLinesWrittenValue the new number of lines written to next steps
+   */
+  public void setLinesWritten(long newLinesWrittenValue) {
+    synchronized (statusCountersLock) {
+      linesWritten = newLinesWrittenValue;
+    }
+  }
+
+  /**
+   * @return Returns the number of lines updated in an output target: database, file, socket, etc.
+   */
+  public long getLinesUpdated() {
+    synchronized (statusCountersLock) {
+      return linesUpdated;
+    }
+  }
+
+  /**
+   * Increments the number of lines updated in an output target: database, file, socket, etc.
+   * @return the new incremented value
+   */
+  public long incrementLinesUpdated() {
+    synchronized (statusCountersLock) {
+      return ++linesUpdated;
+    }
+  }
+
+  /**
+   * @param newLinesOutputValue the new number of lines updated in an output target: database, file, socket, etc.
+   */
+  public void setLinesUpdated(long newLinesUpdatedValue) {
+    synchronized (statusCountersLock) {
+      linesUpdated = newLinesUpdatedValue;
+    }
+  }
+
+  /**
+   * @return the number of lines rejected to an error handling step
+   */
+  public long getLinesRejected() {
+    synchronized (statusCountersLock) {
+      return linesRejected;
+    }
+  }
+
+  /**
+   * Increments the number of lines rejected to an error handling step
+   * @return the new incremented value
+   */
+  public long incrementLinesRejected() {
+    synchronized (statusCountersLock) {
+      return ++linesRejected;
+    }
+  }
+
+  /**
+   * @param newLinesRejectedValue lines number of lines rejected to an error handling step
+   */
+  public void setLinesRejected(long newLinesRejectedValue) {
+    synchronized (statusCountersLock) {
+      linesRejected = newLinesRejectedValue;
+    }
+  }
+
+  /**
+   * @return the number of lines skipped
+   */
+  public long getLinesSkipped() {
+    synchronized (statusCountersLock) {
+      return linesSkipped;
+    }
+  }
+
+  /**
+   * Increments the number of lines skipped
+   * @return the new incremented value
+   */
+  public long incrementLinesSkipped() {
+    synchronized (statusCountersLock) {
+      return ++linesSkipped;
+    }
+  }
+
+  /**
+   * @param newLinesSkippedValue lines number of lines skipped
+   */
+  public void setLinesSkipped(long newLinesSkippedValue) {
+    synchronized (statusCountersLock) {
+      linesSkipped = newLinesSkippedValue;
+    }
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepInterface#getStepname()
+   */
+  public String getStepname() {
+    return stepname;
+  }
+
+  /**
+   * Sets the stepname.
+   *
+   * @param stepname the new stepname
+   */
+  public void setStepname(String stepname) {
+    this.stepname = stepname;
+  }
+
+  /**
+   * Gets the dispatcher.
+   *
+   * @return the dispatcher
+   */
+  public Trans getDispatcher() {
+    return trans;
+  }
+
+  /**
+   * Gets the status description.
+   *
+   * @return the status description
+   */
+  public String getStatusDescription() {
+    return getStatus().getDescription();
+  }
+
+  /**
+   * @return Returns the stepMetaInterface.
+   */
+  public StepMetaInterface getStepMetaInterface() {
+    return stepMetaInterface;
+  }
+
+  /**
+   * @param stepMetaInterface The stepMetaInterface to set.
+   */
+  public void setStepMetaInterface(StepMetaInterface stepMetaInterface) {
+    this.stepMetaInterface = stepMetaInterface;
+  }
+
+  /**
+   * @return Returns the stepDataInterface.
+   */
+  public StepDataInterface getStepDataInterface() {
+    return stepDataInterface;
+  }
+
+  /**
+   * @param stepDataInterface The stepDataInterface to set.
+   */
+  public void setStepDataInterface(StepDataInterface stepDataInterface) {
+    this.stepDataInterface = stepDataInterface;
+  }
+
+  /**
+   * @return Returns the stepMeta.
+   */
+  public StepMeta getStepMeta() {
+    return stepMeta;
+  }
+
+  /**
+   * @param stepMeta The stepMeta to set.
+   */
+  public void setStepMeta(StepMeta stepMeta) {
+    this.stepMeta = stepMeta;
+  }
+
+  /**
+   * @return Returns the transMeta.
+   */
+  public TransMeta getTransMeta() {
+    return transMeta;
+  }
+
+  /**
+   * @param transMeta The transMeta to set.
+   */
+  public void setTransMeta(TransMeta transMeta) {
+    this.transMeta = transMeta;
+  }
+
+  /**
+   * @return Returns the trans.
+   */
+  public Trans getTrans() {
+    return trans;
+  }
+
+  /**
+   * putRow is used to copy a row, to the alternate rowset(s) This should get priority over everything else!
+   * (synchronized) If distribute is true, a row is copied only once to the output rowsets, otherwise copies are sent
+   * to each rowset!
+   *
+   * @param row The row to put to the destination rowset(s).
+   * @throws KettleStepException
+   */
+  public void putRow(RowMetaInterface rowMeta, Object[] row) throws KettleStepException {
+    // Are we pausing the step? If so, stall forever...
+    //
+    while (paused.get() && !stopped.get()) {
+      try {
+        Thread.sleep(1);
+      } catch (InterruptedException e) {
+        throw new KettleStepException(e);
+      }
+    }
+
+    // Right after the pause loop we have to check if this thread is stopped or
+    // not.
+    //
+    if (stopped.get()) {
+      if (log.isDebug())
+        logDebug(BaseMessages.getString(PKG, "BaseStep.Log.StopPuttingARow")); //$NON-NLS-1$
+      stopAll();
+      return;
+    }
+
+    // Have all threads started?
+    // Are we running yet? If not, wait a bit until all threads have been
+    // started.
+    //
+    if (this.checkTransRunning == false) {
+      while (!trans.isRunning() && !stopped.get()) {
         try {
           Thread.sleep(1);
         } catch (InterruptedException e) {
-          throw new KettleStepException(e);
         }
       }
-  
-      // Right after the pause loop we have to check if this thread is stopped or
-      // not.
-      //
-      if (stopped.get()) {
-        if (log.isDebug())
-          logDebug(BaseMessages.getString(PKG, "BaseStep.Log.StopPuttingARow")); //$NON-NLS-1$
-        stopAll();
-        return;
-      }
-  
-      // Have all threads started?
-      // Are we running yet? If not, wait a bit until all threads have been
-      // started.
-      //
-      if (this.checkTransRunning == false) {
-        while (!trans.isRunning() && !stopped.get()) {
-          try {
-            Thread.sleep(1);
-          } catch (InterruptedException e) {
-          }
-        }
-        this.checkTransRunning = true;
-      }
-  
-      // call all row listeners...
-      //
-      synchronized(rowListeners) {
-        for (int i = 0; i < rowListeners.size(); i++) {
-          RowListener rowListener = rowListeners.get(i);
-          rowListener.rowWrittenEvent(rowMeta, row);
-        }
-      }
-  
-      // Keep adding to terminator_rows buffer...
-      //
-      if (terminator && terminator_rows != null) {
-        try {
-          terminator_rows.add(rowMeta.cloneRow(row));
-        } catch (KettleValueException e) {
-          throw new KettleStepException("Unable to clone row while adding rows to the terminator rows.", e);
-        }
-      }
-  
-      if (outputRowSets.isEmpty()) {
-        // No more output rowsets!
-        // Still update the nr of lines written.
-        //
-        incrementLinesWritten();
-  
-        return; // we're done here!
-      }
+      this.checkTransRunning = true;
+    }
 
-      // Repartitioning happens when the current step is not partitioned, but the next one is.
-      // That means we need to look up the partitioning information in the next step..
-      // If there are multiple steps, we need to look at the first (they should be all the same)
-      // 
-      switch(repartitioning)
-      {
-      case StepPartitioningMeta.PARTITIONING_METHOD_NONE:
-      {
-          if (distributed)
-          {
-            if (loadBalancing) {
-              // LOAD BALANCE:
-              // ----------------
-              //
-              // To balance the output, look for the most empty output buffer and take that one to write to.
-        	    //
-              int smallestSize=Integer.MAX_VALUE;
-              for (int i=0;i<outputRowSets.size();i++) {
-                RowSet candidate = outputRowSets.get(i);
-                if (candidate.size()<smallestSize) {
-                  currentOutputRowSetNr=i;
-                  smallestSize=candidate.size();
-                }
-              }
-              RowSet rs = outputRowSets.get(currentOutputRowSetNr);
-
-              // Loop until we find room in the target rowset, could very well all be full so keep trying.
-              //
-              while (!rs.putRow(rowMeta, row) && !isStopped()) 
-              ;
-              incrementLinesWritten();
-  
-            } else {
-              // ROUND ROBIN DISTRIBUTION:
-              // --------------------------
-              // Copy the row to the "next" output rowset.
-              // We keep the next one in out_handling
-              //
-                RowSet rs = outputRowSets.get(currentOutputRowSetNr);
-                
-              // To reduce stress on the locking system we are NOT going to allow
-              // the buffer to grow to its full capacity.
-              //
-                if (isUsingThreadPriorityManagment() && !rs.isDone() && rs.size()>= upperBufferBoundary && !isStopped())
-                {
-                  try { Thread.sleep(0,1); } catch (InterruptedException e) { }
-                }
-                
-                // Loop until we find room in the target rowset
-                //
-                while (!rs.putRow(rowMeta, row) && !isStopped()) 
-                  ;
-                incrementLinesWritten();
-  
-                // Now determine the next output rowset!
-                // Only if we have more then one output...
-                //
-                if (outputRowSets.size() > 1)
-                {
-                    currentOutputRowSetNr++;
-                    if (currentOutputRowSetNr >= outputRowSets.size()) currentOutputRowSetNr = 0;
-                }
-            }
-          }
-          else
-          	
-          // Copy the row to all output rowsets
-          //
-          {
-              // Copy to the row in the other output rowsets...
-              for (int i = 1; i < outputRowSets.size(); i++) // start at 1
-              {
-                  RowSet rs = outputRowSets.get(i);
-                  
-          	    // To reduce stress on the locking system we are NOT going to allow
-          	    // the buffer to grow to its full capacity.
-          	    //
-                  if (isUsingThreadPriorityManagment() && !rs.isDone() && rs.size()>= upperBufferBoundary && !isStopped())
-                  {
-                  	try { Thread.sleep(0,1); } catch (InterruptedException e) { }
-                  }
-
-                  try
-                  {
-                      // Loop until we find room in the target rowset
-                      //
-                      while (!rs.putRow(rowMeta, rowMeta.cloneRow(row)) && !isStopped()) 
-                      	;
-                      incrementLinesWritten();
-                  }
-                  catch (KettleValueException e)
-                  {
-                      throw new KettleStepException("Unable to clone row while copying rows to multiple target steps", e);
-                  }
-              }
-
-              // set row in first output rowset
-              //
-              RowSet rs = outputRowSets.get(0);
-              while (!rs.putRow(rowMeta, row) && !isStopped()) 
-              	;
-              incrementLinesWritten();
-          }
-      }
-      break;
-
-      case StepPartitioningMeta.PARTITIONING_METHOD_SPECIAL:
-          {
-          	if( nextStepPartitioningMeta == null )
-          	{
-          		// Look up the partitioning of the next step.
-          		// This is the case for non-clustered partitioning...
-          		//
-          		List<StepMeta> nextSteps = transMeta.findNextSteps(stepMeta);
-                  if (nextSteps.size()>0) {
-                  	nextStepPartitioningMeta = nextSteps.get(0).getStepPartitioningMeta();
-                  }
-                  
-                  // TODO: throw exception if we're not partitioning yet. 
-                  // For now it throws a NP Exception.
-          	}
-          	
-              int partitionNr;
-              try
-              {
-              	partitionNr = nextStepPartitioningMeta.getPartition(rowMeta, row);
-              }
-              catch (KettleException e)
-              {
-                  throw new KettleStepException("Unable to convert a value to integer while calculating the partition number", e);
-              }
-
-              RowSet selectedRowSet = null;
-              
-              if (clusteredPartitioningFirst) {
-              	clusteredPartitioningFirst=false;
-              	
-              	// We are only running remotely if both the distribution is there AND if the distribution is actually contains something.
-              	//
-              	clusteredPartitioning = transMeta.getSlaveStepCopyPartitionDistribution()!=null && !transMeta.getSlaveStepCopyPartitionDistribution().getDistribution().isEmpty();
-              }
-              
-      		// OK, we have a SlaveStepCopyPartitionDistribution in the transformation...
-      		// We want to pre-calculate what rowset we're sending data to for which partition...
-              // It is only valid in clustering / partitioning situations.
-              // When doing a local partitioning, it is much simpler.
-      		//
-              if (clusteredPartitioning) {
-              	
-              	// This next block is only performed once for speed...
-              	//
-	                if (partitionNrRowSetList==null) {
-	        			partitionNrRowSetList = new RowSet[outputRowSets.size()];
-	        			
-	        			// The distribution is calculated during transformation split
-	        			// The slave-step-copy distribution is passed onto the slave transformation
-	        			//
-		        		SlaveStepCopyPartitionDistribution distribution = transMeta.getSlaveStepCopyPartitionDistribution();
-		        		
-		        		String nextPartitionSchemaName = TransSplitter.createPartitionSchemaNameFromTarget( nextStepPartitioningMeta.getPartitionSchema().getName() );
-		        		
-		        		for (RowSet outputRowSet : outputRowSets) {
-		        			try
-		        			{
-		        				// Look at the pre-determined distribution, decided at "transformation split" time.
-			        			//
-				        		int partNr = distribution.getPartition(outputRowSet.getRemoteSlaveServerName(), nextPartitionSchemaName, outputRowSet.getDestinationStepCopy());
-			        			
-			        			if (partNr<0) {
-			        				throw new KettleStepException("Unable to find partition using rowset data, slave="+outputRowSet.getRemoteSlaveServerName()+", partition schema="+nextStepPartitioningMeta.getPartitionSchema().getName()+", copy="+outputRowSet.getDestinationStepCopy());
-			        			}
-			        			partitionNrRowSetList[partNr] = outputRowSet;
-		        			}
-		        			catch(NullPointerException e) {
-		        				throw(e);
-		        			}
-		        		}
-	                }
-                
-	                // OK, now get the target partition based on the partition nr...
-	                // This should be very fast
-              	//
-	                if (partitionNr<partitionNrRowSetList.length) {
-	                	selectedRowSet = partitionNrRowSetList[partitionNr];
-	                } else {
-	                	String rowsets = "";
-	                	for (RowSet rowSet : partitionNrRowSetList) {
-	                		rowsets+="["+rowSet.toString()+"] ";
-	                	}
-	                	throw new KettleStepException("Internal error: the referenced partition nr '"+partitionNr+"' is higher than the maximum of '"+(partitionNrRowSetList.length-1)+".  The available row sets are: {"+rowsets+"}");
-	                }
-                }
-                else {
-                	// Local partitioning...
-	                // Put the row forward to the next step according to the partition rule.
-	                //
-	                selectedRowSet = outputRowSets.get(partitionNr);
-                }
-                
-                if (selectedRowSet==null) {
-                	logBasic("Target rowset is not available for target partition, partitionNr="+partitionNr);
-              }
-              
-              // logBasic("Putting row to partition #"+partitionNr);
-                
-                while (!selectedRowSet.putRow(rowMeta, row) && !isStopped()) 
-                	;
-                incrementLinesWritten();
-                
-                if (log.isRowLevel())
-					try {
-						logRowlevel("Partitioned #"+partitionNr+" to "+selectedRowSet+", row="+rowMeta.getString(row));
-					} catch (KettleValueException e) {
-						throw new KettleStepException(e);
-					}
-            }
-            break;
-        case StepPartitioningMeta.PARTITIONING_METHOD_MIRROR:
-            {
-                // Copy always to all target steps/copies.
-              // 
-              for (int r = 0; r < outputRowSets.size(); r++)
-              {
-                  RowSet rowSet = outputRowSets.get(r);
-                  while (!rowSet.putRow(rowMeta, row) && !isStopped()) 
-                  	;
-              }
-          }
-          break;
-      default:
-      	throw new KettleStepException("Internal error: invalid repartitioning type: " + repartitioning);
+    // call all row listeners...
+    //
+    synchronized (rowListeners) {
+      for (int i = 0; i < rowListeners.size(); i++) {
+        RowListener rowListener = rowListeners.get(i);
+        rowListener.rowWrittenEvent(rowMeta, row);
       }
     }
+
+    // Keep adding to terminator_rows buffer...
+    //
+    if (terminator && terminator_rows != null) {
+      try {
+        terminator_rows.add(rowMeta.cloneRow(row));
+      } catch (KettleValueException e) {
+        throw new KettleStepException("Unable to clone row while adding rows to the terminator rows.", e);
+      }
+    }
+
+    if (outputRowSets.isEmpty()) {
+      // No more output rowsets!
+      // Still update the nr of lines written.
+      //
+      incrementLinesWritten();
+
+      return; // we're done here!
+    }
+
+    // Repartitioning happens when the current step is not partitioned, but the next one is.
+    // That means we need to look up the partitioning information in the next step..
+    // If there are multiple steps, we need to look at the first (they should be all the same)
+    // 
+    switch (repartitioning) {
+      case StepPartitioningMeta.PARTITIONING_METHOD_NONE: {
+        if (distributed) {
+          if (loadBalancing) {
+            // LOAD BALANCE:
+            // ----------------
+            //
+            // To balance the output, look for the most empty output buffer and take that one to write to.
+            //
+            int smallestSize = Integer.MAX_VALUE;
+            for (int i = 0; i < outputRowSets.size(); i++) {
+              RowSet candidate = outputRowSets.get(i);
+              if (candidate.size() < smallestSize) {
+                currentOutputRowSetNr = i;
+                smallestSize = candidate.size();
+              }
+            }
+            RowSet rs = outputRowSets.get(currentOutputRowSetNr);
+
+            // Loop until we find room in the target rowset, could very well all be full so keep trying.
+            //
+            while (!rs.putRow(rowMeta, row) && !isStopped())
+              ;
+            incrementLinesWritten();
+
+          } else {
+            // ROUND ROBIN DISTRIBUTION:
+            // --------------------------
+            // Copy the row to the "next" output rowset.
+            // We keep the next one in out_handling
+            //
+            RowSet rs = outputRowSets.get(currentOutputRowSetNr);
+
+            // To reduce stress on the locking system we are NOT going to allow
+            // the buffer to grow to its full capacity.
+            //
+            if (isUsingThreadPriorityManagment() && !rs.isDone() && rs.size() >= upperBufferBoundary && !isStopped()) {
+              try {
+                Thread.sleep(0, 1);
+              } catch (InterruptedException e) {
+              }
+            }
+
+            // Loop until we find room in the target rowset
+            //
+            while (!rs.putRow(rowMeta, row) && !isStopped())
+              ;
+            incrementLinesWritten();
+
+            // Now determine the next output rowset!
+            // Only if we have more then one output...
+            //
+            if (outputRowSets.size() > 1) {
+              currentOutputRowSetNr++;
+              if (currentOutputRowSetNr >= outputRowSets.size())
+                currentOutputRowSetNr = 0;
+            }
+          }
+        } else
+
+        // Copy the row to all output rowsets
+        //
+        {
+          // Copy to the row in the other output rowsets...
+          for (int i = 1; i < outputRowSets.size(); i++) // start at 1
+          {
+            RowSet rs = outputRowSets.get(i);
+
+            // To reduce stress on the locking system we are NOT going to allow
+            // the buffer to grow to its full capacity.
+            //
+            if (isUsingThreadPriorityManagment() && !rs.isDone() && rs.size() >= upperBufferBoundary && !isStopped()) {
+              try {
+                Thread.sleep(0, 1);
+              } catch (InterruptedException e) {
+              }
+            }
+
+            try {
+              // Loop until we find room in the target rowset
+              //
+              while (!rs.putRow(rowMeta, rowMeta.cloneRow(row)) && !isStopped())
+                ;
+              incrementLinesWritten();
+            } catch (KettleValueException e) {
+              throw new KettleStepException("Unable to clone row while copying rows to multiple target steps", e);
+            }
+          }
+
+          // set row in first output rowset
+          //
+          RowSet rs = outputRowSets.get(0);
+          while (!rs.putRow(rowMeta, row) && !isStopped())
+            ;
+          incrementLinesWritten();
+        }
+      }
+        break;
+
+      case StepPartitioningMeta.PARTITIONING_METHOD_SPECIAL: {
+        if (nextStepPartitioningMeta == null) {
+          // Look up the partitioning of the next step.
+          // This is the case for non-clustered partitioning...
+          //
+          List<StepMeta> nextSteps = transMeta.findNextSteps(stepMeta);
+          if (nextSteps.size() > 0) {
+            nextStepPartitioningMeta = nextSteps.get(0).getStepPartitioningMeta();
+          }
+
+          // TODO: throw exception if we're not partitioning yet. 
+          // For now it throws a NP Exception.
+        }
+
+        int partitionNr;
+        try {
+          partitionNr = nextStepPartitioningMeta.getPartition(rowMeta, row);
+        } catch (KettleException e) {
+          throw new KettleStepException("Unable to convert a value to integer while calculating the partition number",
+              e);
+        }
+
+        RowSet selectedRowSet = null;
+
+        if (clusteredPartitioningFirst) {
+          clusteredPartitioningFirst = false;
+
+          // We are only running remotely if both the distribution is there AND if the distribution is actually contains something.
+          //
+          clusteredPartitioning = transMeta.getSlaveStepCopyPartitionDistribution() != null
+              && !transMeta.getSlaveStepCopyPartitionDistribution().getDistribution().isEmpty();
+        }
+
+        // OK, we have a SlaveStepCopyPartitionDistribution in the transformation...
+        // We want to pre-calculate what rowset we're sending data to for which partition...
+        // It is only valid in clustering / partitioning situations.
+        // When doing a local partitioning, it is much simpler.
+        //
+        if (clusteredPartitioning) {
+
+          // This next block is only performed once for speed...
+          //
+          if (partitionNrRowSetList == null) {
+            partitionNrRowSetList = new RowSet[outputRowSets.size()];
+
+            // The distribution is calculated during transformation split
+            // The slave-step-copy distribution is passed onto the slave transformation
+            //
+            SlaveStepCopyPartitionDistribution distribution = transMeta.getSlaveStepCopyPartitionDistribution();
+
+            String nextPartitionSchemaName = TransSplitter.createPartitionSchemaNameFromTarget(nextStepPartitioningMeta
+                .getPartitionSchema().getName());
+
+            for (RowSet outputRowSet : outputRowSets) {
+              try {
+                // Look at the pre-determined distribution, decided at "transformation split" time.
+                //
+                int partNr = distribution.getPartition(outputRowSet.getRemoteSlaveServerName(),
+                    nextPartitionSchemaName, outputRowSet.getDestinationStepCopy());
+
+                if (partNr < 0) {
+                  throw new KettleStepException("Unable to find partition using rowset data, slave="
+                      + outputRowSet.getRemoteSlaveServerName() + ", partition schema="
+                      + nextStepPartitioningMeta.getPartitionSchema().getName() + ", copy="
+                      + outputRowSet.getDestinationStepCopy());
+                }
+                partitionNrRowSetList[partNr] = outputRowSet;
+              } catch (NullPointerException e) {
+                throw (e);
+              }
+            }
+          }
+
+          // OK, now get the target partition based on the partition nr...
+          // This should be very fast
+          //
+          if (partitionNr < partitionNrRowSetList.length) {
+            selectedRowSet = partitionNrRowSetList[partitionNr];
+          } else {
+            String rowsets = "";
+            for (RowSet rowSet : partitionNrRowSetList) {
+              rowsets += "[" + rowSet.toString() + "] ";
+            }
+            throw new KettleStepException("Internal error: the referenced partition nr '" + partitionNr
+                + "' is higher than the maximum of '" + (partitionNrRowSetList.length - 1)
+                + ".  The available row sets are: {" + rowsets + "}");
+          }
+        } else {
+          // Local partitioning...
+          // Put the row forward to the next step according to the partition rule.
+          //
+          selectedRowSet = outputRowSets.get(partitionNr);
+        }
+
+        if (selectedRowSet == null) {
+          logBasic("Target rowset is not available for target partition, partitionNr=" + partitionNr);
+        }
+
+        // logBasic("Putting row to partition #"+partitionNr);
+
+        while (!selectedRowSet.putRow(rowMeta, row) && !isStopped())
+          ;
+        incrementLinesWritten();
+
+        if (log.isRowLevel())
+          try {
+            logRowlevel("Partitioned #" + partitionNr + " to " + selectedRowSet + ", row=" + rowMeta.getString(row));
+          } catch (KettleValueException e) {
+            throw new KettleStepException(e);
+          }
+      }
+        break;
+      case StepPartitioningMeta.PARTITIONING_METHOD_MIRROR: {
+        // Copy always to all target steps/copies.
+        // 
+        for (int r = 0; r < outputRowSets.size(); r++) {
+          RowSet rowSet = outputRowSets.get(r);
+          while (!rowSet.putRow(rowMeta, row) && !isStopped())
+            ;
+        }
+      }
+        break;
+      default:
+        throw new KettleStepException("Internal error: invalid repartitioning type: " + repartitioning);
+    }
+  }
 
   /**
    * putRowTo is used to put a row in a certain specific RowSet.
@@ -1413,7 +1352,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    *           In case something unexpected goes wrong
    */
   public void putRowTo(RowMetaInterface rowMeta, Object[] row, RowSet rowSet) throws KettleStepException {
-    
+
     // Are we pausing the step? If so, stall forever...
     //
     while (paused.get() && !stopped.get()) {
@@ -1426,7 +1365,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
     // call all row listeners...
     //
-    synchronized(rowListeners) {
+    synchronized (rowListeners) {
       for (int i = 0; i < rowListeners.size(); i++) {
         RowListener rowListener = rowListeners.get(i);
         rowListener.rowWrittenEvent(rowMeta, row);
@@ -1467,10 +1406,12 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    * @param errorCodes the error codes
    * @throws KettleStepException the kettle step exception
    */
-  public void putError(RowMetaInterface rowMeta, Object[] row, long nrErrors, String errorDescriptions, String fieldNames, String errorCodes) throws KettleStepException {
+  public void putError(RowMetaInterface rowMeta, Object[] row, long nrErrors, String errorDescriptions,
+      String fieldNames, String errorCodes) throws KettleStepException {
     if (trans.isSafeModeEnabled()) {
       if (rowMeta.size() > row.length) {
-        throw new KettleStepException(BaseMessages.getString(PKG, "BaseStep.Exception.MetadataDoesntMatchDataRowSize", Integer.toString(rowMeta.size()), Integer.toString(row != null ? row.length : 0)));
+        throw new KettleStepException(BaseMessages.getString(PKG, "BaseStep.Exception.MetadataDoesntMatchDataRowSize",
+            Integer.toString(rowMeta.size()), Integer.toString(row != null ? row.length : 0)));
       }
     }
 
@@ -1492,7 +1433,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     stepErrorMeta.addErrorRowData(errorRowData, rowMeta.size(), nrErrors, errorDescriptions, fieldNames, errorCodes);
 
     // call all row listeners...
-    synchronized(rowListeners) {
+    synchronized (rowListeners) {
       for (int i = 0; i < rowListeners.size(); i++) {
         RowListener rowListener = rowListeners.get(i);
         rowListener.errorRowWrittenEvent(rowMeta, row);
@@ -1508,69 +1449,67 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     verifyRejectionRates();
   }
 
-    /**
-     * Verify rejection rates.
-     */
-    private void verifyRejectionRates()
-    {
-        StepErrorMeta stepErrorMeta = stepMeta.getStepErrorMeta();
-        if (stepErrorMeta==null) return; // nothing to verify.
-      
-        
-        // Was this one error too much?
-        if (maxErrors>0 && getLinesRejected()>maxErrors)
-        {
-            logError(BaseMessages.getString(PKG, "BaseStep.Log.TooManyRejectedRows", Long.toString(maxErrors), Long.toString(getLinesRejected())));
-            setErrors(1L);
-            stopAll();
-        }
+  /**
+   * Verify rejection rates.
+   */
+  private void verifyRejectionRates() {
+    StepErrorMeta stepErrorMeta = stepMeta.getStepErrorMeta();
+    if (stepErrorMeta == null)
+      return; // nothing to verify.
 
-        if ( maxPercentErrors>0 && getLinesRejected()>0 &&
-            ( minRowsForMaxErrorPercent<=0 || getLinesRead()>=minRowsForMaxErrorPercent)
-            )
-        {
-            int pct = (int) (100 * getLinesRejected() / getLinesRead() );
-            if (pct>maxPercentErrors)
-            {
-                logError(BaseMessages.getString(PKG, "BaseStep.Log.MaxPercentageRejectedReached", Integer.toString(pct) ,Long.toString(getLinesRejected()), Long.toString(getLinesRead())));
-                setErrors(1L);
-                stopAll();
-            }
-        }
+    // Was this one error too much?
+    if (maxErrors > 0 && getLinesRejected() > maxErrors) {
+      logError(BaseMessages.getString(PKG, "BaseStep.Log.TooManyRejectedRows", Long.toString(maxErrors),
+          Long.toString(getLinesRejected())));
+      setErrors(1L);
+      stopAll();
     }
 
-    /**
-     * Current input stream.
-     *
-     * @return the row set
-     */
-    private RowSet currentInputStream()
-    {
-        return inputRowSets.get(currentInputRowSetNr);
+    if (maxPercentErrors > 0 && getLinesRejected() > 0
+        && (minRowsForMaxErrorPercent <= 0 || getLinesRead() >= minRowsForMaxErrorPercent)) {
+      int pct = (int) (100 * getLinesRejected() / getLinesRead());
+      if (pct > maxPercentErrors) {
+        logError(BaseMessages.getString(PKG, "BaseStep.Log.MaxPercentageRejectedReached", Integer.toString(pct),
+            Long.toString(getLinesRejected()), Long.toString(getLinesRead())));
+        setErrors(1L);
+        stopAll();
+      }
     }
+  }
 
-    /**
-     * Find the next not-finished input-stream... in_handling says which one...
-     */
-    private void nextInputStream()
-    {
-    	synchronized(inputRowSets) {
-    		blockPointer=0;
+  /**
+   * Current input stream.
+   *
+   * @return the row set
+   */
+  private RowSet currentInputStream() {
+    return inputRowSets.get(currentInputRowSetNr);
+  }
 
-	        int streams = inputRowSets.size();
-	
-	        // No more streams left: exit!
-	        if (streams == 0) return;
-	
-	        // Just the one rowSet (common case)
-	        if (streams == 1) currentInputRowSetNr = 0;
-	        
-	        // If we have some left: take the next!
-	        currentInputRowSetNr++;
-	        if (currentInputRowSetNr >= inputRowSets.size()) currentInputRowSetNr = 0;
-    	}
+  /**
+   * Find the next not-finished input-stream... in_handling says which one...
+   */
+  private void nextInputStream() {
+    synchronized (inputRowSets) {
+      blockPointer = 0;
+
+      int streams = inputRowSets.size();
+
+      // No more streams left: exit!
+      if (streams == 0)
+        return;
+
+      // Just the one rowSet (common case)
+      if (streams == 1)
+        currentInputRowSetNr = 0;
+
+      // If we have some left: take the next!
+      currentInputRowSetNr++;
+      if (currentInputRowSetNr >= inputRowSets.size())
+        currentInputRowSetNr = 0;
     }
-    
+  }
+
   /**
    * Wait until the transformation is completely running and all threads have been started.
    */
@@ -1655,7 +1594,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     // The buffer to grow beyond "a few" entries.
     // We'll only do that if the previous step has not ended...
     //
-    if (isUsingThreadPriorityManagment() && !inputRowSet.isDone() && inputRowSet.size() <= lowerBufferBoundary && !isStopped()) {
+    if (isUsingThreadPriorityManagment() && !inputRowSet.isDone() && inputRowSet.size() <= lowerBufferBoundary
+        && !isStopped()) {
       try {
         Thread.sleep(0, 1);
       } catch (InterruptedException e) {
@@ -1734,11 +1674,12 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
         safeModeChecking(inputRowSet.getRowMeta(), inputRowMeta); // Extra
         // checking
         if (row.length < inputRowMeta.size()) {
-          throw new KettleException("Safe mode check noticed that the length of the row data is smaller (" + row.length + ") than the row metadata size (" + inputRowMeta.size() + ")");
+          throw new KettleException("Safe mode check noticed that the length of the row data is smaller (" + row.length
+              + ") than the row metadata size (" + inputRowMeta.size() + ")");
         }
       }
 
-      synchronized(rowListeners) {
+      synchronized (rowListeners) {
         for (int i = 0; i < rowListeners.size(); i++) {
           RowListener rowListener = rowListeners.get(i);
           rowListener.rowReadEvent(inputRowMeta, row);
@@ -1752,173 +1693,168 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     return row;
   }
 
-    /**
-     * Opens socket connections to the remote input steps of this step.
-     * <br>This method should be used by steps that don't call getRow() first in which it is executed automatically.
-     * <br><b>This method should be called before any data is read from previous steps.</b>
-     * <br>This action is executed only once.
-     * @throws KettleStepException
-     */
-    protected void openRemoteInputStepSocketsOnce() throws KettleStepException {
-        if (!remoteInputSteps.isEmpty()) {
-        	if (!remoteInputStepsInitialized) {
-        		// Loop over the remote steps and open client sockets to them 
-        		// Just be careful in case we're dealing with a partitioned clustered step.
-        		// A partitioned clustered step has only one. (see dispatch())
-        		// 
-        		for (RemoteStep remoteStep : remoteInputSteps) {
-        			try {
-						BlockingRowSet rowSet = remoteStep.openReaderSocket(this);
-						inputRowSets.add(rowSet);
-					} catch (Exception e) {
-						throw new KettleStepException("Error opening reader socket to remote step '"+remoteStep+"'", e);
-					}
-        		}
-        		remoteInputStepsInitialized = true;
-        	}
+  /**
+   * Opens socket connections to the remote input steps of this step.
+   * <br>This method should be used by steps that don't call getRow() first in which it is executed automatically.
+   * <br><b>This method should be called before any data is read from previous steps.</b>
+   * <br>This action is executed only once.
+   * @throws KettleStepException
+   */
+  protected void openRemoteInputStepSocketsOnce() throws KettleStepException {
+    if (!remoteInputSteps.isEmpty()) {
+      if (!remoteInputStepsInitialized) {
+        // Loop over the remote steps and open client sockets to them 
+        // Just be careful in case we're dealing with a partitioned clustered step.
+        // A partitioned clustered step has only one. (see dispatch())
+        // 
+        for (RemoteStep remoteStep : remoteInputSteps) {
+          try {
+            BlockingRowSet rowSet = remoteStep.openReaderSocket(this);
+            inputRowSets.add(rowSet);
+          } catch (Exception e) {
+            throw new KettleStepException("Error opening reader socket to remote step '" + remoteStep + "'", e);
+          }
         }
-	}
-    
-    /**
-     * Opens socket connections to the remote output steps of this step.
-     * <br>This method is called in method initBeforeStart() because it needs to connect to the server sockets (remote steps) as soon as possible to avoid time-out situations.
-     * <br>This action is executed only once.
-     * @throws KettleStepException
-     */
-    protected void openRemoteOutputStepSocketsOnce() throws KettleStepException {
-        if (!remoteOutputSteps.isEmpty()) {
-        	if (!remoteOutputStepsInitialized) {
-        		
-				// Set the current slave target name on all the current output steps (local)
-				//
-				for (int c=0;c<outputRowSets.size();c++) {
-					RowSet rowSet = outputRowSets.get(c);
-					rowSet.setRemoteSlaveServerName(getVariable(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME));
-					if (getVariable(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME)==null) {
-						throw new KettleStepException("Variable '"+Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME+"' is not defined.");
-					}
-				}
-				
-				// Start threads: one per remote step to funnel the data through...
-				//
-				for (int i=0;i<remoteOutputSteps.size();i++) {
-					RemoteStep remoteStep = remoteOutputSteps.get(i);
-					try {
-						if (remoteStep.getTargetSlaveServerName()==null) {
-		    				throw new KettleStepException("The target slave server name is not defined for remote output step: "+remoteStep);
-						}
-						BlockingRowSet rowSet = remoteStep.openWriterSocket();
-						if (log.isDetailed()) logDetailed("Opened a writer socket to remote step: "+remoteStep);
-						outputRowSets.add(rowSet);
-					} catch (IOException e) {
-						throw new KettleStepException("Error opening writer socket to remote step '"+remoteStep+"'", e);
-					}
-				}
-				
-				remoteOutputStepsInitialized = true;
-        	}
+        remoteInputStepsInitialized = true;
+      }
+    }
+  }
+
+  /**
+   * Opens socket connections to the remote output steps of this step.
+   * <br>This method is called in method initBeforeStart() because it needs to connect to the server sockets (remote steps) as soon as possible to avoid time-out situations.
+   * <br>This action is executed only once.
+   * @throws KettleStepException
+   */
+  protected void openRemoteOutputStepSocketsOnce() throws KettleStepException {
+    if (!remoteOutputSteps.isEmpty()) {
+      if (!remoteOutputStepsInitialized) {
+
+        // Set the current slave target name on all the current output steps (local)
+        //
+        for (int c = 0; c < outputRowSets.size(); c++) {
+          RowSet rowSet = outputRowSets.get(c);
+          rowSet.setRemoteSlaveServerName(getVariable(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME));
+          if (getVariable(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME) == null) {
+            throw new KettleStepException("Variable '" + Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME
+                + "' is not defined.");
+          }
         }
+
+        // Start threads: one per remote step to funnel the data through...
+        //
+        for (int i = 0; i < remoteOutputSteps.size(); i++) {
+          RemoteStep remoteStep = remoteOutputSteps.get(i);
+          try {
+            if (remoteStep.getTargetSlaveServerName() == null) {
+              throw new KettleStepException("The target slave server name is not defined for remote output step: "
+                  + remoteStep);
+            }
+            BlockingRowSet rowSet = remoteStep.openWriterSocket();
+            if (log.isDetailed())
+              logDetailed("Opened a writer socket to remote step: " + remoteStep);
+            outputRowSets.add(rowSet);
+          } catch (IOException e) {
+            throw new KettleStepException("Error opening writer socket to remote step '" + remoteStep + "'", e);
+          }
+        }
+
+        remoteOutputStepsInitialized = true;
+      }
+    }
+  }
+
+  /**
+   * Safe mode checking.
+   *
+   * @param row the row
+   * @throws KettleRowException the kettle row exception
+   */
+  protected void safeModeChecking(RowMetaInterface row) throws KettleRowException {
+    if (row == null) {
+      return;
     }
 
-	/**
-	 * Safe mode checking.
-	 *
-	 * @param row the row
-	 * @throws KettleRowException the kettle row exception
-	 */
-	protected void safeModeChecking(RowMetaInterface row) throws KettleRowException
-    {
-    	if (row==null) {
-    		return;
-    	}
-    	
-        if (inputReferenceRow == null)
-        {
-            inputReferenceRow = row.clone(); // copy it!
-            
-            // Check for double field names.
-            // 
-            String[] fieldnames = row.getFieldNames();
-            Arrays.sort(fieldnames);
-            for (int i=0;i<fieldnames.length-1;i++)
-            {
-                if (fieldnames[i].equals(fieldnames[i+1]))
-                {
-                    throw new KettleRowException(BaseMessages.getString(PKG, "BaseStep.SafeMode.Exception.DoubleFieldnames", fieldnames[i]));
-                }
-            }
+    if (inputReferenceRow == null) {
+      inputReferenceRow = row.clone(); // copy it!
+
+      // Check for double field names.
+      // 
+      String[] fieldnames = row.getFieldNames();
+      Arrays.sort(fieldnames);
+      for (int i = 0; i < fieldnames.length - 1; i++) {
+        if (fieldnames[i].equals(fieldnames[i + 1])) {
+          throw new KettleRowException(BaseMessages.getString(PKG, "BaseStep.SafeMode.Exception.DoubleFieldnames",
+              fieldnames[i]));
         }
-        else
-        {
-            safeModeChecking(inputReferenceRow, row);
-        }
+      }
+    } else {
+      safeModeChecking(inputReferenceRow, row);
     }
-	
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.trans.step.StepInterface#identifyErrorOutput()
-	 */
-	public void identifyErrorOutput() {
-		if (stepMeta.isDoingErrorHandling()) {
-            StepErrorMeta stepErrorMeta = stepMeta.getStepErrorMeta();
-            boolean stop=false;
-            for (int rowsetNr=0;rowsetNr<outputRowSets.size() && !stop;rowsetNr++)
-            {
-                RowSet outputRowSet = outputRowSets.get(rowsetNr);
-                if (outputRowSet.getDestinationStepName().equalsIgnoreCase(stepErrorMeta.getTargetStep().getName()))
-                {
-                    // This is the rowset to move!
-                	//
-                    errorRowSet = outputRowSet;
-                    outputRowSets.remove(rowsetNr);
-                    stop=true;
-                }
-            }
-		}
-	}
-	
+  }
 
-    /**
-     * Safe mode checking.
-     *
-     * @param referenceRowMeta the reference row meta
-     * @param rowMeta the row meta
-     * @throws KettleRowException the kettle row exception
-     */
-    public static void safeModeChecking(RowMetaInterface referenceRowMeta, RowMetaInterface rowMeta) throws KettleRowException
-    {
-        // See if the row we got has the same layout as the reference row.
-        // First check the number of fields
-    	//
-        if (referenceRowMeta.size() != rowMeta.size())
-        {
-            throw new KettleRowException(BaseMessages.getString(PKG, "BaseStep.SafeMode.Exception.VaryingSize", ""+referenceRowMeta.size(), ""+rowMeta.size(), rowMeta.toString()));
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepInterface#identifyErrorOutput()
+   */
+  public void identifyErrorOutput() {
+    if (stepMeta.isDoingErrorHandling()) {
+      StepErrorMeta stepErrorMeta = stepMeta.getStepErrorMeta();
+      boolean stop = false;
+      for (int rowsetNr = 0; rowsetNr < outputRowSets.size() && !stop; rowsetNr++) {
+        RowSet outputRowSet = outputRowSets.get(rowsetNr);
+        if (outputRowSet.getDestinationStepName().equalsIgnoreCase(stepErrorMeta.getTargetStep().getName())) {
+          // This is the rowset to move!
+          //
+          errorRowSet = outputRowSet;
+          outputRowSets.remove(rowsetNr);
+          stop = true;
         }
-        else
-        {
-            // Check field by field for the position of the names...
-            for (int i = 0; i < referenceRowMeta.size(); i++)
-            {
-                ValueMetaInterface referenceValue = referenceRowMeta.getValueMeta(i);
-                ValueMetaInterface compareValue = rowMeta.getValueMeta(i);
-
-                if (!referenceValue.getName().equalsIgnoreCase(compareValue.getName()))
-                {
-                    throw new KettleRowException(BaseMessages.getString(PKG, "BaseStep.SafeMode.Exception.MixingLayout", ""+(i+1), referenceValue.getName()+" "+referenceValue.toStringMeta(), compareValue.getName()+" "+compareValue.toStringMeta()));
-                }
-
-                if (referenceValue.getType()!=compareValue.getType())
-                {
-                    throw new KettleRowException(BaseMessages.getString(PKG, "BaseStep.SafeMode.Exception.MixingTypes", ""+(i+1), referenceValue.getName()+" "+referenceValue.toStringMeta(), compareValue.getName()+" "+compareValue.toStringMeta()));               
-                }
-                
-                if (referenceValue.getStorageType() != compareValue.getStorageType())
-                {
-                	throw new KettleRowException(BaseMessages.getString(PKG, "BaseStep.SafeMode.Exception.MixingStorageTypes", ""+(i+1), referenceValue.getName()+" "+referenceValue.toStringMeta(), compareValue.getName()+" "+compareValue.toStringMeta()));                	
-                }
-            }
-        }
+      }
     }
-    
+  }
+
+  /**
+   * Safe mode checking.
+   *
+   * @param referenceRowMeta the reference row meta
+   * @param rowMeta the row meta
+   * @throws KettleRowException the kettle row exception
+   */
+  public static void safeModeChecking(RowMetaInterface referenceRowMeta, RowMetaInterface rowMeta)
+      throws KettleRowException {
+    // See if the row we got has the same layout as the reference row.
+    // First check the number of fields
+    //
+    if (referenceRowMeta.size() != rowMeta.size()) {
+      throw new KettleRowException(BaseMessages.getString(PKG, "BaseStep.SafeMode.Exception.VaryingSize", ""
+          + referenceRowMeta.size(), "" + rowMeta.size(), rowMeta.toString()));
+    } else {
+      // Check field by field for the position of the names...
+      for (int i = 0; i < referenceRowMeta.size(); i++) {
+        ValueMetaInterface referenceValue = referenceRowMeta.getValueMeta(i);
+        ValueMetaInterface compareValue = rowMeta.getValueMeta(i);
+
+        if (!referenceValue.getName().equalsIgnoreCase(compareValue.getName())) {
+          throw new KettleRowException(BaseMessages.getString(PKG, "BaseStep.SafeMode.Exception.MixingLayout", ""
+              + (i + 1), referenceValue.getName() + " " + referenceValue.toStringMeta(), compareValue.getName() + " "
+              + compareValue.toStringMeta()));
+        }
+
+        if (referenceValue.getType() != compareValue.getType()) {
+          throw new KettleRowException(BaseMessages.getString(PKG, "BaseStep.SafeMode.Exception.MixingTypes", ""
+              + (i + 1), referenceValue.getName() + " " + referenceValue.toStringMeta(), compareValue.getName() + " "
+              + compareValue.toStringMeta()));
+        }
+
+        if (referenceValue.getStorageType() != compareValue.getStorageType()) {
+          throw new KettleRowException(BaseMessages.getString(PKG, "BaseStep.SafeMode.Exception.MixingStorageTypes", ""
+              + (i + 1), referenceValue.getName() + " " + referenceValue.toStringMeta(), compareValue.getName() + " "
+              + compareValue.toStringMeta()));
+        }
+      }
+    }
+  }
+
   /**
    * Gets the row from.
    *
@@ -1967,7 +1903,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     rowData = rowSet.getRow();
     while (rowData == null && !rowSet.isDone() && !stopped.get()) {
       rowData = rowSet.getRow();
-      
+
       // Verify deadlocks!
       //
       /*
@@ -2009,7 +1945,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
     // call all rowlisteners...
     //
-    synchronized(rowListeners) {
+    synchronized (rowListeners) {
       for (int i = 0; i < rowListeners.size(); i++) {
         RowListener rowListener = rowListeners.get(i);
         rowListener.rowReadEvent(rowSet.getRowMeta(), rowData);
@@ -2018,7 +1954,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
     return rowData;
   }
-    
+
   /**
    * - A step sees that it can't get a new row from input in the step.  
    * - Then it verifies that there is more than one input row set and that at least one is full and at least one is empty.
@@ -2030,51 +1966,53 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   protected void verifyInputDeadLock() throws KettleStepException {
     RowSet inputFull = null;
     RowSet inputEmpty = null;
-    synchronized(getInputRowSets()) {
-      for (Iterator<RowSet> iterator = getInputRowSets().iterator() ; iterator.hasNext(); ) {
+    synchronized (getInputRowSets()) {
+      for (Iterator<RowSet> iterator = getInputRowSets().iterator(); iterator.hasNext();) {
         RowSet rowSet = iterator.next();
-        if (rowSet.size() == transMeta.getSizeRowset()) { 
+        if (rowSet.size() == transMeta.getSizeRowset()) {
           inputFull = rowSet;
         } else if (rowSet.size() == 0) {
           inputEmpty = rowSet;
         }
       }
     }
-    if (inputFull!=null && inputEmpty!=null) {
+    if (inputFull != null && inputEmpty != null) {
       // Find a step where 
       // - the input rowset are full 
       // - one output rowset is full 
       // - one output is empty
       for (StepMetaDataCombi combi : trans.getSteps()) {
-        int inputSize=0;
-        int totalSize = combi.step.getInputRowSets().size()*transMeta.getSizeRowset();
-        synchronized(combi.step.getInputRowSets()) {
-          for (Iterator<RowSet> iterator = getInputRowSets().iterator() ; iterator.hasNext(); ) {
+        int inputSize = 0;
+        int totalSize = combi.step.getInputRowSets().size() * transMeta.getSizeRowset();
+        synchronized (combi.step.getInputRowSets()) {
+          for (Iterator<RowSet> iterator = getInputRowSets().iterator(); iterator.hasNext();) {
             RowSet rowSet = iterator.next();
-            inputSize+=rowSet.size();
+            inputSize += rowSet.size();
           }
         }
         // All full probably means a stalled step.
-        if (inputSize>0 && inputSize==totalSize && combi.step.getOutputRowSets().size()>1) {
+        if (inputSize > 0 && inputSize == totalSize && combi.step.getOutputRowSets().size() > 1) {
           RowSet outputFull = null;
           RowSet outputEmpty = null;
-          synchronized(combi.step.getOutputRowSets()) {
+          synchronized (combi.step.getOutputRowSets()) {
             for (RowSet rowSet : combi.step.getOutputRowSets()) {
-              if (rowSet.size()==transMeta.getSizeRowset()) {
+              if (rowSet.size() == transMeta.getSizeRowset()) {
                 outputFull = rowSet;
-              } else if (rowSet.size()==0) {
+              } else if (rowSet.size() == 0) {
                 outputEmpty = rowSet;
               }
             }
           }
-          if (outputFull!=null && outputEmpty!=null) {
+          if (outputFull != null && outputEmpty != null) {
             // Verify that this step is lated before the current one
             //
             if (transMeta.findPrevious(stepMeta, combi.stepMeta)) {
-              throw new KettleStepException("A deadlock was detected between steps '"+combi.stepname+"' and '"+stepname+"'.  The steps are both waiting for each other because a series of row set buffers filled up.");
+              throw new KettleStepException("A deadlock was detected between steps '" + combi.stepname + "' and '"
+                  + stepname
+                  + "'.  The steps are both waiting for each other because a series of row set buffers filled up.");
             }
           }
-        } 
+        }
       }
     }
   }
@@ -2087,1277 +2025,1241 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    * @throws KettleStepException the kettle step exception
    */
   public RowSet findInputRowSet(String sourceStep) throws KettleStepException {
-  	// Check to see that "sourceStep" only runs in a single copy
-  	// Otherwise you'll see problems during execution.
-  	//
-  	StepMeta sourceStepMeta = transMeta.findStep(sourceStep);
-  	if (sourceStepMeta==null) {
-  		throw new KettleStepException(BaseMessages.getString(PKG, "BaseStep.Exception.SourceStepToReadFromDoesntExist", sourceStep));
-  	}
-  	
-  	if (sourceStepMeta.getCopies()>1) {
-  		throw new KettleStepException(BaseMessages.getString(PKG, "BaseStep.Exception.SourceStepToReadFromCantRunInMultipleCopies", sourceStep, Integer.toString(sourceStepMeta.getCopies())));
-  	}
-  	
-  	return findInputRowSet(sourceStep, 0, getStepname(), getCopy());
+    // Check to see that "sourceStep" only runs in a single copy
+    // Otherwise you'll see problems during execution.
+    //
+    StepMeta sourceStepMeta = transMeta.findStep(sourceStep);
+    if (sourceStepMeta == null) {
+      throw new KettleStepException(BaseMessages.getString(PKG, "BaseStep.Exception.SourceStepToReadFromDoesntExist",
+          sourceStep));
+    }
+
+    if (sourceStepMeta.getCopies() > 1) {
+      throw new KettleStepException(BaseMessages.getString(PKG,
+          "BaseStep.Exception.SourceStepToReadFromCantRunInMultipleCopies", sourceStep,
+          Integer.toString(sourceStepMeta.getCopies())));
+    }
+
+    return findInputRowSet(sourceStep, 0, getStepname(), getCopy());
   }
 
-	/**
-	 * Find input row set.
-	 *
-	 * @param from the from
-	 * @param fromcopy the fromcopy
-	 * @param to the to
-	 * @param tocopy the tocopy
-	 * @return the row set
-	 */
-	public RowSet findInputRowSet(String from, int fromcopy, String to, int tocopy)
-    {
-        for (RowSet rs : inputRowSets)
-        {
-            if (rs.getOriginStepName().equalsIgnoreCase(from) && rs.getDestinationStepName().equalsIgnoreCase(to)
-                    && rs.getOriginStepCopy() == fromcopy && rs.getDestinationStepCopy() == tocopy) return rs;
-        }
-        
-        // See if the rowset is part of the output of a mapping source step...
-        //
-        // Lookup step "From"
-        //
-        StepMeta mappingStep = transMeta.findStep(from);
-        
-        // See if it's a mapping
-        //
-        if (mappingStep!=null && mappingStep.isMapping()) {
-        
-        	// In this case we can cast the step thread to a Mapping...
-        	//
-        	List<StepInterface> baseSteps = trans.findBaseSteps(from);
-        	if (baseSteps.size()==1) {
-	        	Mapping mapping = (Mapping) baseSteps.get(0);
-	        	
-	        	// Find the appropriate rowset in the mapping...
-	        	// The rowset in question has been passed over to a Mapping Input step inside the Mapping transformation. 
-	            //
-	        	MappingOutput[] outputs = mapping.getMappingTrans().findMappingOutput();
-	        	for (MappingOutput output: outputs) {
-	        		for (RowSet rs : output.getOutputRowSets()) {
-	        			// The destination is what counts here...
-	        			//
-	        			if (rs.getDestinationStepName().equalsIgnoreCase(to)) return rs;
-	        		}
-	        	}
-        	}
-        }
-        
-        return null;
-    }
-	
-	/**
-	 * Find output row set.
-	 *
-	 * @param targetStep the target step
-	 * @return the row set
-	 * @throws KettleStepException the kettle step exception
-	 */
-	public RowSet findOutputRowSet(String targetStep) throws KettleStepException {
-		
-    	// Check to see that "targetStep" only runs in a single copy
-    	// Otherwise you'll see problems during execution.
-    	//
-    	StepMeta targetStepMeta = transMeta.findStep(targetStep);
-    	if (targetStepMeta==null) {
-    		throw new KettleStepException(BaseMessages.getString(PKG, "BaseStep.Exception.TargetStepToWriteToDoesntExist", targetStep));
-    	}
-    	
-    	if (targetStepMeta.getCopies()>1) {
-    		throw new KettleStepException(BaseMessages.getString(PKG, "BaseStep.Exception.TargetStepToWriteToCantRunInMultipleCopies", targetStep, Integer.toString(targetStepMeta.getCopies())));
-    	}
-    	
-
-		return findOutputRowSet(getStepname(), getCopy(), targetStep, 0);
-	}
-
-	/**
-	 * Find an output rowset in a running transformation.  It will also look at the "to" step to see if this is a mapping.
-	 * If it is, it will find the appropriate rowset in that transformation.  
-	 * @param from
-	 * @param fromcopy
-	 * @param to
-	 * @param tocopy
-	 * @return The rowset or null if none is found.
-	 */
-    public RowSet findOutputRowSet(String from, int fromcopy, String to, int tocopy)
-    {
-        for (RowSet rs : outputRowSets)
-        {
-            if (rs.getOriginStepName().equalsIgnoreCase(from) && rs.getDestinationStepName().equalsIgnoreCase(to)
-                    && rs.getOriginStepCopy() == fromcopy && rs.getDestinationStepCopy() == tocopy) return rs;
-        }
-        
-        // See if the rowset is part of the input of a mapping target step...
-        //
-        // Lookup step "To"
-        //
-        StepMeta mappingStep = transMeta.findStep(to);
-        
-        // See if it's a mapping
-        //
-        if (mappingStep!=null && mappingStep.isMapping()) {
-        
-        	// In this case we can cast the step thread to a Mapping...
-        	//
-        	List<StepInterface> baseSteps = trans.findBaseSteps(to);
-        	if (baseSteps.size()==1) {
-	        	Mapping mapping = (Mapping) baseSteps.get(0);
-	        	
-	        	// Find the appropriate rowset in the mapping...
-	        	// The rowset in question has been passed over to a Mapping Input step inside the Mapping transformation. 
-	            //
-	        	MappingInput[] inputs= mapping.getMappingTrans().findMappingInput();
-	        	for (MappingInput input : inputs) {
-	        		for (RowSet rs : input.getInputRowSets()) {
-	        			// The source step is what counts in this case...
-	        			//
-	                    if (rs.getOriginStepName().equalsIgnoreCase(from)) return rs;
-	        		}
-	        	}
-        	}
-        }
-        
-        // Still nothing found!
-        //
-        return null;
+  /**
+   * Find input row set.
+   *
+   * @param from the from
+   * @param fromcopy the fromcopy
+   * @param to the to
+   * @param tocopy the tocopy
+   * @return the row set
+   */
+  public RowSet findInputRowSet(String from, int fromcopy, String to, int tocopy) {
+    for (RowSet rs : inputRowSets) {
+      if (rs.getOriginStepName().equalsIgnoreCase(from) && rs.getDestinationStepName().equalsIgnoreCase(to)
+          && rs.getOriginStepCopy() == fromcopy && rs.getDestinationStepCopy() == tocopy)
+        return rs;
     }
 
+    // See if the rowset is part of the output of a mapping source step...
     //
-    // We have to tell the next step we're finished with
-    // writing to output rowset(s)!
+    // Lookup step "From"
     //
-    /* (non-Javadoc)
-     * @see org.pentaho.di.trans.step.StepInterface#setOutputDone()
-     */
-    public void setOutputDone()
-    {
-        if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "BaseStep.Log.OutputDone", String.valueOf(outputRowSets.size()))); //$NON-NLS-1$ //$NON-NLS-2$
-        synchronized(outputRowSets)
-        {
-            for (int i = 0; i < outputRowSets.size(); i++)
-            {
-                RowSet rs = outputRowSets.get(i);
-                rs.setDone();
-            }
-            if (errorRowSet!=null) errorRowSet.setDone();
-        }
-    }
+    StepMeta mappingStep = transMeta.findStep(from);
 
-    /**
-     * This method finds the surrounding steps and rowsets for this base step. This steps keeps it's own list of rowsets
-     * (etc.) to prevent it from having to search every time.
-     */
-    public void dispatch()
-    {
-        if (transMeta == null) { // for preview reasons, no dispatching is done!
-        	return; 
-        }
+    // See if it's a mapping
+    //
+    if (mappingStep != null && mappingStep.isMapping()) {
 
-        StepMeta stepMeta = transMeta.findStep(stepname);
+      // In this case we can cast the step thread to a Mapping...
+      //
+      List<StepInterface> baseSteps = trans.findBaseSteps(from);
+      if (baseSteps.size() == 1) {
+        Mapping mapping = (Mapping) baseSteps.get(0);
 
-        if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.StartingBuffersAllocation")); //$NON-NLS-1$
-
-        // How many next steps are there? 0, 1 or more??
-        // How many steps do we send output to?
-        List<StepMeta> previousSteps = transMeta.findPreviousSteps(stepMeta, true);
-        List<StepMeta> succeedingSteps = transMeta.findNextSteps(stepMeta);
-        
-        int nrInput = previousSteps.size();
-        int nrOutput = succeedingSteps.size();
-
-        inputRowSets = new ArrayList<RowSet>();
-        outputRowSets = new ArrayList<RowSet>();
-        errorRowSet = null;
-        prevSteps = new StepMeta[nrInput];
-        nextSteps = new StepMeta[nrOutput];
-
-        currentInputRowSetNr = 0; // we start with input[0];
-
-        if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.StepInfo", String.valueOf(nrInput), String.valueOf(nrOutput))); //$NON-NLS-1$ //$NON-NLS-2$
-
-        for (int i = 0; i < previousSteps.size(); i++)
-        {
-            prevSteps[i] = previousSteps.get(i);
-            if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.GotPreviousStep", stepname, String.valueOf(i), prevSteps[i].getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-
-            // Looking at the previous step, you can have either 1 rowset to look at or more then one.
-            int prevCopies = prevSteps[i].getCopies();
-            int nextCopies = stepMeta.getCopies();
-            if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.InputRowInfo", String.valueOf(prevCopies), String.valueOf(nextCopies))); //$NON-NLS-1$ //$NON-NLS-2$
-
-            int nrCopies;
-            int dispatchType;
-
-            if (prevCopies == 1 && nextCopies == 1)
-            {
-                dispatchType = Trans.TYPE_DISP_1_1;
-                nrCopies = 1;
-            }
-            else
-            {
-                if (prevCopies == 1 && nextCopies > 1)
-                {
-                    dispatchType = Trans.TYPE_DISP_1_N;
-                    nrCopies = 1;
-                }
-                else
-                {
-                    if (prevCopies > 1 && nextCopies == 1)
-                    {
-                        dispatchType = Trans.TYPE_DISP_N_1;
-                        nrCopies = prevCopies;
-                    }
-                    else
-                    {
-                        if (prevCopies == nextCopies)
-                        {
-                        	if (stepMeta.isPartitioned() && !prevSteps[i].isPartitioned()) {
-                                dispatchType = Trans.TYPE_DISP_N_M;
-                                nrCopies = nextCopies;
-                        	} else {
-	                            dispatchType = Trans.TYPE_DISP_N_N;
-	                            nrCopies = 1;
-                        	}
-                        } // > 1!
-                        else
-                        {
-                            dispatchType = Trans.TYPE_DISP_N_M;
-                            nrCopies = prevCopies;
-                        }
-                    }
-                }
-            }
-
-            for (int c = 0; c < nrCopies; c++)
-            {
-                RowSet rowSet = null;
-                switch (dispatchType)
-                {
-                case Trans.TYPE_DISP_1_1:
-                    rowSet = trans.findRowSet(prevSteps[i].getName(), 0, stepname, 0);
-                    break;
-                case Trans.TYPE_DISP_1_N:
-                    rowSet = trans.findRowSet(prevSteps[i].getName(), 0, stepname, getCopy());
-                    break;
-                case Trans.TYPE_DISP_N_1:
-                    rowSet = trans.findRowSet(prevSteps[i].getName(), c, stepname, 0);
-                    break;
-                case Trans.TYPE_DISP_N_N:
-                    rowSet = trans.findRowSet(prevSteps[i].getName(), getCopy(), stepname, getCopy());
-                    break;
-                case Trans.TYPE_DISP_N_M:
-                    rowSet = trans.findRowSet(prevSteps[i].getName(), c, stepname, getCopy());
-                    break;
-                }
-                if (rowSet != null)
-                {
-                    inputRowSets.add(rowSet);
-                    if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.FoundInputRowset", rowSet.getName())); //$NON-NLS-1$ //$NON-NLS-2$
-                }
-                else
-                {
-                	if (!prevSteps[i].isMapping() && !stepMeta.isMapping()) {
-	                    logError(BaseMessages.getString(PKG, "BaseStep.Log.UnableToFindInputRowset")); //$NON-NLS-1$
-	                    setErrors(1);
-	                    stopAll();
-	                    return;
-                	}
-                }
-            }
-        }
-        // And now the output part!
-        for (int i = 0; i < nrOutput; i++)
-        {
-            nextSteps[i] = succeedingSteps.get(i);
-
-            int prevCopies = stepMeta.getCopies();
-            int nextCopies = nextSteps[i].getCopies();
-
-            if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.OutputRowInfo", String.valueOf(prevCopies), String.valueOf(nextCopies))); //$NON-NLS-1$ //$NON-NLS-2$
-
-            int nrCopies;
-            int dispatchType;
-
-            if (prevCopies == 1 && nextCopies == 1)
-            {
-                dispatchType = Trans.TYPE_DISP_1_1;
-                nrCopies = 1;
-            }
-            else
-            {
-                if (prevCopies == 1 && nextCopies > 1)
-                {
-                    dispatchType = Trans.TYPE_DISP_1_N;
-                    nrCopies = nextCopies;
-                }
-                else
-                {
-                    if (prevCopies > 1 && nextCopies == 1)
-                    {
-                        dispatchType = Trans.TYPE_DISP_N_1;
-                        nrCopies = 1;
-                    }
-                    else
-                    {
-                        if (prevCopies == nextCopies)
-                        {
-                        	if (!stepMeta.isPartitioned() && nextSteps[i].isPartitioned()) {
-                                dispatchType = Trans.TYPE_DISP_N_M;
-                                nrCopies = nextCopies;
-                        	} else {
-	                            dispatchType = Trans.TYPE_DISP_N_N;
-	                            nrCopies = 1;
-                        	}
-                        } // > 1!
-                        else
-                        {
-                            dispatchType = Trans.TYPE_DISP_N_M;
-                            nrCopies = nextCopies;
-                        }
-                    }
-                }
-            }
-
-            for (int c = 0; c < nrCopies; c++)
-            {
-                RowSet rowSet = null;
-                switch (dispatchType)
-                {
-                case Trans.TYPE_DISP_1_1:
-                    rowSet = trans.findRowSet(stepname, 0, nextSteps[i].getName(), 0);
-                    break;
-                case Trans.TYPE_DISP_1_N:
-                    rowSet = trans.findRowSet(stepname, 0, nextSteps[i].getName(), c);
-                    break;
-                case Trans.TYPE_DISP_N_1:
-                    rowSet = trans.findRowSet(stepname, getCopy(), nextSteps[i].getName(), 0);
-                    break;
-                case Trans.TYPE_DISP_N_N:
-                    rowSet = trans.findRowSet(stepname, getCopy(), nextSteps[i].getName(), getCopy());
-                    break;
-                case Trans.TYPE_DISP_N_M:
-                    rowSet = trans.findRowSet(stepname, getCopy(), nextSteps[i].getName(), c);
-                    break;
-                }
-                if (rowSet != null)
-                {
-                    outputRowSets.add(rowSet);
-                    if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.FoundOutputRowset", rowSet.getName())); //$NON-NLS-1$ //$NON-NLS-2$
-                }
-                else
-                {
-                	if (!stepMeta.isMapping() && !nextSteps[i].isMapping()) {
-	                    logError(BaseMessages.getString(PKG, "BaseStep.Log.UnableToFindOutputRowset")); //$NON-NLS-1$
-	                    setErrors(1);
-	                    stopAll();
-	                    return;
-                	}
-                }
-            }
-        }
-        
-        if (stepMeta.getTargetStepPartitioningMeta()!=null) {
-        	nextStepPartitioningMeta = stepMeta.getTargetStepPartitioningMeta();
-        }
-
-        if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.FinishedDispatching")); //$NON-NLS-1$
-    }
-
-    /**
-     * Checks if is basic.
-     *
-     * @return true, if is basic
-     */
-    public boolean isBasic() { return log.isBasic(); }
-    
-    /**
-     * Checks if is detailed.
-     *
-     * @return true, if is detailed
-     */
-    public boolean isDetailed() { return log.isDetailed(); }
-    
-    /**
-     * Checks if is debug.
-     *
-     * @return true, if is debug
-     */
-    public boolean isDebug() { return log.isDebug(); }
-    
-    /**
-     * Checks if is row level.
-     *
-     * @return true, if is row level
-     */
-    public boolean isRowLevel() { return log.isRowLevel(); }
-    
-    /**
-     * Log minimal.
-     *
-     * @param message the message
-     */
-    public void logMinimal(String message) { log.logMinimal(message); }
-    
-    /**
-     * Log minimal.
-     *
-     * @param message the message
-     * @param arguments the arguments
-     */
-    public void logMinimal(String message, Object...arguments) { log.logMinimal(message, arguments); }
-    
-    /**
-     * Log basic.
-     *
-     * @param message the message
-     */
-    public void logBasic(String message) { log.logBasic(message); }
-    
-    /**
-     * Log basic.
-     *
-     * @param message the message
-     * @param arguments the arguments
-     */
-    public void logBasic(String message, Object...arguments) { log.logBasic(message, arguments); }
-    
-    /**
-     * Log detailed.
-     *
-     * @param message the message
-     */
-    public void logDetailed(String message) { log.logDetailed(message); }
-    
-    /**
-     * Log detailed.
-     *
-     * @param message the message
-     * @param arguments the arguments
-     */
-    public void logDetailed(String message, Object...arguments) { log.logDetailed(message, arguments); }
-    
-    /**
-     * Log debug.
-     *
-     * @param message the message
-     */
-    public void logDebug(String message) { log.logDebug(message); }
-    
-    /**
-     * Log debug.
-     *
-     * @param message the message
-     * @param arguments the arguments
-     */
-    public void logDebug(String message, Object...arguments) { log.logDebug(message, arguments); }
-    
-    /**
-     * Log rowlevel.
-     *
-     * @param message the message
-     */
-    public void logRowlevel(String message) { log.logRowlevel(message); }
-    
-    /**
-     * Log rowlevel.
-     *
-     * @param message the message
-     * @param arguments the arguments
-     */
-    public void logRowlevel(String message, Object...arguments) { log.logRowlevel(message, arguments); }
-    
-    /**
-     * Log error.
-     *
-     * @param message the message
-     */
-    public void logError(String message) { log.logError(message); } 
-    
-    /**
-     * Log error.
-     *
-     * @param message the message
-     * @param e the e
-     */
-    public void logError(String message, Throwable e) { log.logError(message, e); }
-    
-    /**
-     * Log error.
-     *
-     * @param message the message
-     * @param arguments the arguments
-     */
-    public void logError(String message, Object...arguments) { log.logError(message, arguments); }
-
-    /**
-     * Gets the next class nr.
-     *
-     * @return the next class nr
-     */
-    public int getNextClassNr()
-    {
-        int ret = trans.class_nr;
-        trans.class_nr++;
-
-        return ret;
-    }
-
-    /**
-     * Output is done.
-     *
-     * @return true, if successful
-     */
-    public boolean outputIsDone()
-    {
-        int nrstopped = 0;
-
-        for (RowSet rs : outputRowSets)
-        {
-            if (rs.isDone()) nrstopped++;
-        }
-        return nrstopped >= outputRowSets.size();
-    }
-
-    /* (non-Javadoc)
-     * @see org.pentaho.di.trans.step.StepInterface#stopAll()
-     */
-    public void stopAll()
-    {
-        stopped.set(true);
-        trans.stopAll();
-    }
-
-    /* (non-Javadoc)
-     * @see org.pentaho.di.trans.step.StepInterface#isStopped()
-     */
-    public boolean isStopped()
-    {
-        return stopped.get();
-    }
-    
-    /* (non-Javadoc)
-     * @see org.pentaho.di.trans.step.StepInterface#isRunning()
-     */
-    public boolean isRunning()
-    {
-        return running.get();
-    }
-    
-    /* (non-Javadoc)
-     * @see org.pentaho.di.trans.step.StepInterface#isPaused()
-     */
-    public boolean isPaused()
-    {
-        return paused.get();
-    }
-
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.trans.step.StepInterface#setStopped(boolean)
-	 */
-	public void setStopped(boolean stopped) {
-		this.stopped.set(stopped);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.trans.step.StepInterface#setRunning(boolean)
-	 */
-	public void setRunning(boolean running) {
-		this.running.set(running);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.trans.step.StepInterface#pauseRunning()
-	 */
-	public void pauseRunning() {
-		setPaused(true);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.trans.step.StepInterface#resumeRunning()
-	 */
-	public void resumeRunning() {
-		setPaused(false);
-	}
-	
-	/**
-	 * Sets the paused.
-	 *
-	 * @param paused the new paused
-	 */
-	public void setPaused(boolean paused) {
-		this.paused.set(paused);
-	}
-
-	/**
-	 * Sets the paused.
-	 *
-	 * @param paused the new paused
-	 */
-	public void setPaused(AtomicBoolean paused) {
-		this.paused = paused;
-	}
-
-    /**
-     * Checks if is initialising.
-     *
-     * @return true, if is initialising
-     */
-    public boolean isInitialising()
-    {
-        return init;
-    }
-
-    /* (non-Javadoc)
-     * @see org.pentaho.di.trans.step.StepInterface#markStart()
-     */
-    public void markStart()
-    {
-        Calendar cal = Calendar.getInstance();
-        start_time = cal.getTime();
-        
-        setInternalVariables();
-    }
-
-    /**
-     * Sets the internal variables.
-     */
-    public void setInternalVariables()
-    {
-        setVariable(Const.INTERNAL_VARIABLE_STEP_NAME, stepname);
-        setVariable(Const.INTERNAL_VARIABLE_STEP_COPYNR, Integer.toString(getCopy()));
-    }
-
-    /* (non-Javadoc)
-     * @see org.pentaho.di.trans.step.StepInterface#markStop()
-     */
-    public void markStop()
-    {
-        Calendar cal = Calendar.getInstance();
-        stop_time = cal.getTime();
-        
-        // Here we are completely done with the transformation.
-        // Call all the attached listeners and notify the outside world that the step has finished.
+        // Find the appropriate rowset in the mapping...
+        // The rowset in question has been passed over to a Mapping Input step inside the Mapping transformation. 
         //
-        for (StepListener stepListener : stepListeners) {
-        	stepListener.stepFinished(trans, stepMeta, this);
+        MappingOutput[] outputs = mapping.getMappingTrans().findMappingOutput();
+        for (MappingOutput output : outputs) {
+          for (RowSet rs : output.getOutputRowSets()) {
+            // The destination is what counts here...
+            //
+            if (rs.getDestinationStepName().equalsIgnoreCase(to))
+              return rs;
+          }
         }
-        
-        // We're finally completely done with this step.
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Find output row set.
+   *
+   * @param targetStep the target step
+   * @return the row set
+   * @throws KettleStepException the kettle step exception
+   */
+  public RowSet findOutputRowSet(String targetStep) throws KettleStepException {
+
+    // Check to see that "targetStep" only runs in a single copy
+    // Otherwise you'll see problems during execution.
+    //
+    StepMeta targetStepMeta = transMeta.findStep(targetStep);
+    if (targetStepMeta == null) {
+      throw new KettleStepException(BaseMessages.getString(PKG, "BaseStep.Exception.TargetStepToWriteToDoesntExist",
+          targetStep));
+    }
+
+    if (targetStepMeta.getCopies() > 1) {
+      throw new KettleStepException(BaseMessages.getString(PKG,
+          "BaseStep.Exception.TargetStepToWriteToCantRunInMultipleCopies", targetStep,
+          Integer.toString(targetStepMeta.getCopies())));
+    }
+
+    return findOutputRowSet(getStepname(), getCopy(), targetStep, 0);
+  }
+
+  /**
+   * Find an output rowset in a running transformation.  It will also look at the "to" step to see if this is a mapping.
+   * If it is, it will find the appropriate rowset in that transformation.  
+   * @param from
+   * @param fromcopy
+   * @param to
+   * @param tocopy
+   * @return The rowset or null if none is found.
+   */
+  public RowSet findOutputRowSet(String from, int fromcopy, String to, int tocopy) {
+    for (RowSet rs : outputRowSets) {
+      if (rs.getOriginStepName().equalsIgnoreCase(from) && rs.getDestinationStepName().equalsIgnoreCase(to)
+          && rs.getOriginStepCopy() == fromcopy && rs.getDestinationStepCopy() == tocopy)
+        return rs;
+    }
+
+    // See if the rowset is part of the input of a mapping target step...
+    //
+    // Lookup step "To"
+    //
+    StepMeta mappingStep = transMeta.findStep(to);
+
+    // See if it's a mapping
+    //
+    if (mappingStep != null && mappingStep.isMapping()) {
+
+      // In this case we can cast the step thread to a Mapping...
+      //
+      List<StepInterface> baseSteps = trans.findBaseSteps(to);
+      if (baseSteps.size() == 1) {
+        Mapping mapping = (Mapping) baseSteps.get(0);
+
+        // Find the appropriate rowset in the mapping...
+        // The rowset in question has been passed over to a Mapping Input step inside the Mapping transformation. 
         //
-        setRunning(false);
+        MappingInput[] inputs = mapping.getMappingTrans().findMappingInput();
+        for (MappingInput input : inputs) {
+          for (RowSet rs : input.getInputRowSets()) {
+            // The source step is what counts in this case...
+            //
+            if (rs.getOriginStepName().equalsIgnoreCase(from))
+              return rs;
+          }
+        }
+      }
     }
 
-    /* (non-Javadoc)
-     * @see org.pentaho.di.trans.step.StepInterface#getRuntime()
-     */
-    public long getRuntime()
-    {
-        long lapsed;
-        if (start_time != null && stop_time == null)
-        {
-            Calendar cal = Calendar.getInstance();
-            long now = cal.getTimeInMillis();
-            long st = start_time.getTime();
-            lapsed = now - st;
-        }
-        else
-            if (start_time != null && stop_time != null)
-            {
-                lapsed = stop_time.getTime() - start_time.getTime();
+    // Still nothing found!
+    //
+    return null;
+  }
+
+  //
+  // We have to tell the next step we're finished with
+  // writing to output rowset(s)!
+  //
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepInterface#setOutputDone()
+   */
+  public void setOutputDone() {
+    if (log.isDebug())
+      logDebug(BaseMessages.getString(PKG, "BaseStep.Log.OutputDone", String.valueOf(outputRowSets.size()))); //$NON-NLS-1$ //$NON-NLS-2$
+    synchronized (outputRowSets) {
+      for (int i = 0; i < outputRowSets.size(); i++) {
+        RowSet rs = outputRowSets.get(i);
+        rs.setDone();
+      }
+      if (errorRowSet != null)
+        errorRowSet.setDone();
+    }
+  }
+
+  /**
+   * This method finds the surrounding steps and rowsets for this base step. This steps keeps it's own list of rowsets
+   * (etc.) to prevent it from having to search every time.
+   */
+  public void dispatch() {
+    if (transMeta == null) { // for preview reasons, no dispatching is done!
+      return;
+    }
+
+    StepMeta stepMeta = transMeta.findStep(stepname);
+
+    if (log.isDetailed())
+      logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.StartingBuffersAllocation")); //$NON-NLS-1$
+
+    // How many next steps are there? 0, 1 or more??
+    // How many steps do we send output to?
+    List<StepMeta> previousSteps = transMeta.findPreviousSteps(stepMeta, true);
+    List<StepMeta> succeedingSteps = transMeta.findNextSteps(stepMeta);
+
+    int nrInput = previousSteps.size();
+    int nrOutput = succeedingSteps.size();
+
+    inputRowSets = new ArrayList<RowSet>();
+    outputRowSets = new ArrayList<RowSet>();
+    errorRowSet = null;
+    prevSteps = new StepMeta[nrInput];
+    nextSteps = new StepMeta[nrOutput];
+
+    currentInputRowSetNr = 0; // we start with input[0];
+
+    if (log.isDetailed())
+      logDetailed(BaseMessages.getString(PKG,
+          "BaseStep.Log.StepInfo", String.valueOf(nrInput), String.valueOf(nrOutput))); //$NON-NLS-1$ //$NON-NLS-2$
+
+    for (int i = 0; i < previousSteps.size(); i++) {
+      prevSteps[i] = previousSteps.get(i);
+      if (log.isDetailed())
+        logDetailed(BaseMessages.getString(PKG,
+            "BaseStep.Log.GotPreviousStep", stepname, String.valueOf(i), prevSteps[i].getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+      // Looking at the previous step, you can have either 1 rowset to look at or more then one.
+      int prevCopies = prevSteps[i].getCopies();
+      int nextCopies = stepMeta.getCopies();
+      if (log.isDetailed())
+        logDetailed(BaseMessages.getString(PKG,
+            "BaseStep.Log.InputRowInfo", String.valueOf(prevCopies), String.valueOf(nextCopies))); //$NON-NLS-1$ //$NON-NLS-2$
+
+      int nrCopies;
+      int dispatchType;
+
+      if (prevCopies == 1 && nextCopies == 1) {
+        dispatchType = Trans.TYPE_DISP_1_1;
+        nrCopies = 1;
+      } else {
+        if (prevCopies == 1 && nextCopies > 1) {
+          dispatchType = Trans.TYPE_DISP_1_N;
+          nrCopies = 1;
+        } else {
+          if (prevCopies > 1 && nextCopies == 1) {
+            dispatchType = Trans.TYPE_DISP_N_1;
+            nrCopies = prevCopies;
+          } else {
+            if (prevCopies == nextCopies) {
+              if (stepMeta.isPartitioned() && !prevSteps[i].isPartitioned()) {
+                dispatchType = Trans.TYPE_DISP_N_M;
+                nrCopies = nextCopies;
+              } else {
+                dispatchType = Trans.TYPE_DISP_N_N;
+                nrCopies = 1;
+              }
+            } // > 1!
+            else {
+              dispatchType = Trans.TYPE_DISP_N_M;
+              nrCopies = prevCopies;
             }
-            else
-            {
-                lapsed = 0;
+          }
+        }
+      }
+
+      for (int c = 0; c < nrCopies; c++) {
+        RowSet rowSet = null;
+        switch (dispatchType) {
+          case Trans.TYPE_DISP_1_1:
+            rowSet = trans.findRowSet(prevSteps[i].getName(), 0, stepname, 0);
+            break;
+          case Trans.TYPE_DISP_1_N:
+            rowSet = trans.findRowSet(prevSteps[i].getName(), 0, stepname, getCopy());
+            break;
+          case Trans.TYPE_DISP_N_1:
+            rowSet = trans.findRowSet(prevSteps[i].getName(), c, stepname, 0);
+            break;
+          case Trans.TYPE_DISP_N_N:
+            rowSet = trans.findRowSet(prevSteps[i].getName(), getCopy(), stepname, getCopy());
+            break;
+          case Trans.TYPE_DISP_N_M:
+            rowSet = trans.findRowSet(prevSteps[i].getName(), c, stepname, getCopy());
+            break;
+        }
+        if (rowSet != null) {
+          inputRowSets.add(rowSet);
+          if (log.isDetailed())
+            logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.FoundInputRowset", rowSet.getName())); //$NON-NLS-1$ //$NON-NLS-2$
+        } else {
+          if (!prevSteps[i].isMapping() && !stepMeta.isMapping()) {
+            logError(BaseMessages.getString(PKG, "BaseStep.Log.UnableToFindInputRowset")); //$NON-NLS-1$
+            setErrors(1);
+            stopAll();
+            return;
+          }
+        }
+      }
+    }
+    // And now the output part!
+    for (int i = 0; i < nrOutput; i++) {
+      nextSteps[i] = succeedingSteps.get(i);
+
+      int prevCopies = stepMeta.getCopies();
+      int nextCopies = nextSteps[i].getCopies();
+
+      if (log.isDetailed())
+        logDetailed(BaseMessages.getString(PKG,
+            "BaseStep.Log.OutputRowInfo", String.valueOf(prevCopies), String.valueOf(nextCopies))); //$NON-NLS-1$ //$NON-NLS-2$
+
+      int nrCopies;
+      int dispatchType;
+
+      if (prevCopies == 1 && nextCopies == 1) {
+        dispatchType = Trans.TYPE_DISP_1_1;
+        nrCopies = 1;
+      } else {
+        if (prevCopies == 1 && nextCopies > 1) {
+          dispatchType = Trans.TYPE_DISP_1_N;
+          nrCopies = nextCopies;
+        } else {
+          if (prevCopies > 1 && nextCopies == 1) {
+            dispatchType = Trans.TYPE_DISP_N_1;
+            nrCopies = 1;
+          } else {
+            if (prevCopies == nextCopies) {
+              if (!stepMeta.isPartitioned() && nextSteps[i].isPartitioned()) {
+                dispatchType = Trans.TYPE_DISP_N_M;
+                nrCopies = nextCopies;
+              } else {
+                dispatchType = Trans.TYPE_DISP_N_N;
+                nrCopies = 1;
+              }
+            } // > 1!
+            else {
+              dispatchType = Trans.TYPE_DISP_N_M;
+              nrCopies = nextCopies;
             }
-
-        return lapsed;
-    }
-
-    /**
-     * Builds the log.
-     *
-     * @param sname the sname
-     * @param copynr the copynr
-     * @param lines_read the lines_read
-     * @param lines_written the lines_written
-     * @param lines_updated the lines_updated
-     * @param lines_skipped the lines_skipped
-     * @param errors the errors
-     * @param start_date the start_date
-     * @param end_date the end_date
-     * @return the row meta and data
-     */
-    public RowMetaAndData buildLog(String sname, int copynr, long lines_read, long lines_written, long lines_updated, long lines_skipped, long errors, Date start_date, Date end_date)
-    {
-        RowMetaInterface r = new RowMeta();
-        Object[] data = new Object[9];
-        int nr=0;
-        
-        r.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "BaseStep.ColumnName.Stepname"), ValueMetaInterface.TYPE_STRING)); //$NON-NLS-1$
-        data[nr]=sname; 
-        nr++;
-        
-        r.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "BaseStep.ColumnName.Copy"), ValueMetaInterface.TYPE_NUMBER)); //$NON-NLS-1$
-        data[nr]=new Double(copynr); 
-        nr++;
-        
-        r.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "BaseStep.ColumnName.LinesReaded"), ValueMetaInterface.TYPE_NUMBER)); //$NON-NLS-1$
-        data[nr]=new Double(lines_read); 
-        nr++;
-        
-        r.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "BaseStep.ColumnName.LinesWritten"), ValueMetaInterface.TYPE_NUMBER)); //$NON-NLS-1$
-        data[nr]=new Double(lines_written); 
-        nr++;
-        
-        r.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "BaseStep.ColumnName.LinesUpdated"), ValueMetaInterface.TYPE_NUMBER)); //$NON-NLS-1$
-        data[nr]=new Double(lines_updated); 
-        nr++;
-        
-        r.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "BaseStep.ColumnName.LinesSkipped"), ValueMetaInterface.TYPE_NUMBER)); //$NON-NLS-1$
-        data[nr]=new Double(lines_skipped); 
-        nr++;
-        
-        r.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "BaseStep.ColumnName.Errors"), ValueMetaInterface.TYPE_NUMBER)); //$NON-NLS-1$
-        data[nr]=new Double(errors); 
-        nr++;
-        
-        r.addValueMeta(new ValueMeta("start_date", ValueMetaInterface.TYPE_DATE)); //$NON-NLS-1$
-        data[nr]=start_date; 
-        nr++;
-        
-        r.addValueMeta(new ValueMeta("end_date", ValueMetaInterface.TYPE_DATE)); //$NON-NLS-1$
-        data[nr]=end_date; 
-        nr++;
-        
-        return new RowMetaAndData(r, data);
-    }
-
-    /**
-     * Gets the log fields.
-     *
-     * @param comm the comm
-     * @return the log fields
-     */
-    public static final RowMetaInterface getLogFields(String comm)
-    {
-        RowMetaInterface r = new RowMeta();
-        ValueMetaInterface sname = new ValueMeta(BaseMessages.getString(PKG, "BaseStep.ColumnName.Stepname"), ValueMetaInterface.TYPE_STRING); //$NON-NLS-1$ //$NON-NLS-2$
-        sname.setLength(256);
-        r.addValueMeta(sname);
-
-        r.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "BaseStep.ColumnName.Copy"), ValueMetaInterface.TYPE_NUMBER)); //$NON-NLS-1$
-        r.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "BaseStep.ColumnName.LinesReaded"), ValueMetaInterface.TYPE_NUMBER)); //$NON-NLS-1$
-        r.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "BaseStep.ColumnName.LinesWritten"), ValueMetaInterface.TYPE_NUMBER)); //$NON-NLS-1$
-        r.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "BaseStep.ColumnName.LinesUpdated"), ValueMetaInterface.TYPE_NUMBER)); //$NON-NLS-1$
-        r.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "BaseStep.ColumnName.LinesSkipped"), ValueMetaInterface.TYPE_NUMBER)); //$NON-NLS-1$
-        r.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "BaseStep.ColumnName.Errors"), ValueMetaInterface.TYPE_NUMBER)); //$NON-NLS-1$
-        r.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "BaseStep.ColumnName.StartDate"), ValueMetaInterface.TYPE_DATE)); //$NON-NLS-1$
-        r.addValueMeta(new ValueMeta(BaseMessages.getString(PKG, "BaseStep.ColumnName.EndDate"), ValueMetaInterface.TYPE_DATE)); //$NON-NLS-1$
-
-        for (int i = 0; i < r.size(); i++)
-        {
-            r.getValueMeta(i).setOrigin(comm);
+          }
         }
+      }
 
-        return r;
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    public String toString()
-    {
-    	StringBuffer string = new StringBuffer();
-    	
-    	// If the step runs in a mapping (and as such has a "parent transformation", we are going to print the name of the transformation during logging
-    	//
-    	//
-    	if (!Const.isEmpty(getTrans().getMappingStepName())) {
-    		string.append('[').append(trans.toString()).append(']').append('.'); // Name of the mapping transformation
-    	}
-    	
-    	if (!Const.isEmpty(partitionID)) {
-    		string.append(stepname).append('.').append(partitionID);  //$NON-NLS-1$
-    	}
-    	else if (clusterSize>1) {
-    		string.append(stepname).append('.').append(slaveNr).append('.').append(Integer.toString(getCopy())); //$NON-NLS-1$ //$NON-NLS-2$
-    	}
-    	else {
-    		string.append(stepname).append('.').append(Integer.toString(getCopy())); //$NON-NLS-1$
-    	}
-    	
-    	return string.toString();
-    }
-
-    /* (non-Javadoc)
-     * @see org.pentaho.di.trans.step.StepInterface#rowsetOutputSize()
-     */
-    public int rowsetOutputSize()
-    {
-        int size = 0;
-        int i;
-        for (i = 0; i < outputRowSets.size(); i++)
-        {
-            size += outputRowSets.get(i).size();
+      for (int c = 0; c < nrCopies; c++) {
+        RowSet rowSet = null;
+        switch (dispatchType) {
+          case Trans.TYPE_DISP_1_1:
+            rowSet = trans.findRowSet(stepname, 0, nextSteps[i].getName(), 0);
+            break;
+          case Trans.TYPE_DISP_1_N:
+            rowSet = trans.findRowSet(stepname, 0, nextSteps[i].getName(), c);
+            break;
+          case Trans.TYPE_DISP_N_1:
+            rowSet = trans.findRowSet(stepname, getCopy(), nextSteps[i].getName(), 0);
+            break;
+          case Trans.TYPE_DISP_N_N:
+            rowSet = trans.findRowSet(stepname, getCopy(), nextSteps[i].getName(), getCopy());
+            break;
+          case Trans.TYPE_DISP_N_M:
+            rowSet = trans.findRowSet(stepname, getCopy(), nextSteps[i].getName(), c);
+            break;
         }
-
-        return size;
-    }
-
-    /* (non-Javadoc)
-     * @see org.pentaho.di.trans.step.StepInterface#rowsetInputSize()
-     */
-    public int rowsetInputSize()
-    {
-        int size = 0;
-        int i;
-        for (i = 0; i < inputRowSets.size(); i++)
-        {
-            size += inputRowSets.get(i).size();
+        if (rowSet != null) {
+          outputRowSets.add(rowSet);
+          if (log.isDetailed())
+            logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.FoundOutputRowset", rowSet.getName())); //$NON-NLS-1$ //$NON-NLS-2$
+        } else {
+          if (!stepMeta.isMapping() && !nextSteps[i].isMapping()) {
+            logError(BaseMessages.getString(PKG, "BaseStep.Log.UnableToFindOutputRowset")); //$NON-NLS-1$
+            setErrors(1);
+            stopAll();
+            return;
+          }
         }
-
-        return size;
+      }
     }
 
-    /**
-     * Perform actions to stop a running step. This can be stopping running SQL queries (cancel), etc. Default it
-     * doesn't do anything.
-     *
-     * @param stepDataInterface The interface to the step data containing the connections, resultsets, open files, etc.
-     * @throws KettleException in case something goes wrong
-     *
-     */
-    public void stopRunning(StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface) throws KettleException
-    {
+    if (stepMeta.getTargetStepPartitioningMeta() != null) {
+      nextStepPartitioningMeta = stepMeta.getTargetStepPartitioningMeta();
     }
 
-    /**
-     * Stops running operations This method is deprecated, please use the method specifying the metadata and data
-     * interfaces.
-     *
-     * @deprecated
-     */
-    public void stopRunning()
-    {
+    if (log.isDetailed())
+      logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.FinishedDispatching")); //$NON-NLS-1$
+  }
+
+  /**
+   * Checks if is basic.
+   *
+   * @return true, if is basic
+   */
+  public boolean isBasic() {
+    return log.isBasic();
+  }
+
+  /**
+   * Checks if is detailed.
+   *
+   * @return true, if is detailed
+   */
+  public boolean isDetailed() {
+    return log.isDetailed();
+  }
+
+  /**
+   * Checks if is debug.
+   *
+   * @return true, if is debug
+   */
+  public boolean isDebug() {
+    return log.isDebug();
+  }
+
+  /**
+   * Checks if is row level.
+   *
+   * @return true, if is row level
+   */
+  public boolean isRowLevel() {
+    return log.isRowLevel();
+  }
+
+  /**
+   * Log minimal.
+   *
+   * @param message the message
+   */
+  public void logMinimal(String message) {
+    log.logMinimal(message);
+  }
+
+  /**
+   * Log minimal.
+   *
+   * @param message the message
+   * @param arguments the arguments
+   */
+  public void logMinimal(String message, Object... arguments) {
+    log.logMinimal(message, arguments);
+  }
+
+  /**
+   * Log basic.
+   *
+   * @param message the message
+   */
+  public void logBasic(String message) {
+    log.logBasic(message);
+  }
+
+  /**
+   * Log basic.
+   *
+   * @param message the message
+   * @param arguments the arguments
+   */
+  public void logBasic(String message, Object... arguments) {
+    log.logBasic(message, arguments);
+  }
+
+  /**
+   * Log detailed.
+   *
+   * @param message the message
+   */
+  public void logDetailed(String message) {
+    log.logDetailed(message);
+  }
+
+  /**
+   * Log detailed.
+   *
+   * @param message the message
+   * @param arguments the arguments
+   */
+  public void logDetailed(String message, Object... arguments) {
+    log.logDetailed(message, arguments);
+  }
+
+  /**
+   * Log debug.
+   *
+   * @param message the message
+   */
+  public void logDebug(String message) {
+    log.logDebug(message);
+  }
+
+  /**
+   * Log debug.
+   *
+   * @param message the message
+   * @param arguments the arguments
+   */
+  public void logDebug(String message, Object... arguments) {
+    log.logDebug(message, arguments);
+  }
+
+  /**
+   * Log rowlevel.
+   *
+   * @param message the message
+   */
+  public void logRowlevel(String message) {
+    log.logRowlevel(message);
+  }
+
+  /**
+   * Log rowlevel.
+   *
+   * @param message the message
+   * @param arguments the arguments
+   */
+  public void logRowlevel(String message, Object... arguments) {
+    log.logRowlevel(message, arguments);
+  }
+
+  /**
+   * Log error.
+   *
+   * @param message the message
+   */
+  public void logError(String message) {
+    log.logError(message);
+  }
+
+  /**
+   * Log error.
+   *
+   * @param message the message
+   * @param e the e
+   */
+  public void logError(String message, Throwable e) {
+    log.logError(message, e);
+  }
+
+  /**
+   * Log error.
+   *
+   * @param message the message
+   * @param arguments the arguments
+   */
+  public void logError(String message, Object... arguments) {
+    log.logError(message, arguments);
+  }
+
+  /**
+   * Gets the next class nr.
+   *
+   * @return the next class nr
+   */
+  public int getNextClassNr() {
+    int ret = trans.class_nr;
+    trans.class_nr++;
+
+    return ret;
+  }
+
+  /**
+   * Output is done.
+   *
+   * @return true, if successful
+   */
+  public boolean outputIsDone() {
+    int nrstopped = 0;
+
+    for (RowSet rs : outputRowSets) {
+      if (rs.isDone())
+        nrstopped++;
+    }
+    return nrstopped >= outputRowSets.size();
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepInterface#stopAll()
+   */
+  public void stopAll() {
+    stopped.set(true);
+    trans.stopAll();
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepInterface#isStopped()
+   */
+  public boolean isStopped() {
+    return stopped.get();
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepInterface#isRunning()
+   */
+  public boolean isRunning() {
+    return running.get();
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepInterface#isPaused()
+   */
+  public boolean isPaused() {
+    return paused.get();
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepInterface#setStopped(boolean)
+   */
+  public void setStopped(boolean stopped) {
+    this.stopped.set(stopped);
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepInterface#setRunning(boolean)
+   */
+  public void setRunning(boolean running) {
+    this.running.set(running);
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepInterface#pauseRunning()
+   */
+  public void pauseRunning() {
+    setPaused(true);
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepInterface#resumeRunning()
+   */
+  public void resumeRunning() {
+    setPaused(false);
+  }
+
+  /**
+   * Sets the paused.
+   *
+   * @param paused the new paused
+   */
+  public void setPaused(boolean paused) {
+    this.paused.set(paused);
+  }
+
+  /**
+   * Sets the paused.
+   *
+   * @param paused the new paused
+   */
+  public void setPaused(AtomicBoolean paused) {
+    this.paused = paused;
+  }
+
+  /**
+   * Checks if is initialising.
+   *
+   * @return true, if is initialising
+   */
+  public boolean isInitialising() {
+    return init;
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepInterface#markStart()
+   */
+  public void markStart() {
+    Calendar cal = Calendar.getInstance();
+    start_time = cal.getTime();
+
+    setInternalVariables();
+  }
+
+  /**
+   * Sets the internal variables.
+   */
+  public void setInternalVariables() {
+    setVariable(Const.INTERNAL_VARIABLE_STEP_NAME, stepname);
+    setVariable(Const.INTERNAL_VARIABLE_STEP_COPYNR, Integer.toString(getCopy()));
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepInterface#markStop()
+   */
+  public void markStop() {
+    Calendar cal = Calendar.getInstance();
+    stop_time = cal.getTime();
+
+    // Here we are completely done with the transformation.
+    // Call all the attached listeners and notify the outside world that the step has finished.
+    //
+    for (StepListener stepListener : stepListeners) {
+      stepListener.stepFinished(trans, stepMeta, this);
     }
 
-    /**
-     * Log summary.
-     */
-    public void logSummary()
-    {
-        synchronized(statusCountersLock) {
-            long li = getLinesInput();
-            long lo = getLinesOutput();
-            long lr = getLinesRead();
-            long lw = getLinesWritten();
-            long lu = getLinesUpdated();
-            long lj = getLinesRejected();
-            if (li > 0 || lo > 0 || lr > 0 || lw > 0 || lu > 0 || lj > 0 || errors > 0)
-                logBasic(BaseMessages.getString(PKG, "BaseStep.Log.SummaryInfo", String.valueOf(li), String.valueOf(lo), String.valueOf(lr), String.valueOf(lw), String.valueOf(lw), String.valueOf(errors+lj)));
-            else
-                logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.SummaryInfo", String.valueOf(li), String.valueOf(lo), String.valueOf(lr), String.valueOf(lw), String.valueOf(lw), String.valueOf(errors+lj)));
+    // We're finally completely done with this step.
+    //
+    setRunning(false);
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepInterface#getRuntime()
+   */
+  public long getRuntime() {
+    long lapsed;
+    if (start_time != null && stop_time == null) {
+      Calendar cal = Calendar.getInstance();
+      long now = cal.getTimeInMillis();
+      long st = start_time.getTime();
+      lapsed = now - st;
+    } else if (start_time != null && stop_time != null) {
+      lapsed = stop_time.getTime() - start_time.getTime();
+    } else {
+      lapsed = 0;
+    }
+
+    return lapsed;
+  }
+
+  /**
+   * Builds the log.
+   *
+   * @param sname the sname
+   * @param copynr the copynr
+   * @param lines_read the lines_read
+   * @param lines_written the lines_written
+   * @param lines_updated the lines_updated
+   * @param lines_skipped the lines_skipped
+   * @param errors the errors
+   * @param start_date the start_date
+   * @param end_date the end_date
+   * @return the row meta and data
+   */
+  public RowMetaAndData buildLog(String sname, int copynr, long lines_read, long lines_written, long lines_updated,
+      long lines_skipped, long errors, Date start_date, Date end_date) {
+    RowMetaInterface r = new RowMeta();
+    Object[] data = new Object[9];
+    int nr = 0;
+
+    r.addValueMeta(new ValueMeta(
+        BaseMessages.getString(PKG, "BaseStep.ColumnName.Stepname"), ValueMetaInterface.TYPE_STRING)); //$NON-NLS-1$
+    data[nr] = sname;
+    nr++;
+
+    r.addValueMeta(new ValueMeta(
+        BaseMessages.getString(PKG, "BaseStep.ColumnName.Copy"), ValueMetaInterface.TYPE_NUMBER)); //$NON-NLS-1$
+    data[nr] = new Double(copynr);
+    nr++;
+
+    r.addValueMeta(new ValueMeta(
+        BaseMessages.getString(PKG, "BaseStep.ColumnName.LinesReaded"), ValueMetaInterface.TYPE_NUMBER)); //$NON-NLS-1$
+    data[nr] = new Double(lines_read);
+    nr++;
+
+    r.addValueMeta(new ValueMeta(
+        BaseMessages.getString(PKG, "BaseStep.ColumnName.LinesWritten"), ValueMetaInterface.TYPE_NUMBER)); //$NON-NLS-1$
+    data[nr] = new Double(lines_written);
+    nr++;
+
+    r.addValueMeta(new ValueMeta(
+        BaseMessages.getString(PKG, "BaseStep.ColumnName.LinesUpdated"), ValueMetaInterface.TYPE_NUMBER)); //$NON-NLS-1$
+    data[nr] = new Double(lines_updated);
+    nr++;
+
+    r.addValueMeta(new ValueMeta(
+        BaseMessages.getString(PKG, "BaseStep.ColumnName.LinesSkipped"), ValueMetaInterface.TYPE_NUMBER)); //$NON-NLS-1$
+    data[nr] = new Double(lines_skipped);
+    nr++;
+
+    r.addValueMeta(new ValueMeta(
+        BaseMessages.getString(PKG, "BaseStep.ColumnName.Errors"), ValueMetaInterface.TYPE_NUMBER)); //$NON-NLS-1$
+    data[nr] = new Double(errors);
+    nr++;
+
+    r.addValueMeta(new ValueMeta("start_date", ValueMetaInterface.TYPE_DATE)); //$NON-NLS-1$
+    data[nr] = start_date;
+    nr++;
+
+    r.addValueMeta(new ValueMeta("end_date", ValueMetaInterface.TYPE_DATE)); //$NON-NLS-1$
+    data[nr] = end_date;
+    nr++;
+
+    return new RowMetaAndData(r, data);
+  }
+
+  /**
+   * Gets the log fields.
+   *
+   * @param comm the comm
+   * @return the log fields
+   */
+  public static final RowMetaInterface getLogFields(String comm) {
+    RowMetaInterface r = new RowMeta();
+    ValueMetaInterface sname = new ValueMeta(
+        BaseMessages.getString(PKG, "BaseStep.ColumnName.Stepname"), ValueMetaInterface.TYPE_STRING); //$NON-NLS-1$ //$NON-NLS-2$
+    sname.setLength(256);
+    r.addValueMeta(sname);
+
+    r.addValueMeta(new ValueMeta(
+        BaseMessages.getString(PKG, "BaseStep.ColumnName.Copy"), ValueMetaInterface.TYPE_NUMBER)); //$NON-NLS-1$
+    r.addValueMeta(new ValueMeta(
+        BaseMessages.getString(PKG, "BaseStep.ColumnName.LinesReaded"), ValueMetaInterface.TYPE_NUMBER)); //$NON-NLS-1$
+    r.addValueMeta(new ValueMeta(
+        BaseMessages.getString(PKG, "BaseStep.ColumnName.LinesWritten"), ValueMetaInterface.TYPE_NUMBER)); //$NON-NLS-1$
+    r.addValueMeta(new ValueMeta(
+        BaseMessages.getString(PKG, "BaseStep.ColumnName.LinesUpdated"), ValueMetaInterface.TYPE_NUMBER)); //$NON-NLS-1$
+    r.addValueMeta(new ValueMeta(
+        BaseMessages.getString(PKG, "BaseStep.ColumnName.LinesSkipped"), ValueMetaInterface.TYPE_NUMBER)); //$NON-NLS-1$
+    r.addValueMeta(new ValueMeta(
+        BaseMessages.getString(PKG, "BaseStep.ColumnName.Errors"), ValueMetaInterface.TYPE_NUMBER)); //$NON-NLS-1$
+    r.addValueMeta(new ValueMeta(
+        BaseMessages.getString(PKG, "BaseStep.ColumnName.StartDate"), ValueMetaInterface.TYPE_DATE)); //$NON-NLS-1$
+    r.addValueMeta(new ValueMeta(
+        BaseMessages.getString(PKG, "BaseStep.ColumnName.EndDate"), ValueMetaInterface.TYPE_DATE)); //$NON-NLS-1$
+
+    for (int i = 0; i < r.size(); i++) {
+      r.getValueMeta(i).setOrigin(comm);
+    }
+
+    return r;
+  }
+
+  /* (non-Javadoc)
+   * @see java.lang.Object#toString()
+   */
+  public String toString() {
+    StringBuffer string = new StringBuffer();
+
+    // If the step runs in a mapping (and as such has a "parent transformation", we are going to print the name of the transformation during logging
+    //
+    //
+    if (!Const.isEmpty(getTrans().getMappingStepName())) {
+      string.append('[').append(trans.toString()).append(']').append('.'); // Name of the mapping transformation
+    }
+
+    if (!Const.isEmpty(partitionID)) {
+      string.append(stepname).append('.').append(partitionID); //$NON-NLS-1$
+    } else if (clusterSize > 1) {
+      string.append(stepname).append('.').append(slaveNr).append('.').append(Integer.toString(getCopy())); //$NON-NLS-1$ //$NON-NLS-2$
+    } else {
+      string.append(stepname).append('.').append(Integer.toString(getCopy())); //$NON-NLS-1$
+    }
+
+    return string.toString();
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepInterface#rowsetOutputSize()
+   */
+  public int rowsetOutputSize() {
+    int size = 0;
+    int i;
+    for (i = 0; i < outputRowSets.size(); i++) {
+      size += outputRowSets.get(i).size();
+    }
+
+    return size;
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepInterface#rowsetInputSize()
+   */
+  public int rowsetInputSize() {
+    int size = 0;
+    int i;
+    for (i = 0; i < inputRowSets.size(); i++) {
+      size += inputRowSets.get(i).size();
+    }
+
+    return size;
+  }
+
+  /**
+   * Perform actions to stop a running step. This can be stopping running SQL queries (cancel), etc. Default it
+   * doesn't do anything.
+   *
+   * @param stepDataInterface The interface to the step data containing the connections, resultsets, open files, etc.
+   * @throws KettleException in case something goes wrong
+   *
+   */
+  public void stopRunning(StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface)
+      throws KettleException {
+  }
+
+  /**
+   * Stops running operations This method is deprecated, please use the method specifying the metadata and data
+   * interfaces.
+   *
+   * @deprecated
+   */
+  public void stopRunning() {
+  }
+
+  /**
+   * Log summary.
+   */
+  public void logSummary() {
+    synchronized (statusCountersLock) {
+      long li = getLinesInput();
+      long lo = getLinesOutput();
+      long lr = getLinesRead();
+      long lw = getLinesWritten();
+      long lu = getLinesUpdated();
+      long lj = getLinesRejected();
+      if (li > 0 || lo > 0 || lr > 0 || lw > 0 || lu > 0 || lj > 0 || errors > 0)
+        logBasic(BaseMessages.getString(PKG, "BaseStep.Log.SummaryInfo", String.valueOf(li), String.valueOf(lo),
+            String.valueOf(lr), String.valueOf(lw), String.valueOf(lw), String.valueOf(errors + lj)));
+      else
+        logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.SummaryInfo", String.valueOf(li), String.valueOf(lo),
+            String.valueOf(lr), String.valueOf(lw), String.valueOf(lw), String.valueOf(errors + lj)));
+    }
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepInterface#getStepID()
+   */
+  public String getStepID() {
+    if (stepMeta != null)
+      return stepMeta.getStepID();
+    return null;
+  }
+
+  /**
+   * @return Returns the inputRowSets.
+   */
+  public List<RowSet> getInputRowSets() {
+    return inputRowSets;
+  }
+
+  /**
+   * @param inputRowSets The inputRowSets to set.
+   */
+  public void setInputRowSets(List<RowSet> inputRowSets) {
+    this.inputRowSets = inputRowSets;
+  }
+
+  /**
+   * @return Returns the outputRowSets.
+   */
+  public List<RowSet> getOutputRowSets() {
+    return outputRowSets;
+  }
+
+  /**
+   * @param outputRowSets The outputRowSets to set.
+   */
+  public void setOutputRowSets(List<RowSet> outputRowSets) {
+    this.outputRowSets = outputRowSets;
+  }
+
+  /**
+   * @return Returns the distributed.
+   */
+  public boolean isDistributed() {
+    return distributed;
+  }
+
+  /**
+   * @param distributed The distributed to set.
+   */
+  public void setDistributed(boolean distributed) {
+    this.distributed = distributed;
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepInterface#addRowListener(org.pentaho.di.trans.step.RowListener)
+   */
+  public void addRowListener(RowListener rowListener) {
+    rowListeners.add(rowListener);
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepInterface#removeRowListener(org.pentaho.di.trans.step.RowListener)
+   */
+  public void removeRowListener(RowListener rowListener) {
+    rowListeners.remove(rowListener);
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepInterface#getRowListeners()
+   */
+  public List<RowListener> getRowListeners() {
+    return rowListeners;
+  }
+
+  /**
+   * Adds the result file.
+   *
+   * @param resultFile the result file
+   */
+  public void addResultFile(ResultFile resultFile) {
+    resultFiles.put(resultFile.getFile().toString(), resultFile);
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepInterface#getResultFiles()
+   */
+  public Map<String, ResultFile> getResultFiles() {
+    return resultFiles;
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepInterface#getStatus()
+   */
+  public StepExecutionStatus getStatus() {
+    // Is this thread alive or not?
+    //
+    if (isRunning()) {
+      if (isStopped()) {
+        return StepExecutionStatus.STATUS_HALTING;
+      } else {
+        if (isPaused()) {
+          return StepExecutionStatus.STATUS_PAUSED;
+        } else {
+          return StepExecutionStatus.STATUS_RUNNING;
         }
+      }
+    } else {
+      // Step is not running... What are we doing?
+      //
+      // An init thread is running...
+      //
+      if (trans.isInitializing()) {
+        if (isInitialising()) {
+          return StepExecutionStatus.STATUS_INIT;
+        } else {
+          // Done initializing, but other threads are still busy.
+          // So this step is idle
+          //
+          return StepExecutionStatus.STATUS_IDLE;
+        }
+      } else {
+        // It's not running, it's not initializing, so what is it doing?
+        //
+        if (isStopped()) {
+          return StepExecutionStatus.STATUS_STOPPED;
+        } else {
+          // To be sure (race conditions and all), get the rest in StepDataInterface object:
+          // 
+          StepDataInterface sdi = trans.getStepDataInterface(stepname, stepcopy);
+          if (sdi != null) {
+            if (sdi.getStatus() == StepExecutionStatus.STATUS_DISPOSED) {
+              return StepExecutionStatus.STATUS_FINISHED;
+            } else {
+              return sdi.getStatus();
+            }
+          }
+          return StepExecutionStatus.STATUS_EMPTY;
+        }
+      }
     }
+  }
 
-    /* (non-Javadoc)
-     * @see org.pentaho.di.trans.step.StepInterface#getStepID()
-     */
-    public String getStepID()
-    {
-        if (stepMeta != null) return stepMeta.getStepID();
-        return null;
+  /**
+   * @return the partitionID
+   */
+  public String getPartitionID() {
+    return partitionID;
+  }
+
+  /**
+   * @param partitionID the partitionID to set
+   */
+  public void setPartitionID(String partitionID) {
+    this.partitionID = partitionID;
+  }
+
+  /**
+   * @return the partitionTargets
+   */
+  public Map<String, BlockingRowSet> getPartitionTargets() {
+    return partitionTargets;
+  }
+
+  /**
+   * @param partitionTargets the partitionTargets to set
+   */
+  public void setPartitionTargets(Map<String, BlockingRowSet> partitionTargets) {
+    this.partitionTargets = partitionTargets;
+  }
+
+  /**
+   * @return the repartitioning type
+   */
+  public int getRepartitioning() {
+    return repartitioning;
+  }
+
+  /**
+   * @param repartitioning the repartitioning type to set
+   */
+  public void setRepartitioning(int repartitioning) {
+    this.repartitioning = repartitioning;
+  }
+
+  /**
+   * @return the partitioned
+   */
+  public boolean isPartitioned() {
+    return partitioned;
+  }
+
+  /**
+   * @param partitioned the partitioned to set
+   */
+  public void setPartitioned(boolean partitioned) {
+    this.partitioned = partitioned;
+  }
+
+  /**
+   * Check feedback.
+   *
+   * @param lines the lines
+   * @return true, if successful
+   */
+  protected boolean checkFeedback(long lines) {
+    return getTransMeta().isFeedbackShown() && (lines > 0) && (getTransMeta().getFeedbackSize() > 0)
+        && (lines % getTransMeta().getFeedbackSize()) == 0;
+  }
+
+  /**
+   * @return the rowMeta
+   */
+  public RowMetaInterface getInputRowMeta() {
+    return inputRowMeta;
+  }
+
+  /**
+   * @param rowMeta the rowMeta to set
+   */
+  public void setInputRowMeta(RowMetaInterface rowMeta) {
+    this.inputRowMeta = rowMeta;
+  }
+
+  /**
+   * @return the errorRowMeta
+   */
+  public RowMetaInterface getErrorRowMeta() {
+    return errorRowMeta;
+  }
+
+  /**
+   * @param errorRowMeta the errorRowMeta to set
+   */
+  public void setErrorRowMeta(RowMetaInterface errorRowMeta) {
+    this.errorRowMeta = errorRowMeta;
+  }
+
+  /**
+   * @return the previewRowMeta
+   */
+  public RowMetaInterface getPreviewRowMeta() {
+    return previewRowMeta;
+  }
+
+  /**
+   * @param previewRowMeta the previewRowMeta to set
+   */
+  public void setPreviewRowMeta(RowMetaInterface previewRowMeta) {
+    this.previewRowMeta = previewRowMeta;
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.core.variables.VariableSpace#copyVariablesFrom(org.pentaho.di.core.variables.VariableSpace)
+   */
+  public void copyVariablesFrom(VariableSpace space) {
+    variables.copyVariablesFrom(space);
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.core.variables.VariableSpace#environmentSubstitute(java.lang.String)
+   */
+  public String environmentSubstitute(String aString) {
+    return variables.environmentSubstitute(aString);
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.core.variables.VariableSpace#environmentSubstitute(java.lang.String[])
+   */
+  public String[] environmentSubstitute(String aString[]) {
+    return variables.environmentSubstitute(aString);
+  }
+
+  public String fieldSubstitute(String aString, RowMetaInterface rowMeta, Object[] rowData) throws KettleValueException {
+    return variables.fieldSubstitute(aString, rowMeta, rowData);
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.core.variables.VariableSpace#getParentVariableSpace()
+   */
+  public VariableSpace getParentVariableSpace() {
+    return variables.getParentVariableSpace();
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.core.variables.VariableSpace#setParentVariableSpace(org.pentaho.di.core.variables.VariableSpace)
+   */
+  public void setParentVariableSpace(VariableSpace parent) {
+    variables.setParentVariableSpace(parent);
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.core.variables.VariableSpace#getVariable(java.lang.String, java.lang.String)
+   */
+  public String getVariable(String variableName, String defaultValue) {
+    return variables.getVariable(variableName, defaultValue);
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.core.variables.VariableSpace#getVariable(java.lang.String)
+   */
+  public String getVariable(String variableName) {
+    return variables.getVariable(variableName);
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.core.variables.VariableSpace#getBooleanValueOfVariable(java.lang.String, boolean)
+   */
+  public boolean getBooleanValueOfVariable(String variableName, boolean defaultValue) {
+    if (!Const.isEmpty(variableName)) {
+      String value = environmentSubstitute(variableName);
+      if (!Const.isEmpty(value)) {
+        return ValueMeta.convertStringToBoolean(value);
+      }
     }
+    return defaultValue;
+  }
 
-    /**
-     * @return Returns the inputRowSets.
-     */
-    public List<RowSet> getInputRowSets()
-    {
-        return inputRowSets;
-    }
+  /* (non-Javadoc)
+   * @see org.pentaho.di.core.variables.VariableSpace#initializeVariablesFrom(org.pentaho.di.core.variables.VariableSpace)
+   */
+  public void initializeVariablesFrom(VariableSpace parent) {
+    variables.initializeVariablesFrom(parent);
+  }
 
-    /**
-     * @param inputRowSets The inputRowSets to set.
-     */
-    public void setInputRowSets(List<RowSet> inputRowSets)
-    {
-        this.inputRowSets = inputRowSets;
-    }
+  /* (non-Javadoc)
+   * @see org.pentaho.di.core.variables.VariableSpace#listVariables()
+   */
+  public String[] listVariables() {
+    return variables.listVariables();
+  }
 
-    /**
-     * @return Returns the outputRowSets.
-     */
-    public List<RowSet> getOutputRowSets()
-    {
-        return outputRowSets;
-    }
+  /* (non-Javadoc)
+   * @see org.pentaho.di.core.variables.VariableSpace#setVariable(java.lang.String, java.lang.String)
+   */
+  public void setVariable(String variableName, String variableValue) {
+    variables.setVariable(variableName, variableValue);
+  }
 
-    /**
-     * @param outputRowSets The outputRowSets to set.
-     */
-    public void setOutputRowSets(List<RowSet> outputRowSets)
-    {
-        this.outputRowSets = outputRowSets;
-    }
+  /* (non-Javadoc)
+   * @see org.pentaho.di.core.variables.VariableSpace#shareVariablesWith(org.pentaho.di.core.variables.VariableSpace)
+   */
+  public void shareVariablesWith(VariableSpace space) {
+    variables = space;
+  }
 
-    /**
-     * @return Returns the distributed.
-     */
-    public boolean isDistributed()
-    {
-        return distributed;
-    }
+  /* (non-Javadoc)
+   * @see org.pentaho.di.core.variables.VariableSpace#injectVariables(java.util.Map)
+   */
+  public void injectVariables(Map<String, String> prop) {
+    variables.injectVariables(prop);
+  }
 
-    /**
-     * @param distributed The distributed to set.
-     */
-    public void setDistributed(boolean distributed)
-    {
-        this.distributed = distributed;
-    }
-
-    /* (non-Javadoc)
-     * @see org.pentaho.di.trans.step.StepInterface#addRowListener(org.pentaho.di.trans.step.RowListener)
-     */
-    public void addRowListener(RowListener rowListener)
-    {
-        rowListeners.add(rowListener);
-    }
-
-    /* (non-Javadoc)
-     * @see org.pentaho.di.trans.step.StepInterface#removeRowListener(org.pentaho.di.trans.step.RowListener)
-     */
-    public void removeRowListener(RowListener rowListener)
-    {
-        rowListeners.remove(rowListener);
-    }
-
-    /* (non-Javadoc)
-     * @see org.pentaho.di.trans.step.StepInterface#getRowListeners()
-     */
-    public List<RowListener> getRowListeners()
-    {
-        return rowListeners;
-    }
-
-    /**
-     * Adds the result file.
-     *
-     * @param resultFile the result file
-     */
-    public void addResultFile(ResultFile resultFile)
-    {
-        resultFiles.put(resultFile.getFile().toString(), resultFile);
-    }
-
-    /* (non-Javadoc)
-     * @see org.pentaho.di.trans.step.StepInterface#getResultFiles()
-     */
-    public Map<String,ResultFile> getResultFiles()
-    {
-        return resultFiles;
-    }
-
-    /* (non-Javadoc)
-     * @see org.pentaho.di.trans.step.StepInterface#getStatus()
-     */
-    public StepExecutionStatus getStatus()
-    {
-    	// Is this thread alive or not?
-    	//
-    	if (isRunning()) {
-    		if (isStopped()) {
-    			return StepExecutionStatus.STATUS_HALTING;
-    		} else {
-    			if (isPaused()) {
-    				return StepExecutionStatus.STATUS_PAUSED;
-    			} else {
-    				return StepExecutionStatus.STATUS_RUNNING;
-    			}
-    		}
-    	} 
-    	else
-    	{
-    		// Step is not running... What are we doing?
-    		//
-			// An init thread is running...
-    		//
-    		if (trans.isInitializing()) {
-        		if (isInitialising()) {
-        			return StepExecutionStatus.STATUS_INIT;
-        		} else {
-        			// Done initializing, but other threads are still busy.
-        			// So this step is idle
-        			//
-        			return StepExecutionStatus.STATUS_IDLE;
-        		}
-    		}
-    		else {
-    			// It's not running, it's not initializing, so what is it doing?
-    			//
-        		if (isStopped()) {
-        	    	return StepExecutionStatus.STATUS_STOPPED;
-        		} else {
-        			// To be sure (race conditions and all), get the rest in StepDataInterface object:
-        			// 
-        			StepDataInterface sdi = trans.getStepDataInterface(stepname, stepcopy);
-        			if (sdi != null)
-        			{
-        				if (sdi.getStatus() == StepExecutionStatus.STATUS_DISPOSED) {
-        					return StepExecutionStatus.STATUS_FINISHED;
-        				} else {
-        					return sdi.getStatus();
-        				}
-        			}
-        			return StepExecutionStatus.STATUS_EMPTY;
-        		}
-    		}
-    	}
-    }
-
-    /**
-     * @return the partitionID
-     */
-    public String getPartitionID()
-    {
-        return partitionID;
-    }
-
-    /**
-     * @param partitionID the partitionID to set
-     */
-    public void setPartitionID(String partitionID)
-    {
-        this.partitionID = partitionID;
-    }
-
-    /**
-     * @return the partitionTargets
-     */
-    public Map<String,BlockingRowSet> getPartitionTargets()
-    {
-        return partitionTargets;
-    }
-
-    /**
-     * @param partitionTargets the partitionTargets to set
-     */
-    public void setPartitionTargets(Map<String,BlockingRowSet> partitionTargets)
-    {
-        this.partitionTargets = partitionTargets;
-    }
-
-    /**
-     * @return the repartitioning type
-     */
-    public int getRepartitioning()
-    {
-        return repartitioning;
-    }
-
-    /**
-     * @param repartitioning the repartitioning type to set
-     */
-    public void setRepartitioning(int repartitioning)
-    {
-        this.repartitioning = repartitioning;
-    }
-
-    /**
-     * @return the partitioned
-     */
-    public boolean isPartitioned()
-    {
-        return partitioned;
-    }
-
-    /**
-     * @param partitioned the partitioned to set
-     */
-    public void setPartitioned(boolean partitioned)
-    {
-        this.partitioned = partitioned;
-    }
-
-    /**
-     * Check feedback.
-     *
-     * @param lines the lines
-     * @return true, if successful
-     */
-    protected boolean checkFeedback(long lines)
-    {
-        return getTransMeta().isFeedbackShown() && (lines > 0) && (getTransMeta().getFeedbackSize() > 0)
-                && (lines % getTransMeta().getFeedbackSize()) == 0;
-    }
-
-    /**
-     * @return the rowMeta
-     */
-    public RowMetaInterface getInputRowMeta()
-    {
-        return inputRowMeta;
-    }
-
-    /**
-     * @param rowMeta the rowMeta to set
-     */
-    public void setInputRowMeta(RowMetaInterface rowMeta)
-    {
-        this.inputRowMeta = rowMeta;
-    }
-
-    /**
-     * @return the errorRowMeta
-     */
-    public RowMetaInterface getErrorRowMeta()
-    {
-        return errorRowMeta;
-    }
-
-    /**
-     * @param errorRowMeta the errorRowMeta to set
-     */
-    public void setErrorRowMeta(RowMetaInterface errorRowMeta)
-    {
-        this.errorRowMeta = errorRowMeta;
-    }
-
-    /**
-     * @return the previewRowMeta
-     */
-    public RowMetaInterface getPreviewRowMeta()
-    {
-        return previewRowMeta;
-    }
-
-    /**
-     * @param previewRowMeta the previewRowMeta to set
-     */
-    public void setPreviewRowMeta(RowMetaInterface previewRowMeta)
-    {
-        this.previewRowMeta = previewRowMeta;
-    }    
-    
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.core.variables.VariableSpace#copyVariablesFrom(org.pentaho.di.core.variables.VariableSpace)
-	 */
-	public void copyVariablesFrom(VariableSpace space) 
-	{
-		variables.copyVariablesFrom(space);		
-	}
-
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.core.variables.VariableSpace#environmentSubstitute(java.lang.String)
-	 */
-	public String environmentSubstitute(String aString) 
-	{
-		return variables.environmentSubstitute(aString);
-	}	
-
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.core.variables.VariableSpace#environmentSubstitute(java.lang.String[])
-	 */
-	public String[] environmentSubstitute(String aString[]) 
-	{
-		return variables.environmentSubstitute(aString);
-	}		
-
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.core.variables.VariableSpace#getParentVariableSpace()
-	 */
-	public VariableSpace getParentVariableSpace() 
-	{
-		return variables.getParentVariableSpace();
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.core.variables.VariableSpace#setParentVariableSpace(org.pentaho.di.core.variables.VariableSpace)
-	 */
-	public void setParentVariableSpace(VariableSpace parent) 
-	{
-		variables.setParentVariableSpace(parent);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.core.variables.VariableSpace#getVariable(java.lang.String, java.lang.String)
-	 */
-	public String getVariable(String variableName, String defaultValue) 
-	{
-		return variables.getVariable(variableName, defaultValue);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.core.variables.VariableSpace#getVariable(java.lang.String)
-	 */
-	public String getVariable(String variableName) 
-	{
-		return variables.getVariable(variableName);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.core.variables.VariableSpace#getBooleanValueOfVariable(java.lang.String, boolean)
-	 */
-	public boolean getBooleanValueOfVariable(String variableName, boolean defaultValue) {
-		if (!Const.isEmpty(variableName))
-		{
-			String value = environmentSubstitute(variableName);
-			if (!Const.isEmpty(value))
-			{
-				return ValueMeta.convertStringToBoolean(value);
-			}
-		}
-		return defaultValue;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.core.variables.VariableSpace#initializeVariablesFrom(org.pentaho.di.core.variables.VariableSpace)
-	 */
-	public void initializeVariablesFrom(VariableSpace parent) 
-	{
-		variables.initializeVariablesFrom(parent);	
-	}
-
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.core.variables.VariableSpace#listVariables()
-	 */
-	public String[] listVariables() 
-	{
-		return variables.listVariables();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.core.variables.VariableSpace#setVariable(java.lang.String, java.lang.String)
-	 */
-	public void setVariable(String variableName, String variableValue) 
-	{
-		variables.setVariable(variableName, variableValue);		
-	}
-
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.core.variables.VariableSpace#shareVariablesWith(org.pentaho.di.core.variables.VariableSpace)
-	 */
-	public void shareVariablesWith(VariableSpace space) 
-	{
-		variables = space;		
-	}
-
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.core.variables.VariableSpace#injectVariables(java.util.Map)
-	 */
-	public void injectVariables(Map<String,String> prop) 
-	{
-		variables.injectVariables(prop);		
-	}
-  
   /**
    * Returns the step ID via the getStepID() method call.  Support for CheckResultSourceInterface.
    * @return getStepID()
@@ -3366,226 +3268,230 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     return this.getStepID();
   }
 
-	/**
-	 * Returns the unique slave number in the cluster.
-	 * @return the unique slave number in the cluster
-	 */
-	public int getSlaveNr() {
-		return slaveNr;
-	}
+  /**
+   * Returns the unique slave number in the cluster.
+   * @return the unique slave number in the cluster
+   */
+  public int getSlaveNr() {
+    return slaveNr;
+  }
 
-	/**
-	 * Returns the cluster size.
-	 * @return the cluster size
-	 */
-	public int getClusterSize() {
-		return clusterSize;
-	}
+  /**
+   * Returns the cluster size.
+   * @return the cluster size
+   */
+  public int getClusterSize() {
+    return clusterSize;
+  }
 
-	/**
-	 * Returns a unique step number across all slave servers: slaveNr * nrCopies + copyNr.
-	 * @return a unique step number across all slave servers: slaveNr * nrCopies + copyNr
-	 */
-	public int getUniqueStepNrAcrossSlaves() {
-		return uniqueStepNrAcrossSlaves;
-	}
+  /**
+   * Returns a unique step number across all slave servers: slaveNr * nrCopies + copyNr.
+   * @return a unique step number across all slave servers: slaveNr * nrCopies + copyNr
+   */
+  public int getUniqueStepNrAcrossSlaves() {
+    return uniqueStepNrAcrossSlaves;
+  }
 
-	/**
-	 * Returns the number of unique steps across all slave servers.
-	 * @return the number of unique steps across all slave servers
-	 */
-	public int getUniqueStepCountAcrossSlaves() {
-		return uniqueStepCountAcrossSlaves;
-	}
+  /**
+   * Returns the number of unique steps across all slave servers.
+   * @return the number of unique steps across all slave servers
+   */
+  public int getUniqueStepCountAcrossSlaves() {
+    return uniqueStepCountAcrossSlaves;
+  }
 
-	/**
-	 * Returns the serverSockets.
-	 * @return the serverSockets
-	 */
-	public List<ServerSocket> getServerSockets() {
-		return serverSockets;
-	}
+  /**
+   * Returns the serverSockets.
+   * @return the serverSockets
+   */
+  public List<ServerSocket> getServerSockets() {
+    return serverSockets;
+  }
 
-	/**
-	 * @return serverSockets the serverSockets to set.
-	 * @param serverSockets the serverSockets to set
-	 */
-	public void setServerSockets(List<ServerSocket> serverSockets) {
-		this.serverSockets = serverSockets;
-	}
+  /**
+   * @return serverSockets the serverSockets to set.
+   * @param serverSockets the serverSockets to set
+   */
+  public void setServerSockets(List<ServerSocket> serverSockets) {
+    this.serverSockets = serverSockets;
+  }
 
-	/**
-	 * Set to true to actively manage priorities of step threads.
-	 * @param usingThreadPriorityManagment set to true to actively manage priorities of step threads
-	 */
-	public void setUsingThreadPriorityManagment(boolean usingThreadPriorityManagment) {
-		this.usingThreadPriorityManagment = usingThreadPriorityManagment;
-	}
+  /**
+   * Set to true to actively manage priorities of step threads.
+   * @param usingThreadPriorityManagment set to true to actively manage priorities of step threads
+   */
+  public void setUsingThreadPriorityManagment(boolean usingThreadPriorityManagment) {
+    this.usingThreadPriorityManagment = usingThreadPriorityManagment;
+  }
 
-	/**
-	 * Retusn true if we are actively managing priorities of step threads.
-	 * @return true if we are actively managing priorities of step threads
-	 */
-	public boolean isUsingThreadPriorityManagment() {
-		return usingThreadPriorityManagment;
-	}
+  /**
+   * Retusn true if we are actively managing priorities of step threads.
+   * @return true if we are actively managing priorities of step threads
+   */
+  public boolean isUsingThreadPriorityManagment() {
+    return usingThreadPriorityManagment;
+  }
 
-	/**
-	 * This method is executed by Trans right before the threads start and right after initialization.
-	 * 
-	 * More to the point: here we open remote output step sockets. 
-	 * 
-	 * @throws KettleStepException In case there is an error
-	 */
-	public void initBeforeStart() throws KettleStepException {
-		openRemoteOutputStepSocketsOnce();
-	}
+  /**
+   * This method is executed by Trans right before the threads start and right after initialization.
+   * 
+   * More to the point: here we open remote output step sockets. 
+   * 
+   * @throws KettleStepException In case there is an error
+   */
+  public void initBeforeStart() throws KettleStepException {
+    openRemoteOutputStepSocketsOnce();
+  }
 
-	/**
-	 * Returns the step listeners.
-	 * @return the stepListeners
-	 */
-	public List<StepListener> getStepListeners() {
-		return stepListeners;
-	}
+  /**
+   * Returns the step listeners.
+   * @return the stepListeners
+   */
+  public List<StepListener> getStepListeners() {
+    return stepListeners;
+  }
 
-	/**
-	 * Sets the step listeners.
-	 * @param stepListeners the stepListeners to set
-	 */
-	public void setStepListeners(List<StepListener> stepListeners) {
-		this.stepListeners = stepListeners;
-	}
+  /**
+   * Sets the step listeners.
+   * @param stepListeners the stepListeners to set
+   */
+  public void setStepListeners(List<StepListener> stepListeners) {
+    this.stepListeners = stepListeners;
+  }
 
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.trans.step.StepInterface#processRow(org.pentaho.di.trans.step.StepMetaInterface, org.pentaho.di.trans.step.StepDataInterface)
-	 */
-	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException {
-		return false;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.trans.step.StepInterface#canProcessOneRow()
-	 */
-	public boolean canProcessOneRow() {
-		switch(inputRowSets.size()) {
-		case 0: return false;
-		case 1:
-			RowSet set = inputRowSets.get(0);
-			if (set.isDone()) return false;
-			return set.size()>0;
-		default: 
-			boolean allDone=true;
-			for (RowSet rowSet : inputRowSets) {
-				if (!rowSet.isDone()) allDone=false;
-				if (rowSet.size()>0) {
-					return true;
-				}
-			}
-			return !allDone;
-		}
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.trans.step.StepInterface#addStepListener(org.pentaho.di.trans.step.StepListener)
-	 */
-	public void addStepListener(StepListener stepListener) {
-		stepListeners.add(stepListener);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.trans.step.StepInterface#isMapping()
-	 */
-	public boolean isMapping() {
-		return stepMeta.isMapping();
-	}
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepInterface#processRow(org.pentaho.di.trans.step.StepMetaInterface, org.pentaho.di.trans.step.StepDataInterface)
+   */
+  public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException {
+    return false;
+  }
 
-	/**
-	 * Retutns the socket repository.
-	 * @return the socketRepository
-	 */
-	public SocketRepository getSocketRepository() {
-		return socketRepository;
-	}
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepInterface#canProcessOneRow()
+   */
+  public boolean canProcessOneRow() {
+    switch (inputRowSets.size()) {
+      case 0:
+        return false;
+      case 1:
+        RowSet set = inputRowSets.get(0);
+        if (set.isDone())
+          return false;
+        return set.size() > 0;
+      default:
+        boolean allDone = true;
+        for (RowSet rowSet : inputRowSets) {
+          if (!rowSet.isDone())
+            allDone = false;
+          if (rowSet.size() > 0) {
+            return true;
+          }
+        }
+        return !allDone;
+    }
+  }
 
-	/**
-	 * Sets the socket repository.
-	 * @param socketRepository the socketRepository to set
-	 */
-	public void setSocketRepository(SocketRepository socketRepository) {
-		this.socketRepository = socketRepository;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.core.logging.LoggingObjectInterface#getObjectName()
-	 */
-	public String getObjectName() {
-		return getStepname();
-	}
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepInterface#addStepListener(org.pentaho.di.trans.step.StepListener)
+   */
+  public void addStepListener(StepListener stepListener) {
+    stepListeners.add(stepListener);
+  }
 
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.trans.step.StepInterface#getLogChannel()
-	 */
-	public LogChannelInterface getLogChannel() {
-		return log;
-	}
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepInterface#isMapping()
+   */
+  public boolean isMapping() {
+    return stepMeta.isMapping();
+  }
 
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.core.logging.LoggingObjectInterface#getFilename()
-	 */
-	public String getFilename() {
-		return null;
-	}
+  /**
+   * Retutns the socket repository.
+   * @return the socketRepository
+   */
+  public SocketRepository getSocketRepository() {
+    return socketRepository;
+  }
 
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.core.logging.LoggingObjectInterface#getLogChannelId()
-	 */
-	public String getLogChannelId() {
-		return log.getLogChannelId();
-	}
+  /**
+   * Sets the socket repository.
+   * @param socketRepository the socketRepository to set
+   */
+  public void setSocketRepository(SocketRepository socketRepository) {
+    this.socketRepository = socketRepository;
+  }
 
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.core.logging.LoggingObjectInterface#getObjectId()
-	 */
-	public ObjectId getObjectId() {
-		if (stepMeta==null) return null;
-		return stepMeta.getObjectId();
-	}
+  /* (non-Javadoc)
+   * @see org.pentaho.di.core.logging.LoggingObjectInterface#getObjectName()
+   */
+  public String getObjectName() {
+    return getStepname();
+  }
 
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.core.logging.LoggingObjectInterface#getObjectRevision()
-	 */
-	public ObjectRevision getObjectRevision() {
-		return null;
-	}
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepInterface#getLogChannel()
+   */
+  public LogChannelInterface getLogChannel() {
+    return log;
+  }
 
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.core.logging.LoggingObjectInterface#getObjectType()
-	 */
-	public LoggingObjectType getObjectType() {
-		return LoggingObjectType.STEP;
-	}
+  /* (non-Javadoc)
+   * @see org.pentaho.di.core.logging.LoggingObjectInterface#getFilename()
+   */
+  public String getFilename() {
+    return null;
+  }
 
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.core.logging.LoggingObjectInterface#getParent()
-	 */
-	public LoggingObjectInterface getParent() {
-		return trans;
-	}
+  /* (non-Javadoc)
+   * @see org.pentaho.di.core.logging.LoggingObjectInterface#getLogChannelId()
+   */
+  public String getLogChannelId() {
+    return log.getLogChannelId();
+  }
 
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.core.logging.LoggingObjectInterface#getRepositoryDirectory()
-	 */
-	public RepositoryDirectory getRepositoryDirectory() {
-		return null;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.core.logging.LoggingObjectInterface#getObjectCopy()
-	 */
-	public String getObjectCopy() {
-		return Integer.toString(stepcopy);
-	}
+  /* (non-Javadoc)
+   * @see org.pentaho.di.core.logging.LoggingObjectInterface#getObjectId()
+   */
+  public ObjectId getObjectId() {
+    if (stepMeta == null)
+      return null;
+    return stepMeta.getObjectId();
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.core.logging.LoggingObjectInterface#getObjectRevision()
+   */
+  public ObjectRevision getObjectRevision() {
+    return null;
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.core.logging.LoggingObjectInterface#getObjectType()
+   */
+  public LoggingObjectType getObjectType() {
+    return LoggingObjectType.STEP;
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.core.logging.LoggingObjectInterface#getParent()
+   */
+  public LoggingObjectInterface getParent() {
+    return trans;
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.core.logging.LoggingObjectInterface#getRepositoryDirectory()
+   */
+  public RepositoryDirectory getRepositoryDirectory() {
+    return null;
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.di.core.logging.LoggingObjectInterface#getObjectCopy()
+   */
+  public String getObjectCopy() {
+    return Integer.toString(stepcopy);
+  }
 
   /* (non-Javadoc)
    * @see org.pentaho.di.core.logging.LoggingObjectInterface#getLogLevel()
@@ -3603,7 +3509,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     this.logLevel = logLevel;
     log.setLogLevel(logLevel);
   }
-  
+
   /**
    * Close quietly.
    *
@@ -3618,7 +3524,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
       }
     }
   }
- 
+
   /**
    * Returns the container object ID.
    * @return the containerObjectId
@@ -3634,14 +3540,14 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   public void setCarteObjectId(String containerObjectId) {
     this.containerObjectId = containerObjectId;
   }
-  
+
   /* (non-Javadoc)
    * @see org.pentaho.di.trans.step.StepInterface#batchComplete()
    */
   @Override
   public void batchComplete() throws KettleException {
   }
- 
+
   /**
    * Gets the remote input steps.
    *
@@ -3650,7 +3556,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   public List<RemoteStep> getRemoteInputSteps() {
     return remoteInputSteps;
   }
-  
+
   /**
    * Gets the remote output steps.
    *
@@ -3659,7 +3565,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   public List<RemoteStep> getRemoteOutputSteps() {
     return remoteOutputSteps;
   }
-  
+
   /**
    * Returns the registration date
    * @rerturn the registration date
@@ -3667,27 +3573,27 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   public Date getRegistrationDate() {
     return null;
   }
-  
+
   @Override
   public boolean isGatheringMetrics() {
-    return log!=null && log.isGatheringMetrics();
+    return log != null && log.isGatheringMetrics();
   }
-  
+
   @Override
   public void setGatheringMetrics(boolean gatheringMetrics) {
-    if (log!=null) {
+    if (log != null) {
       log.setGatheringMetrics(gatheringMetrics);
     }
   }
-  
+
   @Override
   public boolean isForcingSeparateLogging() {
-    return log!=null && log.isForcingSeparateLogging();
+    return log != null && log.isForcingSeparateLogging();
   }
-  
+
   @Override
   public void setForcingSeparateLogging(boolean forcingSeparateLogging) {
-    if (log!=null) {
+    if (log != null) {
       log.setForcingSeparateLogging(forcingSeparateLogging);
     }
   }

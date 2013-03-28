@@ -28,6 +28,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 
@@ -118,7 +119,7 @@ public class FormulaMetaFunction implements Cloneable
         replaceField   = XMLHandler.getTagValue(calcnode, "replace_field");
     }
     
-    public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step, int nr) throws KettleException
+    public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step, int nr) throws KettleException
     {
         rep.saveStepAttribute(id_transformation, id_step, nr, "field_name",          fieldName);
         rep.saveStepAttribute(id_transformation, id_step, nr, "formula_string",      formula);

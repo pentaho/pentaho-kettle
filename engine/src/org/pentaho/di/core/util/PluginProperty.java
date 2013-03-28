@@ -27,6 +27,7 @@ import java.util.prefs.Preferences;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 /**
@@ -92,6 +93,8 @@ public interface PluginProperty {
     /**
      * @param repository
      *            the repository.
+     * @param metaStore
+     *            the MetaStore
      * @param transformationId
      *            the transformationId.
      * @param stepId
@@ -99,8 +102,8 @@ public interface PluginProperty {
      * @throws KettleException
      *             ...
      */
-    void saveToRepositoryStep(final Repository repository, final ObjectId transformationId, final ObjectId stepId)
-            throws KettleException;
+    void saveToRepositoryStep(final Repository repository, final IMetaStore metaStore, final ObjectId transformationId,
+        final ObjectId stepId) throws KettleException;
 
     /**
      * 
@@ -111,5 +114,5 @@ public interface PluginProperty {
      * @throws KettleException
      *             ...
      */
-    void readFromRepositoryStep(final Repository repository, final ObjectId stepId) throws KettleException;
+    void readFromRepositoryStep(final Repository repository, final IMetaStore metaStore, final ObjectId stepId) throws KettleException;
 }

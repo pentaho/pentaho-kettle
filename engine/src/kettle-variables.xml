@@ -210,6 +210,12 @@
 	</kettle-variable>
 
 	<kettle-variable>
+		<variable>PENTAHO_METASTORE_FOLDER</variable>
+		<description>You can specify an alternative location for the Pentaho client Metastore. This location defaults to $HOME/.pentaho/metastore when this variable is not set or empty.</description>
+		<default-value></default-value>
+	</kettle-variable>
+
+	<kettle-variable>
 		<description>Set this variable to Y to redirect stderr to Kettle logging.</description>
 		<variable>KETTLE_REDIRECT_STDERR</variable>
 		<default-value>Y</default-value>

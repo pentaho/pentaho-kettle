@@ -29,7 +29,6 @@ import java.util.Map;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -71,6 +70,7 @@ import org.pentaho.di.trans.step.errorhandling.Stream;
 import org.pentaho.di.trans.step.errorhandling.StreamIcon;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 /**
@@ -241,7 +241,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
     return retval.toString();
   }
   
-  public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleXMLException {
+  public void loadXML(Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore) throws KettleXMLException {
     try {
       String method = XMLHandler.getTagValue(stepnode, "specification_method");
       specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode(method);
@@ -305,7 +305,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
 
-  public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException {
+  public void readRep(Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases) throws KettleException {
     String method = rep.getStepAttributeString(id_step, "specification_method");
     specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode(method);
     String jobId = rep.getStepAttributeString(id_step, "job_object_id");
@@ -353,7 +353,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
     resultFilesFileNameField = rep.getStepAttributeString(id_step, "result_files_file_name_field"); //$NON-NLS-1$
   }
 
-  public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException {
+  public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step) throws KettleException {
     rep.saveStepAttribute(id_transformation, id_step, "specification_method", specificationMethod==null ? null : specificationMethod.getCode());
     rep.saveStepAttribute(id_transformation, id_step, "job_object_id", jobObjectId==null ? null : jobObjectId.toString());
     rep.saveStepAttribute(id_transformation, id_step, "filename", fileName); //$NON-NLS-1$
@@ -366,7 +366,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
 
     // save the mapping parameters too
     //
-    parameters.saveRep(rep, id_transformation, id_step);
+    parameters.saveRep(rep, metaStore, id_transformation, id_step);
     
     // The output side...
     //
@@ -525,6 +525,10 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   public synchronized static final JobMeta loadJobMeta(JobExecutorMeta executorMeta, Repository rep, VariableSpace space) throws KettleException {
+    return loadJobMeta(executorMeta, rep, null, space);
+  }
+  
+  public synchronized static final JobMeta loadJobMeta(JobExecutorMeta executorMeta, Repository rep, IMetaStore metaStore, VariableSpace space) throws KettleException {
     JobMeta mappingJobMeta = null;
     
     switch(executorMeta.getSpecificationMethod()) {
@@ -535,7 +539,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
         //
         // Don't set internal variables: they belong to the parent thread!
         //
-        mappingJobMeta = new JobMeta(realFilename, rep); 
+        mappingJobMeta = new JobMeta(space, realFilename, rep, metaStore, null); 
         LogChannel.GENERAL.logDetailed("Loading job from repository", "Job was loaded from XML file [" + realFilename + "]");
       } catch (Exception e) {
         throw new KettleException(BaseMessages.getString(PKG, "JobExecutorMeta.Exception.UnableToLoadJob"), e);
@@ -552,7 +556,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
           try {
             // reads the last revision in the repository...
             //
-            mappingJobMeta = rep.loadJob(realJobname, repdir, null, null); 
+            mappingJobMeta = rep.loadJob(realJobname, repdir, null, null); // TODO: FIXME: should we also pass an external MetaStore into the repository?
             LogChannel.GENERAL.logDetailed("Loading job from repository", "Executor job [" + realJobname + "] was loaded from the repository");
           } catch (Exception e) {
             throw new KettleException("Unable to load job [" + realJobname + "]", e);
@@ -1277,12 +1281,13 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
    * Load the referenced object
    * @param index the object index to load
    * @param rep the repository
+   * @param metaStore the metaStore
    * @param space the variable space to use
    * @return the referenced object once loaded
    * @throws KettleException
    */
-  public Object loadReferencedObject(int index, Repository rep, VariableSpace space) throws KettleException {
-    return loadJobMeta(this, rep, space);
+  public Object loadReferencedObject(int index, Repository rep, IMetaStore metaStore, VariableSpace space) throws KettleException {
+    return loadJobMeta(this, rep, metaStore, space);
   }
   
 }

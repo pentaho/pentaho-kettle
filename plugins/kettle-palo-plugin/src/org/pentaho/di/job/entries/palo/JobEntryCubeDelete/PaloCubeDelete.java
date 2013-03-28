@@ -34,6 +34,7 @@ import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 
@@ -82,7 +83,7 @@ public class PaloCubeDelete extends JobEntryBase implements Cloneable, JobEntryI
 		return retval.toString();
 	}
 
-	public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException {
+	public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep, IMetaStore metaStore) throws KettleXMLException {
 		try {
 			super.loadXML(entrynode, databases, slaveServers);
 
@@ -95,11 +96,8 @@ public class PaloCubeDelete extends JobEntryBase implements Cloneable, JobEntryI
 		}
 	}
 
-	public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
+	public void loadRep(Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
 		try {
-			
-			super.loadRep(rep, id_jobentry, databases, slaveServers);
-
 			this.databaseMeta = rep.loadDatabaseMetaFromJobEntryAttribute(id_jobentry, "connection", "id_database", databases);
 			this.setCubeName(rep.getStepAttributeString(id_jobentry, "cubeName"));
 
@@ -110,19 +108,17 @@ public class PaloCubeDelete extends JobEntryBase implements Cloneable, JobEntryI
 		}
 	}
 
-	public void saveRep(Repository rep, ObjectId id_job) throws KettleException {
-	    try {
-			super.saveRep(rep, id_job);
+  public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_job) throws KettleException {
+    try {
 
-			rep.saveDatabaseMetaJobEntryAttribute(id_job, getObjectId(), "connection", "id_database", databaseMeta);
-			rep.saveStepAttribute(id_job, getObjectId(), "cubeName", this.getCubeName());
+      rep.saveDatabaseMetaJobEntryAttribute(id_job, getObjectId(), "connection", "id_database", databaseMeta);
+      rep.saveStepAttribute(id_job, getObjectId(), "cubeName", this.getCubeName());
 
-		} catch (KettleDatabaseException dbe) {
-			throw new KettleException(
-					"unable to save jobentry of type 'file exists' to the repository for id_job="
-					+ id_job, dbe);
-		}
-	}
+    } catch (KettleDatabaseException dbe) {
+      throw new KettleException("unable to save jobentry of type 'file exists' to the repository for id_job=" + id_job,
+          dbe);
+    }
+  }
 
 	public Result execute(Result prevResult, int nr) throws KettleException {
 		

@@ -33,12 +33,9 @@ package org.pentaho.di.trans.steps.palo.celloutput;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -60,6 +57,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 @Step(id = "PaloCellOutput", 
@@ -112,7 +110,7 @@ public class PaloCellOutputMeta extends BaseStepMeta
     
     public final void loadXML(final Node stepnode, 
             final List < DatabaseMeta > databases, 
-            final Map < String, Counter > counters) throws KettleXMLException {
+            final IMetaStore metaStore) throws KettleXMLException {
         readData(stepnode, databases);
     }
 
@@ -245,7 +243,7 @@ public class PaloCellOutputMeta extends BaseStepMeta
         return retval.toString();
     }
 
-    public void readRep(Repository rep, ObjectId idStep, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException {
+    public void readRep(Repository rep, IMetaStore metaStore, ObjectId idStep, List<DatabaseMeta> databases) throws KettleException {
         try {
             this.databaseMeta = rep.loadDatabaseMetaFromStepAttribute(idStep, "connection", databases);
             this.cube = rep.getStepAttributeString(idStep, "cube");
@@ -288,7 +286,7 @@ public class PaloCellOutputMeta extends BaseStepMeta
         }
     }
 
-    public void saveRep(Repository rep, ObjectId idTransformation, ObjectId idStep) throws KettleException {
+    public void saveRep(Repository rep, IMetaStore metaStore, ObjectId idTransformation, ObjectId idStep) throws KettleException {
         try {
             rep.saveDatabaseMetaStepAttribute(idTransformation, idStep, "connection", databaseMeta);
             rep.saveStepAttribute(idTransformation, idStep, "cube", this.cube);

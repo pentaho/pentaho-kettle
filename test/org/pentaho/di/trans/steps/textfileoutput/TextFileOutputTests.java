@@ -58,6 +58,7 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -465,7 +466,7 @@ public class TextFileOutputTests extends TestCase {
         Document doc = XMLHandler.loadXMLFile(xmlStream, null, false, false);
         Node stepnode = XMLHandler.getSubNode(doc, "step");
         TextFileOutputMeta textFileOutputMeta = new TextFileOutputMeta();
-        textFileOutputMeta.loadXML(stepnode, null,null);
+        textFileOutputMeta.loadXML(stepnode, null, (IMetaStore)null);
         assertTrue(textFileOutputMeta.isCreateParentFolder());
     }
     

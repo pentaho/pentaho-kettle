@@ -41,11 +41,11 @@ import org.pentaho.di.ui.repository.repositoryexplorer.uisupport.IRepositoryExpl
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.SpoonPluginManager;
 import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
+import org.pentaho.di.ui.xul.KettleXulLoader;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulRunner;
 import org.pentaho.ui.xul.containers.XulDialog;
-import org.pentaho.ui.xul.swt.SwtXulLoader;
 import org.pentaho.ui.xul.swt.SwtXulRunner;
 import org.pentaho.ui.xul.swt.tags.SwtDialog;
 
@@ -78,11 +78,11 @@ public class RepositoryExplorer {
   // private Repository repository;
   public RepositoryExplorer(Shell shell, final Repository rep, RepositoryExplorerCallback callback, VariableSpace variableSpace)
       throws XulException {
-    SwtXulLoader swtXulLoader = new SwtXulLoader();
-    swtXulLoader.setOuterContext(shell);
-    swtXulLoader.setSettingsManager(XulSpoonSettingsManager.getInstance());
-    swtXulLoader.registerClassLoader(getClass().getClassLoader());
-    container = swtXulLoader.loadXul("org/pentaho/di/ui/repository/repositoryexplorer/xul/explorer-layout.xul", resourceBundle); //$NON-NLS-1$
+    KettleXulLoader xulLoader = new KettleXulLoader();
+    xulLoader.setOuterContext(shell);
+    xulLoader.setSettingsManager(XulSpoonSettingsManager.getInstance());
+    xulLoader.registerClassLoader(getClass().getClassLoader());
+    container = xulLoader.loadXul("org/pentaho/di/ui/repository/repositoryexplorer/xul/explorer-layout.xul", resourceBundle); //$NON-NLS-1$
 
     SpoonPluginManager.getInstance().applyPluginsForContainer("repository-explorer", container); //$NON-NLS-1$
 

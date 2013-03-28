@@ -822,7 +822,19 @@ public class Const
      * The release type of this compilation
      */
     public static final ReleaseType RELEASE = ReleaseType.MILESTONE;
+
+    /**
+     * The system environment variable indicating where the alternative location for the Pentaho metastore folder is located.
+     */
+    public static final String PENTAHO_METASTORE_FOLDER = "PENTAHO_METASTORE_FOLDER";
+
+    /**
+     * The name of the local client MetaStore 
+     * 
+     */
+    public static final String PENTAHO_METASTORE_NAME = "Pentaho Local Client Metastore";
     
+
     /** 
      *  rounds double f to any number of places after decimal point
 	 *  Does arithmetic using BigDecimal class to avoid integer overflow while rounding

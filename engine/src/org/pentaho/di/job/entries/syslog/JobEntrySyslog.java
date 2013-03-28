@@ -39,6 +39,7 @@ import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.metastore.api.IMetaStore;
 import org.productivity.java.syslog4j.Syslog;
 import org.productivity.java.syslog4j.SyslogIF;
 import org.w3c.dom.Node;
@@ -110,7 +111,7 @@ public class JobEntrySyslog extends JobEntryBase implements Cloneable, JobEntryI
 		return retval.toString();
 	}
 	
-	public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException
+	public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep, IMetaStore metaStore) throws KettleXMLException
 	{
 	try
 	{
@@ -133,7 +134,7 @@ public class JobEntrySyslog extends JobEntryBase implements Cloneable, JobEntryI
 	}
 
 
-	public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+	public void loadRep(Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
     { 
 		try {
 	      	port          = rep.getJobEntryAttributeString(id_jobentry, "port");
@@ -152,11 +153,10 @@ public class JobEntrySyslog extends JobEntryBase implements Cloneable, JobEntryI
 		}
 	}
 	
-	public void saveRep(Repository rep, ObjectId id_job) throws KettleException
+	public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_job) throws KettleException
 	{
 		try
 		{
-			super.saveRep(rep, id_job);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "port",      port);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "servername",      serverName);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "facility",      facility);
@@ -165,7 +165,6 @@ public class JobEntrySyslog extends JobEntryBase implements Cloneable, JobEntryI
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "datePattern",      datePattern);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "addTimestamp", addTimestamp);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "addHostname", addHostname);
-			
 		}
 		catch(KettleDatabaseException dbe)
 		{

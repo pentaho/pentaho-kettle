@@ -26,6 +26,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 /**
@@ -218,7 +219,7 @@ public class UnivariateStatsMetaFunction implements Cloneable {
    * @param nr the step number
    * @exception KettleException if an error occurs
    */
-  public void saveRep(Repository rep, ObjectId id_transformation, 
+  public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, 
                       ObjectId id_step,
                       int nr) throws KettleException {
 

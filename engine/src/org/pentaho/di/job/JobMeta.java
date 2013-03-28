@@ -47,6 +47,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.gui.Point;
@@ -99,6 +100,7 @@ import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.di.trans.HasSlaveServersInterface;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -233,9 +235,11 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
     
 	protected ObjectRevision objectRevision;
 
-  private List<ContentChangedListener> contentChangedListeners;
+  protected List<ContentChangedListener> contentChangedListeners;
 
-  private boolean usingUniqueConnections;
+  protected boolean usingUniqueConnections;
+
+  protected IMetaStore metaStore;
 
     /**
 	 * Instantiates a new job meta.
@@ -856,6 +860,22 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	public JobMeta(String fname, Repository rep, OverwritePrompter prompter) throws KettleXMLException {
 		this(null, fname, rep, prompter);
 	}
+	
+	 /**
+   * Load the job from the XML file specified.
+   * 
+   * @param log
+   *            the logging channel
+   * @param fname
+   *            The filename to load as a job
+   * @param rep
+   *            The repository to bind againt, null if there is no repository
+   *            available.
+   * @throws KettleXMLException
+   */
+  @Deprecated public JobMeta(VariableSpace parentSpace, String fname, Repository rep, OverwritePrompter prompter) throws KettleXMLException {
+    this(parentSpace, fname, rep, null, prompter);
+  }
 
 	/**
 	 * Load the job from the XML file specified.
@@ -869,9 +889,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	 *            available.
 	 * @throws KettleXMLException
 	 */
-	public JobMeta(VariableSpace parentSpace, String fname, Repository rep, OverwritePrompter prompter)
-			throws KettleXMLException {
+	public JobMeta(VariableSpace parentSpace, String fname, Repository rep, IMetaStore metaStore, OverwritePrompter prompter) throws KettleXMLException {
 		this.initializeVariablesFrom(parentSpace);
+		this.metaStore = metaStore;
 		try {
 			// OK, try to load using the VFS stuff...
 			Document doc = XMLHandler.loadXMLFile(KettleVFS.getFileObject(fname, this));
@@ -1003,18 +1023,34 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	public void loadXML(Node jobnode, Repository rep, boolean ignoreRepositorySharedObjects, OverwritePrompter prompter) throws KettleXMLException {
 		loadXML(jobnode, null, rep, ignoreRepositorySharedObjects, prompter);
 	}
-	
+
+	 /**
+   * Load a block of XML from an DOM node.   
+   * 
+   * @param jobnode The node to load from
+   * @param fname The filename
+   * @param rep The reference to a repository to load additional information from
+   * @param ignoreRepositorySharedObjects Do not load shared objects, handled separately
+   * @param prompter The prompter to use in case a shared object gets overwritten
+   * @throws KettleXMLException
+   * @deprecated
+   */
+  public void loadXML(Node jobnode, String fname, Repository rep, boolean ignoreRepositorySharedObjects, OverwritePrompter prompter) throws KettleXMLException {
+    loadXML(jobnode, fname, rep, null, ignoreRepositorySharedObjects, prompter);
+  }
+
 	/**
 	 * Load a block of XML from an DOM node.   
 	 * 
 	 * @param jobnode The node to load from
 	 * @param fname The filename
 	 * @param rep The reference to a repository to load additional information from
+	 * @param metaStore the MetaStore to use
 	 * @param ignoreRepositorySharedObjects Do not load shared objects, handled separately
 	 * @param prompter The prompter to use in case a shared object gets overwritten
 	 * @throws KettleXMLException
 	 */
-	public void loadXML(Node jobnode, String fname, Repository rep, boolean ignoreRepositorySharedObjects, OverwritePrompter prompter) throws KettleXMLException {
+	public void loadXML(Node jobnode, String fname, Repository rep, IMetaStore metaStore, boolean ignoreRepositorySharedObjects, OverwritePrompter prompter) throws KettleXMLException {
 		Props props = null;
 		if (Props.isInitialized())
 			props = Props.getInstance();
@@ -1208,7 +1244,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				Node entrynode = XMLHandler.getSubNodeByNr(entriesnode, "entry", i); //$NON-NLS-1$
 				// System.out.println("Reading entry:\n"+entrynode);
 
-				JobEntryCopy je = new JobEntryCopy(entrynode, databases, slaveServers, rep);
+				JobEntryCopy je = new JobEntryCopy(entrynode, databases, slaveServers, rep, metaStore);
 				JobEntryCopy prev = findJobEntry(je.getName(), 0, true);
 				if (prev != null) {
 					// See if the #0 (root entry) already exists!
@@ -2470,13 +2506,17 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		this.batchIdPassed = batchIdPassed;
 	}
 
+	 public List<SQLStatement> getSQLStatements(Repository repository, ProgressMonitorListener monitor) throws KettleException {
+	   return getSQLStatements(repository, null, monitor);
+	 }
+	 
 	/**
 	 * Builds a list of all the SQL statements that this transformation needs in
 	 * order to work properly.
 	 * 
 	 * @return An ArrayList of SQLStatement objects.
 	 */
-	public List<SQLStatement> getSQLStatements(Repository repository, ProgressMonitorListener monitor) throws KettleException {
+	public List<SQLStatement> getSQLStatements(Repository repository, IMetaStore metaStore, ProgressMonitorListener monitor) throws KettleException {
 		if (monitor != null)
 			monitor.beginTask(BaseMessages.getString(PKG, "JobMeta.Monitor.GettingSQLNeededForThisJob"), nrJobEntries() + 1); //$NON-NLS-1$
 		List<SQLStatement> stats = new ArrayList<SQLStatement>();
@@ -2485,7 +2525,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			JobEntryCopy copy = getJobEntry(i);
 			if (monitor != null)
 				monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.GettingSQLForJobEntryCopy") + copy + "]"); //$NON-NLS-1$ //$NON-NLS-2$
-			List<SQLStatement> list = copy.getEntry().getSQLStatements(repository, this);
+			List<SQLStatement> list = copy.getEntry().getSQLStatements(repository, metaStore, this);
 			stats.addAll(list);
 			if (monitor != null)
 				monitor.worked(1);
@@ -2968,6 +3008,10 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	public String[] environmentSubstitute(String aString[]) {
 		return variables.environmentSubstitute(aString);
 	}
+
+  public String fieldSubstitute(String aString, RowMetaInterface rowMeta, Object[] rowData) throws KettleValueException {
+    return variables.fieldSubstitute(aString, rowMeta, rowData);
+  }
 
 	/* (non-Javadoc)
 	 * @see org.pentaho.di.core.variables.VariableSpace#getParentVariableSpace()
@@ -3791,5 +3835,13 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
    */
   public void setCheckpointLogTable(CheckpointLogTable checkpointLogTable) {
     this.checkpointLogTable = checkpointLogTable;
+  }
+
+  public IMetaStore getMetaStore() {
+    return metaStore;
+  }
+
+  public void setMetaStore(IMetaStore metaStore) {
+    this.metaStore = metaStore;
   }
 }

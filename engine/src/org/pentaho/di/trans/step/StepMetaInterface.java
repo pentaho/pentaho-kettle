@@ -45,6 +45,7 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransMeta.TransformationType;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 
@@ -180,17 +181,38 @@ public interface StepMetaInterface
 	 * @param databases The available list of databases to reference to
 	 * @param counters Counters to reference.
 	 * @throws KettleXMLException When an unexpected XML error occurred. (malformed etc.)
+	 * @deprecated
 	 */
-	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleXMLException;
+	@Deprecated public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleXMLException;
+
+	 /**
+   * Load the values for this step from an XML Node
+   * @param stepnode the Node to get the info from
+   * @param databases The available list of databases to reference to
+   * @param metaStore the metastore to optionally load external reference metadata from
+   * @throws KettleXMLException When an unexpected XML error occurred. (malformed etc.)
+   */
+  public void loadXML(Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore) throws KettleXMLException;
+
+  /**
+   * Save the steps data into a Kettle repository
+   * @param rep The Kettle repository to save to
+   * @param id_transformation The transformation ID
+   * @param id_step The step ID
+   * @throws KettleException When an unexpected error occurred (database, network, etc)
+   * @deprecated
+   */
+  @Deprecated public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException;
 
 	/**
 	 * Save the steps data into a Kettle repository
 	 * @param rep The Kettle repository to save to
+	 * @param metaStore the metaStore to optionally write to
 	 * @param id_transformation The transformation ID
 	 * @param id_step The step ID
 	 * @throws KettleException When an unexpected error occurred (database, network, etc)
 	 */
-	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException;
+	public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step) throws KettleException;
 
 	/**
 	 * Read the steps information from a Kettle repository
@@ -199,9 +221,20 @@ public interface StepMetaInterface
 	 * @param databases The databases to reference
 	 * @param counters The counters to reference
 	 * @throws KettleException When an unexpected error occurred (database, network, etc)
+	 * @deprecated
 	 */
-	public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException;
-    
+	@Deprecated public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException;
+
+	 /**
+   * Read the steps information from a Kettle repository
+   * @param rep The repository to read from
+   * @param metaStore The MetaStore to read external information from
+   * @param id_step The step ID
+   * @param databases The databases to reference
+   * @throws KettleException When an unexpected error occurred (database, network, etc)
+   */
+  public void readRep(Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases) throws KettleException;
+
 	/**
 	 * Checks the settings of this step and puts the findings in a remarks List.
 	 * @param remarks The list to put the remarks in @see org.pentaho.di.core.CheckResult
@@ -430,10 +463,11 @@ public interface StepMetaInterface
    * Load the referenced object
    * @param index the referenced object index to load (in case there are multiple references)
    * @param rep the repository
+   * @param metaStore the MetaStore to use
    * @param space the variable space to use
    * @return the referenced object once loaded
    * @throws KettleException
    */
-  public Object loadReferencedObject(int index, Repository rep, VariableSpace space) throws KettleException;
+  public Object loadReferencedObject(int index, Repository rep, IMetaStore metaStore, VariableSpace space) throws KettleException;
 
 }

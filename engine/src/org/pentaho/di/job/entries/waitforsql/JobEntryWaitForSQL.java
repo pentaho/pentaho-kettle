@@ -50,6 +50,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.pentaho.di.resource.ResourceReference;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 
@@ -222,7 +223,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 	public void setMaximumTimeout(String maximumTimeout) {
 		this.maximumTimeout = maximumTimeout;
 	}
-	public void loadXML(Node entrynode, List<DatabaseMeta>  databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException
+	public void loadXML(Node entrynode, List<DatabaseMeta>  databases, List<SlaveServer> slaveServers, Repository rep, IMetaStore metaStore) throws KettleXMLException
 	{
 		try
 		{
@@ -249,7 +250,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 		}
 	}
 
-	public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+	public void loadRep(Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	{
 		try
 		{
@@ -284,7 +285,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 		return 0;
 	}
 
-	public void saveRep(Repository rep, ObjectId id_job)
+	public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_job)
 		throws KettleException
 	{
 		try

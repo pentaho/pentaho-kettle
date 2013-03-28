@@ -54,6 +54,7 @@ import org.pentaho.di.trans.steps.udjcstep.UDJCStepMetaBase;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UsageParameter;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -145,7 +146,7 @@ public class UDJCStepPluginType extends StepPluginType implements PluginTypeInte
             
             // For convenience, use a UserDefinedJavaClassMeta to parse the DOM
             UserDefinedJavaClassMeta udjcm = new UserDefinedJavaClassMeta();
-            udjcm.loadXML(pluginNode, null, null);
+            udjcm.loadXML(pluginNode, null, (IMetaStore)null);
             Class<? extends UDJCStepBase> udjcStepClass = cookClasses(udjcm);
             if(udjcStepClass == null) throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.NoValidClassRequested.PLUGINREGISTRY002",udjcm.getName()));
             

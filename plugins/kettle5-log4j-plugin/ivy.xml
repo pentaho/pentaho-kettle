@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="pentaho-kettle" module="kettle5-log4j-plugin" revision="TRUNK-SNAPSHOT" status="integration" publication="20130228232130"/>
+  <info organisation="pentaho-kettle" module="kettle5-log4j-plugin" revision="TRUNK-SNAPSHOT" status="integration" publication="20130320193433"/>
 
   <configurations>
     <conf name="default"/>
@@ -19,7 +19,6 @@
                 
     <dependency org="pentaho-kettle" name="kettle-core" rev="TRUNK-SNAPSHOT" changing="true"/>  
     <dependency org="pentaho-kettle" name="kettle-engine" rev="TRUNK-SNAPSHOT" changing="true"/>
-    <dependency org="pentaho-kettle" name="kettle-db" rev="TRUNK-SNAPSHOT" changing="true"/>
     <dependency org="pentaho-kettle" name="kettle-ui-swt" rev="TRUNK-SNAPSHOT" changing="true"/>
 
     <dependency org="log4j" name="log4j" rev="1.2.16" transitive="false"/>

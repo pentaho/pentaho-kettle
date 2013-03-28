@@ -48,6 +48,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.pentaho.di.resource.ResourceReference;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 
@@ -105,7 +106,7 @@ public class JobEntryTelnet extends JobEntryBase implements Cloneable, JobEntryI
 	}
 
 
-	  public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException {
+	  public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep, IMetaStore metaStore) throws KettleXMLException {
 	    try {
 	      super.loadXML(entrynode, databases, slaveServers);
 			hostname   = XMLHandler.getTagValue(entrynode, "hostname");
@@ -118,7 +119,7 @@ public class JobEntryTelnet extends JobEntryBase implements Cloneable, JobEntryI
 		}
 	}
 
-	  public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
+	  public void loadRep(Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
 		 try {
 			hostname   = rep.getJobEntryAttributeString(id_jobentry, "hostname");
 			port = rep.getJobEntryAttributeString(id_jobentry, "port");
@@ -130,7 +131,7 @@ public class JobEntryTelnet extends JobEntryBase implements Cloneable, JobEntryI
 		}
 	}
 
-	  public void saveRep(Repository rep, ObjectId id_job) throws KettleException {
+	  public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_job) throws KettleException {
 		try {
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "hostname",    hostname);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "port", port);

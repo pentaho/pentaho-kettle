@@ -31,6 +31,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 
@@ -437,7 +438,7 @@ public class CalculatorMetaFunction implements Cloneable
         }
 	}
 
-	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step, int nr) throws KettleException
+	public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step, int nr) throws KettleException
     {
         rep.saveStepAttribute(id_transformation, id_step, nr, "field_name",          fieldName);
         rep.saveStepAttribute(id_transformation, id_step, nr, "calc_type",           getCalcTypeDesc());

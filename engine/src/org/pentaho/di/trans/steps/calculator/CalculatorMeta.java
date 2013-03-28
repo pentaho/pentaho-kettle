@@ -23,12 +23,10 @@
 package org.pentaho.di.trans.steps.calculator;
 
 import java.util.List;
-import java.util.Map;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -48,6 +46,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 /**
@@ -77,7 +76,7 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
         calculation = new CalculatorMetaFunction[nrCalcs];
     }
     
-	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters)
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore)
 		throws KettleXMLException
 	{
         int nrCalcs   = XMLHandler.countNodes(stepnode,   CalculatorMetaFunction.XML_TAG);
@@ -136,7 +135,7 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
         calculation = new CalculatorMetaFunction[0]; 
 	}
 
-	public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters)
+	public void readRep(Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases)
 		throws KettleException
 	{
         int nrCalcs     = rep.countNrStepAttributes(id_step, "field_name");
@@ -147,12 +146,12 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
         }
 	}
 	
-	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step)
+	public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step)
 		throws KettleException
 	{
         for (int i=0;i<calculation.length;i++)
         {
-            calculation[i].saveRep(rep, id_transformation, id_step, i);
+            calculation[i].saveRep(rep, metaStore, id_transformation, id_step, i);
         }
 	}
 	

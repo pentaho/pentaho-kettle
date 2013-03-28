@@ -48,6 +48,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 
@@ -122,10 +123,7 @@ public class UnivariateStatsMeta
    * @param stepnode the step to load
    * @exception KettleXMLException if an error occurs
    */
-  public void loadXML(Node stepnode, 
-                      List<DatabaseMeta> databases, 
-                      Map<String, Counter> counters)
-    throws KettleXMLException {
+  public void loadXML(Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore) throws KettleXMLException {
 
     int nrStats = 
       XMLHandler.countNodes(stepnode, 
@@ -198,7 +196,8 @@ public class UnivariateStatsMeta
     m_stats = new UnivariateStatsMetaFunction[0]; 
   }
 
-  public void readRep(Repository rep, 
+  public void readRep(Repository rep,
+                      IMetaStore metaStore,
                       ObjectId id_step, 
                       List<DatabaseMeta> databases, 
                       Map<String, Counter> counters) 
@@ -216,17 +215,19 @@ public class UnivariateStatsMeta
    * Save this step's meta data to a repository
    *
    * @param rep the repository to save to
+   * @param metaStore the MetaStore to save to
    * @param id_transformation transformation id
    * @param id_step step id
    * @exception KettleException if an error occurs
    */
   public void saveRep(Repository rep, 
+                      IMetaStore metaStore,
                       ObjectId id_transformation, 
                       ObjectId id_step)
     throws KettleException {
 
     for (int i = 0; i < m_stats.length; i++) {
-      m_stats[i].saveRep(rep, id_transformation, id_step, i);
+      m_stats[i].saveRep(rep, metaStore, id_transformation, id_step, i);
     }
   }
 

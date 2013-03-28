@@ -23,11 +23,9 @@
 package org.pentaho.di.trans.steps.luciddbstreamingloader;
 
 import java.util.List;
-import java.util.Map;
 
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -51,6 +49,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 /**
@@ -163,8 +162,7 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
     this.tableName = tableName;
   }
 
-  public void loadXML(Node stepnode, List<DatabaseMeta> databases,
-      Map<String, Counter> counters) throws KettleXMLException {
+  public void loadXML(Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore) throws KettleXMLException {
     readData(stepnode, databases);
   }
 
@@ -323,8 +321,8 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
     return retval.toString();
   }
 
-  public void readRep(Repository rep, ObjectId id_step,
-      List<DatabaseMeta> databases, Map<String, Counter> counters)
+  public void readRep(Repository rep, IMetaStore metaStore, ObjectId id_step,
+      List<DatabaseMeta> databases)
       throws KettleException {
     try {
       databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step,
@@ -377,7 +375,7 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
     }
   }
 
-  public void saveRep(Repository rep, ObjectId id_transformation,
+  public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation,
       ObjectId id_step) throws KettleException {
     try {
       rep.saveDatabaseMetaStepAttribute(id_transformation, id_step,

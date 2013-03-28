@@ -33,6 +33,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 public class Validation implements Cloneable {
@@ -248,7 +249,7 @@ public class Validation implements Cloneable {
 		allowedValues = allowed.toArray(new String[allowed.size()]);
 	}
 
-	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step, int i) throws KettleException {
+	public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step, int i) throws KettleException {
 		rep.saveStepAttribute(id_transformation, id_step, i, "validator_field_name", fieldName);
 		rep.saveStepAttribute(id_transformation, id_step, i, "validator_field_validation_name", name);
 

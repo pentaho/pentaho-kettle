@@ -29,7 +29,6 @@ import java.util.Map;
 
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -50,6 +49,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 
@@ -125,7 +125,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface
 	}
 
 
-    public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleXMLException {
+    public void loadXML(Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore) throws KettleXMLException {
       try {
 
         String method = XMLHandler.getTagValue(stepnode, "specification_method");
@@ -161,7 +161,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface
     }
 
 	
-	public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException
+	public void readRep(Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases) throws KettleException
 	{
 		try {
 		    String method = rep.getStepAttributeString(id_step, "specification_method");
@@ -195,7 +195,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException
+	public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step) throws KettleException
 	{
 		try {
 		    rep.saveStepAttribute(id_transformation, id_step, "specification_method", specificationMethod==null ? null : specificationMethod.getCode());
@@ -324,8 +324,11 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface
   public void setSpecificationMethod(ObjectLocationSpecificationMethod specificationMethod) {
     this.specificationMethod = specificationMethod;
   }
-  
-  public synchronized static final TransMeta loadTransformationMeta(MetaInjectMeta mappingMeta, Repository rep, VariableSpace space) throws KettleException {
+
+  @Deprecated public synchronized static final TransMeta loadTransformationMeta(MetaInjectMeta mappingMeta, Repository rep, VariableSpace space) throws KettleException {
+    return loadTransformationMeta(mappingMeta, rep, null, space);
+  }
+  public synchronized static final TransMeta loadTransformationMeta(MetaInjectMeta mappingMeta, Repository rep, IMetaStore metaStore, VariableSpace space) throws KettleException {
     TransMeta mappingTransMeta = null;
     
     switch(mappingMeta.getSpecificationMethod()) {
@@ -336,7 +339,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface
         //
         // Don't set internal variables: they belong to the parent thread!
         //
-        mappingTransMeta = new TransMeta(realFilename, false); 
+        mappingTransMeta = new TransMeta(realFilename, metaStore, rep, false, space, null); 
         mappingTransMeta.getLogChannel().logDetailed("Loading Mapping from repository", "Mapping transformation was loaded from XML file [" + realFilename + "]");
       } catch (Exception e) {
         throw new KettleException(BaseMessages.getString(PKG, "MetaInjectMeta.Exception.UnableToLoadTransformationFromFile", realFilename), e);
@@ -353,7 +356,8 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface
           try {
             // reads the last revision in the repository...
             //
-            mappingTransMeta = rep.loadTransformation(realTransname, repdir, null, true, null); 
+            mappingTransMeta = rep.loadTransformation(realTransname, repdir, null, true, null); // TODO: FIXME: see if we need to pass external MetaStore references to the repository?
+            
             mappingTransMeta.getLogChannel().logDetailed("Loading Mapping from repository", "Mapping transformation [" + realTransname + "] was loaded from the repository");
           } catch (Exception e) {
             throw new KettleException("Unable to load transformation [" + realTransname + "]", e);
@@ -445,18 +449,23 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface
   public boolean[] isReferencedObjectEnabled() {
     return new boolean[] { isTransformationDefined(), };
   }
+
+  @Deprecated public Object loadReferencedObject(int index, Repository rep, VariableSpace space) throws KettleException {
+    return loadReferencedObject(index, rep, null, space);
+  }
   
   /**
    * Load the referenced object
    * @param meta The metadata that references 
    * @param index the object index to load
    * @param rep the repository
+   * @param metaStore metaStore
    * @param space the variable space to use
    * @return the referenced object once loaded
    * @throws KettleException
    */
-  public Object loadReferencedObject(int index, Repository rep, VariableSpace space) throws KettleException {
-    return loadTransformationMeta(this, rep, space);
+  public Object loadReferencedObject(int index, Repository rep, IMetaStore metaStore, VariableSpace space) throws KettleException {
+    return loadTransformationMeta(this, rep, metaStore, space);
   }
 
 }

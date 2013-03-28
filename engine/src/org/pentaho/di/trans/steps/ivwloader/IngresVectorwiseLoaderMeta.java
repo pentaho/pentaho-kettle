@@ -23,11 +23,9 @@
 package org.pentaho.di.trans.steps.ivwloader;
 
 import java.util.List;
-import java.util.Map;
 
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.ProvidesDatabaseConnectionInformation;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
@@ -47,6 +45,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 /**
@@ -236,7 +235,7 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
   }
 
   @Override
-  public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleXMLException {
+  public void loadXML(Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore) throws KettleXMLException {
     try {
       String con = XMLHandler.getTagValue(stepnode, "connection");
       databaseMeta = DatabaseMeta.findDatabase(databases, con);
@@ -274,7 +273,7 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
     }
   }
 
-  public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException {
+  public void readRep(Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases) throws KettleException {
     try {
       databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases); //$NON-NLS-1$
       tablename = rep.getStepAttributeString(id_step, "table");
@@ -309,7 +308,7 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
     }
   }
 
-  public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException {
+  public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step) throws KettleException {
     try {
       rep.saveDatabaseMetaStepAttribute(id_transformation, id_step, "id_connection", databaseMeta);
       rep.saveStepAttribute(id_transformation, id_step, "table", tablename);

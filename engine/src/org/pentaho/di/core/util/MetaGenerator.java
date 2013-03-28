@@ -83,7 +83,7 @@ public class MetaGenerator {
     
     // Generate loadXML()...
     //
-    code.append("  public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleXMLException {").append(Const.CR);
+    code.append("  public void loadXML(Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore) throws KettleXMLException {").append(Const.CR);
     for (TypeFieldDefinition field : fields) {
       switch(field.getType()) {
       case ValueMeta.TYPE_STRING: 
@@ -111,7 +111,7 @@ public class MetaGenerator {
 
     // Load from repository
     //
-    code.append("  public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException {").append(Const.CR);
+    code.append("  public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases) throws KettleException {").append(Const.CR);
     for (TypeFieldDefinition field : fields) {
       switch(field.getType()) {
       case ValueMeta.TYPE_STRING: 

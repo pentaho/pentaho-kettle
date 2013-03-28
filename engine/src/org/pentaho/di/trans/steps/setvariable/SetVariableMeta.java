@@ -23,12 +23,10 @@
 package org.pentaho.di.trans.steps.setvariable;
 
 import java.util.List;
-import java.util.Map;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -44,6 +42,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 /**
@@ -187,7 +186,7 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
     }
     
 
-	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters)
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore)
 		throws KettleXMLException
 	{
 		readData(stepnode);
@@ -289,7 +288,7 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
 		return retval.toString();
 	}
 	
-	public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters)
+	public void readRep(Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases)
 		throws KettleException
 	{
 		try
@@ -315,7 +314,7 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
 	}
 
 
-    public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step)
+    public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step)
 		throws KettleException
 	{
 		try

@@ -255,6 +255,7 @@ public class KettleVFS
     {
     	try {
 			FileObject fileObject = getFileObject(vfsFilename, space);
+			
 			return getInputStream(fileObject);
 		} catch (IOException e) {
 			throw new KettleFileException(e);

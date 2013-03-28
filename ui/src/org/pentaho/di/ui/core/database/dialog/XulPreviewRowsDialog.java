@@ -27,10 +27,10 @@ import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
+import org.pentaho.di.ui.xul.KettleXulLoader;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulRunner;
 import org.pentaho.ui.xul.containers.XulDialog;
-import org.pentaho.ui.xul.swt.SwtXulLoader;
 import org.pentaho.ui.xul.swt.SwtXulRunner;
 
 public class XulPreviewRowsDialog {
@@ -56,7 +56,7 @@ public class XulPreviewRowsDialog {
 
 	public void open() {
 		try {
-			SwtXulLoader theLoader = new SwtXulLoader();
+		  KettleXulLoader theLoader = new KettleXulLoader();
       theLoader.setSettingsManager(XulSpoonSettingsManager.getInstance());
 			theLoader.setOuterContext(this.shell);
 			this.container = theLoader.loadXul(XUL);

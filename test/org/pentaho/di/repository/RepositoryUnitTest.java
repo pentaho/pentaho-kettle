@@ -21,11 +21,11 @@
  ******************************************************************************/
 package org.pentaho.di.repository;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Hashtable;
 
 import junit.framework.TestSuite;
 
@@ -34,7 +34,6 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -48,6 +47,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.getxmldata.GetXMLDataField;
 import org.pentaho.di.trans.steps.getxmldata.GetXMLDataMeta;
+import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 
 /**
  * This class serves as a collection of tests for transformation steps and other Kettle
@@ -207,7 +207,7 @@ public class RepositoryUnitTest extends TestSuite {
 			for(GetXMLDataField f : newMeta.getInputFields()) {
 				f.setResultType(GetXMLDataField.RESULT_TYPE_VALUE_OF);
 			}
-			newMeta.readRep(repository, getXMLDataStep.getObjectId(), repository.getDatabases(), new Hashtable<String, Counter>());
+			newMeta.readRep(repository, new MemoryMetaStore(), getXMLDataStep.getObjectId(), repository.getDatabases());
 			
 			// Check that the value of Result Type is what was saved in the repo
 			assertEquals(newMeta.getInputFields()[0].getResultTypeCode(),"singlenode");			

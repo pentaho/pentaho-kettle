@@ -6,8 +6,6 @@ import java.util.List;
 
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.metastore.DatabaseMetaStoreUtil;
-import org.pentaho.di.metastore.MetaStoreConst;
-import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.IMetaStoreElement;
 import org.pentaho.metastore.api.IMetaStoreElementType;
@@ -17,6 +15,7 @@ import org.pentaho.metastore.api.exceptions.MetaStoreElementTypeExistsException;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.api.exceptions.MetaStoreNamespaceExistsException;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
+import org.pentaho.metastore.util.PentahoDefaults;
 
 public class SharedObjectsMetaStore extends MemoryMetaStore implements IMetaStore {
   
@@ -32,7 +31,7 @@ public class SharedObjectsMetaStore extends MemoryMetaStore implements IMetaStor
   
   @Override
   public List<String> getNamespaces() throws MetaStoreException {
-    return Arrays.asList( MetaStoreConst.PENTAHO_NAMESPACE );
+    return Arrays.asList( PentahoDefaults.NAMESPACE );
   }
 
   @Override
@@ -43,6 +42,11 @@ public class SharedObjectsMetaStore extends MemoryMetaStore implements IMetaStor
   @Override
   public void deleteNamespace(String namespace) throws MetaStoreException, MetaStoreDependenciesExistsException {
     throw new MetaStoreException("The shared objects metadata store doesn't support deleting namespaces");
+  }
+  
+  @Override
+  public boolean namespaceExists(String namespace) throws MetaStoreException {
+    return getNamespaces().indexOf(namespace)>=0;
   }
 
   @Override

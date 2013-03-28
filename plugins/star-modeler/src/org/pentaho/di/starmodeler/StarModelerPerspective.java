@@ -32,8 +32,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleObjectExistsException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.Variables;
@@ -41,6 +39,7 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.metastore.DatabaseMetaStoreUtil;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.starmodeler.generator.JobGenerator;
 import org.pentaho.di.starmodeler.generator.MetadataGenerator;
@@ -57,10 +56,14 @@ import org.pentaho.di.ui.spoon.SpoonPerspective;
 import org.pentaho.di.ui.spoon.SpoonPerspectiveListener;
 import org.pentaho.di.ui.spoon.SpoonPerspectiveManager;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.xul.KettleXulLoader;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.metadata.util.SerializationService;
+import org.pentaho.metastore.api.IMetaStore;
+import org.pentaho.metastore.api.exceptions.MetaStoreElementExistException;
+import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
@@ -78,7 +81,6 @@ import org.pentaho.ui.xul.containers.XulTabs;
 import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.impl.XulEventHandler;
-import org.pentaho.ui.xul.swt.SwtXulLoader;
 import org.pentaho.ui.xul.swt.SwtXulRunner;
 import org.pentaho.ui.xul.swt.tags.SwtTab;
 import org.pentaho.ui.xul.util.XulDialogCallback;
@@ -150,7 +152,7 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     
     String perspectiveSrc = "org/pentaho/di/starmodeler/xul/perspective.xul";
     try {
-      SwtXulLoader loader = new SwtXulLoader();
+      KettleXulLoader loader = new KettleXulLoader();
       loader.registerClassLoader(getClass().getClassLoader());
       
       Spoon.getInstance().addFileListener(this);
@@ -242,7 +244,7 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
       StarDomain starDomain = new StarDomain();
       starDomain.setDomain(domain);
       starDomain.setFilename(fname);
-      createTabForModel(starDomain, ModelerHelper.MODELER_NAME);
+      createTabForDomain(starDomain, ModelerHelper.MODELER_NAME);
       PropsUI.getInstance().addLastFile(LastUsedFile.FILE_TYPE_SCHEMA, fname, null, false, null);
       Spoon.getInstance().addMenuLast();
       return true;
@@ -377,8 +379,7 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     tab.setLabel(tabName);
   }
   
-
-  public void createTabForModel(final StarDomain starDomain, final String modelerName) throws Exception {
+  public void createTabForDomain(final StarDomain starDomain, final String modelerName) throws Exception {
     SpoonPerspectiveManager.getInstance().activatePerspective(getClass());
     
     final XulTabAndPanel tabAndPanel = createTab();
@@ -396,7 +397,6 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     props.setLook(parentComposite);
     
     int margin = Const.MARGIN;
-    int middle = Const.MIDDLE_PCT;
     
     FormLayout formLayout = new FormLayout();
     formLayout.marginLeft=10;
@@ -406,8 +406,128 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     formLayout.spacing=margin;
     parentComposite.setLayout(formLayout);
     
+    Control lastControl = addModelsGroupToDomainTab(starDomain, tabAndPanel, parentComposite);
+    lastControl = addSharedDimensionsGroupToDomainTab(starDomain, tabAndPanel, parentComposite, lastControl);
+    lastControl = addPhysicalGroupToDomainTab(starDomain, tabAndPanel, parentComposite, lastControl);
+    
+    parentComposite.layout(true);
+    parentComposite.pack();
+    
+    // What's the size: 
+    Rectangle bounds = parentComposite.getBounds();
+    
+    scrolledComposite.setContent(parentComposite);
+    scrolledComposite.setExpandHorizontal(true);
+    scrolledComposite.setExpandVertical(true);
+    scrolledComposite.setMinWidth(bounds.width);
+    scrolledComposite.setMinHeight(bounds.height);
+    
+    models.add(starDomain);
+    
+    setNameForTab(tabAndPanel.tab, starDomain.getDomain().getName(defaultLocale));
+    setMetaForTab(tabAndPanel.tab, starDomain);
+    setSelectedMeta(starDomain);
+    setActive(true);
+
+    comp.layout();
+    
+    Spoon.getInstance().enableMenus();
+  }
+  
+  private Control addPhysicalGroupToDomainTab(final StarDomain starDomain, final XulTabAndPanel tabAndPanel,
+      final Composite parentComposite, Control lastControl) {    
+    PropsUI props = PropsUI.getInstance();
+    int middle = props.getMiddlePct();
+    int margin = Const.MARGIN;
+    
+    // And now for the physical hints
+    //
+    final Group physicalGroup = new Group(parentComposite, SWT.SHADOW_NONE);
+    props.setLook(physicalGroup);
+    physicalGroup.setText(BaseMessages.getString(PKG, "StarModelerPerspective.PhysicalGroup.Label"));
+    FormLayout phGroupLayout = new FormLayout();
+    phGroupLayout.marginLeft=10;
+    phGroupLayout.marginRight=10;
+    phGroupLayout.marginTop=10;
+    phGroupLayout.marginBottom=10;
+    phGroupLayout.spacing=margin;
+    physicalGroup.setLayout(phGroupLayout);
+    
+    FormData fdPhysicalGroup = new FormData();
+    fdPhysicalGroup.top = new FormAttachment(lastControl, 2*margin);
+    fdPhysicalGroup.left = new FormAttachment(0, 0);
+    fdPhysicalGroup.right = new FormAttachment(100, 0);
+    physicalGroup.setLayoutData(fdPhysicalGroup);
+    lastControl = physicalGroup;
+
+    // The target database (optional)
+    //
+    final List<DatabaseMeta> sharedDatabases= SharedDatabaseUtil.getDatabaseMetaList(Spoon.getInstance().metaStore);
+    String[] databaseNames = SharedDatabaseUtil.getSortedDatabaseNames(sharedDatabases);
+    
+    Label targetDatabaseLabel = new Label(physicalGroup, SWT.RIGHT);
+    props.setLook(targetDatabaseLabel);
+    targetDatabaseLabel.setText(BaseMessages.getString(PKG, "StarModelerPerspective.TargetDatabase.Label"));
+    FormData fdTargetDatabaseLabel = new FormData();
+    fdTargetDatabaseLabel.left=new FormAttachment(0, 0);
+    fdTargetDatabaseLabel.right=new FormAttachment(middle, 0);
+    fdTargetDatabaseLabel.top =new FormAttachment(0, 0);
+    targetDatabaseLabel.setLayoutData(fdTargetDatabaseLabel);
+    
+    final Button newDatabaseButton = new Button(physicalGroup, SWT.PUSH);
+    newDatabaseButton.setText(BaseMessages.getString("System.Button.New"));
+    FormData fdNewDatabaseButton = new FormData();
+    fdNewDatabaseButton.right=new FormAttachment(100, 0);
+    fdNewDatabaseButton.top =new FormAttachment(0, 0);
+    newDatabaseButton.setLayoutData(fdNewDatabaseButton);
+
+    final CCombo targetDatabase = new CCombo(physicalGroup, SWT.BORDER | SWT.SINGLE);
+    targetDatabase.setItems(databaseNames);
+    props.setLook(targetDatabase);
+    String targetDb = ConceptUtil.getString(starDomain.getDomain(), DefaultIDs.DOMAIN_TARGET_DATABASE);
+    targetDatabase.setText(Const.NVL(targetDb, ""));
+    FormData fdTargetDatabase = new FormData();
+    fdTargetDatabase.left=new FormAttachment(middle, 5);
+    fdTargetDatabase.right=new FormAttachment(newDatabaseButton, -margin);
+    fdTargetDatabase.top =new FormAttachment(lastControl, margin);
+    targetDatabase.setLayoutData(fdTargetDatabase);
+    targetDatabase.addModifyListener(new ModifyListener() {  public void modifyText(ModifyEvent event) { 
+      starDomain.getDomain().setProperty(DefaultIDs.DOMAIN_TARGET_DATABASE, targetDatabase.getText()); } });
+    lastControl = targetDatabase;
+    
+    newDatabaseButton.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent event) {
+        createSharedDatabase(targetDatabase);
+      }
+    });
+
+    
+    // put some utility buttons at the bottom too...
+    //
+    Button sqlJobButton = new Button(physicalGroup, SWT.PUSH);
+    sqlJobButton.setText(BaseMessages.getString(PKG, "StarModelerPerspective.Button.GenerateSQLJob"));
+    sqlJobButton.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { generateSqlJobButton(starDomain); } });
+    Button domainJobButton = new Button(physicalGroup, SWT.PUSH);
+    domainJobButton.setText(BaseMessages.getString(PKG, "StarModelerPerspective.Button.GenerateDomainJob"));
+    domainJobButton.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { generateDomainJobButton(starDomain); } });
+    Button physicalModelButton = new Button(physicalGroup, SWT.PUSH);
+    physicalModelButton.setText(BaseMessages.getString(PKG, "StarModelerPerspective.Button.GeneratePhysicalModel"));
+    physicalModelButton.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { generatePhysicalModelButton(starDomain); } });
+    Button mondrianSchemaButton = new Button(physicalGroup, SWT.PUSH);
+    mondrianSchemaButton.setText(BaseMessages.getString(PKG, "StarModelerPerspective.Button.GenerateMondrianSchema"));
+    mondrianSchemaButton.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { generateMondrialSchemaButton(starDomain); } });
+    BaseStepDialog.positionBottomButtons(physicalGroup, 
+        new Button[] { sqlJobButton, domainJobButton, physicalModelButton, mondrianSchemaButton, }, margin, lastControl);
+    
+    return physicalGroup;
+  }
+
+  private Control addModelsGroupToDomainTab(final StarDomain starDomain, final XulTabAndPanel tabAndPanel, Composite parentComposite) {
+    PropsUI props = PropsUI.getInstance();
+    int middle = props.getMiddlePct();
+    int margin = Const.MARGIN;
+    
     // Add a group for the logical stars
-    // Then below one for the physical hints...
     //
     final Group logicalGroup = new Group(parentComposite, SWT.SHADOW_NONE);
     props.setLook(logicalGroup);
@@ -419,6 +539,12 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     groupLayout.marginBottom=10;
     groupLayout.spacing=margin;
     logicalGroup.setLayout(groupLayout);
+    
+    FormData fdLogicalGroup = new FormData();
+    fdLogicalGroup.top = new FormAttachment(0, 0);
+    fdLogicalGroup.left = new FormAttachment(0, 0);
+    fdLogicalGroup.right = new FormAttachment(100, 0);
+    logicalGroup.setLayoutData(fdLogicalGroup);
     
     // Add a line to edit the name of the logical domain
     //
@@ -499,9 +625,11 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
       }
     });
     
+    refreshModelsList(starDomain, modelsList);
+    
     FormData fdModelsList = new FormData();
     fdModelsList.top = new FormAttachment(lastControl, margin);
-    fdModelsList.bottom = new FormAttachment(lastControl, 350);
+    fdModelsList.bottom = new FormAttachment(lastControl, 250);
     fdModelsList.left = new FormAttachment(middle, margin);
     fdModelsList.right = new FormAttachment(100, 0);
     modelsList.setLayoutData(fdModelsList);
@@ -559,117 +687,130 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
       }
     });
     
-    FormData fdLogicalGroup = new FormData();
-    fdLogicalGroup.top = new FormAttachment(0, 0);
-    fdLogicalGroup.left = new FormAttachment(0, 0);
-    fdLogicalGroup.right = new FormAttachment(100, 0);
-    logicalGroup.setLayoutData(fdLogicalGroup);
-    lastControl = logicalGroup;
     
-    // And now for the physical hints
-    //
-    final Group physicalGroup = new Group(parentComposite, SWT.SHADOW_NONE);
-    props.setLook(physicalGroup);
-    physicalGroup.setText(BaseMessages.getString(PKG, "StarModelerPerspective.PhysicalGroup.Label"));
-    FormLayout phGroupLayout = new FormLayout();
-    phGroupLayout.marginLeft=10;
-    phGroupLayout.marginRight=10;
-    phGroupLayout.marginTop=10;
-    phGroupLayout.marginBottom=10;
-    phGroupLayout.spacing=margin;
-    physicalGroup.setLayout(phGroupLayout);
-    
-    // The target database (optional)
-    //
-    final List<DatabaseMeta> sharedDatabases= SharedDatabaseUtil.loadSharedDatabases();
-    String[] databaseNames = SharedDatabaseUtil.getSortedDatabaseNames(sharedDatabases);
-    
-    Label targetDatabaseLabel = new Label(physicalGroup, SWT.RIGHT);
-    props.setLook(targetDatabaseLabel);
-    targetDatabaseLabel.setText(BaseMessages.getString(PKG, "StarModelerPerspective.TargetDatabase.Label"));
-    FormData fdTargetDatabaseLabel = new FormData();
-    fdTargetDatabaseLabel.left=new FormAttachment(0, 0);
-    fdTargetDatabaseLabel.right=new FormAttachment(middle, 0);
-    fdTargetDatabaseLabel.top =new FormAttachment(0, 0);
-    targetDatabaseLabel.setLayoutData(fdTargetDatabaseLabel);
-    
-    final Button newDatabaseButton = new Button(physicalGroup, SWT.PUSH);
-    newDatabaseButton.setText(BaseMessages.getString("System.Button.New"));
-    FormData fdNewDatabaseButton = new FormData();
-    fdNewDatabaseButton.right=new FormAttachment(100, 0);
-    fdNewDatabaseButton.top =new FormAttachment(0, 0);
-    newDatabaseButton.setLayoutData(fdNewDatabaseButton);
+    return logicalGroup;
+  }
 
-    final CCombo targetDatabase = new CCombo(physicalGroup, SWT.BORDER | SWT.SINGLE);
-    targetDatabase.setItems(databaseNames);
-    props.setLook(targetDatabase);
-    String targetDb = ConceptUtil.getString(starDomain.getDomain(), DefaultIDs.DOMAIN_TARGET_DATABASE);
-    targetDatabase.setText(Const.NVL(targetDb, ""));
-    FormData fdTargetDatabase = new FormData();
-    fdTargetDatabase.left=new FormAttachment(middle, 5);
-    fdTargetDatabase.right=new FormAttachment(newDatabaseButton, -margin);
-    fdTargetDatabase.top =new FormAttachment(lastControl, margin);
-    targetDatabase.setLayoutData(fdTargetDatabase);
-    targetDatabase.addModifyListener(new ModifyListener() {  public void modifyText(ModifyEvent event) { 
-      starDomain.getDomain().setProperty(DefaultIDs.DOMAIN_TARGET_DATABASE, targetDatabase.getText()); } });
-    lastControl = targetDatabase;
+  private Control addSharedDimensionsGroupToDomainTab(final StarDomain starDomain, final XulTabAndPanel tabAndPanel, Composite parentComposite, Control lastControl) {
+    PropsUI props = PropsUI.getInstance();
+    int middle = props.getMiddlePct();
+    int margin = Const.MARGIN;
     
-    newDatabaseButton.addSelectionListener(new SelectionAdapter() {
-      public void widgetSelected(SelectionEvent event) {
-        createSharedDatabase(targetDatabase);
+    // Add a group for the logical stars
+    //
+    final Group dimsGroup = new Group(parentComposite, SWT.SHADOW_NONE);
+    props.setLook(dimsGroup);
+    dimsGroup.setText(BaseMessages.getString(PKG, "StarModelerPerspective.SharedDimensions.Label"));
+    FormLayout groupLayout = new FormLayout();
+    groupLayout.marginLeft=10;
+    groupLayout.marginRight=10;
+    groupLayout.marginTop=10;
+    groupLayout.marginBottom=10;
+    groupLayout.spacing=margin;
+    dimsGroup.setLayout(groupLayout);
+    
+    FormData fdDimsGroup = new FormData();
+    fdDimsGroup.top = new FormAttachment(lastControl, margin);
+    fdDimsGroup.left = new FormAttachment(0, 0);
+    fdDimsGroup.right = new FormAttachment(100, 0);
+    dimsGroup.setLayoutData(fdDimsGroup);
+    
+    // Then we'll add a table view for the shared dimensions
+    //
+    Label modelsLabel = new Label(dimsGroup, SWT.RIGHT);
+    props.setLook(modelsLabel);
+    modelsLabel.setText(BaseMessages.getString(PKG, "StarModelerPerspective.DomainModels.Label"));
+    FormData fdModelsLabel = new FormData();
+    fdModelsLabel.left=new FormAttachment(0, 0);
+    fdModelsLabel.right=new FormAttachment(middle, 0);
+    fdModelsLabel.top =new FormAttachment(lastControl, margin);
+    modelsLabel.setLayoutData(fdModelsLabel);
+
+    ColumnInfo[] colinf=new ColumnInfo[] {
+      new ColumnInfo(BaseMessages.getString(PKG, "StarModelerPerspective.ModelName.Column"), ColumnInfo.COLUMN_TYPE_TEXT, false, true),
+      new ColumnInfo(BaseMessages.getString(PKG, "StarModelerPerspective.ModelDescription.Column"), ColumnInfo.COLUMN_TYPE_TEXT, false, true),
+    };
+    
+    final TableView modelsList=new TableView(new Variables(), dimsGroup, SWT.BORDER, colinf, 1, null, props);
+    modelsList.setReadonly(true);
+    modelsList.table.addSelectionListener(new SelectionAdapter() {
+      @Override
+      public void widgetDefaultSelected(SelectionEvent e) {
+        if (modelsList.getSelectionIndex()<0) return;
+        TableItem item = modelsList.table.getSelection()[0];
+        String name = item.getText(1);
+        if (editModel(dimsGroup.getShell(), starDomain, defaultLocale, name)) {
+          refreshModelsList(starDomain, modelsList);
+        }
+      }
+    });
+    
+    refreshModelsList(starDomain, modelsList);
+    
+    FormData fdModelsList = new FormData();
+    fdModelsList.top = new FormAttachment(lastControl, margin);
+    fdModelsList.bottom = new FormAttachment(lastControl, 250);
+    fdModelsList.left = new FormAttachment(middle, margin);
+    fdModelsList.right = new FormAttachment(100, 0);
+    modelsList.setLayoutData(fdModelsList);
+    lastControl = modelsList;
+    
+    
+    
+    // A few buttons to edit the list
+    // 
+    Button newModelButton = new Button(dimsGroup, SWT.PUSH);
+    newModelButton.setText(BaseMessages.getString(PKG, "StarModelerPerspective.Button.NewModel"));
+    FormData fdNewModelButton = new FormData();
+    fdNewModelButton.top = new FormAttachment(lastControl, margin);
+    fdNewModelButton.left = new FormAttachment(middle, margin);
+    newModelButton.setLayoutData(fdNewModelButton);
+    newModelButton.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent event) { 
+        if (newModel(dimsGroup.getShell(), starDomain)) {
+          refreshModelsList(starDomain, modelsList);
+        }
+      }
+    });
+    
+    Button editModelButton = new Button(dimsGroup, SWT.PUSH);
+    editModelButton.setText(BaseMessages.getString(PKG, "StarModelerPerspective.Button.EditModel"));
+    FormData fdEditModelButton = new FormData();
+    fdEditModelButton.top = new FormAttachment(lastControl, margin);
+    fdEditModelButton.left = new FormAttachment(newModelButton, margin);
+    editModelButton.setLayoutData(fdEditModelButton);
+    editModelButton.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent event) { 
+        if (modelsList.getSelectionIndex()<0) return;
+        TableItem item = modelsList.table.getSelection()[0];
+        String name = item.getText(1);
+        if (editModel(dimsGroup.getShell(), starDomain, defaultLocale, name)) {
+          refreshModelsList(starDomain, modelsList);
+        }
       }
     });
 
+    Button delModelButton = new Button(dimsGroup, SWT.PUSH);
+    delModelButton.setText(BaseMessages.getString(PKG, "StarModelerPerspective.Button.DeleteModel"));
+    FormData fdDelModelButton = new FormData();
+    fdDelModelButton.top = new FormAttachment(lastControl, margin);
+    fdDelModelButton.left = new FormAttachment(editModelButton, margin);
+    delModelButton.setLayoutData(fdDelModelButton);
+    delModelButton.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent event) {
+        if (modelsList.getSelectionIndex()<0) return;
+        TableItem item = modelsList.table.getSelection()[0];
+        String name = item.getText(1);
+        if (deleteModel(dimsGroup.getShell(), starDomain, defaultLocale, name)) {
+          refreshModelsList(starDomain, modelsList);
+        }
+      }
+    });
     
-    // put some utility buttons at the bottom too...
-    //
-    Button sqlJobButton = new Button(physicalGroup, SWT.PUSH);
-    sqlJobButton.setText(BaseMessages.getString(PKG, "StarModelerPerspective.Button.GenerateSQLJob"));
-    sqlJobButton.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { generateSqlJobButton(starDomain); } });
-    Button domainJobButton = new Button(physicalGroup, SWT.PUSH);
-    domainJobButton.setText(BaseMessages.getString(PKG, "StarModelerPerspective.Button.GenerateDomainJob"));
-    domainJobButton.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { generateDomainJobButton(starDomain); } });
-    Button physicalModelButton = new Button(physicalGroup, SWT.PUSH);
-    physicalModelButton.setText(BaseMessages.getString(PKG, "StarModelerPerspective.Button.GeneratePhysicalModel"));
-    physicalModelButton.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { generatePhysicalModelButton(starDomain); } });
-    Button mondrianSchemaButton = new Button(physicalGroup, SWT.PUSH);
-    mondrianSchemaButton.setText(BaseMessages.getString(PKG, "StarModelerPerspective.Button.GenerateMondrianSchema"));
-    mondrianSchemaButton.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { generateMondrialSchemaButton(starDomain); } });
-    BaseStepDialog.positionBottomButtons(physicalGroup, 
-        new Button[] { sqlJobButton, domainJobButton, physicalModelButton, mondrianSchemaButton, }, margin, lastControl);
     
-    FormData fdPhysicalGroup = new FormData();
-    fdPhysicalGroup.top = new FormAttachment(logicalGroup, 2*margin);
-    fdPhysicalGroup.left = new FormAttachment(0, 0);
-    fdPhysicalGroup.right = new FormAttachment(100, 0);
-    physicalGroup.setLayoutData(fdPhysicalGroup);
-    lastControl = physicalGroup;
-    
-    parentComposite.layout(true);
-    parentComposite.pack();
-    
-    // What's the size: 
-    Rectangle bounds = parentComposite.getBounds();
-    
-    scrolledComposite.setContent(parentComposite);
-    scrolledComposite.setExpandHorizontal(true);
-    scrolledComposite.setExpandVertical(true);
-    scrolledComposite.setMinWidth(bounds.width);
-    scrolledComposite.setMinHeight(bounds.height);
-
-    
-    refreshModelsList(starDomain, modelsList);
-    models.add(starDomain);
-    
-    setNameForTab(tabAndPanel.tab, starDomain.getDomain().getName(defaultLocale));
-    setMetaForTab(tabAndPanel.tab, starDomain);
-    setSelectedMeta(starDomain);
-    setActive(true);
-
-    comp.layout();
-    
-    Spoon.getInstance().enableMenus();
+    return dimsGroup;
   }
+
   
   protected void createSharedDatabase(CCombo targetDatabase) {
     Shell shell = Spoon.getInstance().getShell();
@@ -679,21 +820,26 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
         DatabaseMeta dbMeta = new DatabaseMeta();
         DatabaseDialog databaseDialog = new DatabaseDialog(shell, dbMeta);
         if (databaseDialog.open()!=null) {
-          // Add dbMeta to the list of shared databases...
+          // Add dbMeta to the shared databases...
           //
-          SharedDatabaseUtil.addSharedDatabase(dbMeta);
+          IMetaStore metaStore = Spoon.getInstance().getMetaStore();
           
-          final List<DatabaseMeta> sharedDatabases= SharedDatabaseUtil.loadSharedDatabases();
+          DatabaseMetaStoreUtil.createDatabaseElement(metaStore, dbMeta);
+
+          // Refresh the list...
+          //
+          final List<DatabaseMeta> sharedDatabases= DatabaseMetaStoreUtil.getDatabaseElements(metaStore);
           String[] databaseNames = SharedDatabaseUtil.getSortedDatabaseNames(sharedDatabases);
           
           targetDatabase.setItems(databaseNames);
+          targetDatabase.setText(dbMeta.getName());
         }
         retry = false;
-      } catch(KettleObjectExistsException e) {
+      } catch(MetaStoreElementExistException e) {
         new ErrorDialog(shell, 
             BaseMessages.getString(PKG, "StarModelerPerspective.Exception.UnableToCreateSharedDB.Title"), 
             BaseMessages.getString(PKG, "StarModelerPerspective.Exception.UnableToCreateSharedDB.Message"), e);
-      } catch (KettleException e) {
+      } catch (MetaStoreException e) {
         new ErrorDialog(shell, 
             BaseMessages.getString(PKG, "StarModelerPerspective.Exception.UnableToCreateSharedDB.Title"), 
             BaseMessages.getString(PKG, "StarModelerPerspective.Exception.UnableToCreateSharedDB.Message"), e);
@@ -787,6 +933,7 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
    */
   private boolean newModel(Shell shell, StarDomain starDomain) {
     LogicalModel model = new LogicalModel();
+    model.setName(new LocalizedString(defaultLocale, "Model"));
 
     StarModelDialog dialog = new StarModelDialog(shell, model, defaultLocale);
     if (dialog.open()!=null) {

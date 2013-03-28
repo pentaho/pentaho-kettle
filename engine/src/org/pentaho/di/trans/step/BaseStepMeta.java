@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.KettleAttribute;
 import org.pentaho.di.core.KettleAttributeInterface;
 import org.pentaho.di.core.SQLStatement;
@@ -36,6 +37,7 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
@@ -58,6 +60,7 @@ import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransMeta.TransformationType;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -853,7 +856,45 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface
      * @return the referenced object once loaded
      * @throws KettleException
      */
-    public Object loadReferencedObject(int index, Repository rep, VariableSpace space) throws KettleException {
+    @Deprecated public Object loadReferencedObject(int index, Repository rep, VariableSpace space) throws KettleException {
+      // Provided for v4 API compatibility
       return null;
+    }
+    
+    public Object loadReferencedObject(int index, Repository rep, IMetaStore metaStore, VariableSpace space) throws KettleException {
+      // Provided for v4 API compatibility
+      return null;
+    }
+
+    @Deprecated public void readRep(Repository rep, ObjectId idStep, List<DatabaseMeta> databases) throws KettleException {
+      // provided for API (compile & runtime) compatibility with v4
+    }
+
+    public void readRep(Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases) throws KettleException {
+      // provided for API (compile & runtime) compatibility with v4
+    }
+
+    @Deprecated public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException {
+      // provided for API (compile & runtime) compatibility with v4
+    }
+
+    @Deprecated public void loadXML(Node stepnode, List<DatabaseMeta> databases) throws KettleXMLException {
+      // provided for API (compile & runtime) compatibility with v4
+    }
+
+    @Deprecated public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleXMLException {
+      // provided for API (compile & runtime) compatibility with v4
+    }
+
+    public void loadXML(Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore) throws KettleXMLException {
+      // provided for API (compile & runtime) compatibility with v4
+    }
+
+    @Deprecated public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException {
+      // provided for API (compile & runtime) compatibility with v4
+    }
+
+    public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step) throws KettleException {
+      // provided for API (compile & runtime) compatibility with v4
     }
 }

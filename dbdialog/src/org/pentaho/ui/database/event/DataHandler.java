@@ -215,7 +215,7 @@ public class DataHandler extends AbstractXulEventHandler {
 
   protected XulTree poolParameterTree;
 
-  private XulButton acceptButton;
+  protected XulButton acceptButton;
   private XulButton cancelButton;
   private XulButton testButton;
   private XulLabel noticeLabel;

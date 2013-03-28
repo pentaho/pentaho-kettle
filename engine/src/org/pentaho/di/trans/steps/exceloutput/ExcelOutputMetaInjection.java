@@ -22,12 +22,11 @@
 
 package org.pentaho.di.trans.steps.exceloutput;
 
-import org.pentaho.di.core.row.ValueMeta;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.step.StepMetaInjectionInterface;

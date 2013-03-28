@@ -3902,6 +3902,10 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     return variables.environmentSubstitute(aString);
   }
 
+  public String fieldSubstitute(String aString, RowMetaInterface rowMeta, Object[] rowData) throws KettleValueException {
+    return variables.fieldSubstitute(aString, rowMeta, rowData);
+  }
+
   public VariableSpace getParentVariableSpace() {
     return variables.getParentVariableSpace();
   }

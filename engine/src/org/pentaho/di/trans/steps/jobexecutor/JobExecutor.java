@@ -45,7 +45,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
- * Execute a mapping: a re-usuable transformation
+ * Execute a job for every input row
  * 
  * @author Matt
  * @since 22-nov-2005
@@ -369,7 +369,7 @@ public class JobExecutor extends BaseStep implements StepInterface
         meta.setRepository(getTransMeta().getRepository());
 
         data.executorJobMeta = JobExecutorMeta.loadJobMeta(meta, meta.getRepository(), this);
-        data.executorJobMeta.setArguments(getTransMeta().getArguments());
+        data.executorJobMeta.setArguments(getTrans().getArguments());
         
         // Do we have a job at all?
         //

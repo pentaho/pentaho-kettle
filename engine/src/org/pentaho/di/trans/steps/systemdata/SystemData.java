@@ -244,14 +244,11 @@ public class SystemData extends BaseStep implements StepInterface
 			case SystemDataMeta.TYPE_SYSTEM_INFO_ARGUMENT_09: 
 			case SystemDataMeta.TYPE_SYSTEM_INFO_ARGUMENT_10: 
 				argnr = meta.getFieldType()[i]-SystemDataMeta.TYPE_SYSTEM_INFO_ARGUMENT_01;
-				if (argnr<getTransMeta().getArguments().length)
-				{
-                    row[index] = getTransMeta().getArguments()[argnr];
-				}
-				else
-				{
-                    row[index] = null;
-				}
+          if (getTrans().getArguments()!=null && argnr < getTrans().getArguments().length) {
+            row[index] = getTrans().getArguments()[argnr];
+          } else {
+            row[index] = null;
+          }
 				break;
             case SystemDataMeta.TYPE_SYSTEM_INFO_KETTLE_VERSION:
                 row[index] = Const.VERSION;
@@ -570,7 +567,7 @@ public class SystemData extends BaseStep implements StepInterface
 				row[index] = cal.getTime();				
 				break; 
 			case SystemDataMeta.TYPE_SYSTEM_INFO_PREVIOUS_RESULT_RESULT:
-				Result previousResult = getTransMeta().getPreviousResult();
+				Result previousResult = getTrans().getPreviousResult();
 				boolean result=false;
 				if(previousResult!=null)
 				{
@@ -579,7 +576,7 @@ public class SystemData extends BaseStep implements StepInterface
 				row[index] =result;
 				break;
 			case SystemDataMeta.TYPE_SYSTEM_INFO_PREVIOUS_RESULT_EXIT_STATUS:
-				previousResult = getTransMeta().getPreviousResult();
+				previousResult = getTrans().getPreviousResult();
 				long value=0;
 				if(previousResult!=null)
 				{
@@ -588,7 +585,7 @@ public class SystemData extends BaseStep implements StepInterface
 				row[index] =value;
 				break;
 			case SystemDataMeta.TYPE_SYSTEM_INFO_PREVIOUS_RESULT_ENTRY_NR:
-				previousResult = getTransMeta().getPreviousResult();
+				previousResult = getTrans().getPreviousResult();
 				value=0;
 				if(previousResult!=null)
 				{
@@ -597,7 +594,7 @@ public class SystemData extends BaseStep implements StepInterface
 				row[index] =value;
 				break;
 			case SystemDataMeta.TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_FILES:
-				previousResult = getTransMeta().getPreviousResult();
+				previousResult = getTrans().getPreviousResult();
 				value=0;
 
 				if(previousResult!=null)
@@ -607,7 +604,7 @@ public class SystemData extends BaseStep implements StepInterface
 				row[index] =value;
 				break;
 			case SystemDataMeta.TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_FILES_RETRIEVED:
-				previousResult = getTransMeta().getPreviousResult();
+				previousResult = getTrans().getPreviousResult();
 				value=0;
 				if(previousResult!=null)
 				{
@@ -616,7 +613,7 @@ public class SystemData extends BaseStep implements StepInterface
 				row[index] =value;
 				break;
 			case SystemDataMeta.TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_DELETED:
-				previousResult = getTransMeta().getPreviousResult();
+				previousResult = getTrans().getPreviousResult();
 				value=0;
 				if(previousResult!=null)
 				{
@@ -625,7 +622,7 @@ public class SystemData extends BaseStep implements StepInterface
 				row[index] =value;
 				break;
 			case SystemDataMeta.TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_INPUT:
-				previousResult = getTransMeta().getPreviousResult();
+				previousResult = getTrans().getPreviousResult();
 				value=0;
 				if(previousResult!=null)
 				{
@@ -634,7 +631,7 @@ public class SystemData extends BaseStep implements StepInterface
 				row[index] =value;
 				break;
 			case SystemDataMeta.TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_OUTPUT:
-				previousResult = getTransMeta().getPreviousResult();
+				previousResult = getTrans().getPreviousResult();
 				value=0;
 				if(previousResult!=null)
 				{
@@ -643,7 +640,7 @@ public class SystemData extends BaseStep implements StepInterface
 				row[index] =value;
 				break;
 			case SystemDataMeta.TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_READ:
-				previousResult = getTransMeta().getPreviousResult();
+				previousResult = getTrans().getPreviousResult();
 				value=0;
 				if(previousResult!=null)
 				{
@@ -652,7 +649,7 @@ public class SystemData extends BaseStep implements StepInterface
 				row[index] =value;
 				break;
 			case SystemDataMeta.TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_REJETED:
-				previousResult = getTransMeta().getPreviousResult();
+				previousResult = getTrans().getPreviousResult();
 				value=0;
 				if(previousResult!=null)
 				{
@@ -661,7 +658,7 @@ public class SystemData extends BaseStep implements StepInterface
 				row[index] =value;
 				break;
 			case SystemDataMeta.TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_UPDATED:
-				previousResult = getTransMeta().getPreviousResult();
+				previousResult = getTrans().getPreviousResult();
 				value=0;
 				if(previousResult!=null)
 				{
@@ -670,7 +667,7 @@ public class SystemData extends BaseStep implements StepInterface
 				row[index] =value;
 				break;
 			case SystemDataMeta.TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_WRITTEN:
-				previousResult = getTransMeta().getPreviousResult();
+				previousResult = getTrans().getPreviousResult();
 				value=0;
 				if(previousResult!=null)
 				{
@@ -679,7 +676,7 @@ public class SystemData extends BaseStep implements StepInterface
 				row[index] =value;
 				break;
 			case SystemDataMeta.TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_ROWS:
-				previousResult = getTransMeta().getPreviousResult();
+				previousResult = getTrans().getPreviousResult();
 				value=0;
 				if(previousResult!=null)
 				{
@@ -688,7 +685,7 @@ public class SystemData extends BaseStep implements StepInterface
 				row[index] =value;
 				break;
 			case SystemDataMeta.TYPE_SYSTEM_INFO_PREVIOUS_RESULT_IS_STOPPED:
-				previousResult = getTransMeta().getPreviousResult();
+				previousResult = getTrans().getPreviousResult();
 				boolean stop=false;
 				if(previousResult!=null)
 				{
@@ -697,7 +694,7 @@ public class SystemData extends BaseStep implements StepInterface
 				row[index] =stop;
 				break;
 			case SystemDataMeta.TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_ERRORS:
-				previousResult = getTransMeta().getPreviousResult();
+				previousResult = getTrans().getPreviousResult();
 				value=0;
 				if(previousResult!=null)
 				{
@@ -706,7 +703,7 @@ public class SystemData extends BaseStep implements StepInterface
 				row[index] =value;
 				break;
 			case SystemDataMeta.TYPE_SYSTEM_INFO_PREVIOUS_RESULT_LOG_TEXT:
-				previousResult = getTransMeta().getPreviousResult();
+				previousResult = getTrans().getPreviousResult();
 				String errorReason=null;
 				if(previousResult!=null)
 				{

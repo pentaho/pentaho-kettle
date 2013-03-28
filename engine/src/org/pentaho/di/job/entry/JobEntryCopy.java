@@ -40,6 +40,7 @@ import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 /**
@@ -105,8 +106,20 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 		return retval.toString();
 	}
 
-	public JobEntryCopy(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException
-	{
+	/**
+	 * 
+	 * @param entrynode
+	 * @param databases
+	 * @param slaveServers
+	 * @param rep
+	 * @throws KettleXMLException
+	 * @deprecated
+	 */
+  public JobEntryCopy(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException {
+    this(entrynode, databases, slaveServers, rep, null);
+  }
+
+	public JobEntryCopy(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep, IMetaStore metaStore) throws KettleXMLException {
 		try
 		{
 			String stype = XMLHandler.getTagValue(entrynode, "type");
@@ -122,7 +135,9 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 				// System.out.println("New JobEntryInterface built of type:
 				// "+entry.getTypeDesc());
 				entry.setPluginId(jobPlugin.getIds()[0]);
-				entry.loadXML(entrynode, databases, slaveServers, rep);
+				entry.loadXML(entrynode, databases, slaveServers, rep, metaStore);
+				
+				compatibleLoadXml(entrynode, databases, slaveServers, rep);
 
 				// Handle GUI information: nr & location?
 				setNr(Const.toInt(XMLHandler.getTagValue(entrynode, "nr"), 0));
@@ -140,7 +155,21 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 		}
 	}
 
-	public void clear()
+	/**
+	 * Backward compatible loading of XML, using deprecated method.
+	 * 
+	 * @param entrynode
+	 * @param databases
+	 * @param slaveServers
+	 * @param rep
+	 * @throws KettleXMLException
+	 */
+	@SuppressWarnings("deprecation")
+  protected void compatibleLoadXml(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException {
+	  entry.loadXML(entrynode, databases, slaveServers, rep);
+  }
+
+  public void clear()
 	{
 		location = null;
 		entry = null;

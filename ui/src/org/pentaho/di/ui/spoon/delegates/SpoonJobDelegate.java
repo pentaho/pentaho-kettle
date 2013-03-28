@@ -413,7 +413,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 			for (int i = 0; i < nr; i++)
 			{
 				Node entrynode = XMLHandler.getSubNodeByNr(entriesnode, "entry", i); //$NON-NLS-1$
-				JobEntryCopy copy = new JobEntryCopy(entrynode, jobMeta.getDatabases(), jobMeta.getSlaveServers(), spoon.getRepository());
+				JobEntryCopy copy = new JobEntryCopy(entrynode, jobMeta.getDatabases(), jobMeta.getSlaveServers(), spoon.getRepository(), spoon.getMetaStore());
 				if (copy.isStart() && (jobMeta.findStart() != null) ) {
 					JobGraph.showOnlyStartOnceMessage(spoon.getShell());
 					continue;
@@ -623,7 +623,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 						//
 						String transname = BaseMessages.getString(PKG, "Spoon.RipDB.Monitor.Transname1") + sourceDbInfo + "].[" + tables[i] + BaseMessages.getString(PKG, "Spoon.RipDB.Monitor.Transname2") + targetDbInfo + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	
-						TransMeta transMeta = new TransMeta((String) null, transname, null);
+						TransMeta transMeta = new TransMeta();
 						if (repdir != null)
 						{
 							transMeta.setRepositoryDirectory(repdir);

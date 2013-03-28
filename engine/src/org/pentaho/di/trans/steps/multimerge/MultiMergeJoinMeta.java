@@ -23,12 +23,10 @@
 package org.pentaho.di.trans.steps.multimerge;
 
 import java.util.List;
-import java.util.Map;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -50,6 +48,7 @@ import org.pentaho.di.trans.step.errorhandling.Stream;
 import org.pentaho.di.trans.step.errorhandling.StreamIcon;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 /**
@@ -121,7 +120,7 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
 		super(); // allocate BaseStepMeta
 	}
 	
-	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters)
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore)
 		throws KettleXMLException
 	{
 		readData(stepnode);
@@ -208,7 +207,7 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
         allocateKeys(0);
 	}
     
-	public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters)
+	public void readRep(Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases)
 		throws KettleException
 	{
 		try
@@ -248,7 +247,7 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
 		}
 	}
 
-	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step)
+	public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step)
 		throws KettleException
 	{
 		try

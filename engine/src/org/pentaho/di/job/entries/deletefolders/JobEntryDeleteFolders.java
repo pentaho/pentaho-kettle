@@ -56,6 +56,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.pentaho.di.resource.ResourceReference;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 /**
@@ -126,7 +127,7 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
     return retval.toString();
   }
 
-  public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException {
+  public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep, IMetaStore metaStore) throws KettleXMLException {
     try {
       super.loadXML(entrynode, databases, slaveServers);
       argFromPrevious = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "arg_from_previous")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -150,7 +151,7 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
     }
   }
 
-  public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
+  public void loadRep(Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
     try {
       argFromPrevious = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous"); //$NON-NLS-1$
       limit_folders  = rep.getJobEntryAttributeString(id_jobentry, "limit_folders");
@@ -169,7 +170,7 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
     }
   }
 
-  public void saveRep(Repository rep, ObjectId id_job) throws KettleException {
+  public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_job) throws KettleException {
     try {
       rep.saveJobEntryAttribute(id_job, getObjectId(), "arg_from_previous", argFromPrevious); //$NON-NLS-1$
 	  rep.saveJobEntryAttribute(id_job, getObjectId(), "limit_folders",      limit_folders);

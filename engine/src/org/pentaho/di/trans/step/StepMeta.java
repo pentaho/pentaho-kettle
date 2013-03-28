@@ -56,9 +56,8 @@ import org.pentaho.di.shared.SharedObjectBase;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
-
-
 
 /**
  * This class contains everything that is needed to define a step.
@@ -67,72 +66,87 @@ import org.w3c.dom.Node;
  * @author Matt
  *
  */
-public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<StepMeta>, GUIPositionInterface, SharedObjectInterface, 
-                                                          CheckResultSourceInterface, ResourceExportInterface, ResourceHolderInterface
-{
-	private static Class<?> PKG = StepMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<StepMeta>, GUIPositionInterface,
+    SharedObjectInterface, CheckResultSourceInterface, ResourceExportInterface, ResourceHolderInterface {
+  private static Class<?> PKG = StepMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	public static final String XML_TAG = "step";
+  public static final String XML_TAG = "step";
 
-  public static final String STRING_ID_MAPPING         = "Mapping";
-	public static final String STRING_ID_SINGLE_THREADER = "SingleThreader";
+  public static final String STRING_ID_MAPPING = "Mapping";
+
+  public static final String STRING_ID_SINGLE_THREADER = "SingleThreader";
+
   public static final String STRING_ID_ETL_META_INJECT = "MetaInject";
-  public static final String STRING_ID_JOB_EXECUTOR    = "JobExecutor";
-	public static final String STRING_ID_MAPPING_INPUT   = "MappingInput";
-	public static final String STRING_ID_MAPPING_OUTPUT  = "MappingOutput";
-    
-  private String        stepid;   // --> StepPlugin.id
-	private String        stepname;
-	private StepMetaInterface stepMetaInterface;
-	private boolean       selected;
-	private boolean       distributes;
-  private boolean       loadBalancing;
-  private String        copiesString;
-	private Point         location;
-	private boolean       drawstep;
-	private String        description;
-	private boolean       terminator;
-	
+
+  public static final String STRING_ID_JOB_EXECUTOR = "JobExecutor";
+
+  public static final String STRING_ID_MAPPING_INPUT = "MappingInput";
+
+  public static final String STRING_ID_MAPPING_OUTPUT = "MappingOutput";
+
+  private String stepid; // --> StepPlugin.id
+
+  private String stepname;
+
+  private StepMetaInterface stepMetaInterface;
+
+  private boolean selected;
+
+  private boolean distributes;
+
+  private boolean loadBalancing;
+
+  private String copiesString;
+
+  private Point location;
+
+  private boolean drawstep;
+
+  private String description;
+
+  private boolean terminator;
+
   private StepPartitioningMeta stepPartitioningMeta;
+
   private StepPartitioningMeta targetStepPartitioningMeta;
-  
-  private ClusterSchema        clusterSchema;
-  private String               clusterSchemaName; // temporary to resolve later.
-  
+
+  private ClusterSchema clusterSchema;
+
+  private String clusterSchemaName; // temporary to resolve later.
+
   private StepErrorMeta stepErrorMeta;
-    
-	// OK, we need to explain to this running step that we expect input from remote steps.
-	// This only happens when the previous step "repartitions". (previous step has different
-	// partitioning method than this one)
-	//
-	// So here we go, let's create List members for the remote input and output step
-	//
-	
-	/** These are the remote input steps to read from, one per host:port combination */
-	private List<RemoteStep> remoteInputSteps;
 
-	/** These are the remote output steps to write to, one per host:port combination */
-	private List<RemoteStep> remoteOutputSteps;
-	
-	private ObjectId id;
-	
-	private TransMeta parentTransMeta;
+  // OK, we need to explain to this running step that we expect input from remote steps.
+  // This only happens when the previous step "repartitions". (previous step has different
+  // partitioning method than this one)
+  //
+  // So here we go, let's create List members for the remote input and output step
+  //
 
-	private Integer copiesCache = null;
-	
-    
+  /** These are the remote input steps to read from, one per host:port combination */
+  private List<RemoteStep> remoteInputSteps;
+
+  /** These are the remote output steps to write to, one per host:port combination */
+  private List<RemoteStep> remoteOutputSteps;
+
+  private ObjectId id;
+
+  private TransMeta parentTransMeta;
+
+  private Integer copiesCache = null;
+
   /**
    * @param stepid The ID of the step: this is derived information, you can also use the constructor without stepid.
    *               This constructor will be deprecated soon.
    * @param stepname The name of the new step
    * @param stepMetaInterface The step metadata interface to use (TextFileInputMeta, etc)
    */
-  public StepMeta(String stepid, String stepname, StepMetaInterface stepMetaInterface)
-  {
-      this(stepname, stepMetaInterface);
-      if (this.stepid==null) this.stepid = stepid;
+  public StepMeta(String stepid, String stepname, StepMetaInterface stepMetaInterface) {
+    this(stepname, stepMetaInterface);
+    if (this.stepid == null)
+      this.stepid = stepid;
   }
-    
+
   /**
    * @param stepname The name of the new step
    * @param stepMetaInterface The step metadata interface to use (TextFileInputMeta, etc)
@@ -158,80 +172,92 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     remoteInputSteps = new ArrayList<RemoteStep>();
     remoteOutputSteps = new ArrayList<RemoteStep>();
   }
-        
-	public StepMeta()
-	{
-		this((String)null, (String)null, (StepMetaInterface)null);
-	}
 
-	public String getXML() throws KettleException
-	{
-		return getXML(true);
-	}
-	
-	public String getXML(boolean includeInterface) throws KettleException
-	{
-		StringBuffer retval=new StringBuffer(200); //$NON-NLS-1$
-		
-		retval.append("  <").append(XML_TAG).append('>').append(Const.CR); //$NON-NLS-1$
-		retval.append("    ").append(XMLHandler.addTagValue("name",        getName()) ); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("type",        getStepID()) ); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("description", description) ); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("distribute",  distributes) ); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("loadbalance", loadBalancing) ); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("copies",      copiesString) ); //$NON-NLS-1$ //$NON-NLS-2$
-        
-        retval.append( stepPartitioningMeta.getXML() );
-        if (targetStepPartitioningMeta!=null) {
-        	retval.append( XMLHandler.openTag("target_step_partitioning")).append(targetStepPartitioningMeta.getXML()).append( XMLHandler.closeTag("target_step_partitioning"));
-        }
+  public StepMeta() {
+    this((String) null, (String) null, (StepMetaInterface) null);
+  }
 
-        if (includeInterface) {
-        	retval.append( stepMetaInterface.getXML() );
-        }
-        
-        retval.append("     ").append(XMLHandler.addTagValue("cluster_schema", clusterSchema==null?"":clusterSchema.getName()));
-        
-        retval.append(" <remotesteps>");
-        // Output the remote input steps
-        List<RemoteStep> inputSteps = new ArrayList<RemoteStep>(remoteInputSteps);
-        Collections.sort(inputSteps); // sort alphabetically, making it easier to compare XML files
-        retval.append("   <input>");
-        for (RemoteStep remoteStep : inputSteps) {
-        	retval.append("      ").append(remoteStep.getXML()).append(Const.CR);
-        }
-        retval.append("   </input>");
+  public String getXML() throws KettleException {
+    return getXML(true);
+  }
 
-        // Output the remote output steps
-        List<RemoteStep> outputSteps = new ArrayList<RemoteStep>(remoteOutputSteps);
-        Collections.sort(outputSteps); // sort alphabetically, making it easier to compare XML files
-        retval.append("   <output>");
-        for (RemoteStep remoteStep : outputSteps) {
-        	retval.append("      ").append(remoteStep.getXML()).append(Const.CR);
-        }
-        retval.append("   </output>");
-        retval.append(" </remotesteps>");
-        
-		retval.append("    <GUI>").append(Const.CR); //$NON-NLS-1$
-		retval.append("      <xloc>").append(location.x).append("</xloc>").append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      <yloc>").append(location.y).append("</yloc>").append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      <draw>").append((drawstep?"Y":"N")).append("</draw>").append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-		retval.append("      </GUI>").append(Const.CR); //$NON-NLS-1$
-		retval.append("    </"+XML_TAG+">").append(Const.CR).append(Const.CR); //$NON-NLS-1$
-		
-		return retval.toString();
-	}
+  public String getXML(boolean includeInterface) throws KettleException {
+    StringBuffer retval = new StringBuffer(200); //$NON-NLS-1$
 
-    
-	/**
-	 * Read the step data from XML
-	 * 
-	 * @param stepnode The XML step node.
-	 * @param databases A list of databases
-	 * @param counters A map with all defined counters.
-	 * 
-	 */
-  public StepMeta(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleXMLException, KettlePluginLoaderException {
+    retval.append("  <").append(XML_TAG).append('>').append(Const.CR); //$NON-NLS-1$
+    retval.append("    ").append(XMLHandler.addTagValue("name", getName())); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("    ").append(XMLHandler.addTagValue("type", getStepID())); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("    ").append(XMLHandler.addTagValue("description", description)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("    ").append(XMLHandler.addTagValue("distribute", distributes)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("    ").append(XMLHandler.addTagValue("loadbalance", loadBalancing)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("    ").append(XMLHandler.addTagValue("copies", copiesString)); //$NON-NLS-1$ //$NON-NLS-2$
+
+    retval.append(stepPartitioningMeta.getXML());
+    if (targetStepPartitioningMeta != null) {
+      retval.append(XMLHandler.openTag("target_step_partitioning")).append(targetStepPartitioningMeta.getXML())
+          .append(XMLHandler.closeTag("target_step_partitioning"));
+    }
+
+    if (includeInterface) {
+      retval.append(stepMetaInterface.getXML());
+    }
+
+    retval.append("     ").append(
+        XMLHandler.addTagValue("cluster_schema", clusterSchema == null ? "" : clusterSchema.getName()));
+
+    retval.append(" <remotesteps>");
+    // Output the remote input steps
+    List<RemoteStep> inputSteps = new ArrayList<RemoteStep>(remoteInputSteps);
+    Collections.sort(inputSteps); // sort alphabetically, making it easier to compare XML files
+    retval.append("   <input>");
+    for (RemoteStep remoteStep : inputSteps) {
+      retval.append("      ").append(remoteStep.getXML()).append(Const.CR);
+    }
+    retval.append("   </input>");
+
+    // Output the remote output steps
+    List<RemoteStep> outputSteps = new ArrayList<RemoteStep>(remoteOutputSteps);
+    Collections.sort(outputSteps); // sort alphabetically, making it easier to compare XML files
+    retval.append("   <output>");
+    for (RemoteStep remoteStep : outputSteps) {
+      retval.append("      ").append(remoteStep.getXML()).append(Const.CR);
+    }
+    retval.append("   </output>");
+    retval.append(" </remotesteps>");
+
+    retval.append("    <GUI>").append(Const.CR); //$NON-NLS-1$
+    retval.append("      <xloc>").append(location.x).append("</xloc>").append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      <yloc>").append(location.y).append("</yloc>").append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      <draw>").append((drawstep ? "Y" : "N")).append("</draw>").append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+    retval.append("      </GUI>").append(Const.CR); //$NON-NLS-1$
+    retval.append("    </" + XML_TAG + ">").append(Const.CR).append(Const.CR); //$NON-NLS-1$
+
+    return retval.toString();
+  }
+
+  /**
+  * Read the step data from XML
+  * 
+  * @param stepnode The XML step node.
+  * @param databases A list of databases
+  * @param counters A map with all defined counters.
+  * @deprecated
+  */
+  public StepMeta(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters)
+      throws KettleXMLException, KettlePluginLoaderException {
+    this(stepnode, databases, (IMetaStore) null);
+  }
+
+  /**
+   * Read the step data from XML
+   * 
+   * @param stepnode The XML step node.
+   * @param databases A list of databases
+   * @param counters A map with all defined counters.
+   * 
+   */
+  public StepMeta(Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore) throws KettleXMLException,
+      KettlePluginLoaderException {
     this();
     PluginRegistry registry = PluginRegistry.getInstance();
 
@@ -245,12 +271,14 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
         setStepMetaInterface((StepMetaInterface) registry.loadClass(sp));
         stepid = sp.getIds()[0]; // revert to the default in case we loaded an alternate version
       } else {
-        throw new KettlePluginLoaderException(stepid, BaseMessages.getString(PKG, "StepMeta.Exception.UnableToLoadClass", stepid));
+        throw new KettlePluginLoaderException(stepid, BaseMessages.getString(PKG,
+            "StepMeta.Exception.UnableToLoadClass", stepid));
       }
 
       // Load the specifics from XML...
       if (stepMetaInterface != null) {
-        stepMetaInterface.loadXML(stepnode, databases, counters);
+        stepMetaInterface.loadXML(stepnode, databases, metaStore);
+        loadXmlCompatibleStepMeta(stepMetaInterface, stepnode, databases);
       }
 
       /* Handle info general to all step types...*/
@@ -312,622 +340,578 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
       for (int i = 0; i < nrOutput; i++) {
         remoteOutputSteps.add(new RemoteStep(XMLHandler.getSubNodeByNr(outputNode, RemoteStep.XML_TAG, i)));
       }
-    } catch(KettlePluginLoaderException e) {
+    } catch (KettlePluginLoaderException e) {
       throw e;
     } catch (Exception e) {
-      throw new KettleXMLException(BaseMessages.getString(PKG, "StepMeta.Exception.UnableToLoadStepInfo") + e.toString(), e);
+      throw new KettleXMLException(BaseMessages.getString(PKG, "StepMeta.Exception.UnableToLoadStepInfo")
+          + e.toString(), e);
     }
   }
-    
-    /**
-     * Resolves the name of the cluster loaded from XML/Repository to the correct clusterSchema object
-     * @param clusterSchemas The list of clusterSchemas to reference.
-     */
-    public void setClusterSchemaAfterLoading(List<ClusterSchema> clusterSchemas)
-    {
-        if (clusterSchemaName==null) return;
-        for (ClusterSchema look : clusterSchemas)
-        {
-            if (look.getName().equals(clusterSchemaName)) clusterSchema=look;
-        }
+
+  /**
+   * Just in case we missed a v4 plugin using deprecated methods.
+   *
+   * @param stepMetaInterface2
+   * @param stepnode
+   * @param databases
+   * @throws KettleXMLException 
+   */
+  private void loadXmlCompatibleStepMeta(StepMetaInterface stepMetaInterface2, Node stepnode, List<DatabaseMeta> databases) throws KettleXMLException {
+    stepMetaInterface.loadXML(stepnode, databases, (IMetaStore) null);
+  }
+
+  /**
+   * Resolves the name of the cluster loaded from XML/Repository to the correct clusterSchema object
+   * @param clusterSchemas The list of clusterSchemas to reference.
+   */
+  public void setClusterSchemaAfterLoading(List<ClusterSchema> clusterSchemas) {
+    if (clusterSchemaName == null)
+      return;
+    for (ClusterSchema look : clusterSchemas) {
+      if (look.getName().equals(clusterSchemaName))
+        clusterSchema = look;
+    }
+  }
+
+  public ObjectId getObjectId() {
+    return id;
+  }
+
+  public void setObjectId(ObjectId id) {
+    this.id = id;
+  }
+
+  /**
+   * See wether or not the step is drawn on the canvas.
+   * 
+   * @return True if the step is drawn on the canvas.
+   */
+  public boolean isDrawn() {
+    return drawstep;
+  }
+
+  /**
+   * See wether or not the step is drawn on the canvas.
+   * Same as isDrawn(), but needed for findMethod(StepMeta, drawstep)
+   * called by StringSearcher.findMetaData(). Otherwise findMethod() returns
+   * org.pentaho.di.trans.step.StepMeta.drawStep() instead of isDrawn().
+   * @return True if the step is drawn on the canvas.
+   */
+  public boolean isDrawStep() {
+    return drawstep;
+  }
+
+  /**
+   * Sets the draw attribute of the step so that it will be drawn on the canvas.
+   *  
+   * @param draw True if you want the step to show itself on the canvas, False if you don't.
+   */
+  public void setDraw(boolean draw) {
+    drawstep = draw;
+    setChanged();
+  }
+
+  /**
+   * Sets the number of parallel copies that this step will be launched with.
+   *  
+   * @param c The number of copies.
+   */
+  public void setCopies(int c) {
+    setChanged();
+    copiesString = Integer.toString(c);
+    copiesCache = c;
+  }
+
+  /**
+   * Get the number of copies to start of a step.
+   * This takes into account the partitioning logic.
+   * @return the number of step copies to start.
+   */
+  public int getCopies() {
+    // If the step is partitioned, that's going to determine the number of copies, nothing else...
+    //
+    if (isPartitioned() && getStepPartitioningMeta().getPartitionSchema() != null) {
+      List<String> partitionIDs = getStepPartitioningMeta().getPartitionSchema().getPartitionIDs();
+      if (partitionIDs != null && partitionIDs.size() > 0) // these are the partitions the step can "reach"
+      {
+        return partitionIDs.size();
+      }
     }
 
-	public ObjectId getObjectId()
-	{
-		return id;
-	}
-	
-	public void setObjectId(ObjectId id)
-	{
-		this.id = id;
-	}
-	
-	/**
-	 * See wether or not the step is drawn on the canvas.
-	 * 
-	 * @return True if the step is drawn on the canvas.
-	 */
-	public boolean isDrawn()
-	{
-		return drawstep;
-	}
-	/**
-	 * See wether or not the step is drawn on the canvas.
-	 * Same as isDrawn(), but needed for findMethod(StepMeta, drawstep)
-	 * called by StringSearcher.findMetaData(). Otherwise findMethod() returns
-	 * org.pentaho.di.trans.step.StepMeta.drawStep() instead of isDrawn().
-	 * @return True if the step is drawn on the canvas.
-	 */
-	public boolean isDrawStep()
-	{
-		return drawstep;
-	}
-	
-	/**
-	 * Sets the draw attribute of the step so that it will be drawn on the canvas.
-	 *  
-	 * @param draw True if you want the step to show itself on the canvas, False if you don't.
-	 */
-	public void setDraw(boolean draw)
-	{
-		drawstep=draw;
-		setChanged();
-	}
-	
-	/**
-	 * Sets the number of parallel copies that this step will be launched with.
-	 *  
-	 * @param c The number of copies.
-	 */
-	public void setCopies(int c)
-	{
-		setChanged();
-		copiesString=Integer.toString(c);
-		copiesCache=c;
-	}
-	
-	/**
-	 * Get the number of copies to start of a step.
-	 * This takes into account the partitioning logic.
-	 * @return the number of step copies to start.
-	 */
-	public int getCopies()
-	{
-		// If the step is partitioned, that's going to determine the number of copies, nothing else...
-		//
-    if (isPartitioned() && getStepPartitioningMeta().getPartitionSchema()!=null)
-    {
-        List<String> partitionIDs = getStepPartitioningMeta().getPartitionSchema().getPartitionIDs();
-        if (partitionIDs!=null && partitionIDs.size()>0) // these are the partitions the step can "reach"
-        {
-            return partitionIDs.size();
-        }
-    }
-
-    if (copiesCache!=null) {
+    if (copiesCache != null) {
       return copiesCache.intValue();
     }
 
-    if (parentTransMeta!=null) {
+    if (parentTransMeta != null) {
       // Return -1 to indicate that the variable or string value couldn't be converted to number
       //
       copiesCache = Const.toInt(parentTransMeta.environmentSubstitute(copiesString), -1);
     } else {
       copiesCache = Const.toInt(copiesString, 1);
     }
-    
-		return copiesCache;
-	}
 
-	public void drawStep()
-	{
-		setDraw(true);
-		setChanged();
-	}
+    return copiesCache;
+  }
 
-	public void hideStep()
-	{
-		setDraw(false);
-		setChanged();
-	}
-	
-	/**
-	 * Two steps are equal if their names are equal.
-	 * @return true if the two steps are equal.
-	 */
-	public boolean equals(Object obj)
-	{
-		if (obj==null) return false;
-		StepMeta stepMeta = (StepMeta)obj;
-		// getName() is returning stepname, matching the hashCode() algorithm
-		return getName().equalsIgnoreCase(stepMeta.getName());
-	}
-	
-	public int hashCode()
-	{
-		return stepname.hashCode();
-	}
-	
-	public int compareTo(StepMeta o)
-	{
-		return toString().compareTo(o.toString());
-	}
-	
-	public boolean hasChanged()
-	{
-		StepMetaInterface bsi = this.getStepMetaInterface();
-		return bsi!=null?bsi.hasChanged():false;
-	}
-	
-	public void setChanged(boolean ch)
-	{
-		BaseStepMeta bsi = (BaseStepMeta)this.getStepMetaInterface();
-		if (bsi!=null) bsi.setChanged(ch);
-	}
+  public void drawStep() {
+    setDraw(true);
+    setChanged();
+  }
 
-	public void setChanged()
-	{
-		StepMetaInterface bsi = (StepMetaInterface) this.getStepMetaInterface();
-		if (bsi!=null) bsi.setChanged();
-	}
+  public void hideStep() {
+    setDraw(false);
+    setChanged();
+  }
 
-	public boolean chosesTargetSteps()
-	{
-	    if (getStepMetaInterface()!=null)
-	    {
-	    	List<StreamInterface> targetStreams = getStepMetaInterface().getStepIOMeta().getTargetStreams();
-	        return targetStreams.isEmpty();
-	    }
-	    return false;
-	}
-	
-	
-	public Object clone()
-	{
-        StepMeta stepMeta = new StepMeta();
-        stepMeta.replaceMeta(this);
-        stepMeta.setObjectId(null);
+  /**
+   * Two steps are equal if their names are equal.
+   * @return true if the two steps are equal.
+   */
+  public boolean equals(Object obj) {
+    if (obj == null)
+      return false;
+    StepMeta stepMeta = (StepMeta) obj;
+    // getName() is returning stepname, matching the hashCode() algorithm
+    return getName().equalsIgnoreCase(stepMeta.getName());
+  }
+
+  public int hashCode() {
+    return stepname.hashCode();
+  }
+
+  public int compareTo(StepMeta o) {
+    return toString().compareTo(o.toString());
+  }
+
+  public boolean hasChanged() {
+    StepMetaInterface bsi = this.getStepMetaInterface();
+    return bsi != null ? bsi.hasChanged() : false;
+  }
+
+  public void setChanged(boolean ch) {
+    BaseStepMeta bsi = (BaseStepMeta) this.getStepMetaInterface();
+    if (bsi != null)
+      bsi.setChanged(ch);
+  }
+
+  public void setChanged() {
+    StepMetaInterface bsi = (StepMetaInterface) this.getStepMetaInterface();
+    if (bsi != null)
+      bsi.setChanged();
+  }
+
+  public boolean chosesTargetSteps() {
+    if (getStepMetaInterface() != null) {
+      List<StreamInterface> targetStreams = getStepMetaInterface().getStepIOMeta().getTargetStreams();
+      return targetStreams.isEmpty();
+    }
+    return false;
+  }
+
+  public Object clone() {
+    StepMeta stepMeta = new StepMeta();
+    stepMeta.replaceMeta(this);
+    stepMeta.setObjectId(null);
+    return stepMeta;
+  }
+
+  public void replaceMeta(StepMeta stepMeta) {
+    this.stepid = stepMeta.stepid; // --> StepPlugin.id
+    this.stepname = stepMeta.stepname;
+    if (stepMeta.stepMetaInterface != null) {
+      setStepMetaInterface((StepMetaInterface) stepMeta.stepMetaInterface.clone());
+    } else {
+      this.stepMetaInterface = null;
+    }
+    this.selected = stepMeta.selected;
+    this.distributes = stepMeta.distributes;
+    this.copiesString = stepMeta.copiesString;
+    this.copiesCache = null; // force re-calculation
+    if (stepMeta.location != null) {
+      this.location = new Point(stepMeta.location.x, stepMeta.location.y);
+    } else {
+      this.location = null;
+    }
+    this.drawstep = stepMeta.drawstep;
+    this.description = stepMeta.description;
+    this.terminator = stepMeta.terminator;
+
+    if (stepMeta.stepPartitioningMeta != null) {
+      this.stepPartitioningMeta = (StepPartitioningMeta) stepMeta.stepPartitioningMeta.clone();
+    } else {
+      this.stepPartitioningMeta = null;
+    }
+    if (stepMeta.clusterSchema != null) {
+      this.clusterSchema = (ClusterSchema) stepMeta.clusterSchema.clone();
+    } else {
+      this.clusterSchema = null;
+    }
+    this.clusterSchemaName = stepMeta.clusterSchemaName; // temporary to resolve later.
+
+    // Also replace the remote steps with cloned versions...
+    //
+    this.remoteInputSteps = new ArrayList<RemoteStep>();
+    for (RemoteStep remoteStep : stepMeta.remoteInputSteps)
+      this.remoteInputSteps.add((RemoteStep) remoteStep.clone());
+    this.remoteOutputSteps = new ArrayList<RemoteStep>();
+    for (RemoteStep remoteStep : stepMeta.remoteOutputSteps)
+      this.remoteOutputSteps.add((RemoteStep) remoteStep.clone());
+
+    // The error handling needs to be done too...
+    //
+    if (stepMeta.stepErrorMeta != null) {
+      this.stepErrorMeta = stepMeta.stepErrorMeta.clone();
+    }
+
+    // this.setShared(stepMeta.isShared());
+    this.id = stepMeta.getObjectId();
+    this.setChanged(true);
+  }
+
+  public StepMetaInterface getStepMetaInterface() {
+    return stepMetaInterface;
+  }
+
+  public void setStepMetaInterface(StepMetaInterface stepMetaInterface) {
+    this.stepMetaInterface = stepMetaInterface;
+    if (stepMetaInterface != null) {
+      this.stepMetaInterface.setParentStepMeta(this);
+    }
+  }
+
+  public String getStepID() {
+    return stepid;
+  }
+
+  public String getName() {
+    return stepname;
+  }
+
+  public void setName(String sname) {
+    stepname = sname;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public void setSelected(boolean sel) {
+    selected = sel;
+  }
+
+  public void flipSelected() {
+    selected = !selected;
+  }
+
+  public boolean isSelected() {
+    return selected;
+  }
+
+  public void setTerminator() {
+    setTerminator(true);
+  }
+
+  public void setTerminator(boolean t) {
+    terminator = t;
+  }
+
+  public boolean hasTerminator() {
+    return terminator;
+  }
+
+  public StepMeta(ObjectId id_step) {
+    this((String) null, (String) null, (StepMetaInterface) null);
+    setObjectId(id_step);
+  }
+
+  public void setLocation(int x, int y) {
+    int nx = (x >= 0 ? x : 0);
+    int ny = (y >= 0 ? y : 0);
+
+    Point loc = new Point(nx, ny);
+    if (!loc.equals(location))
+      setChanged();
+    location = loc;
+  }
+
+  public void setLocation(Point loc) {
+    if (loc != null && !loc.equals(location))
+      setChanged();
+    location = loc;
+  }
+
+  public Point getLocation() {
+    return location;
+  }
+
+  public void check(List<CheckResultInterface> remarks, TransMeta transMeta, RowMetaInterface prev, String input[],
+      String output[], RowMetaInterface info) {
+    stepMetaInterface.check(remarks, transMeta, this, prev, input, output, info);
+  }
+
+  public String toString() {
+    if (getName() == null)
+      return getClass().getName();
+    return getName();
+  }
+
+  /**
+   * @return true is the step is partitioned
+   */
+  public boolean isPartitioned() {
+    return stepPartitioningMeta.isPartitioned();
+  }
+
+  /**
+   * @return true is the step is partitioned
+   */
+  public boolean isTargetPartitioned() {
+    return targetStepPartitioningMeta.isPartitioned();
+  }
+
+  /**
+   * @return the stepPartitioningMeta
+   */
+  public StepPartitioningMeta getStepPartitioningMeta() {
+    return stepPartitioningMeta;
+  }
+
+  /**
+   * @param stepPartitioningMeta the stepPartitioningMeta to set
+   */
+  public void setStepPartitioningMeta(StepPartitioningMeta stepPartitioningMeta) {
+    this.stepPartitioningMeta = stepPartitioningMeta;
+  }
+
+  /**
+   * @return the clusterSchema
+   */
+  public ClusterSchema getClusterSchema() {
+    return clusterSchema;
+  }
+
+  /**
+   * @param clusterSchema the clusterSchema to set
+   */
+  public void setClusterSchema(ClusterSchema clusterSchema) {
+    this.clusterSchema = clusterSchema;
+  }
+
+  /**
+   * @return the distributes
+   */
+  public boolean isDistributes() {
+    return distributes;
+  }
+
+  /**
+   * @param distributes the distributes to set
+   */
+  public void setDistributes(boolean distributes) {
+    if (this.distributes != distributes) {
+      this.distributes = distributes;
+      setChanged();
+    }
+
+  }
+
+  /**
+   * @return the StepErrorMeta error handling metadata for this step  
+   */
+  public StepErrorMeta getStepErrorMeta() {
+    return stepErrorMeta;
+  }
+
+  /**
+   * @param stepErrorMeta the error handling metadata for this step
+   */
+  public void setStepErrorMeta(StepErrorMeta stepErrorMeta) {
+    this.stepErrorMeta = stepErrorMeta;
+  }
+
+  /**
+   * Find a step with the ID in a given ArrayList of steps
+   *
+   * @param steps The List of steps to search
+   * @param id The ID of the step
+   * @return The step if it was found, null if nothing was found
+   */
+  public static final StepMeta findStep(List<StepMeta> steps, ObjectId id) {
+    if (steps == null)
+      return null;
+
+    for (StepMeta stepMeta : steps) {
+      if (stepMeta.getObjectId() != null && stepMeta.getObjectId().equals(id)) {
         return stepMeta;
-	}
-    
-
-    public void replaceMeta(StepMeta stepMeta)
-    {
-        this.stepid = stepMeta.stepid;   // --> StepPlugin.id
-        this.stepname = stepMeta.stepname;
-        if (stepMeta.stepMetaInterface!=null)
-        {
-            setStepMetaInterface( (StepMetaInterface) stepMeta.stepMetaInterface.clone() );
-        }
-        else
-        {
-            this.stepMetaInterface = null;
-        }
-        this.selected = stepMeta.selected;
-        this.distributes = stepMeta.distributes;
-        this.copiesString = stepMeta.copiesString;
-        this.copiesCache = null; // force re-calculation
-        if (stepMeta.location!=null)
-        {
-            this.location = new Point(stepMeta.location.x, stepMeta.location.y);
-        }
-        else
-        {
-            this.location = null;
-        }
-        this.drawstep = stepMeta.drawstep;
-        this.description = stepMeta.description;
-        this.terminator = stepMeta.terminator;
-        
-        if (stepMeta.stepPartitioningMeta!=null)
-        {
-            this.stepPartitioningMeta = (StepPartitioningMeta) stepMeta.stepPartitioningMeta.clone();
-        }
-        else
-        {
-            this.stepPartitioningMeta = null;
-        }
-        if (stepMeta.clusterSchema!=null)
-        {
-            this.clusterSchema = (ClusterSchema) stepMeta.clusterSchema.clone();
-        }
-        else
-        {
-            this.clusterSchema = null;
-        }
-        this.clusterSchemaName = stepMeta.clusterSchemaName; // temporary to resolve later.
-
-        // Also replace the remote steps with cloned versions...
-        //
-        this.remoteInputSteps = new ArrayList<RemoteStep>();
-        for (RemoteStep remoteStep : stepMeta.remoteInputSteps) this.remoteInputSteps.add((RemoteStep)remoteStep.clone());
-        this.remoteOutputSteps = new ArrayList<RemoteStep>();
-        for (RemoteStep remoteStep : stepMeta.remoteOutputSteps) this.remoteOutputSteps.add((RemoteStep)remoteStep.clone());
-        
-        // The error handling needs to be done too...
-        //
-        if (stepMeta.stepErrorMeta!=null) {
-        	this.stepErrorMeta = stepMeta.stepErrorMeta.clone();
-        }
-        
-        // this.setShared(stepMeta.isShared());
-        this.id = stepMeta.getObjectId();
-        this.setChanged(true);
+      }
     }
-	
-	public StepMetaInterface getStepMetaInterface()
-	{
-		return stepMetaInterface;
-	}
-	
-	public void setStepMetaInterface(StepMetaInterface stepMetaInterface) {
-		this.stepMetaInterface = stepMetaInterface;
-		if (stepMetaInterface!=null) {
-			this.stepMetaInterface.setParentStepMeta(this);
-		}
-	}
-	
-	public String getStepID()
-	{
-		return stepid;
-	}
-	
-	public String getName()
-	{
-		return stepname;
-	}
+    return null;
+  }
 
-	public void setName(String sname)
-	{
-		stepname=sname;
-	}
+  /**
+   * Find a step with its name in a given ArrayList of steps
+   *
+   * @param steps The List of steps to search
+   * @param stepname The name of the step
+   * @return The step if it was found, null if nothing was found
+   */
+  public static final StepMeta findStep(List<StepMeta> steps, String stepname) {
+    if (steps == null)
+      return null;
 
-	public String getDescription()
-	{
-		return description;
-	}
-
-	public void setDescription(String description)
-	{
-		this.description=description;
-	}
-	
-	public void setSelected(boolean sel)
-	{
-		selected=sel;
-	}
-
-	public void flipSelected()
-	{
-		selected=!selected;
-	}
-
-	public boolean isSelected()
-	{
-		return selected;
-	}
-	
-	public void setTerminator()
-	{
-		setTerminator(true);
-	}
-	
-	public void setTerminator(boolean t)
-	{
-		terminator = t;
-	}
-	
-	public boolean hasTerminator()
-	{
-		return terminator;
-	}
-	    
-    public StepMeta(ObjectId id_step)
-    {
-        this((String)null, (String)null, (StepMetaInterface)null);
-        setObjectId(id_step);
+    for (StepMeta stepMeta : steps) {
+      if (stepMeta.getName().equalsIgnoreCase(stepname))
+        return stepMeta;
     }
+    return null;
+  }
 
+  public boolean supportsErrorHandling() {
+    return stepMetaInterface.supportsErrorHandling();
+  }
 
-	public void setLocation(int x, int y)
-	{
-		int nx = (x>=0?x:0);
-		int ny = (y>=0?y:0);
-		
-		Point loc = new Point(nx,ny);
-		if (!loc.equals(location)) setChanged();
-		location=loc;
-	}
-	
-	public void setLocation(Point loc)
-	{
-		if (loc!=null && !loc.equals(location)) setChanged();
-		location = loc;
-	}
-	
-	public Point getLocation()
-	{
-		return location;
-	}
+  /**
+   * @return if error handling is supported for this step, if error handling is defined and a target step is set
+   */
+  public boolean isDoingErrorHandling() {
+    return stepMetaInterface.supportsErrorHandling() && stepErrorMeta != null && stepErrorMeta.getTargetStep() != null
+        && stepErrorMeta.isEnabled();
+  }
 
-	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
-	{
-		stepMetaInterface.check(remarks, transMeta, this, prev, input, output, info);
-	}
-	
-	public String toString()
-	{
-		if (getName()==null) return getClass().getName();
-		return getName();
-	}
-    
-
-    /**
-     * @return true is the step is partitioned
-     */
-    public boolean isPartitioned()
-    {
-        return stepPartitioningMeta.isPartitioned();
-    }
-    
-    /**
-     * @return true is the step is partitioned
-     */
-    public boolean isTargetPartitioned()
-    {
-        return targetStepPartitioningMeta.isPartitioned();
-    }
-    
-    /**
-     * @return the stepPartitioningMeta
-     */
-    public StepPartitioningMeta getStepPartitioningMeta()
-    {
-        return stepPartitioningMeta;
-    }
-
-    /**
-     * @param stepPartitioningMeta the stepPartitioningMeta to set
-     */
-    public void setStepPartitioningMeta(StepPartitioningMeta stepPartitioningMeta)
-    {
-        this.stepPartitioningMeta = stepPartitioningMeta;
-    }
-
-    /**
-     * @return the clusterSchema
-     */
-    public ClusterSchema getClusterSchema()
-    {
-        return clusterSchema;
-    }
-
-    /**
-     * @param clusterSchema the clusterSchema to set
-     */
-    public void setClusterSchema(ClusterSchema clusterSchema)
-    {
-        this.clusterSchema = clusterSchema;
-    }
-
-    /**
-     * @return the distributes
-     */
-    public boolean isDistributes()
-    {
-        return distributes;
-    }
-
-    /**
-     * @param distributes the distributes to set
-     */
-    public void setDistributes(boolean distributes)
-    {
-    	if (this.distributes != distributes){
-    		this.distributes = distributes;
-    		setChanged();
-    	}
-        
-    }
-
-    /**
-     * @return the StepErrorMeta error handling metadata for this step  
-     */
-    public StepErrorMeta getStepErrorMeta()
-    {
-        return stepErrorMeta;
-    }
-
-    /**
-     * @param stepErrorMeta the error handling metadata for this step
-     */
-    public void setStepErrorMeta(StepErrorMeta stepErrorMeta)
-    {
-        this.stepErrorMeta = stepErrorMeta;
-    }
-
-    /**
-     * Find a step with the ID in a given ArrayList of steps
-     *
-     * @param steps The List of steps to search
-     * @param id The ID of the step
-     * @return The step if it was found, null if nothing was found
-     */
-    public static final StepMeta findStep(List<StepMeta> steps, ObjectId id)
-    {
-        if (steps == null) return null;
-
-        for (StepMeta stepMeta : steps)
-        {
-            if (stepMeta.getObjectId()!=null && stepMeta.getObjectId().equals(id)) { 
-            	return stepMeta;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Find a step with its name in a given ArrayList of steps
-     *
-     * @param steps The List of steps to search
-     * @param stepname The name of the step
-     * @return The step if it was found, null if nothing was found
-     */
-    public static final StepMeta findStep(List<StepMeta> steps, String stepname)
-    {
-        if (steps == null) return null;
-
-        for (StepMeta stepMeta : steps)
-        {
-            if (stepMeta.getName().equalsIgnoreCase(stepname)) return stepMeta;
-        }
-        return null;
-    }
-    
-    public boolean supportsErrorHandling()
-    {
-        return stepMetaInterface.supportsErrorHandling();
-    }
-    /**
-     * @return if error handling is supported for this step, if error handling is defined and a target step is set
-     */
-    public boolean isDoingErrorHandling()
-    {
-        return stepMetaInterface.supportsErrorHandling() && 
-            stepErrorMeta!=null && 
-            stepErrorMeta.getTargetStep()!=null &&
-            stepErrorMeta.isEnabled()
-            ;
-    }
-    
-    public boolean isSendingErrorRowsToStep(StepMeta targetStep)
-    {
-        return (isDoingErrorHandling() && stepErrorMeta.getTargetStep().equals(targetStep));
-    }
+  public boolean isSendingErrorRowsToStep(StepMeta targetStep) {
+    return (isDoingErrorHandling() && stepErrorMeta.getTargetStep().equals(targetStep));
+  }
 
   /**
    * Support for CheckResultSourceInterface
    */
-    public String getTypeId() {
-      return this.getStepID();
-    }
-    
-    public boolean isMapping() {
-    	return STRING_ID_MAPPING.equals(stepid);
-    }
-    
-    public boolean isSingleThreader() {
-      return STRING_ID_SINGLE_THREADER.equals(stepid);
-    }
-    
-    public boolean isEtlMetaInject() {
-      return STRING_ID_ETL_META_INJECT.equals(stepid);
-    }
-    
-    public boolean isJobExecutor() {
-      return STRING_ID_JOB_EXECUTOR.equals(stepid);
-    }
+  public String getTypeId() {
+    return this.getStepID();
+  }
 
+  public boolean isMapping() {
+    return STRING_ID_MAPPING.equals(stepid);
+  }
 
-    public boolean isMappingInput() {
-    	return STRING_ID_MAPPING_INPUT.equals(stepid);
-    }
-    public boolean isMappingOutput() {
-    	return STRING_ID_MAPPING_OUTPUT.equals(stepid);
-    }
+  public boolean isSingleThreader() {
+    return STRING_ID_SINGLE_THREADER.equals(stepid);
+  }
 
-    /**
-     * Get a list of all the resource dependencies that the step is depending on.
-     * 
-     * @return a list of all the resource dependencies that the step is depending on
-     */
-    public List<ResourceReference> getResourceDependencies(TransMeta transMeta) {
-    	return stepMetaInterface.getResourceDependencies(transMeta, this);
-    }
+  public boolean isEtlMetaInject() {
+    return STRING_ID_ETL_META_INJECT.equals(stepid);
+  }
 
-	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository) throws KettleException {
+  public boolean isJobExecutor() {
+    return STRING_ID_JOB_EXECUTOR.equals(stepid);
+  }
 
-		// The step calls out to the StepMetaInterface...
-		// These can in turn add anything to the map in terms of resources, etc.
-		// Even reference files, etc.  For now it's just XML probably...
-		//
-		return stepMetaInterface.exportResources(space, definitions, resourceNamingInterface, repository);
-	}
+  public boolean isMappingInput() {
+    return STRING_ID_MAPPING_INPUT.equals(stepid);
+  }
 
-	/**
-	 * @return the remoteInputSteps
-	 */
-	public List<RemoteStep> getRemoteInputSteps() {
-		return remoteInputSteps;
-	}
+  public boolean isMappingOutput() {
+    return STRING_ID_MAPPING_OUTPUT.equals(stepid);
+  }
 
-	/**
-	 * @param remoteInputSteps the remoteInputSteps to set
-	 */
-	public void setRemoteInputSteps(List<RemoteStep> remoteInputSteps) {
-		this.remoteInputSteps = remoteInputSteps;
-	}
+  /**
+   * Get a list of all the resource dependencies that the step is depending on.
+   * 
+   * @return a list of all the resource dependencies that the step is depending on
+   */
+  public List<ResourceReference> getResourceDependencies(TransMeta transMeta) {
+    return stepMetaInterface.getResourceDependencies(transMeta, this);
+  }
 
-	/**
-	 * @return the remoteOutputSteps
-	 */
-	public List<RemoteStep> getRemoteOutputSteps() {
-		return remoteOutputSteps;
-	}
+  public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions,
+      ResourceNamingInterface resourceNamingInterface, Repository repository) throws KettleException {
 
-	/**
-	 * @param remoteOutputSteps the remoteOutputSteps to set
-	 */
-	public void setRemoteOutputSteps(List<RemoteStep> remoteOutputSteps) {
-		this.remoteOutputSteps = remoteOutputSteps;
-	}
+    // The step calls out to the StepMetaInterface...
+    // These can in turn add anything to the map in terms of resources, etc.
+    // Even reference files, etc.  For now it's just XML probably...
+    //
+    return stepMetaInterface.exportResources(space, definitions, resourceNamingInterface, repository);
+  }
 
-	/**
-	 * @return the targetStepPartitioningMeta
-	 */
-	public StepPartitioningMeta getTargetStepPartitioningMeta() {
-		return targetStepPartitioningMeta;
-	}
+  /**
+   * @return the remoteInputSteps
+   */
+  public List<RemoteStep> getRemoteInputSteps() {
+    return remoteInputSteps;
+  }
 
-	/**
-	 * @param targetStepPartitioningMeta the targetStepPartitioningMeta to set
-	 */
-	public void setTargetStepPartitioningMeta(StepPartitioningMeta targetStepPartitioningMeta) {
-		this.targetStepPartitioningMeta = targetStepPartitioningMeta;
-	}
+  /**
+   * @param remoteInputSteps the remoteInputSteps to set
+   */
+  public void setRemoteInputSteps(List<RemoteStep> remoteInputSteps) {
+    this.remoteInputSteps = remoteInputSteps;
+  }
 
-	public boolean isRepartitioning() {
-		if (!isPartitioned() && isTargetPartitioned()) return true;
-		if (isPartitioned() && isTargetPartitioned() && !stepPartitioningMeta.equals(targetStepPartitioningMeta)) return true;
-		return false;
-	}
+  /**
+   * @return the remoteOutputSteps
+   */
+  public List<RemoteStep> getRemoteOutputSteps() {
+    return remoteOutputSteps;
+  }
+
+  /**
+   * @param remoteOutputSteps the remoteOutputSteps to set
+   */
+  public void setRemoteOutputSteps(List<RemoteStep> remoteOutputSteps) {
+    this.remoteOutputSteps = remoteOutputSteps;
+  }
+
+  /**
+   * @return the targetStepPartitioningMeta
+   */
+  public StepPartitioningMeta getTargetStepPartitioningMeta() {
+    return targetStepPartitioningMeta;
+  }
+
+  /**
+   * @param targetStepPartitioningMeta the targetStepPartitioningMeta to set
+   */
+  public void setTargetStepPartitioningMeta(StepPartitioningMeta targetStepPartitioningMeta) {
+    this.targetStepPartitioningMeta = targetStepPartitioningMeta;
+  }
+
+  public boolean isRepartitioning() {
+    if (!isPartitioned() && isTargetPartitioned())
+      return true;
+    if (isPartitioned() && isTargetPartitioned() && !stepPartitioningMeta.equals(targetStepPartitioningMeta))
+      return true;
+    return false;
+  }
 
   public String getHolderType() {
     return "STEP"; //$NON-NLS-1$
   }
-  
+
   public boolean isClustered() {
-	  return clusterSchema!=null;
+    return clusterSchema != null;
   }
-  
+
   /**
    * Set the plugin step id (code)
    * @param stepid
    */
   public void setStepID(String stepid) {
-	this.stepid = stepid;
+    this.stepid = stepid;
   }
-  
+
   public void setClusterSchemaName(String clusterSchemaName) {
-	this.clusterSchemaName = clusterSchemaName;
+    this.clusterSchemaName = clusterSchemaName;
   }
 
   public void setParentTransMeta(TransMeta parentTransMeta) {
     this.parentTransMeta = parentTransMeta;
   }
-  
+
   public TransMeta getParentTransMeta() {
-	return parentTransMeta;
+    return parentTransMeta;
   }
 
   /**
@@ -941,7 +925,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
    * @param loadBalancing the loadBalancing to set
    */
   public void setLoadBalancing(boolean loadBalancing) {
-    if (this.loadBalancing!= loadBalancing){
+    if (this.loadBalancing != loadBalancing) {
       this.loadBalancing = loadBalancing;
       setChanged();
     }

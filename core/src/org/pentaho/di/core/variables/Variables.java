@@ -28,149 +28,163 @@ import java.util.List;
 import java.util.Map;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.version.BuildVersion;
-
 
 /**
  * This class is an implementation of VariableSpace
  * 
  * @author Sven Boden
  */
-public class Variables implements VariableSpace 
-{
-    private Map<String, String> properties;
-    private VariableSpace parent;
-    private Map<String, String> injection;
-    private boolean initialized;
-    
-    public Variables()
-    {
-        properties  = new Hashtable<String,String>();
-        parent      = null;
-        injection   = null;
-        initialized = false;
-        
-        // The Kettle version
-        properties.put(Const.INTERNAL_VARIABLE_KETTLE_VERSION, Const.VERSION);
+public class Variables implements VariableSpace {
+  private Map<String, String> properties;
 
-        // The Kettle build version
-        String revision = BuildVersion.getInstance().getRevision();
-        if(revision == null) revision = "";
-        properties.put(Const.INTERNAL_VARIABLE_KETTLE_BUILD_VERSION, revision);
+  private VariableSpace parent;
 
-        // The Kettle build date
-        String buildDate = BuildVersion.getInstance().getBuildDate();
-        if(buildDate == null) buildDate = "";
-        properties.put(Const.INTERNAL_VARIABLE_KETTLE_BUILD_DATE, buildDate);
+  private Map<String, String> injection;
+
+  private boolean initialized;
+
+  public Variables() {
+    properties = new Hashtable<String, String>();
+    parent = null;
+    injection = null;
+    initialized = false;
+
+    // The Kettle version
+    properties.put(Const.INTERNAL_VARIABLE_KETTLE_VERSION, Const.VERSION);
+
+    // The Kettle build version
+    String revision = BuildVersion.getInstance().getRevision();
+    if (revision == null)
+      revision = "";
+    properties.put(Const.INTERNAL_VARIABLE_KETTLE_BUILD_VERSION, revision);
+
+    // The Kettle build date
+    String buildDate = BuildVersion.getInstance().getBuildDate();
+    if (buildDate == null)
+      buildDate = "";
+    properties.put(Const.INTERNAL_VARIABLE_KETTLE_BUILD_DATE, buildDate);
+  }
+
+  public void copyVariablesFrom(VariableSpace space) {
+    if (space != null && this != space) {
+      // If space is not null and this variable is not already
+      // the same object as the argument.
+      String[] variableNames = space.listVariables();
+      for (int idx = 0; idx < variableNames.length; idx++) {
+        properties.put(variableNames[idx], space.getVariable(variableNames[idx]));
+      }
+    }
+  }
+
+  public VariableSpace getParentVariableSpace() {
+    return parent;
+  }
+
+  public void setParentVariableSpace(VariableSpace parent) {
+    this.parent = parent;
+  }
+
+  public String getVariable(String variableName, String defaultValue) {
+    String var = properties.get(variableName);
+    if (var == null)
+      return defaultValue;
+    return var;
+  }
+
+  public String getVariable(String variableName) {
+    return properties.get(variableName);
+  }
+
+  public boolean getBooleanValueOfVariable(String variableName, boolean defaultValue) {
+    if (!Const.isEmpty(variableName)) {
+      String value = environmentSubstitute(variableName);
+      if (!Const.isEmpty(value)) {
+        return ValueMeta.convertStringToBoolean(value);
+      }
+    }
+    return defaultValue;
+  }
+
+  public void initializeVariablesFrom(VariableSpace parent) {
+    this.parent = parent;
+
+    // Add all the system properties...
+    for (Object key : System.getProperties().keySet()) {
+      properties.put((String) key, System.getProperties().getProperty((String) key));
     }
 
-	public void copyVariablesFrom(VariableSpace space) {
-		if ( space != null && this != space )
-		{
-			// If space is not null and this variable is not already
-			// the same object as the argument.
-			String[] variableNames = space.listVariables();
-			for ( int idx = 0; idx < variableNames.length; idx++ )
-			{
-				properties.put(variableNames[idx], space.getVariable(variableNames[idx]));
-			}		
-		}
-	}
-
-	public VariableSpace getParentVariableSpace() {
-		return parent;
-	}
-	
-	public void setParentVariableSpace(VariableSpace parent) {
-		this.parent = parent;
-	}
-
-	public String getVariable(String variableName, String defaultValue) {
-        String var = properties.get(variableName);
-        if (var==null) return defaultValue;
-        return var;
-	}
-
-	public String getVariable(String variableName) {
-		return properties.get(variableName);
-	}
-	
-	public boolean getBooleanValueOfVariable(String variableName, boolean defaultValue) {
-		if (!Const.isEmpty(variableName))
-		{
-			String value = environmentSubstitute(variableName);
-			if (!Const.isEmpty(value))
-			{
-				return ValueMeta.convertStringToBoolean(value);
-			}
-		}
-		return defaultValue;
-	}
-
-	public void initializeVariablesFrom(VariableSpace parent) {
-	   this.parent = parent;
-	   
-	   // Add all the system properties...
-	   for (Object key : System.getProperties().keySet()) {
-		   properties.put((String)key, System.getProperties().getProperty((String)key));
-	   }
-	   
-	   if ( parent != null )
-	   {
-           copyVariablesFrom(parent);
-	   }
-	   if ( injection != null )
-	   {
-	       properties.putAll(injection);
-	       injection = null;
-	   }
-	   initialized = true;
-	}
-
-	public String[] listVariables() {
-		List<String> list = new ArrayList<String>();
-		for ( String name : properties.keySet() )
-		{
-			list.add(name);
-		}
-		return (String[])list.toArray(new String[list.size()]);
-	}
-
-	public void setVariable(String variableName, String variableValue) 
-	{
-        if (variableValue!=null)
-        {
-            properties.put(variableName, variableValue);
-        }
-        else
-        {
-            properties.remove(variableName);
-        }
+    if (parent != null) {
+      copyVariablesFrom(parent);
     }
-	
-	public String environmentSubstitute(String aString)
-	{
-        if (aString==null || aString.length()==0) return aString;
-        
-        return StringUtil.environmentSubstitute(aString, properties);
-	}
-	
-	public String[] environmentSubstitute(String string[])
-	{
-		String retval[] = new String[string.length];
-		for (int i = 0; i < string.length; i++)
-		{
-			retval[i] = environmentSubstitute(string[i]);
-		}
-		return retval;
-	}	
+    if (injection != null) {
+      properties.putAll(injection);
+      injection = null;
+    }
+    initialized = true;
+  }
 
-	public void shareVariablesWith(VariableSpace space) {
-	    // not implemented in here... done by pointing to the same VariableSpace
-		// implementation
-	}
+  public String[] listVariables() {
+    List<String> list = new ArrayList<String>();
+    for (String name : properties.keySet()) {
+      list.add(name);
+    }
+    return (String[]) list.toArray(new String[list.size()]);
+  }
+
+  public void setVariable(String variableName, String variableValue) {
+    if (variableValue != null) {
+      properties.put(variableName, variableValue);
+    } else {
+      properties.remove(variableName);
+    }
+  }
+
+  public String environmentSubstitute(String aString) {
+    if (aString == null || aString.length() == 0)
+      return aString;
+
+    return StringUtil.environmentSubstitute(aString, properties);
+  }
+
+  /**
+   * Substitutes field values in <code>aString</code>. Field values are of the
+   * form "?{<field name>}". The values are retrieved from the specified row.
+   * Please note that the getString() method is used to convert to a String, for all values in the row.
+   * 
+   * @param aString
+   *            the string on which to apply the substitution.
+   * @param rowMeta 
+   *            The row metadata to use.
+   * @param rowData
+   *            The row data to use
+   *            
+   * @return the string with the substitution applied.
+   * @throws KettleValueException In case there is a String conversion error
+   */
+  public String fieldSubstitute(String aString, RowMetaInterface rowMeta, Object[] rowData) throws KettleValueException {
+    if (aString == null || aString.length() == 0)
+      return aString;
+
+    return StringUtil.substituteField(aString, rowMeta, rowData);
+  }
+
+  public String[] environmentSubstitute(String string[]) {
+    String retval[] = new String[string.length];
+    for (int i = 0; i < string.length; i++) {
+      retval[i] = environmentSubstitute(string[i]);
+    }
+    return retval;
+  }
+
+  public void shareVariablesWith(VariableSpace space) {
+    // not implemented in here... done by pointing to the same VariableSpace
+    // implementation
+  }
 
   public void injectVariables(Map<String, String> prop) {
     if (initialized) {
@@ -196,19 +210,18 @@ public class Variables implements VariableSpace
       }
     }
   }
-	
-	/**
-	 * Get a default variable space as a placeholder. Everytime you 
-	 * will get a new instance.
-	 * 
-	 * @return a default variable space.
-	 */
-	synchronized public static VariableSpace getADefaultVariableSpace()
-	{
-	    VariableSpace space = new Variables();
-	    
-	    space.initializeVariablesFrom(null);
-	    
-	    return space;
-	}	
+
+  /**
+   * Get a default variable space as a placeholder. Everytime you 
+   * will get a new instance.
+   * 
+   * @return a default variable space.
+   */
+  synchronized public static VariableSpace getADefaultVariableSpace() {
+    VariableSpace space = new Variables();
+
+    space.initializeVariablesFrom(null);
+
+    return space;
+  }
 }

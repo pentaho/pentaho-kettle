@@ -19,11 +19,8 @@ package org.pentaho.di.trans.steps.openerp.objectoutput;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -44,6 +41,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 @Step(id = "OpenERPObjectOutputImport", 
@@ -133,8 +131,7 @@ import org.w3c.dom.Node;
 	}
 
 	@Override
-	public void loadXML(Node stepnode, List<DatabaseMeta> databases,
-			Map<String, Counter> counters) throws KettleXMLException {
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore) throws KettleXMLException {
 		readData(stepnode, databases);
 	}
 
@@ -144,8 +141,8 @@ import org.w3c.dom.Node;
 	}
 
 	@Override
-	public void readRep(Repository rep, ObjectId idStep,
-			List<DatabaseMeta> databases, Map<String, Counter> counters)
+	public void readRep(Repository rep, IMetaStore metaStore, ObjectId idStep,
+			List<DatabaseMeta> databases)
 	throws KettleException {
 		try {
 			this.databaseMeta = rep.loadDatabaseMetaFromStepAttribute(idStep, "connection", databases);
@@ -182,7 +179,7 @@ import org.w3c.dom.Node;
 	}
 
 	@Override
-	public void saveRep(Repository rep, ObjectId idTransformation,
+	public void saveRep(Repository rep, IMetaStore metaStore, ObjectId idTransformation,
 			ObjectId idStep) throws KettleException {
 		try {
 			rep.saveDatabaseMetaStepAttribute(idTransformation, idStep, "connection", this.databaseMeta);

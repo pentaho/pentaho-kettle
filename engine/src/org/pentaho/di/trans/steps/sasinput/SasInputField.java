@@ -30,6 +30,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 /**
@@ -97,7 +98,7 @@ public class SasInputField implements XMLInterface, Cloneable {
     return retval.toString();
   }
   
-  public void saveRep(Repository rep, ObjectId transformationId, ObjectId stepId, int fieldNr) throws KettleException {
+  public void saveRep(Repository rep, IMetaStore metaStore, ObjectId transformationId, ObjectId stepId, int fieldNr) throws KettleException {
     rep.saveStepAttribute(transformationId, stepId, fieldNr, "field_name", name);
     rep.saveStepAttribute(transformationId, stepId, fieldNr, "field_rename", rename);
     rep.saveStepAttribute(transformationId, stepId, fieldNr, "field_type", ValueMeta.getTypeDesc(type));

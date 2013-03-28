@@ -30,7 +30,6 @@ import java.util.Map;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -71,6 +70,7 @@ import org.pentaho.di.trans.step.errorhandling.StreamIcon;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.pentaho.di.trans.steps.mappinginput.MappingInputMeta;
 import org.pentaho.di.trans.steps.mappingoutput.MappingOutputMeta;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 /**
@@ -102,7 +102,9 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
    * This repository object is injected from the outside at runtime or at design
    * time. It comes from either Spoon or Trans
    */
-  private Repository                        repository;
+  private Repository repository;
+  
+  private IMetaStore metaStore;
 
   public MappingMeta() {
     super(); // allocate BaseStepMeta
@@ -130,7 +132,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
     }
   }
 
-  public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleXMLException {
+  public void loadXML(Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore) throws KettleXMLException {
     try {
       String method = XMLHandler.getTagValue(stepnode, "specification_method");
       specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode(method);
@@ -280,7 +282,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
     return retval.toString();
   }
 
-  public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException {
+  public void readRep(Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases) throws KettleException {
     String method = rep.getStepAttributeString(id_step, "specification_method");
     specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode(method);
     String transId = rep.getStepAttributeString(id_step, "trans_object_id");
@@ -347,7 +349,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
     allowingMultipleOutputs = rep.getStepAttributeBoolean(id_step, 0, "allow_multiple_output", outputMappings.size()>1);    
   }
 
-  public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException {
+  public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step) throws KettleException {
     rep.saveStepAttribute(id_transformation, id_step, "specification_method", specificationMethod==null ? null : specificationMethod.getCode());
     rep.saveStepAttribute(id_transformation, id_step, "trans_object_id", transObjectId==null ? null : transObjectId.toString());
     rep.saveStepAttribute(id_transformation, id_step, "filename", fileName); //$NON-NLS-1$
@@ -355,16 +357,16 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
     rep.saveStepAttribute(id_transformation, id_step, "directory_path", directoryPath); //$NON-NLS-1$
 
     for (int i = 0; i < inputMappings.size(); i++) {
-      inputMappings.get(i).saveRep(rep, id_transformation, id_step, "input_", i);
+      inputMappings.get(i).saveRep(rep, metaStore, id_transformation, id_step, "input_", i);
     }
 
     for (int i = 0; i < outputMappings.size(); i++) {
-      outputMappings.get(i).saveRep(rep, id_transformation, id_step, "output_", i);
+      outputMappings.get(i).saveRep(rep, metaStore, id_transformation, id_step, "output_", i);
     }
 
     // save the mapping parameters too
     //
-    mappingParameters.saveRep(rep, id_transformation, id_step);
+    mappingParameters.saveRep(rep, metaStore, id_transformation, id_step);
 
     rep.saveStepAttribute(id_transformation, id_step, 0, "allow_multiple_input", allowingMultipleInputs);
     rep.saveStepAttribute(id_transformation, id_step, 0, "allow_multiple_output", allowingMultipleOutputs);
@@ -392,7 +394,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
     //
     TransMeta mappingTransMeta = null;
     try {
-      mappingTransMeta = loadMappingMeta(this, repository, space);
+      mappingTransMeta = loadMappingMeta(this, repository, metaStore, space);
     } catch (KettleException e) {
       throw new KettleStepException(BaseMessages.getString(PKG, "MappingMeta.Exception.UnableToLoadMappingTransformation"), e);
     }
@@ -590,7 +592,11 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
     return targetSteps.toArray(new String[targetSteps.size()]);
   }
 
-  public synchronized static final TransMeta loadMappingMeta(MappingMeta mappingMeta, Repository rep, VariableSpace space) throws KettleException {
+  @Deprecated public synchronized static final TransMeta loadMappingMeta(MappingMeta mappingMeta, Repository rep, VariableSpace space) throws KettleException {
+    return loadMappingMeta(mappingMeta, rep, null, space);
+  }
+  
+  public synchronized static final TransMeta loadMappingMeta(MappingMeta mappingMeta, Repository rep, IMetaStore metaStore, VariableSpace space) throws KettleException {
     TransMeta mappingTransMeta = null;
     
     switch(mappingMeta.getSpecificationMethod()) {
@@ -601,7 +607,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
         //
         // Don't set internal variables: they belong to the parent thread!
         //
-        mappingTransMeta = new TransMeta(realFilename, space); 
+        mappingTransMeta = new TransMeta(realFilename, metaStore, rep, true, space, null); 
         mappingTransMeta.getLogChannel().logDetailed("Loading Mapping from repository", "Mapping transformation was loaded from XML file [" + realFilename + "]");
       } catch (Exception e) {
         throw new KettleException(BaseMessages.getString(PKG, "MappingMeta.Exception.UnableToLoadMapping"), e);
@@ -622,7 +628,8 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
           try {
             // reads the last revision in the repository...
             //
-            mappingTransMeta = rep.loadTransformation(realTransname, repdir, null, true, null); 
+            mappingTransMeta = rep.loadTransformation(realTransname, repdir, null, true, null);  // TODO: FIXME: Should we pass in external MetaStore into Repository methods?
+            
             mappingTransMeta.getLogChannel().logDetailed("Loading Mapping from repository", "Mapping transformation [" + realTransname + "] was loaded from the repository");
           } catch (Exception e) {
             throw new KettleException("Unable to load transformation [" + realTransname + "]", e);
@@ -1062,15 +1069,29 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
   public boolean[] isReferencedObjectEnabled() {
     return new boolean[] { isMapppingDefined(), };
   }
+  
+  @Deprecated public Object loadReferencedObject(int index, Repository rep, VariableSpace space) throws KettleException {
+    return loadReferencedObject(index, rep, null, space);
+  }
+  
   /**
    * Load the referenced object
    * @param index the object index to load
    * @param rep the repository
+   * @param metaStore the MetaStore to use
    * @param space the variable space to use
    * @return the referenced object once loaded
    * @throws KettleException
    */
-  public Object loadReferencedObject(int index, Repository rep, VariableSpace space) throws KettleException {
-    return loadMappingMeta(this, rep, space);
+  public Object loadReferencedObject(int index, Repository rep, IMetaStore metaStore, VariableSpace space) throws KettleException {
+    return loadMappingMeta(this, rep, metaStore, space);
+  }
+
+  public IMetaStore getMetaStore() {
+    return metaStore;
+  }
+
+  public void setMetaStore(IMetaStore metaStore) {
+    this.metaStore = metaStore;
   }
 }

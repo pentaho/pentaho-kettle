@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="pentaho-kettle" module="kettle-hl7-plugin" revision="TRUNK-SNAPSHOT" status="integration" publication="20130227214515"/>
+  <info organisation="pentaho-kettle" module="kettle-hl7-plugin" revision="TRUNK-SNAPSHOT" status="integration" publication="20130320193413"/>
 
   <configurations>
     <conf name="default"/>
@@ -15,7 +15,6 @@
 
   <dependencies defaultconf="default->default">
     <dependency org="pentaho-kettle" name="kettle-core" rev="TRUNK-SNAPSHOT" conf="dev->default" changing="true"/>
-    <dependency org="pentaho-kettle" name="kettle-db" rev="TRUNK-SNAPSHOT" conf="dev->default" changing="true"/>
     <dependency org="pentaho-kettle" name="kettle-engine" rev="TRUNK-SNAPSHOT" conf="dev->default" changing="true"/>
     <dependency org="pentaho-kettle" name="kettle-ui-swt" rev="TRUNK-SNAPSHOT" conf="dev->default" changing="true"/>  
     

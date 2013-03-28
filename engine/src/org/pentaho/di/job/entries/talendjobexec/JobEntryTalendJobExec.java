@@ -60,6 +60,7 @@ import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 /**
@@ -103,7 +104,7 @@ public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, Jo
     return retval.toString();
   }
 
-  public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException {
+  public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep, IMetaStore metaStore) throws KettleXMLException {
     try {
       super.loadXML(entrynode, databases, slaveServers);
       filename = XMLHandler.getTagValue(entrynode, "filename"); //$NON-NLS-1$
@@ -113,7 +114,7 @@ public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, Jo
     }
   }
 
-  public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
+  public void loadRep(Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
     try {
       filename = rep.getJobEntryAttributeString(id_jobentry, "filename"); //$NON-NLS-1$
       className = rep.getJobEntryAttributeString(id_jobentry, "class_name"); //$NON-NLS-1$
@@ -122,7 +123,7 @@ public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, Jo
     }
   }
 
-  public void saveRep(Repository rep, ObjectId id_job) throws KettleException {
+  public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_job) throws KettleException {
     try {
       rep.saveJobEntryAttribute(id_job, getObjectId(), "filename", filename); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getObjectId(), "class_name", className); //$NON-NLS-1$

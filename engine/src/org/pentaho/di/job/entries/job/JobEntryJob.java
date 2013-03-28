@@ -75,6 +75,7 @@ import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.www.SlaveServerJobStatus;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 /**
@@ -300,7 +301,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     }
   }
   
-  public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException {
+  public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep, IMetaStore metaStore) throws KettleXMLException {
     try {
       super.loadXML(entrynode, databases, slaveServers);
 
@@ -377,7 +378,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   /**
    * Load the jobentry from repository
    */
-  public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
+  public void loadRep(Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
     try {
       String method = rep.getJobEntryAttributeString(id_jobentry, "specification_method");
       specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode(method);
@@ -439,7 +440,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
   // Save the attributes of this job entry
   //
-  public void saveRep(Repository rep, ObjectId id_job) throws KettleException {
+  public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_job) throws KettleException {
     try {
       rep.saveJobEntryAttribute(id_job, getObjectId(), "specification_method", specificationMethod==null ? null : specificationMethod.getCode());
       rep.saveJobEntryAttribute(id_job, getObjectId(), "job_object_id", jobObjectId==null ? null : jobObjectId.toString());
@@ -1100,17 +1101,17 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     return true;
   }
 
-  public List<SQLStatement> getSQLStatements(Repository repository) throws KettleException {
-    return getSQLStatements(repository, null);
-  }
-
-  public List<SQLStatement> getSQLStatements(Repository repository, VariableSpace space) throws KettleException {
+  public List<SQLStatement> getSQLStatements(Repository repository, IMetaStore metaStore, VariableSpace space) throws KettleException {
     this.copyVariablesFrom(space);
-    JobMeta jobMeta = getJobMeta(repository, space);
+    JobMeta jobMeta = getJobMeta(repository, metaStore, space);
     return jobMeta.getSQLStatements(repository, null);
   }
 
   public JobMeta getJobMeta(Repository rep, VariableSpace space) throws KettleException {
+    return getJobMeta(rep, null, space);
+  }
+  
+  public JobMeta getJobMeta(Repository rep, IMetaStore metaStore, VariableSpace space) throws KettleException {
     try {
       switch(specificationMethod) {
       case FILENAME:
@@ -1368,12 +1369,13 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
    * Load the referenced object
    * @param index the referenced object index to load (in case there are multiple references)
    * @param rep the repository
+   * @param metaStore the metaStore
    * @param space the variable space to use
    * @return the referenced object once loaded
    * @throws KettleException
    */
-  public Object loadReferencedObject(int index, Repository rep, VariableSpace space) throws KettleException {
-    return getJobMeta(rep, space);
+  public Object loadReferencedObject(int index, Repository rep, IMetaStore metaStore, VariableSpace space) throws KettleException {
+    return getJobMeta(rep, metaStore, space);
   }
 
   /**

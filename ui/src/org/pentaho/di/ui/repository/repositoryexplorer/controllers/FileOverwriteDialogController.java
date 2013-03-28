@@ -33,6 +33,7 @@ import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObject;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObjectsList;
 import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
+import org.pentaho.di.ui.xul.KettleXulLoader;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulRunner;
 import org.pentaho.ui.xul.binding.Binding;
@@ -40,7 +41,6 @@ import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
-import org.pentaho.ui.xul.swt.SwtXulLoader;
 import org.pentaho.ui.xul.swt.SwtXulRunner;
 
 /**
@@ -77,7 +77,7 @@ public class FileOverwriteDialogController extends AbstractXulEventHandler {
   
   public static FileOverwriteDialogController getInstance(Shell shell, List<UIRepositoryObject> objects) {
     try {
-      SwtXulLoader swtLoader = new SwtXulLoader();
+      KettleXulLoader swtLoader = new KettleXulLoader();
       swtLoader.setOuterContext(shell);
       swtLoader.setSettingsManager(XulSpoonSettingsManager.getInstance());
       XulDomContainer container = swtLoader.loadXul("org/pentaho/di/ui/repository/repositoryexplorer/xul/file-overwrite-dialog.xul", resourceBundle); //$NON-NLS-1$

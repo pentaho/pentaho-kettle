@@ -31,7 +31,6 @@ import java.util.Map;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -48,6 +47,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 /*
@@ -127,7 +127,7 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
     parameterFieldMap = new HashMap<String, String>();
   }
 
-  public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleXMLException {
+  public void loadXML(Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore) throws KettleXMLException {
     readData(stepnode);
   }
 
@@ -186,7 +186,7 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
     return retval.toString();
   }
 
-  public void readRep(Repository rep, ObjectId idStep, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException {
+  public void readRep(Repository rep, IMetaStore metaStore, ObjectId idStep, List<DatabaseMeta> databases) throws KettleException {
     try {
       inputFileField = rep.getStepAttributeString(idStep, "file_input_field"); //$NON-NLS-1$
       outputFileField = rep.getStepAttributeString(idStep, "file_output_field"); //$NON-NLS-1$
@@ -207,7 +207,7 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
     }
   }
 
-  public void saveRep(Repository rep, ObjectId idTransformation, ObjectId idStep) throws KettleException {
+  public void saveRep(Repository rep, IMetaStore metaStore, ObjectId idTransformation, ObjectId idStep) throws KettleException {
     try {
       rep.saveStepAttribute(idTransformation, idStep, "file_input_field", inputFileField); //$NON-NLS-1$
       rep.saveStepAttribute(idTransformation, idStep, "file_output_field", outputFileField); //$NON-NLS-1$

@@ -40,6 +40,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 
@@ -186,6 +187,13 @@ public interface JobEntryInterface
 	 * @param repository the new repository
 	 */
 	public void setRepository(Repository repository);
+
+	/**
+	 * Sets the MetaStore
+	 * 
+	 * @param metaStore The new MetaStore to use
+	 */
+	public void setMetaStore(IMetaStore metaStore);
 	
 	/**
 	 * This method should clear out any variables, objects, etc. used by the job entry.
@@ -223,10 +231,10 @@ public interface JobEntryInterface
 	/**
 	 * Gets the plugin ID
 	 * 
-	 * @deprecated in favor of getPluginId()
+	 * deprecated in favor of getPluginId()
 	 * @see JobEntryInterface#getPluginId()
 	 */
-	public String  getTypeId();
+	@Deprecated public String  getTypeId();
 	
 	/**
 	 * Gets the plugin id.
@@ -286,8 +294,22 @@ public interface JobEntryInterface
 	 * @param rep the repository object
 	 * @throws KettleXMLException if any errors occur during the loading of the XML
 	 */
-	public void    loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException;
+	@Deprecated public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException;
 	
+	 /**
+   * This method is called by PDI whenever a job entry needs to read its settings from XML. The XML node containing
+   * the job entry's settings is passed in as an argument. Again, the helper class org.pentaho.di.core.xml.XMLHandler
+   * is typically used to conveniently read the settings from the XML node.
+   *
+   * @param entrynode the top-level XML node
+   * @param databases the list of databases
+   * @param slaveServers the list of slave servers
+   * @param rep the repository object
+   * @param metaStore The metaStore to optionally load from.
+   * @throws KettleXMLException if any errors occur during the loading of the XML
+   */
+  public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep, IMetaStore metaStore) throws KettleXMLException;
+
 	/**
 	 *  This method is called by PDI whenever a job entry needs to serialize its settings to XML. It is called when
 	 *  saving a job in Spoon. The method returns an XML string, containing the serialized settings. The string contains
@@ -296,7 +318,7 @@ public interface JobEntryInterface
 	 *
 	 * @return the xml representation of the job entry
 	 */
-	public String  getXML();
+	public String getXML();
 	
 	/**
 	 * This method is called by PDI whenever a job entry needs to save its settings to a PDI repository. The repository
@@ -309,8 +331,22 @@ public interface JobEntryInterface
 	 * @param id_job the id_job
 	 * @throws KettleException if any errors occur during the save
 	 */
-	public void    saveRep(Repository rep, ObjectId id_job) throws KettleException;
+	@Deprecated public void saveRep(Repository rep, ObjectId id_job) throws KettleException;
 	
+	 /**
+   * This method is called by PDI whenever a job entry needs to save its settings to a PDI repository. The repository
+   * object passed in as the first argument provides a convenient set of methods for serializing job entry settings.
+   * When calling repository serialization methods, job id and job entry id are required. The job id is passed in to
+   * saveRep() as an argument, and the job entry id can be obtained by a call to getObjectId() inherited from the
+   * base class.
+   *
+   * @param rep the repository
+   * @param metaStore the MetaStore to use
+   * @param id_job the id_job
+   * @throws KettleException if any errors occur during the save
+   */
+  public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_job) throws KettleException;
+
 	/**
 	 * This method is called by PDI whenever a job entry needs to read its configuration from a PDI repository. The 
 	 * job entry id given in the arguments should be used as the identifier when using the repository's serialization
@@ -322,7 +358,21 @@ public interface JobEntryInterface
 	 * @param slaveServers the list of slave servers
 	 * @throws KettleException if any errors occur during the load
 	 */
-	public void    loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException;
+	@Deprecated public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException;
+
+	 /**
+   * This method is called by PDI whenever a job entry needs to read its configuration from a PDI repository. The 
+   * job entry id given in the arguments should be used as the identifier when using the repository's serialization
+   * methods.
+   *
+   * @param rep the repository object
+   * @param metaStore the MetaStore to use
+   * @param id_jobentry the id of the job entry
+   * @param databases the list of databases
+   * @param slaveServers the list of slave servers
+   * @throws KettleException if any errors occur during the load
+   */
+  public void loadRep(Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException;
 
 	/**
 	 * Checks if the job entry has started
@@ -419,7 +469,7 @@ public interface JobEntryInterface
      * @return a list of SQL statements
      * @throws KettleException if any errors occur during the generation of SQL statements
      */
-    public List<SQLStatement> getSQLStatements(Repository repository) throws KettleException;
+    @Deprecated public List<SQLStatement> getSQLStatements(Repository repository) throws KettleException;
     
     /**
      * Gets the SQL statements needed by this job entry to execute successfully, given a set of variables.
@@ -429,8 +479,19 @@ public interface JobEntryInterface
      * @return a list of SQL statements
      * @throws KettleException if any errors occur during the generation of SQL statements
      */
-    public List<SQLStatement> getSQLStatements(Repository repository, VariableSpace space) throws KettleException;
-    
+    @Deprecated public List<SQLStatement> getSQLStatements(Repository repository, VariableSpace space) throws KettleException;
+
+    /**
+     * Gets the SQL statements needed by this job entry to execute successfully, given a set of variables.
+     *
+     * @param repository the repository object
+     * @param metaStore the MetaStore to use
+     * @param space a variable space object containing variable bindings
+     * @return a list of SQL statements
+     * @throws KettleException if any errors occur during the generation of SQL statements
+     */
+    public List<SQLStatement> getSQLStatements(Repository repository, IMetaStore metaStore, VariableSpace space) throws KettleException;
+
     /**
      * Get the name of the class that implements the dialog for the job entry
      * JobEntryBase provides a default
@@ -522,7 +583,19 @@ public interface JobEntryInterface
    * @param space the variable space to use
    * @return the referenced object once loaded
    * @throws KettleException
+   * @deprecated
    */
-  public Object loadReferencedObject(int index, Repository rep, VariableSpace space) throws KettleException;
+  @Deprecated public Object loadReferencedObject(int index, Repository rep, VariableSpace space) throws KettleException;
+
+  /**
+   * Load the referenced object
+   * @param index the referenced object index to load (in case there are multiple references)
+   * @param rep the repository
+   * @param metaStore the metaStore
+   * @param space the variable space to use
+   * @return the referenced object once loaded
+   * @throws KettleException
+   */
+  public Object loadReferencedObject(int index, Repository rep, IMetaStore metaStore, VariableSpace space) throws KettleException;
 
 }

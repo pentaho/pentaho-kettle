@@ -34,13 +34,13 @@ import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.repository.controllers.RepositoriesController;
 import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
+import org.pentaho.di.ui.xul.KettleXulLoader;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulRunner;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.containers.XulDialog;
-import org.pentaho.ui.xul.swt.SwtXulLoader;
 import org.pentaho.ui.xul.swt.SwtXulRunner;
 
 public class RepositoriesDialog {
@@ -66,10 +66,10 @@ public class RepositoriesDialog {
   public RepositoriesDialog(Shell shell, String preferredRepositoryName, ILoginCallback callback) {
     try {
       this.callback = callback;
-      SwtXulLoader swtLoader = new SwtXulLoader();
-      swtLoader.setOuterContext(shell);
-      swtLoader.setSettingsManager(XulSpoonSettingsManager.getInstance());
-      container = swtLoader.loadXul("org/pentaho/di/ui/repository/xul/repositories.xul", resourceBundle); //$NON-NLS-1$
+      KettleXulLoader xulLoader = new KettleXulLoader();
+      xulLoader.setOuterContext(shell);
+      xulLoader.setSettingsManager(XulSpoonSettingsManager.getInstance());
+      container = xulLoader.loadXul("org/pentaho/di/ui/repository/xul/repositories.xul", resourceBundle); //$NON-NLS-1$
       final XulRunner runner = new SwtXulRunner();
       runner.addContainer(container);
 

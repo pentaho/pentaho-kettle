@@ -71,11 +71,11 @@ import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.XulSpoonResourceBundle;
 import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.xul.KettleXulLoader;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulLoader;
 import org.pentaho.ui.xul.containers.XulToolbar;
 import org.pentaho.ui.xul.impl.XulEventHandler;
-import org.pentaho.ui.xul.swt.SwtXulLoader;
 
 public class ImportRulesDialog extends Dialog implements XulEventHandler {
 
@@ -204,7 +204,7 @@ public class ImportRulesDialog extends Dialog implements XulEventHandler {
   private void addToolBar() {
 
     try {
-      XulLoader loader = new SwtXulLoader();
+      XulLoader loader = new KettleXulLoader();
       loader.setSettingsManager(XulSpoonSettingsManager.getInstance());
       ResourceBundle bundle = new XulSpoonResourceBundle(Spoon.class);
       XulDomContainer xulDomContainer = loader.loadXul(XUL_FILE_TOOLBAR, bundle);

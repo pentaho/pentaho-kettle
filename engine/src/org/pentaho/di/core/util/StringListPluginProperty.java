@@ -32,6 +32,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 /**
@@ -140,7 +141,7 @@ public class StringListPluginProperty extends KeyValue<List<String>> implements 
      * @see at.aschauer.commons.pentaho.plugin.PluginProperty#readFromRepositoryStep(org.pentaho.di.repository.Repository,
      *      long)
      */
-    public void readFromRepositoryStep(final Repository repository, final ObjectId stepId) throws KettleException {
+    public void readFromRepositoryStep(final Repository repository, final IMetaStore metaStore, final ObjectId stepId) throws KettleException {
         final String stringValue = repository.getStepAttributeString(stepId, this.getKey());
         this.setValue(fromString(stringValue));
     }
@@ -160,7 +161,7 @@ public class StringListPluginProperty extends KeyValue<List<String>> implements 
      * @see at.aschauer.commons.pentaho.plugin.PluginProperty#saveToRepositoryStep(org.pentaho.di.repository.Repository,
      *      long, long)
      */
-    public void saveToRepositoryStep(final Repository repository, final ObjectId transformationId, final ObjectId stepId)
+    public void saveToRepositoryStep(final Repository repository, final IMetaStore metaStore, final ObjectId transformationId, final ObjectId stepId)
             throws KettleException {
         final String stringValue = asString(this.getValue());
         repository.saveStepAttribute(transformationId, stepId, this.getKey(), stringValue);

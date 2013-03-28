@@ -275,6 +275,12 @@ public class Mapping extends BaseStep implements StepInterface
     // purposes
     //
     data.mappingTrans.setMappingStepName(getStepname());
+    
+    // Also pass servlet information (if any)
+    //
+    data.mappingTrans.setServletPrintWriter(getTrans().getServletPrintWriter());
+    data.mappingTrans.setServletReponse(getTrans().getServletResponse());
+    data.mappingTrans.setServletRequest(getTrans().getServletRequest());
 
     // We launch the transformation in the processRow when the first row is
     // received.
@@ -283,7 +289,7 @@ public class Mapping extends BaseStep implements StepInterface
     // init is done.
     //
     try {
-      data.mappingTrans.prepareExecution(getTransMeta().getArguments());
+      data.mappingTrans.prepareExecution(getTrans().getArguments());
     } catch (KettleException e) {
       throw new KettleException(BaseMessages.getString(PKG, "Mapping.Exception.UnableToPrepareExecutionOfMapping"), e);
     }
@@ -492,7 +498,7 @@ public class Mapping extends BaseStep implements StepInterface
         //
         meta.setRepository(getTransMeta().getRepository());
 
-        data.mappingTransMeta = MappingMeta.loadMappingMeta(meta, meta.getRepository(), this);
+        data.mappingTransMeta = MappingMeta.loadMappingMeta(meta, meta.getRepository(), meta.getMetaStore(), this);
         if (data.mappingTransMeta != null) // Do we have a mapping at all?
         {
 

@@ -30,6 +30,8 @@ import java.util.Map;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
@@ -398,6 +400,11 @@ public class ClusterSchema
 	{
 		return variables.environmentSubstitute(aString);
 	}		
+
+  public String fieldSubstitute(String aString, RowMetaInterface rowMeta, Object[] rowData) throws KettleValueException 
+  {
+    return variables.fieldSubstitute(aString, rowMeta, rowData);
+  }
 
 	public VariableSpace getParentVariableSpace() 
 	{

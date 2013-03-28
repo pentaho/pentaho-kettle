@@ -8,8 +8,12 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleObjectExistsException;
 import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.metastore.DatabaseMetaStoreUtil;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.metastore.api.IMetaStore;
 
 public class SharedDatabaseUtil {
   
@@ -37,6 +41,15 @@ public class SharedDatabaseUtil {
     }
   }
   
+  public static List<DatabaseMeta> getDatabaseMetaList(IMetaStore metaStore) {
+    try {
+      return DatabaseMetaStoreUtil.getDatabaseElements(metaStore);
+    } catch(Exception e) {
+      new ErrorDialog(Spoon.getInstance().getShell(), "Error retrieving databases", "There was an error retrieving database from the MetaStore", e);
+      return new ArrayList<DatabaseMeta>(); // empty list.
+    }
+  }
+
   public static List<DatabaseMeta> loadSharedDatabases() {
     List<DatabaseMeta> sharedDatabases= new ArrayList<DatabaseMeta>();
     try {
@@ -60,6 +73,5 @@ public class SharedDatabaseUtil {
     Arrays.sort(databaseNames);
 
     return databaseNames;
-  }
-  
+  }  
 }

@@ -65,6 +65,7 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 
@@ -218,7 +219,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 		return retval.toString();
 	}
 	
-	public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep)
+	public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep, IMetaStore metaStore)
 	throws KettleXMLException
  {
 		try
@@ -254,7 +255,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 		}
 	}
 
-	public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+	public void loadRep(Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
     {
 		try
 		{
@@ -288,7 +289,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 		}
 	}
 	
-	public void saveRep(Repository rep, ObjectId id_job)
+	public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_job)
 		throws KettleException
 	{
 		try

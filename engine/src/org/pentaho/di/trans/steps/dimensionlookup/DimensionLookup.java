@@ -508,7 +508,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
         switch (getTechKeyCreation()) {
         case CREATION_METHOD_TABLEMAX:
           // What's the next value for the technical key?
-          technicalKey = data.db.getNextValue(getTransMeta().getCounters(), data.realSchemaName, data.realTableName, meta.getKeyField());
+          technicalKey = data.db.getNextValue(getTrans().getCounters(), data.realSchemaName, data.realTableName, meta.getKeyField());
           break;
         case CREATION_METHOD_AUTOINC:
           technicalKey = null; // Set to null to flag auto-increment usage
@@ -707,7 +707,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
           // Use our own sequence here...
           {
             // What's the next value for the technical key?
-            technicalKey = data.db.getNextValue(getTransMeta().getCounters(), data.realSchemaName, data.realTableName, meta.getKeyField());
+            technicalKey = data.db.getNextValue(getTrans().getCounters(), data.realSchemaName, data.realTableName, meta.getKeyField());
           }
 
           // update our technicalKey with the return of the insert

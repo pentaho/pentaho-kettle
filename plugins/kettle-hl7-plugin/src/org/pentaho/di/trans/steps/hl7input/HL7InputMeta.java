@@ -1,11 +1,9 @@
 package org.pentaho.di.trans.steps.hl7input;
 
 import java.util.List;
-import java.util.Map;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
-import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -26,6 +24,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 @Step(id = "HL7Input", image = "hl7-input.png", i18nPackageName="org.pentaho.di.trans.steps.hl7input", name="HL7Input.Name", description = "HL7Input.TooltipDesc", categoryDescription="i18n:org.pentaho.di.trans.step:BaseStep.Category.Input")
@@ -40,7 +39,7 @@ public class HL7InputMeta extends BaseStepMeta implements StepMetaInterface
 		super(); // allocate BaseStepMeta
 	}
 
-	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters)
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore)
 		throws KettleXMLException
 	{
 		readData(stepnode);
@@ -66,13 +65,13 @@ public class HL7InputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 	}
 
-	public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters)
+	public void readRep(Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases)
 		throws KettleException
 	{
 	  messageField = rep.getStepAttributeString(id_step, "message_field");
 	}
 	
-	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step)
+	public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step)
 		throws KettleException
 	{
 	  rep.saveStepAttribute(id_transformation, id_step, "message_field", messageField);

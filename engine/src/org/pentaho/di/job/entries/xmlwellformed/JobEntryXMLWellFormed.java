@@ -57,6 +57,7 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -153,7 +154,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 	}
 	
 	
-	 public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException
+	 public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep, IMetaStore metaStore) throws KettleXMLException
 	  {
 		try
 		{
@@ -192,7 +193,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 	}
 
 
-	 public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
+	 public void loadRep(Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	 {
 		try
 		{
@@ -221,7 +222,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 			throw new KettleException(BaseMessages.getString(PKG, "JobXMLWellFormed.Error.Exception.UnableLoadRep")+id_jobentry, dbe);
 		}
 	}
-	public void saveRep(Repository rep, ObjectId id_job) throws KettleException
+	public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_job) throws KettleException
 	{
 		try
 		{

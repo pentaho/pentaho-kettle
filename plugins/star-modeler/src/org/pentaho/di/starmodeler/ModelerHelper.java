@@ -19,7 +19,7 @@ public class ModelerHelper  extends AbstractXulEventHandler implements ISpoonMen
   
   private static ModelerHelper instance = null;
   
-  private String defaultLocale = LanguageChoice.getInstance().getDefaultLocale().getCountry();
+  private String defaultLocale = LanguageChoice.getInstance().getDefaultLocale().toString();
     
   private ModelerHelper() {
   }
@@ -54,9 +54,9 @@ public class ModelerHelper  extends AbstractXulEventHandler implements ISpoonMen
   public void createEmptyModel() {
     try {
       StarDomain starDomain = new StarDomain();
-      
-      starDomain.getDomain().setName(new LocalizedString(defaultLocale, "Star Model"));
-      StarModelerPerspective.getInstance().createTabForModel(starDomain, MODELER_NAME);
+      starDomain.getDomain().setName(new LocalizedString(defaultLocale, "Star model domain"));
+      starDomain.getDomain().setDescription(new LocalizedString(defaultLocale, "This star model domain contains multiple star models for the same subject domain"));
+      StarModelerPerspective.getInstance().createTabForDomain(starDomain, MODELER_NAME);
       SpoonPerspectiveManager.getInstance().activatePerspective(StarModelerPerspective.class);
     } catch (Exception e) {
       new ErrorDialog(((Spoon) SpoonFactory.getInstance()).getShell(), "Error", "Error creating visualization", e);

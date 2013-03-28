@@ -150,6 +150,8 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
       // Pass the servlet print writer to the transformation...
       //
       trans.setServletPrintWriter(out);
+      trans.setServletReponse(response);
+      trans.setServletRequest(request);
       
       try {
         // Execute the transformation...

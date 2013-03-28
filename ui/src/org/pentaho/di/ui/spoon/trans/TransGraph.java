@@ -105,10 +105,10 @@ import org.pentaho.di.core.gui.SnapAllignDistribute;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
+import org.pentaho.di.core.logging.KettleLoggingEvent;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogMessage;
 import org.pentaho.di.core.logging.LogParentProvidedInterface;
-import org.pentaho.di.core.logging.KettleLoggingEvent;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.LoggingRegistry;
@@ -174,6 +174,7 @@ import org.pentaho.di.ui.spoon.dialog.NotePadDialog;
 import org.pentaho.di.ui.spoon.dialog.SearchFieldsProgressDialog;
 import org.pentaho.di.ui.spoon.job.JobGraph;
 import org.pentaho.di.ui.trans.dialog.TransDialog;
+import org.pentaho.di.ui.xul.KettleXulLoader;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulLoader;
@@ -186,7 +187,6 @@ import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.ui.xul.jface.tags.JfaceMenuitem;
 import org.pentaho.ui.xul.jface.tags.JfaceMenupopup;
-import org.pentaho.ui.xul.swt.SwtXulLoader;
 
 /**
  * This class handles the display of the transformations in a graphical way using icons, arrows, etc.
@@ -389,7 +389,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     transPreviewDelegate = new TransPreviewDelegate(spoon, this);
 
     try {
-      XulLoader loader = new SwtXulLoader();
+      XulLoader loader = new KettleXulLoader();
       loader.setSettingsManager(XulSpoonSettingsManager.getInstance());
       ResourceBundle bundle = new XulSpoonResourceBundle(Spoon.class);
       XulDomContainer container = loader.loadXul(XUL_FILE_TRANS_TOOLBAR, bundle);
@@ -4001,7 +4001,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 	    Object referencedMeta = null;
 	    StepMetaInterface meta = stepMeta.getStepMetaInterface();
 	    if (!Const.isEmpty(meta.getReferencedObjectDescriptions())) {
-        referencedMeta = meta.loadReferencedObject(index, spoon.rep, transMeta);
+        referencedMeta = meta.loadReferencedObject(index, spoon.rep, spoon.metaStore, transMeta);
 	    }
 	    if (referencedMeta==null) return;
 	    

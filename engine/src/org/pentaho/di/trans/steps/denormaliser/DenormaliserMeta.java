@@ -23,12 +23,10 @@
 package org.pentaho.di.trans.steps.denormaliser;
 
 import java.util.List;
-import java.util.Map;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -49,6 +47,7 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 
@@ -146,7 +145,7 @@ public class DenormaliserMeta extends BaseStepMeta implements StepMetaInterface
         this.denormaliserTargetField = pivotField;
     }
 
-    public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String,Counter> counters) throws KettleXMLException
+    public void loadXML(Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore) throws KettleXMLException
     {
         readData(stepnode);
     }
@@ -301,8 +300,7 @@ public class DenormaliserMeta extends BaseStepMeta implements StepMetaInterface
         return retval.toString();
     }
     
-    public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException
-    {
+    public void readRep(Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases) throws KettleException {
         try
         {
             keyField = rep.getStepAttributeString(id_step, "key_field"); //$NON-NLS-1$
@@ -340,7 +338,7 @@ public class DenormaliserMeta extends BaseStepMeta implements StepMetaInterface
         }
     }
 
-    public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException
+    public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step) throws KettleException
     {
         try
         {

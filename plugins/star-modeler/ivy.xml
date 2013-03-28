@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="pentaho-kettle" module="star-modeler" revision="TRUNK-SNAPSHOT" status="integration" publication="20130227214538"/>
+  <info organisation="pentaho-kettle" module="star-modeler" revision="TRUNK-SNAPSHOT" status="integration" publication="20130320193425"/>
 
   <configurations>
     <conf name="default"/>
@@ -16,7 +16,6 @@
   <dependencies defaultconf="dev->default">
     <dependency org="pentaho-kettle" name="kettle-core" rev="TRUNK-SNAPSHOT" changing="true"/>
     <dependency org="pentaho-kettle" name="kettle-engine" rev="TRUNK-SNAPSHOT" changing="true"/>
-    <dependency org="pentaho-kettle" name="kettle-db" rev="TRUNK-SNAPSHOT" changing="true"/>
     <dependency org="pentaho-kettle" name="kettle-ui-swt" rev="TRUNK-SNAPSHOT" changing="true"/>  
     <dependency org="commons-vfs" name="commons-vfs" rev="20091118-pentaho" transitive="false"/>
     <dependency org="pentaho" name="pentaho-xul-core" rev="TRUNK-SNAPSHOT" changing="true"/>

@@ -1,8 +1,14 @@
 package org.pentaho.di.metastore;
 
+import java.io.File;
+
+import org.pentaho.di.core.Const;
+import org.pentaho.metastore.api.IMetaStore;
+import org.pentaho.metastore.api.exceptions.MetaStoreException;
+import org.pentaho.metastore.stores.xml.XmlMetaStore;
+
 public class MetaStoreConst {
-  public static final String PENTAHO_NAMESPACE = "pentaho";
-  
+
   public static final String DATABASE_TYPE_NAME = "Database connection";
   public static final String DATABASE_TYPE_DESCRIPTION = "This is the official central database connection metadata";
   
@@ -17,6 +23,29 @@ public class MetaStoreConst {
   public static final String DB_ATTR_ID_SERVERNAME = "servername";
   public static final String DB_ATTR_ID_DATA_TABLESPACE = "data_tablespace";
   public static final String DB_ATTR_ID_INDEX_TABLESPACE = "index_tablespace";
-  public static final String DB_ATTR_ID_ATTRIBUTES = "attributes";
   
+  // Extra information for 3rd party tools, not used by Kettle
+  //
+  public static final String DB_ATTR_DRIVER_CLASS = "driver_class";
+  public static final String DB_ATTR_JDBC_URL = "jdbc_url";
+  
+  public static final String DB_ATTR_ID_ATTRIBUTES = "attributes";
+
+  public static final String getDefaultPentahoMetaStoreLocation() {
+    return System.getProperty("user.home")+File.separator+".pentaho";
+  }
+  
+  public static IMetaStore openLocalPentahoMetaStore() throws MetaStoreException {
+    String rootFolder = System.getProperty(Const.PENTAHO_METASTORE_FOLDER);
+    if (Const.isEmpty(rootFolder)) {
+      rootFolder = getDefaultPentahoMetaStoreLocation();
+    }
+    File rootFolderFile = new File(rootFolder);
+    if (!rootFolderFile.exists()) {
+      rootFolderFile.mkdirs();
+    }
+    XmlMetaStore metaStore = new XmlMetaStore(rootFolder);
+    metaStore.setName(Const.PENTAHO_METASTORE_NAME);
+    return metaStore;
+  }
 }

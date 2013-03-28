@@ -23,12 +23,10 @@
 package org.pentaho.di.core.util;
 
 import java.util.List;
-import java.util.Map;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import org.apache.commons.lang.StringUtils;
-import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -42,6 +40,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 /**
@@ -109,8 +108,7 @@ public abstract class AbstractStepMeta extends BaseStepMeta implements StepMetaI
      * 
      * @see org.pentaho.di.trans.step.StepMetaInterface#loadXML(org.w3c.dom.Node, java.util.List, java.util.Map)
      */
-    public void loadXML(final Node node, final List<DatabaseMeta> databaseMeta, final Map<String, Counter> counters)
-            throws KettleXMLException {
+    public void loadXML(final Node node, final List<DatabaseMeta> databaseMeta, final IMetaStore metaStore) throws KettleXMLException {
         this.getProperties().walk(new LoadXml(node));
         initDbMeta(databaseMeta);
     }
@@ -141,9 +139,8 @@ public abstract class AbstractStepMeta extends BaseStepMeta implements StepMetaI
      * @see org.pentaho.di.trans.step.StepMetaInterface#readRep(org.pentaho.di.repository.Repository, long,
      *      java.util.List, java.util.Map)
      */
-    public void readRep(final Repository repo, final ObjectId stepId, final List<DatabaseMeta> databaseList,
-            final Map<String, Counter> counters) throws KettleException {
-    	PluginPropertyHandler.walk(this.getProperties(), new ReadFromRepository(repo, stepId));
+    public void readRep(final Repository repo, final IMetaStore metaStore, final ObjectId stepId, final List<DatabaseMeta> databaseList) throws KettleException {
+    	PluginPropertyHandler.walk(this.getProperties(), new ReadFromRepository(repo, metaStore, stepId));
         initDbMeta(databaseList);
     }
 
@@ -152,8 +149,8 @@ public abstract class AbstractStepMeta extends BaseStepMeta implements StepMetaI
      * 
      * @see org.pentaho.di.trans.step.StepMetaInterface#saveRep(org.pentaho.di.repository.Repository, long, long)
      */
-    public void saveRep(final Repository repo, final ObjectId transformationId, final ObjectId stepId) throws KettleException {
-        final SaveToRepository handler = new SaveToRepository(repo, transformationId, stepId);
+    public void saveRep(final Repository repo, final IMetaStore metaStore, final ObjectId transformationId, final ObjectId stepId) throws KettleException {
+        final SaveToRepository handler = new SaveToRepository(repo, metaStore, transformationId, stepId);
         PluginPropertyHandler.walk(this.getProperties(), handler);
     }
 

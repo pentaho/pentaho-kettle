@@ -82,12 +82,9 @@ public class TextFileInput extends BaseStep implements StepInterface
 
 	private long lineNumberInFile;
     
-    private TransMeta transmeta;
-
 	public TextFileInput(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
-        this.transmeta = transMeta;
 	}
 	
     public static final String getLine(LogChannelInterface log, InputStreamReader reader, int formatNr, StringBuilder line) throws KettleFileException {
@@ -1619,7 +1616,7 @@ public class TextFileInput extends BaseStep implements StepInterface
             
             // If there are missing files, fail if we don't ignore errors
             //
-			if ( (transmeta.getPreviousResult()==null || transmeta.getPreviousResult().getResultFiles()==null || transmeta.getPreviousResult().getResultFiles().size()==0) && 
+			if ( (getTrans().getPreviousResult()==null || getTrans().getPreviousResult().getResultFiles()==null || getTrans().getPreviousResult().getResultFiles().size()==0) && 
                   data.files.nrOfMissingFiles() > 0 && !meta.isAcceptingFilenames() && !meta.isErrorIgnored()
                )
 			{

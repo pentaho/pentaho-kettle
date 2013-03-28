@@ -89,7 +89,7 @@ public class FilesFromResult extends BaseStep implements StepInterface
 
 		if (super.init(smi, sdi))
 		{
-			Result result = getTransMeta().getPreviousResult();
+			Result result = getTrans().getPreviousResult();
 
 			if (result != null)
 			{

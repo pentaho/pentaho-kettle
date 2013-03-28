@@ -157,7 +157,7 @@ public class RepositoriesController extends AbstractXulEventHandler {
 
     helper = new RepositoriesHelper(loginModel, document, loginShell);
     helper.setPreferredRepositoryName(preferredRepositoryName);
-    helper.getMetaData();
+    helper.getMetaData();    
   }
 
   public void setBindingFactory(BindingFactory bf) {
@@ -336,9 +336,11 @@ public class RepositoriesController extends AbstractXulEventHandler {
     return callback;
   }
 
-  public void setShell(Shell shell) {
+  public void setShell(final Shell shell) {
     this.shell = shell;
   }
+  
+  
 
   public Shell getShell() {
     return shell;

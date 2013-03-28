@@ -11,12 +11,12 @@
 	</menupopup>
 	
 	<menupopup id="file-newfile-new-popup">
-	    <menuitem id="file-new-domain-model" label="Star model"
+	    <menuitem id="file-new-domain-model" label="Star model domain"
               command="starModeler.createEmptyModel()" />
 	</menupopup>
 	
 	<menupopup id="new-file-popup">
-	    <menuitem id="file-new-model" insertafter="menubar-new-trans" label="Star model"
+	    <menuitem id="file-new-model" insertafter="menubar-new-trans" label="Star model domain"
               command="starModeler.createEmptyModel()" image="org/pentaho/di/starmodeler/images/starmodeler.png"/>
 	</menupopup>	
 	

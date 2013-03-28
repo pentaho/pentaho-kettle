@@ -23,12 +23,10 @@
 package org.pentaho.di.trans.steps.execsqlrow;
 
 import java.util.List;
-import java.util.Map;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
@@ -51,6 +49,7 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.sql.ExecSQL;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 
@@ -227,8 +226,7 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface
         this.updateField = updateField;
     }
 
-    public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleXMLException
-	{
+  public void loadXML(Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore) throws KettleXMLException {
 		readData(stepnode, databases);
 	}
 
@@ -296,34 +294,31 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 		return retval.toString();
 	}
 
-	public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters)
-	throws KettleException
-	{
-		try
-		{
-			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);
-			commitSize     		= (int)rep.getStepAttributeInteger(id_step, "commit");
-            sqlField              = rep.getStepAttributeString (id_step, "sql_field"); //$NON-NLS-1$
+  public void readRep(Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases) throws KettleException {
+    try {
+      databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);
+      commitSize = (int) rep.getStepAttributeInteger(id_step, "commit");
+      sqlField = rep.getStepAttributeString(id_step, "sql_field"); //$NON-NLS-1$
 
-            insertField           = rep.getStepAttributeString (id_step, "insert_field"); //$NON-NLS-1$
-            updateField           = rep.getStepAttributeString (id_step, "update_field"); //$NON-NLS-1$
-            deleteField           = rep.getStepAttributeString (id_step, "delete_field"); //$NON-NLS-1$
-            readField             = rep.getStepAttributeString (id_step, "read_field"); //$NON-NLS-1$
-            sqlFromfile              = rep.getStepAttributeBoolean(id_step, "sqlFromfile");
-            
-            String sendOneStatementString    = rep.getStepAttributeString(id_step, "sendOneStatement");
-            if(Const.isEmpty(sendOneStatementString)) sendOneStatement=true;
-            else  sendOneStatement              = rep.getStepAttributeBoolean(id_step, "sendOneStatement");
-            
-           
-		}
-		catch(Exception e)
-		{
-			throw new KettleException(BaseMessages.getString(PKG, "ExecSQLRowMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
-		}
-	}
+      insertField = rep.getStepAttributeString(id_step, "insert_field"); //$NON-NLS-1$
+      updateField = rep.getStepAttributeString(id_step, "update_field"); //$NON-NLS-1$
+      deleteField = rep.getStepAttributeString(id_step, "delete_field"); //$NON-NLS-1$
+      readField = rep.getStepAttributeString(id_step, "read_field"); //$NON-NLS-1$
+      sqlFromfile = rep.getStepAttributeBoolean(id_step, "sqlFromfile");
+
+      String sendOneStatementString = rep.getStepAttributeString(id_step, "sendOneStatement");
+      if (Const.isEmpty(sendOneStatementString))
+        sendOneStatement = true;
+      else
+        sendOneStatement = rep.getStepAttributeBoolean(id_step, "sendOneStatement");
+
+    } catch (Exception e) {
+      throw new KettleException(
+          BaseMessages.getString(PKG, "ExecSQLRowMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
+    }
+  }
 	
-	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step)
+	public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step)
 		throws KettleException
 	{
 		try

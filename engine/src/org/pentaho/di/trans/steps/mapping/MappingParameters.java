@@ -27,6 +27,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 /**
@@ -107,7 +108,7 @@ public class MappingParameters implements Cloneable {
 		return xml.toString();
 	}
 	
-	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException {
+	public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step) throws KettleException {
 		for (int i=0;i<variable.length;i++)
 		{
 			rep.saveStepAttribute(id_transformation, id_step, i, "mapping_parameter_variable", variable[i]);  //$NON-NLS-1$

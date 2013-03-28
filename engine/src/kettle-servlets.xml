@@ -27,6 +27,7 @@
   <servlet id="sniffStep"> <description>Sniff test a transformation step</description> <classname>org.pentaho.di.www.SniffStepServlet</classname> </servlet>
   <servlet id="executeTrans"> <description>Execute (prepare and start) a specific transformation and pass output to the servlet</description> <classname>org.pentaho.di.www.ExecuteTransServlet</classname> </servlet>
   <servlet id="transImage"> <description>Generate a PNG image of a transformation</description> <classname>org.pentaho.di.www.GetTransImageServlet</classname> </servlet>
+  <servlet id="runTrans"> <description>Run a transformation directly from a repository</description> <classname>org.pentaho.di.www.RunTransServlet</classname> </servlet>
   
   <!-- The job handlers... -->
   

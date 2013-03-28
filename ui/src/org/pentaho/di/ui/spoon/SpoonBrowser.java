@@ -40,13 +40,13 @@ import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.GlobalMessages;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.xul.KettleXulLoader;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulLoader;
 import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.components.XulToolbarbutton;
 import org.pentaho.ui.xul.containers.XulToolbar;
 import org.pentaho.ui.xul.impl.XulEventHandler;
-import org.pentaho.ui.xul.swt.SwtXulLoader;
 
 /**
  * This class handles the display of help information like the welcome page and JDBC info in an embedded browser.
@@ -163,7 +163,7 @@ public class SpoonBrowser implements TabItemInterface, XulEventHandler {
   protected void addToolBar() {
 
     try {
-      XulLoader loader = new SwtXulLoader();
+      XulLoader loader = new KettleXulLoader();
       loader.setSettingsManager(XulSpoonSettingsManager.getInstance());
       ResourceBundle bundle = GlobalMessages.getBundle("org/pentaho/di/ui/spoon/messages/messages");
       XulDomContainer xulDomContainer = loader.loadXul(XUL_FILE_BROWSER_TOOLBAR, bundle);

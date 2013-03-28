@@ -24,12 +24,10 @@ package org.pentaho.di.trans.steps.validator;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -51,6 +49,7 @@ import org.pentaho.di.trans.step.errorhandling.Stream;
 import org.pentaho.di.trans.step.errorhandling.StreamIcon;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 
@@ -91,7 +90,7 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
     	validations = new ArrayList<Validation>(nrValidations);
     }
     
-	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleXMLException
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore) throws KettleXMLException
 	{
         int nrCalcs   = XMLHandler.countNodes(stepnode,   Validation.XML_TAG);
         allocate(nrCalcs);
@@ -156,7 +155,7 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
 		concatenationSeparator="|";
 	}
 
-	public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException
+	public void readRep(Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases) throws KettleException
 	{
         int nrValidationFields = rep.countNrStepAttributes(id_step, "validator_field_name");
         allocate(nrValidationFields);
@@ -170,7 +169,7 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
         }
 	}
 	
-	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step)
+	public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step)
 		throws KettleException
 	{
 		rep.saveStepAttribute(id_transformation, id_step, "validate_all", validatingAll);
@@ -179,7 +178,7 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
 		
         for (int i=0;i<validations.size();i++)
         {
-        	validations.get(i).saveRep(rep, id_transformation, id_step, i);
+        	validations.get(i).saveRep(rep, metaStore, id_transformation, id_step, i);
         }
 	}
     

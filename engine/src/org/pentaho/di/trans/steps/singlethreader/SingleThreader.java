@@ -221,6 +221,8 @@ public class SingleThreader extends BaseStep implements StepInterface
         // Pass the servlet print writer
         //
         data.mappingTrans.setServletPrintWriter(getTrans().getServletPrintWriter());
+        data.mappingTrans.setServletReponse(getTrans().getServletResponse());
+        data.mappingTrans.setServletRequest(getTrans().getServletRequest());
         
         // prepare the execution 
         //

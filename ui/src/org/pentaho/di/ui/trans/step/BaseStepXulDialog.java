@@ -58,12 +58,12 @@ import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.spoon.XulSpoonResourceBundle;
 import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
+import org.pentaho.di.ui.xul.KettleXulLoader;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulSettingsManager;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.containers.XulTreeRow;
 import org.pentaho.ui.xul.swt.SwtBindingFactory;
-import org.pentaho.ui.xul.swt.SwtXulLoader;
 import org.pentaho.ui.xul.swt.SwtXulRunner;
 
 /**
@@ -126,7 +126,7 @@ public abstract class BaseStepXulDialog extends BaseStepGenericXulDialog {
   }
 
   protected void initializeXul() throws XulException {
-    initializeXul(new SwtXulLoader(), new SwtBindingFactory(), new SwtXulRunner(), parent);
+    initializeXul(new KettleXulLoader(), new SwtBindingFactory(), new SwtXulRunner(), parent);
     dialogShell = (Shell) xulDialog.getRootObject();
   }
 

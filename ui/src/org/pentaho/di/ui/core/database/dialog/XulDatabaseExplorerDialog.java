@@ -34,11 +34,11 @@ import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.spoon.SpoonPluginManager;
 import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
+import org.pentaho.di.ui.xul.KettleXulLoader;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulRunner;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.impl.DefaultSettingsManager;
-import org.pentaho.ui.xul.swt.SwtXulLoader;
 import org.pentaho.ui.xul.swt.SwtXulRunner;
 
 public class XulDatabaseExplorerDialog {
@@ -66,7 +66,7 @@ public class XulDatabaseExplorerDialog {
 	public boolean open() {
 		try {
 
-			SwtXulLoader theLoader = new SwtXulLoader();
+		  KettleXulLoader theLoader = new KettleXulLoader();
       theLoader.setSettingsManager(XulSpoonSettingsManager.getInstance());
 			theLoader.setSettingsManager(new DefaultSettingsManager(new File(Const.getKettleDirectory() + Const.FILE_SEPARATOR + "xulSettings.properties")));
 			theLoader.setOuterContext(this.shell);

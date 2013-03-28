@@ -150,6 +150,7 @@ import org.pentaho.di.ui.spoon.dialog.NotePadDialog;
 import org.pentaho.di.ui.spoon.trans.DelayListener;
 import org.pentaho.di.ui.spoon.trans.DelayTimer;
 import org.pentaho.di.ui.spoon.trans.TransGraph;
+import org.pentaho.di.ui.xul.KettleXulLoader;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulLoader;
@@ -162,7 +163,6 @@ import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.ui.xul.jface.tags.JfaceMenuitem;
 import org.pentaho.ui.xul.jface.tags.JfaceMenupopup;
-import org.pentaho.ui.xul.swt.SwtXulLoader;
 
 /**
  * Handles the display of Jobs in Spoon, in a graphical form.
@@ -317,7 +317,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
     refreshListeners = new ArrayList<RefreshListener>();
     
     try {
-      XulLoader loader = new SwtXulLoader();
+      XulLoader loader = new KettleXulLoader();
       loader.setSettingsManager(XulSpoonSettingsManager.getInstance());
       ResourceBundle bundle = new XulSpoonResourceBundle(JobGraph.class);
       XulDomContainer container = loader.loadXul(XUL_FILE_JOB_GRAPH, bundle);
@@ -2314,7 +2314,11 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
   
   protected void loadReferencedObject(JobEntryCopy jobEntryCopy, int index) {
     try {
-      Object referencedMeta = jobEntryCopy.getEntry().loadReferencedObject(index, spoon.rep, jobMeta);
+      Object referencedMeta = jobEntryCopy.getEntry().loadReferencedObject(index, spoon.rep, spoon.metaStore, jobMeta);
+      if (referencedMeta==null) {
+        // Compatible re-try for older plugins.
+        jobEntryCopy.getEntry().loadReferencedObject(index, spoon.rep, spoon.metaStore, jobMeta);
+      }
       if (referencedMeta!=null && (referencedMeta instanceof TransMeta)) {
         TransMeta launchTransMeta = (TransMeta) referencedMeta;
         
@@ -2419,7 +2423,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
         
         boolean exists = spoon.rep.getTransformationID(exactTransname, repositoryDirectoryInterface) != null;
         if (!exists) {
-          launchTransMeta = new TransMeta(null, exactTransname, entry.arguments);
+          launchTransMeta = new TransMeta(null, exactTransname);
         } 
         else {
           launchTransMeta = spoon.rep.loadTransformation(exactTransname, spoon.rep.findDirectory(jobMeta.environmentSubstitute(entry.getDirectory())), null, true, null); // reads last version
@@ -2485,7 +2489,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
         // Open the file or create a new one!
         //
         if (KettleVFS.fileExists(exactFilename)) {
-          launchJobMeta = new JobMeta(jobMeta, exactFilename, spoon.rep, null);
+          launchJobMeta = new JobMeta(jobMeta, exactFilename, spoon.rep, spoon.metaStore, null);
         } else {
           launchJobMeta = new JobMeta();
         }

@@ -24,10 +24,8 @@ package org.pentaho.di.trans.steps.infobrightoutput;
 
 import java.nio.charset.Charset;
 import java.util.List;
-import java.util.Map;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -41,6 +39,7 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.tableoutput.TableOutputMeta;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 import com.infobright.etl.model.DataFormat;
@@ -148,9 +147,9 @@ public class InfobrightLoaderMeta extends TableOutputMeta implements StepMetaInt
 
   //@SuppressWarnings("unchecked")
   @Override
-  public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters)
+  public void loadXML(Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore)
       throws KettleXMLException {
-    super.loadXML(stepnode, databases, counters);
+    super.loadXML(stepnode, databases, metaStore);
     try {
       dataFormat = Enum.valueOf(DataFormat.class, XMLHandler.getTagValue(stepnode, TAG_DATA_FORMAT));
       agentPort = Integer.parseInt(Const.NVL(XMLHandler.getTagValue(stepnode, TAG_AGENT_PORT),
@@ -165,8 +164,8 @@ public class InfobrightLoaderMeta extends TableOutputMeta implements StepMetaInt
   }
 
   @Override
-  public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException {
-    super.readRep(rep, id_step, databases, counters);
+  public void readRep(Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases) throws KettleException {
+    super.readRep(rep, metaStore, id_step, databases);
     try {
       dataFormat = Enum.valueOf(DataFormat.class, rep.getStepAttributeString(id_step, TAG_DATA_FORMAT));
       String agentPortStr = rep.getStepAttributeString(id_step, TAG_AGENT_PORT);
@@ -185,8 +184,8 @@ public class InfobrightLoaderMeta extends TableOutputMeta implements StepMetaInt
   }
 
   @Override
-  public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException {
-    super.saveRep(rep, id_transformation, id_step);
+  public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step) throws KettleException {
+    super.saveRep(rep, metaStore, id_transformation, id_step);
     rep.saveStepAttribute(id_transformation, id_step, TAG_DATA_FORMAT, dataFormat.toString());
     rep.saveStepAttribute(id_transformation, id_step, TAG_AGENT_PORT, agentPort);
     rep.saveStepAttribute(id_transformation, id_step, TAG_CHARSET, charset.name());

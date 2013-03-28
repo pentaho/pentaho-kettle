@@ -109,7 +109,7 @@ public class TransformationResource {
       TransExecutionConfiguration executionConfiguration = transConfiguration.getTransExecutionConfiguration();
       // Set the appropriate logging, variables, arguments, replay date, ...
       // etc.
-      trans.getTransMeta().setArguments(executionConfiguration.getArgumentStrings());
+      trans.setArguments(executionConfiguration.getArgumentStrings());
       trans.setReplayDate(executionConfiguration.getReplayDate());
       trans.setSafeModeEnabled(executionConfiguration.isSafeModeEnabled());
       trans.setGatheringMetrics(executionConfiguration.isGatheringMetrics());

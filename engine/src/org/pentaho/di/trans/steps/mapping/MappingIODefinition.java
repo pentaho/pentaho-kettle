@@ -31,6 +31,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 /**
@@ -143,7 +144,7 @@ public class MappingIODefinition implements Cloneable {
 		return xml.toString();
 	}
 
-	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step, String prefix, int nr) throws KettleException {
+	public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step, String prefix, int nr) throws KettleException {
 		rep.saveStepAttribute(id_transformation, id_step, nr, prefix+"input_step", inputStepname); 
 		rep.saveStepAttribute(id_transformation, id_step, nr, prefix+"output_step", outputStepname); 
 		rep.saveStepAttribute(id_transformation, id_step, nr, prefix+"main_path", mainDataPath); 

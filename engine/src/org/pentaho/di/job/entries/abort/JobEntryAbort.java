@@ -40,6 +40,7 @@ import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 /**
@@ -76,7 +77,7 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
     return retval.toString();
   }
 
-  public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException {
+  public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep, IMetaStore metaStore) throws KettleXMLException {
     try {
       super.loadXML(entrynode, databases, slaveServers);
       messageAbort = XMLHandler.getTagValue(entrynode, "message"); //$NON-NLS-1$
@@ -85,7 +86,7 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
     }
   }
 
-  public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
+  public void loadRep(Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
     try {
       messageAbort = rep.getJobEntryAttributeString(id_jobentry, "message"); //$NON-NLS-1$
     } catch (KettleDatabaseException dbe) {
@@ -95,7 +96,7 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
 
   // Save the attributes of this job entry
   //
-  public void saveRep(Repository rep, ObjectId id_job) throws KettleException {
+  public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_job) throws KettleException {
     try {
       rep.saveJobEntryAttribute(id_job, getObjectId(), "message", messageAbort); //$NON-NLS-1$
 

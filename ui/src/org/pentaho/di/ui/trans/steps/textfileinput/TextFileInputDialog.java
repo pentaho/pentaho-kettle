@@ -2382,7 +2382,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 				else item = new TableItem(wFields.table, SWT.NONE);
 			}
 			
-			item.setText(1, field.getName());
+			item.setText(1, Const.NVL(field.getName(), ""));
 			String type     = field.getTypeDesc();
 			String format   = field.getFormat();
 			String position = ""+field.getPosition();

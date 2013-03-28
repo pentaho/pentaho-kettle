@@ -17,6 +17,7 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.steps.hl7input.common.MLLPSocketCache;
 import org.pentaho.di.trans.steps.hl7input.common.MLLPSocketCacheEntry;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 import ca.uhn.hl7v2.model.Message;
@@ -89,7 +90,7 @@ public class HL7MLLPInput extends JobEntryBase implements Cloneable, JobEntryInt
 		return retval.toString();
 	}
 	
-	  public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException
+	  public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep, IMetaStore metaStore) throws KettleXMLException
 	  {
 	    try
 	    {
@@ -109,11 +110,9 @@ public class HL7MLLPInput extends JobEntryBase implements Cloneable, JobEntryInt
 
 		
 	@Override
-	public void loadRep(Repository rep, ObjectId idJobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
+	public void loadRep(Repository rep, IMetaStore metaStore, ObjectId idJobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
 		try
 	    {
-	        super.loadRep(rep, idJobentry, databases, slaveServers);
-	        
 	        server = rep.getJobEntryAttributeString(idJobentry, "server");
 	        port = rep.getJobEntryAttributeString(idJobentry, "port");
 	        messageVariableName = rep.getJobEntryAttributeString(idJobentry, "message_variable");
@@ -126,7 +125,7 @@ public class HL7MLLPInput extends JobEntryBase implements Cloneable, JobEntryInt
 		}
 	}
 	
-	public void saveRep(Repository rep, ObjectId id_job) throws KettleException
+	public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_job) throws KettleException
 	{
 		try
 		{

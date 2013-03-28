@@ -1,6 +1,8 @@
 package org.pentaho.di.metastore;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Properties;
 
 import org.pentaho.di.core.database.DatabaseInterface;
@@ -16,14 +18,65 @@ import org.pentaho.metastore.api.IMetaStoreAttribute;
 import org.pentaho.metastore.api.IMetaStoreElement;
 import org.pentaho.metastore.api.IMetaStoreElementType;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
+import org.pentaho.metastore.util.MetaStoreUtil;
+import org.pentaho.metastore.util.PentahoDefaults;
+import org.pentaho.pms.util.Const;
 
-public class DatabaseMetaStoreUtil {
+public class DatabaseMetaStoreUtil extends MetaStoreUtil {
+  
+  public static List<DatabaseMeta> getDatabaseElements(IMetaStore metaStore) throws MetaStoreException {
+    List<DatabaseMeta> databases = new ArrayList<DatabaseMeta>();
+  
+    // If the data type doesn't exist, it's an empty list...
+    //
+    IMetaStoreElementType elementType = metaStore.getElementTypeByName(PentahoDefaults.NAMESPACE, MetaStoreConst.DATABASE_TYPE_NAME);
+    if (elementType==null) {
+      return databases;
+    }
+
+    List<IMetaStoreElement> elements = metaStore.getElements(PentahoDefaults.NAMESPACE, elementType.getId());
+    for (IMetaStoreElement element : elements) {
+      try {
+        DatabaseMeta databaseMeta = loadDatabaseMetaFromDatabaseElement(element);
+        databases.add(databaseMeta);
+      } catch(Exception e) {
+        throw new MetaStoreException("Unable to load database from element with name '"+element.getName()+"' and type '"+elementType.getName()+"'", e);
+      }
+    }
+    
+    return databases;
+  }
+  
+  public static void createDatabaseElement(IMetaStore metaStore, DatabaseMeta databaseMeta) throws MetaStoreException {
+    
+    // If the Pentaho namespace doesn't exist, create it!
+    //
+    if (!metaStore.namespaceExists(PentahoDefaults.NAMESPACE)) {
+      metaStore.createNamespace(PentahoDefaults.NAMESPACE);
+    }
+    
+    // If the database connection element type doesn't exist, create it
+    //
+    IMetaStoreElementType elementType = metaStore.getElementTypeByName(PentahoDefaults.NAMESPACE, MetaStoreConst.DATABASE_TYPE_NAME);
+    if (elementType==null) {
+      elementType = populateDatabaseElementType(metaStore);
+      metaStore.createElementType(PentahoDefaults.NAMESPACE, elementType);
+    }
+    
+    // populate an element, store it.
+    //
+    IMetaStoreElement databaseElement = populateDatabaseElement(metaStore, databaseMeta);
+    
+    // Store the element physically
+    //
+    metaStore.createElement(PentahoDefaults.NAMESPACE, databaseElement.getElementType().getId(), databaseElement);
+  }
   
   public static IMetaStoreElementType populateDatabaseElementType(IMetaStore metaStore) throws MetaStoreException {
     
     // The new type will typically have an ID so all we need to do is give the type a name and a description.
     //
-    IMetaStoreElementType elementType = metaStore.newElementType(MetaStoreConst.PENTAHO_NAMESPACE);
+    IMetaStoreElementType elementType = metaStore.newElementType(PentahoDefaults.NAMESPACE);
     
     // If we didn't get an ID, provide one
     //
@@ -39,13 +92,20 @@ public class DatabaseMetaStoreUtil {
   }
   
   public static IMetaStoreElement populateDatabaseElement(IMetaStore metaStore, DatabaseMeta databaseMeta) throws MetaStoreException {
-    // If the data type doesn't exist, create it...
-    //
-    IMetaStoreElementType elementType = metaStore.getElementTypeByName(MetaStoreConst.PENTAHO_NAMESPACE, MetaStoreConst.DATABASE_TYPE_NAME);
-    if (elementType==null) {
-      elementType = populateDatabaseElementType(metaStore);
+    
+    if (!metaStore.namespaceExists(PentahoDefaults.NAMESPACE)) {
+      throw new MetaStoreException("Namespace '"+PentahoDefaults.NAMESPACE+"' doesn't exist.");
     }
     
+    // If the data type doesn't exist, error out...
+    //
+    IMetaStoreElementType elementType = metaStore.getElementTypeByName(PentahoDefaults.NAMESPACE, MetaStoreConst.DATABASE_TYPE_NAME);
+    if (elementType==null) {
+      throw new MetaStoreException("Unable to find the database connection type");
+    }
+
+    elementType = populateDatabaseElementType(metaStore);
+
     // generate a new database element and populate it with metadata
     //
     IMetaStoreElement element = metaStore.newElement(elementType, databaseMeta.getName(), null);
@@ -63,11 +123,11 @@ public class DatabaseMetaStoreUtil {
     element.addChild(metaStore.newAttribute(MetaStoreConst.DB_ATTR_ID_PORT, databaseMeta.getDatabasePortNumberString()));
     element.addChild(metaStore.newAttribute(MetaStoreConst.DB_ATTR_ID_DATABASE_NAME, databaseMeta.getDatabaseName()));
     element.addChild(metaStore.newAttribute(MetaStoreConst.DB_ATTR_ID_USERNAME, databaseMeta.getUsername()));
-    element.addChild(metaStore.newAttribute(MetaStoreConst.DB_ATTR_ID_PASSWORD, Encr.encryptPasswordIfNotUsingVariables(databaseMeta.getUsername())));
+    element.addChild(metaStore.newAttribute(MetaStoreConst.DB_ATTR_ID_PASSWORD, Encr.encryptPasswordIfNotUsingVariables(databaseMeta.getPassword())));
     element.addChild(metaStore.newAttribute(MetaStoreConst.DB_ATTR_ID_SERVERNAME, databaseMeta.getServername()));
     element.addChild(metaStore.newAttribute(MetaStoreConst.DB_ATTR_ID_DATA_TABLESPACE, databaseMeta.getDataTablespace()));
     element.addChild(metaStore.newAttribute(MetaStoreConst.DB_ATTR_ID_INDEX_TABLESPACE, databaseMeta.getIndexTablespace()));
-    
+
     IMetaStoreAttribute attributesChild = metaStore.newAttribute(MetaStoreConst.DB_ATTR_ID_ATTRIBUTES, null);
     element.addChild(attributesChild);
     
@@ -82,7 +142,21 @@ public class DatabaseMetaStoreUtil {
       //
       attributesChild.addChild(metaStore.newAttribute(code, attribute));
     }
-            
+
+    // Extra information for 3rd-party tools:
+    //
+    // The driver class
+    //
+    element.addChild(metaStore.newAttribute(MetaStoreConst.DB_ATTR_DRIVER_CLASS, databaseMeta.getDriverClass()));
+    
+    // The URL
+    //
+    try {
+      element.addChild(metaStore.newAttribute(MetaStoreConst.DB_ATTR_JDBC_URL, databaseMeta.getURL()));
+    } catch(Exception e) {
+      throw new MetaStoreException("Unable to assemble URL from database '"+databaseMeta.getName()+"'", e);
+    }    
+
     return element;
   }
 
@@ -94,6 +168,7 @@ public class DatabaseMetaStoreUtil {
     String pluginId = getChildString(element, MetaStoreConst.DB_ATTR_ID_PLUGIN_ID);
     PluginInterface plugin = PluginRegistry.getInstance().getPlugin(DatabasePluginType.class, pluginId);
     DatabaseInterface databaseInterface = (DatabaseInterface) PluginRegistry.getInstance().loadClass(plugin);
+    databaseInterface.setPluginId(pluginId);
     databaseMeta.setDatabaseInterface(databaseInterface);
 
     databaseMeta.setObjectId(new StringObjectId(element.getId()));
@@ -120,27 +195,16 @@ public class DatabaseMetaStoreUtil {
       for (IMetaStoreAttribute attr : attributesChild.getChildren()) {
         String code = attr.getId();
         String value = getAttributeString(attr);
-        attributes.put(code,  value);
+        attributes.put(code,  Const.NVL(value, ""));
+        
       }
     }
     
     return databaseMeta;
   }
   
-  public static String getChildString(IMetaStoreAttribute attribute, String id) {
-    IMetaStoreAttribute child = attribute.getChild(id);
-    if (child==null) {
-      return null;
-    }
-    
-    return getAttributeString(child);
-  }
-  
-  public static String getAttributeString(IMetaStoreAttribute attribute) {
-    if (attribute.getValue()==null) {
-      return null;
-    }
-    return attribute.getValue().toString();
-  }
+
+
+
 }
   

@@ -23,12 +23,10 @@
 package org.pentaho.di.trans.steps.concatfields;
 
 import java.util.List;
-import java.util.Map;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -50,6 +48,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.textfileoutput.TextFileField;
 import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 
@@ -153,9 +152,9 @@ public class ConcatFieldsMeta extends TextFileOutputMeta  implements StepMetaInt
 	}
 	
 	@Override
-	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleXMLException
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore) throws KettleXMLException
 	{
-		super.loadXML(stepnode, databases, counters);
+		super.loadXML(stepnode, databases, metaStore);
 		targetFieldName=XMLHandler.getTagValue(stepnode, ConcatFieldsNodeNameSpace, "targetFieldName");
 		targetFieldLength=Const.toInt(XMLHandler.getTagValue(stepnode, ConcatFieldsNodeNameSpace, "targetFieldLength"), 0);
 		removeSelectedFields="Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, ConcatFieldsNodeNameSpace, "removeSelectedFields"));
@@ -175,20 +174,18 @@ public class ConcatFieldsMeta extends TextFileOutputMeta  implements StepMetaInt
 	}
 	
 	@Override
-	public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters)
-		throws KettleException
-	{
-		super.readRep(rep, id_step, databases, counters);
+	public void readRep(Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases) throws KettleException {
+		super.readRep(rep, metaStore, id_step, databases);
 		targetFieldName=rep.getStepAttributeString (id_step, ConcatFieldsNodeNameSpace+"targetFieldName");  
 		targetFieldLength=(int)rep.getStepAttributeInteger(id_step, ConcatFieldsNodeNameSpace+"targetFieldLength");
 		removeSelectedFields=rep.getStepAttributeBoolean(id_step, ConcatFieldsNodeNameSpace+"removeSelectedFields");
 	}
 
 	@Override
-	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step)
+	public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step)
 		throws KettleException
 	{
-		super.saveRep(rep, id_transformation, id_step);
+		super.saveRep(rep, metaStore, id_transformation, id_step);
 		rep.saveStepAttribute(id_transformation, id_step, ConcatFieldsNodeNameSpace+"targetFieldName", targetFieldName);
 		rep.saveStepAttribute(id_transformation, id_step, ConcatFieldsNodeNameSpace+"targetFieldLength", targetFieldLength);
 		rep.saveStepAttribute(id_transformation, id_step, ConcatFieldsNodeNameSpace+"removeSelectedFields", removeSelectedFields);

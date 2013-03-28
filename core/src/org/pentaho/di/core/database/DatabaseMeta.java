@@ -39,6 +39,7 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettlePluginException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -828,7 +829,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
       setDBName(XMLHandler.getTagValue(con, "database"));
 
-      // The DB port is read here too for backward compatibility!
+      // The DB port is read here too for backward compatibility! getName()
       //
       setDBPort(XMLHandler.getTagValue(con, "port"));
       setUsername(XMLHandler.getTagValue(con, "username"));
@@ -2277,6 +2278,10 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   public String[] environmentSubstitute(String aString[]) {
     return variables.environmentSubstitute(aString);
+  }
+
+  public String fieldSubstitute(String aString, RowMetaInterface rowMeta, Object[] rowData) throws KettleValueException {
+    return variables.fieldSubstitute(aString, rowMeta, rowData);
   }
 
   public VariableSpace getParentVariableSpace() {

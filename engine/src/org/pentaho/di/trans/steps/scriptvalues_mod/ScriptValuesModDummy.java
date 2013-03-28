@@ -29,6 +29,7 @@ import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -187,6 +188,10 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 		public String[] environmentSubstitute(String[] string) {
 			return null;
 		}
+
+	  public String fieldSubstitute(String aString, RowMetaInterface rowMeta, Object[] rowData) throws KettleValueException {
+	    return null;
+	  }
 
 		public boolean getBooleanValueOfVariable(String variableName, boolean defaultValue) {
 			return false;

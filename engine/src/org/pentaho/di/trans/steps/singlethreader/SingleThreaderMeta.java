@@ -29,7 +29,6 @@ import java.util.Map;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -61,6 +60,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 /**
@@ -98,7 +98,7 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
     setDefault();
   }
 
-  public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleXMLException {
+  public void loadXML(Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore) throws KettleXMLException {
     try {
       String method = XMLHandler.getTagValue(stepnode, "specification_method");
       specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode(method);
@@ -186,7 +186,7 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
     return retval.toString();
   }
 
-  public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException {
+  public void readRep(Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases) throws KettleException {
     String method = rep.getStepAttributeString(id_step, "specification_method");
     specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode(method);
     String transId = rep.getStepAttributeString(id_step, "trans_object_id");
@@ -215,7 +215,7 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
     passingAllParameters = rep.getStepAttributeBoolean(id_step, 0, "pass_all_parameters", true);
   }
 
-  public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException {
+  public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step) throws KettleException {
     rep.saveStepAttribute(id_transformation, id_step, "specification_method", specificationMethod==null ? null : specificationMethod.getCode());
     rep.saveStepAttribute(id_transformation, id_step, "trans_object_id", transObjectId==null ? null : transObjectId.toString());
     rep.saveStepAttribute(id_transformation, id_step, "filename", fileName); //$NON-NLS-1$
@@ -277,6 +277,10 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
   }
 
   public synchronized static final TransMeta loadSingleThreadedTransMeta(SingleThreaderMeta mappingMeta, Repository rep, VariableSpace space) throws KettleException {
+    return loadSingleThreadedTransMeta(mappingMeta, rep, null, space);
+  }
+  
+  public synchronized static final TransMeta loadSingleThreadedTransMeta(SingleThreaderMeta mappingMeta, Repository rep, IMetaStore metaStore, VariableSpace space) throws KettleException {
     TransMeta mappingTransMeta = null;
     
     switch(mappingMeta.getSpecificationMethod()) {
@@ -654,8 +658,12 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
    * @return the referenced object once loaded
    * @throws KettleException
    */
-  public Object loadReferencedObject(int index, Repository rep, VariableSpace space) throws KettleException {
+  @Deprecated public Object loadReferencedObject(int index, Repository rep, VariableSpace space) throws KettleException {
     return loadSingleThreadedTransMeta(this, rep, space);
+  }
+  
+  public Object loadReferencedObject(int index, Repository rep, IMetaStore metaStore, VariableSpace space) throws KettleException {
+    return loadSingleThreadedTransMeta(this, rep, metaStore, space);
   }
 
   @Override
