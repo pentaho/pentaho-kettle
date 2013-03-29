@@ -1,6 +1,5 @@
 package org.pentaho.di.core.logging;
 
-import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
