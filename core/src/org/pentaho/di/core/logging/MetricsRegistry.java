@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.LinkedBlockingDeque;
 
 import org.pentaho.di.core.metrics.MetricsSnapshotInterface;
 
@@ -73,7 +74,7 @@ public class MetricsRegistry {
   public Deque<MetricsSnapshotInterface> getSnapshotList(String logChannelId) {
     Deque<MetricsSnapshotInterface> list = snapshotLists.get(logChannelId);
     if (list==null) {
-      list = new ArrayDeque<MetricsSnapshotInterface>();
+      list = new LinkedBlockingDeque<MetricsSnapshotInterface>();
       snapshotLists.put(logChannelId, list);
     }
     return list;
