@@ -1783,8 +1783,10 @@ public class JobDialog extends Dialog
 	
 			    try
 				{
-					ObjectId newId = rep.renameJob(jobMeta.getObjectId(), newDirectory, jobMeta.getName() );
-					jobMeta.setObjectId(newId);
+			    if (jobMeta.getObjectId()!=null) {
+  					ObjectId newId = rep.renameJob(jobMeta.getObjectId(), newDirectory, jobMeta.getName() );
+  					jobMeta.setObjectId(newId);
+			    }
 					jobMeta.setRepositoryDirectory( newDirectory );
 					wDirectory.setText(jobMeta.getRepositoryDirectory().getPath());
 				}
@@ -1792,10 +1794,8 @@ public class JobDialog extends Dialog
 				{
 					jobMeta.setRepositoryDirectory( dirFrom );
 			 		
-					MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-					mb.setText(BaseMessages.getString(PKG, "JobDialog.Dialog.ErrorChangingDirectory.Title"));
-					mb.setMessage(BaseMessages.getString(PKG, "JobDialog.Dialog.ErrorChangingDirectory.Message"));
-					mb.open();
+					new ErrorDialog(shell, BaseMessages.getString(PKG, "JobDialog.Dialog.ErrorChangingDirectory.Title"), 
+					    BaseMessages.getString(PKG, "JobDialog.Dialog.ErrorChangingDirectory.Message"), dbe);
 				}
 	        }
 	        else

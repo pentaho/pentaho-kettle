@@ -163,6 +163,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
    * time. It comes from either Spoon or Trans
    */
   private Repository                        repository;
+  private IMetaStore metaStore;
 
   public JobExecutorMeta() {
     super(); // allocate BaseStepMeta
@@ -1288,6 +1289,15 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
    */
   public Object loadReferencedObject(int index, Repository rep, IMetaStore metaStore, VariableSpace space) throws KettleException {
     return loadJobMeta(this, rep, metaStore, space);
+  }
+
+
+  public void setMetaStore(IMetaStore metaStore) {
+    this.metaStore = metaStore;
+  }
+  
+  public IMetaStore getMetaStore() {
+    return metaStore;
   }
   
 }

@@ -64,4 +64,9 @@ public interface RepositoryCapabilities {
 	 */
 	public boolean supportsAcls();
 	
+	/**
+	 * @return true if the repository is capable of representing objects as references (IDs)...
+	 */
+	public boolean supportsReferences();
+	
 }

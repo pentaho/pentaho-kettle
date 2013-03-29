@@ -228,8 +228,9 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
             StepInterface step = trans.getRunThread(i);
             if ((step.isRunning()) || step.getStatus() != StepExecutionStatus.STATUS_EMPTY) {
               StepStatus stepStatus = new StepStatus(step);
-              
+              boolean snif=false;
               if (step.isRunning() && !step.isStopped() && !step.isPaused()) {
+                snif=true;
 	              String sniffLink = " <a href=\""+
 	              						convertContextPath(SniffStepServlet.CONTEXT_PATH) + 
 	              						"?trans=" + URLEncoder.encode(transName, "UTF-8") + 
@@ -242,7 +243,7 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
 	              stepStatus.setStepname(sniffLink);
               }
               
-              out.print(stepStatus.getHTMLTableRow());
+              out.print(stepStatus.getHTMLTableRow(snif));
             }
           }
           out.println("</table>");

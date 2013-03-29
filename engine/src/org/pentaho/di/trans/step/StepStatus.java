@@ -93,24 +93,20 @@ public class StepStatus
         this.paused = baseStep.isPaused();
     }
     
-    public String getHTMLTableRow()
-    {
+    public String getHTMLTableRow(boolean urlInStepname) {
       Encoder encoder = ESAPI.encoder();
-        return "<tr> " +
-                    "<th>"+encoder.encodeForHTML(stepname)+"</th> " +
-                    "<th>"+copy+"</th> " +
-                    "<th>"+linesRead+"</th> " +
-                    "<th>"+linesWritten+"</th> " +
-                    "<th>"+linesInput+"</th> " +
-                    "<th>"+linesOutput+"</th> " +
-                    "<th>"+linesUpdated+"</th> " +
-                    "<th>"+linesRejected+"</th> " +
-                    "<th>"+errors+"</th> " +
-                    "<th>"+encoder.encodeForHTML(statusDescription)+"</th> " +
-                    "<th>"+seconds+"</th> " +
-                    "<th>"+encoder.encodeForHTML(speed)+"</th> " +
-                    "<th>"+encoder.encodeForHTML(priority)+"</th> " +
-                "</tr>";
+      return "<tr> " + "<th>" + (urlInStepname?stepname:encoder.encodeForHTML(stepname)) + "</th> " + 
+          "<th>" + copy + "</th> " + 
+          "<th>" + linesRead + "</th> " + 
+          "<th>" + linesWritten + "</th> " + 
+          "<th>" + linesInput + "</th> " + 
+          "<th>" + linesOutput + "</th> " + 
+          "<th>" + linesUpdated + "</th> " + 
+          "<th>" + linesRejected + "</th> " + 
+          "<th>" + errors + "</th> " + 
+          "<th>" + encoder.encodeForHTML(statusDescription) + "</th> " + 
+          "<th>" + seconds + "</th> " + 
+          "<th>" + encoder.encodeForHTML(speed) + "</th> " + "<th>" + encoder.encodeForHTML(priority) + "</th> " + "</tr>";
     }
 
     public String getXML()

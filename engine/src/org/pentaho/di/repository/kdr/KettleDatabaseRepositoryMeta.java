@@ -69,6 +69,7 @@ public class KettleDatabaseRepositoryMeta extends BaseRepositoryMeta implements 
     		public boolean supportsLocking() { return true; }
     		public boolean hasVersionRegistry() { return false; }
     		public boolean supportsAcls() { return false; }
+    		public boolean supportsReferences() { return true; }
     	};
     }
 

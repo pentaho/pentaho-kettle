@@ -111,6 +111,8 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
   private Button                            wbFilename;
   private TextVar                           wFilename;
 
+  private Button                            wNewJob;
+  
   private Composite                         wLogging;
   private FormData                          fdLogging;
 
@@ -448,6 +450,19 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
     fdgByReference.left = new FormAttachment(0, 0);
     fdgByReference.right = new FormAttachment(100, 0);
     gByReference.setLayoutData(fdgByReference);
+
+    wNewJob = new Button(wSpec, SWT.PUSH);
+    wNewJob.setText(BaseMessages.getString(PKG, "JobJob.NewJobButton.Label"));
+    FormData fdNewJob = new FormData();
+    fdNewJob.bottom = new FormAttachment(100, -margin);
+    fdNewJob.left = new FormAttachment(wByReference, 0, SWT.CENTER);
+    wNewJob.setLayoutData(fdNewJob);
+    wNewJob.addSelectionListener(new SelectionAdapter() {
+      @Override
+      public void widgetSelected(SelectionEvent event) {
+        newJob();
+      }
+    });
 
     wSpec.pack();
     Rectangle bounds = wSpec.getBounds();
@@ -1100,6 +1115,53 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
     return jobEntry;
   }
 
+  /**
+   * Ask the user to fill in the details...
+   */
+  protected void newJob() {
+    JobMeta newJobMeta = new JobMeta();
+    JobDialog jobDialog = new JobDialog(shell, SWT.NONE, newJobMeta, rep);
+    if (jobDialog.open()!=null) {
+      Spoon spoon = Spoon.getInstance();
+      spoon.addJobGraph(newJobMeta);
+      boolean saved=false;
+      try {
+        if (rep != null) {
+          if (!Const.isEmpty(newJobMeta.getName())) {
+            wName.setText(newJobMeta.getName());
+          }
+          saved = spoon.saveToRepository(newJobMeta, false);
+          if (rep.getRepositoryMeta().getRepositoryCapabilities().supportsReferences()) {
+            specificationMethod=ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE;
+          } else {
+            specificationMethod=ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
+          }
+        } else {
+          saved=spoon.saveToFile(newJobMeta);
+          specificationMethod=ObjectLocationSpecificationMethod.FILENAME;
+        }
+      } catch (Exception e) {
+        new ErrorDialog(shell, "Error", "Error saving new job", e);
+      }
+      if (saved) {
+        setRadioButtons();
+        switch(specificationMethod) {
+          case FILENAME: 
+            wFilename.setText(Const.NVL(newJobMeta.getFilename(), ""));
+            break;
+          case REPOSITORY_BY_NAME:
+            wJobname.setText(Const.NVL(newJobMeta.getName(), ""));
+            wDirectory.setText(newJobMeta.getRepositoryDirectory().getPath());
+            break;
+          case REPOSITORY_BY_REFERENCE:
+            getByReferenceData(newJobMeta.getObjectId());
+            break;
+        }
+      }
+    }
+  }
+
+
   protected void getParameters() {
     try {
       JobEntryJob jej = new JobEntryJob();
@@ -1246,16 +1308,18 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
   }
 
   public void setActive() {
+    boolean supportsReferences = rep!=null && rep.getRepositoryMeta().getRepositoryCapabilities().supportsReferences();
+    
     radioByName.setEnabled(rep != null);
-    radioByReference.setEnabled(rep != null);
+    radioByReference.setEnabled(rep != null && supportsReferences);
     wFilename.setEnabled(radioFilename.getSelection());
     wbLogFilename.setEnabled(wSetLogfile.getSelection());
     wJobname.setEnabled(rep != null && radioByName.getSelection());
     wbJobname.setEnabled(rep != null);
     wDirectory.setEnabled(rep != null && radioByName.getSelection());
     
-    wByReference.setEnabled(rep != null && radioByReference.getSelection());
-    wbByReference.setEnabled(rep != null);
+    wByReference.setEnabled(rep != null && radioByReference.getSelection() && supportsReferences);
+    wbByReference.setEnabled(rep != null && supportsReferences);
 
     wlLogfile.setEnabled(wSetLogfile.getSelection());
     wLogfile.setEnabled(wSetLogfile.getSelection());
@@ -1304,14 +1368,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
       referenceObjectId = jobEntry.getJobObjectId();
       wByReference.setText("");
       if(rep != null) {
-        try {
-          RepositoryObject jobInf = rep.getObjectInformation(jobEntry.getJobObjectId(), RepositoryObjectType.JOB);
-          if (jobInf != null) {
-            getByReferenceData(jobInf);
-          }
-        } catch (KettleException e) {
-          new ErrorDialog(shell, BaseMessages.getString(PKG, "JobEntryJobDialog.Exception.UnableToReferenceObjectId.Title"), BaseMessages.getString(PKG, "JobEntryJobDialog.Exception.UnableToReferenceObjectId.Message"), e);
-        }
+        getByReferenceData(referenceObjectId);
       }
       break;
     }
@@ -1372,6 +1429,17 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
     wWaitingToFinish.setSelection(jobEntry.isWaitingToFinish());
     wFollowingAbortRemotely.setSelection(jobEntry.isFollowingAbortRemotely());
     wExpandRemote.setSelection(jobEntry.isExpandingRemoteJob());
+  }
+
+  private void getByReferenceData(ObjectId referenceObjectId) {
+    try {
+      RepositoryObject jobInf = rep.getObjectInformation(referenceObjectId, RepositoryObjectType.JOB);
+      if (jobInf != null) {
+        getByReferenceData(jobInf);
+      }
+    } catch (KettleException e) {
+      new ErrorDialog(shell, BaseMessages.getString(PKG, "JobEntryJobDialog.Exception.UnableToReferenceObjectId.Title"), BaseMessages.getString(PKG, "JobEntryJobDialog.Exception.UnableToReferenceObjectId.Message"), e);
+    }
   }
 
   private void cancel() {

@@ -1144,11 +1144,38 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
     if (transDialog.open()!=null) {
       Spoon spoon = Spoon.getInstance();
       spoon.addTransGraph(newTransMeta);
-      if (spoon.saveFile()) {
-        wFilename.setText(Const.NVL(newTransMeta.getFilename(), ""));
-        if (rep!=null) {
-          wTransname.setText(Const.NVL(newTransMeta.getName(), ""));
-          wDirectory.setText(newTransMeta.getRepositoryDirectory().getPath());
+      boolean saved=false;
+      try {
+        if (rep != null) {
+          if (!Const.isEmpty(newTransMeta.getName())) {
+            wName.setText(newTransMeta.getName());
+          }
+          saved = spoon.saveToRepository(newTransMeta, false);
+          if (rep.getRepositoryMeta().getRepositoryCapabilities().supportsReferences()) {
+            specificationMethod=ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE;
+          } else {
+            specificationMethod=ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
+          }
+        } else {
+          saved=spoon.saveToFile(newTransMeta);
+          specificationMethod=ObjectLocationSpecificationMethod.FILENAME;
+        }
+      } catch (Exception e) {
+        new ErrorDialog(shell, "Error", "Error saving new transformation", e);
+      }
+      if (saved) {
+        setRadioButtons();
+        switch(specificationMethod) {
+          case FILENAME: 
+            wFilename.setText(Const.NVL(newTransMeta.getFilename(), ""));
+            break;
+          case REPOSITORY_BY_NAME:
+            wTransname.setText(Const.NVL(newTransMeta.getName(), ""));
+            wDirectory.setText(newTransMeta.getRepositoryDirectory().getPath());
+            break;
+          case REPOSITORY_BY_REFERENCE:
+            getByReferenceData(newTransMeta.getObjectId());
+            break;
         }
       }
       
@@ -1293,9 +1320,11 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
   }
 
   public void setActive() {
+    boolean supportsReferences = rep!=null && rep.getRepositoryMeta().getRepositoryCapabilities().supportsReferences();
+    
     wbLogFilename.setEnabled(wSetLogfile.getSelection());
     radioByName.setEnabled(rep != null);
-    radioByReference.setEnabled(rep != null);
+    radioByReference.setEnabled(rep != null && supportsReferences);
     wFilename.setEnabled(radioFilename.getSelection());
     wbFilename.setEnabled(radioFilename.getSelection());
     wTransname.setEnabled(rep != null && radioByName.getSelection());
@@ -1304,8 +1333,8 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
     
     wbTransname.setEnabled(rep != null && radioByName.getSelection());
 
-    wByReference.setEnabled(rep != null && radioByReference.getSelection());
-    wbByReference.setEnabled(rep != null && radioByReference.getSelection());
+    wByReference.setEnabled(rep != null && radioByReference.getSelection() && supportsReferences);
+    wbByReference.setEnabled(rep != null && radioByReference.getSelection() && supportsReferences);
 
     wlLogfile.setEnabled(wSetLogfile.getSelection());
     wLogfile.setEnabled(wSetLogfile.getSelection());
@@ -1357,16 +1386,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
       referenceObjectId = jobEntry.getTransObjectId();
       wByReference.setText("");
       if(rep != null) {
-        try {
-          RepositoryObject transInf = rep.getObjectInformation(jobEntry.getTransObjectId(), RepositoryObjectType.TRANSFORMATION);
-          if (transInf != null) {
-            getByReferenceData(transInf);
-          }
-        } catch (KettleException e) {
-          new ErrorDialog(shell, 
-              BaseMessages.getString(PKG, "JobEntryTransDialog.Exception.UnableToReferenceObjectId.Title"), 
-              BaseMessages.getString(PKG, "JobEntryTransDialog.Exception.UnableToReferenceObjectId.Message"), e);
-        }
+        getByReferenceData(jobEntry.getTransObjectId());
       }
       break;   
     }
@@ -1424,6 +1444,19 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
     wCreateParentFolder.setSelection(jobEntry.createParentFolder);
     if (jobEntry.logFileLevel!=null) {
       wLoglevel.select(jobEntry.logFileLevel.getLevel());
+    }
+  }
+
+  private void getByReferenceData(ObjectId transObjectId) {
+    try {
+      RepositoryObject transInf = rep.getObjectInformation(transObjectId, RepositoryObjectType.TRANSFORMATION);
+      if (transInf != null) {
+        getByReferenceData(transInf);
+      }
+    } catch (KettleException e) {
+      new ErrorDialog(shell, 
+          BaseMessages.getString(PKG, "JobEntryTransDialog.Exception.UnableToReferenceObjectId.Title"), 
+          BaseMessages.getString(PKG, "JobEntryTransDialog.Exception.UnableToReferenceObjectId.Message"), e);
     }
   }
 

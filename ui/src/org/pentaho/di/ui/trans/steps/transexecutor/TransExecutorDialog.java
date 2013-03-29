@@ -79,6 +79,7 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
 import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.trans.dialog.TransDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
@@ -96,6 +97,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
   private Button                            wbbFilename;
   private TextVar                           wFilename;
 
+  
 	// Repository by name
 	//
   private Button                            radioByName;
@@ -110,6 +112,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
 	
   // Edit the TransExecutor transformation in Spoon
   //
+  private Button wNewTrans;
 	private Button wEditTrans;
 
 	private CTabFolder wTabFolder;
@@ -418,14 +421,26 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
         setRadioButtons();      
       }
     });
-		
+
+    wNewTrans = new Button(gTransGroup, SWT.PUSH | SWT.CENTER); // Browse
+    props.setLook(wNewTrans);
+    wNewTrans.setText(BaseMessages.getString(PKG, "TransExecutorDialog.New.Button"));
+    FormData fdNewTrans = new FormData();
+    fdNewTrans.left = new FormAttachment(0, 0);
+    fdNewTrans.top = new FormAttachment(wByReference, 3 * margin);
+    wNewTrans.setLayoutData(fdNewTrans);
+    wNewTrans.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e)
+      {
+        newTransformation();
+      }
+    });
+
 		wEditTrans = new Button(gTransGroup, SWT.PUSH | SWT.CENTER); // Browse
 		props.setLook(wEditTrans);
 		wEditTrans.setText(BaseMessages.getString(PKG, "TransExecutorDialog.Edit.Button"));
 		wEditTrans.setToolTipText(BaseMessages.getString(PKG, "System.Tooltip.BrowseForFileOrDirAndAdd"));
 		FormData fdEditTrans = new FormData();
-		fdEditTrans.left = new FormAttachment(0, 0);
-		fdEditTrans.right = new FormAttachment(100, 0);
+		fdEditTrans.left = new FormAttachment(wNewTrans, 2*margin);
 		fdEditTrans.top = new FormAttachment(wByReference, 3 * margin);
 		wEditTrans.setLayoutData(fdEditTrans);
 		wEditTrans.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e)
@@ -688,8 +703,10 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
 	}
 	
   public void setActive() {
+    boolean supportsReferences = repository!=null && repository.getRepositoryMeta().getRepositoryCapabilities().supportsReferences();
+
     radioByName.setEnabled(repository != null);
-    radioByReference.setEnabled(repository != null);
+    radioByReference.setEnabled(repository != null && supportsReferences);
     wFilename.setEnabled(radioFilename.getSelection());
     wbbFilename.setEnabled(radioFilename.getSelection());
     wTransname.setEnabled(repository != null && radioByName.getSelection());
@@ -698,8 +715,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     
     wbTrans.setEnabled(repository != null && radioByName.getSelection());
 
-    wByReference.setEnabled(repository != null && radioByReference.getSelection());
-    wbByReference.setEnabled(repository != null && radioByReference.getSelection());
+    wByReference.setEnabled(repository != null && radioByReference.getSelection() && supportsReferences);
+    wbByReference.setEnabled(repository != null && radioByReference.getSelection() && supportsReferences);
   }
   
   protected void setRadioButtons() {
@@ -736,19 +753,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     case REPOSITORY_BY_REFERENCE:
       referenceObjectId = transExecutorMeta.getTransObjectId();
       wByReference.setText("");
-      try {
-        if (repository==null) {
-          throw new KettleException(BaseMessages.getString(PKG, "TransExecutorDialog.Exception.NotConnectedToRepository.Message"));
-        }
-        RepositoryObject transInf = repository.getObjectInformation(transExecutorMeta.getTransObjectId(), RepositoryObjectType.JOB);
-        if (transInf != null) {
-          getByReferenceData(transInf);
-        }
-      } catch (KettleException e) {
-        new ErrorDialog(shell, 
-            BaseMessages.getString(PKG, "TransExecutorDialog.Exception.UnableToReferenceObjectId.Title"), 
-            BaseMessages.getString(PKG, "TransExecutorDialog.Exception.UnableToReferenceObjectId.Message"), e);
-      }
+      getByReferenceData(transExecutorMeta.getTransObjectId());
       break;   
     }
     setRadioButtons();
@@ -1635,4 +1640,69 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     }
 
 	}
+	
+  /**
+   * Ask the user to fill in the details...
+   */
+  protected void newTransformation() {
+    TransMeta newTransMeta = new TransMeta();
+    TransDialog transDialog = new TransDialog(shell, SWT.NONE, newTransMeta, repository);
+    if (transDialog.open()!=null) {
+      Spoon spoon = Spoon.getInstance();
+      spoon.addTransGraph(newTransMeta);
+      boolean saved=false;
+      try {
+        if (repository != null) {
+          if (!Const.isEmpty(newTransMeta.getName())) {
+            wStepname.setText(newTransMeta.getName());
+          }
+          saved = spoon.saveToRepository(newTransMeta, false);
+          if (repository.getRepositoryMeta().getRepositoryCapabilities().supportsReferences()) {
+            specificationMethod=ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE;
+          } else {
+            specificationMethod=ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
+          }
+        } else {
+          saved=spoon.saveToFile(newTransMeta);
+          specificationMethod=ObjectLocationSpecificationMethod.FILENAME;
+        }
+      } catch (Exception e) {
+        new ErrorDialog(shell, "Error", "Error saving new transformation", e);
+      }
+      if (saved) {
+        setRadioButtons();
+        switch(specificationMethod) {
+          case FILENAME: 
+            wFilename.setText(Const.NVL(newTransMeta.getFilename(), ""));
+            break;
+          case REPOSITORY_BY_NAME:
+            wTransname.setText(Const.NVL(newTransMeta.getName(), ""));
+            wDirectory.setText(newTransMeta.getRepositoryDirectory().getPath());
+            break;
+          case REPOSITORY_BY_REFERENCE:
+            getByReferenceData(newTransMeta.getObjectId());
+            break;
+        }
+      }
+      
+      
+    }
+  }
+
+  private void getByReferenceData(ObjectId transObjectId) {
+    try {
+      if (repository==null) {
+        throw new KettleException(BaseMessages.getString(PKG, "TransExecutorDialog.Exception.NotConnectedToRepository.Message"));
+      }
+      RepositoryObject transInf = repository.getObjectInformation(transObjectId, RepositoryObjectType.JOB);
+      if (transInf != null) {
+        getByReferenceData(transInf);
+      }
+    } catch (KettleException e) {
+      new ErrorDialog(shell, 
+          BaseMessages.getString(PKG, "TransExecutorDialog.Exception.UnableToReferenceObjectId.Title"), 
+          BaseMessages.getString(PKG, "TransExecutorDialog.Exception.UnableToReferenceObjectId.Message"), e);
+    }
+  }
+
 }

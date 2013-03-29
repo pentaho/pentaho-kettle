@@ -78,6 +78,7 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
@@ -109,7 +110,9 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
   private Button                            wbByReference;
   private TextVar                           wByReference;
 	
-  // Edit the JobExecutor transformation in Spoon
+  private Button                            wNewJob;
+  
+  // Edit the JobExecutor job in Spoon
   //
 	private Button wEditJob;
 
@@ -419,14 +422,26 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
         setRadioButtons();      
       }
     });
-		
+
+    wNewJob = new Button(gJobGroup, SWT.PUSH);
+    wNewJob.setText(BaseMessages.getString(PKG, "JobExecutorDialog.NewJobButton.Label"));
+    FormData fdNewJob = new FormData();
+    fdNewJob.left = new FormAttachment(0, 0);
+    fdNewJob.top = new FormAttachment(wByReference, 3 * margin);
+    wNewJob.setLayoutData(fdNewJob);
+    wNewJob.addSelectionListener(new SelectionAdapter() {
+      @Override
+      public void widgetSelected(SelectionEvent event) {
+        newJob();
+      }
+    });
+
 		wEditJob = new Button(gJobGroup, SWT.PUSH | SWT.CENTER); // Browse
 		props.setLook(wEditJob);
 		wEditJob.setText(BaseMessages.getString(PKG, "JobExecutorDialog.Edit.Button"));
 		wEditJob.setToolTipText(BaseMessages.getString(PKG, "System.Tooltip.BrowseForFileOrDirAndAdd"));
 		FormData fdEditJob = new FormData();
-		fdEditJob.left = new FormAttachment(0, 0);
-		fdEditJob.right = new FormAttachment(100, 0);
+		fdEditJob.left = new FormAttachment(wNewJob, 2*margin);
 		fdEditJob.top = new FormAttachment(wByReference, 3 * margin);
 		wEditJob.setLayoutData(fdEditJob);
 		wEditJob.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e)
@@ -434,6 +449,8 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
 				editJob();
 			}
 		});
+		
+
 
 		FormData fdJobGroup = new FormData();
 		fdJobGroup.left = new FormAttachment(0, 0);
@@ -689,8 +706,10 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
 	}
 	
   public void setActive() {
+    boolean supportsReferences = repository!=null && repository.getRepositoryMeta().getRepositoryCapabilities().supportsReferences();
+    
     radioByName.setEnabled(repository != null);
-    radioByReference.setEnabled(repository != null);
+    radioByReference.setEnabled(repository != null && supportsReferences);
     wFilename.setEnabled(radioFilename.getSelection());
     wbbFilename.setEnabled(radioFilename.getSelection());
     wJobname.setEnabled(repository != null && radioByName.getSelection());
@@ -699,8 +718,8 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     
     wbJob.setEnabled(repository != null && radioByName.getSelection());
 
-    wByReference.setEnabled(repository != null && radioByReference.getSelection());
-    wbByReference.setEnabled(repository != null && radioByReference.getSelection());
+    wByReference.setEnabled(repository != null && radioByReference.getSelection() && supportsReferences);
+    wbByReference.setEnabled(repository != null && radioByReference.getSelection() && supportsReferences);
   }
   
   protected void setRadioButtons() {
@@ -737,19 +756,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     case REPOSITORY_BY_REFERENCE:
       referenceObjectId = jobExecutorMeta.getJobObjectId();
       wByReference.setText("");
-      try {
-        if (repository==null) {
-          throw new KettleException(BaseMessages.getString(PKG, "JobExecutorDialog.Exception.NotConnectedToRepository.Message"));
-        }
-        RepositoryObject transInf = repository.getObjectInformation(jobExecutorMeta.getJobObjectId(), RepositoryObjectType.JOB);
-        if (transInf != null) {
-          getByReferenceData(transInf);
-        }
-      } catch (KettleException e) {
-        new ErrorDialog(shell, 
-            BaseMessages.getString(PKG, "JobExecutorDialog.Exception.UnableToReferenceObjectId.Title"), 
-            BaseMessages.getString(PKG, "JobExecutorDialog.Exception.UnableToReferenceObjectId.Message"), e);
-      }
+      getByReferenceData(jobExecutorMeta.getJobObjectId());
       break;   
     }
     setRadioButtons();
@@ -825,7 +832,24 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     setFlags();
 	}
 
-	private void addParametersTab()
+	private void getByReferenceData(ObjectId jobObjectId) {
+    try {
+      if (repository==null) {
+        throw new KettleException(BaseMessages.getString(PKG, "JobExecutorDialog.Exception.NotConnectedToRepository.Message"));
+      }
+      RepositoryObject transInf = repository.getObjectInformation(jobObjectId, RepositoryObjectType.JOB);
+      if (transInf != null) {
+        getByReferenceData(transInf);
+      }
+    } catch (KettleException e) {
+      new ErrorDialog(shell, 
+          BaseMessages.getString(PKG, "JobExecutorDialog.Exception.UnableToReferenceObjectId.Title"), 
+          BaseMessages.getString(PKG, "JobExecutorDialog.Exception.UnableToReferenceObjectId.Message"), e);
+    }
+
+  }
+
+  private void addParametersTab()
 	{
 		CTabItem wParametersTab = new CTabItem(wTabFolder, SWT.NONE);
 		wParametersTab.setText(BaseMessages.getString(PKG, "JobExecutorDialog.Parameters.Title")); //$NON-NLS-1$
@@ -1633,4 +1657,51 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     }
 
 	}
+	
+  /**
+   * Ask the user to fill in the details...
+   */
+  protected void newJob() {
+    JobMeta newJobMeta = new JobMeta();
+    JobDialog jobDialog = new JobDialog(shell, SWT.NONE, newJobMeta, repository);
+    if (jobDialog.open()!=null) {
+      Spoon spoon = Spoon.getInstance();
+      spoon.addJobGraph(newJobMeta);
+      boolean saved=false;
+      try {
+        if (repository != null) {
+          if (!Const.isEmpty(newJobMeta.getName())) {
+            wStepname.setText(newJobMeta.getName());
+          }
+          saved = spoon.saveToRepository(newJobMeta, false);
+          if (repository.getRepositoryMeta().getRepositoryCapabilities().supportsReferences()) {
+            specificationMethod=ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE;
+          } else {
+            specificationMethod=ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
+          }
+        } else {
+          saved=spoon.saveToFile(newJobMeta);
+          specificationMethod=ObjectLocationSpecificationMethod.FILENAME;
+        }
+      } catch (Exception e) {
+        new ErrorDialog(shell, "Error", "Error saving new job", e);
+      }
+      if (saved) {
+        setRadioButtons();
+        switch(specificationMethod) {
+          case FILENAME: 
+            wFilename.setText(Const.NVL(newJobMeta.getFilename(), ""));
+            break;
+          case REPOSITORY_BY_NAME:
+            wJobname.setText(Const.NVL(newJobMeta.getName(), ""));
+            wDirectory.setText(newJobMeta.getRepositoryDirectory().getPath());
+            break;
+          case REPOSITORY_BY_REFERENCE:
+            getByReferenceData(newJobMeta.getObjectId());
+            break;
+        }
+      }
+    }
+  }
+
 }

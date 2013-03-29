@@ -92,6 +92,8 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
   private String                             parameters[];
   private String                             parameterValues[];
 
+  private IMetaStore metaStore;
+
   public SingleThreaderMeta() {
     super(); // allocate BaseStepMeta
 
@@ -674,5 +676,13 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
   @Override
   public boolean excludeFromCopyDistributeVerification() {
     return true;
+  }
+
+  public void setMetaStore(IMetaStore metaStore) {
+    this.metaStore = metaStore;
+  }
+  
+  public IMetaStore getMetaStore() {
+    return metaStore;
   }
 }

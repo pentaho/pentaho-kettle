@@ -2188,17 +2188,26 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * Set the Repository object on the Mapping step
    * That way the mapping step can determine the output fields for repository hosted mappings...
    * This is the exception to the rule so we don't pass this through the getFields() method.
+   * TODO: figure out a way to make this more generic.
    */
   private void setRepositoryOnMappingSteps() {
 
     for (StepMeta step : steps) {
-      if (step.getStepMetaInterface() instanceof MappingMeta ||
-          step.getStepMetaInterface() instanceof SingleThreaderMeta ||
-          step.getStepMetaInterface() instanceof JobExecutorMeta ||
-          step.getStepMetaInterface() instanceof TransExecutorMeta
-         ) {
+      if (step.getStepMetaInterface() instanceof MappingMeta) {
         ((MappingMeta) step.getStepMetaInterface()).setRepository(repository);
         ((MappingMeta) step.getStepMetaInterface()).setMetaStore(metaStore);
+      }
+      if (step.getStepMetaInterface() instanceof SingleThreaderMeta) {
+        ((SingleThreaderMeta) step.getStepMetaInterface()).setRepository(repository);
+        ((SingleThreaderMeta) step.getStepMetaInterface()).setMetaStore(metaStore);
+      }
+      if (step.getStepMetaInterface() instanceof JobExecutorMeta) {
+        ((JobExecutorMeta) step.getStepMetaInterface()).setRepository(repository);
+        ((JobExecutorMeta) step.getStepMetaInterface()).setMetaStore(metaStore);
+      }
+      if (step.getStepMetaInterface() instanceof TransExecutorMeta) {
+        ((TransExecutorMeta) step.getStepMetaInterface()).setRepository(repository);
+        ((TransExecutorMeta) step.getStepMetaInterface()).setMetaStore(metaStore);
       }
     }
   }
