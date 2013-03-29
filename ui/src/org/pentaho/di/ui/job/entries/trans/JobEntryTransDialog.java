@@ -83,6 +83,7 @@ import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
 import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.trans.dialog.TransDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
@@ -115,6 +116,8 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 
   private Button           wbFilename;
   private TextVar          wFilename;
+  
+  private Button           wNewTrans;
 
   private Composite        wLogging;
 
@@ -441,6 +444,20 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
     fdgByReference.right = new FormAttachment(100, 0);
     gByReference.setLayoutData(fdgByReference);
 
+    wNewTrans = new Button(wSpec, SWT.PUSH);
+    wNewTrans.setText(BaseMessages.getString(PKG, "JobTrans.NewTransButton.Label"));
+    FormData fdNewTrans = new FormData();
+    fdNewTrans.bottom = new FormAttachment(100, -margin);
+    fdNewTrans.left = new FormAttachment(wByReference, 0, SWT.CENTER);
+    wNewTrans.setLayoutData(fdNewTrans);
+    wNewTrans.addSelectionListener(new SelectionAdapter() {
+      @Override
+      public void widgetSelected(SelectionEvent event) {
+        newTransformation();
+      }
+    });
+
+    
     wSpec.pack();
     Rectangle bounds = wSpec.getBounds();
 
@@ -1116,6 +1133,27 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
         display.sleep();
     }
     return jobEntry;
+  }
+
+  /**
+   * Ask the user to fill in the details...
+   */
+  protected void newTransformation() {
+    TransMeta newTransMeta = new TransMeta();
+    TransDialog transDialog = new TransDialog(shell, SWT.NONE, newTransMeta, rep);
+    if (transDialog.open()!=null) {
+      Spoon spoon = Spoon.getInstance();
+      spoon.addTransGraph(newTransMeta);
+      if (spoon.saveFile()) {
+        wFilename.setText(Const.NVL(newTransMeta.getFilename(), ""));
+        if (rep!=null) {
+          wTransname.setText(Const.NVL(newTransMeta.getName(), ""));
+          wDirectory.setText(newTransMeta.getRepositoryDirectory().getPath());
+        }
+      }
+      
+      
+    }
   }
 
   protected void getParameters() {

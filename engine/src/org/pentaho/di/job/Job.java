@@ -60,12 +60,12 @@ import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.JobEntryLogTable;
 import org.pentaho.di.core.logging.JobLogTable;
-import org.pentaho.di.core.logging.LoggingBuffer;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LogTableField;
+import org.pentaho.di.core.logging.LoggingBuffer;
 import org.pentaho.di.core.logging.LoggingHierarchy;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
@@ -188,6 +188,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   private List<JobEntryListener> jobEntryListeners;
 
+  private List<DelegationListener> delegationListeners;
+
   private Map<JobEntryCopy, JobEntryTrans> activeJobEntryTransformations;
 
   private Map<JobEntryCopy, JobEntryJob> activeJobEntryJobs;
@@ -225,6 +227,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   private boolean ignoringCheckpoints;
 
+  /** The command line arguments for the job. */
+  protected String arguments[];
+
   /**
    * Instantiates a new job.
    *
@@ -240,7 +245,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       setName(name + " (" + super.getName() + ")");
     jobMeta.setName(name);
     jobMeta.setFilename(file);
-    jobMeta.setArguments(args);
+    this.arguments = args;
 
     init();
     this.log = new LogChannel(this);
@@ -252,6 +257,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
   public void init() {
     jobListeners = new ArrayList<JobListener>();
     jobEntryListeners = new ArrayList<JobEntryListener>();
+    delegationListeners = new ArrayList<DelegationListener>();
 
     activeJobEntryTransformations = new HashMap<JobEntryCopy, JobEntryTrans>();
     activeJobEntryJobs = new HashMap<JobEntryCopy, JobEntryJob>();
@@ -686,6 +692,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       JobEntryInterface cloneJei = (JobEntryInterface) jobEntryInterface.clone();
       ((VariableSpace) cloneJei).copyVariablesFrom(this);
       cloneJei.setRepository(rep);
+      if (rep!=null) {
+        cloneJei.setMetaStore(rep.getMetaStore());
+      }
       cloneJei.setParentJob(this);
       final long start = System.currentTimeMillis();
 
@@ -2659,5 +2668,25 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    */
   public void setIgnoringCheckpoints(boolean ignoringCheckpoints) {
     this.ignoringCheckpoints = ignoringCheckpoints;
+  }
+
+  public List<DelegationListener> getDelegationListeners() {
+    return delegationListeners;
+  }
+  
+  public void setDelegationListeners(List<DelegationListener> delegationListeners) {
+    this.delegationListeners = delegationListeners;
+  }
+
+  public void addDelegationListener(DelegationListener delegationListener) {
+    delegationListeners.add(delegationListener);
+  }
+
+  public String[] getArguments() {
+    return arguments;
+  }
+
+  public void setArguments(String[] arguments) {
+    this.arguments = arguments;
   }
 }

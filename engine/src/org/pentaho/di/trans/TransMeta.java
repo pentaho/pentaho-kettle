@@ -3351,7 +3351,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     IMetaStoreElementType databaseType = metaStore.getElementTypeByName(PentahoDefaults.NAMESPACE, MetaStoreConst.DATABASE_TYPE_NAME);
     List<IMetaStoreElement> databaseElements = metaStore.getElements(PentahoDefaults.NAMESPACE, databaseType.getId());
     for (IMetaStoreElement databaseElement : databaseElements) {
-      addOrReplaceDatabase(DatabaseMetaStoreUtil.loadDatabaseMetaFromDatabaseElement(databaseElement));
+      addOrReplaceDatabase(DatabaseMetaStoreUtil.loadDatabaseMetaFromDatabaseElement(metaStore, databaseElement));
     }
     
     // TODO: do the same for slaves, clusters, partition schemas

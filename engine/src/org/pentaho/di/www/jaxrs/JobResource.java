@@ -142,7 +142,6 @@ public class JobResource {
       JobMeta jobMeta = jobConfiguration.getJobMeta();
       JobExecutionConfiguration jobExecutionConfiguration = jobConfiguration.getJobExecutionConfiguration();
       jobMeta.setLogLevel(jobExecutionConfiguration.getLogLevel());
-      jobMeta.setArguments(jobExecutionConfiguration.getArgumentStrings());
       jobMeta.injectVariables(jobExecutionConfiguration.getVariables());
 
       // If there was a repository, we know about it at this point in time.
@@ -164,6 +163,7 @@ public class JobResource {
       job.getJobMeta().setInternalKettleVariables(job);
       job.injectVariables(jobConfiguration.getJobExecutionConfiguration().getVariables());
       job.setIgnoringCheckpoints(jobExecutionConfiguration.isIgnoringCheckpoint());
+      job.setArguments(jobExecutionConfiguration.getArgumentStrings());
 
       // Also copy the parameters over...
       //

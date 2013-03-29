@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobConfiguration;
@@ -51,6 +52,13 @@ public class JobMap {
 
   public synchronized void addJob(String jobName, String carteObjectId, Job job, JobConfiguration jobConfiguration) {
     CarteObjectEntry entry = new CarteObjectEntry(jobName, carteObjectId);
+    jobMap.put(entry, job);
+    configurationMap.put(entry, jobConfiguration);
+  }
+  
+  public synchronized void registerJob(Job job, JobConfiguration jobConfiguration) {
+    job.setContainerObjectId(UUID.randomUUID().toString());
+    CarteObjectEntry entry = new CarteObjectEntry(job.getJobMeta().getName(), job.getContainerObjectId());
     jobMap.put(entry, job);
     configurationMap.put(entry, jobConfiguration);
   }

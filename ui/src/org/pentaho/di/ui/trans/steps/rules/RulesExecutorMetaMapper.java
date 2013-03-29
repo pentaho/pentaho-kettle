@@ -124,7 +124,8 @@ public class RulesExecutorMetaMapper extends XulEventSourceAdapter {
 	 * Save data from the MetaMapper into the RulesMeta
 	 * @param meta
 	 */
-	public void saveMeta(RulesExecutorMeta meta) {
+	@SuppressWarnings("deprecation")
+  public void saveMeta(RulesExecutorMeta meta) {
 		if(ruleSource != null && ruleSource.equalsIgnoreCase("file")) {
 			if(meta.getRuleFile() != null && !meta.getRuleFile().equals(getRuleFile())
 					|| (meta.getRuleFile() != getRuleFile())

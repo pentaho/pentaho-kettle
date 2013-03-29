@@ -99,7 +99,6 @@ public class AddJobServlet extends BaseHttpServlet implements CartePluginInterfa
       JobMeta jobMeta = jobConfiguration.getJobMeta();
       JobExecutionConfiguration jobExecutionConfiguration = jobConfiguration.getJobExecutionConfiguration();
       jobMeta.setLogLevel(jobExecutionConfiguration.getLogLevel());
-      jobMeta.setArguments(jobExecutionConfiguration.getArgumentStrings());
       jobMeta.injectVariables(jobExecutionConfiguration.getVariables());
 
       // If there was a repository, we know about it at this point in time.
@@ -121,7 +120,8 @@ public class AddJobServlet extends BaseHttpServlet implements CartePluginInterfa
       job.getJobMeta().setInternalKettleVariables(job);
       job.injectVariables(jobConfiguration.getJobExecutionConfiguration().getVariables());
       job.setIgnoringCheckpoints(jobExecutionConfiguration.isIgnoringCheckpoint());
-      
+      job.setArguments(jobExecutionConfiguration.getArgumentStrings());
+
       // Also copy the parameters over...
       //
       job.copyParametersFrom(jobMeta);
@@ -141,7 +141,16 @@ public class AddJobServlet extends BaseHttpServlet implements CartePluginInterfa
 
       job.setSocketRepository(getSocketRepository());
       
-      getJobMap().addJob(job.getJobname(), carteObjectId, job, jobConfiguration);
+      // Do we need to expand the job when it's running?
+      // Note: the plugin (Job and Trans) job entries need to call the delegation listeners in the parent job.
+      //
+      if (jobExecutionConfiguration.isExpandingRemoteJob()) {
+        job.addDelegationListener(new CarteDelegationHandler(getTransformationMap(), getJobMap()));
+      }
+      
+      synchronized(getJobMap()) {
+        getJobMap().addJob(job.getJobname(), carteObjectId, job, jobConfiguration);
+      }
 
       // Make sure to disconnect from the repository when the job finishes.
       // 

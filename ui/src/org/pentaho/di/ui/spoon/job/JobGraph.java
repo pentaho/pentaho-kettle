@@ -3290,10 +3290,10 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
             job = new Job(spoon.rep, runJobMeta, spoonLoggingObject);
 
             job.setLogLevel(executionConfiguration.getLogLevel());
-            job.getJobMeta().setArguments(jobMeta.getArguments());
             job.shareVariablesWith(jobMeta);
             job.setInteractive(true);
             job.setGatheringMetrics(executionConfiguration.isGatheringMetrics());
+            job.setArguments(executionConfiguration.getArgumentStrings());
 
             // Ignore checkpoints if this is asked...
             //

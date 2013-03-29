@@ -40,9 +40,6 @@ public class TransAdapter implements TransListener {
   public void transActive(Trans trans) {
   }
 
-  public void transIdle(Trans trans) {
-  }
-
   public void transFinished(Trans trans) throws KettleException {
   }
 

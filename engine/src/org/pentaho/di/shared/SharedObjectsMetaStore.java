@@ -145,7 +145,7 @@ public class SharedObjectsMetaStore extends MemoryMetaStore implements IMetaStor
       if (elementTypeId.equals(databaseElementType.getId())) {
         // convert the element to DatabaseMeta and store it in the shared objects file, then save the file
         //
-        sharedObjects.storeObject(DatabaseMetaStoreUtil.loadDatabaseMetaFromDatabaseElement(element));
+        sharedObjects.storeObject(DatabaseMetaStoreUtil.loadDatabaseMetaFromDatabaseElement(this, element));
         sharedObjects.saveToFile();
         return;
       }
@@ -159,7 +159,7 @@ public class SharedObjectsMetaStore extends MemoryMetaStore implements IMetaStor
   public void deleteElement(String namespace, String elementTypeId, String elementId) throws MetaStoreException {
     try {
       if (elementTypeId.equals(databaseElementType.getId())) {
-        sharedObjects.removeObject(DatabaseMetaStoreUtil.loadDatabaseMetaFromDatabaseElement(getElement(namespace, elementTypeId, elementId)));
+        sharedObjects.removeObject(DatabaseMetaStoreUtil.loadDatabaseMetaFromDatabaseElement(this, getElement(namespace, elementTypeId, elementId)));
         sharedObjects.saveToFile();
         return;
       }

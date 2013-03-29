@@ -42,15 +42,6 @@ public interface StepListener {
   public void stepActive(Trans trans, StepMeta stepMeta, StepInterface step);
 
   /**
-   * This method is called when a step goes from being active to being idle.
-   * 
-   * @param trans
-   * @param stepMeta
-   * @param step
-   */
-  public void stepIdle(Trans trans, StepMeta stepMeta, StepInterface step);
-
-  /**
    * This method is called when a step completes all work and is finished.
    * 
    * @param trans

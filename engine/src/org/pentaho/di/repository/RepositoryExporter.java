@@ -218,17 +218,17 @@ public class RepositoryExporter implements IRepositoryExporter {
           if (entry instanceof JobEntryJob) {
             // convert to a named based reference.
             //
-            JobEntryJob job = (JobEntryJob) entry;
-            if (job.getSpecificationMethod()==ObjectLocationSpecificationMethod.FILENAME) {
+            JobEntryJob jobEntryJob = (JobEntryJob) entry;
+            if (jobEntryJob.getSpecificationMethod()==ObjectLocationSpecificationMethod.FILENAME) {
               try {
-                JobMeta meta = job.getJobMeta(repository, jobMeta);
+                JobMeta meta = jobEntryJob.getJobMeta(repository, repository.getMetaStore(), jobMeta);
                 FileObject fileObject = KettleVFS.getFileObject(meta.getFilename());
-                job.setSpecificationMethod(ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME);
-                job.setFileName(null);
-                job.setJobName(meta.getName());
-                job.setDirectory(Const.NVL(calcRepositoryDirectory(fileRep, fileObject), "/"));
+                jobEntryJob.setSpecificationMethod(ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME);
+                jobEntryJob.setFileName(null);
+                jobEntryJob.setJobName(meta.getName());
+                jobEntryJob.setDirectory(Const.NVL(calcRepositoryDirectory(fileRep, fileObject), "/"));
               } catch(Exception e) {
-                log.logError("Unable to load job specified in job entry '"+job.getName()+"'", e);
+                log.logError("Unable to load job specified in job entry '"+jobEntryJob.getName()+"'", e);
                 // Ignore this error, just leave everything the way it is.
               }
             }

@@ -175,6 +175,10 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
   private Label                             wlFollowingAbortRemotely;
   private Button                            wFollowingAbortRemotely;
   private FormData                          fdlFollowingAbortRemotely, fdFollowingAbortRemotely;
+  
+  private Label                             wlExpandRemote;
+  private Button                            wExpandRemote;
+  private FormData                          fdlExpandRemote, fdExpandRemote;
 
   private Label                             wlPassParams;
   private Button                            wPassParams;
@@ -574,7 +578,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
       }
     });
 
-    // Wait for the remote transformation to finish?
+    // Pass the export of this job as an export to the slave server
     //
     wlPassExport = new Label(wAdvanced, SWT.RIGHT);
     wlPassExport.setText(BaseMessages.getString(PKG, "JobJob.PassExportToSlave.Label"));
@@ -591,7 +595,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
     fdPassExport.top = new FormAttachment(wSlaveServer, margin);
     fdPassExport.right = new FormAttachment(100, 0);
     wPassExport.setLayoutData(fdPassExport);
-
+    
     // Wait for the remote transformation to finish?
     //
     wlWaitingToFinish = new Label(wAdvanced, SWT.RIGHT);
@@ -632,6 +636,24 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
     fdFollowingAbortRemotely.top = new FormAttachment(wWaitingToFinish, margin);
     fdFollowingAbortRemotely.right = new FormAttachment(100, 0);
     wFollowingAbortRemotely.setLayoutData(fdFollowingAbortRemotely);
+    
+    // Expand the job on the remote server, make the sub-jobs and transformations visible
+    //
+    wlExpandRemote = new Label(wAdvanced, SWT.RIGHT);
+    wlExpandRemote.setText(BaseMessages.getString(PKG, "JobEntryJobDialog.ExpandRemoteOnSlave.Label"));
+    props.setLook(wlExpandRemote);
+    fdlExpandRemote = new FormData();
+    fdlExpandRemote.left = new FormAttachment(0, 0);
+    fdlExpandRemote.top = new FormAttachment(wFollowingAbortRemotely, margin);
+    fdlExpandRemote.right = new FormAttachment(middle, -margin);
+    wlExpandRemote.setLayoutData(fdlExpandRemote);
+    wExpandRemote = new Button(wAdvanced, SWT.CHECK);
+    props.setLook(wExpandRemote);
+    fdExpandRemote = new FormData();
+    fdExpandRemote.left = new FormAttachment(middle, 0);
+    fdExpandRemote.top = new FormAttachment(wFollowingAbortRemotely, margin);
+    fdExpandRemote.right = new FormAttachment(100, 0);
+    wExpandRemote.setLayoutData(fdExpandRemote);
 
     wAdvanced.pack();
     bounds = wAdvanced.getBounds();
@@ -1082,7 +1104,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
     try {
       JobEntryJob jej = new JobEntryJob();
       getInfo(jej);
-      JobMeta jm = jej.getJobMeta(rep, jobMeta);
+      JobMeta jm = jej.getJobMeta(rep, metaStore, jobMeta);
       String[] parameters = jm.listParameters();
       
       String[] existing = wParameters.getItems(1);
@@ -1261,6 +1283,9 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 
     wlFollowingAbortRemotely.setEnabled(wWaitingToFinish.getSelection() && !Const.isEmpty(wSlaveServer.getText()));
     wFollowingAbortRemotely.setEnabled(wWaitingToFinish.getSelection() && !Const.isEmpty(wSlaveServer.getText()));
+    
+    wlExpandRemote.setEnabled(!Const.isEmpty(wSlaveServer.getText()));
+    wExpandRemote.setEnabled(!Const.isEmpty(wSlaveServer.getText()));
   }
 
   public void getData() {
@@ -1346,6 +1371,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
     wCreateParentFolder.setSelection(jobEntry.createParentFolder);
     wWaitingToFinish.setSelection(jobEntry.isWaitingToFinish());
     wFollowingAbortRemotely.setSelection(jobEntry.isFollowingAbortRemotely());
+    wExpandRemote.setSelection(jobEntry.isExpandingRemoteJob());
   }
 
   private void cancel() {

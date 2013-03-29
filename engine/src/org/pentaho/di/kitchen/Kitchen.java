@@ -332,11 +332,12 @@ public class Kitchen {
     int returnCode = 0;
 
     try {
-      // Set the arguments on the job metadata as well...
+      // Set the command line arguments on the job ...
+      //
       if (args.size() == 0) {
-        job.getJobMeta().setArguments(null);
+        job.setArguments(null);
       } else {
-        job.getJobMeta().setArguments((String[]) args.toArray(new String[args.size()]));
+        job.setArguments((String[]) args.toArray(new String[args.size()]));
       }
       job.initializeVariablesFrom(null);
       job.setLogLevel(log.getLogLevel());

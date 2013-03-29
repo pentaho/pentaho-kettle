@@ -2564,8 +2564,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	 * Gets the arguments used for this job.
 	 * 
 	 * @return Returns the arguments.
+	 * @deprecated Moved to the Job class
 	 */
-	public String[] getArguments() {
+	@Deprecated public String[] getArguments() {
 		return arguments;
 	}
 
@@ -2573,8 +2574,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	 * Sets the arguments.
 	 * @param arguments
 	 *            The arguments to set.
+	 * @deprecated moved to the job class
 	 */
-	public void setArguments(String[] arguments) {
+	@Deprecated public void setArguments(String[] arguments) {
 		this.arguments = arguments;
 	}
 

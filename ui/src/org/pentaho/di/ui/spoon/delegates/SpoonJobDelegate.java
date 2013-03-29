@@ -1448,10 +1448,6 @@ public class SpoonJobDelegate extends SpoonDelegate
 				jobMeta.setParameterValue(paramName, paramValue);
 			}
 			
-			// Set the arguments too...
-			//
-			jobMeta.setArguments(executionConfiguration.getArgumentStrings());
-
 			// Is this a local execution?
 			//
 			if (executionConfiguration.isExecutingLocally()) {
@@ -1463,7 +1459,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 			else if (executionConfiguration.isExecutingRemotely()) {
 				
 				// Activate the parameters, turn them into variables...
-				//
+				// jobMeta.hasChanged()
 				jobMeta.activateParameters();
 				
 				if (executionConfiguration.getRemoteServer() != null) {

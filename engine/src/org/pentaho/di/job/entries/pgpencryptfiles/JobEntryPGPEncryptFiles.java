@@ -1065,7 +1065,7 @@ public class JobEntryPGPEncryptFiles extends JobEntryBase implements Cloneable, 
 	private void addFileToResultFilenames(String fileaddentry,Result result,Job parentJob)
 	{	
 		try {
-			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(fileaddentry), parentJob.getName(), toString());
+			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(fileaddentry), parentJob.getJobname(), toString());
 			result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 	    
 			if(isDebug()) {

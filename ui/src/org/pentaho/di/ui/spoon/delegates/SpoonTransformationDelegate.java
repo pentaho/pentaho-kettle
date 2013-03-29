@@ -913,6 +913,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			
 			// addTransLog(transMeta, executionConfiguration.isExecutingLocally());
 			// TransLog transLog = spoon.getActiveTransLog();
+			// 
 			TransGraph activeTransGraph = spoon.getActiveTransGraph();
 
 			// Is this a local execution?

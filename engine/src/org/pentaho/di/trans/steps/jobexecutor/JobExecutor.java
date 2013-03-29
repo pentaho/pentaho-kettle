@@ -35,7 +35,9 @@ import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.job.DelegationListener;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -189,7 +191,8 @@ public class JobExecutor extends BaseStep implements StepInterface
     }
     data.executorJob.setInternalKettleVariables(this);
     data.executorJob.copyParametersFrom(data.executorJobMeta);
-    
+    data.executorJob.setArguments(getTrans().getArguments());
+
     // data.executorJob.setInteractive(); TODO: pass interactivity through the transformation too for drill-down.
     
     // TODO 
@@ -214,7 +217,18 @@ public class JobExecutor extends BaseStep implements StepInterface
     data.executorJob.beginProcessing();
     
     Result result = new Result();
+    
+    // Inform the parent transformation we delegated work here...
+    //
+    for (DelegationListener delegationListener : getTrans().getDelegationListeners()) {
+      // TODO: copy some settings in the job execution configuration, not strictly needed 
+      // but the execution configuration information is useful in case of a job re-start on Carte
+      //
+      delegationListener.jobDelegationStarted(data.executorJob, new JobExecutionConfiguration());
+    }
 
+    // Now go execute this job
+    //
     try {
       result = data.executorJob.execute(0, result);
     } catch(KettleException e)
@@ -369,7 +383,6 @@ public class JobExecutor extends BaseStep implements StepInterface
         meta.setRepository(getTransMeta().getRepository());
 
         data.executorJobMeta = JobExecutorMeta.loadJobMeta(meta, meta.getRepository(), this);
-        data.executorJobMeta.setArguments(getTrans().getArguments());
         
         // Do we have a job at all?
         //

@@ -353,7 +353,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   /**
    * Short description of the access type, used in XML and the repository.
    */
-  public static final String dbAccessTypeCode[] = { "Native", "ODBC", "OCI", "Plugin", "JNDI", };
+  public static final String dbAccessTypeCode[] = { "Native", "ODBC", "OCI", "Plugin", ", ", };
 
   /**
    * Longer description for user interactions.

@@ -104,6 +104,7 @@ import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.job.DelegationListener;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.ObjectId;
@@ -319,6 +320,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
   /** A list of stop-event listeners attached to the transformation. */
   private List<TransStoppedListener> transStoppedListeners;
+  
+  /** In case this transformation starts to delegate work to a local transformation or job */
+  private List<DelegationListener> delegationListeners;
 
   /** The number of finished steps. */
   private int nrOfFinishedSteps;
@@ -371,7 +375,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   
   protected List<ResultFile> resultFiles;
   
-  /** The list of arguments to the transformation. */
+  /** The command line arguments for the transformation. */
   protected String arguments[];
   
   /** A table of named counters. 
@@ -392,6 +396,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     transListeners = new ArrayList<TransListener>();
     transStoppedListeners = new ArrayList<TransStoppedListener>();
+    delegationListeners = new ArrayList<DelegationListener>();
 
     // Get a valid transactionId in case we run database transactional.
     transactionId = calculateTransactionId();
@@ -1093,17 +1098,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             //
             for (TransListener listener : transListeners) {
               listener.transActive(Trans.this);
-            }
-          }
-        }
-
-        public void stepIdle(Trans trans, StepMeta stepMeta, StepInterface step) {
-          nrOfActiveSteps--;
-          if (nrOfActiveSteps == 0) {
-            // Transformation goes from active to in-active...
-            //
-            for (TransListener listener : transListeners) {
-              listener.transIdle(Trans.this);
             }
           }
         }
@@ -4854,5 +4848,17 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   
   public HttpServletRequest getServletRequest() {
     return servletRequest;
+  }
+  
+  public List<DelegationListener> getDelegationListeners() {
+    return delegationListeners;
+  }
+  
+  public void setDelegationListeners(List<DelegationListener> delegationListeners) {
+    this.delegationListeners = delegationListeners;
+  }
+
+  public void addDelegationListener(DelegationListener delegationListener) {
+    delegationListeners.add(delegationListener);
   }
 }

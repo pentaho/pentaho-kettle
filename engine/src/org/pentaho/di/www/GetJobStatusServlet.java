@@ -105,7 +105,7 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
         entry = new CarteObjectEntry(jobName, id);
         job = getJobMap().getJob(entry);
         if (job!=null) {
-          jobName = job.getName();
+          jobName = job.getJobname();
         }
       }
     }

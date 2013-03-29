@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -69,6 +70,13 @@ public class TransformationMap {
    */
   public synchronized void addTransformation(String transformationName, String containerObjectId, Trans trans, TransConfiguration transConfiguration) {
     CarteObjectEntry entry = new CarteObjectEntry(transformationName, containerObjectId);
+    transformationMap.put(entry, trans);
+    configurationMap.put(entry, transConfiguration);
+  }
+  
+  public synchronized void registerTransformation(Trans trans, TransConfiguration transConfiguration) {
+    trans.setContainerObjectId(UUID.randomUUID().toString());
+    CarteObjectEntry entry = new CarteObjectEntry(trans.getTransMeta().getName(), trans.getContainerObjectId());
     transformationMap.put(entry, trans);
     configurationMap.put(entry, transConfiguration);
   }

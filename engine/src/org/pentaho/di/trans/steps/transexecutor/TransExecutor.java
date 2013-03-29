@@ -35,7 +35,9 @@ import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.job.DelegationListener;
 import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -211,6 +213,18 @@ public class TransExecutor extends BaseStep implements StepInterface {
     try {
       data.executorTrans.setPreviousResult(result);
       data.executorTrans.execute(null);
+      
+      // Inform the parent transformation we started something here...
+      //
+      for (DelegationListener delegationListener : getTrans().getDelegationListeners()) {
+        // TODO: copy some settings in the transformation execution configuration, not strictly needed 
+        // but the execution configuration information is useful in case of a transformation re-start on Carte
+        //
+        delegationListener.transformationDelegationStarted(data.executorTrans, new TransExecutionConfiguration());
+      }
+      
+      // Wait a while until we're done with the transformation
+      //
       data.executorTrans.waitUntilFinished();
       result = data.executorTrans.getResult();
     } catch (KettleException e) {

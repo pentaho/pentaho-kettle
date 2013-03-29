@@ -769,7 +769,7 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
 	}
 	private void addFileToResultFilenames(FileObject fileaddentry, Result result,Job parentJob) {	
 		try	 {
-			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, fileaddentry, parentJob.getName(), toString());
+			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, fileaddentry, parentJob.getJobname(), toString());
 			result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 	    
 			if(isDetailed())

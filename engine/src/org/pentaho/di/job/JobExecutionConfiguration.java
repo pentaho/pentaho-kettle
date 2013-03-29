@@ -77,6 +77,8 @@ public class JobExecutionConfiguration implements Cloneable
     
     private boolean gatheringMetrics;
     private boolean ignoringCheckpoint;
+
+    private boolean expandingRemoteJob;
     
     public JobExecutionConfiguration()
     {
@@ -387,6 +389,7 @@ public class JobExecutionConfiguration implements Cloneable
 
         xml.append("    ").append(XMLHandler.addTagValue("gather_metrics", gatheringMetrics));
         xml.append("    ").append(XMLHandler.addTagValue("ignore_checkpoint", ignoringCheckpoint));
+        xml.append("    ").append(XMLHandler.addTagValue("expand_remote_job", expandingRemoteJob));
 
         // The source rows...
         //
@@ -426,6 +429,7 @@ public class JobExecutionConfiguration implements Cloneable
             remoteServer = new SlaveServer(remoteHostNode);
         }
         passingExport = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "pass_export"));
+        expandingRemoteJob = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "expand_remote_job"));
 
         // Read the variables...
         //
@@ -654,5 +658,13 @@ public class JobExecutionConfiguration implements Cloneable
    */
   public void setIgnoringCheckpoint(boolean ignoringCheckpoint) {
     this.ignoringCheckpoint = ignoringCheckpoint;
+  }
+
+  public void setExpandingRemoteJob(boolean expandingRemoteJob) {
+    this.expandingRemoteJob = expandingRemoteJob; 
+  }
+  
+  public boolean isExpandingRemoteJob() {
+    return expandingRemoteJob;
   }
 }

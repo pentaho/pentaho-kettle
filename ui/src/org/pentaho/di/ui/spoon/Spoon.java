@@ -3740,7 +3740,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
               true, rep.getName());
           saveSettings();
           addMenuLast();
-          jobMeta.setArguments(arguments);
           addJobGraph(jobMeta);
         }
         refreshTree();
@@ -3787,7 +3786,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           props.addLastFile(LastUsedFile.FILE_TYPE_JOB, objname, repdir.getPath(), true, rep.getName());
           saveSettings();
           addMenuLast();
-          jobMeta.setArguments(arguments);
           addJobGraph(jobMeta);
         }
         refreshTree();

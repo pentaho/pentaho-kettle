@@ -43,14 +43,6 @@ public interface TransListener {
   public void transActive(Trans trans);
 
   /**
-   * The transformation went from an active to an inactive state.
-   * 
-   * @param trans
-   * @throws KettleException
-   */
-  public void transIdle(Trans trans);
-
-  /**
    * The transformation has finished.
    * 
    * @param trans

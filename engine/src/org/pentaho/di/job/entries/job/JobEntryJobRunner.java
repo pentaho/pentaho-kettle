@@ -84,6 +84,7 @@ public class JobEntryJobRunner implements Runnable
         result.setResult(false);
         log.logError(BaseMessages.getString(PKG, "Job.Log.ErrorExecJob", e.getMessage()), e);
       }
+      job.setFinished(true);
     }
 		finished=true;
 	}

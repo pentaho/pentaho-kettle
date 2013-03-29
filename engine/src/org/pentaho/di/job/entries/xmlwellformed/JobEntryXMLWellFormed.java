@@ -596,7 +596,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 	{	
 		try
 		{
-			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(fileaddentry, this), parentJob.getName(), toString());
+			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(fileaddentry, this), parentJob.getJobname(), toString());
 			result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 	    
 			if(log.isDetailed())

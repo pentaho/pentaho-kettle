@@ -54,6 +54,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.job.DelegationListener;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
@@ -633,7 +634,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     String args1[] = arguments;
     if (args1 == null || args1.length == 0) // No arguments set, look at the parent job.
     {
-      args1 = parentJob.getJobMeta().getArguments();
+      args1 = parentJob.getArguments();
     }
     //initializeVariablesFrom(parentJob);
 
@@ -1017,11 +1018,20 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
           trans.setJobStartDate(rootJob.getStartDate());
           trans.setJobEndDate(rootJob.getEndDate());
 
+          // Inform the parent job we started something here...
+          //
+          for (DelegationListener delegationListener : parentJob.getDelegationListeners()) {
+            // TODO: copy some settings in the job execution configuration, not strictly needed 
+            // but the execution configuration information is useful in case of a job re-start
+            //
+            delegationListener.transformationDelegationStarted(trans, new TransExecutionConfiguration());
+          }
+          
           try {
             // Start execution...
             //
             trans.execute(args);
-
+          
             // Wait until we're done with it...
             //
             while (!trans.isFinished() && !parentJob.isStopped() && trans.getErrors() == 0) {

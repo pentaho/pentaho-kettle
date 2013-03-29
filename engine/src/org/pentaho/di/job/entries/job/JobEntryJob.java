@@ -56,6 +56,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.job.DelegationListener;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobMeta;
@@ -118,6 +119,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   public boolean               waitingToFinish      = true;
   public boolean               followingAbortRemotely;
 
+  public boolean               expandingRemoteJob;
+  
   private String               remoteSlaveServerName;
   public boolean               passingAllParameters = true;
 
@@ -249,6 +252,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     retval.append("      ").append(XMLHandler.addTagValue("slave_server_name", remoteSlaveServerName));
     retval.append("      ").append(XMLHandler.addTagValue("wait_until_finished", waitingToFinish));
     retval.append("      ").append(XMLHandler.addTagValue("follow_abort_remote", followingAbortRemotely));
+    retval.append("      ").append(XMLHandler.addTagValue("expand_remote_job", expandingRemoteJob));
     retval.append("      ").append(XMLHandler.addTagValue("create_parent_folder", createParentFolder));
     retval.append("      ").append(XMLHandler.addTagValue("pass_export", passingExport));
     retval.append("      ").append(XMLHandler.addTagValue("force_separate_logging", forcingSeparateLogging));
@@ -339,6 +343,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         waitingToFinish = "Y".equalsIgnoreCase(wait);
 
       followingAbortRemotely = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "follow_abort_remote"));
+      expandingRemoteJob = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "expand_remote_job"));
 
       // How many arguments?
       int argnr = 0;
@@ -406,6 +411,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       passingExport = rep.getJobEntryAttributeBoolean(id_jobentry, "pass_export");
       waitingToFinish = rep.getJobEntryAttributeBoolean(id_jobentry, "wait_until_finished", true);
       followingAbortRemotely = rep.getJobEntryAttributeBoolean(id_jobentry, "follow_abort_remote");
+      expandingRemoteJob = rep.getJobEntryAttributeBoolean(id_jobentry, "expand_remote_job");
       createParentFolder = rep.getJobEntryAttributeBoolean(id_jobentry, "create_parent_folder");
       forcingSeparateLogging = rep.getJobEntryAttributeBoolean(id_jobentry, "force_separate_logging");
 
@@ -461,6 +467,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       rep.saveJobEntryAttribute(id_job, getObjectId(), "pass_export", passingExport);
       rep.saveJobEntryAttribute(id_job, getObjectId(), "wait_until_finished", waitingToFinish);
       rep.saveJobEntryAttribute(id_job, getObjectId(), "follow_abort_remote", followingAbortRemotely);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "expand_remote_job", expandingRemoteJob);
       rep.saveJobEntryAttribute(id_job, getObjectId(), "create_parent_folder", createParentFolder);
       rep.saveJobEntryAttribute(id_job, getObjectId(), "force_separate_logging", forcingSeparateLogging);
 
@@ -578,7 +585,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       // no arguments? Check the parent jobs arguments
       if (args1 == null || args1.length == 0) 
       {
-        args1 = parentJob.getJobMeta().getArguments();
+        args1 = parentJob.getArguments();
       }
 
       copyVariablesFrom(parentJob);
@@ -815,7 +822,16 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             job.setPassedBatchId(parentJob.getBatchId());
           }
 
-          job.getJobMeta().setArguments(args);
+          job.setArguments(args);
+          
+          // Inform the parent job we started something here...
+          //
+          for (DelegationListener delegationListener : parentJob.getDelegationListeners()) {
+            // TODO: copy some settings in the job execution configuration, not strictly needed 
+            // but the execution configuration information is useful in case of a job re-start
+            //
+            delegationListener.jobDelegationStarted(job, new JobExecutionConfiguration());
+          }
           
           JobEntryJobRunner runner = new JobEntryJobRunner( job, result, nr, log);
           Thread jobRunnerThread = new Thread(runner);
@@ -825,8 +841,9 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
           jobRunnerThread.setName( Const.NVL(job.getJobMeta().getName(), job.getJobMeta().getFilename())+" UUID: "+UUID.randomUUID().toString() );
           jobRunnerThread.start();
           
-          //job.start();
-          
+
+          // Keep running until we're done.
+          //
           while (!runner.isFinished() && !parentJob.isStopped())
           {
               try { Thread.sleep(0,1);}
@@ -859,7 +876,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
           jobExecutionConfiguration.setRepository(rep);
           jobExecutionConfiguration.setLogLevel(jobLogLevel);
           jobExecutionConfiguration.setPassingExport(passingExport);
-          
+          jobExecutionConfiguration.setExpandingRemoteJob(expandingRemoteJob);
           for (String param : namedParam.listParameters()) {
             String defValue = namedParam.getParameterDefault(param);
             String value = namedParam.getParameterValue(param);
@@ -1107,8 +1124,12 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     return jobMeta.getSQLStatements(repository, null);
   }
 
-  public JobMeta getJobMeta(Repository rep, VariableSpace space) throws KettleException {
-    return getJobMeta(rep, null, space);
+  @Deprecated public JobMeta getJobMeta(Repository rep, VariableSpace space) throws KettleException {
+    if (rep!=null) {
+      return getJobMeta(rep, rep.getMetaStore(), space);
+    } else {
+      return getJobMeta(rep, null, space);
+    }
   }
   
   public JobMeta getJobMeta(Repository rep, IMetaStore metaStore, VariableSpace space) throws KettleException {
@@ -1390,5 +1411,13 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
    */
   public void setForcingSeparateLogging(boolean forcingSeparateLogging) {
     this.forcingSeparateLogging = forcingSeparateLogging;
+  }
+
+  public boolean isExpandingRemoteJob() {
+    return expandingRemoteJob;
+  }
+
+  public void setExpandingRemoteJob(boolean expandingRemoteJob) {
+    this.expandingRemoteJob = expandingRemoteJob;
   }
 }

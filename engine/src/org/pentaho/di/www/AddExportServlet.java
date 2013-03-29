@@ -143,15 +143,24 @@ public class AddExportServlet extends BaseHttpServlet implements CartePluginInte
           servletLoggingObject.setLogLevel(jobExecutionConfiguration.getLogLevel());
 
           Job job = new Job(null, jobMeta, servletLoggingObject);
+          
+          // Do we need to expand the job when it's running?
+          // Note: the plugin (Job and Trans) job entries need to call the delegation listeners in the parent job.
+          //
+          if (jobExecutionConfiguration.isExpandingRemoteJob()) {
+            job.addDelegationListener(new CarteDelegationHandler(getTransformationMap(), getJobMap()));
+          }
 
           // store it all in the map...
           //
-          getJobMap().addJob(job.getJobname(), carteObjectId, job, new JobConfiguration(jobMeta, jobExecutionConfiguration));
+          synchronized(getJobMap()) {
+            getJobMap().addJob(job.getJobname(), carteObjectId, job, new JobConfiguration(jobMeta, jobExecutionConfiguration));
+          }
 
           // Apply the execution configuration...
           //
           log.setLogLevel(jobExecutionConfiguration.getLogLevel());
-          jobMeta.setArguments(jobExecutionConfiguration.getArgumentStrings());
+          job.setArguments(jobExecutionConfiguration.getArgumentStrings());
           jobMeta.injectVariables(jobExecutionConfiguration.getVariables());
 
           // Also copy the parameters over...

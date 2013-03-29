@@ -42,12 +42,14 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.plugins.KettleURLClassLoader;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -290,43 +292,50 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 	
-	public void getFields(RowMetaInterface row, String originStepname, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
-	{
-		for (int i=0;i<fieldname.length;i++)
-		{
-			if (!Const.isEmpty(fieldname[i]))
-			{
-				ValueMetaInterface v;
-				if (replace[i]) {
-					// Look up the field to replace...
-					v = row.searchValueMeta(fieldname[i]);
-					if (v==null && Const.isEmpty(rename[i])) {
-						throw new KettleStepException(BaseMessages.getString(PKG, "ScriptMeta.Exception.FieldToReplaceNotFound", fieldname[i]));
-					}
-					v= row.searchValueMeta(rename[i]);
-					
-					// Change the data type to match what's specified...
-					//
-					v.setType(type[i]);
-				} else {
-					if (rename[i]!=null && rename[i].length()!=0) 
-					{
-						v = new ValueMeta(rename[i], type[i]);
-					} 
-					else
-					{
-						v = new ValueMeta(this.fieldname[i], type[i]); 
-					} 
-				}
-				v.setLength(length[i]);
-                v.setPrecision(precision[i]);
-				v.setOrigin(originStepname);
-				if (!replace[i]) {
-					row.addValueMeta( v );
-				}
-			}
-		}
-	}
+  public void getFields(RowMetaInterface row, String originStepname, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException {
+    for (int i = 0; i < fieldname.length; i++) {
+      if (!Const.isEmpty(fieldname[i])) {
+        String fieldName;
+        int replaceIndex;
+        int fieldType;
+        
+        if (replace[i]) {
+          // Look up the field to replace...
+          //
+          if (row.searchValueMeta(fieldname[i]) == null && Const.isEmpty(rename[i])) {
+            throw new KettleStepException(BaseMessages.getString(PKG, "ScriptMeta.Exception.FieldToReplaceNotFound", fieldname[i]));
+          }
+          replaceIndex = row.indexOfValue(rename[i]);
+
+          // Change the data type to match what's specified...
+          //
+          fieldType = type[i];
+          fieldName = rename[i];
+        } else {
+          replaceIndex = -1;
+          fieldType = type[i];
+          if (rename[i] != null && rename[i].length() != 0) {
+            fieldName = rename[i];
+          } else {
+            fieldName = fieldname[i];
+          }
+        }
+        try {
+          ValueMetaInterface v = ValueMetaFactory.createValueMeta(fieldName, fieldType);
+          v.setLength(length[i]);
+          v.setPrecision(precision[i]);
+          v.setOrigin(originStepname);
+          if (replace[i] && replaceIndex>=0) {
+            row.setValueMeta(replaceIndex, v);
+          } else {
+            row.addValueMeta(v);
+          }
+        } catch(KettlePluginException e) {
+          
+        }
+      }
+    }
+  }
 
 	public String getXML()
     {

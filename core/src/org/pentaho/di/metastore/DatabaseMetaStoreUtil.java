@@ -8,7 +8,6 @@ import java.util.Properties;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.plugins.DatabasePluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
@@ -37,7 +36,7 @@ public class DatabaseMetaStoreUtil extends MetaStoreUtil {
     List<IMetaStoreElement> elements = metaStore.getElements(PentahoDefaults.NAMESPACE, elementType.getId());
     for (IMetaStoreElement element : elements) {
       try {
-        DatabaseMeta databaseMeta = loadDatabaseMetaFromDatabaseElement(element);
+        DatabaseMeta databaseMeta = loadDatabaseMetaFromDatabaseElement(metaStore, element);
         databases.add(databaseMeta);
       } catch(Exception e) {
         throw new MetaStoreException("Unable to load database from element with name '"+element.getName()+"' and type '"+elementType.getName()+"'", e);
@@ -123,7 +122,7 @@ public class DatabaseMetaStoreUtil extends MetaStoreUtil {
     element.addChild(metaStore.newAttribute(MetaStoreConst.DB_ATTR_ID_PORT, databaseMeta.getDatabasePortNumberString()));
     element.addChild(metaStore.newAttribute(MetaStoreConst.DB_ATTR_ID_DATABASE_NAME, databaseMeta.getDatabaseName()));
     element.addChild(metaStore.newAttribute(MetaStoreConst.DB_ATTR_ID_USERNAME, databaseMeta.getUsername()));
-    element.addChild(metaStore.newAttribute(MetaStoreConst.DB_ATTR_ID_PASSWORD, Encr.encryptPasswordIfNotUsingVariables(databaseMeta.getPassword())));
+    element.addChild(metaStore.newAttribute(MetaStoreConst.DB_ATTR_ID_PASSWORD, metaStore.getTwoWayPasswordEncoder().encode(databaseMeta.getPassword())));
     element.addChild(metaStore.newAttribute(MetaStoreConst.DB_ATTR_ID_SERVERNAME, databaseMeta.getServername()));
     element.addChild(metaStore.newAttribute(MetaStoreConst.DB_ATTR_ID_DATA_TABLESPACE, databaseMeta.getDataTablespace()));
     element.addChild(metaStore.newAttribute(MetaStoreConst.DB_ATTR_ID_INDEX_TABLESPACE, databaseMeta.getIndexTablespace()));
@@ -160,12 +159,34 @@ public class DatabaseMetaStoreUtil extends MetaStoreUtil {
     return element;
   }
 
-  public static DatabaseMeta loadDatabaseMetaFromDatabaseElement(IMetaStoreElement element) throws KettlePluginException {
+  public static DatabaseMeta loadDatabaseMetaFromDatabaseElement(IMetaStore metaStore, IMetaStoreElement element) throws KettlePluginException {
     DatabaseMeta databaseMeta = new DatabaseMeta();
-
+    PluginRegistry pluginRegistry = PluginRegistry.getInstance();
+    
     // Load the appropriate database plugin (database interface)
     //
     String pluginId = getChildString(element, MetaStoreConst.DB_ATTR_ID_PLUGIN_ID);
+    String driverClassName = getChildString(element, MetaStoreConst.DB_ATTR_DRIVER_CLASS);
+    if (Const.isEmpty(pluginId) && Const.isEmpty(driverClassName)) {
+      throw new KettlePluginException("The attributes 'plugin_id' and 'driver_class' can't be both empty");
+    }
+    if (Const.isEmpty(pluginId)) {
+      // Determine pluginId using the plugin registry.
+      //
+      List<PluginInterface> plugins = pluginRegistry.getPlugins(DatabasePluginType.class);
+      for (PluginInterface plugin : plugins) {
+        DatabaseInterface databaseInterface = (DatabaseInterface) pluginRegistry.loadClass(plugin);
+        if (driverClassName.equalsIgnoreCase(databaseInterface.getDriverClass())) {
+          pluginId = plugin.getIds()[0];
+        }
+      }
+    }
+    if (Const.isEmpty(pluginId)) {
+      throw new KettlePluginException("The 'plugin_id' attribute could not be determined using 'driver_class' value '"+driverClassName+"'");
+    }
+    
+    // Look for the plugin
+    //
     PluginInterface plugin = PluginRegistry.getInstance().getPlugin(DatabasePluginType.class, pluginId);
     DatabaseInterface databaseInterface = (DatabaseInterface) PluginRegistry.getInstance().loadClass(plugin);
     databaseInterface.setPluginId(pluginId);
@@ -176,13 +197,16 @@ public class DatabaseMetaStoreUtil extends MetaStoreUtil {
     databaseMeta.setDescription(getChildString(element, MetaStoreConst.DB_ATTR_ID_DESCRIPTION));
 
     String accessTypeString = getChildString(element, MetaStoreConst.DB_ATTR_ID_ACCESS_TYPE);
+    if (Const.isEmpty(accessTypeString)) {
+      accessTypeString = DatabaseMeta.getAccessTypeDesc(DatabaseMeta.TYPE_ACCESS_NATIVE);
+    }
     databaseMeta.setAccessType(DatabaseMeta.getAccessType(accessTypeString));
 
     databaseMeta.setHostname(getChildString(element, MetaStoreConst.DB_ATTR_ID_HOSTNAME));
     databaseMeta.setDBPort(getChildString(element, MetaStoreConst.DB_ATTR_ID_PORT));
     databaseMeta.setDBName(getChildString(element, MetaStoreConst.DB_ATTR_ID_DATABASE_NAME));
     databaseMeta.setUsername(getChildString(element, MetaStoreConst.DB_ATTR_ID_USERNAME));
-    databaseMeta.setPassword(Encr.decryptPasswordOptionallyEncrypted(getChildString(element, MetaStoreConst.DB_ATTR_ID_PASSWORD)));
+    databaseMeta.setPassword(metaStore.getTwoWayPasswordEncoder().decode(getChildString(element, MetaStoreConst.DB_ATTR_ID_PASSWORD)));
     databaseMeta.setServername(getChildString(element, MetaStoreConst.DB_ATTR_ID_SERVERNAME));
     databaseMeta.setDataTablespace(getChildString(element, MetaStoreConst.DB_ATTR_ID_DATA_TABLESPACE));
     databaseMeta.setIndexTablespace(getChildString(element, MetaStoreConst.DB_ATTR_ID_INDEX_TABLESPACE));

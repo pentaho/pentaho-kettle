@@ -86,6 +86,7 @@ public class JobExecutionConfigurationDialog extends Dialog
     private CCombo wRemoteHost;
     private Label wlRemoteHost;
     private Button wPassExport;
+    private Button wExpandRemote;
 
     private TableView wArguments;
     private Label wlArguments;
@@ -229,7 +230,16 @@ public class JobExecutionConfigurationDialog extends Dialog
         fdPassExport.left  = new FormAttachment(33, margin);
         fdPassExport.top   = new FormAttachment(wRemoteHost, margin);
         wPassExport.setLayoutData(fdPassExport);
-        
+
+        wExpandRemote = new Button(gLocal, SWT.CHECK);
+        wExpandRemote.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.ExpandRemote.Label")); //$NON-NLS-1$
+        wExpandRemote.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.ExpandRemote.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        props.setLook(wExpandRemote);
+        FormData fdExpandRemote = new FormData();
+        fdExpandRemote.left  = new FormAttachment(33, margin);
+        fdExpandRemote.top   = new FormAttachment(wPassExport, margin);
+        wExpandRemote.setLayoutData(fdExpandRemote);
+
         /////////////////////////////////////////////////////////////////////////////////////////////////
         // Replay date, arguments & variables
         //
@@ -578,6 +588,7 @@ public class JobExecutionConfigurationDialog extends Dialog
         wClearLog.setSelection(configuration.isClearingLog());
         wRemoteHost.setText( configuration.getRemoteServer()==null ? "" : configuration.getRemoteServer().toString() );
         wPassExport.setSelection(configuration.isPassingExport());
+        wExpandRemote.setSelection(configuration.isExpandingRemoteJob());
         wLogLevel.select( DefaultLogLevel.getLogLevel().getLevel() );
         if (configuration.getReplayDate()!=null) wReplayDate.setText(simpleDateFormat.format(configuration.getReplayDate()));
         wGatherMetrics.setSelection(configuration.isGatheringMetrics());
@@ -614,6 +625,7 @@ public class JobExecutionConfigurationDialog extends Dialog
                 configuration.setRemoteServer(jobMeta.findSlaveServer(serverName));
             }
             configuration.setPassingExport(wPassExport.getSelection());
+            configuration.setExpandingRemoteJob(wExpandRemote.getSelection());
             
             // various settings
             //
