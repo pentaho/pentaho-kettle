@@ -3413,7 +3413,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
   }
 
   public void setControlStates() {
-	  if (getDisplay().isDisposed()) return;
+	  if (isDisposed() || getDisplay().isDisposed()) return;
 	  
       getDisplay().asyncExec(new Runnable() {
 

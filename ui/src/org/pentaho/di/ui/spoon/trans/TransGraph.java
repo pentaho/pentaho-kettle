@@ -3719,7 +3719,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
 
   public synchronized void setControlStates() {
-    if (getDisplay().isDisposed()) return;
+    if (isDisposed() || getDisplay().isDisposed()) return;
     if (((Control)toolbar.getManagedObject()).isDisposed()) return;
     
       getDisplay().asyncExec(new Runnable() {

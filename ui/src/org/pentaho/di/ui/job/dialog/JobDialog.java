@@ -1769,7 +1769,8 @@ public class JobDialog extends Dialog
 			} catch (DuplicateParamException e) {
 				// Ignore the duplicate parameter.
 			}
-		}		        
+		}		  
+		jobMeta.activateParameters();
         
         jobMeta.setBatchIdPassed( wBatchTrans.getSelection() );
         jobMeta.setSharedObjectsFile( wSharedObjectsFile.getText() );

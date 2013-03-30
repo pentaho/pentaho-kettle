@@ -2401,6 +2401,7 @@ public class TransDialog extends Dialog
 				// Ignore the duplicate parameter.
 			}
 		}
+		transMeta.activateParameters();
 
 		transMeta.setSizeRowset(Const.toInt(wSizeRowset.getText(), Const.ROWS_IN_ROWSET));
 		transMeta.setUsingUniqueConnections(wUniqueConnections.getSelection());
