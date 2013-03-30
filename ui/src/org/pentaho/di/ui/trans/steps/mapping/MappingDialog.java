@@ -62,7 +62,9 @@ import org.pentaho.di.core.SourceToTargetMapping;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.core.gui.SpoonInterface;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
@@ -70,6 +72,7 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
+import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
@@ -78,6 +81,8 @@ import org.pentaho.di.trans.steps.mapping.MappingIODefinition;
 import org.pentaho.di.trans.steps.mapping.MappingMeta;
 import org.pentaho.di.trans.steps.mapping.MappingParameters;
 import org.pentaho.di.trans.steps.mapping.MappingValueRename;
+import org.pentaho.di.trans.steps.mappinginput.MappingInputMeta;
+import org.pentaho.di.trans.steps.mappingoutput.MappingOutputMeta;
 import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -87,6 +92,7 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
 import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.trans.dialog.TransDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
@@ -119,7 +125,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
   // Edit the mapping transformation in Spoon
   //
 	private Button wEditTrans;
-
+  private Button wNewTrans;
+  
 	private CTabFolder wTabFolder;
 
 	private TransMeta mappingTransMeta = null;
@@ -483,20 +490,32 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
       }
     });
 		
-		wEditTrans = new Button(gTransGroup, SWT.PUSH | SWT.CENTER); // Browse
-		props.setLook(wEditTrans);
-		wEditTrans.setText(BaseMessages.getString(PKG, "MappingDialog.Edit.Button"));
-		wEditTrans.setToolTipText(BaseMessages.getString(PKG, "System.Tooltip.BrowseForFileOrDirAndAdd"));
-		FormData fdEditTrans = new FormData();
-		fdEditTrans.left = new FormAttachment(0, 0);
-		fdEditTrans.right = new FormAttachment(100, 0);
-		fdEditTrans.top = new FormAttachment(wByReference, 3 * margin);
-		wEditTrans.setLayoutData(fdEditTrans);
-		wEditTrans.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e)
-			{
-				editTrans();
-			}
-		});
+    wNewTrans = new Button(gTransGroup, SWT.PUSH | SWT.CENTER); // Browse
+    props.setLook(wNewTrans);
+    wNewTrans.setText(BaseMessages.getString(PKG, "MappingDialog.New.Button"));
+    FormData fdNewTrans = new FormData();
+    fdNewTrans.left = new FormAttachment(0, 0);
+    fdNewTrans.top = new FormAttachment(wByReference, 3 * margin);
+    wNewTrans.setLayoutData(fdNewTrans);
+    wNewTrans.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e)
+      {
+        newTransformation();
+      }
+    });
+
+    wEditTrans = new Button(gTransGroup, SWT.PUSH | SWT.CENTER); // Browse
+    props.setLook(wEditTrans);
+    wEditTrans.setText(BaseMessages.getString(PKG, "MappingDialog.Edit.Button"));
+    wEditTrans.setToolTipText(BaseMessages.getString(PKG, "System.Tooltip.BrowseForFileOrDirAndAdd"));
+    FormData fdEditTrans = new FormData();
+    fdEditTrans.left = new FormAttachment(wNewTrans, 2*margin);
+    fdEditTrans.top = new FormAttachment(wByReference, 3 * margin);
+    wEditTrans.setLayoutData(fdEditTrans);
+    wEditTrans.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e)
+      {
+        editTrans();
+      }
+    });
 
 		FormData fdTransGroup = new FormData();
 		fdTransGroup.left = new FormAttachment(0, 0);
@@ -807,8 +826,10 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 	}
 	
   public void setActive() {
+    boolean supportsReferences = repository!=null && repository.getRepositoryMeta().getRepositoryCapabilities().supportsReferences();
+
     radioByName.setEnabled(repository != null);
-    radioByReference.setEnabled(repository != null);
+    radioByReference.setEnabled(repository != null && supportsReferences);
     wFilename.setEnabled(radioFilename.getSelection());
     wbbFilename.setEnabled(radioFilename.getSelection());
     wTransname.setEnabled(repository != null && radioByName.getSelection());
@@ -817,8 +838,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
     
     wbTrans.setEnabled(repository != null && radioByName.getSelection());
 
-    wByReference.setEnabled(repository != null && radioByReference.getSelection());
-    wbByReference.setEnabled(repository != null && radioByReference.getSelection());
+    wByReference.setEnabled(repository != null && radioByReference.getSelection() && supportsReferences);
+    wbByReference.setEnabled(repository != null && radioByReference.getSelection() && supportsReferences);
   }
   
   protected void setRadioButtons() {
@@ -827,6 +848,116 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
     radioByReference.setSelection(specificationMethod==ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE);
     setActive();
   }
+  
+  /**
+   * Ask the user to fill in the details...
+   */
+  protected void newTransformation() {
+
+    // Get input fields for this step so we can put this metadata in the mapping
+    //
+    RowMetaInterface inFields = new RowMeta();
+    try {
+      inFields = transMeta.getPrevStepFields(stepname);
+    } catch(Exception e) {
+      // Just show the error but continue operations.
+      //
+      new ErrorDialog(shell, "Error", "Unable to get input fields from previous step", e);
+    }
+
+    
+    TransMeta newTransMeta = new TransMeta();
+    
+    // Pass some interesting settings from the parent transformations...
+    //
+    newTransMeta.setUsingUniqueConnections(transMeta.isUsingUniqueConnections());
+        
+    // Add MappingInput and MappingOutput steps
+    //
+    String INPUTSTEP_NAME = "Mapping Input";
+    MappingInputMeta inputMeta = new MappingInputMeta();
+    inputMeta.allocate(inFields.size());
+    for (int i=0;i<inFields.size();i++) {
+      ValueMetaInterface valueMeta = inFields.getValueMeta(i);
+      inputMeta.getFieldName()[i] = valueMeta.getName();
+      inputMeta.getFieldType()[i] = valueMeta.getType();
+      inputMeta.getFieldLength()[i] = valueMeta.getLength();
+      inputMeta.getFieldPrecision()[i] = valueMeta.getPrecision();
+    }
+    StepMeta inputStep = new StepMeta(INPUTSTEP_NAME, inputMeta);
+    inputStep.setLocation(50,  50);
+    inputStep.setDraw(true);
+    newTransMeta.addStep(inputStep);
+
+    String OUTPUTSTEP_NAME = "Mapping Output";
+    MappingOutputMeta outputMeta = new MappingOutputMeta();
+    outputMeta.allocate(0);
+    StepMeta outputStep = new StepMeta(OUTPUTSTEP_NAME, outputMeta);
+    outputStep.setLocation(500,  50);
+    outputStep.setDraw(true);
+    newTransMeta.addStep(outputStep);
+    newTransMeta.addTransHop(new TransHopMeta(inputStep, outputStep));
+    
+    TransDialog transDialog = new TransDialog(shell, SWT.NONE, newTransMeta, repository);
+    if (transDialog.open()!=null) {
+      Spoon spoon = Spoon.getInstance();
+      spoon.addTransGraph(newTransMeta);
+      boolean saved=false;
+      try {
+        if (repository != null) {
+          if (!Const.isEmpty(newTransMeta.getName())) {
+            wStepname.setText(newTransMeta.getName());
+          }
+          saved = spoon.saveToRepository(newTransMeta, false);
+          if (repository.getRepositoryMeta().getRepositoryCapabilities().supportsReferences()) {
+            specificationMethod=ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE;
+          } else {
+            specificationMethod=ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
+          }
+        } else {
+          saved=spoon.saveToFile(newTransMeta);
+          specificationMethod=ObjectLocationSpecificationMethod.FILENAME;
+        }
+      } catch (Exception e) {
+        new ErrorDialog(shell, "Error", "Error saving new transformation", e);
+      }
+      if (saved) {
+        setRadioButtons();
+        switch(specificationMethod) {
+          case FILENAME: 
+            wFilename.setText(Const.NVL(newTransMeta.getFilename(), ""));
+            break;
+          case REPOSITORY_BY_NAME:
+            wTransname.setText(Const.NVL(newTransMeta.getName(), ""));
+            wDirectory.setText(newTransMeta.getRepositoryDirectory().getPath());
+            break;
+          case REPOSITORY_BY_REFERENCE:
+            getByReferenceData(newTransMeta.getObjectId());
+            break;
+        }
+        
+        // Connect mapping input/output
+        //
+      }
+    }
+  }
+
+  private void getByReferenceData(ObjectId transObjectId) {
+    try {
+      if (repository==null) {
+        throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.NotConnectedToRepository.Message"));
+      }
+      RepositoryObject transInf = repository.getObjectInformation(transObjectId, RepositoryObjectType.JOB);
+      if (transInf != null) {
+        getByReferenceData(transInf);
+      }
+    } catch (KettleException e) {
+      new ErrorDialog(shell, 
+          BaseMessages.getString(PKG, "MappingDialog.Exception.UnableToReferenceObjectId.Title"), 
+          BaseMessages.getString(PKG, "MappingDialog.Exception.UnableToReferenceObjectId.Message"), e);
+    }
+  }
+
 
   private void getByReferenceData(RepositoryElementMetaInterface transInf) {
     String path = transInf.getRepositoryDirectory().getPath();
@@ -855,19 +986,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
     case REPOSITORY_BY_REFERENCE:
       referenceObjectId = mappingMeta.getTransObjectId();
       wByReference.setText("");
-      try {
-        if (repository==null) {
-          throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.NotConnectedToRepository.Message"));
-        }
-        RepositoryObject transInf = repository.getObjectInformation(mappingMeta.getTransObjectId(), RepositoryObjectType.TRANSFORMATION);
-        if (transInf != null) {
-          getByReferenceData(transInf);
-        }
-      } catch (KettleException e) {
-        new ErrorDialog(shell, 
-            BaseMessages.getString(PKG, "MappingDialog.Exception.UnableToReferenceObjectId.Title"), 
-            BaseMessages.getString(PKG, "MappingDialog.Exception.UnableToReferenceObjectId.Message"), e);
-      }
+      getByReferenceData(referenceObjectId);
       break;   
     }
     setRadioButtons();

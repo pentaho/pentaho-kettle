@@ -854,8 +854,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     wGetParameters.setLayoutData(fdGetParameters);
     wGetParameters.setSelection(transExecutorMeta.getParameters().isInheritingAllVariables());
     wGetParameters.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { 
-      getParametersFromTrans(); 
-      } });
+      getParametersFromTrans(null); // null = force reload of data on disk 
+    } });
 
 		// Add a checkbox: inherit all variables...
 		//
@@ -910,16 +910,19 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
 		wParametersTab.setControl(wParametersComposite);
 	}
 	
-	 protected void getParametersFromTrans() {
+	 protected void getParametersFromTrans(TransMeta inputTransMeta) {
     try {
       // Load the job in executorTransMeta
       //
-      loadTrans();
+      if (inputTransMeta==null) {
+        loadTrans();
+        inputTransMeta = executorTransMeta;
+      }
       
-      String[] parameters = executorTransMeta.listParameters();
+      String[] parameters = inputTransMeta.listParameters();
       for (int i=0;i<parameters.length;i++) {
         String name = parameters[i];
-        String desc = executorTransMeta.getParameterDescription(name);
+        String desc = inputTransMeta.getParameterDescription(name);
         
         TableItem item = new TableItem(wTransExecutorParameters.table, SWT.NONE);
         item.setText(1, Const.NVL(name, ""));
@@ -1646,6 +1649,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
    */
   protected void newTransformation() {
     TransMeta newTransMeta = new TransMeta();
+    
     TransDialog transDialog = new TransDialog(shell, SWT.NONE, newTransMeta, repository);
     if (transDialog.open()!=null) {
       Spoon spoon = Spoon.getInstance();
@@ -1683,9 +1687,11 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
             getByReferenceData(newTransMeta.getObjectId());
             break;
         }
+        
+        // Grab parameters
+        //
+        getParametersFromTrans(newTransMeta);
       }
-      
-      
     }
   }
 
