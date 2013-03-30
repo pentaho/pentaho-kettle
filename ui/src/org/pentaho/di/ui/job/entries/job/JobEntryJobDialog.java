@@ -975,7 +975,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
     wbGetParams.setLayoutData(fdGetParams);
     wbGetParams.addSelectionListener(new SelectionAdapter(){ @Override
     public void widgetSelected(SelectionEvent arg0) {
-      getParameters();
+      getParameters(null); // null: reload file from specification
     } });
 
     
@@ -1157,17 +1157,20 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
             getByReferenceData(newJobMeta.getObjectId());
             break;
         }
+        getParameters(newJobMeta);
       }
     }
   }
 
 
-  protected void getParameters() {
+  protected void getParameters(JobMeta inputJobMeta) {
     try {
-      JobEntryJob jej = new JobEntryJob();
-      getInfo(jej);
-      JobMeta jm = jej.getJobMeta(rep, metaStore, jobMeta);
-      String[] parameters = jm.listParameters();
+      if (inputJobMeta==null) {
+        JobEntryJob jej = new JobEntryJob();
+        getInfo(jej);
+        inputJobMeta = jej.getJobMeta(rep, metaStore, jobMeta);
+      }
+      String[] parameters = inputJobMeta.listParameters();
       
       String[] existing = wParameters.getItems(1);
       

@@ -993,7 +993,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
     wbGetParams.setLayoutData(fdGetParams);
     wbGetParams.addSelectionListener(new SelectionAdapter(){ @Override
     public void widgetSelected(SelectionEvent arg0) {
-      getParameters();
+      getParameters(null); // force reload from file specification
     } });
     
     final int parameterRows = jobEntry.parameters != null ? jobEntry.parameters.length : 0;
@@ -1177,18 +1177,21 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
             getByReferenceData(newTransMeta.getObjectId());
             break;
         }
+        getParameters(newTransMeta);
       }
       
       
     }
   }
 
-  protected void getParameters() {
+  protected void getParameters(TransMeta inputTransMeta) {
     try {
-      JobEntryTrans jet = new JobEntryTrans();
-      getInfo(jet);
-      TransMeta transMeta = jet.getTransMeta(rep, jobMeta);
-      String[] parameters = transMeta.listParameters();
+      if (inputTransMeta==null) {
+        JobEntryTrans jet = new JobEntryTrans();
+        getInfo(jet);
+        inputTransMeta = jet.getTransMeta(rep, jobMeta);
+      }
+      String[] parameters = inputTransMeta.listParameters();
       
       String[] existing = wParameters.getItems(1);
       

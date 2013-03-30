@@ -874,8 +874,8 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     wGetParameters.setLayoutData(fdGetParameters);
     wGetParameters.setSelection(jobExecutorMeta.getParameters().isInheritingAllVariables());
     wGetParameters.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { 
-      getParametersFromJob(); 
-      } });
+      getParametersFromJob(null); // null : reload file 
+    } });
 
 		// Add a checkbox: inherit all variables...
 		//
@@ -930,16 +930,19 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
 		wParametersTab.setControl(wParametersComposite);
 	}
 	
-	 protected void getParametersFromJob() {
+	 protected void getParametersFromJob(JobMeta inputJobMeta) {
     try {
       // Load the job in executorJobMeta
       //
-      loadJob();
+      if (inputJobMeta==null) {
+        loadJob();
+        inputJobMeta = executorJobMeta;
+      }
       
-      String[] parameters = executorJobMeta.listParameters();
+      String[] parameters = inputJobMeta.listParameters();
       for (int i=0;i<parameters.length;i++) {
         String name = parameters[i];
-        String desc = executorJobMeta.getParameterDescription(name);
+        String desc = inputJobMeta.getParameterDescription(name);
         
         TableItem item = new TableItem(wJobExecutorParameters.table, SWT.NONE);
         item.setText(1, Const.NVL(name, ""));
@@ -1700,6 +1703,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
             getByReferenceData(newJobMeta.getObjectId());
             break;
         }
+        getParametersFromJob(newJobMeta);
       }
     }
   }
