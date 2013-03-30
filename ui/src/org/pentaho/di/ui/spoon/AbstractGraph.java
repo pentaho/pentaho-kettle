@@ -109,6 +109,8 @@ public abstract class AbstractGraph extends Composite {
   }
   
   public void redraw() {
+    if (isDisposed() || canvas.isDisposed()) return;
+    
     canvas.redraw();
     setZoomLabel();
   }

@@ -146,6 +146,7 @@ import org.pentaho.di.trans.step.errorhandling.Stream;
 import org.pentaho.di.trans.step.errorhandling.StreamIcon;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
+import org.pentaho.di.trans.steps.metainject.MetaInjectMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
@@ -3999,9 +4000,22 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   public void openMapping(StepMeta stepMeta, int index) {
 	  try {
 	    Object referencedMeta = null;
-	    StepMetaInterface meta = stepMeta.getStepMetaInterface();
-	    if (!Const.isEmpty(meta.getReferencedObjectDescriptions())) {
-        referencedMeta = meta.loadReferencedObject(index, spoon.rep, spoon.metaStore, transMeta);
+	    Trans subTrans = getActiveSubtransformation(this, stepMeta);
+	    if (subTrans!=null) {
+	      TransMeta subTransMeta = subTrans.getTransMeta(); 
+	      referencedMeta = subTransMeta;
+	      if (stepMeta.getStepMetaInterface() instanceof MetaInjectMeta) {
+	        // Make sure we don't accidently overwrite this transformation so we'll remove the filename and objectId
+	        // Modify the name so the users sees it's a result
+	        subTransMeta.setFilename(null);
+	        subTransMeta.setObjectId(null);
+	        subTransMeta.setName(subTransMeta.getName()+" ("+BaseMessages.getString(PKG, "TransGraph.AfterInjection")+")");
+	      }
+	    } else {
+  	    StepMetaInterface meta = stepMeta.getStepMetaInterface();
+  	    if (!Const.isEmpty(meta.getReferencedObjectDescriptions())) {
+          referencedMeta = meta.loadReferencedObject(index, spoon.rep, spoon.metaStore, transMeta);
+  	    }
 	    }
 	    if (referencedMeta==null) return;
 	    
@@ -4041,6 +4055,19 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 		  }
 		  transGraph.setControlStates();
 	  }
+  }
+  
+  /**
+   * Finds the last active transformation in the running job to the opened transMeta
+   * 
+   * @param transGraph
+   * @param jobEntryCopy
+   */
+  private Trans getActiveSubtransformation(TransGraph transGraph, StepMeta stepMeta) {
+    if (trans!=null && transGraph!=null) {
+      return trans.getActiveSubtransformations().get(stepMeta.getName());
+    }
+    return null;
   }
   
   /**

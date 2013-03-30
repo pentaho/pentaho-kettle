@@ -85,6 +85,7 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
 import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.trans.dialog.TransDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
@@ -119,6 +120,7 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
   //
   private Button                            wValidateTrans;
   private Button                            wEditTrans;
+  private Button                            wNewTrans;
 
   private TransMeta                         injectTransMeta = null;
 
@@ -383,30 +385,26 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
         setRadioButtons();
       }
     });
-
-    wValidateTrans = new Button(gTransGroup, SWT.PUSH | SWT.CENTER); // Browse
-    props.setLook(wValidateTrans);
-    wValidateTrans.setText(BaseMessages.getString(PKG, "MetaInjectDialog.Validate.Button"));
-    wValidateTrans.setToolTipText(BaseMessages.getString(PKG, "MetaInjectDialog.Validate.Tooltip"));
-    FormData fdValidateTrans = new FormData();
-    fdValidateTrans.left = new FormAttachment(0, 0);
-    fdValidateTrans.right = new FormAttachment(50, 0);
-    fdValidateTrans.top = new FormAttachment(wByReference, 3 * margin);
-    wValidateTrans.setLayoutData(fdValidateTrans);
-    wValidateTrans.addSelectionListener(new SelectionAdapter() {
+    
+    wNewTrans = new Button(gTransGroup, SWT.PUSH | SWT.CENTER); // Browse
+    props.setLook(wNewTrans);
+    wNewTrans.setText(BaseMessages.getString(PKG, "MetaInjectDialog.New.Button"));
+    FormData fdNewTrans = new FormData();
+    fdNewTrans.left = new FormAttachment(0, 0);
+    fdNewTrans.top = new FormAttachment(wByReference, 3 * margin);
+    wNewTrans.setLayoutData(fdNewTrans);
+    wNewTrans.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
-        validateTrans();
+        newTransformation();
       }
     });
 
-    
     wEditTrans = new Button(gTransGroup, SWT.PUSH | SWT.CENTER); // Browse
     props.setLook(wEditTrans);
     wEditTrans.setText(BaseMessages.getString(PKG, "MetaInjectDialog.Edit.Button"));
     wEditTrans.setToolTipText(BaseMessages.getString(PKG, "System.Tooltip.BrowseForFileOrDirAndAdd"));
     FormData fdEditTrans = new FormData();
-    fdEditTrans.left = new FormAttachment(wValidateTrans, margin);
-    fdEditTrans.right = new FormAttachment(100, 0);
+    fdEditTrans.left = new FormAttachment(wNewTrans, 2*margin);
     fdEditTrans.top = new FormAttachment(wByReference, 3 * margin);
     wEditTrans.setLayoutData(fdEditTrans);
     wEditTrans.addSelectionListener(new SelectionAdapter() {
@@ -415,6 +413,20 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
       }
     });
 
+    wValidateTrans = new Button(gTransGroup, SWT.PUSH | SWT.CENTER); // Browse
+    props.setLook(wValidateTrans);
+    wValidateTrans.setText(BaseMessages.getString(PKG, "MetaInjectDialog.Validate.Button"));
+    wValidateTrans.setToolTipText(BaseMessages.getString(PKG, "MetaInjectDialog.Validate.Tooltip"));
+    FormData fdValidateTrans = new FormData();
+    fdValidateTrans.left = new FormAttachment(wEditTrans, 2*margin);
+    fdValidateTrans.top = new FormAttachment(wByReference, 3 * margin);
+    wValidateTrans.setLayoutData(fdValidateTrans);
+    wValidateTrans.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent e) {
+        validateTrans();
+      }
+    });
+    
     FormData fdTransGroup = new FormData();
     fdTransGroup.left = new FormAttachment(0, 0);
     fdTransGroup.top = new FormAttachment(wStepname, 2 * margin);
@@ -667,8 +679,10 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
   }
 
   public void setActive() {
+    boolean supportsReferences = repository!=null && repository.getRepositoryMeta().getRepositoryCapabilities().supportsReferences();
+
     radioByName.setEnabled(repository != null);
-    radioByReference.setEnabled(repository != null);
+    radioByReference.setEnabled(repository != null && supportsReferences);
     wFilename.setEnabled(radioFilename.getSelection());
     wbbFilename.setEnabled(radioFilename.getSelection());
     wTransname.setEnabled(repository != null && radioByName.getSelection());
@@ -677,8 +691,8 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
 
     wbTrans.setEnabled(repository != null && radioByName.getSelection());
 
-    wByReference.setEnabled(repository != null && radioByReference.getSelection());
-    wbByReference.setEnabled(repository != null && radioByReference.getSelection());
+    wByReference.setEnabled(repository != null && radioByReference.getSelection() && supportsReferences);
+    wbByReference.setEnabled(repository != null && radioByReference.getSelection() && supportsReferences);
   }
 
   protected void setRadioButtons() {
@@ -971,5 +985,73 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     metaInjectMeta.setChanged(true);
 
     dispose();
+  }
+  
+  /**
+   * Ask the user to fill in the details...
+   */
+  protected void newTransformation() {
+
+    TransMeta newTransMeta = new TransMeta();
+    
+    // Pass some interesting settings from the parent transformations...
+    //
+    newTransMeta.setUsingUniqueConnections(transMeta.isUsingUniqueConnections());
+    
+    TransDialog transDialog = new TransDialog(shell, SWT.NONE, newTransMeta, repository);
+    if (transDialog.open()!=null) {
+      Spoon spoon = Spoon.getInstance();
+      spoon.addTransGraph(newTransMeta);
+      boolean saved=false;
+      try {
+        if (repository != null) {
+          if (!Const.isEmpty(newTransMeta.getName())) {
+            wStepname.setText(newTransMeta.getName());
+          }
+          saved = spoon.saveToRepository(newTransMeta, false);
+          if (repository.getRepositoryMeta().getRepositoryCapabilities().supportsReferences()) {
+            specificationMethod=ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE;
+          } else {
+            specificationMethod=ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
+          }
+        } else {
+          saved=spoon.saveToFile(newTransMeta);
+          specificationMethod=ObjectLocationSpecificationMethod.FILENAME;
+        }
+      } catch (Exception e) {
+        new ErrorDialog(shell, "Error", "Error saving new transformation", e);
+      }
+      if (saved) {
+        setRadioButtons();
+        switch(specificationMethod) {
+          case FILENAME: 
+            wFilename.setText(Const.NVL(newTransMeta.getFilename(), ""));
+            break;
+          case REPOSITORY_BY_NAME:
+            wTransname.setText(Const.NVL(newTransMeta.getName(), ""));
+            wDirectory.setText(newTransMeta.getRepositoryDirectory().getPath());
+            break;
+          case REPOSITORY_BY_REFERENCE:
+            getByReferenceData(newTransMeta.getObjectId());
+            break;
+        }
+      }
+    }
+  }
+
+  private void getByReferenceData(ObjectId transObjectId) {
+    try {
+      if (repository==null) {
+        throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.NotConnectedToRepository.Message"));
+      }
+      RepositoryObject transInf = repository.getObjectInformation(transObjectId, RepositoryObjectType.JOB);
+      if (transInf != null) {
+        getByReferenceData(transInf);
+      }
+    } catch (KettleException e) {
+      new ErrorDialog(shell, 
+          BaseMessages.getString(PKG, "MappingDialog.Exception.UnableToReferenceObjectId.Title"), 
+          BaseMessages.getString(PKG, "MappingDialog.Exception.UnableToReferenceObjectId.Message"), e);
+    }
   }
 }

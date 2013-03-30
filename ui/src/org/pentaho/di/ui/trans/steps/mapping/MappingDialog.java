@@ -935,9 +935,6 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
             getByReferenceData(newTransMeta.getObjectId());
             break;
         }
-        
-        // Connect mapping input/output
-        //
       }
     }
   }

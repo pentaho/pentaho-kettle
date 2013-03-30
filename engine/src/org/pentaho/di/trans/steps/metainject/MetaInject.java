@@ -237,6 +237,11 @@ public class MetaInject extends BaseStep implements StepInterface {
       });
       injectTrans.prepareExecution(null);
       
+      // Finally, add the mapping transformation to the active sub-transformations
+      // map in the parent transformation
+      //
+      getTrans().getActiveSubtransformations().put(getStepname(), injectTrans);
+      
       if (!Const.isEmpty(meta.getSourceStepName())) {
         StepInterface stepInterface = injectTrans.getStepInterface(meta.getSourceStepName(), 0);
         if (stepInterface==null) {

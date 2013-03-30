@@ -49,6 +49,9 @@ import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.core.gui.SpoonInterface;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
@@ -56,10 +59,13 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
+import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.steps.mappinginput.MappingInputMeta;
+import org.pentaho.di.trans.steps.mappingoutput.MappingOutputMeta;
 import org.pentaho.di.trans.steps.singlethreader.SingleThreaderMeta;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -70,6 +76,7 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
 import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.trans.dialog.TransDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
@@ -102,6 +109,7 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
   // Edit the mapping transformation in Spoon
   //
 	private Button wEditTrans;
+  private Button wNewTrans;
 
 	
 	private LabelTextVar wBatchSize;
@@ -362,20 +370,33 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
       }
     });
 		
-		wEditTrans = new Button(gTransGroup, SWT.PUSH | SWT.CENTER); // Browse
-		props.setLook(wEditTrans);
-		wEditTrans.setText(BaseMessages.getString(PKG, "SingleThreaderDialog.Edit.Button"));
-		wEditTrans.setToolTipText(BaseMessages.getString(PKG, "System.Tooltip.BrowseForFileOrDirAndAdd"));
-		FormData fdEditTrans = new FormData();
-		fdEditTrans.left = new FormAttachment(0, 0);
-		fdEditTrans.right = new FormAttachment(100, 0);
-		fdEditTrans.top = new FormAttachment(wByReference, 3 * margin);
-		wEditTrans.setLayoutData(fdEditTrans);
-		wEditTrans.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e)
-			{
-				editTrans();
-			}
-		});
+    wNewTrans = new Button(gTransGroup, SWT.PUSH | SWT.CENTER); // Browse
+    props.setLook(wNewTrans);
+    wNewTrans.setText(BaseMessages.getString(PKG, "SingleThreaderDialog.New.Button"));
+    FormData fdNewTrans = new FormData();
+    fdNewTrans.left = new FormAttachment(0, 0);
+    fdNewTrans.top = new FormAttachment(wByReference, 3 * margin);
+    wNewTrans.setLayoutData(fdNewTrans);
+    wNewTrans.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e)
+      {
+        newTransformation();
+      }
+    });
+
+    wEditTrans = new Button(gTransGroup, SWT.PUSH | SWT.CENTER); // Browse
+    props.setLook(wEditTrans);
+    wEditTrans.setText(BaseMessages.getString(PKG, "SingleThreaderDialog.Edit.Button"));
+    wEditTrans.setToolTipText(BaseMessages.getString(PKG, "System.Tooltip.BrowseForFileOrDirAndAdd"));
+    FormData fdEditTrans = new FormData();
+    fdEditTrans.left = new FormAttachment(wNewTrans, 2*margin);
+    fdEditTrans.top = new FormAttachment(wByReference, 3 * margin);
+    wEditTrans.setLayoutData(fdEditTrans);
+    wEditTrans.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e)
+      {
+        editTrans();
+      }
+    });
+
 
 		FormData fdTransGroup = new FormData();
 		fdTransGroup.left = new FormAttachment(0, 0);
@@ -524,7 +545,7 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
     wbGetParams.setLayoutData(fdGetParams);
     wbGetParams.addSelectionListener(new SelectionAdapter(){ @Override
     public void widgetSelected(SelectionEvent arg0) {
-      getParameters();
+      getParameters(null); // null: force reload of file from specification
     } });
     
     final int parameterRows = singleThreaderMeta.getParameters()!=null ? singleThreaderMeta.getParameters().length : 0;
@@ -809,19 +830,7 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
     case REPOSITORY_BY_REFERENCE:
       referenceObjectId = singleThreaderMeta.getTransObjectId();
       wByReference.setText("");
-      try {
-        if (repository==null) {
-          throw new KettleException(BaseMessages.getString(PKG, "SingleThreaderDialog.Exception.NotConnectedToRepository.Message"));
-        }
-        RepositoryObject transInf = repository.getObjectInformation(singleThreaderMeta.getTransObjectId(), RepositoryObjectType.TRANSFORMATION);
-        if (transInf != null) {
-          getByReferenceData(transInf);
-        }
-      } catch (KettleException e) {
-        new ErrorDialog(shell, 
-            BaseMessages.getString(PKG, "SingleThreaderDialog.Exception.UnableToReferenceObjectId.Title"), 
-            BaseMessages.getString(PKG, "SingleThreaderDialog.Exception.UnableToReferenceObjectId.Message"), e);
-      }
+      getByReferenceData(referenceObjectId);
       break;   
     }
     setRadioButtons();
@@ -854,6 +863,22 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
 		  // Skip the error, it becomes annoying otherwise
 		}
 	}
+
+  private void getByReferenceData(ObjectId referenceObjectId) {
+    try {
+      if (repository==null) {
+        throw new KettleException(BaseMessages.getString(PKG, "SingleThreaderDialog.Exception.NotConnectedToRepository.Message"));
+      }
+      RepositoryObject transInf = repository.getObjectInformation(referenceObjectId, RepositoryObjectType.TRANSFORMATION);
+      if (transInf != null) {
+        getByReferenceData(transInf);
+      }
+    } catch (KettleException e) {
+      new ErrorDialog(shell, 
+          BaseMessages.getString(PKG, "SingleThreaderDialog.Exception.UnableToReferenceObjectId.Title"), 
+          BaseMessages.getString(PKG, "SingleThreaderDialog.Exception.UnableToReferenceObjectId.Message"), e);
+    }
+  }
 
   public static String getInjectorStep(TransMeta mappingTransMeta) {
     for (StepMeta stepMeta : mappingTransMeta.getSteps()) {
@@ -946,11 +971,13 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
 		dispose();
 	}
 
-  protected void getParameters() {
+  protected void getParameters(TransMeta mappingTransMeta) {
     try {
-      SingleThreaderMeta jet = new SingleThreaderMeta();
-      getInfo(jet);
-      TransMeta mappingTransMeta = SingleThreaderMeta.loadSingleThreadedTransMeta(jet, repository, transMeta);
+      if (mappingTransMeta==null) {
+        SingleThreaderMeta jet = new SingleThreaderMeta();
+        getInfo(jet);
+        mappingTransMeta = SingleThreaderMeta.loadSingleThreadedTransMeta(jet, repository, transMeta);
+      }
       String[] parameters = mappingTransMeta.listParameters();
       
       String[] existing = wParameters.getItems(1);
@@ -970,6 +997,103 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
           BaseMessages.getString(PKG, "SingleThreaderDialog.Exception.UnableToLoadTransformation.Message"), e);
     }
     
+  }
+
+  /**
+   * Ask the user to fill in the details...
+   */
+  protected void newTransformation() {
+
+    // Get input fields for this step so we can put this metadata in the mapping
+    //
+    RowMetaInterface inFields = new RowMeta();
+    try {
+      inFields = transMeta.getPrevStepFields(stepname);
+    } catch(Exception e) {
+      // Just show the error but continue operations.
+      //
+      new ErrorDialog(shell, "Error", "Unable to get input fields from previous step", e);
+    }
+    
+    TransMeta newTransMeta = new TransMeta();
+    
+    // Pass some interesting settings from the parent transformations...
+    //
+    newTransMeta.setUsingUniqueConnections(transMeta.isUsingUniqueConnections());
+        
+    // Add MappingInput and MappingOutput steps
+    //
+    String INPUTSTEP_NAME = "Mapping Input";
+    MappingInputMeta inputMeta = new MappingInputMeta();
+    inputMeta.allocate(inFields.size());
+    for (int i=0;i<inFields.size();i++) {
+      ValueMetaInterface valueMeta = inFields.getValueMeta(i);
+      inputMeta.getFieldName()[i] = valueMeta.getName();
+      inputMeta.getFieldType()[i] = valueMeta.getType();
+      inputMeta.getFieldLength()[i] = valueMeta.getLength();
+      inputMeta.getFieldPrecision()[i] = valueMeta.getPrecision();
+    }
+    StepMeta inputStep = new StepMeta(INPUTSTEP_NAME, inputMeta);
+    inputStep.setLocation(50,  50);
+    inputStep.setDraw(true);
+    newTransMeta.addStep(inputStep);
+
+    String OUTPUTSTEP_NAME = "Mapping Output";
+    MappingOutputMeta outputMeta = new MappingOutputMeta();
+    outputMeta.allocate(0);
+    StepMeta outputStep = new StepMeta(OUTPUTSTEP_NAME, outputMeta);
+    outputStep.setLocation(500,  50);
+    outputStep.setDraw(true);
+    newTransMeta.addStep(outputStep);
+    newTransMeta.addTransHop(new TransHopMeta(inputStep, outputStep));
+    
+    TransDialog transDialog = new TransDialog(shell, SWT.NONE, newTransMeta, repository);
+    if (transDialog.open()!=null) {
+      Spoon spoon = Spoon.getInstance();
+      spoon.addTransGraph(newTransMeta);
+      boolean saved=false;
+      try {
+        if (repository != null) {
+          if (!Const.isEmpty(newTransMeta.getName())) {
+            wStepname.setText(newTransMeta.getName());
+          }
+          saved = spoon.saveToRepository(newTransMeta, false);
+          if (repository.getRepositoryMeta().getRepositoryCapabilities().supportsReferences()) {
+            specificationMethod=ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE;
+          } else {
+            specificationMethod=ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
+          }
+        } else {
+          saved=spoon.saveToFile(newTransMeta);
+          specificationMethod=ObjectLocationSpecificationMethod.FILENAME;
+        }
+      } catch (Exception e) {
+        new ErrorDialog(shell, "Error", "Error saving new transformation", e);
+      }
+      if (saved) {
+        setRadioButtons();
+        switch(specificationMethod) {
+          case FILENAME: 
+            wFilename.setText(Const.NVL(newTransMeta.getFilename(), ""));
+            break;
+          case REPOSITORY_BY_NAME:
+            wTransname.setText(Const.NVL(newTransMeta.getName(), ""));
+            wDirectory.setText(newTransMeta.getRepositoryDirectory().getPath());
+            break;
+          case REPOSITORY_BY_REFERENCE:
+            getByReferenceData(newTransMeta.getObjectId());
+            break;
+        }
+        
+        getParameters(newTransMeta);
+        
+        // Connect mapping input/output
+        //
+        wInjectStep.setText(INPUTSTEP_NAME);
+        wRetrieveStep.setText(OUTPUTSTEP_NAME);
+        
+      }
+    }
   }
 
 }
