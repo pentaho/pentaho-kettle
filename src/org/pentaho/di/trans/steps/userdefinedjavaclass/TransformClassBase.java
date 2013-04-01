@@ -260,7 +260,13 @@ public abstract class TransformClassBase
 
     public Object[] getRow() throws KettleException
     {
-        return parent.getRowImpl();
+        Object[] row = parent.getRowImpl();
+        
+        // Update data.inputRowMeta and data.outputRowMeta
+        data.inputRowMeta = parent.getInputRowMeta();
+        data.outputRowMeta = getTransMeta().getThisStepFields(getStepMeta(), null, data.inputRowMeta.clone());
+        
+        return row;
     }
 
     public Object[] getRowFrom(RowSet rowSet) throws KettleStepException
