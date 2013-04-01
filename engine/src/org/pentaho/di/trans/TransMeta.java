@@ -2917,7 +2917,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
           
           // Add the shared objects to the store for a unified view over all shared metadata
           //
-          store.addMetaStore(new SharedObjectsMetaStore(sharedObjects));
+          SharedObjectsMetaStore sharedObjectsMetaStore = new SharedObjectsMetaStore(sharedObjects);
+          sharedObjectsMetaStore.setName("Pentaho Shared Objects Metastore");
+          store.addMetaStore(sharedObjectsMetaStore);
           
         } catch (Exception e) {
           log.logError(BaseMessages.getString(PKG, "TransMeta.ErrorReadingSharedObjects.Message", e.toString()));
