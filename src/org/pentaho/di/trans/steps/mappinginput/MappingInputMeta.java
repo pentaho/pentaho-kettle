@@ -270,13 +270,15 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface
     			
     			// First rename any fields...
     			if (valueRenames != null) {
-                    for (MappingValueRename valueRename : valueRenames) {
-                    	ValueMetaInterface valueMeta = inputRowMeta.searchValueMeta(valueRename.getSourceValueName());
-                    	if (valueMeta==null) {
-                    		throw new KettleStepException(BaseMessages.getString(PKG, "MappingInput.Exception.UnableToFindMappedValue", valueRename.getSourceValueName()));
-                    	}
-                    	valueMeta.setName(valueRename.getTargetValueName());
-                    }
+              for (MappingValueRename valueRename : valueRenames) {
+                // If inputRowMeta != null, then the parent has set it, after already doing the rename. Thus search the input meta
+                // for the target name, not the source name
+                ValueMetaInterface valueMeta = inputRowMeta.searchValueMeta(valueRename.getTargetValueName());
+              	if (valueMeta==null) {
+              		throw new KettleStepException(BaseMessages.getString(PKG, "MappingInput.Exception.UnableToFindMappedValue", valueRename.getSourceValueName()));
+              	}
+              	valueMeta.setName(valueRename.getTargetValueName());
+              }
     			}
     			
     			// Select the specified fields from the input, re-order everything and put the other fields at the back, sorted...
