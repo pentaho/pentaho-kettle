@@ -93,25 +93,44 @@ public class CentralLogStore {
 
   }
   
+  /**
+   * Initialize the central log store with optional limitation to the size and redirect of stdout and stderr
+   * 
+   * @param maxSize the maximum size
+   * @param maxLogTimeoutMinutes the maximum time that a log line times out in hours
+   * @param redirectStdOut a boolean indicating whether to redirect stdout to the logging framework
+   * @param redirectStdErr a boolean indicating whether to redirect stderr to the logging framework
+   */
+  public static void init(int maxSize, int maxLogTimeoutMinutes, boolean redirectStdOut, boolean redirectStdErr) {
+    if (maxSize>0 || maxLogTimeoutMinutes>0) {
+      init0(maxSize, maxLogTimeoutMinutes, redirectStdOut, redirectStdErr);
+    } else {
+      init(redirectStdOut, redirectStdErr);
+    }
+  }
+  
 	/**
 	 * Initialize the central log store with optional limitation to the size
 	 * 
 	 * @param maxSize the maximum size
 	 * @param maxLogTimeoutHours The maximum time that a log line times out in hours.
 	 */
-	public static void init(int maxSize, int maxLogTimeoutMinutes) {
-		if (maxSize>0 || maxLogTimeoutMinutes>0) {
-		  init0(maxSize, maxLogTimeoutMinutes, true, true);
-		} else {
-			init();
-		}
-	}
+  public static void init(int maxSize, int maxLogTimeoutMinutes) {
+    init(maxSize, maxLogTimeoutMinutes, EnvUtil.getSystemProperty(Const.KETTLE_REDIRECT_STDOUT, "Y").equalsIgnoreCase("Y"), 
+        EnvUtil.getSystemProperty(Const.KETTLE_REDIRECT_STDERR, "Y").equalsIgnoreCase("Y"));
+  }
 	
 	public static void init() {
 	  init(EnvUtil.getSystemProperty(Const.KETTLE_REDIRECT_STDOUT, "Y").equalsIgnoreCase("Y"), 
 	      EnvUtil.getSystemProperty(Const.KETTLE_REDIRECT_STDERR, "Y").equalsIgnoreCase("Y"));
 	}
 	
+	/**
+   * Initialize the central log store with arguments specifying whether to redirect of stdout and stderr
+   * 
+   * @param redirectStdOut a boolean indicating whether to redirect stdout to the logging framework
+   * @param redirectStdErr a boolean indicating whether to redirect stderr to the logging framework
+   */
 	public static void init(boolean redirectStdOut, boolean redirectStdErr) {
 		int maxSize = Const.toInt(EnvUtil.getSystemProperty(Const.KETTLE_MAX_LOG_SIZE_IN_LINES), 5000); 
 		int maxLogTimeoutMinutes = Const.toInt(EnvUtil.getSystemProperty(Const.KETTLE_MAX_LOG_TIMEOUT_IN_MINUTES), 1440); 
