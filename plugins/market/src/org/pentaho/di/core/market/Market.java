@@ -223,6 +223,19 @@ public class Market implements SpoonPluginInterface {
    */
   public static void install(final MarketEntry marketEntry) throws KettleException {
     String parentFolderName = buildPluginsFolderPath(marketEntry);
+    
+    // Until plugin dependencies are implemented, check that the pentaho-big-data-plugin directory exists
+    // before installing anything of type HadoopShim
+    if(marketEntry.getType().equals(MarketEntryType.HadoopShim)) {
+      
+      File bdPluginFolder = new File(parentFolderName).getParentFile();
+      if(bdPluginFolder == null || !bdPluginFolder.exists()) {
+        throw new KettleException(
+            BaseMessages.getString(PKG, "Marketplaces.Dialog.PluginNotInstalled.message","Pentaho Big Data Plugin")
+            + ". You must install the Pentaho Big Data plugin before you can install a Hadoop Shim");
+      }
+    }
+    
     File pluginFolder = new File(parentFolderName + File.separator + marketEntry.getId());
     LogChannel.GENERAL.logBasic("Installing plugin in folder: "+pluginFolder.getAbsolutePath());
     if (pluginFolder.exists()) {
@@ -572,7 +585,13 @@ public class Market implements SpoonPluginInterface {
     case Repository:
       subfolder = "repositories";
       break;
-
+    case HadoopShim:
+      subfolder = "pentaho-big-data-plugin"+File.separator+"hadoop-configurations";
+      break;
+    case General:
+      subfolder = "";
+      break;
+    
     // TODO: The KFF project has a type of "MarketEntryType" which will
     // default to null. the plugin will not be installed.
     default:

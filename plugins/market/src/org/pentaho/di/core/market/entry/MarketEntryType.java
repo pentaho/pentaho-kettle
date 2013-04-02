@@ -15,6 +15,8 @@ public enum MarketEntryType {
   ImportRule,
   Mixed,
   Platform,
+  HadoopShim,
+  General,
   ;
   
   public static MarketEntryType getMarketEntryType(String code) {
