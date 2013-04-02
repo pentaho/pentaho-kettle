@@ -416,7 +416,7 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface
 			if(xslFileFieldUse && Const.isEmpty(isAfile)) {
 				xslFieldIsAFile= true;
 			}else {
-				xslFieldIsAFile= "Y".equalsIgnoreCase(isAfile);
+				xslFieldIsAFile= "true".equalsIgnoreCase(isAfile);
 			}
 			xslFactory     = rep.getStepAttributeString(id_step, "xslfactory");
 			
