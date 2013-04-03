@@ -1026,6 +1026,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 			if (in.getRowNumberField()!=null) wInclRownumField.setText(in.getRowNumberField());
 			if (in.getDynamicFilenameField()!=null) wFilenameField.setText(in.getDynamicFilenameField());
 			if (in.getDynamicWildcardField()!=null) wWildcardField.setText(in.getDynamicWildcardField());
+			if (in.getDynamicExcludeWildcardField() != null) wExcludeWildcardField.setText(in.getDynamicExcludeWildcardField());
 			wLimit.setText(""+in.getRowLimit());
 			wIncludeSubFolder.setSelection(in.isDynamicIncludeSubFolders());
 		}
@@ -1065,6 +1066,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		in.setAddResultFile( wAddResult.getSelection() );
 		in.setDynamicFilenameField( wFilenameField.getText() );
 		in.setDynamicWildcardField( wWildcardField.getText() );
+		in.setDynamicExcludeWildcardField(wExcludeWildcardField.getText());
 		in.setFileField(wFileField.getSelection() );
 		in.setRowNumberField( wInclRownumField.getText() );
 		in.setRowLimit( Const.toLong(wLimit.getText(), 0L) );
