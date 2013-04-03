@@ -74,7 +74,15 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
 		}
 		else
 		{
-			return "jdbc:jtds:sqlserver://"+hostname+":"+port+"/"+databaseName;
+		  StringBuilder sb = new StringBuilder("jdbc:jtds:sqlserver://");
+      sb.append(hostname);
+      if (port != null && port.length() > 0) {
+        sb.append(":");
+        sb.append(port);
+      }
+      sb.append("/");
+      sb.append(databaseName);
+      return sb.toString();
 		}
 	}
 	
