@@ -1739,9 +1739,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         }
 
         public void onError(Throwable t) {
-          new ErrorDialog(loginDialog.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"),
-              BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Message"), t);
-
+          onLoginError(t);
         }
 
         public void onCancel() {
@@ -3593,11 +3591,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
       public void onError(Throwable t) {
         closeRepository();
-        MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-        mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Message", t.getLocalizedMessage()));
-        mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"));
-        mb.open();
-
+        onLoginError(t);
       }
 
       public void onCancel() {
@@ -3801,14 +3795,15 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public void closeRepository() {
-    if (rep != null)
+    if (rep != null) {
       rep.disconnect();
-    if (rep.getMetaStore()!=null) {
-      try {
-        metaStore.removeMetaStore(rep.getMetaStore());
-      } catch(MetaStoreException e) {
-        new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.ErrorRemovingMetaStore.Title"), 
-            BaseMessages.getString(PKG, "Spoon.ErrorRemovingMetaStore.Message"), e);
+      if (rep.getMetaStore()!=null) {
+        try {
+          metaStore.removeMetaStore(rep.getMetaStore());
+        } catch(MetaStoreException e) {
+          new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.ErrorRemovingMetaStore.Title"), 
+              BaseMessages.getString(PKG, "Spoon.ErrorRemovingMetaStore.Message"), e);
+        }
       }
     }
     
@@ -7035,14 +7030,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         }
 
         public void onError(Throwable t) {
-          if (t instanceof KettleAuthException) {
-            ShowMessageDialog dialog = new ShowMessageDialog(loginDialog.getShell(), SWT.OK | SWT.ICON_ERROR,
-                BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"), t.getLocalizedMessage());
-            dialog.open();
-          } else {
-            new ErrorDialog(loginDialog.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"),
-                BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Message", t), t);
-          }
+          onLoginError(t);
         }
 
         public void onCancel() {
@@ -7083,10 +7071,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
             }
 
             public void onError(Throwable t) {
-              MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-              mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Message", t.getLocalizedMessage()));
-              mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"));
-              mb.open();
+              onLoginError(t);
             }
 
             public void onCancel() {
@@ -8572,5 +8557,16 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public void setMetaStore(DelegatingMetaStore metaStore) {
     this.metaStore = metaStore;
+  }
+    
+  private void onLoginError(Throwable t) {
+    if (t instanceof KettleAuthException) {
+      ShowMessageDialog dialog = new ShowMessageDialog(loginDialog.getShell(), SWT.OK | SWT.ICON_ERROR,
+          BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"), t.getLocalizedMessage());
+      dialog.open();
+    } else {
+      new ErrorDialog(loginDialog.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"),
+          BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Message", t), t);
+    }
   }
 }
