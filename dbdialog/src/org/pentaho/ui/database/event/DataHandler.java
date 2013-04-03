@@ -22,6 +22,8 @@
 
 package org.pentaho.ui.database.event;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -1325,6 +1327,29 @@ public class DataHandler extends AbstractXulEventHandler {
     cancelButton = (XulButton) document.getElementById("general-datasource-window_cancel"); //$NON-NLS-1$;
     testButton = (XulButton) document.getElementById("test-button"); //$NON-NLS-1$;
     noticeLabel = (XulLabel) document.getElementById("notice-label"); //$NON-NLS-1$;
+    
+    if (portNumberBox != null && serverInstanceBox != null) {
+      if (Boolean.parseBoolean(serverInstanceBox.getAttributeValue("shouldDisablePortIfPopulated"))) {
+        serverInstanceBox.addPropertyChangeListener(new PropertyChangeListener() {
+          
+          @Override
+          public void propertyChange(PropertyChangeEvent evt) {
+            if ("value".equals(evt.getPropertyName())) {
+              disablePortIfInstancePopulated();
+            }
+          }
+        });
+      }
+    }
+  }
+  
+  public void disablePortIfInstancePopulated() {
+    String serverInstance = serverInstanceBox.getValue();
+    if (serverInstance != null && serverInstance.length() > 0) {
+      portNumberBox.setDisabled(true);
+    } else {
+      portNumberBox.setDisabled(false);
+    }
   }
 
   protected void showMessage(String message, boolean scroll){
