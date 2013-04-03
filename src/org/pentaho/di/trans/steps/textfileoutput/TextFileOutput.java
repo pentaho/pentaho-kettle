@@ -23,9 +23,12 @@
 package org.pentaho.di.trans.steps.textfileoutput;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -340,8 +343,15 @@ public class TextFileOutput extends BaseStep implements StepInterface
         		
         		// Also for PDI-170: not all encoding use single characters, so we need to cope
         		// with this.
-        		byte filler[] = " ".getBytes();
-        		int size = text.length + filler.length*(length - string.length());
+        		int size = 0;
+        		byte filler[] = null;
+        		try {
+        			filler = " ".getBytes(meta.getEncoding());
+        			size = text.length + filler.length*(length - string.length());
+        		}
+        		catch (UnsupportedEncodingException uee) {
+        			throw new KettleValueException(uee);
+        		}
         		byte bytes[] = new byte[size];
         		System.arraycopy( text, 0, bytes, 0, text.length );
         		if( filler.length == 1 ) {
@@ -676,7 +686,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 
         if (!Const.isEmpty(meta.getEncoding())) {
           if (log.isDetailed())
-            logDetailed("Opening output stream in encoding: " + meta.getEncoding());
+            logDetailed("Opening output stream in encoding: " + meta.getEncoding());      
           data.writer = new BufferedOutputStream(outputStream, 5000);
         } else {
           if (log.isDetailed())
