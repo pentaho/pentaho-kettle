@@ -349,8 +349,12 @@ public class TextFileOutput extends BaseStep implements StepInterface
         		} 
         		else 
         		{
-        			// need to copy the filler array in lots of times
-        			// TODO: this was not finished.
+        		  int currIndex = text.length;
+              for(int i=0;i<(length-string.length());i++) {
+                for(int j=0;j<filler.length;j++) {
+                  bytes[currIndex++] = filler[j];
+                }
+              }
         		}        		        		
         		return bytes;
         	}
