@@ -172,6 +172,10 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 
 	private TextVar wGaApiKey;
 
+	private Label wlQuUseSegment;
+
+	private Button wUseSegmentEnabled;
+
 	final static String REFERENCE_SORT_URI = "https://developers.google.com/analytics/devguides/reporting/core/v2/gdataReferenceDataFeed#sort";
 	final static String REFERENCE_METRICS_URI = "https://developers.google.com/analytics/devguides/reporting/core/v2/gdataReferenceDataFeed#metrics";
 	final static String REFERENCE_DIMENSIONS_URI = "https://developers.google.com/analytics/devguides/reporting/core/v2/gdataReferenceDataFeed#dimensions";
@@ -306,7 +310,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 		fdGaPassword.right = new FormAttachment(100, 0);
 		wGaPassword.setLayoutData(fdGaPassword);
 
-		// Google Analytics Password
+		// Google Analytics Api Key
 		Label wlGaApiKey = new Label(gConnect, SWT.RIGHT);
 		wlGaApiKey.setText(BaseMessages.getString(PKG, "GoogleAnalyticsDialog.ApiKey.Label"));
 		props.setLook(wlGaApiKey);
@@ -346,6 +350,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 
 		wCustomProfileEnabled.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
+				input.setChanged();
 				setActive();
 				if (wCustomProfileEnabled.getSelection()) {
 					wGaCustomProfile.setFocus();
@@ -443,7 +448,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 		fdConnect.top = new FormAttachment(wStepname, margin);
 		gConnect.setLayoutData(fdConnect);
 		
-		gConnect.setTabList(new Control[] {wGaAppName, wGaEmail, wGaPassword, wCustomProfileEnabled, wGaCustomProfile, wGaProfile, wGetProfiles});
+		gConnect.setTabList(new Control[] {wGaAppName, wGaEmail, wGaPassword, wGaApiKey, wCustomProfileEnabled, wGaCustomProfile, wGaProfile, wGetProfiles});
 
 		/*************************************************
 		 * // GOOGLE ANALYTICS QUERY GROUP
@@ -649,11 +654,44 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 		wQuSortReference.setLayoutData(fdQuSortReference);
 
 		// custom segment definition
+		wlQuUseSegment = new Label(gQuery, SWT.RIGHT);
+		wlQuUseSegment.setText(BaseMessages.getString(PKG, "GoogleAnalyticsDialog.Query.UseSegment.Label"));
+		props.setLook(wlQuUseSegment);
+		FormData fdlQuUseSegment = new FormData();
+		fdlQuUseSegment.top = new FormAttachment(wQuSort, margin);
+		fdlQuUseSegment.left = new FormAttachment(0, 0);
+		fdlQuUseSegment.right = new FormAttachment(middle, -margin);
+		wlQuUseSegment.setLayoutData(fdlQuUseSegment);
+
+		wUseSegmentEnabled = new Button(gQuery, SWT.CHECK);
+		props.setLook(wUseSegmentEnabled);
+		wUseSegmentEnabled.pack(true);
+
+		FormData fdUseSegmentEnabled = new FormData();
+		fdUseSegmentEnabled.left = new FormAttachment(middle, 0);
+		fdUseSegmentEnabled.top = new FormAttachment(wQuSort, margin);
+		wUseSegmentEnabled.setLayoutData(fdUseSegmentEnabled);
+
+		wUseSegmentEnabled.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				input.setChanged();
+				setActive();
+				if (wUseSegmentEnabled.getSelection()){
+					if (wCustomSegmentEnabled.getSelection()) {
+						wQuCustomSegment.setFocus();
+					} else {
+						wQuSegment.setFocus();
+					}
+				}
+			}
+		});		
+		
+		// custom segment definition
 		wlQuCustomSegment = new Label(gQuery, SWT.RIGHT);
 		wlQuCustomSegment.setText(BaseMessages.getString(PKG, "GoogleAnalyticsDialog.Query.CustomSegment.Label"));
 		props.setLook(wlQuCustomSegment);
 		FormData fdlQuCustomSegment = new FormData();
-		fdlQuCustomSegment.top = new FormAttachment(wQuSort, margin);
+		fdlQuCustomSegment.top = new FormAttachment(wUseSegmentEnabled, margin);
 		fdlQuCustomSegment.left = new FormAttachment(0, 0);
 		fdlQuCustomSegment.right = new FormAttachment(middle, -margin);
 		wlQuCustomSegment.setLayoutData(fdlQuCustomSegment);
@@ -664,11 +702,12 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 
 		FormData fdCustomSegmentEnabled = new FormData();
 		fdCustomSegmentEnabled.left = new FormAttachment(middle, 0);
-		fdCustomSegmentEnabled.top = new FormAttachment(wQuSort, margin);
+		fdCustomSegmentEnabled.top = new FormAttachment(wUseSegmentEnabled, margin);
 		wCustomSegmentEnabled.setLayoutData(fdCustomSegmentEnabled);
 
 		wCustomSegmentEnabled.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
+				input.setChanged();
 				setActive();
 				if (wCustomSegmentEnabled.getSelection()) {
 					wQuCustomSegment.setFocus();
@@ -697,13 +736,13 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 		wQuCustomSegmentReference.pack(true);
 
 		FormData fdQuCustomSegment = new FormData();
-		fdQuCustomSegment.top = new FormAttachment(wQuSort, margin);
+		fdQuCustomSegment.top = new FormAttachment(wUseSegmentEnabled, margin);
 		fdQuCustomSegment.left = new FormAttachment(wCustomSegmentEnabled, margin);
 		fdQuCustomSegment.right = new FormAttachment(100, -wQuCustomSegmentReference.getBounds().width - margin);
 		wQuCustomSegment.setLayoutData(fdQuCustomSegment);
 
 		FormData fdQuCustomSegmentReference = new FormData();
-		fdQuCustomSegmentReference.top = new FormAttachment(wQuSort, margin);
+		fdQuCustomSegmentReference.top = new FormAttachment(wUseSegmentEnabled, margin);
 		fdQuCustomSegmentReference.left = new FormAttachment(wQuCustomSegment, 0);
 		fdQuCustomSegmentReference.right = new FormAttachment(100, 0);
 		wQuCustomSegmentReference.setLayoutData(fdQuCustomSegmentReference);
@@ -762,7 +801,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 		fdQueryGroup.top = new FormAttachment(gConnect, margin);
 		gQuery.setLayoutData(fdQueryGroup);
 
-		gQuery.setTabList(new Control[] { wQuStartDate, wQuEndDate, wQuDimensions, wQuMetrics, wQuFilters, wQuSort, wCustomSegmentEnabled, wQuCustomSegment, wQuSegment, wGetSegments });
+		gQuery.setTabList(new Control[] { wQuStartDate, wQuEndDate, wQuDimensions, wQuMetrics, wQuFilters, wQuSort, wUseSegmentEnabled, wCustomSegmentEnabled, wQuCustomSegment, wQuSegment, wGetSegments });
 
 		// Limit input ...
 		wlLimit=new Label(shell, SWT.RIGHT);
@@ -1050,6 +1089,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 		wStepname.addSelectionListener(lsDef);
 		wGaEmail.addSelectionListener(lsDef);
 		wGaPassword.addSelectionListener(lsDef);
+		wGaApiKey.addSelectionListener(lsDef);
 		wGaCustomProfile.addSelectionListener(lsDef);
 		wQuStartDate.addSelectionListener(lsDef);
 		wQuEndDate.addSelectionListener(lsDef);
@@ -1125,6 +1165,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 		meta.setFilters(wQuFilters.getText());
 		meta.setSort(wQuSort.getText());
 
+		meta.setUseSegment(wUseSegmentEnabled.getSelection());
 		meta.setUseCustomSegment(wCustomSegmentEnabled.getSelection());
 		meta.setCustomSegment(wQuCustomSegment.getText());
 
@@ -1206,10 +1247,12 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 			query.setStringCustomParameter("key", wGaApiKey.getText().trim());	
 		}
 
-		if (wCustomSegmentEnabled.getSelection()) {
-			query.setSegment(transMeta.environmentSubstitute(wQuCustomSegment.getText()));
-		} else {
-			query.setSegment(segmentIds.get(wQuSegment.getText()));
+		if (wUseSegmentEnabled.getSelection()){
+			if (wCustomSegmentEnabled.getSelection()) {
+				query.setSegment(transMeta.environmentSubstitute(wQuCustomSegment.getText()));
+			} else {
+				query.setSegment(segmentIds.get(wQuSegment.getText()));
+			}
 		}
 
 		if (!Const.isEmpty(wQuFilters.getText())) {
@@ -1224,12 +1267,25 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 	}
 
 	protected void setActive() {
-		boolean custom = wCustomSegmentEnabled.getSelection();
+		
+		boolean segment = wUseSegmentEnabled.getSelection();
+		wCustomSegmentEnabled.setEnabled(segment);
 
-		wQuCustomSegment.setEnabled(custom);
-		wQuCustomSegmentReference.setEnabled(custom);
-		wQuSegment.setEnabled(!custom);
-		wGetSegments.setEnabled(!custom);
+		if (!segment){
+			wQuCustomSegment.setEnabled(false);
+			wQuCustomSegmentReference.setEnabled(false);
+			wQuSegment.setEnabled(false);
+			wGetSegments.setEnabled(false);
+		}
+		else{
+
+			boolean custom = wCustomSegmentEnabled.getSelection();
+
+			wQuCustomSegment.setEnabled(custom);
+			wQuCustomSegmentReference.setEnabled(custom);
+			wQuSegment.setEnabled(!custom);
+			wGetSegments.setEnabled(!custom);
+		}
 		
 		boolean directTableId = wCustomProfileEnabled.getSelection();
 		
@@ -1414,6 +1470,13 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 			wQuSort.setText(input.getSort());
 		}
 
+		if (input.isUseSegment()){
+			wUseSegmentEnabled.setSelection(true);
+		}
+		else{
+			wUseSegmentEnabled.setSelection(false);
+		}
+		
 		if (input.isUseCustomSegment()) {
 			wCustomSegmentEnabled.setSelection(true);
 		} else {

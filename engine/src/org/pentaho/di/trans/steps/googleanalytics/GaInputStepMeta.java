@@ -84,6 +84,8 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
 	private String metrics;
 	private String filters;
 	private String sort;
+	private boolean useSegment;
+
 	private boolean useCustomSegment;
 	private int rowLimit;
 	
@@ -140,7 +142,15 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
 		this.gaCustomTableId = gaCustomTableId;
 	}
 
+	public boolean isUseSegment() {
+		return useSegment;
+	}
 
+	public void setUseSegment(boolean useSegment) {
+		this.useSegment = useSegment;
+	}
+	
+	
 	public String getSegmentName() {
 		return segmentName;
 	}
@@ -280,6 +290,7 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
 	// set sensible defaults for a new step
 	public void setDefault() {
 		gaEmail = "your.account@googlemail.com";
+		useSegment = true;
 		segmentId = "gaid::-1";
 		segmentName = "All Visits";
 		dimensions = "ga:browser";
@@ -365,6 +376,7 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
 		retval.append("    ").append(XMLHandler.addTagValue("metrics", metrics));
 		retval.append("    ").append(XMLHandler.addTagValue("filters", filters));
 		retval.append("    ").append(XMLHandler.addTagValue("sort", sort));
+		retval.append("    ").append(XMLHandler.addTagValue("useSegment", useSegment));
 		retval.append("    ").append(XMLHandler.addTagValue("useCustomSegment", useCustomSegment));
 		retval.append("    ").append(XMLHandler.addTagValue("customSegment", customSegment));
 		retval.append("    ").append(XMLHandler.addTagValue("segmentId", segmentId));
@@ -402,6 +414,7 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
 			metrics = XMLHandler.getTagValue(stepnode, "metrics");
 			filters = XMLHandler.getTagValue(stepnode, "filters");
 			sort = XMLHandler.getTagValue(stepnode, "sort");
+			useSegment = XMLHandler.getTagValue(stepnode, "useSegment") == null ? true : getBooleanAttributeFromNode(stepnode, "useSegment"); // assume true for non-present
 			useCustomSegment = getBooleanAttributeFromNode(stepnode, "useCustomSegment");
 			customSegment = XMLHandler.getTagValue(stepnode, "customSegment");
 			segmentId = XMLHandler.getTagValue(stepnode, "segmentId");
@@ -452,6 +465,7 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
 			metrics = rep.getStepAttributeString(id_step, "metrics");
 			filters = rep.getStepAttributeString(id_step,  "filters");
 			sort = rep.getStepAttributeString(id_step, "sort");
+			useSegment = rep.getStepAttributeBoolean(id_step, 0, "useSegment", true); // assume default true, if not present
 			useCustomSegment = rep.getStepAttributeBoolean(id_step, "useCustomSegment");
 			customSegment = rep.getStepAttributeString(id_step,  "customSegment");
 			segmentId = rep.getStepAttributeString(id_step,  "segmentId");
@@ -496,6 +510,7 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
 			rep.saveStepAttribute(id_transformation, id_step, "metrics", metrics);
 			rep.saveStepAttribute(id_transformation, id_step, "filters", filters);
 			rep.saveStepAttribute(id_transformation, id_step, "sort", sort);
+			rep.saveStepAttribute(id_transformation, id_step, "useSegment", useSegment);
 			rep.saveStepAttribute(id_transformation, id_step, "useCustomSegment", useCustomSegment);
 			rep.saveStepAttribute(id_transformation, id_step, "customSegment", customSegment);
 			rep.saveStepAttribute(id_transformation, id_step, "segmentId", segmentId);

@@ -195,10 +195,12 @@ public class GaInputStep extends BaseStep implements StepInterface {
 		query.setDimensions(environmentSubstitute(meta.getDimensions()));
 		query.setMetrics(environmentSubstitute(meta.getMetrics()));
 
-		if (meta.isUseCustomSegment()) {
-			query.setSegment(environmentSubstitute(meta.getCustomSegment()));
-		} else {
-			query.setSegment(meta.getSegmentId());
+		if (meta.isUseSegment()){
+			if (meta.isUseCustomSegment()) {
+				query.setSegment(environmentSubstitute(meta.getCustomSegment()));
+			} else {
+				query.setSegment(meta.getSegmentId());
+			}
 		}
 
 		if (!Const.isEmpty(meta.getFilters())) {
