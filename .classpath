@@ -242,8 +242,5 @@
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-swt-3.3.5.jar"/>
 	<classpathentry kind="lib" path="libext/mondrian/mondrian-3.5.0.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-metadata-3.4.6.jar"/>
-	<classpathentry kind="lib" path="/home/mburgess/jdbc_drivers/jtds-1.2.5.jar"/>
-	<classpathentry kind="lib" path="/home/mburgess/jdbc_drivers/mysql-connector-java-5.1.17.jar"/>
-	<classpathentry kind="lib" path="/home/mburgess/jdbc_drivers/ojdbc6.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
