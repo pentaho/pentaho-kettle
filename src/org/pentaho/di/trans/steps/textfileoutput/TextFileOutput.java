@@ -23,12 +23,9 @@
 package org.pentaho.di.trans.steps.textfileoutput;
 
 import java.io.BufferedOutputStream;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -297,7 +294,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 
     private byte[] convertStringToBinaryString(ValueMetaInterface v, String string) throws KettleValueException
     {
-    	int length = v.getLength();
+    	final int length = v.getLength();
     	   	
     	if (string==null) return new byte[] {};
     	
@@ -359,8 +356,12 @@ public class TextFileOutput extends BaseStep implements StepInterface
         		} 
         		else 
         		{
-        			// need to copy the filler array in lots of times
-        			// TODO: this was not finished.
+        		  int currIndex = text.length;
+              for(int i=0;i<(length-string.length());i++) {
+                for(int j=0;j<filler.length;j++) {
+                  bytes[currIndex++] = filler[j];
+                }
+              }
         		}        		        		
         		return bytes;
         	}
