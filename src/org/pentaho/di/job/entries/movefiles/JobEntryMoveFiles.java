@@ -726,6 +726,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 				addFileToResultFilenames(destinationfilename.toString(),result,parentJob);
 			
 			updateSuccess();
+			retval = true;
 		
 		}
 		else{
@@ -739,6 +740,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 					addFileToResultFilenames(destinationfilename.toString(),result,parentJob);
 				
 				updateSuccess();
+				retval = true;
 			
 			}
 			else if(iffileexists.equals("unique_name")){
@@ -766,8 +768,8 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 				if(add_result_filesname && !iffileexists.equals("fail") && !iffileexists.equals("do_nothing")) 
 					addFileToResultFilenames(destinationfile.toString(),result,parentJob);
 			
-				
 				updateSuccess();
+				retval = true;
 			}
 			else if(iffileexists.equals("delete_file")){
 				if(!simulate) destinationfilename.delete();
@@ -805,6 +807,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 							addFileToResultFilenames(destinationfile.toString(),result,parentJob);
 					
 						updateSuccess();
+						retval = true;
 					}
 					else if(ifmovedfileexists.equals("unique_name"))
 					{
@@ -825,6 +828,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 							addFileToResultFilenames(destinationfile.toString(),result,parentJob);
 					
 						updateSuccess();
+						retval = true;
 					}
 					else if(ifmovedfileexists.equals("fail"))
 					{
