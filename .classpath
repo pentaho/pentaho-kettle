@@ -207,7 +207,6 @@
 	<classpathentry kind="lib" path="libext/jersey/jersey-json-1.7.jar"/>
 	<classpathentry kind="lib" path="libext/feeds/xml-apis-2.0.2.jar"/>
 	<classpathentry kind="lib" path="test/libext/mockito-all-1.8.4.jar"/>
-	<classpathentry kind="lib" path="libext/esapi-2.0GA.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/libbase-1.2.8.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/libdocbundle-1.2.8.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/libfonts-1.2.8.jar"/>
@@ -242,5 +241,6 @@
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-swt-3.3.5.jar"/>
 	<classpathentry kind="lib" path="libext/mondrian/mondrian-3.5.0.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-metadata-3.4.6.jar"/>
+	<classpathentry kind="lib" path="libext/esapi-2.0.1.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
