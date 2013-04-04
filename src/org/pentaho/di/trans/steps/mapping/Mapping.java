@@ -133,6 +133,56 @@ public class Mapping extends BaseStep implements StepInterface
           }
           getRemoteInputSteps().clear();
         }
+        
+        // Do the same thing for output row sets
+        //
+        if (!getOutputRowSets().isEmpty()) {
+          for (RowSet rowSet : new ArrayList<RowSet>(getOutputRowSets())) {
+            // Pass this rowset down to a mapping input step in the
+            // sub-transformation...
+            //
+            if (mappingOutputs.length == 1) {
+              // Simple case: only one output mapping. Move the RowSet over
+              //
+              mappingOutputs[0].getOutputRowSets().add(rowSet);
+            } else {
+              // Difficult to see what's going on here.
+              // TODO: figure out where this RowSet needs to go and where it
+              // comes from.
+              //
+              throw new KettleException("Unsupported situation detected where more than one Mapping Output step needs to be handled.  To solve it, insert a dummy step after the mapping step.");
+            }
+          }
+          getOutputRowSets().clear();
+        }
+
+        // Do the same thing for remote output steps...
+        //
+        if (!getRemoteOutputSteps().isEmpty()) {
+          // The remote server is likely a master or a slave server sending data
+          // over remotely to this mapping.
+          // However, the data needs to end up at a Mapping Output step of the
+          // sub-transformation, not in this step.
+          // We can move over the remote steps to the Mapping Output step as long
+          // as the threads haven't started yet.
+          //
+          for (RemoteStep remoteStep : getRemoteOutputSteps()) {
+            // Pass this rowset down to a mapping output step in the
+            // sub-transformation...
+            //
+            if (mappingOutputs.length == 1) {
+              // Simple case: only one output mapping. Move the remote step over
+              //
+              mappingOutputs[0].getRemoteOutputSteps().add(remoteStep);
+            } else {
+              // TODO: figure out where this remote step needs to go and where
+              // it comes from.
+              //
+              throw new KettleException("Unsupported situation detected where a remote output step is expecting data to end up in a particular Mapping Output step of a sub-transformation.  To solve it, insert a dummy step after the mapping.");
+            }
+          }
+          getRemoteOutputSteps().clear();
+        }
 
         // Start the mapping/sub-transformation threads
         //
