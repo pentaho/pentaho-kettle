@@ -45,6 +45,7 @@ import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -68,6 +69,7 @@ import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
@@ -203,6 +205,8 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
   private List<ColumnInfo>     tableFieldColumns = new ArrayList<ColumnInfo>();
 
   private ScrolledComposite    sComp;
+  
+  private Composite    helpComp;
 
   private Composite            comp;
 
@@ -218,7 +222,6 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 
     shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
     props.setLook(shell);
-    setShellImage(shell, input);
 
     ModifyListener lsMod = new ModifyListener() {
       public void modifyText(ModifyEvent e) {
@@ -246,14 +249,33 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
     backupAutoInc = input.isAutoIncrement();
     ci = input.getDatabaseMeta();
 
-    shell.setLayout(new FormLayout());
+    GridLayout shellLayout = new GridLayout();
+    shellLayout.numColumns = 1;
+    shell.setLayout(shellLayout);
     shell.setText(BaseMessages.getString(PKG, "DimensionLookupDialog.Shell.Title")); //$NON-NLS-1$
 
     int middle = props.getMiddlePct();
     int margin = Const.MARGIN;
+    
+    Composite sCompParent = new Composite(shell, SWT.NONE);
+    sCompParent.setLayout(new FillLayout(SWT.VERTICAL));
+    GridData sCompGridData = new GridData(GridData.FILL_BOTH);
+    sCompGridData.grabExcessHorizontalSpace = true;
+    sCompGridData.grabExcessVerticalSpace = true;
+    sCompParent.setLayoutData(sCompGridData);
 
-    sComp = new ScrolledComposite(shell, SWT.V_SCROLL | SWT.H_SCROLL);
+    sComp = new ScrolledComposite(sCompParent, SWT.V_SCROLL | SWT.H_SCROLL);
     sComp.setLayout(new FormLayout());
+    sComp.setExpandHorizontal(true);
+    sComp.setExpandVertical(true);
+    
+    helpComp = new Composite(shell, SWT.NONE);
+    helpComp.setLayout(new FormLayout());
+    GridData helpCompData = new GridData();
+    helpCompData.grabExcessHorizontalSpace = true;
+    helpCompData.grabExcessVerticalSpace = false;
+    helpComp.setLayoutData(helpCompData);
+    setShellImage(shell, input);
 
     comp = new Composite(sComp, SWT.NONE);
     props.setLook(comp);
@@ -1676,6 +1698,11 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
     } catch (KettleException ke) {
       new ErrorDialog(shell, BaseMessages.getString(PKG, "DimensionLookupDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "DimensionLookupDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
     }
+  }
+  
+  @Override
+  protected Button createHelpButton(Shell shell, StepMeta stepMeta, PluginInterface plugin) {
+    return createHelpButton(helpComp, "Step documentation for "+plugin.getName(), plugin);
   }
 
   // Generate code for create table...

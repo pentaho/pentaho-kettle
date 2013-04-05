@@ -1212,8 +1212,8 @@ public class BaseStepDialog extends Dialog {
       return createHelpButton(shell, "Step documentation for "+plugin.getName(), plugin);
     }
     
-    public static Button createHelpButton(final Shell shell, final String title, final PluginInterface plugin) {
-      Button button = new Button(shell, SWT.PUSH);
+    public static Button createHelpButton(final Composite parent, final String title, final PluginInterface plugin) {
+      Button button = new Button(parent, SWT.PUSH);
       button.setImage(GUIResource.getInstance().getImageHelpWeb());
       button.setText(BaseMessages.getString(PKG, "System.Button.Help"));
       button.setToolTipText(BaseMessages.getString(PKG, "System.Tooltip.Help"));
@@ -1260,7 +1260,7 @@ public class BaseStepDialog extends Dialog {
           }
           html.append("</BODY></HTML>");
           
-          ShowBrowserDialog browserDialog = new ShowBrowserDialog(shell, title, html.toString());
+          ShowBrowserDialog browserDialog = new ShowBrowserDialog(parent.getShell(), title, html.toString());
           browserDialog.open();
         }
       });

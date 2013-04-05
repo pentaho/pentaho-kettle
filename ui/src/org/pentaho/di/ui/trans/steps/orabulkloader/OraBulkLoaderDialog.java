@@ -40,9 +40,12 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -61,6 +64,7 @@ import org.pentaho.di.core.SourceToTargetMapping;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
@@ -213,6 +217,8 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
     
 	private ColumnInfo[] ciReturn ;
 	
+	private Composite helpComp;
+	
 	/**
 	 * List of ColumnInfo that should have the field names of the selected database table
 	 */
@@ -251,7 +257,6 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
  		props.setLook(shell);
-        setShellImage(shell, input);
 
 		ModifyListener lsMod = new ModifyListener()
 		{
@@ -276,10 +281,19 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		};
 		changed = input.hasChanged();
 
-		shell.setLayout(new FormLayout());
+		GridLayout shellLayout = new GridLayout();
+    shellLayout.numColumns = 1;
+    shell.setLayout(shellLayout);
 		shell.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.Shell.Title")); //$NON-NLS-1$
 
-	    ScrolledComposite sComp = new ScrolledComposite(shell, SWT.V_SCROLL | SWT.H_SCROLL );
+		Composite sCompParent = new Composite(shell, SWT.NONE);
+    sCompParent.setLayout(new FillLayout(SWT.VERTICAL));
+    GridData sCompGridData = new GridData(GridData.FILL_BOTH);
+    sCompGridData.grabExcessHorizontalSpace = true;
+    sCompGridData.grabExcessVerticalSpace = true;
+    sCompParent.setLayoutData(sCompGridData);
+    
+	    ScrolledComposite sComp = new ScrolledComposite(sCompParent, SWT.V_SCROLL | SWT.H_SCROLL );
         sComp.setLayout(new FormLayout());
         
         Composite comp = new Composite(sComp, SWT.NONE );
@@ -289,6 +303,14 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
         fileLayout.marginWidth  = 3;
         fileLayout.marginHeight = 3;
         comp.setLayout(fileLayout);
+        
+    helpComp = new Composite(shell, SWT.NONE);
+    helpComp.setLayout(new FormLayout());
+    GridData helpCompData = new GridData();
+    helpCompData.grabExcessHorizontalSpace = true;
+    helpCompData.grabExcessVerticalSpace = false;
+    helpComp.setLayoutData(helpCompData);
+    setShellImage(shell, input);
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
@@ -905,6 +927,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		fdGetLU = new FormData();
 		fdGetLU.top   = new FormAttachment(wlReturn, margin);
 		fdGetLU.right = new FormAttachment(100, 0);
+		fdGetLU.left = new FormAttachment(wReturn, margin);
 		wGetLU.setLayoutData(fdGetLU);
 
 		wDoMapping = new Button(comp, SWT.PUSH);
@@ -920,7 +943,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		fdReturn = new FormData();
 		fdReturn.left = new FormAttachment(0, 0);
 		fdReturn.top = new FormAttachment(wlReturn, margin);
-		fdReturn.right = new FormAttachment(wGetLU, -margin);
+		fdReturn.right = new FormAttachment(wDoMapping, -margin);
 		fdReturn.bottom = new FormAttachment(wOK, -2*margin);
 		wReturn.setLayoutData(fdReturn);
 		
@@ -1738,4 +1761,9 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 			wReturn.optWidth(true);
 		}
 	}
+	
+	@Override
+  protected Button createHelpButton(Shell shell, StepMeta stepMeta, PluginInterface plugin) {
+    return createHelpButton(helpComp, "Step documentation for "+plugin.getName(), plugin);
+  }
 }

@@ -32,9 +32,12 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -46,6 +49,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.Trans;
@@ -53,6 +57,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.getrepositorynames.GetRepositoryNamesMeta;
 import org.pentaho.di.trans.steps.getrepositorynames.ObjectTypeSelection;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
@@ -105,6 +110,8 @@ public class GetRepositoryNamesDialog extends BaseStepDialog implements StepDial
 
   private Label                  wlInclRownumField;
   private TextVar                wInclRownumField;
+  
+  private Composite helpComp;
 
   public GetRepositoryNamesDialog(Shell parent, Object in, TransMeta transMeta, String sname) {
     super(parent, (BaseStepMeta) in, transMeta, sname);
@@ -117,7 +124,6 @@ public class GetRepositoryNamesDialog extends BaseStepDialog implements StepDial
 
     shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
     props.setLook(shell);
-    setShellImage(shell, input);
 
     lsMod = new ModifyListener() {
       public void modifyText(ModifyEvent e) {
@@ -126,14 +132,33 @@ public class GetRepositoryNamesDialog extends BaseStepDialog implements StepDial
     };
     changed = input.hasChanged();
 
-    shell.setLayout(new FormLayout());
+    GridLayout shellLayout = new GridLayout();
+    shellLayout.numColumns = 1;
+    shell.setLayout(shellLayout);
     shell.setText(BaseMessages.getString(PKG, "GetRepositoryNamesDialog.DialogTitle"));
 
     middle = props.getMiddlePct();
     margin = Const.MARGIN;
     
-    sComp = new ScrolledComposite(shell, SWT.V_SCROLL | SWT.H_SCROLL );
+    Composite sCompParent = new Composite(shell, SWT.NONE);
+    sCompParent.setLayout(new FillLayout(SWT.VERTICAL));
+    GridData sCompGridData = new GridData(GridData.FILL_BOTH);
+    sCompGridData.grabExcessHorizontalSpace = true;
+    sCompGridData.grabExcessVerticalSpace = true;
+    sCompParent.setLayoutData(sCompGridData);
+    
+    sComp = new ScrolledComposite(sCompParent, SWT.V_SCROLL | SWT.H_SCROLL );
     sComp.setLayout(new FormLayout());
+    sComp.setExpandHorizontal(true);
+    sComp.setExpandVertical(true);
+    
+    helpComp = new Composite(shell, SWT.NONE);
+    helpComp.setLayout(new FormLayout());
+    GridData helpCompData = new GridData();
+    helpCompData.grabExcessHorizontalSpace = true;
+    helpCompData.grabExcessVerticalSpace = false;
+    helpComp.setLayoutData(helpCompData);
+    setShellImage(shell, input);
     
     comp = new Composite(sComp, SWT.NONE );
     props.setLook(comp);
@@ -463,6 +488,11 @@ public class GetRepositoryNamesDialog extends BaseStepDialog implements StepDial
         display.sleep();
     }
     return stepname;
+  }
+  
+  @Override
+  protected Button createHelpButton(Shell shell, StepMeta stepMeta, PluginInterface plugin) {
+    return createHelpButton(helpComp, "Step documentation for "+plugin.getName(), plugin);
   }
 
   /**
