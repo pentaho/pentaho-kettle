@@ -352,7 +352,7 @@ public class MailInput extends BaseStep implements StepInterface
 					
 	            	data.inputRowMeta = getInputRowMeta();
 		            data.outputRowMeta = data.inputRowMeta.clone();
-		            meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+		            meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
 		            
 		            // Get total previous fields
 		            data.totalpreviousfields=data.inputRowMeta.size();
@@ -443,7 +443,7 @@ public class MailInput extends BaseStep implements StepInterface
 				try {
 					// Create the output row meta-data
 		            data.outputRowMeta = new RowMeta();
-		            meta.getFields(data.outputRowMeta, getStepname(), null, null, this); // get the metadata populated
+		            meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore); // get the metadata populated
 	
 				} catch(Exception e){
 					logError(BaseMessages.getString(PKG, "MailInput.ErrorInit",e.toString()));

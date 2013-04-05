@@ -132,7 +132,7 @@ public class OlapInputMeta extends BaseStepMeta implements StepMetaInterface
 		
 	}
     
-    public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException 
+    public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException 
     {
 		
 		RowMetaInterface add=null;
@@ -211,7 +211,7 @@ public class OlapInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
         //TODO: perform tests to see if connection is valid
 	    //	    CheckResult cr;
@@ -230,7 +230,7 @@ public class OlapInputMeta extends BaseStepMeta implements StepMetaInterface
 		return new OlapData();
 	}
 
-	public void analyseImpact(List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info) throws KettleStepException
+	public void analyseImpact(List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, Repository repository, IMetaStore metaStore) throws KettleStepException
 	{
 		// you can't really analyze the database impact since it runs on a remote XML/A server
 	}

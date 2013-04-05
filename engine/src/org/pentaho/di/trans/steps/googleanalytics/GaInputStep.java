@@ -75,7 +75,7 @@ public class GaInputStep extends BaseStep implements StepInterface {
 			first = false;
 			
 			data.outputRowMeta = new RowMeta();
-			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+			meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
 			
             // stores the indices where to look for the key fields in the input rows
             data.conversionMeta = new ValueMetaInterface[meta.getFeedField().length];

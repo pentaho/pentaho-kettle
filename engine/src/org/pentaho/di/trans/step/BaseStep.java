@@ -62,6 +62,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.trans.SlaveStepCopyPartitionDistribution;
 import org.pentaho.di.trans.Trans;
@@ -72,6 +73,7 @@ import org.pentaho.di.trans.steps.mapping.Mapping;
 import org.pentaho.di.trans.steps.mappinginput.MappingInput;
 import org.pentaho.di.trans.steps.mappingoutput.MappingOutput;
 import org.pentaho.di.www.SocketRepository;
+import org.pentaho.metastore.api.IMetaStore;
 
 /**
  * This class can be extended for the actual row processing of the implemented step.
@@ -324,6 +326,16 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    * Keeps track of the number of rows read for input deadlock verification.
    */
   protected long deadLockCounter;
+  
+  /**
+   * The repository used by the step to load and reference Kettle objects with at runtime 
+   */
+  protected Repository repository;
+  
+  /**
+   * The metastore that the step uses to load external elements from
+   */
+  protected IMetaStore metaStore;
 
   /**
      * This is the base step that forms that basis for all steps. You can derive from this class to implement your own
@@ -3596,5 +3608,21 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     if (log != null) {
       log.setForcingSeparateLogging(forcingSeparateLogging);
     }
+  }
+
+  public Repository getRepository() {
+    return repository;
+  }
+
+  public void setRepository(Repository repository) {
+    this.repository = repository;
+  }
+
+  public IMetaStore getMetaStore() {
+    return metaStore;
+  }
+
+  public void setMetaStore(IMetaStore metaStore) {
+    this.metaStore = metaStore;
   }
 }

@@ -722,7 +722,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 			first=false;
 			data.outputRowMeta = getInputRowMeta().clone();
 			data.inputRowMeta=data.outputRowMeta;
-	        meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+	        meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
 	       
 	            
 			if(meta.istablenameInField())

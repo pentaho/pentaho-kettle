@@ -389,7 +389,7 @@ public class RssInputMeta extends BaseStepMeta implements StepMetaInterface
 
 		rowLimit=0;
 	}
-	public void getFields(RowMetaInterface r, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException
+	public void getFields(RowMetaInterface r, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
 	{		
 		int i;
 		for (i=0;i<inputFields.length;i++)
@@ -528,7 +528,7 @@ public class RssInputMeta extends BaseStepMeta implements StepMetaInterface
     {
         return true;
     }
-    public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+    public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		CheckResult cr;
 		

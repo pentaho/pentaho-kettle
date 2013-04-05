@@ -36,6 +36,7 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.metastore.api.IMetaStore;
 
 
 public class ResourceUtil {
@@ -49,11 +50,12 @@ public class ResourceUtil {
 	 * @param resourceExportInterface the interface to serialize
 	 * @param space the space to use for variable replacement
 	 * @param repository the repository to load objects from (or null if not used)
+	 * @param metaStore the metaStore to load from
 	 * @return The full VFS filename reference to the serialized export interface XML file in the ZIP archive.
 	 * @throws KettleException in case anything goes wrong during serialization
 	 */
-	public static final TopLevelResource serializeResourceExportInterface(String zipFilename, ResourceExportInterface resourceExportInterface, VariableSpace space, Repository repository) throws KettleException {
-		return serializeResourceExportInterface(zipFilename, resourceExportInterface, space, repository, null, null);
+	public static final TopLevelResource serializeResourceExportInterface(String zipFilename, ResourceExportInterface resourceExportInterface, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleException {
+		return serializeResourceExportInterface(zipFilename, resourceExportInterface, space, repository, metaStore, null, null);
 	}
 	
 	/**
@@ -68,7 +70,7 @@ public class ResourceUtil {
 	 * @return The full VFS filename reference to the serialized export interface XML file in the ZIP archive.
 	 * @throws KettleException in case anything goes wrong during serialization
 	 */
-	public static final TopLevelResource serializeResourceExportInterface(String zipFilename, ResourceExportInterface resourceExportInterface, VariableSpace space, Repository repository, String injectXML, String injectFilename) throws KettleException {
+	public static final TopLevelResource serializeResourceExportInterface(String zipFilename, ResourceExportInterface resourceExportInterface, VariableSpace space, Repository repository, IMetaStore metaStore, String injectXML, String injectFilename) throws KettleException {
 		
 		ZipOutputStream out = null;
 		
@@ -84,7 +86,7 @@ public class ResourceUtil {
 			
 			ResourceNamingInterface namingInterface = new SequenceResourceNaming();
 		
-			String topLevelResource = resourceExportInterface.exportResources(space, definitions, namingInterface, repository);
+			String topLevelResource = resourceExportInterface.exportResources(space, definitions, namingInterface, repository, metaStore);
 	
 			if (topLevelResource!=null && !definitions.isEmpty()) {
 

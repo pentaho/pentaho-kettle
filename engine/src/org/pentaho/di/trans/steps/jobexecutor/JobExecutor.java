@@ -100,15 +100,15 @@ public class JobExecutor extends BaseStep implements StepInterface
 
 			  
         if (meta.getExecutionResultTargetStepMeta()!=null) {
-          meta.getFields(data.executionResultsOutputRowMeta, getStepname(), null, meta.getExecutionResultTargetStepMeta(), this);
+          meta.getFields(data.executionResultsOutputRowMeta, getStepname(), null, meta.getExecutionResultTargetStepMeta(), this, repository, metaStore);
           data.executionResultRowSet = findOutputRowSet(meta.getExecutionResultTargetStepMeta().getName());
         }
 			  if (meta.getResultRowsTargetStepMeta()!=null) {
-			    meta.getFields(data.resultRowsOutputRowMeta, getStepname(), null, meta.getResultRowsTargetStepMeta(), this);
+			    meta.getFields(data.resultRowsOutputRowMeta, getStepname(), null, meta.getResultRowsTargetStepMeta(), this, repository, metaStore);
 			    data.resultRowsRowSet = findOutputRowSet(meta.getResultRowsTargetStepMeta().getName());
 			  }
         if (meta.getResultFilesTargetStepMeta()!=null) {
-          meta.getFields(data.resultFilesOutputRowMeta, getStepname(), null, meta.getResultFilesTargetStepMeta(), this);
+          meta.getFields(data.resultFilesOutputRowMeta, getStepname(), null, meta.getResultFilesTargetStepMeta(), this, repository, metaStore);
           data.resultFilesRowSet = findOutputRowSet(meta.getResultFilesTargetStepMeta().getName());
         }
         
@@ -183,7 +183,7 @@ public class JobExecutor extends BaseStep implements StepInterface
     
     data.executorJob = new Job(meta.getRepository(), data.executorJobMeta, this);
 
-    // data.executorJob.setParentJob(parentJob); TODO: create parentTrans
+    data.executorJob.setParentTrans(getTrans());
     data.executorJob.setLogLevel(getLogLevel());
     
     if (meta.getParameters().isInheritingAllVariables()) {

@@ -173,7 +173,7 @@ public interface JobEntryInterface
 	 * @return the parent job
 	 */
 	public Job getParentJob();
-
+	
 	/**
 	 * Gets the log channel.
 	 *
@@ -527,9 +527,21 @@ public interface JobEntryInterface
      * 
      * @param remarks List of CheckResult objects indicating consistency status
      * @param jobMeta the metadata object for the job entry
+     * @deprecated
      */
-    public void check(List<CheckResultInterface> remarks, JobMeta jobMeta);
-    
+    @Deprecated public void check(List<CheckResultInterface> remarks, JobMeta jobMeta);
+
+    /**
+     * Allows JobEntry objects to check themselves for consistency
+     * 
+     * @param remarks List of CheckResult objects indicating consistency status
+     * @param jobMeta the metadata object for the job entry
+     * @param space the variable space to resolve string expressions with variables with
+     * @param repository the repository to load Kettle objects from
+     * @param metaStore the MetaStore to load common elements from 
+     */
+    public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore);
+
     /**
      * Get a list of all the resource dependencies that the step is depending on.
      * 
@@ -548,8 +560,24 @@ public interface JobEntryInterface
 	 * 
 	 * @return The filename for this object. (also contained in the definitions map)
 	 * @throws KettleException in case something goes wrong during the export
+	 * @deprecated in favor of the same method with a MetaStore argument
 	 */
-	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface, Repository repository) throws KettleException;
+	@Deprecated public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface, Repository repository) throws KettleException;
+
+	 /**
+   * Exports the object to a flat-file system, adding content with filename keys to a set of definitions.
+   * The supplied resource naming interface allows the object to name appropriately without worrying about those parts of the implementation specific details.
+   *  
+   * @param space The variable space to resolve (environment) variables with.
+   * @param definitions The map containing the filenames and content
+   * @param namingInterface The resource naming interface allows the object to be named appropriately
+   * @param repository The repository to load resources from
+   * @param metaStore the metaStore to load external metadata from
+   * 
+   * @return The filename for this object. (also contained in the definitions map)
+   * @throws KettleException in case something goes wrong during the export
+   */
+  public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore) throws KettleException;
 
 	/**
 	 * Checks whether the job entry defines one or more references to a repository object

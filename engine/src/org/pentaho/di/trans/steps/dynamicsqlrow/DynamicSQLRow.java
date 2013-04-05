@@ -67,7 +67,7 @@ public class DynamicSQLRow extends BaseStep implements StepInterface
 		{
 			first=false;
 			data.outputRowMeta = rowMeta.clone();
-			meta.getFields(data.outputRowMeta, getStepname(), new RowMetaInterface[] { meta.getTableFields(), }, null, this);
+			meta.getFields(data.outputRowMeta, getStepname(), new RowMetaInterface[] { meta.getTableFields(), }, null, this, repository, metaStore);
 			
 			loadFromBuffer=false;
 		}

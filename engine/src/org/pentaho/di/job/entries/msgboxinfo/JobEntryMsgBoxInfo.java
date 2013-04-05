@@ -35,6 +35,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.gui.GUIFactory;
 import org.pentaho.di.core.gui.ThreadDialogs;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
@@ -237,7 +238,7 @@ public class JobEntryMsgBoxInfo extends JobEntryBase implements Cloneable, JobEn
 	}
 
   @Override
-  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta)
+  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore)
   {
     addOkRemark(this, "bodyMessage", remarks); //$NON-NLS-1$
     addOkRemark(this, "titleMessage", remarks); //$NON-NLS-1$

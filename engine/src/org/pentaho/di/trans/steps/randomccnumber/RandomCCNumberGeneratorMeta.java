@@ -222,7 +222,7 @@ public class RandomCCNumberGeneratorMeta extends BaseStepMeta implements StepMet
 	}
 
 	public void getFields(RowMetaInterface row, String name,
-			RowMetaInterface[] info, StepMeta nextStep, VariableSpace space)
+			RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore)
 			throws KettleStepException {
 
 		ValueMetaInterface v = new ValueMeta(cardNumberFieldName, ValueMeta.TYPE_STRING);
@@ -305,7 +305,7 @@ public class RandomCCNumberGeneratorMeta extends BaseStepMeta implements StepMet
 
 	public void check(List<CheckResultInterface> remarks, TransMeta transMeta,
 			StepMeta stepMeta, RowMetaInterface prev, String input[],
-			String output[], RowMetaInterface info) {
+			String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore) {
 		// See if we have input streams leading to this step!
 		int nrRemarks = remarks.size();
 		for (int i = 0; i < fieldCCType.length; i++) {

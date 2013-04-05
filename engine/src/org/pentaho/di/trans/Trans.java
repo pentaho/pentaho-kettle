@@ -832,6 +832,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           //
           step.initializeVariablesFrom(this);
           step.setUsingThreadPriorityManagment(transMeta.isUsingThreadPriorityManagment());
+          
+          // Pass the connected repository & metaStore to the steps runtime
+          //
+          step.setRepository(repository);
+          step.setMetaStore(metaStore);
 
           // If the step is partitioned, set the partitioning ID and some other
           // things as well...
@@ -3754,7 +3759,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * @throws KettleException if any errors occur during the dispatch to the slave server
    */
   public static String sendToSlaveServer(TransMeta transMeta, TransExecutionConfiguration executionConfiguration,
-      Repository repository) throws KettleException {
+      Repository repository, IMetaStore metaStore) throws KettleException {
     String carteObjectId;
     SlaveServer slaveServer = executionConfiguration.getRemoteServer();
 
@@ -3786,7 +3791,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             transMeta);
 
         TopLevelResource topLevelResource = ResourceUtil.serializeResourceExportInterface(
-            tempFile.getName().toString(), transMeta, transMeta, repository, executionConfiguration.getXML(),
+            tempFile.getName().toString(), transMeta, transMeta, repository, metaStore, executionConfiguration.getXML(),
             CONFIGURATION_IN_EXPORT_FILENAME);
 
         // Send the zip file over to the slave server...

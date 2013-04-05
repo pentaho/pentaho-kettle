@@ -394,12 +394,12 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 		}
 	}
 	
-	public void getFields(RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
+	public void getFields(RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
 	{
 		// Default: nothing changes to rowMeta
 	}
 
-	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		CheckResult cr;
 		String error_message = ""; //$NON-NLS-1$
@@ -542,7 +542,7 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 		}
 	}
 
-	public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev) throws KettleStepException
+	public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, Repository repository, IMetaStore metaStore) throws KettleStepException
 	{
 		SQLStatement retval = new SQLStatement(stepMeta.getName(), databaseMeta, null); // default: nothing to do!
 
@@ -613,7 +613,7 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 		return retval;
 	}
 
-	public void analyseImpact(List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info) throws KettleStepException
+	public void analyseImpact(List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, Repository repository, IMetaStore metaStore) throws KettleStepException
     {
         if (prev != null)
         {

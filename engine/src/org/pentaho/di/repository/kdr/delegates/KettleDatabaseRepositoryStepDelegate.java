@@ -134,8 +134,8 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
 
         if (stepMeta.getStepMetaInterface() != null) {
           // Read the step info from the repository!
-          stepMeta.getStepMetaInterface().readRep(repository, repository.metaStore, stepMeta.getObjectId(), databases);
           readRepCompatibleStepMeta(stepMeta.getStepMetaInterface(), repository, stepMeta.getObjectId(), databases);
+          stepMeta.getStepMetaInterface().readRep(repository, repository.metaStore, stepMeta.getObjectId(), databases);
         }
 
         // Get the partitioning as well...
@@ -203,8 +203,8 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
 			// This means we can now save the attributes of the step...
 			//
 			log.logDebug(BaseMessages.getString(PKG, "StepMeta.Log.SaveStepDetails")); //$NON-NLS-1$
+			compatibleSaveRep(stepMeta.getStepMetaInterface(), repository, id_transformation, stepMeta.getObjectId());
 			stepMeta.getStepMetaInterface().saveRep(repository, repository.metaStore, id_transformation, stepMeta.getObjectId());
-      compatibleSaveRep(stepMeta.getStepMetaInterface(), repository, id_transformation, stepMeta.getObjectId());
             
       // Save the name of the clustering schema that was chosen.
 			//

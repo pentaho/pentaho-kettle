@@ -73,7 +73,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 	            
 	            // Create the output row meta-data
 	            data.outputRowMeta = new RowMeta();
-	            meta.getFields(data.outputRowMeta, getStepname(), null, null, this); // get the metadata populated
+	            meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore); // get the metadata populated
 	            
 	            // Create convert meta-data objects that will contain Date & Number formatters
 	            //
@@ -153,7 +153,7 @@ public class LDAPInput extends BaseStep implements StepInterface
             // Create the output row meta-data
             data.nrIncomingFields= getInputRowMeta().size();
             data.outputRowMeta = getInputRowMeta().clone();
-            meta.getFields(data.outputRowMeta, getStepname(), null, null, this); // get the metadata populated
+            meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore); // get the metadata populated
             
             // Create convert meta-data objects that will contain Date & Number formatters
             //

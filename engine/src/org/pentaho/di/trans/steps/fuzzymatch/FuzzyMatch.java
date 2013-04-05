@@ -148,7 +148,7 @@ public class FuzzyMatch extends BaseStep implements StepInterface
 			first=false;
 			 
             data.outputRowMeta = getInputRowMeta().clone();
-            meta.getFields(data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.infoMeta }, null, this);
+            meta.getFields(data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.infoMeta }, null, this, repository, metaStore);
             
 			// Check lookup field
 			data.indexOfMainField = getInputRowMeta().indexOfValue(environmentSubstitute(meta.getMainStreamField()));

@@ -30,6 +30,7 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -49,7 +50,7 @@ public class JobEntryEmpty extends JobEntryBase implements JobEntryInterface
 
 	}
 
-  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta) {
+  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore) {
 
   }
 

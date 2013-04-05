@@ -70,7 +70,7 @@ public class CloneRow extends BaseStep implements StepInterface
 			first=false;
             data.outputRowMeta = getInputRowMeta().clone();
 			data.NrPrevFields=getInputRowMeta().size();
-            meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+            meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
             data.addInfosToRow=(meta.isAddCloneFlag()|| meta.isAddCloneNum() );
 
             if(meta.isAddCloneFlag())

@@ -19,7 +19,7 @@ package org.pentaho.di.trans.steps.openerp.objectoutput;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.pentaho.di.core.CheckResultInterface;
+
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -62,7 +62,7 @@ import org.w3c.dom.Node;
 	private ArrayList<String[]> keyLookups = new ArrayList<String[]>();
 	
 	@Override
-	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
+	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
     {
 		if (outputIDField){
 			if (outputIDFieldName == null || outputIDFieldName.length() == 0)
@@ -74,14 +74,6 @@ import org.w3c.dom.Node;
 	        row.addValueMeta( v );
 		}
     }
-	
-	@Override
-	public void check(List<CheckResultInterface> remarks, TransMeta transMeta,
-			StepMeta stepMeta, RowMetaInterface prev, String[] input,
-			String[] output, RowMetaInterface info) {
-		// TODO Auto-generated method stub
-
-	}
 
 	@Override
 	public StepInterface getStep(StepMeta stepMeta,

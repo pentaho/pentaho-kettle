@@ -37,6 +37,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
@@ -252,7 +253,7 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
     maximumTimeout = s;
   }
 
-  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta)
+  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore)
   {
     andValidator().validate(this, "maximumTimeout", remarks, putValidators(longValidator())); //$NON-NLS-1$
     andValidator().validate(this, "scaleTime", remarks, putValidators(integerValidator())); //$NON-NLS-1$

@@ -16,6 +16,7 @@
   
   <dependencies defaultconf="default-ext->default">
   
+
     <!-- Kettle dependencies -->  
     <dependency org="${ivy.artifact.group}"                name="kettle-core"          rev="${dependency.kettle.revision}"   changing="true"/>   
     
@@ -23,7 +24,8 @@
     <dependency org="pentaho"                              name="mondrian"                              rev="${dependency.mondrian.revision}" changing="true"/>
     <dependency org="pentaho"                              name="pentaho-hadoop-hive-jdbc-shim"         rev="${dependency.pentaho-hadoop-hive-jdbc-shim.revision}"/>
     <dependency org="pentaho"                              name="salesforce-partner"                    rev="24.0"/>
-    <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-core" rev="${dependency.pentaho-reporting.revision}" changing="true"/>
+    <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-core" rev="${dependency.pentaho-reporting.revision}" changing="true" transitive="false"/>
+    <dependency org="pentaho-library"                      name="libfonts"                              rev="${dependency.pentaho-reporting.revision}" changing="true" transitive="true"/>
     <dependency org="pentaho"                              name="pentaho-metadata"                      rev="${dependency.pentaho-metadata.revision}" changing="true" />
     <dependency org="pentaho"                              name="metastore"                             rev="${dependency.pentaho-metastore.revision}" changing="true" transitive="false"/>
     
@@ -92,13 +94,16 @@
     <dependency org="org.springframework"              name="spring"               rev="2.5.6"           transitive="false"/>
     <dependency org="org.hibernate"                    name="hibernate"            rev="3.2.6.ga"        transitive="false"/>
     <dependency org="cglib"                            name="cglib"                rev="2.2"             transitive="false"/>
-    <dependency org="org.owasp.esapi"                  name="esapi"                rev="2.0.1"           transitive="false"/>
-    <dependency org="net.sourceforge.nekohtml"         name="nekohtml"             rev="1.9.15"          transitive="false"/>
+    <dependency org="org.owasp.esapi"      name="esapi"                 rev="2.0.1"         transitive="false"/>
+    <dependency org="org.slf4j"           name="slf4j-api"     rev="1.6.4"   transitive="false"/>
+    <dependency org="org.slf4j"           name="slf4j-log4j12" rev="1.6.4"   transitive="false"/>
+    <dependency org="net.sourceforge.nekohtml" name="nekohtml" rev="1.9.15" transitive="false"/>
+    <dependency org="rhino"                 name="js"                  rev="1.7R3"            transitive="false"/>
+    <dependency org="javax.mail"            name="mail"                rev="1.4.7" transitive="false" />
+            
 
     <!--  for testing -->
     <dependency org="com.h2database"      name="h2"            rev="1.2.131" conf="test->default" transitive="false"/>
-    <dependency org="org.slf4j"           name="slf4j-api"     rev="1.6.1"   conf="test->default" transitive="false"/>
-    <dependency org="org.slf4j"           name="slf4j-log4j12" rev="1.6.1"   conf="test->default" transitive="false"/>
     <dependency org="oro"                 name="oro"           rev="2.0.8"   conf="test->default" transitive="false"/>
     <dependency org="jaxen"               name="jaxen"         rev="1.1.1"     conf="test->default" transitive="false"/>
     <dependency org="junit"               name="junit"         rev="4.7"     conf="test->default" transitive="false"/>

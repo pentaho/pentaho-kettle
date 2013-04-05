@@ -106,7 +106,7 @@ public class PrioritizeStreamsMeta extends BaseStepMeta implements StepMetaInter
     {
         this.stepName = stepName;
     }
-    public void getFields(RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
+    public void getFields(RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
 	{
 		// Default: nothing changes to rowMeta
     }
@@ -196,7 +196,7 @@ public class PrioritizeStreamsMeta extends BaseStepMeta implements StepMetaInter
 	        }
 	    }
 		
-	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		CheckResult cr;
 		

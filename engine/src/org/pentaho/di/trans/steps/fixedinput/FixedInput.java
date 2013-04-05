@@ -73,7 +73,7 @@ public class FixedInput extends BaseStep implements StepInterface
 			first=false;
 			
 			data.outputRowMeta = new RowMeta();
-			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+			meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
 
 			// The conversion logic for when the lazy conversion is turned of is simple:
 			// Pretend it's a lazy conversion object anyway and get the native type during conversion.

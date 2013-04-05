@@ -111,7 +111,7 @@ public class Delete extends BaseStep implements StepInterface
             
             // What's the output Row format?
             data.outputRowMeta = getInputRowMeta().clone();
-            meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+            meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
             
             data.schemaTable = meta.getDatabaseMeta().getQuotedSchemaTableCombination(environmentSubstitute(meta.getSchemaName()), environmentSubstitute(meta.getTableName()));
                                     

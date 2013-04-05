@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="pentaho-kettle" module="kettle-palo-plugin" revision="TRUNK-SNAPSHOT" status="integration" publication="20130320193417"/>
+  <info organisation="pentaho-kettle" module="kettle-palo-plugin" revision="TRUNK-SNAPSHOT" status="integration" publication="20130405165010"/>
 
   <configurations>
     <conf name="default"/>

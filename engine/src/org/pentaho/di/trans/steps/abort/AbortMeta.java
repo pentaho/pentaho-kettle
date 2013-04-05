@@ -69,12 +69,14 @@ public class AbortMeta  extends BaseStepMeta implements StepMetaInterface {
 	 */
 	private boolean alwaysLogRows;
 	
-	public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
+	public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
 	{
 		// Default: no values are added to the row in the step
 	}
 
-	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, 
+	    RowMetaInterface prev, String input[], String output[], RowMetaInterface info, 
+	    VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
         // See if we have input streams leading to this step!
         if (input.length == 0) {

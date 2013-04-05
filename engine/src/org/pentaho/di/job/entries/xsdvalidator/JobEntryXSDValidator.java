@@ -48,6 +48,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -314,7 +315,7 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
   }
 
   @Override
-  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta)
+  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore)
   {
     ValidatorContext ctx = new ValidatorContext();
     putVariableSpace(ctx, getVariables());

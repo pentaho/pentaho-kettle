@@ -105,7 +105,7 @@ public class NumberRangeMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space) throws KettleStepException {
+      VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException {
     ValueMetaInterface mcValue = new ValueMeta(outputField, ValueMetaInterface.TYPE_STRING);
     mcValue.setOrigin(name);
     mcValue.setLength(255);
@@ -201,7 +201,7 @@ public class NumberRangeMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info) {
+      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore) {
     CheckResult cr;
     if (prev == null || prev.size() == 0) {
       cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, "Not receiving any fields from previous steps!", stepinfo);

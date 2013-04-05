@@ -24,7 +24,6 @@ package org.pentaho.di.job.entries.connectedtorepository;
 import java.util.List;
 
 import org.pentaho.di.cluster.SlaveServer;
-import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -33,7 +32,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.ObjectId;
@@ -248,10 +246,4 @@ public class JobEntryConnectedToRepository extends JobEntryBase implements Clone
 	{
 		return false;
 	}
-
-  @Override
-  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta)
-  {
-
-  }
 }

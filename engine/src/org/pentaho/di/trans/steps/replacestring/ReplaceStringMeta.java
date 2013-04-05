@@ -330,7 +330,7 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 	 public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface info[], StepMeta nextStep,
-	            VariableSpace space) throws KettleStepException
+	            VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
 	  {
 		 int nrFields=fieldInStream==null?0:fieldInStream.length;
 		 for(int i=0;i<nrFields;i++) {
@@ -345,7 +345,8 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 	 public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo,
-	            RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	            RowMetaInterface prev, String input[], String output[], RowMetaInterface info, 
+	            VariableSpace space, Repository repository, IMetaStore metaStore)
 	  {
 
 		CheckResult cr;

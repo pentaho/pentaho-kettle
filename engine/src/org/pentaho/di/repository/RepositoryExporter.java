@@ -202,7 +202,7 @@ public class RepositoryExporter implements IRepositoryExporter {
             JobEntryTrans trans = (JobEntryTrans) entry;
             if (trans.getSpecificationMethod()==ObjectLocationSpecificationMethod.FILENAME) {
               try {
-                TransMeta meta = trans.getTransMeta(repository, jobMeta);
+                TransMeta meta = trans.getTransMeta(repository, repository.getMetaStore(), jobMeta);
                 FileObject fileObject = KettleVFS.getFileObject(meta.getFilename());
                 trans.setSpecificationMethod(ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME);
                 trans.setFileName(null);

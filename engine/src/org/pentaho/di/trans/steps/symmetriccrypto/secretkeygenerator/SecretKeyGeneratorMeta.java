@@ -265,7 +265,7 @@ public class SecretKeyGeneratorMeta extends BaseStepMeta implements StepMetaInte
 	}
 
 	public void getFields(RowMetaInterface row, String name,
-			RowMetaInterface[] info, StepMeta nextStep, VariableSpace space)
+			RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore)
 			throws KettleStepException {
 
 		ValueMetaInterface v;
@@ -360,7 +360,7 @@ public class SecretKeyGeneratorMeta extends BaseStepMeta implements StepMetaInte
 
 	public void check(List<CheckResultInterface> remarks, TransMeta transMeta,
 			StepMeta stepMeta, RowMetaInterface prev, String input[],
-			String output[], RowMetaInterface info) {
+			String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore) {
 		// See if we have input streams leading to this step!
 		int nrRemarks = remarks.size();
 		for (int i = 0; i < algorithm.length; i++) {

@@ -59,7 +59,6 @@ import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
-import org.pentaho.di.trans.DataServiceMeta;
 
 public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRepositoryBaseDelegate {
   private static Class<?>                    PKG                    = Repository.class;                                                                  // for
@@ -1111,10 +1110,6 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
     return getNextID(quoteTable(KettleDatabaseRepository.TABLE_R_TRANS_HOP), quote(KettleDatabaseRepository.FIELD_TRANS_HOP_ID_TRANS_HOP));
   }
 
-  public synchronized ObjectId getNextTransDataServiceID() throws KettleException {
-    return getNextID(quoteTable(KettleDatabaseRepository.TABLE_R_TRANS_DATA_SERVICE), quote(KettleDatabaseRepository.FIELD_TRANS_DATA_SERVICE_ID_TRANS_DATA_SERVICE));
-  }
-
   public synchronized ObjectId getNextJobHopID() throws KettleException {
     return getNextID(quoteTable(KettleDatabaseRepository.TABLE_R_JOB_HOP), quote(KettleDatabaseRepository.FIELD_JOB_HOP_ID_JOB_HOP));
   }
@@ -1666,22 +1661,6 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
     } catch (SQLException e) {
       throw new KettleException("Unable to perform delete with SQL: " + sql + ", ids=" + ids.toString(), e);
     }
-  }
-
-  /**
-   * @return A list of all the defined data services
-   * @throws KettleException
-   */
-  public List<DataServiceMeta> listDataServices() throws KettleException {
-    List<DataServiceMeta> list = new ArrayList<DataServiceMeta>();
-    List<Object[]> rows = repository.connectionDelegate.getRows("SELECT * FROM " + quoteTable(KettleDatabaseRepository.TABLE_R_TRANS_DATA_SERVICE), 0);
-    RowMetaInterface rowMeta = repository.connectionDelegate.getReturnRowMeta();
-    for (Object[] row : rows) {
-      DataServiceMeta dataService = new DataServiceMeta();
-      repository.transDelegate.loadDataService(dataService, new RowMetaAndData(rowMeta, row));
-      list.add(dataService);
-    }
-    return list;
   }
 
   public void closeAttributeLookupPreparedStatements() throws KettleException {

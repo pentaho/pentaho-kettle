@@ -424,7 +424,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
+	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
 	{
         
 		// the filename
@@ -695,7 +695,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 	}
 
 
-	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		CheckResult cr;
 
@@ -703,32 +703,32 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 		if(filefield)
 		{
 			if (input.length > 0)
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "GetFileNamesMeta.CheckResult.InputOk"), stepinfo);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "GetFileNamesMeta.CheckResult.InputOk"), stepMeta);
 			else
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "GetFileNamesMeta.CheckResult.InputErrorKo"), stepinfo);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "GetFileNamesMeta.CheckResult.InputErrorKo"), stepMeta);
 			remarks.add(cr);
 			
 			if(Const.isEmpty(dynamicFilenameField))
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "GetFileNamesMeta.CheckResult.FolderFieldnameMissing"), stepinfo);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "GetFileNamesMeta.CheckResult.FolderFieldnameMissing"), stepMeta);
 			else
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "GetFileNamesMeta.CheckResult.FolderFieldnameOk"), stepinfo);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "GetFileNamesMeta.CheckResult.FolderFieldnameOk"), stepMeta);
 			remarks.add(cr);
 			
 		}else{
 
 			if (input.length > 0)
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "GetFileNamesMeta.CheckResult.NoInputError"), stepinfo);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "GetFileNamesMeta.CheckResult.NoInputError"), stepMeta);
 			else
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "GetFileNamesMeta.CheckResult.NoInputOk"), stepinfo);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "GetFileNamesMeta.CheckResult.NoInputOk"), stepMeta);
 					
 			remarks.add(cr);
 			
 			// check specified file names
 			FileInputList fileList = getFileList(transMeta);
 			if (fileList.nrOfFiles() == 0)
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "GetFileNamesMeta.CheckResult.ExpectedFilesError"), stepinfo);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "GetFileNamesMeta.CheckResult.ExpectedFilesError"), stepMeta);
 			else
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "GetFileNamesMeta.CheckResult.ExpectedFilesOk", ""+fileList.nrOfFiles()), stepinfo);	
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "GetFileNamesMeta.CheckResult.ExpectedFilesOk", ""+fileList.nrOfFiles()), stepMeta);	
 			remarks.add(cr);
 		}
 	}
@@ -759,14 +759,16 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 	}	
 	
 	
-	/**
-	 * Since the exported transformation that runs this will reside in a ZIP file, we can't reference files relatively.
-	 * So what this does is turn the name of files into absolute paths OR it simply includes the resource in the ZIP file.
-	 * For now, we'll simply turn it into an absolute path and pray that the file is on a shared drive or something like that.
-
-	 * TODO: create options to configure this behavior 
-	 */
-	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository) throws KettleException {
+  /**
+   * @param space the variable space to use 
+   * @param definitions
+   * @param resourceNamingInterface
+   * @param repository The repository to optionally load other resources from (to be converted to XML)
+   * @param metaStore the metaStore in which non-kettle metadata could reside. 
+   * 
+   * @return the filename of the exported resource
+   */
+  public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore) throws KettleException {
 		try {
 			// The object that we're modifying here is a copy of the original!
 			// So let's change the filename from relative to absolute by grabbing the file object...

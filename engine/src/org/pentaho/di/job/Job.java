@@ -101,6 +101,7 @@ import org.pentaho.di.www.AddJobServlet;
 import org.pentaho.di.www.SocketRepository;
 import org.pentaho.di.www.StartJobServlet;
 import org.pentaho.di.www.WebResult;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 /**
@@ -138,7 +139,13 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    * The job that's launching this (sub-) job. This gives us access to the whole
    * chain, including the parent variables, etc.
    */
-  private Job parentJob;
+  protected Job parentJob;
+  
+  /**
+   * The parent transformation
+   */
+  protected Trans parentTrans;
+
 
   /** The parent logging interface to reference */
   private LoggingObjectInterface parentLoggingObject;
@@ -1913,11 +1920,12 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    * @param jobMeta the job meta
    * @param executionConfiguration the execution configuration
    * @param repository the repository
+   * @param metaStore the metaStore
    * @return the string
    * @throws KettleException the kettle exception
    */
   public static String sendToSlaveServer(JobMeta jobMeta, JobExecutionConfiguration executionConfiguration,
-      Repository repository) throws KettleException {
+      Repository repository, IMetaStore metaStore) throws KettleException {
     String carteObjectId;
     SlaveServer slaveServer = executionConfiguration.getRemoteServer();
 
@@ -1944,7 +1952,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
             jobMeta);
 
         TopLevelResource topLevelResource = ResourceUtil.serializeResourceExportInterface(
-            tempFile.getName().toString(), jobMeta, jobMeta, repository, executionConfiguration.getXML(),
+            tempFile.getName().toString(), jobMeta, jobMeta, repository, metaStore, executionConfiguration.getXML(),
             CONFIGURATION_IN_EXPORT_FILENAME);
 
         // Send the zip file over to the slave server...
@@ -2688,5 +2696,13 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   public void setArguments(String[] arguments) {
     this.arguments = arguments;
+  }
+
+  public Trans getParentTrans() {
+    return parentTrans;
+  }
+
+  public void setParentTrans(Trans parentTrans) {
+    this.parentTrans = parentTrans;
   }
 }

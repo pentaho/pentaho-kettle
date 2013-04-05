@@ -99,7 +99,7 @@ public class SalesforceInsert extends BaseStep implements StepInterface
 			// Create the output row meta-data
 			data.inputRowMeta = getInputRowMeta().clone();
 	        data.outputRowMeta = data.inputRowMeta.clone();
-			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+			meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
 			
 			// Build the mapping of input position to field name
 			data.fieldnrs = new int[meta.getUpdateStream().length];

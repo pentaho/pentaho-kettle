@@ -137,17 +137,17 @@ public class StepMetastructureMeta extends BaseStepMeta implements StepMetaInter
 		return new StepMetastructureData();
 	}
 	
-	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		CheckResult cr;
 		
 		
-		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, "Not implemented", stepinfo);
+		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, "Not implemented", stepMeta);
 		remarks.add(cr);
 		
 	}
 	
-	public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
+	public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
     {
         //we create a new output row structure - clear r
 		r.clear();

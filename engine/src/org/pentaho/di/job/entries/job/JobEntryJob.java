@@ -53,6 +53,7 @@ import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -888,7 +889,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
           //
           String carteObjectId = null;
           try {
-            carteObjectId = Job.sendToSlaveServer(jobMeta, jobExecutionConfiguration, rep);
+            carteObjectId = Job.sendToSlaveServer(jobMeta, jobExecutionConfiguration, rep, metaStore);
           } catch (KettleException e) {
             // Perhaps the job exists on the remote server, carte is down, etc.
             // This is an abort situation, stop the parent job...
@@ -1192,12 +1193,19 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   /**
-   * We're going to load the transformation meta data referenced here. Then
-   * we're going to give it a new filename, modify that filename in this
-   * entries. The parent caller will have made a copy of it, so it should be OK
-   * to do so.
+   * Exports the object to a flat-file system, adding content with filename keys to a set of definitions.
+   * The supplied resource naming interface allows the object to name appropriately without worrying about those parts of the implementation specific details.
+   *  
+   * @param space The variable space to resolve (environment) variables with.
+   * @param definitions The map containing the filenames and content
+   * @param namingInterface The resource naming interface allows the object to be named appropriately
+   * @param repository The repository to load resources from
+   * @param metaStore the metaStore to load external metadata from
+   * 
+   * @return The filename for this object. (also contained in the definitions map)
+   * @throws KettleException in case something goes wrong during the export
    */
-  public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface, Repository repository) throws KettleException {
+  public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore) throws KettleException {
     // Try to load the transformation from repository or file.
     // Modify this recursively too...
     //
@@ -1207,12 +1215,12 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     // First load the job meta data...
     //
     copyVariablesFrom(space); // To make sure variables are available.
-    JobMeta jobMeta = getJobMeta(repository, space);
+    JobMeta jobMeta = getJobMeta(repository, metaStore, space);
 
     // Also go down into the job and export the files there. (going down
     // recursively)
     //
-    String proposedNewFilename = jobMeta.exportResources(jobMeta, definitions, namingInterface, repository);
+    String proposedNewFilename = jobMeta.exportResources(jobMeta, definitions, namingInterface, repository, metaStore);
 
     // To get a relative path to it, we inject
     // ${Internal.Job.Filename.Directory}
@@ -1236,7 +1244,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   @Override
-  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta) {
+  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore) {
     if (setLogfile) {
       andValidator().validate(this, "logfile", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
     }
@@ -1253,7 +1261,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
   public static void main(String[] args) {
     List<CheckResultInterface> remarks = new ArrayList<CheckResultInterface>();
-    new JobEntryJob().check(remarks, null);
+    new JobEntryJob().check(remarks, null, new Variables(), null, null);
     System.out.printf("Remarks: %s\n", remarks);
   }
 

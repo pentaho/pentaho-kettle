@@ -934,7 +934,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 			StepMeta stepMeta = new StepMeta(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.StepMeta.Title"), name, info); //$NON-NLS-1$
 			RowMetaInterface prev = transMeta.getPrevStepFields(stepname);
 
-			SQLStatement sql = info.getSQLStatements(transMeta, stepMeta, prev);
+			SQLStatement sql = info.getSQLStatements(transMeta, stepMeta, prev, repository, metaStore);
 			if (!sql.hasError())
 			{
 				if (sql.hasSQL())

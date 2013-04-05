@@ -73,7 +73,7 @@ public class RandomCCNumberGenerator extends BaseStep implements StepInterface {
 		if (first) {
 			first = false;
 			data.outputRowMeta = new RowMeta();
-			meta.getFields(data.outputRowMeta, getStepname(), null, null,this);
+			meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
 		}
 		for(int i=0; i< data.cardTypes.length && !isStopped(); i++) {
 			

@@ -28,7 +28,7 @@ public class DatabaseMetaStoreUtil extends MetaStoreUtil {
   
     // If the data type doesn't exist, it's an empty list...
     //
-    IMetaStoreElementType elementType = metaStore.getElementTypeByName(PentahoDefaults.NAMESPACE, MetaStoreConst.DATABASE_TYPE_NAME);
+    IMetaStoreElementType elementType = metaStore.getElementTypeByName(PentahoDefaults.NAMESPACE, PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME);
     if (elementType==null) {
       return databases;
     }
@@ -56,7 +56,7 @@ public class DatabaseMetaStoreUtil extends MetaStoreUtil {
     
     // If the database connection element type doesn't exist, create it
     //
-    IMetaStoreElementType elementType = metaStore.getElementTypeByName(PentahoDefaults.NAMESPACE, MetaStoreConst.DATABASE_TYPE_NAME);
+    IMetaStoreElementType elementType = metaStore.getElementTypeByName(PentahoDefaults.NAMESPACE, PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME);
     if (elementType==null) {
       elementType = populateDatabaseElementType(metaStore);
       metaStore.createElementType(PentahoDefaults.NAMESPACE, elementType);
@@ -80,13 +80,13 @@ public class DatabaseMetaStoreUtil extends MetaStoreUtil {
     // If we didn't get an ID, provide one
     //
     if (elementType.getId()==null) {
-      elementType.setId(MetaStoreConst.DATABASE_TYPE_NAME);
+      elementType.setId(PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME);
     }
     
     // Name and description...
     //
-    elementType.setName(MetaStoreConst.DATABASE_TYPE_NAME);
-    elementType.setDescription(MetaStoreConst.DATABASE_TYPE_DESCRIPTION);
+    elementType.setName(PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME);
+    elementType.setDescription(PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_DESCRIPTION);
     return elementType;
   }
   
@@ -98,7 +98,7 @@ public class DatabaseMetaStoreUtil extends MetaStoreUtil {
     
     // If the data type doesn't exist, error out...
     //
-    IMetaStoreElementType elementType = metaStore.getElementTypeByName(PentahoDefaults.NAMESPACE, MetaStoreConst.DATABASE_TYPE_NAME);
+    IMetaStoreElementType elementType = metaStore.getElementTypeByName(PentahoDefaults.NAMESPACE, PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME);
     if (elementType==null) {
       throw new MetaStoreException("Unable to find the database connection type");
     }

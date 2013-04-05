@@ -33,6 +33,7 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
@@ -949,90 +950,90 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 
 	}
 	
-	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{	CheckResult cr;
 		if (prev==null || prev.size()==0)
-			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "MailMeta.CheckResult.NotReceivingFields"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "MailMeta.CheckResult.NotReceivingFields"), stepMeta); //$NON-NLS-1$
 		else
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MailMeta.CheckResult.StepRecevingData",prev.size()+""), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MailMeta.CheckResult.StepRecevingData",prev.size()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
 		remarks.add(cr);
 		
 		
 		// See if we have input streams leading to this step!
 		if (input.length>0)
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MailMeta.CheckResult.StepRecevingData2"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MailMeta.CheckResult.StepRecevingData2"), stepMeta); //$NON-NLS-1$
 		else
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "MailMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "MailMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepMeta); //$NON-NLS-1$
 		remarks.add(cr);
 		
 		// Servername
 		if(Const.isEmpty(server))
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "MailMeta.CheckResult.ServerEmpty"), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "MailMeta.CheckResult.ServerEmpty"), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MailMeta.CheckResult.ServerOk"), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MailMeta.CheckResult.ServerOk"), stepMeta);
 			remarks.add(cr);
 			// is the field exists?
 			if(prev.indexOfValue(transMeta.environmentSubstitute(server))<0)
-		    	cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "MailMeta.CheckResult.ServerFieldNotFound",server), stepinfo);
+		    	cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "MailMeta.CheckResult.ServerFieldNotFound",server), stepMeta);
 			remarks.add(cr);
 		}
 		
 		
 		// port number
 		if(Const.isEmpty(port))
-			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "MailMeta.CheckResult.PortEmpty"), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "MailMeta.CheckResult.PortEmpty"), stepMeta);
 		else
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MailMeta.CheckResult.PortOk"), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MailMeta.CheckResult.PortOk"), stepMeta);
 		remarks.add(cr);
 		
 		// reply address
 		if(Const.isEmpty(replyAddress))
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "MailMeta.CheckResult.ReplayAddressEmpty"), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "MailMeta.CheckResult.ReplayAddressEmpty"), stepMeta);
 		else
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MailMeta.CheckResult.ReplayAddressOk"), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MailMeta.CheckResult.ReplayAddressOk"), stepMeta);
 		remarks.add(cr);
 		
 		// Destination
 		if(Const.isEmpty(destination))
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "MailMeta.CheckResult.DestinationEmpty"), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "MailMeta.CheckResult.DestinationEmpty"), stepMeta);
 		else
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MailMeta.CheckResult.DestinationOk"), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MailMeta.CheckResult.DestinationOk"), stepMeta);
 		remarks.add(cr);
 		
 		// Subject
 		if(Const.isEmpty(subject))
-			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "MailMeta.CheckResult.SubjectEmpty"), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "MailMeta.CheckResult.SubjectEmpty"), stepMeta);
 		else
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MailMeta.CheckResult.SubjectOk"), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MailMeta.CheckResult.SubjectOk"), stepMeta);
 		remarks.add(cr);
 		
 		// Comment
 		if(Const.isEmpty(comment))
-			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "MailMeta.CheckResult.CommentEmpty"), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "MailMeta.CheckResult.CommentEmpty"), stepMeta);
 		else
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MailMeta.CheckResult.CommentEmpty"), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MailMeta.CheckResult.CommentEmpty"), stepMeta);
 		remarks.add(cr);
 		
 		if(isFilenameDynamic)
 		{
 			// Dynamic Filename field
 			if(Const.isEmpty(dynamicFieldname))
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "MailMeta.CheckResult.DynamicFilenameFieldEmpty"), stepinfo);
+				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "MailMeta.CheckResult.DynamicFilenameFieldEmpty"), stepMeta);
 			else
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MailMeta.CheckResult.DynamicFilenameFieldOk"), stepinfo);
+				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MailMeta.CheckResult.DynamicFilenameFieldOk"), stepMeta);
 			remarks.add(cr);
 			
 		}else
 		{
 			// static filename
 			if(Const.isEmpty(sourcefilefoldername))
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "MailMeta.CheckResult.SourceFilenameEmpty"), stepinfo);
+				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "MailMeta.CheckResult.SourceFilenameEmpty"), stepMeta);
 			else
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MailMeta.CheckResult.SourceFilenameOk"), stepinfo);
+				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MailMeta.CheckResult.SourceFilenameOk"), stepMeta);
 			remarks.add(cr);
 		}
 		
@@ -1042,18 +1043,18 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				// dynamic zipfilename
 				if(Const.isEmpty(getDynamicZipFilenameField()))
-					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "MailMeta.CheckResult.DynamicZipfilenameEmpty"), stepinfo);
+					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "MailMeta.CheckResult.DynamicZipfilenameEmpty"), stepMeta);
 				else
-					cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MailMeta.CheckResult.DynamicZipfilenameOK"), stepinfo);
+					cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MailMeta.CheckResult.DynamicZipfilenameOK"), stepMeta);
 				remarks.add(cr);
 				
 			}else
 			{
 				// static zipfilename
 				if(Const.isEmpty(zipFilename))
-					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "MailMeta.CheckResult.ZipfilenameEmpty"), stepinfo);
+					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "MailMeta.CheckResult.ZipfilenameEmpty"), stepMeta);
 				else
-					cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MailMeta.CheckResult.ZipfilenameOk"), stepinfo);
+					cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MailMeta.CheckResult.ZipfilenameOk"), stepMeta);
 				remarks.add(cr);
 			}
 		}

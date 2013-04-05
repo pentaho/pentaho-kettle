@@ -966,7 +966,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 	}
 
 	
-	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
+	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
 	{
 		// No values are added to the row in this type of step
 		// However, in case of Fixed length records, 
@@ -1204,14 +1204,14 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 	}
 
 
-	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		CheckResult cr;
 		
 		// Check output fields
 		if (prev!=null && prev.size()>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "TextFileOutputMeta.CheckResult.FieldsReceived", ""+prev.size()), stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "TextFileOutputMeta.CheckResult.FieldsReceived", ""+prev.size()), stepMeta);
 			remarks.add(cr);
 			
 			String  error_message="";
@@ -1230,12 +1230,12 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			if (error_found) 
 			{
 				error_message= BaseMessages.getString(PKG, "TextFileOutputMeta.CheckResult.FieldsNotFound", error_message);
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "TextFileOutputMeta.CheckResult.AllFieldsFound"), stepinfo);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "TextFileOutputMeta.CheckResult.AllFieldsFound"), stepMeta);
 				remarks.add(cr);
 			}
 		}
@@ -1243,16 +1243,16 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "TextFileOutputMeta.CheckResult.ExpectedInputOk"), stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "TextFileOutputMeta.CheckResult.ExpectedInputOk"), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "TextFileOutputMeta.CheckResult.ExpectedInputError"), stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "TextFileOutputMeta.CheckResult.ExpectedInputError"), stepMeta);
 			remarks.add(cr);
 		}
 		
-		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_COMMENT, BaseMessages.getString(PKG, "TextFileOutputMeta.CheckResult.FilesNotChecked"), stepinfo);
+		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_COMMENT, BaseMessages.getString(PKG, "TextFileOutputMeta.CheckResult.FilesNotChecked"), stepMeta);
 		remarks.add(cr);
 	}
 
@@ -1269,8 +1269,16 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 	/**
 	 * Since the exported transformation that runs this will reside in a ZIP file, we can't reference files relatively.
 	 * So what this does is turn the name of the base path into an absolute path.
-	 */
-	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository) throws KettleException {
+   *
+   * @param space the variable space to use 
+   * @param definitions
+   * @param resourceNamingInterface
+   * @param repository The repository to optionally load other resources from (to be converted to XML)
+   * @param metaStore the metaStore in which non-kettle metadata could reside. 
+   * 
+   * @return the filename of the exported resource
+   */
+  public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore) throws KettleException {
 		try {
 			// The object that we're modifying here is a copy of the original!
 			// So let's change the filename from relative to absolute by grabbing the file object...

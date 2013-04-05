@@ -94,7 +94,7 @@ public class DetectLastRowMeta extends BaseStepMeta implements StepMetaInterface
         resultfieldname = "result"; //$NON-NLS-1$
     }
     
-    public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException {
+    public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException {
 
         if (!Const.isEmpty(resultfieldname))
         {
@@ -144,7 +144,7 @@ public class DetectLastRowMeta extends BaseStepMeta implements StepMetaInterface
         }
     }
 
-    public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info) {
+    public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore) {
         CheckResult cr;
         String error_message = ""; //$NON-NLS-1$
       

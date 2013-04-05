@@ -159,7 +159,7 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface
 	    return null;
 	}
     
-    public void getFields(RowMetaInterface r, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException
+    public void getFields(RowMetaInterface r, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
     {
         // We don't have any input fields here in "r" as they are all info fields.
         // So we just take the info fields.
@@ -172,7 +172,9 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface
         }
     }
 
-    public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info)
+    public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, 
+        RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, 
+        VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		CheckResult cr;
 		

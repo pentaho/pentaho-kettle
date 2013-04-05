@@ -205,17 +205,24 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
   }
 
   @Override
-  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta) {
+  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore) {
     andValidator().validate(this, "filename", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
   }
 
-	/**
-	 * Since the exported job that runs this will reside in a ZIP file, we can't reference files relatively.
-	 * So what this does is turn the name of files into absolute paths OR it simply includes the resource in the ZIP file.
-	 * For now, we'll simply turn it into an absolute path and pray that the file is on a shared drive or something like that.
-	 * TODO: create options to configure this behavior 
-	 */
-	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository) throws KettleException {
+  /**
+   * Exports the object to a flat-file system, adding content with filename keys to a set of definitions.
+   * The supplied resource naming interface allows the object to name appropriately without worrying about those parts of the implementation specific details.
+   *  
+   * @param space The variable space to resolve (environment) variables with.
+   * @param definitions The map containing the filenames and content
+   * @param namingInterface The resource naming interface allows the object to be named appropriately
+   * @param repository The repository to load resources from
+   * @param metaStore the metaStore to load external metadata from
+   * 
+   * @return The filename for this object. (also contained in the definitions map)
+   * @throws KettleException in case something goes wrong during the export
+   */
+  public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore) throws KettleException {
 		try {
 			// The object that we're modifying here is a copy of the original!
 			// So let's change the filename from relative to absolute by grabbing the file object...
@@ -232,7 +239,7 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
 				if (fileObject.exists()) {
 					// Convert to an absolute path...
 					// 
-					filename = resourceNamingInterface.nameResource(fileObject, space, true);
+					filename = namingInterface.nameResource(fileObject, space, true);
 					
 					return filename;
 				}

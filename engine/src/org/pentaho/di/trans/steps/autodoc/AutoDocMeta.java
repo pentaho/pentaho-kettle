@@ -230,7 +230,7 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
 		}
 	}
 	
-	public void getFields(RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
+	public void getFields(RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
 	{
 		if (outputType==OutputType.METADATA) {
 		  
@@ -297,7 +297,9 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
 		}
 	}
 	
-	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, 
+	    RowMetaInterface prev, String input[], String output[], RowMetaInterface info, 
+	    VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		CheckResult cr;
 		if (prev==null || prev.size()==0)

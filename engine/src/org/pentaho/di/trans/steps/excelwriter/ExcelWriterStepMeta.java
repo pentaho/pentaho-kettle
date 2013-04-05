@@ -760,7 +760,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
 		return retval;
 	}
 
-	public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) {
+	public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) {
 		if (r == null)
 			r = new RowMeta(); // give back values
 
@@ -965,7 +965,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
 		}
 	}
 
-	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info) {
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore) {
 		CheckResult cr;
 
 		// Check output fields
@@ -1007,10 +1007,16 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
 		remarks.add(cr);
 	}
 
-	/**
-	 * Since the exported transformation that runs this will reside in a ZIP file, we can't reference files relatively. So what this does is turn the name of the base path into an absolute path.
-	 */
-	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository) throws KettleException {
+  /**
+   * @param space the variable space to use 
+   * @param definitions
+   * @param resourceNamingInterface
+   * @param repository The repository to optionally load other resources from (to be converted to XML)
+   * @param metaStore the metaStore in which non-kettle metadata could reside. 
+   * 
+   * @return the filename of the exported resource
+   */
+  public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore) throws KettleException {
 		try {
 			// The object that we're modifying here is a copy of the original!
 			// So let's change the filename from relative to absolute by grabbing the file object...

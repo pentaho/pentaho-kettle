@@ -76,7 +76,7 @@ public class GetRepositoryNames extends BaseStep implements StepInterface {
       first = false;
 
       data.outputRowMeta = new RowMeta();
-      meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+      meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
     }
     
     if (data.filenr>=data.list.size()) {

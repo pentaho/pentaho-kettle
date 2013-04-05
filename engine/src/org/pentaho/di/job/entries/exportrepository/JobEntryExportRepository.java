@@ -49,6 +49,8 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -798,7 +800,7 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 	}
     
 	  @Override
-	  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta)
+	  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore)
 	  {
 	    andValidator().validate(this, "repositoryname", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
 
@@ -813,7 +815,7 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 
 	  public static void main(String[] args) {
 	    List<CheckResultInterface> remarks = new ArrayList<CheckResultInterface>();
-	    new JobEntrySFTP().check(remarks, null);
+	    new JobEntrySFTP().check(remarks, null, new Variables(), null, null);
 	    System.out.printf("Remarks: %s\n", remarks);
 	  }
 }

@@ -175,7 +175,7 @@ public class NormalExecutionTest extends TestCase {
   
       // Get the RowMeta for the injector step (it will be an Integer named 'a' of length 1)
       RowMeta injectorRowMeta = new RowMeta();
-      ((BaseStepMeta) injector.getStepMeta().getStepMetaInterface()).getFields(injectorRowMeta, null, null, null, null);
+      ((BaseStepMeta) injector.getStepMeta().getStepMetaInterface()).getFields(injectorRowMeta, null, null, null, null, null, null);
   
       RowProducer producer = trans.addRowProducer(injector.getStepname(), 0);
   

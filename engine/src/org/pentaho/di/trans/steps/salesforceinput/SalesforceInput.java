@@ -68,7 +68,7 @@ public class SalesforceInput extends BaseStep implements StepInterface
 		    // Create the output row meta-data
             data.outputRowMeta = new RowMeta();
 
-		    meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+		    meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
 			
             // For String to <type> conversions, we allocate a conversion meta data row as well...
 		    //

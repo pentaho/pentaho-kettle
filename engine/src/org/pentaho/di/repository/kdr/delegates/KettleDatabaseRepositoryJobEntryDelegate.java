@@ -40,6 +40,7 @@ import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 import org.pentaho.di.repository.kdr.delegates.metastore.KettleDatabaseRepositoryMetaStore;
 
@@ -149,7 +150,10 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
 							if (jobEntry instanceof JobEntryBase) {
 								loadJobEntryBase((JobEntryBase)jobEntry, id_jobentry, databases, slaveServers);
 							}
+							
+							compatibleJobEntryLoadRep(jobEntry, repository, id_jobentry_type, databases, slaveServers);
 							jobEntry.loadRep(repository, repository.metaStore, id_jobentry, databases, slaveServers);
+							
 							jobEntryCopy.getEntry().setObjectId(id_jobentry);
 							
 							jobentries.add(jobEntryCopy.getEntry());
@@ -178,7 +182,15 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
 		}
 	}
 
-	public void saveJobEntryCopy(JobEntryCopy copy, ObjectId id_job, KettleDatabaseRepositoryMetaStore metaStore) throws KettleException
+	@SuppressWarnings("deprecation")
+  private void compatibleJobEntryLoadRep(JobEntryInterface jobEntry, KettleDatabaseRepository repository,
+      ObjectId id_jobentry_type, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
+    
+	  jobEntry.loadRep(repository, id_jobentry_type, databases, slaveServers);
+	  
+  }
+
+  public void saveJobEntryCopy(JobEntryCopy copy, ObjectId id_job, KettleDatabaseRepositoryMetaStore metaStore) throws KettleException
 	{
 		try
 		{
@@ -197,6 +209,8 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
 				// THIS IS THE PLUGIN/JOB-ENTRY BEING SAVED!
 				//
 				entry.saveRep(repository, metaStore, id_job);  
+				compatibleEntrySaveRep(entry, repository, id_job);
+				
 				id_jobentry = entry.getObjectId();
 			}
 
@@ -224,8 +238,12 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
 		}
 	}
 
+	@SuppressWarnings("deprecation")
+  private void compatibleEntrySaveRep(JobEntryInterface entry, Repository repository, ObjectId id_job) throws KettleException {
+	  entry.saveRep(repository, id_job);
+  }
 
-	public synchronized ObjectId insertJobEntry(ObjectId id_job, JobEntryBase jobEntryBase) throws KettleException {
+  public synchronized ObjectId insertJobEntry(ObjectId id_job, JobEntryBase jobEntryBase) throws KettleException {
 		ObjectId id = repository.connectionDelegate.getNextJobEntryID();
 
 		ObjectId id_jobentry_type = getJobEntryTypeID(jobEntryBase.getPluginId());

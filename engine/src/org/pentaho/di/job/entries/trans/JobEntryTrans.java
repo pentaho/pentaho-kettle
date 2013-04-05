@@ -920,7 +920,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
           // Send the XML over to the slave server
           // Also start the transformation over there...
           //
-          String carteObjectId = Trans.sendToSlaveServer(transMeta, transExecutionConfiguration, rep);
+          String carteObjectId = Trans.sendToSlaveServer(transMeta, transExecutionConfiguration, rep, metaStore);
 
           // Now start the monitoring...
           //
@@ -1146,7 +1146,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     return resultat;
   }
 
-  public TransMeta getTransMeta(Repository rep, VariableSpace space) throws KettleException {
+  @Deprecated public TransMeta getTransMeta(Repository rep, VariableSpace space) throws KettleException {
     return getTransMeta(rep, null, space);
   }
   
@@ -1245,7 +1245,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     this.clustering = clustering;
   }
 
-  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta) {
+  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore) {
     if (setLogfile) {
       andValidator().validate(this, "logfile", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
     }
@@ -1271,13 +1271,24 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     return references;
   }
 
-  /**
-    * We're going to load the transformation meta data referenced here.
-    * Then we're going to give it a new filename, modify that filename in this entries.
-    * The parent caller will have made a copy of it, so it should be OK to do so.
-    */
-  public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface namingInterface, Repository repository) throws KettleException {
+/**
+  * We're going to load the transformation meta data referenced here.
+  * Then we're going to give it a new filename, modify that filename in this entries.
+  * The parent caller will have made a copy of it, so it should be OK to do so.
+  *
+  * Exports the object to a flat-file system, adding content with filename keys to a set of definitions.
+  * The supplied resource naming interface allows the object to name appropriately without worrying about those parts of the implementation specific details.
+  *  
+  * @param space The variable space to resolve (environment) variables with.
+  * @param definitions The map containing the filenames and content
+  * @param namingInterface The resource naming interface allows the object to be named appropriately
+  * @param repository The repository to load resources from
+  * @param metaStore the metaStore to load external metadata from
+  * 
+  * @return The filename for this object. (also contained in the definitions map)
+  * @throws KettleException in case something goes wrong during the export
+  */
+  public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore) throws KettleException {
     // Try to load the transformation from repository or file.
     // Modify this recursively too...
     //
@@ -1290,7 +1301,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
     // Also go down into the transformation and export the files there. (mapping recursively down)
     //
-    String proposedNewFilename = transMeta.exportResources(transMeta, definitions, namingInterface, repository);
+    String proposedNewFilename = transMeta.exportResources(transMeta, definitions, namingInterface, repository, metaStore);
 
     // To get a relative path to it, we inject ${Internal.Job.Filename.Directory} 
     //

@@ -26,7 +26,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -358,7 +357,7 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface
 		dataLines = new ArrayList<List<String>>();
 	}
 	
-	public void getFields(RowMetaInterface rowMeta, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
+	public void getFields(RowMetaInterface rowMeta, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
 	{
     for (int i = 0; i < fieldName.length; i++) {
       try {
@@ -508,7 +507,4 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface
 		return new DataGridData();
 	}
 
-	public void check(List<CheckResultInterface> results, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface rowMeta, String[] input, String[] output, RowMetaInterface info) {
-		
-	}
 }

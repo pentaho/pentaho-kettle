@@ -1088,12 +1088,6 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
     connectionDelegate.performDelete("DELETE FROM " + quoteTable(KettleDatabaseRepository.TABLE_R_TRANSFORMATION) + " WHERE " + quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_TRANSFORMATION) + " = ? ", id_transformation);
   }
 
-  public synchronized void delTransDataService(ObjectId id_transformation) throws KettleException {
-    securityProvider.validateAction(RepositoryOperation.DELETE_TRANSFORMATION);
-
-    connectionDelegate.performDelete("DELETE FROM " + quoteTable(KettleDatabaseRepository.TABLE_R_TRANS_DATA_SERVICE) + " WHERE " + quote(KettleDatabaseRepository.FIELD_TRANS_DATA_SERVICE_ID_TRANS) + " = ? ", id_transformation);
-  }
-
   public synchronized void delJob(ObjectId id_job) throws KettleException {
     securityProvider.validateAction(RepositoryOperation.DELETE_TRANSFORMATION);
 
@@ -1169,7 +1163,6 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
     delPartitionSchemas(id_transformation);
     delTransformationClusters(id_transformation);
     delTransformationSlaves(id_transformation);
-    delTransDataService(id_transformation);
     delTrans(id_transformation);
 
     commit();

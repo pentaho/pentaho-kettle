@@ -33,6 +33,7 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
@@ -42,6 +43,7 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepListener;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.metastore.api.IMetaStore;
 	/**
 	 * Dummy class used for test().
 	 */
@@ -360,5 +362,25 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
         public void batchComplete() throws KettleException {
           // TODO Auto-generated method stub
+        }
+        @Override
+        public void setMetaStore(IMetaStore metaStore) {
+          // TODO Auto-generated method stub
+          
+        }
+        @Override
+        public IMetaStore getMetaStore() {
+          // TODO Auto-generated method stub
+          return null;
+        }
+        @Override
+        public void setRepository(Repository repository) {
+          // TODO Auto-generated method stub
+          
+        }
+        @Override
+        public Repository getRepository() {
+          // TODO Auto-generated method stub
+          return null;
         }
 	}

@@ -1463,7 +1463,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 				jobMeta.activateParameters();
 				
 				if (executionConfiguration.getRemoteServer() != null) {
-					Job.sendToSlaveServer(jobMeta, executionConfiguration, spoon.rep);
+					Job.sendToSlaveServer(jobMeta, executionConfiguration, spoon.rep, spoon.metaStore);
 					spoon.delegates.slaves.addSpoonSlave(executionConfiguration.getRemoteServer());
 				} else {
 					MessageBox mb = new MessageBox(spoon.getShell(), SWT.OK | SWT.ICON_ERROR);

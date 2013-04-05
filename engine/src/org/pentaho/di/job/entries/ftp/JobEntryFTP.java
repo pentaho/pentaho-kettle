@@ -1347,7 +1347,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
     this.activeConnection = passive;
   }
 
-  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta) {
+  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore) {
     andValidator().validate(this, "serverName", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
     andValidator()
         .validate(this, "targetDirectory", remarks, putValidators(notBlankValidator(), fileExistsValidator())); //$NON-NLS-1$

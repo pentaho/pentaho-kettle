@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.KettleAttribute;
@@ -173,35 +174,39 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface
 	}
 
 	
-	/*
-	    getFields determines which fields are
-	      - added to the stream
-	      - removed from the stream
-	      - renamed
-	      - changed
-	        
-	 * @param inputRowMeta Row containing fields that are used as input for the step.
-	 * @param name Name of the step
-	 * @param info Fields used as extra lookup information
-	 * 
-	 * @return The fields that are being put out by this step.
-	 */
 	/**
 	 * Gets the fields.
 	 *
-	 * @param inputRowMeta the input row meta
-	 * @param name the name
-	 * @param info the info
-	 * @param nextStep the next step
-	 * @param space the space
-	 * @return the fields
+	 * @param inputRowMeta the input row meta that is modified in this method to reflect the output row metadata of the step
+	 * @param name Name of the step to use as input for the origin field in the values
+	 * @param info Fields used as extra lookup information
+	 * @param nextStep the next step that is targeted
+	 * @param space the space The variable space to use to replace variables
 	 * @throws KettleStepException the kettle step exception
+	 * @deprecated in favor of the getFields method with repository and metastore arguments
 	 */
-	public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
+	@Deprecated public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
 		// Default: no values are added to the row in the step
 	}
-	
+
+	 /**
+   * Gets the fields.
+   *
+   * @param inputRowMeta the input row meta that is modified in this method to reflect the output row metadata of the step
+   * @param name Name of the step to use as input for the origin field in the values
+   * @param info Fields used as extra lookup information
+   * @param nextStep the next step that is targeted
+   * @param space the space The variable space to use to replace variables
+   * @param repository the repository to use to load Kettle metadata objects impacting the output fields
+   * @param metaStore the MetaStore to use to load additional external data or metadata impacting the output fields
+   * @throws KettleStepException the kettle step exception
+   */
+  public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
+  {
+    // Default: no values are added to the row in the step
+  }
+
 
     /**
      * Each step must be able to report on the impact it has on a database, table field, etc.
@@ -212,11 +217,29 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface
      * @param input The previous step names
      * @param output The output step names
      * @param info The fields used as information by this step
+     * @deprecated
      */
-    public void analyseImpact(List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info) throws KettleStepException
-    {
+    @Deprecated public void analyseImpact(List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info) throws KettleStepException {
         
     }
+    
+    /**
+     * Each step must be able to report on the impact it has on a database, table field, etc.
+     * @param impact The list of impacts @see org.pentaho.di.transMeta.DatabaseImpact
+     * @param transMeta The transformation information
+     * @param stepMeta The step information
+     * @param prev The fields entering this step
+     * @param input The previous step names
+     * @param output The output step names
+     * @param info The fields used as information by this step
+     * @param repository the repository to use to load Kettle metadata objects impacting the output fields
+     * @param metaStore the MetaStore to use to load additional external data or metadata impacting the output fields
+     */
+    public void analyseImpact(List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, Repository repository, IMetaStore metaStore) throws KettleStepException {
+      
+    }
+
+    
 	
     
 	/**
@@ -227,12 +250,30 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface
 	 * @param transMeta TransInfo object containing the complete transformation
 	 * @param stepMeta StepMeta object containing the complete step
 	 * @param prev Row containing meta-data for the input fields (no data)
+	 * @deprecated
 	 */
-	public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev)  throws KettleStepException
+	@Deprecated public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev)  throws KettleStepException
 	{
 		// default: this doesn't require any SQL statements to be executed!
 		return new SQLStatement(stepMeta.getName(), null, null);
 	}
+	
+  /**
+   * Standard method to return an SQLStatement object with SQL statements that the step needs in order to work correctly.
+   * This can mean "create table", "create index" statements but also "alter table ... add/drop/modify" statements.
+   *
+   * @return The SQL Statements for this step. If nothing has to be done, the SQLStatement.getSQL() == null. @see SQLStatement 
+   * @param transMeta TransInfo object containing the complete transformation
+   * @param stepMeta StepMeta object containing the complete step
+   * @param prev Row containing meta-data for the input fields (no data)
+   * @param repository the repository to use to load Kettle metadata objects impacting the output fields
+   * @param metaStore the MetaStore to use to load additional external data or metadata impacting the output fields
+   */
+  public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, Repository repository, IMetaStore metaStore) throws KettleStepException
+  {
+    // default: this doesn't require any SQL statements to be executed!
+    return new SQLStatement(stepMeta.getName(), null, null);
+  }
     
     /**
      *  Call this to cancel trailing database queries (too long running, etc)
@@ -361,11 +402,16 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface
      * @param repository the repository
      * @return the string
      * @throws KettleException the kettle exception
+     * @deprecated
      */
-    public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository) throws KettleException {
+    @Deprecated public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository) throws KettleException {
     	return null;
     }
-    
+
+    public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore) throws KettleException {
+      return null;
+    }
+
 
 	/**
 	 * This returns the expected name for the dialog that edits a job entry.
@@ -896,5 +942,15 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface
 
     public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step) throws KettleException {
       // provided for API (compile & runtime) compatibility with v4
+    }
+    
+    @Deprecated public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info) {      
+    }
+
+    @Deprecated
+    public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, Repository repository, IMetaStore metaStore) {
+    }
+
+    public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore) {
     }
 }

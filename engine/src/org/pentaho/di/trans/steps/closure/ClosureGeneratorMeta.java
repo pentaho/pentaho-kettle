@@ -97,7 +97,7 @@ public class ClosureGeneratorMeta extends BaseStepMeta implements StepMetaInterf
 	{
 	}
 
-    public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException 
+    public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException 
     {
     	// The output for the closure table is:
     	//
@@ -164,11 +164,11 @@ public class ClosureGeneratorMeta extends BaseStepMeta implements StepMetaInterf
 		}
 	}
 
-	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface row, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		CheckResult cr;
 		
-    	ValueMetaInterface parentValueMeta = row.searchValueMeta(parentIdFieldName);
+    	ValueMetaInterface parentValueMeta = prev.searchValueMeta(parentIdFieldName);
     	if (parentValueMeta!=null) {
 			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, "The fieldname of the parent id could not be found.", stepMeta);
 			remarks.add(cr);
@@ -178,7 +178,7 @@ public class ClosureGeneratorMeta extends BaseStepMeta implements StepMetaInterf
 			remarks.add(cr);
     	}
 
-    	ValueMetaInterface childValueMeta = row.searchValueMeta(childIdFieldName);
+    	ValueMetaInterface childValueMeta = prev.searchValueMeta(childIdFieldName);
     	if (childValueMeta!=null) {
 			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, "The fieldname of the child id could not be found.", stepMeta);
 			remarks.add(cr);

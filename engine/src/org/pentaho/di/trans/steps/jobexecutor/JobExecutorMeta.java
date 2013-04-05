@@ -427,7 +427,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
     resultFilesFileNameField = "FileName";
   }
 
-  public void getFields(RowMetaInterface row, String origin, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException {
+  public void getFields(RowMetaInterface row, String origin, RowMetaInterface info[], StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException {
     
     row.clear();
 
@@ -583,22 +583,22 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
     return mappingJobMeta;
   }
 
-  public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info) {
+  public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore) {
     CheckResult cr;
     if (prev == null || prev.size() == 0) {
-      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "JobExecutorMeta.CheckResult.NotReceivingAnyFields"), stepinfo); //$NON-NLS-1$
+      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "JobExecutorMeta.CheckResult.NotReceivingAnyFields"), stepMeta); //$NON-NLS-1$
       remarks.add(cr);
     } else {
-      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "JobExecutorMeta.CheckResult.StepReceivingFields", prev.size() + ""), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
+      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "JobExecutorMeta.CheckResult.StepReceivingFields", prev.size() + ""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
       remarks.add(cr);
     }
 
     // See if we have input streams leading to this step!
     if (input.length > 0) {
-      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "JobExecutorMeta.CheckResult.StepReceivingFieldsFromOtherSteps"), stepinfo); //$NON-NLS-1$
+      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "JobExecutorMeta.CheckResult.StepReceivingFieldsFromOtherSteps"), stepMeta); //$NON-NLS-1$
       remarks.add(cr);
     } else {
-      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "JobExecutorMeta.CheckResult.NoInputReceived"), stepinfo); //$NON-NLS-1$
+      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "JobExecutorMeta.CheckResult.NoInputReceived"), stepMeta); //$NON-NLS-1$
       remarks.add(cr);
     }
   }
@@ -631,7 +631,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   @Override
-  public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository) throws KettleException {
+  public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore) throws KettleException {
     try {
       // Try to load the transformation from repository or file.
       // Modify this recursively too...
@@ -646,7 +646,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
       // Also go down into the mapping transformation and export the files
       // there. (mapping recursively down)
       //
-      String proposedNewFilename = executorJobMeta.exportResources(executorJobMeta, definitions, resourceNamingInterface, repository);
+      String proposedNewFilename = executorJobMeta.exportResources(executorJobMeta, definitions, resourceNamingInterface, repository, metaStore);
 
       // To get a relative path to it, we inject
       // ${Internal.Transformation.Filename.Directory}

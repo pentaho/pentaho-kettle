@@ -77,7 +77,7 @@ public class SampleRows extends BaseStep implements StepInterface
 			data.previousRowMeta = getInputRowMeta().clone();
 			data.NrPrevFields=data.previousRowMeta.size();
 			data.outputRowMeta = data.previousRowMeta;
-			if(data.addlineField) meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+			if(data.addlineField) meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
 			
 			String[] rangePart = realRange.split(",");
 

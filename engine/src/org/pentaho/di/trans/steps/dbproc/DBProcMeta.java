@@ -270,7 +270,7 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface
     }
     
     @Override
-    public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException {
+    public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException {
     	
         if (!Const.isEmpty(resultName))
         {
@@ -411,14 +411,14 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface
         }
     }
 
-    public void check(List<CheckResultInterface> remarks, TransMeta transmeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+    public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
     {
         CheckResult cr;
         String error_message = ""; //$NON-NLS-1$
 
         if (database != null)
         {
-            Database db = new Database(transmeta, database);
+            Database db = new Database(transMeta, database);
             try
             {
                 db.connect();

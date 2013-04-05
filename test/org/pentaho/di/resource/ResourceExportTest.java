@@ -52,7 +52,7 @@ public class ResourceExportTest extends TestCase {
         
         // We get back the top-level filename: it's the starting point...
         //
-		String topLevelFilename = jobMeta.exportResources(jobMeta, definitions, resourceNaming, null);
+		String topLevelFilename = jobMeta.exportResources(jobMeta, definitions, resourceNaming, null, null);
 		
 		System.out.println("Top level filename = "+topLevelFilename);
 		

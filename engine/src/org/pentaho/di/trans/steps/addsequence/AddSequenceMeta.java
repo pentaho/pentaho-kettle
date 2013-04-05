@@ -283,7 +283,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 		maxValue     = "999999999";
 	}
 
-	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
+	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
 	{
 		ValueMetaInterface v=new ValueMeta(valuename, ValueMetaInterface.TYPE_INTEGER);
 		// v.setLength(ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0);  Removed for 2.5.x compatibility reasons.
@@ -385,7 +385,9 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 	}
 
 
-	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, 
+	    RowMetaInterface prev, String input[], String output[], RowMetaInterface info, 
+	    VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		CheckResult cr;
 		if (useDatabase)
@@ -428,7 +430,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 	}
 
 	
-	public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev)
+	public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, Repository repository, IMetaStore metaStore)
 	{
 		SQLStatement retval = new SQLStatement(stepMeta.getName(), database, null); // default: nothing to do!
 	

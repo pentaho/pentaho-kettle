@@ -235,7 +235,7 @@ public class RowsFromResultMeta extends BaseStepMeta implements StepMetaInterfac
         }
 	}
     
-    public void getFields(RowMetaInterface r, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
+    public void getFields(RowMetaInterface r, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
     {
         for (int i=0;i<this.fieldname.length;i++)
         {
@@ -245,7 +245,7 @@ public class RowsFromResultMeta extends BaseStepMeta implements StepMetaInterfac
         }
     }
 
-    public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+    public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		// See if we have input streams leading to this step!
 		if (input.length>0)

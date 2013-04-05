@@ -390,7 +390,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
         connectionTimeout= String.valueOf(DEFAULT_CONNECTION_TIMEOUT);
         closeIdleConnectionsTime= String.valueOf(DEFAULT_CLOSE_CONNECTIONS_TIME);
     }
-    public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException    
+    public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException    
     {
         if (!Const.isEmpty(fieldName))
         {
@@ -597,7 +597,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
         }
     }
 
-    public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+    public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
     {
         CheckResult cr;
 

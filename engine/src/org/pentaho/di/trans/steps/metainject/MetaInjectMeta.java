@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -226,7 +225,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 	
-	public void getFields(RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
+	public void getFields(RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
 	{
 		rowMeta.clear(); // No defined output is expected from this step.
 	}
@@ -250,11 +249,6 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface
       this.targetSourceMapping = targetSourceMapping;
     }
 	
-	@Override
-	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info) {
-	  // TODO Auto-generated method stub
-	}
-
   /**
    * @return the transName
    */

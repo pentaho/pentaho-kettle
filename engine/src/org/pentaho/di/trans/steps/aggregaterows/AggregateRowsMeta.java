@@ -232,7 +232,7 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException {
+	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException {
 	  try {
 		// Remember the types of the row.
 		int fieldnrs[] = new int[fieldName.length];
@@ -327,7 +327,9 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 	
-	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info) {
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, 
+	    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, 
+	    VariableSpace space, Repository repository, IMetaStore metaStore) {
 
 		CheckResult cr;
 		String message = ""; //$NON-NLS-1$

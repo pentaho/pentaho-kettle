@@ -2317,7 +2317,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
       Object referencedMeta = jobEntryCopy.getEntry().loadReferencedObject(index, spoon.rep, spoon.metaStore, jobMeta);
       if (referencedMeta==null) {
         // Compatible re-try for older plugins.
-        jobEntryCopy.getEntry().loadReferencedObject(index, spoon.rep, spoon.metaStore, jobMeta);
+        compatibleJobEntryLoadReferencedObject(jobEntryCopy.getEntry(), index, spoon.rep, jobMeta);
       }
       if (referencedMeta!=null && (referencedMeta instanceof TransMeta)) {
         TransMeta launchTransMeta = (TransMeta) referencedMeta;
@@ -2377,6 +2377,13 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
          (Exception) e); 
     }
   }
+
+  @SuppressWarnings("deprecation")
+  private void compatibleJobEntryLoadReferencedObject(JobEntryInterface entry, int index, Repository rep,
+      JobMeta jobMeta2) throws KettleException {
+    entry.loadReferencedObject(index, spoon.rep, jobMeta);
+  }
+
 
   protected void openTransformation(JobEntryTrans entry, JobEntryCopy jobEntryCopy) {
     

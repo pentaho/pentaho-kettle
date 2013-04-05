@@ -155,8 +155,7 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
         }
 	}
 	
-    public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info, 
-    		              StepMeta nextStep, VariableSpace space) throws KettleStepException
+    public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
     {
         for (int i=0;i<calculation.length;i++)
         {
@@ -447,7 +446,7 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
     }
     
     public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, 
-    		          RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+    		          RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		CheckResult cr = null;
 				

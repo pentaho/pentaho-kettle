@@ -132,7 +132,7 @@ public class GetRepositoryNamesMeta extends BaseStepMeta implements StepMetaInte
     }
   }
 
-  public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException {
+  public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException {
 
     // the directory and name of the object
     //
@@ -296,13 +296,13 @@ public class GetRepositoryNamesMeta extends BaseStepMeta implements StepMetaInte
     return includeSubFolders;
   }
 
-  public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info) {
+  public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore) {
     CheckResult cr;
 
     if (input.length > 0) {
-      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "GetRepositoryNamesMeta.CheckResult.NoInputError"), stepinfo);
+      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "GetRepositoryNamesMeta.CheckResult.NoInputError"), stepMeta);
     } else {
-      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "GetRepositoryNamesMeta.CheckResult.NoInputOk"), stepinfo);
+      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "GetRepositoryNamesMeta.CheckResult.NoInputOk"), stepMeta);
     }
     remarks.add(cr);
   }

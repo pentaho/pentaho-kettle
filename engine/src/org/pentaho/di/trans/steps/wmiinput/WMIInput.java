@@ -64,7 +64,7 @@ public class WMIInput extends BaseStep implements StepInterface
 			
 		    // What's the output Row format?
             data.outputRowMeta = new RowMeta();
-            meta.getFields(data.outputRowMeta, getStepname(), null, null, this);	
+            meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);	
 		}
       
 		// get next row

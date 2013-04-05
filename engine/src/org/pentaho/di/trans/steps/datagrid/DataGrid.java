@@ -76,7 +76,7 @@ public class DataGrid extends BaseStep implements StepInterface
         	data.linesWritten = 0;
         	
             data.outputRowMeta = new RowMeta();
-            meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+            meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
 
         	// Use these metadata values to convert data...
         	//

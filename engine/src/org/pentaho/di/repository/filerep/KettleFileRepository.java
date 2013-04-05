@@ -88,7 +88,6 @@ public class KettleFileRepository implements Repository {
 	private static final String	EXT_SLAVE_SERVER 		= ".ksl";
 	private static final String	EXT_CLUSTER_SCHEMA 		= ".kcs";
 	private static final String	EXT_PARTITION_SCHEMA	= ".kps";
-	private static final String EXT_DATA_SERVICE = ".das";
 	
 	private static final String LOG_FILE = "repository.log";
 	
@@ -316,31 +315,17 @@ public class KettleFileRepository implements Repository {
 				delObject(repositoryElement.getObjectId());
 			}
 			
-			// See if this is a transformation & if the transformation has a defined data service.
-			// If so, we want to store a separate .das (DAta Service) file for performance reasons.
+	    repositoryElement.setObjectId(objectId);
+			
+			// Finally, see if there are external objects that need to be stored or updated in the MetaStore
 			//
 			if (repositoryElement instanceof TransMeta) {
-	      FileObject dasFile = KettleVFS.getFileObject(calcFilename(repositoryElement.getRepositoryDirectory(), repositoryElement.getName(), EXT_DATA_SERVICE));
-
-	      // Remove possible old file
-	      //
-	      if (dasFile.exists()) {
-	        dasFile.delete();
-	      }
-	      TransMeta transMeta = (TransMeta)repositoryElement;
-			  if (transMeta.getDataService().isDefined()) {
-			    // Write new data service file
-			    //
-			    xml = transMeta.getDataService().getXML();
-		      os = KettleVFS.getOutputStream(dasFile, false);
-          os.write(XMLHandler.getXMLHeader().getBytes(Const.XML_ENCODING));
-		      os.write(xml.getBytes(Const.XML_ENCODING));
-		      os.close();
-			  }
-			}
+			  ((TransMeta)repositoryElement).saveMetaStoreObjects(this, metaStore);
+			} 
+      if (repositoryElement instanceof JobMeta) {
+        ((JobMeta)repositoryElement).saveMetaStoreObjects(this, metaStore);
+      }
 			
-
-			repositoryElement.setObjectId(objectId);
 		} catch(Exception e) {
 			throw new KettleException("Unable to save repository element ["+repositoryElement+"] to XML file : "+calcFilename(repositoryElement), e);
 		}

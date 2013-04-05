@@ -75,7 +75,7 @@ public class SapInput extends BaseStep implements StepInterface
 			// Determine the output row metadata of this step
 			//
 			data.outputRowMeta = new RowMeta();
-			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+			meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
 			
 			// Pre-calculate the indexes of the parameters for performance reasons...
 			//

@@ -33,13 +33,13 @@ package org.pentaho.di.trans.steps.palo.celloutput;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -180,27 +180,6 @@ public class PaloCellOutputMeta extends BaseStepMeta
         }
     }
 
-    public final void getFields(final RowMetaInterface row, final String origin, 
-            final RowMetaInterface[] info, final StepMeta nextStep, 
-            final VariableSpace space) throws KettleStepException {
-        //if (databaseMeta == null) 
-        //    throw new KettleStepException("There is no Palo database server connection defined");
-        
-
-        //final PaloHelper helper = new PaloHelper(databaseMeta);
-        //try {
-        //    helper.connect();
-        //    try {
-        //        RowMetaInterface rowMeta = helper.getCellRowMeta(this.cube, this.fields, this.measureField);
-        //        row.addRowMeta(rowMeta);
-        //    } finally {
-        //        helper.disconnect();
-        //    }
-        //} catch (Exception e) {
-        //    throw new KettleStepException(e);
-        //}
-    }
-
     public final String getXML() {
         StringBuffer retval = new StringBuffer();
         
@@ -317,7 +296,7 @@ public class PaloCellOutputMeta extends BaseStepMeta
     public final void check(final List < CheckResultInterface > remarks, 
             final TransMeta transMeta, final StepMeta stepMeta, 
             final RowMetaInterface prev, final String input[], 
-            final String output[], final RowMetaInterface info) {
+            final String output[], final RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore) {
         
         CheckResult cr;
         

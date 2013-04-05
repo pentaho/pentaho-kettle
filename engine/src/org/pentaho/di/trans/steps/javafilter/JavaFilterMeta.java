@@ -31,6 +31,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
@@ -155,7 +156,7 @@ public class JavaFilterMeta extends BaseStepMeta implements StepMetaInterface
 		rep.saveStepAttribute(id_transformation, id_step, "condition", condition);
 	}
 
-    public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+    public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		CheckResult cr;
 		String error_message = ""; //$NON-NLS-1$
@@ -164,18 +165,18 @@ public class JavaFilterMeta extends BaseStepMeta implements StepMetaInterface
 
 		if (targetStreams.get(0).getStepname()!=null && targetStreams.get(1).getStepname()!=null)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "JavaFilterMeta.CheckResult.BothTrueAndFalseStepSpecified"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "JavaFilterMeta.CheckResult.BothTrueAndFalseStepSpecified"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		if (targetStreams.get(0).getStepname()==null && targetStreams.get(1).getStepname()==null)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "JavaFilterMeta.CheckResult.NeitherTrueAndFalseStepSpecified"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "JavaFilterMeta.CheckResult.NeitherTrueAndFalseStepSpecified"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "JavaFilterMeta.CheckResult.PlsSpecifyBothTrueAndFalseStep"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "JavaFilterMeta.CheckResult.PlsSpecifyBothTrueAndFalseStep"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 				
@@ -186,7 +187,7 @@ public class JavaFilterMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, 
 						             BaseMessages.getString(PKG, "JavaFilterMeta.CheckResult.TargetStepInvalid", "true", targetStreams.get(0).getStepname() ), 
-						             stepinfo);
+						             stepMeta);
 				remarks.add(cr);
 			}
 		}
@@ -198,25 +199,25 @@ public class JavaFilterMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, 
 						             BaseMessages.getString(PKG, "JavaFilterMeta.CheckResult.TargetStepInvalid", "false", targetStreams.get(1).getStepname()), 
-						             stepinfo);
+						             stepMeta);
 				remarks.add(cr);
 			}
 		}
 		
 		if (Const.isEmpty(condition))
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "JavaFilterMeta.CheckResult.NoConditionSpecified"), stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "JavaFilterMeta.CheckResult.NoConditionSpecified"), stepMeta);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "JavaFilterMeta.CheckResult.ConditionSpecified"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "JavaFilterMeta.CheckResult.ConditionSpecified"), stepMeta); //$NON-NLS-1$
 		}
 		remarks.add(cr);		
 		
 		// Look up fields in the input stream <prev>
 		if (prev!=null && prev.size()>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "JavaFilterMeta.CheckResult.StepReceivingFields",prev.size()+""), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "JavaFilterMeta.CheckResult.StepReceivingFields",prev.size()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
 			remarks.add(cr);
 			
 			// What fields are used in the condition?
@@ -226,19 +227,19 @@ public class JavaFilterMeta extends BaseStepMeta implements StepMetaInterface
 		else
 		{
 			error_message=BaseMessages.getString(PKG, "JavaFilterMeta.CheckResult.CouldNotReadFieldsFromPreviousStep")+Const.CR; //$NON-NLS-1$
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 			remarks.add(cr);
 		}
 
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "JavaFilterMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "JavaFilterMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "JavaFilterMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "JavaFilterMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 	}

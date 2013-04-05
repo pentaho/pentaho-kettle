@@ -46,6 +46,7 @@ import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.di.pan.CommandLineOption;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
@@ -54,6 +55,7 @@ import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
 import org.pentaho.di.version.BuildVersion;
+import org.pentaho.metastore.stores.delegate.DelegatingMetaStore;
 
 public class Kitchen {
   private static Class<?> PKG = Kitchen.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
@@ -62,7 +64,7 @@ public class Kitchen {
 
   private static FileLoggingEventListener fileAppender;
 
-  public static void main(String[] a) throws KettleException {
+  public static void main(String[] a) throws Exception {
     KettleEnvironment.init();
     KettleClientEnvironment.getInstance().setClient(KettleClientEnvironment.ClientType.KITCHEN);
 
@@ -72,6 +74,9 @@ public class Kitchen {
         args.add(a[i]);
     }
 
+    DelegatingMetaStore metaStore = new DelegatingMetaStore();
+    metaStore.addMetaStore(MetaStoreConst.openLocalPentahoMetaStore());
+    
     RepositoryMeta repositoryMeta = null;
     Job job = null;
 
@@ -224,6 +229,12 @@ public class Kitchen {
 
             RepositoryDirectoryInterface directory = repository.loadRepositoryDirectoryTree(); // Default = root
 
+            // Add the IMetaStore of the repository to our delegation
+            //
+            if (repository.getMetaStore()!=null) {
+              metaStore.addMetaStore(repository.getMetaStore());
+            }
+            
             // Find the directory name if one is specified...
             if (!Const.isEmpty(optionDirname)) {
               directory = directory.findDirectory(optionDirname.toString());
@@ -312,7 +323,7 @@ public class Kitchen {
         // Export the resources linked to the currently loaded file...
         //
         TopLevelResource topLevelResource = ResourceUtil.serializeResourceExportInterface(optionExport.toString(),
-            job.getJobMeta(), job, repository);
+            job.getJobMeta(), job, repository, metaStore);
         String launchFile = topLevelResource.getResourceName();
         String message = ResourceUtil.getExplanation(optionExport.toString(), launchFile, job.getJobMeta());
         System.out.println();

@@ -1603,7 +1603,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 			StepMeta stepMeta = new StepMeta(BaseMessages.getString(PKG, "OraBulkLoaderDialog.StepMeta.Title"), name, info); //$NON-NLS-1$
 			RowMetaInterface prev = transMeta.getPrevStepFields(stepname);
 
-			SQLStatement sql = info.getSQLStatements(transMeta, stepMeta, prev);
+			SQLStatement sql = info.getSQLStatements(transMeta, stepMeta, prev, repository, metaStore);
 			if (!sql.hasError())
 			{
 				if (sql.hasSQL())

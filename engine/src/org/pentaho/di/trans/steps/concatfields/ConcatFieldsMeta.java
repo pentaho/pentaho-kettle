@@ -111,14 +111,18 @@ public class ConcatFieldsMeta extends TextFileOutputMeta  implements StepMetaInt
 		removeSelectedFields=false;
 	}
 
-	public void getFieldsModifyInput(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
+	@Deprecated public void getFieldsModifyInput(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException {
+    getFieldsModifyInput(row, name, info, nextStep, space, null, null);
+  }
+	
+	public void getFieldsModifyInput(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
 	{
 		// the field precisions and lengths are altered! see TextFileOutputMeta.getFields().
-		super.getFields(row, name, info, nextStep, space);
+		super.getFields(row, name, info, nextStep, space, repository, metaStore);
 	}
 	
 	@Override
-	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
+	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
 	{
 		// do not call the super class from TextFileOutputMeta since it modifies the source meta data
 		// see getFieldsModifyInput() instead
@@ -192,26 +196,26 @@ public class ConcatFieldsMeta extends TextFileOutputMeta  implements StepMetaInt
 	}
 	
 	@Override
-	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		CheckResult cr;
 
 		// Check Target Field Name
 		if (Const.isEmpty(targetFieldName)) {
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "ConcatFieldsMeta.CheckResult.TargetFieldNameMissing"), stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "ConcatFieldsMeta.CheckResult.TargetFieldNameMissing"), stepMeta);
 			remarks.add(cr);
 		}
 
 		// Check Target Field Length when Fast Data Dump
 		if (targetFieldLength<=0 && isFastDump()) {
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "ConcatFieldsMeta.CheckResult.TargetFieldLengthMissingFastDataDump"), stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "ConcatFieldsMeta.CheckResult.TargetFieldLengthMissingFastDataDump"), stepMeta);
 			remarks.add(cr);
 		}
 		
 		// Check output fields
 		if (prev!=null && prev.size()>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ConcatFieldsMeta.CheckResult.FieldsReceived", ""+prev.size()), stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ConcatFieldsMeta.CheckResult.FieldsReceived", ""+prev.size()), stepMeta);
 			remarks.add(cr);
 			
 			String  error_message="";
@@ -230,12 +234,12 @@ public class ConcatFieldsMeta extends TextFileOutputMeta  implements StepMetaInt
 			if (error_found) 
 			{
 				error_message= BaseMessages.getString(PKG, "ConcatFieldsMeta.CheckResult.FieldsNotFound", error_message);
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ConcatFieldsMeta.CheckResult.AllFieldsFound"), stepinfo);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ConcatFieldsMeta.CheckResult.AllFieldsFound"), stepMeta);
 				remarks.add(cr);
 			}
 		}

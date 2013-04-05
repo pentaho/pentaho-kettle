@@ -122,7 +122,7 @@ public class XMLOutput extends BaseStep implements StepInterface
 		writeRowToFile(getInputRowMeta(), r);
 		
 		data.outputRowMeta = getInputRowMeta().clone();
-		meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+		meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
 		putRow(data.outputRowMeta, r); // in case we want it to go further...
 
 		if (checkFeedback(getLinesOutput())) logBasic("linenr " + getLinesOutput()); //$NON-NLS-1$

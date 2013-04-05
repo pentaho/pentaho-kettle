@@ -283,7 +283,7 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-    public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+    public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
         /*
          * @todo Need to check for the following:
@@ -291,11 +291,11 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface
          *   2) Number of input streams must be two (for now at least)
          *   3) The field names of input streams must be unique
          */ 
-        CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "MergeJoinMeta.CheckResult.StepNotVerified"), stepinfo); //$NON-NLS-1$
+        CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "MergeJoinMeta.CheckResult.StepNotVerified"), stepMeta); //$NON-NLS-1$
         remarks.add(cr);
 	}
 	
-	public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
+	public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
     {
         // We don't have any input fields here in "r" as they are all info fields.
         // So we just merge in the info fields.

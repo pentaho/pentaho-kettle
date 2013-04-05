@@ -464,7 +464,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
         allocate(0);
     }
 
-  public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException {
+  public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException {
     try {
       if (!Const.isEmpty(resultfieldname)) {
         if (replacefields) {
@@ -671,7 +671,8 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
     }
 
     public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
-            RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+            RowMetaInterface prev, String input[], String output[], RowMetaInterface info, 
+            VariableSpace space, Repository repository, IMetaStore metaStore)
     {
 
         CheckResult cr;

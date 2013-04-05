@@ -22,6 +22,8 @@
 
 package org.pentaho.di.trans.steps.rowgenerator;
 
+import java.util.Date;
+
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -37,6 +39,9 @@ public class RowGeneratorData extends BaseStepData implements StepDataInterface
 	
     public long rowLimit;
 	public long rowsWritten;
+  public Date rowDate;
+  public Date prevDate;
+  public long delay;
 	
 	public RowGeneratorData()
 	{

@@ -156,17 +156,32 @@ public interface StepMetaInterface
 	 */
 	public void setDefault();
 
-	/**
-	 * Get the fields that are emitted by this step
-	 * @param inputRowMeta The fields that are entering the step.  These are changed to reflect the output metadata.
-	 * @param name The name of the step to be used as origin
-	 * @param info The input rows metadata that enters the step through the specified channels in the same order as in method getInfoSteps().  The step metadata can then choose what to do with it: ignore it or not.
-     *        Interesting is also that in case of database lookups, the layout of the target database table is put in info[0]
-	 * @param nextStep if this is a non-null value, it's the next step in the transformation.  The one who's asking, the step where the data is targetted towards.
-	 * @param space TODO
-	 * @throws KettleStepException when an error occurred searching for the fields.
-	 */
-	public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException;
+  /**
+   * Gets the fields.
+   *
+   * @param inputRowMeta the input row meta that is modified in this method to reflect the output row metadata of the step
+   * @param name Name of the step to use as input for the origin field in the values
+   * @param info Fields used as extra lookup information
+   * @param nextStep the next step that is targeted
+   * @param space the space The variable space to use to replace variables
+   * @throws KettleStepException the kettle step exception
+   * @deprecated in favor of the getFields method with repository and metastore arguments
+   */
+	@Deprecated public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException;
+
+  /**
+   * Gets the fields.
+   *
+   * @param inputRowMeta the input row meta that is modified in this method to reflect the output row metadata of the step
+   * @param name Name of the step to use as input for the origin field in the values
+   * @param info Fields used as extra lookup information
+   * @param nextStep the next step that is targeted
+   * @param space the space The variable space to use to replace variables
+   * @param repository the repository to use to load Kettle metadata objects impacting the output fields
+   * @param metaStore the MetaStore to use to load additional external data or metadata impacting the output fields
+   * @throws KettleStepException the kettle step exception
+   */
+  public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException;
 
 	/**
 	 * Get the XML that represents the values in this step
@@ -235,6 +250,18 @@ public interface StepMetaInterface
    */
   public void readRep(Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases) throws KettleException;
 
+  /**
+   * Checks the settings of this step and puts the findings in a remarks List.
+   * @param remarks The list to put the remarks in @see org.pentaho.di.core.CheckResult
+   * @param stepMeta The stepMeta to help checking
+   * @param prev The fields coming from the previous step
+   * @param input The input step names
+   * @param output The output step names
+   * @param info The fields that are used as information by the step
+   * @deprecated in favor of the check() method with repository and metaStore arguments.
+   */
+  @Deprecated public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info);
+
 	/**
 	 * Checks the settings of this step and puts the findings in a remarks List.
 	 * @param remarks The list to put the remarks in @see org.pentaho.di.core.CheckResult
@@ -243,8 +270,11 @@ public interface StepMetaInterface
 	 * @param input The input step names
 	 * @param output The output step names
 	 * @param info The fields that are used as information by the step
+	 * @param space the variable space to resolve variable expressions with 
+	 * @param repository the repository to use to load Kettle metadata objects impacting the output fields
+   * @param metaStore the MetaStore to use to load additional external data or metadata impacting the output fields
 	 */
-	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info);
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore);
 
 	/**
 	 * Make an exact copy of this step, make sure to explicitly copy Collections etc.
@@ -303,8 +333,35 @@ public interface StepMetaInterface
 	 * @param input The previous step names
 	 * @param output The output step names
 	 * @param info The fields used as information by this step
+	 * @deprecated in favor of the analyseImpact method with repository and metaStore arguments.
 	 */
-	public void analyseImpact(List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info) throws KettleStepException;
+	@Deprecated public void analyseImpact(List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info) throws KettleStepException;
+
+	 /**
+   * Each step must be able to report on the impact it has on a database, table field, etc.
+   * @param impact The list of impacts @see org.pentaho.di.transMeta.DatabaseImpact
+   * @param transMeta The transformation information
+   * @param stepMeta The step information
+   * @param prev The fields entering this step
+   * @param input The previous step names
+   * @param output The output step names
+   * @param info The fields used as information by this step
+   * @param repository the repository to use to load Kettle metadata objects impacting the output fields
+   * @param metaStore the MetaStore to use to load additional external data or metadata impacting the output fields
+   */
+  public void analyseImpact(List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, Repository repository, IMetaStore metaStore) throws KettleStepException;
+
+  /**
+   * Standard method to return an SQLStatement object with SQL statements that the step needs in order to work correctly.
+   * This can mean "create table", "create index" statements but also "alter table ... add/drop/modify" statements.
+   *
+   * @return The SQL Statements for this step. If nothing has to be done, the SQLStatement.getSQL() == null. @see SQLStatement 
+   * @param transMeta TransInfo object containing the complete transformation
+   * @param stepMeta StepMeta object containing the complete step
+   * @param prev Row containing meta-data for the input fields (no data)
+   * @deprecated in favor of the getSQLStatements method with repository and metaStore arguments.
+   */
+  @Deprecated public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev) throws KettleStepException;
 
 	/**
 	 * Standard method to return an SQLStatement object with SQL statements that the step needs in order to work correctly.
@@ -314,8 +371,10 @@ public interface StepMetaInterface
 	 * @param transMeta TransInfo object containing the complete transformation
 	 * @param stepMeta StepMeta object containing the complete step
 	 * @param prev Row containing meta-data for the input fields (no data)
+	 * @param repository the repository to use to load Kettle metadata objects impacting the output fields
+   * @param metaStore the MetaStore to use to load additional external data or metadata impacting the output fields
 	 */
-	public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev) throws KettleStepException;
+	public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, Repository repository, IMetaStore metaStore) throws KettleStepException;
     
 	/**
      *  Call this to cancel trailing database queries (too long running, etc)
@@ -379,8 +438,20 @@ public interface StepMetaInterface
      * @param repository The repository to optionally load other resources from (to be converted to XML) 
      * 
      * @return the filename of the exported resource
+     * @deprecated in favor of the same method with a IMetaStore argument.
      */
-    public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository) throws KettleException ;
+    @Deprecated public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository) throws KettleException ;
+    
+    /**
+     * @param space the variable space to use 
+     * @param definitions
+     * @param resourceNamingInterface
+     * @param repository The repository to optionally load other resources from (to be converted to XML)
+     * @param metaStore the metaStore in which non-kettle metadata could reside. 
+     * 
+     * @return the filename of the exported resource
+     */
+    public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore) throws KettleException ;
     
     /**
      * @return The StepMeta object to which this metadata class belongs. 
@@ -401,7 +472,7 @@ public interface StepMetaInterface
 
     /**
      * @return The list of optional input streams.  
-     * It allows the user to select from a list of possible actions like "New target step" 
+     * It allows the user to select f    rom a list of possible actions like "New target step" 
      */
     public List<StreamInterface> getOptionalStreams();
 

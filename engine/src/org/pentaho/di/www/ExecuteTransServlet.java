@@ -194,8 +194,14 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
         name=trans.substring(lastSlash+1);
       }
       RepositoryDirectoryInterface directory = repository.loadRepositoryDirectoryTree().findDirectory(directoryPath);
+      if (directory==null) {
+        throw new KettleException("Unable to find directory path '"+directoryPath+"' in the repository");
+      }
       
       ObjectId transformationID = repository.getTransformationID(name, directory);
+      if (transformationID==null) {
+        throw new KettleException("Unable to find transformation '"+name+"' in directory :"+directory);
+      }
       TransMeta transMeta = repository.loadTransformation(transformationID, null);
       return transMeta;
     }
@@ -208,6 +214,9 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
     RepositoriesMeta repositoriesMeta = new RepositoriesMeta();
     repositoriesMeta.readData();
     RepositoryMeta repositoryMeta = repositoriesMeta.findRepository( repositoryName );
+    if (repositoryMeta==null) {
+      throw new KettleException("Unable to find repository: "+repositoryName);
+    }
     PluginRegistry registry = PluginRegistry.getInstance();
     Repository repository = registry.loadClass(
            RepositoryPluginType.class,

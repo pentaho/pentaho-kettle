@@ -311,7 +311,7 @@ public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaIn
 	    outputResultAsBinary=false;
 	}
 	
-	public void getFields(RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
+	public void getFields(RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
 	{
 
         if (!Const.isEmpty(getResultfieldname())) {
@@ -400,7 +400,8 @@ public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaIn
 	}
 
 	 public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo,
-	            RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	            RowMetaInterface prev, String input[], String output[], RowMetaInterface info, 
+	            VariableSpace space, Repository repository, IMetaStore metaStore)
 	  {
 
 		CheckResult cr;

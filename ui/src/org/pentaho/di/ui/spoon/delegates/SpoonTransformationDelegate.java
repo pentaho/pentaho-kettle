@@ -929,7 +929,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			//
 			} else if (executionConfiguration.isExecutingRemotely()) {
 				if (executionConfiguration.getRemoteServer() != null) {
-					String carteObjectId = Trans.sendToSlaveServer(transMeta, executionConfiguration, spoon.rep);
+					String carteObjectId = Trans.sendToSlaveServer(transMeta, executionConfiguration, spoon.rep, spoon.metaStore);
 					monitorRemoteTrans(transMeta, carteObjectId, executionConfiguration.getRemoteServer());
 					spoon.delegates.slaves.addSpoonSlave(executionConfiguration.getRemoteServer());
 					

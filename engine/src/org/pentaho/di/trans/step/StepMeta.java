@@ -44,6 +44,7 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
@@ -278,8 +279,8 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 
       // Load the specifics from XML...
       if (stepMetaInterface != null) {
-        stepMetaInterface.loadXML(stepnode, databases, metaStore);
         loadXmlCompatibleStepMeta(stepMetaInterface, stepnode, databases);
+        stepMetaInterface.loadXML(stepnode, databases, metaStore);
       }
 
       /* Handle info general to all step types...*/
@@ -650,9 +651,16 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     return location;
   }
 
-  public void check(List<CheckResultInterface> remarks, TransMeta transMeta, RowMetaInterface prev, String input[],
+  @Deprecated public void check(List<CheckResultInterface> remarks, TransMeta transMeta, RowMetaInterface prev, String input[],
       String output[], RowMetaInterface info) {
+    check(remarks, transMeta, prev, input, output, info, new Variables(), null, null);
+  }
+
+  @SuppressWarnings("deprecation")
+  public void check(List<CheckResultInterface> remarks, TransMeta transMeta, RowMetaInterface prev, String input[],
+      String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore) {
     stepMetaInterface.check(remarks, transMeta, this, prev, input, output, info);
+    stepMetaInterface.check(remarks, transMeta, this, prev, input, output, info, space, repository, metaStore);
   }
 
   public String toString() {
@@ -828,14 +836,28 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     return stepMetaInterface.getResourceDependencies(transMeta, this);
   }
 
-  public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions,
+  @Deprecated public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions,
       ResourceNamingInterface resourceNamingInterface, Repository repository) throws KettleException {
+    return exportResources(space, definitions, resourceNamingInterface, repository, repository.getMetaStore());
+  }
 
+  
+  @SuppressWarnings("deprecation")
+  public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions,
+      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore) throws KettleException {
+
+    // Compatibility with previous release...
+    //
+    String resources = stepMetaInterface.exportResources(space, definitions, resourceNamingInterface, repository);
+    if (resources!=null) {
+      return resources;
+    }
+    
     // The step calls out to the StepMetaInterface...
     // These can in turn add anything to the map in terms of resources, etc.
     // Even reference files, etc.  For now it's just XML probably...
     //
-    return stepMetaInterface.exportResources(space, definitions, resourceNamingInterface, repository);
+    return stepMetaInterface.exportResources(space, definitions, resourceNamingInterface, repository, metaStore);
   }
 
   /**

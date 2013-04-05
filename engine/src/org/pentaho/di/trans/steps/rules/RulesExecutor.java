@@ -71,7 +71,7 @@ public class RulesExecutor extends BaseStep implements StepInterface {
 
   public boolean runtimeInit() throws KettleStepException {
     data.setOutputRowMeta(getInputRowMeta().clone());
-    meta.getFields(data.getOutputRowMeta(), getStepname(), null, null, this);
+    meta.getFields(data.getOutputRowMeta(), getStepname(), null, null, this, repository, metaStore);
 
     data.setRuleFilePath(meta.getRuleFile());
     data.setRuleString(meta.getRuleDefinition());

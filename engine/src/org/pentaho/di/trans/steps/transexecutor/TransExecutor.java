@@ -29,17 +29,18 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.LoggingRegistry;
 import org.pentaho.di.core.row.RowDataUtil;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.DelegationListener;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
+import org.pentaho.di.trans.step.RowAdapter;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
@@ -97,15 +98,11 @@ public class TransExecutor extends BaseStep implements StepInterface {
 
         if (meta.getExecutionResultTargetStepMeta() != null) {
           meta.getFields(data.executionResultsOutputRowMeta, getStepname(), null,
-              meta.getExecutionResultTargetStepMeta(), this);
+              meta.getExecutionResultTargetStepMeta(), this, repository, metaStore);
           data.executionResultRowSet = findOutputRowSet(meta.getExecutionResultTargetStepMeta().getName());
         }
-        if (meta.getResultRowsTargetStepMeta() != null) {
-          meta.getFields(data.resultRowsOutputRowMeta, getStepname(), null, meta.getResultRowsTargetStepMeta(), this);
-          data.resultRowsRowSet = findOutputRowSet(meta.getResultRowsTargetStepMeta().getName());
-        }
         if (meta.getResultFilesTargetStepMeta() != null) {
-          meta.getFields(data.resultFilesOutputRowMeta, getStepname(), null, meta.getResultFilesTargetStepMeta(), this);
+          meta.getFields(data.resultFilesOutputRowMeta, getStepname(), null, meta.getResultFilesTargetStepMeta(), this, repository, metaStore);
           data.resultFilesRowSet = findOutputRowSet(meta.getResultFilesTargetStepMeta().getName());
         }
 
@@ -212,7 +209,22 @@ public class TransExecutor extends BaseStep implements StepInterface {
 
     try {
       data.executorTrans.setPreviousResult(result);
-      data.executorTrans.execute(null);
+      data.executorTrans.prepareExecution(getTrans().getArguments());
+      
+      // Optionally also stream the rows from a source step to the output of this step
+      //
+      if (meta.getOutputRowsSourceStepMeta() != null) {
+        
+        StepInterface stepInterface = data.executorTrans.findRunThread(meta.getOutputRowsSourceStepMeta().getName());
+        stepInterface.addRowListener(new RowAdapter() { 
+          @Override
+          public void rowWrittenEvent(RowMetaInterface rowMeta, Object[] row) throws KettleStepException {
+            TransExecutor.this.putRow(rowMeta, row);
+          }
+        });
+        
+      }
+
       
       // Inform the parent transformation we started something here...
       //
@@ -295,26 +307,6 @@ public class TransExecutor extends BaseStep implements StepInterface {
       }
 
       putRowTo(data.executionResultsOutputRowMeta, outputRow, data.executionResultRowSet);
-    }
-
-    // Optionally also send the result rows to a specified target step...
-    //
-    if (meta.getResultRowsTargetStepMeta() != null && result.getRows() != null) {
-      for (RowMetaAndData row : result.getRows()) {
-
-        Object[] targetRow = RowDataUtil.allocateRowData(data.resultRowsOutputRowMeta.size());
-
-        for (int i = 0; i < meta.getResultRowsField().length; i++) {
-          ValueMetaInterface valueMeta = row.getRowMeta().getValueMeta(i);
-          if (valueMeta.getType() != meta.getResultRowsType()[i]) {
-            throw new KettleException(BaseMessages.getString(PKG, "TransExecutor.IncorrectDataTypePassed",
-                valueMeta.getTypeDesc(), ValueMeta.getTypeDesc(meta.getResultRowsType()[i])));
-          }
-
-          targetRow[i] = row.getData()[i];
-        }
-        putRowTo(data.resultRowsOutputRowMeta, targetRow, data.resultRowsRowSet);
-      }
     }
 
     if (meta.getResultFilesTargetStepMeta() != null && result.getResultFilesList() != null) {

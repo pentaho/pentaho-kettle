@@ -851,7 +851,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 			StepMeta stepinfo = new StepMeta(BaseMessages.getString(PKG, "UpdateDialog.StepMeta.Title"), name, info); //$NON-NLS-1$
 			RowMetaInterface prev = transMeta.getPrevStepFields(stepname);
 			
-			SQLStatement sql = info.getSQLStatements(transMeta, stepinfo, prev);
+			SQLStatement sql = info.getSQLStatements(transMeta, stepinfo, prev, repository, metaStore);
 			if (!sql.hasError())
 			{
 				if (sql.hasSQL())

@@ -24,6 +24,7 @@ package org.pentaho.di.job;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -101,6 +102,7 @@ import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.di.trans.HasSlaveServersInterface;
 import org.pentaho.metastore.api.IMetaStore;
+import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -2525,8 +2527,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			JobEntryCopy copy = getJobEntry(i);
 			if (monitor != null)
 				monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.GettingSQLForJobEntryCopy") + copy + "]"); //$NON-NLS-1$ //$NON-NLS-2$
-			List<SQLStatement> list = copy.getEntry().getSQLStatements(repository, metaStore, this);
-			stats.addAll(list);
+			stats.addAll(copy.getEntry().getSQLStatements(repository, metaStore, this));
+			stats.addAll(compatibleGetEntrySQLStatements(copy.getEntry(), repository));
+      stats.addAll(compatibleGetEntrySQLStatements(copy.getEntry(), repository, (VariableSpace)this));
 			if (monitor != null)
 				monitor.worked(1);
 		}
@@ -2560,7 +2563,19 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		return stats;
 	}
 
-	/**
+	@SuppressWarnings("deprecation")
+  private Collection<? extends SQLStatement> compatibleGetEntrySQLStatements(JobEntryInterface entry,
+      Repository repository, VariableSpace variableSpace) throws KettleException {
+    return entry.getSQLStatements(repository, variableSpace);
+  }
+
+	@SuppressWarnings("deprecation")
+  private Collection<? extends SQLStatement> compatibleGetEntrySQLStatements(JobEntryInterface entry,
+      Repository repository) throws KettleException {
+    return entry.getSQLStatements(repository);
+  }
+
+  /**
 	 * Gets the arguments used for this job.
 	 * 
 	 * @return Returns the arguments.
@@ -3091,6 +3106,11 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		variables.injectVariables(prop);
 	}
 
+	 @Deprecated public void checkJobEntries(List<CheckResultInterface> remarks, boolean only_selected, ProgressMonitorListener monitor) {
+	   checkJobEntries(remarks, only_selected, monitor, this, null, null);
+	 }
+
+	   
 	/**
 	 * Check all job entries within the job. Each Job Entry has the opportunity
 	 * to check their own settings.
@@ -3102,7 +3122,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	 * @param monitor
 	 *            Progress monitor (not presently in use)
 	 */
-	public void checkJobEntries(List<CheckResultInterface> remarks, boolean only_selected, ProgressMonitorListener monitor) {
+	public void checkJobEntries(List<CheckResultInterface> remarks, boolean only_selected, ProgressMonitorListener monitor, VariableSpace space, Repository repository, IMetaStore metaStore) {
 		remarks.clear(); // Empty remarks
 		if (monitor != null)
 			monitor.beginTask(BaseMessages.getString(PKG, "JobMeta.Monitor.VerifyingThisJobEntryTask.Title"), jobcopies.size() + 2); //$NON-NLS-1$
@@ -3114,7 +3134,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				if (entry != null) {
 					if (monitor != null)
 						monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.VerifyingJobEntry.Title", entry.getName())); //$NON-NLS-1$ //$NON-NLS-2$
-					entry.check(remarks, this);
+					entry.check(remarks, this, space, repository, metaStore);
+					compatibleEntryCheck(entry, remarks);
 					if (monitor != null) {
 						monitor.worked(1); // progress bar...
 						if (monitor.isCanceled()) {
@@ -3132,7 +3153,12 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		}
 	}
 
-	/**
+	@SuppressWarnings("deprecation")
+  private void compatibleEntryCheck(JobEntryInterface entry, List<CheckResultInterface> remarks) {
+    entry.check(remarks, this);
+  }
+
+  /**
 	 * Gets the resource dependencies.
 	 *
 	 * @return the resource dependencies
@@ -3150,10 +3176,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		return resourceReferences;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.resource.ResourceExportInterface#exportResources(org.pentaho.di.core.variables.VariableSpace, java.util.Map, org.pentaho.di.resource.ResourceNamingInterface, org.pentaho.di.repository.Repository)
-	 */
-	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface, Repository repository) throws KettleException {
+	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore) throws KettleException {
 		String resourceName = null;
 		try {
 			// Handle naming for both repository and XML bases resources...
@@ -3197,7 +3220,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				// loop over steps, databases will be exported to XML anyway.
 				//
 				for (JobEntryCopy jobEntry : jobMeta.jobcopies) {
-					jobEntry.getEntry().exportResources(jobMeta, definitions, namingInterface, repository);
+					compatibleJobEntryExportResources(jobEntry.getEntry(), jobMeta, definitions, namingInterface, repository);
+          jobEntry.getEntry().exportResources(jobMeta, definitions, namingInterface, repository, metaStore);
 				}
 				
 				// Set a number of parameters for all the data files referenced so far...
@@ -3235,7 +3259,13 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		return resourceName;
 	}
 
-	/**
+	@SuppressWarnings("deprecation")
+  private void compatibleJobEntryExportResources(JobEntryInterface entry, JobMeta jobMeta,
+      Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface, Repository repository2) throws KettleException {
+	  entry.exportResources(jobMeta, definitions, namingInterface, repository);	  
+  }
+
+  /**
 	 * Gets a list of slave servers.
 	 * @return the slaveServer list
 	 */
@@ -3846,4 +3876,15 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
   public void setMetaStore(IMetaStore metaStore) {
     this.metaStore = metaStore;
   }
+
+  /**
+   * This method needs to be called to store those objects which are used and referenced 
+   * in the job metadata but not saved in the serialization.
+   * 
+   * @param metaStore The store to save to
+   * @throws MetaStoreException in case there is an error.
+   */
+  public void saveMetaStoreObjects(Repository repository, IMetaStore metaStore) throws MetaStoreException {
+  }
+
 }

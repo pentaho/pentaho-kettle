@@ -298,7 +298,7 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 	    return null;
 	}
     
-    public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
+    public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
     {
         // We don't have any input fields here in "r" as they are all info fields.
         // So we just merge in the info fields.
@@ -323,7 +323,7 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 
     }
 
-    public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+    public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		CheckResult cr;
 		
@@ -333,18 +333,18 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 
 		if (referenceStream.getStepname()!=null && compareStream.getStepname()!=null)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MergeRowsMeta.CheckResult.SourceStepsOK"), stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MergeRowsMeta.CheckResult.SourceStepsOK"), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		if (referenceStream.getStepname()==null && compareStream.getStepname()==null)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "MergeRowsMeta.CheckResult.SourceStepsMissing"), stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "MergeRowsMeta.CheckResult.SourceStepsMissing"), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MergeRowsMeta.CheckResult.OneSourceStepMissing"), stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MergeRowsMeta.CheckResult.OneSourceStepMissing"), stepMeta);
 			remarks.add(cr);
 		}
 	}

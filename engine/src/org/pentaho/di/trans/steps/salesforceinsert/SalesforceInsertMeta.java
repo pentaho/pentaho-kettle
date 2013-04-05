@@ -411,7 +411,7 @@ public class SalesforceInsertMeta extends BaseStepMeta implements StepMetaInterf
 	}
 	
 	/* This function adds meta data to the rows being pushed out */
-	public void getFields(RowMetaInterface r, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException
+	public void getFields(RowMetaInterface r, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
 	{
 		String realfieldname= space.environmentSubstitute(getSalesforceIDFieldName());
 		if (!Const.isEmpty(realfieldname))
@@ -486,7 +486,7 @@ public class SalesforceInsertMeta extends BaseStepMeta implements StepMetaInterf
 	}
 	
 
-	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		CheckResult cr;
 

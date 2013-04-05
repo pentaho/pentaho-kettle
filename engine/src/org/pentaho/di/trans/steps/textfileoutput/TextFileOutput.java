@@ -90,7 +90,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		if (r != null && first) {
 			first = false;
 			data.outputRowMeta = getInputRowMeta().clone();
-			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+			meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
 
 			// if file name in field is enabled then set field name and open file
 			//

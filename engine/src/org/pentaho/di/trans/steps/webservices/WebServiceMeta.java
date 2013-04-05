@@ -129,7 +129,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
     }
 
     @Override
-    public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space)
+    public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore)
         throws KettleStepException {
       // Input rows and output rows are different in the webservice step
       //
@@ -174,7 +174,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
     }
 
     public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-    		String[] input, String[] output, RowMetaInterface info) 
+    		String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore) 
     {
     	CheckResult cr;
         if (prev == null || prev.size() == 0)

@@ -137,7 +137,7 @@ implements StepMetaInterface {
 
     public void getFields(final RowMetaInterface row, final String origin, 
             final RowMetaInterface[] info, final StepMeta nextStep, 
-            final VariableSpace space) throws KettleStepException {
+            final VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException {
         if (databaseMeta == null) 
             throw new KettleStepException("There is no Palo database server connection defined");
         
@@ -220,7 +220,7 @@ implements StepMetaInterface {
     public void check(final List <CheckResultInterface> remarks, 
             final TransMeta transMeta, final StepMeta stepMeta, 
             final RowMetaInterface prev, final String input[], 
-            final String output[], final RowMetaInterface info) {
+            final String output[], final RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore) {
         CheckResult cr;
         
         if (databaseMeta != null) {

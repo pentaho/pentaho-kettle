@@ -83,9 +83,6 @@ public class TransMetricsDelegate extends SpoonDelegate {
 	private boolean emptyGraph;
 
   private List<MetricsDrawArea> drawAreas;
-
-  protected int numberOfPaints;
-
 	
 	/**
 	 * @param spoon
@@ -188,15 +185,25 @@ public class TransMetricsDelegate extends SpoonDelegate {
 
     canvas.addPaintListener(new PaintListener() {
 
-      public void paintControl(PaintEvent event) {
+      public void paintControl(final PaintEvent event) {;
+      
+        if (transGraph.trans!=null && transGraph.trans.isFinished()) {
+          refreshImage(event.gc);
 
-        numberOfPaints++;
-        if ((numberOfPaints%10)==0) System.out.println("!!!!!! paints="+numberOfPaints);
-        
-        refreshImage(event.gc);
+          if (image != null && !image.isDisposed()) {
+            event.gc.drawImage(image, 0, 0);
+          }
+        } else {
+          Rectangle bounds = canvas.getBounds();
+          if (bounds.width<=0 || bounds.height<=0) return;
 
-        if (image != null && !image.isDisposed()) {
-          event.gc.drawImage(image, 0, 0);
+          event.gc.setForeground(GUIResource.getInstance().getColorWhite());
+          event.gc.setBackground(GUIResource.getInstance().getColorWhite());
+          event.gc.fillRectangle(new Rectangle(0, 0, bounds.width, bounds.height));
+          event.gc.setForeground(GUIResource.getInstance().getColorBlack());
+          String metricsMessage = BaseMessages.getString(PKG, "TransMetricsDelegate.TransformationIsNotRunning.Message");
+          org.eclipse.swt.graphics.Point extent = event.gc.textExtent(metricsMessage);
+          event.gc.drawText(metricsMessage, (bounds.width-extent.x)/2, (bounds.height-extent.y)/2);
         }
       }
     });

@@ -683,7 +683,7 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
           }
           prev = prevNew;
                       
-          SQLStatement sql = info.getSQLStatements(transMeta, stepMeta, prev);
+          SQLStatement sql = info.getSQLStatements(transMeta, stepMeta, prev, repository, metaStore);
           if (!sql.hasError())
           {
               if (sql.hasSQL())

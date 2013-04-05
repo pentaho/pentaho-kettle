@@ -430,7 +430,7 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
         nrRowsToSkip=0;
 	}
 	
-	public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space)
+	public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		for (int i=0;i<inputFields.length;i++)
 		{
@@ -660,19 +660,19 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
         */
 	}
 	
-	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		CheckResult cr;
 
 		// See if we get input...
 		if (input.length>0)
 		{		
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XMLInputMeta.CheckResult.NoInputExpected"), stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XMLInputMeta.CheckResult.NoInputExpected"), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XMLInputMeta.CheckResult.NoInput"), stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XMLInputMeta.CheckResult.NoInput"), stepMeta);
 			remarks.add(cr);
 		}
 		
@@ -680,12 +680,12 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 		// String files[] = getFiles();
 		if (fileInputList==null || fileInputList.getFiles().size()==0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XMLInputMeta.CheckResult.NoFiles"), stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XMLInputMeta.CheckResult.NoFiles"), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XMLInputMeta.CheckResult.FilesOk", ""+fileInputList.getFiles().size()), stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XMLInputMeta.CheckResult.FilesOk", ""+fileInputList.getFiles().size()), stepMeta);
 			remarks.add(cr);
 		}
 	}
@@ -791,10 +791,16 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 	 * Since the exported transformation that runs this will reside in a ZIP file, we can't reference files relatively.
 	 * So what this does is turn the name of files into absolute paths OR it simply includes the resource in the ZIP file.
 	 * For now, we'll simply turn it into an absolute path and pray that the file is on a shared drive or something like that.
-
-	 * TODO: create options to configure this behavior 
-	 */
-	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository) throws KettleException {
+   *
+   * @param space the variable space to use 
+   * @param definitions
+   * @param resourceNamingInterface
+   * @param repository The repository to optionally load other resources from (to be converted to XML)
+   * @param metaStore the metaStore in which non-kettle metadata could reside. 
+   * 
+   * @return the filename of the exported resource
+   */
+  public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore) throws KettleException {
 		try {
 			// The object that we're modifying here is a copy of the original!
 			// So let's change the filename from relative to absolute by grabbing the file object...

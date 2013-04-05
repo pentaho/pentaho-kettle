@@ -93,7 +93,7 @@ public class Edi2XmlMeta extends BaseStepMeta implements StepMetaInterface {
 		}
 	}
 
-	public void getFields(RowMetaInterface r, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) {
+	public void getFields(RowMetaInterface r, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) {
 
 		ValueMetaInterface extra = null;
 
@@ -113,7 +113,7 @@ public class Edi2XmlMeta extends BaseStepMeta implements StepMetaInterface {
 
 	}
 
-	public void check(List<CheckResultInterface> remarks, TransMeta transmeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info) {
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore) {
 		CheckResult cr;
 
 		// See if we have input streams leading to this step!
@@ -126,7 +126,7 @@ public class Edi2XmlMeta extends BaseStepMeta implements StepMetaInterface {
 		}
 
 		// is the input field there?
-		String realInputField = transmeta.environmentSubstitute(getInputField());
+		String realInputField = transMeta.environmentSubstitute(getInputField());
 		if (prev.searchValueMeta(realInputField) != null){
 			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Step is seeing input field: "+realInputField, stepMeta);
 			remarks.add(cr);

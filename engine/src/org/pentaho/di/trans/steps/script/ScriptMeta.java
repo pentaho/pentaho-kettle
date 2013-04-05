@@ -292,7 +292,8 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 	
-  public void getFields(RowMetaInterface row, String originStepname, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException {
+  public void getFields(RowMetaInterface row, String originStepname, 
+      RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException {
     for (int i = 0; i < fieldname.length; i++) {
       if (!Const.isEmpty(fieldname[i])) {
         String fieldName;
@@ -442,7 +443,7 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface
     }
 
 
-	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		boolean error_found=false;
 		String error_message = ""; //$NON-NLS-1$
@@ -452,7 +453,7 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface
 		Bindings jsscope;
 		CompiledScript jsscript;
 
-		jscx = createNewScriptEngine(stepinfo.getName());
+		jscx = createNewScriptEngine(stepMeta.getName());
 		jsscope = jscx.getBindings(ScriptContext.ENGINE_SCOPE);
 			
 		// String strActiveScriptName="";
@@ -481,7 +482,7 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		
 		if (prev!=null && strActiveScript.length()>0)		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ScriptMeta.CheckResult.ConnectedStepOK",String.valueOf(prev.size())), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ScriptMeta.CheckResult.ConnectedStepOK",String.valueOf(prev.size())), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
 			remarks.add(cr);
 			
 			// Adding the existing Scripts to the Context
@@ -503,7 +504,7 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface
                 }
 			}catch(Exception e){
 				error_message = ("Couldn't add JavaClasses to Context! Error:");
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
 			
@@ -526,12 +527,12 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface
 				jsscope.put("CONTINUE_TRANSFORMATION", Integer.valueOf(Script.CONTINUE_TRANSFORMATION));
 			} catch (Exception ex) {
 				error_message="Couldn't add Transformation Constants! Error:"+Const.CR+ex.toString(); //$NON-NLS-1$
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			};
 
 			try{
-				ScriptDummy dummyStep = new ScriptDummy(prev, transMeta.getStepFields(stepinfo));
+				ScriptDummy dummyStep = new ScriptDummy(prev, transMeta.getStepFields(stepMeta));
 				jsscope.put("_step_", dummyStep); //$NON-NLS-1$
 
 				Object[] row=new Object[prev.size()];
@@ -563,7 +564,7 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface
                 jsscope.put("row", row); //$NON-NLS-1$
             } catch(Exception ev){
 				error_message="Couldn't add Input fields to Script! Error:"+Const.CR+ev.toString(); //$NON-NLS-1$
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
 			
@@ -572,12 +573,12 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface
 				if(strActiveStartScript != null && strActiveStartScript.length()>0){
 					jscx.eval(strActiveStartScript, jsscope);
 					error_message = "Found Start Script. "+ strActiveStartScriptName+" Processing OK";
-					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, error_message, stepinfo); //$NON-NLS-1$
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, error_message, stepMeta); //$NON-NLS-1$
 					remarks.add(cr);
 				}
 			}catch(Exception e){
 				error_message="Couldn't process Start Script! Error:"+Const.CR+e.toString(); //$NON-NLS-1$
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);				
 			};
 			
@@ -591,7 +592,7 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface
 					
 					jsscript.eval(jsscope);
 
-					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ScriptMeta.CheckResult.ScriptCompiledOK2"), stepinfo); //$NON-NLS-1$
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ScriptMeta.CheckResult.ScriptCompiledOK2"), stepMeta); //$NON-NLS-1$
 					remarks.add(cr);
 					
 					if (fieldname.length>0){
@@ -599,23 +600,23 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface
 												
 						if (error_found)
 						{
-							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, message.toString(), stepinfo);
+							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, message.toString(), stepMeta);
 						}
 						else
 						{
-							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, message.toString(), stepinfo);
+							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, message.toString(), stepMeta);
 						}
 						remarks.add(cr);
 					}
 				}catch(ScriptException jse){
 					//Context.exit(); TODO AKRETION NOT SURE
 					error_message=BaseMessages.getString(PKG, "ScriptMeta.CheckResult.CouldNotExecuteScript")+Const.CR+jse.toString(); //$NON-NLS-1$
-					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 					remarks.add(cr);
 				}catch(Exception e){
 					//Context.exit(); TODO AKRETION NOT SURE
 					error_message=BaseMessages.getString(PKG, "ScriptMeta.CheckResult.CouldNotExecuteScript2")+Const.CR+e.toString(); //$NON-NLS-1$
-					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 					remarks.add(cr);
 				}
 				
@@ -624,33 +625,33 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface
 					if(strActiveEndScript != null && strActiveEndScript.length()>0){
 						/* Object endScript = */ jscx.eval(strActiveEndScript, jsscope);
 						error_message = "Found End Script. "+ strActiveEndScriptName+" Processing OK";
-						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, error_message, stepinfo); //$NON-NLS-1$
+						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, error_message, stepMeta); //$NON-NLS-1$
 						remarks.add(cr);
 					}
 				}catch(Exception e){
 					error_message="Couldn't process End Script! Error:"+Const.CR+e.toString(); //$NON-NLS-1$
-					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 					remarks.add(cr);				
 				};
 			}catch(Exception e){
 				//Context.exit(); TODO AKRETION NOT SURE
 				error_message = BaseMessages.getString(PKG, "ScriptMeta.CheckResult.CouldNotCompileScript")+Const.CR+e.toString(); //$NON-NLS-1$
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
 		}else{
 			//Context.exit(); TODO AKRETION NOT SURE
 			error_message = BaseMessages.getString(PKG, "ScriptMeta.CheckResult.CouldNotGetFieldsFromPreviousStep"); //$NON-NLS-1$
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 			remarks.add(cr);
 		}
 
 		// See if we have input streams leading to this step!
 		if (input.length>0){
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ScriptMeta.CheckResult.ConnectedStepOK2"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ScriptMeta.CheckResult.ConnectedStepOK2"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}else{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "ScriptMeta.CheckResult.NoInputReceived"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "ScriptMeta.CheckResult.NoInputReceived"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 	}

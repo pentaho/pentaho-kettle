@@ -655,7 +655,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		if (databaseMeta!=null)
 		{
@@ -806,7 +806,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
 		return new SQLFileOutputData();
 	}
 
-	public void analyseImpact(List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void analyseImpact(List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, Repository repository, IMetaStore metaStore)
 	{
 		if (truncateTable)
 		{
@@ -846,7 +846,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev)
+	public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, Repository repository, IMetaStore metaStore)
 	{
 		SQLStatement retval = new SQLStatement(stepMeta.getName(), databaseMeta, null); // default: nothing to do!
 	
@@ -966,10 +966,16 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
 	 * Since the exported transformation that runs this will reside in a ZIP file, we can't reference files relatively.
 	 * So what this does is turn the name of files into absolute paths OR it simply includes the resource in the ZIP file.
 	 * For now, we'll simply turn it into an absolute path and pray that the file is on a shared drive or something like that.
-
-	 * TODO: create options to configure this behavior 
-	 */
-	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository) throws KettleException {
+   *
+   * @param space the variable space to use 
+   * @param definitions
+   * @param resourceNamingInterface
+   * @param repository The repository to optionally load other resources from (to be converted to XML)
+   * @param metaStore the metaStore in which non-kettle metadata could reside. 
+   * 
+   * @return the filename of the exported resource
+   */
+  public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore) throws KettleException {
 		try {
 			// The object that we're modifying here is a copy of the original!
 			// So let's change the filename from relative to absolute by grabbing the file object...

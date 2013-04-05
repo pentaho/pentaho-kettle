@@ -51,6 +51,7 @@ import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.i18n.GlobalMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -452,7 +453,7 @@ public class BlackBoxTests {
             
             // see if the transformation checks ok
             List<CheckResultInterface> remarks = new ArrayList<CheckResultInterface>();
-            trans.getTransMeta().checkSteps(remarks, false, null);
+            trans.getTransMeta().checkSteps(remarks, false, null, new Variables(), null, null);
             for( CheckResultInterface remark : remarks ) {
                 if( remark.getType() == CheckResultInterface.TYPE_RESULT_ERROR ) {
                     // add this to the log

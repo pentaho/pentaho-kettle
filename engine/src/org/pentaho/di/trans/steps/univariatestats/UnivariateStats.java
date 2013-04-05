@@ -120,7 +120,7 @@ public class UnivariateStats extends BaseStep
 
       // Determine the output format
       m_meta.getFields(m_data.getOutputRowMeta(), getStepname(), 
-                       null, null, this);
+                       null, null, this, repository, metaStore);
 
       // Set up data cache for calculating median/percentiles
       m_dataCache = (ArrayList<Number>[])

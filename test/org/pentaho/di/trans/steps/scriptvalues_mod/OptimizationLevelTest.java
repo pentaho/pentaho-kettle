@@ -208,7 +208,7 @@ public class OptimizationLevelTest {
          RowMetaAndData rowMetaAndData = (RowMetaAndData)it.next();
          
          // .... and then call the scriptValuesMetaMod's check method
-         scriptValuesMetaMod.check(remarks, transMeta, javaScriptStep, rowMetaAndData.getRowMeta(), input, output, null);         
+         scriptValuesMetaMod.check(remarks, transMeta, javaScriptStep, rowMetaAndData.getRowMeta(), input, output, null, transMeta, null, null);         
       }
       else {
          fail("No data in the inputList");  //$NON-NLS-1$

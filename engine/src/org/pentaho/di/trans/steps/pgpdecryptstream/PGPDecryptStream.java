@@ -82,7 +82,7 @@ public class PGPDecryptStream extends BaseStep implements StepInterface
     			data.previousRowMeta = getInputRowMeta().clone();
     			data.NrPrevFields=data.previousRowMeta.size();
     			data.outputRowMeta = data.previousRowMeta;
-    			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+    			meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
     			
         		// Check is stream data field is provided
 				if (Const.isEmpty(meta.getStreamField()))

@@ -230,7 +230,7 @@ public class StringCutMeta extends BaseStepMeta implements StepMetaInterface {
 		}
 	}
 	 public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface info[], StepMeta nextStep,
-	            VariableSpace space) throws KettleStepException
+	            VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
 	  {			
 		for(int i=0;i<fieldOutStream.length;i++) {
 			if (!Const.isEmpty(fieldOutStream[i])){
@@ -242,7 +242,8 @@ public class StringCutMeta extends BaseStepMeta implements StepMetaInterface {
 		}	
 	}
 	 public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo,
-	            RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	            RowMetaInterface prev, String input[], String output[], RowMetaInterface info, 
+	            VariableSpace space, Repository repository, IMetaStore metaStore)
 	  {
 
 		CheckResult cr;

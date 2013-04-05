@@ -544,7 +544,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
     
-    public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
+    public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
     {
         if (ignoreFlagField!=null && ignoreFlagField.length()>0)
         {
@@ -555,7 +555,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
         }
     }
 
-    public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+    public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		CheckResult cr;
 		String error_message = ""; //$NON-NLS-1$
@@ -570,7 +570,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 				
 				if (!Const.isEmpty(tableName))
 				{
-					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UpdateMeta.CheckResult.TableNameOK"), stepinfo); //$NON-NLS-1$
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UpdateMeta.CheckResult.TableNameOK"), stepMeta); //$NON-NLS-1$
 					remarks.add(cr);
 			
 					boolean first=true;
@@ -582,7 +582,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 					RowMetaInterface r = db.getTableFields( schemaTable );
 					if (r!=null)
 					{
-						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UpdateMeta.CheckResult.TableExists"), stepinfo); //$NON-NLS-1$
+						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UpdateMeta.CheckResult.TableExists"), stepMeta); //$NON-NLS-1$
 						remarks.add(cr);
 			
 						for (int i=0;i<keyLookup.length;i++)
@@ -603,11 +603,11 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 						}
 						if (error_found)
 						{
-							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
+							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 						}
 						else
 						{
-							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UpdateMeta.CheckResult.AllLookupFieldsFound"), stepinfo); //$NON-NLS-1$
+							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UpdateMeta.CheckResult.AllLookupFieldsFound"), stepMeta); //$NON-NLS-1$
 						}
 						remarks.add(cr);
 						
@@ -634,18 +634,18 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 						}
 						if (error_found)
 						{
-							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
+							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 						}
 						else
 						{
-							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UpdateMeta.CheckResult.AllFieldsToUpdateFoundInTargetTable"), stepinfo); //$NON-NLS-1$
+							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UpdateMeta.CheckResult.AllFieldsToUpdateFoundInTargetTable"), stepMeta); //$NON-NLS-1$
 						}
 						remarks.add(cr);
 					}
 					else
 					{
 						error_message=BaseMessages.getString(PKG, "UpdateMeta.CheckResult.CouldNotReadTableInfo"); //$NON-NLS-1$
-						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
+						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 						remarks.add(cr);
 					}
 				}
@@ -653,7 +653,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 				// Look up fields in the input stream <prev>
 				if (prev!=null && prev.size()>0)
 				{
-					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UpdateMeta.CheckResult.StepReceivingDatas",prev.size()+""), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UpdateMeta.CheckResult.StepReceivingDatas",prev.size()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
 					remarks.add(cr);
 			
 					boolean first=true;
@@ -693,11 +693,11 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 					}
 					if (error_found)
 					{
-						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
+						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 					}
 					else
 					{
-						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UpdateMeta.CheckResult.AllFieldsFoundInInput"), stepinfo); //$NON-NLS-1$
+						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UpdateMeta.CheckResult.AllFieldsFoundInInput"), stepMeta); //$NON-NLS-1$
 					}
 					remarks.add(cr);
 
@@ -724,25 +724,25 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 					}
 					if (error_found)
 					{
-						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
+						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 					}
 					else
 					{
-						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UpdateMeta.CheckResult.AllFieldsFoundInInput2"), stepinfo); //$NON-NLS-1$
+						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UpdateMeta.CheckResult.AllFieldsFoundInInput2"), stepMeta); //$NON-NLS-1$
 					}
 					remarks.add(cr);
 				}
 				else
 				{
 					error_message=BaseMessages.getString(PKG, "UpdateMeta.CheckResult.MissingFieldsInInput3")+Const.CR; //$NON-NLS-1$
-					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 					remarks.add(cr);
 				}
 			}
 			catch(KettleException e)
 			{
 				error_message = BaseMessages.getString(PKG, "UpdateMeta.CheckResult.DatabaseErrorOccurred")+e.getMessage(); //$NON-NLS-1$
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
 			finally
@@ -753,24 +753,24 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 		else
 		{
 			error_message = BaseMessages.getString(PKG, "UpdateMeta.CheckResult.InvalidConnection"); //$NON-NLS-1$
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 			remarks.add(cr);
 		}
 
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UpdateMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UpdateMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "UpdateMeta.CheckResult.NoInputError"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "UpdateMeta.CheckResult.NoInputError"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 	}
 	
-	public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev)
+	public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, Repository repository, IMetaStore metaStore)
 	{
 		SQLStatement retval = new SQLStatement(stepMeta.getName(), databaseMeta, null); // default: nothing to do!
 	
@@ -850,7 +850,9 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 	}
 	
 	@Override
-    public void analyseImpact(List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info) throws KettleStepException
+    public void analyseImpact(List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta, 
+        RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, 
+        Repository repository, IMetaStore metaStore) throws KettleStepException
     {
         if (prev != null)
         {

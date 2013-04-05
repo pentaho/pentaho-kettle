@@ -191,7 +191,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 		rowLimit   = "0";
 	}
 
-    public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException 
+    public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException 
     {
 		if (databaseMeta==null) return; // TODO: throw an exception here
 
@@ -327,7 +327,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		CheckResult cr;
 		
@@ -467,7 +467,9 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 	}
 
 	@Override
-  public void analyseImpact(List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info) throws KettleStepException {
+	public void analyseImpact(List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
+	  String[] input, String[] output, RowMetaInterface info, Repository repository, IMetaStore metaStore)
+	  throws KettleStepException {
   
 	  if (stepMeta.getName().equalsIgnoreCase("cdc_cust")) {
 	    System.out.println("HERE!");
@@ -476,7 +478,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 		// Find the lookupfields...
         RowMetaInterface out = new RowMeta(); 
         // TODO: this builds, but does it work in all cases.
-        getFields(out, stepMeta.getName(), new RowMetaInterface[] { info }, null, transMeta);
+        getFields(out, stepMeta.getName(), new RowMetaInterface[] { info }, null, transMeta, repository, metaStore);
         
 		if (out!=null)
 		{

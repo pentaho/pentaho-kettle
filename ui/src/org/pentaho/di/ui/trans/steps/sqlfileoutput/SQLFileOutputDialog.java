@@ -1123,7 +1123,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
           
 			StepMeta stepMeta = transMeta.findStep(stepname);
 			
-			SQLStatement sql = info.getSQLStatements(transMeta, stepMeta, prev);
+			SQLStatement sql = info.getSQLStatements(transMeta, stepMeta, prev, repository, metaStore);
 			if (!sql.hasError())
 			{
 				if (sql.hasSQL())

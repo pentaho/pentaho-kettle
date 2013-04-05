@@ -25,7 +25,6 @@ package org.pentaho.di.trans.steps.rules;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -121,11 +120,6 @@ public class RulesAccumulatorMeta extends BaseStepMeta implements StepMetaInterf
   }
 
   @Override
-  public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info) {
-  }
-
-  @Override
   public void loadXML(Node stepnode, List<DatabaseMeta> _databases, IMetaStore metaStore) throws KettleXMLException {
     try {
       Node fields = XMLHandler.getSubNode(stepnode, StorageKeys.NODE_FIELDS.toString());
@@ -208,7 +202,7 @@ public class RulesAccumulatorMeta extends BaseStepMeta implements StepMetaInterf
 
   @Override
   public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space) throws KettleStepException {
+      VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException {
     if (!keepInputFields) {
       row.clear();
     }

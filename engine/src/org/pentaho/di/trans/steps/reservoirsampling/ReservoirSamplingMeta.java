@@ -215,51 +215,28 @@ public class ReservoirSamplingMeta
     rep.saveStepAttribute(id_transformation, id_step, 0, "seed", m_randomSeed);
   }
 
-  /**
-   * Generates row meta data to represent
-   * the fields output by this step
-   *
-   * @param row the meta data for the output produced
-   * @param origin the name of the step to be used as the origin
-   * @param info The input rows metadata that enters the step through 
-   * the specified channels in the same order as in method getInfoSteps(). 
-   * The step metadata can then choose what to do with it: ignore it or not.
-   * @param nextStep if this is a non-null value, it's the next step in 
-   * the transformation. The one who's asking, the step where the data is 
-   * targetted towards.
-   * @param space not sure what this is :-)
-   * @exception KettleStepException if an error occurs
-   */
   public void getFields(RowMetaInterface row, 
                         String origin, 
                         RowMetaInterface[] info, 
                         StepMeta nextStep, 
-                        VariableSpace space) 
+                        VariableSpace space, 
+                        Repository repository, 
+                        IMetaStore metaStore) 
     throws KettleStepException {
     
     // nothing to do, as no fields are added/deleted
   }
 
-  /**
-   * Check the settings of this step and put findings
-   * in a remarks list.
-   *
-   * @param remarks the list to put the remarks in. 
-   * see <code>org.pentaho.di.core.CheckResult</code>
-   * @param transmeta the transform meta data
-   * @param stepMeta the step meta data
-   * @param prev the fields coming from a previous step
-   * @param input the input step names
-   * @param output the output step names
-   * @param info the fields that are used as information by the step
-   */
   public void check(List<CheckResultInterface> remarks, 
                     TransMeta transmeta,
                     StepMeta stepMeta, 
                     RowMetaInterface prev, 
                     String[] input, 
                     String[] output,
-                    RowMetaInterface info) {
+                    RowMetaInterface info, 
+                    VariableSpace space,
+                    Repository repository, 
+                    IMetaStore metaStore) {
 
     CheckResult cr;
 

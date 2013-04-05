@@ -4852,7 +4852,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       // Export the resources linked to the currently loaded file...
       //
       TopLevelResource topLevelResource = ResourceUtil.serializeResourceExportInterface(zipFilename,
-          resourceExportInterface, (VariableSpace) resourceExportInterface, rep);
+          resourceExportInterface, (VariableSpace) resourceExportInterface, rep, metaStore);
       String message = ResourceUtil.getExplanation(zipFilename, topLevelResource.getResourceName(),
           resourceExportInterface);
 
@@ -4932,7 +4932,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       // Export the resources linked to the currently loaded file...
       //
       TopLevelResource topLevelResource = ResourceUtil.serializeResourceExportInterface(zipFilename,
-          resourceExportInterface, (VariableSpace) resourceExportInterface, rep);
+          resourceExportInterface, (VariableSpace) resourceExportInterface, rep, metaStore);
       String message = ResourceUtil.getExplanation(zipFilename, topLevelResource.getResourceName(),
           resourceExportInterface);
 
@@ -7788,7 +7788,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
    */
   public void sendTransformationXMLToSlaveServer(TransMeta transMeta, TransExecutionConfiguration executionConfiguration) {
     try {
-      Trans.sendToSlaveServer(transMeta, executionConfiguration, rep);
+      Trans.sendToSlaveServer(transMeta, executionConfiguration, rep, metaStore);
     } catch (Exception e) {
       new ErrorDialog(shell, "Error", "Error sending transformation to server", e);
     }

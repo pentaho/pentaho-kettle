@@ -76,7 +76,7 @@ public class SwitchCase extends BaseStep implements StepInterface
         	first = false;
         	
             data.outputRowMeta = getInputRowMeta().clone();
-            meta.getFields(getInputRowMeta(), getStepname(), null, null, this);
+            meta.getFields(getInputRowMeta(), getStepname(), null, null, this, repository, metaStore);
 
             data.fieldIndex = getInputRowMeta().indexOfValue(meta.getFieldname());
             if (data.fieldIndex<0) {

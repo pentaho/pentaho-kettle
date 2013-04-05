@@ -185,7 +185,7 @@ public class AggregateRows extends BaseStep implements StepInterface
 			first=false;
 			
 			data.outputRowMeta = getInputRowMeta().clone();
-			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+			meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
 			
 			for (int i=0;i<meta.getFieldName().length;i++) 
 			{

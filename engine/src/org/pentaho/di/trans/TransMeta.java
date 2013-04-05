@@ -105,7 +105,6 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.metastore.DatabaseMetaStoreUtil;
-import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.HasRepositoryInterface;
 import org.pentaho.di.repository.ObjectId;
@@ -2179,9 +2178,18 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
     // Go get the fields...
     //
-    stepint.getFields(row, name, inform, nextStep, this);
+    compatibleGetStepFields(stepint, row, name, inform, nextStep, this);
+    stepint.getFields(row, name, inform, nextStep, this, repository, metaStore);
 
     return row;
+  }
+
+  @SuppressWarnings("deprecation")
+  private void compatibleGetStepFields(StepMetaInterface stepint, RowMetaInterface row, String name,
+      RowMetaInterface[] inform, StepMeta nextStep, VariableSpace space) throws KettleStepException {
+
+    stepint.getFields(row, name, inform, nextStep, space);
+
   }
 
   /**
@@ -2559,9 +2567,16 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
     retval.append("  ").append(XMLHandler.closeTag(XML_TAG_INFO)).append(Const.CR); //$NON-NLS-1$
 
-    // Add the data service details of this transformation
+    // Add the data service name for this transformation
     //
-    retval.append(dataService.getXML()).append(Const.CR);
+    // The actual service details are saved in saveMetaStoreObjects()
+    //
+    if (dataService!=null && dataService.isDefined()) {
+      retval.append(XMLHandler.openTag(DataServiceMeta.XML_TAG));
+      retval.append(dataService.getName());
+      retval.append(XMLHandler.closeTag(DataServiceMeta.XML_TAG));
+      retval.append(Const.CR);
+    }
 
     retval.append("  ").append(XMLHandler.openTag(XML_TAG_NOTEPADS)).append(Const.CR); //$NON-NLS-1$
     if (notes != null)
@@ -2971,7 +2986,10 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         // Read data service metadata
         //
         Node dataServiceNode = XMLHandler.getSubNode(transnode, DataServiceMeta.XML_TAG);
-        dataService = new DataServiceMeta(dataServiceNode);
+        String dataServiceName = XMLHandler.getTagValue(dataServiceNode, DataServiceMeta.DATA_SERVICE_NAME);
+        if (!Const.isEmpty(dataServiceName) && metaStore!=null) {
+          dataService = DataServiceMetaStoreUtil.loadDataService(metaStore, dataServiceName);
+        }
 
         // Read the notes...
         Node notepadsnode = XMLHandler.getSubNode(transnode, XML_TAG_NOTEPADS); //$NON-NLS-1$
@@ -3359,7 +3377,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     
     // Read the databases...
     //
-    IMetaStoreElementType databaseType = metaStore.getElementTypeByName(PentahoDefaults.NAMESPACE, MetaStoreConst.DATABASE_TYPE_NAME);
+    IMetaStoreElementType databaseType = metaStore.getElementTypeByName(PentahoDefaults.NAMESPACE, PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME);
     List<IMetaStoreElement> databaseElements = metaStore.getElements(PentahoDefaults.NAMESPACE, databaseType.getId());
     for (IMetaStoreElement databaseElement : databaseElements) {
       addOrReplaceDatabase(DatabaseMetaStoreUtil.loadDatabaseMetaFromDatabaseElement(metaStore, databaseElement));
@@ -4392,7 +4410,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         inform = stepint.getTableFields();
       }
 
-      stepint.analyseImpact(impact, this, stepMeta, prev, null, null, inform);
+      compatibleAnalyseImpactStep(impact, stepint, this, stepMeta, prev, inform);
+      stepint.analyseImpact(impact, this, stepMeta, prev, null, null, inform, repository, metaStore);
 
       if (monitor != null) {
         monitor.worked(1);
@@ -4402,6 +4421,12 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
     if (monitor != null)
       monitor.done();
+  }
+
+  @SuppressWarnings("deprecation")
+  private void compatibleAnalyseImpactStep(List<DatabaseImpact> impact, StepMetaInterface stepint, TransMeta transMeta, StepMeta stepMeta,
+      RowMetaInterface prev, RowMetaInterface inform) throws KettleStepException {
+    stepint.analyseImpact(impact, transMeta, stepMeta, prev, null, null, inform);
   }
 
   /**
@@ -4451,7 +4476,11 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
       if (monitor != null)
         monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.GettingTheSQLForStepTask.Title", "" + stepMeta)); //$NON-NLS-1$ //$NON-NLS-2$
       RowMetaInterface prev = getPrevStepFields(stepMeta);
-      SQLStatement sql = stepMeta.getStepMetaInterface().getSQLStatements(this, stepMeta, prev);
+      SQLStatement sqlCompat = compatibleStepMetaGetSQLStatements(stepMeta.getStepMetaInterface(), stepMeta, prev);
+      if (sqlCompat.getSQL()!=null || sqlCompat.hasError()) {
+        stats.add(sqlCompat);
+      }
+      SQLStatement sql = stepMeta.getStepMetaInterface().getSQLStatements(this, stepMeta, prev, repository, metaStore);
       if (sql.getSQL() != null || sql.hasError()) {
         stats.add(sql);
       }
@@ -4509,6 +4538,12 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     return stats;
   }
 
+  @SuppressWarnings("deprecation")
+  private SQLStatement compatibleStepMetaGetSQLStatements(StepMetaInterface stepMetaInterface, StepMeta stepMeta,
+      RowMetaInterface prev) throws KettleStepException {
+    return stepMetaInterface.getSQLStatements(this, stepMeta, prev);
+  }
+
   /**
    * Get the SQL statements (needed to run this transformation) as a single String.
    *
@@ -4535,7 +4570,18 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * @param only_selected true to check only the selected steps, false for all steps
    * @param monitor a progress monitor listener to be updated as the SQL statements are generated
    */
-  public void checkSteps(List<CheckResultInterface> remarks, boolean only_selected, ProgressMonitorListener monitor) {
+  @Deprecated public void checkSteps(List<CheckResultInterface> remarks, boolean only_selected, ProgressMonitorListener monitor) {
+    checkSteps(remarks, only_selected, monitor, this, null, null);
+  }
+  
+  /**
+   * Checks all the steps and fills a List of (CheckResult) remarks.
+   *
+   * @param remarks The remarks list to add to.
+   * @param only_selected true to check only the selected steps, false for all steps
+   * @param monitor a progress monitor listener to be updated as the SQL statements are generated
+   */
+  public void checkSteps(List<CheckResultInterface> remarks, boolean only_selected, ProgressMonitorListener monitor, VariableSpace space, Repository repository, IMetaStore metaStore) {
     try {
       remarks.clear(); // Start with a clean slate...
 
@@ -4577,10 +4623,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             info = null;
             CheckResult cr = new CheckResult(
                 CheckResultInterface.TYPE_RESULT_ERROR,
-                BaseMessages
-                    .getString(
-                        PKG,
-                        "TransMeta.CheckResult.TypeResultError.ErrorOccurredGettingStepInfoFields.Description", "" + stepMeta, Const.CR + kse.getMessage()), stepMeta); //$NON-NLS-1$
+                BaseMessages.getString(PKG, "TransMeta.CheckResult.TypeResultError.ErrorOccurredGettingStepInfoFields.Description", "" + stepMeta, Const.CR + kse.getMessage()), 
+                stepMeta);
             remarks.add(cr);
           }
         }
@@ -4607,7 +4651,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
           String output[] = getNextStepNames(stepMeta);
 
           // Check step specific info...
-          stepMeta.check(remarks, this, prev, input, output, info);
+          stepMeta.check(remarks, this, prev, input, output, info, space, repository, metaStore);
 
           // See if illegal characters etc. were used in field-names...
           if (prev != null) {
@@ -4625,13 +4669,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
                     '!', '^' };
                 for (int c = 0; c < list.length; c++) {
                   if (name.indexOf(list[c]) >= 0)
-                    values
-                        .put(
-                            v,
-                            BaseMessages
-                                .getString(
-                                    PKG,
-                                    "TransMeta.Value.CheckingFieldName.FieldNameContainsUnfriendlyCodes.Description", String.valueOf(list[c]))); //$NON-NLS-1$ //$NON-NLS-2$
+                    values.put(v, BaseMessages.getString(PKG, "TransMeta.Value.CheckingFieldName.FieldNameContainsUnfriendlyCodes.Description", String.valueOf(list[c])));
                 }
               }
             }
@@ -6131,21 +6169,21 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     return resourceReferences;
   }
 
-  /**
-   * Exports the specified objects to a flat-file system, adding content with filename keys to a 
-   * set of definitions. The supplied resource naming interface allows the object to name appropriately 
-   * without worrying about those parts of the implementation specific details.
-   *
-   * @param space the variable space to export
-   * @param definitions the definitions to export
-   * @param resourceNamingInterface the resource naming interface
-   * @param repository the repository
-   * @return the name of the exported file
-   * @throws KettleException if any errors occur during the export
-   * @see org.pentaho.di.resource.ResourceExportInterface#exportResources(org.pentaho.di.core.variables.VariableSpace, java.util.Map, org.pentaho.di.resource.ResourceNamingInterface, org.pentaho.di.repository.Repository)
-   */
-  public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository) throws KettleException {
+ /**
+  * Exports the specified objects to a flat-file system, adding content with filename keys to a 
+  * set of definitions. The supplied resource naming interface allows the object to name appropriately 
+  * without worrying about those parts of the implementation specific details.
+  *
+  * @param space the variable space to use 
+  * @param definitions
+  * @param resourceNamingInterface
+  * @param repository The repository to optionally load other resources from (to be converted to XML)
+  * @param metaStore the metaStore in which non-kettle metadata could reside. 
+  * 
+  * @return the filename of the exported resource
+  */
+ public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore) throws KettleException {
+
     try {
       // Handle naming for both repository and XML bases resources...
       //
@@ -6188,7 +6226,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         // loop over steps, databases will be exported to XML anyway.
         //
         for (StepMeta stepMeta : transMeta.getSteps()) {
-          stepMeta.exportResources(space, definitions, resourceNamingInterface, repository);
+          stepMeta.exportResources(space, definitions, resourceNamingInterface, repository, metaStore);
         }
 
         // Change the filename, calling this sets internal variables
@@ -7008,5 +7046,33 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   public void setMetaStore(IMetaStore metaStore) {
     this.metaStore = metaStore;
+  }
+ 
+  /**
+   * This method needs to be called to store those objects which are used and referenced in the transformation metadata but not saved in the XML serialization.
+   * For example, the Kettle data service definition is referenced by name but not stored when getXML() is called.
+   * 
+   * @param metaStore The store to save to
+   * @throws MetaStoreException in case there is an error.
+   */
+  public void saveMetaStoreObjects(Repository repository, IMetaStore metaStore) throws MetaStoreException {
+    // First new object: the Kettle data service
+    //
+    if (dataService!=null && dataService.isDefined()) {
+      
+      // Leave trace of this transformation...
+      //
+      if (repository!=null) {
+        dataService.setTransRepositoryPath(getRepositoryDirectory().getPath()+RepositoryDirectory.DIRECTORY_SEPARATOR+getName());
+        if (repository.getRepositoryMeta().getRepositoryCapabilities().supportsReferences()) {
+          dataService.setTransObjectId(id.getId());
+        }
+      }
+      dataService.setTransFilename(filename);
+      
+      // Now save the data service definition
+      //
+      DataServiceMetaStoreUtil.createOrUpdateDataServiceElement(metaStore, dataService);
+    }
   }
 }

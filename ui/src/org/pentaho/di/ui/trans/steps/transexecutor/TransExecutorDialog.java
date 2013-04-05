@@ -184,11 +184,11 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
 
   private Label wlResultRowsTarget;
 
-  private CCombo wResultRowsTarget;
+  private CCombo wOutputRowsSource;
 
-  private Label wlResultFields;
+  private Label wlOutputFields;
 
-  private TableView wResultRowsFields;
+  private TableView wOutputFields;
 
   private Button wGetParameters;
  
@@ -765,7 +765,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
 		  Arrays.sort(prevSteps);
 		  wExecutionResultTarget.setItems(prevSteps);
       wResultFilesTarget.setItems(prevSteps);
-      wResultRowsTarget.setItems(prevSteps);
+      wOutputRowsSource.setItems(prevSteps);
 		  
 		  String[] inputFields = transMeta.getPrevStepFields(stepMeta).getFieldNames();
 		  parameterColumns[1].setComboValues(inputFields);
@@ -802,19 +802,19 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     
     // Result rows
     //
-    wResultRowsTarget.setText(transExecutorMeta.getResultRowsTargetStepMeta()==null ? "" : transExecutorMeta.getResultRowsTargetStepMeta().getName());
-    for (int i=0;i<transExecutorMeta.getResultRowsField().length;i++) {
-      TableItem item = new TableItem(wResultRowsFields.table, SWT.NONE);
-      item.setText(1, Const.NVL(transExecutorMeta.getResultRowsField()[i], ""));
-      item.setText(2, ValueMeta.getTypeDesc(transExecutorMeta.getResultRowsType()[i]));
-      int length=transExecutorMeta.getResultRowsLength()[i];
+    wOutputRowsSource.setText(transExecutorMeta.getOutputRowsSourceStepMeta()==null ? "" : transExecutorMeta.getOutputRowsSourceStepMeta().getName());
+    for (int i=0;i<transExecutorMeta.getOutputRowsField().length;i++) {
+      TableItem item = new TableItem(wOutputFields.table, SWT.NONE);
+      item.setText(1, Const.NVL(transExecutorMeta.getOutputRowsField()[i], ""));
+      item.setText(2, ValueMeta.getTypeDesc(transExecutorMeta.getOutputRowsType()[i]));
+      int length=transExecutorMeta.getOutputRowsLength()[i];
       item.setText(3, length<0?"":Integer.toString(length));
-      int precision = transExecutorMeta.getResultRowsPrecision()[i];
+      int precision = transExecutorMeta.getOutputRowsPrecision()[i];
       item.setText(4, precision<0?"":Integer.toString(precision));
     }
-    wResultRowsFields.removeEmptyRows();
-    wResultRowsFields.setRowNums();
-    wResultRowsFields.optWidth(true);
+    wOutputFields.removeEmptyRows();
+    wOutputFields.setRowNums();
+    wOutputFields.optWidth(true);
     
 		wTabFolder.setSelection(0);
 
@@ -1441,31 +1441,31 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
 
      wlResultRowsTarget = new Label(wInputComposite, SWT.RIGHT);
      props.setLook(wlResultRowsTarget);
-     wlResultRowsTarget.setText(BaseMessages.getString(PKG, "TransExecutorDialog.ResultRowsTarget.Label")); //-NLS-1$
+     wlResultRowsTarget.setText(BaseMessages.getString(PKG, "TransExecutorDialog.OutputRowsSource.Label")); //-NLS-1$
      FormData fdlResultRowsTarget = new FormData();
      fdlResultRowsTarget.top = new FormAttachment(0, 0);
      fdlResultRowsTarget.left = new FormAttachment(0, 0); // First one in the left
      fdlResultRowsTarget.right = new FormAttachment(middle, -margin);
      wlResultRowsTarget.setLayoutData(fdlResultRowsTarget);
-     wResultRowsTarget = new CCombo(wInputComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-     props.setLook(wResultRowsTarget);
-     wResultRowsTarget.addModifyListener(lsMod);
+     wOutputRowsSource = new CCombo(wInputComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+     props.setLook(wOutputRowsSource);
+     wOutputRowsSource.addModifyListener(lsMod);
      FormData fdResultRowsTarget = new FormData();
      fdResultRowsTarget.top = new FormAttachment(0, 0);
      fdResultRowsTarget.left = new FormAttachment(middle, 0); // To the right
      fdResultRowsTarget.right = new FormAttachment(100, 0);
-     wResultRowsTarget.setLayoutData(fdResultRowsTarget);
-     Control lastControl = wResultRowsTarget;
+     wOutputRowsSource.setLayoutData(fdResultRowsTarget);
+     Control lastControl = wOutputRowsSource;
 
-     wlResultFields=new Label(wInputComposite, SWT.NONE);
-     wlResultFields.setText(BaseMessages.getString(PKG, "TransExecutorDialog.ResultFields.Label")); //$NON-NLS-1$
-     props.setLook(wlResultFields);
+     wlOutputFields=new Label(wInputComposite, SWT.NONE);
+     wlOutputFields.setText(BaseMessages.getString(PKG, "TransExecutorDialog.ResultFields.Label")); //$NON-NLS-1$
+     props.setLook(wlOutputFields);
      FormData fdlResultFields = new FormData();
      fdlResultFields.left  = new FormAttachment(0, 0);
      fdlResultFields.top   = new FormAttachment(lastControl, margin);
-     wlResultFields.setLayoutData(fdlResultFields);
+     wlOutputFields.setLayoutData(fdlResultFields);
      
-     int nrRows= (transExecutorMeta.getResultRowsField()!=null?transExecutorMeta.getResultRowsField().length:1);
+     int nrRows= (transExecutorMeta.getOutputRowsField()!=null?transExecutorMeta.getOutputRowsField().length:1);
      
      ColumnInfo[] ciResultFields=new ColumnInfo[] {
       new ColumnInfo(BaseMessages.getString(PKG, "TransExecutorDialog.ColumnInfo.Field"),  ColumnInfo.COLUMN_TYPE_TEXT,   false, false), //$NON-NLS-1$
@@ -1474,7 +1474,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
       new ColumnInfo(BaseMessages.getString(PKG, "TransExecutorDialog.ColumnInfo.Length"), ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
      };
      
-     wResultRowsFields=new TableView(transMeta, wInputComposite, 
+     wOutputFields=new TableView(transMeta, wInputComposite, 
                            SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
                            ciResultFields, 
                            nrRows,  
@@ -1484,10 +1484,10 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
 
      FormData fdResultFields = new FormData();
      fdResultFields.left  = new FormAttachment(0, 0);
-     fdResultFields.top   = new FormAttachment(wlResultFields, margin);
+     fdResultFields.top   = new FormAttachment(wlOutputFields, margin);
      fdResultFields.right = new FormAttachment(100, 0);
      fdResultFields.bottom= new FormAttachment(100, 0);
-     wResultRowsFields.setLayoutData(fdResultFields);
+     wOutputFields.setLayoutData(fdResultFields);
      
      wInputComposite.pack();
      Rectangle bounds = wInputComposite.getBounds();
@@ -1626,20 +1626,20 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     
     // Result row info
     //
-    transExecutorMeta.setResultRowsTargetStep(wResultRowsTarget.getText());
-    transExecutorMeta.setResultRowsTargetStepMeta(transMeta.findStep(wResultRowsTarget.getText()));
-    int nrFields = wResultRowsFields.nrNonEmpty();
-    transExecutorMeta.setResultRowsField(new String[nrFields]);
-    transExecutorMeta.setResultRowsType(new int[nrFields]);
-    transExecutorMeta.setResultRowsLength(new int[nrFields]);
-    transExecutorMeta.setResultRowsPrecision(new int[nrFields]);
+    transExecutorMeta.setOutputRowsSourceStep(wOutputRowsSource.getText());
+    transExecutorMeta.setOutputRowsSourceStepMeta(transMeta.findStep(wOutputRowsSource.getText()));
+    int nrFields = wOutputFields.nrNonEmpty();
+    transExecutorMeta.setOutputRowsField(new String[nrFields]);
+    transExecutorMeta.setOutputRowsType(new int[nrFields]);
+    transExecutorMeta.setOutputRowsLength(new int[nrFields]);
+    transExecutorMeta.setOutputRowsPrecision(new int[nrFields]);
     
     for (int i=0;i<nrFields;i++) {
-      TableItem item = wResultRowsFields.getNonEmpty(i);
-      transExecutorMeta.getResultRowsField()[i] = item.getText(1);
-      transExecutorMeta.getResultRowsType()[i] = ValueMeta.getType(item.getText(2));
-      transExecutorMeta.getResultRowsLength()[i] = Const.toInt(item.getText(3), -1);
-      transExecutorMeta.getResultRowsPrecision()[i] = Const.toInt(item.getText(4), -1);
+      TableItem item = wOutputFields.getNonEmpty(i);
+      transExecutorMeta.getOutputRowsField()[i] = item.getText(1);
+      transExecutorMeta.getOutputRowsType()[i] = ValueMeta.getType(item.getText(2));
+      transExecutorMeta.getOutputRowsLength()[i] = Const.toInt(item.getText(3), -1);
+      transExecutorMeta.getOutputRowsPrecision()[i] = Const.toInt(item.getText(4), -1);
     }
 
 	}

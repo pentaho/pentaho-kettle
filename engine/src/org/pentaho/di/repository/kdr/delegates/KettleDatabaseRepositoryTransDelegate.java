@@ -39,7 +39,6 @@ import org.pentaho.di.core.logging.TransLogTable;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.sql.ServiceCacheMethod;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.LongObjectId;
@@ -51,6 +50,7 @@ import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.DataServiceMeta;
+import org.pentaho.di.trans.DataServiceMetaStoreUtil;
 import org.pentaho.di.trans.TransDependency;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -59,6 +59,7 @@ import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
+import org.pentaho.metastore.api.exceptions.MetaStoreException;
 
 public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseRepositoryBaseDelegate {
 	
@@ -492,7 +493,13 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
 	                
 	                // Load the data service metadata
 	                //
-	                loadDataService(transMeta.getObjectId(), transMeta.getDataService());
+	                String dataServiceName = repository.connectionDelegate.getTransAttributeString(transMeta.getObjectId(), 0, KettleDatabaseRepository.TRANS_ATTRIBUTE_DATA_SERVICE_NAME);
+	                if (!Const.isEmpty(dataServiceName)) {
+	                  DataServiceMeta dataServiceMeta = DataServiceMetaStoreUtil.loadDataService(repository.metaStore, dataServiceName);
+	                  transMeta.setDataService(dataServiceMeta);
+	                } else {
+	                  transMeta.setDataService(new DataServiceMeta());
+	                }
 	                
 	                if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.SortingStepsTask.Title")); //$NON-NLS-1$
 	                transMeta.sortSteps();
@@ -1167,51 +1174,17 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
 	  transMeta.getPerformanceLogTable().saveToRepository(attributeInterface);
 	  transMeta.getChannelLogTable().saveToRepository(attributeInterface);
 	  
-	  insertDataService(transMeta.getObjectId(), transMeta.getDataService());
+	  if (transMeta.getDataService().isDefined()) {
+	    try {
+        DataServiceMetaStoreUtil.createOrUpdateDataServiceElement(repository.metaStore, transMeta.getDataService());
+        repository.connectionDelegate.insertTransAttribute(transMeta.getObjectId(), 0, KettleDatabaseRepository.TRANS_ATTRIBUTE_DATA_SERVICE_NAME, 0, transMeta.getDataService().getName());
+      } catch (MetaStoreException e) {
+        throw new KettleException("Unable to save data service to the meta store", e);
+      }
+	  }
 	}
 
-  private synchronized void insertDataService(ObjectId id_transformation, DataServiceMeta dataService) throws KettleException {
-    
-    if (dataService==null) return;
-    if (Const.isEmpty(dataService.getName())) return;
-    
-    ObjectId id = repository.connectionDelegate.getNextTransDataServiceID();
-
-    RowMetaAndData table = new RowMetaAndData();
-
-    table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_DATA_SERVICE_ID_TRANS_DATA_SERVICE, ValueMetaInterface.TYPE_INTEGER), id);
-    table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_DATA_SERVICE_ID_TRANS, ValueMetaInterface.TYPE_INTEGER), id_transformation);
-    table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_DATA_SERVICE_SERVICE_NAME, ValueMetaInterface.TYPE_STRING), dataService.getName());
-    table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_DATA_SERVICE_STEP_NAME, ValueMetaInterface.TYPE_STRING), dataService.getStepname());
-    table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_DATA_SERVICE_IS_OUTPUT, ValueMetaInterface.TYPE_BOOLEAN), dataService.isOutput());
-    table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_DATA_SERVICE_ALLOW_OPTIMIZATION, ValueMetaInterface.TYPE_BOOLEAN), dataService.isOptimizationAllowed());
-    table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_DATA_SERVICE_CACHE_METHOD, ValueMetaInterface.TYPE_STRING), dataService.getCacheMethod().name());
-
-    repository.connectionDelegate.getDatabase().prepareInsert(table.getRowMeta(), KettleDatabaseRepository.TABLE_R_TRANS_DATA_SERVICE);
-    repository.connectionDelegate.getDatabase().setValuesInsert(table);
-    repository.connectionDelegate.getDatabase().insertRow();
-    repository.connectionDelegate.getDatabase().closeInsert();
-  }
   
-  private synchronized void loadDataService(ObjectId id_transformation, DataServiceMeta dataService) throws KettleException {
-    RowMetaAndData row = repository.connectionDelegate.getOneRow(KettleDatabaseRepository.TABLE_R_TRANS_DATA_SERVICE, KettleDatabaseRepository.FIELD_TRANS_DATA_SERVICE_ID_TRANS, id_transformation);
-    if (row!=null) {
-      loadDataService(dataService, row);
-    }
-  }
-	 
-	public void loadDataService(DataServiceMeta dataService, RowMetaAndData row) throws KettleException {
-	  Long idTrans = row.getInteger(KettleDatabaseRepository.FIELD_TRANS_DATA_SERVICE_ID_TRANS);
-	  if (idTrans!=null) {
-  	  dataService.setObjectId(new LongObjectId( idTrans ));
-      dataService.setName(row.getString(KettleDatabaseRepository.FIELD_TRANS_DATA_SERVICE_SERVICE_NAME, null));
-      dataService.setStepname(row.getString(KettleDatabaseRepository.FIELD_TRANS_DATA_SERVICE_STEP_NAME, null));
-      dataService.setOutput(row.getBoolean(KettleDatabaseRepository.FIELD_TRANS_DATA_SERVICE_IS_OUTPUT, false));
-      dataService.setOptimizationAllowed(row.getBoolean(KettleDatabaseRepository.FIELD_TRANS_DATA_SERVICE_ALLOW_OPTIMIZATION, false));
-      dataService.setCacheMethod(ServiceCacheMethod.getMethodByName(row.getString(KettleDatabaseRepository.FIELD_TRANS_DATA_SERVICE_CACHE_METHOD, "")));
-	  }
-  }
-
   private synchronized ObjectId insertTransHop(ObjectId id_transformation, ObjectId id_step_from, ObjectId id_step_to, boolean enabled) throws KettleException {
 		ObjectId id = repository.connectionDelegate.getNextTransHopID();
 

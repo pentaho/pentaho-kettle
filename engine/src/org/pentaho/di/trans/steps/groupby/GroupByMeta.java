@@ -383,7 +383,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields(RowMetaInterface r, String origin, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space) {
+      VariableSpace space, Repository repository, IMetaStore metaStore) {
     // re-assemble a new row of metadata
     //
     RowMetaInterface fields = new RowMeta();
@@ -593,7 +593,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String input[], String output[], RowMetaInterface info) {
+      String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore) {
     CheckResult cr;
 
     if (input.length > 0) {

@@ -681,7 +681,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
 		DynamicFilenameField = null;
 	}
 	
-	public void getFields(RowMetaInterface r, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException
+	public void getFields(RowMetaInterface r, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
 	{
 		if(!getIsInFields()) r.clear();
 		int i;
@@ -924,19 +924,19 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		return includeSubFolderBoolean;
   }
-	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		CheckResult cr;
 
 		// See if we get input...		
 		if (input.length<=0)
 		{		
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "LoadFileInputMeta.CheckResult.NoInputExpected"), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "LoadFileInputMeta.CheckResult.NoInputExpected"), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "LoadFileInputMeta.CheckResult.NoInput"), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "LoadFileInputMeta.CheckResult.NoInput"), stepMeta);
 			remarks.add(cr);
 		}	
 		
@@ -944,12 +944,12 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			 if (Const.isEmpty(getDynamicFilenameField()))
 			 {
-				 cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "LoadFileInputMeta.CheckResult.NoField"), stepinfo);
+				 cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "LoadFileInputMeta.CheckResult.NoField"), stepMeta);
 				 remarks.add(cr); 
 			 }
 			 else
 			 {
-				 cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "LoadFileInputMeta.CheckResult.FieldOk"), stepinfo);
+				 cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "LoadFileInputMeta.CheckResult.FieldOk"), stepMeta);
 				 remarks.add(cr); 
 			 }		 
 		}
@@ -959,12 +959,12 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
 			if (fileInputList==null || fileInputList.getFiles().size()==0)
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "LoadFileInputMeta.CheckResult.NoFiles"), stepinfo);
+				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "LoadFileInputMeta.CheckResult.NoFiles"), stepMeta);
 				remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "LoadFileInputMeta.CheckResult.FilesOk", ""+fileInputList.getFiles().size()), stepinfo);
+				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "LoadFileInputMeta.CheckResult.FilesOk", ""+fileInputList.getFiles().size()), stepMeta);
 				remarks.add(cr);
 			}	
 		}	
@@ -972,8 +972,16 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
 		
 	}
 	
-	@Override
-	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository) throws KettleException {
+  /**
+  * @param space the variable space to use 
+  * @param definitions
+  * @param resourceNamingInterface
+  * @param repository The repository to optionally load other resources from (to be converted to XML)
+  * @param metaStore the metaStore in which non-kettle metadata could reside. 
+  * 
+  * @return the filename of the exported resource
+  */
+ public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore) throws KettleException {
       try {
         // The object that we're modifying here is a copy of the original!
         // So let's change the filename from relative to absolute by grabbing the file object...

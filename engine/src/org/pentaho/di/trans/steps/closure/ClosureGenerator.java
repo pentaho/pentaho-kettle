@@ -68,7 +68,7 @@ public class ClosureGenerator extends BaseStep implements StepInterface
 					// Create the output row metadata
 					//
 					data.outputRowMeta = getInputRowMeta().clone();
-					meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+					meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
 					
 					// Get indexes of parent and child field
 					//

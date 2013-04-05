@@ -194,7 +194,7 @@ public class PGPDecryptStreamMeta extends BaseStepMeta implements StepMetaInterf
         gpglocation=null;
     }
 	
-	public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException
+	public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
 	{    	
         // Output fields (String)
 		 if (!Const.isEmpty(resultfieldname))
@@ -272,7 +272,7 @@ public class PGPDecryptStreamMeta extends BaseStepMeta implements StepMetaInterf
         }
     }
 
-	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
         CheckResult cr;
         String error_message = ""; //$NON-NLS-1$

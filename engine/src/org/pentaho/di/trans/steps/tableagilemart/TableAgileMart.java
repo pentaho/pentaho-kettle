@@ -64,7 +64,7 @@ public class TableAgileMart extends TableOutput implements TableManager {
  		   if (log.isDetailed()) logDetailed("getTransMeta: "+getTransMeta() );
     		   if (log.isDetailed()) logDetailed("getStepname: "+getStepname() );
     		   
-    		   SQLStatement statement = meta.getSQLStatements(transMeta, stepMeta, prev);
+    		   SQLStatement statement = meta.getSQLStatements(transMeta, stepMeta, prev, repository, metaStore);
     		   
     		   if (log.isDetailed()) logDetailed("Statement: "+statement );
    		   if (log.isDetailed() && statement != null) logDetailed("Statement has SQL: "+statement.hasSQL() );

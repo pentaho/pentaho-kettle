@@ -9,9 +9,6 @@ import org.pentaho.metastore.stores.xml.XmlMetaStore;
 
 public class MetaStoreConst {
 
-  public static final String DATABASE_TYPE_NAME = "Database connection";
-  public static final String DATABASE_TYPE_DESCRIPTION = "This is the official central database connection metadata";
-  
   public static final String DB_ATTR_ID_DESCRIPTION = "description";
   public static final String DB_ATTR_ID_PLUGIN_ID = "plugin_id";
   public static final String DB_ATTR_ID_ACCESS_TYPE = "access_type";

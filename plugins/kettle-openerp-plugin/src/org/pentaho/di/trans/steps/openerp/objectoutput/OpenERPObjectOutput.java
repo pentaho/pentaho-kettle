@@ -82,7 +82,7 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
 			try{
 				// Prepare output meta
 				data.outputRowMeta = getInputRowMeta().clone();
-	      meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+	      meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
 	            
 				prepareFieldList();
 				

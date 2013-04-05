@@ -2295,8 +2295,8 @@ public class TransDialog extends Dialog
     if (dataService != null) {
       wServiceName.setText(Const.NVL(dataService.getName(), ""));
       wServiceStep.setText(Const.NVL(dataService.getStepname(), ""));
-      wServiceOutput.setSelection(dataService.isOutput());
-      wServiceAllowOptimization.setSelection(dataService.isOptimizationAllowed());
+      // wServiceOutput.setSelection(dataService.isOutput());
+      // wServiceAllowOptimization.setSelection(dataService.isOptimizationAllowed());
       wServiceCacheMethod.setText(dataService.getCacheMethod()==null ? "" : dataService.getCacheMethod().getDescription());
     }
 
@@ -2465,8 +2465,8 @@ public class TransDialog extends Dialog
 		DataServiceMeta dataService = transMeta.getDataService();
 		dataService.setName(wServiceName.getText());
     dataService.setStepname(wServiceStep.getText());
-    dataService.setOutput(wServiceOutput.getSelection());
-    dataService.setOptimizationAllowed(wServiceAllowOptimization.getSelection());
+    // dataService.setOutput(wServiceOutput.getSelection());
+    // dataService.setOptimizationAllowed(wServiceAllowOptimization.getSelection());
     dataService.setCacheMethod(ServiceCacheMethod.getMethodByDescription(wServiceCacheMethod.getText()));
 
 		if (OK) {

@@ -439,7 +439,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 		useAutoinc  = false;
 	}
 
-	public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
+	public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
 	{
 		ValueMetaInterface v=new ValueMeta(technicalKeyField, ValueMetaInterface.TYPE_INTEGER);
 		v.setLength(10);
@@ -572,7 +572,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 		}
 	}
 
-	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		CheckResult cr;
 		String error_message = ""; //$NON-NLS-1$
@@ -752,7 +752,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 		}
 	}
 
-	public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev)
+	public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, Repository repository, IMetaStore metaStore)
 	{
 		SQLStatement retval = new SQLStatement(stepMeta.getName(), databaseMeta, null); // default: nothing to do!
 
@@ -1023,7 +1023,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 		return new CombinationLookupData();
 	}
 
-	public void analyseImpact(List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void analyseImpact(List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, Repository repository, IMetaStore metaStore)
 	{
 		// The keys are read-only...
 		for (int i=0;i<keyField.length;i++)

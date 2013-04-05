@@ -24,7 +24,6 @@ package org.pentaho.di.trans.steps.ivwloader;
 
 import java.util.List;
 
-import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ProvidesDatabaseConnectionInformation;
 import org.pentaho.di.core.SQLStatement;
@@ -192,12 +191,6 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
   public void allocate(int nrRows) {
     fieldStream = new String[nrRows];
     fieldDatabase = new String[nrRows];
-  }
-
-  @Override
-  public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info) {
-    // TODO Auto-generated method stub
-
   }
 
   public String getXML() {
@@ -420,7 +413,7 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
     this.fieldFormat = fieldFormat;
   }
 
-  public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev) {
+  public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, Repository repository, IMetaStore metaStore) {
     SQLStatement retval = new SQLStatement(stepMeta.getName(), databaseMeta, null); // default:
                                                                                     // nothing
                                                                                     // to

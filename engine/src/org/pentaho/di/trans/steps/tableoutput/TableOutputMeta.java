@@ -621,7 +621,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface, 
 		}
 	}
 
-    public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException 
+    public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException 
     {
     	// Just add the returning key field...
 		if (returningGeneratedKeys && generatedKeyField!=null && generatedKeyField.length()>0)
@@ -632,7 +632,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface, 
 		}
 	}
 
-	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		if (databaseMeta!=null)
 		{
@@ -836,7 +836,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface, 
 		return new TableOutputData();
 	}
 	
-	public void analyseImpact(List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void analyseImpact(List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, Repository repository, IMetaStore metaStore)
 	{
 		if (truncateTable)
 		{
@@ -876,7 +876,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface, 
 		}
 	}
 
-	 public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev) {
+	 public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, Repository repository, IMetaStore metaStore) {
 	   return getSQLStatements(transMeta, stepMeta, prev, null, false, null);
 	 }
 	

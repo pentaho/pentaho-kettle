@@ -53,7 +53,7 @@ public class Edi2Xml extends BaseStep implements StepInterface {
 			data.inputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
 			data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
 
-			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+			meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
 
 			String realInputField = environmentSubstitute(meta.getInputField());
 			String realOutputField = environmentSubstitute(meta.getOutputField());

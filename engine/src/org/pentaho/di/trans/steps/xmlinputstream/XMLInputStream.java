@@ -89,7 +89,8 @@ public class XMLInputStream extends BaseStep implements StepInterface
 			data.encoding=this.environmentSubstitute(meta.getEncoding());
 			
 			data.outputRowMeta = new RowMeta();
-			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+			meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
+			
 			// get and save field positions
 			data.pos_xml_filename=data.outputRowMeta.indexOfValue(meta.getFilenameField());
 			data.pos_xml_row_number=data.outputRowMeta.indexOfValue(meta.getRowNumberField());

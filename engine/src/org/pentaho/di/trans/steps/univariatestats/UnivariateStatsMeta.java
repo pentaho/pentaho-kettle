@@ -231,26 +231,13 @@ public class UnivariateStatsMeta
     }
   }
 
-  /**
-   * Generates row meta data to represent
-   * the fields output by this step
-   *
-   * @param row the meta data for the output produced
-   * @param origin the name of the step to be used as the origin
-   * @param info The input rows metadata that enters the step through 
-   * the specified channels in the same order as in method getInfoSteps(). 
-   * The step metadata can then choose what to do with it: ignore it or not.
-   * @param nextStep if this is a non-null value, it's the next step in 
-   * the transformation. The one who's asking, the step where the data is 
-   * targetted towards.
-   * @param space not sure what this is :-)
-   * @exception KettleStepException if an error occurs
-   */
   public void getFields(RowMetaInterface row, 
                         String origin, 
                         RowMetaInterface[] info, 
                         StepMeta nextStep, 
-                        VariableSpace space) 
+                        VariableSpace space, 
+                        Repository repository, 
+                        IMetaStore metaStore ) 
     throws KettleStepException {
     
     row.clear();
@@ -359,7 +346,10 @@ public class UnivariateStatsMeta
                     RowMetaInterface prev, 
                     String[] input, 
                     String[] output,
-                    RowMetaInterface info) {
+                    RowMetaInterface info, 
+                    VariableSpace space, 
+                    Repository repository, 
+                    IMetaStore metaStore) {
 
     CheckResult cr;
 

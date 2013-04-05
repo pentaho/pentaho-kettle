@@ -98,7 +98,7 @@ public class SasInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   @Override
-  public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException {
+  public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException {
 
     for (SasInputField field : outputFields) {
       ValueMetaInterface valueMeta = new ValueMeta(field.getRename(), field.getType());
@@ -150,7 +150,7 @@ public class SasInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info) {
+  public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore) {
 
     CheckResult cr;
 

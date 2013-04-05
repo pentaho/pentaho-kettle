@@ -74,7 +74,7 @@ public class FieldsChangeSequence extends BaseStep implements StepInterface
 			data.previousMeta = getInputRowMeta().clone();
 			data.nextIndexField = data.previousMeta .size();
             data.outputRowMeta = getInputRowMeta().clone();
-            meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+            meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
 			
 			if(meta.getFieldName()==null || meta.getFieldName().length>0)
 			{

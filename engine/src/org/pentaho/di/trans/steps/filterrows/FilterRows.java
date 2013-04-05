@@ -90,7 +90,7 @@ public class FilterRows extends BaseStep implements StepInterface
         	first = false;
         	
             data.outputRowMeta = getInputRowMeta().clone();
-            meta.getFields(getInputRowMeta(), getStepname(), null, null, this);
+            meta.getFields(getInputRowMeta(), getStepname(), null, null, this, repository, metaStore);
             
             // Cache the position of the RowSet for the output.
             //

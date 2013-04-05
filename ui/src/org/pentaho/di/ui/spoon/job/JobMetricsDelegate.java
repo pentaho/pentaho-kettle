@@ -188,10 +188,23 @@ public class JobMetricsDelegate extends SpoonDelegate {
 
       public void paintControl(PaintEvent event) {
 
-        refreshImage(event.gc);
+        if (jobGraph.job!=null && jobGraph.job.isFinished()) {
+          refreshImage(event.gc);
+  
+          if (image != null && !image.isDisposed()) {
+            event.gc.drawImage(image, 0, 0);
+          }
+        } else {
+          Rectangle bounds = canvas.getBounds();
+          if (bounds.width<=0 || bounds.height<=0) return;
 
-        if (image != null && !image.isDisposed()) {
-          event.gc.drawImage(image, 0, 0);
+          event.gc.setForeground(GUIResource.getInstance().getColorWhite());
+          event.gc.setBackground(GUIResource.getInstance().getColorWhite());
+          event.gc.fillRectangle(new Rectangle(0, 0, bounds.width, bounds.height));
+          event.gc.setForeground(GUIResource.getInstance().getColorBlack());
+          String metricsMessage = BaseMessages.getString(PKG, "JobMetricsDelegate.JobIsNotRunning.Message");
+          org.eclipse.swt.graphics.Point extent = event.gc.textExtent(metricsMessage);
+          event.gc.drawText(metricsMessage, (bounds.width-extent.x)/2, (bounds.height-extent.y)/2);
         }
       }
     });

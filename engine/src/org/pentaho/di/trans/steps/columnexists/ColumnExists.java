@@ -80,7 +80,7 @@ public class ColumnExists extends BaseStep implements StepInterface
     		first=false;
     		
 			data.outputRowMeta = getInputRowMeta().clone();
-			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+			meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
 			
     		
     		// Check is columnname field is provided

@@ -331,7 +331,7 @@ public class LDIFInput extends BaseStep implements StepInterface
 		            
 		            data.inputRowMeta = getInputRowMeta();
 		            data.outputRowMeta = data.inputRowMeta.clone();
-		            meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+		            meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
 		            
 		            // Get total previous fields
 		            data.totalpreviousfields=data.inputRowMeta.size();
@@ -487,7 +487,7 @@ public class LDIFInput extends BaseStep implements StepInterface
 					// Create the output row meta-data
 		            data.outputRowMeta = new RowMeta();
 		
-					meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+					meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
 					
 					// Create convert meta-data objects that will contain Date & Number formatters
 		            data.convertRowMeta = data.outputRowMeta.cloneToType(ValueMetaInterface.TYPE_STRING);

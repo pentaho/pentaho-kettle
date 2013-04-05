@@ -721,7 +721,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
         preloadingCache = false;
 	}
 
-  public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException {
+  public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException {
     
     // Change all the fields to normal storage, this is the fastest way to handle lazy conversion.
     // It doesn't make sense to use it in the SCD context but people try it anyway
@@ -1057,12 +1057,12 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		return mincal.getTime();
 	}
 
-	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		if (update)
-			checkUpdate(remarks, stepinfo, prev);
+			checkUpdate(remarks, stepMeta, prev);
 		else
-			checkLookup(remarks, stepinfo, prev);
+			checkLookup(remarks, stepMeta, prev);
 
 		if ( techKeyCreation != null )
 		{
@@ -1072,7 +1072,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 			       CREATION_METHOD_TABLEMAX.equals(techKeyCreation)) )
 			{
 				String error_message = BaseMessages.getString(PKG, "DimensionLookupMeta.CheckResult.ErrorTechKeyCreation")+ ": " + techKeyCreation +"!"; //$NON-NLS-1$ //$NON-NLS-2$
-				CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
+				CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
 		}		
@@ -1081,13 +1081,13 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		if (input.length > 0)
 		{
 			CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "DimensionLookupMeta.CheckResult.StepReceiveInfoOK"), //$NON-NLS-1$
-					stepinfo);
+					stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
 			CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "DimensionLookupMeta.CheckResult.NoInputReceiveFromOtherSteps"), //$NON-NLS-1$
-					stepinfo);
+					stepMeta);
 			remarks.add(cr);
 		}
 	}
@@ -1549,7 +1549,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		return fields;
 	}
 
-	public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev)
+	public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, Repository repository, IMetaStore metaStore)
 	{
 		SQLStatement retval = new SQLStatement(stepMeta.getName(), databaseMeta, null); // default: nothing to do!
 
@@ -1745,7 +1745,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		return retval;
 	}
     
-    public void analyseImpact(List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+    public void analyseImpact(List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, Repository repository, IMetaStore metaStore)
     {
         if (prev!=null)
         {

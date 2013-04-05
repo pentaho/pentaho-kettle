@@ -195,7 +195,7 @@ public class JsonOutput extends BaseStep implements StepInterface
         	data.inputRowMetaSize=data.inputRowMeta.size();
         	if(data.outputValue) {
         		data.outputRowMeta = data.inputRowMeta.clone();
-        		meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+        		meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
         	}
         	
         	// Cache the field name indexes

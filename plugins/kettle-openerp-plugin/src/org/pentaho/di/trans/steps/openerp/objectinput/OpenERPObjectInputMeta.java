@@ -19,7 +19,7 @@ package org.pentaho.di.trans.steps.openerp.objectinput;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.pentaho.di.core.CheckResultInterface;
+
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -63,7 +63,7 @@ public class OpenERPObjectInputMeta extends BaseStepMeta implements StepMetaInte
 
 	public void getFields(final RowMetaInterface row, final String origin, 
 			final RowMetaInterface[] info, final StepMeta nextStep, 
-			final VariableSpace space) throws KettleStepException {
+			final VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException {
 
 		if (databaseMeta == null) 
 			throw new KettleStepException("There is no OpenERP database server connection defined");
@@ -84,14 +84,6 @@ public class OpenERPObjectInputMeta extends BaseStepMeta implements StepMetaInte
 			rowMeta.addValueMeta(new ValueMeta(map.target_field, map.target_field_type));
 		}
 		return rowMeta;
-	}
-
-	@Override
-	public void check(List<CheckResultInterface> remarks, TransMeta transMeta,
-			StepMeta stepMeta, RowMetaInterface prev, String[] input,
-			String[] output, RowMetaInterface info) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override

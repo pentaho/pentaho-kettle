@@ -227,4 +227,10 @@
 		<default-value>Y</default-value>
 	</kettle-variable>
 
+	<kettle-variable>
+		<description>Set this variable to point to the Simple JNDI folder containing a jdbc.properties file (default is simple-jndi).</description>
+		<variable>KETTLE_JNDI_ROOT</variable>
+		<default-value></default-value>
+	</kettle-variable>
+
 </kettle-variables>

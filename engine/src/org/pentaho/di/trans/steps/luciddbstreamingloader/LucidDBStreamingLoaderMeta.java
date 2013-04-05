@@ -424,7 +424,7 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
   }
 
   public void getFields(RowMetaInterface rowMeta, String origin,
-      RowMetaInterface[] info, StepMeta nextStep, VariableSpace space)
+      RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore)
       throws KettleStepException {
     // Default: nothing changes to rowMeta
   }
@@ -432,7 +432,7 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
   // TODO: In future, we need to implement it to do double-check.
   public void check(List<CheckResultInterface> remarks, TransMeta transMeta,
       StepMeta stepMeta, RowMetaInterface prev, String input[],
-      String output[], RowMetaInterface info) {
+      String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore) {
 
   }
   
@@ -851,7 +851,7 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
   // TODO: Not know the purpose of this method yet so far.
   public void analyseImpact(List<DatabaseImpact> impact, TransMeta transMeta,
       StepMeta stepMeta, RowMetaInterface prev, String input[],
-      String output[], RowMetaInterface info) throws KettleStepException {
+      String output[], RowMetaInterface info, Repository repository, IMetaStore metaStore) throws KettleStepException {
 
   }
 
@@ -1000,9 +1000,9 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
   }
 
   @Override
-  public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev) throws KettleStepException {
+  public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, Repository repository, IMetaStore metaStore) throws KettleStepException {
     
-    SQLStatement retval = super.getSQLStatements(transMeta, stepMeta, prev);
+    SQLStatement retval = super.getSQLStatements(transMeta, stepMeta, prev, repository, metaStore);
     
     if (databaseMeta!=null)
     {

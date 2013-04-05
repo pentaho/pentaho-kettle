@@ -247,7 +247,7 @@ public class FieldsChangeSequenceMeta extends BaseStepMeta implements StepMetaIn
 	            throw new KettleException("Unable to save step information to the repository for id_step=" + id_step, e);
 	        }
 	    }
-    public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space)
+    public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore)
     {
         if (!Const.isEmpty(resultfieldName))
         {
@@ -259,7 +259,7 @@ public class FieldsChangeSequenceMeta extends BaseStepMeta implements StepMetaIn
     }
 
 		
-    public void check(List<CheckResultInterface> remarks, TransMeta transmeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+    public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
     {
 		CheckResult cr;
 		String error_message="";

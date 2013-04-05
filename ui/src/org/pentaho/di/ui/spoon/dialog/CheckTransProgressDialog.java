@@ -31,9 +31,13 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.ProgressMonitorAdapter;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.metastore.api.IMetaStore;
 
 
 /**
@@ -51,15 +55,31 @@ public class CheckTransProgressDialog
 	private List<CheckResultInterface> remarks;
 	private boolean onlySelected;
 
+  private VariableSpace space;
+
+  private Repository repository;
+
+  private IMetaStore metaStore;
+
+	 /**
+   * Creates a new dialog that will handle the wait while checking a transformation...
+   */
+  public CheckTransProgressDialog(Shell shell, TransMeta transMeta, List<CheckResultInterface> remarks, boolean onlySelected) {
+    this(shell, transMeta, remarks, onlySelected, transMeta, Spoon.getInstance().getRepository(), Spoon.getInstance().getMetaStore());
+  }
+
 	/**
 	 * Creates a new dialog that will handle the wait while checking a transformation...
 	 */
-	public CheckTransProgressDialog(Shell shell, TransMeta transMeta, List<CheckResultInterface> remarks, boolean onlySelected)
+	public CheckTransProgressDialog(Shell shell, TransMeta transMeta, List<CheckResultInterface> remarks, boolean onlySelected, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		this.shell = shell;
 		this.transMeta = transMeta;
 		this.onlySelected = onlySelected;
 		this.remarks = remarks;
+		this.space = space;
+		this.repository = repository;
+		this.metaStore = metaStore;
 	}
 	
 	public void open()
@@ -72,7 +92,7 @@ public class CheckTransProgressDialog
 			{
 				try
 				{
-					transMeta.checkSteps(remarks, onlySelected, new ProgressMonitorAdapter(monitor));
+					transMeta.checkSteps(remarks, onlySelected, new ProgressMonitorAdapter(monitor), space, repository, metaStore);
 				}
 				catch(Exception e)
 				{

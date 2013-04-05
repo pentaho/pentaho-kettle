@@ -86,7 +86,7 @@ public class StepMetastructure extends BaseStep implements StepInterface
 			// Create the row metadata for the output rows
 			// 
 			data.outputRowMeta = new RowMeta();
-			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+			meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
 		}
 		
     	if (r==null) 

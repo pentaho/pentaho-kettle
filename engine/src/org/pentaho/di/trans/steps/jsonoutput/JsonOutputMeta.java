@@ -397,7 +397,7 @@ public class JsonOutputMeta extends BaseStepMeta  implements StepMetaInterface
         }
     }
     
-    public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException {
+    public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException {
         
     	if(getOperationType()!=OPERATION_TYPE_WRITE_TO_FILE) {
     		ValueMetaInterface v=new ValueMeta(space.environmentSubstitute(this.getOutputValue()), ValueMetaInterface.TYPE_STRING);
@@ -606,7 +606,7 @@ public class JsonOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		
 		return retval;
 	}
-    public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info) {
+    public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore) {
 
     	CheckResult cr;
     	if(getOperationType() != JsonOutputMeta.OPERATION_TYPE_WRITE_TO_FILE) {

@@ -380,6 +380,7 @@ public class KettleDatabaseRepositoryBase {
 	public static final String FIELD_JOB_LOCK_LOCK_MESSAGE = "LOCK_MESSAGE";
 	public static final String FIELD_JOB_LOCK_LOCK_DATE = "LOCK_DATE";
 
+	/*
 	public static final String TABLE_R_TRANS_DATA_SERVICE = "R_TRANS_DATA_SERVICE";
   public static final String FIELD_TRANS_DATA_SERVICE_ID_TRANS_DATA_SERVICE = "ID_TRANS_DATA_SERVICE";
   public static final String FIELD_TRANS_DATA_SERVICE_ID_TRANS = "ID_TRANS";
@@ -388,6 +389,7 @@ public class KettleDatabaseRepositoryBase {
   public static final String FIELD_TRANS_DATA_SERVICE_IS_OUTPUT = "IS_OUTPUT";
   public static final String FIELD_TRANS_DATA_SERVICE_ALLOW_OPTIMIZATION = "ALLOW_OPTIMIZATION";
   public static final String FIELD_TRANS_DATA_SERVICE_CACHE_METHOD = "CACHE_METHOD";
+  */
 
   public static final String TABLE_R_NAMESPACE = "R_NAMESPACE";
   public static final String FIELD_NAMESPACE_ID_NAMESPACE= "ID_NAMESPACE";
@@ -445,7 +447,7 @@ public class KettleDatabaseRepositoryBase {
             , TABLE_R_TRANSFORMATION
             , TABLE_R_TRANS_ATTRIBUTE
             , TABLE_R_TRANS_CLUSTER
-            , TABLE_R_TRANS_DATA_SERVICE
+            // , TABLE_R_TRANS_DATA_SERVICE
             , TABLE_R_TRANS_HOP
             , TABLE_R_TRANS_LOCK
             , TABLE_R_TRANS_NOTE
@@ -481,6 +483,7 @@ public class KettleDatabaseRepositoryBase {
 	public static final String TRANS_ATTRIBUTE_TRANSFORMATION_TYPE = "TRANSFORMATION_TYPE";
   public static final String TRANS_ATTRIBUTE_SLEEP_TIME_EMPTY = "SLEEP_TIME_EMPTY";
   public static final String TRANS_ATTRIBUTE_SLEEP_TIME_FULL = "SLEEP_TIME_FULL";
+  public static final String TRANS_ATTRIBUTE_DATA_SERVICE_NAME = "DATA_SERVICE_NAME";
 	
 	public static final String TRANS_ATTRIBUTE_PARAM_KEY         = "PARAM_KEY";
 	public static final String TRANS_ATTRIBUTE_PARAM_DEFAULT     = "PARAM_DEFAULT";

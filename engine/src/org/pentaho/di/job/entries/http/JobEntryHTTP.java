@@ -56,6 +56,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -727,7 +728,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
   }
 
   @Override
-  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta)
+  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore)
   {
     andValidator().validate(this, "targetFilename", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
     andValidator().validate(this, "targetFilenameExtention", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$

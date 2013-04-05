@@ -77,7 +77,7 @@ public class SSH extends BaseStep implements StepInterface
 	             first=false;
 	             data.outputRowMeta = getInputRowMeta().clone();
 	             data.nrInputFields=data.outputRowMeta.size();
-	             meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+	             meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
 	             data.nrOutputFields=data.outputRowMeta.size();
 	             
 	             // Check if commands field is provided
@@ -102,7 +102,7 @@ public class SSH extends BaseStep implements StepInterface
 	                first=false;
 	                data.outputRowMeta = new RowMeta();
 	                data.nrInputFields=0;
-	                meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+	                meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
 		            data.nrOutputFields=data.outputRowMeta.size();
 	                data.commands = environmentSubstitute(meta.getCommand());
 	            }

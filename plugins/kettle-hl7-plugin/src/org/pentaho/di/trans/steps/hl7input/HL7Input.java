@@ -65,7 +65,7 @@ public class HL7Input extends BaseStep implements StepInterface
 		  }
 		  
 		  data.outputRowMeta = getInputRowMeta().clone();
-		  meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+		  meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
 		  
 		  data.parser = new GenericParser();
 		  data.parser.setValidationContext(new NoValidation());

@@ -282,7 +282,7 @@ public class HTTP extends BaseStep implements StepInterface
 		{
 			data.outputRowMeta = getInputRowMeta().clone();
 			data.inputRowMeta = getInputRowMeta();
-			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+			meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
 			
 			if(meta.isUrlInField())
 			{

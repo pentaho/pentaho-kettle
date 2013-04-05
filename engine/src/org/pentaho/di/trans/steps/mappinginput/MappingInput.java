@@ -129,7 +129,7 @@ public class MappingInput extends BaseStep implements StepInterface
             	valueMeta.setName(valueRename.getTargetValueName());
             }
 
-            // meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+            // meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
 		}
 		
 		if (meta.isSelectingAndSortingUnspecifiedFields()) {

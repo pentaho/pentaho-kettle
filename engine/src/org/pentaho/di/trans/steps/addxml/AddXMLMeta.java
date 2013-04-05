@@ -244,7 +244,7 @@ public class AddXMLMeta extends BaseStepMeta  implements StepMetaInterface
         }
     }
     
-    public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException {
+    public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException {
         
     	ValueMetaInterface v=new ValueMeta(this.getValueName(), ValueMetaInterface.TYPE_STRING);
         v.setOrigin(name);
@@ -363,7 +363,9 @@ public class AddXMLMeta extends BaseStepMeta  implements StepMetaInterface
         }
     }
 
-    public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info) {
+    public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, 
+        RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, 
+        VariableSpace space, Repository repository, IMetaStore metaStore) {
 
     	CheckResult cr;
         // TODO - add checks for empty fieldnames 

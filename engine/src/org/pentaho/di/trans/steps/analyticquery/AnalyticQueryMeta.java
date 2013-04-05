@@ -278,7 +278,7 @@ public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
 		allocate( sizegroup, nrfields );
 	}
 
-	public void getFields(RowMetaInterface r, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
+	public void getFields(RowMetaInterface r, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
 	{
 		// re-assemble a new row of metadata
 		//
@@ -404,7 +404,9 @@ public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
 	}
 
 	
-	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, 
+	    RowMetaInterface prev, String input[], String output[], RowMetaInterface info, 
+	    VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		CheckResult cr;
 

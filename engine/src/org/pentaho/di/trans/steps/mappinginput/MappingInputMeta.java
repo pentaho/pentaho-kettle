@@ -254,7 +254,7 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface
         }
     }
     
-    public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException 
+    public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException 
     {
     	// Row should normally be empty when we get here.
     	// That is because there is no previous step to this mapping input step from the viewpoint of this single sub-transformation.
@@ -397,29 +397,29 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface
         }
     }
 
-    public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+    public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
     {
         CheckResult cr;
         if (prev == null || prev.size() == 0)
         {
-            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MappingInputMeta.CheckResult.NotReceivingFieldsError"), stepinfo); //$NON-NLS-1$
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MappingInputMeta.CheckResult.NotReceivingFieldsError"), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "MappingInputMeta.CheckResult.StepReceivingDatasFromPreviousOne", prev.size() + ""), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "MappingInputMeta.CheckResult.StepReceivingDatasFromPreviousOne", prev.size() + ""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
             remarks.add(cr);
         }
 
         // See if we have input streams leading to this step!
         if (input.length > 0)
         {
-            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "MappingInputMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepinfo); //$NON-NLS-1$
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "MappingInputMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK , BaseMessages.getString(PKG, "MappingInputMeta.CheckResult.NoInputReceived"), stepinfo); //$NON-NLS-1$
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK , BaseMessages.getString(PKG, "MappingInputMeta.CheckResult.NoInputReceived"), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
         }
     }

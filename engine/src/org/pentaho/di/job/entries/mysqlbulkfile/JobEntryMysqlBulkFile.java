@@ -43,6 +43,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -665,7 +666,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
   }
 
   @Override
-  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta)
+  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore)
   {
     andValidator().validate(this, "filename", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
     andValidator().validate(this, "tablename", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$

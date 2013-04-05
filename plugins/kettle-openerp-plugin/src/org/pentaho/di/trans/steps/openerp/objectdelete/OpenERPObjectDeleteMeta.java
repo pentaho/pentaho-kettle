@@ -19,12 +19,10 @@ package org.pentaho.di.trans.steps.openerp.objectdelete;
 
 import java.util.List;
 
-import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
@@ -51,14 +49,6 @@ import org.w3c.dom.Node;
 	private String modelName;
 	private int commitBatchSize = 1000;
 	private String idFieldName = "";
-
-	@Override
-	public void check(List<CheckResultInterface> remarks, TransMeta transMeta,
-			StepMeta stepMeta, RowMetaInterface prev, String[] input,
-			String[] output, RowMetaInterface info) {
-		// TODO Auto-generated method stub
-
-	}
 
 	@Override
 	public StepInterface getStep(StepMeta stepMeta,

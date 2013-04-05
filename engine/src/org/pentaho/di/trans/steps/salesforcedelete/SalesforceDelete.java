@@ -84,7 +84,7 @@ public class SalesforceDelete extends BaseStep implements StepInterface
 			 
 			// Create the output row meta-data
 	        data.outputRowMeta = getInputRowMeta().clone();
-			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+			meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
 			
 			// Check deleteKeyField
 			String realFieldName= environmentSubstitute(meta.getDeleteField());

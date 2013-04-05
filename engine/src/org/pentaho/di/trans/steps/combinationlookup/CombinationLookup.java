@@ -356,7 +356,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
             first=false;
             
             data.outputRowMeta = getInputRowMeta().clone();
-            meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+            meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
             
             data.schemaTable = meta.getDatabaseMeta().getQuotedSchemaTableCombination(data.realSchemaName, data.realTableName);
             

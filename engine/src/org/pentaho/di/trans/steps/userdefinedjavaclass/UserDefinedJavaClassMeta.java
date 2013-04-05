@@ -422,7 +422,8 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
 		}
 	}
 
-    public void getFields(RowMetaInterface row, String originStepname, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space)
+    public void getFields(RowMetaInterface row, String originStepname, RowMetaInterface[] info, StepMeta nextStep, 
+        VariableSpace space, Repository repository, IMetaStore metaStore)
             throws KettleStepException
     {
     	if (!checkClassCookings(getLog())) {
@@ -618,7 +619,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
     }
 
     public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[],
-            RowMetaInterface info)
+            RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
     {
         CheckResult cr;
 

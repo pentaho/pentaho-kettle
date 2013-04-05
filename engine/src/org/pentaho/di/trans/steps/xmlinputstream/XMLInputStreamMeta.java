@@ -124,7 +124,7 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
 		super(); // allocate BaseStepMeta
 	}
 
-	public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space)
+	public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		int defaultStringLenNameValueElements=Const.toInt(space.environmentSubstitute(defaultStringLen),new Integer(DEFAULT_STRING_LEN));
 
@@ -529,28 +529,28 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
 	}
 
 
-	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		// TODO externalize messages
 		CheckResult cr;
 		if (Const.isEmpty(filename)) {
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, "Filename is not given", stepinfo); 
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, "Filename is not given", stepMeta); 
 		} else {
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, "Filename is given", stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, "Filename is given", stepMeta);
 		}
 		remarks.add(cr);
 		
 		if (includeXmlDataTypeNumericField || includeXmlDataTypeDescriptionField) {
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_COMMENT, "At least one Data Type field (numeric or description) is in the data stream", stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_COMMENT, "At least one Data Type field (numeric or description) is in the data stream", stepMeta);
 		} else {
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, "Data Type field (numeric or description) is missing in the data stream", stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, "Data Type field (numeric or description) is missing in the data stream", stepMeta);
 		}
 		remarks.add(cr);
 		
 		if (includeXmlDataValueField && includeXmlDataNameField) {
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_COMMENT, "Data Name and Data Value fields are in the data stream", stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_COMMENT, "Data Name and Data Value fields are in the data stream", stepMeta);
 		} else {
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, "Both Data Name and Data Value fields should be in the data stream", stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, "Both Data Name and Data Value fields should be in the data stream", stepMeta);
 		}
 		remarks.add(cr);
 	}

@@ -110,7 +110,7 @@ public class XMLJoin extends BaseStep implements StepInterface
         	if(target_field_id == -1) throw new KettleException(BaseMessages.getString(PKG, "XMLJoin.Exception.FieldNotFound", meta.getTargetXMLfield())); //$NON-NLS-1$
         	
         	data.outputRowMeta = data.TargetRowSet.getRowMeta().clone();
-        	meta.getFields(data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.TargetRowSet.getRowMeta() }, null, this);
+        	meta.getFields(data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.TargetRowSet.getRowMeta() }, null, this, repository, metaStore);
         	data.outputRowData = rTarget.clone();
         	
         	//get the target xml structure and create a DOM

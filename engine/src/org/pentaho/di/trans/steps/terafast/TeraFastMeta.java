@@ -40,11 +40,13 @@ import org.pentaho.di.core.util.PluginMessages;
 import org.pentaho.di.core.util.StringListPluginProperty;
 import org.pentaho.di.core.util.StringPluginProperty;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.metastore.api.IMetaStore;
 
 /**
  * @author <a href="mailto:michael.gugerell@aschauer-edv.at">Michael Gugerell(asc145)</a>
@@ -157,7 +159,8 @@ public class TeraFastMeta extends AbstractStepMeta {
      *      java.lang.String[], org.pentaho.di.core.row.RowMetaInterface)
      */
     public void check(final List<CheckResultInterface> remarks, final TransMeta transmeta, final StepMeta stepMeta,
-            final RowMetaInterface prev, final String[] input, final String[] output, final RowMetaInterface info) {
+            final RowMetaInterface prev, final String[] input, final String[] output, final RowMetaInterface info, 
+            VariableSpace space, Repository repository, IMetaStore metaStore) {
         CheckResult checkResult;
         try {
             RowMetaInterface tableFields = getRequiredFields(transmeta);
@@ -292,7 +295,7 @@ public class TeraFastMeta extends AbstractStepMeta {
      */
     @Override
     public void getFields(final RowMetaInterface inputRowMeta, final String name, final RowMetaInterface[] info,
-            final StepMeta nextStep, final VariableSpace space) throws KettleStepException {
+            final StepMeta nextStep, final VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException {
         // Default: nothing changes to rowMeta
     }
 

@@ -1189,7 +1189,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
       if (inputTransMeta==null) {
         JobEntryTrans jet = new JobEntryTrans();
         getInfo(jet);
-        inputTransMeta = jet.getTransMeta(rep, jobMeta);
+        inputTransMeta = jet.getTransMeta(rep, metaStore, jobMeta);
       }
       String[] parameters = inputTransMeta.listParameters();
       
