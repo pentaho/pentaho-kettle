@@ -340,8 +340,15 @@ public class TextFileOutput extends BaseStep implements StepInterface
         		
         		// Also for PDI-170: not all encoding use single characters, so we need to cope
         		// with this.
-        		byte filler[] = " ".getBytes();
-        		int size = text.length + filler.length*(length - string.length());
+        	  int size = 0;
+            byte filler[] = null;
+            try {
+              filler = " ".getBytes(meta.getEncoding());
+              size = text.length + filler.length*(length - string.length());
+            }
+            catch (UnsupportedEncodingException uee) {
+              throw new KettleValueException(uee);
+            }
         		byte bytes[] = new byte[size];
         		System.arraycopy( text, 0, bytes, 0, text.length );
         		if( filler.length == 1 ) {
