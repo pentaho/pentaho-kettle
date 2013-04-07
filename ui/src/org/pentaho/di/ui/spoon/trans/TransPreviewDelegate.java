@@ -30,6 +30,8 @@ import java.util.ResourceBundle;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -92,6 +94,7 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
   private boolean active;
   
   private StepMeta selectedStep;
+  private StepMeta lastSelectedStep;
   
   /**
    * @param spoon
@@ -171,6 +174,13 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
     transPreviewTab.setControl(transPreviewComposite);
 
     transGraph.extraViewTabFolder.setSelection(transPreviewTab);
+    
+    transGraph.extraViewTabFolder.addSelectionListener(new SelectionAdapter() {
+      @Override
+      public void widgetSelected(SelectionEvent e) {
+        refreshView();
+      }
+    });
   }
 
   private void addToolBar() {
@@ -196,6 +206,11 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
    * This refresh is driven by outside influenced using listeners and so on.
    */
   public synchronized void refreshView() {
+    if (transGraph != null && transGraph.extraViewTabFolder != null) {
+      if (transGraph.extraViewTabFolder.getSelection() != transPreviewTab) {
+        return;
+      }
+    }
     
     if (previewComposite==null || previewComposite.isDisposed()) {
       return;
@@ -204,8 +219,10 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
     // Which step do we preview...
     //
     StepMeta stepMeta = selectedStep; // copy to prevent race conditions and so on.
-    if (stepMeta==null) {
+    if (stepMeta==null || selectedStep == lastSelectedStep) {
       return;
+    } else {
+      lastSelectedStep = selectedStep;
     }
     
     // Do we have a log for this selected step?
@@ -267,9 +284,9 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
         } else {
           item.setText(colNr+1, string);
         }
-        
       }
     }
+    
     tableView.setRowNums();
     tableView.setShowingConversionErrorsInline(true);
     tableView.optWidth(true);

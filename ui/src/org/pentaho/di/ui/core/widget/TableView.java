@@ -26,9 +26,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -2254,46 +2256,47 @@ public class TableView extends Composite {
           max += 15;
         }
       }
-
-      for (int r = 0; r < table.getItemCount() && (r < nrLines || nrLines <= 0); r++) {
-        TableItem ti = table.getItem(r);
-        if (ti != null) {
-          String str = "";
-          if (c > 0) {
-            switch (columns[c - 1].getType()) {
-            case ColumnInfo.COLUMN_TYPE_TEXT:
-              str = ti.getText(c);
-              break;
-            case ColumnInfo.COLUMN_TYPE_CCOMBO:
-            case ColumnInfo.COLUMN_TYPE_FORMAT:
-              str = ti.getText(c);
-              int minLength = str.length();
-              String[] options = columns[c - 1].getComboValues();
-              if (options != null) {
-                for (int x = 0; x < options.length; x++) {
-                  if (options[x].length() > minLength) {
-                    str = options[x];
-                    minLength = options[x].length();
-                  }
-                }
-              }
-              break;
-            case ColumnInfo.COLUMN_TYPE_BUTTON:
-              str = columns[c - 1].getButtonText();
-              break;
-            default:
-              break;
+      Set<String> columnStrings = new HashSet<String>();
+      
+      boolean haveToGetTexts = false;
+      if (c > 0) {
+        switch (columns[c - 1].getType()) {
+          case ColumnInfo.COLUMN_TYPE_TEXT:
+            haveToGetTexts = true;
+            break;
+          case ColumnInfo.COLUMN_TYPE_CCOMBO:
+          case ColumnInfo.COLUMN_TYPE_FORMAT:
+            haveToGetTexts = true;
+            for (String comboValue:columns[c - 1].getComboValues()) {
+              columnStrings.add(comboValue);
             }
-          } else {
-            str = ti.getText(c);
+            break;
+          case ColumnInfo.COLUMN_TYPE_BUTTON:
+            columnStrings.add(columns[c - 1].getButtonText());
+            break;
+          default:
+            break;
+          
+        }
+      } else {
+        haveToGetTexts = true;
+      }
+      
+      if (haveToGetTexts) {
+        for (int r = 0; r < table.getItemCount() && (r < nrLines || nrLines <= 0); r++) {
+          TableItem ti = table.getItem(r);
+          if (ti != null) {
+            columnStrings.add(ti.getText(c));
           }
-          if (str == null)
-            str = "";
-          int len = TableView.dummy_gc.textExtent(str, SWT.DRAW_TAB | SWT.DRAW_DELIMITER).x;
-          if (len > max)
-            max = len;
         }
       }
+      
+      for (String str:columnStrings) {
+        int len = TableView.dummy_gc.textExtent(str, SWT.DRAW_TAB | SWT.DRAW_DELIMITER).x;
+        if (len > max)
+          max = len;
+      }
+      
       try {
         int extra = 15;
         if (Const.isWindows()) {
