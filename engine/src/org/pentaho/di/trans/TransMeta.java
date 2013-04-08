@@ -120,7 +120,6 @@ import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
-import org.pentaho.di.shared.SharedObjectsMetaStore;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.RemoteStep;
 import org.pentaho.di.trans.step.StepErrorMeta;
@@ -135,7 +134,6 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.IMetaStoreElement;
 import org.pentaho.metastore.api.IMetaStoreElementType;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
-import org.pentaho.metastore.stores.delegate.DelegatingMetaStore;
 import org.pentaho.metastore.util.PentahoDefaults;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -3360,10 +3358,12 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     
     // Read the databases...
     //
-    IMetaStoreElementType databaseType = metaStore.getElementTypeByName(PentahoDefaults.NAMESPACE, PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME);
-    List<IMetaStoreElement> databaseElements = metaStore.getElements(PentahoDefaults.NAMESPACE, databaseType);
-    for (IMetaStoreElement databaseElement : databaseElements) {
-      addOrReplaceDatabase(DatabaseMetaStoreUtil.loadDatabaseMetaFromDatabaseElement(metaStore, databaseElement));
+    if (metaStore!=null) {
+      IMetaStoreElementType databaseType = metaStore.getElementTypeByName(PentahoDefaults.NAMESPACE, PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME);
+      List<IMetaStoreElement> databaseElements = metaStore.getElements(PentahoDefaults.NAMESPACE, databaseType);
+      for (IMetaStoreElement databaseElement : databaseElements) {
+        addOrReplaceDatabase(DatabaseMetaStoreUtil.loadDatabaseMetaFromDatabaseElement(metaStore, databaseElement));
+      }
     }
     
     // TODO: do the same for slaves, clusters, partition schemas
