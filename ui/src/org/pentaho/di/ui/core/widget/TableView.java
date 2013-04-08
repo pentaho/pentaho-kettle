@@ -2267,8 +2267,10 @@ public class TableView extends Composite {
           case ColumnInfo.COLUMN_TYPE_CCOMBO:
           case ColumnInfo.COLUMN_TYPE_FORMAT:
             haveToGetTexts = true;
-            for (String comboValue:columns[c - 1].getComboValues()) {
-              columnStrings.add(comboValue);
+            if (columns[c - 1].getComboValues()!=null) {
+              for (String comboValue:columns[c - 1].getComboValues()) {
+                columnStrings.add(comboValue);
+              }
             }
             break;
           case ColumnInfo.COLUMN_TYPE_BUTTON:

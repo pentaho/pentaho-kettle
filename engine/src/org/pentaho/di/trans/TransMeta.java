@@ -2892,20 +2892,10 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
     KettleMissingPluginsException missingPluginsException = new KettleMissingPluginsException(
         BaseMessages.getString(PKG, "TransMeta.MissingPluginsFoundWhileLoadingTransformation.Exception"));
-
-    DelegatingMetaStore store = new DelegatingMetaStore();
     
-    this.metaStore = store; // Remember this as the primary meta store.
+    this.metaStore = metaStore; // Remember this as the primary meta store.
     
     try {
-
-      // The metaStore specified takes precedence over anything else.
-      // It is the active store.
-      //
-      if (metaStore!=null) {
-        store.addMetaStore(metaStore);
-        store.setActiveMetaStoreName(metaStore.getName());
-      }
       
       Props props = null;
       if (Props.isInitialized()) {
@@ -2929,13 +2919,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         try {
           sharedObjectsFile = XMLHandler.getTagValue(transnode, "info", "shared_objects_file"); //$NON-NLS-1$ //$NON-NLS-2$
           sharedObjects = rep != null ? rep.readTransSharedObjects(this) : readSharedObjects();
-          
-          // Add the shared objects to the store for a unified view over all shared metadata
-          //
-          SharedObjectsMetaStore sharedObjectsMetaStore = new SharedObjectsMetaStore(sharedObjects);
-          sharedObjectsMetaStore.setName("Pentaho Shared Objects Metastore");
-          store.addMetaStore(sharedObjectsMetaStore);
-          
         } catch (Exception e) {
           log.logError(BaseMessages.getString(PKG, "TransMeta.ErrorReadingSharedObjects.Message", e.toString()));
           log.logError(Const.getStackTracker(e));
