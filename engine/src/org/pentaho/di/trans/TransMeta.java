@@ -3360,9 +3360,11 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     //
     if (metaStore!=null) {
       IMetaStoreElementType databaseType = metaStore.getElementTypeByName(PentahoDefaults.NAMESPACE, PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME);
-      List<IMetaStoreElement> databaseElements = metaStore.getElements(PentahoDefaults.NAMESPACE, databaseType);
-      for (IMetaStoreElement databaseElement : databaseElements) {
-        addOrReplaceDatabase(DatabaseMetaStoreUtil.loadDatabaseMetaFromDatabaseElement(metaStore, databaseElement));
+      if (databaseType!=null) {
+        List<IMetaStoreElement> databaseElements = metaStore.getElements(PentahoDefaults.NAMESPACE, databaseType);
+        for (IMetaStoreElement databaseElement : databaseElements) {
+          addOrReplaceDatabase(DatabaseMetaStoreUtil.loadDatabaseMetaFromDatabaseElement(metaStore, databaseElement));
+        }
       }
     }
     
