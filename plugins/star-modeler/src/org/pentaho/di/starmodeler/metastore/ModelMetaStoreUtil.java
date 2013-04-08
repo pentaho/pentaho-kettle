@@ -101,13 +101,13 @@ public class ModelMetaStoreUtil extends MetaStoreUtil {
       // populate and create...
       //
       IMetaStoreElement newElement = populateElement(metaStore, model);
-      metaStore.createElement(PentahoDefaults.NAMESPACE, elementType.getId(), newElement);
+      metaStore.createElement(PentahoDefaults.NAMESPACE, elementType, newElement);
       return newElement;
     }  else {
       // The element exists, update...
       //
       IMetaStoreElement newElement = populateElement(metaStore, model);
-      metaStore.updateElement(PentahoDefaults.NAMESPACE, elementType.getId(), oldElement.getId(), newElement);
+      metaStore.updateElement(PentahoDefaults.NAMESPACE, elementType, oldElement.getId(), newElement);
       return newElement;
     }
   }

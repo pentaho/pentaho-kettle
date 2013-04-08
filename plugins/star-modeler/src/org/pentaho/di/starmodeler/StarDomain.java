@@ -1,6 +1,8 @@
 package org.pentaho.di.starmodeler;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
@@ -11,6 +13,7 @@ import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.metadata.model.Domain;
+import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.metadata.util.SerializationService;
 
@@ -28,10 +31,13 @@ public class StarDomain implements EngineMetaInterface {
   private Date modifiedDate;
   private String modifiedUser;
   
+  private List<LogicalTable> sharedDimensions;
+  
   public StarDomain() {
     this.domain = new Domain();
-    locale = LanguageChoice.getInstance().getDefaultLocale().getCountry();
+    locale = LanguageChoice.getInstance().getDefaultLocale().toString();
     changed=true;
+    sharedDimensions = new ArrayList<LogicalTable>();
   }
   
   @Override
@@ -209,5 +215,9 @@ public class StarDomain implements EngineMetaInterface {
   
   public void setChanged(boolean changed) {
     this.changed = changed;
+  }
+  
+  public List<LogicalTable> getSharedDimensions() {
+    return sharedDimensions;
   }
 }

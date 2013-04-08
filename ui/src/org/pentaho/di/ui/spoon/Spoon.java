@@ -3822,7 +3822,16 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public void openFile(boolean importfile) {
-    String activePerspectiveId = SpoonPerspectiveManager.getInstance().getActivePerspective().getId();
+    SpoonPerspective activePerspective = SpoonPerspectiveManager.getInstance().getActivePerspective();
+    
+    // In case the perspective wants to handle open/save itself, let it...
+    //
+    if (activePerspective instanceof SpoonPerspectiveOpenSaveInterface) {
+      ((SpoonPerspectiveOpenSaveInterface)activePerspective).open(importfile);
+      return;
+    }
+
+    String activePerspectiveId = activePerspective.getId();
     boolean etlPerspective = activePerspectiveId.equals(MainSpoonPerspective.ID);
 
     if (rep == null || importfile || !etlPerspective) // Load from XML
@@ -4529,7 +4538,15 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       // "Save to file or repository...
       log.logDetailed(BaseMessages.getString(PKG, "Spoon.Log.SaveToFileOrRepository"));
 
-    String activePerspectiveId = SpoonPerspectiveManager.getInstance().getActivePerspective().getId();
+    SpoonPerspective activePerspective = SpoonPerspectiveManager.getInstance().getActivePerspective();
+    
+    // In case the perspective wants to handle open/save itself, let it...
+    //
+    if (activePerspective instanceof SpoonPerspectiveOpenSaveInterface) {
+      return ((SpoonPerspectiveOpenSaveInterface)activePerspective).save(meta);
+    }
+
+    String activePerspectiveId = activePerspective.getId();
     boolean etlPerspective = activePerspectiveId.equals(MainSpoonPerspective.ID);
     if (rep != null && etlPerspective) {
       saved = saveToRepository(meta);

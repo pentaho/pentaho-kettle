@@ -28,6 +28,8 @@ public class TestSharedObjectsMetaStore extends TestCase {
             "<password></password>" +
           "</connection>";
 
+  private static String namespace = PentahoDefaults.NAMESPACE;
+  
   public void testSharedObjectsMetaStore() throws Exception {
     KettleEnvironment.init();
     
@@ -38,13 +40,13 @@ public class TestSharedObjectsMetaStore extends TestCase {
     SharedObjects sharedObjects = new SharedObjects(sharedObjectsFilename);
     SharedObjectsMetaStore metaStore = new SharedObjectsMetaStore(sharedObjects);
     
-    List<IMetaStoreElementType> elementTypes = metaStore.getElementTypes(PentahoDefaults.NAMESPACE);
+    List<IMetaStoreElementType> elementTypes = metaStore.getElementTypes(namespace);
     assertEquals(1, elementTypes.size());
     
-    IMetaStoreElementType databaseElementType = metaStore.getElementType(PentahoDefaults.NAMESPACE, PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME);
+    IMetaStoreElementType databaseElementType = metaStore.getElementType(namespace, PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME);
     assertNotNull(databaseElementType);
     
-    List<IMetaStoreElement> elements = metaStore.getElements(PentahoDefaults.NAMESPACE, databaseElementType.getId());
+    List<IMetaStoreElement> elements = metaStore.getElements(namespace, databaseElementType);
     assertEquals(0, elements.size());
     
     DatabaseMeta databaseMeta = new DatabaseMeta(databaseMetaXml);
@@ -53,19 +55,19 @@ public class TestSharedObjectsMetaStore extends TestCase {
     //
     sharedObjects.storeObject(databaseMeta);
     
-    elements = metaStore.getElements(PentahoDefaults.NAMESPACE, databaseElementType.getId());
+    elements = metaStore.getElements(namespace, databaseElementType);
     assertEquals(1, elements.size());
     IMetaStoreElement databaseElement = elements.get(0);
     
     // Remove it again...
     sharedObjects.removeObject(databaseMeta);
-    elements = metaStore.getElements(PentahoDefaults.NAMESPACE, databaseElementType.getId());
+    elements = metaStore.getElements(namespace, databaseElementType);
     assertEquals(0, elements.size());
     
     // Add it to the meta store, see if it shows in the shared objects (MetaStore --> SharedObjects)
     //
-    metaStore.createElement(PentahoDefaults.NAMESPACE, databaseElementType.getId(), databaseElement);
-    elements = metaStore.getElements(PentahoDefaults.NAMESPACE, databaseElementType.getId());
+    metaStore.createElement(namespace, databaseElementType, databaseElement);
+    elements = metaStore.getElements(namespace, databaseElementType);
     assertEquals(1, elements.size());
     
     assertNotNull(sharedObjects.getSharedDatabase(databaseMeta.getName()));

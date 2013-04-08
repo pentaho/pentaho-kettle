@@ -88,17 +88,17 @@ public class SharedObjectsMetaStore extends MemoryMetaStore implements IMetaStor
   }
 
   @Override
-  public void deleteElementType(String namespace, String elementTypeId) throws MetaStoreException, MetaStoreDependenciesExistsException {
+  public void deleteElementType(String namespace, IMetaStoreElementType elementType) throws MetaStoreException, MetaStoreDependenciesExistsException {
     throw new MetaStoreException("The shared objects metadata store doesn't support deleting element types");
   }
 
   @Override
-  public List<IMetaStoreElement> getElements(String namespace, String elementTypeId) throws MetaStoreException {
+  public List<IMetaStoreElement> getElements(String namespace, IMetaStoreElementType elementType) throws MetaStoreException {
     List<IMetaStoreElement> list = new ArrayList<IMetaStoreElement>();
     for (SharedObjectInterface sharedObject : sharedObjects.getObjectsMap().values()) {
       // The databases...
       //
-      if (sharedObject instanceof DatabaseMeta && databaseElementType.getId().equals(elementTypeId)) {
+      if (sharedObject instanceof DatabaseMeta && databaseElementType.getName().equals(elementType.getName())) {
         list.add( DatabaseMetaStoreUtil.populateDatabaseElement(this, (DatabaseMeta)sharedObject) );
       }
     }
@@ -106,17 +106,17 @@ public class SharedObjectsMetaStore extends MemoryMetaStore implements IMetaStor
   }
 
   @Override
-  public List<String> getElementIds(String namespace, String elementTypeId) throws MetaStoreException {
+  public List<String> getElementIds(String namespace, IMetaStoreElementType elementType) throws MetaStoreException {
     List<String> ids = new ArrayList<String>();
-    for (IMetaStoreElement element : getElements(namespace, elementTypeId)) {
+    for (IMetaStoreElement element : getElements(namespace, elementType)) {
       ids.add(element.getId());
     }
     return ids;
   }
 
   @Override
-  public IMetaStoreElement getElement(String namespace, String elementTypeId, String elementId) throws MetaStoreException {
-    for (IMetaStoreElement element : getElements(namespace, elementTypeId)) {
+  public IMetaStoreElement getElement(String namespace, IMetaStoreElementType elementType, String elementId) throws MetaStoreException {
+    for (IMetaStoreElement element : getElements(namespace, elementType)) {
       if (element.getId().equals(elementId)) {
         return element;
       }
@@ -126,7 +126,7 @@ public class SharedObjectsMetaStore extends MemoryMetaStore implements IMetaStor
 
   @Override
   public IMetaStoreElement getElementByName(String namespace, IMetaStoreElementType elementType, String name) throws MetaStoreException {
-    for (IMetaStoreElement element : getElements(namespace, elementType.getId())) {
+    for (IMetaStoreElement element : getElements(namespace, elementType)) {
       if ((element.getName().equalsIgnoreCase(name))) {
         return element;
       }
@@ -135,31 +135,31 @@ public class SharedObjectsMetaStore extends MemoryMetaStore implements IMetaStor
   }
 
   @Override
-  public void createElement(String namespace, String elementTypeId, IMetaStoreElement element) throws MetaStoreException, MetaStoreElementExistException {
+  public void createElement(String namespace, IMetaStoreElementType elementType, IMetaStoreElement element) throws MetaStoreException, MetaStoreElementExistException {
     try {
-      IMetaStoreElement exists = getElement(namespace, elementTypeId, element.getId());
+      IMetaStoreElement exists = getElementByName(namespace, elementType, element.getId());
       if (exists!=null) {
-        throw new MetaStoreException("The shared objects meta store already contains an element with type id '"+elementTypeId+"' and element id '"+element.getId());
+        throw new MetaStoreException("The shared objects meta store already contains an element with type name '"+elementType.getName()+"' and element name '"+element.getName());
       }
   
-      if (elementTypeId.equals(databaseElementType.getId())) {
+      if (elementType.getName().equals(databaseElementType.getName())) {
         // convert the element to DatabaseMeta and store it in the shared objects file, then save the file
         //
         sharedObjects.storeObject(DatabaseMetaStoreUtil.loadDatabaseMetaFromDatabaseElement(this, element));
         sharedObjects.saveToFile();
         return;
       }
-      throw new MetaStoreException("Storing elements with element type id '"+elementTypeId+"' is not supported in the shared objects meta store");
+      throw new MetaStoreException("Storing elements with element type name '"+elementType.getName()+"' is not supported in the shared objects meta store");
     } catch(Exception e) {
       throw new MetaStoreException("Unexpected error creating an element in the shared objects meta store", e);
     }
   }
 
   @Override
-  public void deleteElement(String namespace, String elementTypeId, String elementId) throws MetaStoreException {
+  public void deleteElement(String namespace, IMetaStoreElementType elementType, String elementId) throws MetaStoreException {
     try {
-      if (elementTypeId.equals(databaseElementType.getId())) {
-        sharedObjects.removeObject(DatabaseMetaStoreUtil.loadDatabaseMetaFromDatabaseElement(this, getElement(namespace, elementTypeId, elementId)));
+      if (elementType.getName().equals(databaseElementType.getName())) {
+        sharedObjects.removeObject(DatabaseMetaStoreUtil.loadDatabaseMetaFromDatabaseElement(this, getElement(namespace, elementType, elementId)));
         sharedObjects.saveToFile();
         return;
       }

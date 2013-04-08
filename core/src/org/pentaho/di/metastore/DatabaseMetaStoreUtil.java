@@ -33,7 +33,7 @@ public class DatabaseMetaStoreUtil extends MetaStoreUtil {
       return databases;
     }
 
-    List<IMetaStoreElement> elements = metaStore.getElements(PentahoDefaults.NAMESPACE, elementType.getId());
+    List<IMetaStoreElement> elements = metaStore.getElements(PentahoDefaults.NAMESPACE, elementType);
     for (IMetaStoreElement element : elements) {
       try {
         DatabaseMeta databaseMeta = loadDatabaseMetaFromDatabaseElement(metaStore, element);
@@ -68,7 +68,7 @@ public class DatabaseMetaStoreUtil extends MetaStoreUtil {
     
     // Store the element physically
     //
-    metaStore.createElement(PentahoDefaults.NAMESPACE, databaseElement.getElementType().getId(), databaseElement);
+    metaStore.createElement(PentahoDefaults.NAMESPACE, databaseElement.getElementType(), databaseElement);
   }
   
   public static IMetaStoreElementType populateDatabaseElementType(IMetaStore metaStore) throws MetaStoreException {
@@ -76,13 +76,7 @@ public class DatabaseMetaStoreUtil extends MetaStoreUtil {
     // The new type will typically have an ID so all we need to do is give the type a name and a description.
     //
     IMetaStoreElementType elementType = metaStore.newElementType(PentahoDefaults.NAMESPACE);
-    
-    // If we didn't get an ID, provide one
-    //
-    if (elementType.getId()==null) {
-      elementType.setId(PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME);
-    }
-    
+        
     // Name and description...
     //
     elementType.setName(PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME);
@@ -111,9 +105,6 @@ public class DatabaseMetaStoreUtil extends MetaStoreUtil {
 
     element.addChild(metaStore.newAttribute(MetaStoreConst.DB_ATTR_ID_PLUGIN_ID, databaseMeta.getPluginId()));
     
-    if (element.getId()==null) {
-      element.setId(databaseMeta.getName());
-    }
     element.setName(databaseMeta.getName());
     
     element.addChild(metaStore.newAttribute(MetaStoreConst.DB_ATTR_ID_DESCRIPTION, databaseMeta.getDescription()));

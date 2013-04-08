@@ -43,9 +43,13 @@ import org.pentaho.di.metastore.DatabaseMetaStoreUtil;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.starmodeler.generator.JobGenerator;
 import org.pentaho.di.starmodeler.generator.MetadataGenerator;
+import org.pentaho.di.starmodeler.metastore.IdNameDescription;
+import org.pentaho.di.starmodeler.metastore.SharedDimensionMetaStoreUtil;
+import org.pentaho.di.starmodeler.metastore.StarDomainMetaStoreUtil;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
+import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
@@ -55,10 +59,12 @@ import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.SpoonPerspective;
 import org.pentaho.di.ui.spoon.SpoonPerspectiveListener;
 import org.pentaho.di.ui.spoon.SpoonPerspectiveManager;
+import org.pentaho.di.ui.spoon.SpoonPerspectiveOpenSaveInterface;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.xul.KettleXulLoader;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
+import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.metadata.util.SerializationService;
 import org.pentaho.metastore.api.IMetaStore;
@@ -86,7 +92,7 @@ import org.pentaho.ui.xul.swt.tags.SwtTab;
 import org.pentaho.ui.xul.util.XulDialogCallback;
 import org.w3c.dom.Node;
 
-public class StarModelerPerspective extends AbstractXulEventHandler implements SpoonPerspective, FileListener, XulEventHandler {
+public class StarModelerPerspective extends AbstractXulEventHandler implements SpoonPerspective, FileListener, XulEventHandler, SpoonPerspectiveOpenSaveInterface {
 
   private static Class<?> PKG = StarModelerPerspective.class; // for i18n
   
@@ -186,8 +192,6 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
           return -1;
         }
       });
-
-
     } catch (Exception e) {
       logger.logError("Error initializing perspective", e);
     }
@@ -244,7 +248,7 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
       StarDomain starDomain = new StarDomain();
       starDomain.setDomain(domain);
       starDomain.setFilename(fname);
-      createTabForDomain(starDomain, ModelerHelper.MODELER_NAME);
+      createTabForDomain(starDomain);
       PropsUI.getInstance().addLastFile(LastUsedFile.FILE_TYPE_SCHEMA, fname, null, false, null);
       Spoon.getInstance().addMenuLast();
       return true;
@@ -258,17 +262,37 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
   @Override
   public boolean save(EngineMetaInterface meta, String fname, boolean isExport) {
     try {
+
+      // We only expect a start domain here. How else would we end up here?
+      //
+      if (meta instanceof StarDomain) {
+        StarDomain starDomain = (StarDomain) meta;
+        IMetaStore metaStore = Spoon.getInstance().metaStore;
+        
+        // Save the name and description of the shared dimension in the metastore
+        //
+        StarDomainMetaStoreUtil.saveStarDomain(metaStore, starDomain);
+        
+        // Save the shared dimensions in the Spoon IMetaStore (update or create)
+        //
+        for (LogicalTable sharedDimension : starDomain.getSharedDimensions()) {
+          SharedDimensionMetaStoreUtil.saveSharedDimension(metaStore, sharedDimension, defaultLocale);
+        }
       
-      String xml = meta.getXML();
-      OutputStream outputStream = KettleVFS.getOutputStream(fname, false);
-      outputStream.write(xml.getBytes(Const.XML_ENCODING));
-      outputStream.close();
-      
-      meta.setFilename(fname);
-      meta.clearChanged();
-      Spoon.getInstance().enableMenus();
-      
-      return true;
+        /*
+        String xml = meta.getXML();
+        OutputStream outputStream = KettleVFS.getOutputStream(fname, false);
+        outputStream.write(xml.getBytes(Const.XML_ENCODING));
+        outputStream.close();
+        
+        meta.setFilename(fname);
+        */
+        
+        meta.clearChanged();
+        Spoon.getInstance().enableMenus();
+        
+        return true;
+      }
     } catch(Exception e) {
       new ErrorDialog(Spoon.getInstance().getShell(), "Error saving model", "There was an error while saving the model:", e);
     }
@@ -379,7 +403,7 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     tab.setLabel(tabName);
   }
   
-  public void createTabForDomain(final StarDomain starDomain, final String modelerName) throws Exception {
+  public void createTabForDomain(final StarDomain starDomain) throws Exception {
     SpoonPerspectiveManager.getInstance().activatePerspective(getClass());
     
     final XulTabAndPanel tabAndPanel = createTab();
@@ -717,96 +741,93 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     
     // Then we'll add a table view for the shared dimensions
     //
-    Label modelsLabel = new Label(dimsGroup, SWT.RIGHT);
-    props.setLook(modelsLabel);
-    modelsLabel.setText(BaseMessages.getString(PKG, "StarModelerPerspective.DomainModels.Label"));
-    FormData fdModelsLabel = new FormData();
-    fdModelsLabel.left=new FormAttachment(0, 0);
-    fdModelsLabel.right=new FormAttachment(middle, 0);
-    fdModelsLabel.top =new FormAttachment(lastControl, margin);
-    modelsLabel.setLayoutData(fdModelsLabel);
+    Label dimensionsLabel = new Label(dimsGroup, SWT.RIGHT);
+    props.setLook(dimensionsLabel);
+    dimensionsLabel.setText(BaseMessages.getString(PKG, "StarModelerPerspective.ListOfSharedDimensions.Label"));
+    FormData fdDimensionsLabel = new FormData();
+    fdDimensionsLabel.left=new FormAttachment(0, 0);
+    fdDimensionsLabel.right=new FormAttachment(middle, 0);
+    fdDimensionsLabel.top =new FormAttachment(lastControl, margin);
+    dimensionsLabel.setLayoutData(fdDimensionsLabel);
 
     ColumnInfo[] colinf=new ColumnInfo[] {
-      new ColumnInfo(BaseMessages.getString(PKG, "StarModelerPerspective.ModelName.Column"), ColumnInfo.COLUMN_TYPE_TEXT, false, true),
-      new ColumnInfo(BaseMessages.getString(PKG, "StarModelerPerspective.ModelDescription.Column"), ColumnInfo.COLUMN_TYPE_TEXT, false, true),
+      new ColumnInfo(BaseMessages.getString(PKG, "StarModelerPerspective.DimensionName.Column"), ColumnInfo.COLUMN_TYPE_TEXT, false, true),
+      new ColumnInfo(BaseMessages.getString(PKG, "StarModelerPerspective.DimensionDescription.Column"), ColumnInfo.COLUMN_TYPE_TEXT, false, true),
     };
     
-    final TableView modelsList=new TableView(new Variables(), dimsGroup, SWT.BORDER, colinf, 1, null, props);
-    modelsList.setReadonly(true);
-    modelsList.table.addSelectionListener(new SelectionAdapter() {
+    final TableView dimensionsList=new TableView(new Variables(), dimsGroup, SWT.BORDER, colinf, 1, null, props);
+    dimensionsList.setReadonly(true);
+    dimensionsList.table.addSelectionListener(new SelectionAdapter() {
       @Override
       public void widgetDefaultSelected(SelectionEvent e) {
-        if (modelsList.getSelectionIndex()<0) return;
-        TableItem item = modelsList.table.getSelection()[0];
+        if (dimensionsList.getSelectionIndex()<0) return;
+        TableItem item = dimensionsList.table.getSelection()[0];
         String name = item.getText(1);
         if (editModel(dimsGroup.getShell(), starDomain, defaultLocale, name)) {
-          refreshModelsList(starDomain, modelsList);
+          refreshDimensionsList(starDomain, dimensionsList);
         }
       }
     });
     
-    refreshModelsList(starDomain, modelsList);
+    refreshDimensionsList(starDomain, dimensionsList);
     
-    FormData fdModelsList = new FormData();
-    fdModelsList.top = new FormAttachment(lastControl, margin);
-    fdModelsList.bottom = new FormAttachment(lastControl, 250);
-    fdModelsList.left = new FormAttachment(middle, margin);
-    fdModelsList.right = new FormAttachment(100, 0);
-    modelsList.setLayoutData(fdModelsList);
-    lastControl = modelsList;
-    
-    
+    FormData fdDimensionsList = new FormData();
+    fdDimensionsList.top = new FormAttachment(lastControl, margin);
+    fdDimensionsList.bottom = new FormAttachment(lastControl, 250);
+    fdDimensionsList.left = new FormAttachment(middle, margin);
+    fdDimensionsList.right = new FormAttachment(100, 0);
+    dimensionsList.setLayoutData(fdDimensionsList);
+    lastControl = dimensionsList;
     
     // A few buttons to edit the list
     // 
-    Button newModelButton = new Button(dimsGroup, SWT.PUSH);
-    newModelButton.setText(BaseMessages.getString(PKG, "StarModelerPerspective.Button.NewModel"));
+    Button newDimensionButton = new Button(dimsGroup, SWT.PUSH);
+    newDimensionButton.setText(BaseMessages.getString(PKG, "StarModelerPerspective.Button.NewSharedDimension"));
     FormData fdNewModelButton = new FormData();
     fdNewModelButton.top = new FormAttachment(lastControl, margin);
     fdNewModelButton.left = new FormAttachment(middle, margin);
-    newModelButton.setLayoutData(fdNewModelButton);
-    newModelButton.addSelectionListener(new SelectionAdapter() {
+    newDimensionButton.setLayoutData(fdNewModelButton);
+    newDimensionButton.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent event) { 
-        if (newModel(dimsGroup.getShell(), starDomain)) {
-          refreshModelsList(starDomain, modelsList);
+        if (newSharedDimension(dimsGroup.getShell(), starDomain)) {
+          refreshDimensionsList(starDomain, dimensionsList);
         }
       }
     });
     
-    Button editModelButton = new Button(dimsGroup, SWT.PUSH);
-    editModelButton.setText(BaseMessages.getString(PKG, "StarModelerPerspective.Button.EditModel"));
+    Button editDimensionButton = new Button(dimsGroup, SWT.PUSH);
+    editDimensionButton.setText(BaseMessages.getString(PKG, "StarModelerPerspective.Button.EditDimension"));
     FormData fdEditModelButton = new FormData();
     fdEditModelButton.top = new FormAttachment(lastControl, margin);
-    fdEditModelButton.left = new FormAttachment(newModelButton, margin);
-    editModelButton.setLayoutData(fdEditModelButton);
-    editModelButton.addSelectionListener(new SelectionAdapter() {
+    fdEditModelButton.left = new FormAttachment(newDimensionButton, margin);
+    editDimensionButton.setLayoutData(fdEditModelButton);
+    editDimensionButton.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent event) { 
-        if (modelsList.getSelectionIndex()<0) return;
-        TableItem item = modelsList.table.getSelection()[0];
+        if (dimensionsList.getSelectionIndex()<0) return;
+        TableItem item = dimensionsList.table.getSelection()[0];
         String name = item.getText(1);
-        if (editModel(dimsGroup.getShell(), starDomain, defaultLocale, name)) {
-          refreshModelsList(starDomain, modelsList);
+        if (editSharedDimension(dimsGroup.getShell(), starDomain, defaultLocale, name)) {
+          refreshDimensionsList(starDomain, dimensionsList);
         }
       }
     });
 
     Button delModelButton = new Button(dimsGroup, SWT.PUSH);
-    delModelButton.setText(BaseMessages.getString(PKG, "StarModelerPerspective.Button.DeleteModel"));
+    delModelButton.setText(BaseMessages.getString(PKG, "StarModelerPerspective.Button.DeleteDimension"));
     FormData fdDelModelButton = new FormData();
     fdDelModelButton.top = new FormAttachment(lastControl, margin);
-    fdDelModelButton.left = new FormAttachment(editModelButton, margin);
+    fdDelModelButton.left = new FormAttachment(editDimensionButton, margin);
     delModelButton.setLayoutData(fdDelModelButton);
     delModelButton.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent event) {
-        if (modelsList.getSelectionIndex()<0) return;
-        TableItem item = modelsList.table.getSelection()[0];
+        if (dimensionsList.getSelectionIndex()<0) return;
+        TableItem item = dimensionsList.table.getSelection()[0];
         String name = item.getText(1);
-        if (deleteModel(dimsGroup.getShell(), starDomain, defaultLocale, name)) {
-          refreshModelsList(starDomain, modelsList);
+        if (deleteSharedDimension(dimsGroup.getShell(), starDomain, defaultLocale, name)) {
+          refreshDimensionsList(starDomain, dimensionsList);
         }
       }
     });
-    
     
     return dimsGroup;
   }
@@ -924,6 +945,74 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     modelsList.optWidth(true);
     Spoon.getInstance().enableMenus();
   }
+  
+  protected void refreshDimensionsList(StarDomain starDomain, TableView dimensionsList) {
+    dimensionsList.clearAll();
+    for (LogicalTable table : starDomain.getSharedDimensions()) {
+      TableItem item = new TableItem(dimensionsList.table, SWT.NONE);
+      item.setText(1, Const.NVL(table.getName(defaultLocale), ""));
+      item.setText(2, Const.NVL(table.getDescription(defaultLocale), ""));
+    }
+    dimensionsList.removeEmptyRows();
+    dimensionsList.setRowNums();
+    dimensionsList.optWidth(true);
+  }
+
+  /**
+   * Create a new shared dimension in the domain
+   * 
+   * @param domain the domain to create the new model in
+   */
+  private boolean newSharedDimension(Shell shell, StarDomain starDomain) {
+    LogicalTable dimensionTable = new LogicalTable();
+    dimensionTable.setName(new LocalizedString(defaultLocale, "Shared dimension"));
+
+    DimensionTableDialog dialog = new DimensionTableDialog(shell, dimensionTable, defaultLocale);
+    if (dialog.open()!=null) {
+      starDomain.getSharedDimensions().add(dimensionTable);
+      starDomain.setChanged(true);
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Edit a shared dimension in the domain
+   * @param shell 
+   * @param LogicstarDomain the domain to edit the model in
+   * @param dimensionName the name of the model to edit
+   * @return 
+   */
+  private boolean editSharedDimension(Shell shell, StarDomain starDomain, String locale, String dimensionName) {
+    LogicalTable logicalTable = findSharedDimension(starDomain, locale, dimensionName);
+    if (logicalTable!=null) {
+      DimensionTableDialog dialog = new DimensionTableDialog(shell, logicalTable, locale);
+      if (dialog.open()!=null) {
+        starDomain.setChanged(true);
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  /**
+   * Delete a shared dimension in the domain
+   *  
+   * @param domain the domain to delete the dimension from
+   * @param modelName the name of the dimension to delete
+   */
+  private boolean deleteSharedDimension(Shell shell, StarDomain starDomain, String locale, String modelName) {
+    LogicalTable logicalTable = findSharedDimension(starDomain, locale, modelName);
+    if (logicalTable!=null) {
+      // TODO: show warning dialog.
+      //
+      starDomain.getSharedDimensions().remove(logicalTable);
+      starDomain.setChanged(true);
+
+      return true;
+    }
+    return false;
+  }
 
 
   /**
@@ -980,6 +1069,15 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
       return true;
     }
     return false;
+  }
+  
+  
+  private LogicalTable findSharedDimension(StarDomain starDomain, String locale, String dimensionName) {
+    for (LogicalTable logicalTable : starDomain.getSharedDimensions()) {
+      String name = ConceptUtil.getName(logicalTable, locale);
+      if (name!=null && name.equalsIgnoreCase(dimensionName)) return logicalTable;
+    }
+    return null;
   }
   
   private LogicalModel findLogicalTable(Domain domain, String locale, String modelName) {
@@ -1076,5 +1174,36 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
 		}
 
 		return false;
+  }
+
+  @Override
+  public void open(boolean importFile) {
+    // List all star domains in the metastore
+    //
+    Shell shell = Spoon.getInstance().getShell();    
+    
+    try {
+      List<IdNameDescription> starDomainList = StarDomainMetaStoreUtil.getStarDomainList(Spoon.getInstance().getMetaStore());
+      List<String> rows = new ArrayList<String>();
+      for (IdNameDescription ind : starDomainList) {
+        rows.add(ind.getName()+" : "+ind.getDescription());
+      }
+      EnterSelectionDialog selectionDialog = new EnterSelectionDialog(shell, rows.toArray(new String[rows.size()]), "Select star domain", "Select the star domain to open:");
+      selectionDialog.setMulti(false);
+      if (selectionDialog.open()!=null) {
+        int index = selectionDialog.getSelectionNr();
+        StarDomain starDomain = StarDomainMetaStoreUtil.loadStarDomain(Spoon.getInstance().getMetaStore(), starDomainList.get(index).getId());
+        if (starDomain!=null) {
+          createTabForDomain(starDomain);
+        }
+      }
+    } catch(Exception e) {
+      new ErrorDialog(shell, "Error", "Error getting list of star domains from the MetaStore:", e);
+    }
+  }
+
+  @Override
+  public boolean save(EngineMetaInterface meta) {
+    return save(meta, null, false);
   }
 }

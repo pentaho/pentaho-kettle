@@ -56,7 +56,7 @@ public class ModelerHelper  extends AbstractXulEventHandler implements ISpoonMen
       StarDomain starDomain = new StarDomain();
       starDomain.getDomain().setName(new LocalizedString(defaultLocale, "Star model domain"));
       starDomain.getDomain().setDescription(new LocalizedString(defaultLocale, "This star model domain contains multiple star models for the same subject domain"));
-      StarModelerPerspective.getInstance().createTabForDomain(starDomain, MODELER_NAME);
+      StarModelerPerspective.getInstance().createTabForDomain(starDomain);
       SpoonPerspectiveManager.getInstance().activatePerspective(StarModelerPerspective.class);
     } catch (Exception e) {
       new ErrorDialog(((Spoon) SpoonFactory.getInstance()).getShell(), "Error", "Error creating visualization", e);

@@ -45,9 +45,9 @@ public class DataServiceMetaStoreUtil extends MetaStoreUtil {
     populateDataServiceElement(metaStore, element, dataServiceMeta);
 
     if (oldElement==null) {
-      metaStore.createElement(PentahoDefaults.NAMESPACE, elementType.getId(), element);
+      metaStore.createElement(PentahoDefaults.NAMESPACE, elementType, element);
     } else {
-      metaStore.updateElement(PentahoDefaults.NAMESPACE, elementType.getId(), oldElement.getId(), element);
+      metaStore.updateElement(PentahoDefaults.NAMESPACE, elementType, oldElement.getId(), element);
     }
     
     return element;
