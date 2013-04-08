@@ -2260,25 +2260,28 @@ public class TableView extends Composite {
       
       boolean haveToGetTexts = false;
       if (c > 0) {
-        switch (columns[c - 1].getType()) {
-          case ColumnInfo.COLUMN_TYPE_TEXT:
-            haveToGetTexts = true;
-            break;
-          case ColumnInfo.COLUMN_TYPE_CCOMBO:
-          case ColumnInfo.COLUMN_TYPE_FORMAT:
-            haveToGetTexts = true;
-            if (columns[c - 1].getComboValues()!=null) {
-              for (String comboValue:columns[c - 1].getComboValues()) {
-                columnStrings.add(comboValue);
+        final ColumnInfo column = columns[c - 1];
+        if (column != null) {
+          switch (column.getType()) {
+            case ColumnInfo.COLUMN_TYPE_TEXT:
+              haveToGetTexts = true;
+              break;
+            case ColumnInfo.COLUMN_TYPE_CCOMBO:
+            case ColumnInfo.COLUMN_TYPE_FORMAT:
+              haveToGetTexts = true;
+              if (column.getComboValues()!=null) {
+                for (String comboValue:columns[c - 1].getComboValues()) {
+                  columnStrings.add(comboValue);
+                }
               }
-            }
-            break;
-          case ColumnInfo.COLUMN_TYPE_BUTTON:
-            columnStrings.add(columns[c - 1].getButtonText());
-            break;
-          default:
-            break;
-          
+              break;
+            case ColumnInfo.COLUMN_TYPE_BUTTON:
+              columnStrings.add(column.getButtonText());
+              break;
+            default:
+              break;
+            
+          }
         }
       } else {
         haveToGetTexts = true;
