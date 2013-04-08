@@ -290,7 +290,10 @@ public class FileInputList
                 }
                 catch (Exception e)
                 {
-                    log.logError(Const.getStackTracker(e));
+                  if (onerequired) {
+                    fileInputList.addNonAccessibleFile(new NonAccessibleFileObject(onefile));
+                  }
+                  log.logError(Const.getStackTracker(e));
                 }
             }
             else
@@ -317,6 +320,9 @@ public class FileInputList
                 }
                 catch (Exception e)
                 {
+                  if (onerequired) {
+                    fileInputList.addNonAccessibleFile(new NonAccessibleFileObject(onefile));
+                  }
                 	log.logError(Const.getStackTracker(e));
                 }
             }
