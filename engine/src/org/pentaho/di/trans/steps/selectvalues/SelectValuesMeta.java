@@ -521,10 +521,10 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface,
         meta[i].setDateFormatLocale(rep.getStepAttributeString (id_step, i, getRepCode("META_DATE_FORMAT_LOCALE"))); //$NON-NLS-1$
         meta[i].setDateFormatTimeZone(rep.getStepAttributeString (id_step, i, getRepCode("META_DATE_FORMAT_TIMEZONE"))); //$NON-NLS-1$
         meta[i].setLenientStringToNumber(Boolean.parseBoolean(rep.getStepAttributeString (id_step, i, getRepCode("META_LENIENT_STRING_TO_NUMBER")))); //$NON-NLS-1$
-				meta[i].setEncoding(rep.getStepAttributeString (id_step, i, getRepCode("META_ENCODING"))); //$NON-NLS-1$
 				meta[i].setDecimalSymbol(rep.getStepAttributeString (id_step, i, getRepCode("META_DECIMAL"))); //$NON-NLS-1$
 				meta[i].setGroupingSymbol(rep.getStepAttributeString (id_step, i, getRepCode("META_GROUPING"))); //$NON-NLS-1$
 				meta[i].setCurrencySymbol(rep.getStepAttributeString (id_step, i, getRepCode("META_CURRENCY"))); //$NON-NLS-1$
+        meta[i].setEncoding(rep.getStepAttributeString (id_step, i, getRepCode("META_ENCODING"))); //$NON-NLS-1$
 			}
 		}
 		catch(Exception e)
@@ -568,6 +568,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface,
 				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_DECIMAL"),  meta[i].getDecimalSymbol()); //$NON-NLS-1$
 				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_GROUPING"), meta[i].getGroupingSymbol()); //$NON-NLS-1$
 				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_CURRENCY"), meta[i].getCurrencySymbol()); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_ENCODING"), meta[i].getEncoding()); //$NON-NLS-1$
 			}
 		}
 		catch(Exception e)
@@ -926,16 +927,17 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface,
                 if (fieldAttr.getKey().equals("META_NAME")) { metaChange.setName(attributeValue); } else
                 if (fieldAttr.getKey().equals("META_RENAME")) { metaChange.setRename(attributeValue); } else
                 if (fieldAttr.getKey().equals("META_TYPE")) { metaChange.setType(ValueMeta.getType(attributeValue)); } else
-                if (fieldAttr.getKey().equals("META_CONVERSION_MASK")) { metaChange.setConversionMask(attributeValue); } else
                 if (fieldAttr.getKey().equals("META_LENGTH")) { metaChange.setLength(attributeValue==null ? -1 : Integer.parseInt(attributeValue)); } else
                 if (fieldAttr.getKey().equals("META_PRECISION")) { metaChange.setPrecision(attributeValue==null ? -1 : Integer.parseInt(attributeValue)); } else
-                if (fieldAttr.getKey().equals("META_CURRENCY")) { metaChange.setCurrencySymbol(attributeValue); } else
+                if (fieldAttr.getKey().equals("META_STORAGE_TYPE")) { metaChange.setStorageType(ValueMeta.getStorageType(attributeValue)); } else
+                if (fieldAttr.getKey().equals("META_CONVERSION_MASK")) { metaChange.setConversionMask(attributeValue); } else
+                if (fieldAttr.getKey().equals("META_DATE_FORMAT_LENIENT")) { metaChange.setDateFormatLenient(ValueMeta.convertStringToBoolean(attributeValue)==null ? false : true); } else
+                if (fieldAttr.getKey().equals("META_DATE_FORMAT_LOCALE")) { metaChange.setDateFormatLocale(attributeValue); } else
+                if (fieldAttr.getKey().equals("META_DATE_FORMAT_TIMEZONE")) { metaChange.setDateFormatTimeZone(attributeValue); } else
+                if (fieldAttr.getKey().equals("META_LENIENT_STRING_TO_NUMBER")) { metaChange.setLenientStringToNumber(ValueMeta.convertStringToBoolean(attributeValue)==null ? false : true); } else
                 if (fieldAttr.getKey().equals("META_DECIMAL")) { metaChange.setDecimalSymbol(attributeValue); } else
                 if (fieldAttr.getKey().equals("META_GROUPING")) { metaChange.setGroupingSymbol(attributeValue); } else
-                if (fieldAttr.getKey().equals("META_STORAGE_TYPE")) { metaChange.setStorageType(ValueMeta.getStorageType(attributeValue)); } else
-                if (fieldAttr.getKey().equals("META_ENCODING")) { metaChange.setEncoding(attributeValue); } else
-                if (fieldAttr.getKey().equals("META_DATE_FORMAT_LENIENT")) { metaChange.setDateFormatLenient(ValueMeta.convertStringToBoolean(attributeValue)==null ? false : true); } else 
-                if (fieldAttr.getKey().equals("META_LENIENT_STRING_TO_NUMBER")) { metaChange.setLenientStringToNumber(ValueMeta.convertStringToBoolean(attributeValue)==null ? false : true); } else 
+                if (fieldAttr.getKey().equals("META_CURRENCY")) { metaChange.setCurrencySymbol(attributeValue); } else
                 if (fieldAttr.getKey().equals("META_ENCODING")) { metaChange.setEncoding(attributeValue); } else 
                 {
                   throw new RuntimeException("Unhandled metadata injection of attribute: "+fieldAttr.getKey()+" - "+fieldAttr.getDescription());
