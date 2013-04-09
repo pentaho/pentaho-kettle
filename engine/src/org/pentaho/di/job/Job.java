@@ -160,7 +160,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    * A flat list of results in THIS job, in the order of execution of job
    * entries
    */
-  private List<JobEntryResult> jobEntryResults;
+  private final LinkedList<JobEntryResult> jobEntryResults = new LinkedList<JobEntryResult>();
 
   private Date startDate, endDate, currentDate, logDate, depDate;
 
@@ -272,7 +272,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     active = new AtomicBoolean(false);
     stopped = new AtomicBoolean(false);
     jobTracker = new JobTracker(jobMeta);
-    jobEntryResults = new LinkedList<JobEntryResult>();
+    synchronized (jobEntryResults) {
+      jobEntryResults.clear(); 
+    }
     initialized = new AtomicBoolean(false);
     finished = new AtomicBoolean(false);
     errors = new AtomicInteger(0);
@@ -585,8 +587,10 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    * @see JobListener#jobFinished(Job)
    */
   public void fireJobFinishListeners() throws KettleException {
-    for (JobListener jobListener : jobListeners) {
-      jobListener.jobFinished(this);
+    synchronized (jobListeners) {
+      for (JobListener jobListener : jobListeners) {
+        jobListener.jobFinished(this);
+      }
     }
   }
 
@@ -596,8 +600,10 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    * @see JobListener#jobStarted(Job)
    */
   public void fireJobStartListeners() throws KettleException {
-    for (JobListener jobListener : jobListeners) {
-      jobListener.jobStarted(this);
+    synchronized (jobListeners) {
+      for (JobListener jobListener : jobListeners) {
+        jobListener.jobStarted(this);
+      } 
     }
   }
 
@@ -672,7 +678,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
           jobEntryCopy.getNr(), environmentSubstitute(jobEntryCopy.getEntry().getFilename()));
       jerCheckpoint.setCheckpoint(true);
       jobTracker.addJobTracker(new JobTracker(jobMeta, jerCheckpoint));
-      synchronized (this) {
+      synchronized (jobEntryResults) {
         jobEntryResults.add(jerCheckpoint);
       }
 
@@ -756,15 +762,17 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
           BaseMessages.getString(PKG, "Job.Comment.JobFinished"), null, jobEntryCopy.getName(), jobEntryCopy.getNr(),
           environmentSubstitute(jobEntryCopy.getEntry().getFilename()));
       jobTracker.addJobTracker(new JobTracker(jobMeta, jerAfter));
-      synchronized (this) {
+      synchronized (jobEntryResults) {
         jobEntryResults.add(jerAfter);
-      }
 
-      // Only keep the last X job entry results in memory
-      //
-      if (maxJobEntriesLogged > 0 && jobEntryResults.size() > maxJobEntriesLogged + 50) {
-        // Remove the oldest.
-        jobEntryResults = jobEntryResults.subList(50, jobEntryResults.size());
+        // Only keep the last X job entry results in memory
+        //
+        if (maxJobEntriesLogged > 0) {
+          while (jobEntryResults.size() > maxJobEntriesLogged + 50) {
+            // Remove the oldest.
+            jobEntryResults.removeFirst();
+          }
+        }
       }
 
       // If this is a checkpoint, write to the checkpoint log table
@@ -1997,7 +2005,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    * @param jobListener the job listener to add
    */
   public void addJobListener(JobListener jobListener) {
-    jobListeners.add(jobListener);
+    synchronized (jobListeners) {
+      jobListeners.add(jobListener);
+    }
   }
 
   /**
@@ -2013,7 +2023,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    * @param jobListener the job listener to remove
    */
   public void removeJobListener(JobListener jobListener) {
-    jobListeners.remove(jobListener);
+    synchronized (jobListeners) {
+      jobListeners.remove(jobListener);
+    }
   }
 
   /**
@@ -2037,7 +2049,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    * @return the job listeners
    */
   public List<JobListener> getJobListeners() {
-    return jobListeners;
+    synchronized (jobListeners) {
+      return new ArrayList<JobListener>(jobListeners);
+    }
   }
 
   /**
@@ -2322,7 +2336,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    * @return A flat list of results in THIS job, in the order of execution of job entries
    */
   public List<JobEntryResult> getJobEntryResults() {
-    return jobEntryResults;
+    synchronized (jobEntryResults) {
+      return new ArrayList<JobEntryResult>(jobEntryResults); 
+    }
   }
 
   /**

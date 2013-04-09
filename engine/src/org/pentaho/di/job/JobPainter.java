@@ -22,7 +22,6 @@
 
 package org.pentaho.di.job;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -605,7 +604,7 @@ public class JobPainter extends BasePainter {
 	 * @param jobEntryResults Sets AND sorts the job entry results by name and number
 	 */
 	public void setJobEntryResults(List<JobEntryResult> jobEntryResults) {
-		this.jobEntryResults = new ArrayList<JobEntryResult>(jobEntryResults);
+		this.jobEntryResults = jobEntryResults;
 		Collections.sort(this.jobEntryResults);
 	}
 

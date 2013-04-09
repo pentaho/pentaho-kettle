@@ -26,6 +26,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -81,7 +82,7 @@ public class FieldsChangeSequence extends BaseStep implements StepInterface
 				data.fieldnr=meta.getFieldName().length;
 				data.fieldnrs=new int[data.fieldnr];
 				data.previousValues=new Object[data.fieldnr];
-				data.fieldnrsMeta = new ValueMeta[data.fieldnr];
+				data.fieldnrsMeta = new ValueMetaInterface[data.fieldnr];
 				for (int i=0;i<data.fieldnr;i++)
 				{
 					data.fieldnrs[i]=data.previousMeta.indexOfValue(meta.getFieldName()[i] );
@@ -89,7 +90,7 @@ public class FieldsChangeSequence extends BaseStep implements StepInterface
 					{
 						logError(BaseMessages.getString(PKG, "FieldsChangeSequence.Log.CanNotFindField",meta.getFieldName()[i]));
 						throw new KettleException(BaseMessages.getString(PKG, "FieldsChangeSequence.Log.CanNotFindField",meta.getFieldName()[i]));
-					}
+					} 
 					data.fieldnrsMeta[i]=data.previousMeta.getValueMeta(data.fieldnrs[i]);
 	 			}
 			}else

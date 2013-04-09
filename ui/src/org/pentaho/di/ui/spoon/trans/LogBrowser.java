@@ -125,26 +125,28 @@ public class LogBrowser {
 									
 									for (int i=0;i<logLines.size();i++) {
 										KettleLoggingEvent event = logLines.get(i);
-										String line = logLayout.format(event);
+										String line = logLayout.format(event).trim();
 
 										int start = text.getText().length();
 										int length = line.length();
-										
-										text.append(line);
-										text.append(Const.CR);
 	
-										if (event.getLevel()==LogLevel.ERROR) {
-											StyleRange styleRange = new StyleRange();
-											styleRange.foreground = GUIResource.getInstance().getColorRed();
-											styleRange.start = start;
-											styleRange.length = length;
-											text.setStyleRange(styleRange);
-										} else {
-											StyleRange styleRange = new StyleRange();
-											styleRange.foreground = GUIResource.getInstance().getColorBlue();
-											styleRange.start = start;
-											styleRange.length = 20;
-											text.setStyleRange(styleRange);
+										if (length > 0) {
+  										text.append(line);
+  										text.append(Const.CR);
+  	
+  										if (event.getLevel()==LogLevel.ERROR) {
+  											StyleRange styleRange = new StyleRange();
+  											styleRange.foreground = GUIResource.getInstance().getColorRed();
+  											styleRange.start = start;
+  											styleRange.length = length;
+  											text.setStyleRange(styleRange);
+  										} else {
+  											StyleRange styleRange = new StyleRange();
+  											styleRange.foreground = GUIResource.getInstance().getColorBlue();
+  											styleRange.start = start;
+  											styleRange.length = Math.min(20, length);
+  											text.setStyleRange(styleRange);
+  										}
 										}
 									}
 								}
