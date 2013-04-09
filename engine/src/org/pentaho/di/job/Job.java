@@ -768,7 +768,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         // Only keep the last X job entry results in memory
         //
         if (maxJobEntriesLogged > 0) {
-          while (jobEntryResults.size() > maxJobEntriesLogged + 50) {
+          while (jobEntryResults.size() > maxJobEntriesLogged) {
             // Remove the oldest.
             jobEntryResults.removeFirst();
           }
