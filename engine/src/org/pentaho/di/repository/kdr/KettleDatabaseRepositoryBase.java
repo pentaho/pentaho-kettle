@@ -23,9 +23,10 @@
 package org.pentaho.di.repository.kdr;
 
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.repository.AbstractRepository;
 import org.pentaho.di.repository.RepositoryDirectory;
 
-public class KettleDatabaseRepositoryBase {
+public abstract class KettleDatabaseRepositoryBase extends AbstractRepository {
 
 //	private static Class<?> PKG = Repository.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 

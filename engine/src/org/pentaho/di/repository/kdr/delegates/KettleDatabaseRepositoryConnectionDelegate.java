@@ -61,13 +61,7 @@ import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 
 public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRepositoryBaseDelegate {
-  private static Class<?>                    PKG                    = Repository.class;                                                                  // for
-                                                                                                                                                          // i18n
-                                                                                                                                                          // purposes,
-                                                                                                                                                          // needed
-                                                                                                                                                          // by
-                                                                                                                                                          // Translator2!!
-                                                                                                                                                          // $NON-NLS-1$
+  private static Class<?>                    PKG                    = Repository.class;                                                                                                                          // $NON-NLS-1$
 
   public static final LoggingObjectInterface loggingObject          = new SimpleLoggingObject("Database repository", LoggingObjectType.REPOSITORY, null);
 
@@ -645,7 +639,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
     return r.getString(KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_VALUE_STR, null);
   }
 
-  public boolean getStepAttributeBoolean(ObjectId id_step, int nr, String code, boolean def) throws KettleException {
+  public synchronized boolean getStepAttributeBoolean(ObjectId id_step, int nr, String code, boolean def) throws KettleException {
     RowMetaAndData r = null;
     if (stepAttributesBuffer != null)
       r = searchStepAttributeInBuffer(id_step, code, (long) nr);
@@ -660,50 +654,15 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
     return ValueMeta.convertStringToBoolean(v).booleanValue();
   }
 
-  public boolean getStepAttributeBoolean(ObjectId id_step, int nr, String code) throws KettleException {
-    RowMetaAndData r = null;
-    if (stepAttributesBuffer != null)
-      r = searchStepAttributeInBuffer(id_step, code, (long) nr);
-    else
-      r = getStepAttributeRow(id_step, nr, code);
-    if (r == null)
-      return false;
-    return ValueMeta.convertStringToBoolean(r.getString(KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_VALUE_STR, null)).booleanValue();
-  }
-
-  public synchronized long getStepAttributeInteger(ObjectId id_step, String code) throws KettleException {
-    return getStepAttributeInteger(id_step, 0, code);
-  }
-
-  public synchronized String getStepAttributeString(ObjectId id_step, String code) throws KettleException {
-    return getStepAttributeString(id_step, 0, code);
-  }
-
-  public boolean getStepAttributeBoolean(ObjectId id_step, String code) throws KettleException {
-    return getStepAttributeBoolean(id_step, 0, code);
-  }
-
-  public synchronized ObjectId saveStepAttribute(ObjectId id_transformation, ObjectId id_step, String code, String value) throws KettleException {
-    return saveStepAttribute(code, 0, id_transformation, id_step, 0.0, value);
-  }
-
-  public synchronized ObjectId saveStepAttribute(ObjectId id_transformation, ObjectId id_step, String code, double value) throws KettleException {
-    return saveStepAttribute(code, 0, id_transformation, id_step, value, null);
-  }
-
-  public synchronized ObjectId saveStepAttribute(ObjectId id_transformation, ObjectId id_step, String code, boolean value) throws KettleException {
-    return saveStepAttribute(code, 0, id_transformation, id_step, 0.0, value ? "Y" : "N");
-  }
-
-  public synchronized ObjectId saveStepAttribute(ObjectId id_transformation, ObjectId id_step, long nr, String code, String value) throws KettleException {
+  public ObjectId saveStepAttribute(ObjectId id_transformation, ObjectId id_step, long nr, String code, String value) throws KettleException {
     return saveStepAttribute(code, nr, id_transformation, id_step, 0.0, value);
   }
 
-  public synchronized ObjectId saveStepAttribute(ObjectId id_transformation, ObjectId id_step, long nr, String code, double value) throws KettleException {
+  public ObjectId saveStepAttribute(ObjectId id_transformation, ObjectId id_step, long nr, String code, double value) throws KettleException {
     return saveStepAttribute(code, nr, id_transformation, id_step, value, null);
   }
 
-  public synchronized ObjectId saveStepAttribute(ObjectId id_transformation, ObjectId id_step, long nr, String code, boolean value) throws KettleException {
+  public ObjectId saveStepAttribute(ObjectId id_transformation, ObjectId id_step, long nr, String code, boolean value) throws KettleException {
     return saveStepAttribute(code, nr, id_transformation, id_step, 0.0, value ? "Y" : "N");
   }
 
@@ -852,27 +811,16 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
   // WANTED: throw extra exceptions to locate storage problems (strings too long
   // etc)
   //
-  public synchronized ObjectId saveJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, String code, String value) throws KettleException {
-    return saveJobEntryAttribute(code, 0, id_job, id_jobentry, 0.0, value);
-  }
 
-  public synchronized ObjectId saveJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, String code, double value) throws KettleException {
-    return saveJobEntryAttribute(code, 0, id_job, id_jobentry, value, null);
-  }
-
-  public synchronized ObjectId saveJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, String code, boolean value) throws KettleException {
-    return saveJobEntryAttribute(code, 0, id_job, id_jobentry, 0.0, value ? "Y" : "N");
-  }
-
-  public synchronized ObjectId saveJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, long nr, String code, String value) throws KettleException {
+  public ObjectId saveJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, long nr, String code, String value) throws KettleException {
     return saveJobEntryAttribute(code, nr, id_job, id_jobentry, 0.0, value);
   }
 
-  public synchronized ObjectId saveJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, long nr, String code, double value) throws KettleException {
+  public ObjectId saveJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, long nr, String code, double value) throws KettleException {
     return saveJobEntryAttribute(code, nr, id_job, id_jobentry, value, null);
   }
 
-  public synchronized ObjectId saveJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, long nr, String code, boolean value) throws KettleException {
+  public ObjectId saveJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, long nr, String code, boolean value) throws KettleException {
     return saveJobEntryAttribute(code, nr, id_job, id_jobentry, 0.0, value ? "Y" : "N");
   }
 
@@ -974,7 +922,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
     return r.getInteger(KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_VALUE_NUM, 0L);
   }
 
-  public double getJobEntryAttributeNumber(ObjectId id_jobentry, int nr, String code) throws KettleException {
+  public synchronized double getJobEntryAttributeNumber(ObjectId id_jobentry, int nr, String code) throws KettleException {
     RowMetaAndData r = getJobEntryAttributeRow(id_jobentry, nr, code);
     if (r == null)
       return 0.0;
@@ -988,11 +936,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
     return r.getString(KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_VALUE_STR, null);
   }
 
-  public boolean getJobEntryAttributeBoolean(ObjectId id_jobentry, int nr, String code) throws KettleException {
-    return getJobEntryAttributeBoolean(id_jobentry, nr, code, false);
-  }
-
-  public boolean getJobEntryAttributeBoolean(ObjectId id_jobentry, int nr, String code, boolean def) throws KettleException {
+  public synchronized boolean getJobEntryAttributeBoolean(ObjectId id_jobentry, int nr, String code, boolean def) throws KettleException {
     RowMetaAndData r = getJobEntryAttributeRow(id_jobentry, nr, code);
     if (r == null)
       return def;
@@ -1000,26 +944,6 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
     if (v == null || Const.isEmpty(v))
       return def;
     return ValueMeta.convertStringToBoolean(v).booleanValue();
-  }
-
-  public double getJobEntryAttributeNumber(ObjectId id_jobentry, String code) throws KettleException {
-    return getJobEntryAttributeNumber(id_jobentry, 0, code);
-  }
-
-  public synchronized long getJobEntryAttributeInteger(ObjectId id_jobentry, String code) throws KettleException {
-    return getJobEntryAttributeInteger(id_jobentry, 0, code);
-  }
-
-  public synchronized String getJobEntryAttributeString(ObjectId id_jobentry, String code) throws KettleException {
-    return getJobEntryAttributeString(id_jobentry, 0, code);
-  }
-
-  public boolean getJobEntryAttributeBoolean(ObjectId id_jobentry, String code) throws KettleException {
-    return getJobEntryAttributeBoolean(id_jobentry, 0, code, false);
-  }
-
-  public boolean getJobEntryAttributeBoolean(ObjectId id_jobentry, String code, boolean def) throws KettleException {
-    return getJobEntryAttributeBoolean(id_jobentry, 0, code, def);
   }
 
   public synchronized int countNrJobEntryAttributes(ObjectId id_jobentry, String code) throws KettleException {

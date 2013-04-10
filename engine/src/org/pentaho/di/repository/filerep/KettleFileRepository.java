@@ -53,12 +53,12 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.partition.PartitionSchema;
+import org.pentaho.di.repository.AbstractRepository;
 import org.pentaho.di.repository.IRepositoryExporter;
 import org.pentaho.di.repository.IRepositoryImporter;
 import org.pentaho.di.repository.IRepositoryService;
 import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementInterface;
@@ -80,7 +80,7 @@ import org.pentaho.metastore.stores.xml.XmlMetaStore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-public class KettleFileRepository implements Repository {
+public class KettleFileRepository extends AbstractRepository {
 
 	private static final String	EXT_TRANSFORMATION		= ".ktr";
 	private static final String EXT_JOB					= ".kjb";
@@ -274,13 +274,9 @@ public class KettleFileRepository implements Repository {
 		save(repositoryElement, versionComment, null);
 	}
 
-	public void save(RepositoryElementInterface repositoryElement, String versionComment, ProgressMonitorListener monitor) throws KettleException {
-		save(repositoryElement, versionComment, monitor, null, false);
-	}
-
 	public void save(RepositoryElementInterface repositoryElement, String versionComment, ProgressMonitorListener monitor, boolean overwrite) throws KettleException {
 	  // We always overwrite so no further changes necessary
-	  save(repositoryElement, versionComment, monitor);
+	  save(repositoryElement, versionComment, monitor, null, overwrite);
 	}
 	
 	public void save(RepositoryElementInterface repositoryElement, String versionComment, ProgressMonitorListener monitor, ObjectId parentId, boolean used) throws KettleException {
@@ -625,20 +621,12 @@ public class KettleFileRepository implements Repository {
 	}
 
 	public boolean getStepAttributeBoolean(ObjectId id_step, int nr, String code, boolean def) throws KettleException { return false; }
-	public boolean getStepAttributeBoolean(ObjectId id_step, int nr, String code) throws KettleException { return false; }
-	public boolean getStepAttributeBoolean(ObjectId id_step, String code) throws KettleException { return false; }
 	public long getStepAttributeInteger(ObjectId id_step, int nr, String code) throws KettleException { return 0; }
-	public long getStepAttributeInteger(ObjectId id_step, String code) throws KettleException { return 0; }
 	public String getStepAttributeString(ObjectId id_step, int nr, String code) throws KettleException { return null; }
-	public String getStepAttributeString(ObjectId id_step, String code) throws KettleException { return null; }
 	
-	public boolean getJobEntryAttributeBoolean(ObjectId id_jobentry, String code) throws KettleException { return false; }
-	public boolean getJobEntryAttributeBoolean(ObjectId id_jobentry, int nr, String code) throws KettleException { return false; }
-	public boolean getJobEntryAttributeBoolean(ObjectId id_jobentry, String code, boolean def) throws KettleException { return false; }
-	public long getJobEntryAttributeInteger(ObjectId id_jobentry, String code) throws KettleException { return 0; }
 	public long getJobEntryAttributeInteger(ObjectId id_jobentry, int nr, String code) throws KettleException { return 0; }
-	public String getJobEntryAttributeString(ObjectId id_jobentry, String code) throws KettleException { return null; }
 	public String getJobEntryAttributeString(ObjectId id_jobentry, int nr, String code) throws KettleException { return null; }
+	public boolean getJobEntryAttributeBoolean(ObjectId id_jobentry, int nr, String code, boolean def) throws KettleException { return false; }
 
 
 	public ObjectId[] getSubConditionIDs(ObjectId id_condition) throws KettleException {
@@ -796,9 +784,7 @@ public class KettleFileRepository implements Repository {
 		}
 	}
 
-	public DatabaseMeta loadDatabaseMetaFromJobEntryAttribute(ObjectId id_jobentry, String nameCode, String idCode, List<DatabaseMeta> databases) throws KettleException { return null; }
-   public DatabaseMeta loadDatabaseMetaFromJobEntryAttribute(ObjectId id_jobentry, String nameCode, int nr, String idCode, List<DatabaseMeta> databases)  throws KettleException { return null; }
-	public void saveDatabaseMetaJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, String nameCode, String idCode, DatabaseMeta database) throws KettleException {}
+  public DatabaseMeta loadDatabaseMetaFromJobEntryAttribute(ObjectId id_jobentry, String nameCode, int nr, String idCode, List<DatabaseMeta> databases)  throws KettleException { return null; }
 	public void saveDatabaseMetaJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, int nr, String nameCode, String idCode, DatabaseMeta database) throws KettleException {}
 
 	public DatabaseMeta loadDatabaseMetaFromStepAttribute(ObjectId id_step, String code, List<DatabaseMeta> databases) throws KettleException { return null; }
@@ -1182,20 +1168,14 @@ public class KettleFileRepository implements Repository {
 	public void saveDatabaseMetaStepAttribute(ObjectId id_transformation, ObjectId id_step, String code, DatabaseMeta database) throws KettleException {}
 
 	public void saveJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, int nr, String code, String value) throws KettleException {}
-	public void saveJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, String code, String value) throws KettleException {}
 	public void saveJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, int nr, String code, boolean value) throws KettleException {}
-	public void saveJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, String code, boolean value) throws KettleException {}
 	public void saveJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, int nr, String code, long value) throws KettleException {}
-	public void saveJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, String code, long value) throws KettleException { }
 
 	public void saveStepAttribute(ObjectId id_transformation, ObjectId id_step, int nr, String code, String value) throws KettleException {}
-	public void saveStepAttribute(ObjectId id_transformation, ObjectId id_step, String code, String value) throws KettleException {}
 	public void saveStepAttribute(ObjectId id_transformation, ObjectId id_step, int nr, String code, boolean value) throws KettleException {}
-	public void saveStepAttribute(ObjectId id_transformation, ObjectId id_step, String code, boolean value) throws KettleException { }
 	public void saveStepAttribute(ObjectId id_transformation, ObjectId id_step, int nr, String code, long value) throws KettleException {}
-	public void saveStepAttribute(ObjectId id_transformation, ObjectId id_step, String code, long value) throws KettleException {}
 	public void saveStepAttribute(ObjectId id_transformation, ObjectId id_step, int nr, String code, double value) throws KettleException {}
-	public void saveStepAttribute(ObjectId id_transformation, ObjectId id_step, String code, double value) throws KettleException {}
+	
 	public void delUser(ObjectId id_user) throws KettleException { }
 	public ObjectId getUserID(String login) throws KettleException { return null; }
 	public ObjectId[] getUserIDs() throws KettleException { return new ObjectId[] {}; }

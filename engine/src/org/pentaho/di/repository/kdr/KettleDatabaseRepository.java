@@ -59,7 +59,6 @@ import org.pentaho.di.repository.IRepositoryService;
 import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementInterface;
@@ -99,7 +98,7 @@ import org.pentaho.di.trans.TransMeta;
  * @author Matt Created on 31-mrt-2004
  * 
  */
-public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase implements Repository {
+public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
   // private static Class<?> PKG = Repository.class; // for i18n purposes,
   // needed by Translator2!! $NON-NLS-1$
 
@@ -358,10 +357,6 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 
   public void save(RepositoryElementInterface repositoryElement, String versionComment) throws KettleException {
     save(repositoryElement, versionComment, null);
-  }
-
-  public void save(RepositoryElementInterface repositoryElement, String versionComment, ProgressMonitorListener monitor) throws KettleException {
-    save(repositoryElement, versionComment, monitor, null, false, false);
   }
 
   public void save(RepositoryElementInterface repositoryElement, String versionComment, ProgressMonitorListener monitor, boolean overwrite) throws KettleException {
@@ -1402,32 +1397,18 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 
   // get
 
-  public boolean getJobEntryAttributeBoolean(ObjectId id_jobentry, String code) throws KettleException {
-    return connectionDelegate.getJobEntryAttributeBoolean(id_jobentry, code);
-  }
-
-  public boolean getJobEntryAttributeBoolean(ObjectId id_jobentry, int nr, String code) throws KettleException {
-    return connectionDelegate.getJobEntryAttributeBoolean(id_jobentry, nr, code);
-  }
-
-  public boolean getJobEntryAttributeBoolean(ObjectId id_jobentry, String code, boolean def) throws KettleException {
-    return connectionDelegate.getJobEntryAttributeBoolean(id_jobentry, code, def);
-  }
-
-  public long getJobEntryAttributeInteger(ObjectId id_jobentry, String code) throws KettleException {
-    return connectionDelegate.getJobEntryAttributeInteger(id_jobentry, code);
-  }
-
   public long getJobEntryAttributeInteger(ObjectId id_jobentry, int nr, String code) throws KettleException {
     return connectionDelegate.getJobEntryAttributeInteger(id_jobentry, nr, code);
   }
 
-  public String getJobEntryAttributeString(ObjectId id_jobentry, String code) throws KettleException {
-    return connectionDelegate.getJobEntryAttributeString(id_jobentry, code);
-  }
-
   public String getJobEntryAttributeString(ObjectId id_jobentry, int nr, String code) throws KettleException {
     return connectionDelegate.getJobEntryAttributeString(id_jobentry, nr, code);
+  }
+  
+  @Override
+  public boolean getJobEntryAttributeBoolean(ObjectId id_jobentry, int nr, String code, boolean def)
+      throws KettleException {
+    return connectionDelegate.getJobEntryAttributeBoolean(id_jobentry, nr, code, def);
   }
 
   // put
@@ -1436,24 +1417,12 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
     connectionDelegate.saveJobEntryAttribute(id_job, id_jobentry, nr, code, value);
   }
 
-  public void saveJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, String code, String value) throws KettleException {
-    connectionDelegate.saveJobEntryAttribute(id_job, id_jobentry, code, value);
-  }
-
   public void saveJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, int nr, String code, boolean value) throws KettleException {
     connectionDelegate.saveJobEntryAttribute(id_job, id_jobentry, nr, code, value);
   }
 
-  public void saveJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, String code, boolean value) throws KettleException {
-    connectionDelegate.saveJobEntryAttribute(id_job, id_jobentry, code, value);
-  }
-
   public void saveJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, int nr, String code, long value) throws KettleException {
     connectionDelegate.saveJobEntryAttribute(id_job, id_jobentry, nr, code, value);
-  }
-
-  public void saveJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, String code, long value) throws KettleException {
-    connectionDelegate.saveJobEntryAttribute(id_job, id_jobentry, code, value);
   }
 
   // Step attributes
@@ -1464,28 +1433,12 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
     return connectionDelegate.getStepAttributeBoolean(id_step, nr, code, def);
   }
 
-  public boolean getStepAttributeBoolean(ObjectId id_step, int nr, String code) throws KettleException {
-    return connectionDelegate.getStepAttributeBoolean(id_step, nr, code);
-  }
-
-  public boolean getStepAttributeBoolean(ObjectId id_step, String code) throws KettleException {
-    return connectionDelegate.getStepAttributeBoolean(id_step, code);
-  }
-
   public long getStepAttributeInteger(ObjectId id_step, int nr, String code) throws KettleException {
     return connectionDelegate.getStepAttributeInteger(id_step, nr, code);
   }
 
-  public long getStepAttributeInteger(ObjectId id_step, String code) throws KettleException {
-    return connectionDelegate.getStepAttributeInteger(id_step, code);
-  }
-
   public String getStepAttributeString(ObjectId id_step, int nr, String code) throws KettleException {
     return connectionDelegate.getStepAttributeString(id_step, nr, code);
-  }
-
-  public String getStepAttributeString(ObjectId id_step, String code) throws KettleException {
-    return connectionDelegate.getStepAttributeString(id_step, code);
   }
 
   // put
@@ -1494,32 +1447,16 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
     connectionDelegate.saveStepAttribute(id_transformation, id_step, nr, code, value);
   }
 
-  public void saveStepAttribute(ObjectId id_transformation, ObjectId id_step, String code, String value) throws KettleException {
-    connectionDelegate.saveStepAttribute(id_transformation, id_step, code, value);
-  }
-
   public void saveStepAttribute(ObjectId id_transformation, ObjectId id_step, int nr, String code, boolean value) throws KettleException {
     connectionDelegate.saveStepAttribute(id_transformation, id_step, nr, code, value);
-  }
-
-  public void saveStepAttribute(ObjectId id_transformation, ObjectId id_step, String code, boolean value) throws KettleException {
-    connectionDelegate.saveStepAttribute(id_transformation, id_step, code, value);
   }
 
   public void saveStepAttribute(ObjectId id_transformation, ObjectId id_step, int nr, String code, long value) throws KettleException {
     connectionDelegate.saveStepAttribute(id_transformation, id_step, nr, code, value);
   }
 
-  public void saveStepAttribute(ObjectId id_transformation, ObjectId id_step, String code, long value) throws KettleException {
-    connectionDelegate.saveStepAttribute(id_transformation, id_step, code, value);
-  }
-
   public void saveStepAttribute(ObjectId id_transformation, ObjectId id_step, int nr, String code, double value) throws KettleException {
     connectionDelegate.saveStepAttribute(id_transformation, id_step, nr, code, value);
-  }
-
-  public void saveStepAttribute(ObjectId id_transformation, ObjectId id_step, String code, double value) throws KettleException {
-    connectionDelegate.saveStepAttribute(id_transformation, id_step, code, value);
   }
 
   /**
@@ -1609,45 +1546,6 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
       return DatabaseMeta.findDatabase(databases, name);
     }
     return DatabaseMeta.findDatabase(databases, new LongObjectId(id_database));
-  }
-
-  public DatabaseMeta loadDatabaseMetaFromJobEntryAttribute(ObjectId id_jobentry, String nameCode, String idCode, List<DatabaseMeta> databases) throws KettleException {
-
-    long id_database = getJobEntryAttributeInteger(id_jobentry, idCode);
-    if (id_database <= 0) {
-      String name = getJobEntryAttributeString(id_jobentry, nameCode);
-      if (name == null) {
-        return null;
-      }
-      return DatabaseMeta.findDatabase(databases, name);
-    }
-    return DatabaseMeta.findDatabase(databases, new LongObjectId(id_database));
-  }
-
-  /**
-   * This method saves the object ID of the database object (if not null) in the
-   * step attributes
-   * 
-   * @param id_transformation
-   * @param id_step
-   * @param linkCode
-   * @param nameCode
-   * @param idCode
-   * @param database
-   */
-  public void saveDatabaseMetaJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, String nameCode, String idCode, DatabaseMeta database) throws KettleException {
-    ObjectId id = null;
-    if (database != null) {
-      id = database.getObjectId();
-      Long id_database = id == null ? Long.valueOf(-1L) : new LongObjectId(id).longValue();
-
-      // Save both the ID and the name of the database connection...
-      //
-      saveJobEntryAttribute(id_job, id_jobentry, idCode, id_database);
-      saveJobEntryAttribute(id_job, id_jobentry, nameCode, id_database);
-
-      insertJobEntryDatabase(id_job, id_jobentry, id);
-    }
   }
 
   /**
