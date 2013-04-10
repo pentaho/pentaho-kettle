@@ -81,6 +81,10 @@ public abstract class BaseStepXulDialog extends BaseStepGenericXulDialog {
   public ResourceBundle getResourceBundle() {
     return new XulSpoonResourceBundle(getClassForMessages());
   }
+ 
+  @Override
+  public void clear() {
+  }
 
   private static Class<?> PKG = StepInterface.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 

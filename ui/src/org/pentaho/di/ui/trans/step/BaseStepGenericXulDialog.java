@@ -151,6 +151,11 @@ public abstract class BaseStepGenericXulDialog extends AbstractXulEventHandler i
   public abstract XulSettingsManager getSettingsManager();
   public abstract ResourceBundle getResourceBundle();
   
+  /**
+   * Reset this dialog and its controls to a default state. 
+   */
+  public abstract void clear();
+  
   protected BindingFactory getBindingFactory(){
     return bf;
   }
