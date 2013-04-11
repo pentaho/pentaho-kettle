@@ -9,6 +9,7 @@ import org.pentaho.di.starmodeler.StarDomain;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.IMetaStoreElement;
 import org.pentaho.metastore.api.IMetaStoreElementType;
+import org.pentaho.metastore.api.exceptions.MetaStoreElementTypeExistsException;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.stores.delegate.DelegatingMetaStore;
 import org.pentaho.metastore.util.MetaStoreUtil;
@@ -16,8 +17,8 @@ import org.pentaho.metastore.util.PentahoDefaults;
 
 public class StarDomainMetaStoreUtil extends MetaStoreUtil {
 
-  public static final String METASTORE_STAR_MODEL_TYPE_NAME = "Star domain";
-  public static final String METASTORE_STAR_MODEL_TYPE_DESCRIPTION = "This contains a star domain, a collection of star models and shared dimensions";
+  public static final String METASTORE_STAR_DOMAIN_TYPE_NAME = "Star domain";
+  public static final String METASTORE_STAR_DOMAIN_TYPE_DESCRIPTION = "This contains a star domain, a collection of star models and shared dimensions";
 
   protected static String namespace = PentahoDefaults.NAMESPACE;
   
@@ -35,18 +36,24 @@ public class StarDomainMetaStoreUtil extends MetaStoreUtil {
   public static IMetaStoreElementType getStarDomainElementType(IMetaStore metaStore) throws MetaStoreException {
     verifyNamespaceCreated(metaStore, namespace);
     
-    IMetaStoreElementType elementType = metaStore.getElementTypeByName(namespace, METASTORE_STAR_MODEL_TYPE_NAME);
+    IMetaStoreElementType elementType = metaStore.getElementTypeByName(namespace, METASTORE_STAR_DOMAIN_TYPE_NAME);
     if (elementType==null) {
       // create the type
       //
-      elementType = metaStore.newElementType(namespace);
-      elementType.setName(METASTORE_STAR_MODEL_TYPE_NAME);
-      elementType.setDescription(METASTORE_STAR_MODEL_TYPE_DESCRIPTION);
-      metaStore.createElementType(namespace, elementType);
+      elementType = createStarDomainElementType(metaStore);
     }
     return elementType;
   }
   
+  public static IMetaStoreElementType createStarDomainElementType(IMetaStore metaStore) throws MetaStoreElementTypeExistsException, MetaStoreException {
+    IMetaStoreElementType elementType = metaStore.newElementType(namespace);
+    elementType.setName(METASTORE_STAR_DOMAIN_TYPE_NAME);
+    elementType.setDescription(METASTORE_STAR_DOMAIN_TYPE_DESCRIPTION);
+    metaStore.createElementType(namespace, elementType);
+  
+    return elementType;
+  }
+
   public static void saveStarDomain(IMetaStore metaStore, StarDomain starDomain) throws MetaStoreException {
     IMetaStoreElementType elementType = getStarDomainElementType(metaStore);
     IMetaStoreElement element = null;
@@ -68,6 +75,7 @@ public class StarDomainMetaStoreUtil extends MetaStoreUtil {
       populateElementWithStarDomain(metaStore, starDomain, element, elementType);
       metaStore.updateElement(namespace, elementType, starDomain.getObjectId().toString(), element);
     }
+    starDomain.setObjectId(new StringObjectId(element.getId().toString()));
   }
 
   private static void populateElementWithStarDomain(IMetaStore metaStore, StarDomain starDomain, IMetaStoreElement element, IMetaStoreElementType elementType) throws MetaStoreException {

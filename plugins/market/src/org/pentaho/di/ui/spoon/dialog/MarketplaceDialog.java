@@ -22,6 +22,7 @@
 
 package org.pentaho.di.ui.spoon.dialog;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -137,6 +138,14 @@ public class MarketplaceDialog extends Dialog {
       addLeftLabel(composite, BaseMessages.getString(MARKET_PKG, "MarketplacesDialog.Name.label"), lastControl);
       lastControl = addRightLabel(composite, Const.NVL(marketEntry.getName(), ""), lastControl);
 
+      // The version
+      addLeftLabel(composite, BaseMessages.getString(MARKET_PKG, "MarketplacesDialog.AvailableVersion.label"), lastControl);
+      lastControl = addRightLabel(composite, Const.NVL(marketEntry.getVersion(), ""), lastControl);
+
+      // Installation path
+      addLeftLabel(composite, BaseMessages.getString(MARKET_PKG, "MarketplacesDialog.InstallPath.label"), lastControl);
+      lastControl = addRightLabel(composite, new File(Market.buildPluginsFolderPath(marketEntry)).getAbsolutePath(), lastControl);
+      
       // The description
       if (!Const.isEmpty(marketEntry.getDescription())) {
         addLeftLabel(composite, BaseMessages.getString(MARKET_PKG, "MarketplacesDialog.Description.label"), lastControl);
@@ -196,7 +205,7 @@ public class MarketplaceDialog extends Dialog {
       Market.discoverInstalledVersion(marketEntry);
 
       if (marketEntry.isInstalled()) {
-        addLeftLabel(composite, BaseMessages.getString(MARKET_PKG, "MarketplacesDialog.Version.label"), lastControl);
+        addLeftLabel(composite, BaseMessages.getString(MARKET_PKG, "MarketplacesDialog.InstalledVersion.label"), lastControl);
         lastControl = addRightLabel(composite, marketEntry.getInstalledVersion(), lastControl);
       }
 
@@ -231,7 +240,7 @@ public class MarketplaceDialog extends Dialog {
         			pmd.run(true, true, new ProgressMonitorRunner(new Runnable() {
         	    	  public void run() {
         	    		  try {
-        	    			  Market.install(marketEntry);
+        	    			  Market.install(marketEntry, pmd);
         	    			  upgradeButton.setEnabled(false);
         	    		  }
         	    		  catch(KettleException ke) {
@@ -253,7 +262,11 @@ public class MarketplaceDialog extends Dialog {
       });
       
       BaseStepDialog.positionBottomButtons(composite, new Button[] {button,  upgradeButton}, margin, lastControl);
-      boolean showUpgradeButton = marketEntry.getInstalledVersion() != marketEntry.getVersion() && marketEntry.isInstalled();
+      boolean showUpgradeButton = marketEntry.isInstalled() && 
+          ( marketEntry.getInstalledVersion()==null || 
+            marketEntry.getVersion()==null || 
+            marketEntry.getInstalledVersion().compareTo(marketEntry.getVersion())<0
+          ) ;
       upgradeButton.setVisible(showUpgradeButton);
       
       
@@ -261,7 +274,7 @@ public class MarketplaceDialog extends Dialog {
       final ProgressMonitorRunner installRunner = new ProgressMonitorRunner(new Runnable() {
     	  public void run() {
     		  try {
-    			  Market.installUninstall(marketEntry, marketEntry.isInstalled());
+    			  Market.installUninstall(marketEntry, marketEntry.isInstalled(), pmd);
 			      Market.discoverInstalledVersion(marketEntry);
 			      setButtonLabel(button, marketEntry.isInstalled());
 			      setPluginName(expandItem, marketEntry.getName(), marketEntry.isInstalled());

@@ -22,6 +22,7 @@
 
 package org.pentaho.di.core.fileinput;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,7 +34,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.vfs.AllFileSelector;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSelectInfo;
-import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileType;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogChannel;
@@ -240,7 +240,7 @@ public class FileInputList
 	                                    	    }
 	                                    	    return false;
 	                                    	}
-	                                    	catch ( FileSystemException ex )
+	                                    	catch ( IOException ex )
 	                                    	{
 	                                    		// Upon error don't process the file.
 	                                    		return false;
@@ -378,7 +378,7 @@ public class FileInputList
 	                            	    }
 	                            	    return false;
 	                            	}
-	                            	catch ( FileSystemException ex ){
+	                            	catch ( IOException ex ){
 	                            		// Upon error don't process the file.
 	                            		return false;
 	                            	}

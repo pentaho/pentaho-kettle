@@ -52,7 +52,6 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileSystemException;
 import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.Const;
@@ -514,7 +513,7 @@ public class XMLHandler
     {
     	try {
 			return loadXMLFile(KettleVFS.getInputStream(fileObject), systemID, ignoreEntities, namespaceAware);
-		} catch (FileSystemException e) {
+		} catch (IOException e) {
 			throw new KettleXMLException("Unable to read file ["+fileObject.toString()+"]", e);
 		}
     }

@@ -25,7 +25,6 @@ package org.pentaho.di.core.vfs.configuration;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemOptions;
 import org.apache.commons.vfs.provider.FileNameParser;
 import org.apache.commons.vfs.provider.URLFileName;
@@ -109,7 +108,7 @@ public class KettleSftpFileSystemConfigBuilder extends KettleGenericFileSystemCo
           // No host match found
           log.logDebug("No host match found for: " + fullParameterName); //$NON-NLS-1$
         }
-      } catch (FileSystemException e) {
+      } catch (IOException e) {
         log.logError("Failed to set VFS parameter: [" + fullParameterName + "] " + value, e); //$NON-NLS-1$ //$NON-NLS-2$
       }
     }

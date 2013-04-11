@@ -663,6 +663,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     metaStore=new DelegatingMetaStore();
     try {
       metaStore.addMetaStore(MetaStoreConst.openLocalPentahoMetaStore());
+      if (rep!=null) {
+        metaStore.addMetaStore(0, rep.getMetaStore());
+        metaStore.setActiveMetaStoreName(rep.getMetaStore().getName());
+      }
     } catch(MetaStoreException e) {
       new ErrorDialog(shell, "Error opening Pentaho Metastore", "Unable to open local Pentaho Metastore", e);
     }
@@ -3421,7 +3425,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         try {
           IMetaStore repositoryMetaStore = repository.getMetaStore();
           if (repositoryMetaStore!=null) {
-            metaStore.addMetaStore(0, repositoryMetaStore); // first priority for explicitely connected repositories.
+            metaStore.addMetaStore(0, repositoryMetaStore); // first priority for explicitly connected repositories.
             metaStore.setActiveMetaStoreName(repositoryMetaStore.getName());
           }
         }  catch (MetaStoreException e) {
@@ -3796,10 +3800,14 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public void closeRepository() {
     if (rep != null) {
+      IMetaStore repMetaStore = rep.getMetaStore();
       rep.disconnect();
-      if (rep.getMetaStore()!=null) {
+      if (repMetaStore!=null) {
         try {
-          metaStore.removeMetaStore(rep.getMetaStore());
+          metaStore.removeMetaStore(repMetaStore);
+          if (metaStore.getMetaStoreList().size()>0) {
+            metaStore.setActiveMetaStoreName(metaStore.getMetaStoreList().get(0).getName());
+          }
         } catch(MetaStoreException e) {
           new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.ErrorRemovingMetaStore.Title"), 
               BaseMessages.getString(PKG, "Spoon.ErrorRemovingMetaStore.Message"), e);
@@ -3826,9 +3834,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     
     // In case the perspective wants to handle open/save itself, let it...
     //
-    if (activePerspective instanceof SpoonPerspectiveOpenSaveInterface) {
-      ((SpoonPerspectiveOpenSaveInterface)activePerspective).open(importfile);
-      return;
+    if (!importfile) {
+      if (activePerspective instanceof SpoonPerspectiveOpenSaveInterface) {
+        ((SpoonPerspectiveOpenSaveInterface)activePerspective).open();
+        return;
+      }
     }
 
     String activePerspectiveId = activePerspective.getId();
@@ -3867,6 +3877,15 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       setFilterPath(dialog);
       String fname = dialog.open();
       if (fname != null) {
+        
+        if (importfile) {
+          if (activePerspective instanceof SpoonPerspectiveOpenSaveInterface) {
+            ((SpoonPerspectiveOpenSaveInterface)activePerspective).importFile(fname);
+            return;
+          }
+        }
+
+        
         lastDirOpened = dialog.getFilterPath();
         openFile(fname, importfile);
       }

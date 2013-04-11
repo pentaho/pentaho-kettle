@@ -32,6 +32,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.Variables;
@@ -46,6 +47,7 @@ import org.pentaho.di.starmodeler.generator.MetadataGenerator;
 import org.pentaho.di.starmodeler.metastore.IdNameDescription;
 import org.pentaho.di.starmodeler.metastore.SharedDimensionMetaStoreUtil;
 import org.pentaho.di.starmodeler.metastore.StarDomainMetaStoreUtil;
+import org.pentaho.di.starmodeler.metastore.StarDomainMetaStoreUtil.Attribute;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
@@ -68,8 +70,11 @@ import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.metadata.util.SerializationService;
 import org.pentaho.metastore.api.IMetaStore;
+import org.pentaho.metastore.api.IMetaStoreElement;
+import org.pentaho.metastore.api.IMetaStoreElementType;
 import org.pentaho.metastore.api.exceptions.MetaStoreElementExistException;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
+import org.pentaho.metastore.util.PentahoDefaults;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
@@ -258,6 +263,26 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     
     return false;
   }
+  
+  public void importFile(String filename) {
+    open(null, filename, true);
+  }
+  
+  public boolean exportFile(EngineMetaInterface meta, String filename) {
+    
+    try {
+      String xml = meta.getXML();
+      OutputStream outputStream = KettleVFS.getOutputStream(filename, false);
+      outputStream.write(xml.getBytes(Const.XML_ENCODING));
+      outputStream.close();
+      
+      meta.setFilename(filename);
+      return true;
+    } catch(Exception e) {
+      new ErrorDialog(Spoon.getInstance().getShell(), "Error", "Error export star domain to XML", e);
+      return false;
+    }
+  }
 
   @Override
   public boolean save(EngineMetaInterface meta, String fname, boolean isExport) {
@@ -267,7 +292,12 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
       //
       if (meta instanceof StarDomain) {
         StarDomain starDomain = (StarDomain) meta;
-        IMetaStore metaStore = Spoon.getInstance().metaStore;
+        
+        // Make sure we pick the active MetaStore to save to, otherwise it's hard to verify
+        //
+        IMetaStore metaStore = Spoon.getInstance().metaStore.getActiveMetaStore();
+        
+        LogChannel.GENERAL.logBasic("Saving star domain to meta store: "+metaStore.getName());
         
         // Save the name and description of the shared dimension in the metastore
         //
@@ -279,15 +309,6 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
           SharedDimensionMetaStoreUtil.saveSharedDimension(metaStore, sharedDimension, defaultLocale);
         }
       
-        /*
-        String xml = meta.getXML();
-        OutputStream outputStream = KettleVFS.getOutputStream(fname, false);
-        outputStream.write(xml.getBytes(Const.XML_ENCODING));
-        outputStream.close();
-        
-        meta.setFilename(fname);
-        */
-        
         meta.clearChanged();
         Spoon.getInstance().enableMenus();
         
@@ -812,13 +833,13 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
       }
     });
 
-    Button delModelButton = new Button(dimsGroup, SWT.PUSH);
-    delModelButton.setText(BaseMessages.getString(PKG, "StarModelerPerspective.Button.DeleteDimension"));
-    FormData fdDelModelButton = new FormData();
-    fdDelModelButton.top = new FormAttachment(lastControl, margin);
-    fdDelModelButton.left = new FormAttachment(editDimensionButton, margin);
-    delModelButton.setLayoutData(fdDelModelButton);
-    delModelButton.addSelectionListener(new SelectionAdapter() {
+    Button delDimensionButton = new Button(dimsGroup, SWT.PUSH);
+    delDimensionButton.setText(BaseMessages.getString(PKG, "StarModelerPerspective.Button.DeleteDimension"));
+    FormData fdDelDimensionButton = new FormData();
+    fdDelDimensionButton.top = new FormAttachment(lastControl, margin);
+    fdDelDimensionButton.left = new FormAttachment(editDimensionButton, margin);
+    delDimensionButton.setLayoutData(fdDelDimensionButton);
+    delDimensionButton.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent event) {
         if (dimensionsList.getSelectionIndex()<0) return;
         TableItem item = dimensionsList.table.getSelection()[0];
@@ -829,10 +850,58 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
       }
     });
     
+
+    Button testDimensionButton = new Button(dimsGroup, SWT.PUSH);
+    testDimensionButton.setText("TEST PUR");
+    FormData fdtestDimensionButton = new FormData();
+    fdtestDimensionButton.top = new FormAttachment(lastControl, margin);
+    fdtestDimensionButton.left = new FormAttachment(delDimensionButton, margin);
+    testDimensionButton.setLayoutData(fdtestDimensionButton);
+    testDimensionButton.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent event) {
+        testMetaStore();
+      }
+    });
+    
     return dimsGroup;
   }
 
   
+  protected void testMetaStore() {
+    try {
+      // Force repository meta store
+      IMetaStore metaStore = Spoon.getInstance().getRepository().getMetaStore(); 
+      
+      LogChannel.GENERAL.logBasic("Active metastore: "+metaStore.getName());
+      
+      StarDomainMetaStoreUtil.verifyNamespaceCreated(metaStore, "pentaho");
+      IMetaStoreElementType elementType = StarDomainMetaStoreUtil.getStarDomainElementType(metaStore);
+      if (elementType==null) {
+        throw new KettleException("Unable to find star domain element type");
+      }
+      LogChannel.GENERAL.logBasic("Found star domain element type: "+elementType.getName()+" : "+elementType.getDescription());
+      
+      elementType = metaStore.getElementTypeByName(PentahoDefaults.NAMESPACE, elementType.getName());
+      if (elementType==null) {
+        throw new KettleException("Unable to find star domain element type by name");
+      }
+      
+      LogChannel.GENERAL.logBasic("Found element type by name");
+      
+      List<IdNameDescription> list = new ArrayList<IdNameDescription>();
+      for (IMetaStoreElement element : metaStore.getElements(PentahoDefaults.NAMESPACE, elementType)) {
+        IdNameDescription nameDescription = new IdNameDescription(element.getId(), element.getName(), null);
+        list.add(nameDescription);
+      }
+      LogChannel.GENERAL.logBasic("Found "+list.size()+" star domain elements.");
+
+      StarDomainMetaStoreUtil.getStarDomainList(metaStore);
+      
+    } catch(Exception e) {
+      new ErrorDialog(Spoon.getInstance().getShell(), "ERROR", "Error testing meta store: ", e);
+    }
+  }
+
   protected void createSharedDatabase(CCombo targetDatabase) {
     Shell shell = Spoon.getInstance().getShell();
     boolean retry=true;
@@ -1176,8 +1245,7 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
 		return false;
   }
 
-  @Override
-  public void open(boolean importFile) {
+  public void open() {
     // List all star domains in the metastore
     //
     Shell shell = Spoon.getInstance().getShell();    

@@ -38,6 +38,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.io.IOUtils;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
@@ -179,7 +180,7 @@ public class Market implements SpoonPluginInterface {
    * @param marketEntry
    * @return String the path to the plugins folder.
    */
-  private static String buildPluginsFolderPath(final MarketEntry marketEntry) {
+  public static String buildPluginsFolderPath(final MarketEntry marketEntry) {
     PluginInterface plugin = getPluginObject(marketEntry.getId());
     if (plugin != null && plugin.getPluginDirectory()!=null) {
       return new File(plugin.getPluginDirectory().getFile()).getParent();
@@ -202,11 +203,11 @@ public class Market implements SpoonPluginInterface {
    *          uninstalled. Otherwise it is installed.
    * @throws KettleException
    */
-  public static void installUninstall(final MarketEntry marketEntry, boolean isInstalled) throws KettleException {
+  public static void installUninstall(final MarketEntry marketEntry, boolean isInstalled, ProgressMonitorDialog monitorDialog) throws KettleException {
     if (isInstalled) {
-      Market.uninstall(marketEntry);
+      Market.uninstall(marketEntry, monitorDialog);
     } else {
-      Market.install(marketEntry);
+      Market.install(marketEntry, monitorDialog);
     }
   }
 	
@@ -221,7 +222,7 @@ public class Market implements SpoonPluginInterface {
    * @param marketEntry
    * @throws KettleException
    */
-  public static void install(final MarketEntry marketEntry) throws KettleException {
+  public static void install(final MarketEntry marketEntry, ProgressMonitorDialog monitorDialog) throws KettleException {
     String parentFolderName = buildPluginsFolderPath(marketEntry);
     
     // Until plugin dependencies are implemented, check that the pentaho-big-data-plugin directory exists
@@ -239,23 +240,25 @@ public class Market implements SpoonPluginInterface {
     File pluginFolder = new File(parentFolderName + File.separator + marketEntry.getId());
     LogChannel.GENERAL.logBasic("Installing plugin in folder: "+pluginFolder.getAbsolutePath());
     if (pluginFolder.exists()) {
+      monitorDialog.close();
       MessageBox mb = new MessageBox(Spoon.getInstance().getShell(), SWT.NO | SWT.YES | SWT.ICON_WARNING);
       mb.setMessage(BaseMessages.getString(PKG, "Marketplace.Dialog.PromptOverwritePlugin.Message", pluginFolder.getAbsolutePath()));
       mb.setText(BaseMessages.getString(PKG, "Marketplace.Dialog.PromptOverwritePlugin.Title"));
       int answer = SWT.NO;
       answer = mb.open();
       if (answer == SWT.YES) {
+        monitorDialog.open();
         ClassLoader cl = PluginRegistry.getInstance().getClassLoader(getPluginObject(marketEntry.getId()));
         if (cl instanceof KettleURLClassLoader) {
           ((KettleURLClassLoader)cl).closeClassLoader();
         }
         deleteDirectory(pluginFolder);
         unzipMarketEntry(parentFolderName, marketEntry.getPackageUrl());
-        refreshSpoon();
+        refreshSpoon(monitorDialog);
       }
     } else {
       unzipMarketEntry(parentFolderName, marketEntry.getPackageUrl());
-      refreshSpoon();
+      refreshSpoon(monitorDialog);
     }
   }
 	 
@@ -320,7 +323,7 @@ public class Market implements SpoonPluginInterface {
    * @param marketEntry
    * @throws KettleException
    */
-  public static void uninstall(final MarketEntry marketEntry) throws KettleException {
+  public static void uninstall(final MarketEntry marketEntry, final ProgressMonitorDialog monitorDialog) throws KettleException {
     
     String parentFolderName = buildPluginsFolderPath(marketEntry);
     File pluginFolder = new File(parentFolderName + File.separator + marketEntry.getId());
@@ -335,20 +338,20 @@ public class Market implements SpoonPluginInterface {
       Spoon.getInstance().getDisplay().asyncExec(new Runnable() {
         public void run() {
           try {
-            refreshSpoon();
+            refreshSpoon(monitorDialog);
           } catch (KettleException e) {
             e.printStackTrace();
           }
         }
       });
     } else {
-      refreshSpoon();
+      refreshSpoon(monitorDialog);
     }
   }
   
-  public static void uninstallMarketInSeparateClassLoader(final File path) throws Exception {
+  public static void uninstallMarketInSeparateClassLoader(final File path, ProgressMonitorDialog monitorDialog) throws Exception {
     try {
-      uninstall(new MarketEntry("market", MarketEntryType.Mixed));
+      uninstall(new MarketEntry("market", MarketEntryType.Mixed), monitorDialog);
       Spoon.getInstance().getDisplay().asyncExec(new Runnable() {
         public void run() {
          try {
@@ -370,7 +373,7 @@ public class Market implements SpoonPluginInterface {
   }
 
   
-  public static void upgradeMarketInSeparateClassLoader(final File path, final String packageUrl) throws Exception {
+  public static void upgradeMarketInSeparateClassLoader(final File path, final String packageUrl, final ProgressMonitorDialog monitorDialog) throws Exception {
     try {
       
       PluginInterface plugin = getPluginObject("market");
@@ -395,7 +398,7 @@ public class Market implements SpoonPluginInterface {
         public void run() {
           try {
             // refresh plugins
-            refreshSpoon();
+            refreshSpoon(monitorDialog);
             
             MessageBox box = new MessageBox(Spoon.getInstance().getShell(), SWT.ICON_WARNING | SWT.OK);
             box.setText(BaseMessages.getString(PKG, "MarketplacesDialog.RestartUpdate.Title"));
@@ -537,17 +540,15 @@ public class Market implements SpoonPluginInterface {
    * 
    * @throws KettleException
    */
-  private static void refreshSpoon() throws KettleException {
+  private static void refreshSpoon(ProgressMonitorDialog monitorDialog) throws KettleException {
     
-    MessageBox box = new MessageBox(Spoon.getInstance().getShell(), SWT.ICON_QUESTION | SWT.YES | SWT.NO);
+    monitorDialog.close();
+    
+    MessageBox box = new MessageBox(Spoon.getInstance().getShell(), SWT.ICON_QUESTION | SWT.OK);
     box.setText(BaseMessages.getString(PKG, "MarketplacesDialog.RestartUpdate.Title"));
     box.setMessage(BaseMessages.getString(PKG, "MarketplacesDialog.RestartUpdate.Message"));
-    int i = box.open();
-    if ((i&SWT.YES)!=0) {
-      Spoon.getInstance().dispose();
-      return;
-    }
-
+    box.open();
+    
     PluginRegistry.init();
     Spoon spoon = Spoon.getInstance();
     spoon.refreshCoreObjects();
