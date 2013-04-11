@@ -28,8 +28,7 @@
   <target name="assemble" depends="subfloor-pkg.assemble" description="copy jar files to distribution directory" >
   	<echo>Construct the distribution package...</echo>
     <!-- make JavaApplicationStub executable for OSX -->
-    <chmod file="${approot.stage.dir}/Data Integration 32-bit.app/Contents/MacOS/JavaApplicationStub" perm="ugo+rx"/>
-    <chmod file="${approot.stage.dir}/Data Integration 64-bit.app/Contents/MacOS/JavaApplicationStub" perm="ugo+rx"/>
+    <chmod file="${approot.stage.dir}/Data Integration.app/Contents/MacOS/JavaApplicationStub" perm="ugo+rx"/>
   	
   	<!-- Remove the SWT JAR used for compilation -->
   	<delete quiet="true">
