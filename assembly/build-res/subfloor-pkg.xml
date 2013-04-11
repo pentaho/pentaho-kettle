@@ -54,7 +54,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <property name="package.basename" value="${package.id}-${project.revision}" />
   <property name="package.resdir" value="${basedir}/package-res" />
   <property name="package.artifact.ivyfile"
-            value="ivy.xml"
+            value="package-ivy.xml"
             description="The ivy file defining dependencies of the package" />
   <property name="package.artifact.pomfile"
             value="package-pom.xml"
@@ -103,28 +103,26 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <target name="assemble.copy-libs">
     <copy todir="${approot.stage.dir}/lib">
       <fileset dir="${lib.dir}" />
+      <fileset file="${dist.dir}/${ivy.artifact.id}-${project.revision}.jar" />
     </copy>
   </target>
 
   <target name="package"
-          depends="assemble,package-zip"
+          depends="assemble,package-zip,package-targz"
           description="Creates packaged distributable artifacts" />
 
   <target name="package-zip">
     <zip destfile="${dist.dir}/${package.basename}.zip">
-      <zipfileset dir="${stage.dir}" />
+      <zipfileset dir="${stage.dir}" filemode="755" >
+        <include name="**/*.sh"/>
+       </zipfileset>
+      <zipfileset dir="${stage.dir}">
+         <exclude name="**/*.sh"/>
+      </zipfileset>
     </zip>
   </target>
 
   <target name="package-targz">
-    <tar destfile="${dist.dir}/${package.basename}.tar.gz" longfile="gnu" compression="gzip">
-      <tarfileset dir="${stage.dir}" mode="755">
-        <include name="**/*.sh" />
-      </tarfileset>
-      <tarfileset dir="${stage.dir}">
-        <exclude name="**/*.sh" />
-      </tarfileset>
-    </tar>
   </target>
 
   <!-- ============================================linuxPackage===================================================== -->
