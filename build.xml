@@ -1110,7 +1110,7 @@
     
   	<!-- Remove artifacts used for compilation -->
     <delete quiet="true">
-      <fileset dir="${distrib}/${lib.dir}" includes="swt*.*,pentaho-big-data-plugin*.zip" />
+      <fileset dir="${distrib}/${lib.dir}" includes="swt*.*,pentaho-big-data-plugin*.zip,pentaho-mongodb-plugin-*.zip" />
     </delete>
   	
   	<!-- Insert launcher revision number into batch files -->
