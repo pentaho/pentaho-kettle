@@ -83,6 +83,8 @@ public class DetectLastRow extends BaseStep implements StepInterface {
         //
         if (!Const.isEmpty(meta.getResultFieldName())) {
           outputRow = RowDataUtil.addRowData(previousRow, getInputRowMeta().size(), data.getTrueArray());
+        } else {
+          outputRow = previousRow;
         }
 
         putRow(data.outputRowMeta, outputRow); // copy row to output rowset(s);
