@@ -54,7 +54,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <property name="package.basename" value="${package.id}-${project.revision}" />
   <property name="package.resdir" value="${basedir}/package-res" />
   <property name="package.artifact.ivyfile"
-            value="package-ivy.xml"
+            value="ivy.xml"
             description="The ivy file defining dependencies of the package" />
   <property name="package.artifact.pomfile"
             value="package-pom.xml"
