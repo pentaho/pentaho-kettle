@@ -1063,7 +1063,7 @@
     <chmod perm="a+x" dir="${distrib}" includes="**/*.sh" />
   	
   	<!-- make JavaApplicationStub executable for OSX -->
-    <chmod file="${distrib}/Data Integration 64-bit.app/Contents/MacOS/JavaApplicationStub" perm="ugo+rx"/>
+    <chmod file="${distrib}/Data Integration.app/Contents/MacOS/JavaApplicationStub" perm="ugo+rx"/>
     
   	<!-- Copy dependencies to distribution folder -->
   	<copy todir="${distrib}/${lib.dir}" overwrite="true">
