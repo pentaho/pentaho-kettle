@@ -1019,11 +1019,20 @@
     </unzip>
 	</target>
 	
-	<!-- Unzip the libswt package into the libswt folder of the distribution -->
+	<!-- Unzip the big data package into the big-data folder of the distribution -->
     <target name="unzip-big-data-plugin" depends="init">
     <unzip dest="${distrib}/plugins" overwrite="true">
       <fileset dir="${big.data.plugin.location}">
         <include name="pentaho-big-data-plugin*.zip"/>
+      </fileset>
+    </unzip>
+    </target>
+
+  <!-- Unzip the mongodb into the mongodb folder of the distribution -->
+    <target name="unzip-mongodb-plugin" depends="init">
+    <unzip dest="${distrib}/plugins" overwrite="true">
+      <fileset dir="${mongodb.plugin.location}">
+        <include name="pentaho-mongodb-plugin*.zip"/>
       </fileset>
     </unzip>
     </target>
@@ -1089,11 +1098,15 @@
   		<param name="libswt" value="${distrib}/${libswt}"/>
   	</antcall>
   	
-  	<!-- Unzip the libswt package into the libswt folder of the distribution -->
+  	<!-- Unzip the big-data package into the big-data folder of the distribution -->
     <antcall target="unzip-big-data-plugin">
         <param name="big.data.plugin.location" value="${lib.dir}"/>
     </antcall> 	
   	
+    <!-- Unzip the mongodb package into the mongodb folder of the distribution -->
+    <antcall target="unzip-mongodb-plugin">
+        <param name="mongodb.plugin.location" value="${lib.dir}"/>
+    </antcall>  
     
   	<!-- Remove artifacts used for compilation -->
     <delete quiet="true">
