@@ -73,6 +73,7 @@ public class SingleThreader extends BaseStep implements StepInterface
 		Object[] row = getRow();
 		if (row==null) {
 		  if (data.batchCount>0) {
+	      data.batchCount=0;
 			  return execOneIteration(); 
 		  }
 		    
