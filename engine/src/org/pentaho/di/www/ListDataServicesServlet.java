@@ -39,7 +39,9 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.DataServiceMeta;
+import org.pentaho.di.trans.DataServiceMetaStoreUtil;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.metastore.api.IMetaStore;
 
 /**
  * This servlet allows a user to get data from a "service" which is a transformation step.
@@ -87,13 +89,15 @@ public class ListDataServicesServlet extends BaseHttpServlet implements CartePlu
     // Copy the list locally so we can add the current repository services...
     //
     List<TransDataService> services = new ArrayList<TransDataService>(transformationMap.getSlaveServerConfig().getServices());
-    
+
+    IMetaStore metaStore = transformationMap.getSlaveServerConfig().getMetaStore();
+
     // Add possible services from the repository...
     //
     Repository repository = transformationMap.getSlaveServerConfig().getRepository();
     if (repository!=null) {
       try {
-        List<DataServiceMeta> dataServices = new ArrayList<DataServiceMeta>(); // TODO: FIXME: !!! repository.listDataServices(); !!!
+        List<DataServiceMeta> dataServices = DataServiceMetaStoreUtil.getDataServices(metaStore);
         for (DataServiceMeta dataService : dataServices) {
           if (!Const.isEmpty(dataService.getName()) && !Const.isEmpty(dataService.getStepname())) {
             services.add(new TransDataService(dataService.getName(), null, dataService.getObjectId(), dataService.getStepname()));

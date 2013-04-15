@@ -3,6 +3,8 @@ package org.pentaho.di.trans;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.sql.ServiceCacheMethod;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.metastore.api.IMetaStore;
+import org.pentaho.metastore.api.exceptions.MetaStoreException;
 
 /**
  * This describes a (transformation) data service to the outside world.
@@ -55,6 +57,20 @@ public class DataServiceMeta {
     this.name = name;
     this.stepname = stepname;
     this.cacheMethod = cacheMethod;
+  }
+  
+  /**
+   * Save this object to the metaStore
+   * @param metaStore
+   * @param attribute
+   */
+  public void saveToMetaStore(IMetaStore metaStore) throws MetaStoreException {
+    DataServiceMetaStoreUtil.createOrUpdateDataServiceElement(metaStore, this);
+  }
+  
+  public DataServiceMeta(IMetaStore metaStore, String dataServiceName) throws MetaStoreException {
+    this();
+    DataServiceMetaStoreUtil.loadDataService(metaStore, dataServiceName, this);
   }
 
   public boolean isDefined() {
@@ -148,4 +164,6 @@ public class DataServiceMeta {
   public void setCacheMaxAgeMinutes(int cacheMaxAgeMinutes) {
     this.cacheMaxAgeMinutes = cacheMaxAgeMinutes;
   }
+  
+  
 }

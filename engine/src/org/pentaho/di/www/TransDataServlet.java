@@ -51,12 +51,14 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.DataServiceMeta;
+import org.pentaho.di.trans.DataServiceMetaStoreUtil;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransConfiguration;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.sql.SqlTransExecutor;
 import org.pentaho.di.trans.step.RowAdapter;
+import org.pentaho.metastore.stores.delegate.DelegatingMetaStore;
 
 /**
  * This servlet allows a user to get data from a "service" which is a transformation step.
@@ -117,7 +119,8 @@ public class TransDataServlet extends BaseHttpServlet implements CartePluginInte
       //
       Repository repository = transformationMap.getSlaveServerConfig().getRepository();
       if (repository!=null) {
-        List<DataServiceMeta> dataServices = new ArrayList<DataServiceMeta>(); // TODO: FIXME:  !!! repository.listDataServices(); !!!
+        DelegatingMetaStore metaStore = transformationMap.getSlaveServerConfig().getMetaStore();
+        List<DataServiceMeta> dataServices = DataServiceMetaStoreUtil.getDataServices(metaStore);
         for (DataServiceMeta dataService : dataServices) {
           if (!Const.isEmpty(dataService.getName()) && !Const.isEmpty(dataService.getStepname())) {
             services.add(new TransDataService(

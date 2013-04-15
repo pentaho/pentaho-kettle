@@ -43,9 +43,13 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryMeta;
+import org.pentaho.metastore.api.exceptions.MetaStoreException;
+import org.pentaho.metastore.stores.delegate.DelegatingMetaStore;
+import org.pentaho.metastore.stores.xml.XmlMetaStore;
 import org.w3c.dom.Node;
 
 public class SlaveServerConfig {
@@ -89,12 +93,15 @@ public class SlaveServerConfig {
 	private String repositoryUsername;
 	private String repositoryPassword;
 	
+  private DelegatingMetaStore metaStore;
+
 	public SlaveServerConfig() {
 		masters=new ArrayList<SlaveServer>();
 		databases=new ArrayList<DatabaseMeta>();
 		slaveSequences=new ArrayList<SlaveSequence>();
 		automaticCreationAllowed=false;
 		services = new ArrayList<TransDataService>();
+		metaStore = new DelegatingMetaStore();
 	}
 	
 	public SlaveServerConfig(SlaveServer slaveServer) {
@@ -212,7 +219,17 @@ public class SlaveServerConfig {
       TransDataService service = new TransDataService(serviceNode);
       services.add(service);
     }
-
+    
+    // Add the local Pentaho MetaStore to the delegation.
+    // This sets it as the active one.
+    //
+    try {
+      XmlMetaStore localStore = new XmlMetaStore(MetaStoreConst.getDefaultPentahoMetaStoreLocation());
+      metaStore.addMetaStore(localStore);
+    } catch(MetaStoreException e) {
+      throw new KettleXMLException("Unable to open local Pentaho meta store", e);
+    }
+    
     Node repositoryNode = XMLHandler.getSubNode(node, XML_TAG_REPOSITORY);
     String repositoryId = XMLHandler.getTagValue(repositoryNode, "name");
     repositoryUsername = XMLHandler.getTagValue(repositoryNode, "username");
@@ -238,6 +255,12 @@ public class SlaveServerConfig {
       repository.init(repositoryMeta);
       repository.connect(repositoryUsername, repositoryPassword);
       
+      // Add the repository MetaStore to the delegation as well.
+      // Set this one as active with the highest priority
+      //
+      if (repository.getMetaStore()!=null) {
+        metaStore.addMetaStore(0, repository.getMetaStore());
+      }
     } catch(Exception e) {
       throw new KettleXMLException(e);
     }
@@ -555,6 +578,14 @@ public class SlaveServerConfig {
    */
   public void setRepositoryPassword(String repositoryPassword) {
     this.repositoryPassword = repositoryPassword;
+  }
+
+  public DelegatingMetaStore getMetaStore() {
+    return metaStore;
+  }
+
+  public void setMetaStore(DelegatingMetaStore metaStore) {
+    this.metaStore = metaStore;
   }
   
   

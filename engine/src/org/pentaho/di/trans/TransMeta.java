@@ -2969,7 +2969,11 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         Node dataServiceNode = XMLHandler.getSubNode(transnode, DataServiceMeta.XML_TAG);
         String dataServiceName = XMLHandler.getTagValue(dataServiceNode, DataServiceMeta.DATA_SERVICE_NAME);
         if (!Const.isEmpty(dataServiceName) && metaStore!=null) {
-          dataService = DataServiceMetaStoreUtil.loadDataService(metaStore, dataServiceName);
+          // Load the data service from the meta store
+          //
+          dataService = new DataServiceMeta(metaStore, dataServiceName);
+        } else {
+          dataService = new DataServiceMeta();
         }
 
         // Read the notes...
@@ -4221,7 +4225,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   private ObjectRevision objectVersion;
 
   private List<ContentChangedListener> contentChangedListeners;
-
+ 
   /**
    * Puts the steps in a more natural order: from start to finish. For the moment, we ignore splits and joins. 
    * Splits and joins can't be listed sequentially in any case!
@@ -5723,7 +5727,11 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    */
   public void saveSharedObjects() throws KettleException {
     try {
-      // First load all the shared objects...
+      // Save the meta store shared objects...
+      //
+      saveMetaStoreObjects(repository, metaStore);
+      
+      // Load all the shared objects...
       String soFile = environmentSubstitute(sharedObjectsFile);
       SharedObjects sharedObjects = new SharedObjects(soFile);
 

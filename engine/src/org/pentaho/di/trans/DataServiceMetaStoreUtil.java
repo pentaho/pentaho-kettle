@@ -1,5 +1,8 @@
 package org.pentaho.di.trans;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.pentaho.di.core.sql.ServiceCacheMethod;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.IMetaStoreElement;
@@ -11,6 +14,8 @@ import org.pentaho.metastore.util.PentahoDefaults;
 import org.pentaho.pms.util.Const;
 
 public class DataServiceMetaStoreUtil extends MetaStoreUtil {
+  
+  private static String namespace = PentahoDefaults.NAMESPACE;
  
   /**
    * This method creates a new Element Type in the meta store corresponding encapsulating the Kettle Data Service meta data. 
@@ -21,16 +26,16 @@ public class DataServiceMetaStoreUtil extends MetaStoreUtil {
    */
   public static IMetaStoreElementType createDataServiceElementTypeIfNeeded(IMetaStore metaStore) throws MetaStoreException {
     
-    if (!metaStore.namespaceExists(PentahoDefaults.NAMESPACE)) {
-      metaStore.createNamespace(PentahoDefaults.NAMESPACE);
+    if (!metaStore.namespaceExists(namespace)) {
+      metaStore.createNamespace(namespace);
     }
     
-    IMetaStoreElementType elementType = metaStore.getElementType(PentahoDefaults.NAMESPACE, PentahoDefaults.KETTLE_DATA_SERVICE_ELEMENT_TYPE_NAME);
+    IMetaStoreElementType elementType = metaStore.getElementType(namespace, PentahoDefaults.KETTLE_DATA_SERVICE_ELEMENT_TYPE_NAME);
     if (elementType==null) {
-      elementType = metaStore.newElementType(PentahoDefaults.NAMESPACE);
+      elementType = metaStore.newElementType(namespace);
       elementType.setName(PentahoDefaults.KETTLE_DATA_SERVICE_ELEMENT_TYPE_NAME);
       elementType.setDescription(PentahoDefaults.KETTLE_DATA_SERVICE_ELEMENT_TYPE_DESCRIPTION);
-      metaStore.createElementType(PentahoDefaults.NAMESPACE, elementType);
+      metaStore.createElementType(namespace, elementType);
     }
     
     return elementType;
@@ -40,14 +45,14 @@ public class DataServiceMetaStoreUtil extends MetaStoreUtil {
     
     IMetaStoreElementType elementType = createDataServiceElementTypeIfNeeded(metaStore);
     
-    IMetaStoreElement oldElement = metaStore.getElementByName(PentahoDefaults.NAMESPACE, elementType, dataServiceMeta.getName());
+    IMetaStoreElement oldElement = metaStore.getElementByName(namespace, elementType, dataServiceMeta.getName());
     IMetaStoreElement element = metaStore.newElement(); 
     populateDataServiceElement(metaStore, element, dataServiceMeta);
 
     if (oldElement==null) {
-      metaStore.createElement(PentahoDefaults.NAMESPACE, elementType, element);
+      metaStore.createElement(namespace, elementType, element);
     } else {
-      metaStore.updateElement(PentahoDefaults.NAMESPACE, elementType, oldElement.getId(), element);
+      metaStore.updateElement(namespace, elementType, oldElement.getId(), element);
     }
     
     return element;
@@ -63,21 +68,39 @@ public class DataServiceMetaStoreUtil extends MetaStoreUtil {
     
   }
 
-  public static DataServiceMeta loadDataService(IMetaStore metaStore, String dataServiceName) throws MetaStoreException {
-    DataServiceMeta meta = new DataServiceMeta();
-    
+  public static DataServiceMeta loadDataService(IMetaStore metaStore, String dataServiceName, DataServiceMeta meta) throws MetaStoreException {
     IMetaStoreElementType elementType = createDataServiceElementTypeIfNeeded(metaStore);
-    IMetaStoreElement element = metaStore.getElementByName(PentahoDefaults.NAMESPACE, elementType, dataServiceName);
+    IMetaStoreElement element = metaStore.getElementByName(namespace, elementType, dataServiceName);
     if (element!=null) {
-      meta.setName(element.getName());
-      meta.setStepname(getChildString(element, DataServiceMeta.DATA_SERVICE_STEPNAME));
-      meta.setTransFilename(getChildString(element, DataServiceMeta.DATA_SERVICE_TRANSFORMATION_FILENAME));
-      meta.setTransRepositoryPath(getChildString(element, DataServiceMeta.DATA_SERVICE_TRANSFORMATION_REP_PATH));
-      meta.setTransObjectId(getChildString(element, DataServiceMeta.DATA_SERVICE_TRANSFORMATION_REP_OBJECT_ID));
-      meta.setCacheMaxAgeMinutes(Const.toInt(getChildString(element, DataServiceMeta.DATA_SERVICE_CACHE_MAX_AGE_MINUTES), 0));
-      meta.setCacheMethod(ServiceCacheMethod.getMethodByName(getChildString(element, DataServiceMeta.DATA_SERVICE_CACHE_METHOD)));
-    }
+      return elementToDataService(element, meta);
+    } 
+    
+    throw new MetaStoreException("Data service '"+dataServiceName+"' could not be found");
+ }
+  
+  private static DataServiceMeta elementToDataService(IMetaStoreElement element) {
+    DataServiceMeta dataService = new DataServiceMeta();
+    return elementToDataService(element, dataService);
+  }
+  
+  private static DataServiceMeta elementToDataService(IMetaStoreElement element, DataServiceMeta meta) {
+    meta.setName(element.getName());
+    meta.setStepname(getChildString(element, DataServiceMeta.DATA_SERVICE_STEPNAME));
+    meta.setTransFilename(getChildString(element, DataServiceMeta.DATA_SERVICE_TRANSFORMATION_FILENAME));
+    meta.setTransRepositoryPath(getChildString(element, DataServiceMeta.DATA_SERVICE_TRANSFORMATION_REP_PATH));
+    meta.setTransObjectId(getChildString(element, DataServiceMeta.DATA_SERVICE_TRANSFORMATION_REP_OBJECT_ID));
+    meta.setCacheMaxAgeMinutes(Const.toInt(getChildString(element, DataServiceMeta.DATA_SERVICE_CACHE_MAX_AGE_MINUTES), 0));
+    meta.setCacheMethod(ServiceCacheMethod.getMethodByName(getChildString(element, DataServiceMeta.DATA_SERVICE_CACHE_METHOD)));
     return meta;
+  }
+
+  public static List<DataServiceMeta> getDataServices(IMetaStore metaStore) throws MetaStoreException {
+    IMetaStoreElementType elementType = createDataServiceElementTypeIfNeeded(metaStore);
+    List<DataServiceMeta> dataServices = new ArrayList<DataServiceMeta>();
+    for (IMetaStoreElement element : metaStore.getElements(namespace,  elementType)) {
+      dataServices.add(elementToDataService(element));
+    }
+    return dataServices;
   }
   
 }
