@@ -138,7 +138,6 @@ public class SortRows extends BaseStep implements StepInterface {
     DataOutputStream dos;
     GZIPOutputStream gzos;
     int p;
-    Object[] previousRow = null;
 
     try {
       FileObject fileObject = KettleVFS.createTempFile(meta.getPrefix(), ".tmp", environmentSubstitute(meta.getDirectory()), getTransMeta());
@@ -154,6 +153,8 @@ public class SortRows extends BaseStep implements StepInterface {
       }
 
       // Just write the data, nothing else
+      List<Integer> duplicates = new ArrayList<Integer>();
+      Object[] previousRow = null;
       if (meta.isOnlyPassingUniqueRows()) {
         int index = 0;
         while (index < data.buffer.size()) {
@@ -161,25 +162,32 @@ public class SortRows extends BaseStep implements StepInterface {
           if (previousRow != null) {
             int result = data.outputRowMeta.compare(row, previousRow, data.fieldnrs);
             if (result == 0) {
-              data.buffer.remove(index); // remove this duplicate element as
-                                         // requested
-              if (log.isRowLevel())
+              duplicates.add(index);
+              if (log.isRowLevel()) {
                 logRowlevel("Duplicate row removed: " + data.outputRowMeta.getString(row));
-            } else {
-              index++;
+              }
             }
-          } else {
-            index++;
           }
+          index++;
           previousRow = row;
         }
       }
 
       // How many records do we have left?
-      data.bufferSizes.add(data.buffer.size());
+      data.bufferSizes.add(data.buffer.size()-duplicates.size());
 
+      int duplicatesIndex=0;
       for (p = 0; p < data.buffer.size(); p++) {
-        data.outputRowMeta.writeData(dos, data.buffer.get(p));
+        boolean skip=false;
+        if (duplicatesIndex<duplicates.size()) {
+          if (p==duplicates.get(duplicatesIndex)) {
+            skip=true;
+            duplicatesIndex++;
+          }
+        }
+        if (!skip) {
+          data.outputRowMeta.writeData(dos, data.buffer.get(p));
+        }
       }
 
       if (data.sortSize < 0) {
