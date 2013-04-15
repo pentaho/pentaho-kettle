@@ -1766,6 +1766,10 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       	checkErrorVisuals();
       }
       
+      if ((e.keyCode=='t' && (e.stateMask & SWT.MOD1) != 0 )) {
+        editProperties(transMeta, spoon, spoon.rep, true);
+      }
+      
       // System.out.println("e.character="+e.character+", e.keyCode="+e.keyCode+", stateMask & SWT.CTRL = "+(e.stateMask & SWT.CTRL));
       
       // CTRL-W or CTRL-F4 : close tab
