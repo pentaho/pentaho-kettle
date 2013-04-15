@@ -305,7 +305,7 @@ public class SelectDirectoryDialog extends Dialog
                     else
                     {
                         MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-                        mb.setMessage(BaseMessages.getString(PKG, "SelectDirectoryDialog.Dialog.PermissionDenied.Message1") + rep.getUserInfo().getLogin() + BaseMessages.getString(PKG, "SelectDirectoryDialog.Dialog.PermissionDenied.Message2"));
+                        mb.setMessage(BaseMessages.getString(PKG, "SelectDirectoryDialog.Dialog.PermissionDenied.Message1") + ( rep.getUserInfo()==null ? "" : rep.getUserInfo().getLogin()) + BaseMessages.getString(PKG, "SelectDirectoryDialog.Dialog.PermissionDenied.Message2"));
                         mb.setText(BaseMessages.getString(PKG, "SelectDirectoryDialog.Dialog.PermissionDenied.Title"));
                         mb.open();
                     }

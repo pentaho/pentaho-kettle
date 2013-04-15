@@ -1314,7 +1314,11 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     // exports always reside in the root directory, in case we want to turn this into a file repository...
     //
     transMeta.setRepositoryDirectory(new RepositoryDirectory());
-
+    
+    // export to filename ALWAYS (this allows the exported XML to be executed remotely)
+    //
+    setSpecificationMethod(ObjectLocationSpecificationMethod.FILENAME);
+    
     // change it in the job entry
     //
     filename = newFilename;

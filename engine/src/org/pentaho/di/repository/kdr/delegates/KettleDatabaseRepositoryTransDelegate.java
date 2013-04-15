@@ -495,7 +495,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
 	                //
 	                String dataServiceName = repository.connectionDelegate.getTransAttributeString(transMeta.getObjectId(), 0, KettleDatabaseRepository.TRANS_ATTRIBUTE_DATA_SERVICE_NAME);
 	                if (!Const.isEmpty(dataServiceName)) {
-	                  DataServiceMeta dataServiceMeta = DataServiceMetaStoreUtil.loadDataService(repository.metaStore, dataServiceName);
+	                  DataServiceMeta dataServiceMeta = new DataServiceMeta(repository.metaStore, dataServiceName);
 	                  transMeta.setDataService(dataServiceMeta);
 	                } else {
 	                  transMeta.setDataService(new DataServiceMeta());

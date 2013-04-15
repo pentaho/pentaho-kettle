@@ -4047,13 +4047,15 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       if (jobMeta != null) {
         if (jobMeta.getName() != null) {
           if (Const.isWindows()) {
-            cmdFile = "kitchen " + "/rep:\"" + rep.getName() + "\"" + " /user:\"" + rep.getUserInfo().getLogin() + "\""
+            cmdFile = "kitchen " + "/rep:\"" + rep.getName() + "\"" + " /user:\"" 
+                + ( rep.getUserInfo()!=null ? rep.getUserInfo().getLogin() : "")+ "\""
                 + " /pass:\"" + Encr.encryptPasswordIfNotUsingVariables(rep.getUserInfo().getPassword()) + "\""
                 + " /job:\"" + jobMeta.getName() + '"' + " /dir:\"" + jobMeta.getRepositoryDirectory().getPath() + "\""
                 + " /level:Basic";
           } else {
-            cmdFile = "sh kitchen.sh " + "-rep='" + rep.getName() + "'" + " -user='" + rep.getUserInfo().getLogin()
-                + "'" + " -pass='" + Encr.encryptPasswordIfNotUsingVariables(rep.getUserInfo().getPassword()) + "'"
+            cmdFile = "sh kitchen.sh " + "-rep='" + rep.getName() + "'" + " -user='" 
+                + ( rep.getUserInfo()!=null ? rep.getUserInfo().getLogin() : "" )
+                + "'" + " -pass='" + Encr.encryptPasswordIfNotUsingVariables( rep.getUserInfo()!=null ? rep.getUserInfo().getPassword() : "") + "'"
                 + " -job='" + jobMeta.getName() + "'" + " -dir='" + jobMeta.getRepositoryDirectory().getPath() + "'"
                 + " -level=Basic";
           }
@@ -4061,13 +4063,15 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       } else {
         if (transMeta.getName() != null) {
           if (Const.isWindows()) {
-            cmdFile = "pan " + "/rep:\"" + rep.getName() + "\"" + " /user:\"" + rep.getUserInfo().getLogin() + "\""
-                + " /pass:\"" + Encr.encryptPasswordIfNotUsingVariables(rep.getUserInfo().getPassword()) + "\""
+            cmdFile = "pan " + "/rep:\"" + rep.getName() + "\"" + " /user:\"" 
+                + ( rep.getUserInfo()!=null ? rep.getUserInfo().getLogin() : "") + "\""
+                + " /pass:\"" + Encr.encryptPasswordIfNotUsingVariables(rep.getUserInfo()!=null ? rep.getUserInfo().getPassword() : "") + "\""
                 + " /trans:\"" + transMeta.getName() + "\"" + " /dir:\"" + transMeta.getRepositoryDirectory().getPath()
                 + "\"" + " /level:Basic";
           } else {
-            cmdFile = "sh pan.sh " + "-rep='" + rep.getName() + "'" + " -user='" + rep.getUserInfo().getLogin() + "'"
-                + " -pass='" + Encr.encryptPasswordIfNotUsingVariables(rep.getUserInfo().getPassword()) + "'"
+            cmdFile = "sh pan.sh " + "-rep='" + rep.getName() + "'" + " -user='" 
+                + ( rep.getUserInfo()!=null ? rep.getUserInfo().getLogin() : "") + "'"
+                + " -pass='" + Encr.encryptPasswordIfNotUsingVariables(rep.getUserInfo()!=null ? rep.getUserInfo().getPassword() : "") + "'"
                 + " -trans='" + transMeta.getName() + "'" + " -dir='" + transMeta.getRepositoryDirectory().getPath()
                 + "'" + " -level=Basic";
           }

@@ -77,7 +77,11 @@ public class JobResource {
         // We might need to re-connect to the repository
         //
         if (job.getRep() != null && !job.getRep().isConnected()) {
-          job.getRep().connect(job.getRep().getUserInfo().getLogin(), job.getRep().getUserInfo().getPassword());
+          if (job.getRep().getUserInfo()!=null) {
+            job.getRep().connect(job.getRep().getUserInfo().getLogin(), job.getRep().getUserInfo().getPassword());
+          } else {
+            job.getRep().connect(null, null);
+          }
         }
 
         // Create a new job object to start from a sane state. Then replace

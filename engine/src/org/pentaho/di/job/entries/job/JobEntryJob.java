@@ -1235,7 +1235,11 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     // into a file repository...
     //
     jobMeta.setRepositoryDirectory(new RepositoryDirectory());
-
+    
+    // export to filename ALWAYS (this allows the exported XML to be executed remotely)
+    //
+    setSpecificationMethod(ObjectLocationSpecificationMethod.FILENAME);
+    
     // change it in the job entry
     //
     filename = newFilename;

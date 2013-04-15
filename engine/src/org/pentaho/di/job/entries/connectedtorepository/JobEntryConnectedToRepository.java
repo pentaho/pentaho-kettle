@@ -219,17 +219,18 @@ public class JobEntryConnectedToRepository extends JobEntryBase implements Clone
 				logError(BaseMessages.getString(PKG, "JobEntryConnectedToRepository.Error.NoUser"));
 				return result;
 			}
-			String Username=environmentSubstitute(username);
+			String realUsername=environmentSubstitute(username);
 			
-			if(!Username.equals(rep.getSecurityProvider().getUserInfo().getLogin()))
+			if(rep.getSecurityProvider().getUserInfo()!=null && !realUsername.equals(rep.getSecurityProvider().getUserInfo().getLogin()))
 			{
-				logError(BaseMessages.getString(PKG, "JobEntryConnectedToRepository.Error.DiffUser",rep.getUserInfo().getLogin(),Username));
+				logError(BaseMessages.getString(PKG, "JobEntryConnectedToRepository.Error.DiffUser",rep.getUserInfo().getLogin(),realUsername));
 				return result;
 			}
 		}
 		
 		
-		if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryConnectedToRepository.Log.Connected",rep.getName(),rep.getUserInfo().getLogin()));
+		if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryConnectedToRepository.Log.Connected",rep.getName(),
+		    rep.getUserInfo()!=null ? rep.getUserInfo().getLogin() : ""));
 		
 		result.setResult(true);
 		result.setNrErrors(0);
