@@ -755,7 +755,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
   public ObjectId[] getSubConditionIDs(ObjectId id_condition) throws KettleException {
     return connectionDelegate.getIDs("SELECT " + quote(KettleDatabaseRepository.FIELD_CONDITION_ID_CONDITION) + " FROM " + quoteTable(KettleDatabaseRepository.TABLE_R_CONDITION) + " WHERE "
-        + quote(KettleDatabaseRepository.FIELD_CONDITION_ID_CONDITION_PARENT) + " = ?", id_condition);
+        + quote(KettleDatabaseRepository.FIELD_CONDITION_ID_CONDITION_PARENT) + " = ? ORDER BY "+quote(KettleDatabaseRepository.FIELD_CONDITION_ID_CONDITION), id_condition);
   }
 
   public ObjectId[] getTransNoteIDs(ObjectId id_transformation) throws KettleException {
