@@ -162,6 +162,7 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
       scope.put("exit_status", scope, exit_status); //$NON-NLS-1$
       scope.put("nr", scope, nr); //$NON-NLS-1$
       scope.put("is_windows", scope, Boolean.valueOf(Const.isWindows())); //$NON-NLS-1$
+      scope.put("_entry_", scope, this); //$NON-NLS-1$
 
       Object array[] = null;
       if (result.getRows() != null) {
@@ -201,7 +202,6 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
    */
   public Result execute(Result prev_result, int nr) {
     prev_result.setResult(evaluate(prev_result, parentJob, prev_result));
-    parentJob.getVariable("LOG_TEXT");
     return prev_result;
   }
 

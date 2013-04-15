@@ -754,7 +754,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       //
       LoggingBuffer loggingBuffer = CentralLogStore.getAppender();
       StringBuffer logTextBuffer = loggingBuffer.getBuffer(cloneJei.getLogChannel().getLogChannelId(), false);
-      result.setLogText(logTextBuffer.toString());
+      result.setLogText(logTextBuffer.toString()+result.getLogText());
 
       // Save this result as well...
       //
