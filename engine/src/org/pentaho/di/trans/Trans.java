@@ -642,13 +642,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     steps = new ArrayList<StepMetaDataCombi>();
     rowsets = new ArrayList<RowSet>();
 
-    //
-    // Sort the steps & hops for visual pleasure...
-    //
-    if (isMonitored()) {
-      transMeta.sortStepsNatural();
-    }
-
     List<StepMeta> hopsteps = transMeta.getTransHopSteps(false);
 
     if (log.isDetailed()) {
@@ -960,6 +953,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     preparing = false;
     initializing = true;
+    
+    // Do a topology sort...  Over 150 step (copies) things might be slowing down too much. 
+    //
+    if (isMonitored() && steps.size()<150) {
+      doTopologySortOfSteps();
+    }
 
     if (log.isDetailed())
       log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.InitialisingSteps", String.valueOf(steps.size()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -4865,5 +4864,136 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
   public void addDelegationListener(DelegationListener delegationListener) {
     delegationListeners.add(delegationListener);
+  }
+  
+  public synchronized void doTopologySortOfSteps() {
+    // The bubble sort algorithm in contrast to the QuickSort or MergeSort
+    // algorithms
+    // does indeed cover all possibilities.
+    // Sorting larger transformations with hundreds of steps might be too slow
+    // though.
+    // We should consider caching TransMeta.findPrevious() results in that case.
+    //
+    transMeta.clearCaches();
+
+    //
+    // Cocktail sort (bi-directional bubble sort)
+    //
+    // Original sort was taking 3ms for 30 steps
+    // cocktail sort takes about 8ms for the same 30, but it works :)
+    // 
+    int stepsMinSize = 0;
+    int stepsSize = steps.size();
+
+    // Noticed a problem with an immediate shrinking iteration window
+    // trapping rows that need to be sorted.
+    // This threshold buys us some time to get the sorting close before
+    // starting to decrease the window size.
+    //
+    // TODO: this could become much smarter by tracking row movement
+    // and reacting to that each outer iteration verses
+    // using a threshold.
+    //
+    // After this many iterations enable trimming inner iteration
+    // window on no change being detected.
+    //
+    int windowShrinkThreshold = (int) Math.round(stepsSize * 0.75);
+
+    // give ourselves some room to sort big lists. the window threshold should
+    // stop us before reaching this anyway.
+    //
+    int totalIterations = stepsSize * 2;
+
+    boolean isBefore = false;
+    boolean forwardChange = false;
+    boolean backwardChange = false;
+
+    boolean lastForwardChange = true;
+    boolean keepSortingForward = true;
+
+    StepMetaDataCombi one = null;
+    StepMetaDataCombi two = null;
+
+    for (int x = 0; x < totalIterations; x++) {
+
+      // Go forward through the list
+      //
+      if (keepSortingForward) {
+        for (int y = stepsMinSize; y < stepsSize - 1; y++) {
+          one = steps.get(y);
+          two = steps.get(y + 1);
+          isBefore = transMeta.findPrevious(one.stepMeta, two.stepMeta);
+          if (isBefore) {
+            // two was found to be positioned BEFORE one so we need to
+            // switch them...
+            //
+            steps.set(y, two);
+            steps.set(y + 1, one);
+            forwardChange = true;
+
+          }
+        }
+      }
+
+      // Go backward through the list
+      //
+      for (int z = stepsSize - 1; z > stepsMinSize; z--) {
+        one = steps.get(z);
+        two = steps.get(z - 1);
+
+        isBefore = transMeta.findPrevious(one.stepMeta, two.stepMeta);
+        if (!isBefore) {
+          // two was found NOT to be positioned BEFORE one so we need to
+          // switch them...
+          //
+          steps.set(z, two);
+          steps.set(z - 1, one);
+          backwardChange = true;
+        }
+      }
+
+      // Shrink stepsSize(max) if there was no forward change
+      //
+      if (x > windowShrinkThreshold && !forwardChange) {
+
+        // should we keep going? check the window size
+        //
+        stepsSize--;
+        if (stepsSize <= stepsMinSize) {
+          break;
+        }
+      }
+
+      // shrink stepsMinSize(min) if there was no backward change
+      //
+      if (x > windowShrinkThreshold && !backwardChange) {
+
+        // should we keep going? check the window size
+        //
+        stepsMinSize++;
+        if (stepsMinSize >= stepsSize) {
+          break;
+        }
+      }
+
+      // End of both forward and backward traversal.
+      // Time to see if we should keep going.
+      //
+      if (!forwardChange && !backwardChange) {
+        break;
+      }
+
+      //
+      // if we are past the first iteration and there has been no change twice,
+      // quit doing it!
+      //
+      if (keepSortingForward && x > 0 && !lastForwardChange && !forwardChange) {
+        keepSortingForward = false;
+      }
+      lastForwardChange = forwardChange;
+      forwardChange = false;
+      backwardChange = false;
+
+    }// finished sorting
   }
 }
