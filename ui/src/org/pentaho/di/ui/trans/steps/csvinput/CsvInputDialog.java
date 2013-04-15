@@ -36,8 +36,6 @@ import org.apache.commons.vfs.provider.local.LocalFile;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.custom.CCombo;
-import org.eclipse.swt.events.FocusAdapter;
-import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -157,7 +155,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
     ModifyListener lsContent = new ModifyListener() {
       @Override
       public void modifyText(ModifyEvent arg0) {
-        asyncUpdatePreview();
+        // asyncUpdatePreview();
       }
     };
     initializing = true;
@@ -281,12 +279,14 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
       fdFilename.left = new FormAttachment(middle, 0);
       fdFilename.right = new FormAttachment(wbbFilename, -margin);
       wFilename.setLayoutData(fdFilename);
+      /*
       wFilename.addFocusListener(new FocusAdapter() {
         @Override
         public void focusLost(FocusEvent arg0) {
           asyncUpdatePreview();
         }
       });
+      */
       lastControl = wFilename;
     }
 
@@ -393,12 +393,14 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
     fdHeaderPresent.left = new FormAttachment(middle, 0);
     fdHeaderPresent.right = new FormAttachment(100, 0);
     wHeaderPresent.setLayoutData(fdHeaderPresent);
+    /*
     wHeaderPresent.addSelectionListener(new SelectionAdapter() {
       @Override
       public void widgetSelected(SelectionEvent arg0) {
         asyncUpdatePreview();
       }
     });
+    */
     lastControl = wHeaderPresent;
 
     wlAddResult = new Label(shell, SWT.RIGHT);
@@ -671,7 +673,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 
     // Update the preview window.
     //
-    asyncUpdatePreview();
+    // asyncUpdatePreview();
     
     shell.open();
     while (!shell.isDisposed()) {
@@ -922,7 +924,8 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
           etd.setReadOnly();
           etd.open();
           
-          asyncUpdatePreview();
+          
+          //  asyncUpdatePreview();          
         }
       }
     } catch (IOException e) {
@@ -1056,7 +1059,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
     }
   }
 
-  private void asyncUpdatePreview() {
+  protected void asyncUpdatePreview() {
     
     Runnable update = new Runnable() {
       
