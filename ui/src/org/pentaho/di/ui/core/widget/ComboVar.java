@@ -67,6 +67,8 @@ public class ComboVar extends Composite {
 
   private CCombo wCombo;
 
+  private ModifyListener modifyListenerTooltipText;
+
   public ComboVar(VariableSpace space, Composite composite, int flags) {
     this(space, composite, flags, null, null, null);
   }
@@ -108,8 +110,8 @@ public class ComboVar extends Composite {
     controlDecoration.setDescriptionText(BaseMessages.getString(PKG, "TextVar.tooltip.InsertVariable"));
 
     //props.setLook(wText);
-
-    wCombo.addModifyListener(getModifyListenerTooltipText(wCombo));
+    modifyListenerTooltipText = getModifyListenerTooltipText(wCombo);
+    wCombo.addModifyListener(modifyListenerTooltipText);
   
     //  SelectionAdapter lsVar = null;
     // VariableButtonListenerFactory.getSelectionAdapter(this, wText, getCaretPositionInterface,
@@ -183,6 +185,7 @@ public class ComboVar extends Composite {
    */
   public void setText(String text) {
     wCombo.setText(text);
+    modifyListenerTooltipText.modifyText(null);
   }
   
   public CCombo getCComboWidget() {
@@ -224,6 +227,7 @@ public class ComboVar extends Composite {
   public void setToolTipText(String toolTipText) {
     this.toolTipText = toolTipText;
     wCombo.setToolTipText(toolTipText);
+    modifyListenerTooltipText.modifyText(null);
   }
 
   public void setEditable(boolean editable) {
@@ -233,6 +237,7 @@ public class ComboVar extends Composite {
   public void setVariables(VariableSpace vars) {
     variables = vars;
     controlSpaceKeyAdapter.setVariables(variables);
+    modifyListenerTooltipText.modifyText(null);
   }
   
   public void setItems(String[] items) {
@@ -261,5 +266,6 @@ public class ComboVar extends Composite {
   
   public void select(int index) {
 	  wCombo.select(index);
+	  modifyListenerTooltipText.modifyText(null);
   }
 }
