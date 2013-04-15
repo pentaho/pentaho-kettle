@@ -77,7 +77,7 @@ public class Const
   /**
    * Copyright year 
    */
-  public static final String COPYRIGHT_YEAR = "2012";
+  public static final String COPYRIGHT_YEAR = "2013";
 
   /**
    * Release Type
