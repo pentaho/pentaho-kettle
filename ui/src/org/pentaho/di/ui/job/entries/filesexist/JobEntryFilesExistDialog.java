@@ -459,30 +459,29 @@ public class JobEntryFilesExistDialog extends JobEntryDialog implements JobEntry
         shell.dispose();
     }
 
-    /**
-     * Copy information from the meta-data input to the dialog fields.
-     */
-    public void getData()
-    {
-        if (jobEntry.getName() != null)
-            wName.setText(jobEntry.getName());
-        wName.selectAll();
-        
-        if (jobEntry.arguments != null)
-		{
-			for (int i = 0; i < jobEntry.arguments.length; i++)
-			{
-				TableItem ti = wFields.table.getItem(i);
-				if (jobEntry.arguments[i] != null)
-					ti.setText(1, jobEntry.arguments[i]);
-			}
-			wFields.setRowNums();
-			wFields.optWidth(true);
-		}
-        
-        if (jobEntry.getFilename() != null)
-            wFilename.setText(jobEntry.getFilename());
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (jobEntry.getName() != null)
+      wName.setText(jobEntry.getName());
+
+    if (jobEntry.arguments != null) {
+      for (int i = 0; i < jobEntry.arguments.length; i++) {
+        TableItem ti = wFields.table.getItem(i);
+        if (jobEntry.arguments[i] != null)
+          ti.setText(1, jobEntry.arguments[i]);
+      }
+      wFields.setRowNums();
+      wFields.optWidth(true);
     }
+
+    if (jobEntry.getFilename() != null)
+      wFilename.setText(jobEntry.getFilename());
+
+    wName.selectAll();
+    wName.setFocus();
+  }
 
     private void cancel()
     {

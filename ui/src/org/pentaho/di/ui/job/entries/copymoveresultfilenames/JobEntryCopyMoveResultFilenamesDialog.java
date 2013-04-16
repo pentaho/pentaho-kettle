@@ -805,61 +805,61 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 		
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData()
-	{
-		if (jobEntry.getName()!= null) wName.setText( jobEntry.getName() );
-		wName.selectAll();
-		wSpecifyWildcard.setSelection(jobEntry.isSpecifyWildcard());
-		if (jobEntry.getWildcard()!= null) wWildcard.setText( jobEntry.getWildcard() );
-		if (jobEntry.getWildcardExclude()!= null) wWildcardExclude.setText( jobEntry.getWildcardExclude() );
-		
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (jobEntry.getName() != null)
+      wName.setText(jobEntry.getName());
+    wSpecifyWildcard.setSelection(jobEntry.isSpecifyWildcard());
+    if (jobEntry.getWildcard() != null)
+      wWildcard.setText(jobEntry.getWildcard());
+    if (jobEntry.getWildcardExclude() != null)
+      wWildcardExclude.setText(jobEntry.getWildcardExclude());
 
-		if (jobEntry.getDestinationFolder()!= null) wFoldername.setText( jobEntry.getDestinationFolder() );
+    if (jobEntry.getDestinationFolder() != null)
+      wFoldername.setText(jobEntry.getDestinationFolder());
 
-		if (jobEntry.getNrErrorsLessThan()!= null) 
-			wNrErrorsLessThan.setText( jobEntry.getNrErrorsLessThan() );
-		else
-			wNrErrorsLessThan.setText("10");
-		
+    if (jobEntry.getNrErrorsLessThan() != null)
+      wNrErrorsLessThan.setText(jobEntry.getNrErrorsLessThan());
+    else
+      wNrErrorsLessThan.setText("10");
 
-		if(jobEntry.getSuccessCondition()!=null)
-		{
-			if(jobEntry.getSuccessCondition().equals(jobEntry.SUCCESS_IF_AT_LEAST_X_FILES_UN_ZIPPED))
-				wSuccessCondition.select(1);
-			else if(jobEntry.getSuccessCondition().equals(jobEntry.SUCCESS_IF_ERRORS_LESS))
-				wSuccessCondition.select(2);
-			else
-				wSuccessCondition.select(0);	
-		}else wSuccessCondition.select(0);
-		
-		
-		
-		if(jobEntry.getAction()!=null)
-		{
-			if(jobEntry.getAction().equals("move"))
-				wAction.select(1);
-			else if(jobEntry.getAction().equals("delete"))
-				wAction.select(2);	
-			else
-				wAction.select(0);	
-		}else wAction.select(0);
-		
-		if (jobEntry.getDateTimeFormat()!= null) wDateTimeFormat.setText( jobEntry.getDateTimeFormat() );
-		
-		wAddDate.setSelection(jobEntry.isAddDate());
-		wAddTime.setSelection(jobEntry.isAddTime());
-		wSpecifyFormat.setSelection(jobEntry.isSpecifyFormat());
-		wAddDateBeforeExtension.setSelection(jobEntry.isAddDateBeforeExtension());
-		wOverwriteFile.setSelection(jobEntry.isOverwriteFile());
-		wCreateDestinationFolder.setSelection(jobEntry.isCreateDestinationFolder());
-		wRemovedSourceFilename.setSelection(jobEntry.isRemovedSourceFilename());
-		wAddDestinationFilename.setSelection(jobEntry.isAddDestinationFilename());
-		
-		
-	}
+    if (jobEntry.getSuccessCondition() != null) {
+      if (jobEntry.getSuccessCondition().equals(jobEntry.SUCCESS_IF_AT_LEAST_X_FILES_UN_ZIPPED))
+        wSuccessCondition.select(1);
+      else if (jobEntry.getSuccessCondition().equals(jobEntry.SUCCESS_IF_ERRORS_LESS))
+        wSuccessCondition.select(2);
+      else
+        wSuccessCondition.select(0);
+    } else
+      wSuccessCondition.select(0);
+
+    if (jobEntry.getAction() != null) {
+      if (jobEntry.getAction().equals("move"))
+        wAction.select(1);
+      else if (jobEntry.getAction().equals("delete"))
+        wAction.select(2);
+      else
+        wAction.select(0);
+    } else
+      wAction.select(0);
+
+    if (jobEntry.getDateTimeFormat() != null)
+      wDateTimeFormat.setText(jobEntry.getDateTimeFormat());
+
+    wAddDate.setSelection(jobEntry.isAddDate());
+    wAddTime.setSelection(jobEntry.isAddTime());
+    wSpecifyFormat.setSelection(jobEntry.isSpecifyFormat());
+    wAddDateBeforeExtension.setSelection(jobEntry.isAddDateBeforeExtension());
+    wOverwriteFile.setSelection(jobEntry.isOverwriteFile());
+    wCreateDestinationFolder.setSelection(jobEntry.isCreateDestinationFolder());
+    wRemovedSourceFilename.setSelection(jobEntry.isRemovedSourceFilename());
+    wAddDestinationFilename.setSelection(jobEntry.isAddDestinationFilename());
+
+    wName.selectAll();
+    wName.setFocus();
+  }
 
 	private void cancel()
 	{

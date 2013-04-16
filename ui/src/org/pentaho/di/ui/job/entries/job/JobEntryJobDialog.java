@@ -1432,6 +1432,9 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
     wWaitingToFinish.setSelection(jobEntry.isWaitingToFinish());
     wFollowingAbortRemotely.setSelection(jobEntry.isFollowingAbortRemotely());
     wExpandRemote.setSelection(jobEntry.isExpandingRemoteJob());
+    
+    wName.selectAll();
+    wName.setFocus();
   }
 
   private void getByReferenceData(ObjectId referenceObjectId) {

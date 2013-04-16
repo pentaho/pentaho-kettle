@@ -952,43 +952,50 @@ public class JobEntryEvalFilesMetricsDialog extends JobEntryDialog implements Jo
 	
 	
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData()
-	{
-		if (jobEntry.getName()!= null) wName.setText( jobEntry.getName() );
-		wName.selectAll();
-		
-		if (jobEntry.source_filefolder != null)
-		{
-			for (int i = 0; i < jobEntry.source_filefolder.length; i++)
-			{
-				TableItem ti = wFields.table.getItem(i);
-				if (jobEntry.source_filefolder[i] != null)
-					ti.setText(1, jobEntry.source_filefolder[i]);
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (jobEntry.getName() != null)
+      wName.setText(jobEntry.getName());
 
-				if (jobEntry.wildcard[i] != null)
-					ti.setText(2, jobEntry.wildcard[i]);
-				
-				if (jobEntry.includeSubFolders[i] != null)
-					ti.setText(3, JobEntryEvalFilesMetrics.getIncludeSubFoldersDesc(jobEntry.includeSubFolders[i]));
-			}
-			wFields.setRowNums();
-			wFields.optWidth(true);
-		}
-		if (jobEntry.getResultFilenamesWildcard()!= null) wResultFilenamesWildcard.setText( jobEntry.getResultFilenamesWildcard() );
-		if (jobEntry.getResultFieldFile()!= null) wResultFieldFile.setText( jobEntry.getResultFieldFile());
-		if (jobEntry.getResultFieldWildcard()!= null) wResultFieldWildcard.setText( jobEntry.getResultFieldWildcard());
-		if (jobEntry.getResultFieldIncludeSubfolders()!= null) wResultFieldIncludeSubFolders.setText( jobEntry.getResultFieldIncludeSubfolders());
-		wSourceFiles.setText(JobEntryEvalFilesMetrics.getSourceFilesDesc(jobEntry.sourceFiles));
-		wEvaluationType.setText(JobEntryEvalFilesMetrics.getEvaluationTypeDesc(jobEntry.evaluationType));
-		wScale.setText(JobEntryEvalFilesMetrics.getScaleDesc(jobEntry.scale));
-		wSuccessNumberCondition.setText(JobEntrySimpleEval.getSuccessNumberConditionDesc(jobEntry.successnumbercondition));
-		if (jobEntry.getCompareValue()!= null) wCompareValue.setText( jobEntry.getCompareValue() );
-		if (jobEntry.getMinValue()!= null) wMinValue.setText( jobEntry.getMinValue() );
-		if (jobEntry.getMaxValue()!= null) wMaxValue.setText( jobEntry.getMaxValue() );
-	}
+    if (jobEntry.source_filefolder != null) {
+      for (int i = 0; i < jobEntry.source_filefolder.length; i++) {
+        TableItem ti = wFields.table.getItem(i);
+        if (jobEntry.source_filefolder[i] != null)
+          ti.setText(1, jobEntry.source_filefolder[i]);
+
+        if (jobEntry.wildcard[i] != null)
+          ti.setText(2, jobEntry.wildcard[i]);
+
+        if (jobEntry.includeSubFolders[i] != null)
+          ti.setText(3, JobEntryEvalFilesMetrics.getIncludeSubFoldersDesc(jobEntry.includeSubFolders[i]));
+      }
+      wFields.setRowNums();
+      wFields.optWidth(true);
+    }
+    if (jobEntry.getResultFilenamesWildcard() != null)
+      wResultFilenamesWildcard.setText(jobEntry.getResultFilenamesWildcard());
+    if (jobEntry.getResultFieldFile() != null)
+      wResultFieldFile.setText(jobEntry.getResultFieldFile());
+    if (jobEntry.getResultFieldWildcard() != null)
+      wResultFieldWildcard.setText(jobEntry.getResultFieldWildcard());
+    if (jobEntry.getResultFieldIncludeSubfolders() != null)
+      wResultFieldIncludeSubFolders.setText(jobEntry.getResultFieldIncludeSubfolders());
+    wSourceFiles.setText(JobEntryEvalFilesMetrics.getSourceFilesDesc(jobEntry.sourceFiles));
+    wEvaluationType.setText(JobEntryEvalFilesMetrics.getEvaluationTypeDesc(jobEntry.evaluationType));
+    wScale.setText(JobEntryEvalFilesMetrics.getScaleDesc(jobEntry.scale));
+    wSuccessNumberCondition.setText(JobEntrySimpleEval.getSuccessNumberConditionDesc(jobEntry.successnumbercondition));
+    if (jobEntry.getCompareValue() != null)
+      wCompareValue.setText(jobEntry.getCompareValue());
+    if (jobEntry.getMinValue() != null)
+      wMinValue.setText(jobEntry.getMinValue());
+    if (jobEntry.getMaxValue() != null)
+      wMaxValue.setText(jobEntry.getMaxValue());
+
+    wName.selectAll();
+    wName.setFocus();
+  }
 
 	private void cancel()
 	{

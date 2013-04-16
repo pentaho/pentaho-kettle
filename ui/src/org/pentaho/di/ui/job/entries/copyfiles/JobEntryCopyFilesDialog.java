@@ -964,42 +964,39 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
 		wCopyEmptyFolders.setEnabled(wIncludeSubfolders.getSelection());
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData()
-	{
-		if (jobEntry.getName()    != null) wName.setText( jobEntry.getName() );
-		wName.selectAll();
-		wCopyEmptyFolders.setSelection(jobEntry.copy_empty_folders);
-		
-		if (jobEntry.source_filefolder != null)
-		{
-			for (int i = 0; i < jobEntry.source_filefolder.length; i++)
-			{
-				TableItem ti = wFields.table.getItem(i);
-				if (jobEntry.source_filefolder[i] != null)
-					ti.setText(1, jobEntry.source_filefolder[i]);
-				if (jobEntry.destination_filefolder[i] != null)
-					ti.setText(2, jobEntry.destination_filefolder[i]);
-				if (jobEntry.wildcard[i] != null)
-					ti.setText(3, jobEntry.wildcard[i]);
-			}
-			wFields.setRowNums();
-			wFields.optWidth(true);
-		}
-		wPrevious.setSelection(jobEntry.arg_from_previous);
-		wOverwriteFiles.setSelection(jobEntry.overwrite_files);
-		wIncludeSubfolders.setSelection(jobEntry.include_subfolders);
-		wRemoveSourceFiles.setSelection(jobEntry.remove_source_files);
-		wDestinationIsAFile.setSelection(jobEntry.destination_is_a_file);
-		wCreateDestinationFolder.setSelection(jobEntry.create_destination_folder);
-			
-		
-		wAddFileToResult.setSelection(jobEntry.add_result_filesname);
-		
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (jobEntry.getName() != null)
+      wName.setText(jobEntry.getName());
+    wCopyEmptyFolders.setSelection(jobEntry.copy_empty_folders);
 
-	}
+    if (jobEntry.source_filefolder != null) {
+      for (int i = 0; i < jobEntry.source_filefolder.length; i++) {
+        TableItem ti = wFields.table.getItem(i);
+        if (jobEntry.source_filefolder[i] != null)
+          ti.setText(1, jobEntry.source_filefolder[i]);
+        if (jobEntry.destination_filefolder[i] != null)
+          ti.setText(2, jobEntry.destination_filefolder[i]);
+        if (jobEntry.wildcard[i] != null)
+          ti.setText(3, jobEntry.wildcard[i]);
+      }
+      wFields.setRowNums();
+      wFields.optWidth(true);
+    }
+    wPrevious.setSelection(jobEntry.arg_from_previous);
+    wOverwriteFiles.setSelection(jobEntry.overwrite_files);
+    wIncludeSubfolders.setSelection(jobEntry.include_subfolders);
+    wRemoveSourceFiles.setSelection(jobEntry.remove_source_files);
+    wDestinationIsAFile.setSelection(jobEntry.destination_is_a_file);
+    wCreateDestinationFolder.setSelection(jobEntry.create_destination_folder);
+
+    wAddFileToResult.setSelection(jobEntry.add_result_filesname);
+
+    wName.selectAll();
+    wName.setFocus();
+  }
 
 	private void cancel()
 	{

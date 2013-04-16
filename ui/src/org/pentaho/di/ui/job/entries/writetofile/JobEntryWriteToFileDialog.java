@@ -444,19 +444,20 @@ public class JobEntryWriteToFileDialog extends JobEntryDialog implements JobEntr
 		shell.dispose();
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData()
-	{
-		if (jobEntry.getName()    != null) wName.setText( jobEntry.getName() );
-		wName.selectAll();
-		if (jobEntry.getFilename()!= null) wFilename.setText( jobEntry.getFilename() );
-		wCreateParentFolder.setSelection(jobEntry.isCreateParentFolder());
-		wAppendFile.setSelection(jobEntry.isAppendFile());
-		if (jobEntry.getContent()!= null) wContent.setText( jobEntry.getContent() );
-		if (jobEntry.getEncoding()!= null) wEncoding.setText( jobEntry.getEncoding() );
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    wName.setText(Const.nullToEmpty(jobEntry.getName()));
+    wFilename.setText(Const.nullToEmpty(jobEntry.getFilename()));
+    wCreateParentFolder.setSelection(jobEntry.isCreateParentFolder());
+    wAppendFile.setSelection(jobEntry.isAppendFile());
+    wContent.setText(Const.nullToEmpty(jobEntry.getContent()));
+    wEncoding.setText(Const.nullToEmpty(jobEntry.getEncoding()));
+
+    wName.selectAll();
+    wName.setFocus();
+  }
 
 	private void cancel()
 	{

@@ -1119,34 +1119,35 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
     /**
      * Copy information from the meta-data input to the dialog fields.
      */
-    public void getData()
-    {
-        if (jobEntry.getName() != null)
-            wName.setText(jobEntry.getName());
-        wName.selectAll();
-
-        wServerName.setText(Const.NVL(jobEntry.getServerName(), ""));
-        wServerPort.setText(jobEntry.getServerPort());
-        wUserName.setText(Const.NVL(jobEntry.getUserName(), ""));
-        wPassword.setText(Const.NVL(jobEntry.getPassword(), ""));
-        wRemoteDirectory.setText(Const.NVL(jobEntry.getRemoteDirectory(), ""));
-        wLocalDirectory.setText(Const.NVL(jobEntry.getLocalDirectory(), ""));
-        wWildcard.setText(Const.NVL(jobEntry.getWildcard(), ""));
-        wRemove.setSelection(jobEntry.getRemove());
-        wBinaryMode.setSelection(jobEntry.isBinaryMode());
-        wTimeout.setText("" + jobEntry.getTimeout());
-        wOnlyNew.setSelection(jobEntry.isOnlyPuttingNewFiles());
-        wActive.setSelection(jobEntry.isActiveConnection());
-        wControlEncoding.setText(jobEntry.getControlEncoding());
-        
-        wProxyHost.setText(Const.NVL(jobEntry.getProxyHost(), ""));       
-        wProxyPort.setText(Const.NVL(jobEntry.getProxyPort(), ""));
-        wProxyUsername.setText(Const.NVL(jobEntry.getProxyUsername(), ""));
-        wProxyPassword.setText(Const.NVL(jobEntry.getProxyPassword(), ""));
-        wSocksProxyHost.setText(Const.NVL(jobEntry.getSocksProxyHost(), ""));       
-        wSocksProxyPort.setText(Const.NVL(jobEntry.getSocksProxyPort(), "1080"));
-        wSocksProxyUsername.setText(Const.NVL(jobEntry.getSocksProxyUsername(), ""));
-        wSocksProxyPassword.setText(Const.NVL(jobEntry.getSocksProxyPassword(), ""));
+    public void getData() {
+      if (jobEntry.getName() != null)
+        wName.setText(jobEntry.getName());
+  
+      wServerName.setText(Const.NVL(jobEntry.getServerName(), ""));
+      wServerPort.setText(jobEntry.getServerPort());
+      wUserName.setText(Const.NVL(jobEntry.getUserName(), ""));
+      wPassword.setText(Const.NVL(jobEntry.getPassword(), ""));
+      wRemoteDirectory.setText(Const.NVL(jobEntry.getRemoteDirectory(), ""));
+      wLocalDirectory.setText(Const.NVL(jobEntry.getLocalDirectory(), ""));
+      wWildcard.setText(Const.NVL(jobEntry.getWildcard(), ""));
+      wRemove.setSelection(jobEntry.getRemove());
+      wBinaryMode.setSelection(jobEntry.isBinaryMode());
+      wTimeout.setText("" + jobEntry.getTimeout());
+      wOnlyNew.setSelection(jobEntry.isOnlyPuttingNewFiles());
+      wActive.setSelection(jobEntry.isActiveConnection());
+      wControlEncoding.setText(jobEntry.getControlEncoding());
+  
+      wProxyHost.setText(Const.NVL(jobEntry.getProxyHost(), ""));
+      wProxyPort.setText(Const.NVL(jobEntry.getProxyPort(), ""));
+      wProxyUsername.setText(Const.NVL(jobEntry.getProxyUsername(), ""));
+      wProxyPassword.setText(Const.NVL(jobEntry.getProxyPassword(), ""));
+      wSocksProxyHost.setText(Const.NVL(jobEntry.getSocksProxyHost(), ""));
+      wSocksProxyPort.setText(Const.NVL(jobEntry.getSocksProxyPort(), "1080"));
+      wSocksProxyUsername.setText(Const.NVL(jobEntry.getSocksProxyUsername(), ""));
+      wSocksProxyPassword.setText(Const.NVL(jobEntry.getSocksProxyPassword(), ""));
+  
+      wName.selectAll();
+      wName.setFocus();
     }
 
     private void cancel()

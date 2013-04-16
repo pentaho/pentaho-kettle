@@ -568,34 +568,30 @@ public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements 
 	}
 	
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData()
-	{
-		if (jobEntry.getName()    != null) wName.setText( jobEntry.getName() );
-		wName.selectAll();
-		
-		if (jobEntry.arguments != null)
-		{
-			for (int i = 0; i < jobEntry.arguments.length; i++)
-			{
-				TableItem ti = wFields.table.getItem(i);
-				if (jobEntry.arguments[i] != null)
-					ti.setText(1, jobEntry.arguments[i]);
-					if (jobEntry.filemasks[i] != null)
-						ti.setText(2, jobEntry.filemasks[i]);
-			}
-			wFields.setRowNums();
-			wFields.optWidth(true);
-		}
-		wPrevious.setSelection(jobEntry.argFromPrevious);		
-		wIncludeSubfolders.setSelection(jobEntry.includeSubfolders);
-		wDeleteAllBefore.setSelection(jobEntry.deleteallbefore);	
-		
-		
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (jobEntry.getName() != null)
+      wName.setText(jobEntry.getName());
+    if (jobEntry.arguments != null) {
+      for (int i = 0; i < jobEntry.arguments.length; i++) {
+        TableItem ti = wFields.table.getItem(i);
+        if (jobEntry.arguments[i] != null)
+          ti.setText(1, jobEntry.arguments[i]);
+        if (jobEntry.filemasks[i] != null)
+          ti.setText(2, jobEntry.filemasks[i]);
+      }
+      wFields.setRowNums();
+      wFields.optWidth(true);
+    }
+    wPrevious.setSelection(jobEntry.argFromPrevious);
+    wIncludeSubfolders.setSelection(jobEntry.includeSubfolders);
+    wDeleteAllBefore.setSelection(jobEntry.deleteallbefore);
 
-	}
+    wName.selectAll();
+    wName.setFocus();
+  }
 
 	private void cancel()
 	{

@@ -335,18 +335,18 @@ public class JobEntryTalendJobExecDialog extends JobEntryDialog implements JobEn
 		shell.dispose();
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData()
-	{
-	  wFilename.setText(Const.NVL(jobEntry.getFilename(), ""));
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    wFilename.setText(Const.NVL(jobEntry.getFilename(), ""));
     wClassName.setText(Const.NVL(jobEntry.getClassName(), ""));
-	  
-		wName.setText(Const.NVL(jobEntry.getName(), ""));
-		wName.selectAll();
-		
-	}
+
+    wName.setText(Const.NVL(jobEntry.getName(), ""));
+
+    wName.selectAll();
+    wName.setFocus();
+  }
 
 	private void cancel()
 	{

@@ -371,22 +371,21 @@ public class JobEntryWaitForFileDialog extends JobEntryDialog implements JobEntr
 		shell.dispose();
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData()
-	{
-		if (jobEntry.getName() != null) 
-			wName.setText( jobEntry.getName() );
-		wName.selectAll();
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    wName.setText(Const.nullToEmpty(jobEntry.getName()));
+    wFilename.setText(Const.NVL(jobEntry.getFilename(), ""));
+    wMaximumTimeout.setText(Const.NVL(jobEntry.getMaximumTimeout(), ""));
+    wCheckCycleTime.setText(Const.NVL(jobEntry.getCheckCycleTime(), ""));
+    wSuccesOnTimeout.setSelection(jobEntry.isSuccessOnTimeout());
+    wFileSizeCheck.setSelection(jobEntry.isFileSizeCheck());
+    wAddFilenameResult.setSelection(jobEntry.isAddFilenameToResult());
 
-		wFilename.setText(Const.NVL(jobEntry.getFilename(), ""));
-		wMaximumTimeout.setText(Const.NVL(jobEntry.getMaximumTimeout(), ""));
-		wCheckCycleTime.setText(Const.NVL(jobEntry.getCheckCycleTime(), ""));
-		wSuccesOnTimeout.setSelection(jobEntry.isSuccessOnTimeout());		
-		wFileSizeCheck.setSelection(jobEntry.isFileSizeCheck());
-		wAddFilenameResult.setSelection(jobEntry.isAddFilenameToResult());
-	}
+    wName.selectAll();
+    wName.setFocus();
+  }
 
 	private void cancel()
 	{

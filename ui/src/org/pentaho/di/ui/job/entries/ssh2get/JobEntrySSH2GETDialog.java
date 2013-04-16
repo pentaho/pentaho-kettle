@@ -1320,57 +1320,63 @@ public class JobEntrySSH2GETDialog extends JobEntryDialog implements JobEntryDia
     	wCreateDestinationFolder.setEnabled(wAfterFTPPut.getSelectionIndex()==2);
     	
     }
+  
     /**
      * Copy information from the meta-data input to the dialog fields.
      */
-    public void getData()
-    {
-        if (jobEntry.getName() != null)
-            wName.setText(jobEntry.getName());
-        wName.getTextWidget().selectAll();
-
-        wServerName.setText(Const.NVL(jobEntry.getServerName(), ""));
-        wUserName.setText(Const.NVL(jobEntry.getUserName(), ""));
-        wPassword.setText(Const.NVL(jobEntry.getPassword(), ""));
-        if(jobEntry.getServerPort()!=null) wServerPort.setText(jobEntry.getServerPort());
-        wFtpDirectory.setText(Const.NVL(jobEntry.getFtpDirectory(), ""));
-        wLocalDirectory.setText(Const.NVL(jobEntry.getlocalDirectory(), ""));
-        wWildcard.setText(Const.NVL(jobEntry.getWildcard(), ""));
-        wOnlyNew.setSelection(jobEntry.isOnlyGettingNewFiles());
-        
-        wuseHTTPProxy.setSelection(jobEntry.isUseHTTPProxy());
-        if(jobEntry.getHTTPProxyHost()!=null) wHTTPProxyHost.setText(jobEntry.getHTTPProxyHost());
-        if(jobEntry.getHTTPProxyPort()!=null) wHTTPProxyPort.setText(jobEntry.getHTTPProxyPort());
-        if(jobEntry.getHTTPProxyUsername()!=null) wHTTPProxyUsername.setText(jobEntry.getHTTPProxyUsername());
-        if(jobEntry.getHTTPProxyPassword()!=null) wHTTPProxyPassword.setText(jobEntry.getHTTPProxyPassword());
-        
-        wusePublicKey.setSelection(jobEntry.isUsePublicKey());
-        if(jobEntry.getKeyFilename()!=null) wKeyFilename.setText(jobEntry.getKeyFilename());
-        if(jobEntry.getKeyFilePass()!=null) wkeyfilePass.setText(jobEntry.getKeyFilePass());
-        
-        wuseBasicAuthentication.setSelection(jobEntry.isUseBasicAuthentication());
-        if(jobEntry.getAfterFTPPut()!=null)
-        {
-        	if(jobEntry.getAfterFTPPut().equals("delete_file"))
-        		wAfterFTPPut.select(1);
-        	else if(jobEntry.getAfterFTPPut().equals("move_file"))
-        		wAfterFTPPut.select(2);
-        	else
-        		wAfterFTPPut.select(0);
-        }else wAfterFTPPut.select(0);
-        
-        if(jobEntry.getDestinationFolder()!=null) wDestinationFolder.setText(jobEntry.getDestinationFolder());
-        wCreateDestinationFolder.setSelection(jobEntry.isCreateDestinationFolder());
-        wcacheHostKey.setSelection(jobEntry.isCacheHostKey());
-        if(jobEntry.getTimeout()>0)
-        	wTimeout.setText(""+jobEntry.getTimeout());
+    public void getData() {
+      wName.setText(Const.nullToEmpty(jobEntry.getName()));
+      wServerName.setText(Const.NVL(jobEntry.getServerName(), ""));
+      wUserName.setText(Const.NVL(jobEntry.getUserName(), ""));
+      wPassword.setText(Const.NVL(jobEntry.getPassword(), ""));
+      if (jobEntry.getServerPort() != null)
+        wServerPort.setText(jobEntry.getServerPort());
+      wFtpDirectory.setText(Const.NVL(jobEntry.getFtpDirectory(), ""));
+      wLocalDirectory.setText(Const.NVL(jobEntry.getlocalDirectory(), ""));
+      wWildcard.setText(Const.NVL(jobEntry.getWildcard(), ""));
+      wOnlyNew.setSelection(jobEntry.isOnlyGettingNewFiles());
+  
+      wuseHTTPProxy.setSelection(jobEntry.isUseHTTPProxy());
+      if (jobEntry.getHTTPProxyHost() != null)
+        wHTTPProxyHost.setText(jobEntry.getHTTPProxyHost());
+      if (jobEntry.getHTTPProxyPort() != null)
+        wHTTPProxyPort.setText(jobEntry.getHTTPProxyPort());
+      if (jobEntry.getHTTPProxyUsername() != null)
+        wHTTPProxyUsername.setText(jobEntry.getHTTPProxyUsername());
+      if (jobEntry.getHTTPProxyPassword() != null)
+        wHTTPProxyPassword.setText(jobEntry.getHTTPProxyPassword());
+  
+      wusePublicKey.setSelection(jobEntry.isUsePublicKey());
+      if (jobEntry.getKeyFilename() != null)
+        wKeyFilename.setText(jobEntry.getKeyFilename());
+      if (jobEntry.getKeyFilePass() != null)
+        wkeyfilePass.setText(jobEntry.getKeyFilePass());
+  
+      wuseBasicAuthentication.setSelection(jobEntry.isUseBasicAuthentication());
+      if (jobEntry.getAfterFTPPut() != null) {
+        if (jobEntry.getAfterFTPPut().equals("delete_file"))
+          wAfterFTPPut.select(1);
+        else if (jobEntry.getAfterFTPPut().equals("move_file"))
+          wAfterFTPPut.select(2);
         else
-        	wTimeout.setText("0");
-        
-        wcreateTargetFolder.setSelection(jobEntry.isCreateTargetFolder());
-        wincludeSubFolders.setSelection(jobEntry.isIncludeSubFolders());
-
-        
+          wAfterFTPPut.select(0);
+      } else
+        wAfterFTPPut.select(0);
+  
+      if (jobEntry.getDestinationFolder() != null)
+        wDestinationFolder.setText(jobEntry.getDestinationFolder());
+      wCreateDestinationFolder.setSelection(jobEntry.isCreateDestinationFolder());
+      wcacheHostKey.setSelection(jobEntry.isCacheHostKey());
+      if (jobEntry.getTimeout() > 0)
+        wTimeout.setText("" + jobEntry.getTimeout());
+      else
+        wTimeout.setText("0");
+  
+      wcreateTargetFolder.setSelection(jobEntry.isCreateTargetFolder());
+      wincludeSubFolders.setSelection(jobEntry.isIncludeSubFolders());
+  
+      wName.selectAll();
+      wName.setFocus();
     }
 
     private void cancel()

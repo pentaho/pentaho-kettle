@@ -362,19 +362,21 @@ public class JobEntryMailValidatorDialog extends JobEntryDialog implements JobEn
 		wleMailSender.setEnabled(wSMTPCheck.getSelection());
 		weMailSender.setEnabled(wSMTPCheck.getSelection());
 	}
-    /**
-     * Copy information from the meta-data input to the dialog fields.
-     */
-    public void getData()
-    {
-        if (jobEntry.getName() != null) wName.setText(jobEntry.getName());
-        wMailAddress.setText(Const.NVL(jobEntry.getEmailAddress(),""));
-        wTimeOut.setText(Const.NVL(jobEntry.getTimeOut(), "0"));
-		wSMTPCheck.setSelection(jobEntry.isSMTPCheck());
-		wDefaultSMTP.setText(Const.NVL(jobEntry.getDefaultSMTP(),""));
-		weMailSender.setText(Const.NVL(jobEntry.geteMailSender(),""));
-        wName.selectAll();
-    }
+
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    wName.setText(Const.NVL(jobEntry.getName(), ""));
+    wMailAddress.setText(Const.NVL(jobEntry.getEmailAddress(), ""));
+    wTimeOut.setText(Const.NVL(jobEntry.getTimeOut(), "0"));
+    wSMTPCheck.setSelection(jobEntry.isSMTPCheck());
+    wDefaultSMTP.setText(Const.NVL(jobEntry.getDefaultSMTP(), ""));
+    weMailSender.setText(Const.NVL(jobEntry.geteMailSender(), ""));
+    
+    wName.selectAll();
+    wName.setFocus();
+  }
 
     private void cancel()
     {

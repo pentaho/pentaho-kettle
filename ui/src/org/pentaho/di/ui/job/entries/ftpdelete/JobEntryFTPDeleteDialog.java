@@ -1542,59 +1542,50 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
     /**
      * Copy information from the meta-data input to the dialog fields.
      */
-    public void getData()
-    {
-        if (jobEntry.getName() != null)
-            wName.setText(jobEntry.getName());
-        wName.getTextWidget().selectAll();
-        
-        if (jobEntry.getProtocol() != null)
-            wProtocol.setText(jobEntry.getProtocol());
+    public void getData() {
+      wName.setText(Const.nullToEmpty(jobEntry.getName()));
+  
+      wProtocol.setText(Const.NVL(jobEntry.getProtocol(), "FTP"));
+      wPort.setText(Const.NVL(jobEntry.getPort(), ""));
+      wServerName.setText(Const.NVL(jobEntry.getServerName(), ""));
+      wUserName.setText(Const.NVL(jobEntry.getUserName(), ""));
+      wPassword.setText(Const.NVL(jobEntry.getPassword(), ""));
+      wFtpDirectory.setText(Const.NVL(jobEntry.getFtpDirectory(), ""));
+      wWildcard.setText(Const.NVL(jobEntry.getWildcard(), ""));
+      wTimeout.setText("" + jobEntry.getTimeout());
+      wActive.setSelection(jobEntry.isActiveConnection());
+  
+      wuseProxy.setSelection(jobEntry.isUseProxy());
+      wProxyHost.setText(Const.NVL(jobEntry.getProxyHost(), ""));
+      wProxyPort.setText(Const.NVL(jobEntry.getProxyPort(), ""));
+      wProxyUsername.setText(Const.NVL(jobEntry.getProxyUsername(), ""));
+      wProxyPassword.setText(Const.NVL(jobEntry.getProxyPassword(), ""));
+      wSocksProxyHost.setText(Const.NVL(jobEntry.getSocksProxyHost(), ""));
+      wSocksProxyPort.setText(Const.NVL(jobEntry.getSocksProxyPort(), ""));
+      wSocksProxyUsername.setText(Const.NVL(jobEntry.getSocksProxyUsername(), ""));
+      wSocksProxyPassword.setText(Const.NVL(jobEntry.getSocksProxyPassword(), ""));
+  
+      wNrErrorsLessThan.setText(Const.NVL(jobEntry.getLimitSuccess(), "10"));
+  
+      if (jobEntry.getSuccessCondition() != null) {
+        if (jobEntry.getSuccessCondition().equals(jobEntry.SUCCESS_IF_AT_LEAST_X_FILES_DOWNLOADED))
+          wSuccessCondition.select(1);
+        else if (jobEntry.getSuccessCondition().equals(jobEntry.SUCCESS_IF_ERRORS_LESS))
+          wSuccessCondition.select(2);
         else
-        	wProtocol.setText("FTP");
-
-        wPort.setText(Const.NVL(jobEntry.getPort(), ""));
-        wServerName.setText(Const.NVL(jobEntry.getServerName(), ""));
-        wUserName.setText(Const.NVL(jobEntry.getUserName(), ""));
-        wPassword.setText(Const.NVL(jobEntry.getPassword(), ""));
-        wFtpDirectory.setText(Const.NVL(jobEntry.getFtpDirectory(), ""));
-        wWildcard.setText(Const.NVL(jobEntry.getWildcard(), ""));
-        wTimeout.setText("" + jobEntry.getTimeout());
-        wActive.setSelection(jobEntry.isActiveConnection());
- 
-        wuseProxy.setSelection(jobEntry.isUseProxy());
-        wProxyHost.setText(Const.NVL(jobEntry.getProxyHost(), ""));       
-        wProxyPort.setText(Const.NVL(jobEntry.getProxyPort(), ""));
-        wProxyUsername.setText(Const.NVL(jobEntry.getProxyUsername(), ""));
-        wProxyPassword.setText(Const.NVL(jobEntry.getProxyPassword(), ""));
-        wSocksProxyHost.setText(Const.NVL(jobEntry.getSocksProxyHost(), ""));       
-        wSocksProxyPort.setText(Const.NVL(jobEntry.getSocksProxyPort(), ""));
-        wSocksProxyUsername.setText(Const.NVL(jobEntry.getSocksProxyUsername(), ""));
-        wSocksProxyPassword.setText(Const.NVL(jobEntry.getSocksProxyPassword(), ""));
-        
-    	if (jobEntry.getLimitSuccess()!= null) 
-			wNrErrorsLessThan.setText( jobEntry.getLimitSuccess());
-		else
-			wNrErrorsLessThan.setText("10");
-		
-		
-		if(jobEntry.getSuccessCondition()!=null)
-		{
-			if(jobEntry.getSuccessCondition().equals(jobEntry.SUCCESS_IF_AT_LEAST_X_FILES_DOWNLOADED))
-				wSuccessCondition.select(1);
-			else if(jobEntry.getSuccessCondition().equals(jobEntry.SUCCESS_IF_ERRORS_LESS))
-				wSuccessCondition.select(2);
-			else
-				wSuccessCondition.select(0);	
-		}else wSuccessCondition.select(0);
-		
-        wusePublicKey.setSelection(jobEntry.isUsePublicKey());
-        if(jobEntry.getKeyFilename()!=null) wKeyFilename.setText(jobEntry.getKeyFilename());
-        if(jobEntry.getKeyFilePass()!=null) wkeyfilePass.setText(jobEntry.getKeyFilePass());
-        
-        wgetPrevious.setSelection(jobEntry.isCopyPrevious());
-		wConnectionType.setText(FTPSConnection.getConnectionTypeDesc(jobEntry.getFTPSConnectionType()));
-		
+          wSuccessCondition.select(0);
+      } else
+        wSuccessCondition.select(0);
+  
+      wusePublicKey.setSelection(jobEntry.isUsePublicKey());
+      wKeyFilename.setText(Const.nullToEmpty(jobEntry.getKeyFilename()));
+      wkeyfilePass.setText(Const.nullToEmpty(jobEntry.getKeyFilePass()));
+  
+      wgetPrevious.setSelection(jobEntry.isCopyPrevious());
+      wConnectionType.setText(FTPSConnection.getConnectionTypeDesc(jobEntry.getFTPSConnectionType()));
+  
+      wName.selectAll();
+      wName.setFocus();
     }
 
     private void cancel()

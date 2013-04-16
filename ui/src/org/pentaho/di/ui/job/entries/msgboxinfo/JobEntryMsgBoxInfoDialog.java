@@ -268,16 +268,13 @@ public class JobEntryMsgBoxInfoDialog extends JobEntryDialog implements JobEntry
     /**
      * Copy information from the meta-data input to the dialog fields.
      */
-    public void getData()
-    {
-        if (jobEntry.getName() != null)
-            wName.setText(jobEntry.getName());
-        wName.selectAll();
-        if (jobEntry.getBodyMessage() != null)
-            wBodyMessage.setText(jobEntry.getBodyMessage());
-
-		if (jobEntry.getTitleMessage() != null)
-			wTitleMessage.setText(jobEntry.getTitleMessage());
+    public void getData() {
+      wName.setText(Const.NVL(jobEntry.getName(), ""));
+      wBodyMessage.setText(Const.NVL(jobEntry.getBodyMessage(), ""));
+      wTitleMessage.setText(Const.NVL(jobEntry.getTitleMessage(), ""));
+      
+      wName.selectAll();
+      wName.setFocus();
     }
 
     private void cancel()

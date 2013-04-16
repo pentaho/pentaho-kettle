@@ -288,15 +288,16 @@ public class JobEntryTelnetDialog extends JobEntryDialog implements JobEntryDial
     /**
      * Copy information from the meta-data input to the dialog fields.
      */
-    public void getData()
-    {
-        if (jobEntry.getName() != null)  wName.setText(jobEntry.getName());
-        wName.selectAll();
-        if (jobEntry.getHostname() != null) wHostname.setText(jobEntry.getHostname());
-
-		wPort.setText(Const.NVL(jobEntry.getPort(), String.valueOf(JobEntryTelnet.DEFAULT_PORT)));
-		wTimeOut.setText(Const.NVL(jobEntry.getTimeOut(), String.valueOf(JobEntryTelnet.DEFAULT_TIME_OUT)));
-
+    public void getData() {
+      wName.setText(Const.nullToEmpty(jobEntry.getName()));
+      if (jobEntry.getHostname() != null)
+        wHostname.setText(jobEntry.getHostname());
+  
+      wPort.setText(Const.NVL(jobEntry.getPort(), String.valueOf(JobEntryTelnet.DEFAULT_PORT)));
+      wTimeOut.setText(Const.NVL(jobEntry.getTimeOut(), String.valueOf(JobEntryTelnet.DEFAULT_TIME_OUT)));
+  
+      wName.selectAll();
+      wName.setFocus();
     }
 
     private void cancel()

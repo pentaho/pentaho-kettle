@@ -864,48 +864,48 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
     /**
      * Copy information from the meta-data input to the dialog fields.
      */
-    public void getData()
-    {
-        if (jobEntry.getName() != null)
-            wName.setText(jobEntry.getName());
-        wName.selectAll();
-
-        wURL.setText(Const.NVL(jobEntry.getUrl(), ""));
-        wRunEveryRow.setSelection(jobEntry.isRunForEveryRow());
-        wFieldURL.setText(Const.NVL(jobEntry.getUrlFieldname(), ""));
-        wTargetFile.setText(Const.NVL(jobEntry.getTargetFilename(), ""));
-        wAppend.setSelection(jobEntry.isFileAppended());
-        wDateTimeAdded.setSelection(jobEntry.isDateTimeAdded());
-        wTargetExt.setText(Const.NVL(jobEntry.getTargetFilenameExtention(), ""));
-
-        wUploadFile.setText(Const.NVL(jobEntry.getUploadFilename(), ""));
-
-        jobEntry.setDateTimeAdded(wDateTimeAdded.getSelection());
-        jobEntry.setTargetFilenameExtention(wTargetExt.getText());
-
-        wUserName.setText(Const.NVL(jobEntry.getUsername(), ""));
-        wPassword.setText(Const.NVL(jobEntry.getPassword(), ""));
-
-        wProxyServer.setText(Const.NVL(jobEntry.getProxyHostname(), ""));
-        wProxyPort.setText(Const.NVL(jobEntry.getProxyPort(), ""));
-        wNonProxyHosts.setText(Const.NVL(jobEntry.getNonProxyHosts(), ""));
-        
-        String[] headerNames = jobEntry.getHeaderName();
-        String[] headerValues = jobEntry.getHeaderValue();
-        if (headerNames != null)
-        {
-           for (int i = 0; i < headerNames.length; i++)
-           {
-              TableItem ti = wHeaders.table.getItem(i);
-              if (headerNames[i] != null) ti.setText(1, headerNames[i]);
-              if (headerValues[i] != null) ti.setText(2, headerValues[i]);
-           }
-           wHeaders.setRowNums();
-           wHeaders.optWidth(true);
+    public void getData() {
+      wName.setText(Const.NVL(jobEntry.getName(), ""));
+  
+      wURL.setText(Const.NVL(jobEntry.getUrl(), ""));
+      wRunEveryRow.setSelection(jobEntry.isRunForEveryRow());
+      wFieldURL.setText(Const.NVL(jobEntry.getUrlFieldname(), ""));
+      wTargetFile.setText(Const.NVL(jobEntry.getTargetFilename(), ""));
+      wAppend.setSelection(jobEntry.isFileAppended());
+      wDateTimeAdded.setSelection(jobEntry.isDateTimeAdded());
+      wTargetExt.setText(Const.NVL(jobEntry.getTargetFilenameExtention(), ""));
+  
+      wUploadFile.setText(Const.NVL(jobEntry.getUploadFilename(), ""));
+  
+      jobEntry.setDateTimeAdded(wDateTimeAdded.getSelection());
+      jobEntry.setTargetFilenameExtention(wTargetExt.getText());
+  
+      wUserName.setText(Const.NVL(jobEntry.getUsername(), ""));
+      wPassword.setText(Const.NVL(jobEntry.getPassword(), ""));
+  
+      wProxyServer.setText(Const.NVL(jobEntry.getProxyHostname(), ""));
+      wProxyPort.setText(Const.NVL(jobEntry.getProxyPort(), ""));
+      wNonProxyHosts.setText(Const.NVL(jobEntry.getNonProxyHosts(), ""));
+  
+      String[] headerNames = jobEntry.getHeaderName();
+      String[] headerValues = jobEntry.getHeaderValue();
+      if (headerNames != null) {
+        for (int i = 0; i < headerNames.length; i++) {
+          TableItem ti = wHeaders.table.getItem(i);
+          if (headerNames[i] != null)
+            ti.setText(1, headerNames[i]);
+          if (headerValues[i] != null)
+            ti.setText(2, headerValues[i]);
         }
-		
-        wAddFilenameToResult.setSelection(jobEntry.isAddFilenameToResult());
-        setFlags();
+        wHeaders.setRowNums();
+        wHeaders.optWidth(true);
+      }
+  
+      wAddFilenameToResult.setSelection(jobEntry.isAddFilenameToResult());
+      setFlags();
+  
+      wName.selectAll();
+      wName.setFocus();
     }
 
     private void cancel()

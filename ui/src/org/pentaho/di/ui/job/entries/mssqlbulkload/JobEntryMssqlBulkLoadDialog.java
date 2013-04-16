@@ -1240,8 +1240,7 @@ public class JobEntryMssqlBulkLoadDialog extends JobEntryDialog implements JobEn
 	 */
 	public void getData()
 	{
-		if (jobEntry.getName() != null)
-			wName.setText(jobEntry.getName());
+		wName.setText(Const.NVL(jobEntry.getName(), ""));
 		if (jobEntry.getDatabase() != null)
 			wConnection.setText(jobEntry.getDatabase().getName());
 		if (jobEntry.getSchemaname() != null)
@@ -1301,7 +1300,8 @@ public class JobEntryMssqlBulkLoadDialog extends JobEntryDialog implements JobEn
 		wAddFileToResult.setSelection(jobEntry.isAddFileToResult());
 		wTruncate.setSelection(jobEntry.isTruncate());
 		
-		wName.selectAll();
+    wName.selectAll();
+    wName.setFocus();
 	}
 
 	private void cancel()

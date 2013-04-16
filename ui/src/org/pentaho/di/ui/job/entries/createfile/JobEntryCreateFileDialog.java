@@ -290,17 +290,20 @@ public class JobEntryCreateFileDialog extends JobEntryDialog implements JobEntry
 		shell.dispose();
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData()
-	{
-		if (jobEntry.getName()    != null) wName.setText( jobEntry.getName() );
-		wName.selectAll();
-		if (jobEntry.getFilename()!= null) wFilename.setText( jobEntry.getFilename() );
-		wAbortExists.setSelection(jobEntry.isFailIfFileExists());
-		wAddFilenameToResult.setSelection(jobEntry.isAddFilenameToResult());
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (jobEntry.getName() != null)
+      wName.setText(jobEntry.getName());
+    if (jobEntry.getFilename() != null)
+      wFilename.setText(jobEntry.getFilename());
+    wAbortExists.setSelection(jobEntry.isFailIfFileExists());
+    wAddFilenameToResult.setSelection(jobEntry.isAddFilenameToResult());
+
+    wName.selectAll();
+    wName.setFocus();
+  }
 
 	private void cancel()
 	{

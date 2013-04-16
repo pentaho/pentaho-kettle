@@ -1761,99 +1761,108 @@ public class JobEntryPGPEncryptFilesDialog extends JobEntryDialog implements Job
 		}
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData()
-	{
-		if (jobEntry.getName() != null) wName.setText( jobEntry.getName() );
-		wName.selectAll();
-		
-		if (jobEntry.source_filefolder != null) {
-			for (int i = 0; i < jobEntry.source_filefolder.length; i++) {
-				TableItem ti = wFields.table.getItem(i);
-				ti.setText(1, JobEntryPGPEncryptFiles.getActionTypeDesc(jobEntry.action_type[i]));
-				if (jobEntry.source_filefolder[i] != null) ti.setText(2, jobEntry.source_filefolder[i]);
-				if (jobEntry.wildcard[i] != null) ti.setText(3, jobEntry.wildcard[i]);
-				if (jobEntry.userid[i] != null)	ti.setText(4, jobEntry.userid[i]);
-	
-				if (jobEntry.destination_filefolder[i] != null)	ti.setText(5, jobEntry.destination_filefolder[i]);
-			}
-			wFields.setRowNums();
-			wFields.optWidth(true);
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    wName.setText(Const.nullToEmpty(jobEntry.getName()));
+    if (jobEntry.source_filefolder != null) {
+      for (int i = 0; i < jobEntry.source_filefolder.length; i++) {
+        TableItem ti = wFields.table.getItem(i);
+        ti.setText(1, JobEntryPGPEncryptFiles.getActionTypeDesc(jobEntry.action_type[i]));
+        if (jobEntry.source_filefolder[i] != null)
+          ti.setText(2, jobEntry.source_filefolder[i]);
+        if (jobEntry.wildcard[i] != null)
+          ti.setText(3, jobEntry.wildcard[i]);
+        if (jobEntry.userid[i] != null)
+          ti.setText(4, jobEntry.userid[i]);
 
-		}
-		wasciiMode.setSelection(jobEntry.isAsciiMode());
-		wPrevious.setSelection(jobEntry.arg_from_previous);
-		wIncludeSubfolders.setSelection(jobEntry.include_subfolders);
-		wDestinationIsAFile.setSelection(jobEntry.destination_is_a_file);
-		wCreateDestinationFolder.setSelection(jobEntry.create_destination_folder);
-		
-		wAddFileToResult.setSelection(jobEntry.add_result_filesname);
-		
-		wCreateMoveToFolder.setSelection(jobEntry.create_move_to_folder);
-		
-		if (jobEntry.getNrErrorsLessThan()!= null) 
-			wNrErrorsLessThan.setText( jobEntry.getNrErrorsLessThan() );
-		else
-			wNrErrorsLessThan.setText("10");
-		
-		if(jobEntry.getSuccessCondition()!=null)
-		{
-			if(jobEntry.getSuccessCondition().equals(jobEntry.SUCCESS_IF_AT_LEAST_X_FILES_UN_ZIPPED))
-				wSuccessCondition.select(1);
-			else if(jobEntry.getSuccessCondition().equals(jobEntry.SUCCESS_IF_ERRORS_LESS))
-				wSuccessCondition.select(2);
-			else
-				wSuccessCondition.select(0);	
-		}else wSuccessCondition.select(0);
-		
-		if(jobEntry.getIfFileExists()!=null)
-		{
-			if(jobEntry.getIfFileExists().equals("overwrite_file"))
-				wIfFileExists.select(1);
-			else if(jobEntry.getIfFileExists().equals("unique_name"))
-				wIfFileExists.select(2);
-			else if(jobEntry.getIfFileExists().equals("delete_file"))
-				wIfFileExists.select(3);
-			else if(jobEntry.getIfFileExists().equals("move_file"))
-				wIfFileExists.select(4);
-			else if(jobEntry.getIfFileExists().equals("fail"))
-				wIfFileExists.select(5);
-			else wIfFileExists.select(0);
-			
-		}else wIfFileExists.select(0);
-		
-		if(jobEntry.getDestinationFolder()!=null) wDestinationFolder.setText(jobEntry.getDestinationFolder());
-		
-		
-		if(jobEntry.getIfMovedFileExists()!=null)
-		{
-			if(jobEntry.getIfMovedFileExists().equals("overwrite_file"))
-				wIfMovedFileExists.select(1);
-			else if(jobEntry.getIfMovedFileExists().equals("unique_name"))
-				wIfMovedFileExists.select(2);
-			else if(jobEntry.getIfMovedFileExists().equals("fail"))
-				wIfMovedFileExists.select(3);
-			else wIfMovedFileExists.select(0);
-			
-		}else wIfMovedFileExists.select(0);
-		wDoNotKeepFolderStructure.setSelection(jobEntry.isDoNotKeepFolderStructure());
-		wAddDateBeforeExtension.setSelection(jobEntry.isAddDateBeforeExtension());
-		
-		wAddDate.setSelection(jobEntry.isAddDate());
-		wAddTime.setSelection(jobEntry.isAddTime());
-		wSpecifyFormat.setSelection(jobEntry.isSpecifyFormat());
-		if (jobEntry.getDateTimeFormat()!= null) wDateTimeFormat.setText( jobEntry.getDateTimeFormat() );
-		
-		if (jobEntry.getGPGLocation()!= null) wGpgExe.setText( jobEntry.getGPGLocation() );
-		
-		wAddMovedDate.setSelection(jobEntry.isAddMovedDate());
-		wAddMovedTime.setSelection(jobEntry.isAddMovedTime());
-		wSpecifyMoveFormat.setSelection(jobEntry.isSpecifyMoveFormat());
-		if (jobEntry.getMovedDateTimeFormat()!= null) wMovedDateTimeFormat.setText( jobEntry.getMovedDateTimeFormat() );
-		wAddMovedDateBeforeExtension.setSelection(jobEntry.isAddMovedDateBeforeExtension());
-	}
+        if (jobEntry.destination_filefolder[i] != null)
+          ti.setText(5, jobEntry.destination_filefolder[i]);
+      }
+      wFields.setRowNums();
+      wFields.optWidth(true);
+
+    }
+    wasciiMode.setSelection(jobEntry.isAsciiMode());
+    wPrevious.setSelection(jobEntry.arg_from_previous);
+    wIncludeSubfolders.setSelection(jobEntry.include_subfolders);
+    wDestinationIsAFile.setSelection(jobEntry.destination_is_a_file);
+    wCreateDestinationFolder.setSelection(jobEntry.create_destination_folder);
+
+    wAddFileToResult.setSelection(jobEntry.add_result_filesname);
+
+    wCreateMoveToFolder.setSelection(jobEntry.create_move_to_folder);
+
+    if (jobEntry.getNrErrorsLessThan() != null)
+      wNrErrorsLessThan.setText(jobEntry.getNrErrorsLessThan());
+    else
+      wNrErrorsLessThan.setText("10");
+
+    if (jobEntry.getSuccessCondition() != null) {
+      if (jobEntry.getSuccessCondition().equals(jobEntry.SUCCESS_IF_AT_LEAST_X_FILES_UN_ZIPPED))
+        wSuccessCondition.select(1);
+      else if (jobEntry.getSuccessCondition().equals(jobEntry.SUCCESS_IF_ERRORS_LESS))
+        wSuccessCondition.select(2);
+      else
+        wSuccessCondition.select(0);
+    } else
+      wSuccessCondition.select(0);
+
+    if (jobEntry.getIfFileExists() != null) {
+      if (jobEntry.getIfFileExists().equals("overwrite_file"))
+        wIfFileExists.select(1);
+      else if (jobEntry.getIfFileExists().equals("unique_name"))
+        wIfFileExists.select(2);
+      else if (jobEntry.getIfFileExists().equals("delete_file"))
+        wIfFileExists.select(3);
+      else if (jobEntry.getIfFileExists().equals("move_file"))
+        wIfFileExists.select(4);
+      else if (jobEntry.getIfFileExists().equals("fail"))
+        wIfFileExists.select(5);
+      else
+        wIfFileExists.select(0);
+
+    } else
+      wIfFileExists.select(0);
+
+    if (jobEntry.getDestinationFolder() != null)
+      wDestinationFolder.setText(jobEntry.getDestinationFolder());
+
+    if (jobEntry.getIfMovedFileExists() != null) {
+      if (jobEntry.getIfMovedFileExists().equals("overwrite_file"))
+        wIfMovedFileExists.select(1);
+      else if (jobEntry.getIfMovedFileExists().equals("unique_name"))
+        wIfMovedFileExists.select(2);
+      else if (jobEntry.getIfMovedFileExists().equals("fail"))
+        wIfMovedFileExists.select(3);
+      else
+        wIfMovedFileExists.select(0);
+
+    } else
+      wIfMovedFileExists.select(0);
+    wDoNotKeepFolderStructure.setSelection(jobEntry.isDoNotKeepFolderStructure());
+    wAddDateBeforeExtension.setSelection(jobEntry.isAddDateBeforeExtension());
+
+    wAddDate.setSelection(jobEntry.isAddDate());
+    wAddTime.setSelection(jobEntry.isAddTime());
+    wSpecifyFormat.setSelection(jobEntry.isSpecifyFormat());
+    if (jobEntry.getDateTimeFormat() != null)
+      wDateTimeFormat.setText(jobEntry.getDateTimeFormat());
+
+    if (jobEntry.getGPGLocation() != null)
+      wGpgExe.setText(jobEntry.getGPGLocation());
+
+    wAddMovedDate.setSelection(jobEntry.isAddMovedDate());
+    wAddMovedTime.setSelection(jobEntry.isAddMovedTime());
+    wSpecifyMoveFormat.setSelection(jobEntry.isSpecifyMoveFormat());
+    if (jobEntry.getMovedDateTimeFormat() != null)
+      wMovedDateTimeFormat.setText(jobEntry.getMovedDateTimeFormat());
+    wAddMovedDateBeforeExtension.setSelection(jobEntry.isAddMovedDateBeforeExtension());
+
+    wName.selectAll();
+    wName.setFocus();
+  }
 
 	private void cancel()
 	{

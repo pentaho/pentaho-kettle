@@ -830,43 +830,37 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
         }
     }
 
-    public void getData()
-    {
-        if (jobEntry.getName() != null)
-            wName.setText(jobEntry.getName());
-        if (jobEntry.getFilename() != null)
-            wFilename.setText(jobEntry.getFilename());
-        if (jobEntry.getWorkDirectory() != null)
-            wWorkDirectory.setText(jobEntry.getWorkDirectory());        
-        
-        if (jobEntry.arguments != null)
-        {
-            for (int i = 0; i < jobEntry.arguments.length; i++)
-            {
-                TableItem ti = wFields.table.getItem(i);
-                if (jobEntry.arguments[i] != null)
-                    ti.setText(1, jobEntry.arguments[i]);
-            }
-            wFields.setRowNums();
-            wFields.optWidth(true);
+    public void getData() {
+      wName.setText(Const.nullToEmpty(jobEntry.getName()));
+      wFilename.setText(Const.nullToEmpty(jobEntry.getFilename()));
+      wWorkDirectory.setText(Const.nullToEmpty(jobEntry.getWorkDirectory()));
+  
+      if (jobEntry.arguments != null) {
+        for (int i = 0; i < jobEntry.arguments.length; i++) {
+          TableItem ti = wFields.table.getItem(i);
+          if (jobEntry.arguments[i] != null)
+            ti.setText(1, jobEntry.arguments[i]);
         }
-        wPrevious.setSelection(jobEntry.argFromPrevious);
-        wEveryRow.setSelection(jobEntry.execPerRow);
-        wSetLogfile.setSelection(jobEntry.setLogfile);
-        if (jobEntry.logfile != null)
-            wLogfile.setText(jobEntry.logfile);
-        if (jobEntry.logext != null)
-            wLogext.setText(jobEntry.logext);
-        wAddDate.setSelection(jobEntry.addDate);
-        wAddTime.setSelection(jobEntry.addTime);
-        wAppendLogfile.setSelection(jobEntry.setAppendLogfile);
-        if(jobEntry.logFileLevel != null) {
-          wLoglevel.select(jobEntry.logFileLevel.getLevel());
-        }
-        
-        wInsertScript.setSelection(jobEntry.insertScript);
-        if (jobEntry.getScript() != null)
-            wScript.setText(jobEntry.getScript());
+        wFields.setRowNums();
+        wFields.optWidth(true);
+      }
+      wPrevious.setSelection(jobEntry.argFromPrevious);
+      wEveryRow.setSelection(jobEntry.execPerRow);
+      wSetLogfile.setSelection(jobEntry.setLogfile);
+      wLogfile.setText(Const.nullToEmpty(jobEntry.logfile));
+      wLogext.setText(Const.nullToEmpty(jobEntry.logext));
+      wAddDate.setSelection(jobEntry.addDate);
+      wAddTime.setSelection(jobEntry.addTime);
+      wAppendLogfile.setSelection(jobEntry.setAppendLogfile);
+      if (jobEntry.logFileLevel != null) {
+        wLoglevel.select(jobEntry.logFileLevel.getLevel());
+      }
+  
+      wInsertScript.setSelection(jobEntry.insertScript);
+      wScript.setText(Const.nullToEmpty(jobEntry.getScript()));
+  
+      wName.selectAll();
+      wName.setFocus();
     }
 
     private void cancel()

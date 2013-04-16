@@ -532,44 +532,43 @@ public class JobEntryDeleteFoldersDialog extends JobEntryDialog implements JobEn
 	}
 	
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData()
-	{
-		if (jobEntry.getName()    != null) wName.setText( jobEntry.getName() );
-		wName.selectAll();
-		
-		if (jobEntry.arguments != null)
-		{
-			for (int i = 0; i < jobEntry.arguments.length; i++)
-			{
-				TableItem ti = wFields.table.getItem(i);
-				if (jobEntry.arguments[i] != null);
-					ti.setText(1, jobEntry.arguments[i]);
-			}
-			wFields.setRowNums();
-			wFields.optWidth(true);
-		}
-		wPrevious.setSelection(jobEntry.argFromPrevious);		
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (jobEntry.getName() != null)
+      wName.setText(jobEntry.getName());
 
-		if (jobEntry.getLimitFolders()!= null) 
-			wLimitFolders.setText( jobEntry.getLimitFolders() );
-		else
-			wLimitFolders.setText("10");
-		
-		if(jobEntry.getSuccessCondition()!=null)
-		{
-			if(jobEntry.getSuccessCondition().equals(jobEntry.SUCCESS_IF_AT_LEAST_X_FOLDERS_DELETED))
-				wSuccessCondition.select(1);
-			else if(jobEntry.getSuccessCondition().equals(jobEntry.SUCCESS_IF_ERRORS_LESS))
-				wSuccessCondition.select(2);
-			else
-				wSuccessCondition.select(0);	
-		}else wSuccessCondition.select(0);
-		
-		
-	}
+    if (jobEntry.arguments != null) {
+      for (int i = 0; i < jobEntry.arguments.length; i++) {
+        TableItem ti = wFields.table.getItem(i);
+        if (jobEntry.arguments[i] != null)
+          ;
+        ti.setText(1, jobEntry.arguments[i]);
+      }
+      wFields.setRowNums();
+      wFields.optWidth(true);
+    }
+    wPrevious.setSelection(jobEntry.argFromPrevious);
+
+    if (jobEntry.getLimitFolders() != null)
+      wLimitFolders.setText(jobEntry.getLimitFolders());
+    else
+      wLimitFolders.setText("10");
+
+    if (jobEntry.getSuccessCondition() != null) {
+      if (jobEntry.getSuccessCondition().equals(jobEntry.SUCCESS_IF_AT_LEAST_X_FOLDERS_DELETED))
+        wSuccessCondition.select(1);
+      else if (jobEntry.getSuccessCondition().equals(jobEntry.SUCCESS_IF_ERRORS_LESS))
+        wSuccessCondition.select(2);
+      else
+        wSuccessCondition.select(0);
+    } else
+      wSuccessCondition.select(0);
+
+    wName.selectAll();
+    wName.setFocus();
+  }
 
 	private void cancel()
 	{

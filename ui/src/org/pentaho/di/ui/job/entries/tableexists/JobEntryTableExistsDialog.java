@@ -316,21 +316,16 @@ public class JobEntryTableExistsDialog extends JobEntryDialog implements JobEntr
     /**
      * Copy information from the meta-data input to the dialog fields.
      */
-    public void getData()
-    {
-        // System.out.println("evaluates: "+jobentry.evaluates());
-
-        if (jobEntry.getName() != null)
-            wName.setText(jobEntry.getName());
-        if (jobEntry.getTablename() != null)
-            wTablename.setText(jobEntry.getTablename());
-        if (jobEntry.getSchemaname() != null)
-            wSchemaname.setText(jobEntry.getSchemaname());
-        if (jobEntry.getDatabase() != null)
-        {
-            wConnection.setText(jobEntry.getDatabase().getName());
-        }
-        wName.selectAll();
+    public void getData() {
+      wName.setText(Const.nullToEmpty(jobEntry.getName()));
+      wTablename.setText(Const.nullToEmpty(jobEntry.getTablename()));
+      wSchemaname.setText(Const.nullToEmpty(jobEntry.getSchemaname()));
+      if (jobEntry.getDatabase() != null) {
+        wConnection.setText(jobEntry.getDatabase().getName());
+      }
+  
+      wName.selectAll();
+      wName.setFocus();
     }
 
     private void cancel()

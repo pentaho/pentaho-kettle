@@ -326,17 +326,21 @@ public class JobEntryFileCompareDialog extends JobEntryDialog implements JobEntr
 		shell.dispose();
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData()
-	{
-		if (jobEntry.getName()    != null) wName.setText( jobEntry.getName() );
-		wName.selectAll();
-		if (jobEntry.getFilename1()!= null) wFilename1.setText( jobEntry.getFilename1() );
-		if (jobEntry.getFilename2()!= null) wFilename2.setText( jobEntry.getFilename2() );
-		wAddFilenameResult.setSelection(jobEntry.isAddFilenameToResult());
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (jobEntry.getName() != null)
+      wName.setText(jobEntry.getName());
+    if (jobEntry.getFilename1() != null)
+      wFilename1.setText(jobEntry.getFilename1());
+    if (jobEntry.getFilename2() != null)
+      wFilename2.setText(jobEntry.getFilename2());
+    wAddFilenameResult.setSelection(jobEntry.isAddFilenameToResult());
+
+    wName.selectAll();
+    wName.setFocus();
+  }
 
 	private void cancel()
 	{

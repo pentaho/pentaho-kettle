@@ -229,13 +229,14 @@ public class JobEntryAbortDialog extends JobEntryDialog implements JobEntryDialo
     /**
      * Copy information from the meta-data input to the dialog fields.
      */
-    public void getData()
-    {
-        if (jobEntry.getName() != null)
-            wName.setText(jobEntry.getName());
-        wName.selectAll();
-		if (jobEntry.getMessageabort() != null)
-			wMessageAbort.setText(jobEntry.getMessageabort());
+    public void getData() {
+      if (jobEntry.getName() != null)
+        wName.setText(jobEntry.getName());
+      if (jobEntry.getMessageabort() != null)
+        wMessageAbort.setText(jobEntry.getMessageabort());
+  
+      wName.selectAll();
+      wName.setFocus();
     }
 
     private void cancel()

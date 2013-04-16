@@ -340,20 +340,16 @@ public class JobEntrySetVariablesDialog extends JobEntryDialog implements JobEnt
   /**
    * Copy information from the meta-data input to the dialog fields.
    */
-  public void getData()
-  {
-    if (jobEntry.getName() != null) wName.setText( jobEntry.getName() );
-    wName.selectAll();
-    
+  public void getData() {
+    wName.setText(Const.nullToEmpty(jobEntry.getName()));
+
     wFilename.setText(Const.NVL(jobEntry.getFilename(), ""));
     wFileVariableType.setText(JobEntrySetVariables.getVariableTypeDescription(jobEntry.getFileVariableType()));
-    
+
     wVarSubs.setSelection(jobEntry.isReplaceVars());
-      
-    if (jobEntry.variableName != null)
-    {
-      for (int i = 0; i < jobEntry.variableName.length; i++)
-      {
+
+    if (jobEntry.variableName != null) {
+      for (int i = 0; i < jobEntry.variableName.length; i++) {
         TableItem ti = wFields.table.getItem(i);
         if (jobEntry.variableName[i] != null)
           ti.setText(1, jobEntry.variableName[i]);
@@ -361,11 +357,14 @@ public class JobEntrySetVariablesDialog extends JobEntryDialog implements JobEnt
           ti.setText(2, jobEntry.getVariableValue()[i]);
 
         ti.setText(3, JobEntrySetVariables.getVariableTypeDescription(jobEntry.getVariableType()[i]));
-        
+
       }
       wFields.setRowNums();
       wFields.optWidth(true);
     }
+
+    wName.selectAll();
+    wName.setFocus();
   }
 
   private void cancel()

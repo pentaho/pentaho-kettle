@@ -310,18 +310,17 @@ public class JobEntryXSDValidatorDialog extends JobEntryDialog implements JobEnt
 		shell.dispose();
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData()
-	{
-		if (jobEntry.getName()    != null) wName.setText( jobEntry.getName() );
-		wName.selectAll();
-		if (jobEntry.getxmlFilename()!= null) wxmlFilename.setText( jobEntry.getxmlFilename() );
-		if (jobEntry.getxsdFilename()!= null) wxsdFilename.setText( jobEntry.getxsdFilename() );		
-		
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    wName.setText(Const.nullToEmpty(jobEntry.getName()));
+    wxmlFilename.setText(Const.nullToEmpty(jobEntry.getxmlFilename()));
+    wxsdFilename.setText(Const.nullToEmpty(jobEntry.getxsdFilename()));
 
-	}
+    wName.selectAll();
+    wName.setFocus();
+  }
 
 	private void cancel()
 	{

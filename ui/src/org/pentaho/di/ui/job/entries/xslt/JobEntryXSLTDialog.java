@@ -783,53 +783,46 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 		shell.dispose();
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData()
-	{
-		if (jobEntry.getName()    != null) wName.setText( jobEntry.getName() );
-		wName.selectAll();
-		if (jobEntry.getxmlFilename()!= null) wxmlFilename.setText( jobEntry.getxmlFilename() );
-		if (jobEntry.getxslFilename()!= null) wxslFilename.setText( jobEntry.getxslFilename() );
-		if (jobEntry.getoutputFilename()!= null) wOutputFilename.setText( jobEntry.getoutputFilename() );
-		
-		if (jobEntry.iffileexists>=0) 
-		{
-			wIfFileExists.select(jobEntry.iffileexists );
-		}
-		else
-		{
-			wIfFileExists.select(2); // NOTHING
-		}
-		
-		wAddFileToResult.setSelection(jobEntry.isAddFileToResult());
-		wPrevious.setSelection(jobEntry.isFilenamesFromPrevious());
-		if (jobEntry.getXSLTFactory()!= null) 
-		{
-			wXSLTFactory.setText(jobEntry.getXSLTFactory());
-		}
-		else
-		{
-			wXSLTFactory.setText("JAXP");
-		}
-		if (jobEntry.getParameterName()!=null) {
-			for (int i=0;i<jobEntry.getParameterName().length;i++)
-			{
-				TableItem item = wFields.table.getItem(i);
-				item.setText(1, Const.NVL(jobEntry.getParameterField()[i], ""));
-				item.setText(2, Const.NVL(jobEntry.getParameterName()[i], ""));
-			}
-		}
-		if (jobEntry.getOutputPropertyName()!=null) {
-			for (int i=0;i<jobEntry.getOutputPropertyName().length;i++)
-			{
-				TableItem item = wOutputProperties.table.getItem(i);
-				item.setText(1, Const.NVL(jobEntry.getOutputPropertyName()[i], ""));
-				item.setText(2, Const.NVL(jobEntry.getOutputPropertyValue()[i], ""));
-			}
-		}
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    wName.setText(Const.nullToEmpty(jobEntry.getName()));
+    wxmlFilename.setText(Const.nullToEmpty(jobEntry.getxmlFilename()));
+    wxslFilename.setText(Const.nullToEmpty(jobEntry.getxslFilename()));
+    wOutputFilename.setText(Const.nullToEmpty(jobEntry.getoutputFilename()));
+
+    if (jobEntry.iffileexists >= 0) {
+      wIfFileExists.select(jobEntry.iffileexists);
+    } else {
+      wIfFileExists.select(2); // NOTHING
+    }
+
+    wAddFileToResult.setSelection(jobEntry.isAddFileToResult());
+    wPrevious.setSelection(jobEntry.isFilenamesFromPrevious());
+    if (jobEntry.getXSLTFactory() != null) {
+      wXSLTFactory.setText(jobEntry.getXSLTFactory());
+    } else {
+      wXSLTFactory.setText("JAXP");
+    }
+    if (jobEntry.getParameterName() != null) {
+      for (int i = 0; i < jobEntry.getParameterName().length; i++) {
+        TableItem item = wFields.table.getItem(i);
+        item.setText(1, Const.NVL(jobEntry.getParameterField()[i], ""));
+        item.setText(2, Const.NVL(jobEntry.getParameterName()[i], ""));
+      }
+    }
+    if (jobEntry.getOutputPropertyName() != null) {
+      for (int i = 0; i < jobEntry.getOutputPropertyName().length; i++) {
+        TableItem item = wOutputProperties.table.getItem(i);
+        item.setText(1, Const.NVL(jobEntry.getOutputPropertyName()[i], ""));
+        item.setText(2, Const.NVL(jobEntry.getOutputPropertyValue()[i], ""));
+      }
+    }
+
+    wName.selectAll();
+    wName.setFocus();
+  }
 
 	private void cancel()
 	{

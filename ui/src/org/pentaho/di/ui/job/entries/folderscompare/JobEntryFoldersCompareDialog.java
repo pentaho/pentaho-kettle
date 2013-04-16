@@ -569,38 +569,38 @@ public class JobEntryFoldersCompareDialog extends JobEntryDialog implements JobE
 		shell.dispose();
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData()
-	{
-		if (jobEntry.getName()    != null) wName.setText( jobEntry.getName() );
-		wName.selectAll();
-		
-		
-		if (jobEntry.getCompareOnly()!= null)
-		{
-			if(jobEntry.getCompareOnly().equals("only_files"))
-				wCompareOnly.select(1);
-			else if(jobEntry.getCompareOnly().equals("only_folders"))
-				wCompareOnly.select(2);
-			else if(jobEntry.getCompareOnly().equals("specify"))
-				wCompareOnly.select(3);
-			else
-				wCompareOnly.select(0);
-		}
-		else
-			wCompareOnly.select(0);
-			
-		if (jobEntry.getWildcard()!= null) wWildcard.setText( jobEntry.getWildcard() );
-		if (jobEntry.getFilename1()!= null) wFilename1.setText( jobEntry.getFilename1() );
-		if (jobEntry.getFilename2()!= null) wFilename2.setText( jobEntry.getFilename2() );
-		
-		wIncludeSubfolders.setSelection(jobEntry.isIncludeSubfolders());
-		wCompareFileContent.setSelection(jobEntry.isCompareFileContent());
-		wCompareFileSize.setSelection(jobEntry.isCompareFileSize());
-		
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (jobEntry.getName() != null)
+      wName.setText(jobEntry.getName());
+    if (jobEntry.getCompareOnly() != null) {
+      if (jobEntry.getCompareOnly().equals("only_files"))
+        wCompareOnly.select(1);
+      else if (jobEntry.getCompareOnly().equals("only_folders"))
+        wCompareOnly.select(2);
+      else if (jobEntry.getCompareOnly().equals("specify"))
+        wCompareOnly.select(3);
+      else
+        wCompareOnly.select(0);
+    } else
+      wCompareOnly.select(0);
+
+    if (jobEntry.getWildcard() != null)
+      wWildcard.setText(jobEntry.getWildcard());
+    if (jobEntry.getFilename1() != null)
+      wFilename1.setText(jobEntry.getFilename1());
+    if (jobEntry.getFilename2() != null)
+      wFilename2.setText(jobEntry.getFilename2());
+
+    wIncludeSubfolders.setSelection(jobEntry.isIncludeSubfolders());
+    wCompareFileContent.setSelection(jobEntry.isCompareFileContent());
+    wCompareFileSize.setSelection(jobEntry.isCompareFileSize());
+
+    wName.selectAll();
+    wName.setFocus();
+  }
 
 	private void cancel()
 	{

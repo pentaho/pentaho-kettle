@@ -637,8 +637,7 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 	 */
 	public void getData()
 	{
-		if (jobEntry.getName()    != null) wName.setText( jobEntry.getName() );
-		wName.selectAll();
+		wName.setText( Const.nullToEmpty(jobEntry.getName()) );
 		wValueType.setText(JobEntrySimpleEval.getValueTypeDesc(jobEntry.valuetype));
 		if (jobEntry.getFieldName()    != null) wFieldName.setText( jobEntry.getFieldName() );
 		if (jobEntry.getVariableName() != null) wVariableName.setText( jobEntry.getVariableName() );
@@ -651,6 +650,9 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 		wSuccessCondition.setText(JobEntrySimpleEval.getSuccessConditionDesc(jobEntry.successcondition));
 		wSuccessNumberCondition.setText(JobEntrySimpleEval.getSuccessNumberConditionDesc(jobEntry.successnumbercondition));
 		wSuccessBooleanCondition.setText(JobEntrySimpleEval.getSuccessBooleanConditionDesc(jobEntry.successbooleancondition));
+		
+    wName.selectAll();
+    wName.setFocus();
 	}
 	private void refresh()
 	{

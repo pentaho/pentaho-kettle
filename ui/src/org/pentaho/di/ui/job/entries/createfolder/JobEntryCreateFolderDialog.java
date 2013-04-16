@@ -265,16 +265,19 @@ public class JobEntryCreateFolderDialog extends JobEntryDialog implements JobEnt
 		shell.dispose();
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData()
-	{
-		if (jobEntry.getName()    != null) wName.setText( jobEntry.getName() );
-		wName.selectAll();
-		if (jobEntry.getFoldername()!= null) wFoldername.setText( jobEntry.getFoldername() );
-		wAbortExists.setSelection(jobEntry.isFailOfFolderExists());
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (jobEntry.getName() != null)
+      wName.setText(jobEntry.getName());
+    if (jobEntry.getFoldername() != null)
+      wFoldername.setText(jobEntry.getFoldername());
+    wAbortExists.setSelection(jobEntry.isFailOfFolderExists());
+
+    wName.selectAll();
+    wName.setFocus();
+  }
 
 	private void cancel()
 	{

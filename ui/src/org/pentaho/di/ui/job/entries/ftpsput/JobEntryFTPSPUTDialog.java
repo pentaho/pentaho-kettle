@@ -962,30 +962,31 @@ public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDia
     /**
      * Copy information from the meta-data input to the dialog fields.
      */
-    public void getData()
-    {
-        if (jobEntry.getName() != null)
-            wName.setText(jobEntry.getName());
-        wName.selectAll();
-
-        wServerName.setText(Const.NVL(jobEntry.getServerName(), ""));
-        wServerPort.setText(jobEntry.getServerPort());
-        wUserName.setText(Const.NVL(jobEntry.getUserName(), ""));
-        wPassword.setText(Const.NVL(jobEntry.getPassword(), ""));
-        wRemoteDirectory.setText(Const.NVL(jobEntry.getRemoteDirectory(), ""));
-        wLocalDirectory.setText(Const.NVL(jobEntry.getLocalDirectory(), ""));
-        wWildcard.setText(Const.NVL(jobEntry.getWildcard(), ""));
-        wRemove.setSelection(jobEntry.getRemove());
-        wBinaryMode.setSelection(jobEntry.isBinaryMode());
-        wTimeout.setText("" + jobEntry.getTimeout());
-        wOnlyNew.setSelection(jobEntry.isOnlyPuttingNewFiles());
-        wActive.setSelection(jobEntry.isActiveConnection());
-        
-        wProxyHost.setText(Const.NVL(jobEntry.getProxyHost(), ""));       
-        wProxyPort.setText(Const.NVL(jobEntry.getProxyPort(), ""));
-        wProxyUsername.setText(Const.NVL(jobEntry.getProxyUsername(), ""));
-        wProxyPassword.setText(Const.NVL(jobEntry.getProxyPassword(), ""));
-		wConnectionType.setText(FTPSConnection.getConnectionTypeDesc(jobEntry.getConnectionType()));
+    public void getData() {
+      if (jobEntry.getName() != null)
+        wName.setText(jobEntry.getName());
+  
+      wServerName.setText(Const.NVL(jobEntry.getServerName(), ""));
+      wServerPort.setText(jobEntry.getServerPort());
+      wUserName.setText(Const.NVL(jobEntry.getUserName(), ""));
+      wPassword.setText(Const.NVL(jobEntry.getPassword(), ""));
+      wRemoteDirectory.setText(Const.NVL(jobEntry.getRemoteDirectory(), ""));
+      wLocalDirectory.setText(Const.NVL(jobEntry.getLocalDirectory(), ""));
+      wWildcard.setText(Const.NVL(jobEntry.getWildcard(), ""));
+      wRemove.setSelection(jobEntry.getRemove());
+      wBinaryMode.setSelection(jobEntry.isBinaryMode());
+      wTimeout.setText("" + jobEntry.getTimeout());
+      wOnlyNew.setSelection(jobEntry.isOnlyPuttingNewFiles());
+      wActive.setSelection(jobEntry.isActiveConnection());
+  
+      wProxyHost.setText(Const.NVL(jobEntry.getProxyHost(), ""));
+      wProxyPort.setText(Const.NVL(jobEntry.getProxyPort(), ""));
+      wProxyUsername.setText(Const.NVL(jobEntry.getProxyUsername(), ""));
+      wProxyPassword.setText(Const.NVL(jobEntry.getProxyPassword(), ""));
+      wConnectionType.setText(FTPSConnection.getConnectionTypeDesc(jobEntry.getConnectionType()));
+      
+      wName.selectAll();
+      wName.setFocus();
     }
 
     private void cancel()

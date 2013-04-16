@@ -1063,33 +1063,33 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
     /**
      * Copy information from the meta-data input to the dialog fields.
      */
-    public void getData()
-    {
-        if (jobEntry.getName() != null)
-            wName.setText(jobEntry.getName());
-        wName.selectAll();
-
-        wServerName.setText(Const.NVL(jobEntry.getServerName(), ""));
-        wServerPort.setText(jobEntry.getServerPort());
-        wUserName.setText(Const.NVL(jobEntry.getUserName(), ""));
-        wPassword.setText(Const.NVL(jobEntry.getPassword(), ""));
-        wScpDirectory.setText(Const.NVL(jobEntry.getScpDirectory(), ""));
-        wTargetDirectory.setText(Const.NVL(jobEntry.getTargetDirectory(), ""));
-        wWildcard.setText(Const.NVL(jobEntry.getWildcard(), ""));
-        wRemove.setSelection(jobEntry.getRemove());
-    	wAddFilenameToResult.setSelection(jobEntry.isAddToResult());
-    	wCreateTargetFolder.setSelection(jobEntry.iscreateTargetFolder());
-        wgetPrevious.setSelection(jobEntry.isCopyPrevious());
-        wusePublicKey.setSelection(jobEntry.isUseKeyFile());
-        wKeyFilename.setText(Const.NVL(jobEntry.getKeyFilename(), ""));
-        wkeyfilePass.setText(Const.NVL(jobEntry.getKeyPassPhrase(), ""));
-        wCompression.setText(Const.NVL(jobEntry.getCompression(), "none"));
-        
-        wProxyType.setText(Const.NVL(jobEntry.getProxyType(), ""));
-        wProxyHost.setText(Const.NVL(jobEntry.getProxyHost(), ""));
-        wProxyPort.setText(Const.NVL(jobEntry.getProxyPort(), ""));
-        wProxyUsername.setText(Const.NVL(jobEntry.getProxyUsername(), ""));
-        wProxyPassword.setText(Const.NVL(jobEntry.getProxyPassword(), ""));
+    public void getData() {
+      wName.setText(Const.nullToEmpty(jobEntry.getName()));
+  
+      wServerName.setText(Const.NVL(jobEntry.getServerName(), ""));
+      wServerPort.setText(jobEntry.getServerPort());
+      wUserName.setText(Const.NVL(jobEntry.getUserName(), ""));
+      wPassword.setText(Const.NVL(jobEntry.getPassword(), ""));
+      wScpDirectory.setText(Const.NVL(jobEntry.getScpDirectory(), ""));
+      wTargetDirectory.setText(Const.NVL(jobEntry.getTargetDirectory(), ""));
+      wWildcard.setText(Const.NVL(jobEntry.getWildcard(), ""));
+      wRemove.setSelection(jobEntry.getRemove());
+      wAddFilenameToResult.setSelection(jobEntry.isAddToResult());
+      wCreateTargetFolder.setSelection(jobEntry.iscreateTargetFolder());
+      wgetPrevious.setSelection(jobEntry.isCopyPrevious());
+      wusePublicKey.setSelection(jobEntry.isUseKeyFile());
+      wKeyFilename.setText(Const.NVL(jobEntry.getKeyFilename(), ""));
+      wkeyfilePass.setText(Const.NVL(jobEntry.getKeyPassPhrase(), ""));
+      wCompression.setText(Const.NVL(jobEntry.getCompression(), "none"));
+  
+      wProxyType.setText(Const.NVL(jobEntry.getProxyType(), ""));
+      wProxyHost.setText(Const.NVL(jobEntry.getProxyHost(), ""));
+      wProxyPort.setText(Const.NVL(jobEntry.getProxyPort(), ""));
+      wProxyUsername.setText(Const.NVL(jobEntry.getProxyUsername(), ""));
+      wProxyPassword.setText(Const.NVL(jobEntry.getProxyPassword(), ""));
+  
+      wName.selectAll();
+      wName.setFocus();
     }
 
     private void cancel()

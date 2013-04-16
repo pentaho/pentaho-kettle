@@ -733,28 +733,33 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
     /**
      * Copy information from the meta-data input to the dialog fields.
      */
-    public void getData()
-    {
-        if (jobEntry.getName() != null) wName.setText(jobEntry.getName());
-
-        if (jobEntry.getDatabase() != null)
-            wConnection.setText(jobEntry.getDatabase().getName());
-        
-        if(jobEntry.schemaname!=null)  wSchemaname.setText(jobEntry.schemaname);
-        if(jobEntry.tablename!=null)  wTablename.setText(jobEntry.tablename);
-      
-        wSuccessCondition.setText(JobEntryEvalTableContent.getSuccessConditionDesc(jobEntry.successCondition));
-        if(jobEntry.limit!=null)  wLimit.setText(jobEntry.limit);
-        else   wLimit.setText("0");
-        
-        
-        wcustomSQL.setSelection(jobEntry.iscustomSQL); 
-        wUseSubs.setSelection(jobEntry.isUseVars);  
-        wClearResultList.setSelection(jobEntry.isClearResultList); 
-        wAddRowsToResult.setSelection(jobEntry.isAddRowsResult);  
-        if(jobEntry.customSQL!=null)  wSQL.setText(jobEntry.customSQL);
-        
-        wName.selectAll();
+    public void getData() {
+      if (jobEntry.getName() != null)
+        wName.setText(jobEntry.getName());
+  
+      if (jobEntry.getDatabase() != null)
+        wConnection.setText(jobEntry.getDatabase().getName());
+  
+      if (jobEntry.schemaname != null)
+        wSchemaname.setText(jobEntry.schemaname);
+      if (jobEntry.tablename != null)
+        wTablename.setText(jobEntry.tablename);
+  
+      wSuccessCondition.setText(JobEntryEvalTableContent.getSuccessConditionDesc(jobEntry.successCondition));
+      if (jobEntry.limit != null)
+        wLimit.setText(jobEntry.limit);
+      else
+        wLimit.setText("0");
+  
+      wcustomSQL.setSelection(jobEntry.iscustomSQL);
+      wUseSubs.setSelection(jobEntry.isUseVars);
+      wClearResultList.setSelection(jobEntry.isClearResultList);
+      wAddRowsToResult.setSelection(jobEntry.isAddRowsResult);
+      if (jobEntry.customSQL != null)
+        wSQL.setText(jobEntry.customSQL);
+  
+      wName.selectAll();
+      wName.setFocus();
     }
 
     private void cancel()

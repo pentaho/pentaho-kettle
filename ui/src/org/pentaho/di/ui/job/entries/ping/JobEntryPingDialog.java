@@ -335,24 +335,24 @@ public class JobEntryPingDialog extends JobEntryDialog implements JobEntryDialog
     /**
      * Copy information from the meta-data input to the dialog fields.
      */
-    public void getData()
-    {
-        if (jobEntry.getName() != null)
-            wName.setText(jobEntry.getName());
-        wName.selectAll();
-        if (jobEntry.getHostname() != null)
-            wHostname.setText(jobEntry.getHostname());
-        if (jobEntry.getNbrPackets() != null)
-			wNbrPackets.setText(jobEntry.getNbrPackets());
-		else
-			wNbrPackets.setText("2");
-		
-		if (jobEntry.getTimeOut() != null)
-			wTimeOut.setText(jobEntry.getTimeOut());
-		else
-			wTimeOut.setText("3000");
-
-		wPingType.select(jobEntry.ipingtype);
+    public void getData() {
+      wName.setText(Const.nullToEmpty(jobEntry.getName()));
+      if (jobEntry.getHostname() != null)
+        wHostname.setText(jobEntry.getHostname());
+      if (jobEntry.getNbrPackets() != null)
+        wNbrPackets.setText(jobEntry.getNbrPackets());
+      else
+        wNbrPackets.setText("2");
+  
+      if (jobEntry.getTimeOut() != null)
+        wTimeOut.setText(jobEntry.getTimeOut());
+      else
+        wTimeOut.setText("3000");
+  
+      wPingType.select(jobEntry.ipingtype);
+  
+      wName.selectAll();
+      wName.setFocus();
     }
 
     private void cancel()

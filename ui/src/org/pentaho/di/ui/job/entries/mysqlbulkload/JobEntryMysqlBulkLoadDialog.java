@@ -683,67 +683,58 @@ public class JobEntryMysqlBulkLoadDialog extends JobEntryDialog implements JobEn
 		shell.dispose();
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData()
-	{
-		// System.out.println("evaluates: "+jobentry.evaluates());
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    wName.setText(Const.nullToEmpty(jobEntry.getName()));
+    if (jobEntry.getSchemaname() != null)
+      wSchemaname.setText(jobEntry.getSchemaname());
+    if (jobEntry.getTablename() != null)
+      wTablename.setText(jobEntry.getTablename());
+    if (jobEntry.getFilename() != null)
+      wFilename.setText(jobEntry.getFilename());
+    if (jobEntry.getSeparator() != null)
+      wSeparator.setText(jobEntry.getSeparator());
 
-		if (jobEntry.getName() != null)
-			wName.setText(jobEntry.getName());
-		if (jobEntry.getSchemaname() != null)
-			wSchemaname.setText(jobEntry.getSchemaname());
-		if (jobEntry.getTablename() != null)
-			wTablename.setText(jobEntry.getTablename());
-		if (jobEntry.getFilename() != null)
-			wFilename.setText(jobEntry.getFilename());
-		if (jobEntry.getSeparator() != null)
-			wSeparator.setText(jobEntry.getSeparator());
-		
-		if (jobEntry.getEnclosed() != null)
-			wEnclosed.setText(jobEntry.getEnclosed());
+    if (jobEntry.getEnclosed() != null)
+      wEnclosed.setText(jobEntry.getEnclosed());
 
-		if (jobEntry.getEscaped() != null)
-			wEscaped.setText(jobEntry.getEscaped());
-		if (jobEntry.getLinestarted() != null)
-			wLinestarted.setText(jobEntry.getLinestarted());	
-		if (jobEntry.getLineterminated() != null)
-			wLineterminated.setText(jobEntry.getLineterminated());			
+    if (jobEntry.getEscaped() != null)
+      wEscaped.setText(jobEntry.getEscaped());
+    if (jobEntry.getLinestarted() != null)
+      wLinestarted.setText(jobEntry.getLinestarted());
+    if (jobEntry.getLineterminated() != null)
+      wLineterminated.setText(jobEntry.getLineterminated());
 
-		wReplacedata.setSelection(jobEntry.isReplacedata());
-		
-		wLocalInfile.setSelection(jobEntry.isLocalInfile());
-	
-		if (jobEntry.getIgnorelines() != null)
-		{
+    wReplacedata.setSelection(jobEntry.isReplacedata());
 
-			wIgnorelines.setText(jobEntry.getIgnorelines());
-		}
-		else
-			wIgnorelines.setText("0");
-		
-		if (jobEntry.getListattribut() != null)
-			wListattribut.setText(jobEntry.getListattribut());
-		     
-		if (jobEntry.prorityvalue>=0) 
-        {
-            wProrityValue.select(jobEntry.prorityvalue );
-        }
-        else
-        {
-            wProrityValue.select(0); // NORMAL priority
-        }
-		
-		if (jobEntry.getDatabase() != null)
-		{
-			wConnection.setText(jobEntry.getDatabase().getName());
-		}
-		
-		wAddFileToResult.setSelection(jobEntry.isAddFileToResult());
-		
-		wName.selectAll();
-	}
+    wLocalInfile.setSelection(jobEntry.isLocalInfile());
+
+    if (jobEntry.getIgnorelines() != null) {
+
+      wIgnorelines.setText(jobEntry.getIgnorelines());
+    } else
+      wIgnorelines.setText("0");
+
+    if (jobEntry.getListattribut() != null)
+      wListattribut.setText(jobEntry.getListattribut());
+
+    if (jobEntry.prorityvalue >= 0) {
+      wProrityValue.select(jobEntry.prorityvalue);
+    } else {
+      wProrityValue.select(0); // NORMAL priority
+    }
+
+    if (jobEntry.getDatabase() != null) {
+      wConnection.setText(jobEntry.getDatabase().getName());
+    }
+
+    wAddFileToResult.setSelection(jobEntry.isAddFileToResult());
+
+    wName.selectAll();
+    wName.setFocus();
+  }
 
 	private void cancel()
 	{

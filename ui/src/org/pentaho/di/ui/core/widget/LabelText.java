@@ -116,4 +116,12 @@ public class LabelText extends Composite
         wText.setEnabled(flag);
         wLabel.setEnabled(flag);
     }
+    
+    public void selectAll() {
+      wText.selectAll();
+    }
+    
+    public boolean setFocus() {
+      return wText.setFocus();
+    }
 }

@@ -808,30 +808,28 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
     /**
      * Copy information from the meta-data input to the dialog fields.
      */
-    public void getData()
-    {
-        if (jobEntry.getName() != null) wName.setText(jobEntry.getName());
-
-        if (jobEntry.getDatabase() != null)
-            wConnection.setText(jobEntry.getDatabase().getName());
-        
-        if(jobEntry.schemaname!=null)  wSchemaname.setText(jobEntry.schemaname);
-        if(jobEntry.tablename!=null)  wTablename.setText(jobEntry.tablename);
-      
-        wSuccessCondition.setText(JobEntryWaitForSQL.getSuccessConditionDesc(jobEntry.successCondition));
-        if(jobEntry.rowsCountValue!=null)  wRowsCountValue.setText(jobEntry.rowsCountValue);
-        else   wRowsCountValue.setText("0");
-
-        wcustomSQL.setSelection(jobEntry.iscustomSQL); 
-        wUseSubs.setSelection(jobEntry.isUseVars);  
-        wAddRowsToResult.setSelection(jobEntry.isAddRowsResult);  
-        wClearResultList.setSelection(jobEntry.isClearResultList); 
-        if(jobEntry.customSQL!=null)  wSQL.setText(jobEntry.customSQL);
-		wMaximumTimeout.setText(Const.NVL(jobEntry.getMaximumTimeout(), ""));
-		wCheckCycleTime.setText(Const.NVL(jobEntry.getCheckCycleTime(), ""));
-		wSuccesOnTimeout.setSelection(jobEntry.isSuccessOnTimeout());
-		
-        wName.selectAll();
+    public void getData() {
+      wName.setText(Const.nullToEmpty(jobEntry.getName()));
+  
+      if (jobEntry.getDatabase() != null)
+        wConnection.setText(jobEntry.getDatabase().getName());
+  
+      wSchemaname.setText(Const.nullToEmpty(jobEntry.schemaname));
+      wTablename.setText(Const.nullToEmpty(jobEntry.tablename));
+  
+      wSuccessCondition.setText(JobEntryWaitForSQL.getSuccessConditionDesc(jobEntry.successCondition));
+      wRowsCountValue.setText(Const.NVL(jobEntry.rowsCountValue, "0"));
+      wcustomSQL.setSelection(jobEntry.iscustomSQL);
+      wUseSubs.setSelection(jobEntry.isUseVars);
+      wAddRowsToResult.setSelection(jobEntry.isAddRowsResult);
+      wClearResultList.setSelection(jobEntry.isClearResultList);
+      wSQL.setText(Const.nullToEmpty(jobEntry.customSQL));
+      wMaximumTimeout.setText(Const.NVL(jobEntry.getMaximumTimeout(), ""));
+      wCheckCycleTime.setText(Const.NVL(jobEntry.getCheckCycleTime(), ""));
+      wSuccesOnTimeout.setSelection(jobEntry.isSuccessOnTimeout());
+  
+      wName.selectAll();
+      wName.setFocus();
     }
 
     private void cancel()

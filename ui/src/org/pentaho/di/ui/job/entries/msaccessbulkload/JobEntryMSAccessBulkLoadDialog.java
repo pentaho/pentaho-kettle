@@ -952,50 +952,50 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 		wlNrErrorsLessThan.setEnabled(wSuccessCondition.getSelectionIndex()!=0);
 		wNrErrorsLessThan.setEnabled(wSuccessCondition.getSelectionIndex()!=0);	
 	}
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData()
-	{
-		if (jobEntry.getName()    != null) wName.setText( jobEntry.getName() );
-		wName.selectAll();
-		wAddFileToResult.setSelection(jobEntry.isAddResultFilename());
-		wincludeSubFolders.setSelection(jobEntry.isIncludeSubFoders());
-		wPrevious.setSelection(jobEntry.isArgsFromPrevious());
-		if (jobEntry.source_filefolder != null)
-		{
-			for (int i = 0; i < jobEntry.source_filefolder.length; i++)
-			{
-				TableItem ti = wFields.table.getItem(i);
-				if (jobEntry.source_filefolder[i] != null)
-					ti.setText(1, jobEntry.source_filefolder[i]);
-				if (jobEntry.source_wildcard[i] != null)
-					ti.setText(2, jobEntry.source_wildcard[i]);
-				if (jobEntry.delimiter[i] != null)
-					ti.setText(3, jobEntry.delimiter[i]);
-				if (jobEntry.target_Db[i] != null)
-					ti.setText(4, jobEntry.target_Db[i]);
-				if (jobEntry.target_table[i] != null)
-					ti.setText(5, jobEntry.target_table[i]);
-			}
-			wFields.setRowNums();
-			wFields.optWidth(true);
-		}
-		if (jobEntry.getLimit()!= null) 
-			wNrErrorsLessThan.setText( jobEntry.getLimit() );
-		else
-			wNrErrorsLessThan.setText("10");
-		
-		if(jobEntry.getSuccessCondition()!=null)
-		{
-			if(jobEntry.getSuccessCondition().equals(jobEntry.SUCCESS_IF_AT_LEAST))
-				wSuccessCondition.select(1);
-			else if(jobEntry.getSuccessCondition().equals(jobEntry.SUCCESS_IF_ERRORS_LESS))
-				wSuccessCondition.select(2);
-			else
-				wSuccessCondition.select(0);	
-		}else wSuccessCondition.select(0);
-	}
+
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    wName.setText(Const.NVL(jobEntry.getName(), ""));
+    wAddFileToResult.setSelection(jobEntry.isAddResultFilename());
+    wincludeSubFolders.setSelection(jobEntry.isIncludeSubFoders());
+    wPrevious.setSelection(jobEntry.isArgsFromPrevious());
+    if (jobEntry.source_filefolder != null) {
+      for (int i = 0; i < jobEntry.source_filefolder.length; i++) {
+        TableItem ti = wFields.table.getItem(i);
+        if (jobEntry.source_filefolder[i] != null)
+          ti.setText(1, jobEntry.source_filefolder[i]);
+        if (jobEntry.source_wildcard[i] != null)
+          ti.setText(2, jobEntry.source_wildcard[i]);
+        if (jobEntry.delimiter[i] != null)
+          ti.setText(3, jobEntry.delimiter[i]);
+        if (jobEntry.target_Db[i] != null)
+          ti.setText(4, jobEntry.target_Db[i]);
+        if (jobEntry.target_table[i] != null)
+          ti.setText(5, jobEntry.target_table[i]);
+      }
+      wFields.setRowNums();
+      wFields.optWidth(true);
+    }
+    if (jobEntry.getLimit() != null)
+      wNrErrorsLessThan.setText(jobEntry.getLimit());
+    else
+      wNrErrorsLessThan.setText("10");
+
+    if (jobEntry.getSuccessCondition() != null) {
+      if (jobEntry.getSuccessCondition().equals(jobEntry.SUCCESS_IF_AT_LEAST))
+        wSuccessCondition.select(1);
+      else if (jobEntry.getSuccessCondition().equals(jobEntry.SUCCESS_IF_ERRORS_LESS))
+        wSuccessCondition.select(2);
+      else
+        wSuccessCondition.select(0);
+    } else
+      wSuccessCondition.select(0);
+
+    wName.selectAll();
+    wName.setFocus();
+  }
 
 	private void cancel()
 	{

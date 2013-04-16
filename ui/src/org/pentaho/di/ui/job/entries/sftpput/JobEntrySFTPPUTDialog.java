@@ -1181,40 +1181,40 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
 		shell.dispose();
 	}
 	
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		if (jobEntry.getName()    != null) wName.setText( jobEntry.getName() );
-		wName.selectAll();
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    wName.setText(Const.nullToEmpty(jobEntry.getName()));
+    wServerName.setText(Const.NVL(jobEntry.getServerName(), ""));
+    wServerPort.setText(jobEntry.getServerPort());
+    wUserName.setText(Const.NVL(jobEntry.getUserName(), ""));
+    wPassword.setText(Const.NVL(jobEntry.getPassword(), ""));
+    wScpDirectory.setText(Const.NVL(jobEntry.getScpDirectory(), ""));
+    wLocalDirectory.setText(Const.NVL(jobEntry.getLocalDirectory(), ""));
+    wWildcard.setText(Const.NVL(jobEntry.getWildcard(), ""));
+    wgetPrevious.setSelection(jobEntry.isCopyPrevious());
+    wAddFilenameToResult.setSelection(jobEntry.isAddFilenameResut());
+    wusePublicKey.setSelection(jobEntry.isUseKeyFile());
+    wKeyFilename.setText(Const.NVL(jobEntry.getKeyFilename(), ""));
+    wkeyfilePass.setText(Const.NVL(jobEntry.getKeyPassPhrase(), ""));
+    wCompression.setText(Const.NVL(jobEntry.getCompression(), "none"));
 
-		wServerName.setText(Const.NVL(jobEntry.getServerName(), ""));
-		wServerPort.setText(jobEntry.getServerPort());
-		wUserName.setText(Const.NVL(jobEntry.getUserName(), ""));
-		wPassword.setText(Const.NVL(jobEntry.getPassword(), ""));
-		wScpDirectory.setText(Const.NVL(jobEntry.getScpDirectory(), ""));
-		wLocalDirectory.setText(Const.NVL(jobEntry.getLocalDirectory(), ""));
-		wWildcard.setText(Const.NVL(jobEntry.getWildcard(), ""));
-        wgetPrevious.setSelection(jobEntry.isCopyPrevious());
-        wAddFilenameToResult.setSelection(jobEntry.isAddFilenameResut());
-        wusePublicKey.setSelection(jobEntry.isUseKeyFile());
-        wKeyFilename.setText(Const.NVL(jobEntry.getKeyFilename(), ""));
-        wkeyfilePass.setText(Const.NVL(jobEntry.getKeyPassPhrase(), ""));
-        wCompression.setText(Const.NVL(jobEntry.getCompression(), "none"));
-        
-        wProxyType.setText(Const.NVL(jobEntry.getProxyType(), ""));
-        wProxyHost.setText(Const.NVL(jobEntry.getProxyHost(), ""));
-        wProxyPort.setText(Const.NVL(jobEntry.getProxyPort(), ""));
-        wProxyUsername.setText(Const.NVL(jobEntry.getProxyUsername(), ""));
-        wProxyPassword.setText(Const.NVL(jobEntry.getProxyPassword(), ""));
-        wCreateRemoteFolder.setSelection(jobEntry.isCreateRemoteFolder());
-        
-		wAfterFTPPut.setText(JobEntrySFTPPUT.getAfterSFTPPutDesc(jobEntry.getAfterFTPS()));
-		wDestinationFolder.setText(Const.NVL(jobEntry.getDestinationFolder(), ""));
-		wCreateDestinationFolder.setSelection(jobEntry.isCreateDestinationFolder());
-		wSuccessWhenNoFile.setSelection(jobEntry.isSuccessWhenNoFile());
-	}
+    wProxyType.setText(Const.NVL(jobEntry.getProxyType(), ""));
+    wProxyHost.setText(Const.NVL(jobEntry.getProxyHost(), ""));
+    wProxyPort.setText(Const.NVL(jobEntry.getProxyPort(), ""));
+    wProxyUsername.setText(Const.NVL(jobEntry.getProxyUsername(), ""));
+    wProxyPassword.setText(Const.NVL(jobEntry.getProxyPassword(), ""));
+    wCreateRemoteFolder.setSelection(jobEntry.isCreateRemoteFolder());
+
+    wAfterFTPPut.setText(JobEntrySFTPPUT.getAfterSFTPPutDesc(jobEntry.getAfterFTPS()));
+    wDestinationFolder.setText(Const.NVL(jobEntry.getDestinationFolder(), ""));
+    wCreateDestinationFolder.setSelection(jobEntry.isCreateDestinationFolder());
+    wSuccessWhenNoFile.setSelection(jobEntry.isSuccessWhenNoFile());
+
+    wName.selectAll();
+    wName.setFocus();
+  }
 	
 	private void cancel()
 	{

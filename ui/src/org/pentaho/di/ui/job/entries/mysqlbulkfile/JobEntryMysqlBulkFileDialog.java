@@ -735,72 +735,59 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
 		shell.dispose();
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData()
-	{
-		// System.out.println("evaluates: "+jobentry.evaluates());
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    wName.setText(Const.NVL(jobEntry.getName(), ""));
+    if (jobEntry.getSchemaname() != null)
+      wTablename.setText(jobEntry.getSchemaname());
+    if (jobEntry.getTablename() != null)
+      wTablename.setText(jobEntry.getTablename());
+    if (jobEntry.getFilename() != null)
+      wFilename.setText(jobEntry.getFilename());
+    if (jobEntry.getSeparator() != null)
+      wSeparator.setText(jobEntry.getSeparator());
 
-		if (jobEntry.getName() != null)
-			wName.setText(jobEntry.getName());
-		if (jobEntry.getSchemaname() != null)
-			wTablename.setText(jobEntry.getSchemaname());
-		if (jobEntry.getTablename() != null)
-			wTablename.setText(jobEntry.getTablename());
-		if (jobEntry.getFilename() != null)
-			wFilename.setText(jobEntry.getFilename());
-		if (jobEntry.getSeparator() != null)
-			wSeparator.setText(jobEntry.getSeparator());
+    if (jobEntry.getEnclosed() != null)
+      wEnclosed.setText(jobEntry.getEnclosed());
+    wOptionEnclosed.setSelection(jobEntry.isOptionEnclosed());
 
-		if (jobEntry.getEnclosed() != null)
-			wEnclosed.setText(jobEntry.getEnclosed());
-		wOptionEnclosed.setSelection(jobEntry.isOptionEnclosed());
-	
-		if (jobEntry.getLineterminated() != null)
-			wLineterminated.setText(jobEntry.getLineterminated());
-		
-			
-		wHighPriority.setSelection(jobEntry.isHighPriority());
-		wOptionEnclosed.setSelection(jobEntry.isOptionEnclosed());
+    if (jobEntry.getLineterminated() != null)
+      wLineterminated.setText(jobEntry.getLineterminated());
 
-		if (jobEntry.getLimitlines() != null)
-			wLimitlines.setText(jobEntry.getLimitlines());
-		else
-			wLimitlines.setText("0");
-		
-		if (jobEntry.getListColumn() != null)
-			wListColumn.setText(jobEntry.getListColumn());
-		
-     
-		if (jobEntry.outdumpvalue>=0) 
-        {
-            wOutDumpValue.select(jobEntry.outdumpvalue );
-        }
-        else
-        {
-            wOutDumpValue.select(0); // NORMAL priority
-        }
+    wHighPriority.setSelection(jobEntry.isHighPriority());
+    wOptionEnclosed.setSelection(jobEntry.isOptionEnclosed());
 
-	
-		if (jobEntry.iffileexists>=0) 
-		{
-			wIfFileExists.select(jobEntry.iffileexists );
-		}
-		else
-		{
-			wIfFileExists.select(2); // FAIL
-		}
-		
-		if (jobEntry.getDatabase() != null)
-		{
-			wConnection.setText(jobEntry.getDatabase().getName());
-		}
-		
-		wAddFileToResult.setSelection(jobEntry.isAddFileToResult());
-		
-		wName.selectAll();
-	}
+    if (jobEntry.getLimitlines() != null)
+      wLimitlines.setText(jobEntry.getLimitlines());
+    else
+      wLimitlines.setText("0");
+
+    if (jobEntry.getListColumn() != null)
+      wListColumn.setText(jobEntry.getListColumn());
+
+    if (jobEntry.outdumpvalue >= 0) {
+      wOutDumpValue.select(jobEntry.outdumpvalue);
+    } else {
+      wOutDumpValue.select(0); // NORMAL priority
+    }
+
+    if (jobEntry.iffileexists >= 0) {
+      wIfFileExists.select(jobEntry.iffileexists);
+    } else {
+      wIfFileExists.select(2); // FAIL
+    }
+
+    if (jobEntry.getDatabase() != null) {
+      wConnection.setText(jobEntry.getDatabase().getName());
+    }
+
+    wAddFileToResult.setSelection(jobEntry.isAddFileToResult());
+
+    wName.selectAll();
+    wName.setFocus();
+  }
 
 	private void cancel()
 	{

@@ -214,17 +214,20 @@ public class JobEntryDelayDialog extends JobEntryDialog implements JobEntryDialo
 		shell.dispose();
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData()
-	{
-		if (jobEntry.getName()    != null) wName.setText( jobEntry.getName() );
-		wName.selectAll();
-		if (jobEntry.getMaximumTimeout()!= null) wMaximumTimeout.setText( jobEntry.getMaximumTimeout() );
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (jobEntry.getName() != null)
+      wName.setText(jobEntry.getName());
+    if (jobEntry.getMaximumTimeout() != null)
+      wMaximumTimeout.setText(jobEntry.getMaximumTimeout());
 
-		wScaleTime.select(jobEntry.scaleTime );
-	}
+    wScaleTime.select(jobEntry.scaleTime);
+
+    wName.selectAll();
+    wName.setFocus();
+  }
 
 	private void cancel()
 	{

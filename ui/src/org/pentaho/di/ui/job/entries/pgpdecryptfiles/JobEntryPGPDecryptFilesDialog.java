@@ -1739,8 +1739,7 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
 	 */
 	public void getData()
 	{
-		if (jobEntry.getName() != null) wName.setText( jobEntry.getName() );
-		wName.selectAll();
+		wName.setText( Const.nullToEmpty(jobEntry.getName()) );
 		
 		if (jobEntry.source_filefolder != null) {
 			for (int i = 0; i < jobEntry.source_filefolder.length; i++) {
@@ -1824,6 +1823,9 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
 		wSpecifyMoveFormat.setSelection(jobEntry.isSpecifyMoveFormat());
 		if (jobEntry.getMovedDateTimeFormat()!= null) wMovedDateTimeFormat.setText( jobEntry.getMovedDateTimeFormat() );
 		wAddMovedDateBeforeExtension.setSelection(jobEntry.isAddMovedDateBeforeExtension());
+		
+    wName.selectAll();
+    wName.setFocus();
 	}
 
 	private void cancel()

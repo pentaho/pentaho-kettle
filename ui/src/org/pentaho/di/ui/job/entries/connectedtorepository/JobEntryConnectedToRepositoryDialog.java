@@ -348,15 +348,18 @@ public class JobEntryConnectedToRepositoryDialog extends JobEntryDialog implemen
     /**
      * Copy information from the meta-data input to the dialog fields.
      */
-    public void getData()
-    {
-        if (jobEntry.getName() != null) wName.setText(jobEntry.getName());
-        wspecificRep.setSelection(jobEntry.isSpecificRep());
-        if (jobEntry.getRepName() != null)  wRepName.setText(jobEntry.getRepName());
-        wspecificUser.setSelection(jobEntry.isSpecificUser());
-        if (jobEntry.getUserName() != null)  wUserName.setText(jobEntry.getUserName());
-        wName.selectAll();
-		
+    public void getData() {
+      if (jobEntry.getName() != null)
+        wName.setText(jobEntry.getName());
+      wspecificRep.setSelection(jobEntry.isSpecificRep());
+      if (jobEntry.getRepName() != null)
+        wRepName.setText(jobEntry.getRepName());
+      wspecificUser.setSelection(jobEntry.isSpecificUser());
+      if (jobEntry.getUserName() != null)
+        wUserName.setText(jobEntry.getUserName());
+  
+      wName.selectAll();
+      wName.setFocus();
     }
 
     private void cancel()

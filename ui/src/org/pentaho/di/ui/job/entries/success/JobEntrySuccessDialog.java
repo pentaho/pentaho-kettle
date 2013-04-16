@@ -209,12 +209,11 @@ public class JobEntrySuccessDialog extends JobEntryDialog implements JobEntryDia
     /**
      * Copy information from the meta-data input to the dialog fields.
      */
-    public void getData()
-    {
-        if (jobEntry.getName() != null)
-            wName.setText(jobEntry.getName());
-        wName.selectAll();
-		
+    public void getData() {
+      wName.setText(Const.nullToEmpty(jobEntry.getName()));
+  
+      wName.selectAll();
+      wName.setFocus();
     }
 
     private void cancel()

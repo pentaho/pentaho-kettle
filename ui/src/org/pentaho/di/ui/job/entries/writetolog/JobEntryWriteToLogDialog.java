@@ -299,20 +299,16 @@ public class JobEntryWriteToLogDialog extends JobEntryDialog implements JobEntry
     /**
      * Copy information from the meta-data input to the dialog fields.
      */
-    public void getData()
-    {
-        if (jobEntry.getName() != null)
-            wName.setText(jobEntry.getName());
-        wName.selectAll();
-        if (jobEntry.getLogMessage() != null)
-            wLogMessage.setText(jobEntry.getLogMessage());
-        
-        if (jobEntry.getLogSubject() != null)
-            wLogSubject.setText(jobEntry.getLogSubject());
-
-        if(jobEntry.entryLogLevel != null) {
-          wLoglevel.select(jobEntry.entryLogLevel.getLevel());
-        }
+    public void getData() {
+      wName.setText(Const.nullToEmpty(jobEntry.getName()));
+      wLogMessage.setText(Const.nullToEmpty(jobEntry.getLogMessage()));
+      wLogSubject.setText(Const.nullToEmpty(jobEntry.getLogSubject()));
+      if (jobEntry.entryLogLevel != null) {
+        wLoglevel.select(jobEntry.entryLogLevel.getLevel());
+      }
+  
+      wName.selectAll();
+      wName.setFocus();
     }
 
     private void cancel()

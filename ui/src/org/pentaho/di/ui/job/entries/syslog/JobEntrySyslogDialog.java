@@ -613,20 +613,23 @@ public class JobEntrySyslogDialog extends JobEntryDialog implements JobEntryDial
     /**
      * Copy information from the meta-data input to the dialog fields.
      */
-    public void getData()
-    {
-        if (jobEntry.getName() != null)
-            wName.setText(jobEntry.getName());
-        wName.getTextWidget().selectAll();
-
-        wServerName.setText(Const.NVL(jobEntry.getServerName(), ""));
-        wPort.setText(Const.NVL(jobEntry.getPort(), String.valueOf(SyslogDefs.DEFAULT_PORT)));
-        if(jobEntry.getFacility()!=null) wFacility.setText(jobEntry.getFacility());
-        if(jobEntry.getPriority()!=null) wPriority.setText(jobEntry.getPriority());
-        if(jobEntry.getMessage()!=null) wMessage.setText(jobEntry.getMessage());
-        if(jobEntry.getDatePattern()!=null) wDatePattern.setText(jobEntry.getDatePattern());
-        wAddTimestamp.setSelection(jobEntry.isAddTimestamp());
-        wAddHostName.setSelection(jobEntry.isAddHostName());
+    public void getData() {
+      wName.setText(Const.nullToEmpty(jobEntry.getName()));
+      wServerName.setText(Const.NVL(jobEntry.getServerName(), ""));
+      wPort.setText(Const.NVL(jobEntry.getPort(), String.valueOf(SyslogDefs.DEFAULT_PORT)));
+      if (jobEntry.getFacility() != null)
+        wFacility.setText(jobEntry.getFacility());
+      if (jobEntry.getPriority() != null)
+        wPriority.setText(jobEntry.getPriority());
+      if (jobEntry.getMessage() != null)
+        wMessage.setText(jobEntry.getMessage());
+      if (jobEntry.getDatePattern() != null)
+        wDatePattern.setText(jobEntry.getDatePattern());
+      wAddTimestamp.setSelection(jobEntry.isAddTimestamp());
+      wAddHostName.setSelection(jobEntry.isAddHostName());
+  
+      wName.selectAll();
+      wName.setFocus();
     }
 
     private void cancel()

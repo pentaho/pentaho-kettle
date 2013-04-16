@@ -997,70 +997,76 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 		shell.dispose();
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData()
-	{
-		if (jobEntry.getName()    != null) wName.setText( jobEntry.getName() );
-		wName.selectAll();
-		if (jobEntry.getRepositoryname()!= null) wRepositoryname.setText( jobEntry.getRepositoryname() );
-		if (jobEntry.getUsername()!= null) wUserName.setText( jobEntry.getUsername() );
-		wPassword.setText(Const.NVL(jobEntry.getPassword(), ""));
-		if (jobEntry.getTargetfilename()!= null) wTargetFilename.setText( jobEntry.getTargetfilename() );
-		
-		if(jobEntry.getIfFileExists()!=null)
-		{
-			if(jobEntry.getIfFileExists().equals(jobEntry.If_FileExists_Overwrite))
-				wIfFileExists.select(1);
-			else if(jobEntry.getIfFileExists().equals(jobEntry.If_FileExists_Uniquename))
-				wIfFileExists.select(2);
-			else if(jobEntry.getIfFileExists().equals(jobEntry.If_FileExists_Fail))
-				wIfFileExists.select(3);
-			else wIfFileExists.select(0);
-			
-		}else wIfFileExists.select(0);
-		
-		if(jobEntry.getExportType()!=null)
-		{
-			if(jobEntry.getExportType().equals(jobEntry.Export_Jobs))
-				wExportType.select(1);
-			else if(jobEntry.getExportType().equals(jobEntry.Export_Trans))
-				wExportType.select(2);
-			else if(jobEntry.getExportType().equals(jobEntry.Export_By_Folder))
-				wExportType.select(3);
-			else if(jobEntry.getExportType().equals(jobEntry.Export_One_Folder))
-				wExportType.select(4);
-			else 
-				wExportType.select(0);
-			
-		}else wExportType.select(0);
-		
-        if (jobEntry.getDirectory() != null)
-            wFoldername.setText(jobEntry.getDirectory());
-        
-    	wAddDate.setSelection(jobEntry.isAddDate());
-		wAddTime.setSelection(jobEntry.isAddTime());
-		wSpecifyFormat.setSelection(jobEntry.isSpecifyFormat());
-		if (jobEntry.getDateTimeFormat()!= null) wDateTimeFormat.setText( jobEntry.getDateTimeFormat() );
-		wcreateFolder.setSelection(jobEntry.isCreateFolder());
-		wNewFolder.setSelection(jobEntry.isNewFolder());
-		wAddFileToResult.setSelection(jobEntry.isAddresultfilesname());
-		
-		if (jobEntry.getNrLimit()!= null) 
-			wLimit.setText( jobEntry.getNrLimit() );
-		else
-			wLimit.setText("10");
-		
-		if(jobEntry.getSuccessCondition()!=null)
-		{
-			if(jobEntry.getSuccessCondition().equals(jobEntry.SUCCESS_IF_ERRORS_LESS))
-				wSuccessCondition.select(1);
-			else
-				wSuccessCondition.select(0);	
-		}else wSuccessCondition.select(0);
-		
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (jobEntry.getName() != null)
+      wName.setText(jobEntry.getName());
+    if (jobEntry.getRepositoryname() != null)
+      wRepositoryname.setText(jobEntry.getRepositoryname());
+    if (jobEntry.getUsername() != null)
+      wUserName.setText(jobEntry.getUsername());
+    wPassword.setText(Const.NVL(jobEntry.getPassword(), ""));
+    if (jobEntry.getTargetfilename() != null)
+      wTargetFilename.setText(jobEntry.getTargetfilename());
+
+    if (jobEntry.getIfFileExists() != null) {
+      if (jobEntry.getIfFileExists().equals(jobEntry.If_FileExists_Overwrite))
+        wIfFileExists.select(1);
+      else if (jobEntry.getIfFileExists().equals(jobEntry.If_FileExists_Uniquename))
+        wIfFileExists.select(2);
+      else if (jobEntry.getIfFileExists().equals(jobEntry.If_FileExists_Fail))
+        wIfFileExists.select(3);
+      else
+        wIfFileExists.select(0);
+
+    } else
+      wIfFileExists.select(0);
+
+    if (jobEntry.getExportType() != null) {
+      if (jobEntry.getExportType().equals(jobEntry.Export_Jobs))
+        wExportType.select(1);
+      else if (jobEntry.getExportType().equals(jobEntry.Export_Trans))
+        wExportType.select(2);
+      else if (jobEntry.getExportType().equals(jobEntry.Export_By_Folder))
+        wExportType.select(3);
+      else if (jobEntry.getExportType().equals(jobEntry.Export_One_Folder))
+        wExportType.select(4);
+      else
+        wExportType.select(0);
+
+    } else
+      wExportType.select(0);
+
+    if (jobEntry.getDirectory() != null)
+      wFoldername.setText(jobEntry.getDirectory());
+
+    wAddDate.setSelection(jobEntry.isAddDate());
+    wAddTime.setSelection(jobEntry.isAddTime());
+    wSpecifyFormat.setSelection(jobEntry.isSpecifyFormat());
+    if (jobEntry.getDateTimeFormat() != null)
+      wDateTimeFormat.setText(jobEntry.getDateTimeFormat());
+    wcreateFolder.setSelection(jobEntry.isCreateFolder());
+    wNewFolder.setSelection(jobEntry.isNewFolder());
+    wAddFileToResult.setSelection(jobEntry.isAddresultfilesname());
+
+    if (jobEntry.getNrLimit() != null)
+      wLimit.setText(jobEntry.getNrLimit());
+    else
+      wLimit.setText("10");
+
+    if (jobEntry.getSuccessCondition() != null) {
+      if (jobEntry.getSuccessCondition().equals(jobEntry.SUCCESS_IF_ERRORS_LESS))
+        wSuccessCondition.select(1);
+      else
+        wSuccessCondition.select(0);
+    } else
+      wSuccessCondition.select(0);
+
+    wName.selectAll();
+    wName.setFocus();
+  }
 
 	private void cancel()
 	{

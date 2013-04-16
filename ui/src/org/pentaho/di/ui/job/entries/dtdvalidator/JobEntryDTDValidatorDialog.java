@@ -358,19 +358,21 @@ public class JobEntryDTDValidatorDialog extends JobEntryDialog implements JobEnt
 		wbdtdFilename.setEnabled(!wDTDIntern.getSelection());
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData()
-	{
-		if (jobEntry.getName()    != null) wName.setText( jobEntry.getName() );
-		wName.selectAll();
-		if (jobEntry.getxmlFilename()!= null) wxmlFilename.setText( jobEntry.getxmlFilename() );
-		if (jobEntry.getdtdFilename()!= null) wdtdFilename.setText( jobEntry.getdtdFilename() );	
-		wDTDIntern.setSelection(jobEntry.getDTDIntern());
-		
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (jobEntry.getName() != null)
+      wName.setText(jobEntry.getName());
+    if (jobEntry.getxmlFilename() != null)
+      wxmlFilename.setText(jobEntry.getxmlFilename());
+    if (jobEntry.getdtdFilename() != null)
+      wdtdFilename.setText(jobEntry.getdtdFilename());
+    wDTDIntern.setSelection(jobEntry.getDTDIntern());
 
-	}
+    wName.selectAll();
+    wName.setFocus();
+  }
 
 	private void cancel()
 	{

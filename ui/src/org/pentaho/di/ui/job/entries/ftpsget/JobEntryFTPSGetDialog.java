@@ -1473,61 +1473,57 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
     /**
      * Copy information from the meta-data input to the dialog fields.
      */
-    public void getData()
-    {
-        if (jobEntry.getName() != null)
-            wName.setText(jobEntry.getName());
-        wName.getTextWidget().selectAll();
-
-        wServerName.setText(Const.NVL(jobEntry.getServerName(), ""));
-        wPort.setText(Const.NVL(jobEntry.getPort(), "21"));
-        wUserName.setText(Const.NVL(jobEntry.getUserName(), ""));
-        wPassword.setText(Const.NVL(jobEntry.getPassword(), ""));
-        wFTPSDirectory.setText(Const.NVL(jobEntry.getFTPSDirectory(), ""));
-        wTargetDirectory.setText(Const.NVL(jobEntry.getTargetDirectory(), ""));
-        wWildcard.setText(Const.NVL(jobEntry.getWildcard(), ""));
-        wBinaryMode.setSelection(jobEntry.isBinaryMode());
-        wTimeout.setText("" + jobEntry.getTimeout());
-        wRemove.setSelection(jobEntry.getRemove());
-        wOnlyNew.setSelection(jobEntry.isOnlyGettingNewFiles());
-        wActive.setSelection(jobEntry.isActiveConnection());
-        wMove.setSelection(jobEntry.isMoveFiles());
-        wMoveToDirectory.setText(Const.NVL(jobEntry.getMoveToDirectory(), ""));
-        
-    	wAddDate.setSelection(jobEntry.isDateInFilename());
-    	wAddTime.setSelection(jobEntry.isTimeInFilename());
-    	
-    	if (jobEntry.getDateTimeFormat()!= null) wDateTimeFormat.setText( jobEntry.getDateTimeFormat() );
-    	wSpecifyFormat.setSelection(jobEntry.isSpecifyFormat());
-    	
-    	wAddDateBeforeExtension.setSelection(jobEntry.isAddDateBeforeExtension());
-    	wAddFilenameToResult.setSelection(jobEntry.isAddToResult());
-    	wCreateMoveFolder.setSelection(jobEntry.isCreateMoveFolder());
-    	
-        wProxyHost.setText(Const.NVL(jobEntry.getProxyHost(), ""));       
-        wProxyPort.setText(Const.NVL(jobEntry.getProxyPort(), ""));
-        wProxyUsername.setText(Const.NVL(jobEntry.getProxyUsername(), ""));
-        wProxyPassword.setText(Const.NVL(jobEntry.getProxyPassword(), ""));
-        
-        wIfFileExists.select(jobEntry.ifFileExists);
-        
-    	if (jobEntry.getLimit()!= null) 
-			wNrErrorsLessThan.setText( jobEntry.getLimit());
-		else
-			wNrErrorsLessThan.setText("10");
-		
-		
-		if(jobEntry.getSuccessCondition()!=null)
-		{
-			if(jobEntry.getSuccessCondition().equals(jobEntry.SUCCESS_IF_AT_LEAST_X_FILES_DOWNLOADED))
-				wSuccessCondition.select(1);
-			else if(jobEntry.getSuccessCondition().equals(jobEntry.SUCCESS_IF_ERRORS_LESS))
-				wSuccessCondition.select(2);
-			else
-				wSuccessCondition.select(0);	
-		}else wSuccessCondition.select(0);
-		
-		wConnectionType.setText(FTPSConnection.getConnectionTypeDesc(jobEntry.getConnectionType()));
+    public void getData() {
+      wName.setText(Const.nullToEmpty(jobEntry.getName()));
+  
+      wServerName.setText(Const.NVL(jobEntry.getServerName(), ""));
+      wPort.setText(Const.NVL(jobEntry.getPort(), "21"));
+      wUserName.setText(Const.NVL(jobEntry.getUserName(), ""));
+      wPassword.setText(Const.NVL(jobEntry.getPassword(), ""));
+      wFTPSDirectory.setText(Const.NVL(jobEntry.getFTPSDirectory(), ""));
+      wTargetDirectory.setText(Const.NVL(jobEntry.getTargetDirectory(), ""));
+      wWildcard.setText(Const.NVL(jobEntry.getWildcard(), ""));
+      wBinaryMode.setSelection(jobEntry.isBinaryMode());
+      wTimeout.setText("" + jobEntry.getTimeout());
+      wRemove.setSelection(jobEntry.getRemove());
+      wOnlyNew.setSelection(jobEntry.isOnlyGettingNewFiles());
+      wActive.setSelection(jobEntry.isActiveConnection());
+      wMove.setSelection(jobEntry.isMoveFiles());
+      wMoveToDirectory.setText(Const.NVL(jobEntry.getMoveToDirectory(), ""));
+  
+      wAddDate.setSelection(jobEntry.isDateInFilename());
+      wAddTime.setSelection(jobEntry.isTimeInFilename());
+  
+      wDateTimeFormat.setText(Const.nullToEmpty(jobEntry.getDateTimeFormat()));
+      wSpecifyFormat.setSelection(jobEntry.isSpecifyFormat());
+  
+      wAddDateBeforeExtension.setSelection(jobEntry.isAddDateBeforeExtension());
+      wAddFilenameToResult.setSelection(jobEntry.isAddToResult());
+      wCreateMoveFolder.setSelection(jobEntry.isCreateMoveFolder());
+  
+      wProxyHost.setText(Const.NVL(jobEntry.getProxyHost(), ""));
+      wProxyPort.setText(Const.NVL(jobEntry.getProxyPort(), ""));
+      wProxyUsername.setText(Const.NVL(jobEntry.getProxyUsername(), ""));
+      wProxyPassword.setText(Const.NVL(jobEntry.getProxyPassword(), ""));
+  
+      wIfFileExists.select(jobEntry.ifFileExists);
+  
+      wNrErrorsLessThan.setText(Const.NVL(jobEntry.getLimit(), "10"));
+  
+      if (jobEntry.getSuccessCondition() != null) {
+        if (jobEntry.getSuccessCondition().equals(jobEntry.SUCCESS_IF_AT_LEAST_X_FILES_DOWNLOADED))
+          wSuccessCondition.select(1);
+        else if (jobEntry.getSuccessCondition().equals(jobEntry.SUCCESS_IF_ERRORS_LESS))
+          wSuccessCondition.select(2);
+        else
+          wSuccessCondition.select(0);
+      } else
+        wSuccessCondition.select(0);
+  
+      wConnectionType.setText(FTPSConnection.getConnectionTypeDesc(jobEntry.getConnectionType()));
+  
+      wName.selectAll();
+      wName.setFocus();
     }
 
     private void cancel()

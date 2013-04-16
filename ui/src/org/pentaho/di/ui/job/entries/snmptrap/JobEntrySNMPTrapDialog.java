@@ -601,23 +601,22 @@ public class JobEntrySNMPTrapDialog extends JobEntryDialog implements JobEntryDi
     /**
      * Copy information from the meta-data input to the dialog fields.
      */
-    public void getData()
-    {
-        if (jobEntry.getName() != null)
-            wName.setText(jobEntry.getName());
-        wName.getTextWidget().selectAll();
-
-        wServerName.setText(Const.NVL(jobEntry.getServerName(), ""));
-        wPort.setText(jobEntry.getPort());
-        wOID.setText(Const.NVL(jobEntry.getOID(), ""));
-        wTimeout.setText("" + jobEntry.getTimeout());
-        wRetry.setText("" + jobEntry.getRetry());
-        wComString.setText(Const.NVL(jobEntry.getComString(), ""));
-        wMessage.setText(Const.NVL(jobEntry.getMessage(), ""));
-        wTargetType.setText(jobEntry.getTargetTypeDesc(jobEntry.getTargetType()));
-        wUser.setText(Const.NVL(jobEntry.getUser(),""));
-        wPassphrase.setText(Const.NVL(jobEntry.getPassPhrase(),""));
-        wEngineID.setText(Const.NVL(jobEntry.getEngineID(),""));
+    public void getData() {
+      wName.setText(Const.nullToEmpty(jobEntry.getName()));
+      wServerName.setText(Const.NVL(jobEntry.getServerName(), ""));
+      wPort.setText(jobEntry.getPort());
+      wOID.setText(Const.NVL(jobEntry.getOID(), ""));
+      wTimeout.setText("" + jobEntry.getTimeout());
+      wRetry.setText("" + jobEntry.getRetry());
+      wComString.setText(Const.NVL(jobEntry.getComString(), ""));
+      wMessage.setText(Const.NVL(jobEntry.getMessage(), ""));
+      wTargetType.setText(jobEntry.getTargetTypeDesc(jobEntry.getTargetType()));
+      wUser.setText(Const.NVL(jobEntry.getUser(), ""));
+      wPassphrase.setText(Const.NVL(jobEntry.getPassPhrase(), ""));
+      wEngineID.setText(Const.NVL(jobEntry.getEngineID(), ""));
+  
+      wName.selectAll();
+      wName.setFocus();
     }
 
     private void cancel()

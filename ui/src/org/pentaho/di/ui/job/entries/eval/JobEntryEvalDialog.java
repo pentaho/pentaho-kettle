@@ -291,13 +291,14 @@ public class JobEntryEvalDialog extends JobEntryDialog implements JobEntryDialog
     /**
      * Copy information from the meta-data input to the dialog fields.
      */
-    public void getData()
-    {
-        if (jobEntry.getName() != null)
-            wName.setText(jobEntry.getName());
-        wName.selectAll();
-        if (jobEntry.getScript() != null)
-            wScript.setText(jobEntry.getScript());
+    public void getData() {
+      if (jobEntry.getName() != null)
+        wName.setText(jobEntry.getName());
+      if (jobEntry.getScript() != null)
+        wScript.setText(jobEntry.getScript());
+
+      wName.selectAll();
+      wName.setFocus();
     }
 
     private void cancel()

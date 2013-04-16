@@ -1503,164 +1503,118 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
         shell.dispose();
     }
 
-    public void getData()
-    {
-        if (jobEntry.getName() != null)
-            wName.setText(jobEntry.getName());
-        if (jobEntry.getDestination() != null)
-            wDestination.setText(jobEntry.getDestination());
-		if (jobEntry.getDestinationCc() != null)
-			wDestinationCc.setText(jobEntry.getDestinationCc());
-		if (jobEntry.getDestinationBCc() != null)
-			wDestinationBCc.setText(jobEntry.getDestinationBCc());
-        if (jobEntry.getServer() != null)
-            wServer.setText(jobEntry.getServer());
-        if (jobEntry.getPort() != null)
-            wPort.setText(jobEntry.getPort());
-        if (jobEntry.getReplyAddress() != null)
-            wReply.setText(jobEntry.getReplyAddress());
-        if (jobEntry.getReplyName() != null)
-            wReplyName.setText(jobEntry.getReplyName());
-        if (jobEntry.getSubject() != null)
-            wSubject.setText(jobEntry.getSubject());
-        if (jobEntry.getContactPerson() != null)
-            wPerson.setText(jobEntry.getContactPerson());
-        if (jobEntry.getContactPhone() != null)
-            wPhone.setText(jobEntry.getContactPhone());
-        if (jobEntry.getComment() != null)
-            wComment.setText(jobEntry.getComment());
-
-        wAddDate.setSelection(jobEntry.getIncludeDate());
-        wIncludeFiles.setSelection(jobEntry.isIncludingFiles());
-
-        if (jobEntry.getFileType() != null)
-        {
-            int types[] = jobEntry.getFileType();
-            wTypes.setSelection(types);
+    public void getData() {
+      wName.setText(Const.nullToEmpty(jobEntry.getName()));
+      wDestination.setText(Const.nullToEmpty(jobEntry.getDestination()));
+      wDestinationCc.setText(Const.nullToEmpty(jobEntry.getDestinationCc()));
+      wDestinationBCc.setText(Const.nullToEmpty(jobEntry.getDestinationBCc()));
+      wServer.setText(Const.nullToEmpty(jobEntry.getServer()));
+      wPort.setText(Const.nullToEmpty(jobEntry.getPort()));
+      wReply.setText(Const.nullToEmpty(jobEntry.getReplyAddress()));
+      wReplyName.setText(Const.nullToEmpty(jobEntry.getReplyName()));
+      wSubject.setText(Const.nullToEmpty(jobEntry.getSubject()));
+      wPerson.setText(Const.nullToEmpty(jobEntry.getContactPerson()));
+      wPhone.setText(Const.nullToEmpty(jobEntry.getContactPhone()));
+      wComment.setText(Const.nullToEmpty(jobEntry.getComment()));
+  
+      wAddDate.setSelection(jobEntry.getIncludeDate());
+      wIncludeFiles.setSelection(jobEntry.isIncludingFiles());
+  
+      if (jobEntry.getFileType() != null) {
+        int types[] = jobEntry.getFileType();
+        wTypes.setSelection(types);
+      }
+  
+      wZipFiles.setSelection(jobEntry.isZipFiles());
+      wZipFilename.setText(Const.nullToEmpty(jobEntry.getZipFilename()));
+  
+      wUseAuth.setSelection(jobEntry.isUsingAuthentication());
+      wUseSecAuth.setSelection(jobEntry.isUsingSecureAuthentication());
+      wAuthUser.setText(Const.nullToEmpty(jobEntry.getAuthenticationUser()));
+      wAuthPass.setText(Const.nullToEmpty(jobEntry.getAuthenticationPassword()));
+  
+      wOnlyComment.setSelection(jobEntry.isOnlySendComment());
+  
+      wUseHTML.setSelection(jobEntry.isUseHTML());
+  
+      if (jobEntry.getEncoding() != null) {
+        wEncoding.setText("" + jobEntry.getEncoding());
+      } else {
+  
+        wEncoding.setText("UTF-8");
+      }
+  
+      // Secure connection type	
+      if (jobEntry.getSecureConnectionType() != null) {
+        wSecureConnectionType.setText(jobEntry.getSecureConnectionType());
+      } else {
+        wSecureConnectionType.setText("SSL");
+      }
+      wUsePriority.setSelection(jobEntry.isUsePriority());
+  
+      // Priority
+  
+      if (jobEntry.getPriority() != null) {
+        if (jobEntry.getPriority().equals("low")) {
+          wPriority.select(0); // Low
+        } else if (jobEntry.getPriority().equals("normal")) {
+          wPriority.select(1); // Normal
+  
+        } else {
+          wPriority.select(2); // Default High
+  
         }
-
-        wZipFiles.setSelection(jobEntry.isZipFiles());
-        if (jobEntry.getZipFilename() != null)
-            wZipFilename.setText(jobEntry.getZipFilename());
-
-        wUseAuth.setSelection(jobEntry.isUsingAuthentication());
-        wUseSecAuth.setSelection(jobEntry.isUsingSecureAuthentication());
-        if (jobEntry.getAuthenticationUser() != null)
-            wAuthUser.setText(jobEntry.getAuthenticationUser());
-        if (jobEntry.getAuthenticationPassword() != null)
-            wAuthPass.setText(jobEntry.getAuthenticationPassword());
-
-        wOnlyComment.setSelection(jobEntry.isOnlySendComment());
-        
-        wUseHTML.setSelection(jobEntry.isUseHTML());
-        
-        if (jobEntry.getEncoding()!=null) 
-        {
-        	wEncoding.setText(""+jobEntry.getEncoding());
-        }else {
-        	
-        	wEncoding.setText("UTF-8");}
-        	
-        // Secure connection type	
-        if (jobEntry.getSecureConnectionType() !=null)
-        {
-        	wSecureConnectionType.setText(jobEntry.getSecureConnectionType());
+      } else {
+        wPriority.select(3); // Default High
+      }
+  
+      // Importance
+      if (jobEntry.getImportance() != null) {
+        if (jobEntry.getImportance().equals("low")) {
+          wImportance.select(0); // Low
+        } else if (jobEntry.getImportance().equals("normal")) {
+          wImportance.select(1); // Normal
+  
+        } else {
+          wImportance.select(2); // Default High
+  
         }
-        else
-        {
-        	wSecureConnectionType.setText("SSL");
+      } else {
+        wImportance.select(3); // Default High
+      }
+  
+      if (jobEntry.getReplyToAddresses() != null)
+        wReplyToAddress.setText(jobEntry.getReplyToAddresses());
+  
+      // Sensitivity
+      if (jobEntry.getSensitivity() != null) {
+        if (jobEntry.getSensitivity().equals("personal")) {
+          wSensitivity.select(1);
+        } else if (jobEntry.getSensitivity().equals("private")) {
+          wSensitivity.select(2);
+        } else if (jobEntry.getSensitivity().equals("company-confidential")) {
+          wSensitivity.select(3);
+        } else {
+          wSensitivity.select(0);
         }
-        wUsePriority.setSelection(jobEntry.isUsePriority());
-        
-        // Priority
-        
-        if (jobEntry.getPriority()!=null)
-        {
-	        if (jobEntry.getPriority().equals("low")) 
-	        {
-	        	wPriority.select(0); // Low
-	        }
-	        else if (jobEntry.getPriority().equals("normal")) 
-	        {	
-	        	wPriority.select(1); // Normal
-	        
-	        }
-		    else 
-		    {	
-		    	wPriority.select(2);  // Default High
-		    
-		    }
+      } else {
+        wSensitivity.select(0); // Default normal
+      }
+  
+      if (jobEntry.embeddedimages != null) {
+        for (int i = 0; i < jobEntry.embeddedimages.length; i++) {
+          TableItem ti = wFields.table.getItem(i);
+          if (jobEntry.embeddedimages[i] != null)
+            ti.setText(1, jobEntry.embeddedimages[i]);
+          if (jobEntry.contentids[i] != null)
+            ti.setText(2, jobEntry.contentids[i]);
         }
-        else
-        {
-        	wPriority.select(3);  // Default High
-        }
-        
-        // Importance
-        if (jobEntry.getImportance()!=null)
-        {
-	        if (jobEntry.getImportance().equals("low")) 
-	        {
-	        	wImportance.select(0); // Low
-	        }
-	        else if (jobEntry.getImportance().equals("normal")) 
-	        {	
-	        	wImportance.select(1); // Normal
-	        
-	        }
-		    else 
-		    {	
-		    	wImportance.select(2);  // Default High
-		    
-		    }
-        }
-        else
-        {
-        	wImportance.select(3);  // Default High
-        }
-        
-        if (jobEntry.getReplyToAddresses() != null)
-            wReplyToAddress.setText(jobEntry.getReplyToAddresses());
-        
-        // Sensitivity
-        if (jobEntry.getSensitivity()!=null)
-        {
-            if (jobEntry.getSensitivity().equals("personal")) 
-            {
-            	wSensitivity.select(1);
-            }
-            else if (jobEntry.getSensitivity().equals("private")) 
-            {	
-            	wSensitivity.select(2); 
-            }
-            else if (jobEntry.getSensitivity().equals("company-confidential")) 
-            {	
-            	wSensitivity.select(3); 
-            }
-    	    else 
-    	    {	
-    	    	wSensitivity.select(0);
-    	    }
-        }
-        else
-        {
-        	wSensitivity.select(0);  // Default normal
-        }
-                
-        
-        if (jobEntry.embeddedimages != null)
-		{
-			for (int i = 0; i < jobEntry.embeddedimages.length; i++)
-			{
-				TableItem ti = wFields.table.getItem(i);
-				if (jobEntry.embeddedimages[i] != null)
-					ti.setText(1, jobEntry.embeddedimages[i]);
-					if (jobEntry.contentids[i] != null)
-						ti.setText(2, jobEntry.contentids[i]);
-			}
-			wFields.setRowNums();
-			wFields.optWidth(true);
-		}
+        wFields.setRowNums();
+        wFields.optWidth(true);
+      }
+  
+      wName.selectAll();
+      wName.setFocus();
     }
 
     private void cancel()

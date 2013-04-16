@@ -346,27 +346,28 @@ public class JobEntryTruncateTablesDialog extends JobEntryDialog implements JobE
     /**
      * Copy information from the meta-data input to the dialog fields.
      */
-    public void getData()
-    {
-        if (jobEntry.getName() != null) wName.setText(jobEntry.getName());
-        if (jobEntry.getDatabase() != null)
-            wConnection.setText(jobEntry.getDatabase().getName());
-        if (jobEntry.arguments != null)
-		{
-			for (int i = 0; i < jobEntry.arguments.length; i++)
-			{
-				//TableItem ti = new TableItem(wFields.table, SWT.NONE);
-				TableItem ti = wFields.table.getItem(i);
-				if (jobEntry.arguments[i] != null) ti.setText(1, jobEntry.arguments[i]);
-				if (jobEntry.schemaname[i] != null) ti.setText(2, jobEntry.schemaname[i]);
-			}
-
-		    wFields.removeEmptyRows();
-		    wFields.setRowNums();
-		    wFields.optWidth(true);
-		}
-        wPrevious.setSelection(jobEntry.argFromPrevious);        
-        wName.selectAll();
+    public void getData() {
+      wName.setText(Const.nullToEmpty(jobEntry.getName()));
+      if (jobEntry.getDatabase() != null)
+        wConnection.setText(jobEntry.getDatabase().getName());
+      if (jobEntry.arguments != null) {
+        for (int i = 0; i < jobEntry.arguments.length; i++) {
+          //TableItem ti = new TableItem(wFields.table, SWT.NONE);
+          TableItem ti = wFields.table.getItem(i);
+          if (jobEntry.arguments[i] != null)
+            ti.setText(1, jobEntry.arguments[i]);
+          if (jobEntry.schemaname[i] != null)
+            ti.setText(2, jobEntry.schemaname[i]);
+        }
+  
+        wFields.removeEmptyRows();
+        wFields.setRowNums();
+        wFields.optWidth(true);
+      }
+      wPrevious.setSelection(jobEntry.argFromPrevious);
+  
+      wName.selectAll();
+      wName.setFocus();
     }
 
     private void cancel()

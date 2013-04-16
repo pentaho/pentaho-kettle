@@ -433,34 +433,31 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
     /**
      * Copy information from the meta-data input to the dialog fields.
      */
-    public void getData()
-    {
-        if (jobEntry.getName() != null)
-            wName.setText(jobEntry.getName());
-        if (jobEntry.getTablename() != null)
-            wTablename.setText(jobEntry.getTablename());
-       
-        if (jobEntry.getSchemaname() != null)
-            wSchemaname.setText(jobEntry.getSchemaname());
-        
-        if (jobEntry.getDatabase() != null)
-        {
-            wConnection.setText(jobEntry.getDatabase().getName());
+    public void getData() {
+      if (jobEntry.getName() != null)
+        wName.setText(jobEntry.getName());
+      if (jobEntry.getTablename() != null)
+        wTablename.setText(jobEntry.getTablename());
+  
+      if (jobEntry.getSchemaname() != null)
+        wSchemaname.setText(jobEntry.getSchemaname());
+  
+      if (jobEntry.getDatabase() != null) {
+        wConnection.setText(jobEntry.getDatabase().getName());
+      }
+  
+      if (jobEntry.arguments != null) {
+        for (int i = 0; i < jobEntry.arguments.length; i++) {
+          TableItem ti = wFields.table.getItem(i);
+          if (jobEntry.arguments[i] != null)
+            ti.setText(1, jobEntry.arguments[i]);
         }
-        
-        wName.selectAll();
-        
-        if (jobEntry.arguments != null)
-		{
-			for (int i = 0; i < jobEntry.arguments.length; i++)
-			{
-				TableItem ti = wFields.table.getItem(i);
-				if (jobEntry.arguments[i] != null)
-					ti.setText(1, jobEntry.arguments[i]);
-			}
-			wFields.setRowNums();
-			wFields.optWidth(true);
-		}
+        wFields.setRowNums();
+        wFields.optWidth(true);
+      }
+  
+      wName.selectAll();
+      wName.setFocus();
     }
 
     private void cancel()

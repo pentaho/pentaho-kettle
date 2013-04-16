@@ -332,27 +332,25 @@ public class JobEntryCheckDbConnectionsDialog extends JobEntryDialog implements 
     /**
      * Copy information from the meta-data input to the dialog fields.
      */
-    public void getData()
-    {
-        if (jobEntry.getName() != null)
-            wName.setText(jobEntry.getName());
-        wName.selectAll();
-        
-        if (jobEntry.connections != null)
-		{
-			for (int i = 0; i < jobEntry.connections.length; i++)
-			{
-				TableItem ti = wFields.table.getItem(i);
-				if (jobEntry.connections[i] != null)
-				{
-					ti.setText(1, jobEntry.connections[i].getName());
-					ti.setText(2, ""+Const.toInt(jobEntry.waitfors[i],0));
-					ti.setText(3,JobEntryCheckDbConnections.getWaitTimeDesc(jobEntry.waittimes[i]));
-				}
-			}
-			wFields.setRowNums();
-			wFields.optWidth(true);
-		}
+    public void getData() {
+      if (jobEntry.getName() != null)
+        wName.setText(jobEntry.getName());
+  
+      if (jobEntry.connections != null) {
+        for (int i = 0; i < jobEntry.connections.length; i++) {
+          TableItem ti = wFields.table.getItem(i);
+          if (jobEntry.connections[i] != null) {
+            ti.setText(1, jobEntry.connections[i].getName());
+            ti.setText(2, "" + Const.toInt(jobEntry.waitfors[i], 0));
+            ti.setText(3, JobEntryCheckDbConnections.getWaitTimeDesc(jobEntry.waittimes[i]));
+          }
+        }
+        wFields.setRowNums();
+        wFields.optWidth(true);
+      }
+      wName.selectAll();
+      wName.setFocus();
+  
     }
 
     private void cancel()

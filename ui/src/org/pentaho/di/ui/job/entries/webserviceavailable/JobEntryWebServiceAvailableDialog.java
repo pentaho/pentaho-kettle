@@ -327,15 +327,14 @@ public class JobEntryWebServiceAvailableDialog extends JobEntryDialog implements
     /**
      * Copy information from the meta-data input to the dialog fields.
      */
-    public void getData()
-    {
-        if (jobEntry.getName() != null)
-            wName.setText(jobEntry.getName());
-        wName.selectAll();
-        if (jobEntry.getURL() != null)
-            wURL.setText(jobEntry.getURL());
-        wConnectTimeOut.setText(Const.NVL(jobEntry.getConnectTimeOut(), "0"));
-        wReadTimeOut.setText(Const.NVL(jobEntry.getReadTimeOut(), "0"));
+    public void getData() {
+      wName.setText(Const.nullToEmpty(jobEntry.getName()));
+      wURL.setText(Const.nullToEmpty(jobEntry.getURL()));
+      wConnectTimeOut.setText(Const.NVL(jobEntry.getConnectTimeOut(), "0"));
+      wReadTimeOut.setText(Const.NVL(jobEntry.getReadTimeOut(), "0"));
+  
+      wName.selectAll();
+      wName.setFocus();
     }
 
     private void cancel()

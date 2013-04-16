@@ -1604,6 +1604,16 @@ public class Const
 			return def;
 		return source;
 	}
+	
+	/**
+	 * Return empty string "" in case the given parameter is null, otherwise return the same value.
+	 * @param source The source value to check for null.
+	 * @return empty string if source is null, otherwise simply return the source value.
+	 */
+	public static final String nullToEmpty(String source) {
+	  if (source==null) return "";
+	  return source;
+	}
 
 	/**
 	 * Search for a string in an array of strings and return the index.

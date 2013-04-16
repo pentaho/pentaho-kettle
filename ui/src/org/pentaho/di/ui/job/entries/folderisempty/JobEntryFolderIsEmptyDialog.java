@@ -339,20 +339,22 @@ public class JobEntryFolderIsEmptyDialog extends JobEntryDialog implements JobEn
 		wWildcard.setEnabled(wSpecifyWildcard.getSelection());
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData()
-	{
-		if (jobEntry.getName()!= null) wName.setText( jobEntry.getName() );
-		wName.selectAll();
-		if (jobEntry.getFoldername()!= null) wFoldername.setText( jobEntry.getFoldername() );
-		wIncludeSubFolders.setSelection(jobEntry.isIncludeSubFolders());
-		wSpecifyWildcard.setSelection(jobEntry.isSpecifyWildcard());
-		if (jobEntry.getWildcard()!= null) wWildcard.setText( jobEntry.getWildcard() );
-		
-		
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (jobEntry.getName() != null)
+      wName.setText(jobEntry.getName());
+    if (jobEntry.getFoldername() != null)
+      wFoldername.setText(jobEntry.getFoldername());
+    wIncludeSubFolders.setSelection(jobEntry.isIncludeSubFolders());
+    wSpecifyWildcard.setSelection(jobEntry.isSpecifyWildcard());
+    if (jobEntry.getWildcard() != null)
+      wWildcard.setText(jobEntry.getWildcard());
+
+    wName.selectAll();
+    wName.setFocus();
+  }
 
 	private void cancel()
 	{

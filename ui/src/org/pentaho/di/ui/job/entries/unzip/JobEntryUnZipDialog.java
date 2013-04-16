@@ -1207,15 +1207,14 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
 	 */
 	public void getData()
 	{
-		if (jobEntry.getName()    != null) wName.setText( jobEntry.getName() );
-		wName.selectAll();
-		if (jobEntry.getZipFilename()!= null) wZipFilename.setText( jobEntry.getZipFilename() );
-		if (jobEntry.getWildcardSource()!= null) wWildcardSource.setText( jobEntry.getWildcardSource() );
+		wName.setText( Const.nullToEmpty(jobEntry.getName()) );
+		wZipFilename.setText( Const.nullToEmpty(jobEntry.getZipFilename()) );
+		wWildcardSource.setText( Const.nullToEmpty(jobEntry.getWildcardSource()) );
 
-		if (jobEntry.getWildcard()!= null) wWildcard.setText( jobEntry.getWildcard() );
-		if (jobEntry.getWildcardExclude()!= null) wWildcardExclude.setText( jobEntry.getWildcardExclude() );
-		if (jobEntry.getSourceDirectory()!= null) wTargetDirectory.setText( jobEntry.getSourceDirectory() );
-		if (jobEntry.getMoveToDirectory()!= null) wMovetoDirectory.setText( jobEntry.getMoveToDirectory() );
+		wWildcard.setText( Const.nullToEmpty(jobEntry.getWildcard()) );
+		wWildcardExclude.setText( Const.nullToEmpty(jobEntry.getWildcardExclude()) );
+		wTargetDirectory.setText( Const.nullToEmpty(jobEntry.getSourceDirectory()) );
+		wMovetoDirectory.setText( Const.nullToEmpty(jobEntry.getMoveToDirectory()) );
 
 		if (jobEntry.afterunzip>=0)
 		{
@@ -1232,17 +1231,14 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
 		wAddDate.setSelection(jobEntry.isDateInFilename());
 		wAddTime.setSelection(jobEntry.isTimeInFilename());
 		
-		if (jobEntry.getDateTimeFormat()!= null) wDateTimeFormat.setText( jobEntry.getDateTimeFormat() );
+		wDateTimeFormat.setText( Const.nullToEmpty(jobEntry.getDateTimeFormat()) );
 		wSpecifyFormat.setSelection(jobEntry.isSpecifyFormat());
 		
 		wRootZip.setSelection(jobEntry.isCreateRootFolder());
 		wCreateFolder.setSelection(jobEntry.isCreateFolder());
 		
-    	if (jobEntry.getLimit()!= null) 
-			wNrErrorsLessThan.setText( jobEntry.getLimit());
-		else
-			wNrErrorsLessThan.setText("10");
-    	
+    wNrErrorsLessThan.setText( Const.NVL(jobEntry.getLimit(), "10") );
+			
 		if(jobEntry.getSuccessCondition()!=null)
 		{
 			if(jobEntry.getSuccessCondition().equals(jobEntry.SUCCESS_IF_AT_LEAST_X_FILES_UN_ZIPPED))
@@ -1257,6 +1253,9 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
 		wSetModificationDateToOriginal.setSelection(jobEntry.isOriginalModificationDate());
 		wIfFileExists.select(jobEntry.getIfFileExist());
 		wcreateMoveToDirectory.setSelection(jobEntry.isCreateMoveToDirectory());
+		
+		wName.selectAll();
+		wName.setFocus();
 	}
 
 	private void cancel()

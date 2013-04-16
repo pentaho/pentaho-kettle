@@ -524,18 +524,22 @@ public class JobEntryPGPVerifyDialog extends JobEntryDialog implements JobEntryD
 		shell.dispose();
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData()
-	{
-		if (jobEntry.getName() != null) wName.setText(jobEntry.getName());
-		wName.selectAll();
-		if (jobEntry.getGPGLocation() != null) wGPGLocation.setText(jobEntry.getGPGLocation());
-		if (jobEntry.getFilename() != null) wFilename.setText(jobEntry.getFilename());
-		if (jobEntry.getDetachedfilename() != null) wDetachedFilename.setText(jobEntry.getDetachedfilename());
-		wuseDetachedSignature.setSelection(jobEntry.useDetachedfilename());
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    wName.setText(Const.nullToEmpty(jobEntry.getName()));
+    if (jobEntry.getGPGLocation() != null)
+      wGPGLocation.setText(jobEntry.getGPGLocation());
+    if (jobEntry.getFilename() != null)
+      wFilename.setText(jobEntry.getFilename());
+    if (jobEntry.getDetachedfilename() != null)
+      wDetachedFilename.setText(jobEntry.getDetachedfilename());
+    wuseDetachedSignature.setSelection(jobEntry.useDetachedfilename());
+
+    wName.selectAll();
+    wName.setFocus();
+  }
 
 	private void cancel()
 	{

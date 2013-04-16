@@ -593,22 +593,22 @@ public class JobEntrySendNagiosPassiveCheckDialog extends JobEntryDialog impleme
     /**
      * Copy information from the meta-data input to the dialog fields.
      */
-    public void getData()
-    {
-        if (jobEntry.getName() != null)      wName.setText(jobEntry.getName());
-        wName.getTextWidget().selectAll();
-
-        wServerName.setText(Const.NVL(jobEntry.getServerName(), ""));
-        wPort.setText(jobEntry.getPort());
-        wConnectionTimeOut.setText(Const.NVL(jobEntry.getConnectionTimeOut(), ""));
-        wResponseTimeOut.setText("" + jobEntry.getResponseTimeOut());
-        wPassword.setText(Const.NVL(jobEntry.getPassword(),""));
-        wSenderServerName.setText(Const.NVL(jobEntry.getSenderServerName(), ""));
-        wSenderServiceName.setText(Const.NVL(jobEntry.getSenderServiceName(), ""));
-        wMessage.setText(Const.NVL(jobEntry.getMessage(), ""));
-        wEncryptionMode.setText(JobEntrySendNagiosPassiveCheck.getEncryptionModeDesc(jobEntry.getEncryptionMode()));
-        wLevelMode.setText(JobEntrySendNagiosPassiveCheck.getLevelDesc(jobEntry.getLevel()));
-
+    public void getData() {
+      wName.setText(Const.nullToEmpty(jobEntry.getName()));
+  
+      wServerName.setText(Const.NVL(jobEntry.getServerName(), ""));
+      wPort.setText(Const.nullToEmpty(jobEntry.getPort()));
+      wConnectionTimeOut.setText(Const.NVL(jobEntry.getConnectionTimeOut(), ""));
+      wResponseTimeOut.setText(Const.nullToEmpty(jobEntry.getResponseTimeOut()));
+      wPassword.setText(Const.NVL(jobEntry.getPassword(), ""));
+      wSenderServerName.setText(Const.NVL(jobEntry.getSenderServerName(), ""));
+      wSenderServiceName.setText(Const.NVL(jobEntry.getSenderServiceName(), ""));
+      wMessage.setText(Const.NVL(jobEntry.getMessage(), ""));
+      wEncryptionMode.setText(JobEntrySendNagiosPassiveCheck.getEncryptionModeDesc(jobEntry.getEncryptionMode()));
+      wLevelMode.setText(JobEntrySendNagiosPassiveCheck.getLevelDesc(jobEntry.getLevel()));
+  
+      wName.selectAll();
+      wName.setFocus();
     }
 
     private void cancel()

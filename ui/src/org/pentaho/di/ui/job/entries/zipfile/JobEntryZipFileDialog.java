@@ -1098,58 +1098,49 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		shell.dispose();
 	}
 
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    wName.setText(Const.nullToEmpty(jobEntry.getName()));
+    wZipFilename.setText(Const.nullToEmpty(jobEntry.getZipFilename()));
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData()
-	{
-		if (jobEntry.getName()    != null) wName.setText( jobEntry.getName() );
-		wName.selectAll();
-		if (jobEntry.getZipFilename()!= null) wZipFilename.setText( jobEntry.getZipFilename() );
+    if (jobEntry.compressionrate >= 0) {
+      wCompressionRate.select(jobEntry.compressionrate);
+    } else {
+      wCompressionRate.select(1); // DEFAULT
+    }
 
-		if (jobEntry.compressionrate>=0) 
-		{
-			wCompressionRate.select(jobEntry.compressionrate );
-		}
-		else
-		{
-			wCompressionRate.select(1); // DEFAULT
-		}
+    if (jobEntry.ifzipfileexists >= 0) {
+      wIfFileExists.select(jobEntry.ifzipfileexists);
+    } else {
+      wIfFileExists.select(2); // NOTHING
+    }
 
-		if (jobEntry.ifzipfileexists>=0) 
-		{
-			wIfFileExists.select(jobEntry.ifzipfileexists );
-		}
-		else
-		{
-			wIfFileExists.select(2); // NOTHING
-		}
+    wWildcard.setText(Const.NVL(jobEntry.getWildcard(), ""));
+    wWildcardExclude.setText(Const.NVL(jobEntry.getWildcardExclude(), ""));
+    wSourceDirectory.setText(Const.NVL(jobEntry.getSourceDirectory(), ""));
+    wMovetoDirectory.setText(Const.NVL(jobEntry.getMoveToDirectory(), ""));
+    if (jobEntry.afterzip >= 0) {
+      wAfterZip.select(jobEntry.afterzip);
+    } else {
+      wAfterZip.select(0); // NOTHING
+    }
 
-		wWildcard.setText( Const.NVL(jobEntry.getWildcard(), "") );
-		wWildcardExclude.setText( Const.NVL(jobEntry.getWildcardExclude(), "") );
-		wSourceDirectory.setText( Const.NVL(jobEntry.getSourceDirectory(), "") );
-		wMovetoDirectory.setText( Const.NVL(jobEntry.getMoveToDirectory(), "") );
-		if (jobEntry.afterzip>=0)
-		{
-			wAfterZip.select(jobEntry.afterzip );
-		}
-		else
-		{
-			wAfterZip.select(0 ); // NOTHING
-		}
-		
-		wAddFileToResult.setSelection(jobEntry.isAddFileToResult());
-		wgetFromPrevious.setSelection(jobEntry.getDatafromprevious());
-		wCreateParentFolder.setSelection(jobEntry.getcreateparentfolder());
-		wAddDate.setSelection(jobEntry.isDateInFilename());
-		wAddTime.setSelection(jobEntry.isTimeInFilename());
-		
-		wDateTimeFormat.setText( Const.NVL(jobEntry.getDateTimeFormat(), "") );
-		wSpecifyFormat.setSelection(jobEntry.isSpecifyFormat());
-		wcreateMoveToDirectory.setSelection(jobEntry.isCreateMoveToDirectory());
-		wIncludeSubfolders.setSelection(jobEntry.isIncludingSubFolders());
-	}
+    wAddFileToResult.setSelection(jobEntry.isAddFileToResult());
+    wgetFromPrevious.setSelection(jobEntry.getDatafromprevious());
+    wCreateParentFolder.setSelection(jobEntry.getcreateparentfolder());
+    wAddDate.setSelection(jobEntry.isDateInFilename());
+    wAddTime.setSelection(jobEntry.isTimeInFilename());
+
+    wDateTimeFormat.setText(Const.NVL(jobEntry.getDateTimeFormat(), ""));
+    wSpecifyFormat.setSelection(jobEntry.isSpecifyFormat());
+    wcreateMoveToDirectory.setSelection(jobEntry.isCreateMoveToDirectory());
+    wIncludeSubfolders.setSelection(jobEntry.isIncludingSubFolders());
+
+    wName.selectAll();
+    wName.setFocus();
+  }
 
 	private void cancel()
 	{

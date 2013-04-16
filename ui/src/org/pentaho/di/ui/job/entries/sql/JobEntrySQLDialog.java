@@ -476,29 +476,25 @@ public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogI
     /**
      * Copy information from the meta-data input to the dialog fields.
      */
-    public void getData()
-    {
-        if (jobEntry.getName() != null)
-            wName.setText(jobEntry.getName());
-        if (jobEntry.getSQL() != null)
-            wSQL.setText(jobEntry.getSQL());
-        DatabaseMeta dbinfo = jobEntry.getDatabase();
-        if (dbinfo != null && dbinfo.getName() != null)
-            wConnection.setText(dbinfo.getName());
-        else
-            wConnection.setText("");
-
-        wUseSubs.setSelection(jobEntry.getUseVariableSubstitution());
-        wSQLFromFile.setSelection(jobEntry.getSQLFromFile());
-        wSendOneStatement.setSelection(jobEntry.isSendOneStatement());
-        
-        if (jobEntry.getSQLFilename() != null)
-        	wFilename.setText(jobEntry.getSQLFilename());
-        
-        
-        
-        wName.selectAll();
+    public void getData() {
+      wName.setText(Const.nullToEmpty(jobEntry.getName()));
+      wSQL.setText(Const.nullToEmpty(jobEntry.getSQL()));
+      DatabaseMeta dbinfo = jobEntry.getDatabase();
+      if (dbinfo != null && dbinfo.getName() != null)
+        wConnection.setText(dbinfo.getName());
+      else
+        wConnection.setText("");
+  
+      wUseSubs.setSelection(jobEntry.getUseVariableSubstitution());
+      wSQLFromFile.setSelection(jobEntry.getSQLFromFile());
+      wSendOneStatement.setSelection(jobEntry.isSendOneStatement());
+  
+      wFilename.setText(Const.nullToEmpty(jobEntry.getSQLFilename()));
+  
+      wName.selectAll();
+      wName.setFocus();
     }
+    
     private void activeSQLFromFile()
     {
     	wlFilename.setEnabled(wSQLFromFile.getSelection());

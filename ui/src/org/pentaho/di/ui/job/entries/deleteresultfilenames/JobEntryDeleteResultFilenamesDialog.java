@@ -281,19 +281,21 @@ public class JobEntryDeleteResultFilenamesDialog extends JobEntryDialog implemen
 		wWildcardExclude.setEnabled(wSpecifyWildcard.getSelection());
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData()
-	{
-		if (jobEntry.getName()!= null) wName.setText( jobEntry.getName() );
-		wName.selectAll();
-		wSpecifyWildcard.setSelection(jobEntry.isSpecifyWildcard());
-		if (jobEntry.getWildcard()!= null) wWildcard.setText( jobEntry.getWildcard() );
-		if (jobEntry.getWildcardExclude()!= null) wWildcardExclude.setText( jobEntry.getWildcardExclude() );
-		
-		
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (jobEntry.getName() != null)
+      wName.setText(jobEntry.getName());
+    wSpecifyWildcard.setSelection(jobEntry.isSpecifyWildcard());
+    if (jobEntry.getWildcard() != null)
+      wWildcard.setText(jobEntry.getWildcard());
+    if (jobEntry.getWildcardExclude() != null)
+      wWildcardExclude.setText(jobEntry.getWildcardExclude());
+
+    wName.selectAll();
+    wName.setFocus();
+  }
 
 	private void cancel()
 	{
