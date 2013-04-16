@@ -51,6 +51,7 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
@@ -99,7 +100,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 	/** The maximum number or lines to read */
 	private  long  rowLimit;
 
-    /** The number or lines to skip before starting to read*/
+    /** The XPath location to loop over */
     private  String  loopxpath;
 
 	/** The fields to import... */
@@ -835,13 +836,18 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public void allocate(int nrfiles, int nrfields)
 	{
-		fileName     = new String [nrfiles];
-		fileMask     = new String [nrfiles];
-		excludeFileMask = new String[nrfiles];
-		fileRequired = new String[nrfiles];
-		includeSubFolders = new String[nrfiles];
+	  allocateFiles(nrfiles);
 		inputFields  = new GetXMLDataField[nrfields];
 	}
+	
+  public void allocateFiles(int nrfiles)
+  {
+    fileName     = new String [nrfiles];
+    fileMask     = new String [nrfiles];
+    excludeFileMask = new String[nrfiles];
+    fileRequired = new String[nrfiles];
+    includeSubFolders = new String[nrfiles];
+  }
 	
 	public void setDefault()
 	{
@@ -1279,5 +1285,9 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
+  @Override
+  public StepMetaInjectionInterface getStepMetaInjectionInterface() {
+    return new GetXMLDataMetaInjection(this);
+  }
 
 }
