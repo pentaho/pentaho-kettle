@@ -1049,7 +1049,6 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
 	 */ 
 	public void getData()
 	{
-		int i;
 		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "SynchronizeAfterMergeDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
 		wCommit.setText("" + input.getCommitSize()); //$NON-NLS-1$
@@ -1062,9 +1061,8 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
 		if(input.getOrderDelete()!=null) wOrderDelete.setText(input.getOrderDelete());
 		wPerformLookup.setSelection(input.isPerformLookup());
 		
-		
 		if (input.getKeyStream() != null)
-			for (i = 0; i < input.getKeyStream().length; i++)
+			for (int i = 0; i < input.getKeyStream().length; i++)
 			{
 				TableItem item = wKey.table.getItem(i);
 				if (input.getKeyLookup()[i] != null)
@@ -1078,7 +1076,7 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
 			}
 
 		if (input.getUpdateLookup() != null)
-			for (i = 0; i < input.getUpdateLookup().length; i++)
+			for (int i = 0; i < input.getUpdateLookup().length; i++)
 			{
 				TableItem item = wReturn.table.getItem(i);
 				if (input.getUpdateLookup()[i] != null)
@@ -1102,12 +1100,13 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
 				wConnection.setText(transMeta.getDatabase(0).getName());
 			}
 
-		wStepname.selectAll();
 		wKey.setRowNums();
 		wKey.optWidth(true);
 		wReturn.setRowNums();
 		wReturn.optWidth(true);
 
+		wStepname.selectAll();
+		wStepname.setFocus();
 	}
 
 	private void cancel()

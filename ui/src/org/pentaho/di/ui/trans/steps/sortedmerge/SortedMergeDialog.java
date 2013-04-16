@@ -250,26 +250,30 @@ public class SortedMergeDialog extends BaseStepDialog implements StepDialogInter
         Const.sortStrings(fieldNames);
         colinf[0].setComboValues(fieldNames);
     }
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-        Table table = wFields.table;
-        if (input.getFieldName().length>0) table.removeAll();
-        for (int i=0;i<input.getFieldName().length;i++)
-        {
-            TableItem ti = new TableItem(table, SWT.NONE);
-            ti.setText(0, ""+(i+1));
-            ti.setText(1, input.getFieldName()[i]);
-            ti.setText(2, input.getAscending()[i]?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No"));
-        }
 
-        wFields.setRowNums();
-        wFields.optWidth(true);
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    Table table = wFields.table;
+    if (input.getFieldName().length > 0)
+      table.removeAll();
+    for (int i = 0; i < input.getFieldName().length; i++) {
+      TableItem ti = new TableItem(table, SWT.NONE);
+      ti.setText(0, "" + (i + 1));
+      ti.setText(1, input.getFieldName()[i]);
+      ti.setText(
+          2,
+          input.getAscending()[i] ? BaseMessages.getString(PKG, "System.Combo.Yes") : BaseMessages.getString(PKG,
+              "System.Combo.No"));
+    }
 
-		wStepname.selectAll();
-	}
+    wFields.setRowNums();
+    wFields.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

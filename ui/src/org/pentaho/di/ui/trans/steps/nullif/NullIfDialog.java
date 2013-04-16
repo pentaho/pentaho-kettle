@@ -252,28 +252,30 @@ public class NullIfDialog extends BaseStepDialog implements StepDialogInterface
         Const.sortStrings(fieldNames);
         colinf[0].setComboValues(fieldNames);
     }
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		wStepname.setText(stepname);
-		
-		for (int i=0;i<input.getFieldName().length;i++)
-		{
-			TableItem item = wFields.table.getItem(i);
-			String name = input.getFieldName()[i];
-			String type = input.getFieldValue()[i];
-			
-			if (name!=null) item.setText(1, name);
-			if (type!=null) item.setText(2, type);
-		}
 
-		wFields.setRowNums();
-		wFields.optWidth(true);
-		
-		wStepname.selectAll();
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    wStepname.setText(stepname);
+
+    for (int i = 0; i < input.getFieldName().length; i++) {
+      TableItem item = wFields.table.getItem(i);
+      String name = input.getFieldName()[i];
+      String type = input.getFieldValue()[i];
+
+      if (name != null)
+        item.setText(1, name);
+      if (type != null)
+        item.setText(2, type);
+    }
+
+    wFields.setRowNums();
+    wFields.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

@@ -143,13 +143,13 @@ public class TableAgileMartDialog extends BaseStepDialog implements StepDialogIn
 		return stepname;
 	}
 	
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		wStepname.selectAll();
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

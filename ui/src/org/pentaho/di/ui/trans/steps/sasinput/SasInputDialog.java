@@ -276,6 +276,7 @@ public class SasInputDialog extends BaseStepDialog implements StepDialogInterfac
     wFields.optWidth(true);
 
     wStepname.selectAll();
+    wStepname.setFocus();
   }
 
   private void cancel() {

@@ -239,16 +239,18 @@ public class CubeInputDialog extends BaseStepDialog implements StepDialogInterfa
 		return stepname;
 	}
 	
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		if (input.getFilename() != null) wFilename.setText(input.getFilename());
-		wLimit.setText(""+(int)input.getRowLimit()); //$NON-NLS-1$
-		wAddResult.setSelection(input.isAddResultFile());
-		wStepname.selectAll();
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (input.getFilename() != null)
+      wFilename.setText(input.getFilename());
+    wLimit.setText("" + (int) input.getRowLimit()); //$NON-NLS-1$
+    wAddResult.setSelection(input.isAddResultFile());
+    
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

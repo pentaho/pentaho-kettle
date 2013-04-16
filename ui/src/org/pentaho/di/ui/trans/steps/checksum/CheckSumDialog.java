@@ -404,30 +404,31 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
 	}
 	
 	
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		wType.select(input.getTypeByDesc());
-		if (input.getResultFieldName()!=null) wResult.setText(input.getResultFieldName());
-		wResultType.setText(CheckSumMeta.getResultTypeDesc(input.getResultType()));
-		wCompatibility.setSelection(input.isCompatibilityMode());
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    wType.select(input.getTypeByDesc());
+    if (input.getResultFieldName() != null)
+      wResult.setText(input.getResultFieldName());
+    wResultType.setText(CheckSumMeta.getResultTypeDesc(input.getResultType()));
+    wCompatibility.setSelection(input.isCompatibilityMode());
 
-		Table table = wFields.table;
-		if (input.getFieldName().length>0) table.removeAll();
-		for (int i=0;i<input.getFieldName().length;i++)
-		{
-			TableItem ti = new TableItem(table, SWT.NONE);
-			ti.setText(0, ""+(i+1));
-			ti.setText(1, input.getFieldName()[i]);
-		}
+    Table table = wFields.table;
+    if (input.getFieldName().length > 0)
+      table.removeAll();
+    for (int i = 0; i < input.getFieldName().length; i++) {
+      TableItem ti = new TableItem(table, SWT.NONE);
+      ti.setText(0, "" + (i + 1));
+      ti.setText(1, input.getFieldName()[i]);
+    }
 
-        wFields.setRowNums();
-		wFields.optWidth(true);
-		
-		wStepname.selectAll();
-	}
+    wFields.setRowNums();
+    wFields.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

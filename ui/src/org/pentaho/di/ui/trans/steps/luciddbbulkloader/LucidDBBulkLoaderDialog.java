@@ -417,46 +417,48 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 		return stepname;
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData()
-	{
-		int i;
-		logDebug(BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    logDebug(BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
-		wMaxErrors.setText("" + input.getMaxErrors());   //$NON-NLS-1$
+    wMaxErrors.setText("" + input.getMaxErrors()); //$NON-NLS-1$
 
-		if (input.getFieldTable() != null) {
-			for (i = 0; i < input.getFieldTable().length; i++)
-			{
-				TableItem item = wReturn.table.getItem(i);
-				if (input.getFieldTable()[i] != null)
-					item.setText(1, input.getFieldTable()[i]);
-				if (input.getFieldStream()[i] != null)
-					item.setText(2, input.getFieldStream()[i]);
-				item.setText(3, input.getFieldFormatOk()[i]?"Y":"N");
-			}
-		}
+    if (input.getFieldTable() != null) {
+      for (int i = 0; i < input.getFieldTable().length; i++) {
+        TableItem item = wReturn.table.getItem(i);
+        if (input.getFieldTable()[i] != null)
+          item.setText(1, input.getFieldTable()[i]);
+        if (input.getFieldStream()[i] != null)
+          item.setText(2, input.getFieldStream()[i]);
+        item.setText(3, input.getFieldFormatOk()[i] ? "Y" : "N");
+      }
+    }
 
-		if (input.getDatabaseMeta() != null)
-			wConnection.setText(input.getDatabaseMeta().getName());
-		else
-		{
-			if (transMeta.nrDatabases() == 1)
-			{
-				wConnection.setText(transMeta.getDatabase(0).getName());
-			}
-		}
-        if (input.getSchemaName() != null) wSchema.setText(input.getSchemaName());
-		if (input.getTableName() != null) wTable.setText(input.getTableName());
-		if (input.getFifoDirectory() != null) wFifoPath.setText(input.getFifoDirectory());
-		if (input.getFifoServerName() != null) wFifoServer.setText(input.getFifoServerName());
-		
-		wStepname.selectAll();
-		wReturn.setRowNums();
-		wReturn.optWidth(true);
-	}
+    if (input.getDatabaseMeta() != null)
+      wConnection.setText(input.getDatabaseMeta().getName());
+    else {
+      if (transMeta.nrDatabases() == 1) {
+        wConnection.setText(transMeta.getDatabase(0).getName());
+      }
+    }
+    if (input.getSchemaName() != null)
+      wSchema.setText(input.getSchemaName());
+    if (input.getTableName() != null)
+      wTable.setText(input.getTableName());
+    if (input.getFifoDirectory() != null)
+      wFifoPath.setText(input.getFifoDirectory());
+    if (input.getFifoServerName() != null)
+      wFifoServer.setText(input.getFifoServerName());
+
+    wReturn.setRowNums();
+    wReturn.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
+  
 	/**
 	 * Reads in the fields from the previous steps and from the ONE next step and opens an 
 	 * EnterMappingDialog with this information. After the user did the mapping, those information 

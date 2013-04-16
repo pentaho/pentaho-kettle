@@ -412,38 +412,44 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
     }
 
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		int i;
-		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "DeleteDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
-		
-		wCommit.setText(""+input.getCommitSize()); //$NON-NLS-1$
-        
-		if (input.getKeyStream()!=null)
-		for (i=0;i<input.getKeyStream().length;i++)
-		{
-			TableItem item = wKey.table.getItem(i);
-			if (input.getKeyLookup()[i]   !=null) item.setText(1, input.getKeyLookup()[i]);
-			if (input.getKeyCondition()[i]!=null) item.setText(2, input.getKeyCondition()[i]);
-			if (input.getKeyStream()[i]         !=null) item.setText(3, input.getKeyStream()[i]);
-			if (input.getKeyStream2()[i]        !=null) item.setText(4, input.getKeyStream2()[i]);
-		}
-				
-        if (input.getSchemaName()!=null) wSchema.setText( input.getSchemaName() );
-		if (input.getTableName()!=null) wTable.setText( input.getTableName() );
-		if (input.getDatabaseMeta()!=null)   wConnection.setText(input.getDatabaseMeta().getName());
-		else if (transMeta.nrDatabases()==1)
-		{
-			wConnection.setText( transMeta.getDatabase(0).getName() );
-		}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (log.isDebug())
+      logDebug(BaseMessages.getString(PKG, "DeleteDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
-		wStepname.selectAll();
-		wKey.setRowNums();
-		wKey.optWidth(true);
-	}
+    wCommit.setText("" + input.getCommitSize()); //$NON-NLS-1$
+
+    if (input.getKeyStream() != null)
+      for (int i = 0; i < input.getKeyStream().length; i++) {
+        TableItem item = wKey.table.getItem(i);
+        if (input.getKeyLookup()[i] != null)
+          item.setText(1, input.getKeyLookup()[i]);
+        if (input.getKeyCondition()[i] != null)
+          item.setText(2, input.getKeyCondition()[i]);
+        if (input.getKeyStream()[i] != null)
+          item.setText(3, input.getKeyStream()[i]);
+        if (input.getKeyStream2()[i] != null)
+          item.setText(4, input.getKeyStream2()[i]);
+      }
+
+    if (input.getSchemaName() != null)
+      wSchema.setText(input.getSchemaName());
+    if (input.getTableName() != null)
+      wTable.setText(input.getTableName());
+    if (input.getDatabaseMeta() != null)
+      wConnection.setText(input.getDatabaseMeta().getName());
+    else if (transMeta.nrDatabases() == 1) {
+      wConnection.setText(transMeta.getDatabase(0).getName());
+    }
+
+    wKey.setRowNums();
+    wKey.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

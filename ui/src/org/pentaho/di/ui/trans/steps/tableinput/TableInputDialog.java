@@ -486,9 +486,11 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
     wVariables.setSelection(input.isVariableReplacementActive());
     wLazyConversion.setSelection(input.isLazyConversionActive());
 
-    wStepname.selectAll();
     setSQLToolTip();
     setFlags();
+
+    wStepname.selectAll();
+    wStepname.setFocus();
   }
 
   private void checkCancel(ShellEvent e) {

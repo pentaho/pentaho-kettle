@@ -341,45 +341,45 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
 		addDataGrid(false);
 	}
 		
-	private void getMetaData() {
-		int nrfields=input.getFieldName().length;
-		if(nrfields>wFields.table.getItemCount()) 
-		{
-			nrfields=wFields.table.getItemCount();
-		}
-		for (int i=0;i<nrfields;i++)
-		{
-			if (input.getFieldName()[i]!=null)
-			{
-				TableItem item = wFields.table.getItem(i);
-				int col=1;
-				
-				item.setText(col++, input.getFieldName()[i]);
-				String type   = input.getFieldType()[i];
-				String format = input.getFieldFormat()[i];
-                String length = input.getFieldLength()[i]<0?"":(""+input.getFieldLength()[i]);
-                String prec   = input.getFieldPrecision()[i]<0?"":(""+input.getFieldPrecision()[i]);;
-				String curr   = input.getCurrency()[i];
-				String group  = input.getGroup()[i];
-				String decim  = input.getDecimal()[i];
+  private void getMetaData() {
+    int nrfields = input.getFieldName().length;
+    if (nrfields > wFields.table.getItemCount()) {
+      nrfields = wFields.table.getItemCount();
+    }
+    for (int i = 0; i < nrfields; i++) {
+      if (input.getFieldName()[i] != null) {
+        TableItem item = wFields.table.getItem(i);
+        int col = 1;
 
-				item.setText(col++, Const.NVL(type  , ""));
-				item.setText(col++, Const.NVL(format, ""));
-				item.setText(col++, Const.NVL(length, ""));
-				item.setText(col++, Const.NVL(prec  , ""));
-				item.setText(col++, Const.NVL(curr  , ""));
-				item.setText(col++, Const.NVL(decim , ""));
-				item.setText(col++, Const.NVL(group , ""));
-				item.setText(col++, input.isSetEmptyString()[i]?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No"));
-				
-			}
-		}
-        
-        wFields.setRowNums();
-        wFields.optWidth(true);
-		
-		wStepname.selectAll();
-	}
+        item.setText(col++, input.getFieldName()[i]);
+        String type = input.getFieldType()[i];
+        String format = input.getFieldFormat()[i];
+        String length = input.getFieldLength()[i] < 0 ? "" : ("" + input.getFieldLength()[i]);
+        String prec = input.getFieldPrecision()[i] < 0 ? "" : ("" + input.getFieldPrecision()[i]);
+        ;
+        String curr = input.getCurrency()[i];
+        String group = input.getGroup()[i];
+        String decim = input.getDecimal()[i];
+
+        item.setText(col++, Const.NVL(type, ""));
+        item.setText(col++, Const.NVL(format, ""));
+        item.setText(col++, Const.NVL(length, ""));
+        item.setText(col++, Const.NVL(prec, ""));
+        item.setText(col++, Const.NVL(curr, ""));
+        item.setText(col++, Const.NVL(decim, ""));
+        item.setText(col++, Const.NVL(group, ""));
+        item.setText(col++, input.isSetEmptyString()[i] ? BaseMessages.getString(PKG, "System.Combo.Yes")
+            : BaseMessages.getString(PKG, "System.Combo.No"));
+
+      }
+    }
+
+    wFields.setRowNums();
+    wFields.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

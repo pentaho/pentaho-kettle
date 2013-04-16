@@ -435,38 +435,43 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
         Const.sortStrings(fieldNames);
         colinf[0].setComboValues(fieldNames);
     }
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		int i;
-		logDebug(BaseMessages.getString(PKG, "DBProcDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
-		
-		if (input.getArgument()!=null)
-		for (i=0;i<input.getArgument().length;i++)
-		{
-			TableItem item = wFields.table.getItem(i);
-			if (input.getArgument()[i]      !=null) item.setText(1, input.getArgument()[i]);
-			if (input.getArgumentDirection()[i]   !=null) item.setText(2, input.getArgumentDirection()[i]);
-			item.setText(3, ValueMeta.getTypeDesc(input.getArgumentType()[i]));
-		}
-		
-		if (input.getDatabase()!=null)   wConnection.setText(input.getDatabase().getName());
-		else if (transMeta.nrDatabases()==1)
-		{
-			wConnection.setText( transMeta.getDatabase(0).getName() );
-		}
-		if (input.getProcedure() !=null)   wProcName.setText(input.getProcedure());
-		if (input.getResultName()!=null)   wResult.setText(input.getResultName());
-		wResultType.setText(ValueMeta.getTypeDesc(input.getResultType()));
 
-        wAutoCommit.setSelection(input.isAutoCommit());
-        
-		wFields.setRowNums();
-		wFields.optWidth(true);
-		wStepname.selectAll();
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    int i;
+    logDebug(BaseMessages.getString(PKG, "DBProcDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+
+    if (input.getArgument() != null)
+      for (i = 0; i < input.getArgument().length; i++) {
+        TableItem item = wFields.table.getItem(i);
+        if (input.getArgument()[i] != null)
+          item.setText(1, input.getArgument()[i]);
+        if (input.getArgumentDirection()[i] != null)
+          item.setText(2, input.getArgumentDirection()[i]);
+        item.setText(3, ValueMeta.getTypeDesc(input.getArgumentType()[i]));
+      }
+
+    if (input.getDatabase() != null)
+      wConnection.setText(input.getDatabase().getName());
+    else if (transMeta.nrDatabases() == 1) {
+      wConnection.setText(transMeta.getDatabase(0).getName());
+    }
+    if (input.getProcedure() != null)
+      wProcName.setText(input.getProcedure());
+    if (input.getResultName() != null)
+      wResult.setText(input.getResultName());
+    wResultType.setText(ValueMeta.getTypeDesc(input.getResultType()));
+
+    wAutoCommit.setSelection(input.isAutoCommit());
+
+    wFields.setRowNums();
+    wFields.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

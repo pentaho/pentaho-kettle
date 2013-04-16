@@ -714,8 +714,6 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
    * Copy information from the meta-data input to the dialog fields.
    */
   public void getData() {
-    wStepname.selectAll();
-
     specificationMethod = metaInjectMeta.getSpecificationMethod();
     switch (specificationMethod) {
     case FILENAME:
@@ -746,8 +744,11 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     setRadioButtons();
     
     refreshTree();
+    
+    wStepname.selectAll();
+    wStepname.setFocus();
   }
-
+  
   private void addTree(Control lastControl) {
     
 	wTree = new Tree(shell, SWT.SINGLE | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
@@ -785,6 +786,39 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
               
               String[] prevStepNames = transMeta.getPrevStepNames(stepMeta);
               Arrays.sort(prevStepNames);
+              
+              Map<String, SourceStepField> fieldMap = new HashMap<String, SourceStepField>();
+              for (String prevStepName : prevStepNames) {
+                RowMetaInterface fields = transMeta.getStepFields(prevStepName);
+                for (ValueMetaInterface field : fields.getValueMetaList()) {
+                  String key = buildStepFieldKey(prevStepName, field.getName());
+                  fieldMap.put(key, new SourceStepField(prevStepName, field.getName()));
+                }
+              }
+              String[] sourceFields = fieldMap.keySet().toArray(new String[fieldMap.size()]);
+              Arrays.sort(sourceFields);
+              
+              EnterSelectionDialog selectSourceField = new EnterSelectionDialog(shell, sourceFields, "Select source field", "Select the source field (cancel=clear)");
+              if (source!=null && !Const.isEmpty(source.getStepname())) {
+                String key = buildStepFieldKey(source.getStepname(), source.getField());
+                int index = Const.indexOfString(key, sourceFields);
+                if (index>=0) {
+                  selectSourceField.setSelectedNrs(new int[] {index,});
+                }
+              }
+              String selectedStepField = selectSourceField.open();
+              if (selectedStepField!=null) {
+                SourceStepField newSource = fieldMap.get(selectedStepField);
+                item.setText(2, newSource.getStepname());
+                item.setText(3, newSource.getField());
+                targetSourceMapping.put(target, newSource);
+              } else {
+                item.setText(2, "");
+                item.setText(3, "");
+                targetSourceMapping.remove(target);
+              }
+              
+              /*
               EnterSelectionDialog selectStep = new EnterSelectionDialog(shell, prevStepNames, "Select source step", "Select the source step");
               if (source!=null && !Const.isEmpty(source.getStepname())) {
                 int index = Const.indexOfString(source.getStepname(), prevStepNames);
@@ -820,7 +854,9 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
                 item.setText(3, "");
                 targetSourceMapping.remove(target);
               }
-            } 
+              */
+            }
+            
           }
         } catch(Exception e) {
           new ErrorDialog(shell, "Oops", "Unexpected Error", e);
@@ -828,6 +864,10 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
       }
     }
     );
+  }
+
+  protected String buildStepFieldKey(String stepname, String field) {
+    return stepname + " : "+field;
   }
 
   private void refreshTree() {

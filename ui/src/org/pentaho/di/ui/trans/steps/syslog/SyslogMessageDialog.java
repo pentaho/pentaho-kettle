@@ -461,22 +461,29 @@ public class SyslogMessageDialog extends BaseStepDialog implements StepDialogInt
 		return stepname;
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		if(input.getMessageFieldName() !=null)   wMessageField.setText(input.getMessageFieldName());
-		if(input.getServerName()!=null) wServerName.setText(input.getServerName());
-		if(input.getPort()!=null) wPort.setText(input.getPort());
-        if(input.getFacility()!=null) wFacility.setText(input.getFacility());
-        if(input.getPriority()!=null) wPriority.setText(input.getPriority());
-        if(input.getDatePattern()!=null) wDatePattern.setText(input.getDatePattern());
-        wAddTimestamp.setSelection(input.isAddTimestamp());
-        wAddHostName.setSelection(input.isAddHostName());
-        
-		wStepname.selectAll();
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (input.getMessageFieldName() != null)
+      wMessageField.setText(input.getMessageFieldName());
+    if (input.getServerName() != null)
+      wServerName.setText(input.getServerName());
+    if (input.getPort() != null)
+      wPort.setText(input.getPort());
+    if (input.getFacility() != null)
+      wFacility.setText(input.getFacility());
+    if (input.getPriority() != null)
+      wPriority.setText(input.getPriority());
+    if (input.getDatePattern() != null)
+      wDatePattern.setText(input.getDatePattern());
+    wAddTimestamp.setSelection(input.isAddTimestamp());
+    wAddHostName.setSelection(input.isAddHostName());
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
+	
    private void activeAddTimestamp()
     {
     	wlDatePattern.setEnabled(wAddTimestamp.getSelection());

@@ -173,16 +173,18 @@ public class SampleRowsDialog extends BaseStepDialog implements StepDialogInterf
 		return stepname;
 	}
 	
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		wStepname.selectAll();
-		if(input.getLinesRange()!=null) wLinesRange.setText(Const.NVL(input.getLinesRange(),SampleRowsMeta.DEFAULT_RANGE));
-		if(input.getLineNumberField()!=null) wLineNumberField.setText(input.getLineNumberField());
-		
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (input.getLinesRange() != null)
+      wLinesRange.setText(Const.NVL(input.getLinesRange(), SampleRowsMeta.DEFAULT_RANGE));
+    if (input.getLineNumberField() != null)
+      wLineNumberField.setText(input.getLineNumberField());
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

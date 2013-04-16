@@ -295,29 +295,30 @@ public class JaninoDialog extends BaseStepDialog implements StepDialogInterface
         
     }
 
-    /**
-	 * Copy information from the meta-data currentMeta to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		wStepname.selectAll();
-        
-        if (currentMeta.getFormula()!=null)
-        for (int i=0;i<currentMeta.getFormula().length;i++)
-        {
-            JaninoMetaFunction fn = currentMeta.getFormula()[i];
-            TableItem item = wFields.table.getItem(i);
-            item.setText(1, Const.NVL(fn.getFieldName(), ""));
-            item.setText(2, Const.NVL(fn.getFormula(), ""));
-            item.setText(3, Const.NVL(ValueMeta.getTypeDesc(fn.getValueType()), ""));
-            if (fn.getValueLength()>=0) item.setText(4, ""+fn.getValueLength());
-            if (fn.getValuePrecision()>=0) item.setText(5, ""+fn.getValuePrecision());
-            item.setText(6, Const.NVL(fn.getReplaceField(), ""));
-        }
-        
-        wFields.setRowNums();
-        wFields.optWidth(true);
-	}
+  /**
+  * Copy information from the meta-data currentMeta to the dialog fields.
+  */
+  public void getData() {
+    if (currentMeta.getFormula() != null)
+      for (int i = 0; i < currentMeta.getFormula().length; i++) {
+        JaninoMetaFunction fn = currentMeta.getFormula()[i];
+        TableItem item = wFields.table.getItem(i);
+        item.setText(1, Const.NVL(fn.getFieldName(), ""));
+        item.setText(2, Const.NVL(fn.getFormula(), ""));
+        item.setText(3, Const.NVL(ValueMeta.getTypeDesc(fn.getValueType()), ""));
+        if (fn.getValueLength() >= 0)
+          item.setText(4, "" + fn.getValueLength());
+        if (fn.getValuePrecision() >= 0)
+          item.setText(5, "" + fn.getValuePrecision());
+        item.setText(6, Const.NVL(fn.getReplaceField(), ""));
+      }
+
+    wFields.setRowNums();
+    wFields.optWidth(true);
+    
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

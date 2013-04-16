@@ -343,30 +343,31 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
 		return stepname;
 	}
 	
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		List<StreamInterface> infoStreams = input.getStepIOMeta().getInfoStreams();
-		
-		wReference.setText(Const.NVL(infoStreams.get(0).getStepname(), ""));
-		wCompare.setText(Const.NVL(infoStreams.get(1).getStepname(), ""));
-        if (input.getFlagField() !=null ) wFlagfield.setText(input.getFlagField() ); 
-        
-        for (int i=0;i<input.getKeyFields().length;i++)
-        {
-            TableItem item = wKeys.table.getItem(i);
-            if (input.getKeyFields()[i]!=null) item.setText(1, input.getKeyFields()[i]);
-        }
-        for (int i=0;i<input.getValueFields().length;i++)
-        {
-            TableItem item = wValues.table.getItem(i);
-            if (input.getValueFields()[i]!=null) item.setText(1, input.getValueFields()[i]);
-        }
-        
-        wStepname.selectAll();
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    List<StreamInterface> infoStreams = input.getStepIOMeta().getInfoStreams();
+
+    wReference.setText(Const.NVL(infoStreams.get(0).getStepname(), ""));
+    wCompare.setText(Const.NVL(infoStreams.get(1).getStepname(), ""));
+    if (input.getFlagField() != null)
+      wFlagfield.setText(input.getFlagField());
+
+    for (int i = 0; i < input.getKeyFields().length; i++) {
+      TableItem item = wKeys.table.getItem(i);
+      if (input.getKeyFields()[i] != null)
+        item.setText(1, input.getKeyFields()[i]);
+    }
+    for (int i = 0; i < input.getValueFields().length; i++) {
+      TableItem item = wValues.table.getItem(i);
+      if (input.getValueFields()[i] != null)
+        item.setText(1, input.getValueFields()[i]);
+    }
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

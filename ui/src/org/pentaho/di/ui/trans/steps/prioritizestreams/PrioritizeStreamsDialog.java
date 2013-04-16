@@ -208,26 +208,28 @@ public class PrioritizeStreamsDialog extends BaseStepDialog implements StepDialo
 		wFields.optWidth(true);
 		
 	}
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		Table table = wFields.table;
-		if (input.getStepName().length>0) table.removeAll();
-		for (int i=0;i<input.getStepName().length;i++)
-		{
-			TableItem ti = new TableItem(table, SWT.NONE);
-			ti.setText(0, ""+(i+1));
-			if(input.getStepName()[i]!=null) ti.setText(1, input.getStepName()[i]);
-		}
 
-		wFields.removeEmptyRows();
-        wFields.setRowNums();
-		wFields.optWidth(true);
-		
-		wStepname.selectAll();
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    Table table = wFields.table;
+    if (input.getStepName().length > 0)
+      table.removeAll();
+    for (int i = 0; i < input.getStepName().length; i++) {
+      TableItem ti = new TableItem(table, SWT.NONE);
+      ti.setText(0, "" + (i + 1));
+      if (input.getStepName()[i] != null)
+        ti.setText(1, input.getStepName()[i]);
+    }
+
+    wFields.removeEmptyRows();
+    wFields.setRowNums();
+    wFields.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

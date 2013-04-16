@@ -297,31 +297,25 @@ public class MonetDBAgileMartDialog extends MonetDBBulkLoaderDialog implements S
 		return stepname;
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData()
-	{
-		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (log.isDebug())
+      logDebug(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
-		/*if (input.getDatabaseMeta() != null)
-			wConnection.setText(input.getDatabaseMeta().getName());
-		else
-		{
-			if (transMeta.nrDatabases() == 1)
-			{
-				wConnection.setText(transMeta.getDatabase(0).getName());
-			}
-		}*/
+    wBufferSize.setText("" + input.getBufferSize()); //$NON-NLS-1$
 
-        wBufferSize.setText("" + input.getBufferSize());   //$NON-NLS-1$
+    if (input.getSchemaName() != null)
+      wSchema.setText(input.getSchemaName());
+    if (input.getTableName() != null)
+      wTable.setText(input.getTableName());
+    if (input.getDbConnectionName() != null)
+      wConnection.setText(input.getDbConnectionName());
 
-        if (input.getSchemaName() != null) wSchema.setText(input.getSchemaName());
-		if (input.getTableName() != null) wTable.setText(input.getTableName());
-		if (input.getDbConnectionName() != null) wConnection.setText(input.getDbConnectionName());
-		
-		wStepname.selectAll();
-	}
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 
 	@Override
 	protected void setTableFieldCombo(){

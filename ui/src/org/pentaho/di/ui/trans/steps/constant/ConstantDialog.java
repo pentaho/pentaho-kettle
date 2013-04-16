@@ -202,49 +202,50 @@ public class ConstantDialog extends BaseStepDialog implements StepDialogInterfac
 		return stepname;
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		int i;
-		if(log.isDebug()) logDebug("getting fields info...");
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    int i;
+    if (log.isDebug())
+      logDebug("getting fields info...");
 
-		for (i=0;i<input.getFieldName().length;i++)
-		{
-			if (input.getFieldName()[i]!=null)
-			{
-				TableItem item = wFields.table.getItem(i);
-				int col=1;
-				item.setText(col++, input.getFieldName()[i]);
-				
-				String type   = input.getFieldType()[i];
-				String format = input.getFieldFormat()[i];
-				String length = input.getFieldLength()[i]<0?"":(""+input.getFieldLength()[i]);
-				String prec   = input.getFieldPrecision()[i]<0?"":(""+input.getFieldPrecision()[i]);;
-				String curr   = input.getCurrency()[i];
-				String group  = input.getGroup()[i];
-				String decim  = input.getDecimal()[i];
-				String def    = input.getValue()[i];
-				
-				item.setText(col++, Const.NVL(type, ""));
-				item.setText(col++, Const.NVL(format, ""));
-				item.setText(col++, Const.NVL(length, ""));
-				item.setText(col++, Const.NVL(prec, ""));
-				item.setText(col++, Const.NVL(curr, ""));
-				item.setText(col++, Const.NVL(decim, ""));
-				item.setText(col++, Const.NVL(group, ""));
-				item.setText(col++, Const.NVL(def, ""));
-				item.setText(col++, input.isSetEmptyString()[i]?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No"));
-				
-			}
-		}
-        
-        wFields.setRowNums();
-        wFields.optWidth(true);
-		
-		wStepname.selectAll();
-	}
+    for (i = 0; i < input.getFieldName().length; i++) {
+      if (input.getFieldName()[i] != null) {
+        TableItem item = wFields.table.getItem(i);
+        int col = 1;
+        item.setText(col++, input.getFieldName()[i]);
+
+        String type = input.getFieldType()[i];
+        String format = input.getFieldFormat()[i];
+        String length = input.getFieldLength()[i] < 0 ? "" : ("" + input.getFieldLength()[i]);
+        String prec = input.getFieldPrecision()[i] < 0 ? "" : ("" + input.getFieldPrecision()[i]);
+        ;
+        String curr = input.getCurrency()[i];
+        String group = input.getGroup()[i];
+        String decim = input.getDecimal()[i];
+        String def = input.getValue()[i];
+
+        item.setText(col++, Const.NVL(type, ""));
+        item.setText(col++, Const.NVL(format, ""));
+        item.setText(col++, Const.NVL(length, ""));
+        item.setText(col++, Const.NVL(prec, ""));
+        item.setText(col++, Const.NVL(curr, ""));
+        item.setText(col++, Const.NVL(decim, ""));
+        item.setText(col++, Const.NVL(group, ""));
+        item.setText(col++, Const.NVL(def, ""));
+        item.setText(col++, input.isSetEmptyString()[i] ? BaseMessages.getString(PKG, "System.Combo.Yes")
+            : BaseMessages.getString(PKG, "System.Combo.No"));
+
+      }
+    }
+
+    wFields.setRowNums();
+    wFields.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

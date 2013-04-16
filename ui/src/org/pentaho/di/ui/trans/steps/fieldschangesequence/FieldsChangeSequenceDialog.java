@@ -369,29 +369,30 @@ public class FieldsChangeSequenceDialog extends BaseStepDialog implements StepDi
 		}
 
 	}
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		wStart.setText(Const.NVL(input.getStart(),"1"));
-		wIncrement.setText(Const.NVL(input.getIncrement(),"1"));
-		wResult.setText(Const.NVL(input.getResultFieldName(),"result"));
-		
-		Table table = wFields.table;
-		if (input.getFieldName().length>0) table.removeAll();
-		for (int i=0;i<input.getFieldName().length;i++)
-		{
-			TableItem ti = new TableItem(table, SWT.NONE);
-			ti.setText(0, ""+(i+1));
-			ti.setText(1, input.getFieldName()[i]);
-		}
 
-        wFields.setRowNums();
-		wFields.optWidth(true);
-		
-		wStepname.selectAll();
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    wStart.setText(Const.NVL(input.getStart(), "1"));
+    wIncrement.setText(Const.NVL(input.getIncrement(), "1"));
+    wResult.setText(Const.NVL(input.getResultFieldName(), "result"));
+
+    Table table = wFields.table;
+    if (input.getFieldName().length > 0)
+      table.removeAll();
+    for (int i = 0; i < input.getFieldName().length; i++) {
+      TableItem ti = new TableItem(table, SWT.NONE);
+      ti.setText(0, "" + (i + 1));
+      ti.setText(1, input.getFieldName()[i]);
+    }
+
+    wFields.setRowNums();
+    wFields.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

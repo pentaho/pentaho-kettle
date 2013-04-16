@@ -393,29 +393,31 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 		wCountField.setEnabled(wCount.getSelection());
 	}
 	
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		wCount.setSelection(input.isCountRows());
-		if (input.getCountField()!=null) wCountField.setText(input.getCountField());
-		setFlags();
-		wRejectDuplicateRow.setSelection(input.isRejectDuplicateRow());
-		if (input.getErrorDescription()!=null) wErrorDesc.setText(input.getErrorDescription());
-		setErrorDesc();
-		for (int i=0;i<input.getCompareFields().length;i++)
-		{
-			TableItem item = wFields.table.getItem(i);
-			if (input.getCompareFields()[i]!=null) item.setText(1, input.getCompareFields()[i]);
-            item.setText(2, input.getCaseInsensitive()[i]?"Y":"N"); //$NON-NLS-1$ //$NON-NLS-2$
-		}
-		wFields.setRowNums();
-		wFields.optWidth(true);
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    wCount.setSelection(input.isCountRows());
+    if (input.getCountField() != null)
+      wCountField.setText(input.getCountField());
+    setFlags();
+    wRejectDuplicateRow.setSelection(input.isRejectDuplicateRow());
+    if (input.getErrorDescription() != null)
+      wErrorDesc.setText(input.getErrorDescription());
+    setErrorDesc();
+    for (int i = 0; i < input.getCompareFields().length; i++) {
+      TableItem item = wFields.table.getItem(i);
+      if (input.getCompareFields()[i] != null)
+        item.setText(1, input.getCompareFields()[i]);
+      item.setText(2, input.getCaseInsensitive()[i] ? "Y" : "N"); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+    wFields.setRowNums();
+    wFields.optWidth(true);
 
-		wStepname.selectAll();
-	}
-	
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
+
 	private void cancel()
 	{
 		stepname=null;

@@ -206,20 +206,22 @@ public class StepMetastructureDialog extends BaseStepDialog implements StepDialo
 		return stepname;
 	}
 	
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		wStepname.selectAll();
-		if (input.getRowcountField()     != null) wRowcountField.setText(input.getRowcountField());
-		
-		if(input.isOutputRowcount()){
-        	wRowcountField.setEnabled(true);
-        }
-        
-        wOutputRowcount.setSelection(input.isOutputRowcount());
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (input.getRowcountField() != null)
+      wRowcountField.setText(input.getRowcountField());
+
+    if (input.isOutputRowcount()) {
+      wRowcountField.setEnabled(true);
+    }
+
+    wOutputRowcount.setSelection(input.isOutputRowcount());
+    
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

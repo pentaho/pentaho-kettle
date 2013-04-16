@@ -763,6 +763,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
     setFlags();
 
     wStepname.selectAll();
+    wStepname.setFocus();
   }
 
   private void cancel() {

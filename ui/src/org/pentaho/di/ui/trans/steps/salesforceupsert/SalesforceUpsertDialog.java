@@ -863,7 +863,9 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
 		wTimeOut.setText(Const.NVL(in.getTimeOut(), SalesforceConnectionUtils.DEFAULT_TIMEOUT));
 		wUseCompression.setSelection(in.isUsingCompression());
 		wRollbackAllChangesOnError.setSelection(in.isRollbackAllChangesOnError());
+
 		wStepname.selectAll();
+    wStepname.setFocus();
 	}
 
 	private void cancel() {

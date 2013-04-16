@@ -1641,110 +1641,131 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		wInclRownumField.setEnabled(wInclRownum.getSelection());
 	}
 
-	/**
-	 * Read the data from the TextFileInputMeta object and show it in this dialog.
-	 * 
-	 * @param in The TextFileInputMeta object to obtain the data from.
-	 */
-	public void getData(GetXMLDataMeta in)
-	{
-		if (in.getFileName() !=null) 
-		{
-			wFilenameList.removeAll();
-			
-			for (int i=0;i<in.getFileName().length;i++) 
-			{
-				wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i] , in.getExludeFileMask()[i],
-						in.getRequiredFilesDesc(in.getFileRequired()[i]), in.getRequiredFilesDesc(in.getIncludeSubFolders()[i])} );
-			}
-			
-			wFilenameList.removeEmptyRows();
-			wFilenameList.setRowNums();
-			wFilenameList.optWidth(true);
-		}
-		wInclFilename.setSelection(in.includeFilename());
-		wInclRownum.setSelection(in.includeRowNumber());
-		wAddResult.setSelection(in.addResultFile());
-		wNameSpaceAware.setSelection(in.isNamespaceAware());
-		wreadUrl.setSelection(in.isReadUrl());
-		wIgnoreComment.setSelection(in.isIgnoreComments());
-		wValidating.setSelection(in.isValidating());
-		wuseToken.setSelection(in.isuseToken());
-		wIgnoreEmptyFile.setSelection(in.isIgnoreEmptyFile());
-		wdoNotFailIfNoFile.setSelection(in.isdoNotFailIfNoFile());
-		wXMLStreamField.setSelection(in.isInFields());
-		wXMLIsAFile.setSelection(in.getIsAFile());
-		
-		if (in.getXMLField()!=null) wXMLField.setText(in.getXMLField());
-		
-		if (in.getFilenameField()!=null) wInclFilenameField.setText(in.getFilenameField());
-		if (in.getRowNumberField()!=null) wInclRownumField.setText(in.getRowNumberField());
-		wLimit.setText(""+in.getRowLimit());
-		if (in.getPrunePath()!=null) wPrunePath.setText(in.getPrunePath());
-        if(in.getLoopXPath()!=null) wLoopXPath.setText(in.getLoopXPath());
-        if (in.getEncoding()!=null) 
-        {
-        	wEncoding.setText(""+in.getEncoding());
-        }else {        	
-        	wEncoding.setText("UTF-8");        
-        }
-		
-		logDebug(BaseMessages.getString(PKG, "GetXMLDataDialog.Log.GettingFieldsInfo"));
-		for (int i=0;i<in.getInputFields().length;i++)
-		{
-		    GetXMLDataField field = in.getInputFields()[i];
-		    
-            if (field!=null)
-            {
-    			TableItem item = wFields.table.getItem(i);
-    			String name     = field.getName();
-    			String xpath	= field.getXPath();
-    			String element  = field.getElementTypeDesc();
-    			String resulttype  = field.getResultTypeDesc();
-    			String type     = field.getTypeDesc();
-    			String format   = field.getFormat();
-    			String length   = ""+field.getLength();
-    			String prec     = ""+field.getPrecision();
-    			String curr     = field.getCurrencySymbol();
-    			String group    = field.getGroupSymbol();
-    			String decim    = field.getDecimalSymbol();
-    			String trim     = field.getTrimTypeDesc();
-    			String rep      = field.isRepeated()?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No");
-    			
-                if (name    !=null) item.setText( 1, name);
-                if (xpath   !=null) item.setText( 2, xpath);
-                if (element !=null) item.setText( 3, element);
-                if (resulttype !=null) item.setText( 4, resulttype);
-    			if (type    !=null) item.setText( 5, type    );
-    			if (format  !=null) item.setText( 6, format  );
-    			if (length  !=null && !"-1".equals(length  )) item.setText( 7, length  );
-    			if (prec    !=null && !"-1".equals(prec    )) item.setText( 8, prec    );
-    			if (curr    !=null) item.setText( 9, curr    );
-    			if (decim   !=null) item.setText( 10, decim   );
-    			if (group   !=null) item.setText( 11, group   );
-    			if (trim    !=null) item.setText( 12, trim    );
-    			if (rep     !=null) item.setText(13, rep     );
-                
-            }
-		}     
-        
-        wFields.removeEmptyRows();
-        wFields.setRowNums();
-        wFields.optWidth(true);
-        
-        if(in.getShortFileNameField()!=null) wShortFileFieldName.setText(in.getShortFileNameField());
-        if(in.getPathField()!=null) wPathFieldName.setText(in.getPathField());
-        if(in.isHiddenField()!=null) wIsHiddenName.setText(in.isHiddenField());
-        if(in.getLastModificationDateField()!=null) wLastModificationTimeName.setText(in.getLastModificationDateField());
-        if(in.getUriField()!=null) wUriName.setText(in.getUriField());
-        if(in.getRootUriField()!=null) wRootUriName.setText(in.getRootUriField());
-        if(in.getExtensionField()!=null) wExtensionFieldName.setText(in.getExtensionField());
-        if(in.getSizeField()!=null) wSizeFieldName.setText(in.getSizeField());
+  /**
+   * Read the data from the TextFileInputMeta object and show it in this dialog.
+   * 
+   * @param in The TextFileInputMeta object to obtain the data from.
+   */
+  public void getData(GetXMLDataMeta in) {
+    if (in.getFileName() != null) {
+      wFilenameList.removeAll();
 
-        
-		wStepname.selectAll();
-	}
-	
+      for (int i = 0; i < in.getFileName().length; i++) {
+        wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i], in.getExludeFileMask()[i],
+            in.getRequiredFilesDesc(in.getFileRequired()[i]), in.getRequiredFilesDesc(in.getIncludeSubFolders()[i]) });
+      }
+
+      wFilenameList.removeEmptyRows();
+      wFilenameList.setRowNums();
+      wFilenameList.optWidth(true);
+    }
+    wInclFilename.setSelection(in.includeFilename());
+    wInclRownum.setSelection(in.includeRowNumber());
+    wAddResult.setSelection(in.addResultFile());
+    wNameSpaceAware.setSelection(in.isNamespaceAware());
+    wreadUrl.setSelection(in.isReadUrl());
+    wIgnoreComment.setSelection(in.isIgnoreComments());
+    wValidating.setSelection(in.isValidating());
+    wuseToken.setSelection(in.isuseToken());
+    wIgnoreEmptyFile.setSelection(in.isIgnoreEmptyFile());
+    wdoNotFailIfNoFile.setSelection(in.isdoNotFailIfNoFile());
+    wXMLStreamField.setSelection(in.isInFields());
+    wXMLIsAFile.setSelection(in.getIsAFile());
+
+    if (in.getXMLField() != null)
+      wXMLField.setText(in.getXMLField());
+
+    if (in.getFilenameField() != null)
+      wInclFilenameField.setText(in.getFilenameField());
+    if (in.getRowNumberField() != null)
+      wInclRownumField.setText(in.getRowNumberField());
+    wLimit.setText("" + in.getRowLimit());
+    if (in.getPrunePath() != null)
+      wPrunePath.setText(in.getPrunePath());
+    if (in.getLoopXPath() != null)
+      wLoopXPath.setText(in.getLoopXPath());
+    if (in.getEncoding() != null) {
+      wEncoding.setText("" + in.getEncoding());
+    } else {
+      wEncoding.setText("UTF-8");
+    }
+
+    logDebug(BaseMessages.getString(PKG, "GetXMLDataDialog.Log.GettingFieldsInfo"));
+    for (int i = 0; i < in.getInputFields().length; i++) {
+      GetXMLDataField field = in.getInputFields()[i];
+
+      if (field != null) {
+        TableItem item = wFields.table.getItem(i);
+        String name = field.getName();
+        String xpath = field.getXPath();
+        String element = field.getElementTypeDesc();
+        String resulttype = field.getResultTypeDesc();
+        String type = field.getTypeDesc();
+        String format = field.getFormat();
+        String length = "" + field.getLength();
+        String prec = "" + field.getPrecision();
+        String curr = field.getCurrencySymbol();
+        String group = field.getGroupSymbol();
+        String decim = field.getDecimalSymbol();
+        String trim = field.getTrimTypeDesc();
+        String rep = field.isRepeated() ? BaseMessages.getString(PKG, "System.Combo.Yes") : BaseMessages.getString(PKG,
+            "System.Combo.No");
+
+        if (name != null)
+          item.setText(1, name);
+        if (xpath != null)
+          item.setText(2, xpath);
+        if (element != null)
+          item.setText(3, element);
+        if (resulttype != null)
+          item.setText(4, resulttype);
+        if (type != null)
+          item.setText(5, type);
+        if (format != null)
+          item.setText(6, format);
+        if (length != null && !"-1".equals(length))
+          item.setText(7, length);
+        if (prec != null && !"-1".equals(prec))
+          item.setText(8, prec);
+        if (curr != null)
+          item.setText(9, curr);
+        if (decim != null)
+          item.setText(10, decim);
+        if (group != null)
+          item.setText(11, group);
+        if (trim != null)
+          item.setText(12, trim);
+        if (rep != null)
+          item.setText(13, rep);
+
+      }
+    }
+
+    wFields.removeEmptyRows();
+    wFields.setRowNums();
+    wFields.optWidth(true);
+
+    if (in.getShortFileNameField() != null)
+      wShortFileFieldName.setText(in.getShortFileNameField());
+    if (in.getPathField() != null)
+      wPathFieldName.setText(in.getPathField());
+    if (in.isHiddenField() != null)
+      wIsHiddenName.setText(in.isHiddenField());
+    if (in.getLastModificationDateField() != null)
+      wLastModificationTimeName.setText(in.getLastModificationDateField());
+    if (in.getUriField() != null)
+      wUriName.setText(in.getUriField());
+    if (in.getRootUriField() != null)
+      wRootUriName.setText(in.getRootUriField());
+    if (in.getExtensionField() != null)
+      wExtensionFieldName.setText(in.getExtensionField());
+    if (in.getSizeField() != null)
+      wSizeFieldName.setText(in.getSizeField());
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
+
 	private void cancel()
 	{
 		stepname=null;

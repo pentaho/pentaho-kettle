@@ -1474,75 +1474,91 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		 	gotPreviousFields=true;
 		}
 	 }
-    /**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		if (input.getFileName()  != null) wFilename.setText(input.getFileName());
-		wFileIsCommand.setSelection(input.isFileAsCommand());
-		wServletOutput.setSelection(input.isServletOutput());
-		setFlagsServletOption();
-		wDoNotOpenNewFileInit.setSelection(input.isDoNotOpenNewFileInit());
-		wCreateParentFolder.setSelection(input.isCreateParentFolder());
-		wExtension.setText(Const.NVL(input.getExtension(), ""));
-		wSeparator.setText(Const.NVL(input.getSeparator(), ""));
-		wEnclosure.setText(Const.NVL(input.getEnclosure(), ""));
-		
-		if (input.getFileFormat()!=null) {
-			wFormat.select(0); // default if not found: CR+LF
-			for (int i=0;i<TextFileOutputMeta.formatMapperLineTerminator.length;i++) {
-				if(input.getFileFormat().equalsIgnoreCase(TextFileOutputMeta.formatMapperLineTerminator[i])) wFormat.select(i);
-			}
-		}
-		if (input.getFileCompression()!=null) wCompression.setText(input.getFileCompression());
-        if (input.getEncoding()  !=null) wEncoding.setText(input.getEncoding());
-        if (input.getEndedLine() !=null) wEndedLine.setText(input.getEndedLine());
-        
-        wFileNameInField.setSelection(input.isFileNameInField());
-        if (input.getFileNameField() !=null) wFileNameField.setText(input.getFileNameField());
- 
-		wSplitEvery.setText(""+input.getSplitEvery());
+
+  /**
+  * Copy information from the meta-data input to the dialog fields.
+  */
+  public void getData() {
+    if (input.getFileName() != null)
+      wFilename.setText(input.getFileName());
+    wFileIsCommand.setSelection(input.isFileAsCommand());
+    wServletOutput.setSelection(input.isServletOutput());
+    setFlagsServletOption();
+    wDoNotOpenNewFileInit.setSelection(input.isDoNotOpenNewFileInit());
+    wCreateParentFolder.setSelection(input.isCreateParentFolder());
+    wExtension.setText(Const.NVL(input.getExtension(), ""));
+    wSeparator.setText(Const.NVL(input.getSeparator(), ""));
+    wEnclosure.setText(Const.NVL(input.getEnclosure(), ""));
+
+    if (input.getFileFormat() != null) {
+      wFormat.select(0); // default if not found: CR+LF
+      for (int i = 0; i < TextFileOutputMeta.formatMapperLineTerminator.length; i++) {
+        if (input.getFileFormat().equalsIgnoreCase(TextFileOutputMeta.formatMapperLineTerminator[i]))
+          wFormat.select(i);
+      }
+    }
+    if (input.getFileCompression() != null)
+      wCompression.setText(input.getFileCompression());
+    if (input.getEncoding() != null)
+      wEncoding.setText(input.getEncoding());
+    if (input.getEndedLine() != null)
+      wEndedLine.setText(input.getEndedLine());
+
+    wFileNameInField.setSelection(input.isFileNameInField());
+    if (input.getFileNameField() != null)
+      wFileNameField.setText(input.getFileNameField());
+
+    wSplitEvery.setText("" + input.getSplitEvery());
 
     wEnclForced.setSelection(input.isEnclosureForced());
     wDisableEnclosureFix.setSelection(input.isEnclosureFixDisabled());
-		wHeader.setSelection(input.isHeaderEnabled());
-		wFooter.setSelection(input.isFooterEnabled());
-		wAddDate.setSelection(input.isDateInFilename());
-		wAddTime.setSelection(input.isTimeInFilename());
-		wDateTimeFormat.setText(Const.NVL(input.getDateTimeFormat(), ""));
-		wSpecifyFormat.setSelection(input.isSpecifyingFormat());
+    wHeader.setSelection(input.isHeaderEnabled());
+    wFooter.setSelection(input.isFooterEnabled());
+    wAddDate.setSelection(input.isDateInFilename());
+    wAddTime.setSelection(input.isTimeInFilename());
+    wDateTimeFormat.setText(Const.NVL(input.getDateTimeFormat(), ""));
+    wSpecifyFormat.setSelection(input.isSpecifyingFormat());
 
-		wAppend.setSelection(input.isFileAppended());
-		wAddStepnr.setSelection(input.isStepNrInFilename());
-		wAddPartnr.setSelection(input.isPartNrInFilename());
-		wPad.setSelection(input.isPadded());
-		wFastDump.setSelection(input.isFastDump());
-		wAddToResult.setSelection(input.isAddToResultFiles());
-				
-		logDebug("getting fields info...");
-		
-		for (int i=0;i<input.getOutputFields().length;i++)
-		{
-		    TextFileField field = input.getOutputFields()[i];
-		    
-			TableItem item = wFields.table.getItem(i);
-			if (field.getName()!=null) item.setText(1, field.getName());
-			item.setText(2, field.getTypeDesc());
-			if (field.getFormat()!=null) item.setText(3, field.getFormat());
-			if (field.getLength()>=0) item.setText(4, ""+field.getLength());
-			if (field.getPrecision()>=0) item.setText(5, ""+field.getPrecision());
-			if (field.getCurrencySymbol()!=null) item.setText(6, field.getCurrencySymbol());
-			if (field.getDecimalSymbol()!=null) item.setText(7, field.getDecimalSymbol());
-			if (field.getGroupingSymbol()!=null) item.setText(8, field.getGroupingSymbol());
-			String trim = field.getTrimTypeDesc();
-			if (trim != null) item.setText(9, trim);
-			if (field.getNullString()!=null) item.setText(10, field.getNullString());
-		}
-		
-		wFields.optWidth(true);
-		wStepname.selectAll();
-	}
+    wAppend.setSelection(input.isFileAppended());
+    wAddStepnr.setSelection(input.isStepNrInFilename());
+    wAddPartnr.setSelection(input.isPartNrInFilename());
+    wPad.setSelection(input.isPadded());
+    wFastDump.setSelection(input.isFastDump());
+    wAddToResult.setSelection(input.isAddToResultFiles());
+
+    logDebug("getting fields info...");
+
+    for (int i = 0; i < input.getOutputFields().length; i++) {
+      TextFileField field = input.getOutputFields()[i];
+
+      TableItem item = wFields.table.getItem(i);
+      if (field.getName() != null)
+        item.setText(1, field.getName());
+      item.setText(2, field.getTypeDesc());
+      if (field.getFormat() != null)
+        item.setText(3, field.getFormat());
+      if (field.getLength() >= 0)
+        item.setText(4, "" + field.getLength());
+      if (field.getPrecision() >= 0)
+        item.setText(5, "" + field.getPrecision());
+      if (field.getCurrencySymbol() != null)
+        item.setText(6, field.getCurrencySymbol());
+      if (field.getDecimalSymbol() != null)
+        item.setText(7, field.getDecimalSymbol());
+      if (field.getGroupingSymbol() != null)
+        item.setText(8, field.getGroupingSymbol());
+      String trim = field.getTrimTypeDesc();
+      if (trim != null)
+        item.setText(9, trim);
+      if (field.getNullString() != null)
+        item.setText(10, field.getNullString());
+    }
+
+    wFields.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

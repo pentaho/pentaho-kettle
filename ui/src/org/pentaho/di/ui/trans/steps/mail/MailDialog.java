@@ -2507,161 +2507,147 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface
         }
         
 	}
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
 
-			wisattachContentField.setSelection(input.isAttachContentFromField());
-			if(input.getAttachContentField()!=null) wattachContentField.setText(input.getAttachContentField());
-			if(input.getAttachContentFileNameField()!=null) wattachContentFileNameField.setText(input.getAttachContentFileNameField());
-	        if (input.getDestination() != null)
-	            wDestination.setText(input.getDestination());
-			if (input.getDestinationCc() != null)
-				wDestinationCc.setText(input.getDestinationCc());
-			if (input.getDestinationBCc() != null)
-				wDestinationBCc.setText(input.getDestinationBCc());
-	        if (input.getServer() != null)
-	            wServer.setText(input.getServer());
-	        if (input.getPort() != null)
-	            wPort.setText(input.getPort());
-	        if (input.getReplyAddress() != null)
-	            wReply.setText(input.getReplyAddress());
-	        if (input.getReplyName() != null)
-	            wReplyName.setText(input.getReplyName());
-	        if (input.getSubject() != null)
-	            wSubject.setText(input.getSubject());
-	        if (input.getContactPerson() != null)
-	            wPerson.setText(input.getContactPerson());
-	        if (input.getContactPhone() != null)
-	            wPhone.setText(input.getContactPhone());
-	        if (input.getComment() != null)
-	            wComment.setText(input.getComment());
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    wisattachContentField.setSelection(input.isAttachContentFromField());
+    if (input.getAttachContentField() != null)
+      wattachContentField.setText(input.getAttachContentField());
+    if (input.getAttachContentFileNameField() != null)
+      wattachContentFileNameField.setText(input.getAttachContentFileNameField());
+    if (input.getDestination() != null)
+      wDestination.setText(input.getDestination());
+    if (input.getDestinationCc() != null)
+      wDestinationCc.setText(input.getDestinationCc());
+    if (input.getDestinationBCc() != null)
+      wDestinationBCc.setText(input.getDestinationBCc());
+    if (input.getServer() != null)
+      wServer.setText(input.getServer());
+    if (input.getPort() != null)
+      wPort.setText(input.getPort());
+    if (input.getReplyAddress() != null)
+      wReply.setText(input.getReplyAddress());
+    if (input.getReplyName() != null)
+      wReplyName.setText(input.getReplyName());
+    if (input.getSubject() != null)
+      wSubject.setText(input.getSubject());
+    if (input.getContactPerson() != null)
+      wPerson.setText(input.getContactPerson());
+    if (input.getContactPhone() != null)
+      wPhone.setText(input.getContactPhone());
+    if (input.getComment() != null)
+      wComment.setText(input.getComment());
 
-	        wAddDate.setSelection(input.getIncludeDate());
-	        wisFileDynamic.setSelection(input.isDynamicFilename());
-	        if(input.getDynamicFieldname()!=null)
-	        	wDynamicFilenameField.setText(input.getDynamicFieldname());
-	        if(input.getDynamicWildcard()!=null)
-	        	wDynamicWildcardField.setText(input.getDynamicWildcard());
-	        
-	        if(input.getSourceFileFoldername()!=null)
-	        	wSourceFileFoldername.setText(input.getSourceFileFoldername());
-	        
-	        if(input.getSourceWildcard()!=null)
-	        	wWildcard.setText(input.getSourceWildcard());
-	        
-	        wincludeSubFolders.setSelection(input.isIncludeSubFolders());
-	        
-	        wZipFiles.setSelection(input.isZipFiles());
-	        if (input.getZipFilename() != null)
-	            wZipFilename.setText(input.getZipFilename());
-	        
-	        if (input.getZipLimitSize() != null)
-	        	wZipSizeCondition.setText(input.getZipLimitSize());
-	        else 
-	        	wZipSizeCondition.setText("0");
-	        
-    		wisZipFileDynamic.setSelection(input.isZipFilenameDynamic());
-    		if (input.getDynamicZipFilenameField() != null)
-    			wDynamicZipFileField.setText(input.getDynamicZipFilenameField());
-    		
-	        wUseAuth.setSelection(input.isUsingAuthentication());
-	        wUseSecAuth.setSelection(input.isUsingSecureAuthentication());
-	        if (input.getAuthenticationUser() != null)
-	            wAuthUser.setText(input.getAuthenticationUser());
-	        if (input.getAuthenticationPassword() != null)
-	            wAuthPass.setText(input.getAuthenticationPassword());
+    wAddDate.setSelection(input.getIncludeDate());
+    wisFileDynamic.setSelection(input.isDynamicFilename());
+    if (input.getDynamicFieldname() != null)
+      wDynamicFilenameField.setText(input.getDynamicFieldname());
+    if (input.getDynamicWildcard() != null)
+      wDynamicWildcardField.setText(input.getDynamicWildcard());
 
-	        wOnlyComment.setSelection(input.isOnlySendComment());
-	        
-	        wUseHTML.setSelection(input.isUseHTML());
-	        
-	        if (input.getEncoding()!=null) 
-	        	wEncoding.setText(""+input.getEncoding());
-	        else
-	        	wEncoding.setText("UTF-8");
-	        	
-	        // Secure connection type	
-	        if (input.getSecureConnectionType() !=null)
-	        	wSecureConnectionType.setText(input.getSecureConnectionType());
-	        else
-	        	wSecureConnectionType.setText("SSL");
+    if (input.getSourceFileFoldername() != null)
+      wSourceFileFoldername.setText(input.getSourceFileFoldername());
 
-	        wUsePriority.setSelection(input.isUsePriority());
-	        
-	        // Priority
-	        
-	        if (input.getPriority()!=null)
-	        {
-		        if (input.getPriority().equals("low")) 
-		        	wPriority.select(0); // Low
-		        else if (input.getPriority().equals("normal")) 
-		        	wPriority.select(1); // Normal
-			    else 	
-			    	wPriority.select(2);  // Default High
-	        }
-	        else
-	        	wPriority.select(3);  // Default High
+    if (input.getSourceWildcard() != null)
+      wWildcard.setText(input.getSourceWildcard());
 
-	        // Importance
-	        if (input.getImportance()!=null)
-	        {
-		        if (input.getImportance().equals("low")) 
-		        	wImportance.select(0); // Low
-		        else if (input.getImportance().equals("normal")) 	
-		        	wImportance.select(1); // Normal
-			    else 	
-			    	wImportance.select(2);  // Default High
-	        }
-	        else
-	        	wImportance.select(3);  // Default High
+    wincludeSubFolders.setSelection(input.isIncludeSubFolders());
 
-	        if (input.getReplyToAddresses() != null)
-	            wReplyToAddresses.setText(input.getReplyToAddresses());
+    wZipFiles.setSelection(input.isZipFiles());
+    if (input.getZipFilename() != null)
+      wZipFilename.setText(input.getZipFilename());
 
-	        // Sensitivity
-	        if (input.getSensitivity()!=null)
-	        {
-	            if (input.getSensitivity().equals("personal")) 
-	            {
-	            	wSensitivity.select(1);
-	            }
-	            else if (input.getSensitivity().equals("private")) 
-	            {	
-	            	wSensitivity.select(2); 
-	            }
-	            else if (input.getSensitivity().equals("company-confidential")) 
-	            {	
-	            	wSensitivity.select(3); 
-	            }
-	    	    else 
-	    	    {	
-	    	    	wSensitivity.select(0);
-	    	    }
-	        }
-	        else
-	        {
-	        	wSensitivity.select(0);  // Default normal
-	        }
-	        
-	        if (input.getEmbeddedImages() != null)
-			{
-				for (int i = 0; i < input.getEmbeddedImages().length; i++)
-				{
-					TableItem ti = wFields.table.getItem(i);
-					if (input.getEmbeddedImages()[i] != null)
-						ti.setText(1, input.getEmbeddedImages()[i]);
-						if (input.getContentIds()[i] != null)
-							ti.setText(2, input.getContentIds()[i]);
-				}
-				wFields.setRowNums();
-				wFields.optWidth(true);
-			}
-	        
-		wStepname.selectAll();
-	}
+    if (input.getZipLimitSize() != null)
+      wZipSizeCondition.setText(input.getZipLimitSize());
+    else
+      wZipSizeCondition.setText("0");
+
+    wisZipFileDynamic.setSelection(input.isZipFilenameDynamic());
+    if (input.getDynamicZipFilenameField() != null)
+      wDynamicZipFileField.setText(input.getDynamicZipFilenameField());
+
+    wUseAuth.setSelection(input.isUsingAuthentication());
+    wUseSecAuth.setSelection(input.isUsingSecureAuthentication());
+    if (input.getAuthenticationUser() != null)
+      wAuthUser.setText(input.getAuthenticationUser());
+    if (input.getAuthenticationPassword() != null)
+      wAuthPass.setText(input.getAuthenticationPassword());
+
+    wOnlyComment.setSelection(input.isOnlySendComment());
+
+    wUseHTML.setSelection(input.isUseHTML());
+
+    if (input.getEncoding() != null)
+      wEncoding.setText("" + input.getEncoding());
+    else
+      wEncoding.setText("UTF-8");
+
+    // Secure connection type	
+    if (input.getSecureConnectionType() != null)
+      wSecureConnectionType.setText(input.getSecureConnectionType());
+    else
+      wSecureConnectionType.setText("SSL");
+
+    wUsePriority.setSelection(input.isUsePriority());
+
+    // Priority
+
+    if (input.getPriority() != null) {
+      if (input.getPriority().equals("low"))
+        wPriority.select(0); // Low
+      else if (input.getPriority().equals("normal"))
+        wPriority.select(1); // Normal
+      else
+        wPriority.select(2); // Default High
+    } else
+      wPriority.select(3); // Default High
+
+    // Importance
+    if (input.getImportance() != null) {
+      if (input.getImportance().equals("low"))
+        wImportance.select(0); // Low
+      else if (input.getImportance().equals("normal"))
+        wImportance.select(1); // Normal
+      else
+        wImportance.select(2); // Default High
+    } else
+      wImportance.select(3); // Default High
+
+    if (input.getReplyToAddresses() != null)
+      wReplyToAddresses.setText(input.getReplyToAddresses());
+
+    // Sensitivity
+    if (input.getSensitivity() != null) {
+      if (input.getSensitivity().equals("personal")) {
+        wSensitivity.select(1);
+      } else if (input.getSensitivity().equals("private")) {
+        wSensitivity.select(2);
+      } else if (input.getSensitivity().equals("company-confidential")) {
+        wSensitivity.select(3);
+      } else {
+        wSensitivity.select(0);
+      }
+    } else {
+      wSensitivity.select(0); // Default normal
+    }
+
+    if (input.getEmbeddedImages() != null) {
+      for (int i = 0; i < input.getEmbeddedImages().length; i++) {
+        TableItem ti = wFields.table.getItem(i);
+        if (input.getEmbeddedImages()[i] != null)
+          ti.setText(1, input.getEmbeddedImages()[i]);
+        if (input.getContentIds()[i] != null)
+          ti.setText(2, input.getContentIds()[i]);
+      }
+      wFields.setRowNums();
+      wFields.optWidth(true);
+    }
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

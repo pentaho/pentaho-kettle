@@ -811,31 +811,28 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
     wByReference.setText(path);
   }
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData()
-	{
-		wStepname.selectAll();
-
-    specificationMethod=singleThreaderMeta.getSpecificationMethod();
-    switch(specificationMethod) {
-    case FILENAME: 
-      wFilename.setText(Const.NVL(singleThreaderMeta.getFileName(), "")); 
-      break;
-    case REPOSITORY_BY_NAME:
-      wDirectory.setText(Const.NVL(singleThreaderMeta.getDirectoryPath(), ""));
-      wTransname.setText(Const.NVL(singleThreaderMeta.getTransName(), ""));
-      break;
-    case REPOSITORY_BY_REFERENCE:
-      referenceObjectId = singleThreaderMeta.getTransObjectId();
-      wByReference.setText("");
-      getByReferenceData(referenceObjectId);
-      break;   
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    specificationMethod = singleThreaderMeta.getSpecificationMethod();
+    switch (specificationMethod) {
+      case FILENAME:
+        wFilename.setText(Const.NVL(singleThreaderMeta.getFileName(), ""));
+        break;
+      case REPOSITORY_BY_NAME:
+        wDirectory.setText(Const.NVL(singleThreaderMeta.getDirectoryPath(), ""));
+        wTransname.setText(Const.NVL(singleThreaderMeta.getTransName(), ""));
+        break;
+      case REPOSITORY_BY_REFERENCE:
+        referenceObjectId = singleThreaderMeta.getTransObjectId();
+        wByReference.setText("");
+        getByReferenceData(referenceObjectId);
+        break;
     }
     setRadioButtons();
 
-		wBatchSize.setText(Const.NVL(singleThreaderMeta.getBatchSize(), ""));
+    wBatchSize.setText(Const.NVL(singleThreaderMeta.getBatchSize(), ""));
     wBatchTime.setText(Const.NVL(singleThreaderMeta.getBatchTime(), ""));
     wInjectStep.setText(Const.NVL(singleThreaderMeta.getInjectStep(), ""));
     wRetrieveStep.setText(Const.NVL(singleThreaderMeta.getRetrieveStep(), ""));
@@ -857,12 +854,15 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
 
     wPassParams.setSelection(singleThreaderMeta.isPassingAllParameters());
 
-		try {
-			loadTransformation();
-		} catch (Throwable t) {
-		  // Skip the error, it becomes annoying otherwise
-		}
-	}
+    try {
+      loadTransformation();
+    } catch (Throwable t) {
+      // Skip the error, it becomes annoying otherwise
+    }
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 
   private void getByReferenceData(ObjectId referenceObjectId) {
     try {

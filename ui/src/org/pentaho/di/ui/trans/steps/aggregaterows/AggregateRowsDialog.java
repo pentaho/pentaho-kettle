@@ -203,32 +203,29 @@ public class AggregateRowsDialog extends BaseStepDialog implements StepDialogInt
 		return stepname;
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		int i;
-		
-		Table table = wFields.table;
-		table.removeAll();
-		for (i=0;i<input.getFieldName().length;i++)
-		{
-			TableItem ti = new TableItem(table, SWT.NONE);
-			ti.setText(0, ""+(i+1)); //$NON-NLS-1$
-			if (input.getFieldName()[i]  !=null) ti.setText(1, input.getFieldName()[i]);
-			if (input.getFieldNewName()[i]!=null && !input.getFieldNewName()[i].equals(input.getFieldName()[i])) 
-				ti.setText(2, input.getFieldNewName()[i]);
-			ti.setText(3, AggregateRowsMeta.aggregateTypeDesc[input.getAggregateType()[i]]);
-		}
-		if (table.getItemCount()==0)
-		{
-			TableItem ti = new TableItem(table, SWT.NONE);
-			ti.setText(0, "001"); //$NON-NLS-1$
-		}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    Table table = wFields.table;
+    table.removeAll();
+    for (int i = 0; i < input.getFieldName().length; i++) {
+      TableItem ti = new TableItem(table, SWT.NONE);
+      ti.setText(0, "" + (i + 1)); //$NON-NLS-1$
+      if (input.getFieldName()[i] != null)
+        ti.setText(1, input.getFieldName()[i]);
+      if (input.getFieldNewName()[i] != null && !input.getFieldNewName()[i].equals(input.getFieldName()[i]))
+        ti.setText(2, input.getFieldNewName()[i]);
+      ti.setText(3, AggregateRowsMeta.aggregateTypeDesc[input.getAggregateType()[i]]);
+    }
+    if (table.getItemCount() == 0) {
+      TableItem ti = new TableItem(table, SWT.NONE);
+      ti.setText(0, "001"); //$NON-NLS-1$
+    }
 
-		wStepname.selectAll();
-	}
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

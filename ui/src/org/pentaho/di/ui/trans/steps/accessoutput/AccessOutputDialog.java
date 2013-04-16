@@ -409,22 +409,25 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
 		return stepname;
 	}
 	
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-        if (input.getFilename()  != null) wFilename.setText(input.getFilename());
-		if (input.getTablename() != null) wTablename.setText(input.getTablename());
-		
-        wCreateFile.setSelection( input.isFileCreated() );
-        wCreateTable.setSelection(input.isFileCreated() );
-        if (input.getCommitSize()>0) wCommitSize.setText( Integer.toString( input.getCommitSize() ) );
-        wAddToResult.setSelection(input.isAddToResultFiles());
-        wDoNotOpenNewFileInit.setSelection(input.isDoNotOpenNewFileInit());
-		
-		wStepname.selectAll();
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (input.getFilename() != null)
+      wFilename.setText(input.getFilename());
+    if (input.getTablename() != null)
+      wTablename.setText(input.getTablename());
+
+    wCreateFile.setSelection(input.isFileCreated());
+    wCreateTable.setSelection(input.isFileCreated());
+    if (input.getCommitSize() > 0)
+      wCommitSize.setText(Integer.toString(input.getCommitSize()));
+    wAddToResult.setSelection(input.isAddToResultFiles());
+    wDoNotOpenNewFileInit.setSelection(input.isDoNotOpenNewFileInit());
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

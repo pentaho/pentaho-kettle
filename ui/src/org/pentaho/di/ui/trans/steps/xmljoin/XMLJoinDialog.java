@@ -534,29 +534,37 @@ public class XMLJoinDialog extends BaseStepDialog implements StepDialogInterface
    
     /**
      * Copy information from the meta-data input to the dialog fields.
-     */ 
-    public void getData()
-    {
-        if (input.getTargetXMLstep()     != null) wTargetXMLstep.setText(input.getTargetXMLstep());
-        if (input.getTargetXMLfield()     != null) wTargetXMLfield.setText(input.getTargetXMLfield());
-        if (input.getSourceXMLstep()     != null) wSourceXMLstep.setText(input.getSourceXMLstep());
-        if (input.getSourceXMLfield()     != null) wSourceXMLfield.setText(input.getSourceXMLfield());
-        if (input.getValueXMLfield()     != null) wValueXMLfield.setText(input.getValueXMLfield());
-        if (input.getTargetXPath()     != null) wTargetXPath.setText(input.getTargetXPath());
-        if (input.getEncoding()      != null) wEncoding.setText(input.getEncoding());
-        if (input.getJoinCompareField()     != null) wJoinCompareField.setText(input.getJoinCompareField());
-        
-        wComplexJoin.setSelection(input.isComplexJoin());
-        wOmitXMLHeader.setSelection(input.isOmitXMLHeader());
-        wOmitNullValues.setSelection(input.isOmitNullValues());
-        
-        if(input.isComplexJoin()){
-        	wJoinCompareField.setEnabled(true);
-        }
-        
-        logDebug(BaseMessages.getString(PKG, "AddXMLDialog.Log.GettingFieldsInfo")); //$NON-NLS-1$
-        
-        wStepname.selectAll();
+     */
+    public void getData() {
+      logDebug(BaseMessages.getString(PKG, "AddXMLDialog.Log.GettingFieldsInfo")); //$NON-NLS-1$
+
+      if (input.getTargetXMLstep() != null)
+        wTargetXMLstep.setText(input.getTargetXMLstep());
+      if (input.getTargetXMLfield() != null)
+        wTargetXMLfield.setText(input.getTargetXMLfield());
+      if (input.getSourceXMLstep() != null)
+        wSourceXMLstep.setText(input.getSourceXMLstep());
+      if (input.getSourceXMLfield() != null)
+        wSourceXMLfield.setText(input.getSourceXMLfield());
+      if (input.getValueXMLfield() != null)
+        wValueXMLfield.setText(input.getValueXMLfield());
+      if (input.getTargetXPath() != null)
+        wTargetXPath.setText(input.getTargetXPath());
+      if (input.getEncoding() != null)
+        wEncoding.setText(input.getEncoding());
+      if (input.getJoinCompareField() != null)
+        wJoinCompareField.setText(input.getJoinCompareField());
+  
+      wComplexJoin.setSelection(input.isComplexJoin());
+      wOmitXMLHeader.setSelection(input.isOmitXMLHeader());
+      wOmitNullValues.setSelection(input.isOmitNullValues());
+  
+      if (input.isComplexJoin()) {
+        wJoinCompareField.setEnabled(true);
+      }
+    
+      wStepname.selectAll();
+      wStepname.setFocus();
     }
     
     private void cancel()

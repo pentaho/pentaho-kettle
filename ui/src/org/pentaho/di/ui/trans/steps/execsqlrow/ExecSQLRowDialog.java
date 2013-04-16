@@ -401,23 +401,30 @@ public class ExecSQLRowDialog extends BaseStepDialog implements StepDialogInterf
 	}
 	
 
-    /**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		wCommit.setText(""+input.getCommitSize()); //$NON-NLS-1$
-		if (input.getSqlFieldName() != null) wSQLFieldName.setText(input.getSqlFieldName());
-		if (input.getDatabaseMeta() != null) wConnection.setText(input.getDatabaseMeta().getName());
-        
-        if (input.getUpdateField()!=null) wUpdateField.setText(input.getUpdateField());
-        if (input.getInsertField()!=null) wInsertField.setText(input.getInsertField());
-        if (input.getDeleteField()!=null) wDeleteField.setText(input.getDeleteField());
-        if (input.getReadField()  !=null) wReadField  .setText(input.getReadField());
-        wSQLFromFile.setSelection(input.isSqlFromfile());
-        wSendOneStatement.setSelection(input.IsSendOneStatement());
-		wStepname.selectAll();
-	}
+  /**
+  * Copy information from the meta-data input to the dialog fields.
+  */
+  public void getData() {
+    wCommit.setText("" + input.getCommitSize()); //$NON-NLS-1$
+    if (input.getSqlFieldName() != null)
+      wSQLFieldName.setText(input.getSqlFieldName());
+    if (input.getDatabaseMeta() != null)
+      wConnection.setText(input.getDatabaseMeta().getName());
+
+    if (input.getUpdateField() != null)
+      wUpdateField.setText(input.getUpdateField());
+    if (input.getInsertField() != null)
+      wInsertField.setText(input.getInsertField());
+    if (input.getDeleteField() != null)
+      wDeleteField.setText(input.getDeleteField());
+    if (input.getReadField() != null)
+      wReadField.setText(input.getReadField());
+    wSQLFromFile.setSelection(input.isSqlFromfile());
+    wSendOneStatement.setSelection(input.IsSendOneStatement());
+    
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

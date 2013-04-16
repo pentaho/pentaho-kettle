@@ -467,8 +467,7 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
    * Copy information from the meta-data input to the dialog fields.
    */
   public void getData() {
-    wStepname.selectAll();
-    if (input.getDatabaseMeta()!=null) {
+    if (input.getDatabaseMeta() != null) {
       serverConnection.setText(input.getDatabaseMeta().getName());
     }
     wTable.setText(Const.NVL(input.getTableName(), ""));
@@ -478,30 +477,33 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
     wEscapeSpecialChars.setSelection(input.isEscapingSpecialCharacters());
     wUseVwload.setSelection(input.isUsingVwload());
     wTruncateTable.setSelection(input.isTruncatingTable());
-    if(input.isUseSSV()){
+    if (input.isUseSSV()) {
       wDelimiter.setEnabled(false);
     }
-    wDelimiter.setText(Const.NVL(input.getDelimiter(), ""));   //$NON-NLS-1$
-    wCharSet.setText(Const.NVL(input.getEncoding(), ""));   //$NON-NLS-1$
-    wBufferSize.setText(Const.NVL(input.getBufferSize(), ""));   //$NON-NLS-1$
-    
+    wDelimiter.setText(Const.NVL(input.getDelimiter(), "")); //$NON-NLS-1$
+    wCharSet.setText(Const.NVL(input.getEncoding(), "")); //$NON-NLS-1$
+    wBufferSize.setText(Const.NVL(input.getBufferSize(), "")); //$NON-NLS-1$
+
     wUseStandardConversion.setSelection(input.isUseStandardConversion());
     wUseAuthentication.setSelection(input.isUseAuthentication());
     wUseDynamicVNode.setSelection(input.isUseDynamicVNode());
     wContinueOnError.setSelection(input.isContinueOnError());
-    wErrorFile.setText(Const.NVL(input.getErrorFileName(),""));
-//    if(input.isContinueOnError()){
-//      wErrorFile.setEnabled(true);
-//    }
-    wMaxErrors.setText(Const.NVL(input.getMaxNrErrors(),""));
-    
+    wErrorFile.setText(Const.NVL(input.getErrorFileName(), ""));
+    //    if(input.isContinueOnError()){
+    //      wErrorFile.setEnabled(true);
+    //    }
+    wMaxErrors.setText(Const.NVL(input.getMaxNrErrors(), ""));
 
-    for (int i=0; i<input.getFieldDatabase().length; i++)
-    {
-        TableItem item = wFields.table.getItem(i);
-        if (input.getFieldDatabase()[i]!=null ) item.setText(1, input.getFieldDatabase()[i]);
-        if (input.getFieldStream()[i]!=null )   item.setText(2, input.getFieldStream()[i]);
+    for (int i = 0; i < input.getFieldDatabase().length; i++) {
+      TableItem item = wFields.table.getItem(i);
+      if (input.getFieldDatabase()[i] != null)
+        item.setText(1, input.getFieldDatabase()[i]);
+      if (input.getFieldStream()[i] != null)
+        item.setText(2, input.getFieldStream()[i]);
     }
+
+    wStepname.selectAll();
+    wStepname.setFocus();
   }
 
   protected void cancel() {

@@ -376,7 +376,8 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
 		
 		wDefaultTarget.setText(input.getDefaultTargetStep()==null ? "" : input.getDefaultTargetStep().getName()); // default target step name
 		
-		wStepname.selectAll();
+    wStepname.selectAll();
+    wStepname.setFocus();
 	}
 	
 	private void cancel()

@@ -248,27 +248,30 @@ public class FlattenerDialog extends BaseStepDialog implements StepDialogInterfa
 		 	gotPreviousFields=true;
 		}
 	 }
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		int i;
-		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "FlattenerDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
-		
-        if (input.getFieldName()!= null) wField.setText(input.getFieldName());
 
-		if (input.getTargetField()!=null)
-		for (i=0;i<input.getTargetField().length;i++)
-		{
-			TableItem item = wFields.table.getItem(i);
-			if (input.getTargetField()[i]   !=null) item.setText(1, input.getTargetField()[i]);
-		}
-		
-		wStepname.selectAll();
-		wFields.setRowNums();
-		wFields.optWidth(true);
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (log.isDebug())
+      logDebug(BaseMessages.getString(PKG, "FlattenerDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+
+    if (input.getFieldName() != null)
+      wField.setText(input.getFieldName());
+
+    if (input.getTargetField() != null)
+      for (int i = 0; i < input.getTargetField().length; i++) {
+        TableItem item = wFields.table.getItem(i);
+        if (input.getTargetField()[i] != null)
+          item.setText(1, input.getTargetField()[i]);
+      }
+
+    wFields.setRowNums();
+    wFields.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

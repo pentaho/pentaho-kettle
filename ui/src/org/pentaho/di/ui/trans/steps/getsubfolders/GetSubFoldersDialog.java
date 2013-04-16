@@ -675,40 +675,40 @@ public class GetSubFoldersDialog extends BaseStepDialog implements StepDialogInt
 		wLimit.setEnabled(!wFolderField.getSelection());
 
 	}
-	/**
-	 * Read the data from the TextFileInputMeta object and show it in this
-	 * dialog.
-	 * 
-	 * @param meta
-	 *            The TextFileInputMeta object to obtain the data from.
-	 */
-	public void getData(GetSubFoldersMeta meta)
-	{
-		final GetSubFoldersMeta in = meta;
 
-		if (in.getFolderName() != null)
-		{
-			wFoldernameList.removeAll();
-			for (int i = 0; i < in.getFolderName().length; i++)
-			{
-				wFoldernameList.add(new String[] { in.getFolderName()[i], 
-						in.getRequiredFilesDesc(in.getFolderRequired()[i]) } );
-				
-			}
-			wFoldernameList.removeEmptyRows();
-			wFoldernameList.setRowNums();
-			wFoldernameList.optWidth(true);
+  /**
+   * Read the data from the TextFileInputMeta object and show it in this
+   * dialog.
+   * 
+   * @param meta
+   *            The TextFileInputMeta object to obtain the data from.
+   */
+  public void getData(GetSubFoldersMeta meta) {
+    final GetSubFoldersMeta in = meta;
 
-		
-			wInclRownum.setSelection(in.includeRowNumber());
-			wFolderField.setSelection(in.isFoldernameDynamic());
-			if (in.getRowNumberField()!=null) wInclRownumField.setText(in.getRowNumberField());
-			if (in.getDynamicFoldernameField()!=null) wFoldernameField.setText(in.getDynamicFoldernameField());
-			wLimit.setText(""+in.getRowLimit());
+    if (in.getFolderName() != null) {
+      wFoldernameList.removeAll();
+      for (int i = 0; i < in.getFolderName().length; i++) {
+        wFoldernameList.add(new String[] { in.getFolderName()[i], in.getRequiredFilesDesc(in.getFolderRequired()[i]) });
 
-		}
-		wStepname.selectAll();
-	}
+      }
+      wFoldernameList.removeEmptyRows();
+      wFoldernameList.setRowNums();
+      wFoldernameList.optWidth(true);
+
+      wInclRownum.setSelection(in.includeRowNumber());
+      wFolderField.setSelection(in.isFoldernameDynamic());
+      if (in.getRowNumberField() != null)
+        wInclRownumField.setText(in.getRowNumberField());
+      if (in.getDynamicFoldernameField() != null)
+        wFoldernameField.setText(in.getDynamicFoldernameField());
+      wLimit.setText("" + in.getRowLimit());
+
+    }
+    
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 
 	private void cancel()
 	{

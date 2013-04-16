@@ -501,11 +501,13 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
         wSortedList.setSelection(input.isUsingSortedList());
         wIntegerPair.setSelection(input.isUsingIntegerPair());
 		
-		wStepname.selectAll();
 		wKey.setRowNums();
 		wKey.optWidth(true);
 		wReturn.setRowNums();
 		wReturn.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
 	}
 	
 	private void cancel()

@@ -393,40 +393,40 @@ public class TableCompareDialog extends BaseStepDialog implements StepDialogInte
 		shell.getDisplay().asyncExec(fieldLoader);
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		for (DatabaseMeta dbMeta : transMeta.getDatabases()) {
-			wReferenceDB.add(dbMeta.getName());
-			wCompareDB.add(dbMeta.getName());
-		}
-		
-		wReferenceDB.setText(input.getReferenceConnection()!=null ? input.getReferenceConnection().getName() : "");
-		wReferenceSchema.setText(Const.NVL(input.getReferenceSchemaField(), ""));
-		wReferenceTable.setText(Const.NVL(input.getReferenceTableField(), ""));
-		wCompareDB.setText(input.getCompareConnection()!=null ? input.getCompareConnection().getName() : "");
-		wCompareSchema.setText(Const.NVL(input.getCompareSchemaField(), ""));
-		wCompareTable.setText(Const.NVL(input.getCompareTableField(), ""));
-		wKeyFields.setText(Const.NVL(input.getKeyFieldsField(), ""));
-		wExcludeFields.setText(Const.NVL(input.getExcludeFieldsField(), ""));
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    for (DatabaseMeta dbMeta : transMeta.getDatabases()) {
+      wReferenceDB.add(dbMeta.getName());
+      wCompareDB.add(dbMeta.getName());
+    }
 
-		wNrErrors.setText(Const.NVL(input.getNrErrorsField(), ""));
-		wNrRecordsReference.setText(Const.NVL(input.getNrRecordsReferenceField(), ""));
-		wNrRecordsCompare.setText(Const.NVL(input.getNrRecordsCompareField(), ""));
-		wNrErrorsLeftJoin.setText(Const.NVL(input.getNrErrorsLeftJoinField(), ""));
-		wNrErrorsInnerJoin.setText(Const.NVL(input.getNrErrorsInnerJoinField(), ""));
-		wNrErrorsRightJoin.setText(Const.NVL(input.getNrErrorsRightJoinField(), ""));
-		
-		wKeyDesc.setText(Const.NVL(input.getKeyDescriptionField(), ""));
-		wReferenceValue.setText(Const.NVL(input.getValueReferenceField(), ""));
-		wCompareValue.setText(Const.NVL(input.getValueCompareField(), ""));
-		
-		setComboValues();
-		
-		wStepname.selectAll();
-	}
+    wReferenceDB.setText(input.getReferenceConnection() != null ? input.getReferenceConnection().getName() : "");
+    wReferenceSchema.setText(Const.NVL(input.getReferenceSchemaField(), ""));
+    wReferenceTable.setText(Const.NVL(input.getReferenceTableField(), ""));
+    wCompareDB.setText(input.getCompareConnection() != null ? input.getCompareConnection().getName() : "");
+    wCompareSchema.setText(Const.NVL(input.getCompareSchemaField(), ""));
+    wCompareTable.setText(Const.NVL(input.getCompareTableField(), ""));
+    wKeyFields.setText(Const.NVL(input.getKeyFieldsField(), ""));
+    wExcludeFields.setText(Const.NVL(input.getExcludeFieldsField(), ""));
+
+    wNrErrors.setText(Const.NVL(input.getNrErrorsField(), ""));
+    wNrRecordsReference.setText(Const.NVL(input.getNrRecordsReferenceField(), ""));
+    wNrRecordsCompare.setText(Const.NVL(input.getNrRecordsCompareField(), ""));
+    wNrErrorsLeftJoin.setText(Const.NVL(input.getNrErrorsLeftJoinField(), ""));
+    wNrErrorsInnerJoin.setText(Const.NVL(input.getNrErrorsInnerJoinField(), ""));
+    wNrErrorsRightJoin.setText(Const.NVL(input.getNrErrorsRightJoinField(), ""));
+
+    wKeyDesc.setText(Const.NVL(input.getKeyDescriptionField(), ""));
+    wReferenceValue.setText(Const.NVL(input.getValueReferenceField(), ""));
+    wCompareValue.setText(Const.NVL(input.getValueCompareField(), ""));
+
+    setComboValues();
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

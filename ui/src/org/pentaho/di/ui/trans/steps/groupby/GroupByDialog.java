@@ -530,7 +530,6 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
    * Copy information from the meta-data input to the dialog fields.
    */
   public void getData() {
-    int i;
     logDebug(BaseMessages.getString(PKG, "GroupByDialog.Log.GettingKeyInfo"));
 
     wAllRows.setSelection(input.passAllRows());
@@ -545,14 +544,14 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
     wAlwaysAddResult.setSelection(input.isAlwaysGivingBackOneRow());
 
     if (input.getGroupField() != null)
-      for (i = 0; i < input.getGroupField().length; i++) {
+      for (int i = 0; i < input.getGroupField().length; i++) {
         TableItem item = wGroup.table.getItem(i);
         if (input.getGroupField()[i] != null)
           item.setText(1, input.getGroupField()[i]);
       }
 
     if (input.getAggregateField() != null)
-      for (i = 0; i < input.getAggregateField().length; i++) {
+      for (int i = 0; i < input.getAggregateField().length; i++) {
         TableItem item = wAgg.table.getItem(i);
         if (input.getAggregateField()[i] != null)
           item.setText(1, input.getAggregateField()[i]);
@@ -563,13 +562,15 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
           item.setText(4, input.getValueField()[i]);
       }
 
-    wStepname.selectAll();
     wGroup.setRowNums();
     wGroup.optWidth(true);
     wAgg.setRowNums();
     wAgg.optWidth(true);
 
     setFlags();
+
+    wStepname.selectAll();
+    wStepname.setFocus();
   }
 
   private void cancel() {

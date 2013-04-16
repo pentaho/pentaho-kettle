@@ -364,24 +364,29 @@ public class MondrianInputDialog extends BaseStepDialog implements StepDialogInt
 		wlPosition.setText(BaseMessages.getString(PKG, "MondrianInputDialog.Position.Label",""+linenr,""+colnr));
 
 	}
-	protected void setSQLToolTip()
-    {
-		if(wVariables.getSelection())
-			wSQL.setToolTipText(transMeta.environmentSubstitute(wSQL.getText()));
-    }
-    /**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		if (input.getSQL() != null) wSQL.setText(input.getSQL());
-		if (input.getDatabaseMeta() != null) wConnection.setText(input.getDatabaseMeta().getName());
-		if (input.getCatalog() != null) wCatalog.setText(input.getCatalog());
-		if (input.getRole() != null) wRole.setText(input.getRole());
-        wVariables.setSelection(input.isVariableReplacementActive());
-        
-		wStepname.selectAll();
-	}
+
+  protected void setSQLToolTip() {
+    if (wVariables.getSelection())
+      wSQL.setToolTipText(transMeta.environmentSubstitute(wSQL.getText()));
+  }
+
+  /**
+  * Copy information from the meta-data input to the dialog fields.
+  */
+  public void getData() {
+    if (input.getSQL() != null)
+      wSQL.setText(input.getSQL());
+    if (input.getDatabaseMeta() != null)
+      wConnection.setText(input.getDatabaseMeta().getName());
+    if (input.getCatalog() != null)
+      wCatalog.setText(input.getCatalog());
+    if (input.getRole() != null)
+      wRole.setText(input.getRole());
+    wVariables.setSelection(input.isVariableReplacementActive());
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 
 	private void cancel()
 	{

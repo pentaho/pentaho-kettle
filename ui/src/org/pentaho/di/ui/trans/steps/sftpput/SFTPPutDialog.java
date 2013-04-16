@@ -1026,37 +1026,38 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
 		return stepname;
 	}
 	
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		wStepname.selectAll();
-		wServerName.setText(Const.NVL(input.getServerName(), ""));
-		wServerPort.setText(Const.NVL(input.getServerPort(), ""));
-		wUserName.setText(Const.NVL(input.getUserName(), ""));
-		wPassword.setText(Const.NVL(input.getPassword(), ""));
-		wRemoteDirectory.setText(Const.NVL(input.getRemoteDirectoryFieldName(), ""));
-		wSourceFileNameField.setText(Const.NVL(input.getSourceFileFieldName(), ""));
-        wInputIsStream.setSelection(input.isInputStream());
-        wAddFilenameToResult.setSelection(input.isAddFilenameResut());
-        wusePublicKey.setSelection(input.isUseKeyFile());
-        wKeyFilename.setText(Const.NVL(input.getKeyFilename(), ""));
-        wkeyfilePass.setText(Const.NVL(input.getKeyPassPhrase(), ""));
-        wCompression.setText(Const.NVL(input.getCompression(), "none"));
-        
-        wProxyType.setText(Const.NVL(input.getProxyType(), ""));
-        wProxyHost.setText(Const.NVL(input.getProxyHost(), ""));
-        wProxyPort.setText(Const.NVL(input.getProxyPort(), ""));
-        wProxyUsername.setText(Const.NVL(input.getProxyUsername(), ""));
-        wProxyPassword.setText(Const.NVL(input.getProxyPassword(), ""));
-        wCreateRemoteFolder.setSelection(input.isCreateRemoteFolder());
-        
-		wAfterFTPPut.setText(JobEntrySFTPPUT.getAfterSFTPPutDesc(input.getAfterFTPS()));
-		wDestinationFolderFieldName.setText(Const.NVL(input.getDestinationFolderFieldName(), ""));
-		wCreateDestinationFolder.setSelection(input.isCreateDestinationFolder());
-		wRemoteFileName.setText(Const.NVL(input.getRemoteFilenameFieldName(), ""));
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    wServerName.setText(Const.NVL(input.getServerName(), ""));
+    wServerPort.setText(Const.NVL(input.getServerPort(), ""));
+    wUserName.setText(Const.NVL(input.getUserName(), ""));
+    wPassword.setText(Const.NVL(input.getPassword(), ""));
+    wRemoteDirectory.setText(Const.NVL(input.getRemoteDirectoryFieldName(), ""));
+    wSourceFileNameField.setText(Const.NVL(input.getSourceFileFieldName(), ""));
+    wInputIsStream.setSelection(input.isInputStream());
+    wAddFilenameToResult.setSelection(input.isAddFilenameResut());
+    wusePublicKey.setSelection(input.isUseKeyFile());
+    wKeyFilename.setText(Const.NVL(input.getKeyFilename(), ""));
+    wkeyfilePass.setText(Const.NVL(input.getKeyPassPhrase(), ""));
+    wCompression.setText(Const.NVL(input.getCompression(), "none"));
+
+    wProxyType.setText(Const.NVL(input.getProxyType(), ""));
+    wProxyHost.setText(Const.NVL(input.getProxyHost(), ""));
+    wProxyPort.setText(Const.NVL(input.getProxyPort(), ""));
+    wProxyUsername.setText(Const.NVL(input.getProxyUsername(), ""));
+    wProxyPassword.setText(Const.NVL(input.getProxyPassword(), ""));
+    wCreateRemoteFolder.setSelection(input.isCreateRemoteFolder());
+
+    wAfterFTPPut.setText(JobEntrySFTPPUT.getAfterSFTPPutDesc(input.getAfterFTPS()));
+    wDestinationFolderFieldName.setText(Const.NVL(input.getDestinationFolderFieldName(), ""));
+    wCreateDestinationFolder.setSelection(input.isCreateDestinationFolder());
+    wRemoteFileName.setText(Const.NVL(input.getRemoteFilenameFieldName(), ""));
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

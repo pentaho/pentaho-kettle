@@ -429,19 +429,25 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
 		return stepname;
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		if (input.getGPGLocation()!=null)   wGPGLocation.setText(input.getGPGLocation());
-		if (input.getStreamField() !=null)   wStreamFieldName.setText(input.getStreamField());
-		if (input.getResultFieldName()!=null)   wResult.setText(input.getResultFieldName());
-		if (input.getPassphrase() !=null)   wPassphrase.setText(input.getPassphrase());
-		wPassphraseFromField.setSelection(input.isPassphraseFromField());
-		if (input.getPassphraseFieldName() !=null)   wPassphraseFieldName.setText(input.getPassphraseFieldName());
-		wStepname.selectAll();
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (input.getGPGLocation() != null)
+      wGPGLocation.setText(input.getGPGLocation());
+    if (input.getStreamField() != null)
+      wStreamFieldName.setText(input.getStreamField());
+    if (input.getResultFieldName() != null)
+      wResult.setText(input.getResultFieldName());
+    if (input.getPassphrase() != null)
+      wPassphrase.setText(input.getPassphrase());
+    wPassphraseFromField.setSelection(input.isPassphraseFromField());
+    if (input.getPassphraseFieldName() != null)
+      wPassphraseFieldName.setText(input.getPassphraseFieldName());
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

@@ -229,16 +229,17 @@ public class FilesToResultDialog extends BaseStepDialog implements StepDialogInt
 		return stepname;
 	}
 	
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		wStepname.selectAll();
-		
-		wTypes.select(input.getFileType());
-		if (input.getFilenameField()!=null) wFilenameField.setText(input.getFilenameField());
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    wTypes.select(input.getFileType());
+    if (input.getFilenameField() != null)
+      wFilenameField.setText(input.getFilenameField());
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

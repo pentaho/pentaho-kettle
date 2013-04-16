@@ -229,17 +229,18 @@ public class SocketWriterDialog extends BaseStepDialog implements StepDialogInte
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
 	 */ 
-	public void getData()
-	{
-		if (Const.isEmpty(wStepname.getText())) return;
+  public void getData() {
+    if (Const.isEmpty(wStepname.getText()))
+      return;
 
-        wPort.setText(Const.NVL(input.getPort(), ""));
-        wBufferSize.setText(Const.NVL(input.getBufferSize(), ""));
-        wFlushInterval.setText(Const.NVL(input.getFlushInterval(), ""));
-        wCompressed.setSelection(input.isCompressed());
-        
-        wStepname.selectAll();
-	}
+    wPort.setText(Const.NVL(input.getPort(), ""));
+    wBufferSize.setText(Const.NVL(input.getBufferSize(), ""));
+    wFlushInterval.setText(Const.NVL(input.getFlushInterval(), ""));
+    wCompressed.setSelection(input.isCompressed());
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

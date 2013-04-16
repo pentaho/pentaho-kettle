@@ -400,22 +400,27 @@ public class ProcessFilesDialog extends BaseStepDialog implements StepDialogInte
 		wlCreateParentFolder.setEnabled(ProcessFilesMeta.getOperationTypeByDesc(wOperation.getText())!=ProcessFilesMeta.OPERATION_TYPE_DELETE);
 		wCreateParentFolder.setEnabled(ProcessFilesMeta.getOperationTypeByDesc(wOperation.getText())!=ProcessFilesMeta.OPERATION_TYPE_DELETE);
 	}
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "ProcessFilesDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
-		if (input.getDynamicSourceFileNameField() !=null)   wSourceFileNameField.setText(input.getDynamicSourceFileNameField());
-		if (input.getDynamicTargetFileNameField() !=null)   wTargetFileNameField.setText(input.getDynamicTargetFileNameField());
-		wOperation.setText(ProcessFilesMeta.getOperationTypeDesc(input.getOperationType()));
-		wAddResult.setSelection(input.isaddTargetFileNametoResult());
-		wOverwriteTarget.setSelection(input.isOverwriteTargetFile());
-		wCreateParentFolder.setSelection(input.isCreateParentFolder());
-		wSimulate.setSelection(input.isSimulate());
-		wStepname.selectAll();
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (log.isDebug())
+      logDebug(BaseMessages.getString(PKG, "ProcessFilesDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+
+    if (input.getDynamicSourceFileNameField() != null)
+      wSourceFileNameField.setText(input.getDynamicSourceFileNameField());
+    if (input.getDynamicTargetFileNameField() != null)
+      wTargetFileNameField.setText(input.getDynamicTargetFileNameField());
+    wOperation.setText(ProcessFilesMeta.getOperationTypeDesc(input.getOperationType()));
+    wAddResult.setSelection(input.isaddTargetFileNametoResult());
+    wOverwriteTarget.setSelection(input.isOverwriteTargetFile());
+    wCreateParentFolder.setSelection(input.isCreateParentFolder());
+    wSimulate.setSelection(input.isSimulate());
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

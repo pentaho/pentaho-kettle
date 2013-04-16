@@ -1248,52 +1248,56 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         wNameInTable.setEnabled(!specifyFields);
     }
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-        if (input.getSchemaName() != null) wSchema.setText(input.getSchemaName());
-		if (input.getTableName() != null) wTable.setText(input.getTableName());
-		if (input.getDatabaseMeta() != null) wConnection.setText(input.getDatabaseMeta().getName());
-		
-        wTruncate.setSelection( input.truncateTable() );
-        wIgnore.setSelection(input.ignoreErrors());
-        wBatch.setSelection(input.useBatchUpdate());
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (input.getSchemaName() != null)
+      wSchema.setText(input.getSchemaName());
+    if (input.getTableName() != null)
+      wTable.setText(input.getTableName());
+    if (input.getDatabaseMeta() != null)
+      wConnection.setText(input.getDatabaseMeta().getName());
 
-        wCommit.setText(input.getCommitSize());
+    wTruncate.setSelection(input.truncateTable());
+    wIgnore.setSelection(input.ignoreErrors());
+    wBatch.setSelection(input.useBatchUpdate());
 
-        wUsePart.setSelection(input.isPartitioningEnabled());
-        wPartDaily.setSelection(input.isPartitioningDaily());
-        wPartMonthly.setSelection(input.isPartitioningMonthly());
-        if (input.getPartitioningField()!=null)  {
-        	wPartField.setText(input.getPartitioningField());
-        }
-        
-        wNameInField.setSelection( input.isTableNameInField());
-        if (input.getTableNameField()!=null)  {
-        	wNameField.setText( input.getTableNameField() );
-        }
-        wNameInTable.setSelection( input.isTableNameInTable());
-        
-        wReturnKeys.setSelection( input.isReturningGeneratedKeys() );
-        if (input.getGeneratedKeyField()!=null)  {
-        	wReturnField.setText( input.getGeneratedKeyField());
-        }
-        
-        wSpecifyFields.setSelection( input.specifyFields() );
-        
-		for (int i=0; i<input.getFieldDatabase().length; i++)
-		{
-			TableItem item = wFields.table.getItem(i);
-			if (input.getFieldDatabase()[i]!=null ) item.setText(1, input.getFieldDatabase()[i]);
-			if (input.getFieldStream()[i]!=null )   item.setText(2, input.getFieldStream()[i]);
-		}
-        
-		setFlags();
-		
-		wStepname.selectAll();
-	}
+    wCommit.setText(input.getCommitSize());
+
+    wUsePart.setSelection(input.isPartitioningEnabled());
+    wPartDaily.setSelection(input.isPartitioningDaily());
+    wPartMonthly.setSelection(input.isPartitioningMonthly());
+    if (input.getPartitioningField() != null) {
+      wPartField.setText(input.getPartitioningField());
+    }
+
+    wNameInField.setSelection(input.isTableNameInField());
+    if (input.getTableNameField() != null) {
+      wNameField.setText(input.getTableNameField());
+    }
+    wNameInTable.setSelection(input.isTableNameInTable());
+
+    wReturnKeys.setSelection(input.isReturningGeneratedKeys());
+    if (input.getGeneratedKeyField() != null) {
+      wReturnField.setText(input.getGeneratedKeyField());
+    }
+
+    wSpecifyFields.setSelection(input.specifyFields());
+
+    for (int i = 0; i < input.getFieldDatabase().length; i++) {
+      TableItem item = wFields.table.getItem(i);
+      if (input.getFieldDatabase()[i] != null)
+        item.setText(1, input.getFieldDatabase()[i]);
+      if (input.getFieldStream()[i] != null)
+        item.setText(2, input.getFieldStream()[i]);
+    }
+
+    setFlags();
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

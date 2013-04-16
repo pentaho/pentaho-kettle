@@ -947,80 +947,84 @@ public class UDJCStepDialog extends BaseStepDialog implements StepDialogInterfac
 						.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Position.Label2") + linenr + ", " + colnr); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData() {
-		int i = 0;
-		for (FieldInfo fi : input.getFieldInfo()) {
-			TableItem item = wFields.table.getItem(i);
-			i++;
-			item.setText(1, fi.name);
-			item.setText(2, ValueMeta.getTypeDesc(fi.type));
-			if (fi.length >= 0) item.setText(3, "" + fi.length); //$NON-NLS-1$
-			if (fi.precision >= 0) item.setText(4, "" + fi.precision); //$NON-NLS-1$
-		}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    int i = 0;
+    for (FieldInfo fi : input.getFieldInfo()) {
+      TableItem item = wFields.table.getItem(i);
+      i++;
+      item.setText(1, fi.name);
+      item.setText(2, ValueMeta.getTypeDesc(fi.type));
+      if (fi.length >= 0)
+        item.setText(3, "" + fi.length); //$NON-NLS-1$
+      if (fi.precision >= 0)
+        item.setText(4, "" + fi.precision); //$NON-NLS-1$
+    }
 
-		List<UDJCStepDef> definitions = input.getDefinitions();
-		if (definitions.size() == 0) {
-	        try {
-	        	definitions = new ArrayList<UDJCStepDef>();
-	        	// Note the tab name isn't i18n because it is a Java Class name and i18n characters might make it choke.
-				definitions.add(new UDJCStepDef(UDJCStepDef.ClassType.TRANSFORM_CLASS, "Processor",
-				        UDJCStepCodeSnippits.getSnippitsHelper().getDefaultCode()));
-				input.replaceDefinitions(definitions);
-			} catch (KettleXMLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		for (UDJCStepDef def : definitions) {
-			if (def.isTransformClass()) strActiveScript = def.getClassName();
-			addCtab(def.getClassName(), def.getSource(), TabAddActions.ADD_DEFAULT);
-		}
+    List<UDJCStepDef> definitions = input.getDefinitions();
+    if (definitions.size() == 0) {
+      try {
+        definitions = new ArrayList<UDJCStepDef>();
+        // Note the tab name isn't i18n because it is a Java Class name and i18n characters might make it choke.
+        definitions.add(new UDJCStepDef(UDJCStepDef.ClassType.TRANSFORM_CLASS, "Processor", UDJCStepCodeSnippits
+            .getSnippitsHelper().getDefaultCode()));
+        input.replaceDefinitions(definitions);
+      } catch (KettleXMLException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
+    for (UDJCStepDef def : definitions) {
+      if (def.isTransformClass())
+        strActiveScript = def.getClassName();
+      addCtab(def.getClassName(), def.getSource(), TabAddActions.ADD_DEFAULT);
+    }
 
-		setActiveCtab(strActiveScript);
-		refresh();
+    setActiveCtab(strActiveScript);
+    refresh();
 
-		wClearResultFields.setSelection(input.isClearingResultFields());
+    wClearResultFields.setSelection(input.isClearingResultFields());
 
-		wFields.setRowNums();
-		wFields.optWidth(true);
-		int rowNr = 0;
-		for (StepDefinition stepDefinition : input.getInfoStepDefinitions()) {
-			TableItem item = wInfoSteps.table.getItem(rowNr++);
-			int colNr = 1;
-			item.setText(colNr++, Const.NVL(stepDefinition.tag, ""));
-			item.setText(colNr++, stepDefinition.stepMeta != null ? stepDefinition.stepMeta.getName() : "");
-			item.setText(colNr++, Const.NVL(stepDefinition.description, ""));
-		}
-		wInfoSteps.setRowNums();
-		wInfoSteps.optWidth(true);
+    wFields.setRowNums();
+    wFields.optWidth(true);
+    int rowNr = 0;
+    for (StepDefinition stepDefinition : input.getInfoStepDefinitions()) {
+      TableItem item = wInfoSteps.table.getItem(rowNr++);
+      int colNr = 1;
+      item.setText(colNr++, Const.NVL(stepDefinition.tag, ""));
+      item.setText(colNr++, stepDefinition.stepMeta != null ? stepDefinition.stepMeta.getName() : "");
+      item.setText(colNr++, Const.NVL(stepDefinition.description, ""));
+    }
+    wInfoSteps.setRowNums();
+    wInfoSteps.optWidth(true);
 
-		rowNr = 0;
-		for (StepDefinition stepDefinition : input.getTargetStepDefinitions()) {
-			TableItem item = wTargetSteps.table.getItem(rowNr++);
-			int colNr = 1;
-			item.setText(colNr++, Const.NVL(stepDefinition.tag, ""));
-			item.setText(colNr++, stepDefinition.stepMeta != null ? stepDefinition.stepMeta.getName() : "");
-			item.setText(colNr++, Const.NVL(stepDefinition.description, ""));
-		}
-		wTargetSteps.setRowNums();
-		wTargetSteps.optWidth(true);
+    rowNr = 0;
+    for (StepDefinition stepDefinition : input.getTargetStepDefinitions()) {
+      TableItem item = wTargetSteps.table.getItem(rowNr++);
+      int colNr = 1;
+      item.setText(colNr++, Const.NVL(stepDefinition.tag, ""));
+      item.setText(colNr++, stepDefinition.stepMeta != null ? stepDefinition.stepMeta.getName() : "");
+      item.setText(colNr++, Const.NVL(stepDefinition.description, ""));
+    }
+    wTargetSteps.setRowNums();
+    wTargetSteps.optWidth(true);
 
-		rowNr = 0;
-		for (UsageParameter usageParameter : input.getUsageParameters()) {
-			TableItem item = wParameters.table.getItem(rowNr++);
-			int colNr = 1;
-			item.setText(colNr++, Const.NVL(usageParameter.tag, ""));
-			item.setText(colNr++, Const.NVL(usageParameter.value, ""));
-			item.setText(colNr++, Const.NVL(usageParameter.description, ""));
-		}
-		wParameters.setRowNums();
-		wParameters.optWidth(true);
+    rowNr = 0;
+    for (UsageParameter usageParameter : input.getUsageParameters()) {
+      TableItem item = wParameters.table.getItem(rowNr++);
+      int colNr = 1;
+      item.setText(colNr++, Const.NVL(usageParameter.tag, ""));
+      item.setText(colNr++, Const.NVL(usageParameter.value, ""));
+      item.setText(colNr++, Const.NVL(usageParameter.description, ""));
+    }
+    wParameters.setRowNums();
+    wParameters.optWidth(true);
 
-		wStepname.selectAll();
-	}
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 
 	private void refresh() {
 		for (int i = 0; i < folder.getItemCount(); i++) {

@@ -421,20 +421,26 @@ public class CloneRowDialog extends BaseStepDialog implements StepDialogInterfac
 		wlCloneNumField.setEnabled(waddCloneNum.getSelection());
 		wCloneNumField.setEnabled(waddCloneNum.getSelection());
 	}
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		wStepname.selectAll();
-		if (input.getNrClones() !=null)   wnrClone.setText(input.getNrClones());
-		waddCloneFlag.setSelection(input.isAddCloneFlag());
-		if (input.getCloneFlagField() !=null)   wcloneFlagField.setText(input.getCloneFlagField());
-		wisNrCloneInField.setSelection(input.isNrCloneInField());
-		if (input.getNrCloneField() !=null)   wNrCloneField.setText(input.getNrCloneField());
-		waddCloneNum.setSelection(input.isAddCloneNum());
-		if (input.getCloneNumField() !=null)   wCloneNumField.setText(input.getCloneNumField());
-	}
+
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (input.getNrClones() != null)
+      wnrClone.setText(input.getNrClones());
+    waddCloneFlag.setSelection(input.isAddCloneFlag());
+    if (input.getCloneFlagField() != null)
+      wcloneFlagField.setText(input.getCloneFlagField());
+    wisNrCloneInField.setSelection(input.isNrCloneInField());
+    if (input.getNrCloneField() != null)
+      wNrCloneField.setText(input.getNrCloneField());
+    waddCloneNum.setSelection(input.isAddCloneNum());
+    if (input.getCloneNumField() != null)
+      wCloneNumField.setText(input.getCloneNumField());
+    
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

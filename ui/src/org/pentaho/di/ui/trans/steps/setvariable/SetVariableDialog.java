@@ -279,35 +279,39 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
         Const.sortStrings(fieldNames);
         colinf[0].setComboValues(fieldNames);
     }
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		wStepname.setText(stepname);
-		
-        for (int i=0;i<input.getFieldName().length;i++)
-		{
-			TableItem item = wFields.table.getItem(i);
-			String src = input.getFieldName()[i];
-			String tgt = input.getVariableName()[i];
-			String typ = SetVariableMeta.getVariableTypeDescription(input.getVariableType()[i]);
-			String tvv = input.getDefaultValue()[i];
-			
-			if (src!=null) item.setText(1, src);
-			if (tgt!=null) item.setText(2, tgt);
-            if (typ!=null) item.setText(3, typ);
-            if (tvv!=null) item.setText(4, tvv);
-		}
 
-        wFormat.setSelection(input.isUsingFormatting());
-        
-		wFields.setRowNums();
-		wFields.optWidth(true);
-		
-		wStepname.selectAll();
-	}
-	
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    wStepname.setText(stepname);
+
+    for (int i = 0; i < input.getFieldName().length; i++) {
+      TableItem item = wFields.table.getItem(i);
+      String src = input.getFieldName()[i];
+      String tgt = input.getVariableName()[i];
+      String typ = SetVariableMeta.getVariableTypeDescription(input.getVariableType()[i]);
+      String tvv = input.getDefaultValue()[i];
+
+      if (src != null)
+        item.setText(1, src);
+      if (tgt != null)
+        item.setText(2, tgt);
+      if (typ != null)
+        item.setText(3, typ);
+      if (tvv != null)
+        item.setText(4, tvv);
+    }
+
+    wFormat.setSelection(input.isUsingFormatting());
+
+    wFields.setRowNums();
+    wFields.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
+
 	private void cancel()
 	{
 		stepname=null;

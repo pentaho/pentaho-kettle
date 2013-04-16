@@ -422,24 +422,29 @@ public class ChangeFileEncodingDialog extends BaseStepDialog implements StepDial
 	}
 
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		if(isDebug()) logDebug( BaseMessages.getString(PKG, "ChangeFileEncodingDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (isDebug())
+      logDebug(BaseMessages.getString(PKG, "ChangeFileEncodingDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
-		if (input.getDynamicFilenameField() !=null)   wFileName.setText(input.getDynamicFilenameField());
-		if (input.getTargetFilenameField() !=null)   wTargetFileName.setText(input.getTargetFilenameField());
-		if (input.getTargetEncoding() !=null)   wTargetEncoding.setText(input.getTargetEncoding());
-		if (input.getSourceEncoding() !=null)   wSourceEncoding.setText(input.getSourceEncoding());
-		
-		wSourceAddResult.setSelection(input.addSourceResultFilenames());
-		wTargetAddResult.setSelection(input.addSourceResultFilenames());
-		wCreateParentFolder.setSelection(input.isCreateParentFolder());
-		
-		wStepname.selectAll();
-	}
+    if (input.getDynamicFilenameField() != null)
+      wFileName.setText(input.getDynamicFilenameField());
+    if (input.getTargetFilenameField() != null)
+      wTargetFileName.setText(input.getTargetFilenameField());
+    if (input.getTargetEncoding() != null)
+      wTargetEncoding.setText(input.getTargetEncoding());
+    if (input.getSourceEncoding() != null)
+      wSourceEncoding.setText(input.getSourceEncoding());
+
+    wSourceAddResult.setSelection(input.addSourceResultFilenames());
+    wTargetAddResult.setSelection(input.addSourceResultFilenames());
+    wCreateParentFolder.setSelection(input.isCreateParentFolder());
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

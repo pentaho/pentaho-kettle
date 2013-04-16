@@ -665,37 +665,45 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
     	wlincludeCatalog.setEnabled(!wdynamicSchema.getSelection());
     	wincludeCatalog.setEnabled(!wdynamicSchema.getSelection());
     }
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		if(isDebug()) logDebug(toString(), BaseMessages.getString(PKG, "GetTableNamesDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
-		
-		if (input.getDatabase()!=null)   wConnection.setText(input.getDatabase().getName());
-		else if (transMeta.nrDatabases()==1)
-		{
-			wConnection.setText( transMeta.getDatabase(0).getName() );
-		}
-		if (input.getSchemaName()!=null)   wschemaname.setText(input.getSchemaName());
-		if (input.getTablenameFieldName()!=null)   wTablenameField.setText(input.getTablenameFieldName());
-		if (input.getObjectTypeFieldName()!=null)   wObjectTypeField.setText(input.getObjectTypeFieldName());
-		if (input.isSystemObjectFieldName()!=null)   wisSystemObjectField.setText(input.isSystemObjectFieldName());
-		if (input.getSQLCreationFieldName()!=null)   wSQLCreationField.setText(input.getSQLCreationFieldName());
-		wincludeCatalog.setSelection(input.isIncludeCatalog());
-		wincludeSchema.setSelection(input.isIncludeSchema());
-		wincludeTable.setSelection(input.isIncludeTable());
-		wincludeView.setSelection(input.isIncludeView());
-		wincludeProcedure.setSelection(input.isIncludeProcedure());
-		wincludeSynonym.setSelection(input.isIncludeSynonym());
-		waddSchemaInOutput.setSelection(input.isAddSchemaInOut());
-		
-		wdynamicSchema.setSelection(input.isDynamicSchema());
-		if (input.getSchemaFieldName()!=null)   wSchemaField.setText(input.getSchemaFieldName());
-		
-		wStepname.selectAll();
-	}
-	
+
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (isDebug())
+      logDebug(toString(), BaseMessages.getString(PKG, "GetTableNamesDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+
+    if (input.getDatabase() != null)
+      wConnection.setText(input.getDatabase().getName());
+    else if (transMeta.nrDatabases() == 1) {
+      wConnection.setText(transMeta.getDatabase(0).getName());
+    }
+    if (input.getSchemaName() != null)
+      wschemaname.setText(input.getSchemaName());
+    if (input.getTablenameFieldName() != null)
+      wTablenameField.setText(input.getTablenameFieldName());
+    if (input.getObjectTypeFieldName() != null)
+      wObjectTypeField.setText(input.getObjectTypeFieldName());
+    if (input.isSystemObjectFieldName() != null)
+      wisSystemObjectField.setText(input.isSystemObjectFieldName());
+    if (input.getSQLCreationFieldName() != null)
+      wSQLCreationField.setText(input.getSQLCreationFieldName());
+    wincludeCatalog.setSelection(input.isIncludeCatalog());
+    wincludeSchema.setSelection(input.isIncludeSchema());
+    wincludeTable.setSelection(input.isIncludeTable());
+    wincludeView.setSelection(input.isIncludeView());
+    wincludeProcedure.setSelection(input.isIncludeProcedure());
+    wincludeSynonym.setSelection(input.isIncludeSynonym());
+    waddSchemaInOutput.setSelection(input.isAddSchemaInOut());
+
+    wdynamicSchema.setSelection(input.isDynamicSchema());
+    if (input.getSchemaFieldName() != null)
+      wSchemaField.setText(input.getSchemaFieldName());
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
+
 	private void cancel()
 	{
 		stepname=null;

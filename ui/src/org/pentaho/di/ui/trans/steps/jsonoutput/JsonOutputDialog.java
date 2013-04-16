@@ -1009,6 +1009,7 @@ public class JsonOutputDialog extends BaseStepDialog implements StepDialogInterf
 
     wFields.optWidth(true);
     wStepname.selectAll();
+    wStepname.setFocus();
   }
     
     private void cancel()

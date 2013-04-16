@@ -366,18 +366,20 @@ public class SplitFieldToRowsDialog extends BaseStepDialog implements StepDialog
 		wlResetRownum.setEnabled(wInclRownum.getSelection());
 		wResetRownum.setEnabled(wInclRownum.getSelection());
 	}
-	public void getData()
-	{	
-		wStepname.selectAll();
+	
+  public void getData() {
+    wSplitfield.setText(Const.NVL(input.getSplitField(), ""));
+    wDelimiter.setText(Const.NVL(input.getDelimiter(), ""));
+    wValName.setText(Const.NVL(input.getNewFieldname(), ""));
+    wInclRownum.setSelection(input.includeRowNumber());
+    wDelimiterIsRegex.setSelection(input.isDelimiterRegex());
+    if (input.getRowNumberField() != null)
+      wInclRownumField.setText(input.getRowNumberField());
+    wResetRownum.setSelection(input.resetRowNumber());
 
-		wSplitfield.setText(Const.NVL(input.getSplitField(), ""));
-		wDelimiter.setText(Const.NVL(input.getDelimiter(), ""));
-		wValName.setText(Const.NVL(input.getNewFieldname(), ""));
-		wInclRownum.setSelection(input.includeRowNumber());
-		wDelimiterIsRegex.setSelection(input.isDelimiterRegex());
-		if (input.getRowNumberField()!=null) wInclRownumField.setText(input.getRowNumberField());
-		wResetRownum.setSelection(input.resetRowNumber());
-	}
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 
 	private void cancel()
 	{

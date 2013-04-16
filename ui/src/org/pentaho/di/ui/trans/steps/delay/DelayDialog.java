@@ -184,15 +184,16 @@ public class DelayDialog extends BaseStepDialog implements StepDialogInterface
 		return stepname;
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		wStepname.selectAll();
-		if(input.getTimeOut()!=null) wTimeout.setText(input.getTimeOut());
-		wScaleTime.select(input.getScaleTimeCode());
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (input.getTimeOut() != null)
+      wTimeout.setText(input.getTimeOut());
+    wScaleTime.select(input.getScaleTimeCode());
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

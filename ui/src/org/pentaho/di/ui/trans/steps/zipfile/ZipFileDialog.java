@@ -474,24 +474,30 @@ public class ZipFileDialog extends BaseStepDialog implements StepDialogInterface
 		return stepname;
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "ZipFileDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
-		if (input.getBaseFolderField() !=null)   wBaseFolderField.setText(input.getBaseFolderField());
-		if (input.getDynamicSourceFileNameField() !=null)   wSourceFileNameField.setText(input.getDynamicSourceFileNameField());
-		if (input.getDynamicTargetFileNameField() !=null)   wTargetFileNameField.setText(input.getDynamicTargetFileNameField());
-		wOperation.setText(ZipFileMeta.getOperationTypeDesc(input.getOperationType()));
-		if (input.getMoveToFolderField() !=null)   wMoveToFolderField.setText(input.getMoveToFolderField());
-		
-		wAddResult.setSelection(input.isaddTargetFileNametoResult());
-		wOverwriteZipEntry.setSelection(input.isOverwriteZipEntry());
-		wCreateParentFolder.setSelection(input.isCreateParentFolder());
-		wKeepFolders.setSelection(input.isKeepSouceFolder());
-		wStepname.selectAll();
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (log.isDebug())
+      log.logDebug(toString(), BaseMessages.getString(PKG, "ZipFileDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+    if (input.getBaseFolderField() != null)
+      wBaseFolderField.setText(input.getBaseFolderField());
+    if (input.getDynamicSourceFileNameField() != null)
+      wSourceFileNameField.setText(input.getDynamicSourceFileNameField());
+    if (input.getDynamicTargetFileNameField() != null)
+      wTargetFileNameField.setText(input.getDynamicTargetFileNameField());
+    wOperation.setText(ZipFileMeta.getOperationTypeDesc(input.getOperationType()));
+    if (input.getMoveToFolderField() != null)
+      wMoveToFolderField.setText(input.getMoveToFolderField());
+
+    wAddResult.setSelection(input.isaddTargetFileNametoResult());
+    wOverwriteZipEntry.setSelection(input.isOverwriteZipEntry());
+    wCreateParentFolder.setSelection(input.isCreateParentFolder());
+    wKeepFolders.setSelection(input.isKeepSouceFolder());
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

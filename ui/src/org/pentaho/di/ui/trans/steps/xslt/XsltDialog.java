@@ -713,47 +713,48 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 		 
 	 }
 	
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-	
-		if (input.getXslFilename() != null) wXSLFilename.setText( input.getXslFilename() );
-		if (input.getResultfieldname() != null) wResultField.setText( input.getResultfieldname() );
-		if (input.getFieldname() != null) wField.setText( input.getFieldname() );
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
 
-		if (input.getXSLFileField() != null) wXSLField.setText( input.getXSLFileField() );
-		
-		wXSLFileField.setSelection(input.useXSLField());
-		wXSLFieldIsAFile.setSelection(input.isXSLFieldIsAFile());
-		
-		if (input.getXSLFactory() != null) 
-			wXSLTFactory.setText( input.getXSLFactory() );
-		else
-			wXSLTFactory.setText( "JAXP");
-		
-		
-		if (input.getParameterName()!=null) {
-			for (int i=0;i<input.getParameterName().length;i++)
-			{
-				TableItem item = wFields.table.getItem(i);
-				item.setText(1, Const.NVL(input.getParameterField()[i], ""));
-				item.setText(2, Const.NVL(input.getParameterName()[i], ""));
-			}
-		}
-		
-		
-		if (input.getOutputPropertyName()!=null) {
-			for (int i=0;i<input.getOutputPropertyName().length;i++)
-			{
-				TableItem item = wOutputProperties.table.getItem(i);
-				item.setText(1, Const.NVL(input.getOutputPropertyName()[i], ""));
-				item.setText(2, Const.NVL(input.getOutputPropertyValue()[i], ""));
-			}
-		}
-		wStepname.selectAll();
-	}
+    if (input.getXslFilename() != null)
+      wXSLFilename.setText(input.getXslFilename());
+    if (input.getResultfieldname() != null)
+      wResultField.setText(input.getResultfieldname());
+    if (input.getFieldname() != null)
+      wField.setText(input.getFieldname());
+
+    if (input.getXSLFileField() != null)
+      wXSLField.setText(input.getXSLFileField());
+
+    wXSLFileField.setSelection(input.useXSLField());
+    wXSLFieldIsAFile.setSelection(input.isXSLFieldIsAFile());
+
+    if (input.getXSLFactory() != null)
+      wXSLTFactory.setText(input.getXSLFactory());
+    else
+      wXSLTFactory.setText("JAXP");
+
+    if (input.getParameterName() != null) {
+      for (int i = 0; i < input.getParameterName().length; i++) {
+        TableItem item = wFields.table.getItem(i);
+        item.setText(1, Const.NVL(input.getParameterField()[i], ""));
+        item.setText(2, Const.NVL(input.getParameterName()[i], ""));
+      }
+    }
+
+    if (input.getOutputPropertyName() != null) {
+      for (int i = 0; i < input.getOutputPropertyName().length; i++) {
+        TableItem item = wOutputProperties.table.getItem(i);
+        item.setText(1, Const.NVL(input.getOutputPropertyName()[i], ""));
+        item.setText(2, Const.NVL(input.getOutputPropertyValue()[i], ""));
+      }
+    }
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

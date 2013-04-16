@@ -882,54 +882,62 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		wlUrl.setEnabled(!wUrlInField.getSelection());
 		wUrl.setEnabled(!wUrlInField.getSelection());    
 	}
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		if(isDebug()) logDebug(BaseMessages.getString(PKG, "HTTPDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
-		
-		if (input.getArgumentField()!=null) {
-			for (int i=0;i<input.getArgumentField().length;i++)
-			{
-				TableItem item = wFields.table.getItem(i);
-				item.setText(1, Const.NVL(input.getArgumentField()[i], ""));
-				item.setText(2, Const.NVL(input.getArgumentParameter()[i], ""));
-			}
-		}
-		
-		if (input.getHeaderField()!=null)
-		{
-		   for (int i = 0; i < input.getHeaderField().length; i++)
-		   {
-		      TableItem item = wHeaders.table.getItem(i);
-		      if (input.getHeaderField()[i]      !=null) item.setText(1, input.getHeaderField()[i]);
-		      if (input.getHeaderParameter()[i]  !=null) item.setText(2, input.getHeaderParameter()[i]);
-		   }
-		}
-	    wSocketTimeOut.setText(Const.NVL(input.getSocketTimeout(), ""));
-	    wConnectionTimeOut.setText(Const.NVL(input.getConnectionTimeout(), ""));
-	    wCloseIdleConnectionsTime.setText(Const.NVL(input.getCloseIdleConnectionsTime(), ""));
-	    
-		wUrl.setText(Const.NVL(input.getUrl(), ""));
-        wUrlInField.setSelection(input.isUrlInField());
-        wUrlField.setText(Const.NVL(input.getUrlField(), ""));
-        wEncoding.setText(Const.NVL(input.getEncoding(), ""));
-        
-		wResult.setText(Const.NVL(input.getFieldName(), ""));
-	    if(input.getHttpLogin() != null) wHttpLogin.setText(input.getHttpLogin());
-	    if(input.getHttpPassword() != null) wHttpPassword.setText(input.getHttpPassword());
-	    if(input.getProxyHost() != null) wProxyHost.setText(input.getProxyHost());
-	    if(input.getProxyPort() != null) wProxyPort.setText(input.getProxyPort());
-	    if (input.getResultCodeFieldName()!=null) wResultCode.setText(input.getResultCodeFieldName());
-       if (input.getResponseTimeFieldName()!=null) wResponseTime.setText(input.getResponseTimeFieldName());
-		
-		wFields.setRowNums();
-		wFields.optWidth(true);
-		wHeaders.setRowNums();
-		wHeaders.optWidth(true);
-		wStepname.selectAll();
-	}
+
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (isDebug())
+      logDebug(BaseMessages.getString(PKG, "HTTPDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+
+    if (input.getArgumentField() != null) {
+      for (int i = 0; i < input.getArgumentField().length; i++) {
+        TableItem item = wFields.table.getItem(i);
+        item.setText(1, Const.NVL(input.getArgumentField()[i], ""));
+        item.setText(2, Const.NVL(input.getArgumentParameter()[i], ""));
+      }
+    }
+
+    if (input.getHeaderField() != null) {
+      for (int i = 0; i < input.getHeaderField().length; i++) {
+        TableItem item = wHeaders.table.getItem(i);
+        if (input.getHeaderField()[i] != null)
+          item.setText(1, input.getHeaderField()[i]);
+        if (input.getHeaderParameter()[i] != null)
+          item.setText(2, input.getHeaderParameter()[i]);
+      }
+    }
+    wSocketTimeOut.setText(Const.NVL(input.getSocketTimeout(), ""));
+    wConnectionTimeOut.setText(Const.NVL(input.getConnectionTimeout(), ""));
+    wCloseIdleConnectionsTime.setText(Const.NVL(input.getCloseIdleConnectionsTime(), ""));
+
+    wUrl.setText(Const.NVL(input.getUrl(), ""));
+    wUrlInField.setSelection(input.isUrlInField());
+    wUrlField.setText(Const.NVL(input.getUrlField(), ""));
+    wEncoding.setText(Const.NVL(input.getEncoding(), ""));
+
+    wResult.setText(Const.NVL(input.getFieldName(), ""));
+    if (input.getHttpLogin() != null)
+      wHttpLogin.setText(input.getHttpLogin());
+    if (input.getHttpPassword() != null)
+      wHttpPassword.setText(input.getHttpPassword());
+    if (input.getProxyHost() != null)
+      wProxyHost.setText(input.getProxyHost());
+    if (input.getProxyPort() != null)
+      wProxyPort.setText(input.getProxyPort());
+    if (input.getResultCodeFieldName() != null)
+      wResultCode.setText(input.getResultCodeFieldName());
+    if (input.getResponseTimeFieldName() != null)
+      wResponseTime.setText(input.getResponseTimeFieldName());
+
+    wFields.setRowNums();
+    wFields.optWidth(true);
+    wHeaders.setRowNums();
+    wHeaders.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

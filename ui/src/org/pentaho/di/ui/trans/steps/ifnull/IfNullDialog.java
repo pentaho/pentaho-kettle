@@ -525,54 +525,68 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface
 		wSelectFields.setSelection(input.isSelectFields());
 		wSelectValuesType.setSelection(input.isSelectValuesType());
 	}
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-        if (input.getReplaceAllByValue()!= null)  wReplaceByValue.setText(input.getReplaceAllByValue());
-        if (input.getReplaceAllMask()!= null)  wMask.setText(input.getReplaceAllMask());
-        wSetEmptyStringAll.setSelection(input.isSetEmptyStringAll());
-        
-		wSelectFields.setSelection(input.isSelectFields());
-		wSelectValuesType.setSelection(input.isSelectValuesType());
-        
-		Table table = wValueTypes.table;
-		if (input.getTypeName().length>0) table.removeAll();
-		for (int i=0;i<input.getTypeName().length;i++)
-		{
-			TableItem ti = new TableItem(table, SWT.NONE);
-			ti.setText(0, ""+(i+1));
-			if(input.getTypeName()[i]!=null) ti.setText(1, input.getTypeName()[i]);
-			if(input.getTypeReplaceValue()[i]!=null) ti.setText(2, input.getTypeReplaceValue()[i]);
-			if(input.getTypeReplaceMask()[i]!=null) ti.setText(3, input.getTypeReplaceMask()[i]);
-			ti.setText(4, input.isSetTypeEmptyString()[i]?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No"));
-			
-		}
 
-		wValueTypes.setRowNums();
-		wValueTypes.removeEmptyRows();
-		wValueTypes.optWidth(true);
-        
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (input.getReplaceAllByValue() != null)
+      wReplaceByValue.setText(input.getReplaceAllByValue());
+    if (input.getReplaceAllMask() != null)
+      wMask.setText(input.getReplaceAllMask());
+    wSetEmptyStringAll.setSelection(input.isSetEmptyStringAll());
 
-		table = wFields.table;
-		if (input.getFieldName().length>0) table.removeAll();
-		for (int i=0;i<input.getFieldName().length;i++)
-		{
-			TableItem ti = new TableItem(table, SWT.NONE);
-			ti.setText(0, ""+(i+1));
-			if(input.getFieldName()[i]!=null) ti.setText(1, input.getFieldName()[i]);
-			if(input.getReplaceValue()[i]!=null) ti.setText(2, input.getReplaceValue()[i]);
-			if(input.getReplaceMask()[i]!=null) ti.setText(3, input.getReplaceMask()[i]);
-			ti.setText(4, input.isSetEmptyString()[i]?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No"));
-		}
+    wSelectFields.setSelection(input.isSelectFields());
+    wSelectValuesType.setSelection(input.isSelectValuesType());
 
-        wFields.setRowNums();
-        wValueTypes.removeEmptyRows();
-		wFields.optWidth(true);
-		
-		wStepname.selectAll();
-	}
+    Table table = wValueTypes.table;
+    if (input.getTypeName().length > 0)
+      table.removeAll();
+    for (int i = 0; i < input.getTypeName().length; i++) {
+      TableItem ti = new TableItem(table, SWT.NONE);
+      ti.setText(0, "" + (i + 1));
+      if (input.getTypeName()[i] != null)
+        ti.setText(1, input.getTypeName()[i]);
+      if (input.getTypeReplaceValue()[i] != null)
+        ti.setText(2, input.getTypeReplaceValue()[i]);
+      if (input.getTypeReplaceMask()[i] != null)
+        ti.setText(3, input.getTypeReplaceMask()[i]);
+      ti.setText(
+          4,
+          input.isSetTypeEmptyString()[i] ? BaseMessages.getString(PKG, "System.Combo.Yes") : BaseMessages.getString(
+              PKG, "System.Combo.No"));
+
+    }
+
+    wValueTypes.setRowNums();
+    wValueTypes.removeEmptyRows();
+    wValueTypes.optWidth(true);
+
+    table = wFields.table;
+    if (input.getFieldName().length > 0)
+      table.removeAll();
+    for (int i = 0; i < input.getFieldName().length; i++) {
+      TableItem ti = new TableItem(table, SWT.NONE);
+      ti.setText(0, "" + (i + 1));
+      if (input.getFieldName()[i] != null)
+        ti.setText(1, input.getFieldName()[i]);
+      if (input.getReplaceValue()[i] != null)
+        ti.setText(2, input.getReplaceValue()[i]);
+      if (input.getReplaceMask()[i] != null)
+        ti.setText(3, input.getReplaceMask()[i]);
+      ti.setText(
+          4,
+          input.isSetEmptyString()[i] ? BaseMessages.getString(PKG, "System.Combo.Yes") : BaseMessages.getString(PKG,
+              "System.Combo.No"));
+    }
+
+    wFields.setRowNums();
+    wValueTypes.removeEmptyRows();
+    wFields.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

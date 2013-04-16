@@ -964,59 +964,55 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
     wByReference.setText(path);
   }
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData()
-	{
-		wStepname.selectAll();
-
-    specificationMethod=mappingMeta.getSpecificationMethod();
-    switch(specificationMethod) {
-    case FILENAME: 
-      wFilename.setText(Const.NVL(mappingMeta.getFileName(), "")); 
-      break;
-    case REPOSITORY_BY_NAME:
-      wDirectory.setText(Const.NVL(mappingMeta.getDirectoryPath(), ""));
-      wTransname.setText(Const.NVL(mappingMeta.getTransName(), ""));
-      break;
-    case REPOSITORY_BY_REFERENCE:
-      referenceObjectId = mappingMeta.getTransObjectId();
-      wByReference.setText("");
-      getByReferenceData(referenceObjectId);
-      break;   
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    specificationMethod = mappingMeta.getSpecificationMethod();
+    switch (specificationMethod) {
+      case FILENAME:
+        wFilename.setText(Const.NVL(mappingMeta.getFileName(), ""));
+        break;
+      case REPOSITORY_BY_NAME:
+        wDirectory.setText(Const.NVL(mappingMeta.getDirectoryPath(), ""));
+        wTransname.setText(Const.NVL(mappingMeta.getTransName(), ""));
+        break;
+      case REPOSITORY_BY_REFERENCE:
+        referenceObjectId = mappingMeta.getTransObjectId();
+        wByReference.setText("");
+        getByReferenceData(referenceObjectId);
+        break;
     }
     setRadioButtons();
 
-		// Add the parameters tab
-		addParametersTab(mappingParameters);
-		wTabFolder.setSelection(0);
+    // Add the parameters tab
+    addParametersTab(mappingParameters);
+    wTabFolder.setSelection(0);
 
-		wMultiInput.setSelection(mappingMeta.isAllowingMultipleInputs());
-		wMultiOutput.setSelection(mappingMeta.isAllowingMultipleOutputs());
+    wMultiInput.setSelection(mappingMeta.isAllowingMultipleInputs());
+    wMultiOutput.setSelection(mappingMeta.isAllowingMultipleOutputs());
 
-		// Now add the input stream tabs: where is our data coming from?
-		for (int i = 0; i < inputMappings.size(); i++)
-		{
-			addInputMappingDefinitionTab(inputMappings.get(i), i);
-		}
+    // Now add the input stream tabs: where is our data coming from?
+    for (int i = 0; i < inputMappings.size(); i++) {
+      addInputMappingDefinitionTab(inputMappings.get(i), i);
+    }
 
-		// Now add the output stream tabs: where is our data going to?
-		for (int i = 0; i < outputMappings.size(); i++)
-		{
-			addOutputMappingDefinitionTab(outputMappings.get(i), i);
-		}
+    // Now add the output stream tabs: where is our data going to?
+    for (int i = 0; i < outputMappings.size(); i++) {
+      addOutputMappingDefinitionTab(outputMappings.get(i), i);
+    }
 
-		try
-		{
-			loadTransformation();
-		} catch (Throwable t)
-		{
+    try {
+      loadTransformation();
+    } catch (Throwable t) {
 
-		}
-		
+    }
+
     setFlags();
-	}
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 
 	private void addOutputMappingDefinitionTab(MappingIODefinition definition, int index)
 	{

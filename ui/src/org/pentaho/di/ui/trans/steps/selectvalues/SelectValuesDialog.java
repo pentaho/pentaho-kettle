@@ -542,89 +542,89 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		shell.getDisplay().asyncExec(fieldLoader);
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{	
-		wTabFolder.setSelection(0); // Default
-		
-		/*
-		 * Select fields
-		 */
-		if (input.getSelectName()!=null && input.getSelectName().length>0)
-		{
-			for (int i=0;i<input.getSelectName().length;i++)
-			{
-				TableItem item = wFields.table.getItem(i);
-				if (input.getSelectName()[i]!=null) 
-					item.setText(1, input.getSelectName()     [i]);
-				if (input.getSelectRename()[i]!=null && !input.getSelectRename()[i].equals(input.getSelectName()[i]))
-					item.setText(2, input.getSelectRename()   [i]);
-				item.setText(3, input.getSelectLength()   [i]<0?"":""+input.getSelectLength()   [i]); //$NON-NLS-1$ //$NON-NLS-2$
-				item.setText(4, input.getSelectPrecision()[i]<0?"":""+input.getSelectPrecision()[i]); //$NON-NLS-1$ //$NON-NLS-2$
-			}
-			wFields.setRowNums();
-			wFields.optWidth(true);
-			wTabFolder.setSelection(0);
-		}
-		wUnspecified.setSelection( input.isSelectingAndSortingUnspecifiedFields() );
-		
-		/*
-		 * Remove certain fields...
-		 */
-		if (input.getDeleteName()!=null && input.getDeleteName().length>0) 
-		{
-			for (int i=0;i<input.getDeleteName().length;i++)
-			{
-				TableItem item = wRemove.table.getItem(i);
-				if (input.getDeleteName()[i]!=null)  item.setText(1, input.getDeleteName()     [i]);
-			}
-			wRemove.setRowNums();
-			wRemove.optWidth(true);
-			wTabFolder.setSelection(1);
-		}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    wTabFolder.setSelection(0); // Default
 
-		/*
-		 * Change the meta-data of certain fields
-		 */
-		if (!Const.isEmpty(input.getMeta()))
-		{
-			for (int i=0;i<input.getMeta().length;i++)
-			{
-				SelectMetadataChange change = input.getMeta()[i];
-				
-				TableItem item = wMeta.table.getItem(i);
-				int index=1;
-				item.setText( index++, Const.NVL(change.getName(), ""));
-				if (change.getRename()!=null && !change.getRename().equals(change.getName()))
-				{
-					item.setText(index++, change.getRename());
-				} else {
-					index++;
-				}
-				item.setText( index++, ValueMeta.getTypeDesc( change.getType()) );
-				item.setText( index++, change.getLength()   <0?"":""+change.getLength()); //$NON-NLS-1$ //$NON-NLS-2$
-				item.setText( index++, change.getPrecision()<0?"":""+change.getPrecision()); //$NON-NLS-1$ //$NON-NLS-2$
-				item.setText( index++, change.getStorageType()==ValueMetaInterface.STORAGE_TYPE_NORMAL?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No")); //$NON-NLS-1$ //$NON-NLS-2$
-				item.setText( index++, Const.NVL(change.getConversionMask(), ""));
-				item.setText( index++, change.isDateFormatLenient()?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No")); //$NON-NLS-1$ //$NON-NLS-2$
-        item.setText( index++, change.getDateFormatLocale() == null ? "" : change.getDateFormatLocale().toString());
-        item.setText( index++, change.getDateFormatTimeZone() == null ? "" : change.getDateFormatTimeZone().toString());
-				item.setText( index++, change.isLenientStringToNumber()?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No")); //$NON-NLS-1$ //$NON-NLS-2$
-				item.setText( index++, Const.NVL(change.getEncoding(), ""));
-				item.setText( index++, Const.NVL(change.getDecimalSymbol(), ""));
-				item.setText( index++, Const.NVL(change.getGroupingSymbol(), ""));
-				item.setText( index++, Const.NVL(change.getCurrencySymbol(), ""));
-			}
-			wMeta.setRowNums();
-			wMeta.optWidth(true);
-			wTabFolder.setSelection(2);
-		}
+    /*
+     * Select fields
+     */
+    if (input.getSelectName() != null && input.getSelectName().length > 0) {
+      for (int i = 0; i < input.getSelectName().length; i++) {
+        TableItem item = wFields.table.getItem(i);
+        if (input.getSelectName()[i] != null)
+          item.setText(1, input.getSelectName()[i]);
+        if (input.getSelectRename()[i] != null && !input.getSelectRename()[i].equals(input.getSelectName()[i]))
+          item.setText(2, input.getSelectRename()[i]);
+        item.setText(3, input.getSelectLength()[i] < 0 ? "" : "" + input.getSelectLength()[i]); //$NON-NLS-1$ //$NON-NLS-2$
+        item.setText(4, input.getSelectPrecision()[i] < 0 ? "" : "" + input.getSelectPrecision()[i]); //$NON-NLS-1$ //$NON-NLS-2$
+      }
+      wFields.setRowNums();
+      wFields.optWidth(true);
+      wTabFolder.setSelection(0);
+    }
+    wUnspecified.setSelection(input.isSelectingAndSortingUnspecifiedFields());
 
-		wStepname.setFocus();
-		wStepname.selectAll();
-	}
+    /*
+     * Remove certain fields...
+     */
+    if (input.getDeleteName() != null && input.getDeleteName().length > 0) {
+      for (int i = 0; i < input.getDeleteName().length; i++) {
+        TableItem item = wRemove.table.getItem(i);
+        if (input.getDeleteName()[i] != null)
+          item.setText(1, input.getDeleteName()[i]);
+      }
+      wRemove.setRowNums();
+      wRemove.optWidth(true);
+      wTabFolder.setSelection(1);
+    }
+
+    /*
+     * Change the meta-data of certain fields
+     */
+    if (!Const.isEmpty(input.getMeta())) {
+      for (int i = 0; i < input.getMeta().length; i++) {
+        SelectMetadataChange change = input.getMeta()[i];
+
+        TableItem item = wMeta.table.getItem(i);
+        int index = 1;
+        item.setText(index++, Const.NVL(change.getName(), ""));
+        if (change.getRename() != null && !change.getRename().equals(change.getName())) {
+          item.setText(index++, change.getRename());
+        } else {
+          index++;
+        }
+        item.setText(index++, ValueMeta.getTypeDesc(change.getType()));
+        item.setText(index++, change.getLength() < 0 ? "" : "" + change.getLength()); //$NON-NLS-1$ //$NON-NLS-2$
+        item.setText(index++, change.getPrecision() < 0 ? "" : "" + change.getPrecision()); //$NON-NLS-1$ //$NON-NLS-2$
+        item.setText(
+            index++,
+            change.getStorageType() == ValueMetaInterface.STORAGE_TYPE_NORMAL ? BaseMessages.getString(PKG,
+                "System.Combo.Yes") : BaseMessages.getString(PKG, "System.Combo.No")); //$NON-NLS-1$ //$NON-NLS-2$
+        item.setText(index++, Const.NVL(change.getConversionMask(), ""));
+        item.setText(
+            index++,
+            change.isDateFormatLenient() ? BaseMessages.getString(PKG, "System.Combo.Yes") : BaseMessages.getString(PKG, "System.Combo.No")); //$NON-NLS-1$ //$NON-NLS-2$
+        item.setText(index++, change.getDateFormatLocale() == null ? "" : change.getDateFormatLocale().toString());
+        item.setText(index++, change.getDateFormatTimeZone() == null ? "" : change.getDateFormatTimeZone().toString());
+        item.setText(
+            index++,
+            change.isLenientStringToNumber() ? BaseMessages.getString(PKG, "System.Combo.Yes") : BaseMessages.getString(PKG, "System.Combo.No")); //$NON-NLS-1$ //$NON-NLS-2$
+        item.setText(index++, Const.NVL(change.getEncoding(), ""));
+        item.setText(index++, Const.NVL(change.getDecimalSymbol(), ""));
+        item.setText(index++, Const.NVL(change.getGroupingSymbol(), ""));
+        item.setText(index++, Const.NVL(change.getCurrencySymbol(), ""));
+      }
+      wMeta.setRowNums();
+      wMeta.optWidth(true);
+      wTabFolder.setSelection(2);
+    }
+
+    wStepname.setFocus();
+    wStepname.selectAll();
+  }
 	
   private String[] getCharsets()
   {

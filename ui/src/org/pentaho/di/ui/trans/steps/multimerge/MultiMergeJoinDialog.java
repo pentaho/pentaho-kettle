@@ -489,30 +489,29 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
         Const.sortStrings(fieldNames);
         ciKeys[0].setComboValues(fieldNames);
     }
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{	
-		 List<StreamInterface> infoStreams = joinMeta.getStepIOMeta().getInfoStreams();
 
-		 for(int i=0 ; i<infoStreams.size();i++)
-		 {
-			wInputStepArray[i].setText(joinMeta.getInputSteps()[i]); 
-		 }
-		String joinType = joinMeta.getJoinType();
-		if (joinType != null && joinType.length() > 0)
-			joinTypeCombo.setText(joinType);
-		else
-			joinTypeCombo.setText(MultiMergeJoinMeta.join_types[0]);
-        
-		String[] keyFields = joinMeta.getKeyFields();
-        for (int i=0;i<keyFields.length;i++)
-        {
-        	keyValTextBox[i].setText(Const.NVL(keyFields[i], ""));
-        }        
-        wStepname.selectAll();
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    List<StreamInterface> infoStreams = joinMeta.getStepIOMeta().getInfoStreams();
+
+    for (int i = 0; i < infoStreams.size(); i++) {
+      wInputStepArray[i].setText(joinMeta.getInputSteps()[i]);
+    }
+    String joinType = joinMeta.getJoinType();
+    if (joinType != null && joinType.length() > 0)
+      joinTypeCombo.setText(joinType);
+    else
+      joinTypeCombo.setText(MultiMergeJoinMeta.join_types[0]);
+
+    String[] keyFields = joinMeta.getKeyFields();
+    for (int i = 0; i < keyFields.length; i++) {
+      keyValTextBox[i].setText(Const.NVL(keyFields[i], ""));
+    }
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

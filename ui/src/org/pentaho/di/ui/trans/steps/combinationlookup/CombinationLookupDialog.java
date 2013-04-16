@@ -741,102 +741,94 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		}		
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData()
-	{
-		int i;
-		logDebug(BaseMessages.getString(PKG, "CombinationLookupDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    logDebug(BaseMessages.getString(PKG, "CombinationLookupDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
-		if (input.getKeyField()!=null)
-		for (i=0;i<input.getKeyField().length;i++)
-		{
-			TableItem item = wKey.table.getItem(i);
-			if (input.getKeyLookup()[i]!=null) item.setText(1, input.getKeyLookup()[i]);
-			if (input.getKeyField()[i]!=null)  item.setText(2, input.getKeyField()[i]);			
-		}
+    if (input.getKeyField() != null)
+      for (int i = 0; i < input.getKeyField().length; i++) {
+        TableItem item = wKey.table.getItem(i);
+        if (input.getKeyLookup()[i] != null)
+          item.setText(1, input.getKeyLookup()[i]);
+        if (input.getKeyField()[i] != null)
+          item.setText(2, input.getKeyField()[i]);
+      }
 
-		wReplace.setSelection( input.replaceFields() );
-		wHashcode.setSelection( input.useHash() );
-		wHashfield.setEnabled(input.useHash());
-		wHashfield.setVisible(input.useHash());
-		wlHashfield.setEnabled(input.useHash());
-		
-		String techKeyCreation = input.getTechKeyCreation(); 
-		if ( techKeyCreation == null )  {		    
-		    // Determine the creation of the technical key for
-			// backwards compatibility. Can probably be removed at
-			// version 3.x or so (Sven Boden).
-		    DatabaseMeta database = input.getDatabaseMeta(); 
-		    if ( database == null || ! database.supportsAutoinc() )  
-		    {
- 			    input.setUseAutoinc(false);			
-		    }		
-		    wAutoinc.setSelection(input.isUseAutoinc());
-		    
-		    wSeqButton.setSelection(input.getSequenceFrom() != null && input.getSequenceFrom().length() > 0);
-		    if ( input.isUseAutoinc() == false && 
-			     (input.getSequenceFrom() == null || input.getSequenceFrom().length() <= 0) ) 
-		    {
- 			    wTableMax.setSelection(true); 			    
-		    }
-		    
-			if ( database != null && database.supportsSequences() && 
-				 input.getSequenceFrom() != null) 
-			{
-				wSeq.setText(input.getSequenceFrom());
-				input.setUseAutoinc(false);
-				wTableMax.setSelection(false);
-			}
-		}
-		else
-		{
-		    // KETTLE post 2.2 version:
-			// The "creation" field now determines the behaviour of the
-			// key creation.
-			if ( CombinationLookupMeta.CREATION_METHOD_AUTOINC.equals(techKeyCreation))  
-			{
-			    wAutoinc.setSelection(true);
-			}
-			else if ( ( CombinationLookupMeta.CREATION_METHOD_SEQUENCE.equals(techKeyCreation)) )
-			{
-				wSeqButton.setSelection(true);
-			}
-			else // the rest
-			{
-				wTableMax.setSelection(true);
-				input.setTechKeyCreation(CombinationLookupMeta.CREATION_METHOD_TABLEMAX);
-			}
-			if ( input.getSequenceFrom() != null )
-			{
-    	        wSeq.setText(input.getSequenceFrom());
-			}
-		}
-		setAutoincUse();
-		setSequence();
-		setTableMax();
-        if (input.getSchemaName()!=null)        wSchema.setText( input.getSchemaName() );
-  		if (input.getTablename()!=null)         wTable.setText( input.getTablename() );
-		if (input.getTechnicalKeyField()!=null) wTk.setText(input.getTechnicalKeyField());
+    wReplace.setSelection(input.replaceFields());
+    wHashcode.setSelection(input.useHash());
+    wHashfield.setEnabled(input.useHash());
+    wHashfield.setVisible(input.useHash());
+    wlHashfield.setEnabled(input.useHash());
 
-		if (input.getDatabaseMeta()!=null) wConnection.setText(input.getDatabaseMeta().getName());
-		else if (transMeta.nrDatabases()==1)
-		{
-			wConnection.setText( transMeta.getDatabase(0).getName() );
-		}
-		if (input.getHashField()!=null)    wHashfield.setText(input.getHashField());
+    String techKeyCreation = input.getTechKeyCreation();
+    if (techKeyCreation == null) {
+      // Determine the creation of the technical key for
+      // backwards compatibility. Can probably be removed at
+      // version 3.x or so (Sven Boden).
+      DatabaseMeta database = input.getDatabaseMeta();
+      if (database == null || !database.supportsAutoinc()) {
+        input.setUseAutoinc(false);
+      }
+      wAutoinc.setSelection(input.isUseAutoinc());
 
-		wCommit.setText(""+input.getCommitSize()); //$NON-NLS-1$
-		wCachesize.setText(""+input.getCacheSize()); //$NON-NLS-1$
-		
-		wLastUpdateField.setText( Const.NVL( input.getLastUpdateField(), "") );
+      wSeqButton.setSelection(input.getSequenceFrom() != null && input.getSequenceFrom().length() > 0);
+      if (input.isUseAutoinc() == false && (input.getSequenceFrom() == null || input.getSequenceFrom().length() <= 0)) {
+        wTableMax.setSelection(true);
+      }
 
-		wKey.setRowNums();
-		wKey.optWidth(true);
+      if (database != null && database.supportsSequences() && input.getSequenceFrom() != null) {
+        wSeq.setText(input.getSequenceFrom());
+        input.setUseAutoinc(false);
+        wTableMax.setSelection(false);
+      }
+    } else {
+      // KETTLE post 2.2 version:
+      // The "creation" field now determines the behaviour of the
+      // key creation.
+      if (CombinationLookupMeta.CREATION_METHOD_AUTOINC.equals(techKeyCreation)) {
+        wAutoinc.setSelection(true);
+      } else if ((CombinationLookupMeta.CREATION_METHOD_SEQUENCE.equals(techKeyCreation))) {
+        wSeqButton.setSelection(true);
+      } else // the rest
+      {
+        wTableMax.setSelection(true);
+        input.setTechKeyCreation(CombinationLookupMeta.CREATION_METHOD_TABLEMAX);
+      }
+      if (input.getSequenceFrom() != null) {
+        wSeq.setText(input.getSequenceFrom());
+      }
+    }
+    setAutoincUse();
+    setSequence();
+    setTableMax();
+    if (input.getSchemaName() != null)
+      wSchema.setText(input.getSchemaName());
+    if (input.getTablename() != null)
+      wTable.setText(input.getTablename());
+    if (input.getTechnicalKeyField() != null)
+      wTk.setText(input.getTechnicalKeyField());
 
-		wStepname.selectAll();
-	}
+    if (input.getDatabaseMeta() != null)
+      wConnection.setText(input.getDatabaseMeta().getName());
+    else if (transMeta.nrDatabases() == 1) {
+      wConnection.setText(transMeta.getDatabase(0).getName());
+    }
+    if (input.getHashField() != null)
+      wHashfield.setText(input.getHashField());
+
+    wCommit.setText("" + input.getCommitSize()); //$NON-NLS-1$
+    wCachesize.setText("" + input.getCacheSize()); //$NON-NLS-1$
+
+    wLastUpdateField.setText(Const.NVL(input.getLastUpdateField(), ""));
+
+    wKey.setRowNums();
+    wKey.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 
 	private void cancel()
 	{

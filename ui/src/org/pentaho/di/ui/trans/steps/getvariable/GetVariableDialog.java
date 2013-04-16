@@ -221,35 +221,34 @@ public class GetVariableDialog extends BaseStepDialog implements StepDialogInter
 		return stepname;
 	}
 	
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		wStepname.setText(stepname);
-		
-		for (int i=0;i<input.getFieldName().length;i++)
-		{
-			TableItem item = wFields.table.getItem(i);
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    wStepname.setText(stepname);
 
-			int index=1;
-			item.setText(index++, Const.NVL(input.getFieldName()[i], ""));
-			item.setText(index++, Const.NVL(input.getVariableString()[i], ""));
-			item.setText(index++, ValueMeta.getTypeDesc(input.getFieldType()[i]));
-			item.setText(index++, Const.NVL(input.getFieldFormat()[i], ""));
-			item.setText(index++, input.getFieldLength()[i]<0?"":(""+input.getFieldLength()[i]));
-			item.setText(index++, input.getFieldPrecision()[i]<0?"":(""+input.getFieldPrecision()[i]));
-			item.setText(index++, Const.NVL(input.getCurrency()[i], ""));
-			item.setText(index++, Const.NVL(input.getDecimal()[i], ""));
-			item.setText(index++, Const.NVL(input.getGroup()[i], ""));
-			item.setText(index++, ValueMeta.getTrimTypeDesc(input.getTrimType()[i]));
-		}
+    for (int i = 0; i < input.getFieldName().length; i++) {
+      TableItem item = wFields.table.getItem(i);
 
-		wFields.setRowNums();
-		wFields.optWidth(true);
-		
-		wStepname.selectAll();
-	}
+      int index = 1;
+      item.setText(index++, Const.NVL(input.getFieldName()[i], ""));
+      item.setText(index++, Const.NVL(input.getVariableString()[i], ""));
+      item.setText(index++, ValueMeta.getTypeDesc(input.getFieldType()[i]));
+      item.setText(index++, Const.NVL(input.getFieldFormat()[i], ""));
+      item.setText(index++, input.getFieldLength()[i] < 0 ? "" : ("" + input.getFieldLength()[i]));
+      item.setText(index++, input.getFieldPrecision()[i] < 0 ? "" : ("" + input.getFieldPrecision()[i]));
+      item.setText(index++, Const.NVL(input.getCurrency()[i], ""));
+      item.setText(index++, Const.NVL(input.getDecimal()[i], ""));
+      item.setText(index++, Const.NVL(input.getGroup()[i], ""));
+      item.setText(index++, ValueMeta.getTrimTypeDesc(input.getTrimType()[i]));
+    }
+
+    wFields.setRowNums();
+    wFields.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

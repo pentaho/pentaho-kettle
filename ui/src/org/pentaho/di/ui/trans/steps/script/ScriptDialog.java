@@ -817,44 +817,48 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 		wlPosition.setText(BaseMessages.getString(PKG, "ScriptDialog.Position.Label2")+linenr+", "+colnr); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		for (int i=0;i<input.getFieldname().length;i++)
-		{
-			if (input.getFieldname()[i]!=null && input.getFieldname()[i].length()>0)
-			{	
-				TableItem item = wFields.table.getItem(i);
-				item.setText(1, input.getFieldname()[i]);
-				if (input.getRename()[i]!=null && !input.getFieldname()[i].equals(input.getRename()[i]))
-					item.setText(2, input.getRename()[i]);
-				item.setText(3, ValueMeta.getTypeDesc(input.getType()[i]));
-				if (input.getLength()[i]>=0) item.setText(4, ""+input.getLength()[i]); //$NON-NLS-1$
-                if (input.getPrecision()[i]>=0) item.setText(5, ""+input.getPrecision()[i]); //$NON-NLS-1$
-                item.setText(6, input.getReplace()[i] ? YES_NO_COMBO[1] : YES_NO_COMBO[0]); //$NON-NLS-1$
-			}
-		}
-	
-		org.pentaho.di.trans.steps.script.ScriptValuesScript[] jsScripts = input.getJSScripts();
-		if(jsScripts.length>0){
-			for(int i=0;i<jsScripts.length;i++){
-				if(jsScripts[i].isTransformScript()) strActiveScript =jsScripts[i].getScriptName();
-				else if(jsScripts[i].isStartScript()) strActiveStartScript =jsScripts[i].getScriptName(); 
-				else if(jsScripts[i].isEndScript()) strActiveEndScript =jsScripts[i].getScriptName();
-				addCtab(jsScripts[i].getScriptName(), jsScripts[i].getScript(), ADD_DEFAULT);
-			}
-		}else{
-			addCtab("", "", ADD_DEFAULT);
-		}
-		setActiveCtab(strActiveScript);
-		refresh();
-		
-		wFields.setRowNums();
-		wFields.optWidth(true);
-		wStepname.selectAll();
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    for (int i = 0; i < input.getFieldname().length; i++) {
+      if (input.getFieldname()[i] != null && input.getFieldname()[i].length() > 0) {
+        TableItem item = wFields.table.getItem(i);
+        item.setText(1, input.getFieldname()[i]);
+        if (input.getRename()[i] != null && !input.getFieldname()[i].equals(input.getRename()[i]))
+          item.setText(2, input.getRename()[i]);
+        item.setText(3, ValueMeta.getTypeDesc(input.getType()[i]));
+        if (input.getLength()[i] >= 0)
+          item.setText(4, "" + input.getLength()[i]); //$NON-NLS-1$
+        if (input.getPrecision()[i] >= 0)
+          item.setText(5, "" + input.getPrecision()[i]); //$NON-NLS-1$
+        item.setText(6, input.getReplace()[i] ? YES_NO_COMBO[1] : YES_NO_COMBO[0]); //$NON-NLS-1$
+      }
+    }
+
+    org.pentaho.di.trans.steps.script.ScriptValuesScript[] jsScripts = input.getJSScripts();
+    if (jsScripts.length > 0) {
+      for (int i = 0; i < jsScripts.length; i++) {
+        if (jsScripts[i].isTransformScript())
+          strActiveScript = jsScripts[i].getScriptName();
+        else if (jsScripts[i].isStartScript())
+          strActiveStartScript = jsScripts[i].getScriptName();
+        else if (jsScripts[i].isEndScript())
+          strActiveEndScript = jsScripts[i].getScriptName();
+        addCtab(jsScripts[i].getScriptName(), jsScripts[i].getScript(), ADD_DEFAULT);
+      }
+    } else {
+      addCtab("", "", ADD_DEFAULT);
+    }
+    setActiveCtab(strActiveScript);
+    refresh();
+
+    wFields.setRowNums();
+    wFields.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	// Setting default active Script
 	private void refresh(){

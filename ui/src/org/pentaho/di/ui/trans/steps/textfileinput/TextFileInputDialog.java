@@ -2250,119 +2250,150 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 	 * 
 	 * @param meta The TextFileInputMeta object to obtain the data from.
 	 */
-	public void getData(TextFileInputMeta meta)
-	{
-        final TextFileInputMeta in = meta;
-        
-        wAccFilenames.setSelection(in.isAcceptingFilenames());
-        wPassThruFields.setSelection(in.isPassingThruFields());
-        if (in.getAcceptingField()!=null) wAccField.setText(in.getAcceptingField());
-        if (in.getAcceptingStep()!=null) wAccStep.setText(in.getAcceptingStep().getName());
-        
-		if (in.getFileName() !=null) 
-		{
-			wFilenameList.removeAll();
-	
-			for (int i=0;i<in.getFileName().length;i++) 
-			{
-				wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i] , in.getExludeFileMask()[i],
-						in.getRequiredFilesDesc(in.getFileRequired()[i]), in.getRequiredFilesDesc(in.getIncludeSubFolders()[i])} );
-			}
-			wFilenameList.removeEmptyRows();
-			wFilenameList.setRowNums();
-			wFilenameList.optWidth(true);
-		}
-		if (in.getFileType() !=null) wFiletype.setText(in.getFileType());
-		if (in.getSeparator()!=null) wSeparator.setText(in.getSeparator());
-		if (in.getEnclosure()!=null) wEnclosure.setText(in.getEnclosure());
-        if (in.getEscapeCharacter()!=null) wEscape.setText(in.getEscapeCharacter());
-		wHeader.setSelection(in.hasHeader());
-        wNrHeader.setText( ""+in.getNrHeaderLines() );
-		wFooter.setSelection(in.hasFooter());
-        wNrFooter.setText( ""+in.getNrFooterLines() );
-        wWraps.setSelection(in.isLineWrapped());
-        wNrWraps.setText( ""+in.getNrWraps() );
-        wLayoutPaged.setSelection(in.isLayoutPaged());
-        wNrLinesPerPage.setText( ""+in.getNrLinesPerPage() );
-        wNrLinesDocHeader.setText( ""+in.getNrLinesDocHeader() );
-		if (in.getFileCompression()!=null) wCompression.setText(in.getFileCompression());
-		wNoempty.setSelection(in.noEmptyLines());
-		wInclFilename.setSelection(in.includeFilename());
-		wInclRownum.setSelection(in.includeRowNumber());
-		wRownumByFile.setSelection(in.isRowNumberByFile());
-        wDateLenient.setSelection(in.isDateFormatLenient());
-        wAddResult.setSelection(in.isAddResultFile());
-		
-        if (in.getFilenameField()!=null) wInclFilenameField.setText(in.getFilenameField());
-		if (in.getRowNumberField()!=null) wInclRownumField.setText(in.getRowNumberField());
-		if (in.getFileFormat()   !=null) wFormat.setText(in.getFileFormat());
-		wLimit.setText(""+in.getRowLimit());
-		
-		logDebug("getting fields info...");
-		getFieldsData(in, false);
-		
-        if ( in.getEncoding()!=null ) wEncoding.setText( in.getEncoding() );
-        
-        // Error handling fields...
-        wErrorIgnored.setSelection( in.isErrorIgnored() );
-        wSkipBadFiles.setSelection(in.isSkipBadFiles());
-        wSkipErrorLines.setSelection( in.isErrorLineSkipped() );
-        
-        if(in.getFileErrorField() != null) wBadFileField.setText(in.getFileErrorField());
-        if(in.getFileErrorMessageField() != null) wBadFileMessageField.setText(in.getFileErrorMessageField());
-        
-        if (in.getErrorCountField()!=null) wErrorCount.setText( in.getErrorCountField() );
-        if (in.getErrorFieldsField()!=null) wErrorFields.setText( in.getErrorFieldsField() );
-        if (in.getErrorTextField()!=null) wErrorText.setText( in.getErrorTextField() );
+  public void getData(TextFileInputMeta meta) {
+    final TextFileInputMeta in = meta;
 
-        if (in.getWarningFilesDestinationDirectory()!=null) wWarnDestDir.setText(in.getWarningFilesDestinationDirectory());
-        if (in.getWarningFilesExtension()!=null) wWarnExt.setText(in.getWarningFilesExtension());
+    wAccFilenames.setSelection(in.isAcceptingFilenames());
+    wPassThruFields.setSelection(in.isPassingThruFields());
+    if (in.getAcceptingField() != null)
+      wAccField.setText(in.getAcceptingField());
+    if (in.getAcceptingStep() != null)
+      wAccStep.setText(in.getAcceptingStep().getName());
 
-        if (in.getErrorFilesDestinationDirectory()!=null) wErrorDestDir.setText(in.getErrorFilesDestinationDirectory());
-        if (in.getErrorLineFilesExtension()!=null) wErrorExt.setText(in.getErrorLineFilesExtension());
+    if (in.getFileName() != null) {
+      wFilenameList.removeAll();
 
-        if (in.getLineNumberFilesDestinationDirectory()!=null) wLineNrDestDir.setText(in.getLineNumberFilesDestinationDirectory());
-        if (in.getLineNumberFilesExtension()!=null) wLineNrExt.setText(in.getLineNumberFilesExtension());
+      for (int i = 0; i < in.getFileName().length; i++) {
+        wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i], in.getExludeFileMask()[i],
+            in.getRequiredFilesDesc(in.getFileRequired()[i]), in.getRequiredFilesDesc(in.getIncludeSubFolders()[i]) });
+      }
+      wFilenameList.removeEmptyRows();
+      wFilenameList.setRowNums();
+      wFilenameList.optWidth(true);
+    }
+    if (in.getFileType() != null)
+      wFiletype.setText(in.getFileType());
+    if (in.getSeparator() != null)
+      wSeparator.setText(in.getSeparator());
+    if (in.getEnclosure() != null)
+      wEnclosure.setText(in.getEnclosure());
+    if (in.getEscapeCharacter() != null)
+      wEscape.setText(in.getEscapeCharacter());
+    wHeader.setSelection(in.hasHeader());
+    wNrHeader.setText("" + in.getNrHeaderLines());
+    wFooter.setSelection(in.hasFooter());
+    wNrFooter.setText("" + in.getNrFooterLines());
+    wWraps.setSelection(in.isLineWrapped());
+    wNrWraps.setText("" + in.getNrWraps());
+    wLayoutPaged.setSelection(in.isLayoutPaged());
+    wNrLinesPerPage.setText("" + in.getNrLinesPerPage());
+    wNrLinesDocHeader.setText("" + in.getNrLinesDocHeader());
+    if (in.getFileCompression() != null)
+      wCompression.setText(in.getFileCompression());
+    wNoempty.setSelection(in.noEmptyLines());
+    wInclFilename.setSelection(in.includeFilename());
+    wInclRownum.setSelection(in.includeRowNumber());
+    wRownumByFile.setSelection(in.isRowNumberByFile());
+    wDateLenient.setSelection(in.isDateFormatLenient());
+    wAddResult.setSelection(in.isAddResultFile());
 
-        for (int i=0;i<in.getFilter().length;i++)
-        {
-            TableItem item = wFilter.table.getItem(i);
-            
-            TextFileFilter filter = in.getFilter()[i];
-            if (filter.getFilterString()  !=null) item.setText(1, filter.getFilterString());
-            if (filter.getFilterPosition()>=0   ) item.setText(2, ""+filter.getFilterPosition());
-            item.setText(3, filter.isFilterLastLine()?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No"));
-            item.setText(4, filter.isFilterPositive()?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No"));
-        }
-        
-        // Date locale
-        wDateLocale.setText(in.getDateFormatLocale().toString());
-        
-        wFields.removeEmptyRows();
-        wFields.setRowNums();
-        wFields.optWidth(true);
+    if (in.getFilenameField() != null)
+      wInclFilenameField.setText(in.getFilenameField());
+    if (in.getRowNumberField() != null)
+      wInclRownumField.setText(in.getRowNumberField());
+    if (in.getFileFormat() != null)
+      wFormat.setText(in.getFileFormat());
+    wLimit.setText("" + in.getRowLimit());
 
-        wFilter.removeEmptyRows();
-        wFilter.setRowNums();
-        wFilter.optWidth(true);
+    logDebug("getting fields info...");
+    getFieldsData(in, false);
 
-        
-        if(in.getShortFileNameField()!=null) wShortFileFieldName.setText(in.getShortFileNameField());
-        if(in.getPathField()!=null) wPathFieldName.setText(in.getPathField());
-        if(in.isHiddenField()!=null) wIsHiddenName.setText(in.isHiddenField());
-        if(in.getLastModificationDateField()!=null) wLastModificationTimeName.setText(in.getLastModificationDateField());
-        if(in.getUriField()!=null) wUriName.setText(in.getUriField());
-        if(in.getRootUriField()!=null) wRootUriName.setText(in.getRootUriField());
-        if(in.getExtensionField()!=null) wExtensionFieldName.setText(in.getExtensionField());
-        if(in.getSizeField()!=null) wSizeFieldName.setText(in.getSizeField());
+    if (in.getEncoding() != null)
+      wEncoding.setText(in.getEncoding());
 
-        
-        
-        
-        setFlags();
-        
-		wStepname.selectAll();
-	}
+    // Error handling fields...
+    wErrorIgnored.setSelection(in.isErrorIgnored());
+    wSkipBadFiles.setSelection(in.isSkipBadFiles());
+    wSkipErrorLines.setSelection(in.isErrorLineSkipped());
+
+    if (in.getFileErrorField() != null)
+      wBadFileField.setText(in.getFileErrorField());
+    if (in.getFileErrorMessageField() != null)
+      wBadFileMessageField.setText(in.getFileErrorMessageField());
+
+    if (in.getErrorCountField() != null)
+      wErrorCount.setText(in.getErrorCountField());
+    if (in.getErrorFieldsField() != null)
+      wErrorFields.setText(in.getErrorFieldsField());
+    if (in.getErrorTextField() != null)
+      wErrorText.setText(in.getErrorTextField());
+
+    if (in.getWarningFilesDestinationDirectory() != null)
+      wWarnDestDir.setText(in.getWarningFilesDestinationDirectory());
+    if (in.getWarningFilesExtension() != null)
+      wWarnExt.setText(in.getWarningFilesExtension());
+
+    if (in.getErrorFilesDestinationDirectory() != null)
+      wErrorDestDir.setText(in.getErrorFilesDestinationDirectory());
+    if (in.getErrorLineFilesExtension() != null)
+      wErrorExt.setText(in.getErrorLineFilesExtension());
+
+    if (in.getLineNumberFilesDestinationDirectory() != null)
+      wLineNrDestDir.setText(in.getLineNumberFilesDestinationDirectory());
+    if (in.getLineNumberFilesExtension() != null)
+      wLineNrExt.setText(in.getLineNumberFilesExtension());
+
+    for (int i = 0; i < in.getFilter().length; i++) {
+      TableItem item = wFilter.table.getItem(i);
+
+      TextFileFilter filter = in.getFilter()[i];
+      if (filter.getFilterString() != null)
+        item.setText(1, filter.getFilterString());
+      if (filter.getFilterPosition() >= 0)
+        item.setText(2, "" + filter.getFilterPosition());
+      item.setText(
+          3,
+          filter.isFilterLastLine() ? BaseMessages.getString(PKG, "System.Combo.Yes") : BaseMessages.getString(PKG,
+              "System.Combo.No"));
+      item.setText(
+          4,
+          filter.isFilterPositive() ? BaseMessages.getString(PKG, "System.Combo.Yes") : BaseMessages.getString(PKG,
+              "System.Combo.No"));
+    }
+
+    // Date locale
+    wDateLocale.setText(in.getDateFormatLocale().toString());
+
+    wFields.removeEmptyRows();
+    wFields.setRowNums();
+    wFields.optWidth(true);
+
+    wFilter.removeEmptyRows();
+    wFilter.setRowNums();
+    wFilter.optWidth(true);
+
+    if (in.getShortFileNameField() != null)
+      wShortFileFieldName.setText(in.getShortFileNameField());
+    if (in.getPathField() != null)
+      wPathFieldName.setText(in.getPathField());
+    if (in.isHiddenField() != null)
+      wIsHiddenName.setText(in.isHiddenField());
+    if (in.getLastModificationDateField() != null)
+      wLastModificationTimeName.setText(in.getLastModificationDateField());
+    if (in.getUriField() != null)
+      wUriName.setText(in.getUriField());
+    if (in.getRootUriField() != null)
+      wRootUriName.setText(in.getRootUriField());
+    if (in.getExtensionField() != null)
+      wExtensionFieldName.setText(in.getExtensionField());
+    if (in.getSizeField() != null)
+      wSizeFieldName.setText(in.getSizeField());
+
+    setFlags();
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void getFieldsData(TextFileInputMeta in, boolean insertAtTop)
 	{

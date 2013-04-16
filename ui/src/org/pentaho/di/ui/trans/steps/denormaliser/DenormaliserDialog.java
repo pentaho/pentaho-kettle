@@ -308,50 +308,62 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 		return stepname;
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		int i;
-		logDebug(BaseMessages.getString(PKG, "DenormaliserDialog.Log.Getting.KeyInfo")); //$NON-NLS-1$
-		
-        if (input.getKeyField()!= null) wKeyField.setText(input.getKeyField());
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    logDebug(BaseMessages.getString(PKG, "DenormaliserDialog.Log.Getting.KeyInfo")); //$NON-NLS-1$
 
-		if (input.getGroupField()!=null)
-		for (i=0;i<input.getGroupField().length;i++)
-		{
-			TableItem item = wGroup.table.getItem(i);
-			if (input.getGroupField()[i]   !=null) item.setText(1, input.getGroupField()[i]);
-		}
-		
-		if (input.getDenormaliserTargetField()!=null)
-		for (i=0;i<input.getDenormaliserTargetField().length;i++)
-		{
-            DenormaliserTargetField field = input.getDenormaliserTargetField()[i];
-            
-			TableItem item = wTarget.table.getItem(i);
-            
-			if (field.getTargetName() != null )           item.setText( 1, field.getTargetName());
-            if (field.getFieldName() != null )            item.setText( 2, field.getFieldName());
-            if (field.getKeyValue() != null )             item.setText( 3, field.getKeyValue());
-            if (field.getTargetTypeDesc() != null )       item.setText( 4, field.getTargetTypeDesc());
-            if (field.getTargetFormat() != null )         item.setText( 5, field.getTargetFormat());
-            if (field.getTargetLength()>=0)               item.setText( 6, ""+field.getTargetLength()); //$NON-NLS-1$
-            if (field.getTargetPrecision()>=0)            item.setText( 7, ""+field.getTargetPrecision()); //$NON-NLS-1$
-            if (field.getTargetCurrencySymbol() != null ) item.setText( 8, field.getTargetCurrencySymbol());
-            if (field.getTargetDecimalSymbol() != null )  item.setText( 9, field.getTargetDecimalSymbol());
-            if (field.getTargetGroupingSymbol() != null ) item.setText(10, field.getTargetGroupingSymbol());
-            if (field.getTargetNullString() != null )     item.setText(11, field.getTargetNullString());
-            if (field.getTargetAggregationType()>=0 )     item.setText(12, field.getTargetAggregationTypeDescLong());
-        }
-		
-		wStepname.selectAll();
-		wGroup.setRowNums();
-		wGroup.optWidth(true);
-		wTarget.setRowNums();
-		wTarget.optWidth(true);
-	}
+    if (input.getKeyField() != null)
+      wKeyField.setText(input.getKeyField());
+
+    if (input.getGroupField() != null)
+      for (int i = 0; i < input.getGroupField().length; i++) {
+        TableItem item = wGroup.table.getItem(i);
+        if (input.getGroupField()[i] != null)
+          item.setText(1, input.getGroupField()[i]);
+      }
+
+    if (input.getDenormaliserTargetField() != null)
+      for (int i = 0; i < input.getDenormaliserTargetField().length; i++) {
+        DenormaliserTargetField field = input.getDenormaliserTargetField()[i];
+
+        TableItem item = wTarget.table.getItem(i);
+
+        if (field.getTargetName() != null)
+          item.setText(1, field.getTargetName());
+        if (field.getFieldName() != null)
+          item.setText(2, field.getFieldName());
+        if (field.getKeyValue() != null)
+          item.setText(3, field.getKeyValue());
+        if (field.getTargetTypeDesc() != null)
+          item.setText(4, field.getTargetTypeDesc());
+        if (field.getTargetFormat() != null)
+          item.setText(5, field.getTargetFormat());
+        if (field.getTargetLength() >= 0)
+          item.setText(6, "" + field.getTargetLength()); //$NON-NLS-1$
+        if (field.getTargetPrecision() >= 0)
+          item.setText(7, "" + field.getTargetPrecision()); //$NON-NLS-1$
+        if (field.getTargetCurrencySymbol() != null)
+          item.setText(8, field.getTargetCurrencySymbol());
+        if (field.getTargetDecimalSymbol() != null)
+          item.setText(9, field.getTargetDecimalSymbol());
+        if (field.getTargetGroupingSymbol() != null)
+          item.setText(10, field.getTargetGroupingSymbol());
+        if (field.getTargetNullString() != null)
+          item.setText(11, field.getTargetNullString());
+        if (field.getTargetAggregationType() >= 0)
+          item.setText(12, field.getTargetAggregationTypeDescLong());
+      }
+
+    wGroup.setRowNums();
+    wGroup.optWidth(true);
+    wTarget.setRowNums();
+    wTarget.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

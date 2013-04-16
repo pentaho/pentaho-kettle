@@ -206,28 +206,29 @@ public class RandomValueDialog extends BaseStepDialog implements StepDialogInter
 		return stepname;
 	}
 	
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		wStepname.setText(stepname);
-		
-		for (int i=0;i<input.getFieldName().length;i++)
-		{
-			TableItem item = wFields.table.getItem(i);
-			String name = input.getFieldName()[i];
-			String type = RandomValueMeta.getTypeDesc( input.getFieldType()[i] );
-			
-			if (name!=null) item.setText(1, name);
-			if (type!=null) item.setText(2, type);
-		}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    wStepname.setText(stepname);
 
-		wFields.setRowNums();
-		wFields.optWidth(true);
-		
-		wStepname.selectAll();
-	}
+    for (int i = 0; i < input.getFieldName().length; i++) {
+      TableItem item = wFields.table.getItem(i);
+      String name = input.getFieldName()[i];
+      String type = RandomValueMeta.getTypeDesc(input.getFieldType()[i]);
+
+      if (name != null)
+        item.setText(1, name);
+      if (type != null)
+        item.setText(2, type);
+    }
+
+    wFields.setRowNums();
+    wFields.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

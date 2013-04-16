@@ -270,26 +270,28 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
 		return stepname;
 	}
 	
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData() {
-		wInput.setText(Const.NVL(input.getInputFileField(), ""));
-        wOutput.setText(Const.NVL(input.getOutputFileField(), ""));
-        
-        for (String name : input.getParameterFieldMap().keySet()) {
-          String field = input.getParameterFieldMap().get(name);
-          TableItem item = new TableItem(wFields.table, SWT.NONE);
-          item.setText(1, name);
-          item.setText(2, field);
-        }
-        wFields.removeEmptyRows();
-        wFields.setRowNums();
-        wFields.optWidth(true);
-        
-		wProcessor.select(input.getOutputProcessorType().ordinal());
-		wStepname.selectAll();
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    wInput.setText(Const.NVL(input.getInputFileField(), ""));
+    wOutput.setText(Const.NVL(input.getOutputFileField(), ""));
+
+    for (String name : input.getParameterFieldMap().keySet()) {
+      String field = input.getParameterFieldMap().get(name);
+      TableItem item = new TableItem(wFields.table, SWT.NONE);
+      item.setText(1, name);
+      item.setText(2, field);
+    }
+    wFields.removeEmptyRows();
+    wFields.setRowNums();
+    wFields.optWidth(true);
+
+    wProcessor.select(input.getOutputProcessorType().ordinal());
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

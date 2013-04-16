@@ -353,21 +353,29 @@ public class ExecProcessDialog extends BaseStepDialog implements StepDialogInter
 		}
 		return stepname;
 	}
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "ExecProcessDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
-		if (input.getProcessField() !=null)   wProcess.setText(input.getProcessField());
-		if (input.getResultFieldName()!=null)   wResult.setText(input.getResultFieldName());	
-		if (input.getErrorFieldName()!=null)   wError.setText(input.getErrorFieldName());	
-		if (input.getExitValueFieldName()!=null)   wExitValue.setText(input.getExitValueFieldName());	
-		if (input.getOutputLineDelimiter() != null) wOutputDelim.setText(input.getOutputLineDelimiter());
-		wFailWhenNotSuccess.setSelection(input.isFailWhenNotSuccess());
-		wStepname.selectAll();
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (log.isDebug())
+      logDebug(BaseMessages.getString(PKG, "ExecProcessDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+
+    if (input.getProcessField() != null)
+      wProcess.setText(input.getProcessField());
+    if (input.getResultFieldName() != null)
+      wResult.setText(input.getResultFieldName());
+    if (input.getErrorFieldName() != null)
+      wError.setText(input.getErrorFieldName());
+    if (input.getExitValueFieldName() != null)
+      wExitValue.setText(input.getExitValueFieldName());
+    if (input.getOutputLineDelimiter() != null)
+      wOutputDelim.setText(input.getOutputLineDelimiter());
+    wFailWhenNotSuccess.setSelection(input.isFailWhenNotSuccess());
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

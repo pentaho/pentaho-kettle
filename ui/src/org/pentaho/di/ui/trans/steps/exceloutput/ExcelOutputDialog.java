@@ -1911,8 +1911,8 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		wRowFontColor.setText(ExcelOutputMeta.getFontColorDesc(input.getRowFontColor()));
 		wRowBackGroundColor.setText(ExcelOutputMeta.getFontColorDesc(input.getRowBackGroundColor()));
 		
-		
-		wStepname.selectAll();
+    wStepname.selectAll();
+    wStepname.setFocus();  
 	}
 	
 	private void cancel()

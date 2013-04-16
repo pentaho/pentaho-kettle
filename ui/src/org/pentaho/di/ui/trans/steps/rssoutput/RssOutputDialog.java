@@ -1833,110 +1833,124 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 			}
 		}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
 
-		if (input.getVersion()  != null) wVersion.setText(input.getVersion());
-		if (input.getEncoding()  != null) 
-			wEncoding.setText(input.getEncoding());
-		else
-			wEncoding.setText("iso-8859-1");
-		
-		if (input.getChannelDescription()  != null) wChannelDescription.setText(input.getChannelDescription());
-		if (input.getChannelLink()  != null) wChannelLink.setText(input.getChannelLink());
-		if (input.getChannelPubDate()  != null) wChannelPubDate.setText(input.getChannelPubDate());
-		
-		if (input.getChannelCopyright()  != null) wChannelCopyright.setText(input.getChannelCopyright());
-		if (input.getChannelImageTitle()  != null) wChannelImageTitle.setText(input.getChannelImageTitle());
-		if (input.getChannelImageLink()  != null) wChannelImageLink.setText(input.getChannelImageLink());
-		if (input.getChannelImageUrl()  != null) wChannelImageUrl.setText(input.getChannelImageUrl());
-		if (input.getChannelImageDescription()  != null) wChannelImageDescription.setText(input.getChannelImageDescription());
-		
-		if (input.getChannelLanguage()  != null) wChannelLanguage.setText(input.getChannelLanguage());
-		if (input.getChannelAuthor()  != null) wChannelAuthor.setText(input.getChannelAuthor());
-		if (input.getChannelTitle()  != null) wChannelTitle.setText(input.getChannelTitle());
-		wAddImage.setSelection(input.AddImage());
-		
-		// items ...
-		if (input.getItemTitle()  != null) wItemTitle.setText(input.getItemTitle());
-		if (input.getItemDescription()  != null) wItemDescription.setText(input.getItemDescription());
-		if (input.getItemLink()  != null) wItemLink.setText(input.getItemLink());
-		if (input.getItemPubDate()  != null) wItemPubDate.setText(input.getItemPubDate());
-		if (input.getItemAuthor()  != null) wItemAuthor.setText(input.getItemAuthor());
-		
-		// GeoRSS
-		wAddGeoRSS.setSelection(input.AddGeoRSS());
-		wuseGeoRSSGML.setSelection(input.useGeoRSSGML());
-		if (input.getGeoPointLat()  != null) wGeoPointLat.setText(input.getGeoPointLat());
-		if (input.getGeoPointLong()  != null) wGeoPointLong.setText(input.getGeoPointLong());
-		
-		if (input.getFileName()  != null) wFilename.setText(input.getFileName());
-		if (input.getFileNameField()  != null) wFieldFilename.setText(input.getFileNameField());
+    if (input.getVersion() != null)
+      wVersion.setText(input.getVersion());
+    if (input.getEncoding() != null)
+      wEncoding.setText(input.getEncoding());
+    else
+      wEncoding.setText("iso-8859-1");
 
-		wFileNameInField.setSelection(input.isFilenameInField());
-		wCreateParentFolder.setSelection(input.isCreateParentFolder());
-		if (input.getExtension() != null) 
-		{
-			wExtension.setText(input.getExtension());
-		}
-		else
-		{
-			wExtension.setText("xml");
-		}
+    if (input.getChannelDescription() != null)
+      wChannelDescription.setText(input.getChannelDescription());
+    if (input.getChannelLink() != null)
+      wChannelLink.setText(input.getChannelLink());
+    if (input.getChannelPubDate() != null)
+      wChannelPubDate.setText(input.getChannelPubDate());
 
-		wAddDate.setSelection(input.isDateInFilename());
-		wAddTime.setSelection(input.isTimeInFilename());
-		wAddStepnr.setSelection(input.isStepNrInFilename());
-        
-        wAddToResult.setSelection( input.AddToResult() );
-        wCustomRss.setSelection( input.isCustomRss() );
-        wDisplayItem.setSelection( input.isDisplayItem() );
-        
-        
-    	if (input.getChannelCustomFields()!=null)
-    	{
-    		for (int i=0;i<input.getChannelCustomFields().length;i++)
-    		{
-    			TableItem item = wChannelCustom.table.getItem(i);
-    			if (input.getChannelCustomTags()[i]!=null) item.setText(1, input.getChannelCustomTags()[i]);
-    			if (input.getChannelCustomFields()[i]!=null)  item.setText(2, input.getChannelCustomFields()[i]);	
-    		}
-    	}
-		wChannelCustom.setRowNums();
-		wChannelCustom.optWidth(true);
-		
-		
-    	if (input.getItemCustomFields()!=null)
-    	{
-    		for (int i=0;i<input.getItemCustomFields().length;i++)
-    		{
-    			TableItem item = wItemCustom.table.getItem(i);
-    			if (input.getItemCustomTags()[i]!=null) item.setText(1, input.getItemCustomTags()[i]);
-    			if (input.getItemCustomFields()[i]!=null)  item.setText(2, input.getItemCustomFields()[i]);	
-    		}
-    	}
-		wItemCustom.setRowNums();
-		wItemCustom.optWidth(true);
-		
-		
-		if (input.getNameSpaces()!=null)
-    	{
-    		for (int i=0;i<input.getNameSpaces().length;i++)
-    		{
-    			TableItem item = wNameSpaceCustom.table.getItem(i);
-    			if (input.getNameSpacesTitle()[i]!=null) item.setText(1, input.getNameSpacesTitle()[i]);
-    			if (input.getNameSpaces()[i]!=null) item.setText(2, input.getNameSpaces()[i]);
-    		}
-    	}
-		wNameSpaceCustom.setRowNums();
-		wNameSpaceCustom.optWidth(true);
-		
-		
-		wStepname.selectAll();
-	}
+    if (input.getChannelCopyright() != null)
+      wChannelCopyright.setText(input.getChannelCopyright());
+    if (input.getChannelImageTitle() != null)
+      wChannelImageTitle.setText(input.getChannelImageTitle());
+    if (input.getChannelImageLink() != null)
+      wChannelImageLink.setText(input.getChannelImageLink());
+    if (input.getChannelImageUrl() != null)
+      wChannelImageUrl.setText(input.getChannelImageUrl());
+    if (input.getChannelImageDescription() != null)
+      wChannelImageDescription.setText(input.getChannelImageDescription());
+
+    if (input.getChannelLanguage() != null)
+      wChannelLanguage.setText(input.getChannelLanguage());
+    if (input.getChannelAuthor() != null)
+      wChannelAuthor.setText(input.getChannelAuthor());
+    if (input.getChannelTitle() != null)
+      wChannelTitle.setText(input.getChannelTitle());
+    wAddImage.setSelection(input.AddImage());
+
+    // items ...
+    if (input.getItemTitle() != null)
+      wItemTitle.setText(input.getItemTitle());
+    if (input.getItemDescription() != null)
+      wItemDescription.setText(input.getItemDescription());
+    if (input.getItemLink() != null)
+      wItemLink.setText(input.getItemLink());
+    if (input.getItemPubDate() != null)
+      wItemPubDate.setText(input.getItemPubDate());
+    if (input.getItemAuthor() != null)
+      wItemAuthor.setText(input.getItemAuthor());
+
+    // GeoRSS
+    wAddGeoRSS.setSelection(input.AddGeoRSS());
+    wuseGeoRSSGML.setSelection(input.useGeoRSSGML());
+    if (input.getGeoPointLat() != null)
+      wGeoPointLat.setText(input.getGeoPointLat());
+    if (input.getGeoPointLong() != null)
+      wGeoPointLong.setText(input.getGeoPointLong());
+
+    if (input.getFileName() != null)
+      wFilename.setText(input.getFileName());
+    if (input.getFileNameField() != null)
+      wFieldFilename.setText(input.getFileNameField());
+
+    wFileNameInField.setSelection(input.isFilenameInField());
+    wCreateParentFolder.setSelection(input.isCreateParentFolder());
+    if (input.getExtension() != null) {
+      wExtension.setText(input.getExtension());
+    } else {
+      wExtension.setText("xml");
+    }
+
+    wAddDate.setSelection(input.isDateInFilename());
+    wAddTime.setSelection(input.isTimeInFilename());
+    wAddStepnr.setSelection(input.isStepNrInFilename());
+
+    wAddToResult.setSelection(input.AddToResult());
+    wCustomRss.setSelection(input.isCustomRss());
+    wDisplayItem.setSelection(input.isDisplayItem());
+
+    if (input.getChannelCustomFields() != null) {
+      for (int i = 0; i < input.getChannelCustomFields().length; i++) {
+        TableItem item = wChannelCustom.table.getItem(i);
+        if (input.getChannelCustomTags()[i] != null)
+          item.setText(1, input.getChannelCustomTags()[i]);
+        if (input.getChannelCustomFields()[i] != null)
+          item.setText(2, input.getChannelCustomFields()[i]);
+      }
+    }
+    wChannelCustom.setRowNums();
+    wChannelCustom.optWidth(true);
+
+    if (input.getItemCustomFields() != null) {
+      for (int i = 0; i < input.getItemCustomFields().length; i++) {
+        TableItem item = wItemCustom.table.getItem(i);
+        if (input.getItemCustomTags()[i] != null)
+          item.setText(1, input.getItemCustomTags()[i]);
+        if (input.getItemCustomFields()[i] != null)
+          item.setText(2, input.getItemCustomFields()[i]);
+      }
+    }
+    wItemCustom.setRowNums();
+    wItemCustom.optWidth(true);
+
+    if (input.getNameSpaces() != null) {
+      for (int i = 0; i < input.getNameSpaces().length; i++) {
+        TableItem item = wNameSpaceCustom.table.getItem(i);
+        if (input.getNameSpacesTitle()[i] != null)
+          item.setText(1, input.getNameSpacesTitle()[i]);
+        if (input.getNameSpaces()[i] != null)
+          item.setText(2, input.getNameSpaces()[i]);
+      }
+    }
+    wNameSpaceCustom.setRowNums();
+    wNameSpaceCustom.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

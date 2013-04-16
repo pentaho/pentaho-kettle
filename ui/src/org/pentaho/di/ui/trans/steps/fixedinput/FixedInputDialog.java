@@ -602,6 +602,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
     enableFields();
 
     wStepname.selectAll();
+    wStepname.setFocus();
   }
 
   private void cancel() {

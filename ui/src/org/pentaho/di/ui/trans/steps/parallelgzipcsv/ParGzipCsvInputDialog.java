@@ -625,49 +625,50 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
 	{
 		getData(inputMeta);
 	}
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData(ParGzipCsvInputMeta inputMeta)
-	{
-		wStepname.setText(stepname);
-		if (isReceivingInput) {
-			wFilenameField.setText(Const.NVL(inputMeta.getFilenameField(), ""));
-			wIncludeFilename.setSelection(inputMeta.isIncludingFilename());
-		} else {
-			wFilename.setText(Const.NVL(inputMeta.getFilename(), ""));
-		}
-		wDelimiter.setText(Const.NVL(inputMeta.getDelimiter(), ""));
-		wEnclosure.setText(Const.NVL(inputMeta.getEnclosure(), ""));
-		wBufferSize.setText(Const.NVL(inputMeta.getBufferSize(), ""));
-		wLazyConversion.setSelection(inputMeta.isLazyConversionActive());
-		wHeaderPresent.setSelection(inputMeta.isHeaderPresent());
-		wRunningInParallel.setSelection(inputMeta.isRunningInParallel());
-		wRowNumField.setText(Const.NVL(inputMeta.getRowNumField(), ""));
-		wAddResult.setSelection(inputMeta.isAddResultFile());
-		wEncoding.setText(Const.NVL(inputMeta.getEncoding(), ""));
-		
-		for (int i=0;i<inputMeta.getInputFields().length;i++) {
-			TextFileInputField field = inputMeta.getInputFields()[i];
-			
-			TableItem item = new TableItem(wFields.table, SWT.NONE);
-			int colnr=1;
-			item.setText(colnr++, Const.NVL(field.getName(), ""));
-			item.setText(colnr++, ValueMeta.getTypeDesc(field.getType()));
-			item.setText(colnr++, Const.NVL(field.getFormat(), ""));
-			item.setText(colnr++, field.getLength()>=0?Integer.toString(field.getLength()):"") ;
-			item.setText(colnr++, field.getPrecision()>=0?Integer.toString(field.getPrecision()):"") ;
-			item.setText(colnr++, Const.NVL(field.getCurrencySymbol(), ""));
-			item.setText(colnr++, Const.NVL(field.getDecimalSymbol(), ""));
-			item.setText(colnr++, Const.NVL(field.getGroupSymbol(), ""));
-			item.setText(colnr++, Const.NVL(field.getTrimTypeDesc(), ""));
-		}
-		wFields.removeEmptyRows();
-		wFields.setRowNums();
-		wFields.optWidth(true);
-		
-		wStepname.selectAll();
-	}
+
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData(ParGzipCsvInputMeta inputMeta) {
+    wStepname.setText(stepname);
+    if (isReceivingInput) {
+      wFilenameField.setText(Const.NVL(inputMeta.getFilenameField(), ""));
+      wIncludeFilename.setSelection(inputMeta.isIncludingFilename());
+    } else {
+      wFilename.setText(Const.NVL(inputMeta.getFilename(), ""));
+    }
+    wDelimiter.setText(Const.NVL(inputMeta.getDelimiter(), ""));
+    wEnclosure.setText(Const.NVL(inputMeta.getEnclosure(), ""));
+    wBufferSize.setText(Const.NVL(inputMeta.getBufferSize(), ""));
+    wLazyConversion.setSelection(inputMeta.isLazyConversionActive());
+    wHeaderPresent.setSelection(inputMeta.isHeaderPresent());
+    wRunningInParallel.setSelection(inputMeta.isRunningInParallel());
+    wRowNumField.setText(Const.NVL(inputMeta.getRowNumField(), ""));
+    wAddResult.setSelection(inputMeta.isAddResultFile());
+    wEncoding.setText(Const.NVL(inputMeta.getEncoding(), ""));
+
+    for (int i = 0; i < inputMeta.getInputFields().length; i++) {
+      TextFileInputField field = inputMeta.getInputFields()[i];
+
+      TableItem item = new TableItem(wFields.table, SWT.NONE);
+      int colnr = 1;
+      item.setText(colnr++, Const.NVL(field.getName(), ""));
+      item.setText(colnr++, ValueMeta.getTypeDesc(field.getType()));
+      item.setText(colnr++, Const.NVL(field.getFormat(), ""));
+      item.setText(colnr++, field.getLength() >= 0 ? Integer.toString(field.getLength()) : "");
+      item.setText(colnr++, field.getPrecision() >= 0 ? Integer.toString(field.getPrecision()) : "");
+      item.setText(colnr++, Const.NVL(field.getCurrencySymbol(), ""));
+      item.setText(colnr++, Const.NVL(field.getDecimalSymbol(), ""));
+      item.setText(colnr++, Const.NVL(field.getGroupSymbol(), ""));
+      item.setText(colnr++, Const.NVL(field.getTrimTypeDesc(), ""));
+    }
+    wFields.removeEmptyRows();
+    wFields.setRowNums();
+    wFields.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

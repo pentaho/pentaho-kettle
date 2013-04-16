@@ -208,32 +208,33 @@ public class MappingInputDialog extends BaseStepDialog implements StepDialogInte
 		return stepname;
 	}
 	
-    /**
-     * Copy information from the meta-data input to the dialog fields.
-     */
-    public void getData()
-    {
-        for (int i=0;i<input.getFieldName().length;i++)
-        {
-            if (input.getFieldName()[i]!=null)
-            {
-                TableItem item = wFields.table.getItem(i);
-                item.setText(1, input.getFieldName()[i]);
-                String type   = ValueMeta.getTypeDesc(input.getFieldType()[i]);
-                int length    = input.getFieldLength()[i];
-                int prec      = input.getFieldPrecision()[i];
-                if (type  !=null) item.setText(2, type  );
-                if (length>=0   ) item.setText(3, ""+length); //$NON-NLS-1$
-                if (prec>=0     ) item.setText(4, ""+prec  ); //$NON-NLS-1$
-            }
-        }
-        wUnspecified.setSelection( input.isSelectingAndSortingUnspecifiedFields() );
-		
-        wFields.setRowNums();
-        wFields.optWidth(true);
-        
-        wStepname.selectAll();
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    for (int i = 0; i < input.getFieldName().length; i++) {
+      if (input.getFieldName()[i] != null) {
+        TableItem item = wFields.table.getItem(i);
+        item.setText(1, input.getFieldName()[i]);
+        String type = ValueMeta.getTypeDesc(input.getFieldType()[i]);
+        int length = input.getFieldLength()[i];
+        int prec = input.getFieldPrecision()[i];
+        if (type != null)
+          item.setText(2, type);
+        if (length >= 0)
+          item.setText(3, "" + length); //$NON-NLS-1$
+        if (prec >= 0)
+          item.setText(4, "" + prec); //$NON-NLS-1$
+      }
     }
+    wUnspecified.setSelection(input.isSelectingAndSortingUnspecifiedFields());
+
+    wFields.setRowNums();
+    wFields.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

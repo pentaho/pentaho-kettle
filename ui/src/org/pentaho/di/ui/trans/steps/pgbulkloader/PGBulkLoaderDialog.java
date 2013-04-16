@@ -586,82 +586,73 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 		return stepname;
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData()
-	{
-		int i;
-		logDebug(BaseMessages.getString(PKG, "PGBulkLoaderDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    logDebug(BaseMessages.getString(PKG, "PGBulkLoaderDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
-		if (input.getFieldTable() != null)
-			for (i = 0; i < input.getFieldTable().length; i++)
-			{
-				TableItem item = wReturn.table.getItem(i);
-				if (input.getFieldTable()[i] != null)
-					item.setText(1, input.getFieldTable()[i]);
-				if (input.getFieldStream()[i] != null)
-					item.setText(2, input.getFieldStream()[i]);
-				String dateMask = input.getDateMask()[i];
-				if (dateMask!=null) {
-					if ( PGBulkLoaderMeta.DATE_MASK_PASS_THROUGH.equals(dateMask) )
-					{
-					    item.setText(3,BaseMessages.getString(PKG, "PGBulkLoaderDialog.PassThrough.Label"));
-					}
-					else if ( PGBulkLoaderMeta.DATE_MASK_DATE.equals(dateMask) )
-					{
-					    item.setText(3,BaseMessages.getString(PKG, "PGBulkLoaderDialog.DateMask.Label"));
-					}
-					else if ( PGBulkLoaderMeta.DATE_MASK_DATETIME.equals(dateMask))
-					{
-						item.setText(3,BaseMessages.getString(PKG, "PGBulkLoaderDialog.DateTimeMask.Label"));
-					}
-					else 
-					{
-						item.setText(3,"");
-					}					
-				} 
-				else {
-					item.setText(3,"");
-				}
-			}
+    if (input.getFieldTable() != null)
+      for (int i = 0; i < input.getFieldTable().length; i++) {
+        TableItem item = wReturn.table.getItem(i);
+        if (input.getFieldTable()[i] != null)
+          item.setText(1, input.getFieldTable()[i]);
+        if (input.getFieldStream()[i] != null)
+          item.setText(2, input.getFieldStream()[i]);
+        String dateMask = input.getDateMask()[i];
+        if (dateMask != null) {
+          if (PGBulkLoaderMeta.DATE_MASK_PASS_THROUGH.equals(dateMask)) {
+            item.setText(3, BaseMessages.getString(PKG, "PGBulkLoaderDialog.PassThrough.Label"));
+          } else if (PGBulkLoaderMeta.DATE_MASK_DATE.equals(dateMask)) {
+            item.setText(3, BaseMessages.getString(PKG, "PGBulkLoaderDialog.DateMask.Label"));
+          } else if (PGBulkLoaderMeta.DATE_MASK_DATETIME.equals(dateMask)) {
+            item.setText(3, BaseMessages.getString(PKG, "PGBulkLoaderDialog.DateTimeMask.Label"));
+          } else {
+            item.setText(3, "");
+          }
+        } else {
+          item.setText(3, "");
+        }
+      }
 
-		if (input.getDatabaseMeta() != null)
-			wConnection.setText(input.getDatabaseMeta().getName());
-		else
-		{
-			if (transMeta.nrDatabases() == 1)
-			{
-				wConnection.setText(transMeta.getDatabase(0).getName());
-			}
-		}
-        if (input.getSchemaName() != null) wSchema.setText(input.getSchemaName());
-		if (input.getTableName() != null) wTable.setText(input.getTableName());
-		if (input.getPsqlpath() != null) wPsqlPath.setText(input.getPsqlpath());
-		if (input.getDelimiter() != null) wDelimiter.setText(input.getDelimiter());
-		if (input.getEnclosure() != null) wEnclosure.setText(input.getEnclosure());
-		wStopOnError.setSelection(input.isStopOnError());
-		if (input.getDbNameOverride() != null ) wDbNameOverride.setText(input.getDbNameOverride());
-		
-		String action = input.getLoadAction();
-		if ( PGBulkLoaderMeta.ACTION_INSERT.equals(action))
-		{
-			wLoadAction.select(0);
-		}
-		else if ( PGBulkLoaderMeta.ACTION_TRUNCATE.equals(action))
-		{
-			wLoadAction.select(1);
-		}
-		else
-		{
-			logDebug("Internal error: load_action set to default 'insert'"); //$NON-NLS-1$
-    		wLoadAction.select(0);
-		}
-		
-		wStepname.selectAll();
-		wReturn.setRowNums();
-		wReturn.optWidth(true);
-	}
+    if (input.getDatabaseMeta() != null)
+      wConnection.setText(input.getDatabaseMeta().getName());
+    else {
+      if (transMeta.nrDatabases() == 1) {
+        wConnection.setText(transMeta.getDatabase(0).getName());
+      }
+    }
+    if (input.getSchemaName() != null)
+      wSchema.setText(input.getSchemaName());
+    if (input.getTableName() != null)
+      wTable.setText(input.getTableName());
+    if (input.getPsqlpath() != null)
+      wPsqlPath.setText(input.getPsqlpath());
+    if (input.getDelimiter() != null)
+      wDelimiter.setText(input.getDelimiter());
+    if (input.getEnclosure() != null)
+      wEnclosure.setText(input.getEnclosure());
+    wStopOnError.setSelection(input.isStopOnError());
+    if (input.getDbNameOverride() != null)
+      wDbNameOverride.setText(input.getDbNameOverride());
+
+    String action = input.getLoadAction();
+    if (PGBulkLoaderMeta.ACTION_INSERT.equals(action)) {
+      wLoadAction.select(0);
+    } else if (PGBulkLoaderMeta.ACTION_TRUNCATE.equals(action)) {
+      wLoadAction.select(1);
+    } else {
+      logDebug("Internal error: load_action set to default 'insert'"); //$NON-NLS-1$
+      wLoadAction.select(0);
+    }
+
+    wReturn.setRowNums();
+    wReturn.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
+
 	protected void setComboBoxes()
     {
         // Something was changed in the row.

@@ -1220,12 +1220,11 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
    * Copy information from the meta-data input to the dialog fields.
    */
   public void getData() {
-    int i;
     if (log.isDebug())
       logDebug(BaseMessages.getString(PKG, "DimensionLookupDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
     if (input.getKeyStream() != null)
-      for (i = 0; i < input.getKeyStream().length; i++) {
+      for (int i = 0; i < input.getKeyStream().length; i++) {
         TableItem item = wKey.table.getItem(i);
         if (input.getKeyLookup()[i] != null)
           item.setText(1, input.getKeyLookup()[i]);
@@ -1234,7 +1233,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
       }
 
     if (input.getFieldStream() != null)
-      for (i = 0; i < input.getFieldStream().length; i++) {
+      for (int i = 0; i < input.getFieldStream().length; i++) {
         TableItem item = wUpIns.table.getItem(i);
         if (input.getFieldLookup()[i] != null)
           item.setText(1, input.getFieldLookup()[i]);
@@ -1284,7 +1283,8 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
       wAutoinc.setSelection(input.isAutoIncrement());
 
       wSeqButton.setSelection(input.getSequenceName() != null && input.getSequenceName().length() > 0);
-      if (input.isAutoIncrement() == false && (input.getSequenceName() == null || input.getSequenceName().length() <= 0)) {
+      if (input.isAutoIncrement() == false
+          && (input.getSequenceName() == null || input.getSequenceName().length() <= 0)) {
         wTableMax.setSelection(true);
       }
 
@@ -1341,6 +1341,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
     setFlags();
 
     wStepname.selectAll();
+    wStepname.setFocus();
   }
 
   private void cancel() {

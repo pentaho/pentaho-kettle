@@ -1248,94 +1248,111 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
 		wInclRownumField.setEnabled(wInclRownum.getSelection());
 	}
 
-	/**
-	 * Read the data from the TextFileInputMeta object and show it in this dialog.
-	 * 
-	 * @param in The TextFileInputMeta object to obtain the data from.
-	 */
-	public void getData(LoadFileInputMeta in)
-	{
-		if (in.getFileName() !=null) 
-		{
-			wFilenameList.removeAll();
+  /**
+   * Read the data from the TextFileInputMeta object and show it in this dialog.
+   * 
+   * @param in The TextFileInputMeta object to obtain the data from.
+   */
+  public void getData(LoadFileInputMeta in) {
+    if (in.getFileName() != null) {
+      wFilenameList.removeAll();
 
-			for (int i=0;i<in.getFileName().length;i++) 
-			{
-				wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i] ,in.getExludeFileMask()[i],
-						in.getRequiredFilesDesc(in.getFileRequired()[i]), in.getRequiredFilesDesc(in.getIncludeSubFolders()[i])} );
-			}
-			
-			
-			wFilenameList.removeEmptyRows();
-			wFilenameList.setRowNums();
-			wFilenameList.optWidth(true);
-		}
-		wInclFilename.setSelection(in.includeFilename());
-		wInclRownum.setSelection(in.includeRowNumber());
-		wAddResult.setSelection(in.addResultFile());;
-		wIgnoreEmptyFile.setSelection(in.isIgnoreEmptyFile());
-		
-		
-		wFilenameInField.setSelection(in.getIsInFields());
-		
-		if (in.getDynamicFilenameField()!=null) wFilenameField.setText(in.getDynamicFilenameField());
-		
-		if (in.getFilenameField()!=null) wInclFilenameField.setText(in.getFilenameField());
-		if (in.getRowNumberField()!=null) wInclRownumField.setText(in.getRowNumberField());
-		wLimit.setText(""+in.getRowLimit());
-        wEncoding.setText(Const.NVL(in.getEncoding(),""));
-        
-		if(isDebug()) logDebug( BaseMessages.getString(PKG, "LoadFileInputDialog.Log.GettingFieldsInfo"));
-		for (int i=0;i<in.getInputFields().length;i++)
-		{
-		    LoadFileInputField field = in.getInputFields()[i];
-		    
-            if (field!=null)
-            {
-    			TableItem item = wFields.table.getItem(i);
-    			String name     = field.getName();
-    			String element  = field.getElementTypeDesc();
-    			String type     = field.getTypeDesc();
-    			String format   = field.getFormat();
-    			String length   = ""+field.getLength();
-    			String prec     = ""+field.getPrecision();
-    			String curr     = field.getCurrencySymbol();
-    			String group    = field.getGroupSymbol();
-    			String decim    = field.getDecimalSymbol();
-    			String trim     = field.getTrimTypeDesc();
-    			String rep      = field.isRepeated()?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No");
-    			
-                if (name    !=null) item.setText( 1, name);
-                if (element !=null) item.setText( 2, element);
-    			if (type    !=null) item.setText( 3, type    );
-    			if (format  !=null) item.setText( 4, format  );
-    			if (length  !=null && !"-1".equals(length  )) item.setText( 5, length  );
-    			if (prec    !=null && !"-1".equals(prec    )) item.setText( 6, prec    );
-    			if (curr    !=null) item.setText( 7, curr    );
-    			if (decim   !=null) item.setText( 8, decim   );
-    			if (group   !=null) item.setText( 9, group   );
-    			if (trim    !=null) item.setText( 10, trim    );
-    			if (rep     !=null) item.setText(11, rep     );
-                
-            }
-		}     
-        
-        wFields.removeEmptyRows();
-        wFields.setRowNums();
-        wFields.optWidth(true);
-        if(in.getShortFileNameField()!=null) wShortFileFieldName.setText(in.getShortFileNameField());
-        if(in.getPathField()!=null) wPathFieldName.setText(in.getPathField());
-        if(in.isHiddenField()!=null) wIsHiddenName.setText(in.isHiddenField());
-        if(in.getLastModificationDateField()!=null) wLastModificationTimeName.setText(in.getLastModificationDateField());
-        if(in.getUriField()!=null) wUriName.setText(in.getUriField());
-        if(in.getRootUriField()!=null) wRootUriName.setText(in.getRootUriField());
-        if(in.getExtensionField()!=null) wExtensionFieldName.setText(in.getExtensionField());
+      for (int i = 0; i < in.getFileName().length; i++) {
+        wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i], in.getExludeFileMask()[i],
+            in.getRequiredFilesDesc(in.getFileRequired()[i]), in.getRequiredFilesDesc(in.getIncludeSubFolders()[i]) });
+      }
 
-        
-		setIncludeFilename();
-		setIncludeRownum();
-		wStepname.selectAll();
-	}
+      wFilenameList.removeEmptyRows();
+      wFilenameList.setRowNums();
+      wFilenameList.optWidth(true);
+    }
+    wInclFilename.setSelection(in.includeFilename());
+    wInclRownum.setSelection(in.includeRowNumber());
+    wAddResult.setSelection(in.addResultFile());
+    ;
+    wIgnoreEmptyFile.setSelection(in.isIgnoreEmptyFile());
+
+    wFilenameInField.setSelection(in.getIsInFields());
+
+    if (in.getDynamicFilenameField() != null)
+      wFilenameField.setText(in.getDynamicFilenameField());
+
+    if (in.getFilenameField() != null)
+      wInclFilenameField.setText(in.getFilenameField());
+    if (in.getRowNumberField() != null)
+      wInclRownumField.setText(in.getRowNumberField());
+    wLimit.setText("" + in.getRowLimit());
+    wEncoding.setText(Const.NVL(in.getEncoding(), ""));
+
+    if (isDebug())
+      logDebug(BaseMessages.getString(PKG, "LoadFileInputDialog.Log.GettingFieldsInfo"));
+    for (int i = 0; i < in.getInputFields().length; i++) {
+      LoadFileInputField field = in.getInputFields()[i];
+
+      if (field != null) {
+        TableItem item = wFields.table.getItem(i);
+        String name = field.getName();
+        String element = field.getElementTypeDesc();
+        String type = field.getTypeDesc();
+        String format = field.getFormat();
+        String length = "" + field.getLength();
+        String prec = "" + field.getPrecision();
+        String curr = field.getCurrencySymbol();
+        String group = field.getGroupSymbol();
+        String decim = field.getDecimalSymbol();
+        String trim = field.getTrimTypeDesc();
+        String rep = field.isRepeated() ? BaseMessages.getString(PKG, "System.Combo.Yes") : BaseMessages.getString(PKG,
+            "System.Combo.No");
+
+        if (name != null)
+          item.setText(1, name);
+        if (element != null)
+          item.setText(2, element);
+        if (type != null)
+          item.setText(3, type);
+        if (format != null)
+          item.setText(4, format);
+        if (length != null && !"-1".equals(length))
+          item.setText(5, length);
+        if (prec != null && !"-1".equals(prec))
+          item.setText(6, prec);
+        if (curr != null)
+          item.setText(7, curr);
+        if (decim != null)
+          item.setText(8, decim);
+        if (group != null)
+          item.setText(9, group);
+        if (trim != null)
+          item.setText(10, trim);
+        if (rep != null)
+          item.setText(11, rep);
+
+      }
+    }
+
+    wFields.removeEmptyRows();
+    wFields.setRowNums();
+    wFields.optWidth(true);
+    if (in.getShortFileNameField() != null)
+      wShortFileFieldName.setText(in.getShortFileNameField());
+    if (in.getPathField() != null)
+      wPathFieldName.setText(in.getPathField());
+    if (in.isHiddenField() != null)
+      wIsHiddenName.setText(in.isHiddenField());
+    if (in.getLastModificationDateField() != null)
+      wLastModificationTimeName.setText(in.getLastModificationDateField());
+    if (in.getUriField() != null)
+      wUriName.setText(in.getUriField());
+    if (in.getRootUriField() != null)
+      wRootUriName.setText(in.getRootUriField());
+    if (in.getExtensionField() != null)
+      wExtensionFieldName.setText(in.getExtensionField());
+
+    setIncludeFilename();
+    setIncludeRownum();
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

@@ -237,20 +237,20 @@ public class GetSlaveSequenceDialog extends BaseStepDialog implements StepDialog
 		return stepname;
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		logDebug(BaseMessages.getString(PKG, "GetSequenceDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    logDebug(BaseMessages.getString(PKG, "GetSequenceDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
-		wValuename.setText( Const.NVL(input.getValuename(), ""));
-		wSlaveServer.setText( Const.NVL(input.getSlaveServerName(), "") );
-		wSeqname.setText(Const.NVL(input.getSequenceName(), ""));
+    wValuename.setText(Const.NVL(input.getValuename(), ""));
+    wSlaveServer.setText(Const.NVL(input.getSlaveServerName(), ""));
+    wSeqname.setText(Const.NVL(input.getSequenceName(), ""));
     wIncrement.setText(Const.NVL(input.getIncrement(), ""));
 
-		wStepname.selectAll();
-	}
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

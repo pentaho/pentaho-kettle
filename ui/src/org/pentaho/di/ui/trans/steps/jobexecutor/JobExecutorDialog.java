@@ -737,52 +737,49 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     wByReference.setText(path);
   }
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData()
-	{
-		wStepname.selectAll();
-
-    specificationMethod=jobExecutorMeta.getSpecificationMethod();
-    switch(specificationMethod) {
-    case FILENAME: 
-      wFilename.setText(Const.NVL(jobExecutorMeta.getFileName(), "")); 
-      break;
-    case REPOSITORY_BY_NAME:
-      wDirectory.setText(Const.NVL(jobExecutorMeta.getDirectoryPath(), ""));
-      wJobname.setText(Const.NVL(jobExecutorMeta.getJobName(), ""));
-      break;
-    case REPOSITORY_BY_REFERENCE:
-      referenceObjectId = jobExecutorMeta.getJobObjectId();
-      wByReference.setText("");
-      getByReferenceData(jobExecutorMeta.getJobObjectId());
-      break;   
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    specificationMethod = jobExecutorMeta.getSpecificationMethod();
+    switch (specificationMethod) {
+      case FILENAME:
+        wFilename.setText(Const.NVL(jobExecutorMeta.getFileName(), ""));
+        break;
+      case REPOSITORY_BY_NAME:
+        wDirectory.setText(Const.NVL(jobExecutorMeta.getDirectoryPath(), ""));
+        wJobname.setText(Const.NVL(jobExecutorMeta.getJobName(), ""));
+        break;
+      case REPOSITORY_BY_REFERENCE:
+        referenceObjectId = jobExecutorMeta.getJobObjectId();
+        wByReference.setText("");
+        getByReferenceData(jobExecutorMeta.getJobObjectId());
+        break;
     }
     setRadioButtons();
-		
-		// TODO: throw in a separate thread.
-		//
-		try {
-		  String[] prevSteps = transMeta.getStepNames();
-		  Arrays.sort(prevSteps);
-		  wExecutionResultTarget.setItems(prevSteps);
+
+    // TODO: throw in a separate thread.
+    //
+    try {
+      String[] prevSteps = transMeta.getStepNames();
+      Arrays.sort(prevSteps);
+      wExecutionResultTarget.setItems(prevSteps);
       wResultFilesTarget.setItems(prevSteps);
       wResultRowsTarget.setItems(prevSteps);
-		  
-		  String[] inputFields = transMeta.getPrevStepFields(stepMeta).getFieldNames();
-		  parameterColumns[1].setComboValues(inputFields);
-		  wGroupField.setItems(inputFields);
-		} catch(Exception e) {
-		  log.logError("couldn't get previous step list",e);
-		}
-		
-		
-		wGroupSize.setText(Const.NVL(jobExecutorMeta.getGroupSize(), ""));
+
+      String[] inputFields = transMeta.getPrevStepFields(stepMeta).getFieldNames();
+      parameterColumns[1].setComboValues(inputFields);
+      wGroupField.setItems(inputFields);
+    } catch (Exception e) {
+      log.logError("couldn't get previous step list", e);
+    }
+
+    wGroupSize.setText(Const.NVL(jobExecutorMeta.getGroupSize(), ""));
     wGroupTime.setText(Const.NVL(jobExecutorMeta.getGroupTime(), ""));
     wGroupField.setText(Const.NVL(jobExecutorMeta.getGroupField(), ""));
-		
-    wExecutionResultTarget.setText(jobExecutorMeta.getExecutionResultTargetStepMeta()==null ? "" : jobExecutorMeta.getExecutionResultTargetStepMeta().getName());
+
+    wExecutionResultTarget.setText(jobExecutorMeta.getExecutionResultTargetStepMeta() == null ? "" : jobExecutorMeta
+        .getExecutionResultTargetStepMeta().getName());
     wExecutionTimeField.setText(Const.NVL(jobExecutorMeta.getExecutionTimeField(), ""));
     wExecutionResultField.setText(Const.NVL(jobExecutorMeta.getExecutionResultField(), ""));
     wExecutionNrErrorsField.setText(Const.NVL(jobExecutorMeta.getExecutionNrErrorsField(), ""));
@@ -800,37 +797,40 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
 
     // result files
     //
-    wResultFilesTarget.setText(jobExecutorMeta.getResultFilesTargetStepMeta()==null ? "" : jobExecutorMeta.getResultFilesTargetStepMeta().getName());
+    wResultFilesTarget.setText(jobExecutorMeta.getResultFilesTargetStepMeta() == null ? "" : jobExecutorMeta
+        .getResultFilesTargetStepMeta().getName());
     wResultFileNameField.setText(Const.NVL(jobExecutorMeta.getResultFilesFileNameField(), ""));
-    
+
     // Result rows
     //
-    wResultRowsTarget.setText(jobExecutorMeta.getResultRowsTargetStepMeta()==null ? "" : jobExecutorMeta.getResultRowsTargetStepMeta().getName());
-    for (int i=0;i<jobExecutorMeta.getResultRowsField().length;i++) {
+    wResultRowsTarget.setText(jobExecutorMeta.getResultRowsTargetStepMeta() == null ? "" : jobExecutorMeta
+        .getResultRowsTargetStepMeta().getName());
+    for (int i = 0; i < jobExecutorMeta.getResultRowsField().length; i++) {
       TableItem item = new TableItem(wResultRowsFields.table, SWT.NONE);
       item.setText(1, Const.NVL(jobExecutorMeta.getResultRowsField()[i], ""));
       item.setText(2, ValueMeta.getTypeDesc(jobExecutorMeta.getResultRowsType()[i]));
-      int length=jobExecutorMeta.getResultRowsLength()[i];
-      item.setText(3, length<0?"":Integer.toString(length));
+      int length = jobExecutorMeta.getResultRowsLength()[i];
+      item.setText(3, length < 0 ? "" : Integer.toString(length));
       int precision = jobExecutorMeta.getResultRowsPrecision()[i];
-      item.setText(4, precision<0?"":Integer.toString(precision));
+      item.setText(4, precision < 0 ? "" : Integer.toString(precision));
     }
     wResultRowsFields.removeEmptyRows();
     wResultRowsFields.setRowNums();
     wResultRowsFields.optWidth(true);
-    
-		wTabFolder.setSelection(0);
 
-		try
-		{
-			loadJob();
-		} catch (Throwable t)
-		{
+    wTabFolder.setSelection(0);
 
-		}
-	   
+    try {
+      loadJob();
+    } catch (Throwable t) {
+
+    }
+
     setFlags();
-	}
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 
 	private void getByReferenceData(ObjectId jobObjectId) {
     try {

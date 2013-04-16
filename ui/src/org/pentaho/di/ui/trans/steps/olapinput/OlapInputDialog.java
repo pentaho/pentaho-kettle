@@ -465,7 +465,8 @@ public class OlapInputDialog extends BaseStepDialog implements
 		wCatalog.setText(Const.NVL(input.getCatalog(), ""));
 		wVariables.setSelection(input.isVariableReplacementActive());
 
-		wStepname.selectAll();
+    wStepname.selectAll();
+    wStepname.setFocus();
 	}
 
 	private void cancel() {

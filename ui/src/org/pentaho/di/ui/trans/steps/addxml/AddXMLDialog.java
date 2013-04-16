@@ -528,41 +528,57 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface
 
     /**
      * Copy information from the meta-data input to the dialog fields.
-     */ 
-    public void getData()
-    {
-        if (input.getEncoding()      != null) wEncoding.setText(input.getEncoding());
-        if (input.getValueName()     != null) wOutputValue.setText(input.getValueName());
-        if (input.getRootNode() != null) wRepeatElement.setText(input.getRootNode());
-        
-        wOmitXMLHeader.setSelection(input.isOmitXMLheader());
-        wOmitNullValues.setSelection(input.isOmitNullValues());
-        
-        logDebug(BaseMessages.getString(PKG, "AddXMLDialog.Log.GettingFieldsInfo"));
-        
-        for (int i=0;i<input.getOutputFields().length;i++)
-        {
-            XMLField field = input.getOutputFields()[i];
-
-            TableItem item = wFields.table.getItem(i);
-            if (field.getFieldName()!=null) item.setText(1, field.getFieldName());
-            if (field.getElementName()!=null) item.setText(2, field.getElementName());
-            item.setText(3, field.getTypeDesc());
-            if (field.getFormat()!=null) item.setText(4, field.getFormat());
-            if (field.getLength()>=0) item.setText(5, ""+field.getLength());
-            if (field.getPrecision()>=0) item.setText(6, ""+field.getPrecision());
-            if (field.getCurrencySymbol()!=null) item.setText(7, field.getCurrencySymbol());
-            if (field.getDecimalSymbol()!=null) item.setText(8, field.getDecimalSymbol());
-            if (field.getGroupingSymbol()!=null) item.setText(9, field.getGroupingSymbol());
-            if (field.getNullString()!=null) item.setText(10, field.getNullString());
-            item.setText(11, field.isAttribute() ? BaseMessages.getString(PKG, "System.Combo.Yes") : BaseMessages.getString(PKG, "System.Combo.No"));
-            if (field.getAttributeParentName()!=null) item.setText(12, field.getAttributeParentName());
-        }
-        
-        wFields.optWidth(true);
-        wStepname.selectAll();
+     */
+    public void getData() {
+      if (input.getEncoding() != null)
+        wEncoding.setText(input.getEncoding());
+      if (input.getValueName() != null)
+        wOutputValue.setText(input.getValueName());
+      if (input.getRootNode() != null)
+        wRepeatElement.setText(input.getRootNode());
+  
+      wOmitXMLHeader.setSelection(input.isOmitXMLheader());
+      wOmitNullValues.setSelection(input.isOmitNullValues());
+  
+      logDebug(BaseMessages.getString(PKG, "AddXMLDialog.Log.GettingFieldsInfo"));
+  
+      for (int i = 0; i < input.getOutputFields().length; i++) {
+        XMLField field = input.getOutputFields()[i];
+  
+        TableItem item = wFields.table.getItem(i);
+        if (field.getFieldName() != null)
+          item.setText(1, field.getFieldName());
+        if (field.getElementName() != null)
+          item.setText(2, field.getElementName());
+        item.setText(3, field.getTypeDesc());
+        if (field.getFormat() != null)
+          item.setText(4, field.getFormat());
+        if (field.getLength() >= 0)
+          item.setText(5, "" + field.getLength());
+        if (field.getPrecision() >= 0)
+          item.setText(6, "" + field.getPrecision());
+        if (field.getCurrencySymbol() != null)
+          item.setText(7, field.getCurrencySymbol());
+        if (field.getDecimalSymbol() != null)
+          item.setText(8, field.getDecimalSymbol());
+        if (field.getGroupingSymbol() != null)
+          item.setText(9, field.getGroupingSymbol());
+        if (field.getNullString() != null)
+          item.setText(10, field.getNullString());
+        item.setText(
+            11,
+            field.isAttribute() ? BaseMessages.getString(PKG, "System.Combo.Yes") : BaseMessages.getString(PKG,
+                "System.Combo.No"));
+        if (field.getAttributeParentName() != null)
+          item.setText(12, field.getAttributeParentName());
+      }
+  
+      wFields.optWidth(true);
+  
+      wStepname.selectAll();
+      wStepname.setFocus();
     }
-    
+
     private void cancel()
     {
         stepname=null;

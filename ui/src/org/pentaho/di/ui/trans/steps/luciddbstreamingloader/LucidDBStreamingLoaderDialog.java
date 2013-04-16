@@ -837,115 +837,95 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
         return stepname;
     }
 
-    /**
-     * Copy information from the meta-data input to the dialog fields.
-     */
-    public void getData()
-    {
-
-        logDebug(BaseMessages.getString(
-            PKG,
-            "LucidDBStreamingLoaderDialog.Log.GettingKeyInfo"));
-        if (input.getDatabaseMeta() != null)
-            wConnection.setText(input.getDatabaseMeta().getName());
-        else {
-            if (transMeta.nrDatabases() == 1) {
-                wConnection.setText(transMeta.getDatabase(0).getName());
-            }
-        }
-        if (input.getSchemaName() != null)
-            wSchema.setText(input.getSchemaName());
-        if (input.getTableName() != null)
-            wTable.setText(input.getTableName());
-        if (input.getHost() != null)
-            wHost.setText("" + input.getHost());
-        if (input.getPort() != null)
-            wPort.setText("" + input.getPort());
-        if (input.getOperation() != null) {
-
-            wOperation.select(wOperation.indexOf(input.getOperation()));
-            if (BaseMessages.getString(
-                PKG,
-                "LucidDBStreamingLoaderDialog.Operation.CCombo.Item2").equals(
-                input.getOperation()))
-            {
-
-                wTabFolder.setSelection(1);
-            } else {
-
-                wTabFolder.setSelection(0);
-            }
-        }
-
-        if (input.getCustom_sql() != null)
-            wCustomTb.setText(input.getCustom_sql());
-
-        if (input.getFieldTableForKeys() != null) {
-
-            int nrKeyMapping = input.getFieldTableForKeys().length;
-            wKeysTb.table.setItemCount(nrKeyMapping);
-            for (int i = 0; i < nrKeyMapping; i++) {
-                TableItem item = wKeysTb.table.getItem(i);
-                if (input.getFieldTableForKeys()[i] != null)
-                    item.setText(1, input.getFieldTableForKeys()[i]);
-                if (input.getFieldStreamForKeys()[i] != null)
-                    item.setText(2, input.getFieldStreamForKeys()[i]);
-            }
-        }
-
-        wKeysTb.setRowNums();
-        wKeysTb.optWidth(true);
-
-        if (input.getFieldTableForFields() != null) {
-
-            int nrFieldMapping = input.getFieldTableForFields().length;
-
-            wFieldsTb.table.setItemCount(nrFieldMapping);
-            for (int i = 0; i < nrFieldMapping; i++) {
-
-                TableItem item = wFieldsTb.table.getItem(i);
-                if (input.getFieldTableForFields()[i] != null)
-                    item.setText(1, input.getFieldTableForFields()[i]);
-                if (input.getFieldStreamForFields()[i] != null)
-                    item.setText(2, input.getFieldStreamForFields()[i]);
-                if (input.getInsOrUptFlag() != null) {
-
-                    item.setText(3, input.getInsOrUptFlag()[i] ? "Y" : "N");
-                } else {
-
-                    item.setText(3, "N");
-                }
-
-            }
-
-        }
-
-        wFieldsTb.setRowNums();
-        wFieldsTb.optWidth(true);
-
-        if (input.getTabIsEnable().length != 0) {
-
-            wKeysTab.getControl().setEnabled(input.getTabIsEnable()[0]);
-            wFieldsTab.getControl().setEnabled(input.getTabIsEnable()[1]);
-            wCustomTab.getControl().setEnabled(input.getTabIsEnable()[2]);
-
-        }
-
-        int fieldWidth = wFieldsTb.table.getColumn(3).getWidth();
-        if (input.getOperation() != null
-            && "INSERT".equalsIgnoreCase(wOperation.getItem(wOperation.getSelectionIndex())))
-        {
-
-            wFieldsTb.table.getColumn(3).setWidth(0);
-
-        } else {
-
-            wFieldsTb.table.getColumn(3).setWidth(fieldWidth);
-        }
-
-        wStepname.selectAll();
-
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    logDebug(BaseMessages.getString(PKG, "LucidDBStreamingLoaderDialog.Log.GettingKeyInfo"));
+    
+    if (input.getDatabaseMeta() != null)
+      wConnection.setText(input.getDatabaseMeta().getName());
+    else {
+      if (transMeta.nrDatabases() == 1) {
+        wConnection.setText(transMeta.getDatabase(0).getName());
+      }
     }
+    if (input.getSchemaName() != null)
+      wSchema.setText(input.getSchemaName());
+    if (input.getTableName() != null)
+      wTable.setText(input.getTableName());
+    if (input.getHost() != null)
+      wHost.setText("" + input.getHost());
+    if (input.getPort() != null)
+      wPort.setText("" + input.getPort());
+    if (input.getOperation() != null) {
+
+      wOperation.select(wOperation.indexOf(input.getOperation()));
+      if (BaseMessages.getString(PKG, "LucidDBStreamingLoaderDialog.Operation.CCombo.Item2").equals(input.getOperation())) {
+        wTabFolder.setSelection(1);
+      } else {
+        wTabFolder.setSelection(0);
+      }
+    }
+
+    if (input.getCustom_sql() != null)
+      wCustomTb.setText(input.getCustom_sql());
+
+    if (input.getFieldTableForKeys() != null) {
+
+      int nrKeyMapping = input.getFieldTableForKeys().length;
+      wKeysTb.table.setItemCount(nrKeyMapping);
+      for (int i = 0; i < nrKeyMapping; i++) {
+        TableItem item = wKeysTb.table.getItem(i);
+        if (input.getFieldTableForKeys()[i] != null)
+          item.setText(1, input.getFieldTableForKeys()[i]);
+        if (input.getFieldStreamForKeys()[i] != null)
+          item.setText(2, input.getFieldStreamForKeys()[i]);
+      }
+    }
+
+    wKeysTb.setRowNums();
+    wKeysTb.optWidth(true);
+
+    if (input.getFieldTableForFields() != null) {
+
+      int nrFieldMapping = input.getFieldTableForFields().length;
+
+      wFieldsTb.table.setItemCount(nrFieldMapping);
+      for (int i = 0; i < nrFieldMapping; i++) {
+
+        TableItem item = wFieldsTb.table.getItem(i);
+        if (input.getFieldTableForFields()[i] != null)
+          item.setText(1, input.getFieldTableForFields()[i]);
+        if (input.getFieldStreamForFields()[i] != null)
+          item.setText(2, input.getFieldStreamForFields()[i]);
+        if (input.getInsOrUptFlag() != null) {
+          item.setText(3, input.getInsOrUptFlag()[i] ? "Y" : "N");
+        } else {
+          item.setText(3, "N");
+        }
+      }
+    }
+
+    wFieldsTb.setRowNums();
+    wFieldsTb.optWidth(true);
+
+    if (input.getTabIsEnable().length != 0) {
+      wKeysTab.getControl().setEnabled(input.getTabIsEnable()[0]);
+      wFieldsTab.getControl().setEnabled(input.getTabIsEnable()[1]);
+      wCustomTab.getControl().setEnabled(input.getTabIsEnable()[2]);
+    }
+
+    int fieldWidth = wFieldsTb.table.getColumn(3).getWidth();
+    if (input.getOperation() != null && "INSERT".equalsIgnoreCase(wOperation.getItem(wOperation.getSelectionIndex()))) {
+      wFieldsTb.table.getColumn(3).setWidth(0);
+    } else {
+      wFieldsTb.table.getColumn(3).setWidth(fieldWidth);
+    }
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 
     /**
      * Reads in the fields from the previous steps and from the ONE next step

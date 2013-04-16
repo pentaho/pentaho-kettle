@@ -1012,61 +1012,62 @@ public class XMLInputStreamDialog extends BaseStepDialog implements StepDialogIn
 //		//###
 //	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData() {
-		wStepname.setText(stepname);
-		wFilename.setText(Const.NVL(inputMeta.getFilename(),""));
-		wAddResult.setSelection(inputMeta.isAddResultFile());
-		wRowsToSkip.setText(Const.NVL(inputMeta.getNrRowsToSkip(),"0"));
-		wLimit.setText(Const.NVL(inputMeta.getRowLimit(),"0"));
-		wDefaultStringLen.setText(Const.NVL(inputMeta.getDefaultStringLen(),XMLInputStreamMeta.DEFAULT_STRING_LEN));
-		wEncoding.setText(Const.NVL(inputMeta.getEncoding(),XMLInputStreamMeta.DEFAULT_ENCODING));
-		wEnableNamespaces.setSelection(inputMeta.isEnableNamespaces());
-		wEnableTrim.setSelection(inputMeta.isEnableTrim());
-		
-		wIncludeFilename.setSelection(inputMeta.isIncludeFilenameField());
-		wFilenameField.setText(Const.NVL(inputMeta.getFilenameField(),""));
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    wStepname.setText(stepname);
+    wFilename.setText(Const.NVL(inputMeta.getFilename(), ""));
+    wAddResult.setSelection(inputMeta.isAddResultFile());
+    wRowsToSkip.setText(Const.NVL(inputMeta.getNrRowsToSkip(), "0"));
+    wLimit.setText(Const.NVL(inputMeta.getRowLimit(), "0"));
+    wDefaultStringLen.setText(Const.NVL(inputMeta.getDefaultStringLen(), XMLInputStreamMeta.DEFAULT_STRING_LEN));
+    wEncoding.setText(Const.NVL(inputMeta.getEncoding(), XMLInputStreamMeta.DEFAULT_ENCODING));
+    wEnableNamespaces.setSelection(inputMeta.isEnableNamespaces());
+    wEnableTrim.setSelection(inputMeta.isEnableTrim());
 
-		wIncludeRowNumber.setSelection(inputMeta.isIncludeRowNumberField());
-		wRowNumberField.setText(Const.NVL(inputMeta.getRowNumberField(),""));
+    wIncludeFilename.setSelection(inputMeta.isIncludeFilenameField());
+    wFilenameField.setText(Const.NVL(inputMeta.getFilenameField(), ""));
 
-		wIncludeXmlDataTypeNumeric.setSelection(inputMeta.isIncludeXmlDataTypeNumericField());
-		wXmlDataTypeNumericField.setText(Const.NVL(inputMeta.getXmlDataTypeNumericField(),""));
+    wIncludeRowNumber.setSelection(inputMeta.isIncludeRowNumberField());
+    wRowNumberField.setText(Const.NVL(inputMeta.getRowNumberField(), ""));
 
-		wIncludeXmlDataTypeDescription.setSelection(inputMeta.isIncludeXmlDataTypeDescriptionField());
-		wXmlDataTypeDescriptionField.setText(Const.NVL(inputMeta.getXmlDataTypeDescriptionField(),""));
+    wIncludeXmlDataTypeNumeric.setSelection(inputMeta.isIncludeXmlDataTypeNumericField());
+    wXmlDataTypeNumericField.setText(Const.NVL(inputMeta.getXmlDataTypeNumericField(), ""));
 
-		wIncludeXmlLocationLine.setSelection(inputMeta.isIncludeXmlLocationLineField());
-		wXmlLocationLineField.setText(Const.NVL(inputMeta.getXmlLocationLineField(),""));
-		
-		wIncludeXmlLocationColumn.setSelection(inputMeta.isIncludeXmlLocationColumnField());
-		wXmlLocationColumnField.setText(Const.NVL(inputMeta.getXmlLocationColumnField(),""));
-		
-		wIncludeXmlElementID.setSelection(inputMeta.isIncludeXmlElementIDField());
-		wXmlElementIDField.setText(Const.NVL(inputMeta.getXmlElementIDField(),""));
+    wIncludeXmlDataTypeDescription.setSelection(inputMeta.isIncludeXmlDataTypeDescriptionField());
+    wXmlDataTypeDescriptionField.setText(Const.NVL(inputMeta.getXmlDataTypeDescriptionField(), ""));
 
-		wIncludeXmlParentElementID.setSelection(inputMeta.isIncludeXmlParentElementIDField());
-		wXmlParentElementIDField.setText(Const.NVL(inputMeta.getXmlParentElementIDField(),""));
+    wIncludeXmlLocationLine.setSelection(inputMeta.isIncludeXmlLocationLineField());
+    wXmlLocationLineField.setText(Const.NVL(inputMeta.getXmlLocationLineField(), ""));
 
-		wIncludeXmlElementLevel.setSelection(inputMeta.isIncludeXmlElementLevelField());
-		wXmlElementLevelField.setText(Const.NVL(inputMeta.getXmlElementLevelField(),""));
+    wIncludeXmlLocationColumn.setSelection(inputMeta.isIncludeXmlLocationColumnField());
+    wXmlLocationColumnField.setText(Const.NVL(inputMeta.getXmlLocationColumnField(), ""));
 
-		wIncludeXmlPath.setSelection(inputMeta.isIncludeXmlPathField());
-		wXmlPathField.setText(Const.NVL(inputMeta.getXmlPathField(),""));
+    wIncludeXmlElementID.setSelection(inputMeta.isIncludeXmlElementIDField());
+    wXmlElementIDField.setText(Const.NVL(inputMeta.getXmlElementIDField(), ""));
 
-		wIncludeXmlParentPath.setSelection(inputMeta.isIncludeXmlParentPathField());
-		wXmlParentPathField.setText(Const.NVL(inputMeta.getXmlParentPathField(),""));
+    wIncludeXmlParentElementID.setSelection(inputMeta.isIncludeXmlParentElementIDField());
+    wXmlParentElementIDField.setText(Const.NVL(inputMeta.getXmlParentElementIDField(), ""));
 
-		wIncludeXmlDataName.setSelection(inputMeta.isIncludeXmlDataNameField());
-		wXmlDataNameField.setText(Const.NVL(inputMeta.getXmlDataNameField(),""));
+    wIncludeXmlElementLevel.setSelection(inputMeta.isIncludeXmlElementLevelField());
+    wXmlElementLevelField.setText(Const.NVL(inputMeta.getXmlElementLevelField(), ""));
 
-		wIncludeXmlDataValue.setSelection(inputMeta.isIncludeXmlDataValueField());
-		wXmlDataValueField.setText(Const.NVL(inputMeta.getXmlDataValueField(),""));
+    wIncludeXmlPath.setSelection(inputMeta.isIncludeXmlPathField());
+    wXmlPathField.setText(Const.NVL(inputMeta.getXmlPathField(), ""));
 
-		wStepname.selectAll();
-	}
+    wIncludeXmlParentPath.setSelection(inputMeta.isIncludeXmlParentPathField());
+    wXmlParentPathField.setText(Const.NVL(inputMeta.getXmlParentPathField(), ""));
+
+    wIncludeXmlDataName.setSelection(inputMeta.isIncludeXmlDataNameField());
+    wXmlDataNameField.setText(Const.NVL(inputMeta.getXmlDataNameField(), ""));
+
+    wIncludeXmlDataValue.setSelection(inputMeta.isIncludeXmlDataValueField());
+    wXmlDataValueField.setText(Const.NVL(inputMeta.getXmlDataValueField(), ""));
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 
 	private void cancel() {
 		stepname = null;

@@ -227,20 +227,21 @@ public class SocketReaderDialog extends BaseStepDialog implements StepDialogInte
 		return stepname;
 	}
 	
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		if (Const.isEmpty(wStepname.getText())) return;
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (Const.isEmpty(wStepname.getText()))
+      return;
 
-        wHostname.setText(Const.NVL(input.getHostname(), ""));
-        wPort.setText(Const.NVL(input.getPort(), ""));
-        wBufferSize.setText(Const.NVL(input.getBufferSize(), ""));
-        wCompressed.setSelection(input.isCompressed());
-        
-        wStepname.selectAll();
-	}
+    wHostname.setText(Const.NVL(input.getHostname(), ""));
+    wPort.setText(Const.NVL(input.getPort(), ""));
+    wBufferSize.setText(Const.NVL(input.getBufferSize(), ""));
+    wCompressed.setSelection(input.isCompressed());
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

@@ -764,48 +764,48 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
    *
    * @param in The ElasticSearchBulkMeta object to obtain the data from.
    */
-  public void getData(ElasticSearchBulkMeta in)
-  {
-    wStepname.selectAll();
-    
-    wIndex.setText(Const.NVL(in.getIndex(),""));
-    wType.setText(Const.NVL(in.getType(),""));
-    
+  public void getData(ElasticSearchBulkMeta in) {
+    wIndex.setText(Const.NVL(in.getIndex(), ""));
+    wType.setText(Const.NVL(in.getType(), ""));
+
     wBatchSize.setText(Const.NVL(in.getBatchSize(), "" + ElasticSearchBulkMeta.DEFAULT_BATCH_SIZE));
-    
+
     wStopOnError.setSelection(in.isStopOnError());
-    
+
     wTimeOut.setText(Const.NVL(in.getTimeOut(), ""));
     wTimeOut.setTimeUnit(in.getTimeoutUnit());
-    
+
     wIdInField.setText(Const.NVL(in.getIdInField(), ""));
-    
-    wIsOverwrite.setSelection( in.isOverWriteIfSameId() );
-    
+
+    wIsOverwrite.setSelection(in.isOverWriteIfSameId());
+
     wIsJson.setSelection(in.isJsonInsert());
-    
-    wJsonField.setText( Const.NVL(in.getJsonField(), "")); 
+
+    wJsonField.setText(Const.NVL(in.getJsonField(), ""));
     wJsonField.setEnabled(wIsJson.getSelection());//listener not working here
-    
+
     wUseOutput.setSelection(in.isUseOutput());
-    
-    wIdOutField.setText( Const.NVL(in.getIdOutField(), "") ); 
+
+    wIdOutField.setText(Const.NVL(in.getIdOutField(), ""));
     wIdOutField.setEnabled(wUseOutput.getSelection());//listener not working here
-    
+
     //Fields
     mapToTableView(model.getFields(), wFields);
-    
+
     //Servers
-    for(InetSocketTransportAddress server : model.getServers()){
+    for (InetSocketTransportAddress server : model.getServers()) {
       String addr = server.address().getAddress().getHostAddress();
-      int port = server.address().getPort(); 
+      int port = server.address().getPort();
       wServers.add(addr, "" + port);
     }
     wServers.removeEmptyRows();
     wServers.setRowNums();
-    
+
     //Settings
     mapToTableView(model.getSettings(), wSettings);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
   }
 
   private void mapToTableView(Map<String,String> map, TableView table ) {

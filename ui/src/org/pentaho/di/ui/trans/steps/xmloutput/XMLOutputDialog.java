@@ -991,45 +991,52 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
     }
 
 
-    /**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		if (input.getFileName()      != null) wFilename.setText(input.getFileName());
-		if (input.getExtension()     != null) wExtension.setText(input.getExtension());
-		wDoNotOpenNewFileInit.setSelection(input.isDoNotOpenNewFileInit());
-		wServletOutput.setSelection( input.isServletOutput() );
-		setFlagsServletOption();
-		
-        if (input.getEncoding()      != null) wEncoding.setText(input.getEncoding());
-        if (input.getNameSpace()     != null) wNameSpace.setText(input.getNameSpace());
-        if (input.getMainElement()   != null) wMainElement.setText(input.getMainElement());
-        if (input.getRepeatElement() != null) wRepeatElement.setText(input.getRepeatElement());
-        
-		wSplitEvery.setText(""+input.getSplitEvery());
+  /**
+  * Copy information from the meta-data input to the dialog fields.
+  */
+  public void getData() {
+    if (input.getFileName() != null)
+      wFilename.setText(input.getFileName());
+    if (input.getExtension() != null)
+      wExtension.setText(input.getExtension());
+    wDoNotOpenNewFileInit.setSelection(input.isDoNotOpenNewFileInit());
+    wServletOutput.setSelection(input.isServletOutput());
+    setFlagsServletOption();
 
-		wZipped.setSelection(input.isZipped());
-		wOmitNullValues.setSelection(input.isOmitNullValues());
-		wAddDate.setSelection(input.isDateInFilename());
-		wAddTime.setSelection(input.isTimeInFilename());
-		wAddStepnr.setSelection(input.isStepNrInFilename());
+    if (input.getEncoding() != null)
+      wEncoding.setText(input.getEncoding());
+    if (input.getNameSpace() != null)
+      wNameSpace.setText(input.getNameSpace());
+    if (input.getMainElement() != null)
+      wMainElement.setText(input.getMainElement());
+    if (input.getRepeatElement() != null)
+      wRepeatElement.setText(input.getRepeatElement());
 
-		wAddToResult.setSelection(input.isAddToResultFiles());
-		
-		if (input.getDateTimeFormat()!= null) wDateTimeFormat.setText( input.getDateTimeFormat() );
-		wSpecifyFormat.setSelection(input.isSpecifyFormat());
-		
-		if(isDebug()) logDebug(BaseMessages.getString(PKG, "XMLOutputDialog.Log.GettingFieldsInfo"));
-		
-		for (int i=0;i<input.getOutputFields().length;i++)
-		{
-		    XMLField field = input.getOutputFields()[i];
+    wSplitEvery.setText("" + input.getSplitEvery());
 
-			TableItem item = wFields.table.getItem(i);
-			int index=1;
-			
-			if (field.getFieldName()!=null) item.setText(index++, field.getFieldName());
+    wZipped.setSelection(input.isZipped());
+    wOmitNullValues.setSelection(input.isOmitNullValues());
+    wAddDate.setSelection(input.isDateInFilename());
+    wAddTime.setSelection(input.isTimeInFilename());
+    wAddStepnr.setSelection(input.isStepNrInFilename());
+
+    wAddToResult.setSelection(input.isAddToResultFiles());
+
+    if (input.getDateTimeFormat() != null)
+      wDateTimeFormat.setText(input.getDateTimeFormat());
+    wSpecifyFormat.setSelection(input.isSpecifyFormat());
+
+    if (isDebug())
+      logDebug(BaseMessages.getString(PKG, "XMLOutputDialog.Log.GettingFieldsInfo"));
+
+    for (int i = 0; i < input.getOutputFields().length; i++) {
+      XMLField field = input.getOutputFields()[i];
+
+      TableItem item = wFields.table.getItem(i);
+      int index = 1;
+
+      if (field.getFieldName() != null)
+        item.setText(index++, field.getFieldName());
       if (field.getElementName() != null) {
         item.setText(index++, field.getElementName());
       } else {
@@ -1042,20 +1049,43 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
         }
       }
       item.setText(index++, field.getContentType().name());
-			item.setText(index++, field.getTypeDesc());
-			if (field.getFormat()!=null) item.setText(index++, field.getFormat()); else index++;
-			if (field.getLength()>=0) item.setText(index++, ""+field.getLength()); else index++;
-			if (field.getPrecision()>=0) item.setText(index++, ""+field.getPrecision()); else index++;
-			if (field.getCurrencySymbol()!=null) item.setText(index++, field.getCurrencySymbol()); else index++;
-			if (field.getDecimalSymbol()!=null) item.setText(index++, field.getDecimalSymbol()); else index++;
-			if (field.getGroupingSymbol()!=null) item.setText(index++, field.getGroupingSymbol()); else index++;
-			if (field.getNullString()!=null) item.setText(index++, field.getNullString()); else index++;
-		}
-		
-		wFields.optWidth(true);
-		wStepname.selectAll();
-	}
-	
+      item.setText(index++, field.getTypeDesc());
+      if (field.getFormat() != null)
+        item.setText(index++, field.getFormat());
+      else
+        index++;
+      if (field.getLength() >= 0)
+        item.setText(index++, "" + field.getLength());
+      else
+        index++;
+      if (field.getPrecision() >= 0)
+        item.setText(index++, "" + field.getPrecision());
+      else
+        index++;
+      if (field.getCurrencySymbol() != null)
+        item.setText(index++, field.getCurrencySymbol());
+      else
+        index++;
+      if (field.getDecimalSymbol() != null)
+        item.setText(index++, field.getDecimalSymbol());
+      else
+        index++;
+      if (field.getGroupingSymbol() != null)
+        item.setText(index++, field.getGroupingSymbol());
+      else
+        index++;
+      if (field.getNullString() != null)
+        item.setText(index++, field.getNullString());
+      else
+        index++;
+    }
+
+    wFields.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
+
 	private void cancel()
 	{
 		stepname=null;

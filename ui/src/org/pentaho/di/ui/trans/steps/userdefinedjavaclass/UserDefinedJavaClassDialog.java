@@ -1110,7 +1110,8 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 		wParameters.setRowNums();
 		wParameters.optWidth(true);
 
-		wStepname.selectAll();
+    wStepname.selectAll();
+    wStepname.setFocus();
 	}
 
 	private void refresh() {

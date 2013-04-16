@@ -313,18 +313,23 @@ public class CreditCardValidatorDialog extends BaseStepDialog implements StepDia
 		return stepname;
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		if (input.getDynamicField() !=null)   wFieldName.setText(input.getDynamicField());
-		wgetOnlyDigits.setSelection(input.isOnlyDigits());
-		if (input.getResultFieldName()!=null)   wResult.setText(input.getResultFieldName());
-		if (input.getCardType()!=null)   wFileType.setText(input.getCardType());
-		if (input.getNotValidMsg()!=null)   wNotValidMsg.setText(input.getNotValidMsg());
-		wStepname.selectAll();
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (input.getDynamicField() != null)
+      wFieldName.setText(input.getDynamicField());
+    wgetOnlyDigits.setSelection(input.isOnlyDigits());
+    if (input.getResultFieldName() != null)
+      wResult.setText(input.getResultFieldName());
+    if (input.getCardType() != null)
+      wFileType.setText(input.getCardType());
+    if (input.getNotValidMsg() != null)
+      wNotValidMsg.setText(input.getNotValidMsg());
+    
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

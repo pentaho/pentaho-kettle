@@ -570,31 +570,42 @@ public class MailValidatorDialog extends BaseStepDialog implements StepDialogInt
 		activedynamicDefaultSMTP();
 	}
 	
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		if (input.getEmailField()!=null)   wemailFieldName.setText(input.getEmailField());
-		if (input.getResultFieldName()!=null)   wResult.setText(input.getResultFieldName());
-		
-		wResultAsString.setSelection(input.isResultAsString());
-		if (input.getEMailValideMsg()!=null)   wResultStringTrue.setText(input.getEMailValideMsg());
-		if (input.getEMailNotValideMsg()!=null)   wResultStringFalse.setText(input.getEMailNotValideMsg());
-		if (input.getErrorsField()!=null)   wErrorMsg.setText(input.getErrorsField());
-		if (input.getTimeOut()!=null) {
-			int i=Const.toInt(input.getTimeOut(), 0);
-			if(i==0) wTimeOut.setText("0");
-			else wTimeOut.setText(input.getTimeOut());
-		}
-		wSMTPCheck.setSelection(input.isSMTPCheck());
-		if (input.getDefaultSMTP()!=null)   wDefaultSMTP.setText(input.getDefaultSMTP());
-		if (input.geteMailSender()!=null)   weMailSender.setText(input.geteMailSender());
-		wdynamicDefaultSMTP.setSelection(input.isdynamicDefaultSMTP());
-		if(input.getDefaultSMTPField()!=null) wdefaultSMTPField.setText(input.getDefaultSMTPField());
-		
-		wStepname.selectAll();
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (input.getEmailField() != null)
+      wemailFieldName.setText(input.getEmailField());
+    if (input.getResultFieldName() != null)
+      wResult.setText(input.getResultFieldName());
+
+    wResultAsString.setSelection(input.isResultAsString());
+    if (input.getEMailValideMsg() != null)
+      wResultStringTrue.setText(input.getEMailValideMsg());
+    if (input.getEMailNotValideMsg() != null)
+      wResultStringFalse.setText(input.getEMailNotValideMsg());
+    if (input.getErrorsField() != null)
+      wErrorMsg.setText(input.getErrorsField());
+    if (input.getTimeOut() != null) {
+      int i = Const.toInt(input.getTimeOut(), 0);
+      if (i == 0)
+        wTimeOut.setText("0");
+      else
+        wTimeOut.setText(input.getTimeOut());
+    }
+    wSMTPCheck.setSelection(input.isSMTPCheck());
+    if (input.getDefaultSMTP() != null)
+      wDefaultSMTP.setText(input.getDefaultSMTP());
+    if (input.geteMailSender() != null)
+      weMailSender.setText(input.geteMailSender());
+    wdynamicDefaultSMTP.setSelection(input.isdynamicDefaultSMTP());
+    if (input.getDefaultSMTPField() != null)
+      wdefaultSMTPField.setText(input.getDefaultSMTPField());
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
+
 	private void activeResultAsString()
 	{
 		wlResultStringFalse.setEnabled(wResultAsString.getSelection());

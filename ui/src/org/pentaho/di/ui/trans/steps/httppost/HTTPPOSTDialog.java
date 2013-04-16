@@ -956,56 +956,69 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 		wlUrl.setEnabled(!wUrlInField.getSelection());
 		wUrl.setEnabled(!wUrlInField.getSelection());       
 	}
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		int i;
-		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "HTTPPOSTDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
-		
-		if (input.getArgumentField()!=null)
-		{
-			for (i=0;i<input.getArgumentField().length;i++)
-			{
-				TableItem item = wFields.table.getItem(i);
-				if (input.getArgumentField()[i]      !=null) item.setText(1, input.getArgumentField()[i]);
-				if (input.getArgumentParameter()[i]  !=null) item.setText(2, input.getArgumentParameter()[i]);
-				item.setText(3, (input.getArgumentHeader()[i]) ? YES : NO );
-			}
-		}
-		if (input.getQueryField()!=null)
-		{
-			for (i=0;i<input.getQueryField().length;i++)
-			{
-				TableItem item = wQuery.table.getItem(i);
-				if (input.getQueryField()[i]      !=null) item.setText(1, input.getQueryField()[i]);
-				if (input.getQueryParameter()[i]  !=null) item.setText(2, input.getQueryParameter()[i]);
-			}
-		}
-		if (input.getUrl() !=null)      wUrl.setText(input.getUrl());
-        wUrlInField.setSelection(input.isUrlInField());
-        if (input.getUrlField() !=null) wUrlField.setText(input.getUrlField());
-        if (input.getRequestEntity() !=null)      wrequestEntity.setText(input.getRequestEntity());
-		if (input.getFieldName()!=null) wResult.setText(input.getFieldName());
-		if (input.getResultCodeFieldName()!=null) wResultCode.setText(input.getResultCodeFieldName());
-		if (input.getResponseTimeFieldName()!=null) wResponseTime.setText(input.getResponseTimeFieldName());
-		if (input.getEncoding()!=null) wEncoding.setText(input.getEncoding());
-		wPostAFile.setSelection(input.isPostAFile());
-		
-	    if(input.getHttpLogin() != null) wHttpLogin.setText(input.getHttpLogin());
-	    if(input.getHttpPassword() != null) wHttpPassword.setText(input.getHttpPassword());
-	    if(input.getProxyHost() != null) wProxyHost.setText(input.getProxyHost());
-	    if(input.getProxyPort() != null) wProxyPort.setText(input.getProxyPort());
-		
-	    wSocketTimeOut.setText(Const.NVL(input.getSocketTimeout(), ""));
-	    wConnectionTimeOut.setText(Const.NVL(input.getConnectionTimeout(), ""));
-	    wCloseIdleConnectionsTime.setText(Const.NVL(input.getCloseIdleConnectionsTime(), ""));
-	    
-		wFields.setRowNums();
-		wFields.optWidth(true);
-		wStepname.selectAll();
-	}
+
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (log.isDebug())
+      logDebug(BaseMessages.getString(PKG, "HTTPPOSTDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+
+    if (input.getArgumentField() != null) {
+      for (int i = 0; i < input.getArgumentField().length; i++) {
+        TableItem item = wFields.table.getItem(i);
+        if (input.getArgumentField()[i] != null)
+          item.setText(1, input.getArgumentField()[i]);
+        if (input.getArgumentParameter()[i] != null)
+          item.setText(2, input.getArgumentParameter()[i]);
+        item.setText(3, (input.getArgumentHeader()[i]) ? YES : NO);
+      }
+    }
+    if (input.getQueryField() != null) {
+      for (int i = 0; i < input.getQueryField().length; i++) {
+        TableItem item = wQuery.table.getItem(i);
+        if (input.getQueryField()[i] != null)
+          item.setText(1, input.getQueryField()[i]);
+        if (input.getQueryParameter()[i] != null)
+          item.setText(2, input.getQueryParameter()[i]);
+      }
+    }
+    if (input.getUrl() != null)
+      wUrl.setText(input.getUrl());
+    wUrlInField.setSelection(input.isUrlInField());
+    if (input.getUrlField() != null)
+      wUrlField.setText(input.getUrlField());
+    if (input.getRequestEntity() != null)
+      wrequestEntity.setText(input.getRequestEntity());
+    if (input.getFieldName() != null)
+      wResult.setText(input.getFieldName());
+    if (input.getResultCodeFieldName() != null)
+      wResultCode.setText(input.getResultCodeFieldName());
+    if (input.getResponseTimeFieldName() != null)
+      wResponseTime.setText(input.getResponseTimeFieldName());
+    if (input.getEncoding() != null)
+      wEncoding.setText(input.getEncoding());
+    wPostAFile.setSelection(input.isPostAFile());
+
+    if (input.getHttpLogin() != null)
+      wHttpLogin.setText(input.getHttpLogin());
+    if (input.getHttpPassword() != null)
+      wHttpPassword.setText(input.getHttpPassword());
+    if (input.getProxyHost() != null)
+      wProxyHost.setText(input.getProxyHost());
+    if (input.getProxyPort() != null)
+      wProxyPort.setText(input.getProxyPort());
+
+    wSocketTimeOut.setText(Const.NVL(input.getSocketTimeout(), ""));
+    wConnectionTimeOut.setText(Const.NVL(input.getConnectionTimeout(), ""));
+    wCloseIdleConnectionsTime.setText(Const.NVL(input.getCloseIdleConnectionsTime(), ""));
+
+    wFields.setRowNums();
+    wFields.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

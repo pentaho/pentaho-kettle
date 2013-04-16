@@ -635,60 +635,68 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		wlFailMultiple.setEnabled(!wCache.getSelection());
     }
 
-    /**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		int i;
-		logDebug(BaseMessages.getString(PKG, "DatabaseLookupDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
-		
-		wCache.setSelection(input.isCached());
-		wCachesize.setText(""+input.getCacheSize()); //$NON-NLS-1$
-		wCacheLoadAll.setSelection(input.isLoadingAllDataInCache());
-		
-		if (input.getStreamKeyField1()!=null)
-		for (i=0;i<input.getStreamKeyField1().length;i++)
-		{
-			TableItem item = wKey.table.getItem(i);
-			if (input.getTableKeyField()[i]   !=null) item.setText(1, input.getTableKeyField()[i]);
-			if (input.getKeyCondition()[i]!=null) item.setText(2, input.getKeyCondition()[i]);
-			if (input.getStreamKeyField1()[i]         !=null) item.setText(3, input.getStreamKeyField1()[i]);
-			if (input.getStreamKeyField2()[i]        !=null) item.setText(4, input.getStreamKeyField2()[i]);
-		}
-		
-		if (input.getReturnValueField()!=null)
-		for (i=0;i<input.getReturnValueField().length;i++)
-		{
-			TableItem item = wReturn.table.getItem(i);
-			if (input.getReturnValueField()[i]!=null     ) item.setText(1, input.getReturnValueField()[i]);
-			if (input.getReturnValueNewName()[i]!=null && !input.getReturnValueNewName()[i].equals(input.getReturnValueField()[i]))
-				item.setText(2, input.getReturnValueNewName()[i]);
-			
-			if (input.getReturnValueDefault()[i]!=null  ) item.setText(3, input.getReturnValueDefault()[i]);
-			item.setText(4, ValueMeta.getTypeDesc(input.getReturnValueDefaultType()[i]));
-		}
-		
-        if (input.getSchemaName()!=null) wSchema.setText( input.getSchemaName() );
-		if (input.getTablename()!=null) wTable.setText( input.getTablename() );
-		if (input.getDatabaseMeta()!=null)   wConnection.setText(input.getDatabaseMeta().getName());
-		else if (transMeta.nrDatabases()==1)
-		{
-			wConnection.setText( transMeta.getDatabase(0).getName() );
-		}
-		if (input.getOrderByClause()!=null)      wOrderBy.setText(input.getOrderByClause());
-		wFailMultiple.setSelection(input.isFailingOnMultipleResults());
-		wEatRows.setSelection(input.isEatingRowOnLookupFailure());
-        
-		wStepname.selectAll();
-		wKey.setRowNums();
-		wKey.optWidth(true);
-		wReturn.setRowNums();
-		wReturn.optWidth(true);
-        
-        enableFields();
-	}
-	
+  /**
+  * Copy information from the meta-data input to the dialog fields.
+  */
+  public void getData() {
+    logDebug(BaseMessages.getString(PKG, "DatabaseLookupDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+
+    wCache.setSelection(input.isCached());
+    wCachesize.setText("" + input.getCacheSize()); //$NON-NLS-1$
+    wCacheLoadAll.setSelection(input.isLoadingAllDataInCache());
+
+    if (input.getStreamKeyField1() != null)
+      for (int i = 0; i < input.getStreamKeyField1().length; i++) {
+        TableItem item = wKey.table.getItem(i);
+        if (input.getTableKeyField()[i] != null)
+          item.setText(1, input.getTableKeyField()[i]);
+        if (input.getKeyCondition()[i] != null)
+          item.setText(2, input.getKeyCondition()[i]);
+        if (input.getStreamKeyField1()[i] != null)
+          item.setText(3, input.getStreamKeyField1()[i]);
+        if (input.getStreamKeyField2()[i] != null)
+          item.setText(4, input.getStreamKeyField2()[i]);
+      }
+
+    if (input.getReturnValueField() != null)
+      for (int i = 0; i < input.getReturnValueField().length; i++) {
+        TableItem item = wReturn.table.getItem(i);
+        if (input.getReturnValueField()[i] != null)
+          item.setText(1, input.getReturnValueField()[i]);
+        if (input.getReturnValueNewName()[i] != null
+            && !input.getReturnValueNewName()[i].equals(input.getReturnValueField()[i]))
+          item.setText(2, input.getReturnValueNewName()[i]);
+
+        if (input.getReturnValueDefault()[i] != null)
+          item.setText(3, input.getReturnValueDefault()[i]);
+        item.setText(4, ValueMeta.getTypeDesc(input.getReturnValueDefaultType()[i]));
+      }
+
+    if (input.getSchemaName() != null)
+      wSchema.setText(input.getSchemaName());
+    if (input.getTablename() != null)
+      wTable.setText(input.getTablename());
+    if (input.getDatabaseMeta() != null)
+      wConnection.setText(input.getDatabaseMeta().getName());
+    else if (transMeta.nrDatabases() == 1) {
+      wConnection.setText(transMeta.getDatabase(0).getName());
+    }
+    if (input.getOrderByClause() != null)
+      wOrderBy.setText(input.getOrderByClause());
+    wFailMultiple.setSelection(input.isFailingOnMultipleResults());
+    wEatRows.setSelection(input.isEatingRowOnLookupFailure());
+
+    wKey.setRowNums();
+    wKey.optWidth(true);
+    wReturn.setRowNums();
+    wReturn.optWidth(true);
+
+    enableFields();
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
+
 	private void cancel()
 	{
 		stepname=null;

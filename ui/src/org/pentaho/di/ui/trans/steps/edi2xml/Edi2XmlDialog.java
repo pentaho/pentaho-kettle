@@ -197,12 +197,14 @@ public class Edi2XmlDialog extends BaseStepDialog implements StepDialogInterface
 		return stepname;
 	}
 
-	// Read data and place it in the dialog
-	public void getData() {
-		wStepname.selectAll();
-		wXmlField.setText(Const.NVL(input.getOutputField(), ""));
-		wEdiField.setText(Const.NVL(input.getInputField(), ""));
-	}
+  // Read data and place it in the dialog
+  public void getData() {
+    wXmlField.setText(Const.NVL(input.getOutputField(), ""));
+    wEdiField.setText(Const.NVL(input.getInputField(), ""));
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 
 	private void cancel() {
 		stepname = null;

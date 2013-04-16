@@ -404,28 +404,30 @@ public class AutoDocDialog extends BaseStepDialog implements StepDialogInterface
 		getData(inputMeta);
 		setFlags();
 	}
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData(AutoDocMeta inputMeta)
-	{
-		wFilenameField.setText(Const.NVL(inputMeta.getFilenameField(), ""));
-		wFileTypeField.setText(Const.NVL(inputMeta.getFileTypeField(), ""));
-    wTargetFilename.setText(Const.NVL(inputMeta.getTargetFilename(), ""));
-		wOutputType.setText(inputMeta.getOutputType().name());
-		
-		wInclName.setSelection(inputMeta.isIncludingName());
-		wInclDesc.setSelection(inputMeta.isIncludingDescription());
-		wInclExtDesc.setSelection(inputMeta.isIncludingExtendedDescription());
-		wInclCreated.setSelection(inputMeta.isIncludingCreated());
-		wInclModified.setSelection(inputMeta.isIncludingModified());
-		wInclImage.setSelection(inputMeta.isIncludingImage());
-		wInclLogging.setSelection(inputMeta.isIncludingLoggingConfiguration());
-		wInclLastExecResult.setSelection(inputMeta.isIncludingLastExecutionResult());
 
-		wStepname.setText(stepname);
-		wStepname.selectAll();
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData(AutoDocMeta inputMeta) {
+    wFilenameField.setText(Const.NVL(inputMeta.getFilenameField(), ""));
+    wFileTypeField.setText(Const.NVL(inputMeta.getFileTypeField(), ""));
+    wTargetFilename.setText(Const.NVL(inputMeta.getTargetFilename(), ""));
+    wOutputType.setText(inputMeta.getOutputType().name());
+
+    wInclName.setSelection(inputMeta.isIncludingName());
+    wInclDesc.setSelection(inputMeta.isIncludingDescription());
+    wInclExtDesc.setSelection(inputMeta.isIncludingExtendedDescription());
+    wInclCreated.setSelection(inputMeta.isIncludingCreated());
+    wInclModified.setSelection(inputMeta.isIncludingModified());
+    wInclImage.setSelection(inputMeta.isIncludingImage());
+    wInclLogging.setSelection(inputMeta.isIncludingLoggingConfiguration());
+    wInclLastExecResult.setSelection(inputMeta.isIncludingLastExecutionResult());
+
+    wStepname.setText(stepname);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

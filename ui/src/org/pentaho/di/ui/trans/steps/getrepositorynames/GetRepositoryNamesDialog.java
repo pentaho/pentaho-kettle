@@ -522,6 +522,7 @@ public class GetRepositoryNamesDialog extends BaseStepDialog implements StepDial
     wInclRownumField.setText(Const.NVL(meta.getRowNumberField(), ""));
 
     wStepname.selectAll();
+    wStepname.setFocus();  
   }
 
   private void cancel() {

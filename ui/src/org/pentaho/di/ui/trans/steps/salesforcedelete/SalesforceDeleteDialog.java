@@ -611,27 +611,29 @@ public class SalesforceDeleteDialog extends BaseStepDialog implements StepDialog
 	}
  
 
-	/**
-	 * Read the data from the TextFileInputMeta object and show it in this
-	 * dialog.
-	 * 
-	 * @param in
-	 *            The SalesforceDeleteMeta object to obtain the data from.
-	 */
-	public void getData(SalesforceDeleteMeta in) 
-	{
-		wURL.setText(Const.NVL(in.getTargetURL(),""));
-		wUserName.setText(Const.NVL(in.getUserName(),""));
-		wPassword.setText(Const.NVL(in.getPassword(),""));
-		wBatchSize.setText(in.getBatchSize());
-		wModule.setText(Const.NVL(in.getModule(), "Account"));
-		if(in.getDeleteField()!=null) wDeleteField.setText(in.getDeleteField());
-		wBatchSize.setText("" + in.getBatchSize());
-		wTimeOut.setText(Const.NVL(in.getTimeOut(), SalesforceConnectionUtils.DEFAULT_TIMEOUT));
-		wUseCompression.setSelection(in.isUsingCompression());
-		wRollbackAllChangesOnError.setSelection(in.isRollbackAllChangesOnError());
-		wStepname.selectAll();
-	}
+  /**
+   * Read the data from the TextFileInputMeta object and show it in this
+   * dialog.
+   * 
+   * @param in
+   *            The SalesforceDeleteMeta object to obtain the data from.
+   */
+  public void getData(SalesforceDeleteMeta in) {
+    wURL.setText(Const.NVL(in.getTargetURL(), ""));
+    wUserName.setText(Const.NVL(in.getUserName(), ""));
+    wPassword.setText(Const.NVL(in.getPassword(), ""));
+    wBatchSize.setText(in.getBatchSize());
+    wModule.setText(Const.NVL(in.getModule(), "Account"));
+    if (in.getDeleteField() != null)
+      wDeleteField.setText(in.getDeleteField());
+    wBatchSize.setText("" + in.getBatchSize());
+    wTimeOut.setText(Const.NVL(in.getTimeOut(), SalesforceConnectionUtils.DEFAULT_TIMEOUT));
+    wUseCompression.setSelection(in.isUsingCompression());
+    wRollbackAllChangesOnError.setSelection(in.isRollbackAllChangesOnError());
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 
 	private void cancel() {
 		stepname = null;

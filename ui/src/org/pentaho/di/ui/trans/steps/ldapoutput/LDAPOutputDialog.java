@@ -1289,60 +1289,70 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 	}
 
 
-	/**
-	 * Read the data from the LDAPOutputMeta object and show it in this dialog.
-	 * 
-	 * @param in The LDAPOutputMeta object to obtain the data from.
-	 */
-	public void getData(LDAPOutputMeta in)
-	{
-		wProtocol.setText(Const.NVL(in.getProtocol(), LDAPConnection.getProtocolCode(LDAPConnection.PROTOCOL_LDAP)));
-		wsetTrustStore.setSelection(in.isUseCertificate());
-		if (in.getTrustStorePath()!=null) wTrustStorePath.setText(in.getTrustStorePath());
-		if (in.getTrustStorePassword()!=null) wTrustStorePassword.setText(in.getTrustStorePassword());
-		wTrustAll.setSelection(in.isTrustAllCertificates());
-		
-		wusingAuthentication.setSelection(in.UseAuthentication());
+  /**
+   * Read the data from the LDAPOutputMeta object and show it in this dialog.
+   * 
+   * @param in The LDAPOutputMeta object to obtain the data from.
+   */
+  public void getData(LDAPOutputMeta in) {
+    wProtocol.setText(Const.NVL(in.getProtocol(), LDAPConnection.getProtocolCode(LDAPConnection.PROTOCOL_LDAP)));
+    wsetTrustStore.setSelection(in.isUseCertificate());
+    if (in.getTrustStorePath() != null)
+      wTrustStorePath.setText(in.getTrustStorePath());
+    if (in.getTrustStorePassword() != null)
+      wTrustStorePassword.setText(in.getTrustStorePassword());
+    wTrustAll.setSelection(in.isTrustAllCertificates());
 
-		if (in.getHost() != null)  wHost.setText(in.getHost());
-		if (in.getUserName() != null)  wUserName.setText(in.getUserName());
-	    if (in.getPassword() != null)  wPassword.setText(in.getPassword());
-		if (in.getPort() != null)  wPort.setText(in.getPort());
-	    if (in.getDnField() != null)  wDnField.setText(in.getDnField());
-	    wFailIfNotExist.setSelection(in.isFailIfNotExist());
-		wOperation.setText(LDAPOutputMeta.getOperationTypeDesc(input.getOperationType()));
-		if(in.getMultiValuedSeparator()!=null)	wMultiValuedSeparator.setText(in.getMultiValuedSeparator());
-		if(in.getSearchBaseDN()!=null)	wBaseDN.setText(in.getSearchBaseDN());
-		
-		wReferral.setText(LDAPOutputMeta.getReferralTypeDesc(input.getReferralType()));
-		wDerefAliases.setText(LDAPOutputMeta.getDerefAliasesTypeDesc(input.getDerefAliasesType()));
-		
-		if(in.getOldDnFieldName()!=null)	wOldDnField.setText(in.getOldDnFieldName());
-		if(in.getNewDnFieldName()!=null)	wNewDnField.setText(in.getNewDnFieldName());
-		wDeleteRDN.setSelection(in.isDeleteRDN());
-		 
-		if (input.getUpdateLookup() != null)
-		{
-			for (int i = 0; i < input.getUpdateLookup().length; i++)
-			{
-				TableItem item = wReturn.table.getItem(i);
-				if (input.getUpdateLookup()[i] != null)
-					item.setText(1, input.getUpdateLookup()[i]);
-				if (input.getUpdateStream()[i] != null)
-					item.setText(2, input.getUpdateStream()[i]);
-				if (input.getUpdate()[i]==null||input.getUpdate()[i].booleanValue()) {
-					item.setText(3,"Y");
-				} else {
-					item.setText(3,"N");
-				}
-			}
-		}
+    wusingAuthentication.setSelection(in.UseAuthentication());
 
-		wReturn.removeEmptyRows();
-		wReturn.setRowNums();
-		wReturn.optWidth(true);
-		wStepname.selectAll();
-	}
+    if (in.getHost() != null)
+      wHost.setText(in.getHost());
+    if (in.getUserName() != null)
+      wUserName.setText(in.getUserName());
+    if (in.getPassword() != null)
+      wPassword.setText(in.getPassword());
+    if (in.getPort() != null)
+      wPort.setText(in.getPort());
+    if (in.getDnField() != null)
+      wDnField.setText(in.getDnField());
+    wFailIfNotExist.setSelection(in.isFailIfNotExist());
+    wOperation.setText(LDAPOutputMeta.getOperationTypeDesc(input.getOperationType()));
+    if (in.getMultiValuedSeparator() != null)
+      wMultiValuedSeparator.setText(in.getMultiValuedSeparator());
+    if (in.getSearchBaseDN() != null)
+      wBaseDN.setText(in.getSearchBaseDN());
+
+    wReferral.setText(LDAPOutputMeta.getReferralTypeDesc(input.getReferralType()));
+    wDerefAliases.setText(LDAPOutputMeta.getDerefAliasesTypeDesc(input.getDerefAliasesType()));
+
+    if (in.getOldDnFieldName() != null)
+      wOldDnField.setText(in.getOldDnFieldName());
+    if (in.getNewDnFieldName() != null)
+      wNewDnField.setText(in.getNewDnFieldName());
+    wDeleteRDN.setSelection(in.isDeleteRDN());
+
+    if (input.getUpdateLookup() != null) {
+      for (int i = 0; i < input.getUpdateLookup().length; i++) {
+        TableItem item = wReturn.table.getItem(i);
+        if (input.getUpdateLookup()[i] != null)
+          item.setText(1, input.getUpdateLookup()[i]);
+        if (input.getUpdateStream()[i] != null)
+          item.setText(2, input.getUpdateStream()[i]);
+        if (input.getUpdate()[i] == null || input.getUpdate()[i].booleanValue()) {
+          item.setText(3, "Y");
+        } else {
+          item.setText(3, "N");
+        }
+      }
+    }
+
+    wReturn.removeEmptyRows();
+    wReturn.setRowNums();
+    wReturn.optWidth(true);
+    
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 
 	private void cancel()
 	{

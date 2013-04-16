@@ -303,34 +303,39 @@ public class RandomCCNumberGeneratorDialog extends BaseStepDialog implements Ste
 		return stepname;
 	}
 	
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		wStepname.setText(stepname);
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    wStepname.setText(stepname);
 
-		for (int i=0;i<input.getFieldCCType().length;i++)
-		{
-			TableItem item = wFields.table.getItem(i);
-			String type = input.getFieldCCType()[i];
-			String len = input.getFieldCCLength()[i] ;
-			String size = input.getFieldCCSize()[i] ;
-			
-			if (type!=null) item.setText(1, type);
-			if (len!=null) item.setText(2, len);
-			if (size!=null) item.setText(3, size);
-		}
+    for (int i = 0; i < input.getFieldCCType().length; i++) {
+      TableItem item = wFields.table.getItem(i);
+      String type = input.getFieldCCType()[i];
+      String len = input.getFieldCCLength()[i];
+      String size = input.getFieldCCSize()[i];
 
-		wFields.setRowNums();
-		wFields.optWidth(true);
-		
-		if(input.getCardNumberFieldName()!=null) wCCNumberField.setText(input.getCardNumberFieldName());
-		if(input.getCardTypeFieldName()!=null) wCCTypeField.setText(input.getCardTypeFieldName());
-		if(input.getCardLengthFieldName()!=null) wCCLengthField.setText(input.getCardLengthFieldName());
-		
-		wStepname.selectAll();
-	}
+      if (type != null)
+        item.setText(1, type);
+      if (len != null)
+        item.setText(2, len);
+      if (size != null)
+        item.setText(3, size);
+    }
+
+    wFields.setRowNums();
+    wFields.optWidth(true);
+
+    if (input.getCardNumberFieldName() != null)
+      wCCNumberField.setText(input.getCardNumberFieldName());
+    if (input.getCardTypeFieldName() != null)
+      wCCTypeField.setText(input.getCardTypeFieldName());
+    if (input.getCardLengthFieldName() != null)
+      wCCLengthField.setText(input.getCardLengthFieldName());
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

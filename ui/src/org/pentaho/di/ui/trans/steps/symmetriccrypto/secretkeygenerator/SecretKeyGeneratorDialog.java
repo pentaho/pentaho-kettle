@@ -348,37 +348,45 @@ public class SecretKeyGeneratorDialog extends BaseStepDialog implements StepDial
 		return stepname;
 	}
 	
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		wStepname.setText(stepname);
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    wStepname.setText(stepname);
 
-		for (int i=0;i<input.getAlgorithm().length;i++)
-		{
-			TableItem item = wFields.table.getItem(i);
-			String algorithm = input.getAlgorithm()[i];
-			String scheme = input.getScheme()[i];
-			String len = input.getSecretKeyLength()[i] ;
-			String size = input.getSecretKeyCount()[i] ;
-			
-			if (algorithm!=null) item.setText(1, algorithm);
-			if (scheme!=null) item.setText(2, scheme);
-			else item.setText(2, algorithm);
-			if (len!=null) item.setText(3, len);
-			if (size!=null) item.setText(4, size);
-		}
+    for (int i = 0; i < input.getAlgorithm().length; i++) {
+      TableItem item = wFields.table.getItem(i);
+      String algorithm = input.getAlgorithm()[i];
+      String scheme = input.getScheme()[i];
+      String len = input.getSecretKeyLength()[i];
+      String size = input.getSecretKeyCount()[i];
 
-		wFields.setRowNums();
-		wFields.optWidth(true);
-		
-		if(input.getSecretKeyFieldName()!=null) wSecretKeyField.setText(input.getSecretKeyFieldName());
-		if(input.getAlgorithmFieldName()!=null) wAlgorithmField.setText(input.getAlgorithmFieldName());
-		if(input.getSecretKeyLengthFieldName()!=null) wSecretKeyLengthField.setText(input.getSecretKeyLengthFieldName());
-		wOutputKeyAsByinary.setSelection(input.isOutputKeyInBinary());
-		wStepname.selectAll();
-	}
+      if (algorithm != null)
+        item.setText(1, algorithm);
+      if (scheme != null)
+        item.setText(2, scheme);
+      else
+        item.setText(2, algorithm);
+      if (len != null)
+        item.setText(3, len);
+      if (size != null)
+        item.setText(4, size);
+    }
+
+    wFields.setRowNums();
+    wFields.optWidth(true);
+
+    if (input.getSecretKeyFieldName() != null)
+      wSecretKeyField.setText(input.getSecretKeyFieldName());
+    if (input.getAlgorithmFieldName() != null)
+      wAlgorithmField.setText(input.getAlgorithmFieldName());
+    if (input.getSecretKeyLengthFieldName() != null)
+      wSecretKeyLengthField.setText(input.getSecretKeyLengthFieldName());
+    wOutputKeyAsByinary.setSelection(input.isOutputKeyInBinary());
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

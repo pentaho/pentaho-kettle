@@ -308,36 +308,47 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 		 	gotPreviousFields=true;
 		}
 	 }
-	public void getData()
-	{	
-		int i;
-		
-		if (input.getSplitField()!=null) wSplitfield.setText(input.getSplitField());
-		if (input.getDelimiter()!=null)  wDelimiter.setText(input.getDelimiter());
-		if (input.getEnclosure()!=null)  wEnclosure.setText(input.getEnclosure());
-		
-        for (i = 0; i < input.getFieldName().length; i++)
-		{
-            final TableItem ti = wFields.table.getItem(i);
-            if (input.getFieldName()[i] != null) ti.setText(1, input.getFieldName()[i]);
-			if (input.getFieldID()[i]      != null) ti.setText( 2, input.getFieldID()[i]); 
-            ti.setText(3, input.getFieldRemoveID()[i] ? "Y" : "N"); //$NON-NLS-1$ //$NON-NLS-2$
-            ti.setText(4, ValueMeta.getTypeDesc(input.getFieldType()[i]));
-            if (input.getFieldLength()[i]>=0) ti.setText(5, "" + input.getFieldLength()[i]); //$NON-NLS-1$
-            if (input.getFieldPrecision()[i]>=0) ti.setText(6, "" + input.getFieldPrecision()[i]); //$NON-NLS-1$
-			if (input.getFieldFormat()[i]  != null) ti.setText( 7, input.getFieldFormat()[i]); 
-			if (input.getFieldGroup()[i]   != null) ti.setText( 8, input.getFieldGroup()[i]); 
-			if (input.getFieldDecimal()[i] != null) ti.setText( 9, input.getFieldDecimal()[i]); 
-			if (input.getFieldCurrency()[i]!= null) ti.setText(10, input.getFieldCurrency()[i]); 
-            if (input.getFieldNullIf()[i] != null) ti.setText(11, input.getFieldNullIf()[i]);
-            if (input.getFieldIfNull()[i] != null) ti.setText(12, input.getFieldIfNull()[i]);
-            ti.setText(13, ValueMeta.getTrimTypeDesc(input.getFieldTrimType()[i]));
-		}
-		wFields.setRowNums();
-		wFields.optWidth(true);
 
-		wStepname.selectAll();
-	}
+  public void getData() {
+    if (input.getSplitField() != null)
+      wSplitfield.setText(input.getSplitField());
+    if (input.getDelimiter() != null)
+      wDelimiter.setText(input.getDelimiter());
+    if (input.getEnclosure() != null)
+      wEnclosure.setText(input.getEnclosure());
+
+    for (int i = 0; i < input.getFieldName().length; i++) {
+      final TableItem ti = wFields.table.getItem(i);
+      if (input.getFieldName()[i] != null)
+        ti.setText(1, input.getFieldName()[i]);
+      if (input.getFieldID()[i] != null)
+        ti.setText(2, input.getFieldID()[i]);
+      ti.setText(3, input.getFieldRemoveID()[i] ? "Y" : "N"); //$NON-NLS-1$ //$NON-NLS-2$
+      ti.setText(4, ValueMeta.getTypeDesc(input.getFieldType()[i]));
+      if (input.getFieldLength()[i] >= 0)
+        ti.setText(5, "" + input.getFieldLength()[i]); //$NON-NLS-1$
+      if (input.getFieldPrecision()[i] >= 0)
+        ti.setText(6, "" + input.getFieldPrecision()[i]); //$NON-NLS-1$
+      if (input.getFieldFormat()[i] != null)
+        ti.setText(7, input.getFieldFormat()[i]);
+      if (input.getFieldGroup()[i] != null)
+        ti.setText(8, input.getFieldGroup()[i]);
+      if (input.getFieldDecimal()[i] != null)
+        ti.setText(9, input.getFieldDecimal()[i]);
+      if (input.getFieldCurrency()[i] != null)
+        ti.setText(10, input.getFieldCurrency()[i]);
+      if (input.getFieldNullIf()[i] != null)
+        ti.setText(11, input.getFieldNullIf()[i]);
+      if (input.getFieldIfNull()[i] != null)
+        ti.setText(12, input.getFieldIfNull()[i]);
+      ti.setText(13, ValueMeta.getTrimTypeDesc(input.getFieldTrimType()[i]));
+    }
+    wFields.setRowNums();
+    wFields.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

@@ -827,56 +827,67 @@ public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInte
 		}
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		// New concat fields
-		if (input.getTargetFieldName()  != null) wTargetFieldName.setText(input.getTargetFieldName());
-		wTargetFieldLength.setText(""+input.getTargetFieldLength());
-		wRemoveSelectedFields.setSelection(input.isRemoveSelectedFields());
-		// previous fields derived from TextFileOutputDialog
-		wSeparator.setText(Const.NVL(input.getSeparator(), ""));
-		wEnclosure.setText(Const.NVL(input.getEnclosure(), ""));
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    // New concat fields
+    if (input.getTargetFieldName() != null)
+      wTargetFieldName.setText(input.getTargetFieldName());
+    wTargetFieldLength.setText("" + input.getTargetFieldLength());
+    wRemoveSelectedFields.setSelection(input.isRemoveSelectedFields());
+    // previous fields derived from TextFileOutputDialog
+    wSeparator.setText(Const.NVL(input.getSeparator(), ""));
+    wEnclosure.setText(Const.NVL(input.getEnclosure(), ""));
 
-		if (input.getEncoding()  !=null) wEncoding.setText(input.getEncoding());
-		if (input.getEndedLine() !=null) wEndedLine.setText(input.getEndedLine());
+    if (input.getEncoding() != null)
+      wEncoding.setText(input.getEncoding());
+    if (input.getEndedLine() != null)
+      wEndedLine.setText(input.getEndedLine());
 
+    wSplitEvery.setText("" + input.getSplitEvery());
 
-		wSplitEvery.setText(""+input.getSplitEvery());
+    wEnclForced.setSelection(input.isEnclosureForced());
+    wDisableEnclosureFix.setSelection(input.isEnclosureFixDisabled());
+    wHeader.setSelection(input.isHeaderEnabled());
+    wFooter.setSelection(input.isFooterEnabled());
+    wPad.setSelection(input.isPadded());
+    wFastDump.setSelection(input.isFastDump());
 
-		wEnclForced.setSelection(input.isEnclosureForced());
-		wDisableEnclosureFix.setSelection(input.isEnclosureFixDisabled());
-		wHeader.setSelection(input.isHeaderEnabled());
-		wFooter.setSelection(input.isFooterEnabled());
-		wPad.setSelection(input.isPadded());
-		wFastDump.setSelection(input.isFastDump());
+    logDebug("getting fields info...");
 
-		logDebug("getting fields info...");
+    for (int i = 0; i < input.getOutputFields().length; i++) {
+      TextFileField field = input.getOutputFields()[i];
 
-		for (int i=0;i<input.getOutputFields().length;i++)
-		{
-			TextFileField field = input.getOutputFields()[i];
+      TableItem item = wFields.table.getItem(i);
+      if (field.getName() != null)
+        item.setText(1, field.getName());
+      item.setText(2, field.getTypeDesc());
+      if (field.getFormat() != null)
+        item.setText(3, field.getFormat());
+      if (field.getLength() >= 0)
+        item.setText(4, "" + field.getLength());
+      if (field.getPrecision() >= 0)
+        item.setText(5, "" + field.getPrecision());
+      if (field.getCurrencySymbol() != null)
+        item.setText(6, field.getCurrencySymbol());
+      if (field.getDecimalSymbol() != null)
+        item.setText(7, field.getDecimalSymbol());
+      if (field.getGroupingSymbol() != null)
+        item.setText(8, field.getGroupingSymbol());
+      String trim = field.getTrimTypeDesc();
+      if (trim != null)
+        item.setText(9, trim);
+      if (field.getNullString() != null)
+        item.setText(10, field.getNullString());
+    }
 
-			TableItem item = wFields.table.getItem(i);
-			if (field.getName()!=null) item.setText(1, field.getName());
-			item.setText(2, field.getTypeDesc());
-			if (field.getFormat()!=null) item.setText(3, field.getFormat());
-			if (field.getLength()>=0) item.setText(4, ""+field.getLength());
-			if (field.getPrecision()>=0) item.setText(5, ""+field.getPrecision());
-			if (field.getCurrencySymbol()!=null) item.setText(6, field.getCurrencySymbol());
-			if (field.getDecimalSymbol()!=null) item.setText(7, field.getDecimalSymbol());
-			if (field.getGroupingSymbol()!=null) item.setText(8, field.getGroupingSymbol());
-			String trim = field.getTrimTypeDesc();
-			if (trim != null) item.setText(9, trim);
-			if (field.getNullString()!=null) item.setText(10, field.getNullString());
-		}
+    wFields.optWidth(true);
+    setFlags();
 
-		wFields.optWidth(true);
-		setFlags();
-		wStepname.selectAll();
-	}
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 
 	private void cancel()
 	{

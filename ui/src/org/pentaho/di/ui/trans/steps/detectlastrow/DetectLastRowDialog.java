@@ -174,17 +174,19 @@ public class DetectLastRowDialog extends BaseStepDialog implements StepDialogInt
 		return stepname;
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "DetectLastRowDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (log.isDebug())
+      logDebug(BaseMessages.getString(PKG, "DetectLastRowDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
-		if (input.getResultFieldName()!=null)   wResult.setText(input.getResultFieldName());
-		
-		wStepname.selectAll();
-	}
+    if (input.getResultFieldName() != null)
+      wResult.setText(input.getResultFieldName());
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

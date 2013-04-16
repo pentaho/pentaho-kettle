@@ -986,46 +986,47 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 	    }
 	
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-        if (input.getSchemaName() != null) wSchema.setText(input.getSchemaName());
-		if (input.getTablename() != null) wTable.setText(input.getTablename());
-		if (input.getDatabaseMeta() != null) wConnection.setText(input.getDatabaseMeta().getName());
-		
-		if (input.getFileName()  != null) wFilename.setText(input.getFileName());
-		wCreateParentFolder.setSelection(input.isCreateParentFolder());
-		if (input.getExtension() != null) 
-		{
-			wExtension.setText(input.getExtension());
-		}
-		else
-		{
-			wExtension.setText("sql");
-		}
-		
-		if (input.getDateFormat()  != null) wFormat.setText(input.getDateFormat());
-		
-		wSplitEvery.setText(""+input.getSplitEvery());
-		wAddDate.setSelection(input.isDateInFilename());
-		wAddTime.setSelection(input.isTimeInFilename());
-		wAppend.setSelection(input.isFileAppended());
-		wAddStepnr.setSelection(input.isStepNrInFilename());
-		
-        wTruncate.setSelection( input.truncateTable() );
-        wAddCreate.setSelection( input.createTable() );
-        
-        if (input.getEncoding()  !=null) wEncoding.setText(input.getEncoding());
-        wAddToResult.setSelection( input.AddToResult() );
-        wStartNewLine.setSelection( input.StartNewLine() );
-        wDoNotOpenNewFileInit.setSelection( input.isDoNotOpenNewFileInit() );
-        
-        
-		
-		wStepname.selectAll();
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (input.getSchemaName() != null)
+      wSchema.setText(input.getSchemaName());
+    if (input.getTablename() != null)
+      wTable.setText(input.getTablename());
+    if (input.getDatabaseMeta() != null)
+      wConnection.setText(input.getDatabaseMeta().getName());
+
+    if (input.getFileName() != null)
+      wFilename.setText(input.getFileName());
+    wCreateParentFolder.setSelection(input.isCreateParentFolder());
+    if (input.getExtension() != null) {
+      wExtension.setText(input.getExtension());
+    } else {
+      wExtension.setText("sql");
+    }
+
+    if (input.getDateFormat() != null)
+      wFormat.setText(input.getDateFormat());
+
+    wSplitEvery.setText("" + input.getSplitEvery());
+    wAddDate.setSelection(input.isDateInFilename());
+    wAddTime.setSelection(input.isTimeInFilename());
+    wAppend.setSelection(input.isFileAppended());
+    wAddStepnr.setSelection(input.isStepNrInFilename());
+
+    wTruncate.setSelection(input.truncateTable());
+    wAddCreate.setSelection(input.createTable());
+
+    if (input.getEncoding() != null)
+      wEncoding.setText(input.getEncoding());
+    wAddToResult.setSelection(input.AddToResult());
+    wStartNewLine.setSelection(input.StartNewLine());
+    wDoNotOpenNewFileInit.setSelection(input.isDoNotOpenNewFileInit());
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

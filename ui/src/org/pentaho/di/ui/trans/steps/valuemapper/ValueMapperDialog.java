@@ -297,32 +297,37 @@ public class ValueMapperDialog extends BaseStepDialog implements StepDialogInter
 			}
 		 }
 		}
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		wStepname.setText(stepname);
-		
-        if (input.getFieldToUse()!=null) wFieldname.setText(input.getFieldToUse());
-        if (input.getTargetField()!=null) wTargetFieldname.setText(input.getTargetField());
-        if (input.getNonMatchDefault()!=null) wNonMatchDefault.setText(input.getNonMatchDefault());
-        
-		for (int i=0;i<input.getSourceValue().length;i++)
-		{
-			TableItem item = wFields.table.getItem(i);
-			String src = input.getSourceValue()[i];
-			String tgt = input.getTargetValue()[i];
-			
-			if (src!=null) item.setText(1, src);
-			if (tgt!=null) item.setText(2, tgt);
-		}
 
-		wFields.setRowNums();
-		wFields.optWidth(true);
-		
-		wStepname.selectAll();
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    wStepname.setText(stepname);
+
+    if (input.getFieldToUse() != null)
+      wFieldname.setText(input.getFieldToUse());
+    if (input.getTargetField() != null)
+      wTargetFieldname.setText(input.getTargetField());
+    if (input.getNonMatchDefault() != null)
+      wNonMatchDefault.setText(input.getNonMatchDefault());
+
+    for (int i = 0; i < input.getSourceValue().length; i++) {
+      TableItem item = wFields.table.getItem(i);
+      String src = input.getSourceValue()[i];
+      String tgt = input.getTargetValue()[i];
+
+      if (src != null)
+        item.setText(1, src);
+      if (tgt != null)
+        item.setText(2, tgt);
+    }
+
+    wFields.setRowNums();
+    wFields.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

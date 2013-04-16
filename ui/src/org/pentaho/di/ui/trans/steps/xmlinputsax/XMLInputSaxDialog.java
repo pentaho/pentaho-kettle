@@ -859,104 +859,98 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 		wInclRownumField.setEnabled(wInclRownum.getSelection());
 	}
 
-	/**
-	 * Read the data from the XMLvInputMeta object and show it in this dialog.
-	 * 
-	 * @param in
-	 *            The XMLvInputMeta object to obtain the data from.
-	 */
-	public void getData(XMLInputSaxMeta in)
-	{
-		if (in.getFileName() != null)
-		{
-			wFilenameList.removeAll();
-			for (int i = 0; i < in.getFileName().length; i++)
-			{
-				wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i] });
-			}
-			wFilenameList.removeEmptyRows();
-			wFilenameList.setRowNums();
-			wFilenameList.optWidth(true);
-		}
-		wInclFilename.setSelection(in.includeFilename());
-		wInclRownum.setSelection(in.includeRowNumber());
-		// wMultiple.setSelection(in.wildcard);
-		if (in.getFilenameField() != null)
-			wInclFilenameField.setText(in.getFilenameField());
-		if (in.getRowNumberField() != null)
-			wInclRownumField.setText(in.getRowNumberField());
-		wLimit.setText("" + in.getRowLimit()); //$NON-NLS-1$
+  /**
+   * Read the data from the XMLvInputMeta object and show it in this dialog.
+   * 
+   * @param in
+   *            The XMLvInputMeta object to obtain the data from.
+   */
+  public void getData(XMLInputSaxMeta in) {
+    if (in.getFileName() != null) {
+      wFilenameList.removeAll();
+      for (int i = 0; i < in.getFileName().length; i++) {
+        wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i] });
+      }
+      wFilenameList.removeEmptyRows();
+      wFilenameList.setRowNums();
+      wFilenameList.optWidth(true);
+    }
+    wInclFilename.setSelection(in.includeFilename());
+    wInclRownum.setSelection(in.includeRowNumber());
+    // wMultiple.setSelection(in.wildcard);
+    if (in.getFilenameField() != null)
+      wInclFilenameField.setText(in.getFilenameField());
+    if (in.getRowNumberField() != null)
+      wInclRownumField.setText(in.getRowNumberField());
+    wLimit.setText("" + in.getRowLimit()); //$NON-NLS-1$
 
-		logDebug("getting fields info..."); //$NON-NLS-1$
-		for (int i = 0; i < in.getInputFields().length; i++)
-		{
-			XMLInputSaxField field = in.getInputFields()[i];
+    logDebug("getting fields info..."); //$NON-NLS-1$
+    for (int i = 0; i < in.getInputFields().length; i++) {
+      XMLInputSaxField field = in.getInputFields()[i];
 
-			if (field != null)
-			{
-				TableItem item = wFields.table.getItem(i);
-				String name = field.getName();
-				String type = field.getTypeDesc();
-				String format = field.getFormat();
-				String length = "" + field.getLength(); //$NON-NLS-1$
-				String prec = "" + field.getPrecision(); //$NON-NLS-1$
-				String curr = field.getCurrencySymbol();
-				String group = field.getGroupSymbol();
-				String decim = field.getDecimalSymbol();
-				String trim = field.getTrimTypeDesc();
-				String rep = field.isRepeated() ? "Y" : "N"; //$NON-NLS-1$ //$NON-NLS-2$
+      if (field != null) {
+        TableItem item = wFields.table.getItem(i);
+        String name = field.getName();
+        String type = field.getTypeDesc();
+        String format = field.getFormat();
+        String length = "" + field.getLength(); //$NON-NLS-1$
+        String prec = "" + field.getPrecision(); //$NON-NLS-1$
+        String curr = field.getCurrencySymbol();
+        String group = field.getGroupSymbol();
+        String decim = field.getDecimalSymbol();
+        String trim = field.getTrimTypeDesc();
+        String rep = field.isRepeated() ? "Y" : "N"; //$NON-NLS-1$ //$NON-NLS-2$
 
-				if (name != null)
-					item.setText(1, name);
-				if (type != null)
-					item.setText(2, type);
-				if (format != null)
-					item.setText(3, format);
-				if (length != null && !"-1".equals(length))item.setText(4, length); //$NON-NLS-1$
-				if (prec != null && !"-1".equals(prec))item.setText(5, prec); //$NON-NLS-1$
-				if (curr != null)
-					item.setText(6, curr);
-				if (decim != null)
-					item.setText(7, decim);
-				if (group != null)
-					item.setText(8, group);
-				if (trim != null)
-					item.setText(9, trim);
-				if (rep != null)
-					item.setText(10, rep);
+        if (name != null)
+          item.setText(1, name);
+        if (type != null)
+          item.setText(2, type);
+        if (format != null)
+          item.setText(3, format);
+        if (length != null && !"-1".equals(length))item.setText(4, length); //$NON-NLS-1$
+        if (prec != null && !"-1".equals(prec))item.setText(5, prec); //$NON-NLS-1$
+        if (curr != null)
+          item.setText(6, curr);
+        if (decim != null)
+          item.setText(7, decim);
+        if (group != null)
+          item.setText(8, group);
+        if (trim != null)
+          item.setText(9, trim);
+        if (rep != null)
+          item.setText(10, rep);
 
-				item.setText(11, field.getFieldPositionsCode());
-			}
-		}
+        item.setText(11, field.getFieldPositionsCode());
+      }
+    }
 
-		for (int i = 0; i < input.getDefinitionLength(); i++)
-		{
-			TableItem item = wAttributes.table.getItem(i);
-			item.setText(1, input.getDefiningElement(i));
-			item.setText(2, input.getDefiningAttribute(i));
-		}
+    for (int i = 0; i < input.getDefinitionLength(); i++) {
+      TableItem item = wAttributes.table.getItem(i);
+      item.setText(1, input.getDefiningElement(i));
+      item.setText(2, input.getDefiningAttribute(i));
+    }
 
-		for (int i = 0; i < input.getInputPosition().length; i++)
-		{
-			TableItem item = wPosition.table.getItem(i);
-			if (input.getInputPosition()[i] != null)
-				item.setText(1, input.getInputPosition()[i].toString());
-		}
+    for (int i = 0; i < input.getInputPosition().length; i++) {
+      TableItem item = wPosition.table.getItem(i);
+      if (input.getInputPosition()[i] != null)
+        item.setText(1, input.getInputPosition()[i].toString());
+    }
 
-		wFields.removeEmptyRows();
-		wFields.setRowNums();
-		wFields.optWidth(true);
+    wFields.removeEmptyRows();
+    wFields.setRowNums();
+    wFields.optWidth(true);
 
-		wPosition.removeEmptyRows();
-		wPosition.setRowNums();
-		wPosition.optWidth(true);
+    wPosition.removeEmptyRows();
+    wPosition.setRowNums();
+    wPosition.optWidth(true);
 
-		setMultiple();
-		setIncludeFilename();
-		setIncludeRownum();
+    setMultiple();
+    setIncludeFilename();
+    setIncludeRownum();
 
-		wStepname.selectAll();
-	}
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 
 	private void cancel()
 	{

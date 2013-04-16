@@ -983,55 +983,55 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		wIncludeSubFolder.setEnabled(wFileField.getSelection());
 
 	}
-	/**
-	 * Read the data from the TextFileInputMeta object and show it in this
-	 * dialog.
-	 * 
-	 * @param meta
-	 *            The TextFileInputMeta object to obtain the data from.
-	 */
-	public void getData(GetFileNamesMeta meta)
-	{
-		final GetFileNamesMeta in = meta;
 
-		if (in.getFileName() != null)
-		{
-			wFilenameList.removeAll();
+  /**
+   * Read the data from the GetFileNamesMeta object and show it in this
+   * dialog.
+   * 
+   * @param meta
+   *            The TextFileInputMeta object to obtain the data from.
+   */
+  public void getData(GetFileNamesMeta meta) {
+    final GetFileNamesMeta in = meta;
 
-			for (int i=0;i<meta.getFileName().length;i++) 
-			{
-				wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i] ,
-						in.getExludeFileMask()[i],
-						in.getRequiredFilesDesc(in.getFileRequired()[i]), 
-						in.getRequiredFilesDesc(in.getIncludeSubFolders()[i])} );
-			}	
-			
-			wdoNotFailIfNoFile.setSelection(in.isdoNotFailIfNoFile());
-			wFilenameList.removeEmptyRows();
-			wFilenameList.setRowNums();
-			wFilenameList.optWidth(true);
+    if (in.getFileName() != null) {
+      wFilenameList.removeAll();
 
-			if (in.getFileTypeFilter() != null)
-			{
-			    wFilterFileType.select(in.getFileTypeFilter().ordinal());
-			} else
-			{
-				wFilterFileType.select(0);
+      for (int i = 0; i < meta.getFileName().length; i++) {
+        wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i], in.getExludeFileMask()[i],
+            in.getRequiredFilesDesc(in.getFileRequired()[i]), in.getRequiredFilesDesc(in.getIncludeSubFolders()[i]) });
+      }
 
-			}
-			
-			wInclRownum.setSelection(in.includeRowNumber());
-			wAddResult.setSelection(in.isAddResultFile());
-			wFileField.setSelection(in.isFileField());
-			if (in.getRowNumberField()!=null) wInclRownumField.setText(in.getRowNumberField());
-			if (in.getDynamicFilenameField()!=null) wFilenameField.setText(in.getDynamicFilenameField());
-			if (in.getDynamicWildcardField()!=null) wWildcardField.setText(in.getDynamicWildcardField());
-			if (in.getDynamicExcludeWildcardField() != null) wExcludeWildcardField.setText(in.getDynamicExcludeWildcardField());
-			wLimit.setText(""+in.getRowLimit());
-			wIncludeSubFolder.setSelection(in.isDynamicIncludeSubFolders());
-		}
-		wStepname.selectAll();
-	}
+      wdoNotFailIfNoFile.setSelection(in.isdoNotFailIfNoFile());
+      wFilenameList.removeEmptyRows();
+      wFilenameList.setRowNums();
+      wFilenameList.optWidth(true);
+
+      if (in.getFileTypeFilter() != null) {
+        wFilterFileType.select(in.getFileTypeFilter().ordinal());
+      } else {
+        wFilterFileType.select(0);
+
+      }
+
+      wInclRownum.setSelection(in.includeRowNumber());
+      wAddResult.setSelection(in.isAddResultFile());
+      wFileField.setSelection(in.isFileField());
+      if (in.getRowNumberField() != null)
+        wInclRownumField.setText(in.getRowNumberField());
+      if (in.getDynamicFilenameField() != null)
+        wFilenameField.setText(in.getDynamicFilenameField());
+      if (in.getDynamicWildcardField() != null)
+        wWildcardField.setText(in.getDynamicWildcardField());
+      if (in.getDynamicExcludeWildcardField() != null)
+        wExcludeWildcardField.setText(in.getDynamicExcludeWildcardField());
+      wLimit.setText("" + in.getRowLimit());
+      wIncludeSubFolder.setSelection(in.isDynamicIncludeSubFolders());
+    }
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 
 	private void cancel()
 	{

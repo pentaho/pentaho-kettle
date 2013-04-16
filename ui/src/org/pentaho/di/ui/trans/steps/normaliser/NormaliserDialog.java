@@ -269,25 +269,27 @@ public class NormaliserDialog extends BaseStepDialog implements StepDialogInterf
         Const.sortStrings(fieldNames);
         colinf[0].setComboValues(fieldNames);
     }
-	public void getData()
-	{	
-		int i;
-		
-		if (input.getTypeField()!=null) wTypefield.setText(input.getTypeField());
-		
-		for (i=0;i<input.getFieldName().length;i++)
-		{
-			TableItem item = wFields.table.getItem(i);
-			if (input.getFieldName()     [i]!=null) item.setText(1, input.getFieldName()[i]);
-			if (input.getFieldValue()[i]!=null) item.setText(2, input.getFieldValue()[i]);
-			if (input.getFieldNorm() [i]!=null) item.setText(3, input.getFieldNorm()[i]);
-		}
-		
-		wFields.setRowNums();
-		wFields.optWidth(true);
 
-		wStepname.selectAll();
-	}
+  public void getData() {
+    if (input.getTypeField() != null)
+      wTypefield.setText(input.getTypeField());
+
+    for (int i = 0; i < input.getFieldName().length; i++) {
+      TableItem item = wFields.table.getItem(i);
+      if (input.getFieldName()[i] != null)
+        item.setText(1, input.getFieldName()[i]);
+      if (input.getFieldValue()[i] != null)
+        item.setText(2, input.getFieldValue()[i]);
+      if (input.getFieldNorm()[i] != null)
+        item.setText(3, input.getFieldNorm()[i]);
+    }
+
+    wFields.setRowNums();
+    wFields.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

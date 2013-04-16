@@ -473,9 +473,11 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 			ti.setText(3, input.getCaseSensitive()[i]?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No"));
 		}
 
-        wFields.setRowNums();
+    wFields.setRowNums();
 		wFields.optWidth(true);
-		wStepname.selectAll();
+		
+    wStepname.selectAll();
+    wStepname.setFocus();
 	}
 	
 	private void cancel()

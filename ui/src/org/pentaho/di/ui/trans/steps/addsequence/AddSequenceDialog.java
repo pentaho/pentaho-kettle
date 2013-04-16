@@ -493,33 +493,37 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 		activeSequence();
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		logDebug(BaseMessages.getString(PKG, "AddSequenceDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    logDebug(BaseMessages.getString(PKG, "AddSequenceDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
-		if (input.getValuename()!=null) wValuename.setText(input.getValuename());
-		
-		wUseDatabase.setSelection(input.isDatabaseUsed());
-		if (input.getDatabase()!=null) wConnection.setText(input.getDatabase().getName());
-		else if (transMeta.nrDatabases()==1)
-		{
-			wConnection.setText( transMeta.getDatabase(0).getName() );
-		}
-        if (input.getSchemaName()!=null) wSchema.setText(input.getSchemaName());
-        if (input.getSequenceName()!=null) wSeqname.setText(input.getSequenceName());
-		
-		wUseCounter.setSelection(input.isCounterUsed());
-        wCounterName.setText( Const.NVL(input.getCounterName(), "") );
-		wStartAt.setText(input.getStartAt()); //$NON-NLS-1$
-		wIncrBy.setText(input.getIncrementBy()); //$NON-NLS-1$
-		wMaxVal.setText(input.getMaxValue()); //$NON-NLS-1$
-		
-		enableFields();
-		wStepname.selectAll();
-	}
+    if (input.getValuename() != null)
+      wValuename.setText(input.getValuename());
+
+    wUseDatabase.setSelection(input.isDatabaseUsed());
+    if (input.getDatabase() != null)
+      wConnection.setText(input.getDatabase().getName());
+    else if (transMeta.nrDatabases() == 1) {
+      wConnection.setText(transMeta.getDatabase(0).getName());
+    }
+    if (input.getSchemaName() != null)
+      wSchema.setText(input.getSchemaName());
+    if (input.getSequenceName() != null)
+      wSeqname.setText(input.getSequenceName());
+
+    wUseCounter.setSelection(input.isCounterUsed());
+    wCounterName.setText(Const.NVL(input.getCounterName(), ""));
+    wStartAt.setText(input.getStartAt()); //$NON-NLS-1$
+    wIncrBy.setText(input.getIncrementBy()); //$NON-NLS-1$
+    wMaxVal.setText(input.getMaxValue()); //$NON-NLS-1$
+
+    enableFields();
+    
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

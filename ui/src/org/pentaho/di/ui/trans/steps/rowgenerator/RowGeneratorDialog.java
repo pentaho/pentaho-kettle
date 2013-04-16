@@ -368,7 +368,7 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
     wInterval.setText(Const.NVL(input.getIntervalInMs(), ""));
     wRowTimeField.setText(Const.NVL(input.getRowTimeField(), ""));
     wLastTimeField.setText(Const.NVL(input.getLastTimeField(), ""));
-    
+
     for (int i = 0; i < input.getFieldName().length; i++) {
       if (input.getFieldName()[i] != null) {
         TableItem item = wFields.table.getItem(i);
@@ -403,7 +403,9 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
     wFields.optWidth(true);
 
     setActive();
+
     wStepname.selectAll();
+    wStepname.setFocus();
   }
 
   private void cancel() {

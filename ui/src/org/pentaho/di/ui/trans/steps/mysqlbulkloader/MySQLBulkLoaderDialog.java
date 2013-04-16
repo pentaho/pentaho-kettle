@@ -738,52 +738,55 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 			wReturn.optWidth(true);
 		}
 	}
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData()
-	{
-		int i;
-		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
-		wEnclosure.setText(Const.NVL(input.getEnclosure(), ""));   //$NON-NLS-1$
-		wDelimiter.setText(Const.NVL(input.getDelimiter(), ""));   //$NON-NLS-1$
-		wEscapeChar.setText(Const.NVL(input.getEscapeChar(), ""));   //$NON-NLS-1$
-		wCharSet.setText(Const.NVL(input.getEncoding(), ""));   //$NON-NLS-1$
-		wReplace.setSelection(input.isReplacingData());
-		wIgnore.setSelection(input.isIgnoringErrors());
-		wLocal.setSelection(input.isLocalFile());
-		wBulkSize.setText(Const.NVL(input.getBulkSize(), ""));
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (log.isDebug())
+      logDebug(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
-		if (input.getFieldTable() != null) {
-			for (i = 0; i < input.getFieldTable().length; i++)
-			{
-				TableItem item = wReturn.table.getItem(i);
-				if (input.getFieldTable()[i] != null)
-					item.setText(1, input.getFieldTable()[i]);
-				if (input.getFieldStream()[i] != null)
-					item.setText(2, input.getFieldStream()[i]);
-				item.setText(3, MySQLBulkLoaderMeta.getFieldFormatTypeDescription(input.getFieldFormatType()[i]));
-			}
-		}
+    wEnclosure.setText(Const.NVL(input.getEnclosure(), "")); //$NON-NLS-1$
+    wDelimiter.setText(Const.NVL(input.getDelimiter(), "")); //$NON-NLS-1$
+    wEscapeChar.setText(Const.NVL(input.getEscapeChar(), "")); //$NON-NLS-1$
+    wCharSet.setText(Const.NVL(input.getEncoding(), "")); //$NON-NLS-1$
+    wReplace.setSelection(input.isReplacingData());
+    wIgnore.setSelection(input.isIgnoringErrors());
+    wLocal.setSelection(input.isLocalFile());
+    wBulkSize.setText(Const.NVL(input.getBulkSize(), ""));
 
-		if (input.getDatabaseMeta() != null)
-			wConnection.setText(input.getDatabaseMeta().getName());
-		else
-		{
-			if (transMeta.nrDatabases() == 1)
-			{
-				wConnection.setText(transMeta.getDatabase(0).getName());
-			}
-		}
-        if (input.getSchemaName() != null) wSchema.setText(input.getSchemaName());
-		if (input.getTableName() != null) wTable.setText(input.getTableName());
-		if (input.getFifoFileName() != null) wFifoFile.setText(input.getFifoFileName());
-		
-		wStepname.selectAll();
-		wReturn.setRowNums();
-		wReturn.optWidth(true);
-	}
+    if (input.getFieldTable() != null) {
+      for (int i = 0; i < input.getFieldTable().length; i++) {
+        TableItem item = wReturn.table.getItem(i);
+        if (input.getFieldTable()[i] != null)
+          item.setText(1, input.getFieldTable()[i]);
+        if (input.getFieldStream()[i] != null)
+          item.setText(2, input.getFieldStream()[i]);
+        item.setText(3, MySQLBulkLoaderMeta.getFieldFormatTypeDescription(input.getFieldFormatType()[i]));
+      }
+    }
+
+    if (input.getDatabaseMeta() != null)
+      wConnection.setText(input.getDatabaseMeta().getName());
+    else {
+      if (transMeta.nrDatabases() == 1) {
+        wConnection.setText(transMeta.getDatabase(0).getName());
+      }
+    }
+    if (input.getSchemaName() != null)
+      wSchema.setText(input.getSchemaName());
+    if (input.getTableName() != null)
+      wTable.setText(input.getTableName());
+    if (input.getFifoFileName() != null)
+      wFifoFile.setText(input.getFifoFileName());
+
+    wReturn.setRowNums();
+    wReturn.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
+	
 	protected void setComboBoxes()
     {
         // Something was changed in the row.

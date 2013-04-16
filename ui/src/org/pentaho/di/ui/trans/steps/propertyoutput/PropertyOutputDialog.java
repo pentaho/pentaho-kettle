@@ -848,38 +848,39 @@ public class PropertyOutputDialog extends BaseStepDialog implements StepDialogIn
 		}
 	 }
 
-	 
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (input.getKeyField() != null)
+      wKeyField.setText(input.getKeyField());
+    if (input.getValueField() != null)
+      wValueField.setText(input.getValueField());
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
+    if (input.getFileName() != null)
+      wFilename.setText(input.getFileName());
+    wFileNameInField.setSelection(input.isFileNameInField());
+    if (input.getFileNameField() != null)
+      wFileNameField.setText(input.getFileNameField());
+    wCreateParentFolder.setSelection(input.isCreateParentFolder());
+    if (input.getExtension() != null)
+      wExtension.setText(input.getExtension());
+    else
+      wExtension.setText("properties");
 
-		if (input.getKeyField()  != null) wKeyField.setText(input.getKeyField());
-		if (input.getValueField()  != null) wValueField.setText(input.getValueField());
-		
-		if (input.getFileName()  != null) wFilename.setText(input.getFileName());
-        wFileNameInField.setSelection(input.isFileNameInField());
-        if (input.getFileNameField() !=null) wFileNameField.setText(input.getFileNameField());
-		wCreateParentFolder.setSelection(input.isCreateParentFolder());
-		if (input.getExtension() != null) 
-			wExtension.setText(input.getExtension());
-		else
-			wExtension.setText("properties");
+    wAddDate.setSelection(input.isDateInFilename());
+    wAddTime.setSelection(input.isTimeInFilename());
+    wAddStepnr.setSelection(input.isStepNrInFilename());
 
-		wAddDate.setSelection(input.isDateInFilename());
-		wAddTime.setSelection(input.isTimeInFilename());
-		wAddStepnr.setSelection(input.isStepNrInFilename());
-        
-        wAddToResult.setSelection( input.addToResult() );
-        wAppend.setSelection( input.isAppend());
-        
-    	if (input.getComment() != null) 
-			wComment.setText(input.getComment());
-        
-		wStepname.selectAll();
-	}
+    wAddToResult.setSelection(input.addToResult());
+    wAppend.setSelection(input.isAppend());
+
+    if (input.getComment() != null)
+      wComment.setText(input.getComment());
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

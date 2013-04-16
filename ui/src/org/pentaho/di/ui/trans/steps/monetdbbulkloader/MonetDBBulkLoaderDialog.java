@@ -948,55 +948,61 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 		};
 		shell.getDisplay().asyncExec(fieldLoader);
 	}
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 *
-	 * This method is called each time the dialog is opened.
-	 */
-	public void getData()
-	{
-		int i;
-		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
-		if (input.getFieldTable() != null) {
-			for (i = 0; i < input.getFieldTable().length; i++)
-			{
-				TableItem item = wReturn.table.getItem(i);
-				if (input.getFieldTable()[i] != null)
-					item.setText(1, input.getFieldTable()[i]);
-				if (input.getFieldStream()[i] != null)
-					item.setText(2, input.getFieldStream()[i]);
-				item.setText(3, input.getFieldFormatOk()[i]?"Y":"N");
-			}
-		}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   *
+   * This method is called each time the dialog is opened.
+   */
+  public void getData() {
+    if (log.isDebug())
+      logDebug(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
-		if (input.getDatabaseMeta() != null)
-			wConnection.setText(input.getDatabaseMeta().getName());
-		else
-		{
-			if (transMeta.nrDatabases() == 1)
-			{
-				wConnection.setText(transMeta.getDatabase(0).getName());
-			}
-		}
-		// General Settings Tab values from step meta-data configuration.
-        if (input.getSchemaName() != null) wSchema.setText(input.getSchemaName());
-		if (input.getTableName() != null) wTable.setText(input.getTableName());
-		wBufferSize.setText("" + input.getBufferSize());   //$NON-NLS-1$
-		if (input.getLogFile() != null) wLogFile.setText(input.getLogFile());
-		wTruncate.setSelection(input.isTruncate());
-		wFullyQuoteSQL.setSelection(input.isFullyQuoteSQL());
-		
-		// MonetDB mclient Settings tab
-		if (input.getFieldSeparator() != null) wFieldSeparator.setText(input.getFieldSeparator());
-		if (input.getFieldEnclosure() != null) wFieldEnclosure.setText(input.getFieldEnclosure());
-		if (input.getNULLrepresentation() != null) wNULLrepresentation.setText(input.getNULLrepresentation());
-		if (input.getEncoding() != null) wEncoding.setText(input.getEncoding());
+    if (input.getFieldTable() != null) {
+      for (int i = 0; i < input.getFieldTable().length; i++) {
+        TableItem item = wReturn.table.getItem(i);
+        if (input.getFieldTable()[i] != null)
+          item.setText(1, input.getFieldTable()[i]);
+        if (input.getFieldStream()[i] != null)
+          item.setText(2, input.getFieldStream()[i]);
+        item.setText(3, input.getFieldFormatOk()[i] ? "Y" : "N");
+      }
+    }
 
-		wStepname.selectAll();
-		wReturn.setRowNums();
-		wReturn.optWidth(true);
-	}
+    if (input.getDatabaseMeta() != null)
+      wConnection.setText(input.getDatabaseMeta().getName());
+    else {
+      if (transMeta.nrDatabases() == 1) {
+        wConnection.setText(transMeta.getDatabase(0).getName());
+      }
+    }
+    // General Settings Tab values from step meta-data configuration.
+    if (input.getSchemaName() != null)
+      wSchema.setText(input.getSchemaName());
+    if (input.getTableName() != null)
+      wTable.setText(input.getTableName());
+    wBufferSize.setText("" + input.getBufferSize()); //$NON-NLS-1$
+    if (input.getLogFile() != null)
+      wLogFile.setText(input.getLogFile());
+    wTruncate.setSelection(input.isTruncate());
+    wFullyQuoteSQL.setSelection(input.isFullyQuoteSQL());
+
+    // MonetDB mclient Settings tab
+    if (input.getFieldSeparator() != null)
+      wFieldSeparator.setText(input.getFieldSeparator());
+    if (input.getFieldEnclosure() != null)
+      wFieldEnclosure.setText(input.getFieldEnclosure());
+    if (input.getNULLrepresentation() != null)
+      wNULLrepresentation.setText(input.getNULLrepresentation());
+    if (input.getEncoding() != null)
+      wEncoding.setText(input.getEncoding());
+
+    wReturn.setRowNums();
+    wReturn.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	protected void cancel()
 	{

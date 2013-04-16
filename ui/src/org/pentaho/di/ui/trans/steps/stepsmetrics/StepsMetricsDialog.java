@@ -535,7 +535,6 @@ public class StepsMetricsDialog extends BaseStepDialog implements StepDialogInte
 			}
 		}
 		
-
 		wFields.removeEmptyRows();
         wFields.setRowNums();
 		wFields.optWidth(true);
@@ -550,7 +549,8 @@ public class StepsMetricsDialog extends BaseStepDialog implements StepDialogInte
 		if(input.getStepLinesErrorsFieldName()!=null) wLineserrorsField.setText(input.getStepLinesErrorsFieldName());
 		if(input.getStepSecondsFieldName()!=null) wSecondsField.setText(input.getStepSecondsFieldName());
 		
-		wStepname.selectAll();
+    wStepname.selectAll();
+    wStepname.setFocus();
 	}
 	
 	private void cancel()

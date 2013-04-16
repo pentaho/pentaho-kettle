@@ -331,39 +331,41 @@ public class MemoryGroupByDialog extends BaseStepDialog implements StepDialogInt
         ciReturn[1].setComboValues(fieldNames);
     }
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		int i;
-		logDebug(BaseMessages.getString(PKG, "MemoryGroupByDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
-		
-        wAlwaysAddResult.setSelection(input.isAlwaysGivingBackOneRow());
-        
-		if (input.getGroupField()!=null)
-		for (i=0;i<input.getGroupField().length;i++)
-		{
-			TableItem item = wGroup.table.getItem(i);
-			if (input.getGroupField()[i]   !=null) item.setText(1, input.getGroupField()[i]);
-		}
-		
-		if (input.getAggregateField()!=null)
-		for (i=0;i<input.getAggregateField().length;i++)
-		{
-			TableItem item = wAgg.table.getItem(i);
-			if (input.getAggregateField()[i]!=null     ) item.setText(1, input.getAggregateField()[i]);
-			if (input.getSubjectField()[i]!=null       ) item.setText(2, input.getSubjectField()[i]);
-			item.setText(3, Const.NVL(MemoryGroupByMeta.getTypeDescLong(input.getAggregateType()[i]), ""));
-			if (input.getValueField()[i]!=null       ) item.setText(4, input.getValueField()[i]);
-		}
-        
-		wStepname.selectAll();
-		wGroup.setRowNums();
-		wGroup.optWidth(true);
-		wAgg.setRowNums();
-		wAgg.optWidth(true);
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    logDebug(BaseMessages.getString(PKG, "MemoryGroupByDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+
+    wAlwaysAddResult.setSelection(input.isAlwaysGivingBackOneRow());
+
+    if (input.getGroupField() != null)
+      for (int i = 0; i < input.getGroupField().length; i++) {
+        TableItem item = wGroup.table.getItem(i);
+        if (input.getGroupField()[i] != null)
+          item.setText(1, input.getGroupField()[i]);
+      }
+
+    if (input.getAggregateField() != null)
+      for (int i = 0; i < input.getAggregateField().length; i++) {
+        TableItem item = wAgg.table.getItem(i);
+        if (input.getAggregateField()[i] != null)
+          item.setText(1, input.getAggregateField()[i]);
+        if (input.getSubjectField()[i] != null)
+          item.setText(2, input.getSubjectField()[i]);
+        item.setText(3, Const.NVL(MemoryGroupByMeta.getTypeDescLong(input.getAggregateType()[i]), ""));
+        if (input.getValueField()[i] != null)
+          item.setText(4, input.getValueField()[i]);
+      }
+
+    wGroup.setRowNums();
+    wGroup.optWidth(true);
+    wAgg.setRowNums();
+    wAgg.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

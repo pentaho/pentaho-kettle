@@ -224,18 +224,20 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface
         }
         return stepname;
     }
-    
-    /**
-     * Copy information from the meta-data input to the dialog fields.
-     */ 
-	public void getData()
-	{	
-		if ( input.getRowThreshold() !=null ) wRowThreshold.setText(input.getRowThreshold());
-		if ( input.getMessage() != null ) wMessage.setText(input.getMessage());
-		wAlwaysLogRows.setSelection(input.isAlwaysLogRows());
-		
-		wStepname.selectAll();
-	}
+
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (input.getRowThreshold() != null)
+      wRowThreshold.setText(input.getRowThreshold());
+    if (input.getMessage() != null)
+      wMessage.setText(input.getMessage());
+    wAlwaysLogRows.setSelection(input.isAlwaysLogRows());
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void getInfo(AbortMeta in)
 	{

@@ -264,17 +264,18 @@ public class FilterRowsDialog extends BaseStepDialog implements StepDialogInterf
 		return stepname;
 	}
 	
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-    	List<StreamInterface> targetStreams = input.getStepIOMeta().getTargetStreams();
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    List<StreamInterface> targetStreams = input.getStepIOMeta().getTargetStreams();
 
-		wTrueTo.setText(Const.NVL(targetStreams.get(0).getStepname(), ""));
-		wFalseTo.setText(Const.NVL(targetStreams.get(1).getStepname(), ""));
-		wStepname.selectAll();
-	}
+    wTrueTo.setText(Const.NVL(targetStreams.get(0).getStepname(), ""));
+    wFalseTo.setText(Const.NVL(targetStreams.get(1).getStepname(), ""));
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

@@ -310,16 +310,18 @@ public class BlockingStepDialog extends BaseStepDialog implements StepDialogInte
     
     /**
      * Copy information from the meta-data input to the dialog fields.
-     */ 
-    public void getData()
-    {
-    	wPassAllRows.setSelection(input.isPassAllRows());
-		if (input.getPrefix() != null) wPrefix.setText(input.getPrefix());
-		if (input.getDirectory() != null) wSpoolDir.setText(input.getDirectory());
-		wCacheSize.setText(""+input.getCacheSize());
-		wCompress.setSelection(input.getCompress());
-		
-        wStepname.selectAll();
+     */
+    public void getData() {
+      wPassAllRows.setSelection(input.isPassAllRows());
+      if (input.getPrefix() != null)
+        wPrefix.setText(input.getPrefix());
+      if (input.getDirectory() != null)
+        wSpoolDir.setText(input.getDirectory());
+      wCacheSize.setText("" + input.getCacheSize());
+      wCompress.setSelection(input.getCompress());
+  
+      wStepname.selectAll();
+      wStepname.setFocus();
     }
     
     private void cancel()

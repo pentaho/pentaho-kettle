@@ -333,7 +333,6 @@ public class InfobrightLoaderDialog extends BaseStepDialog implements StepDialog
    * Copy information from the meta-data input to the dialog fields.
    */
   public void getData() {
-    wStepname.selectAll();
     if (meta.getDatabaseMeta()!=null) {
     	serverConnection.setText(meta.getDatabaseMeta().getName());
     }
@@ -343,6 +342,9 @@ public class InfobrightLoaderDialog extends BaseStepDialog implements StepDialog
     charsetSelect.setText(meta.getCharset().name());
     agentPortText.setText(Integer.toString(meta.getAgentPort()));
     debugFileText.setText(Const.NVL(meta.getDebugFile(), ""));
+    
+    wStepname.selectAll();
+    wStepname.setFocus();
   }
 
   protected void cancel() {

@@ -208,24 +208,23 @@ public class RowsFromResultDialog extends BaseStepDialog implements StepDialogIn
 		return stepname;
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData()
-	{
-		wStepname.selectAll();
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    for (int i = 0; i < input.getFieldname().length; i++) {
+      TableItem item = wFields.table.getItem(i);
+      item.setText(1, input.getFieldname()[i] == null ? "" : input.getFieldname()[i]); //$NON-NLS-1$
+      item.setText(2, ValueMeta.getTypeDesc(input.getType()[i]));
+      int len = input.getLength()[i];
+      int prc = input.getPrecision()[i];
+      item.setText(3, len >= 0 ? "" + len : ""); //$NON-NLS-1$ //$NON-NLS-2$
+      item.setText(4, prc >= 0 ? "" + prc : ""); //$NON-NLS-1$ //$NON-NLS-2$
+    }
 
-		for (int i = 0; i < input.getFieldname().length; i++)
-		{
-			TableItem item = wFields.table.getItem(i);
-			item.setText(1, input.getFieldname()[i] == null ? "" : input.getFieldname()[i]); //$NON-NLS-1$
-			item.setText(2, ValueMeta.getTypeDesc(input.getType()[i]));
-			int len = input.getLength()[i];
-			int prc = input.getPrecision()[i];
-			item.setText(3, len >= 0 ? "" + len : ""); //$NON-NLS-1$ //$NON-NLS-2$
-			item.setText(4, prc >= 0 ? "" + prc : ""); //$NON-NLS-1$ //$NON-NLS-2$
-		}
-	}
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 
 	private void cancel()
 	{

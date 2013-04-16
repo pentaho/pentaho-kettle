@@ -282,20 +282,25 @@ public class WebServiceAvailableDialog extends BaseStepDialog implements StepDia
 		return stepname;
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		if(isDebug()) logDebug( BaseMessages.getString(PKG, "WebServiceAvailableDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (isDebug())
+      logDebug(BaseMessages.getString(PKG, "WebServiceAvailableDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
-		if (input.getURLField() !=null)   wURL.setText(input.getURLField());
-		if (input.getConnectTimeOut() !=null)   wConnectTimeOut.setText(input.getConnectTimeOut());
-		if (input.getReadTimeOut() !=null)   wReadTimeOut.setText(input.getReadTimeOut());
-		if (input.getResultFieldName()!=null)   wResult.setText(input.getResultFieldName());
-		
-		wStepname.selectAll();
-	}
+    if (input.getURLField() != null)
+      wURL.setText(input.getURLField());
+    if (input.getConnectTimeOut() != null)
+      wConnectTimeOut.setText(input.getConnectTimeOut());
+    if (input.getReadTimeOut() != null)
+      wReadTimeOut.setText(input.getReadTimeOut());
+    if (input.getResultFieldName() != null)
+      wResult.setText(input.getResultFieldName());
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

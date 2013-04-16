@@ -303,40 +303,42 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
         this.ciReturn[1].setComboValues(fieldNames);
     }
 
-    /**
-     * Set data values in dialog.
-     */
-    public void getData() {
-        this.wStepname.selectAll();
-        setTextIfPropertyValue(this.meta.getFastloadPath(), this.wFastLoadPath);
-        setTextIfPropertyValue(this.meta.getControlFile(), this.wControlFile);
-        setTextIfPropertyValue(this.meta.getDataFile(), this.wDataFile);
-        setTextIfPropertyValue(this.meta.getLogFile(), this.wLogFile);
-        setTextIfPropertyValue(this.meta.getTargetTable(), this.wTable);
-        setTextIfPropertyValue(this.meta.getErrorLimit(), this.wErrLimit);
-        setTextIfPropertyValue(this.meta.getSessions(), this.wSessions);
-        setTextIfPropertyValue(this.meta.getConnectionName(), this.wConnection);
-        this.wbTruncateTable.setSelection(this.meta.getTruncateTable().getValue());
-        this.wUseControlFile.setSelection(this.meta.getUseControlFile().getValue());
-        this.wVariableSubstitution.setSelection(this.meta.getVariableSubstitution().getValue());
+  /**
+   * Set data values in dialog.
+   */
+  public void getData() {
+    setTextIfPropertyValue(this.meta.getFastloadPath(), this.wFastLoadPath);
+    setTextIfPropertyValue(this.meta.getControlFile(), this.wControlFile);
+    setTextIfPropertyValue(this.meta.getDataFile(), this.wDataFile);
+    setTextIfPropertyValue(this.meta.getLogFile(), this.wLogFile);
+    setTextIfPropertyValue(this.meta.getTargetTable(), this.wTable);
+    setTextIfPropertyValue(this.meta.getErrorLimit(), this.wErrLimit);
+    setTextIfPropertyValue(this.meta.getSessions(), this.wSessions);
+    setTextIfPropertyValue(this.meta.getConnectionName(), this.wConnection);
+    this.wbTruncateTable.setSelection(this.meta.getTruncateTable().getValue());
+    this.wUseControlFile.setSelection(this.meta.getUseControlFile().getValue());
+    this.wVariableSubstitution.setSelection(this.meta.getVariableSubstitution().getValue());
 
-        if (this.meta.getTableFieldList().getValue().size() == this.meta.getStreamFieldList().getValue().size()) {
-            for (int i = 0; i < this.meta.getTableFieldList().getValue().size(); i++) {
-                TableItem item = this.wReturn.table.getItem(i);
-                item.setText(1, this.meta.getTableFieldList().getValue().get(i));
-                item.setText(2, this.meta.getStreamFieldList().getValue().get(i));
-            }
-        }
-        // DatabaseMeta dbMeta = this.transMeta.findDatabase(this.meta.getDbConnection().getValue());
-        if (this.meta.getDbMeta() != null) {
-            this.wConnection.setText(this.meta.getConnectionName().getValue());
-        } else {
-            if (this.transMeta.nrDatabases() == 1) {
-                this.wConnection.setText(this.transMeta.getDatabase(0).getName());
-            }
-        }
-        setTableFieldCombo();
+    if (this.meta.getTableFieldList().getValue().size() == this.meta.getStreamFieldList().getValue().size()) {
+      for (int i = 0; i < this.meta.getTableFieldList().getValue().size(); i++) {
+        TableItem item = this.wReturn.table.getItem(i);
+        item.setText(1, this.meta.getTableFieldList().getValue().get(i));
+        item.setText(2, this.meta.getStreamFieldList().getValue().get(i));
+      }
     }
+    // DatabaseMeta dbMeta = this.transMeta.findDatabase(this.meta.getDbConnection().getValue());
+    if (this.meta.getDbMeta() != null) {
+      this.wConnection.setText(this.meta.getConnectionName().getValue());
+    } else {
+      if (this.transMeta.nrDatabases() == 1) {
+        this.wConnection.setText(this.transMeta.getDatabase(0).getName());
+      }
+    }
+    setTableFieldCombo();
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 
     /**
      * Configure listeners.

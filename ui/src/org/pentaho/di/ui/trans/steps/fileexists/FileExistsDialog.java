@@ -319,19 +319,23 @@ public class FileExistsDialog extends BaseStepDialog implements StepDialogInterf
 		wlFileType.setEnabled(wInclFileType.getSelection());
 		wFileType.setEnabled(wInclFileType.getSelection());
 	}
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		if (input.getDynamicFilenameField() !=null)   wFileName.setText(input.getDynamicFilenameField());
-		if (input.getResultFieldName()!=null)   wResult.setText(input.getResultFieldName());
-		wInclFileType.setSelection(input.includeFileType());
-		if (input.getFileTypeFieldName()!=null)   wFileType.setText(input.getFileTypeFieldName());
-		wAddResult.setSelection(input.addResultFilenames());
-		
-		wStepname.selectAll();
-	}
+
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (input.getDynamicFilenameField() != null)
+      wFileName.setText(input.getDynamicFilenameField());
+    if (input.getResultFieldName() != null)
+      wResult.setText(input.getResultFieldName());
+    wInclFileType.setSelection(input.includeFileType());
+    if (input.getFileTypeFieldName() != null)
+      wFileType.setText(input.getFileTypeFieldName());
+    wAddResult.setSelection(input.addResultFilenames());
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

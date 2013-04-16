@@ -412,29 +412,31 @@ public class DynamicSQLRowDialog extends BaseStepDialog implements StepDialogInt
 		wlPosition.setText(BaseMessages.getString(PKG, "DynamicSQLRowDialog.Position.Label",""+linenr, ""+colnr));
 
 	}
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "DynamicSQLRowDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
-		
-		wSQL.setText( Const.NVL(input.getSql(), ""));
-		wLimit.setText(""+input.getRowLimit()); //$NON-NLS-1$
-		wOuter.setSelection(input.isOuterJoin());
-		wuseVars.setSelection(input.isVariableReplace());
-		if(input.getSQLFieldName()!=null) wSQLFieldName.setText(input.getSQLFieldName());
-		wqueryOnlyOnChange.setSelection(input.isQueryOnlyOnChange());
-		if (input.getDatabaseMeta()!=null)   wConnection.setText(input.getDatabaseMeta().getName());
-		else if (transMeta.nrDatabases()==1)
-		{
-			wConnection.setText( transMeta.getDatabase(0).getName() );
-		}
 
-		wStepname.selectAll();
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (log.isDebug())
+      logDebug(BaseMessages.getString(PKG, "DynamicSQLRowDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
-	}
-	
+    wSQL.setText(Const.NVL(input.getSql(), ""));
+    wLimit.setText("" + input.getRowLimit()); //$NON-NLS-1$
+    wOuter.setSelection(input.isOuterJoin());
+    wuseVars.setSelection(input.isVariableReplace());
+    if (input.getSQLFieldName() != null)
+      wSQLFieldName.setText(input.getSQLFieldName());
+    wqueryOnlyOnChange.setSelection(input.isQueryOnlyOnChange());
+    if (input.getDatabaseMeta() != null)
+      wConnection.setText(input.getDatabaseMeta().getName());
+    else if (transMeta.nrDatabases() == 1) {
+      wConnection.setText(transMeta.getDatabase(0).getName());
+    }
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
+
 	private void cancel()
 	{
 		stepname=null;

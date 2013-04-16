@@ -685,31 +685,45 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface
 		return stepname;
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		wdynamicCommand.setSelection(input.isDynamicCommand());
-		if(input.getCommand()!=null) wCommand.setText(input.getCommand());
-		if(input.getcommandfieldname()!=null) wCommandField.setText(input.getcommandfieldname());
-		if(input.getServerName()!=null) wServerName.setText(input.getServerName());
-		if(input.getPort()!=null) wPort.setText(input.getPort());
-		if(input.getuserName() !=null)   wUserName.setText(input.getuserName());
-		if(input.getpassword() !=null)   wPassword.setText(input.getpassword());
-        wUseKey.setSelection(input.isusePrivateKey());
-        if(input.getKeyFileName()!=null) wPrivateKey.setText(input.getKeyFileName());
-        if(input.getPassphrase()!=null) wPassphrase.setText(input.getPassphrase());
-        if(input.getStdOutFieldName()!=null) wResultOutFieldName.setText(input.getStdOutFieldName());
-        if(input.getStdErrFieldName()!=null) wResultErrFieldName.setText(input.getStdErrFieldName());
-        wTimeOut.setText(Const.NVL(input.getTimeOut(), "0"));
-        if(input.getProxyHost()!=null) wProxyHost.setText(input.getProxyHost());
-        if(input.getProxyPort()!=null) wProxyPort.setText(input.getProxyPort());
-        if(input.getProxyUsername()!=null) wProxyUsername.setText(input.getProxyUsername());
-        if(input.getProxyPassword()!=null) wProxyPassword.setText(input.getProxyPassword());
-        
-		wStepname.selectAll();
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    wdynamicCommand.setSelection(input.isDynamicCommand());
+    if (input.getCommand() != null)
+      wCommand.setText(input.getCommand());
+    if (input.getcommandfieldname() != null)
+      wCommandField.setText(input.getcommandfieldname());
+    if (input.getServerName() != null)
+      wServerName.setText(input.getServerName());
+    if (input.getPort() != null)
+      wPort.setText(input.getPort());
+    if (input.getuserName() != null)
+      wUserName.setText(input.getuserName());
+    if (input.getpassword() != null)
+      wPassword.setText(input.getpassword());
+    wUseKey.setSelection(input.isusePrivateKey());
+    if (input.getKeyFileName() != null)
+      wPrivateKey.setText(input.getKeyFileName());
+    if (input.getPassphrase() != null)
+      wPassphrase.setText(input.getPassphrase());
+    if (input.getStdOutFieldName() != null)
+      wResultOutFieldName.setText(input.getStdOutFieldName());
+    if (input.getStdErrFieldName() != null)
+      wResultErrFieldName.setText(input.getStdErrFieldName());
+    wTimeOut.setText(Const.NVL(input.getTimeOut(), "0"));
+    if (input.getProxyHost() != null)
+      wProxyHost.setText(input.getProxyHost());
+    if (input.getProxyPort() != null)
+      wProxyPort.setText(input.getProxyPort());
+    if (input.getProxyUsername() != null)
+      wProxyUsername.setText(input.getProxyUsername());
+    if (input.getProxyPassword() != null)
+      wProxyPassword.setText(input.getProxyPassword());
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 
 	private void cancel()
 	{

@@ -365,25 +365,27 @@ public class UniqueRowsByHashSetDialog extends BaseStepDialog implements StepDia
         Const.sortStrings(fieldNames);
         colinf[0].setComboValues(fieldNames);
     }
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-	    wStoreValues.setSelection(input.getStoreValues());
-		wRejectDuplicateRow.setSelection(input.isRejectDuplicateRow());
-		if (input.getErrorDescription()!=null) wErrorDesc.setText(input.getErrorDescription());
-	    for (int i=0;i<input.getCompareFields().length;i++)
-	    {
-	        TableItem item = wFields.table.getItem(i);
-	        if (input.getCompareFields()[i]!=null) item.setText(1, input.getCompareFields()[i]);
-	    }
-	    wFields.setRowNums();
-	    wFields.optWidth(true);
 
-	    wStepname.selectAll();
-	}
-	
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    wStoreValues.setSelection(input.getStoreValues());
+    wRejectDuplicateRow.setSelection(input.isRejectDuplicateRow());
+    if (input.getErrorDescription() != null)
+      wErrorDesc.setText(input.getErrorDescription());
+    for (int i = 0; i < input.getCompareFields().length; i++) {
+      TableItem item = wFields.table.getItem(i);
+      if (input.getCompareFields()[i] != null)
+        item.setText(1, input.getCompareFields()[i]);
+    }
+    wFields.setRowNums();
+    wFields.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
+
 	private void cancel()
 	{
 		stepname=null;

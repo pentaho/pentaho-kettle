@@ -351,35 +351,35 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
 		return stepname;
 	}
 	
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-        List<StreamInterface> infoStreams = input.getStepIOMeta().getInfoStreams();
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    List<StreamInterface> infoStreams = input.getStepIOMeta().getInfoStreams();
 
-		wStep1.setText(Const.NVL(infoStreams.get(0).getStepname(), ""));
-		wStep2.setText(Const.NVL(infoStreams.get(1).getStepname(), ""));
-		String joinType = input.getJoinType();
-		if (joinType != null && joinType.length() > 0)
-			wType.setText(joinType);
-		else
-			wType.setText(MergeJoinMeta.join_types[0]);
-        
-        for (int i=0;i<input.getKeyFields1().length;i++)
-        {
-            TableItem item = wKeys1.table.getItem(i);
-            if (input.getKeyFields1()[i]!=null) item.setText(1, input.getKeyFields1()[i]);
-        }
-        for (int i=0;i<input.getKeyFields2().length;i++)
-        {
-            TableItem item = wKeys2.table.getItem(i);
-            if (input.getKeyFields2()[i]!=null) item.setText(1, input.getKeyFields2()[i]);
-        }
-        
-        wStepname.selectAll();
-	}
-	
+    wStep1.setText(Const.NVL(infoStreams.get(0).getStepname(), ""));
+    wStep2.setText(Const.NVL(infoStreams.get(1).getStepname(), ""));
+    String joinType = input.getJoinType();
+    if (joinType != null && joinType.length() > 0)
+      wType.setText(joinType);
+    else
+      wType.setText(MergeJoinMeta.join_types[0]);
+
+    for (int i = 0; i < input.getKeyFields1().length; i++) {
+      TableItem item = wKeys1.table.getItem(i);
+      if (input.getKeyFields1()[i] != null)
+        item.setText(1, input.getKeyFields1()[i]);
+    }
+    for (int i = 0; i < input.getKeyFields2().length; i++) {
+      TableItem item = wKeys2.table.getItem(i);
+      if (input.getKeyFields2()[i] != null)
+        item.setText(1, input.getKeyFields2()[i]);
+    }
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
+
 	private void cancel()
 	{
 		stepname=null;

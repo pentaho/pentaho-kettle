@@ -1204,60 +1204,75 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
 		wlUrl.setEnabled(!wUrlInField.getSelection());
 		wUrl.setEnabled(!wUrlInField.getSelection());       
 	}
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		int i;
-		if(isDebug()) logDebug(BaseMessages.getString(PKG, "RestDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
-		
-		if (input.getHeaderName()!=null)
-		{
-			for (i=0;i<input.getHeaderName().length;i++)
-			{
-				TableItem item = wFields.table.getItem(i);
-				if (input.getHeaderField()[i]  !=null) item.setText(1, input.getHeaderField()[i]);
-				if (input.getHeaderName()[i]      !=null) item.setText(2, input.getHeaderName()[i]);
-			}
-		}
 
-		if (input.getParameterField()!=null)
-		{
-			for (i=0;i<input.getParameterField().length;i++)
-			{
-				TableItem item = wParameters.table.getItem(i);
-				if (input.getParameterField()[i]      !=null) item.setText(1, input.getParameterField()[i]);
-				if (input.getParameterName()[i]  !=null) item.setText(2, input.getParameterName()[i]);
-			}
-		}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (isDebug())
+      logDebug(BaseMessages.getString(PKG, "RestDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
-		wMethod.setText(Const.NVL(input.getMethod(), RestMeta.HTTP_METHOD_GET));
-		wMethodInField.setSelection(input.isDynamicMethod());
-		if(input.getBodyField()!=null) wBody.setText(input.getBodyField());
-		if(input.getMethodFieldName()!=null) wMethodField.setText(input.getMethodFieldName());
-		if (input.getUrl() !=null)      wUrl.setText(input.getUrl());
-        wUrlInField.setSelection(input.isUrlInField());
-        if (input.getUrlField() !=null) wUrlField.setText(input.getUrlField());
-		if (input.getFieldName()!=null) wResult.setText(input.getFieldName());
-		if (input.getResultCodeFieldName()!=null) wResultCode.setText(input.getResultCodeFieldName());
-		if (input.getResponseTimeFieldName()!=null) wResponseTime.setText(input.getResponseTimeFieldName());
+    if (input.getHeaderName() != null) {
+      for (int i = 0; i < input.getHeaderName().length; i++) {
+        TableItem item = wFields.table.getItem(i);
+        if (input.getHeaderField()[i] != null)
+          item.setText(1, input.getHeaderField()[i]);
+        if (input.getHeaderName()[i] != null)
+          item.setText(2, input.getHeaderName()[i]);
+      }
+    }
 
-	    if(input.getHttpLogin() != null) wHttpLogin.setText(input.getHttpLogin());
-	    if(input.getHttpPassword() != null) wHttpPassword.setText(input.getHttpPassword());
-	    if(input.getProxyHost() != null) wProxyHost.setText(input.getProxyHost());
-	    if(input.getProxyPort() != null) wProxyPort.setText(input.getProxyPort());
-		wPreemptive.setSelection(input.isPreemptive());
-		
-	    if(input.getTrustStoreFile() != null) wTrustStoreFile.setText(input.getTrustStoreFile());
-	    if(input.getTrustStorePassword() != null) wTrustStorePassword.setText(input.getTrustStorePassword());
-	    
-	    wApplicationType.setText(Const.NVL(input.getApplicationType(), ""));
-	    
-		wFields.setRowNums();
-		wFields.optWidth(true);
-		wStepname.selectAll();
-	}
+    if (input.getParameterField() != null) {
+      for (int i = 0; i < input.getParameterField().length; i++) {
+        TableItem item = wParameters.table.getItem(i);
+        if (input.getParameterField()[i] != null)
+          item.setText(1, input.getParameterField()[i]);
+        if (input.getParameterName()[i] != null)
+          item.setText(2, input.getParameterName()[i]);
+      }
+    }
+
+    wMethod.setText(Const.NVL(input.getMethod(), RestMeta.HTTP_METHOD_GET));
+    wMethodInField.setSelection(input.isDynamicMethod());
+    if (input.getBodyField() != null)
+      wBody.setText(input.getBodyField());
+    if (input.getMethodFieldName() != null)
+      wMethodField.setText(input.getMethodFieldName());
+    if (input.getUrl() != null)
+      wUrl.setText(input.getUrl());
+    wUrlInField.setSelection(input.isUrlInField());
+    if (input.getUrlField() != null)
+      wUrlField.setText(input.getUrlField());
+    if (input.getFieldName() != null)
+      wResult.setText(input.getFieldName());
+    if (input.getResultCodeFieldName() != null)
+      wResultCode.setText(input.getResultCodeFieldName());
+    if (input.getResponseTimeFieldName() != null)
+      wResponseTime.setText(input.getResponseTimeFieldName());
+
+    if (input.getHttpLogin() != null)
+      wHttpLogin.setText(input.getHttpLogin());
+    if (input.getHttpPassword() != null)
+      wHttpPassword.setText(input.getHttpPassword());
+    if (input.getProxyHost() != null)
+      wProxyHost.setText(input.getProxyHost());
+    if (input.getProxyPort() != null)
+      wProxyPort.setText(input.getProxyPort());
+    wPreemptive.setSelection(input.isPreemptive());
+
+    if (input.getTrustStoreFile() != null)
+      wTrustStoreFile.setText(input.getTrustStoreFile());
+    if (input.getTrustStorePassword() != null)
+      wTrustStorePassword.setText(input.getTrustStorePassword());
+
+    wApplicationType.setText(Const.NVL(input.getApplicationType(), ""));
+
+    wFields.setRowNums();
+    wFields.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

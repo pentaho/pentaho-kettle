@@ -1405,91 +1405,116 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 	}
 
 
-	/**
-	 * Read the data from the LDAPInputMeta object and show it in this dialog.
-	 * 
-	 * @param in The LDAPInputMeta object to obtain the data from.
-	 */
-	public void getData(LDAPInputMeta in)
-	{
-		wProtocol.setText(Const.NVL(in.getProtocol(), LDAPConnection.getProtocolCode(LDAPConnection.PROTOCOL_LDAP)));
-		wsetTrustStore.setSelection(in.isUseCertificate());
-		if (in.getTrustStorePath()!=null) wTrustStorePath.setText(in.getTrustStorePath());
-		if (in.getTrustStorePassword()!=null) wTrustStorePassword.setText(in.getTrustStorePassword());
-		wTrustAll.setSelection(in.isTrustAllCertificates());
-		
-		wInclRownum.setSelection(in.includeRowNumber());
-		if (in.getRowNumberField()!=null) wInclRownumField.setText(in.getRowNumberField());
-		
-		wusingAuthentication.setSelection(in.UseAuthentication());
-		wsetPaging.setSelection(in.isPaging());
-		if (in.getPageSize()!=null) wPageSize.setText(in.getPageSize());
-		
-		wLimit.setText(""+in.getRowLimit());
-		wTimeLimit.setText(""+in.getTimeLimit());
-		if(in.getMultiValuedSeparator()!=null)	wMultiValuedSeparator.setText(in.getMultiValuedSeparator());
+  /**
+   * Read the data from the LDAPInputMeta object and show it in this dialog.
+   * 
+   * @param in The LDAPInputMeta object to obtain the data from.
+   */
+  public void getData(LDAPInputMeta in) {
+    wProtocol.setText(Const.NVL(in.getProtocol(), LDAPConnection.getProtocolCode(LDAPConnection.PROTOCOL_LDAP)));
+    wsetTrustStore.setSelection(in.isUseCertificate());
+    if (in.getTrustStorePath() != null)
+      wTrustStorePath.setText(in.getTrustStorePath());
+    if (in.getTrustStorePassword() != null)
+      wTrustStorePassword.setText(in.getTrustStorePassword());
+    wTrustAll.setSelection(in.isTrustAllCertificates());
 
-		if (in.getHost() != null)  wHost.setText(in.getHost());
-		if (in.getUserName() != null)  wUserName.setText(in.getUserName());
-	    if (in.getPassword() != null)  wPassword.setText(in.getPassword());
-		if (in.getPort() != null)  wPort.setText(in.getPort());
-		
-		if (in.getFilterString() != null)  wFilterString.setText(in.getFilterString());
-		if (in.getSearchBase()!= null)  wSearchBase.setText(in.getSearchBase());
-		wdynamicBase.setSelection(in.isDynamicSearch());
-		if (in.getDynamicSearchFieldName() != null)  wsearchBaseField.setText(in.getDynamicSearchFieldName());
-		
-		wdynamicFilter.setSelection(in.isDynamicFilter());
-		if (in.getDynamicFilterFieldName() != null)  wfilterField.setText(in.getDynamicFilterFieldName());
-		wsearchScope.setText(LDAPInputMeta.getSearchScopeDesc(in.getSearchScope()));
-		if(isDebug()) logDebug(BaseMessages.getString(PKG, "LDAPInputDialog.Log.GettingFieldsInfo"));
-		for (int i=0;i<in.getInputFields().length;i++)
-		{
-		    LDAPInputField field = in.getInputFields()[i];
-		    
-            if (field!=null)
-            {
-    			TableItem item  = wFields.table.getItem(i);
-    			String name     = field.getName();
-    			String path	= field.getAttribute();
-				String issortedkey = field.isSortedKey() ? 
-						BaseMessages.getString(PKG, "System.Combo.Yes") : 
-						BaseMessages.getString(PKG, "System.Combo.No");
-    			String returntype   = field.getFetchAttributeAsDesc();
-    			String type     = field.getTypeDesc();
-    			String format   = field.getFormat();
-    			String length   = ""+field.getLength();
-    			String prec     = ""+field.getPrecision();
-    			String curr     = field.getCurrencySymbol();
-    			String group    = field.getGroupSymbol();
-    			String decim    = field.getDecimalSymbol();
-    			String trim     = field.getTrimTypeDesc();
-    			String rep      = field.isRepeated()?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No");
-    			
-                if (name    !=null) item.setText( 1, name);
-                if (path   !=null) item.setText( 2,path);
-    			if (returntype    !=null) item.setText( 3, returntype);
-    			if (issortedkey != null) item.setText(4, issortedkey);
-    			if (type    !=null) item.setText( 5, type);
-    			if (format  !=null) item.setText( 6, format);
-    			if (length  !=null && !"-1".equals(length)) item.setText( 5, length);
-    			if (prec    !=null && !"-1".equals(prec)) item.setText( 8, prec);
-    			if (curr    !=null) item.setText( 9, curr);
-    			if (decim   !=null) item.setText( 10, decim);
-    			if (group   !=null) item.setText( 11, group);
-    			if (trim    !=null) item.setText(12, trim);
-    			if (rep     !=null) item.setText(13, rep);                
-            }
-		}
-        
-        wFields.removeEmptyRows();
-        wFields.setRowNums();
-        wFields.optWidth(true);
+    wInclRownum.setSelection(in.includeRowNumber());
+    if (in.getRowNumberField() != null)
+      wInclRownumField.setText(in.getRowNumberField());
 
-		setIncludeRownum();
+    wusingAuthentication.setSelection(in.UseAuthentication());
+    wsetPaging.setSelection(in.isPaging());
+    if (in.getPageSize() != null)
+      wPageSize.setText(in.getPageSize());
 
-		wStepname.selectAll();
-	}
+    wLimit.setText("" + in.getRowLimit());
+    wTimeLimit.setText("" + in.getTimeLimit());
+    if (in.getMultiValuedSeparator() != null)
+      wMultiValuedSeparator.setText(in.getMultiValuedSeparator());
+
+    if (in.getHost() != null)
+      wHost.setText(in.getHost());
+    if (in.getUserName() != null)
+      wUserName.setText(in.getUserName());
+    if (in.getPassword() != null)
+      wPassword.setText(in.getPassword());
+    if (in.getPort() != null)
+      wPort.setText(in.getPort());
+
+    if (in.getFilterString() != null)
+      wFilterString.setText(in.getFilterString());
+    if (in.getSearchBase() != null)
+      wSearchBase.setText(in.getSearchBase());
+    wdynamicBase.setSelection(in.isDynamicSearch());
+    if (in.getDynamicSearchFieldName() != null)
+      wsearchBaseField.setText(in.getDynamicSearchFieldName());
+
+    wdynamicFilter.setSelection(in.isDynamicFilter());
+    if (in.getDynamicFilterFieldName() != null)
+      wfilterField.setText(in.getDynamicFilterFieldName());
+    wsearchScope.setText(LDAPInputMeta.getSearchScopeDesc(in.getSearchScope()));
+    if (isDebug())
+      logDebug(BaseMessages.getString(PKG, "LDAPInputDialog.Log.GettingFieldsInfo"));
+    for (int i = 0; i < in.getInputFields().length; i++) {
+      LDAPInputField field = in.getInputFields()[i];
+
+      if (field != null) {
+        TableItem item = wFields.table.getItem(i);
+        String name = field.getName();
+        String path = field.getAttribute();
+        String issortedkey = field.isSortedKey() ? BaseMessages.getString(PKG, "System.Combo.Yes") : BaseMessages
+            .getString(PKG, "System.Combo.No");
+        String returntype = field.getFetchAttributeAsDesc();
+        String type = field.getTypeDesc();
+        String format = field.getFormat();
+        String length = "" + field.getLength();
+        String prec = "" + field.getPrecision();
+        String curr = field.getCurrencySymbol();
+        String group = field.getGroupSymbol();
+        String decim = field.getDecimalSymbol();
+        String trim = field.getTrimTypeDesc();
+        String rep = field.isRepeated() ? BaseMessages.getString(PKG, "System.Combo.Yes") : BaseMessages.getString(PKG,
+            "System.Combo.No");
+
+        if (name != null)
+          item.setText(1, name);
+        if (path != null)
+          item.setText(2, path);
+        if (returntype != null)
+          item.setText(3, returntype);
+        if (issortedkey != null)
+          item.setText(4, issortedkey);
+        if (type != null)
+          item.setText(5, type);
+        if (format != null)
+          item.setText(6, format);
+        if (length != null && !"-1".equals(length))
+          item.setText(5, length);
+        if (prec != null && !"-1".equals(prec))
+          item.setText(8, prec);
+        if (curr != null)
+          item.setText(9, curr);
+        if (decim != null)
+          item.setText(10, decim);
+        if (group != null)
+          item.setText(11, group);
+        if (trim != null)
+          item.setText(12, trim);
+        if (rep != null)
+          item.setText(13, rep);
+      }
+    }
+
+    wFields.removeEmptyRows();
+    wFields.setRowNums();
+    wFields.optWidth(true);
+
+    setIncludeRownum();
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 
 	private void cancel()
 	{

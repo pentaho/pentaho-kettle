@@ -404,35 +404,36 @@ public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterf
 		}
 
 	}
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		wLoglevel.select(input.getLogLevelByDesc().getLevel());
 
-		wPrintHeader.setSelection(input.isdisplayHeader());
-                wLimitRows.setSelection(input.isLimitRows());
-                wLimitRowsNumber.setText(""+input.getLimitRowsNumber());
-		
-        if (input.getLogMessage() != null)
-            wLogMessage.setText(input.getLogMessage());
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    wLoglevel.select(input.getLogLevelByDesc().getLevel());
 
-		Table table = wFields.table;
-		if (input.getFieldName().length>0) table.removeAll();
-		for (int i=0;i<input.getFieldName().length;i++)
-		{
-			TableItem ti = new TableItem(table, SWT.NONE);
-			ti.setText(0, ""+(i+1));
-			ti.setText(1, input.getFieldName()[i]);
-		}
+    wPrintHeader.setSelection(input.isdisplayHeader());
+    wLimitRows.setSelection(input.isLimitRows());
+    wLimitRowsNumber.setText("" + input.getLimitRowsNumber());
 
-        wFields.setRowNums();
-		wFields.optWidth(true);
-		
-		wStepname.selectAll();
-	}
-	
+    if (input.getLogMessage() != null)
+      wLogMessage.setText(input.getLogMessage());
+
+    Table table = wFields.table;
+    if (input.getFieldName().length > 0)
+      table.removeAll();
+    for (int i = 0; i < input.getFieldName().length; i++) {
+      TableItem ti = new TableItem(table, SWT.NONE);
+      ti.setText(0, "" + (i + 1));
+      ti.setText(1, input.getFieldName()[i]);
+    }
+
+    wFields.setRowNums();
+    wFields.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
+
 	private void cancel()
 	{
 		stepname=null;

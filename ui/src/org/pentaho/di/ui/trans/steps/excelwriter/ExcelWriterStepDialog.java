@@ -1550,114 +1550,116 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 		colinf[9].setComboValues(fieldNames);
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData() {
-		if (input.getFileName() != null)
-			wFilename.setText(input.getFileName());
-		wDoNotOpenNewFileInit.setSelection(input.isDoNotOpenNewFileInit());
-		if (input.getExtension() != null) {
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (input.getFileName() != null)
+      wFilename.setText(input.getFileName());
+    wDoNotOpenNewFileInit.setSelection(input.isDoNotOpenNewFileInit());
+    if (input.getExtension() != null) {
 
-			if (input.getExtension().equals("xlsx")) {
-				wExtension.select(1);
-			} else {
-				wExtension.select(0);
-			}
+      if (input.getExtension().equals("xlsx")) {
+        wExtension.select(1);
+      } else {
+        wExtension.select(0);
+      }
 
-		}
+    }
 
     wStreamData.setSelection(input.isStreamingData());
-		wSplitEvery.setText("" + input.getSplitEvery());
-		wEmptyRows.setText("" + input.getAppendEmpty());
-		wSkipRows.setText("" + input.getAppendOffset());
-		wAppendLines.setSelection(input.isAppendLines());
-		wHeader.setSelection(input.isHeaderEnabled());
-		wFooter.setSelection(input.isFooterEnabled());
-		wOmitHeader.setSelection(input.isAppendOmitHeader());
-		wForceFormulaRecalculation.setSelection(input.isForceFormulaRecalculation());
-		wLeaveExistingStylesUnchanged.setSelection(input.isLeaveExistingStylesUnchanged());
+    wSplitEvery.setText("" + input.getSplitEvery());
+    wEmptyRows.setText("" + input.getAppendEmpty());
+    wSkipRows.setText("" + input.getAppendOffset());
+    wAppendLines.setSelection(input.isAppendLines());
+    wHeader.setSelection(input.isHeaderEnabled());
+    wFooter.setSelection(input.isFooterEnabled());
+    wOmitHeader.setSelection(input.isAppendOmitHeader());
+    wForceFormulaRecalculation.setSelection(input.isForceFormulaRecalculation());
+    wLeaveExistingStylesUnchanged.setSelection(input.isLeaveExistingStylesUnchanged());
 
-		if (input.getStartingCell() != null){
-			wStartingCell.setText(input.getStartingCell());	
-		}
-		
-		wAddDate.setSelection(input.isDateInFilename());
-		wAddTime.setSelection(input.isTimeInFilename());
+    if (input.getStartingCell() != null) {
+      wStartingCell.setText(input.getStartingCell());
+    }
 
-		if (input.getDateTimeFormat() != null)
-			wDateTimeFormat.setText(input.getDateTimeFormat());
-		wSpecifyFormat.setSelection(input.isSpecifyFormat());
+    wAddDate.setSelection(input.isDateInFilename());
+    wAddTime.setSelection(input.isTimeInFilename());
 
-		wAddToResult.setSelection(input.isAddToResultFiles());
-		wAutoSize.setSelection(input.isAutoSizeColums());
-		wIfFileExists.select(ExcelWriterStepMeta.IF_FILE_EXISTS_REUSE.equals(input.getIfFileExists())?1:0);
-		wIfSheetExists.select(ExcelWriterStepMeta.IF_SHEET_EXISTS_REUSE.equals(input.getIfSheetExists())?1:0);
-		wRowWritingMethod.select(ExcelWriterStepMeta.ROW_WRITE_PUSH_DOWN.equals(input.getRowWritingMethod())?1:0);
+    if (input.getDateTimeFormat() != null)
+      wDateTimeFormat.setText(input.getDateTimeFormat());
+    wSpecifyFormat.setSelection(input.isSpecifyFormat());
 
-		wAddStepnr.setSelection(input.isStepNrInFilename());
-		wMakeActiveSheet.setSelection(input.isMakeSheetActive());
-		wTemplate.setSelection(input.isTemplateEnabled());
-		wTemplateSheet.setSelection(input.isTemplateSheetEnabled());
-		
-		if (input.getTemplateFileName() != null)
-			wTemplateFilename.setText(input.getTemplateFileName());
-		
-		if (input.getTemplateSheetName() != null)
-			wTemplateSheetname.setText(input.getTemplateSheetName());
-		
-		if (input.getSheetname() != null) {
-			wSheetname.setText(input.getSheetname());
-		} else {
-			wSheetname.setText("Sheet1");
-		}
-		wProtectSheet.setSelection(input.isSheetProtected());
+    wAddToResult.setSelection(input.isAddToResultFiles());
+    wAutoSize.setSelection(input.isAutoSizeColums());
+    wIfFileExists.select(ExcelWriterStepMeta.IF_FILE_EXISTS_REUSE.equals(input.getIfFileExists()) ? 1 : 0);
+    wIfSheetExists.select(ExcelWriterStepMeta.IF_SHEET_EXISTS_REUSE.equals(input.getIfSheetExists()) ? 1 : 0);
+    wRowWritingMethod.select(ExcelWriterStepMeta.ROW_WRITE_PUSH_DOWN.equals(input.getRowWritingMethod()) ? 1 : 0);
 
-		enablePassword();
-		enableTemplate();
+    wAddStepnr.setSelection(input.isStepNrInFilename());
+    wMakeActiveSheet.setSelection(input.isMakeSheetActive());
+    wTemplate.setSelection(input.isTemplateEnabled());
+    wTemplateSheet.setSelection(input.isTemplateSheetEnabled());
 
-		if (input.getPassword() != null)
-			wPassword.setText(input.getPassword());
-		if (input.getProtectedBy() != null){
-			wProtectedBy.setText(input.getProtectedBy());
-		}
+    if (input.getTemplateFileName() != null)
+      wTemplateFilename.setText(input.getTemplateFileName());
 
-		logDebug("getting fields info...");
+    if (input.getTemplateSheetName() != null)
+      wTemplateSheetname.setText(input.getTemplateSheetName());
 
-		for (int i = 0; i < input.getOutputFields().length; i++) {
-			ExcelWriterStepField field = input.getOutputFields()[i];
+    if (input.getSheetname() != null) {
+      wSheetname.setText(input.getSheetname());
+    } else {
+      wSheetname.setText("Sheet1");
+    }
+    wProtectSheet.setSelection(input.isSheetProtected());
 
-			TableItem item = wFields.table.getItem(i);
-			if (field.getName() != null)
-				item.setText(1, field.getName());
-			item.setText(2, field.getTypeDesc());
+    enablePassword();
+    enableTemplate();
 
-			if (field.getFormat() != null)
-				item.setText(3, field.getFormat());
-			if (field.getStyleCell() != null)
-				item.setText(4, field.getStyleCell());
-			if (field.getTitle() != null)
-				item.setText(5, field.getTitle());
-			if (field.getTitleStyleCell() != null)
-				item.setText(6, field.getTitleStyleCell());
-			if (field.isFormula()) {
-				item.setText(7, "Y");
-			} else {
-				item.setText(7, "N");
-			}
+    if (input.getPassword() != null)
+      wPassword.setText(input.getPassword());
+    if (input.getProtectedBy() != null) {
+      wProtectedBy.setText(input.getProtectedBy());
+    }
 
-			if (field.getHyperlinkField() != null)
-				item.setText(8, field.getHyperlinkField());
-			if (field.getCommentField() != null)
-				item.setText(9, field.getCommentField());
-			if (field.getCommentAuthorField() != null)
-				item.setText(10, field.getCommentAuthorField());
+    logDebug("getting fields info...");
 
-		}
+    for (int i = 0; i < input.getOutputFields().length; i++) {
+      ExcelWriterStepField field = input.getOutputFields()[i];
 
-		wFields.optWidth(true);
-		wStepname.selectAll();
-	}
+      TableItem item = wFields.table.getItem(i);
+      if (field.getName() != null)
+        item.setText(1, field.getName());
+      item.setText(2, field.getTypeDesc());
+
+      if (field.getFormat() != null)
+        item.setText(3, field.getFormat());
+      if (field.getStyleCell() != null)
+        item.setText(4, field.getStyleCell());
+      if (field.getTitle() != null)
+        item.setText(5, field.getTitle());
+      if (field.getTitleStyleCell() != null)
+        item.setText(6, field.getTitleStyleCell());
+      if (field.isFormula()) {
+        item.setText(7, "Y");
+      } else {
+        item.setText(7, "N");
+      }
+
+      if (field.getHyperlinkField() != null)
+        item.setText(8, field.getHyperlinkField());
+      if (field.getCommentField() != null)
+        item.setText(9, field.getCommentField());
+      if (field.getCommentAuthorField() != null)
+        item.setText(10, field.getCommentAuthorField());
+
+    }
+
+    wFields.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 
 	private void cancel() {
 		stepname = null;

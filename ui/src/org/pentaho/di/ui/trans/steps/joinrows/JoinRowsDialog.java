@@ -330,18 +330,21 @@ public class JoinRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		return stepname;
 	}
 	
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		if (input.getPrefix() != null) wPrefix.setText(input.getPrefix());
-		if (input.getDirectory() != null) wSortDir.setText(input.getDirectory());
-		wCache.setText(""+input.getCacheSize()); //$NON-NLS-1$
-		if (input.getLookupStepname() != null) wMainStep.setText(input.getLookupStepname());
-		
-		wStepname.selectAll();
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (input.getPrefix() != null)
+      wPrefix.setText(input.getPrefix());
+    if (input.getDirectory() != null)
+      wSortDir.setText(input.getDirectory());
+    wCache.setText("" + input.getCacheSize()); //$NON-NLS-1$
+    if (input.getLookupStepname() != null)
+      wMainStep.setText(input.getLookupStepname());
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

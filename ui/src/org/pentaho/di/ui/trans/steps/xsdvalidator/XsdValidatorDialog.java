@@ -672,60 +672,55 @@ public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInte
 			if(fieldXSD!=null)  wXSDDefinedColumn.setText(fieldXSD);
 		 }
 	 }
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-	
-		if (input.getXSDFilename() != null) wFilename.setText( input.getXSDFilename());
-		
-		// XML source
-		wXMLSourceFile.setSelection(input.getXMLSourceFile());
-		if (input.getXMLStream() != null) wXMLStream.setText( input.getXMLStream());
-		
-		if (input.getXSDDefinedField() != null) wXSDDefinedColumn.setText( input.getXSDDefinedField());
-		
-		// Output Fields
-		if (input.getResultfieldname() != null) wResultField.setText( input.getResultfieldname() );
-		wAddValidationMsg.setSelection(input.useAddValidationMessage());
-		if (input.getValidationMessageField() !=null) 
-		{
-			wValidationMsg.setText(input.getValidationMessageField());
-		}
-		else
-		{
-			wValidationMsg.setText("ValidationMsgField");
-		}
-		
-		wOutputStringField.setSelection(input.getOutputStringField());
-		
-		if(input.getIfXmlValid()!=null) wIfXMLValid.setText(input.getIfXmlValid());
-		if(input.getIfXmlInvalid()!=null) wIfXMLUnValid.setText(input.getIfXmlInvalid());
-		
-		
-		if (input.getXSDSource()!=null)
-		{
-			if (input.getXSDSource().equals(input.SPECIFY_FILENAME))
-			{
-				wXSDSource.select(0);
-			}
-			else if  (input.getXSDSource().equals(input.SPECIFY_FIELDNAME))
-			{
-				wXSDSource.select(1);
-			}
-			else
-			{
-				wXSDSource.select(2);
-			}
-		}
-		else
-		{
-			wXSDSource.select(0);
-		}
-		
-		wStepname.selectAll();
-	}
+
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+
+    if (input.getXSDFilename() != null)
+      wFilename.setText(input.getXSDFilename());
+
+    // XML source
+    wXMLSourceFile.setSelection(input.getXMLSourceFile());
+    if (input.getXMLStream() != null)
+      wXMLStream.setText(input.getXMLStream());
+
+    if (input.getXSDDefinedField() != null)
+      wXSDDefinedColumn.setText(input.getXSDDefinedField());
+
+    // Output Fields
+    if (input.getResultfieldname() != null)
+      wResultField.setText(input.getResultfieldname());
+    wAddValidationMsg.setSelection(input.useAddValidationMessage());
+    if (input.getValidationMessageField() != null) {
+      wValidationMsg.setText(input.getValidationMessageField());
+    } else {
+      wValidationMsg.setText("ValidationMsgField");
+    }
+
+    wOutputStringField.setSelection(input.getOutputStringField());
+
+    if (input.getIfXmlValid() != null)
+      wIfXMLValid.setText(input.getIfXmlValid());
+    if (input.getIfXmlInvalid() != null)
+      wIfXMLUnValid.setText(input.getIfXmlInvalid());
+
+    if (input.getXSDSource() != null) {
+      if (input.getXSDSource().equals(input.SPECIFY_FILENAME)) {
+        wXSDSource.select(0);
+      } else if (input.getXSDSource().equals(input.SPECIFY_FIELDNAME)) {
+        wXSDSource.select(1);
+      } else {
+        wXSDSource.select(2);
+      }
+    } else {
+      wXSDSource.select(0);
+    }
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 
 	private void activeValidationMsg()
 	{

@@ -729,46 +729,54 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 		}
 	}
 	 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-	
-		if (input.getScript() != null) wScript.setText( input.getScript() );
-		if (input.getResultFieldName() != null) wResultField.setText( input.getResultFieldName() );
-		if (input.getMatcher() != null) wfieldevaluate.setText( input.getMatcher() );
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (input.getScript() != null)
+      wScript.setText(input.getScript());
+    if (input.getResultFieldName() != null)
+      wResultField.setText(input.getResultFieldName());
+    if (input.getMatcher() != null)
+      wfieldevaluate.setText(input.getMatcher());
 
-		wUseVar.setSelection(input.isUseVariableInterpolationFlagSet());
-		wReplaceFields.setSelection(input.isReplacefields());
-		wAllowCaptureGroups.setSelection(input.isAllowCaptureGroupsFlagSet());
-		wCanonEq.setSelection(input.isCanonicalEqualityFlagSet());
-		wCaseInsensitive.setSelection(input.isCaseInsensitiveFlagSet());
-		wComment.setSelection(input.isCommentFlagSet());
-		wDotAll.setSelection(input.isDotAllFlagSet());
-		wMultiline.setSelection(input.isMultilineFlagSet());
-		wUnicode.setSelection(input.isUnicodeFlagSet());
-		wUnix.setSelection(input.isUnixLineEndingsFlagSet());
-		for (int i = 0; i < input.getFieldName().length; i++)
-		{
-			TableItem ti = wFields.table.getItem(i);
-			if (input.getFieldName()[i]   != null) ti.setText( 1, input.getFieldName()[i]); 
-	              ti.setText(2, ValueMeta.getTypeDesc(input.getFieldType()[i]));
-	              ti.setText(3, input.getFieldLength()[i]>=0 ? ""+input.getFieldLength()[i] : "");  //$NON-NLS-1$
-	              ti.setText(4, input.getFieldPrecision()[i]>=0 ? (""+input.getFieldPrecision()[i]) : "");  //$NON-NLS-1$
-			if (input.getFieldFormat()[i]  != null) ti.setText(5, input.getFieldFormat()[i]); 
-			if (input.getFieldGroup()[i]   != null) ti.setText(6, input.getFieldGroup()[i]); 
-			if (input.getFieldDecimal()[i] != null) ti.setText(7, input.getFieldDecimal()[i]); 
-			if (input.getFieldCurrency()[i]!= null) ti.setText(8, input.getFieldCurrency()[i]); 
-            if (input.getFieldNullIf()[i] != null) ti.setText(9, input.getFieldNullIf()[i]);
-            if (input.getFieldIfNull()[i] != null) ti.setText(10, input.getFieldIfNull()[i]);
-            ti.setText(11, ValueMeta.getTrimTypeDesc(input.getFieldTrimType()[i]));
-		}
-		wFields.setRowNums();
-		wFields.optWidth(true);
+    wUseVar.setSelection(input.isUseVariableInterpolationFlagSet());
+    wReplaceFields.setSelection(input.isReplacefields());
+    wAllowCaptureGroups.setSelection(input.isAllowCaptureGroupsFlagSet());
+    wCanonEq.setSelection(input.isCanonicalEqualityFlagSet());
+    wCaseInsensitive.setSelection(input.isCaseInsensitiveFlagSet());
+    wComment.setSelection(input.isCommentFlagSet());
+    wDotAll.setSelection(input.isDotAllFlagSet());
+    wMultiline.setSelection(input.isMultilineFlagSet());
+    wUnicode.setSelection(input.isUnicodeFlagSet());
+    wUnix.setSelection(input.isUnixLineEndingsFlagSet());
+    for (int i = 0; i < input.getFieldName().length; i++) {
+      TableItem ti = wFields.table.getItem(i);
+      if (input.getFieldName()[i] != null)
+        ti.setText(1, input.getFieldName()[i]);
+      ti.setText(2, ValueMeta.getTypeDesc(input.getFieldType()[i]));
+      ti.setText(3, input.getFieldLength()[i] >= 0 ? "" + input.getFieldLength()[i] : ""); //$NON-NLS-1$
+      ti.setText(4, input.getFieldPrecision()[i] >= 0 ? ("" + input.getFieldPrecision()[i]) : ""); //$NON-NLS-1$
+      if (input.getFieldFormat()[i] != null)
+        ti.setText(5, input.getFieldFormat()[i]);
+      if (input.getFieldGroup()[i] != null)
+        ti.setText(6, input.getFieldGroup()[i]);
+      if (input.getFieldDecimal()[i] != null)
+        ti.setText(7, input.getFieldDecimal()[i]);
+      if (input.getFieldCurrency()[i] != null)
+        ti.setText(8, input.getFieldCurrency()[i]);
+      if (input.getFieldNullIf()[i] != null)
+        ti.setText(9, input.getFieldNullIf()[i]);
+      if (input.getFieldIfNull()[i] != null)
+        ti.setText(10, input.getFieldIfNull()[i]);
+      ti.setText(11, ValueMeta.getTrimTypeDesc(input.getFieldTrimType()[i]));
+    }
+    wFields.setRowNums();
+    wFields.optWidth(true);
 
-		wStepname.selectAll();
-	}
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

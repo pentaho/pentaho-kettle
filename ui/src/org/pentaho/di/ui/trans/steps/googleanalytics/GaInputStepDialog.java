@@ -1408,126 +1408,124 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 
 	}
 
-	// Collect data from the meta and place it in the dialog
-	public void getData() {
+  /** Collect data from the meta and place it in the dialog */
+  public void getData() {
 
-		wStepname.selectAll();
+    if (input.getGaAppName() != null) {
+      wGaAppName.setText(input.getGaAppName());
+    }
 
-		if (input.getGaAppName() != null){
-			wGaAppName.setText(input.getGaAppName());
-		}
-		
-		if (input.getGaEmail() != null) {
-			wGaEmail.setText(input.getGaEmail());
-		}
+    if (input.getGaEmail() != null) {
+      wGaEmail.setText(input.getGaEmail());
+    }
 
-		if (input.getGaPassword() != null) {
-			wGaPassword.setText(input.getGaPassword());
-		}
-		
-		if (input.getGaApiKey() != null){
-			wGaApiKey.setText(input.getGaApiKey());
-		}
+    if (input.getGaPassword() != null) {
+      wGaPassword.setText(input.getGaPassword());
+    }
 
-		if (input.getGaProfileName() != null) {
-			wGaProfile.setText(input.getGaProfileName());
-			profileTableIds.clear();
-			profileTableIds.put(input.getGaProfileName(), input.getGaProfileTableId());
-		}
+    if (input.getGaApiKey() != null) {
+      wGaApiKey.setText(input.getGaApiKey());
+    }
 
-		if (input.isUseCustomTableId()){
-			wCustomProfileEnabled.setSelection(true);
-		}
-		else{
-			wCustomProfileEnabled.setSelection(false);
-		}
-		
-		if (input.getGaCustomTableId() != null){
-			wGaCustomProfile.setText(input.getGaCustomTableId());
-		}
-		
-		if (input.getStartDate() != null) {
-			wQuStartDate.setText(input.getStartDate());
-		}
+    if (input.getGaProfileName() != null) {
+      wGaProfile.setText(input.getGaProfileName());
+      profileTableIds.clear();
+      profileTableIds.put(input.getGaProfileName(), input.getGaProfileTableId());
+    }
 
-		if (input.getEndDate() != null) {
-			wQuEndDate.setText(input.getEndDate());
-		}
+    if (input.isUseCustomTableId()) {
+      wCustomProfileEnabled.setSelection(true);
+    } else {
+      wCustomProfileEnabled.setSelection(false);
+    }
 
-		if (input.getDimensions() != null) {
-			wQuDimensions.setText(input.getDimensions());
-		}
+    if (input.getGaCustomTableId() != null) {
+      wGaCustomProfile.setText(input.getGaCustomTableId());
+    }
 
-		if (input.getMetrics() != null) {
-			wQuMetrics.setText(input.getMetrics());
-		}
+    if (input.getStartDate() != null) {
+      wQuStartDate.setText(input.getStartDate());
+    }
 
-		if (input.getFilters() != null) {
-			wQuFilters.setText(input.getFilters());
-		}
+    if (input.getEndDate() != null) {
+      wQuEndDate.setText(input.getEndDate());
+    }
 
-		if (input.getSort() != null) {
-			wQuSort.setText(input.getSort());
-		}
+    if (input.getDimensions() != null) {
+      wQuDimensions.setText(input.getDimensions());
+    }
 
-		if (input.isUseSegment()){
-			wUseSegmentEnabled.setSelection(true);
-		}
-		else{
-			wUseSegmentEnabled.setSelection(false);
-		}
-		
-		if (input.isUseCustomSegment()) {
-			wCustomSegmentEnabled.setSelection(true);
-		} else {
-			wCustomSegmentEnabled.setSelection(false);
-		}
+    if (input.getMetrics() != null) {
+      wQuMetrics.setText(input.getMetrics());
+    }
 
-		if (input.getCustomSegment() != null) {
-			wQuCustomSegment.setText(input.getCustomSegment());
-		}
+    if (input.getFilters() != null) {
+      wQuFilters.setText(input.getFilters());
+    }
 
-		if (input.getSegmentName() != null) {
-			wQuSegment.setText(input.getSegmentName());
-			segmentIds.clear();
-			segmentIds.put(input.getSegmentName(), input.getSegmentId());
-		}
+    if (input.getSort() != null) {
+      wQuSort.setText(input.getSort());
+    }
 
-		if (input.getFeedField() != null) {
+    if (input.isUseSegment()) {
+      wUseSegmentEnabled.setSelection(true);
+    } else {
+      wUseSegmentEnabled.setSelection(false);
+    }
 
-			for (int i = 0; i < input.getFeedField().length; i++) {
+    if (input.isUseCustomSegment()) {
+      wCustomSegmentEnabled.setSelection(true);
+    } else {
+      wCustomSegmentEnabled.setSelection(false);
+    }
 
-				TableItem item = wFields.table.getItem(i);
+    if (input.getCustomSegment() != null) {
+      wQuCustomSegment.setText(input.getCustomSegment());
+    }
 
-				if (input.getFeedFieldType()[i] != null) {
-					item.setText(1, input.getFeedFieldType()[i]);
-				}
-				
-				if (input.getFeedField()[i] != null) {
-					item.setText(2, input.getFeedField()[i]);
-				}
+    if (input.getSegmentName() != null) {
+      wQuSegment.setText(input.getSegmentName());
+      segmentIds.clear();
+      segmentIds.put(input.getSegmentName(), input.getSegmentId());
+    }
 
-				if (input.getOutputField()[i] != null) {
-					item.setText(3, input.getOutputField()[i]);
-				}
+    if (input.getFeedField() != null) {
 
-				item.setText(4, ValueMeta.getTypeDesc(input.getOutputType()[i]));
-				
-				if (input.getConversionMask()[i] != null) {
-					item.setText(5, input.getConversionMask()[i]);
-				}
-				
+      for (int i = 0; i < input.getFeedField().length; i++) {
 
-			}
-		}
+        TableItem item = wFields.table.getItem(i);
 
-		wFields.setRowNums();
-		wFields.optWidth(true);
+        if (input.getFeedFieldType()[i] != null) {
+          item.setText(1, input.getFeedFieldType()[i]);
+        }
 
-		wLimit.setText(input.getRowLimit()+"");
+        if (input.getFeedField()[i] != null) {
+          item.setText(2, input.getFeedField()[i]);
+        }
 
-		setActive();
-	}
+        if (input.getOutputField()[i] != null) {
+          item.setText(3, input.getOutputField()[i]);
+        }
+
+        item.setText(4, ValueMeta.getTypeDesc(input.getOutputType()[i]));
+
+        if (input.getConversionMask()[i] != null) {
+          item.setText(5, input.getConversionMask()[i]);
+        }
+
+      }
+    }
+
+    wFields.setRowNums();
+    wFields.optWidth(true);
+
+    wLimit.setText(input.getRowLimit() + "");
+
+    setActive();
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 
 	private void cancel() {
 		stepname = null;

@@ -284,23 +284,27 @@ public class GetPreviousRowFieldDialog extends BaseStepDialog implements StepDia
             }
         );
     }
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData() {
-		int i;
-		if (input.getFieldInStream() != null) {
-			for (i = 0; i < input.getFieldInStream().length; i++) {
-				TableItem item = wFields.table.getItem(i);
-				if (input.getFieldInStream()[i] != null) item.setText(1, input.getFieldInStream()[i]);
-				if (input.getFieldOutStream()[i] != null) item.setText(2, input.getFieldOutStream()[i]);
-			}
-		}
 
-		wStepname.selectAll();
-		wFields.setRowNums();
-		wFields.optWidth(true);
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (input.getFieldInStream() != null) {
+      for (int i = 0; i < input.getFieldInStream().length; i++) {
+        TableItem item = wFields.table.getItem(i);
+        if (input.getFieldInStream()[i] != null)
+          item.setText(1, input.getFieldInStream()[i]);
+        if (input.getFieldOutStream()[i] != null)
+          item.setText(2, input.getFieldOutStream()[i]);
+      }
+    }
+
+    wFields.setRowNums();
+    wFields.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 
 	private void cancel() {
 		stepname = null;

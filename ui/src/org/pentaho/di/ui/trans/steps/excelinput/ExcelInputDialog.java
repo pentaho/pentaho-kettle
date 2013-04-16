@@ -1241,119 +1241,150 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         wbvLineNrDestDir.setEnabled( wErrorIgnored.getSelection() );
     }
 
-	/**
-	 * Read the data from the ExcelInputMeta object and show it in this dialog.
-	 * 
-	 * @param meta The ExcelInputMeta object to obtain the data from.
-	 */
-	public void getData(ExcelInputMeta meta)
-	{
-		if (meta.getFileName() !=null) 
-		{
-			wFilenameList.removeAll();
+  /**
+   * Read the data from the ExcelInputMeta object and show it in this dialog.
+   * 
+   * @param meta The ExcelInputMeta object to obtain the data from.
+   */
+  public void getData(ExcelInputMeta meta) {
+    if (meta.getFileName() != null) {
+      wFilenameList.removeAll();
 
-			for (int i=0;i<meta.getFileName().length;i++) 
-			{
-				wFilenameList.add(new String[] { meta.getFileName()[i], meta.getFileMask()[i] , meta.getExludeFileMask()[i],
-						meta.getRequiredFilesDesc(meta.getFileRequired()[i]), meta.getRequiredFilesDesc(meta.getIncludeSubFolders()[i])} );
-			}
-			wFilenameList.removeEmptyRows();
-			wFilenameList.setRowNums();
-			wFilenameList.optWidth(true);
-		}
-        
-        wAccFilenames.setSelection(meta.isAcceptingFilenames());
+      for (int i = 0; i < meta.getFileName().length; i++) {
+        wFilenameList.add(new String[] { meta.getFileName()[i], meta.getFileMask()[i], meta.getExludeFileMask()[i],
+            meta.getRequiredFilesDesc(meta.getFileRequired()[i]),
+            meta.getRequiredFilesDesc(meta.getIncludeSubFolders()[i]) });
+      }
+      wFilenameList.removeEmptyRows();
+      wFilenameList.setRowNums();
+      wFilenameList.optWidth(true);
+    }
 
-        if (meta.getAcceptingField() != null && !meta.getAcceptingField().equals("")) wAccField.select(wAccField.indexOf(meta.getAcceptingField())); //$NON-NLS-1$
-        if (meta.getAcceptingStepName() != null && !meta.getAcceptingStepName().equals("")) wAccStep.select(wAccStep.indexOf(meta.getAcceptingStepName())); //$NON-NLS-1$
-        
-		wHeader.setSelection(meta.startsWithHeader());
-		wNoempty.setSelection(meta.ignoreEmptyRows());
-		wStoponempty.setSelection(meta.stopOnEmpty());
-		if (meta.getFileField()!=null) wInclFilenameField.setText(meta.getFileField());
-		if (meta.getSheetField()!=null) wInclSheetnameField.setText(meta.getSheetField());
-		if (meta.getSheetRowNumberField()!=null) wInclSheetRownumField.setText(meta.getSheetRowNumberField());
-		if (meta.getRowNumberField()!=null) wInclRownumField.setText(meta.getRowNumberField());
-		wLimit.setText(""+meta.getRowLimit());
-        wEncoding.setText(Const.NVL(meta.getEncoding(), ""));
-        wSpreadSheetType.setText(meta.getSpreadSheetType().getDescription());
-        wAddResult.setSelection(meta.isAddResultFile());
-		
-		if(isDebug()) logDebug("getting fields info...");
-		for (int i=0;i<meta.getField().length;i++)
-		{
-			TableItem item = wFields.table.getItem(i);
-			String field    = meta.getField()[i].getName();
-			String type     = meta.getField()[i].getTypeDesc();
-			String length   = ""+meta.getField()[i].getLength();
-			String prec     = ""+meta.getField()[i].getPrecision();
-			String trim     = meta.getField()[i].getTrimTypeDesc();
-			String rep      = meta.getField()[i].isRepeated()?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No");
-			String format   = meta.getField()[i].getFormat();
-			String currency = meta.getField()[i].getCurrencySymbol();
-			String decimal  = meta.getField()[i].getDecimalSymbol();
-			String grouping = meta.getField()[i].getGroupSymbol();
-			
-			if (field   !=null) item.setText( 1, field);
-			if (type    !=null) item.setText( 2, type    );
-			if (length  !=null) item.setText( 3, length  );
-			if (prec    !=null) item.setText( 4, prec    );
-			if (trim    !=null) item.setText( 5, trim    );
-			if (rep     !=null) item.setText( 6, rep     );
-			if (format  !=null) item.setText( 7, format  );
-			if (currency!=null) item.setText( 8, currency);
-			if (decimal !=null) item.setText( 9, decimal );
-			if (grouping!=null) item.setText(10, grouping);
-		}
-		
-		wFields.removeEmptyRows();
-		wFields.setRowNums();
-		wFields.optWidth(true);
+    wAccFilenames.setSelection(meta.isAcceptingFilenames());
 
-		logDebug("getting sheets info...");
-		for (int i=0;i<meta.getSheetName().length;i++)
-		{
-			TableItem item = wSheetnameList.table.getItem(i);
-			String sheetname    =    meta.getSheetName()[i];
-			String startrow     = ""+meta.getStartRow()[i];
-			String startcol     = ""+meta.getStartColumn()[i];
-			
-			if (sheetname!=null) item.setText( 1, sheetname);
-			if (startrow!=null)  item.setText( 2, startrow);
-			if (startcol!=null)  item.setText( 3, startcol);
-		}
-		wSheetnameList.removeEmptyRows();
-		wSheetnameList.setRowNums();
-		wSheetnameList.optWidth(true);
-		
-		//		 Error handling fields...
-        wErrorIgnored.setSelection( meta.isErrorIgnored() );
-        wStrictTypes.setSelection( meta.isStrictTypes() );
-        wSkipErrorLines.setSelection( meta.isErrorLineSkipped() );
+    if (meta.getAcceptingField() != null && !meta.getAcceptingField().equals(""))wAccField.select(wAccField.indexOf(meta.getAcceptingField())); //$NON-NLS-1$
+    if (meta.getAcceptingStepName() != null && !meta.getAcceptingStepName().equals(""))wAccStep.select(wAccStep.indexOf(meta.getAcceptingStepName())); //$NON-NLS-1$
 
-        if (meta.getWarningFilesDestinationDirectory()!=null) wWarningDestDir.setText(meta.getWarningFilesDestinationDirectory());
-        if (meta.getBadLineFilesExtension()!=null) wWarningExt.setText(meta.getBadLineFilesExtension());
+    wHeader.setSelection(meta.startsWithHeader());
+    wNoempty.setSelection(meta.ignoreEmptyRows());
+    wStoponempty.setSelection(meta.stopOnEmpty());
+    if (meta.getFileField() != null)
+      wInclFilenameField.setText(meta.getFileField());
+    if (meta.getSheetField() != null)
+      wInclSheetnameField.setText(meta.getSheetField());
+    if (meta.getSheetRowNumberField() != null)
+      wInclSheetRownumField.setText(meta.getSheetRowNumberField());
+    if (meta.getRowNumberField() != null)
+      wInclRownumField.setText(meta.getRowNumberField());
+    wLimit.setText("" + meta.getRowLimit());
+    wEncoding.setText(Const.NVL(meta.getEncoding(), ""));
+    wSpreadSheetType.setText(meta.getSpreadSheetType().getDescription());
+    wAddResult.setSelection(meta.isAddResultFile());
 
-        if (meta.getErrorFilesDestinationDirectory()!=null) wErrorDestDir.setText(meta.getErrorFilesDestinationDirectory());
-        if (meta.getErrorFilesExtension()!=null) wErrorExt.setText(meta.getErrorFilesExtension());
+    if (isDebug())
+      logDebug("getting fields info...");
+    for (int i = 0; i < meta.getField().length; i++) {
+      TableItem item = wFields.table.getItem(i);
+      String field = meta.getField()[i].getName();
+      String type = meta.getField()[i].getTypeDesc();
+      String length = "" + meta.getField()[i].getLength();
+      String prec = "" + meta.getField()[i].getPrecision();
+      String trim = meta.getField()[i].getTrimTypeDesc();
+      String rep = meta.getField()[i].isRepeated() ? BaseMessages.getString(PKG, "System.Combo.Yes") : BaseMessages
+          .getString(PKG, "System.Combo.No");
+      String format = meta.getField()[i].getFormat();
+      String currency = meta.getField()[i].getCurrencySymbol();
+      String decimal = meta.getField()[i].getDecimalSymbol();
+      String grouping = meta.getField()[i].getGroupSymbol();
 
-        if (meta.getLineNumberFilesDestinationDirectory()!=null) wLineNrDestDir.setText(meta.getLineNumberFilesDestinationDirectory());
-        if (meta.getLineNumberFilesExtension()!=null) wLineNrExt.setText(meta.getLineNumberFilesExtension());
-        if(meta.getPathField()!=null) wPathFieldName.setText(meta.getPathField());
-        if(meta.getShortFileNameField()!=null) wShortFileFieldName.setText(meta.getShortFileNameField());
-        
-        if(meta.getPathField()!=null) wPathFieldName.setText(meta.getPathField());
-        if(meta.isHiddenField()!=null) wIsHiddenName.setText(meta.isHiddenField());
-        if(meta.getLastModificationDateField()!=null) wLastModificationTimeName.setText(meta.getLastModificationDateField());
-        if(meta.getUriField()!=null) wUriName.setText(meta.getUriField());
-        if(meta.getRootUriField()!=null) wRootUriName.setText(meta.getRootUriField());
-        if(meta.getExtensionField()!=null) wExtensionFieldName.setText(meta.getExtensionField());
-        if(meta.getSizeField()!=null) wSizeFieldName.setText(meta.getSizeField());
+      if (field != null)
+        item.setText(1, field);
+      if (type != null)
+        item.setText(2, type);
+      if (length != null)
+        item.setText(3, length);
+      if (prec != null)
+        item.setText(4, prec);
+      if (trim != null)
+        item.setText(5, trim);
+      if (rep != null)
+        item.setText(6, rep);
+      if (format != null)
+        item.setText(7, format);
+      if (currency != null)
+        item.setText(8, currency);
+      if (decimal != null)
+        item.setText(9, decimal);
+      if (grouping != null)
+        item.setText(10, grouping);
+    }
 
-		setFlags();
-		
-		wStepname.selectAll();
-	}
+    wFields.removeEmptyRows();
+    wFields.setRowNums();
+    wFields.optWidth(true);
+
+    logDebug("getting sheets info...");
+    for (int i = 0; i < meta.getSheetName().length; i++) {
+      TableItem item = wSheetnameList.table.getItem(i);
+      String sheetname = meta.getSheetName()[i];
+      String startrow = "" + meta.getStartRow()[i];
+      String startcol = "" + meta.getStartColumn()[i];
+
+      if (sheetname != null)
+        item.setText(1, sheetname);
+      if (startrow != null)
+        item.setText(2, startrow);
+      if (startcol != null)
+        item.setText(3, startcol);
+    }
+    wSheetnameList.removeEmptyRows();
+    wSheetnameList.setRowNums();
+    wSheetnameList.optWidth(true);
+
+    //		 Error handling fields...
+    wErrorIgnored.setSelection(meta.isErrorIgnored());
+    wStrictTypes.setSelection(meta.isStrictTypes());
+    wSkipErrorLines.setSelection(meta.isErrorLineSkipped());
+
+    if (meta.getWarningFilesDestinationDirectory() != null)
+      wWarningDestDir.setText(meta.getWarningFilesDestinationDirectory());
+    if (meta.getBadLineFilesExtension() != null)
+      wWarningExt.setText(meta.getBadLineFilesExtension());
+
+    if (meta.getErrorFilesDestinationDirectory() != null)
+      wErrorDestDir.setText(meta.getErrorFilesDestinationDirectory());
+    if (meta.getErrorFilesExtension() != null)
+      wErrorExt.setText(meta.getErrorFilesExtension());
+
+    if (meta.getLineNumberFilesDestinationDirectory() != null)
+      wLineNrDestDir.setText(meta.getLineNumberFilesDestinationDirectory());
+    if (meta.getLineNumberFilesExtension() != null)
+      wLineNrExt.setText(meta.getLineNumberFilesExtension());
+    if (meta.getPathField() != null)
+      wPathFieldName.setText(meta.getPathField());
+    if (meta.getShortFileNameField() != null)
+      wShortFileFieldName.setText(meta.getShortFileNameField());
+
+    if (meta.getPathField() != null)
+      wPathFieldName.setText(meta.getPathField());
+    if (meta.isHiddenField() != null)
+      wIsHiddenName.setText(meta.isHiddenField());
+    if (meta.getLastModificationDateField() != null)
+      wLastModificationTimeName.setText(meta.getLastModificationDateField());
+    if (meta.getUriField() != null)
+      wUriName.setText(meta.getUriField());
+    if (meta.getRootUriField() != null)
+      wRootUriName.setText(meta.getRootUriField());
+    if (meta.getExtensionField() != null)
+      wExtensionFieldName.setText(meta.getExtensionField());
+    if (meta.getSizeField() != null)
+      wSizeFieldName.setText(meta.getSizeField());
+
+    setFlags();
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

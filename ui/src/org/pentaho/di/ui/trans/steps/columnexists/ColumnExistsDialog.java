@@ -390,28 +390,34 @@ public class ColumnExistsDialog extends BaseStepDialog implements StepDialogInte
 		wTablenameText.setEnabled(!wTablenameInField.getSelection());
 		wlTablenameText.setEnabled(!wTablenameInField.getSelection());
 	}
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "ColumnExistsDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
-		
-		if (input.getDatabase()!=null)   wConnection.setText(input.getDatabase().getName());
-		else if (transMeta.nrDatabases()==1)
-		{
-			wConnection.setText( transMeta.getDatabase(0).getName() );
-		}
-		if (input.getSchemaname() !=null)   wSchemaname.setText(input.getSchemaname());
-		if (input.getTablename() !=null)   wTablenameText.setText(input.getTablename());
-		wTablenameInField.setSelection(input.isTablenameInField());
-		if (input.getDynamicTablenameField() !=null)   wTableName.setText(input.getDynamicTablenameField());
-		if (input.getDynamicColumnnameField() !=null)   wColumnName.setText(input.getDynamicColumnnameField());
-		if (input.getResultFieldName()!=null)   wResult.setText(input.getResultFieldName());
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (log.isDebug())
+      logDebug(BaseMessages.getString(PKG, "ColumnExistsDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
-		wStepname.selectAll();
-	}
+    if (input.getDatabase() != null)
+      wConnection.setText(input.getDatabase().getName());
+    else if (transMeta.nrDatabases() == 1) {
+      wConnection.setText(transMeta.getDatabase(0).getName());
+    }
+    if (input.getSchemaname() != null)
+      wSchemaname.setText(input.getSchemaname());
+    if (input.getTablename() != null)
+      wTablenameText.setText(input.getTablename());
+    wTablenameInField.setSelection(input.isTablenameInField());
+    if (input.getDynamicTablenameField() != null)
+      wTableName.setText(input.getDynamicTablenameField());
+    if (input.getDynamicColumnnameField() != null)
+      wColumnName.setText(input.getDynamicColumnnameField());
+    if (input.getResultFieldName() != null)
+      wResult.setText(input.getResultFieldName());
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

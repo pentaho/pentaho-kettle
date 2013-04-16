@@ -437,36 +437,38 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 		wlPosition.setText(BaseMessages.getString(PKG, "DatabaseJoinDialog.Position.Label",""+linenr, ""+colnr));
 
 	}
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		int i;
-		logDebug(BaseMessages.getString(PKG, "DatabaseJoinDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
-		
-		wSQL.setText( Const.NVL(input.getSql(), ""));
-		wLimit.setText(""+input.getRowLimit()); //$NON-NLS-1$
-		wOuter.setSelection(input.isOuterJoin());
-		wuseVars.setSelection(input.isVariableReplace());
-		if (input.getParameterField()!=null)
-		for (i=0;i<input.getParameterField().length;i++)
-		{
-			TableItem item = wParam.table.getItem(i);
-			if (input.getParameterField()[i]  !=null) item.setText(1, input.getParameterField()[i]);
-			if (input.getParameterType() [i]  !=0   ) item.setText(2, ValueMeta.getTypeDesc( input.getParameterType()[i] ));
-		}
-		
-		if (input.getDatabaseMeta()!=null)   wConnection.setText(input.getDatabaseMeta().getName());
-		else if (transMeta.nrDatabases()==1)
-		{
-			wConnection.setText( transMeta.getDatabase(0).getName() );
-		}
 
-		wStepname.selectAll();
-		wParam.setRowNums();
-		wParam.optWidth(true);
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    logDebug(BaseMessages.getString(PKG, "DatabaseJoinDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+
+    wSQL.setText(Const.NVL(input.getSql(), ""));
+    wLimit.setText("" + input.getRowLimit()); //$NON-NLS-1$
+    wOuter.setSelection(input.isOuterJoin());
+    wuseVars.setSelection(input.isVariableReplace());
+    if (input.getParameterField() != null)
+      for (int i = 0; i < input.getParameterField().length; i++) {
+        TableItem item = wParam.table.getItem(i);
+        if (input.getParameterField()[i] != null)
+          item.setText(1, input.getParameterField()[i]);
+        if (input.getParameterType()[i] != 0)
+          item.setText(2, ValueMeta.getTypeDesc(input.getParameterType()[i]));
+      }
+
+    if (input.getDatabaseMeta() != null)
+      wConnection.setText(input.getDatabaseMeta().getName());
+    else if (transMeta.nrDatabases() == 1) {
+      wConnection.setText(transMeta.getDatabase(0).getName());
+    }
+
+    wParam.setRowNums();
+    wParam.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

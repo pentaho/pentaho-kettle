@@ -237,19 +237,22 @@ public class FileLockedDialog extends BaseStepDialog implements StepDialogInterf
 		return stepname;
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		if(isDebug()) logDebug( BaseMessages.getString(PKG, "FileLockedDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (isDebug())
+      logDebug(BaseMessages.getString(PKG, "FileLockedDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
-		if (input.getDynamicFilenameField() !=null)   wFileName.setText(input.getDynamicFilenameField());
-		if (input.getResultFieldName()!=null)   wResult.setText(input.getResultFieldName());
-		wAddResult.setSelection(input.addResultFilenames());
-		
-		wStepname.selectAll();
-	}
+    if (input.getDynamicFilenameField() != null)
+      wFileName.setText(input.getDynamicFilenameField());
+    if (input.getResultFieldName() != null)
+      wResult.setText(input.getResultFieldName());
+    wAddResult.setSelection(input.addResultFilenames());
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

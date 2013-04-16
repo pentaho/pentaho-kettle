@@ -483,30 +483,29 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
         wbFilename.setEnabled( !wAccFilenames.getSelection() );
     }
 	
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		if (input.getDbfFileName() != null) 
-		{
-			wFilename.setText(input.getDbfFileName());
-			wFilename.setToolTipText(transMeta.environmentSubstitute(input.getDbfFileName()));
-		}
-        wFieldRownr.setText(Const.NVL(input.getRowNrField(), ""));
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (input.getDbfFileName() != null) {
+      wFilename.setText(input.getDbfFileName());
+      wFilename.setToolTipText(transMeta.environmentSubstitute(input.getDbfFileName()));
+    }
+    wFieldRownr.setText(Const.NVL(input.getRowNrField(), ""));
 
-        wInclFilename.setSelection(input.includeFilename());
-        wInclFilenameField.setText(Const.NVL(input.getFilenameField(), ""));
+    wInclFilename.setSelection(input.includeFilename());
+    wInclFilenameField.setText(Const.NVL(input.getFilenameField(), ""));
 
-        wAccFilenames.setSelection(input.isAcceptingFilenames());
-        wAccField.setText(Const.NVL(input.getAcceptingField(), ""));
-        wAccStep.setText(Const.NVL(input.getAcceptingStep()==null?"":input.getAcceptingStep().getName(), ""));
-        wCharactersetName.setText(Const.NVL(input.getCharactersetName(), ""));
+    wAccFilenames.setSelection(input.isAcceptingFilenames());
+    wAccField.setText(Const.NVL(input.getAcceptingField(), ""));
+    wAccStep.setText(Const.NVL(input.getAcceptingStep() == null ? "" : input.getAcceptingStep().getName(), ""));
+    wCharactersetName.setText(Const.NVL(input.getCharactersetName(), ""));
 
-        setFlags();
-		
-		wStepname.selectAll();
-	}
+    setFlags();
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

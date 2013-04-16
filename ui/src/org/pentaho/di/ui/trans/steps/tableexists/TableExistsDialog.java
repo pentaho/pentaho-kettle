@@ -275,24 +275,28 @@ public class TableExistsDialog extends BaseStepDialog implements StepDialogInter
 		return stepname;
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "TableExistsDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
-		
-		if (input.getDatabase()!=null)   wConnection.setText(input.getDatabase().getName());
-		else if (transMeta.nrDatabases()==1)
-		{
-			wConnection.setText( transMeta.getDatabase(0).getName() );
-		}
-		if (input.getDynamicTablenameField() !=null)   wTableName.setText(input.getDynamicTablenameField());
-		if (input.getSchemaname() !=null)   wSchemaname.setText(input.getSchemaname());
-		if (input.getResultFieldName()!=null)   wResult.setText(input.getResultFieldName());
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (log.isDebug())
+      logDebug(BaseMessages.getString(PKG, "TableExistsDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
-		wStepname.selectAll();
-	}
+    if (input.getDatabase() != null)
+      wConnection.setText(input.getDatabase().getName());
+    else if (transMeta.nrDatabases() == 1) {
+      wConnection.setText(transMeta.getDatabase(0).getName());
+    }
+    if (input.getDynamicTablenameField() != null)
+      wTableName.setText(input.getDynamicTablenameField());
+    if (input.getSchemaname() != null)
+      wSchemaname.setText(input.getSchemaname());
+    if (input.getResultFieldName() != null)
+      wResult.setText(input.getResultFieldName());
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

@@ -998,81 +998,71 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 				new ErrorDialog(shell, BaseMessages.getString(PKG, "GetFilesRowsCountDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "GetFilesRowsCountDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 	 }
-	/**
-	 * Read the data from the GetFilesRowsCountMeta object and show it in this dialog.
-	 * 
-	 * @param in The GetFilesRowsCountMeta object to obtain the data from.
-	 */
-	public void getData(GetFilesRowsCountMeta in)
-	{
-		if (in.getFileName() !=null) 
-		{
-			wFilenameList.removeAll();
-			for (int i=0;i<in.getFileName().length;i++) 
-			{
-				wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i] ,in.getExludeFileMask()[i],
-						in.getRequiredFilesDesc(in.getFileRequired()[i]), in.getRequiredFilesDesc(in.getIncludeSubFolders()[i])} );
-			}
-			wFilenameList.removeEmptyRows();
-			wFilenameList.setRowNums();
-			wFilenameList.optWidth(true);
-		}
-		wInclFilesCount.setSelection(in.includeCountFiles());
 
-		if (in.getFilesCountFieldName()!=null) 
-			wInclFilesCountField.setText(in.getFilesCountFieldName());
-		else
-			wInclFilesCountField.setText("filescount");
-		
-		if (in.getRowsCountFieldName()!=null) 
-			wRowsCountField.setText(in.getRowsCountFieldName());
-		else
-			wRowsCountField.setText(GetFilesRowsCountMeta.DEFAULT_ROWSCOUNT_FIELDNAME);
+  /**
+   * Read the data from the GetFilesRowsCountMeta object and show it in this dialog.
+   * 
+   * @param in The GetFilesRowsCountMeta object to obtain the data from.
+   */
+  public void getData(GetFilesRowsCountMeta in) {
+    if (in.getFileName() != null) {
+      wFilenameList.removeAll();
+      for (int i = 0; i < in.getFileName().length; i++) {
+        wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i], in.getExludeFileMask()[i],
+            in.getRequiredFilesDesc(in.getFileRequired()[i]), in.getRequiredFilesDesc(in.getIncludeSubFolders()[i]) });
+      }
+      wFilenameList.removeEmptyRows();
+      wFilenameList.setRowNums();
+      wFilenameList.optWidth(true);
+    }
+    wInclFilesCount.setSelection(in.includeCountFiles());
 
-		if (in.getRowSeparatorFormat()!=null)
-		{
-		  // Checking for 'CR' for backwards compatibility
-			if (in.getRowSeparatorFormat().equals("CARRIAGERETURN") || in.getRowSeparatorFormat().equals("CR"))
-			{
-				wRowSeparatorFormat.select(0);
-			}
-			// Checking for 'LF' for backwards compatibility
-			else if (in.getRowSeparatorFormat().equals("LINEFEED") || in.getRowSeparatorFormat().equals("LF"))
-			{
-				wRowSeparatorFormat.select(1);
-			}
-			else if (in.getRowSeparatorFormat().equals("CRLF"))
-			{
-				wRowSeparatorFormat.select(2);
-			}
-			else if (in.getRowSeparatorFormat().equals("TAB"))
-			{
-				wRowSeparatorFormat.select(3);
-			}
-		
-			else
-			{
-				wRowSeparatorFormat.select(4);
-			}
-		}
-		else
-		{
-			wRowSeparatorFormat.select(0);
-		}
-		
-		
-		if (in.getRowSeparator()!=null) wRowSeparator.setText(in.getRowSeparator());
-		
-		wAddResult.setSelection(in.isAddResultFile());
-		wFileField.setSelection(in.isFileField());
-		if (in.setOutputFilenameField()!=null) wFilenameField.setText(in.setOutputFilenameField());
-		
-		logDebug(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.Log.GettingFieldsInfo"));
-		
-		setIncludeRownum();
+    if (in.getFilesCountFieldName() != null)
+      wInclFilesCountField.setText(in.getFilesCountFieldName());
+    else
+      wInclFilesCountField.setText("filescount");
 
-		wStepname.selectAll();
-	}
+    if (in.getRowsCountFieldName() != null)
+      wRowsCountField.setText(in.getRowsCountFieldName());
+    else
+      wRowsCountField.setText(GetFilesRowsCountMeta.DEFAULT_ROWSCOUNT_FIELDNAME);
+
+    if (in.getRowSeparatorFormat() != null) {
+      // Checking for 'CR' for backwards compatibility
+      if (in.getRowSeparatorFormat().equals("CARRIAGERETURN") || in.getRowSeparatorFormat().equals("CR")) {
+        wRowSeparatorFormat.select(0);
+      }
+      // Checking for 'LF' for backwards compatibility
+      else if (in.getRowSeparatorFormat().equals("LINEFEED") || in.getRowSeparatorFormat().equals("LF")) {
+        wRowSeparatorFormat.select(1);
+      } else if (in.getRowSeparatorFormat().equals("CRLF")) {
+        wRowSeparatorFormat.select(2);
+      } else if (in.getRowSeparatorFormat().equals("TAB")) {
+        wRowSeparatorFormat.select(3);
+      }
+
+      else {
+        wRowSeparatorFormat.select(4);
+      }
+    } else {
+      wRowSeparatorFormat.select(0);
+    }
+
+    if (in.getRowSeparator() != null)
+      wRowSeparator.setText(in.getRowSeparator());
+
+    wAddResult.setSelection(in.isAddResultFile());
+    wFileField.setSelection(in.isFileField());
+    if (in.setOutputFilenameField() != null)
+      wFilenameField.setText(in.setOutputFilenameField());
+
+    logDebug(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.Log.GettingFieldsInfo"));
+
+    setIncludeRownum();
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 
 	private void cancel()
 	{

@@ -429,24 +429,29 @@ public class WMIInputDialog extends BaseStepDialog implements StepDialogInterfac
        }
     }
 
-    /**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		if (input.getWMI() != null) wWMI.setText(input.getWMI());
-		if (input.getDomain() != null) wDomain.setText(input.getDomain());
-		if (input.getHost() != null) wHost.setText(input.getHost());
-		if (input.getUserName() != null) wUserName.setText(input.getUserName());
-		if (input.getPassword() != null) wPassword.setText(input.getPassword());
-		
-		wLimit.setText(Const.NVL(input.getRowLimit(), "0")); //$NON-NLS-1$
-		
-        wVariables.setSelection(input.isVariableReplacementActive());
-               
-		wStepname.selectAll();
-        setWMIToolTip();
-	}
+  /**
+  * Copy information from the meta-data input to the dialog fields.
+  */
+  public void getData() {
+    if (input.getWMI() != null)
+      wWMI.setText(input.getWMI());
+    if (input.getDomain() != null)
+      wDomain.setText(input.getDomain());
+    if (input.getHost() != null)
+      wHost.setText(input.getHost());
+    if (input.getUserName() != null)
+      wUserName.setText(input.getUserName());
+    if (input.getPassword() != null)
+      wPassword.setText(input.getPassword());
+
+    wLimit.setText(Const.NVL(input.getRowLimit(), "0")); //$NON-NLS-1$
+
+    wVariables.setSelection(input.isVariableReplacementActive());
+
+    setWMIToolTip();
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

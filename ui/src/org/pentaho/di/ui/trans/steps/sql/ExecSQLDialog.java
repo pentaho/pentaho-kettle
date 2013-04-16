@@ -690,7 +690,8 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		}
 		wSetParams.setSelection(input.isParams());
 		
-		wStepname.selectAll();
+    wStepname.selectAll();
+    wStepname.setFocus();
 	}
 
 	private void checkCancel(ShellEvent e)

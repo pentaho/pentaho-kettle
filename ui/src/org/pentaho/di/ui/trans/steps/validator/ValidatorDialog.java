@@ -1156,36 +1156,36 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		}
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		// Populate the list of validations...
-		//
-		refreshValidationsList();
-		enableFields();
-		
-		wValidateAll.setSelection(input.isValidatingAll());
-		wConcatErrors.setSelection(input.isConcatenatingErrors());
-		wConcatSeparator.setText(Const.NVL(input.getConcatenationSeparator(), ""));
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    // Populate the list of validations...
+    //
+    refreshValidationsList();
+    enableFields();
 
-		// Select the first available field...
-		//
-		if (input.getValidations().size()>0) {
-			Validation validatorField = input.getValidations().get(0);
-			String description = validatorField.getName();
-			int index = wValidationsList.indexOf(description);
-			if (index>=0) {
-				wValidationsList.select(index);
-				showSelectedValidatorField(description);
-			}
-		}
-		
-		setFlags();
-		
-		wStepname.selectAll();
-	}
+    wValidateAll.setSelection(input.isValidatingAll());
+    wConcatErrors.setSelection(input.isConcatenatingErrors());
+    wConcatSeparator.setText(Const.NVL(input.getConcatenationSeparator(), ""));
+
+    // Select the first available field...
+    //
+    if (input.getValidations().size() > 0) {
+      Validation validatorField = input.getValidations().get(0);
+      String description = validatorField.getName();
+      int index = wValidationsList.indexOf(description);
+      if (index >= 0) {
+        wValidationsList.select(index);
+        showSelectedValidatorField(description);
+      }
+    }
+
+    setFlags();
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void refreshValidationsList() {
 		wValidationsList.removeAll();

@@ -312,42 +312,43 @@ public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInt
         ciReturn[1].setComboValues(fieldNames);
     }
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		int i;
-		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "AnalyticQueryDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
-        
-        
-		if (input.getGroupField()!=null)
-		for (i=0;i<input.getGroupField().length;i++)
-		{
-			TableItem item = wGroup.table.getItem(i);
-			if (input.getGroupField()[i]   !=null) item.setText(1, input.getGroupField()[i]);
-		}
-		
-		if (input.getAggregateField()!=null)
-		for (i=0;i<input.getAggregateField().length;i++)
-		{
-			TableItem item = wAgg.table.getItem(i);
-			if (input.getAggregateField()[i]!=null     ) item.setText(1, input.getAggregateField()[i]);
-			if (input.getSubjectField()[i]!=null       ) item.setText(2, input.getSubjectField()[i]);
-			item.setText(3, AnalyticQueryMeta.getTypeDescLong(input.getAggregateType()[i]));
-			int value = input.getValueField()[i];
-			String valuetext = Integer.toString(value);
-			if (valuetext != null ){
-				item.setText(4, valuetext);
-			}
-		}
-        
-		wStepname.selectAll();
-		wGroup.setRowNums();
-		wGroup.optWidth(true);
-		wAgg.setRowNums();
-		wAgg.optWidth(true);
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (log.isDebug())
+      logDebug(BaseMessages.getString(PKG, "AnalyticQueryDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+
+    if (input.getGroupField() != null)
+      for (int i = 0; i < input.getGroupField().length; i++) {
+        TableItem item = wGroup.table.getItem(i);
+        if (input.getGroupField()[i] != null)
+          item.setText(1, input.getGroupField()[i]);
+      }
+
+    if (input.getAggregateField() != null)
+      for (int i = 0; i < input.getAggregateField().length; i++) {
+        TableItem item = wAgg.table.getItem(i);
+        if (input.getAggregateField()[i] != null)
+          item.setText(1, input.getAggregateField()[i]);
+        if (input.getSubjectField()[i] != null)
+          item.setText(2, input.getSubjectField()[i]);
+        item.setText(3, AnalyticQueryMeta.getTypeDescLong(input.getAggregateType()[i]));
+        int value = input.getValueField()[i];
+        String valuetext = Integer.toString(value);
+        if (valuetext != null) {
+          item.setText(4, valuetext);
+        }
+      }
+
+    wGroup.setRowNums();
+    wGroup.optWidth(true);
+    wAgg.setRowNums();
+    wAgg.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

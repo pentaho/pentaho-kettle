@@ -314,31 +314,37 @@ public class SetValueConstantDialog extends BaseStepDialog implements StepDialog
 	
 	
  
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		wuseVars.setSelection(input.isUseVars());
-		Table table = wFields.table;
-		if (input.getFieldName().length>0) table.removeAll();
-		for (int i=0;i<input.getFieldName().length;i++)
-		{
-			TableItem ti = new TableItem(table, SWT.NONE);
-			ti.setText(0, ""+(i+1));
-			if(input.getFieldName()[i]!=null)    ti.setText(1, input.getFieldName()[i]);
-			if(input.getReplaceValue()[i]!=null) ti.setText(2, input.getReplaceValue()[i]);
-			if(input.getReplaceMask()[i]!=null)  ti.setText(3, input.getReplaceMask()[i]);
-			ti.setText(4, input.isSetEmptyString()[i]?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No"));
-			
-		}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    wuseVars.setSelection(input.isUseVars());
+    Table table = wFields.table;
+    if (input.getFieldName().length > 0)
+      table.removeAll();
+    for (int i = 0; i < input.getFieldName().length; i++) {
+      TableItem ti = new TableItem(table, SWT.NONE);
+      ti.setText(0, "" + (i + 1));
+      if (input.getFieldName()[i] != null)
+        ti.setText(1, input.getFieldName()[i]);
+      if (input.getReplaceValue()[i] != null)
+        ti.setText(2, input.getReplaceValue()[i]);
+      if (input.getReplaceMask()[i] != null)
+        ti.setText(3, input.getReplaceMask()[i]);
+      ti.setText(
+          4,
+          input.isSetEmptyString()[i] ? BaseMessages.getString(PKG, "System.Combo.Yes") : BaseMessages.getString(PKG,
+              "System.Combo.No"));
 
-        wFields.setRowNums();
-        wFields.removeEmptyRows();
-		wFields.optWidth(true);
-		
-		wStepname.selectAll();
-	}
+    }
+
+    wFields.setRowNums();
+    wFields.removeEmptyRows();
+    wFields.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

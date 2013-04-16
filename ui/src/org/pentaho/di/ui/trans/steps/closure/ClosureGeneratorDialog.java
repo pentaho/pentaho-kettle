@@ -286,18 +286,21 @@ public class ClosureGeneratorDialog extends BaseStepDialog implements StepDialog
     }
 
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		if (input.getParentIdFieldName() != null) wParent.setText(input.getParentIdFieldName());
-		if (input.getChildIdFieldName() != null) wChild.setText(input.getChildIdFieldName());
-		if (input.getDistanceFieldName() != null) wDistance.setText(input.getDistanceFieldName());
-		wRootZero.setSelection(input.isRootIdZero());
-               
-		wStepname.selectAll();
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (input.getParentIdFieldName() != null)
+      wParent.setText(input.getParentIdFieldName());
+    if (input.getChildIdFieldName() != null)
+      wChild.setText(input.getChildIdFieldName());
+    if (input.getDistanceFieldName() != null)
+      wDistance.setText(input.getDistanceFieldName());
+    wRootZero.setSelection(input.isRootIdZero());
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

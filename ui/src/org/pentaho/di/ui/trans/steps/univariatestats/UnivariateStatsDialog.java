@@ -335,57 +335,35 @@ public class UnivariateStatsDialog extends BaseStepDialog
    * dialog fields.
    */
   public void getData() {
-    m_wStepname.selectAll();
 
     if (m_currentMeta.getInputFieldMetaFunctions() != null) {
       for (int i = 0; i < m_currentMeta.getNumFieldsToProcess(); i++) {
-        UnivariateStatsMetaFunction fn = 
-          m_currentMeta.getInputFieldMetaFunctions()[i];
+        UnivariateStatsMetaFunction fn = m_currentMeta.getInputFieldMetaFunctions()[i];
 
         TableItem item = m_wFields.table.getItem(i);
 
         item.setText(1, Const.NVL(fn.getSourceFieldName(), ""));
-        item.setText(2, Const.NVL(
-                                  (fn.getCalcN())
-                                  ? "True"
-                                  : "False", ""));
-        item.setText(3, Const.NVL(
-                                  (fn.getCalcMean())
-                                  ? "True"
-                                  : "False", ""));
-        item.setText(4, Const.NVL(
-                                  (fn.getCalcStdDev())
-                                  ? "True"
-                                  : "False", ""));
-        item.setText(5, Const.NVL(
-                                  (fn.getCalcMin())
-                                  ? "True"
-                                  : "False", ""));
-        item.setText(6, Const.NVL(
-                                  (fn.getCalcMax())
-                                  ? "True"
-                                  : "False", ""));
-        item.setText(7, Const.NVL(
-                                  (fn.getCalcMedian())
-                                  ? "True"
-                                  : "False", ""));
+        item.setText(2, Const.NVL((fn.getCalcN()) ? "True" : "False", ""));
+        item.setText(3, Const.NVL((fn.getCalcMean()) ? "True" : "False", ""));
+        item.setText(4, Const.NVL((fn.getCalcStdDev()) ? "True" : "False", ""));
+        item.setText(5, Const.NVL((fn.getCalcMin()) ? "True" : "False", ""));
+        item.setText(6, Const.NVL((fn.getCalcMax()) ? "True" : "False", ""));
+        item.setText(7, Const.NVL((fn.getCalcMedian()) ? "True" : "False", ""));
         double p = fn.getCalcPercentile();
         NumberFormat pF = NumberFormat.getInstance();
         pF.setMaximumFractionDigits(2);
-        String res = (p < 0) 
-          ? ""
-          : pF.format(p * 100);
+        String res = (p < 0) ? "" : pF.format(p * 100);
         item.setText(8, Const.NVL(res, ""));
 
-        item.setText(9, Const.NVL(
-                                  (fn.getInterpolatePercentile())
-                                  ? "True"
-                                  : "False", ""));
+        item.setText(9, Const.NVL((fn.getInterpolatePercentile()) ? "True" : "False", ""));
       }
 
       m_wFields.setRowNums();
       m_wFields.optWidth(true);
     }
+    
+    m_wStepname.selectAll();
+    m_wStepname.setFocus();
   }
 
   private void cancel() {

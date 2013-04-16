@@ -1380,84 +1380,91 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     	wTestIMAPFolder.setEnabled(!wdynamicFolder.getSelection()&&!activePOP3);
     	wSelectFolder.setEnabled(!wdynamicFolder.getSelection()&&!activePOP3);
 	}
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		wStepname.selectAll();
-		 if (input.getServerName() != null)
-	            wServerName.setText(input.getServerName());
-			if (input.getUserName() != null)
-				wUserName.setText(input.getUserName());
-			if (input.getPassword() != null)
-				wPassword.setText(input.getPassword());
 
-			wUseSSL.setSelection(input.isUseSSL());
-			
-			if (input.getPort() !=null)
-			{
-				wPort.setText(input.getPort());
-			}
-			
-			if (input.getRetrievemails()>=0) 
-			{
-				wListmails.select(input.getRetrievemails() );
-			}
-			else
-			{
-				wListmails.select(0); // Retrieve All Mails
-			}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (input.getServerName() != null)
+      wServerName.setText(input.getServerName());
+    if (input.getUserName() != null)
+      wUserName.setText(input.getUserName());
+    if (input.getPassword() != null)
+      wPassword.setText(input.getPassword());
 
-			if (input.getFirstMails() != null)
-				wFirstmails.setText(input.getFirstMails());
+    wUseSSL.setSelection(input.isUseSSL());
 
-			wProtocol.setText(input.getProtocol());
-			wIMAPListmails.setText(MailConnectionMeta.getValueImapListDesc(input.getValueImapList()));
-			if (input.getFirstIMAPMails()!= null) wIMAPFirstmails.setText(input.getFirstIMAPMails());
-			if(input.getIMAPFolder()!=null) wIMAPFolder.setText(input.getIMAPFolder());
-			// search term
-			if(input.getSenderSearchTerm()!=null) wSender.setText(input.getSenderSearchTerm());
-			wNegateSender.setSelection(input.isNotTermSenderSearch());
-			if(input.getRecipientSearch()!=null) wReceipient.setText(input.getRecipientSearch());
-			wNegateReceipient.setSelection(input.isNotTermRecipientSearch());
-			if(input.getSubjectSearch()!=null) wSubject.setText(input.getSubjectSearch());
-			wNegateSubject.setSelection(input.isNotTermSubjectSearch());
-			wConditionOnReceivedDate.setText(MailConnectionMeta.getConditionDateDesc(input.getConditionOnReceivedDate()));
-			wNegateReceivedDate.setSelection(input.isNotTermReceivedDateSearch());
-			if(input.getReceivedDate1()!=null) wReadFrom.setText(input.getReceivedDate1());
-			if(input.getReceivedDate2()!=null) wReadTo.setText(input.getReceivedDate2());
-			wIncludeSubFolders.setSelection(input.isIncludeSubFolders());
-			wUseProxy.setSelection(input.isUseProxy());
-			if(input.getProxyUsername()!=null) wProxyUsername.setText(input.getProxyUsername());
-			wdynamicFolder.setSelection(input.isDynamicFolder());
-			if(input.getFolderField()!=null) wFolderField.setText(input.getFolderField());
-			wLimit.setText(Const.NVL(input.getRowLimit(),"0"));
-			for (int i=0;i<input.getInputFields().length;i++)
-			{
-			    MailInputField field = input.getInputFields()[i];
-			    
-	            if (field!=null)
-	            {
-	    			TableItem item  = wFields.table.getItem(i);
-	    			String name     = field.getName();
-	    			String column	= field.getColumnDesc();
-	                if (name    !=null) item.setText( 1, name);
-	                if (column  !=null) item.setText( 2, column);   
-	            }
-			}
-	        
-	        wFields.removeEmptyRows();
-	        wFields.setRowNums();
-	        wFields.optWidth(true);
-	        
-	        wUseBatch.setSelection(input.isUseBatch());
-	        wBatchSize.setText(input.getBatchSize() == null ? "" : input.getBatchSize().toString());
-	        wStartMessage.setText(input.getStart() == null ? "" : input.getStart().toString());
-	        wEndMessage.setText(input.getEnd() == null ? "" : input.getEnd().toString());
-	        wIgnoreFieldErrors.setSelection(input.isStopOnError());
-	        setBatchSettingsEnabled();
-	}
+    if (input.getPort() != null) {
+      wPort.setText(input.getPort());
+    }
+
+    if (input.getRetrievemails() >= 0) {
+      wListmails.select(input.getRetrievemails());
+    } else {
+      wListmails.select(0); // Retrieve All Mails
+    }
+
+    if (input.getFirstMails() != null)
+      wFirstmails.setText(input.getFirstMails());
+
+    wProtocol.setText(input.getProtocol());
+    wIMAPListmails.setText(MailConnectionMeta.getValueImapListDesc(input.getValueImapList()));
+    if (input.getFirstIMAPMails() != null)
+      wIMAPFirstmails.setText(input.getFirstIMAPMails());
+    if (input.getIMAPFolder() != null)
+      wIMAPFolder.setText(input.getIMAPFolder());
+    // search term
+    if (input.getSenderSearchTerm() != null)
+      wSender.setText(input.getSenderSearchTerm());
+    wNegateSender.setSelection(input.isNotTermSenderSearch());
+    if (input.getRecipientSearch() != null)
+      wReceipient.setText(input.getRecipientSearch());
+    wNegateReceipient.setSelection(input.isNotTermRecipientSearch());
+    if (input.getSubjectSearch() != null)
+      wSubject.setText(input.getSubjectSearch());
+    wNegateSubject.setSelection(input.isNotTermSubjectSearch());
+    wConditionOnReceivedDate.setText(MailConnectionMeta.getConditionDateDesc(input.getConditionOnReceivedDate()));
+    wNegateReceivedDate.setSelection(input.isNotTermReceivedDateSearch());
+    if (input.getReceivedDate1() != null)
+      wReadFrom.setText(input.getReceivedDate1());
+    if (input.getReceivedDate2() != null)
+      wReadTo.setText(input.getReceivedDate2());
+    wIncludeSubFolders.setSelection(input.isIncludeSubFolders());
+    wUseProxy.setSelection(input.isUseProxy());
+    if (input.getProxyUsername() != null)
+      wProxyUsername.setText(input.getProxyUsername());
+    wdynamicFolder.setSelection(input.isDynamicFolder());
+    if (input.getFolderField() != null)
+      wFolderField.setText(input.getFolderField());
+    wLimit.setText(Const.NVL(input.getRowLimit(), "0"));
+    for (int i = 0; i < input.getInputFields().length; i++) {
+      MailInputField field = input.getInputFields()[i];
+
+      if (field != null) {
+        TableItem item = wFields.table.getItem(i);
+        String name = field.getName();
+        String column = field.getColumnDesc();
+        if (name != null)
+          item.setText(1, name);
+        if (column != null)
+          item.setText(2, column);
+      }
+    }
+
+    wFields.removeEmptyRows();
+    wFields.setRowNums();
+    wFields.optWidth(true);
+
+    wUseBatch.setSelection(input.isUseBatch());
+    wBatchSize.setText(input.getBatchSize() == null ? "" : input.getBatchSize().toString());
+    wStartMessage.setText(input.getStart() == null ? "" : input.getStart().toString());
+    wEndMessage.setText(input.getEnd() == null ? "" : input.getEnd().toString());
+    wIgnoreFieldErrors.setSelection(input.isStopOnError());
+    setBatchSettingsEnabled();
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

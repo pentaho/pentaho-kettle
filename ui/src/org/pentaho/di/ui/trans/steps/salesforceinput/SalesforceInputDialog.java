@@ -1651,7 +1651,8 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		wFields.setRowNums();
 		wFields.optWidth(true);
 
-		wStepname.selectAll();
+    wStepname.selectAll();
+    wStepname.setFocus();
 	}
 
 	private void cancel() {

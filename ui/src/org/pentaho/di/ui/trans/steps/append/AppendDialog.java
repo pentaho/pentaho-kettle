@@ -210,20 +210,20 @@ public class AppendDialog extends BaseStepDialog implements StepDialogInterface
 		return stepname;
 	}
 	
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-	    List<StreamInterface> infoStreams = input.getStepIOMeta().getInfoStreams();
-	    StreamInterface headStream = infoStreams.get(0);
-	    StreamInterface tailStream = infoStreams.get(1);
-        
-		wHeadHop.setText(Const.NVL(headStream.getStepname(), ""));
-		wTailHop.setText(Const.NVL(tailStream.getStepname(), ""));
-        
-        wStepname.selectAll();
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    List<StreamInterface> infoStreams = input.getStepIOMeta().getInfoStreams();
+    StreamInterface headStream = infoStreams.get(0);
+    StreamInterface tailStream = infoStreams.get(1);
+
+    wHeadHop.setText(Const.NVL(headStream.getStepname(), ""));
+    wTailHop.setText(Const.NVL(tailStream.getStepname(), ""));
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

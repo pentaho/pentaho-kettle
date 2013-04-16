@@ -671,7 +671,8 @@ public class SymmetricCryptoTransDialog extends BaseStepDialog implements StepDi
 		if (input.getSecretKeyField() != null) wSecretKeyField.setText( input.getSecretKeyField() );
 		wOutputAsBinary.setSelection(input.isOutputResultAsBinary());
 
-		wStepname.selectAll();
+    wStepname.selectAll();
+    wStepname.setFocus();
 	}
 	
 	private void cancel()

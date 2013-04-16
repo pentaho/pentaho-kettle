@@ -735,42 +735,50 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
 		return stepname;
 	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		if(isDebug()) logDebug( BaseMessages.getString(PKG, "FuzzyMatchDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
-		
-		wAlgorithm.setText(FuzzyMatchMeta.getAlgorithmTypeDesc(input.getAlgorithmType()));
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (isDebug())
+      logDebug(BaseMessages.getString(PKG, "FuzzyMatchDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
-		if(input.getMainStreamField()!=null) wMainStreamField.setText(input.getMainStreamField());
-		if(input.getLookupField()!=null) wLookupField.setText(input.getLookupField());
-		wcaseSensitive.setSelection(input.isCaseSensitive());
-		wgetCloserValue.setSelection(input.isGetCloserValue());
-		if(input.getMinimalValue()!=null) wminValue.setText(input.getMinimalValue());
-		if(input.getMaximalValue()!=null) wmaxValue.setText(input.getMaximalValue());
-		if(input.getOutputMatchField()!=null) wmatchField.setText(input.getOutputMatchField());
-		if(input.getOutputValueField()!=null) wvalueField.setText(input.getOutputValueField());
-		if(input.getSeparator()!=null) wseparator.setText(input.getSeparator());
-		
-		if (input.getValue()!=null)
-			for (int i=0;i<input.getValue().length;i++)
-			{
-				TableItem item = wReturn.table.getItem(i);
-				if (input.getValue()[i]!=null     ) item.setText(1, input.getValue()[i]);
-				if (input.getValueName()[i]!=null && !input.getValueName()[i].equals(input.getValue()[i]))
-					item.setText(2, input.getValueName()[i]);
-			}
-		
-		
-		StreamInterface infoStream = input.getStepIOMeta().getInfoStreams().get(0);
-		wStep.setText( Const.NVL(infoStream.getStepname(), "") );
-		
-		wStepname.selectAll();
-		wReturn.setRowNums();
-		wReturn.optWidth(true);
-	}
+    wAlgorithm.setText(FuzzyMatchMeta.getAlgorithmTypeDesc(input.getAlgorithmType()));
+
+    if (input.getMainStreamField() != null)
+      wMainStreamField.setText(input.getMainStreamField());
+    if (input.getLookupField() != null)
+      wLookupField.setText(input.getLookupField());
+    wcaseSensitive.setSelection(input.isCaseSensitive());
+    wgetCloserValue.setSelection(input.isGetCloserValue());
+    if (input.getMinimalValue() != null)
+      wminValue.setText(input.getMinimalValue());
+    if (input.getMaximalValue() != null)
+      wmaxValue.setText(input.getMaximalValue());
+    if (input.getOutputMatchField() != null)
+      wmatchField.setText(input.getOutputMatchField());
+    if (input.getOutputValueField() != null)
+      wvalueField.setText(input.getOutputValueField());
+    if (input.getSeparator() != null)
+      wseparator.setText(input.getSeparator());
+
+    if (input.getValue() != null)
+      for (int i = 0; i < input.getValue().length; i++) {
+        TableItem item = wReturn.table.getItem(i);
+        if (input.getValue()[i] != null)
+          item.setText(1, input.getValue()[i]);
+        if (input.getValueName()[i] != null && !input.getValueName()[i].equals(input.getValue()[i]))
+          item.setText(2, input.getValueName()[i]);
+      }
+
+    StreamInterface infoStream = input.getStepIOMeta().getInfoStreams().get(0);
+    wStep.setText(Const.NVL(infoStream.getStepname(), ""));
+
+    wReturn.setRowNums();
+    wReturn.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

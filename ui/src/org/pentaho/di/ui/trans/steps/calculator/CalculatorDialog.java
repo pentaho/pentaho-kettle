@@ -318,40 +318,41 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
         colinf[4].setComboValues(fieldNames);
     }
 
-    /**
-	 * Copy information from the meta-data currentMeta to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		wStepname.selectAll();
-        
-        if (currentMeta.getCalculation()!=null)
-        for (int i=0;i<currentMeta.getCalculation().length;i++)
-        {
-            CalculatorMetaFunction fn = currentMeta.getCalculation()[i];
-            TableItem item = wFields.table.getItem(i);
-            item.setText( 1, Const.NVL(fn.getFieldName(), ""));
-            item.setText( 2, Const.NVL(fn.getCalcTypeLongDesc(), ""));
-            item.setText( 3, Const.NVL(fn.getFieldA(), ""));
-            item.setText( 4, Const.NVL(fn.getFieldB(), ""));
-            item.setText( 5, Const.NVL(fn.getFieldC(), ""));
-            item.setText( 6, Const.NVL(ValueMeta.getTypeDesc(fn.getValueType()), ""));
-            if (fn.getValueLength()>=0) {
-            	item.setText( 7, ""+fn.getValueLength());
-            }
-            if (fn.getValuePrecision()>=0) {
-            	item.setText( 8, ""+fn.getValuePrecision());
-            }
-            item.setText( 9, fn.isRemovedFromResult()?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No"));
-            item.setText(10, Const.NVL(fn.getConversionMask(), ""));
-            item.setText(11, Const.NVL(fn.getDecimalSymbol(), ""));
-            item.setText(12, Const.NVL(fn.getGroupingSymbol(), ""));
-            item.setText(13, Const.NVL(fn.getCurrencySymbol(), ""));
+  /**
+  * Copy information from the meta-data currentMeta to the dialog fields.
+  */
+  public void getData() {
+    if (currentMeta.getCalculation() != null)
+      for (int i = 0; i < currentMeta.getCalculation().length; i++) {
+        CalculatorMetaFunction fn = currentMeta.getCalculation()[i];
+        TableItem item = wFields.table.getItem(i);
+        item.setText(1, Const.NVL(fn.getFieldName(), ""));
+        item.setText(2, Const.NVL(fn.getCalcTypeLongDesc(), ""));
+        item.setText(3, Const.NVL(fn.getFieldA(), ""));
+        item.setText(4, Const.NVL(fn.getFieldB(), ""));
+        item.setText(5, Const.NVL(fn.getFieldC(), ""));
+        item.setText(6, Const.NVL(ValueMeta.getTypeDesc(fn.getValueType()), ""));
+        if (fn.getValueLength() >= 0) {
+          item.setText(7, "" + fn.getValueLength());
         }
-        
-        wFields.setRowNums();
-        wFields.optWidth(true);
-	}
+        if (fn.getValuePrecision() >= 0) {
+          item.setText(8, "" + fn.getValuePrecision());
+        }
+        item.setText(9,
+            fn.isRemovedFromResult() ? BaseMessages.getString(PKG, "System.Combo.Yes") : BaseMessages.getString(PKG,
+                "System.Combo.No"));
+        item.setText(10, Const.NVL(fn.getConversionMask(), ""));
+        item.setText(11, Const.NVL(fn.getDecimalSymbol(), ""));
+        item.setText(12, Const.NVL(fn.getGroupingSymbol(), ""));
+        item.setText(13, Const.NVL(fn.getCurrencySymbol(), ""));
+      }
+
+    wFields.setRowNums();
+    wFields.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

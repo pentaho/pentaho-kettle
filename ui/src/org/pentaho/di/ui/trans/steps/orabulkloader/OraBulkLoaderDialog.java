@@ -1269,121 +1269,111 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		};
 		shell.getDisplay().asyncExec(fieldLoader);
 	}
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData()
-	{
-		int i;
-		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "OraBulkLoaderDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
-		wMaxErrors.setText("" + input.getMaxErrors());   //$NON-NLS-1$
-		wCommit.setText("" + input.getCommitSize());     //$NON-NLS-1$
-		wBindSize.setText("" + input.getBindSize());     //$NON-NLS-1$
-		wReadSize.setText("" + input.getReadSize());     //$NON-NLS-1$		
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (log.isDebug())
+      logDebug(BaseMessages.getString(PKG, "OraBulkLoaderDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
-		if (input.getFieldTable() != null)
-			for (i = 0; i < input.getFieldTable().length; i++)
-			{
-				TableItem item = wReturn.table.getItem(i);
-				if (input.getFieldTable()[i] != null)
-					item.setText(1, input.getFieldTable()[i]);
-				if (input.getFieldStream()[i] != null)
-					item.setText(2, input.getFieldStream()[i]);
-				String dateMask = input.getDateMask()[i];
-				if (dateMask!=null) {
-					if ( OraBulkLoaderMeta.DATE_MASK_DATE.equals(dateMask) )
-					{
-					    item.setText(3,BaseMessages.getString(PKG, "OraBulkLoaderDialog.DateMask.Label"));
-					}
-					else if ( OraBulkLoaderMeta.DATE_MASK_DATETIME.equals(dateMask)) 
-					{
-						item.setText(3,BaseMessages.getString(PKG, "OraBulkLoaderDialog.DateTimeMask.Label"));
-					}
-					else 
-					{
-						item.setText(3,"");
-					}					
-				} 
-				else {
-					item.setText(3,"");
-				}
-			}
+    wMaxErrors.setText("" + input.getMaxErrors()); //$NON-NLS-1$
+    wCommit.setText("" + input.getCommitSize()); //$NON-NLS-1$
+    wBindSize.setText("" + input.getBindSize()); //$NON-NLS-1$
+    wReadSize.setText("" + input.getReadSize()); //$NON-NLS-1$		
 
-		if (input.getDatabaseMeta() != null)
-			wConnection.setText(input.getDatabaseMeta().getName());
-		else
-		{
-			if (transMeta.nrDatabases() == 1)
-			{
-				wConnection.setText(transMeta.getDatabase(0).getName());
-			}
-		}
-        if (input.getSchemaName() != null) wSchema.setText(input.getSchemaName());
-		if (input.getTableName() != null) wTable.setText(input.getTableName());
-		if (input.getSqlldr() != null) wSqlldr.setText(input.getSqlldr());
-		if (input.getControlFile() != null) wControlFile.setText(input.getControlFile());
-		if (input.getDataFile() != null) wDataFile.setText(input.getDataFile());
-		if (input.getLogFile() != null) wLogFile.setText(input.getLogFile());
-		if (input.getBadFile() != null) wBadFile.setText(input.getBadFile());
-		if (input.getDiscardFile() != null) wDiscardFile.setText(input.getDiscardFile());	
-		if (input.getEncoding() != null) wEncoding.setText(input.getEncoding());
-		if (input.getCharacterSetName() != null) wCharacterSetName.setText(input.getCharacterSetName());
-		if (input.getDbNameOverride() != null ) wDbNameOverride.setText(input.getDbNameOverride());
-		if (input.getAltRecordTerm() != null ) wAltRecordTerm.setText(input.getAltRecordTerm());
-		wDirectPath.setSelection(input.isDirectPath());
-		wEraseFiles.setSelection(input.isEraseFiles());
-		wFailOnError.setSelection(input.isFailOnError());
+    if (input.getFieldTable() != null)
+      for (int i = 0; i < input.getFieldTable().length; i++) {
+        TableItem item = wReturn.table.getItem(i);
+        if (input.getFieldTable()[i] != null)
+          item.setText(1, input.getFieldTable()[i]);
+        if (input.getFieldStream()[i] != null)
+          item.setText(2, input.getFieldStream()[i]);
+        String dateMask = input.getDateMask()[i];
+        if (dateMask != null) {
+          if (OraBulkLoaderMeta.DATE_MASK_DATE.equals(dateMask)) {
+            item.setText(3, BaseMessages.getString(PKG, "OraBulkLoaderDialog.DateMask.Label"));
+          } else if (OraBulkLoaderMeta.DATE_MASK_DATETIME.equals(dateMask)) {
+            item.setText(3, BaseMessages.getString(PKG, "OraBulkLoaderDialog.DateTimeMask.Label"));
+          } else {
+            item.setText(3, "");
+          }
+        } else {
+          item.setText(3, "");
+        }
+      }
+
+    if (input.getDatabaseMeta() != null)
+      wConnection.setText(input.getDatabaseMeta().getName());
+    else {
+      if (transMeta.nrDatabases() == 1) {
+        wConnection.setText(transMeta.getDatabase(0).getName());
+      }
+    }
+    if (input.getSchemaName() != null)
+      wSchema.setText(input.getSchemaName());
+    if (input.getTableName() != null)
+      wTable.setText(input.getTableName());
+    if (input.getSqlldr() != null)
+      wSqlldr.setText(input.getSqlldr());
+    if (input.getControlFile() != null)
+      wControlFile.setText(input.getControlFile());
+    if (input.getDataFile() != null)
+      wDataFile.setText(input.getDataFile());
+    if (input.getLogFile() != null)
+      wLogFile.setText(input.getLogFile());
+    if (input.getBadFile() != null)
+      wBadFile.setText(input.getBadFile());
+    if (input.getDiscardFile() != null)
+      wDiscardFile.setText(input.getDiscardFile());
+    if (input.getEncoding() != null)
+      wEncoding.setText(input.getEncoding());
+    if (input.getCharacterSetName() != null)
+      wCharacterSetName.setText(input.getCharacterSetName());
+    if (input.getDbNameOverride() != null)
+      wDbNameOverride.setText(input.getDbNameOverride());
+    if (input.getAltRecordTerm() != null)
+      wAltRecordTerm.setText(input.getAltRecordTerm());
+    wDirectPath.setSelection(input.isDirectPath());
+    wEraseFiles.setSelection(input.isEraseFiles());
+    wFailOnError.setSelection(input.isFailOnError());
     wParallel.setSelection(input.isParallel());
-		wFailOnWarning.setSelection(input.isFailOnWarning());
-		
-		String method = input.getLoadMethod();		
-		if ( OraBulkLoaderMeta.METHOD_AUTO_END.equals(method) ) 
-		{
-			wLoadMethod.select(0);
-		}
-		else if ( OraBulkLoaderMeta.METHOD_MANUAL.equals(method) ) 
-		{
-			wLoadMethod.select(1);
-		}
-		else if ( OraBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals(method) ) 
-		{
-			wLoadMethod.select(2);
-		}
-		else  
-		{
-			if(log.isDebug()) logDebug("Internal error: load_method set to default 'auto at end'"); //$NON-NLS-1$
-			wLoadMethod.select(0);
-		}		
-		
-		String action = input.getLoadAction();
-		if ( OraBulkLoaderMeta.ACTION_APPEND.equals(action))
-		{
-			wLoadAction.select(0);
-		}
-		else if ( OraBulkLoaderMeta.ACTION_INSERT.equals(action))
-		{
-			wLoadAction.select(1);
-		}
-		else if ( OraBulkLoaderMeta.ACTION_REPLACE.equals(action))
-		{
-			wLoadAction.select(2);
-		}
-		else if ( OraBulkLoaderMeta.ACTION_TRUNCATE.equals(action))
-		{
-			wLoadAction.select(3);
-		}
-		else
-		{
-			if(log.isDebug()) logDebug("Internal error: load_action set to default 'append'"); //$NON-NLS-1$
-    		wLoadAction.select(0);
-		}
-		
-		
-		wStepname.selectAll();
-		wReturn.setRowNums();
-		wReturn.optWidth(true);
-	}
+    wFailOnWarning.setSelection(input.isFailOnWarning());
+
+    String method = input.getLoadMethod();
+    if (OraBulkLoaderMeta.METHOD_AUTO_END.equals(method)) {
+      wLoadMethod.select(0);
+    } else if (OraBulkLoaderMeta.METHOD_MANUAL.equals(method)) {
+      wLoadMethod.select(1);
+    } else if (OraBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals(method)) {
+      wLoadMethod.select(2);
+    } else {
+      if (log.isDebug())
+        logDebug("Internal error: load_method set to default 'auto at end'"); //$NON-NLS-1$
+      wLoadMethod.select(0);
+    }
+
+    String action = input.getLoadAction();
+    if (OraBulkLoaderMeta.ACTION_APPEND.equals(action)) {
+      wLoadAction.select(0);
+    } else if (OraBulkLoaderMeta.ACTION_INSERT.equals(action)) {
+      wLoadAction.select(1);
+    } else if (OraBulkLoaderMeta.ACTION_REPLACE.equals(action)) {
+      wLoadAction.select(2);
+    } else if (OraBulkLoaderMeta.ACTION_TRUNCATE.equals(action)) {
+      wLoadAction.select(3);
+    } else {
+      if (log.isDebug())
+        logDebug("Internal error: load_action set to default 'append'"); //$NON-NLS-1$
+      wLoadAction.select(0);
+    }
+
+    wReturn.setRowNums();
+    wReturn.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 	
 	private void cancel()
 	{

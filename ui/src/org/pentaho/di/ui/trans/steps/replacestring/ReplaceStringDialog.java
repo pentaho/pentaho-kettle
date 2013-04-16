@@ -293,33 +293,41 @@ public class ReplaceStringDialog extends BaseStepDialog implements StepDialogInt
         ciKey[0].setComboValues(fieldNames);
         ciKey[6].setComboValues(fieldNames);
     }
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData() {
 
-		int i;
-		if (input.getFieldInStream() != null) {
-			for (i = 0; i < input.getFieldInStream().length; i++) {
-				TableItem item = wFields.table.getItem(i);
-				if (input.getFieldInStream()[i] != null) item.setText(1, input.getFieldInStream()[i]);
-				if (input.getFieldOutStream()[i] != null) item.setText(2, input.getFieldOutStream()[i]);
-				item.setText(3, ReplaceStringMeta.getUseRegExDesc(input.getUseRegEx()[i]));
-				if (input.getReplaceString()[i] != null) item.setText(4, input.getReplaceString()[i]);
-				if (input.getReplaceByString()[i] != null) item.setText(5, input.getReplaceByString()[i]);
-				item.setText(6, input.isSetEmptyString()[i]?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No"));
-				
-				if (input.getFieldReplaceByString()[i] != null) item.setText(7, input.getFieldReplaceByString()[i]);
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (input.getFieldInStream() != null) {
+      for (int i = 0; i < input.getFieldInStream().length; i++) {
+        TableItem item = wFields.table.getItem(i);
+        if (input.getFieldInStream()[i] != null)
+          item.setText(1, input.getFieldInStream()[i]);
+        if (input.getFieldOutStream()[i] != null)
+          item.setText(2, input.getFieldOutStream()[i]);
+        item.setText(3, ReplaceStringMeta.getUseRegExDesc(input.getUseRegEx()[i]));
+        if (input.getReplaceString()[i] != null)
+          item.setText(4, input.getReplaceString()[i]);
+        if (input.getReplaceByString()[i] != null)
+          item.setText(5, input.getReplaceByString()[i]);
+        item.setText(6,
+            input.isSetEmptyString()[i] ? BaseMessages.getString(PKG, "System.Combo.Yes") : BaseMessages.getString(PKG,
+                "System.Combo.No"));
 
-				item.setText(8, ReplaceStringMeta.getWholeWordDesc(input.getWholeWord()[i]));
-				item.setText(9, ReplaceStringMeta.getCaseSensitiveDesc(input.getCaseSensitive()[i]));
-			}
-		}
+        if (input.getFieldReplaceByString()[i] != null)
+          item.setText(7, input.getFieldReplaceByString()[i]);
 
-		wStepname.selectAll();
-		wFields.setRowNums();
-		wFields.optWidth(true);
-	}
+        item.setText(8, ReplaceStringMeta.getWholeWordDesc(input.getWholeWord()[i]));
+        item.setText(9, ReplaceStringMeta.getCaseSensitiveDesc(input.getCaseSensitive()[i]));
+      }
+    }
+
+    wFields.setRowNums();
+    wFields.optWidth(true);
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 
 	private void cancel() {
 		stepname = null;
