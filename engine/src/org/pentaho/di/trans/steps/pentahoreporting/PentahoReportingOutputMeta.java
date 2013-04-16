@@ -47,6 +47,7 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
@@ -304,5 +305,10 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
    */
   public void setOutputProcessorType(ProcessorType outputProcessorType) {
     this.outputProcessorType = outputProcessorType;
+  }
+  
+  @Override
+  public StepMetaInjectionInterface getStepMetaInjectionInterface() {
+    return new PentahoReportingOutputMetaInjection(this);
   }
 }
