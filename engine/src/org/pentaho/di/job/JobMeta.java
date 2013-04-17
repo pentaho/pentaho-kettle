@@ -63,6 +63,7 @@ import org.pentaho.di.core.logging.CheckpointLogTable;
 import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.logging.JobEntryLogTable;
 import org.pentaho.di.core.logging.JobLogTable;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LogTableInterface;
@@ -1297,7 +1298,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				notes.add(ni);
 			}
 			
-      ExtensionPointHandler.callExtensionPoint(KettleExtensionPoint.JobMetaLoaded.id, this);
+      ExtensionPointHandler.callExtensionPoint(LogChannel.GENERAL, KettleExtensionPoint.JobMetaLoaded.id, this);
 
 			clearChanged();
 		} catch (Exception e) {

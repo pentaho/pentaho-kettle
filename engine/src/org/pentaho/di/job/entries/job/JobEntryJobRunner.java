@@ -67,7 +67,7 @@ public class JobEntryJobRunner implements Runnable
       // This JobEntryRunner is a replacement for the Job thread.
       // The job thread is never started because we simply want to wait for the result.
       //
-      ExtensionPointHandler.callExtensionPoint(KettleExtensionPoint.JobStart.id, this);
+      ExtensionPointHandler.callExtensionPoint(log, KettleExtensionPoint.JobStart.id, this);
 
       job.fireJobStartListeners(); // Fire the start listeners
 			result = job.execute(entryNr+1, result);
@@ -82,7 +82,7 @@ public class JobEntryJobRunner implements Runnable
 		finally 
 		{
       try {
-        ExtensionPointHandler.callExtensionPoint(KettleExtensionPoint.JobFinish.id, this);
+        ExtensionPointHandler.callExtensionPoint(log, KettleExtensionPoint.JobFinish.id, this);
 
         job.fireJobFinishListeners();
       } catch (KettleException e) {

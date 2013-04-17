@@ -435,7 +435,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       stopped.set(false);
     } finally {
       try {
-        ExtensionPointHandler.callExtensionPoint(KettleExtensionPoint.JobFinish.id, this);
+        ExtensionPointHandler.callExtensionPoint(log, KettleExtensionPoint.JobFinish.id, this);
 
         fireJobFinishListeners();
       } catch (KettleException e) {
@@ -469,7 +469,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
       log.logMinimal(BaseMessages.getString(PKG, "Job.Comment.JobStarted"));
 
-      ExtensionPointHandler.callExtensionPoint(KettleExtensionPoint.JobStart.id, this);
+      ExtensionPointHandler.callExtensionPoint(log, KettleExtensionPoint.JobStart.id, this);
 
       // Start the tracking...
       JobEntryResult jerStart = new JobEntryResult(null, null, BaseMessages.getString(PKG, "Job.Comment.JobStarted"),

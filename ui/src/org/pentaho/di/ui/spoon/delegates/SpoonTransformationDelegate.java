@@ -896,8 +896,9 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 		
 		if (execConfigAnswer) {
 		  
-		  ExtensionPointHandler.callExtensionPoint(KettleExtensionPoint.SpoonTransMetaExecutionStart.id, transMeta);
-			
+		  ExtensionPointHandler.callExtensionPoint(log, KettleExtensionPoint.SpoonTransMetaExecutionStart.id, transMeta);
+		  ExtensionPointHandler.callExtensionPoint(log, KettleExtensionPoint.SpoonTransExecutionConfiguration.id, executionConfiguration);
+      
 			// Verify if there is at least one step specified to debug or preview...
 			//
 			if (debug || preview)

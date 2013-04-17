@@ -216,7 +216,7 @@ public class JobExecutor extends BaseStep implements StepInterface
     //
     getTrans().getActiveSubjobs().put(getStepname(), data.executorJob);
     
-    ExtensionPointHandler.callExtensionPoint(KettleExtensionPoint.JobStart.id, data.executorJob);
+    ExtensionPointHandler.callExtensionPoint(log, KettleExtensionPoint.JobStart.id, data.executorJob);
     
     data.executorJob.beginProcessing();
     
@@ -243,7 +243,7 @@ public class JobExecutor extends BaseStep implements StepInterface
       result.setNrErrors(1);
     } finally {
       try {
-        ExtensionPointHandler.callExtensionPoint(KettleExtensionPoint.JobFinish.id, data.executorJob);
+        ExtensionPointHandler.callExtensionPoint(log, KettleExtensionPoint.JobFinish.id, data.executorJob);
         data.executorJob.fireJobFinishListeners();
       } catch(KettleException e) {
           result.setNrErrors(1);

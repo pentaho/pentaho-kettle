@@ -590,7 +590,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     log.snap(Metrics.METRIC_TRANSFORMATION_EXECUTION_START);
     log.snap(Metrics.METRIC_TRANSFORMATION_INIT_START);
     
-    ExtensionPointHandler.callExtensionPoint(KettleExtensionPoint.TransformationPrepareExecution.id, this);
+    ExtensionPointHandler.callExtensionPoint(log, KettleExtensionPoint.TransformationPrepareExecution.id, this);
 
     checkCompatibility();
     
@@ -1090,7 +1090,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     nrOfFinishedSteps = 0;
     nrOfActiveSteps = 0;
     
-    ExtensionPointHandler.callExtensionPoint(KettleExtensionPoint.TransformationStartThreads.id, this);
+    ExtensionPointHandler.callExtensionPoint(log, KettleExtensionPoint.TransformationStartThreads.id, this);
 
     fireTransStartedListeners();
 
@@ -1188,7 +1188,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       public void transFinished(Trans trans) {
         
         try {
-          ExtensionPointHandler.callExtensionPoint(KettleExtensionPoint.TransformationFinish.id, this);
+          ExtensionPointHandler.callExtensionPoint(log, KettleExtensionPoint.TransformationFinish.id, this);
         } catch(KettleException e) {
           throw new RuntimeException("Error calling extension point at end of transformation", e);
         }
@@ -1315,7 +1315,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     }
     
-    ExtensionPointHandler.callExtensionPoint(KettleExtensionPoint.TransformationStarted.id, this);
+    ExtensionPointHandler.callExtensionPoint(log, KettleExtensionPoint.TransformationStarted.id, this);
 
     if (log.isDetailed())
       log.logDetailed(BaseMessages.getString(PKG,

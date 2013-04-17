@@ -3346,7 +3346,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
           setInternalKettleVariables();
         }
         
-        ExtensionPointHandler.callExtensionPoint(KettleExtensionPoint.TransformationMetaLoaded.id, this);
+        ExtensionPointHandler.callExtensionPoint(log, KettleExtensionPoint.TransformationMetaLoaded.id, this);
       }
     } catch (Exception e) {
       // See if we have missing plugins to report, those take precedence!

@@ -280,7 +280,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
       securityProvider.validateAction(RepositoryOperation.READ_TRANSFORMATION);
       TransMeta transMeta = new TransMeta();
       transMeta = transDelegate.loadTransformation(transMeta, transname, repdir, monitor, setInternalVariables);      
-      ExtensionPointHandler.callExtensionPoint(KettleExtensionPoint.TransformationMetaLoaded.id, transMeta);      
+      ExtensionPointHandler.callExtensionPoint(log, KettleExtensionPoint.TransformationMetaLoaded.id, transMeta);      
       return transMeta;      
     } finally {
       connectionDelegate.closeReadTransaction();
@@ -318,7 +318,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
     try {
       securityProvider.validateAction(RepositoryOperation.READ_JOB);
       JobMeta jobMeta = jobDelegate.loadJobMeta(jobname, repdir, monitor);
-      ExtensionPointHandler.callExtensionPoint(KettleExtensionPoint.JobMetaLoaded.id, jobMeta);      
+      ExtensionPointHandler.callExtensionPoint(log, KettleExtensionPoint.JobMetaLoaded.id, jobMeta);      
       return jobMeta;
     } finally {
       connectionDelegate.closeReadTransaction();
