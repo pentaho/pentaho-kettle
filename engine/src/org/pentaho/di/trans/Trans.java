@@ -71,6 +71,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleTransException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.extension.ExtensionPointHandler;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.ChannelLogTable;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
@@ -587,6 +589,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     log.snap(Metrics.METRIC_TRANSFORMATION_EXECUTION_START);
     log.snap(Metrics.METRIC_TRANSFORMATION_INIT_START);
+    
+    ExtensionPointHandler.callExtensionPoint(KettleExtensionPoint.TransformationPrepareExecution.id, this);
 
     checkCompatibility();
     
@@ -1051,7 +1055,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         throw new KettleException(BaseMessages.getString(PKG, "Trans.Log.FailToInitializeAtLeastOneStep") + Const.CR); //$NON-NLS-1
       }
     }
-
+    
     log.snap(Metrics.METRIC_TRANSFORMATION_INIT_STOP);
 
     KettleEnvironment.setExecutionInformation(this, repository);
@@ -1085,6 +1089,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     //
     nrOfFinishedSteps = 0;
     nrOfActiveSteps = 0;
+    
+    ExtensionPointHandler.callExtensionPoint(KettleExtensionPoint.TransformationStartThreads.id, this);
+
     fireTransStartedListeners();
 
     for (int i = 0; i < steps.size(); i++) {
@@ -1179,6 +1186,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     TransListener transListener = new TransAdapter() {
       public void transFinished(Trans trans) {
+        
+        try {
+          ExtensionPointHandler.callExtensionPoint(KettleExtensionPoint.TransformationFinish.id, this);
+        } catch(KettleException e) {
+          throw new RuntimeException("Error calling extension point at end of transformation", e);
+        }
 
         // First of all, stop the performance snapshot timer if there is is
         // one...
@@ -1301,6 +1314,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         break;
 
     }
+    
+    ExtensionPointHandler.callExtensionPoint(KettleExtensionPoint.TransformationStarted.id, this);
 
     if (log.isDetailed())
       log.logDetailed(BaseMessages.getString(PKG,

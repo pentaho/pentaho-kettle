@@ -66,6 +66,8 @@ import org.pentaho.di.core.exception.KettleRowException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.extension.ExtensionPointHandler;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.UndoInterface;
@@ -3340,8 +3342,11 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         throw new KettleXMLException(e);
       } finally {
         initializeVariablesFrom(null);
-        if (setInternalVariables)
+        if (setInternalVariables) {
           setInternalKettleVariables();
+        }
+        
+        ExtensionPointHandler.callExtensionPoint(KettleExtensionPoint.TransformationMetaLoaded.id, this);
       }
     } catch (Exception e) {
       // See if we have missing plugins to report, those take precedence!

@@ -29,6 +29,8 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.extension.ExtensionPointHandler;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.LoggingRegistry;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -214,7 +216,10 @@ public class JobExecutor extends BaseStep implements StepInterface
     //
     getTrans().getActiveSubjobs().put(getStepname(), data.executorJob);
     
+    ExtensionPointHandler.callExtensionPoint(KettleExtensionPoint.JobStart.id, data.executorJob);
+    
     data.executorJob.beginProcessing();
+    
     
     Result result = new Result();
     
@@ -238,6 +243,7 @@ public class JobExecutor extends BaseStep implements StepInterface
       result.setNrErrors(1);
     } finally {
       try {
+        ExtensionPointHandler.callExtensionPoint(KettleExtensionPoint.JobFinish.id, data.executorJob);
         data.executorJob.fireJobFinishListeners();
       } catch(KettleException e) {
           result.setNrErrors(1);

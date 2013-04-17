@@ -43,6 +43,8 @@ import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.extension.ExtensionPointHandler;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
@@ -1429,6 +1431,9 @@ public class SpoonJobDelegate extends SpoonDelegate
 
 		JobExecutionConfigurationDialog dialog = new JobExecutionConfigurationDialog(spoon.getShell(), executionConfiguration, jobMeta);
 		if (dialog.open()) {
+		  
+	    ExtensionPointHandler.callExtensionPoint(KettleExtensionPoint.SpoonJobMetaExecutionStart.id, jobMeta);
+
 			// addJobLog(jobMeta);
 			JobGraph jobGraph = spoon.getActiveJobGraph();
 

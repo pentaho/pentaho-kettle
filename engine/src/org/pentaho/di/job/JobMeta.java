@@ -50,6 +50,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.extension.ExtensionPointHandler;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.UndoInterface;
@@ -1294,6 +1296,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				NotePadMeta ni = new NotePadMeta(notepadnode);
 				notes.add(ni);
 			}
+			
+      ExtensionPointHandler.callExtensionPoint(KettleExtensionPoint.JobMetaLoaded.id, this);
 
 			clearChanged();
 		} catch (Exception e) {

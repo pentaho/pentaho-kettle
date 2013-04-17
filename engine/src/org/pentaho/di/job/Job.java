@@ -52,6 +52,8 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.extension.ExtensionPointHandler;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.gui.JobTracker;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.ChannelLogTable;
@@ -404,7 +406,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       stopped = new AtomicBoolean(false);
       finished = new AtomicBoolean(false);
       initialized = new AtomicBoolean(true);
-
+      
       // Create a new variable name space as we want jobs to have their own set of variables.
       // initialize from parentJob or null
       //
@@ -433,6 +435,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       stopped.set(false);
     } finally {
       try {
+        ExtensionPointHandler.callExtensionPoint(KettleExtensionPoint.JobFinish.id, this);
+
         fireJobFinishListeners();
       } catch (KettleException e) {
         result.setNrErrors(1);
@@ -464,6 +468,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       transactionId = calculateTransactionId();
 
       log.logMinimal(BaseMessages.getString(PKG, "Job.Comment.JobStarted"));
+
+      ExtensionPointHandler.callExtensionPoint(KettleExtensionPoint.JobStart.id, this);
 
       // Start the tracking...
       JobEntryResult jerStart = new JobEntryResult(null, null, BaseMessages.getString(PKG, "Job.Comment.JobStarted"),

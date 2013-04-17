@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.extension.ExtensionPointPluginType;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.ConsoleLoggingEventListener;
 import org.pentaho.di.core.logging.LoggingPluginType;
@@ -64,6 +65,7 @@ public class KettleClientEnvironment {
     PluginRegistry.addPluginType(LoggingPluginType.getInstance());
 		PluginRegistry.addPluginType(ValueMetaPluginType.getInstance());
     PluginRegistry.addPluginType(DatabasePluginType.getInstance());
+    PluginRegistry.addPluginType(ExtensionPointPluginType.getInstance());
 		PluginRegistry.init(true);
 		
 		initialized=new Boolean(true);

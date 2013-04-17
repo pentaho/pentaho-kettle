@@ -46,6 +46,8 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleDependencyException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleSecurityException;
+import org.pentaho.di.core.extension.ExtensionPointHandler;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaAndData;
@@ -277,7 +279,9 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
     try {
       securityProvider.validateAction(RepositoryOperation.READ_TRANSFORMATION);
       TransMeta transMeta = new TransMeta();
-      return transDelegate.loadTransformation(transMeta, transname, repdir, monitor, setInternalVariables);
+      transMeta = transDelegate.loadTransformation(transMeta, transname, repdir, monitor, setInternalVariables);      
+      ExtensionPointHandler.callExtensionPoint(KettleExtensionPoint.TransformationMetaLoaded.id, transMeta);      
+      return transMeta;      
     } finally {
       connectionDelegate.closeReadTransaction();
     }
@@ -313,7 +317,9 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
   public JobMeta loadJob(String jobname, RepositoryDirectoryInterface repdir, ProgressMonitorListener monitor, String versionName) throws KettleException {
     try {
       securityProvider.validateAction(RepositoryOperation.READ_JOB);
-      return jobDelegate.loadJobMeta(jobname, repdir, monitor);
+      JobMeta jobMeta = jobDelegate.loadJobMeta(jobname, repdir, monitor);
+      ExtensionPointHandler.callExtensionPoint(KettleExtensionPoint.JobMetaLoaded.id, jobMeta);      
+      return jobMeta;
     } finally {
       connectionDelegate.closeReadTransaction();
     }

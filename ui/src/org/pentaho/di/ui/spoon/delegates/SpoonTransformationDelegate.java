@@ -38,6 +38,8 @@ import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.extension.ExtensionPointHandler;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.logging.LogLevel;
@@ -893,6 +895,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 		}
 		
 		if (execConfigAnswer) {
+		  
+		  ExtensionPointHandler.callExtensionPoint(KettleExtensionPoint.SpoonTransMetaExecutionStart.id, transMeta);
 			
 			// Verify if there is at least one step specified to debug or preview...
 			//
