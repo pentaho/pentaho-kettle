@@ -548,7 +548,7 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 								try
 								{
 									// Run the SQL
-									db.execStatements(SQLBULKLOAD);
+									db.execStatement(SQLBULKLOAD);
 	
 									// Everything is OK...we can disconnect now
 									db.disconnect();
