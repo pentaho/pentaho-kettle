@@ -68,6 +68,8 @@ public class TextVar extends Composite {
 
   private Text wText;
 
+  private ModifyListener modifyListenerTooltipText;
+
   public TextVar(VariableSpace space, Composite composite, int flags) {
     this(space, composite, flags, null, null, null);
   }
@@ -108,7 +110,8 @@ public class TextVar extends Composite {
     controlDecoration.setDescriptionText(BaseMessages.getString(PKG, "TextVar.tooltip.InsertVariable"));
     PropsUI.getInstance().setLook(controlDecoration.getControl());
 
-    wText.addModifyListener(getModifyListenerTooltipText(wText));
+    modifyListenerTooltipText = getModifyListenerTooltipText(wText);
+    wText.addModifyListener(modifyListenerTooltipText);
   
     controlSpaceKeyAdapter = new ControlSpaceKeyAdapter(variables, wText,getCaretPositionInterface, insertTextInterface);
     wText.addKeyListener(controlSpaceKeyAdapter);
@@ -179,6 +182,7 @@ public class TextVar extends Composite {
    */
   public void setText(String text) {
     wText.setText(text);
+    modifyListenerTooltipText.modifyText(null);
   }
 
   public Text getTextWidget() {
@@ -224,6 +228,7 @@ public class TextVar extends Composite {
   public void setToolTipText(String toolTipText) {
     this.toolTipText = toolTipText;
     wText.setToolTipText(toolTipText);
+    modifyListenerTooltipText.modifyText(null);
   }
 
   public void setEditable(boolean editable) {
@@ -245,6 +250,7 @@ public class TextVar extends Composite {
   public void setVariables(VariableSpace vars) {
     variables = vars;
     controlSpaceKeyAdapter.setVariables(variables);
+    modifyListenerTooltipText.modifyText(null);
   }
 
 }
