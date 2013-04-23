@@ -88,7 +88,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
     /**
      * Set default encoding if not set already
      */
-    if(meta.getEncoding().isEmpty()){
+    if((meta.getEncoding() == null)||(meta.getEncoding().isEmpty())){
       meta.setEncoding(CharsetToolkit.getDefaultSystemCharset().name());
     }
 
