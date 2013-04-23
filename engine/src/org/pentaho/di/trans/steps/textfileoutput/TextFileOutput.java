@@ -42,6 +42,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.fileinput.CharsetToolkit;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
@@ -70,7 +71,8 @@ public class TextFileOutput extends BaseStep implements StepInterface
     private static final String FILE_COMPRESSION_TYPE_NONE = TextFileOutputMeta.fileCompressionTypeCodes[TextFileOutputMeta.FILE_COMPRESSION_TYPE_NONE];
     private static final String FILE_COMPRESSION_TYPE_ZIP  = TextFileOutputMeta.fileCompressionTypeCodes[TextFileOutputMeta.FILE_COMPRESSION_TYPE_ZIP];
     private static final String FILE_COMPRESSION_TYPE_GZIP = TextFileOutputMeta.fileCompressionTypeCodes[TextFileOutputMeta.FILE_COMPRESSION_TYPE_GZIP];
-    
+
+
 	public TextFileOutputMeta meta;
 	public TextFileOutputData data;
 	 
@@ -82,6 +84,13 @@ public class TextFileOutput extends BaseStep implements StepInterface
 	public synchronized boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException {
 		meta = (TextFileOutputMeta) smi;
 		data = (TextFileOutputData) sdi;
+
+    /**
+     * Set default encoding if not set already
+     */
+    if(meta.getEncoding().isEmpty()){
+      meta.setEncoding(CharsetToolkit.getDefaultSystemCharset().name());
+    }
 
 		boolean result = true;
 		boolean bEndedLineWrote = false;
