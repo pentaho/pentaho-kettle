@@ -287,7 +287,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 			rep.saveStepAttribute(id_transformation, id_step, getRepCode("LAZY_CONVERSION"), lazyConversionActive);
 			rep.saveStepAttribute(id_transformation, id_step, getRepCode("ADD_FILENAME_RESULT"), isaddresult);
 			rep.saveStepAttribute(id_transformation, id_step, getRepCode("PARALLEL"), runningInParallel);
-      rep.saveStepAttribute(id_transformation, id_step, getRepCode("NEWLINE_POSSIBLE"), newlinePossibleInFields);
+      rep.saveStepAttribute(id_transformation, id_step, 0, getRepCode("NEWLINE_POSSIBLE"), newlinePossibleInFields);
 			rep.saveStepAttribute(id_transformation, id_step, getRepCode("ENCODING"), encoding);
 
 			for (int i = 0; i < inputFields.length; i++)
