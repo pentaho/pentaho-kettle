@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <option name="DEFAULT_COMPILER" value="Javac" />
+    <resourceExtensions />
+    <wildcardResourcePatterns>
+      <entry name="!?*.java" />
+      <entry name="!?*.form" />
+      <entry name="!?*.class" />
+      <entry name="!?*.groovy" />
+      <entry name="!?*.scala" />
+      <entry name="!?*.flex" />
+      <entry name="!?*.kt" />
+      <entry name="!?*.clj" />
+    </wildcardResourcePatterns>
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="false">
+        <processorPath useClasspath="true" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="CopyrightManager" default="">
+    <module2copyright />
+  </component>
+  <component name="DependencyValidationManager">
+    <option name="SKIP_IMPORT_STATEMENTS" value="false" />
+  </component>
+  <component name="EclipseCodeFormatter">
+    <option name="defaultSettings" value="true" />
+    <option name="formatter" value="ECLIPSE" />
+    <option name="id" value="1366226860383" />
+    <option name="name" value="default" />
+    <option name="pathToConfigFileJava" value="$USER_HOME$/Downloads/PentahoCodeStyle_latest.xml" />
+    <option name="selectedJavaProfile" value="Pentaho" />
+  </component>
+  <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false" />
+  <component name="EntryPointsManager">
+    <entry_points version="2.0" />
+  </component>
+  <component name="IdProvider" IDEtalkID="7D21794E4B9E7CE717F5920D85700CD6" />
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/core/Kettle Core.iml" filepath="$PROJECT_DIR$/core/Kettle Core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/dbdialog/Kettle DB Dialog.iml" filepath="$PROJECT_DIR$/dbdialog/Kettle DB Dialog.iml" />
+      <module fileurl="file://$PROJECT_DIR$/engine/Kettle Engine.iml" filepath="$PROJECT_DIR$/engine/Kettle Engine.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/kettle-gpload-plugin/Kettle GPLoad Plugin.iml" filepath="$PROJECT_DIR$/plugins/kettle-gpload-plugin/Kettle GPLoad Plugin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/kettle-hl7-plugin/Kettle HL7 Plugin.iml" filepath="$PROJECT_DIR$/plugins/kettle-hl7-plugin/Kettle HL7 Plugin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jdbc/Kettle JDBC.iml" filepath="$PROJECT_DIR$/jdbc/Kettle JDBC.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/market/Kettle Market Plugin.iml" filepath="$PROJECT_DIR$/plugins/market/Kettle Market Plugin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/kettle-openerp-plugin/Kettle Open ERP Plugin.iml" filepath="$PROJECT_DIR$/plugins/kettle-openerp-plugin/Kettle Open ERP Plugin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/kettle-palo-plugin/Kettle Palo Plugin.iml" filepath="$PROJECT_DIR$/plugins/kettle-palo-plugin/Kettle Palo Plugin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/star-modeler/Kettle Star Modeler Plugin.iml" filepath="$PROJECT_DIR$/plugins/star-modeler/Kettle Star Modeler Plugin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ui/Kettle UI.iml" filepath="$PROJECT_DIR$/ui/Kettle UI.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/kettle5-log4j-plugin/PDI5 Log4j logging plugin.iml" filepath="$PROJECT_DIR$/plugins/kettle5-log4j-plugin/PDI5 Log4j logging plugin.iml" />
+    </modules>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" assert-keyword="true" jdk-15="true" project-jdk-name="1.6" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/out" />
+  </component>
+  <component name="SvnBranchConfigurationManager">
+    <option name="myConfigurationMap">
+      <map>
+        <entry key="$PROJECT_DIR$">
+          <value>
+            <SvnBranchConfiguration>
+              <option name="trunkUrl" value="" />
+            </SvnBranchConfiguration>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="mySupportsUserInfoFilter" value="true" />
+  </component>
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="svn" />
+  </component>
+</project>
+
