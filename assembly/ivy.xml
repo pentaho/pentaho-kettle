@@ -22,7 +22,7 @@
     
     <!-- Pentaho dependencies (non-Kettle), launcher, shim, etc. -->
     <dependency org="pentaho"               name="launcher"             rev="${launcher.revision}" conf="launcher->default"/>
-    <dependency org="pentaho"               name="pentaho-hadoop-hive-jdbc-shim" rev="${pentaho.hadoop.hive.shim.version}"/>
+    <dependency org="pentaho"               name="pentaho-hadoop-hive-jdbc-shim" rev="${dependency.pentaho-hadoop-hive-jdbc-shim.revision}"/>
        
     <!-- The OS-specific libraries are bundled together, unzip them all for assembly -->
     <dependency org="org.eclipse"          name="swtlibs"               rev="3.7" conf="swtlibs->default" transitive="false">
