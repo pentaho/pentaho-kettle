@@ -183,7 +183,10 @@ public abstract class BaseStepGenericXulDialog extends AbstractXulEventHandler i
 
   protected abstract Class<?> getClassForMessages();
 
-  abstract public void dispose();
+  public abstract void dispose();
+  
+  public abstract boolean validate();
+  
   
   public void addDatabases( XulMenuList<?> wConnection ) {
     addDatabases(wConnection, null);

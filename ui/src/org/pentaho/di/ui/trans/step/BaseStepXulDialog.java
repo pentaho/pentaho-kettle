@@ -85,6 +85,11 @@ public abstract class BaseStepXulDialog extends BaseStepGenericXulDialog {
   @Override
   public void clear() {
   }
+  
+  @Override
+  public boolean validate(){
+    return true;
+  }
 
   private static Class<?> PKG = StepInterface.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
