@@ -72,7 +72,7 @@ public class DynamicSQLRow extends BaseStep implements StepInterface
 			loadFromBuffer=false;
 		}
 		
-		if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "DynamicSQLRow.Log.CheckingRow")+rowMeta.getString(rowData)); //$NON-NLS-1$
+		if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "DynamicSQLRow.Log.CheckingRow")+rowMeta.getString(rowData)); 
 		
 		
 		// get dynamic SQL statement
@@ -177,7 +177,7 @@ public class DynamicSQLRow extends BaseStep implements StepInterface
 					data.skipPreviousRow=false;
 				}
 				
-				if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DynamicSQLRow.Log.PutoutRow")+data.outputRowMeta.getString(newRow)); //$NON-NLS-1$
+				if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DynamicSQLRow.Log.PutoutRow")+data.outputRowMeta.getString(newRow)); 
 				
 				
 				// Get a new row
@@ -252,7 +252,7 @@ public class DynamicSQLRow extends BaseStep implements StepInterface
 				if (data.indexOfSQLField<0)
 				{
 					// The field is unreachable !
-					throw new KettleException(BaseMessages.getString(PKG, "DynamicSQLRow.Exception.FieldNotFound",meta.getSQLFieldName())); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleException(BaseMessages.getString(PKG, "DynamicSQLRow.Exception.FieldNotFound",meta.getSQLFieldName()));  
 				}
 			}
 		}
@@ -262,7 +262,7 @@ public class DynamicSQLRow extends BaseStep implements StepInterface
  
             if (checkFeedback(getLinesRead())) 
             {
-            	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "DynamicSQLRow.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+            	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "DynamicSQLRow.Log.LineNumber")+getLinesRead()); 
             }
 		}
 		catch(KettleException e)
@@ -277,7 +277,7 @@ public class DynamicSQLRow extends BaseStep implements StepInterface
 			}
 			else
 			{
-				logError(BaseMessages.getString(PKG, "DynamicSQLRow.Log.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "DynamicSQLRow.Log.ErrorInStepRunning")+e.getMessage()); 
 				setErrors(1);
 				stopAll();
 				setOutputDone();  // signal end to receiver(s)
@@ -336,7 +336,7 @@ public class DynamicSQLRow extends BaseStep implements StepInterface
 				
                 data.db.setCommit(100); // we never get a commit, but it just turns off auto-commit.
 
-                if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "DynamicSQLRow.Log.ConnectedToDB")); //$NON-NLS-1$
+                if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "DynamicSQLRow.Log.ConnectedToDB")); 
 	
 				data.db.setQueryLimit(meta.getRowLimit());
 				
@@ -344,7 +344,7 @@ public class DynamicSQLRow extends BaseStep implements StepInterface
 			}
 			catch(KettleException e)
 			{
-				logError(BaseMessages.getString(PKG, "DynamicSQLRow.Log.DatabaseError")+e.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "DynamicSQLRow.Log.DatabaseError")+e.getMessage()); 
 				if(data.db!=null) data.db.disconnect();
 			}
 		}

@@ -97,12 +97,12 @@ public class UserDialog extends Dialog
 		formLayout.marginWidth  = Const.FORM_MARGIN;
 		formLayout.marginHeight = Const.FORM_MARGIN;
 		
-		shell.setText(BaseMessages.getString(PKG, "UserDialog.Dialog.Main.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "UserDialog.Dialog.Main.Title")); 
 		shell.setLayout (formLayout);
  		
 		// Username
 		wlLogin = new Label(shell, SWT.RIGHT ); 
-		wlLogin.setText(BaseMessages.getString(PKG, "UserDialog.Label.Login"));  //$NON-NLS-1$
+		wlLogin.setText(BaseMessages.getString(PKG, "UserDialog.Label.Login"));  
  		props.setLook(wlLogin);
 		FormData fdlLogin = new FormData();
 		fdlLogin.left = new FormAttachment(0,0); 
@@ -119,7 +119,7 @@ public class UserDialog extends Dialog
 		
 		// Password
 		wlPassword = new Label(shell, SWT.RIGHT ); 
-		wlPassword.setText(BaseMessages.getString(PKG, "UserDialog.Label.Password"));  //$NON-NLS-1$
+		wlPassword.setText(BaseMessages.getString(PKG, "UserDialog.Label.Password"));  
  		props.setLook(wlPassword);
 		FormData fdlPassword = new FormData();
 		fdlPassword.left = new FormAttachment(0,0);
@@ -137,7 +137,7 @@ public class UserDialog extends Dialog
 
 		// Username
 		wlUsername = new Label(shell, SWT.RIGHT ); 
-		wlUsername.setText(BaseMessages.getString(PKG, "UserDialog.Label.FullName"));  //$NON-NLS-1$
+		wlUsername.setText(BaseMessages.getString(PKG, "UserDialog.Label.FullName"));  
  		props.setLook(wlUsername);
 		FormData fdlUsername = new FormData();
 		fdlUsername.left = new FormAttachment(0,0);
@@ -154,7 +154,7 @@ public class UserDialog extends Dialog
 
 		// Description
 		wlDescription = new Label(shell, SWT.RIGHT ); 
-		wlDescription.setText(BaseMessages.getString(PKG, "UserDialog.Label.Description"));  //$NON-NLS-1$
+		wlDescription.setText(BaseMessages.getString(PKG, "UserDialog.Label.Description"));  
  		props.setLook(wlDescription);
 		FormData fdlDescription = new FormData();
 		fdlDescription.left = new FormAttachment(0,0);
@@ -171,9 +171,9 @@ public class UserDialog extends Dialog
 
 		// Buttons
 		wOK     = new Button(shell, SWT.PUSH); 
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel = new Button(shell, SWT.PUSH); 
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 		
 		FormData fdOK        = new FormData();
 		FormData fdCancel    = new FormData();
@@ -264,8 +264,8 @@ public class UserDialog extends Dialog
 			if ( login == null || login.length() == 0 )
 			{
 				MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-				mb.setMessage(BaseMessages.getString(PKG, "UserDialog.Dialog.User.New.EmptyLogin.Message")); //$NON-NLS-1$
-				mb.setText(BaseMessages.getString(PKG, "UserDialog.Dialog.User.New.EmptyLogin.Title")); //$NON-NLS-1$
+				mb.setMessage(BaseMessages.getString(PKG, "UserDialog.Dialog.User.New.EmptyLogin.Message")); 
+				mb.setText(BaseMessages.getString(PKG, "UserDialog.Dialog.User.New.EmptyLogin.Title")); 
 				mb.open();
 				
 				// don't dispose
@@ -278,8 +278,8 @@ public class UserDialog extends Dialog
 		    	if ( id != null )
 		    	{
 					MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-					mb.setMessage(BaseMessages.getString(PKG, "UserDialog.Dialog.User.New.AlreadyExists.Message")); //$NON-NLS-1$
-					mb.setText(BaseMessages.getString(PKG, "UserDialog.Dialog.User.New.AlreadyExists.Title")); //$NON-NLS-1$
+					mb.setMessage(BaseMessages.getString(PKG, "UserDialog.Dialog.User.New.AlreadyExists.Message")); 
+					mb.setText(BaseMessages.getString(PKG, "UserDialog.Dialog.User.New.AlreadyExists.Title")); 
 					mb.open();
 					
 					// don't dispose
@@ -298,8 +298,8 @@ public class UserDialog extends Dialog
 		catch(KettleException e)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(BaseMessages.getString(PKG, "UserDialog.Dialog.UnexpectedError.Message")+e.getMessage()); //$NON-NLS-1$
-			mb.setText(BaseMessages.getString(PKG, "UserDialog.Dialog.UnexpectedError.Title")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "UserDialog.Dialog.UnexpectedError.Message")+e.getMessage()); 
+			mb.setText(BaseMessages.getString(PKG, "UserDialog.Dialog.UnexpectedError.Title")); 
 			mb.open(); 
 		}
 	}

@@ -126,22 +126,22 @@ public class SetValueFieldMeta extends BaseStepMeta implements StepMetaInterface
 	   {
 		try
 		{
-			Node fields = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
-			int count= XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
+			Node fields = XMLHandler.getSubNode(stepnode, "fields"); 
+			int count= XMLHandler.countNodes(fields, "field"); 
 			
 			allocate(count);
 					
 			for (int i=0;i<count;i++)
 			{
-				Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
+				Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); 
 				
-				fieldName[i]  = XMLHandler.getTagValue(fnode, "name"); //$NON-NLS-1$
-				replaceByFieldValue[i] = XMLHandler.getTagValue(fnode, "replaceby"); //$NON-NLS-1$
+				fieldName[i]  = XMLHandler.getTagValue(fnode, "name"); 
+				replaceByFieldValue[i] = XMLHandler.getTagValue(fnode, "replaceby"); 
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "SetValueFieldMeta.Exception.UnableToReadStepInfoFromXML"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "SetValueFieldMeta.Exception.UnableToReadStepInfoFromXML"), e); 
 		}
 	}
 	
@@ -153,8 +153,8 @@ public class SetValueFieldMeta extends BaseStepMeta implements StepMetaInterface
 
 		for (int i=0;i<count;i++)
 		{
-			fieldName[i] = "field"+i; //$NON-NLS-1$
-			replaceByFieldValue[i] = ""; //$NON-NLS-1$
+			fieldName[i] = "field"+i; 
+			replaceByFieldValue[i] = ""; 
 		}
 	}
 
@@ -162,16 +162,16 @@ public class SetValueFieldMeta extends BaseStepMeta implements StepMetaInterface
 	{
         StringBuffer retval = new StringBuffer();
 
-		retval.append("    <fields>"+Const.CR); //$NON-NLS-1$
+		retval.append("    <fields>"+Const.CR); 
 		
 		for (int i=0;i<fieldName.length;i++)
 		{
-			retval.append("      <field>"+Const.CR); //$NON-NLS-1$
-			retval.append("        "+XMLHandler.addTagValue("name", fieldName[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("replaceby", replaceByFieldValue[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        </field>"+Const.CR); //$NON-NLS-1$
+			retval.append("      <field>"+Const.CR); 
+			retval.append("        "+XMLHandler.addTagValue("name", fieldName[i]));  
+			retval.append("        "+XMLHandler.addTagValue("replaceby", replaceByFieldValue[i]));  
+			retval.append("        </field>"+Const.CR); 
 		}
-		retval.append("      </fields>"+Const.CR); //$NON-NLS-1$
+		retval.append("      </fields>"+Const.CR); 
 
 		return retval.toString();
 	}
@@ -180,19 +180,19 @@ public class SetValueFieldMeta extends BaseStepMeta implements StepMetaInterface
 	  {
 		try
 		{
-			int nrfields = rep.countNrStepAttributes(id_step, "field_name"); //$NON-NLS-1$
+			int nrfields = rep.countNrStepAttributes(id_step, "field_name"); 
 			
 			allocate(nrfields);
 	
 			for (int i=0;i<nrfields;i++)
 			{
-				fieldName[i] =          rep.getStepAttributeString(id_step, i, "field_name"); //$NON-NLS-1$
-				replaceByFieldValue[i] = 		rep.getStepAttributeString(id_step, i, "replace_by"); //$NON-NLS-1$
+				fieldName[i] =          rep.getStepAttributeString(id_step, i, "field_name"); 
+				replaceByFieldValue[i] = 		rep.getStepAttributeString(id_step, i, "replace_by"); 
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "SetValueFieldMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "SetValueFieldMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository"), e); 
 		}
 	}
 
@@ -203,13 +203,13 @@ public class SetValueFieldMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			for (int i=0;i<fieldName.length;i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",      fieldName[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "replace_by",     replaceByFieldValue[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",      fieldName[i]); 
+				rep.saveStepAttribute(id_transformation, id_step, i, "replace_by",     replaceByFieldValue[i]); 
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "SetValueFieldMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "SetValueFieldMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); 
 		}
 
 	}
@@ -219,22 +219,22 @@ public class SetValueFieldMeta extends BaseStepMeta implements StepMetaInterface
 	 {	
 		 CheckResult cr;
 		if (prev==null || prev.size()==0)
-			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "SetValueFieldMeta.CheckResult.NoReceivingFieldsError"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "SetValueFieldMeta.CheckResult.NoReceivingFieldsError"), stepMeta); 
 		else
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SetValueFieldMeta.CheckResult.StepReceivingFieldsOK",prev.size()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SetValueFieldMeta.CheckResult.StepReceivingFieldsOK",prev.size()+""), stepMeta);  
 		remarks.add(cr);
 		
 		
 		// See if we have input streams leading to this step!
 		if (input.length>0)
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SetValueFieldMeta.CheckResult.StepRecevingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SetValueFieldMeta.CheckResult.StepRecevingInfoFromOtherSteps"), stepMeta); 
 		else
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SetValueFieldMeta.CheckResult.NoInputReceivedError"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SetValueFieldMeta.CheckResult.NoInputReceivedError"), stepMeta); 
 		remarks.add(cr);
 		
 		if(fieldName==null && fieldName.length==0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SetValueFieldMeta.CheckResult.FieldsSelectionEmpty"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SetValueFieldMeta.CheckResult.FieldsSelectionEmpty"), stepMeta); 
 			remarks.add(cr);	
 		}else
 		{
@@ -242,7 +242,7 @@ public class SetValueFieldMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				if(Const.isEmpty(replaceByFieldValue[i]))
 				{
-					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SetValueFieldMeta.CheckResult.ReplaceByValueMissing",fieldName[i],""+i), stepMeta); //$NON-NLS-1$
+					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SetValueFieldMeta.CheckResult.ReplaceByValueMissing",fieldName[i],""+i), stepMeta); 
 					remarks.add(cr);
 				}
 			}

@@ -108,8 +108,8 @@ public class UISecurityRoleTest {
       usersToAssign.add(new UIRepositoryUser(joeUser));
       role.assignUsers(usersToAssign);
       assertEquals(role.getMode(), Mode.ADD); // Should have exactly 7 roles
-      assertEquals(role.getName(), "newrole"); //$NON-NLS-1$
-      assertEquals(role.getDescription(), "new description"); //$NON-NLS-1$
+      assertEquals(role.getName(), "newrole"); 
+      assertEquals(role.getDescription(), "new description"); 
       Assert.assertTrue(contains(role.getAssignedUsers(),new UIRepositoryUser(joeUser)));
       Assert.assertTrue(contains(role.getAssignedUsers(),new UIRepositoryUser(tiffanyUser)));
       Assert.assertTrue(contains(role.getAssignedUsers(),new UIRepositoryUser(suzyUser)));
@@ -138,7 +138,7 @@ public class UISecurityRoleTest {
       role.assignUsers(usersToAssign);
       role.unassignUsers(usersToUnAssign);
       assertEquals(role.getMode(), Mode.EDIT); // Should have exactly 7 roles
-      assertEquals(role.getDescription(), "new description"); //$NON-NLS-1$
+      assertEquals(role.getDescription(), "new description"); 
       Assert.assertFalse(contains(role.getAssignedUsers(),new UIRepositoryUser(joeUser)));
       Assert.assertFalse(contains(role.getAssignedUsers(),new UIRepositoryUser(patUser)));
       Assert.assertTrue(contains(role.getAssignedUsers(),new UIRepositoryUser(tiffanyUser)));

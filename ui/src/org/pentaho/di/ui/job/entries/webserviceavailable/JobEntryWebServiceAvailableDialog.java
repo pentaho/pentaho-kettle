@@ -109,7 +109,7 @@ public class JobEntryWebServiceAvailableDialog extends JobEntryDialog implements
 		super(parent, jobEntryInt, rep, jobMeta);
 		jobEntry = (JobEntryWebServiceAvailable) jobEntryInt;
 		if (this.jobEntry.getName() == null)
-			this.jobEntry.setName(BaseMessages.getString(PKG, "JobEntryWebServiceAvailable.Name.Default")); //$NON-NLS-1$
+			this.jobEntry.setName(BaseMessages.getString(PKG, "JobEntryWebServiceAvailable.Name.Default")); 
 	}
 
 

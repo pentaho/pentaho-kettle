@@ -414,10 +414,10 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
     private String scrubOldRowSeparator(String original) {
       if(original != null) {
         // Update old files to the new format
-        if(original.equalsIgnoreCase("CR")) { //$NON-NLS-1$
-          return "LINEFEED"; //$NON-NLS-1$
-        } else if(original.equalsIgnoreCase("LF")) { //$NON-NLS-1$
-          return "CARRIAGERETURN"; //$NON-NLS-1$
+        if(original.equalsIgnoreCase("CR")) { 
+          return "LINEFEED"; 
+        } else if(original.equalsIgnoreCase("LF")) { 
+          return "CARRIAGERETURN"; 
         }
       }
       return original;
@@ -702,7 +702,7 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
 			}
 			return null;
 		} catch (Exception e) {
-			throw new KettleException(e); //$NON-NLS-1$
+			throw new KettleException(e); 
 		}
 	}
 

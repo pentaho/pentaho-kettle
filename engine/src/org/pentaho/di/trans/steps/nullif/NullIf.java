@@ -79,7 +79,7 @@ public class NullIf extends BaseStep implements StepInterface
 		        data.keynr[i] = data.outputRowMeta.indexOfValue(meta.getFieldName()[i]);
 				if (data.keynr[i]<0)
 				{
-					logError(BaseMessages.getString(PKG, "NullIf.Log.CouldNotFindFieldInRow",meta.getFieldName()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "NullIf.Log.CouldNotFindFieldInRow",meta.getFieldName()[i]));  
 					setErrors(1);
 					stopAll();
 					return false;
@@ -90,7 +90,7 @@ public class NullIf extends BaseStep implements StepInterface
 		    }
 		}
 
-		if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "NullIf.Log.ConvertFieldValuesToNullForRow")+data.outputRowMeta.getString(r)); //$NON-NLS-1$
+		if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "NullIf.Log.ConvertFieldValuesToNullForRow")+data.outputRowMeta.getString(r)); 
 		
 		for (int i=0;i<meta.getFieldValue().length;i++)
 		{

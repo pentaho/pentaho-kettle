@@ -261,7 +261,7 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface
         wRepeatElement.setLayoutData(fdRepeatElement);
 
         wlOmitXMLHeader=new Label(wContentComp, SWT.RIGHT);
-        wlOmitXMLHeader.setText(BaseMessages.getString(PKG, "AddXMLDialog.OmitXMLHeader.Label")); //$NON-NLS-1$
+        wlOmitXMLHeader.setText(BaseMessages.getString(PKG, "AddXMLDialog.OmitXMLHeader.Label")); 
         props.setLook(wlOmitXMLHeader);
         fdlOmitXMLHeader=new FormData();
         fdlOmitXMLHeader.left = new FormAttachment(0, 0);
@@ -285,7 +285,7 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface
         );
         
         wlOmitNullValues=new Label(wContentComp, SWT.RIGHT);
-        wlOmitNullValues.setText(BaseMessages.getString(PKG, "AddXMLDialog.OmitNullValues.Label")); //$NON-NLS-1$
+        wlOmitNullValues.setText(BaseMessages.getString(PKG, "AddXMLDialog.OmitNullValues.Label")); 
         props.setLook(wlOmitNullValues);
         fdlOmitNullValues=new FormData();
         fdlOmitNullValues.left = new FormAttachment(0, 0);

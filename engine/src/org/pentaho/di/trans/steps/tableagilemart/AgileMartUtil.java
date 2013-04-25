@@ -24,7 +24,7 @@ public class AgileMartUtil {
     if( registry == null ) {
       try {
         registry = new OrderedFileRegistry();
-        ((OrderedFileRegistry) registry).setFilePath(org.pentaho.di.core.Const.getKettleDirectory() + File.separator + "registry.xml"); //$NON-NLS-1$
+        ((OrderedFileRegistry) registry).setFilePath(org.pentaho.di.core.Const.getKettleDirectory() + File.separator + "registry.xml"); 
         factory.setMetadataRegistry(registry);
         registry.init();
       } catch (Exception e) {

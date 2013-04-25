@@ -125,7 +125,7 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
     this.masterRepositoryName = repositoryMeta.getName();
 
     shell = new Shell(parent, style | SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN | SWT.APPLICATION_MODAL| SWT.SHEET);
-    shell.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.Main.Title")); //$NON-NLS-1$
+    shell.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.Main.Title")); 
 
   }
 
@@ -139,18 +139,18 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
 
     shell.setLayout(formLayout);
     shell.setImage(GUIResource.getInstance().getImageSpoon());
-    shell.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.Main.Title2")); //$NON-NLS-1$
+    shell.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.Main.Title2")); 
 
     int middle = props.getMiddlePct();
     int margin = Const.MARGIN;
 
     // Add the connection buttons :
     wnConnection = new Button(shell, SWT.PUSH);
-    wnConnection.setText(BaseMessages.getString(PKG, "System.Button.New")); //$NON-NLS-1$
+    wnConnection.setText(BaseMessages.getString(PKG, "System.Button.New")); 
     weConnection = new Button(shell, SWT.PUSH);
-    weConnection.setText(BaseMessages.getString(PKG, "System.Button.Edit")); //$NON-NLS-1$
+    weConnection.setText(BaseMessages.getString(PKG, "System.Button.Edit")); 
     wdConnection = new Button(shell, SWT.PUSH);
-    wdConnection.setText(BaseMessages.getString(PKG, "System.Button.Delete")); //$NON-NLS-1$
+    wdConnection.setText(BaseMessages.getString(PKG, "System.Button.Delete")); 
 
     // Button positions...
     fddConnection = new FormData();
@@ -180,7 +180,7 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
 
     // Connection line
     wlConnection = new Label(shell, SWT.RIGHT);
-    wlConnection.setText(BaseMessages.getString(PKG, "RepositoryDialog.Label.SelectConnection")); //$NON-NLS-1$
+    wlConnection.setText(BaseMessages.getString(PKG, "RepositoryDialog.Label.SelectConnection")); 
     props.setLook(wlConnection);
     fdlConnection = new FormData();
     fdlConnection.left = new FormAttachment(0, 0);
@@ -235,7 +235,7 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
 
     // ID line
     wlId = new Label(shell, SWT.RIGHT);
-    wlId.setText(BaseMessages.getString(PKG, "RepositoryDialog.Label.ID")); //$NON-NLS-1$
+    wlId.setText(BaseMessages.getString(PKG, "RepositoryDialog.Label.ID")); 
     props.setLook(wlId);
     fldId = new FormData();
     fldId.left = new FormAttachment(0, 0);
@@ -252,7 +252,7 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
 
     // Name line
     wlName = new Label(shell, SWT.RIGHT);
-    wlName.setText(BaseMessages.getString(PKG, "RepositoryDialog.Label.Name")); //$NON-NLS-1$
+    wlName.setText(BaseMessages.getString(PKG, "RepositoryDialog.Label.Name")); 
     props.setLook(wlName);
     fdlName = new FormData();
     fdlName.left = new FormAttachment(0, 0);
@@ -268,7 +268,7 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
     wName.setLayoutData(fdName);
 
     wOK = new Button(shell, SWT.PUSH);
-    wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+    wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
     lsOK = new Listener() {
       public void handleEvent(Event e) {
         ok();
@@ -277,7 +277,7 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
     wOK.addListener(SWT.Selection, lsOK);
 
     wCreate = new Button(shell, SWT.PUSH);
-    wCreate.setText(BaseMessages.getString(PKG, "RepositoryDialog.Button.CreateOrUpgrade")); //$NON-NLS-1$
+    wCreate.setText(BaseMessages.getString(PKG, "RepositoryDialog.Button.CreateOrUpgrade")); 
     lsCreate = new Listener() {
       public void handleEvent(Event e) {
         create();
@@ -286,7 +286,7 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
     wCreate.addListener(SWT.Selection, lsCreate);
 
     wDrop = new Button(shell, SWT.PUSH);
-    wDrop.setText(BaseMessages.getString(PKG, "RepositoryDialog.Button.Remove")); //$NON-NLS-1$
+    wDrop.setText(BaseMessages.getString(PKG, "RepositoryDialog.Button.Remove")); 
     lsDrop = new Listener() {
       public void handleEvent(Event e) {
         drop();
@@ -295,7 +295,7 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
     wDrop.addListener(SWT.Selection, lsDrop);
 
     wCancel = new Button(shell, SWT.PUSH);
-    wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+    wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
     lsCancel = new Listener() {
       public void handleEvent(Event e) {
         cancel();
@@ -391,20 +391,20 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
           }
         } else {
           MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-          box.setMessage(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.ErrorNoName.Message")); //$NON-NLS-1$
-          box.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.Error.Title")); //$NON-NLS-1$
+          box.setMessage(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.ErrorNoName.Message")); 
+          box.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.Error.Title")); 
           box.open();
         }
       } else {
         MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-        box.setMessage(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.ErrorNoId.Message")); //$NON-NLS-1$
-        box.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.Error.Title")); //$NON-NLS-1$
+        box.setMessage(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.ErrorNoId.Message")); 
+        box.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.Error.Title")); 
         box.open();        
       }
     } else {
       MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-      box.setMessage(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.ErrorNoConnection.Message")); //$NON-NLS-1$
-      box.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.Error.Title")); //$NON-NLS-1$
+      box.setMessage(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.ErrorNoConnection.Message")); 
+      box.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.Error.Title")); 
       box.open();      
     }
   }
@@ -419,7 +419,7 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
   }
 
   private void create() {
-    System.out.println("Loading repository info..."); //$NON-NLS-1$
+    System.out.println("Loading repository info..."); 
 
     KettleDatabaseRepositoryMeta repositoryMeta = new KettleDatabaseRepositoryMeta();
     getInfo(repositoryMeta);
@@ -427,13 +427,13 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
     if (repositoryMeta.getConnection() != null) {
       if (repositoryMeta.getConnection().getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC) {
         // Show a warning: using ODBC is not always the best choice ;-)
-        System.out.println("Show ODBC warning..."); //$NON-NLS-1$
+        System.out.println("Show ODBC warning..."); 
 
         MessageBox qmb = new MessageBox(shell, SWT.ICON_WARNING | SWT.YES | SWT.NO);
         qmb
             .setMessage(BaseMessages
-                .getString(PKG, "RepositoryDialog.Dialog.ODBCIsNotSafe.Message", Const.CR, Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
-        qmb.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.ODBCIsNotSafe.Title")); //$NON-NLS-1$
+                .getString(PKG, "RepositoryDialog.Dialog.ODBCIsNotSafe.Message", Const.CR, Const.CR));  
+        qmb.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.ODBCIsNotSafe.Title")); 
         int answer = qmb.open();
         if (answer != SWT.YES) {
           return; // Don't continue
@@ -442,22 +442,22 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
       }
 
       try {
-        System.out.println("Allocating repository..."); //$NON-NLS-1$
+        System.out.println("Allocating repository..."); 
 
         KettleDatabaseRepository rep = (KettleDatabaseRepository) PluginRegistry.getInstance().loadClass(
             RepositoryPluginType.class, repositoryMeta, Repository.class);
         rep.init(repositoryMeta);
 
-        System.out.println("Connecting to database for repository creation..."); //$NON-NLS-1$
+        System.out.println("Connecting to database for repository creation..."); 
         rep.connectionDelegate.connect(true, true);
         boolean upgrade = false;
-        String cu = BaseMessages.getString(PKG, "RepositoryDialog.Dialog.CreateUpgrade.Create"); //$NON-NLS-1$
+        String cu = BaseMessages.getString(PKG, "RepositoryDialog.Dialog.CreateUpgrade.Create"); 
 
         try {
           String userTableName = rep.getDatabaseMeta().quoteField(KettleDatabaseRepository.TABLE_R_USER);
-          upgrade = rep.getDatabase().checkTableExists(userTableName); //$NON-NLS-1$
+          upgrade = rep.getDatabase().checkTableExists(userTableName); 
           if (upgrade)
-            cu = BaseMessages.getString(PKG, "RepositoryDialog.Dialog.CreateUpgrade.Upgrade"); //$NON-NLS-1$
+            cu = BaseMessages.getString(PKG, "RepositoryDialog.Dialog.CreateUpgrade.Upgrade"); 
         } catch (KettleDatabaseException dbe) {
           // Roll back the connection: this is required for certain databases like PGSQL
           // Otherwise we can't execute any other DDL statement.
@@ -469,8 +469,8 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
 
         MessageBox qmb = new MessageBox(shell, SWT.ICON_WARNING | SWT.YES | SWT.NO);
         qmb
-            .setMessage(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.CreateUpgrade.Message1") + cu + BaseMessages.getString(PKG, "RepositoryDialog.Dialog.CreateUpgrade.Message2")); //$NON-NLS-1$ //$NON-NLS-2$
-        qmb.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.CreateUpgrade.Title")); //$NON-NLS-1$
+            .setMessage(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.CreateUpgrade.Message1") + cu + BaseMessages.getString(PKG, "RepositoryDialog.Dialog.CreateUpgrade.Message2"));  
+        qmb.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.CreateUpgrade.Title")); 
         int answer = qmb.open();
 
         if (answer == SWT.YES) {
@@ -479,7 +479,7 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
           if (!goAhead) {
             EnterPasswordDialog etd = new EnterPasswordDialog(
                 shell,
-                BaseMessages.getString(PKG, "RepositoryDialog.Dialog.EnterPassword.Title"), BaseMessages.getString(PKG, "RepositoryDialog.Dialog.EnterPassword.Message"), ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                BaseMessages.getString(PKG, "RepositoryDialog.Dialog.EnterPassword.Title"), BaseMessages.getString(PKG, "RepositoryDialog.Dialog.EnterPassword.Message"), "");   //$NON-NLS-3$
             etd.setModal();
             String pwd = etd.open();
             if (pwd != null) {
@@ -493,14 +493,14 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
               } catch (KettleException e) {
                 new ErrorDialog(
                     shell,
-                    BaseMessages.getString(PKG, "RepositoryDialog.Dialog.UnableToVerifyUser.Title"), BaseMessages.getString(PKG, "RepositoryDialog.Dialog.UnableToVerifyUser.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+                    BaseMessages.getString(PKG, "RepositoryDialog.Dialog.UnableToVerifyUser.Title"), BaseMessages.getString(PKG, "RepositoryDialog.Dialog.UnableToVerifyUser.Message"), e);  
               }
             }
           }
 
           if (goAhead) {
             System.out
-                .println(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.TryingToUpgradeRepository.Message1") + cu + BaseMessages.getString(PKG, "RepositoryDialog.Dialog.TryingToUpgradeRepository.Message2")); //$NON-NLS-1$ //$NON-NLS-2$
+                .println(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.TryingToUpgradeRepository.Message1") + cu + BaseMessages.getString(PKG, "RepositoryDialog.Dialog.TryingToUpgradeRepository.Message2"));  
             UpgradeRepositoryProgressDialog urpd = new UpgradeRepositoryProgressDialog(shell, rep, upgrade);
             if (urpd.open()) {
               if (urpd.isDryRun()) {
@@ -527,8 +527,8 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
               } else {
                 MessageBox mb = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
                 mb
-                    .setMessage(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.UpgradeFinished.Message1") + cu + BaseMessages.getString(PKG, "RepositoryDialog.Dialog.UpgradeFinished.Message2")); //$NON-NLS-1$ //$NON-NLS-2$
-                mb.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.UpgradeFinished.Title")); //$NON-NLS-1$
+                    .setMessage(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.UpgradeFinished.Message1") + cu + BaseMessages.getString(PKG, "RepositoryDialog.Dialog.UpgradeFinished.Message2"));  
+                mb.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.UpgradeFinished.Title")); 
                 mb.open();
               }
             }
@@ -539,12 +539,12 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
       } catch (KettleException ke) {
         new ErrorDialog(
             shell,
-            BaseMessages.getString(PKG, "RepositoryDialog.Dialog.UnableToConnectToUpgrade.Title"), BaseMessages.getString(PKG, "RepositoryDialog.Dialog.UnableToConnectToUpgrade.Message") + Const.CR, ke); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            BaseMessages.getString(PKG, "RepositoryDialog.Dialog.UnableToConnectToUpgrade.Title"), BaseMessages.getString(PKG, "RepositoryDialog.Dialog.UnableToConnectToUpgrade.Message") + Const.CR, ke);   //$NON-NLS-3$
       }
     } else {
       MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-      mb.setMessage(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.FirstCreateAValidConnection.Message")); //$NON-NLS-1$
-      mb.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.FirstCreateAValidConnection.Title")); //$NON-NLS-1$
+      mb.setMessage(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.FirstCreateAValidConnection.Message")); 
+      mb.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.FirstCreateAValidConnection.Title")); 
       mb.open();
     }
   }
@@ -559,14 +559,14 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
       rep.init(repositoryMeta);
 
       MessageBox qmb = new MessageBox(shell, SWT.ICON_WARNING | SWT.YES | SWT.NO);
-      qmb.setMessage(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.ConfirmRemovalOfRepository.Message")); //$NON-NLS-1$
-      qmb.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.ConfirmRemovalOfRepository.Title")); //$NON-NLS-1$
+      qmb.setMessage(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.ConfirmRemovalOfRepository.Message")); 
+      qmb.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.ConfirmRemovalOfRepository.Title")); 
       int answer = qmb.open();
 
       if (answer == SWT.YES) {
         EnterPasswordDialog etd = new EnterPasswordDialog(
             shell,
-            BaseMessages.getString(PKG, "RepositoryDialog.Dialog.AskAdminPassword.Title"), BaseMessages.getString(PKG, "RepositoryDialog.Dialog.AskAdminPassword.Message"), ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            BaseMessages.getString(PKG, "RepositoryDialog.Dialog.AskAdminPassword.Title"), BaseMessages.getString(PKG, "RepositoryDialog.Dialog.AskAdminPassword.Message"), "");   //$NON-NLS-3$
         String pwd = etd.open();
         if (pwd != null) {
           try {
@@ -576,20 +576,20 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
               rep.dropRepositorySchema();
 
               MessageBox mb = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
-              mb.setMessage(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.RemovedRepositoryTables.Message")); //$NON-NLS-1$
-              mb.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.RemovedRepositoryTables.Title")); //$NON-NLS-1$
+              mb.setMessage(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.RemovedRepositoryTables.Message")); 
+              mb.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.RemovedRepositoryTables.Title")); 
               mb.open();
             } catch (KettleDatabaseException dbe) {
               MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
               mb
-                  .setMessage(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.UnableToRemoveRepository.Message") + Const.CR + dbe.getMessage()); //$NON-NLS-1$
-              mb.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.UnableToRemoveRepository.Title")); //$NON-NLS-1$
+                  .setMessage(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.UnableToRemoveRepository.Message") + Const.CR + dbe.getMessage()); 
+              mb.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.UnableToRemoveRepository.Title")); 
               mb.open();
             }
           } catch (KettleException e) {
             new ErrorDialog(
                 shell,
-                BaseMessages.getString(PKG, "RepositoryDialog.Dialog.UnableToVerifyAdminUser.Title"), BaseMessages.getString(PKG, "RepositoryDialog.Dialog.UnableToVerifyAdminUser.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+                BaseMessages.getString(PKG, "RepositoryDialog.Dialog.UnableToVerifyAdminUser.Title"), BaseMessages.getString(PKG, "RepositoryDialog.Dialog.UnableToVerifyAdminUser.Message"), e);  
           } finally {
             rep.disconnect();
           }
@@ -598,14 +598,14 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
     } catch (KettleException ke) {
       new ErrorDialog(
           shell,
-          BaseMessages.getString(PKG, "RepositoryDialog.Dialog.NoRepositoryFoundOnConnection.Title"), BaseMessages.getString(PKG, "RepositoryDialog.Dialog.NoRepositoryFoundOnConnection.Message"), ke); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+          BaseMessages.getString(PKG, "RepositoryDialog.Dialog.NoRepositoryFoundOnConnection.Title"), BaseMessages.getString(PKG, "RepositoryDialog.Dialog.NoRepositoryFoundOnConnection.Message"), ke);   //$NON-NLS-3$
     }
   }
   
   private void  displayRepositoryAlreadyExistMessage(String name) {
     MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-    box.setMessage(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.ErrorIdExist.Message", name)); //$NON-NLS-1$
-    box.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.Error.Title")); //$NON-NLS-1$
+    box.setMessage(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.ErrorIdExist.Message", name)); 
+    box.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.Error.Title")); 
     box.open();                   
   }
 }

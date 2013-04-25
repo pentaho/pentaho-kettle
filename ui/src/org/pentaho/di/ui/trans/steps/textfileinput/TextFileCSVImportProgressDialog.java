@@ -295,7 +295,11 @@ public class TextFileCSVImportProgressDialog
             }
             
     		String delimiter = transMeta.environmentSubstitute(meta.getSeparator());
-            Object[] r = TextFileInput.convertLineToRow(log, new TextFileLine(line, fileLineNumber, null), strinfo, null, 0, outputRowMeta, convertRowMeta, meta.getFilePaths(transMeta)[0], rownumber, delimiter, null,
+    		String enclosure = transMeta.environmentSubstitute(meta.getEnclosure());
+    		String escapeCharacter = transMeta.environmentSubstitute(meta.getEscapeCharacter());
+            Object[] r = TextFileInput.convertLineToRow(log, new TextFileLine(line, fileLineNumber, null), strinfo, null, 0, 
+                outputRowMeta, convertRowMeta, meta.getFilePaths(transMeta)[0], rownumber, 
+                delimiter, enclosure, escapeCharacter, null,
             		false, false, false, false, false, false, false, false,
             		null, null, false, null, null, null, null, 0);
 

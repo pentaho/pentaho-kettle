@@ -94,8 +94,8 @@ public class RepositoriesController extends AbstractXulEventHandler {
   public void init() throws ControllerInitializationException {
     // TODO Initialize the Repository Login Dialog
     try {
-      messageBox = (XulMessageBox) document.createElement("messagebox");//$NON-NLS-1$
-      confirmBox = (XulConfirmBox) document.createElement("confirmbox");//$NON-NLS-1$
+      messageBox = (XulMessageBox) document.createElement("messagebox");
+      confirmBox = (XulConfirmBox) document.createElement("confirmbox");
     } catch (Exception e) {
       throw new ControllerInitializationException(e);
     }
@@ -105,25 +105,25 @@ public class RepositoriesController extends AbstractXulEventHandler {
   }
 
   private void createBindings() {
-    loginDialog = (XulDialog) document.getElementById("repository-login-dialog");//$NON-NLS-1$
+    loginDialog = (XulDialog) document.getElementById("repository-login-dialog");
 
-    repositoryEditButton = (XulButton) document.getElementById("repository-edit");//$NON-NLS-1$
-    repositoryRemoveButton = (XulButton) document.getElementById("repository-remove");//$NON-NLS-1$
+    repositoryEditButton = (XulButton) document.getElementById("repository-edit");
+    repositoryRemoveButton = (XulButton) document.getElementById("repository-remove");
 
-    username = (XulTextbox) document.getElementById("user-name");//$NON-NLS-1$
-    userPassword = (XulTextbox) document.getElementById("user-password");//$NON-NLS-1$
-    availableRepositories = (XulListbox) document.getElementById("available-repository-list");//$NON-NLS-1$
-    showAtStartup = (XulCheckbox) document.getElementById("show-login-dialog-at-startup");//$NON-NLS-1$
-    okButton = (XulButton) document.getElementById("repository-login-dialog_accept"); //$NON-NLS-1$
-    cancelButton = (XulButton) document.getElementById("repository-login-dialog_cancel"); //$NON-NLS-1$
+    username = (XulTextbox) document.getElementById("user-name");
+    userPassword = (XulTextbox) document.getElementById("user-password");
+    availableRepositories = (XulListbox) document.getElementById("available-repository-list");
+    showAtStartup = (XulCheckbox) document.getElementById("show-login-dialog-at-startup");
+    okButton = (XulButton) document.getElementById("repository-login-dialog_accept"); 
+    cancelButton = (XulButton) document.getElementById("repository-login-dialog_cancel"); 
     bf.setBindingType(Binding.Type.BI_DIRECTIONAL);
-    bf.createBinding(loginModel, "username", username, "value");//$NON-NLS-1$ //$NON-NLS-2$
-    bf.createBinding(loginModel, "password", userPassword, "value");//$NON-NLS-1$ //$NON-NLS-2$
-    bf.createBinding(loginModel, "availableRepositories", availableRepositories, "elements");//$NON-NLS-1$ //$NON-NLS-2$
-    bf.createBinding(loginModel, "selectedRepository", availableRepositories, "selectedItem");//$NON-NLS-1$ //$NON-NLS-2$
-    bf.createBinding(loginModel, "showDialogAtStartup", showAtStartup, "checked");//$NON-NLS-1$ //$NON-NLS-2$
+    bf.createBinding(loginModel, "username", username, "value"); 
+    bf.createBinding(loginModel, "password", userPassword, "value"); 
+    bf.createBinding(loginModel, "availableRepositories", availableRepositories, "elements"); 
+    bf.createBinding(loginModel, "selectedRepository", availableRepositories, "selectedItem"); 
+    bf.createBinding(loginModel, "showDialogAtStartup", showAtStartup, "checked"); 
     bf.setBindingType(Binding.Type.ONE_WAY);
-    bf.createBinding(loginModel, "valid", okButton, "!disabled");//$NON-NLS-1$ //$NON-NLS-2$
+    bf.createBinding(loginModel, "valid", okButton, "!disabled"); 
 
     BindingConvertor<RepositoryMeta, Boolean> buttonConverter = new BindingConvertor<RepositoryMeta, Boolean>() {
       @Override
@@ -147,11 +147,11 @@ public class RepositoriesController extends AbstractXulEventHandler {
       }
     };
 
-    bf.createBinding(loginModel, "selectedRepository", username, "disabled", userpassConverter);//$NON-NLS-1$ //$NON-NLS-2$
-    bf.createBinding(loginModel, "selectedRepository", userPassword, "disabled", userpassConverter);//$NON-NLS-1$ //$NON-NLS-2$
+    bf.createBinding(loginModel, "selectedRepository", username, "disabled", userpassConverter); 
+    bf.createBinding(loginModel, "selectedRepository", userPassword, "disabled", userpassConverter); 
 
-    bf.createBinding(loginModel, "selectedRepository", repositoryEditButton, "disabled", buttonConverter);//$NON-NLS-1$ //$NON-NLS-2$
-    bf.createBinding(loginModel, "selectedRepository", repositoryRemoveButton, "disabled", buttonConverter);//$NON-NLS-1$ //$NON-NLS-2$
+    bf.createBinding(loginModel, "selectedRepository", repositoryEditButton, "disabled", buttonConverter); 
+    bf.createBinding(loginModel, "selectedRepository", repositoryRemoveButton, "disabled", buttonConverter); 
 
     final Shell loginShell = (Shell) loginDialog.getRootObject();
 
@@ -169,7 +169,7 @@ public class RepositoriesController extends AbstractXulEventHandler {
   }
 
   public String getName() {
-    return "repositoryLoginController"; //$NON-NLS-1$
+    return "repositoryLoginController"; 
   }
   
   public void show(){
@@ -223,7 +223,7 @@ public class RepositoriesController extends AbstractXulEventHandler {
                 cancelButton.setDisabled(false);
 
                 if (helper.getConnectedRepository().getConnectMessage() != null) {
-                  getMessageBox().setTitle(BaseMessages.getString(PKG, "ConnectMessageTitle")); //$NON-NLS-1$
+                  getMessageBox().setTitle(BaseMessages.getString(PKG, "ConnectMessageTitle")); 
                   getMessageBox().setMessage(helper.getConnectedRepository().getConnectMessage());
                   getMessageBox().open();
                 }

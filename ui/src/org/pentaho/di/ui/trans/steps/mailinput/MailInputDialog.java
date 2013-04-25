@@ -278,14 +278,14 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "MailInputdialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "MailInputdialog.Shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "MailInputdialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "MailInputdialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -1551,7 +1551,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 				 if(field!=null) wFolderField.setText(field);
 			 }catch(KettleException ke){
 					new ErrorDialog(shell, BaseMessages.getString(PKG, "MailInput.FailedToGetFields.DialogTitle"),
-							BaseMessages.getString(PKG, "MailInput.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+							BaseMessages.getString(PKG, "MailInput.FailedToGetFields.DialogMessage"), ke);  
 				}
 			 gotPreviousfields=true;
 		 }

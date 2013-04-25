@@ -75,7 +75,7 @@ public class GetSlaveSequence extends BaseStep implements StepInterface {
       outputRowData[inputRowMeta.size()] = next;
       return outputRowData;
     } else {
-      throw new KettleStepException(BaseMessages.getString(PKG, "GetSequence.Exception.CouldNotFindNextValueForSequence") + meta.getValuename()); //$NON-NLS-1$
+      throw new KettleStepException(BaseMessages.getString(PKG, "GetSequence.Exception.CouldNotFindNextValueForSequence") + meta.getValuename()); 
     }
   }
 
@@ -101,19 +101,19 @@ public class GetSlaveSequence extends BaseStep implements StepInterface {
     }
 
     if (log.isRowLevel())
-      logRowlevel(BaseMessages.getString(PKG, "GetSequence.Log.ReadRow") + getLinesRead() + " : " + getInputRowMeta().getString(r)); //$NON-NLS-1$ //$NON-NLS-2$
+      logRowlevel(BaseMessages.getString(PKG, "GetSequence.Log.ReadRow") + getLinesRead() + " : " + getInputRowMeta().getString(r));  
 
     try {
       putRow(data.outputRowMeta, addSequence(getInputRowMeta(), r));
 
       if (log.isRowLevel())
-        logRowlevel(BaseMessages.getString(PKG, "GetSequence.Log.WriteRow") + getLinesWritten() + " : " + getInputRowMeta().getString(r)); //$NON-NLS-1$ //$NON-NLS-2$
+        logRowlevel(BaseMessages.getString(PKG, "GetSequence.Log.WriteRow") + getLinesWritten() + " : " + getInputRowMeta().getString(r));  
       if (checkFeedback(getLinesRead())) {
         if (log.isBasic())
-          logBasic(BaseMessages.getString(PKG, "GetSequence.Log.LineNumber") + getLinesRead()); //$NON-NLS-1$
+          logBasic(BaseMessages.getString(PKG, "GetSequence.Log.LineNumber") + getLinesRead()); 
       }
     } catch (KettleException e) {
-      logError(BaseMessages.getString(PKG, "GetSequence.Log.ErrorInStep") + e.getMessage()); //$NON-NLS-1$
+      logError(BaseMessages.getString(PKG, "GetSequence.Log.ErrorInStep") + e.getMessage()); 
       setErrors(1);
       stopAll();
       setOutputDone(); // signal end to receiver(s)

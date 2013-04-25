@@ -47,7 +47,6 @@ import org.pentaho.di.starmodeler.generator.MetadataGenerator;
 import org.pentaho.di.starmodeler.metastore.IdNameDescription;
 import org.pentaho.di.starmodeler.metastore.SharedDimensionMetaStoreUtil;
 import org.pentaho.di.starmodeler.metastore.StarDomainMetaStoreUtil;
-import org.pentaho.di.starmodeler.metastore.StarDomainMetaStoreUtil.Attribute;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
@@ -168,7 +167,7 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
       
       Spoon.getInstance().addFileListener(this);
       
-      container = loader.loadXul(perspectiveSrc, new PDIMessages(this.getClass())); //$NON-NLS-1$
+      container = loader.loadXul(perspectiveSrc, new PDIMessages(this.getClass())); 
 
       runner = new SwtXulRunner();
       runner.addContainer(container);
@@ -1198,9 +1197,9 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
   public boolean onTabClose(final int pos) throws XulException {
     
     if(models.get(pos).hasChanged()){
-      XulConfirmBox confirm = (XulConfirmBox) document.createElement("confirmbox"); //$NON-NLS-1$
-      confirm.setTitle(BaseMessages.getString(this.getClass(), "StarModelerPerspective.unsavedChangesTitle")); //$NON-NLS-1$
-      confirm.setMessage(BaseMessages.getString(this.getClass(), "StarModelerPerspective.unsavedChangesMessage")); //$NON-NLS-1$
+      XulConfirmBox confirm = (XulConfirmBox) document.createElement("confirmbox"); 
+      confirm.setTitle(BaseMessages.getString(this.getClass(), "StarModelerPerspective.unsavedChangesTitle")); 
+      confirm.setMessage(BaseMessages.getString(this.getClass(), "StarModelerPerspective.unsavedChangesMessage")); 
       
       CloseConfirmXulDialogCallback callback = new CloseConfirmXulDialogCallback();
       confirm.addDialogCallback(callback);

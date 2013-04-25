@@ -106,7 +106,7 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
         }
         if (data.subjectnrs[i] < 0) {
           logError(BaseMessages.getString(PKG,
-              "MemoryGroupBy.Log.AggregateSubjectFieldCouldNotFound", meta.getSubjectField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+              "MemoryGroupBy.Log.AggregateSubjectFieldCouldNotFound", meta.getSubjectField()[i]));  
           setErrors(1);
           stopAll();
           return false;
@@ -117,7 +117,7 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
       for (int i = 0; i < meta.getGroupField().length; i++) {
         data.groupnrs[i] = data.inputRowMeta.indexOfValue(meta.getGroupField()[i]);
         if (data.groupnrs[i] < 0) {
-          logError(BaseMessages.getString(PKG, "MemoryGroupBy.Log.GroupFieldCouldNotFound", meta.getGroupField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+          logError(BaseMessages.getString(PKG, "MemoryGroupBy.Log.GroupFieldCouldNotFound", meta.getGroupField()[i]));  
           setErrors(1);
           stopAll();
           return false;
@@ -166,7 +166,7 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
 
     if (checkFeedback(getLinesRead())) {
       if (log.isBasic())
-        logBasic(BaseMessages.getString(PKG, "MemoryGroupBy.LineNumber") + getLinesRead()); //$NON-NLS-1$
+        logBasic(BaseMessages.getString(PKG, "MemoryGroupBy.LineNumber") + getLinesRead()); 
     }
 
     return true;
@@ -455,7 +455,7 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
           case MemoryGroupByMeta.TYPE_GROUP_AVERAGE:
             ag = ValueDataUtil.divide(data.aggMeta.getValueMeta(i), ag, new ValueMeta("c",
                 ValueMetaInterface.TYPE_INTEGER), new Long(aggregate.counts[i]));
-            break; //$NON-NLS-1$
+            break; 
           case MemoryGroupByMeta.TYPE_GROUP_MEDIAN:
           case MemoryGroupByMeta.TYPE_GROUP_PERCENTILE:
             double percentile = 50.0;

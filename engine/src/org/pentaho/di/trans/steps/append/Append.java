@@ -117,7 +117,7 @@ public class Append extends BaseStep implements StepInterface
 
         if (checkFeedback(getLinesRead())) 
         {
-        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "AppendRows.LineNumber")+getLinesRead()); //$NON-NLS-1$
+        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "AppendRows.LineNumber")+getLinesRead()); 
         }
 
 		return true;
@@ -143,7 +143,7 @@ public class Append extends BaseStep implements StepInterface
 
             if (headStream.getStepname()==null || tailStream.getStepname()==null)
             {
-                logError(BaseMessages.getString(PKG, "AppendRows.Log.BothHopsAreNeeded")); //$NON-NLS-1$
+                logError(BaseMessages.getString(PKG, "AppendRows.Log.BothHopsAreNeeded")); 
             }
             else
             {

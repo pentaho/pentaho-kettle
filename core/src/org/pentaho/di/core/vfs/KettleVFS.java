@@ -121,7 +121,7 @@ public class KettleVFS
 	        String[] schemes = fsManager.getSchemes();
 	        for (int i=0;i<schemes.length && relativeFilename;i++)
 	        {
-	            if (vfsFilename.startsWith(schemes[i]+":")) { //$NON-NLS-1$
+	            if (vfsFilename.startsWith(schemes[i]+":")) { 
 	              relativeFilename=false;
 	              // We have a VFS URL, load any options for the file system driver
 	              fsOptions = buildFsOptions(space, fsOptions, vfsFilename, schemes[i]);
@@ -129,7 +129,7 @@ public class KettleVFS
 	        }
 	        
 	        String filename;
-	        if (vfsFilename.startsWith("\\\\")) //$NON-NLS-1$
+	        if (vfsFilename.startsWith("\\\\")) 
 	        {
 	            File file = new File(vfsFilename);
 	            filename = file.toURI().toString();
@@ -175,12 +175,12 @@ public class KettleVFS
       String[] varList = varSpace.listVariables();
       
       for(String var : varList) {
-        if(var.startsWith("vfs.")) { //$NON-NLS-1$
+        if(var.startsWith("vfs.")) { 
           String param = configBuilder.parseParameterName(var, scheme);
           if(param != null) {
             configBuilder.setParameter(fsOptions, param, varSpace.getVariable(var), var, vfsFilename);
           } else {
-            throw new IOException("FileSystemConfigBuilder could not parse parameter: " + var); //$NON-NLS-1$
+            throw new IOException("FileSystemConfigBuilder could not parse parameter: " + var); 
           }
         }
       }
@@ -320,20 +320,20 @@ public class KettleVFS
     {
         FileName fileName = fileObject.getName();
         String root = fileName.getRootURI();
-        if (!root.startsWith("file:")) return fileName.getURI(); // nothing we can do about non-normal files. //$NON-NLS-1$
+        if (!root.startsWith("file:")) return fileName.getURI(); // nothing we can do about non-normal files. 
         if (root.startsWith("file:////")) return fileName.getURI(); // we'll see 4 forward slashes for a windows/smb network share
-        if (root.endsWith(":/")) // Windows //$NON-NLS-1$
+        if (root.endsWith(":/")) // Windows 
         {
             root = root.substring(8,10);
         }
         else // *nix & OSX
         {
-            root = ""; //$NON-NLS-1$
+            root = ""; 
         }
         String fileString = root + fileName.getPath();
-        if (!"/".equals(Const.FILE_SEPARATOR)) //$NON-NLS-1$
+        if (!"/".equals(Const.FILE_SEPARATOR)) 
         {
-            fileString = Const.replace(fileString, "/", Const.FILE_SEPARATOR); //$NON-NLS-1$
+            fileString = Const.replace(fileString, "/", Const.FILE_SEPARATOR); 
         }
         return fileString;
     }

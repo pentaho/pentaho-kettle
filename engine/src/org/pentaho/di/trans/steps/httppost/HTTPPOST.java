@@ -362,8 +362,8 @@ public class HTTPPOST extends BaseStep implements StepInterface
 					int fieldIndex=data.inputRowMeta.indexOfValue(meta.getArgumentField()[i]);
 					if (fieldIndex<0)
 					{
-						logError(BaseMessages.getString(PKG, "HTTPPOST.Log.ErrorFindingField")+meta.getArgumentField()[i]+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-						throw new KettleStepException(BaseMessages.getString(PKG, "HTTPPOST.Exception.CouldnotFindField",meta.getArgumentField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+						logError(BaseMessages.getString(PKG, "HTTPPOST.Log.ErrorFindingField")+meta.getArgumentField()[i]+"]");  
+						throw new KettleStepException(BaseMessages.getString(PKG, "HTTPPOST.Exception.CouldnotFindField",meta.getArgumentField()[i]));  
 					}
 					if (meta.getArgumentHeader()[i]) {
 						data.header_parameters_nrs[posHeader]=fieldIndex;
@@ -393,8 +393,8 @@ public class HTTPPOST extends BaseStep implements StepInterface
 					data.query_parameters_nrs[i]=data.inputRowMeta.indexOfValue(meta.getQueryField()[i]);
 					if (data.query_parameters_nrs[i]<0)
 					{
-						logError(BaseMessages.getString(PKG, "HTTPPOST.Log.ErrorFindingField")+meta.getQueryField()[i]+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-						throw new KettleStepException(BaseMessages.getString(PKG, "HTTPPOST.Exception.CouldnotFindField",meta.getQueryField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+						logError(BaseMessages.getString(PKG, "HTTPPOST.Log.ErrorFindingField")+meta.getQueryField()[i]+"]");  
+						throw new KettleStepException(BaseMessages.getString(PKG, "HTTPPOST.Exception.CouldnotFindField",meta.getQueryField()[i]));  
 					}
 					data.queryParameters[i]= new NameValuePair(environmentSubstitute(meta.getQueryParameter()[i]),
 							data.outputRowMeta.getString(r,data.query_parameters_nrs[i]));
@@ -406,7 +406,7 @@ public class HTTPPOST extends BaseStep implements StepInterface
 				data.indexOfRequestEntity=data.inputRowMeta.indexOfValue(environmentSubstitute(meta.getRequestEntity()));
 				if (data.indexOfRequestEntity<0)
 				{
-					throw new KettleStepException(BaseMessages.getString(PKG, "HTTPPOST.Exception.CouldnotFindRequestEntityField",meta.getRequestEntity())); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleStepException(BaseMessages.getString(PKG, "HTTPPOST.Exception.CouldnotFindRequestEntityField",meta.getRequestEntity()));  
 				}
 			}
 			data.realEncoding=environmentSubstitute(meta.getEncoding());	
@@ -419,7 +419,7 @@ public class HTTPPOST extends BaseStep implements StepInterface
 			
             if (checkFeedback(getLinesRead())) 
             {
-            	if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "HTTPPOST.LineNumber")+getLinesRead()); //$NON-NLS-1$
+            	if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "HTTPPOST.LineNumber")+getLinesRead()); 
             }
 		}
 		catch(KettleException e)
@@ -434,7 +434,7 @@ public class HTTPPOST extends BaseStep implements StepInterface
 			}
 			else
 			{
-				logError(BaseMessages.getString(PKG, "HTTPPOST.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "HTTPPOST.ErrorInStepRunning")+e.getMessage()); 
 				setErrors(1);
                 logError(Const.getStackTracker(e));
 				stopAll();

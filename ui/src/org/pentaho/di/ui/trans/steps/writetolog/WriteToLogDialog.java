@@ -134,14 +134,14 @@ public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterf
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "WriteToLogDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "WriteToLogDialog.Shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "WriteToLogDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "WriteToLogDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -199,7 +199,7 @@ public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterf
                 // Limit output?
                 		// Cache?
 		wlLimitRows=new Label(shell, SWT.RIGHT);
-		wlLimitRows.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.LimitRows.Label")); //$NON-NLS-1$
+		wlLimitRows.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.LimitRows.Label")); 
  		props.setLook(wlLimitRows);
 		fdlLimitRows=new FormData();
 		fdlLimitRows.left = new FormAttachment(0, 0);
@@ -224,7 +224,7 @@ public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterf
 
 		// LimitRows size line
 		wlLimitRowsNumber=new Label(shell, SWT.RIGHT);
-		wlLimitRowsNumber.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.LimitRowsNumber.Label")); //$NON-NLS-1$
+		wlLimitRowsNumber.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.LimitRowsNumber.Label")); 
  		props.setLook(wlLimitRowsNumber);
 		wlLimitRowsNumber.setEnabled(input.isLimitRows());
 		fdlLimitRowsNumber=new FormData();

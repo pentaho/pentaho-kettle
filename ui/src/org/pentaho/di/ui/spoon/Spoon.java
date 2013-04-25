@@ -150,7 +150,7 @@ import org.pentaho.di.core.lifecycle.LifeEventHandler;
 import org.pentaho.di.core.lifecycle.LifeEventInfo;
 import org.pentaho.di.core.lifecycle.LifecycleException;
 import org.pentaho.di.core.lifecycle.LifecycleSupport;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.logging.FileLoggingEventListener;
 import org.pentaho.di.core.logging.LogChannel;
@@ -441,13 +441,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       BasePropertyHandler.getProperty("documentationDirBase", "docs/"),
       BaseMessages.getString(PKG, "Spoon.Title.STRING_DOCUMENT_WELCOME")); // "docs/English/welcome/kettle_document_map.html";
 
-  private static final String UNDO_MENUITEM = "edit-undo"; //$NON-NLS-1$
+  private static final String UNDO_MENUITEM = "edit-undo"; 
 
-  private static final String REDO_MENUITEM = "edit-redo"; //$NON-NLS-1$
+  private static final String REDO_MENUITEM = "edit-redo"; 
 
-  private static final String UNDO_UNAVAILABLE = BaseMessages.getString(PKG, "Spoon.Menu.Undo.NotAvailable"); //"Undo : not available \tCTRL-Z" //$NON-NLS-1$
+  private static final String UNDO_UNAVAILABLE = BaseMessages.getString(PKG, "Spoon.Menu.Undo.NotAvailable"); //"Undo : not available \tCTRL-Z" 
 
-  private static final String REDO_UNAVAILABLE = BaseMessages.getString(PKG, "Spoon.Menu.Redo.NotAvailable"); //"Redo : not available \tCTRL-Y" //$NON-NLS-1$S
+  private static final String REDO_UNAVAILABLE = BaseMessages.getString(PKG, "Spoon.Menu.Redo.NotAvailable"); //"Redo : not available \tCTRL-Y" S
 
   private Composite tabComp;
 
@@ -582,7 +582,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
       PropsUI.init(display, Props.TYPE_PROPERTIES_SPOON);
 
-      CentralLogStore.init(PropsUI.getInstance().getMaxNrLinesInLog(), PropsUI.getInstance()
+      KettleLogStore.init(PropsUI.getInstance().getMaxNrLinesInLog(), PropsUI.getInstance()
           .getMaxLogLineTimeoutMinutes());
 
       // remember...
@@ -610,7 +610,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       //
       t.printStackTrace();
       if (staticSpoon != null) {
-        log.logError("Fatal error : " + Const.NVL(t.toString(), Const.NVL(t.getMessage(), "Unknown error"))); //$NON-NLS-1$ //$NON-NLS-2$
+        log.logError("Fatal error : " + Const.NVL(t.toString(), Const.NVL(t.getMessage(), "Unknown error")));  
         log.logError(Const.getStackTracker(t));
       }
     }
@@ -631,7 +631,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       if (log.isBasic()) {
         log.logBasic(BaseMessages.getString(PKG, "Spoon.Log.LoggingToFile") + fileLoggingEventListener.getFilename());
       }
-      CentralLogStore.getAppender().addLoggingEventListener(fileLoggingEventListener);
+      KettleLogStore.getAppender().addLoggingEventListener(fileLoggingEventListener);
     } else {
       fileLoggingEventListener = null;
     }
@@ -1467,45 +1467,45 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public void createPopupMenus() {
 
     try {
-      menuMap.put("trans-class", mainSpoonContainer //$NON-NLS-1$
-          .getDocumentRoot().getElementById("trans-class")); //$NON-NLS-1$
-      menuMap.put("trans-class-new", mainSpoonContainer //$NON-NLS-1$
-          .getDocumentRoot().getElementById("trans-class-new")); //$NON-NLS-1$
-      menuMap.put("job-class", mainSpoonContainer //$NON-NLS-1$
-          .getDocumentRoot().getElementById("job-class")); //$NON-NLS-1$
-      menuMap.put("trans-hop-class", mainSpoonContainer //$NON-NLS-1$
-          .getDocumentRoot().getElementById("trans-hop-class")); //$NON-NLS-1$
-      menuMap.put("database-class", mainSpoonContainer //$NON-NLS-1$
-          .getDocumentRoot().getElementById("database-class")); //$NON-NLS-1$
-      menuMap.put("partition-schema-class", mainSpoonContainer //$NON-NLS-1$
-          .getDocumentRoot().getElementById("partition-schema-class")); //$NON-NLS-1$
-      menuMap.put("cluster-schema-class", mainSpoonContainer //$NON-NLS-1$
-          .getDocumentRoot().getElementById("cluster-schema-class")); //$NON-NLS-1$
-      menuMap.put("slave-cluster-class", mainSpoonContainer //$NON-NLS-1$
-          .getDocumentRoot().getElementById("slave-cluster-class")); //$NON-NLS-1$
-      menuMap.put("trans-inst", mainSpoonContainer //$NON-NLS-1$
-          .getDocumentRoot().getElementById("trans-inst")); //$NON-NLS-1$
-      menuMap.put("job-inst", mainSpoonContainer //$NON-NLS-1$
-          .getDocumentRoot().getElementById("job-inst")); //$NON-NLS-1$
-      menuMap.put("step-plugin", mainSpoonContainer //$NON-NLS-1$
-          .getDocumentRoot().getElementById("step-plugin")); //$NON-NLS-1$
-      menuMap.put("database-inst", mainSpoonContainer //$NON-NLS-1$
-          .getDocumentRoot().getElementById("database-inst")); //$NON-NLS-1$
-      menuMap.put("step-inst", mainSpoonContainer //$NON-NLS-1$
-          .getDocumentRoot().getElementById("step-inst")); //$NON-NLS-1$
-      menuMap.put("job-entry-copy-inst", mainSpoonContainer //$NON-NLS-1$
-          .getDocumentRoot().getElementById("job-entry-copy-inst")); //$NON-NLS-1$
-      menuMap.put("trans-hop-inst", mainSpoonContainer //$NON-NLS-1$
-          .getDocumentRoot().getElementById("trans-hop-inst")); //$NON-NLS-1$
-      menuMap.put("partition-schema-inst", mainSpoonContainer //$NON-NLS-1$
-          .getDocumentRoot().getElementById("partition-schema-inst")); //$NON-NLS-1$
-      menuMap.put("cluster-schema-inst", mainSpoonContainer //$NON-NLS-1$
-          .getDocumentRoot().getElementById("cluster-schema-inst")); //$NON-NLS-1$
-      menuMap.put("slave-server-inst", mainSpoonContainer //$NON-NLS-1$
-          .getDocumentRoot().getElementById("slave-server-inst")); //$NON-NLS-1$
+      menuMap.put("trans-class", mainSpoonContainer 
+          .getDocumentRoot().getElementById("trans-class")); 
+      menuMap.put("trans-class-new", mainSpoonContainer 
+          .getDocumentRoot().getElementById("trans-class-new")); 
+      menuMap.put("job-class", mainSpoonContainer 
+          .getDocumentRoot().getElementById("job-class")); 
+      menuMap.put("trans-hop-class", mainSpoonContainer 
+          .getDocumentRoot().getElementById("trans-hop-class")); 
+      menuMap.put("database-class", mainSpoonContainer 
+          .getDocumentRoot().getElementById("database-class")); 
+      menuMap.put("partition-schema-class", mainSpoonContainer 
+          .getDocumentRoot().getElementById("partition-schema-class")); 
+      menuMap.put("cluster-schema-class", mainSpoonContainer 
+          .getDocumentRoot().getElementById("cluster-schema-class")); 
+      menuMap.put("slave-cluster-class", mainSpoonContainer 
+          .getDocumentRoot().getElementById("slave-cluster-class")); 
+      menuMap.put("trans-inst", mainSpoonContainer 
+          .getDocumentRoot().getElementById("trans-inst")); 
+      menuMap.put("job-inst", mainSpoonContainer 
+          .getDocumentRoot().getElementById("job-inst")); 
+      menuMap.put("step-plugin", mainSpoonContainer 
+          .getDocumentRoot().getElementById("step-plugin")); 
+      menuMap.put("database-inst", mainSpoonContainer 
+          .getDocumentRoot().getElementById("database-inst")); 
+      menuMap.put("step-inst", mainSpoonContainer 
+          .getDocumentRoot().getElementById("step-inst")); 
+      menuMap.put("job-entry-copy-inst", mainSpoonContainer 
+          .getDocumentRoot().getElementById("job-entry-copy-inst")); 
+      menuMap.put("trans-hop-inst", mainSpoonContainer 
+          .getDocumentRoot().getElementById("trans-hop-inst")); 
+      menuMap.put("partition-schema-inst", mainSpoonContainer 
+          .getDocumentRoot().getElementById("partition-schema-inst")); 
+      menuMap.put("cluster-schema-inst", mainSpoonContainer 
+          .getDocumentRoot().getElementById("cluster-schema-inst")); 
+      menuMap.put("slave-server-inst", mainSpoonContainer 
+          .getDocumentRoot().getElementById("slave-server-inst")); 
     } catch (Throwable t) {
-      new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), //$NON-NLS-1$
-          BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_MAIN), //$NON-NLS-1$
+      new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), 
+          BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_MAIN), 
           new Exception(t));
     }
 
@@ -1665,10 +1665,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       final LastUsedFile lastUsedFile = lastUsedFiles.get(i);
 
       char chr = (char) ('1' + i);
-      String accessKey = "ctrl-" + chr; //$NON-NLS-1$
-      String accessText = "CTRL-" + chr; //$NON-NLS-1$
+      String accessKey = "ctrl-" + chr; 
+      String accessText = "CTRL-" + chr; 
       String text = lastUsedFile.toString();
-      String id = "last-file-" + i; //$NON-NLS-1$
+      String id = "last-file-" + i; 
 
       if (i > 9) {
         accessKey = null;
@@ -2586,8 +2586,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     final DatabaseMeta databaseMeta = (DatabaseMeta) selectionObject;
     MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION);
-    mb.setMessage(BaseMessages.getString(PKG, "Spoon.ExploreDB.DeleteConnectionAsk.Message", databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-    mb.setText(BaseMessages.getString(PKG, "Spoon.ExploreDB.DeleteConnectionAsk.Title")); //$NON-NLS-1$
+    mb.setMessage(BaseMessages.getString(PKG, "Spoon.ExploreDB.DeleteConnectionAsk.Message", databaseMeta.getName()));   //$NON-NLS-3$
+    mb.setText(BaseMessages.getString(PKG, "Spoon.ExploreDB.DeleteConnectionAsk.Title")); 
     int response = mb.open();
 
     if (response != SWT.YES)
@@ -3337,8 +3337,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     if (transMeta.hasLoop(newHop.getFromStep()) || transMeta.hasLoop(newHop.getToStep())) {
       MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING);
-      mb.setMessage(BaseMessages.getString(PKG, "TransGraph.Dialog.HopCausesLoop.Message")); //$NON-NLS-1$
-      mb.setText(BaseMessages.getString(PKG, "TransGraph.Dialog.HopCausesLoop.Title")); //$NON-NLS-1$
+      mb.setMessage(BaseMessages.getString(PKG, "TransGraph.Dialog.HopCausesLoop.Message")); 
+      mb.setText(BaseMessages.getString(PKG, "TransGraph.Dialog.HopCausesLoop.Title")); 
       mb.open();
       ok = false;
     }
@@ -3503,8 +3503,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
             }
           } catch (KettleException ke) {
             rep = null;
-            new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.ErrorConnectingRepository.Title"), //$NON-NLS-1$
-                BaseMessages.getString(PKG, "Spoon.Dialog.ErrorConnectingRepository.Message", //$NON-NLS-1$
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.ErrorConnectingRepository.Title"), 
+                BaseMessages.getString(PKG, "Spoon.Dialog.ErrorConnectingRepository.Message", 
                     Const.CR), ke);
           }
         }
@@ -3582,8 +3582,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
             }
           } catch (KettleException ke) {
             rep = null;
-            new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.ErrorConnectingRepository.Title"), //$NON-NLS-1$
-                BaseMessages.getString(PKG, "Spoon.Dialog.ErrorConnectingRepository.Message", //$NON-NLS-1$
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.ErrorConnectingRepository.Title"), 
+                BaseMessages.getString(PKG, "Spoon.Dialog.ErrorConnectingRepository.Message", 
                     Const.CR), ke);
           }
         }
@@ -3724,7 +3724,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         refreshGraph();
       } catch (Exception e) {
         new ErrorDialog(((Spoon) SpoonFactory.getInstance()).getShell(), BaseMessages.getString(Spoon.class,
-            "Spoon.Dialog.ErrorOpeningById.Message", objectId), e.getMessage(), e); //$NON-NLS-1$
+            "Spoon.Dialog.ErrorOpeningById.Message", objectId), e.getMessage(), e); 
       }
     } else
     // Try to open the selected job.
@@ -3744,7 +3744,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         refreshGraph();
       } catch (Exception e) {
         new ErrorDialog(((Spoon) SpoonFactory.getInstance()).getShell(), BaseMessages.getString(Spoon.class,
-            "Spoon.Dialog.ErrorOpeningById.Message", objectId), e.getMessage(), e); //$NON-NLS-1$
+            "Spoon.Dialog.ErrorOpeningById.Message", objectId), e.getMessage(), e); 
       }
     }
   }
@@ -4556,6 +4556,15 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       return false;
 
     boolean saved = false;
+    
+    if (meta instanceof TransMeta) {
+      ((TransMeta)meta).setRepository(rep);
+      ((TransMeta)meta).setMetaStore(metaStore);
+    }
+    if (meta instanceof JobMeta) {
+      ((JobMeta)meta).setRepository(rep);
+      ((JobMeta)meta).setMetaStore(metaStore);
+    }
 
     if (log.isDetailed())
       // "Save to file or repository...
@@ -5141,7 +5150,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public boolean saveXMLFile(EngineMetaInterface meta, boolean export) {
     if (log.isBasic())
-      log.logBasic("Save file as..."); //$NON-NLS-1$
+      log.logBasic("Save file as..."); 
     boolean saved = false;
     String beforeFilename = meta.getFilename();
     String beforeName = meta.getName();
@@ -5227,7 +5236,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public boolean saveXMLFileToVfs(EngineMetaInterface meta) {
     if (log.isBasic())
-      log.logBasic("Save file as..."); //$NON-NLS-1$
+      log.logBasic("Save file as..."); 
     boolean saved = false;
 
     FileObject rootFile = null;
@@ -5351,7 +5360,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       saved = true;
 
       // Handle last opened files...
-      props.addLastFile(meta.getFileType(), fname, null, false, null); //$NON-NLS-1$
+      props.addLastFile(meta.getFileType(), fname, null, false, null); 
       saveSettings();
       addMenuLast();
 
@@ -6605,7 +6614,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     LogLevel logLevel = LogLevel.getLogLevelForCode(props.getLogLevel());
     DefaultLogLevel.setLogLevel(logLevel);
     log.setLogLevel(logLevel);
-    CentralLogStore.getAppender().setMaxNrLines(props.getMaxNrLinesInLog());
+    KettleLogStore.getAppender().setMaxNrLines(props.getMaxNrLinesInLog());
 
     // transMeta.setMaxUndo(props.getMaxUndo());
     DBCache.getInstance().setActive(props.useDBCache());
@@ -6694,8 +6703,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     item.setLabel(next == null ? REDO_UNAVAILABLE : BaseMessages.getString(PKG, "Spoon.Menu.Redo.Available",
         next.toString()));
     item.setDisabled(next == null);
-    //    menuBar.setTextById(UNDO_MENUITEM, prev == null ? UNDO_UNAVAILABLE : Messages.getString("Spoon.Menu.Undo.Available", prev.toString())); //$NON-NLS-1$
-    //    menuBar.setTextById(REDO_MENUITEM, next == null ? REDO_UNAVAILABLE : Messages.getString("Spoon.Menu.Redo.Available", next.toString())); //$NON-NLS-1$
+    //    menuBar.setTextById(UNDO_MENUITEM, prev == null ? UNDO_UNAVAILABLE : Messages.getString("Spoon.Menu.Undo.Available", prev.toString())); 
+    //    menuBar.setTextById(REDO_MENUITEM, next == null ? REDO_UNAVAILABLE : Messages.getString("Spoon.Menu.Redo.Available", next.toString())); 
     //
     //    // Set the enabled flags
     //    menuBar.setEnableById(UNDO_MENUITEM, prev != null);
@@ -7325,7 +7334,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       } catch (Exception e) {
         LogChannel.GENERAL.logError("Error closing logging file", e);
       }
-      CentralLogStore.getAppender().removeLoggingEventListener(fileLoggingEventListener);
+      KettleLogStore.getAppender().removeLoggingEventListener(fileLoggingEventListener);
     }
   }
 
@@ -7746,7 +7755,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       refreshTree();
     } catch (KettleException e) {
       new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.ErrorDeletingClusterSchema.Title"),
-          BaseMessages.getString(PKG, "Spoon.Dialog.ErrorDeletingClusterSchema.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+          BaseMessages.getString(PKG, "Spoon.Dialog.ErrorDeletingClusterSchema.Message"), e);  
     }
   }
 
@@ -7798,7 +7807,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       refreshTree();
     } catch (KettleException e) {
       new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.ErrorDeletingPartitionSchema.Title"),
-          BaseMessages.getString(PKG, "Spoon.Dialog.ErrorDeletingPartitionSchema.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+          BaseMessages.getString(PKG, "Spoon.Dialog.ErrorDeletingPartitionSchema.Message"), e);  
     }
   }
 
@@ -7817,7 +7826,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     } catch (KettleException e) {
       new ErrorDialog(
           shell,
-          BaseMessages.getString(PKG, "Spoon.Dialog.ErrorDeletingSlave.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorDeletingSlave.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+          BaseMessages.getString(PKG, "Spoon.Dialog.ErrorDeletingSlave.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorDeletingSlave.Message"), e);  
     }
   }
 
@@ -8119,8 +8128,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public boolean overwritePrompt(String message, String rememberText, String rememberPropertyName) {
     Object res[] = messageDialogWithToggle(
-        "Warning", null, message, Const.WARNING, new String[] { BaseMessages.getString(PKG, "System.Button.Yes"), //$NON-NLS-1$ 
-            BaseMessages.getString(PKG, "System.Button.No") },//$NON-NLS-1$
+        "Warning", null, message, Const.WARNING, new String[] { BaseMessages.getString(PKG, "System.Button.Yes"),  
+            BaseMessages.getString(PKG, "System.Button.No") },
         1, rememberText, !"Y".equalsIgnoreCase(props.getProperty(rememberPropertyName)));
     int idx = ((Integer) res[0]).intValue();
     boolean overwrite = ((idx & 0xFF) == 0);

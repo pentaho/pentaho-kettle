@@ -1215,12 +1215,12 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
       @Override
       public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore)
       {
-        andValidator().validate(this, "serverName", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+        andValidator().validate(this, "serverName", remarks, putValidators(notBlankValidator())); 
         andValidator()
-            .validate(this, "localDirectory", remarks, putValidators(notBlankValidator(), fileExistsValidator())); //$NON-NLS-1$
-        andValidator().validate(this, "userName", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
-        andValidator().validate(this, "password", remarks, putValidators(notNullValidator())); //$NON-NLS-1$
-        andValidator().validate(this, "serverPort", remarks, putValidators(integerValidator())); //$NON-NLS-1$
+            .validate(this, "localDirectory", remarks, putValidators(notBlankValidator(), fileExistsValidator())); 
+        andValidator().validate(this, "userName", remarks, putValidators(notBlankValidator())); 
+        andValidator().validate(this, "password", remarks, putValidators(notNullValidator())); 
+        andValidator().validate(this, "serverPort", remarks, putValidators(integerValidator())); 
       }
     
 

@@ -134,17 +134,17 @@ public class SlaveServerDialog extends Dialog
 		formLayout.marginWidth  = Const.FORM_MARGIN;
 		formLayout.marginHeight = Const.FORM_MARGIN;
 		
-		shell.setText(BaseMessages.getString(PKG, "SlaveServerDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "SlaveServerDialog.Shell.Title")); 
 		shell.setLayout (formLayout);
  		
 		// First, add the buttons...
 		
 		// Buttons
 		wOK     = new Button(shell, SWT.PUSH); 
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 
 		wCancel = new Button(shell, SWT.PUSH); 
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		Button[] buttons = new Button[] { wOK, wCancel };
 		BaseStepDialog.positionBottomButtons(shell, buttons, margin, null);
@@ -203,7 +203,7 @@ public class SlaveServerDialog extends Dialog
 		// START OF DB TAB   ///
 		//////////////////////////
 		wServiceTab=new CTabItem(wTabFolder, SWT.NONE);
-		wServiceTab.setText(BaseMessages.getString(PKG, "SlaveServerDialog.USER_TAB_SERVICE")); //$NON-NLS-1$
+		wServiceTab.setText(BaseMessages.getString(PKG, "SlaveServerDialog.USER_TAB_SERVICE")); 
         
 		wServiceComp = new Composite(wTabFolder, SWT.NONE);
 		props.setLook(wServiceComp);
@@ -216,7 +216,7 @@ public class SlaveServerDialog extends Dialog
 		// What's the name
 		Label wlName = new Label(wServiceComp, SWT.RIGHT); 
 		props.setLook(wlName);
-		wlName.setText(BaseMessages.getString(PKG, "SlaveServerDialog.ServerName.Label"));  //$NON-NLS-1$
+		wlName.setText(BaseMessages.getString(PKG, "SlaveServerDialog.ServerName.Label"));  
 		FormData fdlName = new FormData();
 		fdlName.top   = new FormAttachment(0, 0);
 		fdlName.left  = new FormAttachment(0, 0);  // First one in the left top corner
@@ -235,7 +235,7 @@ public class SlaveServerDialog extends Dialog
 		// What's the hostname
 		Label wlHostname = new Label(wServiceComp, SWT.RIGHT); 
 		props.setLook(wlHostname); 
-		wlHostname.setText(BaseMessages.getString(PKG, "SlaveServerDialog.HostIP.Label")); //$NON-NLS-1$
+		wlHostname.setText(BaseMessages.getString(PKG, "SlaveServerDialog.HostIP.Label")); 
 		FormData fdlHostname = new FormData();
 		fdlHostname.top   = new FormAttachment(wName, margin*2);
 		fdlHostname.left  = new FormAttachment(0, 0);  // First one in the left top corner
@@ -254,7 +254,7 @@ public class SlaveServerDialog extends Dialog
 		// What's the service URL?
 		Label wlPort = new Label(wServiceComp, SWT.RIGHT); 
 		props.setLook(wlPort);
-		wlPort.setText(BaseMessages.getString(PKG, "SlaveServerDialog.Port.Label")); //$NON-NLS-1$
+		wlPort.setText(BaseMessages.getString(PKG, "SlaveServerDialog.Port.Label")); 
 		FormData fdlPort = new FormData();
 		fdlPort.top   = new FormAttachment(wHostname, margin);
 		fdlPort.left  = new FormAttachment(0, 0);  // First one in the left top corner
@@ -273,7 +273,7 @@ public class SlaveServerDialog extends Dialog
 		
     // webapp name (optional)
     Label wlWebAppName = new Label(wServiceComp, SWT.RIGHT ); 
-    wlWebAppName.setText(BaseMessages.getString(PKG, "SlaveServerDialog.WebAppName.Label"));  //$NON-NLS-1$
+    wlWebAppName.setText(BaseMessages.getString(PKG, "SlaveServerDialog.WebAppName.Label"));  
     props.setLook(wlWebAppName);
     FormData fdlWebAppName = new FormData();
     fdlWebAppName.top  = new FormAttachment(wPort, margin);
@@ -292,7 +292,7 @@ public class SlaveServerDialog extends Dialog
 		
 		// Username
 		Label wlUsername = new Label(wServiceComp, SWT.RIGHT ); 
-		wlUsername.setText(BaseMessages.getString(PKG, "SlaveServerDialog.UserName.Label"));  //$NON-NLS-1$
+		wlUsername.setText(BaseMessages.getString(PKG, "SlaveServerDialog.UserName.Label"));  
 		props.setLook(wlUsername);
 		FormData fdlUsername = new FormData();
 		fdlUsername.top  = new FormAttachment(wWebAppName, margin);
@@ -312,7 +312,7 @@ public class SlaveServerDialog extends Dialog
         
 		// Password
 		Label wlPassword = new Label(wServiceComp, SWT.RIGHT ); 
-		wlPassword.setText(BaseMessages.getString(PKG, "SlaveServerDialog.Password.Label"));  //$NON-NLS-1$
+		wlPassword.setText(BaseMessages.getString(PKG, "SlaveServerDialog.Password.Label"));  
 		props.setLook(wlPassword);
 		FormData fdlPassword = new FormData();
 		fdlPassword.top  = new FormAttachment(wUsername, margin);
@@ -332,7 +332,7 @@ public class SlaveServerDialog extends Dialog
 
 		// Master
 		Label wlMaster = new Label(wServiceComp, SWT.RIGHT ); 
-		wlMaster.setText(BaseMessages.getString(PKG, "SlaveServerDialog.IsTheMaster.Label"));  //$NON-NLS-1$
+		wlMaster.setText(BaseMessages.getString(PKG, "SlaveServerDialog.IsTheMaster.Label"));  
 		props.setLook(wlMaster);
 		FormData fdlMaster = new FormData();
 		fdlMaster.top  = new FormAttachment(wPassword, margin);
@@ -370,7 +370,7 @@ public class SlaveServerDialog extends Dialog
 		// START OF POOL TAB///
 		///
 		wProxyTab=new CTabItem(wTabFolder, SWT.NONE);
-		wProxyTab.setText(BaseMessages.getString(PKG, "SlaveServerDialog.USER_TAB_PROXY")); //$NON-NLS-1$
+		wProxyTab.setText(BaseMessages.getString(PKG, "SlaveServerDialog.USER_TAB_PROXY")); 
 
 		FormLayout poolLayout = new FormLayout ();
 		poolLayout.marginWidth  = Const.FORM_MARGIN;
@@ -383,7 +383,7 @@ public class SlaveServerDialog extends Dialog
 		// What's the data tablespace name?
 		Label wlProxyHost = new Label(wProxyComp, SWT.RIGHT); 
 		props.setLook(wlProxyHost);
-		wlProxyHost.setText(BaseMessages.getString(PKG, "SlaveServerDialog.ProxyServerName.Label"));  //$NON-NLS-1$
+		wlProxyHost.setText(BaseMessages.getString(PKG, "SlaveServerDialog.ProxyServerName.Label"));  
 		FormData fdlProxyHost = new FormData();
 		fdlProxyHost.top   = new FormAttachment(0, 0);
 		fdlProxyHost.left  = new FormAttachment(0, 0);  // First one in the left top corner
@@ -402,7 +402,7 @@ public class SlaveServerDialog extends Dialog
 		// What's the initial pool size
 		Label wlProxyPort = new Label(wProxyComp, SWT.RIGHT); 
 		props.setLook(wlProxyPort);
-		wlProxyPort.setText(BaseMessages.getString(PKG, "SlaveServerDialog.ProxyServerPort.Label"));  //$NON-NLS-1$
+		wlProxyPort.setText(BaseMessages.getString(PKG, "SlaveServerDialog.ProxyServerPort.Label"));  
 		FormData fdlProxyPort = new FormData();
 		fdlProxyPort.top   = new FormAttachment(wProxyHost, margin);
 		fdlProxyPort.left  = new FormAttachment(0, 0);  // First one in the left top corner
@@ -421,7 +421,7 @@ public class SlaveServerDialog extends Dialog
 		// What's the maximum pool size
 		Label wlNonProxyHosts = new Label(wProxyComp, SWT.RIGHT); 
 		props.setLook(wlNonProxyHosts);
-		wlNonProxyHosts.setText(BaseMessages.getString(PKG, "SlaveServerDialog.IgnoreProxyForHosts.Label"));  //$NON-NLS-1$
+		wlNonProxyHosts.setText(BaseMessages.getString(PKG, "SlaveServerDialog.IgnoreProxyForHosts.Label"));  
 		FormData fdlNonProxyHosts = new FormData();
 		fdlNonProxyHosts.top   = new FormAttachment(wProxyPort, margin);
 		fdlNonProxyHosts.left  = new FormAttachment(0, 0);  // First one in the left top corner
@@ -457,16 +457,16 @@ public class SlaveServerDialog extends Dialog
     
 	public void getData()
 	{
-		wName    .setText( Const.NVL(slaveServer.getName(),     "") ); //$NON-NLS-1$
-		wHostname.setText( Const.NVL(slaveServer.getHostname(), "") ); //$NON-NLS-1$
-		wPort    .setText( Const.NVL(slaveServer.getPort(),     "") ); //$NON-NLS-1$
-    wWebAppName.setText( Const.NVL(slaveServer.getWebAppName(), "") ); //$NON-NLS-1$
-		wUsername.setText( Const.NVL(slaveServer.getUsername(), "") ); //$NON-NLS-1$
-		wPassword.setText( Const.NVL(slaveServer.getPassword(), "") ); //$NON-NLS-1$
+		wName    .setText( Const.NVL(slaveServer.getName(),     "") ); 
+		wHostname.setText( Const.NVL(slaveServer.getHostname(), "") ); 
+		wPort    .setText( Const.NVL(slaveServer.getPort(),     "") ); 
+    wWebAppName.setText( Const.NVL(slaveServer.getWebAppName(), "") ); 
+		wUsername.setText( Const.NVL(slaveServer.getUsername(), "") ); 
+		wPassword.setText( Const.NVL(slaveServer.getPassword(), "") ); 
 
-		wProxyHost.setText( Const.NVL(slaveServer.getProxyHostname(), "")); //$NON-NLS-1$
-		wProxyPort.setText( Const.NVL(slaveServer.getProxyPort(), "")); //$NON-NLS-1$
-		wNonProxyHosts.setText( Const.NVL(slaveServer.getNonProxyHosts(), "")); //$NON-NLS-1$
+		wProxyHost.setText( Const.NVL(slaveServer.getProxyHostname(), "")); 
+		wProxyPort.setText( Const.NVL(slaveServer.getProxyPort(), "")); 
+		wNonProxyHosts.setText( Const.NVL(slaveServer.getNonProxyHosts(), "")); 
         
 		wMaster.setSelection( slaveServer.isMaster() );
         
@@ -525,25 +525,25 @@ public class SlaveServerDialog extends Dialog
 		{
 			getInfo();
             
-			String xml = "<sample/>"; //$NON-NLS-1$
+			String xml = "<sample/>"; 
             
 			String reply = slaveServer.sendXML(xml, AddTransServlet.CONTEXT_PATH);
             
-			String message = BaseMessages.getString(PKG, "SlaveServer.Replay.Info1") //$NON-NLS-1$
+			String message = BaseMessages.getString(PKG, "SlaveServer.Replay.Info1") 
 				+slaveServer.constructUrl(AddTransServlet.CONTEXT_PATH)+Const.CR+
-				BaseMessages.getString(PKG, "SlaveServer.Replay.Info2") +Const.CR+Const.CR; //$NON-NLS-1$
+				BaseMessages.getString(PKG, "SlaveServer.Replay.Info2") +Const.CR+Const.CR; 
 			message+=xml;
 			message+=Const.CR+Const.CR;
-			message+="Reply was:"+Const.CR+Const.CR; //$NON-NLS-1$
+			message+="Reply was:"+Const.CR+Const.CR; 
 			message+=reply+Const.CR;
             
-			EnterTextDialog dialog = new EnterTextDialog(shell, "XML", BaseMessages.getString(PKG, "SlaveServer.RetournedXMLInfo"), message); //$NON-NLS-1$  //$NON-NLS-2$
+			EnterTextDialog dialog = new EnterTextDialog(shell, "XML", BaseMessages.getString(PKG, "SlaveServer.RetournedXMLInfo"), message);   
 			dialog.open();
 		}
 		catch(Exception e)
 		{
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "SlaveServer.ExceptionError"), BaseMessages.getString(PKG, "SlaveServer.ExceptionUnableGetReplay.Error1") //$NON-NLS-1$  //$NON-NLS-2$
-				+slaveServer.getHostname()+ BaseMessages.getString(PKG, "SlaveServer.ExceptionUnableGetReplay.Error2"), e); //$NON-NLS-1$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "SlaveServer.ExceptionError"), BaseMessages.getString(PKG, "SlaveServer.ExceptionUnableGetReplay.Error1")   
+				+slaveServer.getHostname()+ BaseMessages.getString(PKG, "SlaveServer.ExceptionUnableGetReplay.Error2"), e); 
 		}		
 	}
 }

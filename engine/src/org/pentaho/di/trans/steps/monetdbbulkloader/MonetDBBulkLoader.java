@@ -218,7 +218,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
       setOutputDone();
       return true;
     } catch(Exception e) {
-			logError(BaseMessages.getString(PKG, "MonetDBBulkLoader.Log.ErrorInStep"), e); //$NON-NLS-1$
+			logError(BaseMessages.getString(PKG, "MonetDBBulkLoader.Log.ErrorInStep"), e); 
 			setErrors(1);
 			stopAll();
 			setOutputDone();  // signal end to receiver(s)

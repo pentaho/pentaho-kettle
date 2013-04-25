@@ -35,7 +35,7 @@ public class EmailValidator implements JobEntryValidator
 
   public static final EmailValidator INSTANCE = new EmailValidator();
 
-  private static final String VALIDATOR_NAME = "email"; //$NON-NLS-1$
+  private static final String VALIDATOR_NAME = "email"; 
 
   public String getName()
   {

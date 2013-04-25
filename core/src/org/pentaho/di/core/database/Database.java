@@ -429,13 +429,13 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       try {
         connection = dataSource.getConnection();
       } catch (SQLException e) {
-        throw new KettleDatabaseException("Invalid JNDI connection " + dataSourceName + " : " + e.getMessage()); //$NON-NLS-1$
+        throw new KettleDatabaseException("Invalid JNDI connection " + dataSourceName + " : " + e.getMessage()); 
       }
       if (connection == null) {
-        throw new KettleDatabaseException("Invalid JNDI connection " + dataSourceName); //$NON-NLS-1$
+        throw new KettleDatabaseException("Invalid JNDI connection " + dataSourceName); 
       }
     } else {
-      throw new KettleDatabaseException("Invalid JNDI connection " + dataSourceName); //$NON-NLS-1$
+      throw new KettleDatabaseException("Invalid JNDI connection " + dataSourceName); 
     }
   }
 

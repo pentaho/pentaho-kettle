@@ -130,9 +130,9 @@ public class SplitFieldToRowsMeta extends BaseStepMeta implements StepMetaInterf
 	{
 		try
 		{
-			splitField = XMLHandler.getTagValue(stepnode, "splitfield"); //$NON-NLS-1$
-			delimiter  = XMLHandler.getTagValue(stepnode, "delimiter"); //$NON-NLS-1$
-			newFieldname = XMLHandler.getTagValue(stepnode, "newfield"); //$NON-NLS-1$
+			splitField = XMLHandler.getTagValue(stepnode, "splitfield"); 
+			delimiter  = XMLHandler.getTagValue(stepnode, "delimiter"); 
+			newFieldname = XMLHandler.getTagValue(stepnode, "newfield"); 
 			includeRowNumber  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "rownum"));
 			resetRowNumber  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "resetrownumber"));
 			rowNumberField    = XMLHandler.getTagValue(stepnode, "rownum_field");
@@ -140,14 +140,14 @@ public class SplitFieldToRowsMeta extends BaseStepMeta implements StepMetaInterf
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "SplitFieldToRowsMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "SplitFieldToRowsMeta.Exception.UnableToLoadStepInfoFromXML"), e); 
 		}
 	}
 
 	public void setDefault()
 	{
-		splitField = ""; //$NON-NLS-1$
-		delimiter  = ";"; //$NON-NLS-1$
+		splitField = ""; 
+		delimiter  = ";"; 
 		newFieldname = "";
 		includeRowNumber = false;
 		isDelimiterRegex = false;
@@ -175,9 +175,9 @@ public class SplitFieldToRowsMeta extends BaseStepMeta implements StepMetaInterf
 	{
         StringBuffer retval = new StringBuffer();
 
-		retval.append("   "+XMLHandler.addTagValue("splitfield", splitField)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("   "+XMLHandler.addTagValue("delimiter", delimiter)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("   "+XMLHandler.addTagValue("newfield", newFieldname)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("   "+XMLHandler.addTagValue("splitfield", splitField));  
+		retval.append("   "+XMLHandler.addTagValue("delimiter", delimiter));  
+		retval.append("   "+XMLHandler.addTagValue("newfield", newFieldname));  
         retval.append("   "+XMLHandler.addTagValue("rownum",          includeRowNumber));
         retval.append("   "+XMLHandler.addTagValue("rownum_field",    rowNumberField));
         retval.append("   "+XMLHandler.addTagValue("resetrownumber",  resetRowNumber));
@@ -189,9 +189,9 @@ public class SplitFieldToRowsMeta extends BaseStepMeta implements StepMetaInterf
 	public void readRep(Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases) throws KettleException {
 		try
 		{
-			splitField  = rep.getStepAttributeString(id_step, "splitfield"); //$NON-NLS-1$
-			delimiter   = rep.getStepAttributeString(id_step, "delimiter"); //$NON-NLS-1$
-			newFieldname  = rep.getStepAttributeString(id_step, "newfield"); //$NON-NLS-1$
+			splitField  = rep.getStepAttributeString(id_step, "splitfield"); 
+			delimiter   = rep.getStepAttributeString(id_step, "delimiter"); 
+			newFieldname  = rep.getStepAttributeString(id_step, "newfield"); 
 			includeRowNumber  = rep.getStepAttributeBoolean(id_step, "rownum");
 			rowNumberField    = rep.getStepAttributeString (id_step, "rownum_field");
 			resetRowNumber     = rep.getStepAttributeBoolean (id_step, "reset_rownumber");
@@ -199,7 +199,7 @@ public class SplitFieldToRowsMeta extends BaseStepMeta implements StepMetaInterf
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "SplitFieldToRowsMeta.Exception.UnexpectedErrorInReadingStepInfo"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "SplitFieldToRowsMeta.Exception.UnexpectedErrorInReadingStepInfo"), e); 
 		}
 	}
 
@@ -207,9 +207,9 @@ public class SplitFieldToRowsMeta extends BaseStepMeta implements StepMetaInterf
 	{
 		try
 		{
-			rep.saveStepAttribute(id_transformation, id_step, "splitfield", splitField); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "delimiter",  delimiter); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "newfield",  newFieldname); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "splitfield", splitField); 
+			rep.saveStepAttribute(id_transformation, id_step, "delimiter",  delimiter); 
+			rep.saveStepAttribute(id_transformation, id_step, "newfield",  newFieldname); 
 			rep.saveStepAttribute(id_transformation, id_step, "rownum",          includeRowNumber);
 			rep.saveStepAttribute(id_transformation, id_step, "reset_rownumber",  resetRowNumber);
 			rep.saveStepAttribute(id_transformation, id_step, "rownum_field",    rowNumberField);
@@ -217,38 +217,38 @@ public class SplitFieldToRowsMeta extends BaseStepMeta implements StepMetaInterf
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "SplitFieldToRowsMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "SplitFieldToRowsMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); 
 		}
 	}
 	
 	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore) {
-		String error_message=""; //$NON-NLS-1$
+		String error_message=""; 
 		CheckResult cr;
 		
 		// Look up fields in the input stream <prev>
 		if (prev!=null && prev.size()>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SplitFieldToRowsMeta.CheckResult.StepReceivingFields",prev.size()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SplitFieldToRowsMeta.CheckResult.StepReceivingFields",prev.size()+""), stepMeta);  
 			remarks.add(cr);
 			
-			error_message = ""; //$NON-NLS-1$
+			error_message = ""; 
 			
 			ValueMetaInterface v = prev.searchValueMeta(splitField);
 			if (v==null)
 			{
-				error_message=BaseMessages.getString(PKG, "SplitFieldToRowsMeta.CheckResult.FieldToSplitNotPresentInInputStream" , splitField); //$NON-NLS-1$ 
+				error_message=BaseMessages.getString(PKG, "SplitFieldToRowsMeta.CheckResult.FieldToSplitNotPresentInInputStream" , splitField);  
 				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SplitFieldToRowsMeta.CheckResult.FieldToSplitFoundInInputStream" , splitField), stepMeta); //$NON-NLS-1$ 
+				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SplitFieldToRowsMeta.CheckResult.FieldToSplitFoundInInputStream" , splitField), stepMeta);  
 				remarks.add(cr);
 			}
 		}
 		else
 		{
-			error_message=BaseMessages.getString(PKG, "SplitFieldToRowsMeta.CheckResult.CouldNotReadFieldsFromPreviousStep")+Const.CR; //$NON-NLS-1$
+			error_message=BaseMessages.getString(PKG, "SplitFieldToRowsMeta.CheckResult.CouldNotReadFieldsFromPreviousStep")+Const.CR; 
 			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
 			remarks.add(cr);
 		}
@@ -256,12 +256,12 @@ public class SplitFieldToRowsMeta extends BaseStepMeta implements StepMetaInterf
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SplitFieldToRowsMeta.CheckResult.StepReceivingInfoFromOtherStep"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SplitFieldToRowsMeta.CheckResult.StepReceivingInfoFromOtherStep"), stepMeta); 
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SplitFieldToRowsMeta.CheckResult.NoInputReceivedFromOtherStep"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SplitFieldToRowsMeta.CheckResult.NoInputReceivedFromOtherStep"), stepMeta); 
 			remarks.add(cr);
 		}
 		

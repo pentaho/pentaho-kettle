@@ -98,7 +98,7 @@ import org.pentaho.di.core.gui.GCInterface;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.Redrawable;
 import org.pentaho.di.core.gui.SnapAllignDistribute;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogParentProvidedInterface;
@@ -177,11 +177,11 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
 
   private static final String XUL_FILE_JOB_GRAPH = "ui/job-graph.xul";
 
-  public final static String START_TEXT = BaseMessages.getString(PKG, "JobLog.Button.Start"); //$NON-NLS-1$
+  public final static String START_TEXT = BaseMessages.getString(PKG, "JobLog.Button.Start"); 
 
-  // public final static String PAUSE_TEXT = BaseMessages.getString(PKG, "JobLog.Button.PauseJob"); //$NON-NLS-1$    TODO 
-  // public final static String RESUME_TEXT = BaseMessages.getString(PKG, "JobLog.Button.ResumeJob"); //$NON-NLS-1$  TODO
-  public final static String STOP_TEXT = BaseMessages.getString(PKG, "JobLog.Button.Stop"); //$NON-NLS-1$
+  // public final static String PAUSE_TEXT = BaseMessages.getString(PKG, "JobLog.Button.PauseJob");     TODO 
+  // public final static String RESUME_TEXT = BaseMessages.getString(PKG, "JobLog.Button.ResumeJob");   TODO
+  public final static String STOP_TEXT = BaseMessages.getString(PKG, "JobLog.Button.Stop"); 
 
   private final static String STRING_PARALLEL_WARNING_PARAMETER = "ParallelJobEntriesWarning";
 
@@ -521,7 +521,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
                   newjge = (JobEntryCopy) jge.clone();
                   if (newjge != null) {
                     // newjge.setEntry(jge.getEntry());
-                    if(log.isDebug()) log.logDebug("entry aft = " + ((Object) jge.getEntry()).toString()); //$NON-NLS-1$
+                    if(log.isDebug()) log.logDebug("entry aft = " + ((Object) jge.getEntry()).toString()); 
 
                     newjge.setNr(jobMeta.findUnusedNr(newjge.getName()));
 
@@ -529,10 +529,10 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
                     spoon.addUndoNew(jobMeta, new JobEntryCopy[] { newjge }, new int[] { jobMeta
                         .indexOfJobEntry(newjge) });
                   } else {
-                	  if(log.isDebug()) log.logDebug("jge is not cloned!"); //$NON-NLS-1$
+                	  if(log.isDebug()) log.logDebug("jge is not cloned!"); 
                   }
                 } else {
-                	if(log.isDebug()) log.logDebug(jge.toString() + " is not drawn"); //$NON-NLS-1$
+                	if(log.isDebug()) log.logDebug(jge.toString() + " is not drawn"); 
                   jge_changed = true;
                 }
                 PropsUI.setLocation(newjge, p.x, p.y);
@@ -850,9 +850,9 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
               if (!spoon.props.getAutoSplit()) {
                 MessageDialogWithToggle md = new MessageDialogWithToggle(
                     shell,
-                    BaseMessages.getString(PKG, "TransGraph.Dialog.SplitHop.Title"), null, //$NON-NLS-1$
-                    BaseMessages.getString(PKG, "TransGraph.Dialog.SplitHop.Message") + Const.CR + hi.toString(), MessageDialog.QUESTION, new String[] { //$NON-NLS-1$
-                    BaseMessages.getString(PKG, "System.Button.Yes"), BaseMessages.getString(PKG, "System.Button.No") }, 0, BaseMessages.getString(PKG, "TransGraph.Dialog.Option.SplitHop.DoNotAskAgain"), spoon.props.getAutoSplit()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    BaseMessages.getString(PKG, "TransGraph.Dialog.SplitHop.Title"), null, 
+                    BaseMessages.getString(PKG, "TransGraph.Dialog.SplitHop.Message") + Const.CR + hi.toString(), MessageDialog.QUESTION, new String[] { 
+                    BaseMessages.getString(PKG, "System.Button.Yes"), BaseMessages.getString(PKG, "System.Button.No") }, 0, BaseMessages.getString(PKG, "TransGraph.Dialog.Option.SplitHop.DoNotAskAgain"), spoon.props.getAutoSplit());   //$NON-NLS-3$
                 MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
                 id = md.open();
                 spoon.props.setAutoSplit(md.getToggleState());
@@ -1369,8 +1369,8 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
       }
     } catch (Exception e) {
       MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_ERROR);
-      mb.setMessage(BaseMessages.getString(PKG, "TransGraph.Dialog.InvalidZoomMeasurement.Message", zoomLabel.getText())); //$NON-NLS-1$
-      mb.setText(BaseMessages.getString(PKG, "TransGraph.Dialog.InvalidZoomMeasurement.Title")); //$NON-NLS-1$
+      mb.setMessage(BaseMessages.getString(PKG, "TransGraph.Dialog.InvalidZoomMeasurement.Message", zoomLabel.getText())); 
+      mb.setText(BaseMessages.getString(PKG, "TransGraph.Dialog.InvalidZoomMeasurement.Title")); 
       mb.open();
     }
     redraw();
@@ -1503,7 +1503,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
     }
 
     // Display the delete confirmation message box
-    MessageBox mb = new DeleteMessageBox(shell, BaseMessages.getString(PKG, "Spoon.Dialog.DeletionConfirm.Message"), //$NON-NLS-1$
+    MessageBox mb = new DeleteMessageBox(shell, BaseMessages.getString(PKG, "Spoon.Dialog.DeletionConfirm.Message"), 
         stepList);
     int answer = mb.open();
     if (answer == SWT.YES) {
@@ -1652,8 +1652,8 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
   }
 
   public void editEntryDescription() {
-    String title = BaseMessages.getString(PKG, "JobGraph.Dialog.EditDescription.Title"); //$NON-NLS-1$
-    String message = BaseMessages.getString(PKG, "JobGraph.Dialog.EditDescription.Message"); //$NON-NLS-1$
+    String title = BaseMessages.getString(PKG, "JobGraph.Dialog.EditDescription.Title"); 
+    String message = BaseMessages.getString(PKG, "JobGraph.Dialog.EditDescription.Message"); 
     EnterTextDialog dd = new EnterTextDialog(shell, title, message, getJobEntry().getDescription());
     String des = dd.open();
     if (des != null)
@@ -1678,18 +1678,18 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
     if (getJobEntry().isLaunchingInParallel()) {
       // Show a warning (optional)
       //
-      if ("Y".equalsIgnoreCase(spoon.props.getCustomParameter(STRING_PARALLEL_WARNING_PARAMETER, "Y"))) //$NON-NLS-1$ //$NON-NLS-2$
+      if ("Y".equalsIgnoreCase(spoon.props.getCustomParameter(STRING_PARALLEL_WARNING_PARAMETER, "Y")))  
       {
         MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
-        		BaseMessages.getString(PKG, "JobGraph.ParallelJobEntriesWarning.DialogTitle"), //$NON-NLS-1$
-            null, BaseMessages.getString(PKG, "JobGraph.ParallelJobEntriesWarning.DialogMessage", Const.CR) + Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
-            MessageDialog.WARNING, new String[] { BaseMessages.getString(PKG, "JobGraph.ParallelJobEntriesWarning.Option1") }, //$NON-NLS-1$
-            0, BaseMessages.getString(PKG, "JobGraph.ParallelJobEntriesWarning.Option2"), //$NON-NLS-1$
-            "N".equalsIgnoreCase(spoon.props.getCustomParameter(STRING_PARALLEL_WARNING_PARAMETER, "Y")) //$NON-NLS-1$ //$NON-NLS-2$
+        		BaseMessages.getString(PKG, "JobGraph.ParallelJobEntriesWarning.DialogTitle"), 
+            null, BaseMessages.getString(PKG, "JobGraph.ParallelJobEntriesWarning.DialogMessage", Const.CR) + Const.CR,  
+            MessageDialog.WARNING, new String[] { BaseMessages.getString(PKG, "JobGraph.ParallelJobEntriesWarning.Option1") }, 
+            0, BaseMessages.getString(PKG, "JobGraph.ParallelJobEntriesWarning.Option2"), 
+            "N".equalsIgnoreCase(spoon.props.getCustomParameter(STRING_PARALLEL_WARNING_PARAMETER, "Y"))  
         );
         MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
         md.open();
-        spoon.props.setCustomParameter(STRING_PARALLEL_WARNING_PARAMETER, md.getToggleState() ? "N" : "Y"); //$NON-NLS-1$ //$NON-NLS-2$
+        spoon.props.setCustomParameter(STRING_PARALLEL_WARNING_PARAMETER, md.getToggleState() ? "N" : "Y");  
         spoon.props.saveProps();
       }
     }
@@ -1884,9 +1884,9 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
 
           if (miDisHop != null) {
             if (hi.isEnabled())
-              miDisHop.setLabel(BaseMessages.getString(PKG, "JobGraph.PopupMenu.Hop.Disable")); //$NON-NLS-1$
+              miDisHop.setLabel(BaseMessages.getString(PKG, "JobGraph.PopupMenu.Hop.Disable")); 
             else
-              miDisHop.setLabel(BaseMessages.getString(PKG, "JobGraph.PopupMenu.Hop.Enable")); //$NON-NLS-1$
+              miDisHop.setLabel(BaseMessages.getString(PKG, "JobGraph.PopupMenu.Hop.Enable")); 
           }
           ConstUI.displayMenu(menu, canvas);
         }
@@ -2321,7 +2321,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
       Object referencedMeta = jobEntryCopy.getEntry().loadReferencedObject(index, spoon.rep, spoon.metaStore, jobMeta);
       if (referencedMeta==null) {
         // Compatible re-try for older plugins.
-        compatibleJobEntryLoadReferencedObject(jobEntryCopy.getEntry(), index, spoon.rep, jobMeta);
+        referencedMeta = compatibleJobEntryLoadReferencedObject(jobEntryCopy.getEntry(), index, spoon.rep, jobMeta);
       }
       if (referencedMeta!=null && (referencedMeta instanceof TransMeta)) {
         TransMeta launchTransMeta = (TransMeta) referencedMeta;
@@ -2383,9 +2383,9 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
   }
 
   @SuppressWarnings("deprecation")
-  private void compatibleJobEntryLoadReferencedObject(JobEntryInterface entry, int index, Repository rep,
+  private Object compatibleJobEntryLoadReferencedObject(JobEntryInterface entry, int index, Repository rep,
       JobMeta jobMeta2) throws KettleException {
-    entry.loadReferencedObject(index, spoon.rep, jobMeta);
+    return entry.loadReferencedObject(index, spoon.rep, jobMeta);
   }
 
 
@@ -3245,14 +3245,14 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
       if (jobMeta.hasChanged()) {
         if (spoon.props.getAutoSave()) {
           if (log.isDetailed())
-            log.logDetailed(BaseMessages.getString(PKG, "JobLog.Log.AutoSaveFileBeforeRunning")); //$NON-NLS-1$
-          System.out.println(BaseMessages.getString(PKG, "JobLog.Log.AutoSaveFileBeforeRunning2")); //$NON-NLS-1$
+            log.logDetailed(BaseMessages.getString(PKG, "JobLog.Log.AutoSaveFileBeforeRunning")); 
+          System.out.println(BaseMessages.getString(PKG, "JobLog.Log.AutoSaveFileBeforeRunning2")); 
           spoon.saveToFile(jobMeta);
         } else {
-          MessageDialogWithToggle md = new MessageDialogWithToggle(shell, BaseMessages.getString(PKG, "JobLog.Dialog.SaveChangedFile.Title"), //$NON-NLS-1$
-              null, BaseMessages.getString(PKG, "JobLog.Dialog.SaveChangedFile.Message") + Const.CR + BaseMessages.getString(PKG, "JobLog.Dialog.SaveChangedFile.Message2") + Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
-              MessageDialog.QUESTION, new String[] { BaseMessages.getString(PKG, "System.Button.Yes"), BaseMessages.getString(PKG, "System.Button.No") }, //$NON-NLS-1$ //$NON-NLS-2$
-              0, BaseMessages.getString(PKG, "JobLog.Dialog.SaveChangedFile.Toggle"), //$NON-NLS-1$
+          MessageDialogWithToggle md = new MessageDialogWithToggle(shell, BaseMessages.getString(PKG, "JobLog.Dialog.SaveChangedFile.Title"), 
+              null, BaseMessages.getString(PKG, "JobLog.Dialog.SaveChangedFile.Message") + Const.CR + BaseMessages.getString(PKG, "JobLog.Dialog.SaveChangedFile.Message2") + Const.CR,  
+              MessageDialog.QUESTION, new String[] { BaseMessages.getString(PKG, "System.Button.Yes"), BaseMessages.getString(PKG, "System.Button.No") },  
+              0, BaseMessages.getString(PKG, "JobLog.Dialog.SaveChangedFile.Toggle"), 
               spoon.props.getAutoSave());
           int answer = md.open();
           if ((answer & 0xFF) == 0) {
@@ -3283,7 +3283,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
             // store & registry
             //
             if (job != null) {
-              CentralLogStore.discardLines(job.getLogChannelId(), true);
+              KettleLogStore.discardLines(job.getLogChannelId(), true);
             }
             
             JobMeta runJobMeta;
@@ -3329,7 +3329,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
             }
             job.getJobMeta().activateParameters();
 
-            log.logMinimal(BaseMessages.getString(PKG, "JobLog.Log.StartingJob")); //$NON-NLS-1$
+            log.logMinimal(BaseMessages.getString(PKG, "JobLog.Log.StartingJob")); 
             job.start();
             jobGridDelegate.previousNrItems = -1;
             // Link to the new jobTracker!
@@ -3347,30 +3347,30 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
             //
             addAllTabs();
           } catch (KettleException e) {
-            new ErrorDialog(shell, BaseMessages.getString(PKG, "JobLog.Dialog.CanNotOpenJob.Title"), BaseMessages.getString(PKG, "JobLog.Dialog.CanNotOpenJob.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "JobLog.Dialog.CanNotOpenJob.Title"), BaseMessages.getString(PKG, "JobLog.Dialog.CanNotOpenJob.Message"), e);  
             job = null;
           }
         } else {
           MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-          m.setText(BaseMessages.getString(PKG, "JobLog.Dialog.JobIsAlreadyRunning.Title")); //$NON-NLS-1$
-          m.setMessage(BaseMessages.getString(PKG, "JobLog.Dialog.JobIsAlreadyRunning.Message")); //$NON-NLS-1$
+          m.setText(BaseMessages.getString(PKG, "JobLog.Dialog.JobIsAlreadyRunning.Title")); 
+          m.setMessage(BaseMessages.getString(PKG, "JobLog.Dialog.JobIsAlreadyRunning.Message")); 
           m.open();
         }
       } else {
         if (jobMeta.hasChanged()) {
           MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-          m.setText(BaseMessages.getString(PKG, "JobLog.Dialog.JobHasChangedSave.Title")); //$NON-NLS-1$
-          m.setMessage(BaseMessages.getString(PKG, "JobLog.Dialog.JobHasChangedSave.Message")); //$NON-NLS-1$
+          m.setText(BaseMessages.getString(PKG, "JobLog.Dialog.JobHasChangedSave.Title")); 
+          m.setMessage(BaseMessages.getString(PKG, "JobLog.Dialog.JobHasChangedSave.Message")); 
           m.open();
         } else if (spoon.rep != null && jobMeta.getName() == null) {
           MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-          m.setText(BaseMessages.getString(PKG, "JobLog.Dialog.PleaseGiveThisJobAName.Title")); //$NON-NLS-1$
-          m.setMessage(BaseMessages.getString(PKG, "JobLog.Dialog.PleaseGiveThisJobAName.Message")); //$NON-NLS-1$
+          m.setText(BaseMessages.getString(PKG, "JobLog.Dialog.PleaseGiveThisJobAName.Title")); 
+          m.setMessage(BaseMessages.getString(PKG, "JobLog.Dialog.PleaseGiveThisJobAName.Message")); 
           m.open();
         } else {
           MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-          m.setText(BaseMessages.getString(PKG, "JobLog.Dialog.NoFilenameSaveYourJobFirst.Title")); //$NON-NLS-1$
-          m.setMessage(BaseMessages.getString(PKG, "JobLog.Dialog.NoFilenameSaveYourJobFirst.Message")); //$NON-NLS-1$
+          m.setText(BaseMessages.getString(PKG, "JobLog.Dialog.NoFilenameSaveYourJobFirst.Title")); 
+          m.setMessage(BaseMessages.getString(PKG, "JobLog.Dialog.NoFilenameSaveYourJobFirst.Message")); 
           m.open();
         }
       }
@@ -3400,7 +3400,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
     if (job != null && job.isInitialized() && job.isFinished()) {
       for (RefreshListener listener : refreshListeners)
         listener.refreshNeeded();
-      log.logMinimal(BaseMessages.getString(PKG, "JobLog.Log.JobHasEnded")); //$NON-NLS-1$
+      log.logMinimal(BaseMessages.getString(PKG, "JobLog.Log.JobHasEnded")); 
     }
     setControlStates();
   }
@@ -3410,7 +3410,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
 	    job.stopAll();
 	    job.waitUntilFinished(5000); // wait until everything is stopped, maximum 5 seconds...
 	    
-	    log.logMinimal(BaseMessages.getString(PKG, "JobLog.Log.JobWasStopped")); //$NON-NLS-1$
+	    log.logMinimal(BaseMessages.getString(PKG, "JobLog.Log.JobWasStopped")); 
 	  }
 	  setControlStates();
   }

@@ -278,9 +278,9 @@ public class PGBulkLoader extends BaseStep implements StepInterface
                 // wait for the pgsql process to finish and check for any error...
 				//
             	int exitVal = data.psqlProcess.waitFor();
-				logBasic(BaseMessages.getString(PKG, "GPBulkLoader.Log.ExitValuePsqlPath", "" + exitVal)); //$NON-NLS-1$
+				logBasic(BaseMessages.getString(PKG, "GPBulkLoader.Log.ExitValuePsqlPath", "" + exitVal)); 
             	if (meta.isStopOnError() && exitVal != 0) { // If we're supposed to stop on exception, then this is where.
-            	  throw new KettleException(BaseMessages.getString(PKG, "PGBulkLoader.Exception.ExitValueNotZero", exitVal)); //$NON-NLS-1$
+            	  throw new KettleException(BaseMessages.getString(PKG, "PGBulkLoader.Exception.ExitValueNotZero", exitVal)); 
             	}
             }
             else {
@@ -322,7 +322,7 @@ public class PGBulkLoader extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError(BaseMessages.getString(PKG, "GPBulkLoader.Log.ErrorInStep"), e); //$NON-NLS-1$
+			logError(BaseMessages.getString(PKG, "GPBulkLoader.Log.ErrorInStep"), e); 
 			setErrors(1);
 			stopAll();
 			setOutputDone();  // signal end to receiver(s)

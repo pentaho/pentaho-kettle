@@ -136,26 +136,26 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-            fieldToUse      = XMLHandler.getTagValue(stepnode, "field_to_use"); //$NON-NLS-1$
-            targetField     = XMLHandler.getTagValue(stepnode, "target_field"); //$NON-NLS-1$
-            nonMatchDefault = XMLHandler.getTagValue(stepnode, "non_match_default"); //$NON-NLS-1$
+            fieldToUse      = XMLHandler.getTagValue(stepnode, "field_to_use"); 
+            targetField     = XMLHandler.getTagValue(stepnode, "target_field"); 
+            nonMatchDefault = XMLHandler.getTagValue(stepnode, "non_match_default"); 
             
-			Node fields = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
-			int count   = XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
+			Node fields = XMLHandler.getSubNode(stepnode, "fields"); 
+			int count   = XMLHandler.countNodes(fields, "field"); 
 			
 			allocate(count);
 					
 			for (int i=0;i<count;i++)
 			{
-				Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
+				Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); 
 				
-				sourceValue[i] = XMLHandler.getTagValue(fnode, "source_value"); //$NON-NLS-1$
-				targetValue[i] = XMLHandler.getTagValue(fnode, "target_value"); //$NON-NLS-1$
+				sourceValue[i] = XMLHandler.getTagValue(fnode, "source_value"); 
+				targetValue[i] = XMLHandler.getTagValue(fnode, "target_value"); 
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "ValueMapperMeta.RuntimeError.UnableToReadXML.VALUEMAPPER0004"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "ValueMapperMeta.RuntimeError.UnableToReadXML.VALUEMAPPER0004"), e); 
 		}
 	}
 	
@@ -167,8 +167,8 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface
 
 		for (int i=0;i<count;i++)
 		{
-			sourceValue[i] = "field"+i; //$NON-NLS-1$
-			targetValue[i] = ""; //$NON-NLS-1$
+			sourceValue[i] = "field"+i; 
+			targetValue[i] = ""; 
 		}
 	}
 
@@ -216,20 +216,20 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface
 	{
         StringBuffer retval = new StringBuffer();
 
-        retval.append("    ").append(XMLHandler.addTagValue("field_to_use", fieldToUse)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("    ").append(XMLHandler.addTagValue("target_field", targetField)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("    ").append(XMLHandler.addTagValue("non_match_default", nonMatchDefault)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    ").append(XMLHandler.addTagValue("field_to_use", fieldToUse));  
+        retval.append("    ").append(XMLHandler.addTagValue("target_field", targetField));  
+        retval.append("    ").append(XMLHandler.addTagValue("non_match_default", nonMatchDefault));  
         
-		retval.append("    <fields>").append(Const.CR); //$NON-NLS-1$
+		retval.append("    <fields>").append(Const.CR); 
 		
 		for (int i=0;i<sourceValue.length;i++)
 		{
-			retval.append("      <field>").append(Const.CR); //$NON-NLS-1$
-			retval.append("        ").append(XMLHandler.addTagValue("source_value", sourceValue[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        ").append(XMLHandler.addTagValue("target_value", targetValue[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("      </field>").append(Const.CR); //$NON-NLS-1$
+			retval.append("      <field>").append(Const.CR); 
+			retval.append("        ").append(XMLHandler.addTagValue("source_value", sourceValue[i]));  
+			retval.append("        ").append(XMLHandler.addTagValue("target_value", targetValue[i]));  
+			retval.append("      </field>").append(Const.CR); 
 		}
-		retval.append("    </fields>").append(Const.CR); //$NON-NLS-1$
+		retval.append("    </fields>").append(Const.CR); 
 
 		return retval.toString();
 	}
@@ -239,23 +239,23 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-            fieldToUse      = rep.getStepAttributeString(id_step, "field_to_use"); //$NON-NLS-1$
-            targetField     = rep.getStepAttributeString(id_step, "target_field"); //$NON-NLS-1$
-            nonMatchDefault = rep.getStepAttributeString(id_step, "non_match_default"); //$NON-NLS-1$
+            fieldToUse      = rep.getStepAttributeString(id_step, "field_to_use"); 
+            targetField     = rep.getStepAttributeString(id_step, "target_field"); 
+            nonMatchDefault = rep.getStepAttributeString(id_step, "non_match_default"); 
             
-			int nrfields = rep.countNrStepAttributes(id_step, "source_value"); //$NON-NLS-1$
+			int nrfields = rep.countNrStepAttributes(id_step, "source_value"); 
 			
 			allocate(nrfields);
 	
 			for (int i=0;i<nrfields;i++)
 			{
-				sourceValue[i] = rep.getStepAttributeString(id_step, i, "source_value"); //$NON-NLS-1$
-				targetValue[i] = rep.getStepAttributeString(id_step, i, "target_value"); //$NON-NLS-1$
+				sourceValue[i] = rep.getStepAttributeString(id_step, i, "source_value"); 
+				targetValue[i] = rep.getStepAttributeString(id_step, i, "target_value"); 
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "ValueMapperMeta.RuntimeError.UnableToReadRepository.VALUEMAPPER0005"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "ValueMapperMeta.RuntimeError.UnableToReadRepository.VALUEMAPPER0005"), e); 
 		}
 	}
 
@@ -264,19 +264,19 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-            rep.saveStepAttribute(id_transformation, id_step, "field_to_use",       fieldToUse); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "target_field",       targetField); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "non_match_default",  nonMatchDefault); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "field_to_use",       fieldToUse); 
+            rep.saveStepAttribute(id_transformation, id_step, "target_field",       targetField); 
+            rep.saveStepAttribute(id_transformation, id_step, "non_match_default",  nonMatchDefault); 
             
 			for (int i=0;i<sourceValue.length;i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "source_value",      sourceValue[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "target_value",     targetValue[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "source_value",      sourceValue[i]); 
+				rep.saveStepAttribute(id_transformation, id_step, i, "target_value",     targetValue[i]); 
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "ValueMapperMeta.RuntimeError.UnableToSaveRepository.VALUEMAPPER0006", ""+id_step), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "ValueMapperMeta.RuntimeError.UnableToSaveRepository.VALUEMAPPER0006", ""+id_step), e); 
 		}
 
 	}
@@ -285,24 +285,24 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface
 		CheckResult cr;
 		if (prev==null || prev.size()==0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "ValueMapperMeta.CheckResult.NotReceivingFieldsFromPreviousSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "ValueMapperMeta.CheckResult.NotReceivingFieldsFromPreviousSteps"), stepMeta); 
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ValueMapperMeta.CheckResult.ReceivingFieldsFromPreviousSteps", ""+prev.size()), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ValueMapperMeta.CheckResult.ReceivingFieldsFromPreviousSteps", ""+prev.size()), stepMeta);  
 			remarks.add(cr);
 		}
 		
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ValueMapperMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ValueMapperMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); 
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "ValueMapperMeta.CheckResult.NotReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "ValueMapperMeta.CheckResult.NotReceivingInfoFromOtherSteps"), stepMeta); 
 			remarks.add(cr);
 		}
 	}

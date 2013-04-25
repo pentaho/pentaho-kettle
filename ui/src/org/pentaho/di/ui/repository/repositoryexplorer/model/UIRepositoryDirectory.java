@@ -305,7 +305,7 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
   
   public void toggleExpanded() {
     setExpanded(!isExpanded());
-    firePropertyChange("expanded", null, this.expanded); //$NON-NLS-1$
+    firePropertyChange("expanded", null, this.expanded); 
   }
   
   public UIRepositoryDirectory getParent() {

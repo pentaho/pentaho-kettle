@@ -111,8 +111,8 @@ public class GetSubFolders extends BaseStep implements StepInterface
 				if (data.indexOfFoldernameField<0)
 				{
 					// The field is unreachable !
-					logError(BaseMessages.getString(PKG, "GetSubFolders.Log.ErrorFindingField")+ "[" + realDynamicFoldername+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-					throw new KettleException(BaseMessages.getString(PKG, "GetSubFolders.Exception.CouldnotFindField",realDynamicFoldername)); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "GetSubFolders.Log.ErrorFindingField")+ "[" + realDynamicFoldername+"]");  
+					throw new KettleException(BaseMessages.getString(PKG, "GetSubFolders.Exception.CouldnotFindField",realDynamicFoldername));  
 				}
 			}  
         }else

@@ -81,7 +81,7 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
 
 	public JobEntryFileCompare(String n)
 	{
-		super(n, ""); //$NON-NLS-1$
+		super(n, ""); 
      	filename1 = null;
      	filename2=null;
      	addFilenameToResult=false;
@@ -90,7 +90,7 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
 
 	public JobEntryFileCompare()
 	{
-		this(""); //$NON-NLS-1$
+		this(""); 
 	}
 
     public Object clone()
@@ -104,8 +104,8 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
         StringBuffer retval = new StringBuffer(50);
 
 		retval.append(super.getXML());
-		retval.append("      ").append(XMLHandler.addTagValue("filename1", filename1)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      ").append(XMLHandler.addTagValue("filename2", filename2)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("filename1", filename1));  
+		retval.append("      ").append(XMLHandler.addTagValue("filename2", filename2));  
 		retval.append("      ").append(XMLHandler.addTagValue("add_filename_result", addFilenameToResult));
 		return retval.toString();
 	}
@@ -116,13 +116,13 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
 		try
 		{
 			super.loadXML(entrynode, databases, slaveServers);
-			filename1 = XMLHandler.getTagValue(entrynode, "filename1"); //$NON-NLS-1$
-			filename2 = XMLHandler.getTagValue(entrynode, "filename2"); //$NON-NLS-1$
+			filename1 = XMLHandler.getTagValue(entrynode, "filename1"); 
+			filename2 = XMLHandler.getTagValue(entrynode, "filename2"); 
 			addFilenameToResult = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "add_filename_result"));
 		}
 		catch(KettleXMLException xe)
 		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryFileCompare.ERROR_0001_Unable_To_Load_From_Xml_Node"), xe); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryFileCompare.ERROR_0001_Unable_To_Load_From_Xml_Node"), xe); 
 		}
 	}
 
@@ -130,13 +130,13 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
 	{
 		try
 		{
-			filename1 = rep.getJobEntryAttributeString(id_jobentry, "filename1"); //$NON-NLS-1$
-			filename2 = rep.getJobEntryAttributeString(id_jobentry, "filename2"); //$NON-NLS-1$
+			filename1 = rep.getJobEntryAttributeString(id_jobentry, "filename1"); 
+			filename2 = rep.getJobEntryAttributeString(id_jobentry, "filename2"); 
 			addFilenameToResult = rep.getJobEntryAttributeBoolean(id_jobentry, "add_filename_result");
 		}
 		catch(KettleException dbe)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "JobEntryFileCompare.ERROR_0002_Unable_To_Load_Job_From_Repository", id_jobentry), dbe); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "JobEntryFileCompare.ERROR_0002_Unable_To_Load_Job_From_Repository", id_jobentry), dbe); 
 		}
 	}
 
@@ -144,13 +144,13 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_job, getObjectId(), "filename1", filename1); //$NON-NLS-1$
-			rep.saveJobEntryAttribute(id_job, getObjectId(), "filename2", filename2); //$NON-NLS-1$
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "filename1", filename1); 
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "filename2", filename2); 
             rep.saveJobEntryAttribute(id_job, getObjectId(), "add_filename_result", addFilenameToResult);
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "JobEntryFileCompare.ERROR_0003_Unable_To_Save_Job", id_job), dbe); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "JobEntryFileCompare.ERROR_0003_Unable_To_Save_Job", id_job), dbe); 
 		}
 	}
 
@@ -261,23 +261,23 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
 				else
 				{
 					if ( ! file1.exists() )
-						logError(BaseMessages.getString(PKG, "JobEntryFileCompare.ERROR_0004_File1_Does_Not_Exist", realFilename1)); //$NON-NLS-1$
+						logError(BaseMessages.getString(PKG, "JobEntryFileCompare.ERROR_0004_File1_Does_Not_Exist", realFilename1)); 
 					if ( ! file2.exists() )
-						logError(BaseMessages.getString(PKG, "JobEntryFileCompare.ERROR_0005_File2_Does_Not_Exist", realFilename2)); //$NON-NLS-1$
+						logError(BaseMessages.getString(PKG, "JobEntryFileCompare.ERROR_0005_File2_Does_Not_Exist", realFilename2)); 
 					result.setResult( false );
 					result.setNrErrors(1);
 				}
 			}
 			else
 			{
-				logError(BaseMessages.getString(PKG, "JobEntryFileCompare.ERROR_0006_Need_Two_Filenames")); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "JobEntryFileCompare.ERROR_0006_Need_Two_Filenames")); 
 			}
 		}
 		catch ( Exception e )
 		{
 			result.setResult( false );
 			result.setNrErrors(1);
-			logError(BaseMessages.getString(PKG, "JobEntryFileCompare.ERROR_0007_Comparing_Files", realFilename2, realFilename2, e.getMessage())); //$NON-NLS-1$
+			logError(BaseMessages.getString(PKG, "JobEntryFileCompare.ERROR_0007_Comparing_Files", realFilename2, realFilename2, e.getMessage())); 
 		}
 		finally
 		{
@@ -348,8 +348,8 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
     ValidatorContext ctx = new ValidatorContext();
     putVariableSpace(ctx, getVariables());
     putValidators(ctx, notNullValidator(), fileExistsValidator());
-    andValidator().validate(this, "filename1", remarks, ctx); //$NON-NLS-1$
-    andValidator().validate(this, "filename2", remarks, ctx); //$NON-NLS-1$
+    andValidator().validate(this, "filename1", remarks, ctx); 
+    andValidator().validate(this, "filename2", remarks, ctx); 
   }
 
 }

@@ -225,9 +225,9 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
     // BUTTONS //
     ////////////
     wOK = new Button(shell, SWT.PUSH);
-    wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+    wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
     wCancel = new Button(shell, SWT.PUSH);
-    wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+    wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
     setButtonPositions(new Button[]
             {
@@ -700,8 +700,8 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
           fieldNames = r.getFieldNames();
         }
       } catch (KettleException ke) {
-        new ErrorDialog(shell, BaseMessages.getString(PKG, "ElasticSearchBulkDialog.FailedToGetFields.DialogTitle"), //$NON-NLS-1$
-            BaseMessages.getString(PKG, "ElasticSearchBulkDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$
+        new ErrorDialog(shell, BaseMessages.getString(PKG, "ElasticSearchBulkDialog.FailedToGetFields.DialogTitle"), 
+            BaseMessages.getString(PKG, "ElasticSearchBulkDialog.FailedToGetFields.DialogMessage"), ke); 
         return new String[0];
       }
     }

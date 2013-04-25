@@ -220,14 +220,14 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "RestDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "RestDialog.Shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin=Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "RestDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "RestDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -265,7 +265,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
         // START Settings GROUP
 
         Group gSettings = new Group(wGeneralComp, SWT.SHADOW_ETCHED_IN);
-        gSettings.setText(BaseMessages.getString(PKG, "RestDialog.SettingsGroup.Label")); //$NON-NLS-1$;
+        gSettings.setText(BaseMessages.getString(PKG, "RestDialog.SettingsGroup.Label")); ;
         FormLayout SettingsLayout = new FormLayout();
         SettingsLayout.marginWidth = 3;
         SettingsLayout.marginHeight = 3;
@@ -273,7 +273,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
         props.setLook(gSettings);
 		
 		wlUrl=new Label(gSettings, SWT.RIGHT);
-		wlUrl.setText(BaseMessages.getString(PKG, "RestDialog.URL.Label")); //$NON-NLS-1$
+		wlUrl.setText(BaseMessages.getString(PKG, "RestDialog.URL.Label")); 
  		props.setLook(wlUrl);
 		fdlUrl=new FormData();
 		fdlUrl.left = new FormAttachment(0, 0);
@@ -318,7 +318,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
 
 		// UrlField Line
 		wlUrlField=new Label(gSettings, SWT.RIGHT);
-		wlUrlField.setText(BaseMessages.getString(PKG, "RestDialog.UrlField.Label")); //$NON-NLS-1$
+		wlUrlField.setText(BaseMessages.getString(PKG, "RestDialog.UrlField.Label")); 
  		props.setLook(wlUrlField);
 		fdlUrlField=new FormData();
 		fdlUrlField.left = new FormAttachment(0, 0);
@@ -355,7 +355,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
         
         // Method Line
 		wlMethod=new Label(gSettings, SWT.RIGHT);
-		wlMethod.setText(BaseMessages.getString(PKG, "RestDialog.Method.Label")); //$NON-NLS-1$
+		wlMethod.setText(BaseMessages.getString(PKG, "RestDialog.Method.Label")); 
  		props.setLook(wlMethod);
 		fdlMethod=new FormData();
 		fdlMethod.left = new FormAttachment(0, 0);
@@ -414,7 +414,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
         
     	// MethodField Line
 		wlMethodField=new Label(gSettings, SWT.RIGHT);
-		wlMethodField.setText(BaseMessages.getString(PKG, "RestDialog.MethodField.Label")); //$NON-NLS-1$
+		wlMethodField.setText(BaseMessages.getString(PKG, "RestDialog.MethodField.Label")); 
  		props.setLook(wlMethodField);
 		fdlMethodField=new FormData();
 		fdlMethodField.left = new FormAttachment(0, 0);
@@ -455,7 +455,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
         
         // Body Line
  		wlBody=new Label(gSettings, SWT.RIGHT);
- 		wlBody.setText(BaseMessages.getString(PKG, "RestDialog.Body.Label")); //$NON-NLS-1$
+ 		wlBody.setText(BaseMessages.getString(PKG, "RestDialog.Body.Label")); 
   		props.setLook(wlBody);
  		fdlBody=new FormData();
  		fdlBody.left = new FormAttachment(0, 0);
@@ -492,7 +492,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
 
          // ApplicationType Line
  		wlApplicationType=new Label(gSettings, SWT.RIGHT);
- 		wlApplicationType.setText(BaseMessages.getString(PKG, "RestDialog.ApplicationType.Label")); //$NON-NLS-1$
+ 		wlApplicationType.setText(BaseMessages.getString(PKG, "RestDialog.ApplicationType.Label")); 
   		props.setLook(wlApplicationType);
  		fdlApplicationType=new FormData();
  		fdlApplicationType.left = new FormAttachment(0, 0);
@@ -533,7 +533,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
         // START Output Fields GROUP
 
         Group gOutputFields = new Group(wGeneralComp, SWT.SHADOW_ETCHED_IN);
-        gOutputFields.setText(BaseMessages.getString(PKG, "RestDialog.OutputFieldsGroup.Label")); //$NON-NLS-1$;
+        gOutputFields.setText(BaseMessages.getString(PKG, "RestDialog.OutputFieldsGroup.Label")); ;
         FormLayout OutputFieldsLayout = new FormLayout();
         OutputFieldsLayout.marginWidth = 3;
         OutputFieldsLayout.marginHeight = 3;
@@ -542,7 +542,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
 
 		// Result line...
 		wlResult=new Label(gOutputFields, SWT.RIGHT);
-		wlResult.setText(BaseMessages.getString(PKG, "RestDialog.Result.Label")); //$NON-NLS-1$
+		wlResult.setText(BaseMessages.getString(PKG, "RestDialog.Result.Label")); 
  		props.setLook(wlResult);
 		fdlResult=new FormData();
 		fdlResult.left = new FormAttachment(0, 0);
@@ -560,7 +560,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
 
 		// Resultcode line...
 		wlResultCode=new Label(gOutputFields, SWT.RIGHT);
-		wlResultCode.setText(BaseMessages.getString(PKG, "RestDialog.ResultCode.Label")); //$NON-NLS-1$
+		wlResultCode.setText(BaseMessages.getString(PKG, "RestDialog.ResultCode.Label")); 
  		props.setLook(wlResultCode);
 		fdlResultCode=new FormData();
 		fdlResultCode.left = new FormAttachment(0, 0);
@@ -578,7 +578,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
 		
 		 // Response time line...
 	      wlResponseTime = new Label(gOutputFields, SWT.RIGHT);
-	      wlResponseTime.setText(BaseMessages.getString(PKG, "RestDialog.ResponseTime.Label")); //$NON-NLS-1$
+	      wlResponseTime.setText(BaseMessages.getString(PKG, "RestDialog.ResponseTime.Label")); 
 	      props.setLook(wlResponseTime);
 	      fdlResponseTime=new FormData();
 	      fdlResponseTime.left = new FormAttachment(0, 0);
@@ -639,7 +639,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
         // START HTTP AUTH GROUP
 
         Group gHttpAuth = new Group(wAuthComp, SWT.SHADOW_ETCHED_IN);
-        gHttpAuth.setText(BaseMessages.getString(PKG, "RestDialog.HttpAuthGroup.Label")); //$NON-NLS-1$;
+        gHttpAuth.setText(BaseMessages.getString(PKG, "RestDialog.HttpAuthGroup.Label")); ;
         FormLayout httpAuthLayout = new FormLayout();
         httpAuthLayout.marginWidth = 3;
         httpAuthLayout.marginHeight = 3;
@@ -648,7 +648,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
 
         // HTTP Login
         wlHttpLogin = new Label(gHttpAuth, SWT.RIGHT);
-        wlHttpLogin.setText(BaseMessages.getString(PKG, "RestDialog.HttpLogin.Label")); //$NON-NLS-1$
+        wlHttpLogin.setText(BaseMessages.getString(PKG, "RestDialog.HttpLogin.Label")); 
         props.setLook(wlHttpLogin);
         FormData fdlHttpLogin = new FormData();
         fdlHttpLogin.top = new FormAttachment(0, margin);
@@ -657,7 +657,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
         wlHttpLogin.setLayoutData(fdlHttpLogin);
         wHttpLogin = new TextVar(transMeta, gHttpAuth, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wHttpLogin.addModifyListener(lsMod);
-        wHttpLogin.setToolTipText(BaseMessages.getString(PKG, "RestDialog.HttpLogin.Tooltip")); //$NON-NLS-1$
+        wHttpLogin.setToolTipText(BaseMessages.getString(PKG, "RestDialog.HttpLogin.Tooltip")); 
         props.setLook(wHttpLogin);
         FormData fdHttpLogin = new FormData();
         fdHttpLogin.top = new FormAttachment(0, margin);
@@ -667,7 +667,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
 
         // HTTP Password
         wlHttpPassword = new Label(gHttpAuth, SWT.RIGHT);
-        wlHttpPassword.setText(BaseMessages.getString(PKG, "RestDialog.HttpPassword.Label")); //$NON-NLS-1$
+        wlHttpPassword.setText(BaseMessages.getString(PKG, "RestDialog.HttpPassword.Label")); 
         props.setLook(wlHttpPassword);
         FormData fdlHttpPassword = new FormData();
         fdlHttpPassword.top = new FormAttachment(wHttpLogin, margin);
@@ -676,7 +676,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
         wlHttpPassword.setLayoutData(fdlHttpPassword);
         wHttpPassword = new TextVar(transMeta, gHttpAuth, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wHttpPassword.addModifyListener(lsMod);
-        wHttpPassword.setToolTipText(BaseMessages.getString(PKG, "RestDialog.HttpPassword.Tooltip")); //$NON-NLS-1$
+        wHttpPassword.setToolTipText(BaseMessages.getString(PKG, "RestDialog.HttpPassword.Tooltip")); 
         wHttpPassword.setEchoChar('*');
         props.setLook(wHttpPassword);
         FormData fdHttpPassword = new FormData();
@@ -725,7 +725,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
         // START PROXY GROUP
 
         Group gProxy = new Group(wAuthComp, SWT.SHADOW_ETCHED_IN);
-        gProxy.setText(BaseMessages.getString(PKG, "RestDialog.ProxyGroup.Label")); //$NON-NLS-1$;
+        gProxy.setText(BaseMessages.getString(PKG, "RestDialog.ProxyGroup.Label")); ;
         FormLayout proxyLayout = new FormLayout();
         proxyLayout.marginWidth = 3;
         proxyLayout.marginHeight = 3;
@@ -734,7 +734,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
 
         // HTTP Login
         wlProxyHost = new Label(gProxy, SWT.RIGHT);
-        wlProxyHost.setText(BaseMessages.getString(PKG, "RestDialog.ProxyHost.Label")); //$NON-NLS-1$
+        wlProxyHost.setText(BaseMessages.getString(PKG, "RestDialog.ProxyHost.Label")); 
         props.setLook(wlProxyHost);
         FormData fdlProxyHost = new FormData();
         fdlProxyHost.top = new FormAttachment(0, margin);
@@ -743,7 +743,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
         wlProxyHost.setLayoutData(fdlProxyHost);
         wProxyHost = new TextVar(transMeta, gProxy, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wProxyHost.addModifyListener(lsMod);
-        wProxyHost.setToolTipText(BaseMessages.getString(PKG, "RestDialog.ProxyHost.Tooltip")); //$NON-NLS-1$
+        wProxyHost.setToolTipText(BaseMessages.getString(PKG, "RestDialog.ProxyHost.Tooltip")); 
         props.setLook(wProxyHost);
         FormData fdProxyHost = new FormData();
         fdProxyHost.top = new FormAttachment(0, margin);
@@ -753,7 +753,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
 
         // HTTP Password
         wlProxyPort = new Label(gProxy, SWT.RIGHT);
-        wlProxyPort.setText(BaseMessages.getString(PKG, "RestDialog.ProxyPort.Label")); //$NON-NLS-1$
+        wlProxyPort.setText(BaseMessages.getString(PKG, "RestDialog.ProxyPort.Label")); 
         props.setLook(wlProxyPort);
         FormData fdlProxyPort = new FormData();
         fdlProxyPort.top = new FormAttachment(wProxyHost, margin);
@@ -762,7 +762,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
         wlProxyPort.setLayoutData(fdlProxyPort);
         wProxyPort = new TextVar(transMeta, gProxy, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wProxyPort.addModifyListener(lsMod);
-        wProxyPort.setToolTipText(BaseMessages.getString(PKG, "RestDialog.ProxyPort.Tooltip")); //$NON-NLS-1$
+        wProxyPort.setToolTipText(BaseMessages.getString(PKG, "RestDialog.ProxyPort.Tooltip")); 
         props.setLook(wProxyPort);
         FormData fdProxyPort = new FormData();
         fdProxyPort.top = new FormAttachment(wProxyHost, margin);
@@ -811,7 +811,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
         // START SSLTrustStore GROUP
 
         Group gSSLTrustStore = new Group(wSSLComp, SWT.SHADOW_ETCHED_IN);
-        gSSLTrustStore.setText(BaseMessages.getString(PKG, "RestDialog.SSLTrustStoreGroup.Label")); //$NON-NLS-1$;
+        gSSLTrustStore.setText(BaseMessages.getString(PKG, "RestDialog.SSLTrustStoreGroup.Label")); ;
         FormLayout SSLTrustStoreLayout = new FormLayout();
         SSLTrustStoreLayout.marginWidth = 3;
         SSLTrustStoreLayout.marginHeight = 3;
@@ -923,7 +923,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
 		
 		
 		wlFields=new Label(wAdditionalComp, SWT.NONE);
-		wlFields.setText(BaseMessages.getString(PKG, "RestDialog.Headers.Label")); //$NON-NLS-1$
+		wlFields.setText(BaseMessages.getString(PKG, "RestDialog.Headers.Label")); 
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -932,7 +932,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
 		
 		 
 		wGetHeaders=new Button(wAdditionalComp, SWT.PUSH);
-		wGetHeaders.setText(BaseMessages.getString(PKG, "RestDialog.GetHeaders.Button")); //$NON-NLS-1$
+		wGetHeaders.setText(BaseMessages.getString(PKG, "RestDialog.GetHeaders.Button")); 
 		FormData fdGetHeaders = new FormData();
 		fdGetHeaders.top = new FormAttachment(wlFields, margin);
 		fdGetHeaders.right = new FormAttachment(100, 0);
@@ -941,8 +941,8 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
 		final int FieldsRows=input.getHeaderName().length;
 		
 		  colinf=new ColumnInfo[] { 
-		  new ColumnInfo(BaseMessages.getString(PKG, "RestDialog.ColumnInfo.Field"),       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false), //$NON-NLS-1$
-		  new ColumnInfo(BaseMessages.getString(PKG, "RestDialog.ColumnInfo.Name"),  ColumnInfo.COLUMN_TYPE_TEXT,   false) //$NON-NLS-1$
+		  new ColumnInfo(BaseMessages.getString(PKG, "RestDialog.ColumnInfo.Field"),       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false), 
+		  new ColumnInfo(BaseMessages.getString(PKG, "RestDialog.ColumnInfo.Name"),  ColumnInfo.COLUMN_TYPE_TEXT,   false) 
 		 };
 
 		colinf[1].setUsingVariables(true);
@@ -988,7 +988,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
  		props.setLook(wParametersComp);
 
  	   wlParameters=new Label(wParametersComp, SWT.NONE);
-       wlParameters.setText(BaseMessages.getString(PKG, "RestDialog.Parameters.Label")); //$NON-NLS-1$
+       wlParameters.setText(BaseMessages.getString(PKG, "RestDialog.Parameters.Label")); 
        props.setLook(wlParameters);
        fdlParameters=new FormData();
        fdlParameters.left = new FormAttachment(0, 0);
@@ -996,7 +996,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
        wlParameters.setLayoutData(fdlParameters);
         
 		wGet=new Button(wParametersComp, SWT.PUSH);
-		wGet.setText(BaseMessages.getString(PKG, "RestDialog.GetParameters.Button")); //$NON-NLS-1$
+		wGet.setText(BaseMessages.getString(PKG, "RestDialog.GetParameters.Button")); 
 		FormData fdGet = new FormData();
 		fdGet.top = new FormAttachment(wlParameters, margin);
 		fdGet.right = new FormAttachment(100, 0);
@@ -1006,7 +1006,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
 		
 		colinfoparams=new ColumnInfo[] { 
 		  new ColumnInfo(BaseMessages.getString(PKG, "RestDialog.ColumnInfo.ParameterField"),      ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
-		  new ColumnInfo(BaseMessages.getString(PKG, "RestDialog.ColumnInfo.ParameterName"),  ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
+		  new ColumnInfo(BaseMessages.getString(PKG, "RestDialog.ColumnInfo.ParameterName"),  ColumnInfo.COLUMN_TYPE_TEXT,   false), 
         };
 		
 		wParameters=new TableView(transMeta, wParametersComp, 
@@ -1084,9 +1084,9 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
         
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wTabFolder);
 
@@ -1210,7 +1210,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
    */
   public void getData() {
     if (isDebug())
-      logDebug(BaseMessages.getString(PKG, "RestDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+      logDebug(BaseMessages.getString(PKG, "RestDialog.Log.GettingKeyInfo")); 
 
     if (input.getHeaderName() != null) {
       for (int i = 0; i < input.getHeaderName().length; i++) {
@@ -1289,7 +1289,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
 		int nrparams = wParameters.nrNonEmpty();
 		input.allocate(nrheaders, nrparams);
 
-		if(isDebug()) logDebug(BaseMessages.getString(PKG, "RestDialog.Log.FoundArguments",String.valueOf(nrheaders))); //$NON-NLS-1$ //$NON-NLS-2$
+		if(isDebug()) logDebug(BaseMessages.getString(PKG, "RestDialog.Log.FoundArguments",String.valueOf(nrheaders)));  
 		for (int i=0;i<nrheaders;i++)
 		{
 			TableItem item = wFields.getNonEmpty(i);
@@ -1342,7 +1342,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
 		catch(KettleException ke)
 		{
 			new ErrorDialog(shell, BaseMessages.getString(PKG, "RestDialog.FailedToGetFields.DialogTitle"), 
-					BaseMessages.getString(PKG, "RestDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+					BaseMessages.getString(PKG, "RestDialog.FailedToGetFields.DialogMessage"), ke);  
 		}
 
 	}
@@ -1360,7 +1360,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
 		catch(KettleException ke)
 		{
 			new ErrorDialog(shell, BaseMessages.getString(PKG, "RestDialog.FailedToGetHeaders.DialogTitle"), 
-					BaseMessages.getString(PKG, "RestDialog.FailedToGetHeaders.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+					BaseMessages.getString(PKG, "RestDialog.FailedToGetHeaders.DialogMessage"), ke);  
 		}
 
 	}

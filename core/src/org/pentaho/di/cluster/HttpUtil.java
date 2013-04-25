@@ -78,18 +78,18 @@ public class HttpUtil {
       if (!StringUtils.isEmpty(webAppName)) {
         serviceAndArguments = "/" + space.environmentSubstitute(webAppName) + serviceAndArguments;
       }
-      String retval =  "http://"+realHostname+getPortSpecification(space, port)+serviceAndArguments; //$NON-NLS-1$ $NON-NLS-2$
-      retval = Const.replace(retval, " ", "%20"); //$NON-NLS-1$  //$NON-NLS-2$
+      String retval =  "http://"+realHostname+getPortSpecification(space, port)+serviceAndArguments;  
+      retval = Const.replace(retval, " ", "%20");   
       return retval;
   }
   
   public static String getPortSpecification(VariableSpace space, String port)
   {
       String realPort = space.environmentSubstitute(port);
-      String portSpec = ":"+realPort; //$NON-NLS-1$
-      if (Const.isEmpty(realPort) || port.equals("80")) //$NON-NLS-1$
+      String portSpec = ":"+realPort; 
+      if (Const.isEmpty(realPort) || port.equals("80")) 
       {
-          portSpec=""; //$NON-NLS-1$
+          portSpec=""; 
       }
       return portSpec;
   }
@@ -121,7 +121,7 @@ public class HttpUtil {
     if (StringUtils.isEmpty(webAppName)) {
       client.getState().setCredentials
             (
-              new AuthScope(space.environmentSubstitute(hostname), Const.toInt(space.environmentSubstitute(port), 80), "Kettle"), //$NON-NLS-1$
+              new AuthScope(space.environmentSubstitute(hostname), Const.toInt(space.environmentSubstitute(port), 80), "Kettle"), 
               new UsernamePasswordCredentials(space.environmentSubstitute(username), Encr.decryptPasswordOptionallyEncrypted(space.environmentSubstitute(password)))
             );
     } else {        

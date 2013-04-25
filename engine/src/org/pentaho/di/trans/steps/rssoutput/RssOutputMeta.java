@@ -719,9 +719,9 @@ public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface
 			timeInFilename  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_time"));
 			AddToResult     = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "AddToResult"));
 			
-			Node keys = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
+			Node keys = XMLHandler.getSubNode(stepnode, "fields"); 
 			// Custom Channel fields
-			int nrchannelfields    = XMLHandler.countNodes(keys, "channel_custom_fields"); //$NON-NLS-1$
+			int nrchannelfields    = XMLHandler.countNodes(keys, "channel_custom_fields"); 
 			allocate(nrchannelfields);
 
 			for (int i=0;i<nrchannelfields;i++)
@@ -731,7 +731,7 @@ public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface
 				ChannelCustomFields[i]      = XMLHandler.getTagValue(knode, "field");	
 			}
 			// Custom Item fields
-			int nritemfields    = XMLHandler.countNodes(keys, "item_custom_fields"); //$NON-NLS-1$
+			int nritemfields    = XMLHandler.countNodes(keys, "item_custom_fields"); 
 			allocateitem(nritemfields);
 
 			for (int i=0;i<nritemfields;i++)
@@ -741,8 +741,8 @@ public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface
 				ItemCustomFields[i]      = XMLHandler.getTagValue(knode, "field");	
 			}
 			// NameSpaces
-			Node keysNameSpaces = XMLHandler.getSubNode(stepnode, "namespaces"); //$NON-NLS-1$
-			int nrnamespaces    = XMLHandler.countNodes(keysNameSpaces, "namespace"); //$NON-NLS-1$
+			Node keysNameSpaces = XMLHandler.getSubNode(stepnode, "namespaces"); 
+			int nrnamespaces    = XMLHandler.countNodes(keysNameSpaces, "namespace"); 
 			allocatenamespace(nrnamespaces);
 			for (int i=0;i<nrnamespaces;i++)
 			{
@@ -793,7 +793,7 @@ public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface
 		// channel custom fields
 		for (int i=0;i<nrchannelfields;i++)
 		{
-			ChannelCustomFields[i] ="field"+i; //$NON-NLS-1$
+			ChannelCustomFields[i] ="field"+i; 
 			ChannelCustomTags[i]="tag"+i;
 		}
 		
@@ -802,7 +802,7 @@ public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface
 		// Custom Item Fields
 		for (int i=0;i<nritemfields;i++)
 		{
-			ItemCustomFields[i] ="field"+i; //$NON-NLS-1$
+			ItemCustomFields[i] ="field"+i; 
 			ItemCustomTags[i]="tag"+i;
 		}
         //  Namespaces
@@ -812,7 +812,7 @@ public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface
 		for (int i=0;i<nrnamespaces;i++)
 		{
 			NameSpacesTitle[i]="namespace_title"+i;
-			NameSpaces[i] ="namespace"+i; //$NON-NLS-1$
+			NameSpaces[i] ="namespace"+i; 
 		}
 	}
 
@@ -865,22 +865,22 @@ public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    "+XMLHandler.addTagValue("addtoresult",      AddToResult));
 		retval.append("      </file>"+Const.CR);
 		
-		retval.append("      <fields>").append(Const.CR); //$NON-NLS-1$
+		retval.append("      <fields>").append(Const.CR); 
 		for (int i=0;i<ChannelCustomFields.length;i++)
 		{
-			retval.append("        <channel_custom_fields>").append(Const.CR); //$NON-NLS-1$
+			retval.append("        <channel_custom_fields>").append(Const.CR); 
 			retval.append("          ").append(XMLHandler.addTagValue("tag",   ChannelCustomTags[i]));
-			retval.append("          ").append(XMLHandler.addTagValue("field",   ChannelCustomFields[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        </channel_custom_fields>").append(Const.CR); //$NON-NLS-1$
+			retval.append("          ").append(XMLHandler.addTagValue("field",   ChannelCustomFields[i]));  
+			retval.append("        </channel_custom_fields>").append(Const.CR); 
 		}
 		for (int i=0;i<ItemCustomFields.length;i++)
 		{
-			retval.append("        <Item_custom_fields>").append(Const.CR); //$NON-NLS-1$
+			retval.append("        <Item_custom_fields>").append(Const.CR); 
 			retval.append("          ").append(XMLHandler.addTagValue("tag",   ItemCustomTags[i]));
-			retval.append("          ").append(XMLHandler.addTagValue("field",   ItemCustomFields[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        </Item_custom_fields>").append(Const.CR); //$NON-NLS-1$
+			retval.append("          ").append(XMLHandler.addTagValue("field",   ItemCustomFields[i]));  
+			retval.append("        </Item_custom_fields>").append(Const.CR); 
 		}
-		retval.append("      </fields>").append(Const.CR); //$NON-NLS-1$
+		retval.append("      </fields>").append(Const.CR); 
 		
 
 		retval.append("      <namespaces>").append(Const.CR); 
@@ -947,30 +947,30 @@ public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface
 			createparentfolder        =      rep.getStepAttributeBoolean(id_step, "create_parent_folder");
 			AddToResult     =      rep.getStepAttributeBoolean(id_step, "addtoresult");
 			// Channel Custom
-			int nrchannel   = rep.countNrStepAttributes(id_step, "channel_custom_field"); //$NON-NLS-1$
+			int nrchannel   = rep.countNrStepAttributes(id_step, "channel_custom_field"); 
 			allocate(nrchannel);
 			for (int i=0;i<nrchannel;i++)
 			{
-				ChannelCustomTags[i]  = rep.getStepAttributeString(id_step, i, "channel_custom_tag"); //$NON-NLS-1$
-				ChannelCustomFields[i]  = rep.getStepAttributeString(id_step, i, "channel_custom_field"); //$NON-NLS-1$	
+				ChannelCustomTags[i]  = rep.getStepAttributeString(id_step, i, "channel_custom_tag"); 
+				ChannelCustomFields[i]  = rep.getStepAttributeString(id_step, i, "channel_custom_field"); 	
 			}
 			// Item Custom
-			int nritem   = rep.countNrStepAttributes(id_step, "item_custom_field"); //$NON-NLS-1$
+			int nritem   = rep.countNrStepAttributes(id_step, "item_custom_field"); 
 			allocateitem(nritem);
 			for (int i=0;i<nritem;i++)
 			{
-				ItemCustomTags[i]  = rep.getStepAttributeString(id_step, i, "item_custom_tag"); //$NON-NLS-1$
-				ItemCustomFields[i]  = rep.getStepAttributeString(id_step, i, "item_custom_field"); //$NON-NLS-1$	
+				ItemCustomTags[i]  = rep.getStepAttributeString(id_step, i, "item_custom_tag"); 
+				ItemCustomFields[i]  = rep.getStepAttributeString(id_step, i, "item_custom_field"); 	
 			}
 			
 			// Namespaces
-			int nrnamespaces   = rep.countNrStepAttributes(id_step, "namespace_tag"); //$NON-NLS-1$
+			int nrnamespaces   = rep.countNrStepAttributes(id_step, "namespace_tag"); 
 			allocatenamespace(nrnamespaces);
 
 			for (int i=0;i<nrnamespaces;i++)
 			{
-				NameSpacesTitle[i]  = rep.getStepAttributeString(id_step, i, "namespace_tag"); //$NON-NLS-1$	
-				NameSpaces[i]  = rep.getStepAttributeString(id_step, i, "namespace_value"); //$NON-NLS-1$	
+				NameSpacesTitle[i]  = rep.getStepAttributeString(id_step, i, "namespace_tag"); 	
+				NameSpaces[i]  = rep.getStepAttributeString(id_step, i, "namespace_value"); 	
 			}
 		}
 		catch(Exception e)
@@ -1030,19 +1030,19 @@ public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface
 			
 			for (int i=0;i<ChannelCustomFields.length;i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "channel_custom_field",   ChannelCustomFields[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "channel_custom_tag",      ChannelCustomTags[i]); //$NON-NLS-1$	
+				rep.saveStepAttribute(id_transformation, id_step, i, "channel_custom_field",   ChannelCustomFields[i]); 
+				rep.saveStepAttribute(id_transformation, id_step, i, "channel_custom_tag",      ChannelCustomTags[i]); 	
 			}
 			for (int i=0;i<ItemCustomFields.length;i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "item_custom_field",   ItemCustomFields[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "item_custom_tag",      ItemCustomTags[i]); //$NON-NLS-1$	
+				rep.saveStepAttribute(id_transformation, id_step, i, "item_custom_field",   ItemCustomFields[i]); 
+				rep.saveStepAttribute(id_transformation, id_step, i, "item_custom_tag",      ItemCustomTags[i]); 	
 			}
 			
 			for (int i=0;i<NameSpaces.length;i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "namespace_tag",   NameSpacesTitle[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "namespace_value",   NameSpaces[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "namespace_tag",   NameSpacesTitle[i]); 
+				rep.saveStepAttribute(id_transformation, id_step, i, "namespace_value",   NameSpaces[i]); 
 			}
 			
 		}

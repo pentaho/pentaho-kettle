@@ -417,4 +417,8 @@ public class LogWriter {
   public static Layout getLayout() {
     return layout;
   }
+  
+  public Logger getPentahoLogger() {
+    return pentahoLogger;
+  }
 }

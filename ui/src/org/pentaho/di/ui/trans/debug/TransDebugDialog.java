@@ -124,7 +124,7 @@ public class TransDebugDialog extends Dialog {
         formLayout.marginHeight = Const.FORM_MARGIN;
 
         shell.setLayout(formLayout);
-        shell.setText(BaseMessages.getString(PKG, "TransDebugDialog.Shell.Title")); //$NON-NLS-1$
+        shell.setText(BaseMessages.getString(PKG, "TransDebugDialog.Shell.Title")); 
 
         margin = Const.MARGIN;
         middle = props.getMiddlePct();

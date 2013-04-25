@@ -72,7 +72,7 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
 {
 	private static Class<?> PKG = MultiMergeJoinMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	public static final String STRING_SORT_WARNING_PARAMETER = "MergeJoinSortWarning"; //$NON-NLS-1$
+	public static final String STRING_SORT_WARNING_PARAMETER = "MergeJoinSortWarning"; 
     
 	private CCombo[]  wInputStepArray;
     private CCombo joinTypeCombo;
@@ -124,12 +124,12 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "MultiMergeJoinDialog.Shell.Label")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "MultiMergeJoinDialog.Shell.Label")); 
 		
 		//int middle = props.getMiddlePct();
 		
 		wlStepname=new Label(shell, SWT.LEFT);
-		wlStepname.setText(BaseMessages.getString(PKG, "MultiMergeJoinDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "MultiMergeJoinDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -154,9 +154,9 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, joinTypeCombo);
 
@@ -196,7 +196,7 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
 	 */
 	private void createJoinTypeWidget(final ModifyListener lsMod) {
 		Label joinTypeLabel=new Label(shell, SWT.LEFT);
-		joinTypeLabel.setText(BaseMessages.getString(PKG, "MultiMergeJoinDialog.Type.Label")); //$NON-NLS-1$
+		joinTypeLabel.setText(BaseMessages.getString(PKG, "MultiMergeJoinDialog.Type.Label")); 
  		props.setLook(joinTypeLabel);
  		FormData fdlType=new FormData();
 		fdlType.left = new FormAttachment(0, 0);
@@ -244,7 +244,7 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
 		   	FormData     fdlStep, fdStep1;
 			
 			wlStep=new Label(shell, SWT.LEFT);
-			//wlStep1.setText(+i+".Label")); //$NON-NLS-1$
+			//wlStep1.setText(+i+".Label")); 
 			wlStep.setText(BaseMessages.getString(PKG, "MultiMergeJoinMeta.InputStep")+(index+1));
 			props.setLook(wlStep);
 			fdlStep=new FormData();
@@ -360,7 +360,7 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
         int nrKeyRows = (keys!=null?keys.length:1);
         
         ciKeys=new ColumnInfo[] {
-            new ColumnInfo(BaseMessages.getString(PKG, "MultiMergeJoinDialog.ColumnInfo.KeyField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false), //$NON-NLS-1$
+            new ColumnInfo(BaseMessages.getString(PKG, "MultiMergeJoinDialog.ColumnInfo.KeyField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false), 
         };
             
         final TableView wKeys=new TableView(transMeta, subShell, 
@@ -410,7 +410,7 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
 
 
         Button getKeyButton=new Button(subShell, SWT.PUSH);
-        getKeyButton.setText(BaseMessages.getString(PKG, "MultiMergeJoinDialog.KeyFields.Button")); //$NON-NLS-1$
+        getKeyButton.setText(BaseMessages.getString(PKG, "MultiMergeJoinDialog.KeyFields.Button")); 
         FormData fdbKeys = new FormData();
         fdbKeys.top   = new FormAttachment(wKeys, margin);
         fdbKeys.left  = new FormAttachment(0, 0);
@@ -427,7 +427,7 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
         );
      // Some buttons
         Button okButton=new Button(subShell, SWT.PUSH);
-        okButton.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+        okButton.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		
 		setButtonPositions(new Button[] {okButton}, margin, getKeyButton);
 
@@ -566,21 +566,21 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
 		if (Const.isEmpty(wStepname.getText())) return;
         getMeta(joinMeta);
         // Show a warning (optional)
-        if ( "Y".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") )) //$NON-NLS-1$ //$NON-NLS-2$
+        if ( "Y".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") ))  
         {
             MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
-                 BaseMessages.getString(PKG, "MultiMergeJoinDialog.InputNeedSort.DialogTitle"),  //$NON-NLS-1$
+                 BaseMessages.getString(PKG, "MultiMergeJoinDialog.InputNeedSort.DialogTitle"),  
                  null,
-                 BaseMessages.getString(PKG, "MultiMergeJoinDialog.InputNeedSort.DialogMessage", Const.CR )+Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
+                 BaseMessages.getString(PKG, "MultiMergeJoinDialog.InputNeedSort.DialogMessage", Const.CR )+Const.CR,  
                  MessageDialog.WARNING,
-                 new String[] { BaseMessages.getString(PKG, "MultiMergeJoinDialog.InputNeedSort.Option1") }, //$NON-NLS-1$
+                 new String[] { BaseMessages.getString(PKG, "MultiMergeJoinDialog.InputNeedSort.Option1") }, 
                  0,
-                 BaseMessages.getString(PKG, "MultiMergeJoinDialog.InputNeedSort.Option2"), //$NON-NLS-1$
-                 "N".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") ) //$NON-NLS-1$ //$NON-NLS-2$
+                 BaseMessages.getString(PKG, "MultiMergeJoinDialog.InputNeedSort.Option2"), 
+                 "N".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") )  
             );
             MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
             md.open();
-            props.setCustomParameter(STRING_SORT_WARNING_PARAMETER, md.getToggleState()?"N":"Y"); //$NON-NLS-1$ //$NON-NLS-2$
+            props.setCustomParameter(STRING_SORT_WARNING_PARAMETER, md.getToggleState()?"N":"Y");  
             props.saveProps();
         }
         stepname = wStepname.getText(); // return value

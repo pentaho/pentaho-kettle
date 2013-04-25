@@ -121,7 +121,7 @@ public class FlattenerMeta extends BaseStepMeta implements StepMetaInterface
         {
             int idx = row.indexOfValue(fieldName);
             if (idx < 0) { 
-            	throw new KettleStepException(BaseMessages.getString(PKG, "FlattenerMeta.Exception.UnableToLocateFieldInInputFields", fieldName )); //$NON-NLS-1$ //$NON-NLS-2$ 
+            	throw new KettleStepException(BaseMessages.getString(PKG, "FlattenerMeta.Exception.UnableToLocateFieldInInputFields", fieldName ));   
             } 
             
             ValueMetaInterface v = row.getValueMeta(idx);
@@ -138,7 +138,7 @@ public class FlattenerMeta extends BaseStepMeta implements StepMetaInterface
         }
         else
         {
-            throw new KettleStepException(BaseMessages.getString(PKG, "FlattenerMeta.Exception.FlattenFieldRequired")); //$NON-NLS-1$
+            throw new KettleStepException(BaseMessages.getString(PKG, "FlattenerMeta.Exception.FlattenFieldRequired")); 
         }
     }
 
@@ -146,22 +146,22 @@ public class FlattenerMeta extends BaseStepMeta implements StepMetaInterface
     {
         try
         {
-            fieldName = XMLHandler.getTagValue(stepnode, "field_name"); //$NON-NLS-1$
+            fieldName = XMLHandler.getTagValue(stepnode, "field_name"); 
 
-            Node fields = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
-            int nrfields = XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
+            Node fields = XMLHandler.getSubNode(stepnode, "fields"); 
+            int nrfields = XMLHandler.countNodes(fields, "field"); 
 
             allocate(nrfields);
 
             for (int i = 0; i < nrfields; i++)
             {
-                Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
-                targetField[i] = XMLHandler.getTagValue(fnode, "name"); //$NON-NLS-1$
+                Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); 
+                targetField[i] = XMLHandler.getTagValue(fnode, "name"); 
             }
         }
         catch (Exception e)
         {
-            throw new KettleXMLException(BaseMessages.getString(PKG, "FlattenerMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
+            throw new KettleXMLException(BaseMessages.getString(PKG, "FlattenerMeta.Exception.UnableToLoadStepInfoFromXML"), e); 
         }
     }
 
@@ -169,16 +169,16 @@ public class FlattenerMeta extends BaseStepMeta implements StepMetaInterface
     {
         StringBuffer retval = new StringBuffer();
 
-        retval.append("      " + XMLHandler.addTagValue("field_name", fieldName)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      " + XMLHandler.addTagValue("field_name", fieldName));  
 
-        retval.append("      <fields>" + Const.CR); //$NON-NLS-1$
+        retval.append("      <fields>" + Const.CR); 
         for (int i = 0; i < targetField.length; i++)
         {
-            retval.append("        <field>" + Const.CR); //$NON-NLS-1$
-            retval.append("          " + XMLHandler.addTagValue("name", targetField[i])); //$NON-NLS-1$ //$NON-NLS-2$
-            retval.append("          </field>" + Const.CR); //$NON-NLS-1$
+            retval.append("        <field>" + Const.CR); 
+            retval.append("          " + XMLHandler.addTagValue("name", targetField[i]));  
+            retval.append("          </field>" + Const.CR); 
         }
-        retval.append("        </fields>" + Const.CR); //$NON-NLS-1$
+        retval.append("        </fields>" + Const.CR); 
 
         return retval.toString();
     }
@@ -187,20 +187,20 @@ public class FlattenerMeta extends BaseStepMeta implements StepMetaInterface
 
     	try
         {
-            fieldName = rep.getStepAttributeString(id_step, "field_name"); //$NON-NLS-1$
+            fieldName = rep.getStepAttributeString(id_step, "field_name"); 
 
-            int nrvalues = rep.countNrStepAttributes(id_step, "target_field"); //$NON-NLS-1$
+            int nrvalues = rep.countNrStepAttributes(id_step, "target_field"); 
 
             allocate(nrvalues);
 
             for (int i = 0; i < nrvalues; i++)
             {
-                targetField[i] = rep.getStepAttributeString(id_step, i, "target_field"); //$NON-NLS-1$
+                targetField[i] = rep.getStepAttributeString(id_step, i, "target_field"); 
             }
         }
         catch (Exception e)
         {
-            throw new KettleException(BaseMessages.getString(PKG, "FlattenerMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository"), e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "FlattenerMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository"), e); 
         }
     }
 
@@ -208,16 +208,16 @@ public class FlattenerMeta extends BaseStepMeta implements StepMetaInterface
     {
         try
         {
-            rep.saveStepAttribute(id_transformation, id_step, "field_name", fieldName); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "field_name", fieldName); 
 
             for (int i = 0; i < targetField.length; i++)
             {
-                rep.saveStepAttribute(id_transformation, id_step, i, "target_field", targetField[i]); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "target_field", targetField[i]); 
             }
         }
         catch (Exception e)
         {
-            throw new KettleException(BaseMessages.getString(PKG, "FlattenerMeta.Exception.UnableToSaveStepInfoToRepository") + id_step, e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "FlattenerMeta.Exception.UnableToSaveStepInfoToRepository") + id_step, e); 
         }
     }
     
@@ -227,12 +227,12 @@ public class FlattenerMeta extends BaseStepMeta implements StepMetaInterface
 
         if (input.length > 0)
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FlattenerMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FlattenerMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepMeta); 
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "FlattenerMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "FlattenerMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepMeta); 
             remarks.add(cr);
         }
     }

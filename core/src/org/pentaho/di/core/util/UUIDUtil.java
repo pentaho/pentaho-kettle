@@ -45,10 +45,10 @@ public class UUIDUtil {
         // using another method for generating UUID's.
         /*
          * This is always going to fail at the moment try {
-         * System.loadLibrary("EthernetAddress"); //$NON-NLS-1$
+         * System.loadLibrary("EthernetAddress"); 
          * nativeInitialized = true; } catch (Throwable t) { //
          * log.warn(BaseMessages.getString(PKG, "UUIDUtil.ERROR_0001_LOADING_ETHERNET_ADDRESS") );
-         * //$NON-NLS-1$ //$NON-NLS-2$ // Ignore for now. }
+         *   // Ignore for now. }
          */
         ug = UUIDGenerator.getInstance();
         if (nativeInitialized) {
@@ -56,9 +56,9 @@ public class UUIDUtil {
                 com.ccg.net.ethernet.EthernetAddress ea = com.ccg.net.ethernet.EthernetAddress.getPrimaryAdapter();
                 eAddr = new org.safehaus.uuid.EthernetAddress(ea.getBytes());
             } catch (Exception ex) {
-                log.error(BaseMessages.getString(PKG, "UUIDUtil.ERROR_0002_GET_MAC_ADDR"), ex); //$NON-NLS-1$
+                log.error(BaseMessages.getString(PKG, "UUIDUtil.ERROR_0002_GET_MAC_ADDR"), ex); 
             } catch (UnsatisfiedLinkError ule) {
-                log.error(BaseMessages.getString(PKG, "UUIDUtil.ERROR_0002_GET_MAC_ADDR"), ule); //$NON-NLS-1$
+                log.error(BaseMessages.getString(PKG, "UUIDUtil.ERROR_0002_GET_MAC_ADDR"), ule); 
                 nativeInitialized = false;
             }
         }
@@ -68,7 +68,7 @@ public class UUIDUtil {
          * running server can be added to the environment with a -DMAC_ADDRESS=00:50:56:C0:00:01
          */
         if (eAddr == null) {
-          String macAddr = System.getProperty("MAC_ADDRESS"); //$NON-NLS-1$
+          String macAddr = System.getProperty("MAC_ADDRESS"); 
           if (macAddr != null) {
             // On Windows machines, people would be inclined to get the MAC
             // address with ipconfig /all. The format of this would be
@@ -88,7 +88,7 @@ public class UUIDUtil {
         // Generate a UUID to make sure everything is running OK.
         UUID olduuId = ug.generateTimeBasedUUID(eAddr);
         if (olduuId == null) {
-          log.error(BaseMessages.getString(PKG, "UUIDUtil.ERROR_0003_GENERATEFAILED")); //$NON-NLS-1$
+          log.error(BaseMessages.getString(PKG, "UUIDUtil.ERROR_0003_GENERATEFAILED")); 
         }
 
     }

@@ -103,7 +103,7 @@ public class JobEntryFolderIsEmptyDialog extends JobEntryDialog implements JobEn
 		super(parent, jobEntryInt, rep, jobMeta);
 		jobEntry = (JobEntryFolderIsEmpty) jobEntryInt;
 		if (this.jobEntry.getName() == null)
-			this.jobEntry.setName(BaseMessages.getString(PKG, "JobFolderIsEmpty.Name.Default")); //$NON-NLS-1$
+			this.jobEntry.setName(BaseMessages.getString(PKG, "JobFolderIsEmpty.Name.Default")); 
 	}
 
 	public JobEntryInterface open()

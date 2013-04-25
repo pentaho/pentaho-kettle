@@ -82,8 +82,8 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface
         StringBuilder retval = new StringBuilder();
 
         List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
-		retval.append(XMLHandler.addTagValue("head_name", infoStreams.get(0).getStepname()));	//$NON-NLS-1$
-		retval.append(XMLHandler.addTagValue("tail_name", infoStreams.get(1).getStepname()));	//$NON-NLS-1$
+		retval.append(XMLHandler.addTagValue("head_name", infoStreams.get(0).getStepname()));	
+		retval.append(XMLHandler.addTagValue("tail_name", infoStreams.get(1).getStepname()));	
 
 		return retval.toString();
 	}
@@ -96,12 +96,12 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface
             List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
             StreamInterface headStream = infoStreams.get(0);
             StreamInterface tailStream = infoStreams.get(1);
-			headStream.setSubject( XMLHandler.getTagValue(stepnode, "head_name") );  //$NON-NLS-1$
-			tailStream.setSubject( XMLHandler.getTagValue(stepnode, "tail_name") );  //$NON-NLS-1$			
+			headStream.setSubject( XMLHandler.getTagValue(stepnode, "head_name") );  
+			tailStream.setSubject( XMLHandler.getTagValue(stepnode, "tail_name") );  			
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "AppendMeta.Exception.UnableToLoadStepInfo"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "AppendMeta.Exception.UnableToLoadStepInfo"), e); 
 		}
 	}
 	
@@ -117,12 +117,12 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface
             List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
             StreamInterface headStream = infoStreams.get(0);
             StreamInterface tailStream = infoStreams.get(1);
-            headStream.setSubject( rep.getStepAttributeString (id_step, "head_name") );  //$NON-NLS-1$
-            tailStream.setSubject( rep.getStepAttributeString (id_step, "tail_name") );  //$NON-NLS-1$
+            headStream.setSubject( rep.getStepAttributeString (id_step, "head_name") );  
+            tailStream.setSubject( rep.getStepAttributeString (id_step, "tail_name") );  
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "AppendMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "AppendMeta.Exception.UnexpectedErrorReadingStepInfo"), e); 
 		}
 	}
 
@@ -133,12 +133,12 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface
             List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
             StreamInterface headStream = infoStreams.get(0);
             StreamInterface tailStream = infoStreams.get(1);
-			rep.saveStepAttribute(id_transformation, id_step, "head_name", headStream.getStepname()); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "tail_name", tailStream.getStepname()); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "head_name", headStream.getStepname()); 
+			rep.saveStepAttribute(id_transformation, id_step, "tail_name", tailStream.getStepname()); 
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "AppendMeta.Exception.UnableToSaveStepInfo")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "AppendMeta.Exception.UnableToSaveStepInfo")+id_step, e); 
 		}
 	}
 	

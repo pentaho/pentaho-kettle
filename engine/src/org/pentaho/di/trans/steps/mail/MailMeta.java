@@ -217,18 +217,18 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
       setZipFilename(XMLHandler.getTagValue(stepnode, "zip_name"));
       setZipLimitSize(XMLHandler.getTagValue(stepnode, "zip_limit_size"));
       
-      Node images = XMLHandler.getSubNode(stepnode, "embeddedimages"); //$NON-NLS-1$
+      Node images = XMLHandler.getSubNode(stepnode, "embeddedimages"); 
       // How many field embedded images ?
-      int nrImages = XMLHandler.countNodes(images, "embeddedimage"); //$NON-NLS-1$
+      int nrImages = XMLHandler.countNodes(images, "embeddedimage"); 
       
       allocate(nrImages);
 
       // Read them all...
       for (int i = 0; i < nrImages; i++) {
-        Node fnode = XMLHandler.getSubNodeByNr(images, "embeddedimage", i); //$NON-NLS-1$
+        Node fnode = XMLHandler.getSubNodeByNr(images, "embeddedimage", i); 
 
-        embeddedimages[i] = XMLHandler.getTagValue(fnode, "image_name"); //$NON-NLS-1$
-        contentids[i] = XMLHandler.getTagValue(fnode, "content_id"); //$NON-NLS-1$
+        embeddedimages[i] = XMLHandler.getTagValue(fnode, "image_name"); 
+        contentids[i] = XMLHandler.getTagValue(fnode, "content_id"); 
       }
   }
 	 public void setEmbeddedImage(int i, String value)
@@ -290,16 +290,16 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 	    retval.append("    " + XMLHandler.addTagValue("sensitivity", this.sensitivity));
 	    retval.append("    " + XMLHandler.addTagValue("secureconnectiontype", this.secureconnectiontype));
 	    
-	    retval.append("      <embeddedimages>").append(Const.CR); //$NON-NLS-1$
+	    retval.append("      <embeddedimages>").append(Const.CR); 
 	    if (embeddedimages != null) {
 	      for (int i = 0; i < embeddedimages.length; i++) {
-	        retval.append("        <embeddedimage>").append(Const.CR); //$NON-NLS-1$
-	        retval.append("          ").append(XMLHandler.addTagValue("image_name", embeddedimages[i])); //$NON-NLS-1$ //$NON-NLS-2$
-	        retval.append("          ").append(XMLHandler.addTagValue("content_id", contentids[i])); //$NON-NLS-1$ //$NON-NLS-2$
-	        retval.append("        </embeddedimage>").append(Const.CR); //$NON-NLS-1$
+	        retval.append("        <embeddedimage>").append(Const.CR); 
+	        retval.append("          ").append(XMLHandler.addTagValue("image_name", embeddedimages[i]));  
+	        retval.append("          ").append(XMLHandler.addTagValue("content_id", contentids[i]));  
+	        retval.append("        </embeddedimage>").append(Const.CR); 
 	      }
 	    }
-	    retval.append("      </embeddedimages>").append(Const.CR); //$NON-NLS-1$
+	    retval.append("      </embeddedimages>").append(Const.CR); 
 
 
 	    return retval.toString();
@@ -863,14 +863,14 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 		      
 		      
 		      // How many arguments?
-		      int imagesnr = rep.countNrStepAttributes(id_step, "embeddedimage"); //$NON-NLS-1$
+		      int imagesnr = rep.countNrStepAttributes(id_step, "embeddedimage"); 
 		      
 		      allocate(imagesnr);
 
 		      // Read them all...
 		      for (int a = 0; a < imagesnr; a++) {
-		    	  embeddedimages[a] = rep.getStepAttributeString(id_step, a, "embeddedimage"); //$NON-NLS-1$
-		    	  contentids[a] = rep.getStepAttributeString(id_step, a, "contentid"); //$NON-NLS-1$
+		    	  embeddedimages[a] = rep.getStepAttributeString(id_step, a, "embeddedimage"); 
+		    	  contentids[a] = rep.getStepAttributeString(id_step, a, "contentid"); 
 		      }
 		      
 		    } catch (KettleDatabaseException dbe)
@@ -939,8 +939,8 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 	      // save the arguments...
 	      if (embeddedimages != null) {
 	        for (int i = 0; i < embeddedimages.length; i++) {
-	          rep.saveStepAttribute(id_transformation, id_step, i, "embeddedimage", embeddedimages[i]); //$NON-NLS-1$
-	          rep.saveStepAttribute(id_transformation, id_step, i, "contentid", contentids[i]); //$NON-NLS-1$
+	          rep.saveStepAttribute(id_transformation, id_step, i, "embeddedimage", embeddedimages[i]); 
+	          rep.saveStepAttribute(id_transformation, id_step, i, "contentid", contentids[i]); 
 	        }
 	      }
 	    } catch (KettleDatabaseException dbe)
@@ -953,17 +953,17 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{	CheckResult cr;
 		if (prev==null || prev.size()==0)
-			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "MailMeta.CheckResult.NotReceivingFields"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "MailMeta.CheckResult.NotReceivingFields"), stepMeta); 
 		else
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MailMeta.CheckResult.StepRecevingData",prev.size()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MailMeta.CheckResult.StepRecevingData",prev.size()+""), stepMeta);  
 		remarks.add(cr);
 		
 		
 		// See if we have input streams leading to this step!
 		if (input.length>0)
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MailMeta.CheckResult.StepRecevingData2"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MailMeta.CheckResult.StepRecevingData2"), stepMeta); 
 		else
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "MailMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "MailMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepMeta); 
 		remarks.add(cr);
 		
 		// Servername

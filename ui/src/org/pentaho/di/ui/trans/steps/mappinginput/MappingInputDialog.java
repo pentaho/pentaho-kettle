@@ -94,14 +94,14 @@ public class MappingInputDialog extends BaseStepDialog implements StepDialogInte
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "MappingInputDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "MappingInputDialog.Shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "MappingInputDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "MappingInputDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -121,9 +121,9 @@ public class MappingInputDialog extends BaseStepDialog implements StepDialogInte
 		// Some buttons
 		//
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 
 		// The check box to pass through and sort unspecified fields...
@@ -145,7 +145,7 @@ public class MappingInputDialog extends BaseStepDialog implements StepDialogInte
 		// The grid goes in between the step name and the check box...
 		//
         wlFields=new Label(shell, SWT.NONE);
-        wlFields.setText(BaseMessages.getString(PKG, "MappingInputDialog.Fields.Label")); //$NON-NLS-1$
+        wlFields.setText(BaseMessages.getString(PKG, "MappingInputDialog.Fields.Label")); 
         props.setLook(wlFields);
         fdlFields=new FormData();
         fdlFields.left = new FormAttachment(0, 0);
@@ -156,10 +156,10 @@ public class MappingInputDialog extends BaseStepDialog implements StepDialogInte
         
         ColumnInfo[] colinf=new ColumnInfo[]
             {
-                new ColumnInfo(BaseMessages.getString(PKG, "MappingInputDialog.ColumnInfo.Name"),       ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
-                new ColumnInfo(BaseMessages.getString(PKG, "MappingInputDialog.ColumnInfo.Type"),       ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ), //$NON-NLS-1$
-                new ColumnInfo(BaseMessages.getString(PKG, "MappingInputDialog.ColumnInfo.Length"),     ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
-                new ColumnInfo(BaseMessages.getString(PKG, "MappingInputDialog.ColumnInfo.Precision"),  ColumnInfo.COLUMN_TYPE_TEXT,   false) //$NON-NLS-1$
+                new ColumnInfo(BaseMessages.getString(PKG, "MappingInputDialog.ColumnInfo.Name"),       ColumnInfo.COLUMN_TYPE_TEXT,   false), 
+                new ColumnInfo(BaseMessages.getString(PKG, "MappingInputDialog.ColumnInfo.Type"),       ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ), 
+                new ColumnInfo(BaseMessages.getString(PKG, "MappingInputDialog.ColumnInfo.Length"),     ColumnInfo.COLUMN_TYPE_TEXT,   false), 
+                new ColumnInfo(BaseMessages.getString(PKG, "MappingInputDialog.ColumnInfo.Precision"),  ColumnInfo.COLUMN_TYPE_TEXT,   false) 
             };
         
         wFields=new TableView(transMeta, shell, 
@@ -222,9 +222,9 @@ public class MappingInputDialog extends BaseStepDialog implements StepDialogInte
         if (type != null)
           item.setText(2, type);
         if (length >= 0)
-          item.setText(3, "" + length); //$NON-NLS-1$
+          item.setText(3, "" + length); 
         if (prec >= 0)
-          item.setText(4, "" + prec); //$NON-NLS-1$
+          item.setText(4, "" + prec); 
       }
     }
     wUnspecified.setSelection(input.isSelectingAndSortingUnspecifiedFields());

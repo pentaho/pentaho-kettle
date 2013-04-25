@@ -192,14 +192,14 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -224,7 +224,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		
         // Schema line...
         wlSchema=new Label(shell, SWT.RIGHT);
-        wlSchema.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.TargetSchema.Label")); //$NON-NLS-1$
+        wlSchema.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.TargetSchema.Label")); 
         props.setLook(wlSchema);
         fdlSchema=new FormData();
         fdlSchema.left = new FormAttachment(0, 0);
@@ -251,7 +251,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 
 		// Table line...
 		wlTable=new Label(shell, SWT.RIGHT);
-		wlTable.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.Lookuptable.Label")); //$NON-NLS-1$
+		wlTable.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.Lookuptable.Label")); 
  		props.setLook(wlTable);
 		fdlTable=new FormData();
 		fdlTable.left = new FormAttachment(0, 0);
@@ -261,7 +261,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 
 		wbTable=new Button(shell, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbTable);
-		wbTable.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.Browse.Button")); //$NON-NLS-1$
+		wbTable.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.Browse.Button")); 
 		fdbTable=new FormData();
 		fdbTable.right= new FormAttachment(100, 0);
 		fdbTable.top  = new FormAttachment(wbSchema, margin);
@@ -278,7 +278,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 
 		// Cache?
 		wlCache=new Label(shell, SWT.RIGHT);
-		wlCache.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.Cache.Label")); //$NON-NLS-1$
+		wlCache.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.Cache.Label")); 
  		props.setLook(wlCache);
 		fdlCache=new FormData();
 		fdlCache.left = new FormAttachment(0, 0);
@@ -303,7 +303,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 
 		// Cache size line
 		wlCachesize=new Label(shell, SWT.RIGHT);
-		wlCachesize.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.Cachesize.Label")); //$NON-NLS-1$
+		wlCachesize.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.Cachesize.Label")); 
  		props.setLook(wlCachesize);
 		wlCachesize.setEnabled(input.isCached());
 		fdlCachesize=new FormData();
@@ -323,7 +323,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 
 		// Cache : Load all?
 		wlCacheLoadAll=new Label(shell, SWT.RIGHT);
-		wlCacheLoadAll.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.CacheLoadAll.Label")); //$NON-NLS-1$
+		wlCacheLoadAll.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.CacheLoadAll.Label")); 
  		props.setLook(wlCacheLoadAll);
 		fdlCacheLoadAll=new FormData();
 		fdlCacheLoadAll.left = new FormAttachment(0, 0);
@@ -348,7 +348,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 
 
 		wlKey=new Label(shell, SWT.NONE);
-		wlKey.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.Keys.Label")); //$NON-NLS-1$
+		wlKey.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.Keys.Label")); 
  		props.setLook(wlKey);
 		fdlKey=new FormData();
 		fdlKey.left  = new FormAttachment(0, 0);
@@ -359,10 +359,10 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		int nrKeyRows=(input.getStreamKeyField1()!=null?input.getStreamKeyField1().length:1);
 
 		ColumnInfo[] ciKey=new ColumnInfo[nrKeyCols];
-		ciKey[0]=new ColumnInfo(BaseMessages.getString(PKG, "DatabaseLookupDialog.ColumnInfo.Tablefield"),   ColumnInfo.COLUMN_TYPE_CCOMBO, new String[]{""},  false); //$NON-NLS-1$
+		ciKey[0]=new ColumnInfo(BaseMessages.getString(PKG, "DatabaseLookupDialog.ColumnInfo.Tablefield"),   ColumnInfo.COLUMN_TYPE_CCOMBO, new String[]{""},  false); 
 		ciKey[1]=new ColumnInfo(BaseMessages.getString(PKG, "DatabaseLookupDialog.ColumnInfo.Comparator"),   ColumnInfo.COLUMN_TYPE_CCOMBO, DatabaseLookupMeta.conditionStrings);
-		ciKey[2]=new ColumnInfo(BaseMessages.getString(PKG, "DatabaseLookupDialog.ColumnInfo.Field1"),       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[]{""},   false); //$NON-NLS-1$
-		ciKey[3]=new ColumnInfo(BaseMessages.getString(PKG, "DatabaseLookupDialog.ColumnInfo.Field2"),       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[]{""},   false); //$NON-NLS-1$
+		ciKey[2]=new ColumnInfo(BaseMessages.getString(PKG, "DatabaseLookupDialog.ColumnInfo.Field1"),       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[]{""},   false); 
+		ciKey[3]=new ColumnInfo(BaseMessages.getString(PKG, "DatabaseLookupDialog.ColumnInfo.Field2"),       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[]{""},   false); 
 		tableFieldColumns.add(ciKey[0]);
 		fieldColumns.add(ciKey[2]);
 		fieldColumns.add(ciKey[3]);
@@ -383,19 +383,19 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wGet=new Button(shell, SWT.PUSH);
-		wGet.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.GetFields.Button")); //$NON-NLS-1$
+		wGet.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.GetFields.Button")); 
 		wGetLU=new Button(shell, SWT.PUSH);
-		wGetLU.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.GetLookupFields.Button")); //$NON-NLS-1$
+		wGetLU.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.GetLookupFields.Button")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel , wGet, wGetLU}, margin, null);
 
 		// OderBy line
 		wlOrderBy=new Label(shell, SWT.RIGHT);
-		wlOrderBy.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.Orderby.Label")); //$NON-NLS-1$
+		wlOrderBy.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.Orderby.Label")); 
  		props.setLook(wlOrderBy);
 		fdlOrderBy=new FormData();
 		fdlOrderBy.left   = new FormAttachment(0, 0);
@@ -413,7 +413,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 
         // FailMultiple?
         wlFailMultiple=new Label(shell, SWT.RIGHT);
-        wlFailMultiple.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.FailMultiple.Label")); //$NON-NLS-1$
+        wlFailMultiple.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.FailMultiple.Label")); 
         props.setLook(wlFailMultiple);
         fdlFailMultiple=new FormData();
         fdlFailMultiple.left   = new FormAttachment(0, 0);
@@ -438,7 +438,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 
         // EatRows?
         wlEatRows=new Label(shell, SWT.RIGHT);
-        wlEatRows.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.EatRows.Label")); //$NON-NLS-1$
+        wlEatRows.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.EatRows.Label")); 
         props.setLook(wlEatRows);
         fdlEatRows=new FormData();
         fdlEatRows.left   = new FormAttachment(0, 0);
@@ -464,7 +464,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
         
         // THE UPDATE/INSERT TABLE
         wlReturn=new Label(shell, SWT.NONE);
-        wlReturn.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.Return.Label")); //$NON-NLS-1$
+        wlReturn.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.Return.Label")); 
         props.setLook(wlReturn);
         fdlReturn=new FormData();
         fdlReturn.left  = new FormAttachment(0, 0);
@@ -475,10 +475,10 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
         int UpInsRows= (input.getReturnValueField()!=null?input.getReturnValueField().length:1);
         
         ColumnInfo[] ciReturn=new ColumnInfo[UpInsCols];
-        ciReturn[0]=new ColumnInfo(BaseMessages.getString(PKG, "DatabaseLookupDialog.ColumnInfo.Field"),    ColumnInfo.COLUMN_TYPE_CCOMBO,new String[]{},  false); //$NON-NLS-1$
-        ciReturn[1]=new ColumnInfo(BaseMessages.getString(PKG, "DatabaseLookupDialog.ColumnInfo.Newname"), ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-        ciReturn[2]=new ColumnInfo(BaseMessages.getString(PKG, "DatabaseLookupDialog.ColumnInfo.Default"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-        ciReturn[3]=new ColumnInfo(BaseMessages.getString(PKG, "DatabaseLookupDialog.ColumnInfo.Type"),     ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes()); //$NON-NLS-1$
+        ciReturn[0]=new ColumnInfo(BaseMessages.getString(PKG, "DatabaseLookupDialog.ColumnInfo.Field"),    ColumnInfo.COLUMN_TYPE_CCOMBO,new String[]{},  false); 
+        ciReturn[1]=new ColumnInfo(BaseMessages.getString(PKG, "DatabaseLookupDialog.ColumnInfo.Newname"), ColumnInfo.COLUMN_TYPE_TEXT,   false); 
+        ciReturn[2]=new ColumnInfo(BaseMessages.getString(PKG, "DatabaseLookupDialog.ColumnInfo.Default"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); 
+        ciReturn[3]=new ColumnInfo(BaseMessages.getString(PKG, "DatabaseLookupDialog.ColumnInfo.Type"),     ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes()); 
         tableFieldColumns.add(ciReturn[0]);
         
         wReturn=new TableView(transMeta, shell, 
@@ -639,10 +639,10 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
   * Copy information from the meta-data input to the dialog fields.
   */
   public void getData() {
-    logDebug(BaseMessages.getString(PKG, "DatabaseLookupDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+    logDebug(BaseMessages.getString(PKG, "DatabaseLookupDialog.Log.GettingKeyInfo")); 
 
     wCache.setSelection(input.isCached());
-    wCachesize.setText("" + input.getCacheSize()); //$NON-NLS-1$
+    wCachesize.setText("" + input.getCacheSize()); 
     wCacheLoadAll.setSelection(input.isLoadingAllDataInCache());
 
     if (input.getStreamKeyField1() != null)
@@ -717,7 +717,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		input.setCacheSize( Const.toInt(wCachesize.getText(), 0) );
 		input.setLoadingAllDataInCache( wCacheLoadAll.getSelection() );
 		
-		logDebug(BaseMessages.getString(PKG, "DatabaseLookupDialog.Log.FoundKeys",String.valueOf(nrkeys))); //$NON-NLS-1$ //$NON-NLS-2$
+		logDebug(BaseMessages.getString(PKG, "DatabaseLookupDialog.Log.FoundKeys",String.valueOf(nrkeys)));  
 		for (int i=0;i<nrkeys;i++)
 		{
 			TableItem item = wKey.getNonEmpty(i);
@@ -727,7 +727,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 			input.getStreamKeyField2()[i]  = item.getText(4);
 		}
 
-		logDebug(BaseMessages.getString(PKG, "DatabaseLookupDialog.Log.FoundFields",String.valueOf(nrfields))); //$NON-NLS-1$ //$NON-NLS-2$
+		logDebug(BaseMessages.getString(PKG, "DatabaseLookupDialog.Log.FoundFields",String.valueOf(nrfields)));  
 		for (int i=0;i<nrfields;i++)
 		{
 			TableItem item        = wReturn.getNonEmpty(i);
@@ -757,8 +757,8 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		if (transMeta.findDatabase(wConnection.getText())==null)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(BaseMessages.getString(PKG, "DatabaseLookupDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
-			mb.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "DatabaseLookupDialog.InvalidConnection.DialogMessage")); 
+			mb.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.InvalidConnection.DialogTitle")); 
 			mb.open();
 		}
 		
@@ -774,7 +774,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		
 		if (inf!=null)
 		{
-			if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "DatabaseLookupDialog.Log.LookingAtConnection")+inf.toString()); //$NON-NLS-1$
+			if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "DatabaseLookupDialog.Log.LookingAtConnection")+inf.toString()); 
 		
 			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, transMeta.getDatabases());
       std.setSelectedSchemaAndTable(wSchema.getText(), wTable.getText());
@@ -788,8 +788,8 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		else
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(BaseMessages.getString(PKG, "DatabaseLookupDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
-			mb.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "DatabaseLookupDialog.InvalidConnection.DialogMessage")); 
+			mb.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.InvalidConnection.DialogTitle")); 
 			mb.open(); 
 		}
 	}
@@ -814,7 +814,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "DatabaseLookupDialog.GetFieldsFailed.DialogTitle"), BaseMessages.getString(PKG, "DatabaseLookupDialog.GetFieldsFailed.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "DatabaseLookupDialog.GetFieldsFailed.DialogTitle"), BaseMessages.getString(PKG, "DatabaseLookupDialog.GetFieldsFailed.DialogMessage"), ke);  
 		}
 
 	}
@@ -836,14 +836,14 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
                     RowMetaInterface r = db.getTableFields(schemaTable);
 					if (r!=null && !r.isEmpty())
 					{
-                        logDebug(BaseMessages.getString(PKG, "DatabaseLookupDialog.Log.FoundTableFields")+schemaTable+" --> "+r.toStringMeta()); //$NON-NLS-1$ //$NON-NLS-2$
+                        logDebug(BaseMessages.getString(PKG, "DatabaseLookupDialog.Log.FoundTableFields")+schemaTable+" --> "+r.toStringMeta());  
                         BaseStepDialog.getFieldsFromPrevious(r, wReturn, 1, new int[] { 1, 2}, new int[] { 4 }, -1, -1, null);
 					}
 					else
 					{
 						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-						mb.setMessage(BaseMessages.getString(PKG, "DatabaseLookupDialog.CouldNotReadTableInfo.DialogMessage")); //$NON-NLS-1$
-						mb.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.CouldNotReadTableInfo.DialogTitle")); //$NON-NLS-1$
+						mb.setMessage(BaseMessages.getString(PKG, "DatabaseLookupDialog.CouldNotReadTableInfo.DialogMessage")); 
+						mb.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.CouldNotReadTableInfo.DialogTitle")); 
 						mb.open(); 
 					}
 				}
@@ -851,16 +851,16 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 			catch(KettleException e)
 			{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage(BaseMessages.getString(PKG, "DatabaseLookupDialog.ErrorOccurred.DialogMessage")+Const.CR+e.getMessage()); //$NON-NLS-1$
-				mb.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.ErrorOccurred.DialogTitle")); //$NON-NLS-1$
+				mb.setMessage(BaseMessages.getString(PKG, "DatabaseLookupDialog.ErrorOccurred.DialogMessage")+Const.CR+e.getMessage()); 
+				mb.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.ErrorOccurred.DialogTitle")); 
 				mb.open(); 
 			}
 		}
 		else
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(BaseMessages.getString(PKG, "DatabaseLookupDialog.InvalidConnectionName.DialogMessage")); //$NON-NLS-1$
-			mb.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.InvalidConnectionName.DialogTitle")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "DatabaseLookupDialog.InvalidConnectionName.DialogMessage")); 
+			mb.setText(BaseMessages.getString(PKG, "DatabaseLookupDialog.InvalidConnectionName.DialogTitle")); 
 			mb.open(); 
 		}
 	}

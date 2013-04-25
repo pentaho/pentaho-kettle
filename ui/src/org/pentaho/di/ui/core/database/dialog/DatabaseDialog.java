@@ -119,7 +119,7 @@ public class DatabaseDialog extends XulDatabaseDialog
         	//
         	String reportMessage = dbinfo.testConnection();
 
-        	EnterTextDialog dialog = new EnterTextDialog(shell, BaseMessages.getString(PKG, "DatabaseDialog.ConnectionReport.title"), BaseMessages.getString(PKG, "DatabaseDialog.ConnectionReport.description"), reportMessage.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+        	EnterTextDialog dialog = new EnterTextDialog(shell, BaseMessages.getString(PKG, "DatabaseDialog.ConnectionReport.title"), BaseMessages.getString(PKG, "DatabaseDialog.ConnectionReport.description"), reportMessage.toString());  
             dialog.setReadOnly();
             dialog.setFixed(true);
             dialog.setModal();
@@ -127,13 +127,13 @@ public class DatabaseDialog extends XulDatabaseDialog
         }
         else
         {
-            String message = ""; //$NON-NLS-1$
+            String message = ""; 
             for (int i = 0; i < remarks.length; i++)
-                message += "    * " + remarks[i] + Const.CR; //$NON-NLS-1$
+                message += "    * " + remarks[i] + Const.CR; 
 
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-            mb.setText(BaseMessages.getString(PKG, "DatabaseDialog.ErrorParameters2.title")); //$NON-NLS-1$
-            mb.setMessage(BaseMessages.getString(PKG, "DatabaseDialog.ErrorParameters2.description", message)); //$NON-NLS-1$
+            mb.setText(BaseMessages.getString(PKG, "DatabaseDialog.ErrorParameters2.title")); 
+            mb.setMessage(BaseMessages.getString(PKG, "DatabaseDialog.ErrorParameters2.description", message)); 
             mb.open();
         }
     }

@@ -145,7 +145,7 @@ public class SocketReader extends BaseStep implements StepInterface
             
             incrementLinesInput();
             
-            if (checkFeedback(getLinesInput())) logBasic(BaseMessages.getString(PKG, "SocketReader.Log.LineNumber")+getLinesInput()); //$NON-NLS-1$
+            if (checkFeedback(getLinesInput())) logBasic(BaseMessages.getString(PKG, "SocketReader.Log.LineNumber")+getLinesInput()); 
             
             putRow(data.rowMeta, r);
         }

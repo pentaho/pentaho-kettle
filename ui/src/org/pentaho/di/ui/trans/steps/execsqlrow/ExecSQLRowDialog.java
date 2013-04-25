@@ -133,14 +133,14 @@ public class ExecSQLRowDialog extends BaseStepDialog implements StepDialogInterf
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "ExecSQLRowDialog.Shell.Label")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "ExecSQLRowDialog.Shell.Label")); 
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
         // Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "ExecSQLRowDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "ExecSQLRowDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -164,7 +164,7 @@ public class ExecSQLRowDialog extends BaseStepDialog implements StepDialogInterf
 		
 		// Commit line
 		wlCommit = new Label(shell, SWT.RIGHT);
-		wlCommit.setText(BaseMessages.getString(PKG, "ExecSQLRowDialog.Commit.Label")); //$NON-NLS-1$
+		wlCommit.setText(BaseMessages.getString(PKG, "ExecSQLRowDialog.Commit.Label")); 
  		props.setLook(wlCommit);
 		fdlCommit = new FormData();
 		fdlCommit.left = new FormAttachment(0, 0);
@@ -208,7 +208,7 @@ public class ExecSQLRowDialog extends BaseStepDialog implements StepDialogInterf
 		
 		// SQLFieldName field
 		wlSQLFieldName=new Label(shell, SWT.RIGHT);
-		wlSQLFieldName.setText(BaseMessages.getString(PKG, "ExecSQLRowDialog.SQLFieldName.Label")); //$NON-NLS-1$
+		wlSQLFieldName.setText(BaseMessages.getString(PKG, "ExecSQLRowDialog.SQLFieldName.Label")); 
  		props.setLook(wlSQLFieldName);
 		fdlSQLFieldName=new FormData();
 		fdlSQLFieldName.left = new FormAttachment(0, 0);
@@ -282,7 +282,7 @@ public class ExecSQLRowDialog extends BaseStepDialog implements StepDialogInterf
         
         // insert field
         wlInsertField=new Label(wAdditionalFields, SWT.RIGHT);
-        wlInsertField.setText(BaseMessages.getString(PKG, "ExecSQLRowDialog.InsertField.Label")); //$NON-NLS-1$
+        wlInsertField.setText(BaseMessages.getString(PKG, "ExecSQLRowDialog.InsertField.Label")); 
  		props.setLook(        wlInsertField);
         fdlInsertField=new FormData();
         fdlInsertField.left = new FormAttachment(0, margin);
@@ -300,7 +300,7 @@ public class ExecSQLRowDialog extends BaseStepDialog implements StepDialogInterf
         
         // Update field
         wlUpdateField=new Label(wAdditionalFields, SWT.RIGHT);
-        wlUpdateField.setText(BaseMessages.getString(PKG, "ExecSQLRowDialog.UpdateField.Label")); //$NON-NLS-1$
+        wlUpdateField.setText(BaseMessages.getString(PKG, "ExecSQLRowDialog.UpdateField.Label")); 
  		props.setLook(        wlUpdateField);
         fdlUpdateField=new FormData();
         fdlUpdateField.left = new FormAttachment(0, margin);
@@ -318,7 +318,7 @@ public class ExecSQLRowDialog extends BaseStepDialog implements StepDialogInterf
         
         // Delete field
         wlDeleteField=new Label(wAdditionalFields, SWT.RIGHT);
-        wlDeleteField.setText(BaseMessages.getString(PKG, "ExecSQLRowDialog.DeleteField.Label")); //$NON-NLS-1$
+        wlDeleteField.setText(BaseMessages.getString(PKG, "ExecSQLRowDialog.DeleteField.Label")); 
  		props.setLook(        wlDeleteField);
         fdlDeleteField=new FormData();
         fdlDeleteField.left = new FormAttachment(0, margin);
@@ -336,7 +336,7 @@ public class ExecSQLRowDialog extends BaseStepDialog implements StepDialogInterf
         
         // Read field
         wlReadField=new Label(wAdditionalFields, SWT.RIGHT);
-        wlReadField.setText(BaseMessages.getString(PKG, "ExecSQLRowDialog.ReadField.Label")); //$NON-NLS-1$
+        wlReadField.setText(BaseMessages.getString(PKG, "ExecSQLRowDialog.ReadField.Label")); 
  		props.setLook(        wlReadField);
         fdlReadField=new FormData();
         fdlReadField.left = new FormAttachment(0, 0);
@@ -365,9 +365,9 @@ public class ExecSQLRowDialog extends BaseStepDialog implements StepDialogInterf
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wAdditionalFields);
 		
@@ -405,7 +405,7 @@ public class ExecSQLRowDialog extends BaseStepDialog implements StepDialogInterf
   * Copy information from the meta-data input to the dialog fields.
   */
   public void getData() {
-    wCommit.setText("" + input.getCommitSize()); //$NON-NLS-1$
+    wCommit.setText("" + input.getCommitSize()); 
     if (input.getSqlFieldName() != null)
       wSQLFieldName.setText(input.getSqlFieldName());
     if (input.getDatabaseMeta() != null)
@@ -451,8 +451,8 @@ public class ExecSQLRowDialog extends BaseStepDialog implements StepDialogInterf
 		if (input.getDatabaseMeta()==null)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(BaseMessages.getString(PKG, "ExecSQLRowDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
-			mb.setText(BaseMessages.getString(PKG, "ExecSQLRowDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "ExecSQLRowDialog.InvalidConnection.DialogMessage")); 
+			mb.setText(BaseMessages.getString(PKG, "ExecSQLRowDialog.InvalidConnection.DialogTitle")); 
 			mb.open();
 			return;
 		}
@@ -480,7 +480,7 @@ public class ExecSQLRowDialog extends BaseStepDialog implements StepDialogInterf
 			catch(KettleException ke)
 			{
 				new ErrorDialog(shell, BaseMessages.getString(PKG, "ExecSQLRowDialog.FailedToGetFields.DialogTitle"), 
-						BaseMessages.getString(PKG, "ExecSQLRowDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+						BaseMessages.getString(PKG, "ExecSQLRowDialog.FailedToGetFields.DialogMessage"), ke);  
 			}
     	}
 	}

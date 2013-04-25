@@ -152,14 +152,14 @@ public class SymmetricCryptoTransDialog extends BaseStepDialog implements StepDi
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "SymmetricCryptoTransDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "SymmetricCryptoTransDialog.Shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// SecretKey line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "SymmetricCryptoTransDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "SymmetricCryptoTransDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -215,7 +215,7 @@ public class SymmetricCryptoTransDialog extends BaseStepDialog implements StepDi
 
 		// Operation
 		wlOperation=new Label(wCryptoSettings, SWT.RIGHT);
-		wlOperation.setText(BaseMessages.getString(PKG, "SymmetricCryptoTransDialog.Operation.Label")); //$NON-NLS-1$
+		wlOperation.setText(BaseMessages.getString(PKG, "SymmetricCryptoTransDialog.Operation.Label")); 
  		props.setLook(wlOperation);
 		fdlOperation=new FormData();
 		fdlOperation.left = new FormAttachment(0, 0);
@@ -243,7 +243,7 @@ public class SymmetricCryptoTransDialog extends BaseStepDialog implements StepDi
 		
 		// Algorithm
 		wlAlgorithm=new Label(wCryptoSettings, SWT.RIGHT);
-		wlAlgorithm.setText(BaseMessages.getString(PKG, "SymmetricCryptoTransDialog.Algorithm.Label")); //$NON-NLS-1$
+		wlAlgorithm.setText(BaseMessages.getString(PKG, "SymmetricCryptoTransDialog.Algorithm.Label")); 
  		props.setLook(wlAlgorithm);
 		fdlAlgorithm=new FormData();
 		fdlAlgorithm.left = new FormAttachment(0, 0);
@@ -373,7 +373,7 @@ public class SymmetricCryptoTransDialog extends BaseStepDialog implements StepDi
         
 
         wlReadKeyAsBinary=new Label(wCryptoSettings, SWT.RIGHT);
-        wlReadKeyAsBinary.setText(BaseMessages.getString(PKG, "SymmetricCryptoTransDialog.ReadKeyAsBinary.Label")); //$NON-NLS-1$
+        wlReadKeyAsBinary.setText(BaseMessages.getString(PKG, "SymmetricCryptoTransDialog.ReadKeyAsBinary.Label")); 
         props.setLook(wlReadKeyAsBinary);
         fdlReadKeyAsBinary=new FormData();
         fdlReadKeyAsBinary.left = new FormAttachment(0, 0);
@@ -495,7 +495,7 @@ public class SymmetricCryptoTransDialog extends BaseStepDialog implements StepDi
         
 
         wlOutputAsBinary=new Label(wOutputField, SWT.RIGHT);
-        wlOutputAsBinary.setText(BaseMessages.getString(PKG, "SymmetricCryptoTransDialog.OutputAsBinary.Label")); //$NON-NLS-1$
+        wlOutputAsBinary.setText(BaseMessages.getString(PKG, "SymmetricCryptoTransDialog.OutputAsBinary.Label")); 
         props.setLook(wlOutputAsBinary);
         fdlOutputAsBinary=new FormData();
         fdlOutputAsBinary.left = new FormAttachment(0, 0);
@@ -557,10 +557,10 @@ public class SymmetricCryptoTransDialog extends BaseStepDialog implements StepDi
 		wTabFolder.setLayoutData(fdTabFolder);
 
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wTabFolder);
 
@@ -637,7 +637,7 @@ public class SymmetricCryptoTransDialog extends BaseStepDialog implements StepDi
 			if(field!=null) wSecretKeyField.setText(field);
 
 		 }catch(KettleException ke){
-				new ErrorDialog(shell, BaseMessages.getString(PKG, "SymmetricCryptoTransDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "SymmetricCryptoTransDialogMod.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "SymmetricCryptoTransDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "SymmetricCryptoTransDialogMod.FailedToGetFields.DialogMessage"), ke);  
 			}
 	 }
 	 private void setFieldname()
@@ -651,7 +651,7 @@ public class SymmetricCryptoTransDialog extends BaseStepDialog implements StepDi
 			 if(field!=null) wMessage.setText(field);
 
 		 }catch(KettleException ke){
-				new ErrorDialog(shell, BaseMessages.getString(PKG, "SymmetricCryptoTransDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "SymmetricCryptoTransDialogMod.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "SymmetricCryptoTransDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "SymmetricCryptoTransDialogMod.FailedToGetFields.DialogMessage"), ke);  
 			}
 	 }
 	/**

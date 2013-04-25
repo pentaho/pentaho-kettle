@@ -84,7 +84,7 @@ public class SyslogMessage extends BaseStep implements StepInterface
 			if (data.indexOfMessageFieldName<0)
 			{
 				// The field is unreachable !
-				throw new KettleException(BaseMessages.getString(PKG, "SyslogMessage.Exception.CouldnotFindField",meta.getMessageFieldName())); //$NON-NLS-1$ //$NON-NLS-2$
+				throw new KettleException(BaseMessages.getString(PKG, "SyslogMessage.Exception.CouldnotFindField",meta.getMessageFieldName()));  
 			}
 
     	}
@@ -107,7 +107,7 @@ public class SyslogMessage extends BaseStep implements StepInterface
                 
             if (checkFeedback(getLinesRead())) 
             {
-            	if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "SyslogMessage.LineNumber",getLinesRead())); //$NON-NLS-1$
+            	if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "SyslogMessage.LineNumber",getLinesRead())); 
             }
         }
         catch(Exception e)
@@ -123,7 +123,7 @@ public class SyslogMessage extends BaseStep implements StepInterface
         	}
         	else
         	{
-	            logError(BaseMessages.getString(PKG, "SyslogMessage.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
+	            logError(BaseMessages.getString(PKG, "SyslogMessage.ErrorInStepRunning")+e.getMessage()); 
 	            setErrors(1);
 	            stopAll();
 	            setOutputDone();  // signal end to receiver(s)

@@ -177,7 +177,7 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface
 
     public void setDefault()
     {
-        resultfieldname = "Result output"; //$NON-NLS-1$
+        resultfieldname = "Result output"; 
         errorfieldname="Error output";
         exitvaluefieldname="Exit value";
         failwhennotsuccess=false;
@@ -216,8 +216,8 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface
     {
         StringBuffer retval = new StringBuffer();
 
-        retval.append("    " + XMLHandler.addTagValue("processfield", processfield)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("    " + XMLHandler.addTagValue("resultfieldname", resultfieldname)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    " + XMLHandler.addTagValue("processfield", processfield));  
+        retval.append("    " + XMLHandler.addTagValue("resultfieldname", resultfieldname));  
         retval.append("    " + XMLHandler.addTagValue("errorfieldname", errorfieldname));
         retval.append("    " + XMLHandler.addTagValue("exitvaluefieldname", exitvaluefieldname));
         retval.append("    " + XMLHandler.addTagValue("failwhennotsuccess", failwhennotsuccess));
@@ -229,7 +229,7 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface
 	throws KettleXMLException
 	{
     	try{
-			processfield = XMLHandler.getTagValue(stepnode, "processfield"); //$NON-NLS-1$
+			processfield = XMLHandler.getTagValue(stepnode, "processfield"); 
             resultfieldname = XMLHandler.getTagValue(stepnode, "resultfieldname"); 
             errorfieldname = XMLHandler.getTagValue(stepnode, "errorfieldname"); 
             exitvaluefieldname = XMLHandler.getTagValue(stepnode, "exitvaluefieldname"); 
@@ -241,14 +241,14 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleXMLException(BaseMessages.getString(PKG, "ExecProcessMeta.Exception.UnableToReadStepInfo"), e); //$NON-NLS-1$
+            throw new KettleXMLException(BaseMessages.getString(PKG, "ExecProcessMeta.Exception.UnableToReadStepInfo"), e); 
         }
     }
 
     public void readRep(Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases) throws KettleException {
       try {
-        processfield = rep.getStepAttributeString(id_step, "processfield"); //$NON-NLS-1$
-        resultfieldname = rep.getStepAttributeString(id_step, "resultfieldname"); //$NON-NLS-1$  
+        processfield = rep.getStepAttributeString(id_step, "processfield"); 
+        resultfieldname = rep.getStepAttributeString(id_step, "resultfieldname");   
         errorfieldname = rep.getStepAttributeString(id_step, "errorfieldname");
         exitvaluefieldname = rep.getStepAttributeString(id_step, "exitvaluefieldname");
         failwhennotsuccess = rep.getStepAttributeBoolean(id_step, "failwhennotsuccess");
@@ -258,7 +258,7 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface
         }
       } catch (Exception e) {
         throw new KettleException(
-            BaseMessages.getString(PKG, "ExecProcessMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
+            BaseMessages.getString(PKG, "ExecProcessMeta.Exception.UnexpectedErrorReadingStepInfo"), e); 
       }
     }
 
@@ -266,8 +266,8 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface
     {
         try
         {
-            rep.saveStepAttribute(id_transformation, id_step, "processfield", processfield); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "resultfieldname", resultfieldname); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "processfield", processfield); 
+            rep.saveStepAttribute(id_transformation, id_step, "resultfieldname", resultfieldname); 
             rep.saveStepAttribute(id_transformation, id_step, "errorfieldname", errorfieldname);
             rep.saveStepAttribute(id_transformation, id_step, "exitvaluefieldname", exitvaluefieldname);
             rep.saveStepAttribute(id_transformation, id_step, "failwhennotsuccess",           failwhennotsuccess);
@@ -275,45 +275,45 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleException(BaseMessages.getString(PKG, "ExecProcessMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "ExecProcessMeta.Exception.UnableToSaveStepInfo") + id_step, e); 
         }
     }
 
     public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
         CheckResult cr;
-        String error_message = ""; //$NON-NLS-1$
+        String error_message = ""; 
 
       
         if (Const.isEmpty(resultfieldname))
         {
-            error_message = BaseMessages.getString(PKG, "ExecProcessMeta.CheckResult.ResultFieldMissing"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "ExecProcessMeta.CheckResult.ResultFieldMissing"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
         }
         else
         {
-            error_message = BaseMessages.getString(PKG, "ExecProcessMeta.CheckResult.ResultFieldOK"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "ExecProcessMeta.CheckResult.ResultFieldOK"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
         }
         remarks.add(cr);
         
         if (Const.isEmpty(processfield))
         {
-            error_message = BaseMessages.getString(PKG, "ExecProcessMeta.CheckResult.ProcessFieldMissing"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "ExecProcessMeta.CheckResult.ProcessFieldMissing"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
         }
         else
         {
-            error_message = BaseMessages.getString(PKG, "ExecProcessMeta.CheckResult.ProcessFieldOK"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "ExecProcessMeta.CheckResult.ProcessFieldOK"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
         }
         remarks.add(cr);
         
         // See if we have input streams leading to this step!
         if (input.length > 0)
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ExecProcessMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ExecProcessMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); 
         else
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "ExecProcessMeta.CheckResult.NoInpuReceived"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "ExecProcessMeta.CheckResult.NoInpuReceived"), stepMeta); 
          remarks.add(cr);
 
     }

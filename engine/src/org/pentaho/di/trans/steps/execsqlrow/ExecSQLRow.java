@@ -129,7 +129,7 @@ public class ExecSQLRow extends BaseStep implements StepInterface
 				if (data.indexOfSQLFieldname<0)
 				{
 					// The field is unreachable !
-					throw new KettleException(BaseMessages.getString(PKG, "ExecSQLRow.Exception.CouldnotFindField",meta.getSqlFieldName())); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleException(BaseMessages.getString(PKG, "ExecSQLRow.Exception.CouldnotFindField",meta.getSqlFieldName()));  
 				}
 			}
            
@@ -148,7 +148,7 @@ public class ExecSQLRow extends BaseStep implements StepInterface
 				if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "ExecSQLRow.Log.ExecutingSQLFromFile", sql));
 				data.result = data.db.execStatementsFromFile(sql, meta.IsSendOneStatement());
 			}else {
-				if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "ExecSQLRow.Log.ExecutingSQLScript")+Const.CR+sql); //$NON-NLS-1$
+				if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "ExecSQLRow.Log.ExecutingSQLScript")+Const.CR+sql); 
 				if(meta.IsSendOneStatement()) {
 					data.result = data.db.execStatement(sql);
 				} else {
@@ -177,7 +177,7 @@ public class ExecSQLRow extends BaseStep implements StepInterface
 			
 			if (checkFeedback(getLinesWritten()))
 			{
-				if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "ExecSQLRow.Log.LineNumber") + getLinesWritten()); //$NON-NLS-1$
+				if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "ExecSQLRow.Log.LineNumber") + getLinesWritten()); 
 			}
 		}
 		catch(KettleException e)
@@ -189,7 +189,7 @@ public class ExecSQLRow extends BaseStep implements StepInterface
 			}
 			else
 			{
-				logError(BaseMessages.getString(PKG, "ExecSQLRow.Log.ErrorInStep")+e.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "ExecSQLRow.Log.ErrorInStep")+e.getMessage()); 
 				setErrors(1);
 				stopAll();
 				setOutputDone();  // signal end to receiver(s)
@@ -209,7 +209,7 @@ public class ExecSQLRow extends BaseStep implements StepInterface
         meta=(ExecSQLRowMeta)smi;
         data=(ExecSQLRowData)sdi;
 
-        if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "ExecSQLRow.Log.FinishingReadingQuery")); //$NON-NLS-1$
+        if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "ExecSQLRow.Log.FinishingReadingQuery")); 
      
         if( data.db!=null) {
         	try
@@ -228,7 +228,7 @@ public class ExecSQLRow extends BaseStep implements StepInterface
 	        }
 	        catch(KettleDatabaseException e)
 	        {
-	            logError(BaseMessages.getString(PKG, "Update.Log.UnableToCommitUpdateConnection")+data.db+"] :"+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+	            logError(BaseMessages.getString(PKG, "Update.Log.UnableToCommitUpdateConnection")+data.db+"] :"+e.toString());  
 	            setErrors(1);
 	        }
 	        finally
@@ -276,14 +276,14 @@ public class ExecSQLRow extends BaseStep implements StepInterface
                     data.db.connect(getPartitionID());
                 }
 
-                if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "ExecSQLRow.Log.ConnectedToDB")); //$NON-NLS-1$
+                if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "ExecSQLRow.Log.ConnectedToDB")); 
 
                 if(meta.getCommitSize()>=1) data.db.setCommit(meta.getCommitSize());
                 return true;
             }
             catch(KettleException e)
             {
-                logError(BaseMessages.getString(PKG, "ExecSQLRow.Log.ErrorOccurred")+e.getMessage()); //$NON-NLS-1$
+                logError(BaseMessages.getString(PKG, "ExecSQLRow.Log.ErrorOccurred")+e.getMessage()); 
                 setErrors(1);
                 stopAll();
             }

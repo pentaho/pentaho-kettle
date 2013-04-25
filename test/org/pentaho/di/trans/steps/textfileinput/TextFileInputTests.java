@@ -353,13 +353,13 @@ public class TextFileInputTests extends TestCase {
    * Verify that lines are properly identified when parsing a mixed format file.
    */
   public void testGetLine_FILE_FORMAT_MIXED() throws Exception {
-    String fileLocation = "testfiles/example.csv"; //$NON-NLS-1$
+    String fileLocation = "testfiles/example.csv"; 
     InputStream inputStream = KettleVFS.getInputStream(fileLocation);
     InputStreamReader reader = new InputStreamReader(inputStream);
     // Grab the first line and verify it only has 4 tokens instead of 24 (the total tokens in the file)
     StringBuilder stringBuilder = new StringBuilder(1000);
     String line = TextFileInput.getLine(null, reader, TextFileInputMeta.FILE_FORMAT_MIXED, stringBuilder);
-    CSVTokenizer csvt = new CSVTokenizer(line, ",", "\""); //$NON-NLS-1$ //$NON-NLS-2$
+    CSVTokenizer csvt = new CSVTokenizer(line, ",", "\"");  
     assertEquals(4, csvt.countTokens());
   }
 }

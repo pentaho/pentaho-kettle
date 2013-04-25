@@ -140,20 +140,20 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			filename  = XMLHandler.getTagValue(stepnode, "file", "name"); //$NON-NLS-1$ //$NON-NLS-2$
-			rowLimit  = Const.toInt( XMLHandler.getTagValue(stepnode, "limit"), 0); //$NON-NLS-1$
+			filename  = XMLHandler.getTagValue(stepnode, "file", "name");  
+			rowLimit  = Const.toInt( XMLHandler.getTagValue(stepnode, "limit"), 0); 
 			addfilenameresult = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "addfilenameresult"));
 			
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "CubeInputMeta.Exception.UnableToLoadStepInfo"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "CubeInputMeta.Exception.UnableToLoadStepInfo"), e); 
 		}
 	}
 
 	public void setDefault()
 	{
-		filename = "file"; //$NON-NLS-1$
+		filename = "file"; 
 		rowLimit = 0;
 		addfilenameresult=false;
 	}
@@ -178,11 +178,11 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(KettleFileException kfe)
 		{
-			throw new KettleStepException(BaseMessages.getString(PKG, "CubeInputMeta.Exception.UnableToReadMetaData"), kfe); //$NON-NLS-1$
+			throw new KettleStepException(BaseMessages.getString(PKG, "CubeInputMeta.Exception.UnableToReadMetaData"), kfe); 
 		}
 		catch(IOException e)
 		{
-			throw new KettleStepException(BaseMessages.getString(PKG, "CubeInputMeta.Exception.ErrorOpeningOrReadingCubeFile"), e); //$NON-NLS-1$
+			throw new KettleStepException(BaseMessages.getString(PKG, "CubeInputMeta.Exception.ErrorOpeningOrReadingCubeFile"), e); 
 		}
 		finally
 		{
@@ -193,7 +193,7 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 			}
 			catch(IOException ioe)
 			{
-				throw new KettleStepException(BaseMessages.getString(PKG, "CubeInputMeta.Exception.UnableToCloseCubeFile"), ioe); //$NON-NLS-1$
+				throw new KettleStepException(BaseMessages.getString(PKG, "CubeInputMeta.Exception.UnableToCloseCubeFile"), ioe); 
 			}
 		}
 	}
@@ -202,10 +202,10 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
         StringBuffer retval = new StringBuffer(300);
 		
-		retval.append("    <file>").append(Const.CR); //$NON-NLS-1$
-		retval.append("      ").append(XMLHandler.addTagValue("name", filename)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    </file>").append(Const.CR); //$NON-NLS-1$
-		retval.append("    ").append(XMLHandler.addTagValue("limit",  rowLimit)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    <file>").append(Const.CR); 
+		retval.append("      ").append(XMLHandler.addTagValue("name", filename));  
+		retval.append("    </file>").append(Const.CR); 
+		retval.append("    ").append(XMLHandler.addTagValue("limit",  rowLimit));  
 		retval.append("    ").append(XMLHandler.addTagValue("addfilenameresult", addfilenameresult));
 		
 
@@ -216,14 +216,14 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			filename         =      rep.getStepAttributeString (id_step, "file_name"); //$NON-NLS-1$
-			rowLimit         = (int)rep.getStepAttributeInteger(id_step, "limit"); //$NON-NLS-1$
+			filename         =      rep.getStepAttributeString (id_step, "file_name"); 
+			rowLimit         = (int)rep.getStepAttributeInteger(id_step, "limit"); 
 			addfilenameresult = rep.getStepAttributeBoolean(id_step, "addfilenameresult");
 			
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "CubeInputMeta.Exception.UnexpectedErrorWhileReadingStepInfo"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "CubeInputMeta.Exception.UnexpectedErrorWhileReadingStepInfo"), e); 
 		}
 	}
 
@@ -232,14 +232,14 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			rep.saveStepAttribute(id_transformation, id_step, "file_name",   filename); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "limit",       rowLimit); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "file_name",   filename); 
+			rep.saveStepAttribute(id_transformation, id_step, "limit",       rowLimit); 
 			rep.saveStepAttribute(id_transformation, id_step, "addfilenameresult", addfilenameresult);
 			
 		}
 		catch(KettleException e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "CubeInputMeta.Exception.UnableToSaveStepInfo")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "CubeInputMeta.Exception.UnableToSaveStepInfo")+id_step, e); 
 		}
 	}
 
@@ -247,7 +247,7 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		CheckResult cr;
 		
-		cr = new CheckResult(CheckResult.TYPE_RESULT_COMMENT, BaseMessages.getString(PKG, "CubeInputMeta.CheckResult.FileSpecificationsNotChecked"), stepMeta); //$NON-NLS-1$
+		cr = new CheckResult(CheckResult.TYPE_RESULT_COMMENT, BaseMessages.getString(PKG, "CubeInputMeta.CheckResult.FileSpecificationsNotChecked"), stepMeta); 
 		remarks.add(cr);
 	}
 	
@@ -291,7 +291,7 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 			}
 			return null;
 		} catch (Exception e) {
-			throw new KettleException(e); //$NON-NLS-1$
+			throw new KettleException(e); 
 		}
 	}
 

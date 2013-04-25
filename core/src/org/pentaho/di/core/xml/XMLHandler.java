@@ -981,17 +981,21 @@ public class XMLHandler
 		}
 		else
 		{
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            GZIPOutputStream gzos = new GZIPOutputStream(baos);
-            BufferedOutputStream bos = new BufferedOutputStream(gzos);
-            bos.write( val );
-            bos.flush();
-            bos.close();
-            
-            string = new String(Base64.encodeBase64(baos.toByteArray()));
+      string = encodeBinaryData(val);
 		}
 		
 		return addTagValue(tag, string, true);
+	}
+	
+	public static String encodeBinaryData(byte[] val) throws IOException {
+	  ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    GZIPOutputStream gzos = new GZIPOutputStream(baos);
+    BufferedOutputStream bos = new BufferedOutputStream(gzos);
+    bos.write( val );
+    bos.flush();
+    bos.close();
+    
+    return new String(Base64.encodeBase64(baos.toByteArray()));    
 	}
 
     /**

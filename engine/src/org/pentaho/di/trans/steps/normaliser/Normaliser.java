@@ -109,7 +109,7 @@ public class Normaliser extends BaseStep implements StepInterface
 				data.fieldnrs[i] = data.inputRowMeta.indexOfValue(meta.getFieldName()[i]);
 				if (data.fieldnrs[i]<0)
 				{
-					logError(BaseMessages.getString(PKG, "Normaliser.Log.CouldNotFindFieldInRow",meta.getFieldName()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "Normaliser.Log.CouldNotFindFieldInRow",meta.getFieldName()[i]));  
 					setErrors(1);
 					stopAll();
 					return false;
@@ -159,7 +159,7 @@ public class Normaliser extends BaseStep implements StepInterface
 
         if (checkFeedback(getLinesRead())) 
         {
-        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "Normaliser.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "Normaliser.Log.LineNumber")+getLinesRead()); 
         }
 			
 		return true;

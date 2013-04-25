@@ -70,12 +70,12 @@ public class StepInitThread implements Runnable
             else
             {
                 combi.step.setErrors(1);
-                log.logError(BaseMessages.getString(PKG, "Trans.Log.ErrorInitializingStep", combi.step.getStepname())); //$NON-NLS-1$ //$NON-NLS-2$
+                log.logError(BaseMessages.getString(PKG, "Trans.Log.ErrorInitializingStep", combi.step.getStepname()));  
             }
         }
         catch (Throwable e)
         {
-            log.logError(BaseMessages.getString(PKG, "Trans.Log.ErrorInitializingStep", combi.step.getStepname())); //$NON-NLS-1$ //$NON-NLS-2$
+            log.logError(BaseMessages.getString(PKG, "Trans.Log.ErrorInitializingStep", combi.step.getStepname()));  
             log.logError(Const.getStackTracker(e));
         } finally {
           combi.step.getLogChannel().snap(Metrics.METRIC_STEP_INIT_STOP);

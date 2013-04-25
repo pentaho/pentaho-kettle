@@ -148,11 +148,11 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface
 		FieldsRows=input.getFieldName().length;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "IfNullDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "IfNullDialog.Shell.Title")); 
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "IfNullDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "IfNullDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);

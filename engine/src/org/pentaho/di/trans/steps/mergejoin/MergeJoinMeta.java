@@ -63,7 +63,7 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private static Class<?> PKG = MergeJoinMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	public static final String [] join_types = {"INNER", "LEFT OUTER", "RIGHT OUTER", "FULL OUTER"}; //$NON-NLS-1$
+	public static final String [] join_types = {"INNER", "LEFT OUTER", "RIGHT OUTER", "FULL OUTER"}; 
 	public static final boolean [] one_optionals = {false, false, true, true};
 	public static final boolean [] two_optionals = {false, true, false, true};
 
@@ -156,23 +156,23 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface
 
         List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
 
-		retval.append(XMLHandler.addTagValue("join_type", getJoinType())); //$NON-NLS-1$
-		retval.append(XMLHandler.addTagValue("step1", infoStreams.get(0).getStepname())); //$NON-NLS-1$
-		retval.append(XMLHandler.addTagValue("step2", infoStreams.get(1).getStepname())); //$NON-NLS-1$
+		retval.append(XMLHandler.addTagValue("join_type", getJoinType())); 
+		retval.append(XMLHandler.addTagValue("step1", infoStreams.get(0).getStepname())); 
+		retval.append(XMLHandler.addTagValue("step2", infoStreams.get(1).getStepname())); 
 
-		retval.append("    <keys_1>"+Const.CR); //$NON-NLS-1$
+		retval.append("    <keys_1>"+Const.CR); 
         for (int i=0;i<keyFields1.length;i++)
         {
-            retval.append("      "+XMLHandler.addTagValue("key", keyFields1[i])); //$NON-NLS-1$
+            retval.append("      "+XMLHandler.addTagValue("key", keyFields1[i])); 
         }
-        retval.append("    </keys_1>"+Const.CR); //$NON-NLS-1$
+        retval.append("    </keys_1>"+Const.CR); 
         
-        retval.append("    <keys_2>"+Const.CR); //$NON-NLS-1$
+        retval.append("    <keys_2>"+Const.CR); 
         for (int i=0;i<keyFields2.length;i++)
         {
-            retval.append("      "+XMLHandler.addTagValue("key", keyFields2[i])); //$NON-NLS-1$
+            retval.append("      "+XMLHandler.addTagValue("key", keyFields2[i])); 
         }
-        retval.append("    </keys_2>"+Const.CR); //$NON-NLS-1$
+        retval.append("    </keys_2>"+Const.CR); 
 
 		return retval.toString();
 	}
@@ -182,34 +182,34 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{ 
             
-            Node keysNode1 = XMLHandler.getSubNode(stepnode, "keys_1"); //$NON-NLS-1$
-            Node keysNode2 = XMLHandler.getSubNode(stepnode, "keys_2"); //$NON-NLS-1$
+            Node keysNode1 = XMLHandler.getSubNode(stepnode, "keys_1"); 
+            Node keysNode2 = XMLHandler.getSubNode(stepnode, "keys_2"); 
             
-		    int nrKeys1 = XMLHandler.countNodes(keysNode1, "key"); //$NON-NLS-1$
-            int nrKeys2 = XMLHandler.countNodes(keysNode2, "key"); //$NON-NLS-1$
+		    int nrKeys1 = XMLHandler.countNodes(keysNode1, "key"); 
+            int nrKeys2 = XMLHandler.countNodes(keysNode2, "key"); 
             
             allocate(nrKeys1, nrKeys2);
             
             for (int i=0;i<nrKeys1;i++) 
             {
-                Node keynode = XMLHandler.getSubNodeByNr(keysNode1, "key", i); //$NON-NLS-1$
+                Node keynode = XMLHandler.getSubNodeByNr(keysNode1, "key", i); 
                 keyFields1[i] = XMLHandler.getNodeValue(keynode);
             }
             
             for (int i=0;i<nrKeys2;i++) 
             {
-                Node keynode = XMLHandler.getSubNodeByNr(keysNode2, "key", i); //$NON-NLS-1$
+                Node keynode = XMLHandler.getSubNodeByNr(keysNode2, "key", i); 
                 keyFields2[i] = XMLHandler.getNodeValue(keynode);
             }
             
             List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
-			infoStreams.get(0).setSubject( XMLHandler.getTagValue(stepnode, "step1") ); //$NON-NLS-1$
-			infoStreams.get(1).setSubject( XMLHandler.getTagValue(stepnode, "step2") ); //$NON-NLS-1$
-			joinType = XMLHandler.getTagValue(stepnode, "join_type"); //$NON-NLS-1$
+			infoStreams.get(0).setSubject( XMLHandler.getTagValue(stepnode, "step1") ); 
+			infoStreams.get(1).setSubject( XMLHandler.getTagValue(stepnode, "step2") ); 
+			joinType = XMLHandler.getTagValue(stepnode, "join_type"); 
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "MergeJoinMeta.Exception.UnableToLoadStepInfo"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "MergeJoinMeta.Exception.UnableToLoadStepInfo"), e); 
 		}
 	}
 	
@@ -224,28 +224,28 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-            int nrKeys1 = rep.countNrStepAttributes(id_step, "keys_1"); //$NON-NLS-1$
-            int nrKeys2 = rep.countNrStepAttributes(id_step, "keys_2"); //$NON-NLS-1$
+            int nrKeys1 = rep.countNrStepAttributes(id_step, "keys_1"); 
+            int nrKeys2 = rep.countNrStepAttributes(id_step, "keys_2"); 
             
 			allocate(nrKeys1, nrKeys2);
             
             for (int i=0;i<nrKeys1;i++)
             {
-                keyFields1[i] = rep.getStepAttributeString(id_step, i, "keys_1"); //$NON-NLS-1$
+                keyFields1[i] = rep.getStepAttributeString(id_step, i, "keys_1"); 
             }
             for (int i=0;i<nrKeys2;i++)
             {
-                keyFields2[i] = rep.getStepAttributeString(id_step, i, "keys_2"); //$NON-NLS-1$
+                keyFields2[i] = rep.getStepAttributeString(id_step, i, "keys_2"); 
             }
 
             List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
-			infoStreams.get(0).setSubject( rep.getStepAttributeString (id_step, "step1") );  //$NON-NLS-1$
-			infoStreams.get(1).setSubject( rep.getStepAttributeString (id_step, "step2") );  //$NON-NLS-1$
-			joinType = rep.getStepAttributeString(id_step, "join_type"); //$NON-NLS-1$
+			infoStreams.get(0).setSubject( rep.getStepAttributeString (id_step, "step1") );  
+			infoStreams.get(1).setSubject( rep.getStepAttributeString (id_step, "step2") );  
+			joinType = rep.getStepAttributeString(id_step, "join_type"); 
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "MergeJoinMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "MergeJoinMeta.Exception.UnexpectedErrorReadingStepInfo"), e); 
 		}
 	}
 	
@@ -263,23 +263,23 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface
 		{
             for (int i=0;i<keyFields1.length;i++)
             {
-                rep.saveStepAttribute(id_transformation, id_step, i, "keys_1", keyFields1[i]); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "keys_1", keyFields1[i]); 
             }
 
             for (int i=0;i<keyFields2.length;i++)
             {
-                rep.saveStepAttribute(id_transformation, id_step, i, "keys_2", keyFields2[i]); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "keys_2", keyFields2[i]); 
             }
 
             List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
 
-			rep.saveStepAttribute(id_transformation, id_step, "step1", infoStreams.get(0).getStepname()); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "step2", infoStreams.get(1).getStepname()); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "join_type", getJoinType()); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "step1", infoStreams.get(0).getStepname()); 
+			rep.saveStepAttribute(id_transformation, id_step, "step2", infoStreams.get(1).getStepname()); 
+			rep.saveStepAttribute(id_transformation, id_step, "join_type", getJoinType()); 
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "MergeJoinMeta.Exception.UnableToSaveStepInfo")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "MergeJoinMeta.Exception.UnableToSaveStepInfo")+id_step, e); 
 		}
 	}
 
@@ -291,7 +291,7 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface
          *   2) Number of input streams must be two (for now at least)
          *   3) The field names of input streams must be unique
          */ 
-        CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "MergeJoinMeta.CheckResult.StepNotVerified"), stepMeta); //$NON-NLS-1$
+        CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "MergeJoinMeta.CheckResult.StepNotVerified"), stepMeta); 
         remarks.add(cr);
 	}
 	

@@ -115,31 +115,31 @@ public class JobGridDelegate extends SpoonDelegate {
         TreeMemory.addTreeListener(wTree, STRING_CHEF_LOG_TREE_NAME);
         
         TreeColumn column1 = new TreeColumn(wTree, SWT.LEFT);
-        column1.setText(BaseMessages.getString(PKG, "JobLog.Column.JobJobEntry")); //$NON-NLS-1$
+        column1.setText(BaseMessages.getString(PKG, "JobLog.Column.JobJobEntry")); 
         column1.setWidth(200);
         
         TreeColumn column2 = new TreeColumn(wTree, SWT.LEFT);
-        column2.setText(BaseMessages.getString(PKG, "JobLog.Column.Comment")); //$NON-NLS-1$
+        column2.setText(BaseMessages.getString(PKG, "JobLog.Column.Comment")); 
         column2.setWidth(200);
         
         TreeColumn column3 = new TreeColumn(wTree, SWT.LEFT);
-        column3.setText(BaseMessages.getString(PKG, "JobLog.Column.Result")); //$NON-NLS-1$
+        column3.setText(BaseMessages.getString(PKG, "JobLog.Column.Result")); 
         column3.setWidth(100);
 
         TreeColumn column4 = new TreeColumn(wTree, SWT.LEFT);
-        column4.setText(BaseMessages.getString(PKG, "JobLog.Column.Reason")); //$NON-NLS-1$
+        column4.setText(BaseMessages.getString(PKG, "JobLog.Column.Reason")); 
         column4.setWidth(200);
 
         TreeColumn column5 = new TreeColumn(wTree, SWT.LEFT);
-        column5.setText(BaseMessages.getString(PKG, "JobLog.Column.Filename")); //$NON-NLS-1$
+        column5.setText(BaseMessages.getString(PKG, "JobLog.Column.Filename")); 
         column5.setWidth(200);
 
         TreeColumn column6 = new TreeColumn(wTree, SWT.RIGHT);
-        column6.setText(BaseMessages.getString(PKG, "JobLog.Column.Nr")); //$NON-NLS-1$
+        column6.setText(BaseMessages.getString(PKG, "JobLog.Column.Nr")); 
         column6.setWidth(50);
 
         TreeColumn column7 = new TreeColumn(wTree, SWT.RIGHT);
-        column7.setText(BaseMessages.getString(PKG, "JobLog.Column.LogDate")); //$NON-NLS-1$
+        column7.setText(BaseMessages.getString(PKG, "JobLog.Column.LogDate")); 
         column7.setWidth(120);
 
 		FormData fdTree=new FormData();
@@ -209,7 +209,7 @@ public class JobGridDelegate extends SpoonDelegate {
                 if(Const.isEmpty(jobName)) 
                 {
                     if (!Const.isEmpty(jobTracker.getJobFilename())) jobName = jobTracker.getJobFilename();
-                    else jobName = BaseMessages.getString(PKG, "JobLog.Tree.StringToDisplayWhenJobHasNoName"); //$NON-NLS-1$
+                    else jobName = BaseMessages.getString(PKG, "JobLog.Tree.StringToDisplayWhenJobHasNoName"); 
                 }
                 treeItem.setText(0, jobName);
                 TreeMemory.getInstance().storeExpanded(STRING_CHEF_LOG_TREE_NAME, new String[] { jobName }, true);
@@ -237,7 +237,7 @@ public class JobGridDelegate extends SpoonDelegate {
                 if (jobTracker.nrJobTrackers()>0)
                 {
                     // This is a sub-job: display the name at the top of the list...
-                    treeItem.setText( 0, BaseMessages.getString(PKG, "JobLog.Tree.JobPrefix")+jobTracker.getJobName() ); //$NON-NLS-1$
+                    treeItem.setText( 0, BaseMessages.getString(PKG, "JobLog.Tree.JobPrefix")+jobTracker.getJobName() ); 
                     
                     // then populate the sub-job entries ...
                     for (int i=0;i<jobTracker.nrJobTrackers();i++)
@@ -258,7 +258,7 @@ public class JobGridDelegate extends SpoonDelegate {
                         }
                         else
                         {
-                            treeItem.setText( 0, BaseMessages.getString(PKG, "JobLog.Tree.JobPrefix2")+jobTracker.getJobName()); //$NON-NLS-1$
+                            treeItem.setText( 0, BaseMessages.getString(PKG, "JobLog.Tree.JobPrefix2")+jobTracker.getJobName()); 
                         }
                         String comment = result.getComment();
                         if (comment!=null)
@@ -268,8 +268,8 @@ public class JobGridDelegate extends SpoonDelegate {
                         Result res = result.getResult();
                         if (res!=null)
                         {
-                            treeItem.setText(2, res.getResult()?BaseMessages.getString(PKG, "JobLog.Tree.Success"):BaseMessages.getString(PKG, "JobLog.Tree.Failure")); //$NON-NLS-1$ //$NON-NLS-2$
-                            treeItem.setText(5, Long.toString(res.getEntryNr())); //$NON-NLS-1$
+                            treeItem.setText(2, res.getResult()?BaseMessages.getString(PKG, "JobLog.Tree.Success"):BaseMessages.getString(PKG, "JobLog.Tree.Failure"));  
+                            treeItem.setText(5, Long.toString(res.getEntryNr())); 
                             if(res.getResult())
                             {
                             	treeItem.setForeground(GUIResource.getInstance().getColorSuccessGreen());
@@ -287,7 +287,7 @@ public class JobGridDelegate extends SpoonDelegate {
                         Date logDate = result.getLogDate();
                         if (logDate!=null)
                         {
-                            treeItem.setText(6, new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(logDate)); //$NON-NLS-1$
+                            treeItem.setText(6, new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(logDate)); 
                         }
                     }
                 }

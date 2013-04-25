@@ -143,7 +143,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
     formLayout.marginHeight = Const.FORM_MARGIN;
 
     shell.setLayout(formLayout);
-    shell.setText(BaseMessages.getString(PKG, "FixedInputDialog.Shell.Title")); //$NON-NLS-1$
+    shell.setText(BaseMessages.getString(PKG, "FixedInputDialog.Shell.Title")); 
 
     int middle = props.getMiddlePct();
     int margin = Const.MARGIN;
@@ -151,7 +151,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
     // Step name line
     //
     wlStepname = new Label(shell, SWT.RIGHT);
-    wlStepname.setText(BaseMessages.getString(PKG, "FixedInputDialog.Stepname.Label")); //$NON-NLS-1$
+    wlStepname.setText(BaseMessages.getString(PKG, "FixedInputDialog.Stepname.Label")); 
     props.setLook(wlStepname);
     fdlStepname = new FormData();
     fdlStepname.left = new FormAttachment(0, 0);
@@ -184,7 +184,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
     // The field itself...
     //
     Label wlFilename = new Label(shell, SWT.RIGHT);
-    wlFilename.setText(BaseMessages.getString(PKG, "FixedInputDialog.Filename.Label")); //$NON-NLS-1$
+    wlFilename.setText(BaseMessages.getString(PKG, "FixedInputDialog.Filename.Label")); 
     props.setLook(wlFilename);
     FormData fdlFilename = new FormData();
     fdlFilename.top = new FormAttachment(lastControl, margin);
@@ -203,7 +203,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 
     // delimiter
     Label wlLineWidth = new Label(shell, SWT.RIGHT);
-    wlLineWidth.setText(BaseMessages.getString(PKG, "FixedInputDialog.LineWidth.Label")); //$NON-NLS-1$
+    wlLineWidth.setText(BaseMessages.getString(PKG, "FixedInputDialog.LineWidth.Label")); 
     props.setLook(wlLineWidth);
     FormData fdlLineWidth = new FormData();
     fdlLineWidth.top = new FormAttachment(lastControl, margin);
@@ -222,7 +222,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 
     // delimiter
     Label wlLineFeedPresent = new Label(shell, SWT.RIGHT);
-    wlLineFeedPresent.setText(BaseMessages.getString(PKG, "FixedInputDialog.LineFeedPresent.Label")); //$NON-NLS-1$
+    wlLineFeedPresent.setText(BaseMessages.getString(PKG, "FixedInputDialog.LineFeedPresent.Label")); 
     props.setLook(wlLineFeedPresent);
     FormData fdlLineFeedPresent = new FormData();
     fdlLineFeedPresent.top = new FormAttachment(lastControl, margin);
@@ -241,7 +241,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
     // bufferSize
     //
     Label wlBufferSize = new Label(shell, SWT.RIGHT);
-    wlBufferSize.setText(BaseMessages.getString(PKG, "FixedInputDialog.BufferSize.Label")); //$NON-NLS-1$
+    wlBufferSize.setText(BaseMessages.getString(PKG, "FixedInputDialog.BufferSize.Label")); 
     props.setLook(wlBufferSize);
     FormData fdlBufferSize = new FormData();
     fdlBufferSize.top = new FormAttachment(lastControl, margin);
@@ -261,7 +261,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
     // performingLazyConversion?
     //
     Label wlLazyConversion = new Label(shell, SWT.RIGHT);
-    wlLazyConversion.setText(BaseMessages.getString(PKG, "FixedInputDialog.LazyConversion.Label")); //$NON-NLS-1$
+    wlLazyConversion.setText(BaseMessages.getString(PKG, "FixedInputDialog.LazyConversion.Label")); 
     props.setLook(wlLazyConversion);
     FormData fdlLazyConversion = new FormData();
     fdlLazyConversion.top = new FormAttachment(lastControl, margin);
@@ -280,7 +280,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
     // header row?
     //
     Label wlHeaderPresent = new Label(shell, SWT.RIGHT);
-    wlHeaderPresent.setText(BaseMessages.getString(PKG, "FixedInputDialog.HeaderPresent.Label")); //$NON-NLS-1$
+    wlHeaderPresent.setText(BaseMessages.getString(PKG, "FixedInputDialog.HeaderPresent.Label")); 
     props.setLook(wlHeaderPresent);
     FormData fdlHeaderPresent = new FormData();
     fdlHeaderPresent.top = new FormAttachment(lastControl, margin);
@@ -299,7 +299,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
     // running in parallel?
     //
     Label wlRunningInParallel = new Label(shell, SWT.RIGHT);
-    wlRunningInParallel.setText(BaseMessages.getString(PKG, "FixedInputDialog.RunningInParallel.Label")); //$NON-NLS-1$
+    wlRunningInParallel.setText(BaseMessages.getString(PKG, "FixedInputDialog.RunningInParallel.Label")); 
     props.setLook(wlRunningInParallel);
     FormData fdlRunningInParallel = new FormData();
     fdlRunningInParallel.top = new FormAttachment(lastControl, margin);
@@ -316,15 +316,15 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
     // The file type...
     //
     wlFileType = new Label(shell, SWT.RIGHT);
-    wlFileType.setText(BaseMessages.getString(PKG, "FixedInputDialog.FileType.Label")); //$NON-NLS-1$
-    wlFileType.setToolTipText(BaseMessages.getString(PKG, "FixedInputDialog.FileType.ToolTip")); //$NON-NLS-1$
+    wlFileType.setText(BaseMessages.getString(PKG, "FixedInputDialog.FileType.Label")); 
+    wlFileType.setToolTipText(BaseMessages.getString(PKG, "FixedInputDialog.FileType.ToolTip")); 
     props.setLook(wlFileType);
     FormData fdlFileType = new FormData();
     fdlFileType.top = new FormAttachment(lastControl, margin);
     fdlFileType.left = new FormAttachment(wRunningInParallel, margin * 2);
     wlFileType.setLayoutData(fdlFileType);
     wFileType = new CCombo(shell, SWT.BORDER | SWT.READ_ONLY);
-    wFileType.setToolTipText(BaseMessages.getString(PKG, "FixedInputDialog.FileType.ToolTip")); //$NON-NLS-1$
+    wFileType.setToolTipText(BaseMessages.getString(PKG, "FixedInputDialog.FileType.ToolTip")); 
     props.setLook(wFileType);
     wFileType.setItems(FixedInputMeta.fileTypeDesc);
     FormData fdFileType = new FormData();
@@ -392,13 +392,13 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
     // Some buttons first, so that the dialog scales nicely...
     //
     wOK = new Button(shell, SWT.PUSH);
-    wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+    wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
     wPreview = new Button(shell, SWT.PUSH);
-    wPreview.setText(BaseMessages.getString(PKG, "System.Button.Preview")); //$NON-NLS-1$
+    wPreview.setText(BaseMessages.getString(PKG, "System.Button.Preview")); 
     wGet = new Button(shell, SWT.PUSH);
-    wGet.setText(BaseMessages.getString(PKG, "System.Button.GetFields")); //$NON-NLS-1$
+    wGet.setText(BaseMessages.getString(PKG, "System.Button.GetFields")); 
     wCancel = new Button(shell, SWT.PUSH);
-    wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+    wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK , wGet, wPreview, wCancel }, margin, null);
 

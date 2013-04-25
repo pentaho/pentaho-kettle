@@ -38,7 +38,7 @@ import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.Point;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -110,8 +110,8 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
     
     if (trans != null) {
       String status = trans.getStatus();
-      int lastLineNr = CentralLogStore.getLastBufferLineNr();
-      String logText = CentralLogStore.getAppender().getBuffer(trans.getLogChannel().getLogChannelId(), false, startLineNr, lastLineNr).toString();
+      int lastLineNr = KettleLogStore.getLastBufferLineNr();
+      String logText = KettleLogStore.getAppender().getBuffer(trans.getLogChannel().getLogChannelId(), false, startLineNr, lastLineNr).toString();
 
       if (useXML) {
         response.setContentType("text/xml");

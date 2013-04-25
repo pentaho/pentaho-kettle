@@ -87,7 +87,7 @@ public class RepositoryImporter implements IRepositoryImporter {
   }
   
   public RepositoryImporter(Repository repository, ImportRules importRules, List<String> limitDirs) {
-      this.log = new LogChannel("Repository import"); //$NON-NLS-1$
+      this.log = new LogChannel("Repository import"); 
       this.rep = repository;
       this.importRules = importRules;
       this.limitDirs = limitDirs;
@@ -113,7 +113,7 @@ public class RepositoryImporter implements IRepositoryImporter {
 
         final String filename = (!Const.isEmpty(fileDirectory)) ? fileDirectory + Const.FILE_SEPARATOR + filenames[ii] : filenames[ii];
         if (log.isBasic())
-          log.logBasic("Import objects from XML file [" + filename + "]"); //$NON-NLS-1$ //$NON-NLS-2$
+          log.logBasic("Import objects from XML file [" + filename + "]");  
         feedback.addLog(BaseMessages.getString(PKG, "RepositoryImporter.WhichFile.Log", filename));
 
         // To where?

@@ -274,8 +274,8 @@ public class SqlTransMeta {
     
     // specify true/false targets
     List<StreamInterface> targetStreams = filterMeta.getStepIOMeta().getTargetStreams();
-    targetStreams.get(0).setSubject( trueStep.getName() ); //$NON-NLS-1$
-    targetStreams.get(1).setSubject( falseStep.getName() ); //$NON-NLS-1$
+    targetStreams.get(0).setSubject( trueStep.getName() ); 
+    targetStreams.get(1).setSubject( falseStep.getName() ); 
     filterMeta.searchInfoAndTargetSteps(transMeta.getSteps());
 
     DummyTransMeta dummyMeta = new DummyTransMeta();

@@ -33,7 +33,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.FileLoggingEventListener;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -80,8 +80,8 @@ public class Pan {
     StringBuffer optionLogfile, optionLogfileOld, optionListdir, optionListtrans, optionListrep, optionExprep, optionNorep, optionSafemode, optionVersion, optionJarFilename, optionListParam, optionMetrics;
     NamedParams optionParams = new NamedParamsDefault();
     
-    CommandLineOption maxLogLinesOption = new CommandLineOption("maxloglines", BaseMessages.getString(PKG, "Pan.CmdLine.MaxLogLines"), new StringBuffer()); //$NON-NLS-1$ //$NON-NLS-2$
-    CommandLineOption maxLogTimeoutOption = new CommandLineOption("maxlogtimeout", BaseMessages.getString(PKG, "Pan.CmdLine.MaxLogTimeout"), new StringBuffer()); //$NON-NLS-1$ //$NON-NLS-2$
+    CommandLineOption maxLogLinesOption = new CommandLineOption("maxloglines", BaseMessages.getString(PKG, "Pan.CmdLine.MaxLogLines"), new StringBuffer());  
+    CommandLineOption maxLogTimeoutOption = new CommandLineOption("maxlogtimeout", BaseMessages.getString(PKG, "Pan.CmdLine.MaxLogTimeout"), new StringBuffer());  
 
     CommandLineOption options[] = new CommandLineOption[] { new CommandLineOption("rep", BaseMessages.getString(PKG, "Pan.ComdLine.RepName"), optionRepname = new StringBuffer()),
         new CommandLineOption("user", BaseMessages.getString(PKG, "Pan.ComdLine.RepUsername"), optionUsername = new StringBuffer()),
@@ -141,7 +141,7 @@ public class Pan {
 
     if (!Const.isEmpty(optionLogfile)) {
       fileLoggingEventListener = new FileLoggingEventListener(optionLogfile.toString(), true);
-      CentralLogStore.getAppender().addLoggingEventListener(fileLoggingEventListener);
+      KettleLogStore.getAppender().addLoggingEventListener(fileLoggingEventListener);
     } else {
       fileLoggingEventListener = null;
     }
@@ -528,7 +528,7 @@ public class Pan {
         e.printStackTrace(System.err);
         status = 1;
       }
-      CentralLogStore.getAppender().removeLoggingEventListener(fileLoggingEventListener);
+      KettleLogStore.getAppender().removeLoggingEventListener(fileLoggingEventListener);
     }
 
     System.exit(status);

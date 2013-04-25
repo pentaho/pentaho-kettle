@@ -734,7 +734,7 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
 			 
 			
 		 }catch(KettleException ke){
-				new ErrorDialog(shell, BaseMessages.getString(PKG, "RssInputDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "RssInputDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "RssInputDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "RssInputDialog.FailedToGetFields.DialogMessage"), ke);  
 			}
 	 }
 	 

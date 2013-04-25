@@ -84,7 +84,7 @@ public class CubeInput extends BaseStep implements StepInterface
 
         if (checkFeedback(getLinesInput())) 
         {
-        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "CubeInput.Log.LineNumber")+getLinesInput()); //$NON-NLS-1$
+        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "CubeInput.Log.LineNumber")+getLinesInput()); 
         }
 
 		return true;
@@ -120,13 +120,13 @@ public class CubeInput extends BaseStep implements StepInterface
 				}
 				catch(KettleFileException kfe)
 				{
-					logError(BaseMessages.getString(PKG, "CubeInput.Log.UnableToReadMetadata"), kfe); //$NON-NLS-1$
+					logError(BaseMessages.getString(PKG, "CubeInput.Log.UnableToReadMetadata"), kfe); 
 					return false;
 				}
 			}
 			catch(Exception e)
 			{
-				logError(BaseMessages.getString(PKG, "CubeInput.Log.ErrorReadingFromDataCube"), e); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "CubeInput.Log.ErrorReadingFromDataCube"), e); 
 			}
 		}
 		return false;
@@ -157,7 +157,7 @@ public class CubeInput extends BaseStep implements StepInterface
 		}
 		catch(IOException e)
 		{
-			logError(BaseMessages.getString(PKG, "CubeInput.Log.ErrorClosingCube")+e.toString()); //$NON-NLS-1$
+			logError(BaseMessages.getString(PKG, "CubeInput.Log.ErrorClosingCube")+e.toString()); 
 			setErrors(1);
 			stopAll();
 		}

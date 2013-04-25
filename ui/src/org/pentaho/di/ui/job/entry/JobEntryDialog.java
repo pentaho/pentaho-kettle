@@ -154,7 +154,7 @@ public class JobEntryDialog extends Dialog {
 
     addDatabases(wConnection);
 
-    wlConnection.setText(BaseMessages.getString(PKG, "BaseStepDialog.Connection.Label")); //$NON-NLS-1$
+    wlConnection.setText(BaseMessages.getString(PKG, "BaseStepDialog.Connection.Label")); 
     props.setLook(wlConnection);
     fdlConnection = new FormData();
     fdlConnection.left = new FormAttachment(0, 0);
@@ -168,7 +168,7 @@ public class JobEntryDialog extends Dialog {
     // 
     // Wizard button
     //
-    wbwConnection.setText(BaseMessages.getString(PKG, "BaseStepDialog.WizardConnectionButton.Label")); //$NON-NLS-1$
+    wbwConnection.setText(BaseMessages.getString(PKG, "BaseStepDialog.WizardConnectionButton.Label")); 
     wbwConnection.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
     	CreateDatabaseWizard cdw = new CreateDatabaseWizard();
@@ -193,7 +193,7 @@ public class JobEntryDialog extends Dialog {
     // 
     // NEW button
     //
-    wbnConnection.setText(BaseMessages.getString(PKG, "BaseStepDialog.NewConnectionButton.Label")); //$NON-NLS-1$
+    wbnConnection.setText(BaseMessages.getString(PKG, "BaseStepDialog.NewConnectionButton.Label")); 
     wbnConnection.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
         DatabaseMeta databaseMeta = new DatabaseMeta();
@@ -220,7 +220,7 @@ public class JobEntryDialog extends Dialog {
     //
     // Edit button
     //
-    wbeConnection.setText(BaseMessages.getString(PKG, "BaseStepDialog.EditConnectionButton.Label")); //$NON-NLS-1$
+    wbeConnection.setText(BaseMessages.getString(PKG, "BaseStepDialog.EditConnectionButton.Label")); 
     wbeConnection.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
         DatabaseMeta databaseMeta = jobMeta.findDatabase(wConnection.getText());

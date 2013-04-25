@@ -133,13 +133,13 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 
         for (int i = 0; i < nrparams; i++)
         {
-            parameterField[i] = "param" + i; //$NON-NLS-1$
-            parameterName[i] = "param"; //$NON-NLS-1$
+            parameterField[i] = "param" + i; 
+            parameterName[i] = "param"; 
         }
         for (int i = 0; i < nroutputproperties; i++)
         {
-        	outputPropertyName[i] = "outputprop" + i; //$NON-NLS-1$
-        	outputPropertyValue[i] = "outputprop"; //$NON-NLS-1$
+        	outputPropertyName[i] = "outputprop" + i; 
+        	outputPropertyValue[i] = "outputprop"; 
         }
 		setID(-1L);
 	}
@@ -190,28 +190,28 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 		retval.append("      ").append(XMLHandler.addTagValue("filenamesfromprevious",  filenamesfromprevious));
 		retval.append("      ").append(XMLHandler.addTagValue("xsltfactory", xsltfactory));
 		
-		retval.append("    <parameters>").append(Const.CR); //$NON-NLS-1$
+		retval.append("    <parameters>").append(Const.CR); 
 
 	        for (int i = 0; i < parameterName.length; i++)
 	        {
-	            retval.append("      <parameter>").append(Const.CR); //$NON-NLS-1$
-	            retval.append("        ").append(XMLHandler.addTagValue("field", parameterField[i])); //$NON-NLS-1$ //$NON-NLS-2$
-	            retval.append("        ").append(XMLHandler.addTagValue("name", parameterName[i])); //$NON-NLS-1$ //$NON-NLS-2$
-	            retval.append("      </parameter>").append(Const.CR); //$NON-NLS-1$
+	            retval.append("      <parameter>").append(Const.CR); 
+	            retval.append("        ").append(XMLHandler.addTagValue("field", parameterField[i]));  
+	            retval.append("        ").append(XMLHandler.addTagValue("name", parameterName[i]));  
+	            retval.append("      </parameter>").append(Const.CR); 
 	        }
 
-	      retval.append("    </parameters>").append(Const.CR); //$NON-NLS-1$
-	      retval.append("    <outputproperties>").append(Const.CR); //$NON-NLS-1$
+	      retval.append("    </parameters>").append(Const.CR); 
+	      retval.append("    <outputproperties>").append(Const.CR); 
 
 	        for (int i = 0; i < outputPropertyName.length; i++)
 	        {
-	            retval.append("      <outputproperty>").append(Const.CR); //$NON-NLS-1$
-	            retval.append("        ").append(XMLHandler.addTagValue("name", outputPropertyName[i])); //$NON-NLS-1$ //$NON-NLS-2$
-	            retval.append("        ").append(XMLHandler.addTagValue("value", outputPropertyValue[i])); //$NON-NLS-1$ //$NON-NLS-2$
-	            retval.append("      </outputproperty>").append(Const.CR); //$NON-NLS-1$
+	            retval.append("      <outputproperty>").append(Const.CR); 
+	            retval.append("        ").append(XMLHandler.addTagValue("name", outputPropertyName[i]));  
+	            retval.append("        ").append(XMLHandler.addTagValue("value", outputPropertyValue[i]));  
+	            retval.append("      </outputproperty>").append(Const.CR); 
 	        }
 
-	      retval.append("    </outputproperties>").append(Const.CR); //$NON-NLS-1$
+	      retval.append("    </outputproperties>").append(Const.CR); 
 		return retval.toString();
 	}
 
@@ -228,24 +228,24 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 			filenamesfromprevious = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "filenamesfromprevious"));
 			xsltfactory = XMLHandler.getTagValue(entrynode, "xsltfactory");
 			if(xsltfactory==null) xsltfactory=FACTORY_JAXP;
-			Node parametersNode = XMLHandler.getSubNode(entrynode, "parameters"); //$NON-NLS-1$
-            int nrparams = XMLHandler.countNodes(parametersNode, "parameter"); //$NON-NLS-1$
+			Node parametersNode = XMLHandler.getSubNode(entrynode, "parameters"); 
+            int nrparams = XMLHandler.countNodes(parametersNode, "parameter"); 
             
-    		Node parametersOutputProps = XMLHandler.getSubNode(entrynode, "outputproperties"); //$NON-NLS-1$
+    		Node parametersOutputProps = XMLHandler.getSubNode(entrynode, "outputproperties"); 
             int nroutputprops = XMLHandler.countNodes(parametersOutputProps, "outputproperty");
             allocate(nrparams, nroutputprops);
 
             for (int i = 0; i < nrparams; i++)
             {
-                Node anode = XMLHandler.getSubNodeByNr(parametersNode, "parameter", i); //$NON-NLS-1$
-                parameterField[i] = XMLHandler.getTagValue(anode, "field"); //$NON-NLS-1$
-                parameterName[i] = XMLHandler.getTagValue(anode, "name"); //$NON-NLS-1$
+                Node anode = XMLHandler.getSubNodeByNr(parametersNode, "parameter", i); 
+                parameterField[i] = XMLHandler.getTagValue(anode, "field"); 
+                parameterName[i] = XMLHandler.getTagValue(anode, "name"); 
             }
             for (int i = 0; i < nroutputprops; i++)
             {
-                Node anode = XMLHandler.getSubNodeByNr(parametersOutputProps, "outputproperty", i); //$NON-NLS-1$
-                outputPropertyName[i] = XMLHandler.getTagValue(anode, "name"); //$NON-NLS-1$
-                outputPropertyValue[i] = XMLHandler.getTagValue(anode, "value"); //$NON-NLS-1$
+                Node anode = XMLHandler.getSubNodeByNr(parametersOutputProps, "outputproperty", i); 
+                outputPropertyName[i] = XMLHandler.getTagValue(anode, "name"); 
+                outputPropertyValue[i] = XMLHandler.getTagValue(anode, "value"); 
             }
 
 
@@ -269,19 +269,19 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 			xsltfactory = rep.getJobEntryAttributeString(id_jobentry, "xsltfactory");
 			if(xsltfactory==null) xsltfactory=FACTORY_JAXP;
 			
-			 int nrparams = rep.countNrJobEntryAttributes(id_jobentry, "param_name"); //$NON-NLS-1$
-			 int nroutputprops = rep.countNrJobEntryAttributes(id_jobentry, "output_property_name"); //$NON-NLS-1$
+			 int nrparams = rep.countNrJobEntryAttributes(id_jobentry, "param_name"); 
+			 int nroutputprops = rep.countNrJobEntryAttributes(id_jobentry, "output_property_name"); 
 	         allocate(nrparams, nroutputprops);
 
            for (int i = 0; i < nrparams; i++)
            {
-               parameterField[i] = rep.getJobEntryAttributeString(id_jobentry, i, "param_field"); //$NON-NLS-1$
-               parameterName[i] = rep.getJobEntryAttributeString(id_jobentry, i, "param_name"); //$NON-NLS-1$
+               parameterField[i] = rep.getJobEntryAttributeString(id_jobentry, i, "param_field"); 
+               parameterName[i] = rep.getJobEntryAttributeString(id_jobentry, i, "param_name"); 
            }
            for (int i = 0; i < nroutputprops; i++)
            {
-               outputPropertyName[i] = rep.getJobEntryAttributeString(id_jobentry, i, "output_property_name"); //$NON-NLS-1$
-               outputPropertyValue[i] = rep.getJobEntryAttributeString(id_jobentry, i, "output_property_value"); //$NON-NLS-1$
+               outputPropertyName[i] = rep.getJobEntryAttributeString(id_jobentry, i, "output_property_name"); 
+               outputPropertyValue[i] = rep.getJobEntryAttributeString(id_jobentry, i, "output_property_value"); 
            }
 		}
 		catch(KettleException dbe)
@@ -305,13 +305,13 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 
 			for (int i = 0; i < parameterName.length; i++)
             {
-                rep.saveJobEntryAttribute(id_job, getObjectId(), i, "param_field", parameterField[i]); //$NON-NLS-1$
-                rep.saveJobEntryAttribute(id_job, getObjectId(), i, "param_name", parameterName[i]); //$NON-NLS-1$
+                rep.saveJobEntryAttribute(id_job, getObjectId(), i, "param_field", parameterField[i]); 
+                rep.saveJobEntryAttribute(id_job, getObjectId(), i, "param_name", parameterName[i]); 
             }
 			for (int i = 0; i < outputPropertyName.length; i++)
             {
-                rep.saveJobEntryAttribute(id_job, getObjectId(), i, "output_property_name", outputPropertyName[i]); //$NON-NLS-1$
-                rep.saveJobEntryAttribute(id_job, getObjectId(), i, "output_property_value", outputPropertyValue[i]); //$NON-NLS-1$
+                rep.saveJobEntryAttribute(id_job, getObjectId(), i, "output_property_name", outputPropertyName[i]); 
+                rep.saveJobEntryAttribute(id_job, getObjectId(), i, "output_property_value", outputPropertyValue[i]); 
             }
 		}
 		catch(KettleDatabaseException dbe)
@@ -687,10 +687,10 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
     ValidatorContext ctx = new ValidatorContext();
     putVariableSpace(ctx, getVariables());
     putValidators(ctx, notBlankValidator(), fileExistsValidator());
-    andValidator().validate(this, "xmlFilename", remarks, ctx);//$NON-NLS-1$
-    andValidator().validate(this, "xslFilename", remarks, ctx);//$NON-NLS-1$
+    andValidator().validate(this, "xmlFilename", remarks, ctx);
+    andValidator().validate(this, "xslFilename", remarks, ctx);
 
-    andValidator().validate(this, "outputFilename", remarks, putValidators(notBlankValidator()));//$NON-NLS-1$
+    andValidator().validate(this, "outputFilename", remarks, putValidators(notBlankValidator()));
   }
   /**
    * @return Returns the OutputPropertyName.

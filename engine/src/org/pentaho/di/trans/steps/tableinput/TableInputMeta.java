@@ -170,7 +170,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 			sql                       = XMLHandler.getTagValue(stepnode, "sql");
 			rowLimit                  = XMLHandler.getTagValue(stepnode, "limit");
 
-	        String lookupFromStepname = XMLHandler.getTagValue(stepnode, "lookup"); //$NON-NLS-1$
+	        String lookupFromStepname = XMLHandler.getTagValue(stepnode, "lookup"); 
 	        StreamInterface infoStream = getStepIOMeta().getInfoStreams().get(0);
 	        infoStream.setSubject(lookupFromStepname);
 
@@ -271,7 +271,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    "+XMLHandler.addTagValue("sql",        sql));
 		retval.append("    "+XMLHandler.addTagValue("limit",      rowLimit));
         StreamInterface infoStream = getStepIOMeta().getInfoStreams().get(0);
-        retval.append("    "+XMLHandler.addTagValue("lookup", infoStream.getStepname())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        retval.append("    "+XMLHandler.addTagValue("lookup", infoStream.getStepname()));   //$NON-NLS-3$
         retval.append("    "+XMLHandler.addTagValue("execute_each_row",   executeEachInputRow));
         retval.append("    "+XMLHandler.addTagValue("variables_active",   variableReplacementActive));
         retval.append("    "+XMLHandler.addTagValue("lazy_conversion_active",   lazyConversionActive));
@@ -283,7 +283,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);  //$NON-NLS-1$
+			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);  
 			
 			sql                       =      rep.getStepAttributeString (id_step, "sql");
 			rowLimit = rep.getStepAttributeString(id_step, "limit");
@@ -291,7 +291,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 				rowLimit = Long.toString( rep.getStepAttributeInteger(id_step, "limit") );
 			}
 
-	        String lookupFromStepname =  rep.getStepAttributeString (id_step, "lookup"); //$NON-NLS-1$
+	        String lookupFromStepname =  rep.getStepAttributeString (id_step, "lookup"); 
 	        StreamInterface infoStream = getStepIOMeta().getInfoStreams().get(0);
 	        infoStream.setSubject(lookupFromStepname);
 
@@ -313,7 +313,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "sql",              sql);
 			rep.saveStepAttribute(id_transformation, id_step, "limit",            rowLimit);
             StreamInterface infoStream = getStepIOMeta().getInfoStreams().get(0);
-            rep.saveStepAttribute(id_transformation, id_step, "lookup",  infoStream.getStepname()); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "lookup",  infoStream.getStepname()); 
             rep.saveStepAttribute(id_transformation, id_step, "execute_each_row", executeEachInputRow);
             rep.saveStepAttribute(id_transformation, id_step, "variables_active", variableReplacementActive);
             rep.saveStepAttribute(id_transformation, id_step, "lazy_conversion_active", lazyConversionActive);

@@ -192,14 +192,14 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "SSHDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "SSHDialog.Shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin=Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "SSHDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "SSHDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -554,7 +554,7 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface
 
 		// CommandField field
 		wlCommandField=new Label(wCommands, SWT.RIGHT);
-		wlCommandField.setText(BaseMessages.getString(PKG, "SSHDialog.MessageNameField.Label")); //$NON-NLS-1$
+		wlCommandField.setText(BaseMessages.getString(PKG, "SSHDialog.MessageNameField.Label")); 
  		props.setLook(wlCommandField);
 		fdlCommandField=new FormData();
 		fdlCommandField.left = new FormAttachment(0, margin);
@@ -644,11 +644,11 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface
 
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wPreview=new Button(shell, SWT.PUSH);
 		wPreview.setText(BaseMessages.getString(PKG, "SSHDialog.Button.PreviewRows"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, wTabFolder);
 
@@ -802,7 +802,7 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface
 			catch(KettleException ke)
 			{
 				new ErrorDialog(shell, BaseMessages.getString(PKG, "SSHDialog.FailedToGetFields.DialogTitle"), 
-						BaseMessages.getString(PKG, "SSHDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+						BaseMessages.getString(PKG, "SSHDialog.FailedToGetFields.DialogMessage"), ke);  
 			}
 		 }
 		}

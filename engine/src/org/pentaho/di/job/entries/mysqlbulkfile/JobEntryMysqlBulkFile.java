@@ -668,8 +668,8 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
   @Override
   public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore)
   {
-    andValidator().validate(this, "filename", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
-    andValidator().validate(this, "tablename", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+    andValidator().validate(this, "filename", remarks, putValidators(notBlankValidator())); 
+    andValidator().validate(this, "tablename", remarks, putValidators(notBlankValidator())); 
   }
 
 

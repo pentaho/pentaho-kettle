@@ -37,11 +37,11 @@ public class CheckResult implements CheckResultInterface
 	private static Class<?> PKG = Const.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	  public static final String typeDesc[] = {
-          "", //$NON-NLS-1$
-          BaseMessages.getString(PKG, "CheckResult.OK"), //$NON-NLS-1$
-          BaseMessages.getString(PKG, "CheckResult.Remark"), //$NON-NLS-1$
-          BaseMessages.getString(PKG, "CheckResult.Warning"), //$NON-NLS-1$
-          BaseMessages.getString(PKG, "CheckResult.Error") //$NON-NLS-1$
+          "", 
+          BaseMessages.getString(PKG, "CheckResult.OK"), 
+          BaseMessages.getString(PKG, "CheckResult.Remark"), 
+          BaseMessages.getString(PKG, "CheckResult.Warning"), 
+          BaseMessages.getString(PKG, "CheckResult.Error") 
           };
 	  
     private int type;
@@ -56,7 +56,7 @@ public class CheckResult implements CheckResultInterface
 
     public CheckResult()
     {
-        this(CheckResultInterface.TYPE_RESULT_NONE, "", null); //$NON-NLS-1$
+        this(CheckResultInterface.TYPE_RESULT_NONE, "", null); 
     }
 
     public CheckResult(int t, String s, CheckResultSourceInterface sourceMeta)
@@ -96,10 +96,10 @@ public class CheckResult implements CheckResultInterface
     public String toString()
     {
         StringBuffer sb = new StringBuffer();
-        sb.append(typeDesc[type]).append(": ").append(text); //$NON-NLS-1$
+        sb.append(typeDesc[type]).append(": ").append(text); 
 
         if (sourceMeta != null)
-            sb.append(" (").append(sourceMeta.getName()).append(")");  //$NON-NLS-1$ //$NON-NLS-2$
+            sb.append(" (").append(sourceMeta.getName()).append(")");   
 
         return sb.toString();
     }

@@ -80,7 +80,7 @@ public class AbortMeta  extends BaseStepMeta implements StepMetaInterface {
 	{
         // See if we have input streams leading to this step!
         if (input.length == 0) {
-            CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "AbortMeta.CheckResult.NoInputReceivedError"), stepinfo); //$NON-NLS-1$
+            CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "AbortMeta.CheckResult.NoInputReceivedError"), stepinfo); 
             remarks.add(cr);
         }
     }
@@ -108,9 +108,9 @@ public class AbortMeta  extends BaseStepMeta implements StepMetaInterface {
 	{
         StringBuilder retval = new StringBuilder(200);
 
-        retval.append("      ").append(XMLHandler.addTagValue("row_threshold", rowThreshold)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("      ").append(XMLHandler.addTagValue("message", message)); //$NON-NLS-1$ //$NON-NLS-2$
-	    retval.append("      ").append(XMLHandler.addTagValue("always_log_rows", alwaysLogRows)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      ").append(XMLHandler.addTagValue("row_threshold", rowThreshold));  
+        retval.append("      ").append(XMLHandler.addTagValue("message", message));  
+	    retval.append("      ").append(XMLHandler.addTagValue("always_log_rows", alwaysLogRows));  
 	    
 	    return retval.toString();
 	}
@@ -120,13 +120,13 @@ public class AbortMeta  extends BaseStepMeta implements StepMetaInterface {
     {
     	try 
     	{
-    	    rowThreshold  = XMLHandler.getTagValue(stepnode, "row_threshold"); //$NON-NLS-1$
-    	    message       = XMLHandler.getTagValue(stepnode, "message"); //$NON-NLS-1$
-    		alwaysLogRows = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "always_log_rows")); //$NON-NLS-1$ //$NON-NLS-2$
+    	    rowThreshold  = XMLHandler.getTagValue(stepnode, "row_threshold"); 
+    	    message       = XMLHandler.getTagValue(stepnode, "message"); 
+    		alwaysLogRows = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "always_log_rows"));  
     	}
 	    catch(Exception e)
 	    {
- 		    throw new KettleXMLException(BaseMessages.getString(PKG, "AbortMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository"), e); //$NON-NLS-1$
+ 		    throw new KettleXMLException(BaseMessages.getString(PKG, "AbortMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository"), e); 
 	    }    	
     }
 
@@ -134,13 +134,13 @@ public class AbortMeta  extends BaseStepMeta implements StepMetaInterface {
     {
 	    try
 	    {
-	    	rowThreshold  = rep.getStepAttributeString(id_step, "row_threshold"); //$NON-NLS-1$
-	    	message       = rep.getStepAttributeString(id_step, "message"); //$NON-NLS-1$
-		    alwaysLogRows = rep.getStepAttributeBoolean(id_step, "always_log_rows"); //$NON-NLS-1$
+	    	rowThreshold  = rep.getStepAttributeString(id_step, "row_threshold"); 
+	    	message       = rep.getStepAttributeString(id_step, "message"); 
+		    alwaysLogRows = rep.getStepAttributeBoolean(id_step, "always_log_rows"); 
 	    }
 	    catch(Exception e)
 	    {
- 		    throw new KettleException(BaseMessages.getString(PKG, "AbortMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository"), e); //$NON-NLS-1$
+ 		    throw new KettleException(BaseMessages.getString(PKG, "AbortMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository"), e); 
 	    }
     }
 
@@ -149,13 +149,13 @@ public class AbortMeta  extends BaseStepMeta implements StepMetaInterface {
     {
 	    try
 	    {
-	    	rep.saveStepAttribute(id_transformation, id_step, "row_threshold",   rowThreshold); //$NON-NLS-1$
-	    	rep.saveStepAttribute(id_transformation, id_step, "message",         message); //$NON-NLS-1$
-  	 	    rep.saveStepAttribute(id_transformation, id_step, "always_log_rows", alwaysLogRows); //$NON-NLS-1$
+	    	rep.saveStepAttribute(id_transformation, id_step, "row_threshold",   rowThreshold); 
+	    	rep.saveStepAttribute(id_transformation, id_step, "message",         message); 
+  	 	    rep.saveStepAttribute(id_transformation, id_step, "always_log_rows", alwaysLogRows); 
 	    }
 	    catch(Exception e)
 	    {
-		    throw new KettleException(BaseMessages.getString(PKG, "AbortMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
+		    throw new KettleException(BaseMessages.getString(PKG, "AbortMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); 
 	    }
     }
     

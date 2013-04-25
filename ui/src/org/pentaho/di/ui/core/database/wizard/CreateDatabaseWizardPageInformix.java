@@ -64,8 +64,8 @@ public class CreateDatabaseWizardPageInformix extends WizardPage
 		this.props=props;
 		this.info = info;
 		
-		setTitle(BaseMessages.getString(PKG, "CreateDatabaseWizardPageInformix.DialogTitle")); //$NON-NLS-1$
-		setDescription(BaseMessages.getString(PKG, "CreateDatabaseWizardPageInformix.DialogMessage")); //$NON-NLS-1$
+		setTitle(BaseMessages.getString(PKG, "CreateDatabaseWizardPageInformix.DialogTitle")); 
+		setDescription(BaseMessages.getString(PKG, "CreateDatabaseWizardPageInformix.DialogMessage")); 
 		
 		setPageComplete(false);
 	}
@@ -85,7 +85,7 @@ public class CreateDatabaseWizardPageInformix extends WizardPage
 		composite.setLayout(compLayout);
 
 		wlServername = new Label(composite, SWT.RIGHT);
-		wlServername.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPageInformix.Servername.Label")); //$NON-NLS-1$
+		wlServername.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPageInformix.Servername.Label")); 
  		props.setLook(wlServername);
 		fdlServername = new FormData();
 		fdlServername.top    = new FormAttachment(0, 0);
@@ -117,14 +117,14 @@ public class CreateDatabaseWizardPageInformix extends WizardPage
 		String name = wServername.getText()!=null?wServername.getText().length()>0?wServername.getText():null:null;
 		if (name==null)
 		{
-			setErrorMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPageInformix.ErrorMessage.ServernameRequired")); //$NON-NLS-1$
+			setErrorMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPageInformix.ErrorMessage.ServernameRequired")); 
 			return false;
 		}
 		else
 		{
 			getDatabaseInfo();
 			setErrorMessage(null);
-			setMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPageInformix.Message.Next")); //$NON-NLS-1$
+			setMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPageInformix.Message.Next")); 
 			return true;
 		}
 	}	
@@ -145,7 +145,7 @@ public class CreateDatabaseWizardPageInformix extends WizardPage
 	public IWizardPage getNextPage()
 	{
 		IWizard wiz = getWizard();
-		return wiz.getPage("2"); //$NON-NLS-1$
+		return wiz.getPage("2"); 
 	}
 	
 }

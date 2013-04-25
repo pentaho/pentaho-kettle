@@ -141,14 +141,14 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "DatabaseJoinDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "DatabaseJoinDialog.Shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "DatabaseJoinDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "DatabaseJoinDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -172,7 +172,7 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 
 		// SQL editor...
 		wlSQL=new Label(shell, SWT.NONE);
-		wlSQL.setText(BaseMessages.getString(PKG, "DatabaseJoinDialog.SQL.Label")); //$NON-NLS-1$
+		wlSQL.setText(BaseMessages.getString(PKG, "DatabaseJoinDialog.SQL.Label")); 
  		props.setLook(wlSQL);
 		fdlSQL=new FormData();
 		fdlSQL.left = new FormAttachment(0, 0);
@@ -231,7 +231,7 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 		
 		// Limit the number of lines returns
 		wlLimit=new Label(shell, SWT.RIGHT);
-		wlLimit.setText(BaseMessages.getString(PKG, "DatabaseJoinDialog.Limit.Label")); //$NON-NLS-1$
+		wlLimit.setText(BaseMessages.getString(PKG, "DatabaseJoinDialog.Limit.Label")); 
  		props.setLook(wlLimit);
 		fdlLimit=new FormData();
 		fdlLimit.left   = new FormAttachment(0, 0);
@@ -249,8 +249,8 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 
 		// Outer join?
 		wlOuter=new Label(shell, SWT.RIGHT);
-		wlOuter.setText(BaseMessages.getString(PKG, "DatabaseJoinDialog.Outerjoin.Label")); //$NON-NLS-1$
-		wlOuter.setToolTipText(BaseMessages.getString(PKG, "DatabaseJoinDialog.Outerjoin.Tooltip")); //$NON-NLS-1$
+		wlOuter.setText(BaseMessages.getString(PKG, "DatabaseJoinDialog.Outerjoin.Label")); 
+		wlOuter.setToolTipText(BaseMessages.getString(PKG, "DatabaseJoinDialog.Outerjoin.Tooltip")); 
  		props.setLook(wlOuter);
 		fdlOuter=new FormData();
 		fdlOuter.left = new FormAttachment(0, 0);
@@ -275,8 +275,8 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 
 		// useVars ?
 		wluseVars=new Label(shell, SWT.RIGHT);
-		wluseVars.setText(BaseMessages.getString(PKG, "DatabaseJoinDialog.useVarsjoin.Label")); //$NON-NLS-1$
-		wluseVars.setToolTipText(BaseMessages.getString(PKG, "DatabaseJoinDialog.useVarsjoin.Tooltip")); //$NON-NLS-1$
+		wluseVars.setText(BaseMessages.getString(PKG, "DatabaseJoinDialog.useVarsjoin.Label")); 
+		wluseVars.setToolTipText(BaseMessages.getString(PKG, "DatabaseJoinDialog.useVarsjoin.Tooltip")); 
 			props.setLook(wluseVars);
 		fdluseVars=new FormData();
 		fdluseVars.left = new FormAttachment(0, 0);
@@ -302,17 +302,17 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 		
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wGet=new Button(shell, SWT.PUSH);
-		wGet.setText(BaseMessages.getString(PKG, "DatabaseJoinDialog.GetFields.Button")); //$NON-NLS-1$
+		wGet.setText(BaseMessages.getString(PKG, "DatabaseJoinDialog.GetFields.Button")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel , wGet}, margin, null);
 
 		// The parameters
 		wlParam=new Label(shell, SWT.NONE);
-		wlParam.setText(BaseMessages.getString(PKG, "DatabaseJoinDialog.Param.Label")); //$NON-NLS-1$
+		wlParam.setText(BaseMessages.getString(PKG, "DatabaseJoinDialog.Param.Label")); 
  		props.setLook(wlParam);
 		fdlParam=new FormData();
 		fdlParam.left  = new FormAttachment(0, 0);
@@ -324,7 +324,7 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 		
 		ciKey=new ColumnInfo[nrKeyCols];
 		ciKey[0]=new ColumnInfo(BaseMessages.getString(PKG, "DatabaseJoinDialog.ColumnInfo.ParameterFieldname"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false);
-		ciKey[1]=new ColumnInfo(BaseMessages.getString(PKG, "DatabaseJoinDialog.ColumnInfo.ParameterType"),       ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ); //$NON-NLS-1$
+		ciKey[1]=new ColumnInfo(BaseMessages.getString(PKG, "DatabaseJoinDialog.ColumnInfo.ParameterType"),       ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ); 
 		
 		wParam=new TableView(transMeta, shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
@@ -442,10 +442,10 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
    * Copy information from the meta-data input to the dialog fields.
    */
   public void getData() {
-    logDebug(BaseMessages.getString(PKG, "DatabaseJoinDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+    logDebug(BaseMessages.getString(PKG, "DatabaseJoinDialog.Log.GettingKeyInfo")); 
 
     wSQL.setText(Const.NVL(input.getSql(), ""));
-    wLimit.setText("" + input.getRowLimit()); //$NON-NLS-1$
+    wLimit.setText("" + input.getRowLimit()); 
     wOuter.setSelection(input.isOuterJoin());
     wuseVars.setSelection(input.isVariableReplace());
     if (input.getParameterField() != null)
@@ -490,7 +490,7 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 		
 		input.setOuterJoin( wOuter.getSelection() );
 		input.setVariableReplace(wuseVars.getSelection() );
-		logDebug(BaseMessages.getString(PKG, "DatabaseJoinDialog.Log.ParametersFound")+nrparam+" parameters"); //$NON-NLS-1$ //$NON-NLS-2$
+		logDebug(BaseMessages.getString(PKG, "DatabaseJoinDialog.Log.ParametersFound")+nrparam+" parameters");  
 		for (int i=0;i<nrparam;i++)
 		{
 			TableItem item = wParam.getNonEmpty(i);
@@ -505,8 +505,8 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 		if (transMeta.findDatabase(wConnection.getText())==null)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(BaseMessages.getString(PKG, "DatabaseJoinDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
-			mb.setText(BaseMessages.getString(PKG, "DatabaseJoinDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "DatabaseJoinDialog.InvalidConnection.DialogMessage")); 
+			mb.setText(BaseMessages.getString(PKG, "DatabaseJoinDialog.InvalidConnection.DialogTitle")); 
 			mb.open();
 		}
 		
@@ -525,7 +525,7 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "DatabaseJoinDialog.GetFieldsFailed.DialogTitle"), BaseMessages.getString(PKG, "DatabaseJoinDialog.GetFieldsFailed.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "DatabaseJoinDialog.GetFieldsFailed.DialogTitle"), BaseMessages.getString(PKG, "DatabaseJoinDialog.GetFieldsFailed.DialogMessage"), ke);  
 		}
 
 	}

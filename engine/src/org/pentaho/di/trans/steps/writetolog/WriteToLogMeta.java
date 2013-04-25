@@ -306,12 +306,12 @@ public class WriteToLogMeta extends BaseStepMeta implements StepMetaInterface
 		CheckResult cr;
 		if (prev==null || prev.size()==0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "WriteToLogMeta.CheckResult.NotReceivingFields"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "WriteToLogMeta.CheckResult.NotReceivingFields"), stepMeta); 
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "WriteToLogMeta.CheckResult.StepRecevingData",prev.size()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "WriteToLogMeta.CheckResult.StepRecevingData",prev.size()+""), stepMeta);  
 			remarks.add(cr);
 			
 			String error_message = "";
@@ -353,12 +353,12 @@ public class WriteToLogMeta extends BaseStepMeta implements StepMetaInterface
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "WriteToLogMeta.CheckResult.StepRecevingData2"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "WriteToLogMeta.CheckResult.StepRecevingData2"), stepMeta); 
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "WriteToLogMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "WriteToLogMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepMeta); 
 			remarks.add(cr);
 		}
 	}

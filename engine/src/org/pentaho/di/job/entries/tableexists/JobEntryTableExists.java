@@ -258,7 +258,7 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
     @Override
     public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore)
     {
-      andValidator().validate(this, "tablename", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+      andValidator().validate(this, "tablename", remarks, putValidators(notBlankValidator())); 
     }
 
 }

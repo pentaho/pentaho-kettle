@@ -173,8 +173,8 @@ public class UISecurityTest {
       selectedUser.removeRole(adminRole);
       selectedUser.removeRole(authenticatedRole);
       security.updateUser(selectedUser);
-      assertEquals(selectedUser.getPassword(), "newpassword123");//$NON-NLS-1$
-      assertEquals(selectedUser.getDescription(), "new description 123"); //$NON-NLS-1$
+      assertEquals(selectedUser.getPassword(), "newpassword123");
+      assertEquals(selectedUser.getDescription(), "new description 123"); 
       assertEquals(security.getSelectedUser(), selectedUser);
       assertEquals(security.getUserList().size(), 5);
     } catch (Exception e) {
@@ -247,7 +247,7 @@ public class UISecurityTest {
       selectedRole.removeUser(suzyUser);
       selectedRole.removeUser(tiffanyUser);
       security.updateRole(selectedRole);
-      assertEquals(selectedRole.getDescription(), "new description 123"); //$NON-NLS-1$
+      assertEquals(selectedRole.getDescription(), "new description 123"); 
       assertEquals(security.getSelectedRole(), selectedRole);
       assertEquals(security.getRoleList().size(), 9);
     } catch (Exception e) {

@@ -80,7 +80,7 @@ public class FilesToResult extends BaseStep implements StepInterface
 
 			if (data.filenameIndex < 0)
 			{
-				logError(BaseMessages.getString(PKG, "FilesToResult.Log.CouldNotFindField", meta.getFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
+				logError(BaseMessages.getString(PKG, "FilesToResult.Log.CouldNotFindField", meta.getFilenameField()));  
 				setErrors(1);
 				stopAll();
 				return false;
@@ -110,7 +110,7 @@ public class FilesToResult extends BaseStep implements StepInterface
 		// rowset(s).
 
 		if (checkFeedback(getLinesRead())) {
-			logBasic(BaseMessages.getString(PKG, "FilesToResult.Log.LineNumber") + getLinesRead()); //$NON-NLS-1$
+			logBasic(BaseMessages.getString(PKG, "FilesToResult.Log.LineNumber") + getLinesRead()); 
 		}
 
 		return true;

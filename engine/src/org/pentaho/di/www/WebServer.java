@@ -72,8 +72,12 @@ public class WebServer {
 
   private Timer slaveMonitoringTimer;
 
+  private String passwordFile;
+
+  
+  
   public WebServer(LogChannelInterface log, TransformationMap transformationMap, JobMap jobMap, SocketRepository socketRepository,
-      List<SlaveServerDetection> detections, String hostname, int port, boolean join) throws Exception {
+      List<SlaveServerDetection> detections, String hostname, int port, boolean join, String passwordFile) throws Exception {
     this.log = log;
     this.transformationMap = transformationMap;
     this.jobMap = jobMap;
@@ -81,6 +85,7 @@ public class WebServer {
     this.detections = detections;
     this.hostname = hostname;
     this.port = port;
+    this.passwordFile = passwordFile; 
 
     startServer();
 
@@ -97,6 +102,12 @@ public class WebServer {
       List<SlaveServerDetection> slaveServers, String hostname, int port) throws Exception {
     this(log, transformationMap, jobMap, socketRepository, slaveServers, hostname, port, true);
   }
+  
+  public WebServer(LogChannelInterface log, TransformationMap transformationMap, JobMap jobMap, SocketRepository socketRepository,
+      List<SlaveServerDetection> detections, String hostname, int port, boolean join) throws Exception {
+    this(log, transformationMap, jobMap, socketRepository, detections, hostname, port, join, null);
+  }
+   
 
   public Server getServer() {
     return server;
@@ -126,12 +137,15 @@ public class WebServer {
     } else {
       // See if there is a kettle.pwd file in the KETTLE_HOME directory:
       //
-      File homePwdFile = new File(Const.getKettleCartePasswordFile());
-      if (homePwdFile.exists()) {
-        securityHandler.setUserRealm(new HashUserRealm("Kettle", Const.getKettleCartePasswordFile()));
-      } else {
-        securityHandler.setUserRealm(new HashUserRealm("Kettle", Const.getKettleLocalCartePasswordFile()));
+      if (Const.isEmpty(passwordFile)) {
+        File homePwdFile = new File(Const.getKettleCartePasswordFile());
+        if (homePwdFile.exists()) {
+          passwordFile = Const.getKettleCartePasswordFile();
+        } else {
+          passwordFile = Const.getKettleLocalCartePasswordFile();
+        }
       }
+      securityHandler.setUserRealm(new HashUserRealm("Kettle", passwordFile));
     }
 
     securityHandler.setConstraintMappings(new ConstraintMapping[] { constraintMapping });
@@ -286,5 +300,13 @@ public class WebServer {
    */
   public void setSocketRepository(SocketRepository socketRepository) {
     this.socketRepository = socketRepository;
+  }
+
+  public String getPasswordFile() {
+    return passwordFile;
+  }
+
+  public void setPasswordFile(String passwordFile) {
+    this.passwordFile = passwordFile;
   }
 }

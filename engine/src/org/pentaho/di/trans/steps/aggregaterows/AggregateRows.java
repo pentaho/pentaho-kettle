@@ -192,7 +192,7 @@ public class AggregateRows extends BaseStep implements StepInterface
 				data.fieldnrs[i]=getInputRowMeta().indexOfValue(meta.getFieldName()[i]);
 				if (data.fieldnrs[i]<0)
 				{
-					logError(BaseMessages.getString(PKG, "AggregateRows.Log.CouldNotFindField",meta.getFieldName()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "AggregateRows.Log.CouldNotFindField",meta.getFieldName()[i]));  
 					setErrors(1);
 					stopAll();
 					return false;
@@ -204,7 +204,7 @@ public class AggregateRows extends BaseStep implements StepInterface
 		AddAggregate(getInputRowMeta(), r);
 		
         if (checkFeedback(getLinesRead())) 
-        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "AggregateRows.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "AggregateRows.Log.LineNumber")+getLinesRead()); 
 		
 		return true;
 	}

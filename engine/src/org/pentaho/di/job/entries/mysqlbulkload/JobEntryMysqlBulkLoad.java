@@ -697,9 +697,9 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
     ValidatorContext ctx = new ValidatorContext();
     putVariableSpace(ctx, getVariables());
     putValidators(ctx, notBlankValidator(), fileExistsValidator());
-    andValidator().validate(this, "filename", remarks, ctx);//$NON-NLS-1$
+    andValidator().validate(this, "filename", remarks, ctx);
 
-    andValidator().validate(this, "tablename", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+    andValidator().validate(this, "tablename", remarks, putValidators(notBlankValidator())); 
   }
 
 }

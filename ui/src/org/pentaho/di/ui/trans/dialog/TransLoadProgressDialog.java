@@ -104,7 +104,7 @@ public class TransLoadProgressDialog
 				}
 				catch(KettleException e)
 				{
-					throw new InvocationTargetException(e, BaseMessages.getString(PKG, "TransLoadProgressDialog.Exception.ErrorLoadingTransformation")); //$NON-NLS-1$
+					throw new InvocationTargetException(e, BaseMessages.getString(PKG, "TransLoadProgressDialog.Exception.ErrorLoadingTransformation")); 
 				}
 			}
 		};
@@ -116,12 +116,12 @@ public class TransLoadProgressDialog
 		}
 		catch (InvocationTargetException e)
 		{
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "TransLoadProgressDialog.ErrorLoadingTransformation.DialogTitle"), BaseMessages.getString(PKG, "TransLoadProgressDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "TransLoadProgressDialog.ErrorLoadingTransformation.DialogTitle"), BaseMessages.getString(PKG, "TransLoadProgressDialog.ErrorLoadingTransformation.DialogMessage"), e);  
 			transInfo = null;
 		}
 		catch (InterruptedException e)
 		{
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "TransLoadProgressDialog.ErrorLoadingTransformation.DialogTitle"), BaseMessages.getString(PKG, "TransLoadProgressDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "TransLoadProgressDialog.ErrorLoadingTransformation.DialogTitle"), BaseMessages.getString(PKG, "TransLoadProgressDialog.ErrorLoadingTransformation.DialogMessage"), e);  
 			transInfo = null;
 		}
 

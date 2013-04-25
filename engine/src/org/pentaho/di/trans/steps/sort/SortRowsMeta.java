@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.sort;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
@@ -66,6 +67,10 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
     /** false : case insensitive, true=case sensitive */
     private boolean caseSensitive[];
 
+    /** false : not a presorted field, true=presorted field */
+    private boolean preSortedField[];
+    private List<String> groupFields;
+    
     /** Directory to store the temp files */
     private String  directory;
 
@@ -89,7 +94,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
     
     /** The variable to use to set the compressFiles option boolean */
     private String  compressFilesVariable;
-
+    
     public SortRowsMeta()
     {
         super(); // allocate BaseStepMeta
@@ -169,6 +174,8 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
         fieldName = new String[nrfields]; // order by
         ascending = new boolean[nrfields];
         caseSensitive = new boolean[nrfields];
+        preSortedField = new boolean[nrfields];
+        groupFields = null;
     }
 
     public Object clone()
@@ -184,6 +191,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
             retval.fieldName[i] = fieldName[i];
             retval.ascending[i] = ascending[i];
             retval.caseSensitive[i] = caseSensitive[i];
+            retval.preSortedField[i] = preSortedField[i];
         }
 
         return retval;
@@ -215,6 +223,8 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
                 ascending[i] = "Y".equalsIgnoreCase(asc);
                 String sens = XMLHandler.getTagValue(fnode, "case_sensitive");
                 caseSensitive[i] = Const.isEmpty(sens) || "Y".equalsIgnoreCase(sens);
+                String presorted = XMLHandler.getTagValue(fnode, "presorted");
+                preSortedField[i] = "Y".equalsIgnoreCase(presorted);
             }
         }
         catch (Exception e)
@@ -241,6 +251,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
         {
             fieldName[i] = "field" + i;
             caseSensitive[i] = true;
+            preSortedField[i] = false;
         }
     }
 
@@ -255,7 +266,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("      ").append(XMLHandler.addTagValue("compress", compressFiles));
         retval.append("      ").append(XMLHandler.addTagValue("compress_variable", compressFilesVariable));
         retval.append("      ").append(XMLHandler.addTagValue("unique_rows", onlyPassingUniqueRows));
-
+        
         retval.append("    <fields>").append(Const.CR);
         for (int i = 0; i < fieldName.length; i++)
         {
@@ -263,6 +274,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
             retval.append("        ").append(XMLHandler.addTagValue("name", fieldName[i]));
             retval.append("        ").append(XMLHandler.addTagValue("ascending", ascending[i]));
             retval.append("        ").append(XMLHandler.addTagValue("case_sensitive", caseSensitive[i]));
+            retval.append("        ").append(XMLHandler.addTagValue("presorted", preSortedField[i]));
             retval.append("      </field>").append(Const.CR);
         }
         retval.append("    </fields>").append(Const.CR);
@@ -299,6 +311,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
                 fieldName[i] = rep.getStepAttributeString(id_step, i, "field_name");
                 ascending[i] = rep.getStepAttributeBoolean(id_step, i, "field_ascending");
                 caseSensitive[i] = rep.getStepAttributeBoolean(id_step, i, "field_case_sensitive", true);
+                preSortedField[i] = rep.getStepAttributeBoolean(id_step, i, "field_presorted", false);
             }
         }
         catch (Exception e)
@@ -324,6 +337,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
                 rep.saveStepAttribute(id_transformation, id_step, i, "field_name", fieldName[i]);
                 rep.saveStepAttribute(id_transformation, id_step, i, "field_ascending", ascending[i]);
                 rep.saveStepAttribute(id_transformation, id_step, i, "field_case_sensitive", caseSensitive[i]);
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_presorted", preSortedField[i]);
             }
         }
         catch (Exception e)
@@ -343,6 +357,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
                 ValueMetaInterface valueMeta = inputRowMeta.getValueMeta(idx);
                 valueMeta.setSortedDescending(!ascending[i]);
                 valueMeta.setCaseInsensitive(!caseSensitive[i]);
+                
                 
                 // Also see if lazy conversion is active on these key fields.
                 // If so we want to automatically convert them to the normal storage type.
@@ -544,6 +559,39 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
 	public void setFreeMemoryLimit(String freeMemoryLimit) {
 		this.freeMemoryLimit = freeMemoryLimit;
 	}
+	
+	/**
+	 * @return the preSortedField
+	 */	
+	public boolean[] getPreSortedField() {		
+		return preSortedField;
+	}
+	
+	/**
+	 * @param preSortedField the preSorteField to set
+	 */
+	public void setPreSortedField(boolean[] preSorted) {		
+		preSortedField = preSorted;
+	}
+	
+	public List<String> getGroupFields() {
+		if(this.groupFields == null){
+			for (int i = 0; i < preSortedField.length; i++) {
+				if(preSortedField[i] == true){
+					if(groupFields == null){
+						groupFields = new ArrayList<String>();
+					}
+					groupFields.add(this.fieldName[i]);
+				}
+			}
+		}
+		return groupFields;
+	}
+
+	public boolean isGroupSortEnabled(){		
+		return (this.getGroupFields()!= null) ? true: false; 
+	}
+	
 	
   @Override
   public StepMetaInjectionInterface getStepMetaInjectionInterface() {

@@ -100,14 +100,14 @@ public class AppendDialog extends BaseStepDialog implements StepDialogInterface
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "AppendDialog.Shell.Label")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "AppendDialog.Shell.Label")); 
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "AppendDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "AppendDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -128,7 +128,7 @@ public class AppendDialog extends BaseStepDialog implements StepDialogInterface
         String previousSteps[] = transMeta.getPrevStepNames(stepname);
         
 		wlHeadHop=new Label(shell, SWT.RIGHT);
-		wlHeadHop.setText(BaseMessages.getString(PKG, "AppendDialog.HeadHop.Label")); //$NON-NLS-1$
+		wlHeadHop.setText(BaseMessages.getString(PKG, "AppendDialog.HeadHop.Label")); 
  		props.setLook(wlHeadHop);
 		fdlHeadHop=new FormData();
 		fdlHeadHop.left = new FormAttachment(0, 0);
@@ -151,7 +151,7 @@ public class AppendDialog extends BaseStepDialog implements StepDialogInterface
 		wHeadHop.setLayoutData(fdHeadHop);
 
 		wlTailHop=new Label(shell, SWT.RIGHT);
-		wlTailHop.setText(BaseMessages.getString(PKG, "AppendDialog.TailHop.Label")); //$NON-NLS-1$
+		wlTailHop.setText(BaseMessages.getString(PKG, "AppendDialog.TailHop.Label")); 
  		props.setLook(wlTailHop);
 		fdlTailHop=new FormData();
 		fdlTailHop.left = new FormAttachment(0, 0);
@@ -175,9 +175,9 @@ public class AppendDialog extends BaseStepDialog implements StepDialogInterface
 		
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wTailHop);
 

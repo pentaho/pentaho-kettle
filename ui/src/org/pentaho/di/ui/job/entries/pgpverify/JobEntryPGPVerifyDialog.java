@@ -71,10 +71,10 @@ public class JobEntryPGPVerifyDialog extends JobEntryDialog implements JobEntryD
 {
 	private static Class<?> PKG = JobEntryPGPVerify.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	private static final String[] EXTENSIONS = new String[] { "*" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	private static final String[] EXTENSIONS = new String[] { "*" };   //$NON-NLS-3$
 
 	private static final String[] FILETYPES = new String[] {
-			BaseMessages.getString(PKG, "JobPGPVerify.Filetype.All") }; //$NON-NLS-1$
+			BaseMessages.getString(PKG, "JobPGPVerify.Filetype.All") }; 
 
 	private Label wlName;
 
@@ -135,7 +135,7 @@ public class JobEntryPGPVerifyDialog extends JobEntryDialog implements JobEntryD
 		super(parent, jobEntryInt, rep, jobMeta);
 		jobEntry = (JobEntryPGPVerify) jobEntryInt;
 		if (this.jobEntry.getName() == null)
-			this.jobEntry.setName(BaseMessages.getString(PKG, "JobPGPVerify.Name.Default")); //$NON-NLS-1$
+			this.jobEntry.setName(BaseMessages.getString(PKG, "JobPGPVerify.Name.Default")); 
 	}
 
 	public JobEntryInterface open()
@@ -161,14 +161,14 @@ public class JobEntryPGPVerifyDialog extends JobEntryDialog implements JobEntryD
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "JobPGPVerify.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "JobPGPVerify.Title")); 
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// GPGLocation line
 		wlName = new Label(shell, SWT.RIGHT);
-		wlName.setText(BaseMessages.getString(PKG, "JobPGPVerify.Name.Label")); //$NON-NLS-1$
+		wlName.setText(BaseMessages.getString(PKG, "JobPGPVerify.Name.Label")); 
 		props.setLook(wlName);
 		fdlName = new FormData();
 		fdlName.left = new FormAttachment(0, 0);
@@ -199,7 +199,7 @@ public class JobEntryPGPVerifyDialog extends JobEntryDialog implements JobEntryD
 
 		// GPGLocation line
 		wlGPGLocation = new Label(wSettings, SWT.RIGHT);
-		wlGPGLocation.setText(BaseMessages.getString(PKG, "JobPGPVerify.GPGLocation.Label")); //$NON-NLS-1$
+		wlGPGLocation.setText(BaseMessages.getString(PKG, "JobPGPVerify.GPGLocation.Label")); 
 		props.setLook(wlGPGLocation);
 		fdlGPGLocation = new FormData();
 		fdlGPGLocation.left = new FormAttachment(0, 0);
@@ -209,7 +209,7 @@ public class JobEntryPGPVerifyDialog extends JobEntryDialog implements JobEntryD
 
 		wbGPGLocation = new Button(wSettings, SWT.PUSH | SWT.CENTER);
 		props.setLook(wbGPGLocation);
-		wbGPGLocation.setText(BaseMessages.getString(PKG, "System.Button.Browse")); //$NON-NLS-1$
+		wbGPGLocation.setText(BaseMessages.getString(PKG, "System.Button.Browse")); 
 		fdbGPGLocation = new FormData();
 		fdbGPGLocation.right = new FormAttachment(100, 0);
 		fdbGPGLocation.top = new FormAttachment(wName, 0);
@@ -227,7 +227,7 @@ public class JobEntryPGPVerifyDialog extends JobEntryDialog implements JobEntryD
 
 		// Filename line
 		wlFilename = new Label(wSettings, SWT.RIGHT);
-		wlFilename.setText(BaseMessages.getString(PKG, "JobPGPVerify.Filename.Label")); //$NON-NLS-1$
+		wlFilename.setText(BaseMessages.getString(PKG, "JobPGPVerify.Filename.Label")); 
 		props.setLook(wlFilename);
 		fdlFilename = new FormData();
 		fdlFilename.left = new FormAttachment(0, 0);
@@ -237,7 +237,7 @@ public class JobEntryPGPVerifyDialog extends JobEntryDialog implements JobEntryD
 
 		wbFilename = new Button(wSettings, SWT.PUSH | SWT.CENTER);
 		props.setLook(wbFilename);
-		wbFilename.setText(BaseMessages.getString(PKG, "System.Button.Browse")); //$NON-NLS-1$
+		wbFilename.setText(BaseMessages.getString(PKG, "System.Button.Browse")); 
 		fdbFilename = new FormData();
 		fdbFilename.right = new FormAttachment(100, 0);
 		fdbFilename.top = new FormAttachment(wGPGLocation, 0);
@@ -280,7 +280,7 @@ public class JobEntryPGPVerifyDialog extends JobEntryDialog implements JobEntryD
 		
        // DetachedFilename line
 		wlDetachedFilename = new Label(wSettings, SWT.RIGHT);
-		wlDetachedFilename.setText(BaseMessages.getString(PKG, "JobPGPVerify.DetachedFilename.Label")); //$NON-NLS-1$
+		wlDetachedFilename.setText(BaseMessages.getString(PKG, "JobPGPVerify.DetachedFilename.Label")); 
 		props.setLook(wlDetachedFilename);
 		fdlDetachedFilename = new FormData();
 		fdlDetachedFilename.left = new FormAttachment(0, 0);
@@ -290,7 +290,7 @@ public class JobEntryPGPVerifyDialog extends JobEntryDialog implements JobEntryD
 
 		wbDetachedFilename = new Button(wSettings, SWT.PUSH | SWT.CENTER);
 		props.setLook(wbDetachedFilename);
-		wbDetachedFilename.setText(BaseMessages.getString(PKG, "System.Button.Browse")); //$NON-NLS-1$
+		wbDetachedFilename.setText(BaseMessages.getString(PKG, "System.Button.Browse")); 
 		fdbDetachedFilename = new FormData();
 		fdbDetachedFilename.right = new FormAttachment(100, 0);
 		fdbDetachedFilename.top = new FormAttachment(wuseDetachedSignature, 0);
@@ -448,7 +448,7 @@ public class JobEntryPGPVerifyDialog extends JobEntryDialog implements JobEntryD
 	     // ///////////////////////////////////////////////////////////
 	     
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		FormData fd = new FormData();
 		fd.right = new FormAttachment(50, -10);
 		fd.bottom = new FormAttachment(100, 0);
@@ -456,7 +456,7 @@ public class JobEntryPGPVerifyDialog extends JobEntryDialog implements JobEntryD
 		wOK.setLayoutData(fd);
 
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 		fd = new FormData();
 		fd.left = new FormAttachment(50, 10);
 		fd.bottom = new FormAttachment(100, 0);
@@ -508,7 +508,7 @@ public class JobEntryPGPVerifyDialog extends JobEntryDialog implements JobEntryD
 		BaseStepDialog.setSize(shell);
 
 		shell.open();
-		props.setDialogSize(shell, "JobPGPVerifyDialogSize"); //$NON-NLS-1$
+		props.setDialogSize(shell, "JobPGPVerifyDialogSize"); 
 		while (!shell.isDisposed())
 		{
 			if (!display.readAndDispatch())

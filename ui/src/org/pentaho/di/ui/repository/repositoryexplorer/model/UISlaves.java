@@ -39,7 +39,7 @@ public class UISlaves extends AbstractModelList<UISlave> {
   
   @Override
   protected void fireCollectionChanged() {
-    this.changeSupport.firePropertyChange("children", null, this.getChildren()); //$NON-NLS-1$
+    this.changeSupport.firePropertyChange("children", null, this.getChildren()); 
   }
 
 }

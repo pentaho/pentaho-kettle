@@ -30,7 +30,7 @@ import junit.framework.TestCase;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
@@ -45,7 +45,7 @@ public class SlaveSequenceTest extends TestCase {
     // Bootstrap the Kettle API...
     //
     KettleEnvironment.init();
-    CentralLogStore.init(5000, 60); // Keep 5000 log rows for at least 60 minutes
+    KettleLogStore.init(5000, 60); // Keep 5000 log rows for at least 60 minutes
     
     loggingObject = new SimpleLoggingObject("SlaveSequenceTest", LoggingObjectType.GENERAL, null);
   }

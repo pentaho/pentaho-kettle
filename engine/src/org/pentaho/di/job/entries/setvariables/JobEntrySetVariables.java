@@ -95,7 +95,7 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
       };
   
   public JobEntrySetVariables(String n) {
-    super(n, ""); //$NON-NLS-1$
+    super(n, ""); 
     replaceVars = true;
     variableName = null;
     variableValue=null;
@@ -104,7 +104,7 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
   }
 
   public JobEntrySetVariables() {
-    this(""); //$NON-NLS-1$
+    this(""); 
   }
 
   public Object clone() {
@@ -154,15 +154,15 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
 
       // Read them all...
       for (int i = 0; i < nrFields; i++) {
-        Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
+        Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); 
 
-        variableName[i] = XMLHandler.getTagValue(fnode, "variable_name"); //$NON-NLS-1$
-        variableValue[i] = XMLHandler.getTagValue(fnode, "variable_value"); //$NON-NLS-1$
+        variableName[i] = XMLHandler.getTagValue(fnode, "variable_name"); 
+        variableValue[i] = XMLHandler.getTagValue(fnode, "variable_value"); 
         variableType[i] = getVariableType(XMLHandler.getTagValue(fnode, "variable_type"));
 
       }
     } catch (KettleXMLException xe) {
-      throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntrySetVariables.Meta.UnableLoadXML",xe.getMessage()), xe); //$NON-NLS-1$
+      throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntrySetVariables.Meta.UnableLoadXML",xe.getMessage()), xe); 
     }
   }
 
@@ -170,46 +170,46 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
   {
     try
     {
-        replaceVars = rep.getJobEntryAttributeBoolean(id_jobentry, "replacevars"); //$NON-NLS-1$
+        replaceVars = rep.getJobEntryAttributeBoolean(id_jobentry, "replacevars"); 
  
-        filename = rep.getJobEntryAttributeString(id_jobentry, "filename"); //$NON-NLS-1$
-        fileVariableType = getVariableType(rep.getJobEntryAttributeString(id_jobentry, "file_variable_type")); //$NON-NLS-1$
+        filename = rep.getJobEntryAttributeString(id_jobentry, "filename"); 
+        fileVariableType = getVariableType(rep.getJobEntryAttributeString(id_jobentry, "file_variable_type")); 
 
         // How many variableName?
-        int argnr = rep.countNrJobEntryAttributes(id_jobentry, "variable_name"); //$NON-NLS-1$
+        int argnr = rep.countNrJobEntryAttributes(id_jobentry, "variable_name"); 
         variableName = new String[argnr];
         variableValue = new String[argnr];
         variableType = new int[argnr];
   
         // Read them all...
         for (int a = 0; a < argnr; a++) {
-        variableName[a] = rep.getJobEntryAttributeString(id_jobentry, a, "variable_name"); //$NON-NLS-1$
-          variableValue[a] = rep.getJobEntryAttributeString(id_jobentry, a, "variable_value"); //$NON-NLS-1$
+        variableName[a] = rep.getJobEntryAttributeString(id_jobentry, a, "variable_name"); 
+          variableValue[a] = rep.getJobEntryAttributeString(id_jobentry, a, "variable_value"); 
           variableType[a] = getVariableType(rep.getJobEntryAttributeString(id_jobentry, a, "variable_type")); 
         }
       } catch (KettleException dbe) {
-        throw new KettleException(BaseMessages.getString(PKG, "JobEntrySetVariables.Meta.UnableLoadRep", String.valueOf(id_jobentry),dbe.getMessage()), dbe); //$NON-NLS-1$
+        throw new KettleException(BaseMessages.getString(PKG, "JobEntrySetVariables.Meta.UnableLoadRep", String.valueOf(id_jobentry),dbe.getMessage()), dbe); 
       }
   }
 
   public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_job) throws KettleException {
     try {
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "replacevars", replaceVars); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "replacevars", replaceVars); 
 
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "filename", filename); //$NON-NLS-1$
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "file_variable_type", getVariableTypeCode(fileVariableType)); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "filename", filename); 
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "file_variable_type", getVariableTypeCode(fileVariableType)); 
 
       // save the variableName...
       if (variableName != null) {
         for (int i = 0; i < variableName.length; i++) {
-          rep.saveJobEntryAttribute(id_job, getObjectId(), i, "variable_name", variableName[i]); //$NON-NLS-1$
-          rep.saveJobEntryAttribute(id_job, getObjectId(), i, "variable_value", variableValue[i]); //$NON-NLS-1$
+          rep.saveJobEntryAttribute(id_job, getObjectId(), i, "variable_name", variableName[i]); 
+          rep.saveJobEntryAttribute(id_job, getObjectId(), i, "variable_value", variableValue[i]); 
           rep.saveJobEntryAttribute(id_job, getObjectId(), i, "variable_type",   getVariableTypeCode(variableType[i]));
         }
       }
     } catch (KettleDatabaseException dbe) {
       throw new KettleException(
-          BaseMessages.getString(PKG, "JobEntrySetVariables.Meta.UnableSaveRep", String.valueOf(id_job),dbe.getMessage()), dbe); //$NON-NLS-1$
+          BaseMessages.getString(PKG, "JobEntrySetVariables.Meta.UnableSaveRep", String.valueOf(id_job),dbe.getMessage()), dbe); 
     }
   }
 
@@ -304,7 +304,7 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
           
           // ok we can process this line
         if(log.isDetailed()) 
-          logDetailed(BaseMessages.getString(PKG, "JobEntrySetVariables.Log.SetVariableToValue", varname, value)); //$NON-NLS-1$
+          logDetailed(BaseMessages.getString(PKG, "JobEntrySetVariables.Log.SetVariableToValue", varname, value)); 
       }
     } catch(Exception e) {
       result.setResult(false);
@@ -406,7 +406,7 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
       return variableTypeDesc;
   }
   public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore) {
-      boolean res = andValidator().validate(this, "variableName", remarks, putValidators(notNullValidator())); //$NON-NLS-1$
+      boolean res = andValidator().validate(this, "variableName", remarks, putValidators(notNullValidator())); 
 
       if (res == false) {
         return;
@@ -417,7 +417,7 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
       putValidators(ctx, notNullValidator(), fileExistsValidator());
 
       for (int i = 0; i < variableName.length; i++) {
-        andValidator().validate(this, "variableName[" + i + "]", remarks, ctx); //$NON-NLS-1$ //$NON-NLS-2$
+        andValidator().validate(this, "variableName[" + i + "]", remarks, ctx);  
       }
     }
 

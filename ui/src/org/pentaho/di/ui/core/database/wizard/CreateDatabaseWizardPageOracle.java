@@ -70,8 +70,8 @@ public class CreateDatabaseWizardPageOracle extends WizardPage
 		this.props=props;
 		this.info = info;
 		
-		setTitle(BaseMessages.getString(PKG, "CreateDatabaseWizardPageOracle.DialogTitle")); //$NON-NLS-1$
-		setDescription(BaseMessages.getString(PKG, "CreateDatabaseWizardPageOracle.DialogMessage")); //$NON-NLS-1$
+		setTitle(BaseMessages.getString(PKG, "CreateDatabaseWizardPageOracle.DialogTitle")); 
+		setDescription(BaseMessages.getString(PKG, "CreateDatabaseWizardPageOracle.DialogMessage")); 
 		
 		setPageComplete(false);
 	}
@@ -91,7 +91,7 @@ public class CreateDatabaseWizardPageOracle extends WizardPage
 		composite.setLayout(compLayout);
 
 		wlDataTS = new Label(composite, SWT.RIGHT);
-		wlDataTS.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPageOracle.DataTablespace.Label")); //$NON-NLS-1$
+		wlDataTS.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPageOracle.DataTablespace.Label")); 
  		props.setLook(wlDataTS);
 		fdlDataTS = new FormData();
 		fdlDataTS.top    = new FormAttachment(0, 0);
@@ -114,7 +114,7 @@ public class CreateDatabaseWizardPageOracle extends WizardPage
 		});
 		
 		wlIndexTS = new Label(composite, SWT.RIGHT);
-		wlIndexTS.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPageOracle.IndexTableSpace.Label")); //$NON-NLS-1$
+		wlIndexTS.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPageOracle.IndexTableSpace.Label")); 
  		props.setLook(wlIndexTS);
 		fdlIndexTS = new FormData();
 		fdlIndexTS.top    = new FormAttachment(wDataTS, margin);
@@ -144,7 +144,7 @@ public class CreateDatabaseWizardPageOracle extends WizardPage
 	{
 		getDatabaseInfo();
 		setErrorMessage(null);
-		setMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPageOracle.Message.Next")); //$NON-NLS-1$
+		setMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPageOracle.Message.Next")); 
 		return true;
 	}	
 	
@@ -169,6 +169,6 @@ public class CreateDatabaseWizardPageOracle extends WizardPage
 	public IWizardPage getNextPage()
 	{
 		IWizard wiz = getWizard();
-		return wiz.getPage("2"); //$NON-NLS-1$
+		return wiz.getPage("2"); 
 	}
 }

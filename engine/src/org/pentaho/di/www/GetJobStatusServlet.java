@@ -38,7 +38,7 @@ import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.Point;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
@@ -114,8 +114,8 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
     
     if (job != null) {
       String status = job.getStatus();
-      int lastLineNr = CentralLogStore.getLastBufferLineNr();
-      String logText = CentralLogStore.getAppender().getBuffer(job.getLogChannel().getLogChannelId(), false, startLineNr, lastLineNr).toString();
+      int lastLineNr = KettleLogStore.getLastBufferLineNr();
+      String logText = KettleLogStore.getAppender().getBuffer(job.getLogChannel().getLogChannelId(), false, startLineNr, lastLineNr).toString();
 
       if (useXML) {
         response.setContentType("text/xml");

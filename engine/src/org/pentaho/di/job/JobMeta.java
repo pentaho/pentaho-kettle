@@ -125,9 +125,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	
 	private static Class<?> PKG = JobMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	public static final String XML_TAG = "job"; //$NON-NLS-1$
+	public static final String XML_TAG = "job"; 
 
-	protected static final String XML_TAG_SLAVESERVERS = "slaveservers"; //$NON-NLS-1$
+	protected static final String XML_TAG_SLAVESERVERS = "slaveservers"; 
 	
 	/** A constant specifying the repository element type as a Job. */
 	public static final RepositoryObjectType REPOSITORY_ELEMENT_TYPE = RepositoryObjectType.JOB;
@@ -192,19 +192,19 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	public static final int TYPE_UNDO_POSITION = 4;
 
 	/** Constant = "SPECIAL" **/
-	public static final String STRING_SPECIAL = "SPECIAL"; //$NON-NLS-1$
+	public static final String STRING_SPECIAL = "SPECIAL"; 
 
 	/** Constant = "START"  **/
-	public static final String STRING_SPECIAL_START = "START"; //$NON-NLS-1$
+	public static final String STRING_SPECIAL_START = "START"; 
 
 	/** Constant = "DUMMY"  **/
-	public static final String STRING_SPECIAL_DUMMY = "DUMMY"; //$NON-NLS-1$
+	public static final String STRING_SPECIAL_DUMMY = "DUMMY"; 
 
 	/** Constant = "OK"  **/
-	public static final String STRING_SPECIAL_OK = "OK"; //$NON-NLS-1$
+	public static final String STRING_SPECIAL_OK = "OK"; 
 
 	/** Constant = "ERROR"  **/
-	public static final String STRING_SPECIAL_ERROR = "ERROR"; //$NON-NLS-1$
+	public static final String STRING_SPECIAL_ERROR = "ERROR"; 
 
 	/**
 	 *  List of booleans indicating whether or not to remember the size and position of the different windows...
@@ -297,10 +297,10 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		addDefaults();
 		setChanged(false);
 
-		created_user = "-"; //$NON-NLS-1$
+		created_user = "-"; 
 		created_date = new Date();
 
-		modifiedUser = "-"; //$NON-NLS-1$
+		modifiedUser = "-"; 
 		modifiedDate = new Date();
 		directory = new RepositoryDirectory();
 		description = null;
@@ -337,7 +337,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		jobEntry.setEntry(jobEntrySpecial);
 		jobEntry.setLocation(50, 50);
 		jobEntry.setDrawn(false);
-		jobEntry.setDescription(BaseMessages.getString(PKG, "JobMeta.StartJobEntry.Description")); //$NON-NLS-1$
+		jobEntry.setDescription(BaseMessages.getString(PKG, "JobMeta.StartJobEntry.Description")); 
 		return jobEntry;
 
 	}
@@ -354,7 +354,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		jobEntry.setEntry(jobEntrySpecial);
 		jobEntry.setLocation(50, 50);
 		jobEntry.setDrawn(false);
-		jobEntry.setDescription(BaseMessages.getString(PKG, "JobMeta.DummyJobEntry.Description")); //$NON-NLS-1$
+		jobEntry.setDescription(BaseMessages.getString(PKG, "JobMeta.DummyJobEntry.Description")); 
 		return jobEntry;
 	}
 
@@ -750,40 +750,40 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
 		StringBuffer retval = new StringBuffer(500);
 
-		retval.append("<").append(XML_TAG).append(">").append(Const.CR); //$NON-NLS-1$
+		retval.append("<").append(XML_TAG).append(">").append(Const.CR); 
 
-		retval.append("  ").append(XMLHandler.addTagValue("name", getName())); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("  ").append(XMLHandler.addTagValue("name", getName()));  
 
-		retval.append("    ").append(XMLHandler.addTagValue("description", description)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("description", description));  
 		retval.append("    ").append(XMLHandler.addTagValue("extended_description", extendedDescription));
 		retval.append("    ").append(XMLHandler.addTagValue("job_version", jobVersion));
 		if (jobStatus >= 0) {
 			retval.append("    ").append(XMLHandler.addTagValue("job_status", jobStatus));
 		}
 
-		retval.append("  ").append(XMLHandler.addTagValue("directory", directory.getPath())); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("  ").append(XMLHandler.addTagValue("created_user", created_user)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("  ").append(XMLHandler.addTagValue("created_date", XMLHandler.date2string(created_date))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		retval.append("  ").append(XMLHandler.addTagValue("modified_user", modifiedUser)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("  ").append(XMLHandler.addTagValue("modified_date", XMLHandler.date2string(modifiedDate))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		retval.append("  ").append(XMLHandler.addTagValue("directory", directory.getPath()));  
+		retval.append("  ").append(XMLHandler.addTagValue("created_user", created_user));  
+		retval.append("  ").append(XMLHandler.addTagValue("created_date", XMLHandler.date2string(created_date)));   //$NON-NLS-3$
+		retval.append("  ").append(XMLHandler.addTagValue("modified_user", modifiedUser));  
+		retval.append("  ").append(XMLHandler.addTagValue("modified_date", XMLHandler.date2string(modifiedDate)));   //$NON-NLS-3$
 
-    retval.append("  ").append(XMLHandler.addTagValue("unique_connections", usingUniqueConnections)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("  ").append(XMLHandler.addTagValue("unique_connections", usingUniqueConnections));  
 
-        retval.append("    ").append(XMLHandler.openTag(XML_TAG_PARAMETERS)).append(Const.CR); //$NON-NLS-1$
+        retval.append("    ").append(XMLHandler.openTag(XML_TAG_PARAMETERS)).append(Const.CR); 
         String[] parameters = listParameters();
         for (int idx = 0; idx < parameters.length; idx++)
         {
-        	retval.append("        ").append(XMLHandler.openTag("parameter")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
-        	retval.append("            ").append(XMLHandler.addTagValue("name", parameters[idx])); //$NON-NLS-1$
+        	retval.append("        ").append(XMLHandler.openTag("parameter")).append(Const.CR);  
+        	retval.append("            ").append(XMLHandler.addTagValue("name", parameters[idx])); 
         	try {
-        		retval.append("            ").append(XMLHandler.addTagValue("default_value", getParameterDefault(parameters[idx]))); //$NON-NLS-1$
-        		retval.append("            ").append(XMLHandler.addTagValue("description", getParameterDescription(parameters[idx]))); //$NON-NLS-1$
+        		retval.append("            ").append(XMLHandler.addTagValue("default_value", getParameterDefault(parameters[idx]))); 
+        		retval.append("            ").append(XMLHandler.addTagValue("description", getParameterDescription(parameters[idx]))); 
         	} catch (UnknownParamException e) {
 				// skip the default value and/or description.  This exception should never happen because we use listParameters() above.
 			}
-        	retval.append("        ").append(XMLHandler.closeTag("parameter")).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$        	
+        	retval.append("        ").append(XMLHandler.closeTag("parameter")).append(Const.CR);          	
         }        
-        retval.append("    ").append(XMLHandler.closeTag(XML_TAG_PARAMETERS)).append(Const.CR); //$NON-NLS-1$
+        retval.append("    ").append(XMLHandler.closeTag(XML_TAG_PARAMETERS)).append(Const.CR); 
 				
 		// Save the database connections...
 		for (int i = 0; i < nrDatabases(); i++) {
@@ -799,12 +799,12 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
 		// The slave servers...
 		//
-		retval.append("    ").append(XMLHandler.openTag(XML_TAG_SLAVESERVERS)).append(Const.CR); //$NON-NLS-1$
+		retval.append("    ").append(XMLHandler.openTag(XML_TAG_SLAVESERVERS)).append(Const.CR); 
 		for (int i = 0; i < slaveServers.size(); i++) {
 			SlaveServer slaveServer = slaveServers.get(i);
 			retval.append("         ").append(slaveServer.getXML()).append(Const.CR);
 		}
-		retval.append("    ").append(XMLHandler.closeTag(XML_TAG_SLAVESERVERS)).append(Const.CR); //$NON-NLS-1$
+		retval.append("    ").append(XMLHandler.closeTag(XML_TAG_SLAVESERVERS)).append(Const.CR); 
 
 		// Append the job logging information...
 		//
@@ -813,32 +813,32 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		retval.append(channelLogTable.getXML());		
     retval.append(checkpointLogTable.getXML());    
         
-		retval.append("   ").append(XMLHandler.addTagValue("pass_batchid", batchIdPassed)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("   ").append(XMLHandler.addTagValue("pass_batchid", batchIdPassed));  
 		retval.append("   ").append(XMLHandler.addTagValue("shared_objects_file", sharedObjectsFile)); // $NON-NLS-1$
 
-		retval.append("  <entries>").append(Const.CR); //$NON-NLS-1$
+		retval.append("  <entries>").append(Const.CR); 
 		for (int i = 0; i < nrJobEntries(); i++) {
 			JobEntryCopy jge = getJobEntry(i);
 			jge.getEntry().setRepository(repository);
 			retval.append(jge.getXML());
 		}
-		retval.append("  </entries>").append(Const.CR); //$NON-NLS-1$
+		retval.append("  </entries>").append(Const.CR); 
 
-		retval.append("  <hops>").append(Const.CR); //$NON-NLS-1$
+		retval.append("  <hops>").append(Const.CR); 
 		for (JobHopMeta hi : jobhops) // Look at all the hops
 		{
 			retval.append(hi.getXML());
 		}
-		retval.append("  </hops>").append(Const.CR); //$NON-NLS-1$
+		retval.append("  </hops>").append(Const.CR); 
 
-		retval.append("  <notepads>").append(Const.CR); //$NON-NLS-1$
+		retval.append("  <notepads>").append(Const.CR); 
 		for (int i = 0; i < nrNotes(); i++) {
 			NotePadMeta ni = getNote(i);
 			retval.append(ni.getXML());
 		}
-		retval.append("  </notepads>").append(Const.CR); //$NON-NLS-1$
+		retval.append("  </notepads>").append(Const.CR); 
 
-		retval.append("</").append(XML_TAG).append(">").append(Const.CR); //$NON-NLS-1$
+		retval.append("</").append(XML_TAG).append(">").append(Const.CR); 
 
 		return retval.toString();
 	}
@@ -906,10 +906,10 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
 				loadXML(jobnode, fname, rep, prompter);
 			} else {
-				throw new KettleXMLException(BaseMessages.getString(PKG, "JobMeta.Exception.ErrorReadingFromXMLFile") + fname); //$NON-NLS-1$
+				throw new KettleXMLException(BaseMessages.getString(PKG, "JobMeta.Exception.ErrorReadingFromXMLFile") + fname); 
 			}
 		} catch (Exception e) {
-			throw new KettleXMLException(BaseMessages.getString(PKG, "JobMeta.Exception.UnableToLoadJobFromXMLFile") + fname + "]", e); //$NON-NLS-1$ //$NON-NLS-2$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "JobMeta.Exception.UnableToLoadJobFromXMLFile") + fname + "]", e);  
 		}
 	}
 
@@ -1073,7 +1073,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			//
 			// get job info:
 			//
-			setName( XMLHandler.getTagValue(jobnode, "name") ); //$NON-NLS-1$
+			setName( XMLHandler.getTagValue(jobnode, "name") ); 
 			
 			// Optionally load the repository directory...
 			//
@@ -1100,48 +1100,48 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			jobStatus = Const.toInt(XMLHandler.getTagValue(jobnode, "job_status"), -1);
 
 			// Created user/date
-			created_user = XMLHandler.getTagValue(jobnode, "created_user"); //$NON-NLS-1$
-			String createDate = XMLHandler.getTagValue(jobnode, "created_date"); //$NON-NLS-1$
+			created_user = XMLHandler.getTagValue(jobnode, "created_user"); 
+			String createDate = XMLHandler.getTagValue(jobnode, "created_date"); 
 
 			if (createDate != null) {
 				created_date = XMLHandler.stringToDate(createDate);
 			}
 
 			// Changed user/date
-			modifiedUser = XMLHandler.getTagValue(jobnode, "modified_user"); //$NON-NLS-1$
-			String modDate = XMLHandler.getTagValue(jobnode, "modified_date"); //$NON-NLS-1$
+			modifiedUser = XMLHandler.getTagValue(jobnode, "modified_user"); 
+			String modDate = XMLHandler.getTagValue(jobnode, "modified_date"); 
 			if (modDate != null) {
 				modifiedDate = XMLHandler.stringToDate(modDate);
 			}
 
 			// Is this job database transactional?
 			//
-      usingUniqueConnections = "Y".equalsIgnoreCase( XMLHandler.getTagValue(jobnode, "unique_connections") ); //$NON-NLS-1$
+      usingUniqueConnections = "Y".equalsIgnoreCase( XMLHandler.getTagValue(jobnode, "unique_connections") ); 
       
 			// Load the default list of databases
 			// Read objects from the shared XML file & the repository
 			try {
-				sharedObjectsFile = XMLHandler.getTagValue(jobnode, "shared_objects_file"); //$NON-NLS-1$ //$NON-NLS-2$
+				sharedObjectsFile = XMLHandler.getTagValue(jobnode, "shared_objects_file");  
 				if (rep==null || ignoreRepositorySharedObjects) {
 				  sharedObjects = readSharedObjects();
 				} else {
 				  sharedObjects = rep.readJobMetaSharedObjects(this);
 				}
 			} catch (Exception e) {
-				throw new KettleXMLException(BaseMessages.getString(PKG, "JobMeta.ErrorReadingSharedObjects.Message"), e); // $NON-NLS-1$ // //$NON-NLS-1$
+				throw new KettleXMLException(BaseMessages.getString(PKG, "JobMeta.ErrorReadingSharedObjects.Message"), e); // $NON-NLS-1$ // 
 			}
 
             // Read the named parameters.
             Node paramsNode = XMLHandler.getSubNode(jobnode, XML_TAG_PARAMETERS);
-            int nrParams = XMLHandler.countNodes(paramsNode, "parameter"); //$NON-NLS-1$
+            int nrParams = XMLHandler.countNodes(paramsNode, "parameter"); 
 
             for (int i = 0; i < nrParams; i++)
             {
-                Node paramNode = XMLHandler.getSubNodeByNr(paramsNode, "parameter", i); //$NON-NLS-1$
+                Node paramNode = XMLHandler.getSubNodeByNr(paramsNode, "parameter", i); 
 
-                String paramName = XMLHandler.getTagValue(paramNode, "name"); //$NON-NLS-1$
-                String defValue = XMLHandler.getTagValue(paramNode, "default_value"); //$NON-NLS-1$
-                String descr = XMLHandler.getTagValue(paramNode, "description"); //$NON-NLS-1$
+                String paramName = XMLHandler.getTagValue(paramNode, "name"); 
+                String defValue = XMLHandler.getTagValue(paramNode, "default_value"); 
+                String descr = XMLHandler.getTagValue(paramNode, "description"); 
                 
                 addParameterDefinition(paramName, defValue, descr);
             }            			
@@ -1149,9 +1149,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			// 
 			// Read the database connections
 			//
-			int nr = XMLHandler.countNodes(jobnode, "connection"); //$NON-NLS-1$
+			int nr = XMLHandler.countNodes(jobnode, "connection"); 
 			for (int i = 0; i < nr; i++) {
-				Node dbnode = XMLHandler.getSubNodeByNr(jobnode, "connection", i); //$NON-NLS-1$
+				Node dbnode = XMLHandler.getSubNodeByNr(jobnode, "connection", i); 
 				DatabaseMeta dbcon = new DatabaseMeta(dbnode);
 				dbcon.shareVariablesWith(this);
 
@@ -1185,8 +1185,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
 			// Read the slave servers...
 			// 
-			Node slaveServersNode = XMLHandler.getSubNode(jobnode, XML_TAG_SLAVESERVERS); //$NON-NLS-1$
-			int nrSlaveServers = XMLHandler.countNodes(slaveServersNode, SlaveServer.XML_TAG); //$NON-NLS-1$
+			Node slaveServersNode = XMLHandler.getSubNode(jobnode, XML_TAG_SLAVESERVERS); 
+			int nrSlaveServers = XMLHandler.countNodes(slaveServersNode, SlaveServer.XML_TAG); 
 			for (int i = 0; i < nrSlaveServers; i++) {
 				Node slaveServerNode = XMLHandler.getSubNodeByNr(slaveServersNode, SlaveServer.XML_TAG, i);
 				SlaveServer slaveServer = new SlaveServer(slaveServerNode);
@@ -1238,15 +1238,15 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
         checkpointLogTable.loadXML(checkpointLogNode, databases);
       }
 			
-			batchIdPassed = "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "pass_batchid")); //$NON-NLS-1$ //$NON-NLS-2$
+			batchIdPassed = "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "pass_batchid"));  
 
 			/*
 			 * read the job entries...
 			 */
-			Node entriesnode = XMLHandler.getSubNode(jobnode, "entries"); //$NON-NLS-1$
-			int tr = XMLHandler.countNodes(entriesnode, "entry"); //$NON-NLS-1$
+			Node entriesnode = XMLHandler.getSubNode(jobnode, "entries"); 
+			int tr = XMLHandler.countNodes(entriesnode, "entry"); 
 			for (int i = 0; i < tr; i++) {
-				Node entrynode = XMLHandler.getSubNodeByNr(entriesnode, "entry", i); //$NON-NLS-1$
+				Node entrynode = XMLHandler.getSubNodeByNr(entriesnode, "entry", i); 
 				// System.out.println("Reading entry:\n"+entrynode);
 
 				JobEntryCopy je = new JobEntryCopy(entrynode, databases, slaveServers, rep, metaStore);
@@ -1281,19 +1281,19 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				addJobEntry(je);
 			}
 
-			Node hopsnode = XMLHandler.getSubNode(jobnode, "hops"); //$NON-NLS-1$
-			int ho = XMLHandler.countNodes(hopsnode, "hop"); //$NON-NLS-1$
+			Node hopsnode = XMLHandler.getSubNode(jobnode, "hops"); 
+			int ho = XMLHandler.countNodes(hopsnode, "hop"); 
 			for (int i = 0; i < ho; i++) {
-				Node hopnode = XMLHandler.getSubNodeByNr(hopsnode, "hop", i); //$NON-NLS-1$
+				Node hopnode = XMLHandler.getSubNodeByNr(hopsnode, "hop", i); 
 				JobHopMeta hi = new JobHopMeta(hopnode, this);
 				jobhops.add(hi);
 			}
 
 			// Read the notes...
-			Node notepadsnode = XMLHandler.getSubNode(jobnode, "notepads"); //$NON-NLS-1$
-			int nrnotes = XMLHandler.countNodes(notepadsnode, "notepad"); //$NON-NLS-1$
+			Node notepadsnode = XMLHandler.getSubNode(jobnode, "notepads"); 
+			int nrnotes = XMLHandler.countNodes(notepadsnode, "notepad"); 
 			for (int i = 0; i < nrnotes; i++) {
-				Node notepadnode = XMLHandler.getSubNodeByNr(notepadsnode, "notepad", i); //$NON-NLS-1$
+				Node notepadnode = XMLHandler.getSubNodeByNr(notepadsnode, "notepad", i); 
 				NotePadMeta ni = new NotePadMeta(notepadnode);
 				notes.add(ni);
 			}
@@ -1302,7 +1302,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
 			clearChanged();
 		} catch (Exception e) {
-			throw new KettleXMLException(BaseMessages.getString(PKG, "JobMeta.Exception.UnableToLoadJobFromXMLNode"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "JobMeta.Exception.UnableToLoadJobFromXMLNode"), e); 
 		} finally {
 			setInternalKettleVariables();
 		}
@@ -2044,7 +2044,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		int nr = 1;
 		while (jec != null) {
 			nr++;
-			newname = entryname + " " + nr; //$NON-NLS-1$
+			newname = entryname + " " + nr; 
 			jec = findJobEntry(newname);
 		}
 
@@ -2525,13 +2525,13 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	 */
 	public List<SQLStatement> getSQLStatements(Repository repository, IMetaStore metaStore, ProgressMonitorListener monitor) throws KettleException {
 		if (monitor != null)
-			monitor.beginTask(BaseMessages.getString(PKG, "JobMeta.Monitor.GettingSQLNeededForThisJob"), nrJobEntries() + 1); //$NON-NLS-1$
+			monitor.beginTask(BaseMessages.getString(PKG, "JobMeta.Monitor.GettingSQLNeededForThisJob"), nrJobEntries() + 1); 
 		List<SQLStatement> stats = new ArrayList<SQLStatement>();
 
 		for (int i = 0; i < nrJobEntries(); i++) {
 			JobEntryCopy copy = getJobEntry(i);
 			if (monitor != null)
-				monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.GettingSQLForJobEntryCopy") + copy + "]"); //$NON-NLS-1$ //$NON-NLS-2$
+				monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.GettingSQLForJobEntryCopy") + copy + "]");  
 			stats.addAll(copy.getEntry().getSQLStatements(repository, metaStore, this));
 			stats.addAll(compatibleGetEntrySQLStatements(copy.getEntry(), repository));
       stats.addAll(compatibleGetEntrySQLStatements(copy.getEntry(), repository, (VariableSpace)this));
@@ -2541,7 +2541,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
 		// Also check the sql for the logtable...
 		if (monitor != null)
-			monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.GettingSQLStatementsForJobLogTables")); //$NON-NLS-1$
+			monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.GettingSQLStatementsForJobLogTables")); 
 		if (jobLogTable.getDatabaseMeta()!=null && !Const.isEmpty(jobLogTable.getTableName())) {
 			Database db = new Database(this, jobLogTable.getDatabaseMeta());
 			try {
@@ -2549,12 +2549,12 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				RowMetaInterface fields = jobLogTable.getLogRecord(LogStatus.START, null, null).getRowMeta();
 				String sql = db.getDDL(jobLogTable.getTableName(), fields);
 				if (sql != null && sql.length() > 0) {
-					SQLStatement stat = new SQLStatement(BaseMessages.getString(PKG, "JobMeta.SQLFeedback.ThisJob"), jobLogTable.getDatabaseMeta(), sql); //$NON-NLS-1$
+					SQLStatement stat = new SQLStatement(BaseMessages.getString(PKG, "JobMeta.SQLFeedback.ThisJob"), jobLogTable.getDatabaseMeta(), sql); 
 					stats.add(stat);
 				}
 			} catch (KettleDatabaseException dbe) {
-				SQLStatement stat = new SQLStatement(BaseMessages.getString(PKG, "JobMeta.SQLFeedback.ThisJob"), jobLogTable.getDatabaseMeta(), null); //$NON-NLS-1$
-				stat.setError(BaseMessages.getString(PKG, "JobMeta.SQLFeedback.ErrorObtainingJobLogTableInfo") + dbe.getMessage()); //$NON-NLS-1$
+				SQLStatement stat = new SQLStatement(BaseMessages.getString(PKG, "JobMeta.SQLFeedback.ThisJob"), jobLogTable.getDatabaseMeta(), null); 
+				stat.setError(BaseMessages.getString(PKG, "JobMeta.SQLFeedback.ErrorObtainingJobLogTableInfo") + dbe.getMessage()); 
 				stats.add(stat);
 			} finally {
 				db.disconnect();
@@ -2613,9 +2613,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			// vars are...
 			for (int i = 0; i < nrJobEntries(); i++) {
 				JobEntryCopy entryMeta = getJobEntry(i);
-				stringList.add(new StringSearchResult(entryMeta.getName(), entryMeta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.JobEntryName"))); //$NON-NLS-1$
+				stringList.add(new StringSearchResult(entryMeta.getName(), entryMeta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.JobEntryName"))); 
 				if (entryMeta.getDescription() != null)
-					stringList.add(new StringSearchResult(entryMeta.getDescription(), entryMeta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.JobEntryDescription"))); //$NON-NLS-1$
+					stringList.add(new StringSearchResult(entryMeta.getDescription(), entryMeta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.JobEntryDescription"))); 
 				JobEntryInterface metaInterface = entryMeta.getEntry();
 				StringSearcher.findMetaData(metaInterface, 1, stringList, entryMeta, this);
 			}
@@ -2626,16 +2626,16 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		if (searchDatabases) {
 			for (int i = 0; i < nrDatabases(); i++) {
 				DatabaseMeta meta = getDatabase(i);
-				stringList.add(new StringSearchResult(meta.getName(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabaseConnectionName"))); //$NON-NLS-1$
-        if (meta.getHostname()!=null) stringList.add(new StringSearchResult(meta.getHostname(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabaseHostName")));  //$NON-NLS-1$
-        if (meta.getDatabaseName()!=null) stringList.add(new StringSearchResult(meta.getDatabaseName(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabaseName")));  //$NON-NLS-1$
-        if (meta.getUsername()!=null) stringList.add(new StringSearchResult(meta.getUsername(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabaseUsername")));  //$NON-NLS-1$
-        if (meta.getPluginId()!=null) stringList.add(new StringSearchResult(meta.getPluginId(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabaseTypeDescription")));  //$NON-NLS-1$
-        if (meta.getDatabasePortNumberString()!=null) stringList.add(new StringSearchResult(meta.getDatabasePortNumberString(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabasePort")));  //$NON-NLS-1$
-        if (meta.getServername()!=null) stringList.add(new StringSearchResult(meta.getServername(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabaseServer")));  //$NON-NLS-1$ 
+				stringList.add(new StringSearchResult(meta.getName(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabaseConnectionName"))); 
+        if (meta.getHostname()!=null) stringList.add(new StringSearchResult(meta.getHostname(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabaseHostName")));  
+        if (meta.getDatabaseName()!=null) stringList.add(new StringSearchResult(meta.getDatabaseName(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabaseName")));  
+        if (meta.getUsername()!=null) stringList.add(new StringSearchResult(meta.getUsername(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabaseUsername")));  
+        if (meta.getPluginId()!=null) stringList.add(new StringSearchResult(meta.getPluginId(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabaseTypeDescription")));  
+        if (meta.getDatabasePortNumberString()!=null) stringList.add(new StringSearchResult(meta.getDatabasePortNumberString(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabasePort")));  
+        if (meta.getServername()!=null) stringList.add(new StringSearchResult(meta.getServername(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabaseServer")));   
         //if ( includePasswords )
         //{
-          if (meta.getPassword()!=null) stringList.add(new StringSearchResult(meta.getPassword(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabasePassword")));  //$NON-NLS-1$
+          if (meta.getPassword()!=null) stringList.add(new StringSearchResult(meta.getPassword(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabasePassword")));  
         //}
 			}
 		}
@@ -2646,7 +2646,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			for (int i = 0; i < nrNotes(); i++) {
 				NotePadMeta meta = getNote(i);
 				if (meta.getNote() != null)
-					stringList.add(new StringSearchResult(meta.getNote(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.NotepadText"))); //$NON-NLS-1$
+					stringList.add(new StringSearchResult(meta.getNote(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.NotepadText"))); 
 			}
 		}
 
@@ -2957,7 +2957,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	  setInternalNameKettleVariable(var);
 	  
 		// The name of the directory in the repository
-		var.setVariable(Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, directory != null ? directory.getPath() : ""); //$NON-NLS-1$
+		var.setVariable(Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, directory != null ? directory.getPath() : ""); 
 
 		// Undefine the transformation specific variables:
 		// transformations can't run jobs, so if you use these they are 99.99%
@@ -2977,7 +2977,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
    */
   private void setInternalNameKettleVariable(VariableSpace var) {
     // The name of the job
-    var.setVariable(Const.INTERNAL_VARIABLE_JOB_NAME, Const.NVL(name, "")); //$NON-NLS-1$
+    var.setVariable(Const.INTERNAL_VARIABLE_JOB_NAME, Const.NVL(name, "")); 
   }
 
   /**
@@ -3003,8 +3003,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
         var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, "");
       }
     } else {
-      var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, ""); //$NON-NLS-1$
-      var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, ""); //$NON-NLS-1$
+      var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, ""); 
+      var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, ""); 
     }
   }
 
@@ -3130,7 +3130,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	public void checkJobEntries(List<CheckResultInterface> remarks, boolean only_selected, ProgressMonitorListener monitor, VariableSpace space, Repository repository, IMetaStore metaStore) {
 		remarks.clear(); // Empty remarks
 		if (monitor != null)
-			monitor.beginTask(BaseMessages.getString(PKG, "JobMeta.Monitor.VerifyingThisJobEntryTask.Title"), jobcopies.size() + 2); //$NON-NLS-1$
+			monitor.beginTask(BaseMessages.getString(PKG, "JobMeta.Monitor.VerifyingThisJobEntryTask.Title"), jobcopies.size() + 2); 
 		boolean stop_checking = false;
 		for (int i = 0; i < jobcopies.size() && !stop_checking; i++) {
 			JobEntryCopy copy = jobcopies.get(i); // get the job entry copy
@@ -3138,7 +3138,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				JobEntryInterface entry = copy.getEntry();
 				if (entry != null) {
 					if (monitor != null)
-						monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.VerifyingJobEntry.Title", entry.getName())); //$NON-NLS-1$ //$NON-NLS-2$
+						monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.VerifyingJobEntry.Title", entry.getName()));  
 					entry.check(remarks, this, space, repository, metaStore);
 					compatibleEntryCheck(entry, remarks);
 					if (monitor != null) {
@@ -3195,7 +3195,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				//
 				originalPath = directory.getPath();
 				baseName = getName();
-				fullname = directory.getPath()+( directory.getPath().endsWith(RepositoryDirectory.DIRECTORY_SEPARATOR) ? "" : RepositoryDirectory.DIRECTORY_SEPARATOR ) +getName()+"."+extension; // $NON-NLS-1$ // $NON-NLS-2$  
+				fullname = directory.getPath()+( directory.getPath().endsWith(RepositoryDirectory.DIRECTORY_SEPARATOR) ? "" : RepositoryDirectory.DIRECTORY_SEPARATOR ) +getName()+"."+extension; // $NON-NLS-1$ //   
 			} else {
 				// Assume file
 				//
@@ -3205,7 +3205,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				fullname = fileObject.getName().getPath();
 			}
 			
-			resourceName = namingInterface.nameResource(baseName, originalPath, extension, ResourceNamingInterface.FileNamingType.JOB); //$NON-NLS-1$
+			resourceName = namingInterface.nameResource(baseName, originalPath, extension, ResourceNamingInterface.FileNamingType.JOB); 
 			ResourceDefinition definition = definitions.get(resourceName);
 			if (definition == null) {
 				// If we do this once, it will be plenty :-)

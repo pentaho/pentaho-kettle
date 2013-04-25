@@ -515,7 +515,7 @@ public class JobEntrySNMPTrap extends JobEntryBase implements Cloneable, JobEntr
 			result.setResult(true);
 		}
 		catch(Exception e){
-			logError(BaseMessages.getString(PKG, "JobEntrySNMPTrap.ErrorGetting", e.getMessage())); //$NON-NLS-1$
+			logError(BaseMessages.getString(PKG, "JobEntrySNMPTrap.ErrorGetting", e.getMessage())); 
 		}
         finally{
         	try{

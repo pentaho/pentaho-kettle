@@ -118,7 +118,7 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface
 		//
 		putRow(getInputRowMeta(), r);       
 		
-        if (checkFeedback(getLinesOutput())) logBasic(BaseMessages.getString(PKG, "PentahoReportingOutput.Log.LineNumber")+getLinesOutput()); //$NON-NLS-1$
+        if (checkFeedback(getLinesOutput())) logBasic(BaseMessages.getString(PKG, "PentahoReportingOutput.Log.LineNumber")+getLinesOutput()); 
 		
 		return result;
 	}

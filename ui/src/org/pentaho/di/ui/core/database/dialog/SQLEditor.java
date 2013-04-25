@@ -51,7 +51,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.PartitionDatabaseMeta;
 import org.pentaho.di.core.database.SqlScriptStatement;
 import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
@@ -353,7 +353,7 @@ public class SQLEditor
 
             // A DDL statement
             nrstats++;
-            int startLogLine = CentralLogStore.getLastBufferLineNr();
+            int startLogLine = KettleLogStore.getLastBufferLineNr();
             try {
 
               log.logDetailed("Executing SQL: " + Const.CR + sql);
@@ -378,8 +378,8 @@ public class SQLEditor
                 break;
               }
             } finally {
-              int endLogLine = CentralLogStore.getLastBufferLineNr();
-              sql.setLoggingText(CentralLogStore.getAppender().getLogBufferFromTo(db.getLogChannelId(), true, startLogLine, endLogLine).toString());
+              int endLogLine = KettleLogStore.getLastBufferLineNr();
+              sql.setLoggingText(KettleLogStore.getAppender().getLogBufferFromTo(db.getLogChannelId(), true, startLogLine, endLogLine).toString());
               sql.setComplete(true);
               refreshExecutionResults();
             }

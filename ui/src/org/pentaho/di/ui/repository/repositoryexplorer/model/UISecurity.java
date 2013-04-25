@@ -53,7 +53,7 @@ public class UISecurity extends XulEventSourceAdapter {
       for (IUser user : rsm.getUsers()) {
         userList.add(UIObjectRegistry.getInstance().constructUIRepositoryUser(user));
       }
-      this.firePropertyChange("userList", null, userList); //$NON-NLS-1$
+      this.firePropertyChange("userList", null, userList); 
     }
   }
 
@@ -63,7 +63,7 @@ public class UISecurity extends XulEventSourceAdapter {
 
   public void setSelectedDeck(Type selectedDeck) {
     this.selectedDeck = selectedDeck;
-    this.firePropertyChange("selectedDeck", null, selectedDeck); //$NON-NLS-1$
+    this.firePropertyChange("selectedDeck", null, selectedDeck); 
   }
 
   public int getSelectedUserIndex() {
@@ -72,7 +72,7 @@ public class UISecurity extends XulEventSourceAdapter {
 
   public void setSelectedUserIndex(int selectedUserIndex) {
     this.selectedUserIndex = selectedUserIndex;
-    this.firePropertyChange("selectedUserIndex", null, selectedUserIndex); //$NON-NLS-1$
+    this.firePropertyChange("selectedUserIndex", null, selectedUserIndex); 
   }
 
   public IUIUser getSelectedUser() {
@@ -81,7 +81,7 @@ public class UISecurity extends XulEventSourceAdapter {
 
   public void setSelectedUser(IUIUser selectedUser) {
     this.selectedUser = selectedUser;
-    this.firePropertyChange("selectedUser", null, selectedUser); //$NON-NLS-1$
+    this.firePropertyChange("selectedUser", null, selectedUser); 
     setSelectedUserIndex(getIndexOfUser(selectedUser));
   }
 
@@ -92,19 +92,19 @@ public class UISecurity extends XulEventSourceAdapter {
   public void setUserList(List<IUIUser> userList) {
     this.userList.clear();
     this.userList.addAll(userList);
-    this.firePropertyChange("userList", null, userList); //$NON-NLS-1$
+    this.firePropertyChange("userList", null, userList); 
   }
 
   public void updateUser(IUIUser userToUpdate) {
     IUIUser user = getUser(userToUpdate.getName());
     user.setDescription(userToUpdate.getDescription());
-    this.firePropertyChange("userList", null, userList); //$NON-NLS-1$
+    this.firePropertyChange("userList", null, userList); 
     setSelectedUser(user);
   }
 
   public void addUser(IUIUser userToAdd) {
     userList.add(userToAdd);
-    this.firePropertyChange("userList", null, userList); //$NON-NLS-1$
+    this.firePropertyChange("userList", null, userList); 
     setSelectedUser(userToAdd);
   }
 
@@ -115,7 +115,7 @@ public class UISecurity extends XulEventSourceAdapter {
   public void removeUser(IUIUser userToRemove) {
     int index = getIndexOfUser(userToRemove);
     userList.remove(userToRemove);
-    this.firePropertyChange("userList", null, userList); //$NON-NLS-1$
+    this.firePropertyChange("userList", null, userList); 
     if (index - 1 >= 0) {
       setSelectedUser(getUserAtIndex(index - 1));
     }

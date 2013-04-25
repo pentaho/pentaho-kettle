@@ -82,9 +82,9 @@ public class RepositoryExplorer {
     xulLoader.setOuterContext(shell);
     xulLoader.setSettingsManager(XulSpoonSettingsManager.getInstance());
     xulLoader.registerClassLoader(getClass().getClassLoader());
-    container = xulLoader.loadXul("org/pentaho/di/ui/repository/repositoryexplorer/xul/explorer-layout.xul", resourceBundle); //$NON-NLS-1$
+    container = xulLoader.loadXul("org/pentaho/di/ui/repository/repositoryexplorer/xul/explorer-layout.xul", resourceBundle); 
 
-    SpoonPluginManager.getInstance().applyPluginsForContainer("repository-explorer", container); //$NON-NLS-1$
+    SpoonPluginManager.getInstance().applyPluginsForContainer("repository-explorer", container); 
 
     final XulRunner runner = new SwtXulRunner();
     runner.addContainer(container);
@@ -104,38 +104,38 @@ public class RepositoryExplorer {
         }
       }
     } catch (Exception e) {
-      log.error(resourceBundle.getString("RepositoryExplorer.ErrorStartingXulApplication"), e);//$NON-NLS-1$
+      log.error(resourceBundle.getString("RepositoryExplorer.ErrorStartingXulApplication"), e);
       new ErrorDialog(((Spoon) SpoonFactory.getInstance()).getShell(), BaseMessages.getString(Spoon.class,
-          "Spoon.Error"), e.getMessage(), e); //$NON-NLS-1$
+          "Spoon.Error"), e.getMessage(), e); 
     }
     // Call the init method for all the Active UISupportController
     for (IRepositoryExplorerUISupport uiSupport : uiSupportList) {
       try {
         uiSupport.initControllers(rep);
       } catch (ControllerInitializationException e) {
-        log.error(resourceBundle.getString("RepositoryExplorer.ErrorStartingXulApplication"), e);//$NON-NLS-1$
+        log.error(resourceBundle.getString("RepositoryExplorer.ErrorStartingXulApplication"), e);
         new ErrorDialog(((Spoon) SpoonFactory.getInstance()).getShell(), BaseMessages.getString(Spoon.class,
-            "Spoon.Error"), e.getMessage(), e); //$NON-NLS-1$
+            "Spoon.Error"), e.getMessage(), e); 
       }
     }
 
     try {
       runner.initialize();
     } catch (XulException e) {
-      log.error(resourceBundle.getString("RepositoryExplorer.ErrorStartingXulApplication"), e);//$NON-NLS-1$
+      log.error(resourceBundle.getString("RepositoryExplorer.ErrorStartingXulApplication"), e);
       new ErrorDialog(((Spoon) SpoonFactory.getInstance()).getShell(), BaseMessages.getString(Spoon.class,
-          "Spoon.Error"), e.getMessage(), e); //$NON-NLS-1$
+          "Spoon.Error"), e.getMessage(), e); 
     }
   }
 
   public void show() {
-    XulDialog dialog = (XulDialog) container.getDocumentRoot().getElementById("repository-explorer-dialog"); //$NON-NLS-1$
+    XulDialog dialog = (XulDialog) container.getDocumentRoot().getElementById("repository-explorer-dialog"); 
     dialog.show();
 
   }
   
   public void dispose(){
-    SwtDialog dialog = (SwtDialog) container.getDocumentRoot().getElementById("repository-explorer-dialog"); //$NON-NLS-1$
+    SwtDialog dialog = (SwtDialog) container.getDocumentRoot().getElementById("repository-explorer-dialog"); 
     dialog.dispose();
   }
 }

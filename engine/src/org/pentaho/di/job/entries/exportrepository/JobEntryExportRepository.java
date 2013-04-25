@@ -802,15 +802,15 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 	  @Override
 	  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore)
 	  {
-	    andValidator().validate(this, "repositoryname", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+	    andValidator().validate(this, "repositoryname", remarks, putValidators(notBlankValidator())); 
 
 	    ValidatorContext ctx = new ValidatorContext();
 	    putVariableSpace(ctx, getVariables());
 	    putValidators(ctx, notBlankValidator(), fileExistsValidator());
-	    andValidator().validate(this, "targetfilename", remarks, ctx);//$NON-NLS-1$
+	    andValidator().validate(this, "targetfilename", remarks, ctx);
 
-	    andValidator().validate(this, "username", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
-	    andValidator().validate(this, "password", remarks, putValidators(notNullValidator())); //$NON-NLS-1$
+	    andValidator().validate(this, "username", remarks, putValidators(notBlankValidator())); 
+	    andValidator().validate(this, "password", remarks, putValidators(notNullValidator())); 
 	  }
 
 	  public static void main(String[] args) {

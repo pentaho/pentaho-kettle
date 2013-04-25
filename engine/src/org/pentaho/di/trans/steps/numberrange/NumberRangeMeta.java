@@ -91,15 +91,15 @@ public class NumberRangeMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append("    ").append(XMLHandler.addTagValue("outputField", outputField));
     retval.append("    ").append(XMLHandler.addTagValue("fallBackValue", getFallBackValue()));
 
-    retval.append("    <rules>").append(Const.CR); //$NON-NLS-1$
+    retval.append("    <rules>").append(Const.CR); 
     for (NumberRangeRule rule : rules) {
-      retval.append("      <rule>").append(Const.CR); //$NON-NLS-1$
-      retval.append("        ").append(XMLHandler.addTagValue("lower_bound", rule.getLowerBound())); //$NON-NLS-1$ //$NON-NLS-2$
-      retval.append("        ").append(XMLHandler.addTagValue("upper_bound", rule.getUpperBound())); //$NON-NLS-1$ //$NON-NLS-2$
-      retval.append("        ").append(XMLHandler.addTagValue("value", rule.getValue())); //$NON-NLS-1$ //$NON-NLS-2$
-      retval.append("      </rule>").append(Const.CR); //$NON-NLS-1$
+      retval.append("      <rule>").append(Const.CR); 
+      retval.append("        ").append(XMLHandler.addTagValue("lower_bound", rule.getLowerBound()));  
+      retval.append("        ").append(XMLHandler.addTagValue("upper_bound", rule.getUpperBound()));  
+      retval.append("        ").append(XMLHandler.addTagValue("value", rule.getValue()));  
+      retval.append("      </rule>").append(Const.CR); 
     }
-    retval.append("    </rules>").append(Const.CR); //$NON-NLS-1$
+    retval.append("    </rules>").append(Const.CR); 
 
     return retval.toString();
   }
@@ -126,15 +126,15 @@ public class NumberRangeMeta extends BaseStepMeta implements StepMetaInterface {
       String fallBackValue = XMLHandler.getTagValue(stepnode, "fallBackValue");
       setFallBackValue(fallBackValue);
 
-      Node fields = XMLHandler.getSubNode(stepnode, "rules"); //$NON-NLS-1$
-      int count = XMLHandler.countNodes(fields, "rule"); //$NON-NLS-1$
+      Node fields = XMLHandler.getSubNode(stepnode, "rules"); 
+      int count = XMLHandler.countNodes(fields, "rule"); 
       for (int i = 0; i < count; i++) {
 
-        Node fnode = XMLHandler.getSubNodeByNr(fields, "rule", i); //$NON-NLS-1$
+        Node fnode = XMLHandler.getSubNodeByNr(fields, "rule", i); 
 
-        String lowerBoundStr = XMLHandler.getTagValue(fnode, "lower_bound"); //$NON-NLS-1$
-        String upperBoundStr = XMLHandler.getTagValue(fnode, "upper_bound"); //$NON-NLS-1$
-        String value = XMLHandler.getTagValue(fnode, "value"); //$NON-NLS-1$
+        String lowerBoundStr = XMLHandler.getTagValue(fnode, "lower_bound"); 
+        String upperBoundStr = XMLHandler.getTagValue(fnode, "upper_bound"); 
+        String value = XMLHandler.getTagValue(fnode, "value"); 
 
         double lowerBound = Double.parseDouble(lowerBoundStr);
         double upperBound = Double.parseDouble(upperBoundStr);
@@ -165,11 +165,11 @@ public class NumberRangeMeta extends BaseStepMeta implements StepMetaInterface {
       emptyRules();
       String fallBackValue = rep.getStepAttributeString(id_step, "fallBackValue");
       setFallBackValue(fallBackValue);
-      int nrfields = rep.countNrStepAttributes(id_step, "lower_bound"); //$NON-NLS-1$
+      int nrfields = rep.countNrStepAttributes(id_step, "lower_bound"); 
       for (int i = 0; i < nrfields; i++) {
-        String lowerBoundStr = rep.getStepAttributeString(id_step, i, "lower_bound"); //$NON-NLS-1$
-        String upperBoundStr = rep.getStepAttributeString(id_step, i, "upper_bound"); //$NON-NLS-1$
-        String value = rep.getStepAttributeString(id_step, i, "value"); //$NON-NLS-1$
+        String lowerBoundStr = rep.getStepAttributeString(id_step, i, "lower_bound"); 
+        String upperBoundStr = rep.getStepAttributeString(id_step, i, "upper_bound"); 
+        String value = rep.getStepAttributeString(id_step, i, "value"); 
 
         double lowerBound = Double.parseDouble(lowerBoundStr);
         double upperBound = Double.parseDouble(upperBoundStr);
@@ -190,9 +190,9 @@ public class NumberRangeMeta extends BaseStepMeta implements StepMetaInterface {
 
       int i = 0;
       for (NumberRangeRule rule : rules) {
-        rep.saveStepAttribute(id_transformation, id_step, i, "lower_bound", String.valueOf(rule.getLowerBound())); //$NON-NLS-1$
-        rep.saveStepAttribute(id_transformation, id_step, i, "upper_bound", String.valueOf(rule.getUpperBound())); //$NON-NLS-1$
-        rep.saveStepAttribute(id_transformation, id_step, i, "value", String.valueOf(rule.getValue())); //$NON-NLS-1$
+        rep.saveStepAttribute(id_transformation, id_step, i, "lower_bound", String.valueOf(rule.getLowerBound())); 
+        rep.saveStepAttribute(id_transformation, id_step, i, "upper_bound", String.valueOf(rule.getUpperBound())); 
+        rep.saveStepAttribute(id_transformation, id_step, i, "value", String.valueOf(rule.getValue())); 
         i++;
       }
     } catch (KettleDatabaseException dbe) {

@@ -330,17 +330,17 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
 
         for (i = 0; i < nrargs; i++)
         {
-            argumentField[i] = "arg" + i; //$NON-NLS-1$
-            argumentParameter[i] = "arg"; //$NON-NLS-1$
+            argumentField[i] = "arg" + i; 
+            argumentParameter[i] = "arg"; 
         }
 
         for (i = 0; i < nrquery; i++)
         {
-            headerField[i] = "header" + i; //$NON-NLS-1$
-            headerParameter[i] = "header"; //$NON-NLS-1$
+            headerField[i] = "header" + i; 
+            headerParameter[i] = "header"; 
         }
 
-        fieldName = "result"; //$NON-NLS-1$
+        fieldName = "result"; 
         resultCodeFieldName="";
         responseTimeFieldName="";
         encoding = "UTF-8";
@@ -372,7 +372,7 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
     {
         StringBuffer retval = new StringBuffer(300);
 
-        retval.append("    ").append(XMLHandler.addTagValue("url", url)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    ").append(XMLHandler.addTagValue("url", url));  
         retval.append("    "+XMLHandler.addTagValue("urlInField",  urlInField));
         retval.append("    "+XMLHandler.addTagValue("urlField",  urlField));
         retval.append("    "+XMLHandler.addTagValue("encoding",  encoding));
@@ -384,30 +384,30 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    " + XMLHandler.addTagValue("connectionTimeout", connectionTimeout));
         retval.append("    " + XMLHandler.addTagValue("closeIdleConnectionsTime", closeIdleConnectionsTime));
         
-        retval.append("    <lookup>").append(Const.CR); //$NON-NLS-1$
+        retval.append("    <lookup>").append(Const.CR); 
 
         for (int i = 0; i < argumentField.length; i++)
         {
-            retval.append("      <arg>").append(Const.CR); //$NON-NLS-1$
-            retval.append("        ").append(XMLHandler.addTagValue("name", argumentField[i])); //$NON-NLS-1$ //$NON-NLS-2$
-            retval.append("        ").append(XMLHandler.addTagValue("parameter", argumentParameter[i])); //$NON-NLS-1$ //$NON-NLS-2$
-            retval.append("      </arg>").append(Const.CR); //$NON-NLS-1$
+            retval.append("      <arg>").append(Const.CR); 
+            retval.append("        ").append(XMLHandler.addTagValue("name", argumentField[i]));  
+            retval.append("        ").append(XMLHandler.addTagValue("parameter", argumentParameter[i]));  
+            retval.append("      </arg>").append(Const.CR); 
         }
         for (int i = 0; i < headerField.length; i++)
         {
-            retval.append("      <header>" + Const.CR); //$NON-NLS-1$
-            retval.append("        " + XMLHandler.addTagValue("name", headerField[i])); //$NON-NLS-1$ //$NON-NLS-2$
-            retval.append("        " + XMLHandler.addTagValue("parameter", headerParameter[i])); //$NON-NLS-1$ //$NON-NLS-2$
-            retval.append("      </header>" + Const.CR); //$NON-NLS-1$
+            retval.append("      <header>" + Const.CR); 
+            retval.append("        " + XMLHandler.addTagValue("name", headerField[i]));  
+            retval.append("        " + XMLHandler.addTagValue("parameter", headerParameter[i]));  
+            retval.append("      </header>" + Const.CR); 
         }
 
-        retval.append("    </lookup>").append(Const.CR); //$NON-NLS-1$
+        retval.append("    </lookup>").append(Const.CR); 
 
-        retval.append("    <result>").append(Const.CR); //$NON-NLS-1$
-        retval.append("      ").append(XMLHandler.addTagValue("name", fieldName)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    <result>").append(Const.CR); 
+        retval.append("      ").append(XMLHandler.addTagValue("name", fieldName));  
         retval.append("      ").append(XMLHandler.addTagValue("code", resultCodeFieldName));
         retval.append("      ").append(XMLHandler.addTagValue("response_time", responseTimeFieldName));
-        retval.append("    </result>").append(Const.CR); //$NON-NLS-1$
+        retval.append("    </result>").append(Const.CR); 
 
         return retval.toString();
     }
@@ -418,7 +418,7 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
         {
             int nrargs;
 
-            url = XMLHandler.getTagValue(stepnode, "url"); //$NON-NLS-1$
+            url = XMLHandler.getTagValue(stepnode, "url"); 
             urlInField="Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "urlInField"));
             urlField = XMLHandler.getTagValue(stepnode, "urlField");
             encoding = XMLHandler.getTagValue(stepnode, "encoding");
@@ -432,25 +432,25 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
             closeIdleConnectionsTime = XMLHandler.getTagValue(stepnode, "closeIdleConnectionsTime");
             
             
-            Node lookup = XMLHandler.getSubNode(stepnode, "lookup"); //$NON-NLS-1$
-            nrargs = XMLHandler.countNodes(lookup, "arg"); //$NON-NLS-1$
+            Node lookup = XMLHandler.getSubNode(stepnode, "lookup"); 
+            nrargs = XMLHandler.countNodes(lookup, "arg"); 
 
-            int nrheaders = XMLHandler.countNodes(lookup, "header"); //$NON-NLS-1$
+            int nrheaders = XMLHandler.countNodes(lookup, "header"); 
             allocate(nrargs, nrheaders);
 
             for (int i = 0; i < nrargs; i++)
             {
-                Node anode = XMLHandler.getSubNodeByNr(lookup, "arg", i); //$NON-NLS-1$
+                Node anode = XMLHandler.getSubNodeByNr(lookup, "arg", i); 
 
-                argumentField[i] = XMLHandler.getTagValue(anode, "name"); //$NON-NLS-1$
-                argumentParameter[i] = XMLHandler.getTagValue(anode, "parameter"); //$NON-NLS-1$
+                argumentField[i] = XMLHandler.getTagValue(anode, "name"); 
+                argumentParameter[i] = XMLHandler.getTagValue(anode, "parameter"); 
             }
 
             for (int i = 0; i < nrheaders; i++)
             {
-                Node anode = XMLHandler.getSubNodeByNr(lookup, "header", i); //$NON-NLS-1$
-                headerField[i] = XMLHandler.getTagValue(anode, "name"); //$NON-NLS-1$
-                headerParameter[i] = XMLHandler.getTagValue(anode, "parameter"); //$NON-NLS-1$
+                Node anode = XMLHandler.getSubNodeByNr(lookup, "header", i); 
+                headerField[i] = XMLHandler.getTagValue(anode, "name"); 
+                headerParameter[i] = XMLHandler.getTagValue(anode, "parameter"); 
             }
 
             fieldName = XMLHandler.getTagValue(stepnode, "result", "name"); 
@@ -459,7 +459,7 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleXMLException(BaseMessages.getString(PKG, "HTTPMeta.Exception.UnableToReadStepInfo"), e); //$NON-NLS-1$
+            throw new KettleXMLException(BaseMessages.getString(PKG, "HTTPMeta.Exception.UnableToReadStepInfo"), e); 
         }
     }
 
@@ -467,7 +467,7 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
     {
         try
         {
-            url = rep.getStepAttributeString(id_step, "url"); //$NON-NLS-1$
+            url = rep.getStepAttributeString(id_step, "url"); 
             urlInField = rep.getStepAttributeBoolean (id_step, "urlInField");
             urlField = rep.getStepAttributeString (id_step, "urlField");
             encoding = rep.getStepAttributeString (id_step, "encoding");
@@ -480,29 +480,29 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
             closeIdleConnectionsTime = rep.getStepAttributeString(id_step, "closeIdleConnectionsTime");
             
             
-            int nrargs = rep.countNrStepAttributes(id_step, "arg_name"); //$NON-NLS-1$
-            int nrheaders = rep.countNrStepAttributes(id_step, "header_name"); //$NON-NLS-1$
+            int nrargs = rep.countNrStepAttributes(id_step, "arg_name"); 
+            int nrheaders = rep.countNrStepAttributes(id_step, "header_name"); 
             allocate(nrargs, nrheaders);
 
             for (int i = 0; i < nrargs; i++)
             {
-                argumentField[i] = rep.getStepAttributeString(id_step, i, "arg_name"); //$NON-NLS-1$
-                argumentParameter[i] = rep.getStepAttributeString(id_step, i, "arg_parameter"); //$NON-NLS-1$
+                argumentField[i] = rep.getStepAttributeString(id_step, i, "arg_name"); 
+                argumentParameter[i] = rep.getStepAttributeString(id_step, i, "arg_parameter"); 
             }
 
             for (int i = 0; i < nrheaders; i++)
             {
-                headerField[i] = rep.getStepAttributeString(id_step, i, "header_name"); //$NON-NLS-1$
-                headerParameter[i] = rep.getStepAttributeString(id_step, i, "header_parameter"); //$NON-NLS-1$
+                headerField[i] = rep.getStepAttributeString(id_step, i, "header_name"); 
+                headerParameter[i] = rep.getStepAttributeString(id_step, i, "header_parameter"); 
             }
 
-            fieldName = rep.getStepAttributeString(id_step, "result_name"); //$NON-NLS-1$
-            resultCodeFieldName = rep.getStepAttributeString(id_step, "result_code"); //$NON-NLS-1$  
-            responseTimeFieldName = rep.getStepAttributeString(id_step, "response_time"); //$NON-NLS-1$  
+            fieldName = rep.getStepAttributeString(id_step, "result_name"); 
+            resultCodeFieldName = rep.getStepAttributeString(id_step, "result_code");   
+            responseTimeFieldName = rep.getStepAttributeString(id_step, "response_time");   
         }
         catch (Exception e)
         {
-            throw new KettleException(BaseMessages.getString(PKG, "HTTPMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "HTTPMeta.Exception.UnexpectedErrorReadingStepInfo"), e); 
         }
     }
 
@@ -510,7 +510,7 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
     {
         try
         {
-            rep.saveStepAttribute(id_transformation, id_step, "url", url); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "url", url); 
 			rep.saveStepAttribute(id_transformation, id_step, "urlInField",   urlInField);
 			rep.saveStepAttribute(id_transformation, id_step, "urlField",   urlField);
 			rep.saveStepAttribute(id_transformation, id_step, "encoding",   encoding);
@@ -524,23 +524,23 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
 			
             for (int i = 0; i < argumentField.length; i++)
             {
-                rep.saveStepAttribute(id_transformation, id_step, i, "arg_name", argumentField[i]); //$NON-NLS-1$
-                rep.saveStepAttribute(id_transformation, id_step, i, "arg_parameter", argumentParameter[i]); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "arg_name", argumentField[i]); 
+                rep.saveStepAttribute(id_transformation, id_step, i, "arg_parameter", argumentParameter[i]); 
             }
 
             for (int i = 0; i < headerField.length; i++)
             {
-                rep.saveStepAttribute(id_transformation, id_step, i, "header_name", headerField[i]); //$NON-NLS-1$
-                rep.saveStepAttribute(id_transformation, id_step, i, "header_parameter", headerParameter[i]); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "header_name", headerField[i]); 
+                rep.saveStepAttribute(id_transformation, id_step, i, "header_parameter", headerParameter[i]); 
             }
             
-            rep.saveStepAttribute(id_transformation, id_step, "result_name", fieldName); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "result_name", fieldName); 
             rep.saveStepAttribute(id_transformation, id_step, "result_code", resultCodeFieldName);
             rep.saveStepAttribute(id_transformation, id_step, "response_time", responseTimeFieldName);
         }
         catch (Exception e)
         {
-            throw new KettleException(BaseMessages.getString(PKG, "HTTPMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "HTTPMeta.Exception.UnableToSaveStepInfo") + id_step, e); 
         }
     }
 
@@ -551,12 +551,12 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
         // See if we have input streams leading to this step!
         if (input.length > 0)
         {
-            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "HTTPMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "HTTPMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); 
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "HTTPMeta.CheckResult.NoInpuReceived"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "HTTPMeta.CheckResult.NoInpuReceived"), stepMeta); 
             remarks.add(cr);
         }
         // check Url

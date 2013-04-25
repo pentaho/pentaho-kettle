@@ -31,7 +31,7 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LoggingRegistry;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.ValueMeta;
@@ -179,7 +179,7 @@ public class JobExecutor extends BaseStep implements StepInterface
     // TODO: make this optional/user-defined later
     //
     if (data.executorJob!=null) {
-      CentralLogStore.discardLines(data.executorJob.getLogChannelId(), false);
+      KettleLogStore.discardLines(data.executorJob.getLogChannelId(), false);
       LoggingRegistry.getInstance().removeIncludingChildren(data.executorJob.getLogChannelId());
     }
     
@@ -297,7 +297,7 @@ public class JobExecutor extends BaseStep implements StepInterface
       }
       if (!Const.isEmpty(meta.getExecutionLogTextField())) {
         String channelId = data.executorJob.getLogChannelId();
-        String logText = CentralLogStore.getAppender().getBuffer(channelId, false).toString();
+        String logText = KettleLogStore.getAppender().getBuffer(channelId, false).toString();
         outputRow[idx++] = logText;
       }
       if (!Const.isEmpty(meta.getExecutionLogChannelIdField())) {

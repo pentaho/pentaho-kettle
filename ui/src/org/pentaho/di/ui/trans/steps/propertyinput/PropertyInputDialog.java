@@ -1304,7 +1304,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 				if(value!=null) wFilenameField.setText(value);
 			
 		 }catch(KettleException ke){
-				new ErrorDialog(shell, BaseMessages.getString(PKG, "PropertyInputDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "PropertyInputDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "PropertyInputDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "PropertyInputDialog.FailedToGetFields.DialogMessage"), ke);  
 			}
 	 }
 

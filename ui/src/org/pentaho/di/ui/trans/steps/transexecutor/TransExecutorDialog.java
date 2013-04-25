@@ -224,14 +224,14 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "TransExecutorDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "TransExecutorDialog.Shell.Title")); 
 
 		middle = props.getMiddlePct();
 		margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname = new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "TransExecutorDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "TransExecutorDialog.Stepname.Label")); 
 		props.setLook(wlStepname);
 		fdlStepname = new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -257,7 +257,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
 		// //////////////////////////////////////////////////
 		//
 		gTransGroup = new Group(shell, SWT.SHADOW_ETCHED_IN);
-		gTransGroup.setText(BaseMessages.getString(PKG, "TransExecutorDialog.TransGroup.Label")); //$NON-NLS-1$;
+		gTransGroup.setText(BaseMessages.getString(PKG, "TransExecutorDialog.TransGroup.Label")); ;
 		gTransGroup.setBackground(shell.getBackground()); // the default looks
 		// ugly
 		FormLayout transGroupLayout = new FormLayout();
@@ -272,8 +272,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
 		radioFilename = new Button(gTransGroup, SWT.RADIO);
 		props.setLook(radioFilename);
 		radioFilename.setSelection(false);
-		radioFilename.setText(BaseMessages.getString(PKG, "TransExecutorDialog.RadioFile.Label")); //$NON-NLS-1$
-		radioFilename.setToolTipText(BaseMessages.getString(PKG, "TransExecutorDialog.RadioFile.Tooltip", Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
+		radioFilename.setText(BaseMessages.getString(PKG, "TransExecutorDialog.RadioFile.Label")); 
+		radioFilename.setToolTipText(BaseMessages.getString(PKG, "TransExecutorDialog.RadioFile.Tooltip", Const.CR));  
 		FormData fdFileRadio = new FormData();
 		fdFileRadio.left = new FormAttachment(0, 0);
 		fdFileRadio.right = new FormAttachment(100, 0);
@@ -320,8 +320,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
 		radioByName = new Button(gTransGroup, SWT.RADIO);
 		props.setLook(radioByName);
 		radioByName.setSelection(false);
-		radioByName.setText(BaseMessages.getString(PKG, "TransExecutorDialog.RadioRep.Label")); //$NON-NLS-1$
-		radioByName.setToolTipText(BaseMessages.getString(PKG, "TransExecutorDialog.RadioRep.Tooltip", Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
+		radioByName.setText(BaseMessages.getString(PKG, "TransExecutorDialog.RadioRep.Label")); 
+		radioByName.setToolTipText(BaseMessages.getString(PKG, "TransExecutorDialog.RadioRep.Tooltip", Const.CR));  
 		FormData fdRepRadio = new FormData();
 		fdRepRadio.left = new FormAttachment(0, 0);
 		fdRepRadio.right = new FormAttachment(100, 0);
@@ -380,8 +380,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     radioByReference = new Button(gTransGroup, SWT.RADIO);
     props.setLook(radioByReference);
     radioByReference.setSelection(false);
-    radioByReference.setText(BaseMessages.getString(PKG, "TransExecutorDialog.RadioRepByReference.Label")); //$NON-NLS-1$
-    radioByReference.setToolTipText(BaseMessages.getString(PKG, "TransExecutorDialog.RadioRepByReference.Tooltip", Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
+    radioByReference.setText(BaseMessages.getString(PKG, "TransExecutorDialog.RadioRepByReference.Label")); 
+    radioByReference.setToolTipText(BaseMessages.getString(PKG, "TransExecutorDialog.RadioRepByReference.Tooltip", Const.CR));  
     FormData fdRadioByReference = new FormData();
     fdRadioByReference.left = new FormAttachment(0, 0);
     fdRadioByReference.right = new FormAttachment(100, 0);
@@ -475,9 +475,9 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
 
 		// Some buttons
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 
@@ -598,7 +598,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
 		{
 			new ErrorDialog(
 					shell,
-					BaseMessages.getString(PKG, "TransExecutorDialog.ErrorSelectingObject.DialogTitle"), BaseMessages.getString(PKG, "TransExecutorDialog.ErrorSelectingObject.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+					BaseMessages.getString(PKG, "TransExecutorDialog.ErrorSelectingObject.DialogTitle"), BaseMessages.getString(PKG, "TransExecutorDialog.ErrorSelectingObject.DialogMessage"), ke);  
 		}
 	}
 
@@ -638,11 +638,11 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     } catch (IOException e) {
       new ErrorDialog(shell, 
           BaseMessages.getString(PKG, "TransExecutorDialog.ErrorLoadingTrans.DialogTitle"), 
-          BaseMessages.getString(PKG, "TransExecutorDialog.ErrorLoadingTrans.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+          BaseMessages.getString(PKG, "TransExecutorDialog.ErrorLoadingTrans.DialogMessage"), e);  
     } catch (KettleException e) {
       new ErrorDialog(shell, 
           BaseMessages.getString(PKG, "TransExecutorDialog.ErrorLoadingTrans.DialogTitle"), 
-          BaseMessages.getString(PKG, "TransExecutorDialog.ErrorLoadingTrans.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+          BaseMessages.getString(PKG, "TransExecutorDialog.ErrorLoadingTrans.DialogMessage"), e);  
     }
   }
 
@@ -832,8 +832,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
 	private void addParametersTab()
 	{
 		CTabItem wParametersTab = new CTabItem(wTabFolder, SWT.NONE);
-		wParametersTab.setText(BaseMessages.getString(PKG, "TransExecutorDialog.Parameters.Title")); //$NON-NLS-1$
-		wParametersTab.setToolTipText(BaseMessages.getString(PKG, "TransExecutorDialog.Parameters.Tooltip")); //$NON-NLS-1$
+		wParametersTab.setText(BaseMessages.getString(PKG, "TransExecutorDialog.Parameters.Title")); 
+		wParametersTab.setToolTipText(BaseMessages.getString(PKG, "TransExecutorDialog.Parameters.Tooltip")); 
 
 		Composite wParametersComposite = new Composite(wTabFolder, SWT.NONE);
 		props.setLook(wParametersComposite);
@@ -941,8 +941,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
   private void addRowGroupTab() {
 
 	    final CTabItem wTab = new CTabItem(wTabFolder, SWT.NONE);
-	    wTab.setText(BaseMessages.getString(PKG, "TransExecutorDialog.RowGroup.Title")); //$NON-NLS-1$
-	    wTab.setToolTipText(BaseMessages.getString(PKG, "TransExecutorDialog.RowGroup.Tooltip")); //$NON-NLS-1$
+	    wTab.setText(BaseMessages.getString(PKG, "TransExecutorDialog.RowGroup.Title")); 
+	    wTab.setToolTipText(BaseMessages.getString(PKG, "TransExecutorDialog.RowGroup.Tooltip")); 
 
 	    Composite wInputComposite = new Composite(wTabFolder, SWT.NONE);
 	    props.setLook(wInputComposite);
@@ -956,7 +956,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
 	    //
 	    wlGroupSize = new Label(wInputComposite, SWT.RIGHT);
 	    props.setLook(wlGroupSize);
-	    wlGroupSize.setText(BaseMessages.getString(PKG, "TransExecutorDialog.GroupSize.Label")); //$NON-NLS-1$
+	    wlGroupSize.setText(BaseMessages.getString(PKG, "TransExecutorDialog.GroupSize.Label")); 
 	    FormData fdlGroupSize = new FormData();
 	    fdlGroupSize.top = new FormAttachment(0, 0);
 	    fdlGroupSize.left = new FormAttachment(0, 0); // First one in the left
@@ -976,7 +976,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
       //
       wlGroupField = new Label(wInputComposite, SWT.RIGHT);
       props.setLook(wlGroupField);
-      wlGroupField.setText(BaseMessages.getString(PKG, "TransExecutorDialog.GroupField.Label")); //$NON-NLS-1$
+      wlGroupField.setText(BaseMessages.getString(PKG, "TransExecutorDialog.GroupField.Label")); 
       FormData fdlGroupField = new FormData();
       fdlGroupField.top = new FormAttachment(lastControl, margin);
       fdlGroupField.left = new FormAttachment(0, 0); // First one in the left
@@ -996,7 +996,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
       //
       wlGroupTime = new Label(wInputComposite, SWT.RIGHT);
       props.setLook(wlGroupTime);
-      wlGroupTime.setText(BaseMessages.getString(PKG, "TransExecutorDialog.GroupTime.Label")); //$NON-NLS-1$
+      wlGroupTime.setText(BaseMessages.getString(PKG, "TransExecutorDialog.GroupTime.Label")); 
       FormData fdlGroupTime = new FormData();
       fdlGroupTime.top = new FormAttachment(lastControl, margin);
       fdlGroupTime.left = new FormAttachment(0, 0); // First one in the left
@@ -1019,8 +1019,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
    private void addExecutionResultTab() {
 
      final CTabItem wTab = new CTabItem(wTabFolder, SWT.NONE);
-     wTab.setText(BaseMessages.getString(PKG, "TransExecutorDialog.ExecutionResults.Title")); //$NON-NLS-1$
-     wTab.setToolTipText(BaseMessages.getString(PKG, "TransExecutorDialog.ExecutionResults.Tooltip")); //$NON-NLS-1$
+     wTab.setText(BaseMessages.getString(PKG, "TransExecutorDialog.ExecutionResults.Title")); 
+     wTab.setToolTipText(BaseMessages.getString(PKG, "TransExecutorDialog.ExecutionResults.Tooltip")); 
      
      ScrolledComposite scrolledComposite = new ScrolledComposite(wTabFolder, SWT.V_SCROLL | SWT.H_SCROLL);
      scrolledComposite.setLayout(new FillLayout());
@@ -1357,8 +1357,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
    private void addResultFilesTab() {
 
      final CTabItem wTab = new CTabItem(wTabFolder, SWT.NONE);
-     wTab.setText(BaseMessages.getString(PKG, "TransExecutorDialog.ResultFiles.Title")); //$NON-NLS-1$
-     wTab.setToolTipText(BaseMessages.getString(PKG, "TransExecutorDialog.ResultFiles.Tooltip")); //$NON-NLS-1$
+     wTab.setText(BaseMessages.getString(PKG, "TransExecutorDialog.ResultFiles.Title")); 
+     wTab.setToolTipText(BaseMessages.getString(PKG, "TransExecutorDialog.ResultFiles.Tooltip")); 
      
      ScrolledComposite scrolledComposite = new ScrolledComposite(wTabFolder, SWT.V_SCROLL | SWT.H_SCROLL);
      scrolledComposite.setLayout(new FillLayout());
@@ -1425,8 +1425,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
    private void addResultRowsTab() {
 
      final CTabItem wTab = new CTabItem(wTabFolder, SWT.NONE);
-     wTab.setText(BaseMessages.getString(PKG, "TransExecutorDialog.ResultRows.Title")); //$NON-NLS-1$
-     wTab.setToolTipText(BaseMessages.getString(PKG, "TransExecutorDialog.ResultRows.Tooltip")); //$NON-NLS-1$
+     wTab.setText(BaseMessages.getString(PKG, "TransExecutorDialog.ResultRows.Title")); 
+     wTab.setToolTipText(BaseMessages.getString(PKG, "TransExecutorDialog.ResultRows.Tooltip")); 
      
      ScrolledComposite scrolledComposite = new ScrolledComposite(wTabFolder, SWT.V_SCROLL | SWT.H_SCROLL);
      scrolledComposite.setLayout(new FillLayout());
@@ -1458,7 +1458,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
      Control lastControl = wOutputRowsSource;
 
      wlOutputFields=new Label(wInputComposite, SWT.NONE);
-     wlOutputFields.setText(BaseMessages.getString(PKG, "TransExecutorDialog.ResultFields.Label")); //$NON-NLS-1$
+     wlOutputFields.setText(BaseMessages.getString(PKG, "TransExecutorDialog.ResultFields.Label")); 
      props.setLook(wlOutputFields);
      FormData fdlResultFields = new FormData();
      fdlResultFields.left  = new FormAttachment(0, 0);
@@ -1468,10 +1468,10 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
      int nrRows= (transExecutorMeta.getOutputRowsField()!=null?transExecutorMeta.getOutputRowsField().length:1);
      
      ColumnInfo[] ciResultFields=new ColumnInfo[] {
-      new ColumnInfo(BaseMessages.getString(PKG, "TransExecutorDialog.ColumnInfo.Field"),  ColumnInfo.COLUMN_TYPE_TEXT,   false, false), //$NON-NLS-1$
-      new ColumnInfo(BaseMessages.getString(PKG, "TransExecutorDialog.ColumnInfo.Type"),   ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes()), //$NON-NLS-1$
-      new ColumnInfo(BaseMessages.getString(PKG, "TransExecutorDialog.ColumnInfo.Length"), ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
-      new ColumnInfo(BaseMessages.getString(PKG, "TransExecutorDialog.ColumnInfo.Length"), ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
+      new ColumnInfo(BaseMessages.getString(PKG, "TransExecutorDialog.ColumnInfo.Field"),  ColumnInfo.COLUMN_TYPE_TEXT,   false, false), 
+      new ColumnInfo(BaseMessages.getString(PKG, "TransExecutorDialog.ColumnInfo.Type"),   ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes()), 
+      new ColumnInfo(BaseMessages.getString(PKG, "TransExecutorDialog.ColumnInfo.Length"), ColumnInfo.COLUMN_TYPE_TEXT,   false), 
+      new ColumnInfo(BaseMessages.getString(PKG, "TransExecutorDialog.ColumnInfo.Length"), ColumnInfo.COLUMN_TYPE_TEXT,   false), 
      };
      
      wOutputFields=new TableView(transMeta, wInputComposite, 

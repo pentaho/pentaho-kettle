@@ -101,7 +101,7 @@ public class SasInput extends BaseStep implements StepInterface {
     final String filename = KettleVFS.getFilename(KettleVFS.getFileObject(rawFilename)); 
     
     data.helper = new SasInputHelper(filename);
-    logBasic(BaseMessages.getString(PKG, "SASInput.Log.OpenedSASFile") + " : [" + data.helper + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    logBasic(BaseMessages.getString(PKG, "SASInput.Log.OpenedSASFile") + " : [" + data.helper + "]");   //$NON-NLS-3$
     
     // verify the row layout...
     //

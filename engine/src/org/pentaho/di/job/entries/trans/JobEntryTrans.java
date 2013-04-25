@@ -372,23 +372,23 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         arguments[a] = XMLHandler.getTagValue(entrynode, "argument" + a);
       }
 
-      Node parametersNode = XMLHandler.getSubNode(entrynode, "parameters"); //$NON-NLS-1$
+      Node parametersNode = XMLHandler.getSubNode(entrynode, "parameters"); 
 
       String passAll = XMLHandler.getTagValue(parametersNode, "pass_all_parameters");
       passingAllParameters = Const.isEmpty(passAll) || "Y".equalsIgnoreCase(passAll);
 
-      int nrParameters = XMLHandler.countNodes(parametersNode, "parameter"); //$NON-NLS-1$
+      int nrParameters = XMLHandler.countNodes(parametersNode, "parameter"); 
 
       parameters = new String[nrParameters];
       parameterFieldNames = new String[nrParameters];
       parameterValues = new String[nrParameters];
 
       for (int i = 0; i < nrParameters; i++) {
-        Node knode = XMLHandler.getSubNodeByNr(parametersNode, "parameter", i); //$NON-NLS-1$
+        Node knode = XMLHandler.getSubNodeByNr(parametersNode, "parameter", i); 
 
-        parameters[i] = XMLHandler.getTagValue(knode, "name"); //$NON-NLS-1$
-        parameterFieldNames[i] = XMLHandler.getTagValue(knode, "stream_name"); //$NON-NLS-1$
-        parameterValues[i] = XMLHandler.getTagValue(knode, "value"); //$NON-NLS-1$
+        parameters[i] = XMLHandler.getTagValue(knode, "name"); 
+        parameterFieldNames[i] = XMLHandler.getTagValue(knode, "stream_name"); 
+        parameterValues[i] = XMLHandler.getTagValue(knode, "value"); 
       }
     } catch (KettleException e) {
       throw new KettleXMLException("Unable to load job entry of type 'trans' from XML node", e);
@@ -1247,13 +1247,13 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
   public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore) {
     if (setLogfile) {
-      andValidator().validate(this, "logfile", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+      andValidator().validate(this, "logfile", remarks, putValidators(notBlankValidator())); 
     }
     if (!Const.isEmpty(filename)) {
-      andValidator().validate(this, "filename", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+      andValidator().validate(this, "filename", remarks, putValidators(notBlankValidator())); 
     } else {
-      andValidator().validate(this, "transname", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
-      andValidator().validate(this, "directory", remarks, putValidators(notNullValidator())); //$NON-NLS-1$
+      andValidator().validate(this, "transname", remarks, putValidators(notBlankValidator())); 
+      andValidator().validate(this, "directory", remarks, putValidators(notNullValidator())); 
     }
   }
 

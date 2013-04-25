@@ -111,14 +111,14 @@ public class ReplaceStringDialog extends BaseStepDialog implements StepDialogInt
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "ReplaceStringDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "ReplaceStringDialog.Shell.Title")); 
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname = new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "ReplaceStringDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "ReplaceStringDialog.Stepname.Label")); 
 		props.setLook(wlStepname);
 		fdlStepname = new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -137,7 +137,7 @@ public class ReplaceStringDialog extends BaseStepDialog implements StepDialogInt
 	
 
 		wlKey = new Label(shell, SWT.NONE);
-		wlKey.setText(BaseMessages.getString(PKG, "ReplaceStringDialog.Fields.Label")); //$NON-NLS-1$
+		wlKey.setText(BaseMessages.getString(PKG, "ReplaceStringDialog.Fields.Label")); 
 		props.setLook(wlKey);
 		fdlKey = new FormData();
 		fdlKey.left = new FormAttachment(0, 0);
@@ -149,14 +149,14 @@ public class ReplaceStringDialog extends BaseStepDialog implements StepDialogInt
 		int nrFieldRows = (input.getFieldInStream() != null ? input.getFieldInStream().length : 1);
 
 		ciKey = new ColumnInfo[nrFieldCols];
-		ciKey[0] = new ColumnInfo(BaseMessages.getString(PKG, "ReplaceStringDialog.ColumnInfo.InStreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
-		ciKey[1] = new ColumnInfo(BaseMessages.getString(PKG, "ReplaceStringDialog.ColumnInfo.OutStreamField"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
+		ciKey[0] = new ColumnInfo(BaseMessages.getString(PKG, "ReplaceStringDialog.ColumnInfo.InStreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); 
+		ciKey[1] = new ColumnInfo(BaseMessages.getString(PKG, "ReplaceStringDialog.ColumnInfo.OutStreamField"), ColumnInfo.COLUMN_TYPE_TEXT, false); 
 		ciKey[2] =  new ColumnInfo(BaseMessages.getString(PKG, "ReplaceStringDialog.ColumnInfo.useRegEx"), ColumnInfo.COLUMN_TYPE_CCOMBO,  ReplaceStringMeta.useRegExDesc);
-		ciKey[3] = new ColumnInfo(BaseMessages.getString(PKG, "ReplaceStringDialog.ColumnInfo.Replace"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
-		ciKey[4] = new ColumnInfo(BaseMessages.getString(PKG, "ReplaceStringDialog.ColumnInfo.By"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
+		ciKey[3] = new ColumnInfo(BaseMessages.getString(PKG, "ReplaceStringDialog.ColumnInfo.Replace"), ColumnInfo.COLUMN_TYPE_TEXT, false); 
+		ciKey[4] = new ColumnInfo(BaseMessages.getString(PKG, "ReplaceStringDialog.ColumnInfo.By"), ColumnInfo.COLUMN_TYPE_TEXT, false); 
 		ciKey[5]=new ColumnInfo(BaseMessages.getString(PKG, "ReplaceStringDialog.ColumnInfo.SetEmptyString"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString(PKG, "System.Combo.Yes"), BaseMessages.getString(PKG, "System.Combo.No") });
 		
-		ciKey[6] = new ColumnInfo(BaseMessages.getString(PKG, "ReplaceStringDialog.ColumnInfo.FieldReplaceBy"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+		ciKey[6] = new ColumnInfo(BaseMessages.getString(PKG, "ReplaceStringDialog.ColumnInfo.FieldReplaceBy"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); 
 
 		ciKey[7] =  new ColumnInfo(BaseMessages.getString(PKG, "ReplaceStringDialog.ColumnInfo.WholeWord"), ColumnInfo.COLUMN_TYPE_CCOMBO,  ReplaceStringMeta.wholeWordDesc);
 		ciKey[8] =  new ColumnInfo(BaseMessages.getString(PKG, "ReplaceStringDialog.ColumnInfo.CaseSensitive"), ColumnInfo.COLUMN_TYPE_CCOMBO,  ReplaceStringMeta.caseSensitiveDesc);
@@ -212,12 +212,12 @@ public class ReplaceStringDialog extends BaseStepDialog implements StepDialogInt
 		
 		// THE BUTTONS
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		wGet = new Button(shell, SWT.PUSH);
-		wGet.setText(BaseMessages.getString(PKG, "ReplaceStringDialog.GetFields.Button")); //$NON-NLS-1$
+		wGet.setText(BaseMessages.getString(PKG, "ReplaceStringDialog.GetFields.Button")); 
 		fdGet = new FormData();
 		fdGet.right = new FormAttachment(100, 0);
 		fdGet.top = new FormAttachment(wStepname, 3*middle);
@@ -342,7 +342,7 @@ public class ReplaceStringDialog extends BaseStepDialog implements StepDialogInt
 
 		inf.allocate(nrkeys);
 		if(isDebug())
-			logDebug(BaseMessages.getString(PKG, "ReplaceStringDialog.Log.FoundFields", String.valueOf(nrkeys))); //$NON-NLS-1$ //$NON-NLS-2$
+			logDebug(BaseMessages.getString(PKG, "ReplaceStringDialog.Log.FoundFields", String.valueOf(nrkeys)));  
 		for (int i = 0; i < nrkeys; i++) {
 			TableItem item = wFields.getNonEmpty(i);
 			inf.getFieldInStream()[i] = item.getText(1);
@@ -396,7 +396,7 @@ public class ReplaceStringDialog extends BaseStepDialog implements StepDialogInt
 			}
 		} catch (KettleException ke) {
 			new ErrorDialog(
-					shell,BaseMessages.getString(PKG, "ReplaceStringDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "ReplaceStringDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+					shell,BaseMessages.getString(PKG, "ReplaceStringDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "ReplaceStringDialog.FailedToGetFields.DialogMessage"), ke);  
 		}
 	}
 }

@@ -62,16 +62,16 @@ public class ClustersController extends LazilyInitializedController implements I
   
   @Override
   public String getName() {
-    return "clustersController"; //$NON-NLS-1$
+    return "clustersController"; 
   }
 
   public void createBindings() {
     refreshClusters();
     try {
-      clustersTable = (XulTree) document.getElementById("clusters-table"); //$NON-NLS-1$
+      clustersTable = (XulTree) document.getElementById("clusters-table"); 
       bf.setBindingType(Binding.Type.ONE_WAY);
-      bf.createBinding(clusterList, "children", clustersTable, "elements").fireSourceChanged(); //$NON-NLS-1$ //$NON-NLS-2$
-      bf.createBinding(clustersTable, "selectedItems", this, "enableButtons"); //$NON-NLS-1$ //$NON-NLS-2$
+      bf.createBinding(clusterList, "children", clustersTable, "elements").fireSourceChanged();  
+      bf.createBinding(clustersTable, "selectedItems", this, "enableButtons");  
     } catch (Exception e) {
       // convert to runtime exception so it bubbles up through the UI
       throw new RuntimeException(e);
@@ -80,7 +80,7 @@ public class ClustersController extends LazilyInitializedController implements I
 
   protected boolean doLazyInit() {
     // Load the SWT Shell from the explorer dialog
-    shell = ((SwtDialog) document.getElementById("repository-explorer-dialog")).getShell(); //$NON-NLS-1$
+    shell = ((SwtDialog) document.getElementById("repository-explorer-dialog")).getShell(); 
     bf = new SwtBindingFactory();
     bf.setDocument(this.getXulDomContainer().getDocumentRoot());
     enableButtons(true, false, false);
@@ -91,7 +91,7 @@ public class ClustersController extends LazilyInitializedController implements I
   }
   
   public void editCluster() {
-    String clusterSchemaName = ""; //$NON-NLS-1$
+    String clusterSchemaName = ""; 
     try {
       Collection<UICluster> clusters = clustersTable.getSelectedItems();
 
@@ -103,28 +103,28 @@ public class ClustersController extends LazilyInitializedController implements I
         ObjectId clusterId = repository.getClusterID(clusterSchema.getName());
         if (clusterId == null) {
           MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-          mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.DoesNotExists.Message", clusterSchemaName)); //$NON-NLS-1$
-          mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Edit.Title")); //$NON-NLS-1$
+          mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.DoesNotExists.Message", clusterSchemaName)); 
+          mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Edit.Title")); 
           mb.open();
         } else {
           ClusterSchemaDialog csd = new ClusterSchemaDialog(shell, clusterSchema, repository.getSlaveServers());
           if (csd.open()) {
-            if (clusterSchema.getName() != null && !clusterSchema.getName().equals("")) {//$NON-NLS-1$
+            if (clusterSchema.getName() != null && !clusterSchema.getName().equals("")) {
               repository.insertLogEntry(BaseMessages.getString(PKG,
-                  "ClusterController.Message.UpdatingCluster", clusterSchema.getName())); //$NON-NLS-1$
+                  "ClusterController.Message.UpdatingCluster", clusterSchema.getName())); 
               repository.save(clusterSchema, Const.VERSION_COMMENT_EDIT_VERSION, null);
             } else {
               MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-              mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Edit.InvalidName.Message")); //$NON-NLS-1$
-              mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Edit.Title")); //$NON-NLS-1$
+              mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Edit.InvalidName.Message")); 
+              mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Edit.Title")); 
               mb.open();
             }
           }
         }
       } else {
         MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-        mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.NoItemSelected.Message")); //$NON-NLS-1$
-        mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Edit.Title")); //$NON-NLS-1$
+        mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.NoItemSelected.Message")); 
+        mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Edit.Title")); 
         mb.open();
       }
 
@@ -132,7 +132,7 @@ public class ClustersController extends LazilyInitializedController implements I
     } catch (KettleException e) {
       new ErrorDialog(
           shell,
-          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Edit.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Edit.UnexpectedError.Message") + clusterSchemaName + "]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Edit.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Edit.UnexpectedError.Message") + clusterSchemaName + "]", e);   //$NON-NLS-3$
     }
   }
 
@@ -144,34 +144,34 @@ public class ClustersController extends LazilyInitializedController implements I
         // See if this cluster already exists...
         ObjectId idCluster = repository.getClusterID(cluster.getName());
         if (idCluster == null) {
-          if (cluster.getName() != null && !cluster.getName().equals("")) {//$NON-NLS-1$
+          if (cluster.getName() != null && !cluster.getName().equals("")) {
             repository.insertLogEntry(BaseMessages.getString(RepositoryExplorer.class,
-                "ClusterController.Message.CreatingNewCluster", cluster.getName())); //$NON-NLS-1$
+                "ClusterController.Message.CreatingNewCluster", cluster.getName())); 
             repository.save(cluster, Const.VERSION_COMMENT_INITIAL_VERSION, null);
           } else {
             MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-            mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Edit.InvalidName.Message")); //$NON-NLS-1$
-            mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Edit.Title")); //$NON-NLS-1$
+            mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Edit.InvalidName.Message")); 
+            mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Edit.Title")); 
             mb.open();
           }
         } else {
           MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-          mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Create.AlreadyExists.Message")); //$NON-NLS-1$
-          mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Create.AlreadyExists.Title")); //$NON-NLS-1$
+          mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Create.AlreadyExists.Message")); 
+          mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Create.AlreadyExists.Title")); 
           mb.open();
         }
       }
     } catch (KettleException e) {
       new ErrorDialog(shell, BaseMessages.getString(PKG,
-          "RepositoryExplorerDialog.Cluster.Create.UnexpectedError.Title"), //$NON-NLS-1$
-          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Create.UnexpectedError.Message"), e); //$NON-NLS-1$
+          "RepositoryExplorerDialog.Cluster.Create.UnexpectedError.Title"), 
+          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Create.UnexpectedError.Message"), e); 
     } finally {
       refreshClusters();
     }
   }
 
   public void removeCluster() {
-    String clusterSchemaName = ""; //$NON-NLS-1$
+    String clusterSchemaName = ""; 
     try {
       Collection<UICluster> clusters = clustersTable.getSelectedItems();
 
@@ -186,8 +186,8 @@ public class ClustersController extends LazilyInitializedController implements I
             if (clusterId == null) {
               MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
               mb.setMessage(BaseMessages.getString(PKG,
-                  "RepositoryExplorerDialog.Cluster.DoesNotExists.Message", clusterSchema.getName())); //$NON-NLS-1$
-              mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Delete.Title")); //$NON-NLS-1$
+                  "RepositoryExplorerDialog.Cluster.DoesNotExists.Message", clusterSchema.getName())); 
+              mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Delete.Title")); 
               mb.open();
             } else {
               repository.deleteClusterSchema(clusterId);
@@ -196,14 +196,14 @@ public class ClustersController extends LazilyInitializedController implements I
         }
       } else {
         MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-        mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.NoItemSelected.Message")); //$NON-NLS-1$
-        mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Delete.Title")); //$NON-NLS-1$
+        mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.NoItemSelected.Message")); 
+        mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Delete.Title")); 
         mb.open();
       }
     } catch (KettleException e) {
       new ErrorDialog(
           shell,
-          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Delete.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Delete.UnexpectedError.Message") + clusterSchemaName + "]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Delete.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Delete.UnexpectedError.Message") + clusterSchemaName + "]", e);   //$NON-NLS-3$
     } finally {
       refreshClusters();
     }
@@ -247,9 +247,9 @@ public class ClustersController extends LazilyInitializedController implements I
   }
 
   public void enableButtons(boolean enableNew, boolean enableEdit, boolean enableRemove) {
-    XulButton bNew = (XulButton) document.getElementById("clusters-new"); //$NON-NLS-1$
-    XulButton bEdit = (XulButton) document.getElementById("clusters-edit"); //$NON-NLS-1$
-    XulButton bRemove = (XulButton) document.getElementById("clusters-remove"); //$NON-NLS-1$
+    XulButton bNew = (XulButton) document.getElementById("clusters-new"); 
+    XulButton bEdit = (XulButton) document.getElementById("clusters-edit"); 
+    XulButton bRemove = (XulButton) document.getElementById("clusters-remove"); 
 
     bNew.setDisabled(!enableNew);
     bEdit.setDisabled(!enableEdit);

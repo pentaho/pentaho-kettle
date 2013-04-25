@@ -209,26 +209,26 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
       List<? extends SharedObjectInterface> databases)
       throws KettleXMLException {
     try {
-      String con = XMLHandler.getTagValue(stepnode, "connection"); //$NON-NLS-1$
+      String con = XMLHandler.getTagValue(stepnode, "connection"); 
       databaseMeta = DatabaseMeta.findDatabase(databases, con);
-      schemaName = XMLHandler.getTagValue(stepnode, "schema"); //$NON-NLS-1$
-      tableName = XMLHandler.getTagValue(stepnode, "table"); //$NON-NLS-1$
-      host = XMLHandler.getTagValue(stepnode, "host"); //$NON-NLS-1$
-      port = XMLHandler.getTagValue(stepnode, "port"); //$NON-NLS-1$
-      operation = XMLHandler.getTagValue(stepnode, "operation"); //$NON-NLS-1$
-      custom_sql = XMLHandler.getTagValue(stepnode, "custom_sql"); //$NON-NLS-1$
-      int nrKeyMapping = XMLHandler.countNodes(stepnode, "keys_mapping"); //$NON-NLS-1$
-      int nrFieldMapping = XMLHandler.countNodes(stepnode, "fields_mapping"); //$NON-NLS-1$
+      schemaName = XMLHandler.getTagValue(stepnode, "schema"); 
+      tableName = XMLHandler.getTagValue(stepnode, "table"); 
+      host = XMLHandler.getTagValue(stepnode, "host"); 
+      port = XMLHandler.getTagValue(stepnode, "port"); 
+      operation = XMLHandler.getTagValue(stepnode, "operation"); 
+      custom_sql = XMLHandler.getTagValue(stepnode, "custom_sql"); 
+      int nrKeyMapping = XMLHandler.countNodes(stepnode, "keys_mapping"); 
+      int nrFieldMapping = XMLHandler.countNodes(stepnode, "fields_mapping"); 
       int nrTabIsEnable = XMLHandler.countNodes(stepnode,
-          "tab_is_enable_mapping"); //$NON-NLS-1$
+          "tab_is_enable_mapping"); 
       allocate(nrKeyMapping, nrFieldMapping, nrTabIsEnable);
 
       for (int i = 0; i < nrKeyMapping; i++) {
-        Node vnode = XMLHandler.getSubNodeByNr(stepnode, "keys_mapping", i); //$NON-NLS-1$
+        Node vnode = XMLHandler.getSubNodeByNr(stepnode, "keys_mapping", i); 
 
-        fieldTableForKeys[i] = XMLHandler.getTagValue(vnode, "key_field_name"); //$NON-NLS-1$
+        fieldTableForKeys[i] = XMLHandler.getTagValue(vnode, "key_field_name"); 
         fieldStreamForKeys[i] = XMLHandler
-            .getTagValue(vnode, "key_stream_name"); //$NON-NLS-1$
+            .getTagValue(vnode, "key_stream_name"); 
         if (fieldStreamForKeys[i] == null)
           fieldStreamForKeys[i] = fieldTableForKeys[i]; // default:
         // the same
@@ -236,25 +236,25 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
 
       }
       for (int i = 0; i < nrFieldMapping; i++) {
-        Node vnode = XMLHandler.getSubNodeByNr(stepnode, "fields_mapping", i); //$NON-NLS-1$
+        Node vnode = XMLHandler.getSubNodeByNr(stepnode, "fields_mapping", i); 
 
         fieldTableForFields[i] = XMLHandler.getTagValue(vnode,
-            "field_field_name"); //$NON-NLS-1$
+            "field_field_name"); 
         fieldStreamForFields[i] = XMLHandler.getTagValue(vnode,
-            "field_stream_name"); //$NON-NLS-1$
+            "field_stream_name"); 
         if (fieldStreamForFields[i] == null)
           fieldStreamForFields[i] = fieldTableForFields[i]; // default:
         // the
         // same
         // name!
-        insOrUptFlag[i] = "Y".equalsIgnoreCase(XMLHandler.getTagValue(vnode, "insert_or_update_flag")); //$NON-NLS-1$
+        insOrUptFlag[i] = "Y".equalsIgnoreCase(XMLHandler.getTagValue(vnode, "insert_or_update_flag")); 
 
       }
 
       for (int i = 0; i < nrTabIsEnable; i++) {
         Node vnode = XMLHandler.getSubNodeByNr(stepnode,
-            "tab_is_enable_mapping", i); //$NON-NLS-1$
-        tabIsEnable[i] = "Y".equalsIgnoreCase(XMLHandler.getTagValue(vnode, "tab_is_enable")); //$NON-NLS-1$
+            "tab_is_enable_mapping", i); 
+        tabIsEnable[i] = "Y".equalsIgnoreCase(XMLHandler.getTagValue(vnode, "tab_is_enable")); 
 
       }
 
@@ -262,15 +262,15 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
       throw new KettleXMLException(
           BaseMessages
               .getString(PKG,
-                  "LucidDBStreamingLoaderMeta.Exception.UnableToReadStepInfoFromXML"), e); //$NON-NLS-1$
+                  "LucidDBStreamingLoaderMeta.Exception.UnableToReadStepInfoFromXML"), e); 
     }
   }
 
   public void setDefault() {
     databaseMeta = null;
-    schemaName = ""; //$NON-NLS-1$
+    schemaName = ""; 
     tableName = BaseMessages.getString(PKG,
-        "LucidDBStreamingLoaderMeta.DefaultTableName"); //$NON-NLS-1$      
+        "LucidDBStreamingLoaderMeta.DefaultTableName");       
     host = "localhost";
     port = "9034";
     operation = "MERGE";
@@ -281,41 +281,41 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
     StringBuffer retval = new StringBuffer(300);
 
     retval
-        .append("    ").append(XMLHandler.addTagValue("connection", databaseMeta == null ? "" : databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-    retval.append("    ").append(XMLHandler.addTagValue("schema", schemaName)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("table", tableName)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("host", host)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("port", port)); //$NON-NLS-1$ //$NON-NLS-2$
+        .append("    ").append(XMLHandler.addTagValue("connection", databaseMeta == null ? "" : databaseMeta.getName()));   //$NON-NLS-3$
+    retval.append("    ").append(XMLHandler.addTagValue("schema", schemaName));  
+    retval.append("    ").append(XMLHandler.addTagValue("table", tableName));  
+    retval.append("    ").append(XMLHandler.addTagValue("host", host));  
+    retval.append("    ").append(XMLHandler.addTagValue("port", port));  
     retval
-        .append("    ").append(XMLHandler.addTagValue("operation", operation)); //$NON-NLS-1$ //$NON-NLS-2$
+        .append("    ").append(XMLHandler.addTagValue("operation", operation));  
     retval
-        .append("    ").append(XMLHandler.addTagValue("custom_sql", custom_sql)); //$NON-NLS-1$ //$NON-NLS-2$
+        .append("    ").append(XMLHandler.addTagValue("custom_sql", custom_sql));  
 
     for (int i = 0; i < fieldTableForKeys.length; i++) {
-      retval.append("      <keys_mapping>").append(Const.CR); //$NON-NLS-1$
+      retval.append("      <keys_mapping>").append(Const.CR); 
       retval
-          .append("        ").append(XMLHandler.addTagValue("key_field_name", fieldTableForKeys[i])); //$NON-NLS-1$ //$NON-NLS-2$
+          .append("        ").append(XMLHandler.addTagValue("key_field_name", fieldTableForKeys[i]));  
       retval
-          .append("        ").append(XMLHandler.addTagValue("key_stream_name", fieldStreamForKeys[i])); //$NON-NLS-1$ //$NON-NLS-2$
-      retval.append("      </keys_mapping>").append(Const.CR); //$NON-NLS-1$
+          .append("        ").append(XMLHandler.addTagValue("key_stream_name", fieldStreamForKeys[i]));  
+      retval.append("      </keys_mapping>").append(Const.CR); 
     }
 
     for (int i = 0; i < fieldTableForFields.length; i++) {
-      retval.append("      <fields_mapping>").append(Const.CR); //$NON-NLS-1$
+      retval.append("      <fields_mapping>").append(Const.CR); 
       retval
-          .append("        ").append(XMLHandler.addTagValue("field_field_name", fieldTableForFields[i])); //$NON-NLS-1$ //$NON-NLS-2$
+          .append("        ").append(XMLHandler.addTagValue("field_field_name", fieldTableForFields[i]));  
       retval
-          .append("        ").append(XMLHandler.addTagValue("field_stream_name", fieldStreamForFields[i])); //$NON-NLS-1$ //$NON-NLS-2$
+          .append("        ").append(XMLHandler.addTagValue("field_stream_name", fieldStreamForFields[i]));  
       retval
-          .append("        ").append(XMLHandler.addTagValue("insert_or_update_flag", insOrUptFlag[i])); //$NON-NLS-1$ //$NON-NLS-2$
-      retval.append("      </fields_mapping>").append(Const.CR); //$NON-NLS-1$
+          .append("        ").append(XMLHandler.addTagValue("insert_or_update_flag", insOrUptFlag[i]));  
+      retval.append("      </fields_mapping>").append(Const.CR); 
     }
 
     for (int i = 0; i < tabIsEnable.length; i++) {
-      retval.append("      <tab_is_enable_mapping>").append(Const.CR); //$NON-NLS-1$
+      retval.append("      <tab_is_enable_mapping>").append(Const.CR); 
       retval
-          .append("        ").append(XMLHandler.addTagValue("tab_is_enable", tabIsEnable[i])); //$NON-NLS-1$ //$NON-NLS-2$
-      retval.append("      </tab_is_enable_mapping>").append(Const.CR); //$NON-NLS-1$
+          .append("        ").append(XMLHandler.addTagValue("tab_is_enable", tabIsEnable[i]));  
+      retval.append("      </tab_is_enable_mapping>").append(Const.CR); 
     }
 
     return retval.toString();
@@ -327,24 +327,24 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
     try {
       databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step,
           "id_connection", databases);
-      schemaName = rep.getStepAttributeString(id_step, "schema"); //$NON-NLS-1$
-      tableName = rep.getStepAttributeString(id_step, "table"); //$NON-NLS-1$
-      host = rep.getStepAttributeString(id_step, "host"); //$NON-NLS-1$
-      port = rep.getStepAttributeString(id_step, "port"); //$NON-NLS-1$
-      operation = rep.getStepAttributeString(id_step, "operation"); //$NON-NLS-1$
-      custom_sql = rep.getStepAttributeString(id_step, "custom_sql"); //$NON-NLS-1$
-      int nrKeyMapping = rep.countNrStepAttributes(id_step, "key_field_name"); //$NON-NLS-1$
-      int nrFieldMapping = rep.countNrStepAttributes(id_step, "field_field_name"); //$NON-NLS-1$
+      schemaName = rep.getStepAttributeString(id_step, "schema"); 
+      tableName = rep.getStepAttributeString(id_step, "table"); 
+      host = rep.getStepAttributeString(id_step, "host"); 
+      port = rep.getStepAttributeString(id_step, "port"); 
+      operation = rep.getStepAttributeString(id_step, "operation"); 
+      custom_sql = rep.getStepAttributeString(id_step, "custom_sql"); 
+      int nrKeyMapping = rep.countNrStepAttributes(id_step, "key_field_name"); 
+      int nrFieldMapping = rep.countNrStepAttributes(id_step, "field_field_name"); 
       int nrTabIsEnable = rep.countNrStepAttributes(id_step,
-          "tab_is_enable_mapping"); //$NON-NLS-1$
+          "tab_is_enable_mapping"); 
 
       allocate(nrKeyMapping, nrFieldMapping, nrTabIsEnable);
 
       for (int i = 0; i < nrKeyMapping; i++) {
         fieldTableForKeys[i] = rep.getStepAttributeString(id_step, i,
-            "key_field_name"); //$NON-NLS-1$
+            "key_field_name"); 
         fieldStreamForKeys[i] = rep.getStepAttributeString(id_step, i,
-            "key_stream_name"); //$NON-NLS-1$
+            "key_stream_name"); 
         if (fieldStreamForKeys[i] == null)
           fieldStreamForKeys[i] = fieldTableForKeys[i];
 
@@ -352,26 +352,26 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
 
       for (int i = 0; i < nrFieldMapping; i++) {
         fieldTableForFields[i] = rep.getStepAttributeString(id_step, i,
-            "field_field_name"); //$NON-NLS-1$
+            "field_field_name"); 
         fieldStreamForFields[i] = rep.getStepAttributeString(id_step, i,
-            "field_stream_name"); //$NON-NLS-1$
+            "field_stream_name"); 
         if (fieldStreamForFields[i] == null)
           fieldStreamForFields[i] = fieldTableForFields[i];
         insOrUptFlag[i] = rep.getStepAttributeBoolean(id_step, i,
-            "insert_or_update_flag"); //$NON-NLS-1$
+            "insert_or_update_flag"); 
       }
 
       for (int i = 0; i < nrTabIsEnable; i++) {
 
         tabIsEnable[i] = rep.getStepAttributeBoolean(id_step, i,
-            "tab_is_enable"); //$NON-NLS-1$
+            "tab_is_enable"); 
       }
     } catch (Exception e) {
       throw new KettleException(
           BaseMessages
               .getString(
                   PKG,
-                  "LucidDBStreamingLoaderMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository"), e); //$NON-NLS-1$
+                  "LucidDBStreamingLoaderMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository"), e); 
     }
   }
 
@@ -380,35 +380,35 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
     try {
       rep.saveDatabaseMetaStepAttribute(id_transformation, id_step,
           "id_connection", databaseMeta);
-      rep.saveStepAttribute(id_transformation, id_step, "schema", schemaName); //$NON-NLS-1$
-      rep.saveStepAttribute(id_transformation, id_step, "table", tableName); //$NON-NLS-1$  
+      rep.saveStepAttribute(id_transformation, id_step, "schema", schemaName); 
+      rep.saveStepAttribute(id_transformation, id_step, "table", tableName);   
       rep.saveStepAttribute(id_transformation, id_step, "host", host); //$NON-NLS-1
       rep.saveStepAttribute(id_transformation, id_step, "port", port); //$NON-NLS-1
-      rep.saveStepAttribute(id_transformation, id_step, "operation", operation); //$NON-NLS-1$
+      rep.saveStepAttribute(id_transformation, id_step, "operation", operation); 
       rep.saveStepAttribute(id_transformation, id_step,
-          "custom_sql", custom_sql); //$NON-NLS-1$       
+          "custom_sql", custom_sql);        
 
       for (int i = 0; i < fieldTableForKeys.length; i++) {
         rep.saveStepAttribute(id_transformation, id_step, i,
-            "key_field_name", fieldTableForKeys[i]); //$NON-NLS-1$
+            "key_field_name", fieldTableForKeys[i]); 
         rep.saveStepAttribute(id_transformation, id_step, i,
-            "key_stream_name", fieldStreamForKeys[i]); //$NON-NLS-1$
+            "key_stream_name", fieldStreamForKeys[i]); 
 
       }
 
       for (int i = 0; i < fieldTableForFields.length; i++) {
         rep.saveStepAttribute(id_transformation, id_step, i,
-            "field_field_name", fieldTableForFields[i]); //$NON-NLS-1$
+            "field_field_name", fieldTableForFields[i]); 
         rep.saveStepAttribute(id_transformation, id_step, i,
-            "field_stream_name", fieldStreamForFields[i]); //$NON-NLS-1$
+            "field_stream_name", fieldStreamForFields[i]); 
         rep.saveStepAttribute(id_transformation, id_step, i,
-            "insert_or_update_flag", insOrUptFlag[i]); //$NON-NLS-1$
+            "insert_or_update_flag", insOrUptFlag[i]); 
       }
 
       for (int i = 0; i < tabIsEnable.length; i++) {
 
         rep.saveStepAttribute(id_transformation, id_step, i,
-            "tab_is_enable", tabIsEnable[i]); //$NON-NLS-1$
+            "tab_is_enable", tabIsEnable[i]); 
       }
 
       // Also, save the step-database relationship!
@@ -419,7 +419,7 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
       throw new KettleException(
           BaseMessages
               .getString(PKG,
-                  "LucidDBStreamingLoaderMeta.Exception.UnableToSaveStepInfoToRepository") + id_step, e); //$NON-NLS-1$
+                  "LucidDBStreamingLoaderMeta.Exception.UnableToSaveStepInfoToRepository") + id_step, e); 
     }
   }
 

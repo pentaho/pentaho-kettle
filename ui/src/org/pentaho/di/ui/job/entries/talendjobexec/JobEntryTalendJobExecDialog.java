@@ -70,11 +70,11 @@ public class JobEntryTalendJobExecDialog extends JobEntryDialog implements JobEn
 {
 	private static Class<?> PKG = JobEntryTalendJobExec.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	private static final String[] EXTENSIONS = new String[] { "*.ZIP;*.zip", "*" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	private static final String[] EXTENSIONS = new String[] { "*.ZIP;*.zip", "*" };   //$NON-NLS-3$
 
 	private static final String[] FILETYPES = new String[] {
-			BaseMessages.getString(PKG, "JobEntryTalendJobExec.Filetype.ZIP"), //$NON-NLS-1$
-			BaseMessages.getString(PKG, "JobEntryTalendJobExec.Filetype.All") }; //$NON-NLS-1$
+			BaseMessages.getString(PKG, "JobEntryTalendJobExec.Filetype.ZIP"), 
+			BaseMessages.getString(PKG, "JobEntryTalendJobExec.Filetype.All") }; 
 
 	private Label wlName;
 
@@ -110,7 +110,7 @@ public class JobEntryTalendJobExecDialog extends JobEntryDialog implements JobEn
 		super(parent, jobEntryInt, rep, jobMeta);
 		jobEntry = (JobEntryTalendJobExec) jobEntryInt;
 		if (this.jobEntry.getName() == null)
-			this.jobEntry.setName(BaseMessages.getString(PKG, "JobEntryTalendJobExec.Name.Default")); //$NON-NLS-1$
+			this.jobEntry.setName(BaseMessages.getString(PKG, "JobEntryTalendJobExec.Name.Default")); 
 	}
 
 	public JobEntryInterface open()
@@ -136,14 +136,14 @@ public class JobEntryTalendJobExecDialog extends JobEntryDialog implements JobEn
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "JobEntryTalendJobExec.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "JobEntryTalendJobExec.Title")); 
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Filename line
 		wlName = new Label(shell, SWT.RIGHT);
-		wlName.setText(BaseMessages.getString(PKG, "JobEntryTalendJobExec.Name.Label")); //$NON-NLS-1$
+		wlName.setText(BaseMessages.getString(PKG, "JobEntryTalendJobExec.Name.Label")); 
 		props.setLook(wlName);
 		fdlName = new FormData();
 		fdlName.left = new FormAttachment(0, 0);
@@ -163,7 +163,7 @@ public class JobEntryTalendJobExecDialog extends JobEntryDialog implements JobEn
 		
 		// Filename line
 		wlFilename = new Label(shell, SWT.RIGHT);
-		wlFilename.setText(BaseMessages.getString(PKG, "JobEntryTalendJobExec.Filename.Label")); //$NON-NLS-1$
+		wlFilename.setText(BaseMessages.getString(PKG, "JobEntryTalendJobExec.Filename.Label")); 
 		props.setLook(wlFilename);
 		fdlFilename = new FormData();
 		fdlFilename.left = new FormAttachment(0, 0);
@@ -173,7 +173,7 @@ public class JobEntryTalendJobExecDialog extends JobEntryDialog implements JobEn
 
 		wbFilename = new Button(shell, SWT.PUSH | SWT.CENTER);
 		props.setLook(wbFilename);
-		wbFilename.setText(BaseMessages.getString(PKG, "System.Button.Browse")); //$NON-NLS-1$
+		wbFilename.setText(BaseMessages.getString(PKG, "System.Button.Browse")); 
 		fdbFilename = new FormData();
 		fdbFilename.right = new FormAttachment(100, 0);
 		fdbFilename.top = new FormAttachment(lastControl, 0);
@@ -239,7 +239,7 @@ public class JobEntryTalendJobExecDialog extends JobEntryDialog implements JobEn
 		
     // Filename line
     Label wlClassName = new Label(shell, SWT.RIGHT);
-    wlClassName.setText(BaseMessages.getString(PKG, "JobEntryTalendJobExec.ClassName.Label")); //$NON-NLS-1$
+    wlClassName.setText(BaseMessages.getString(PKG, "JobEntryTalendJobExec.ClassName.Label")); 
     props.setLook(wlClassName);
     FormData fdlClassName = new FormData();
     fdlClassName.left = new FormAttachment(0, 0);
@@ -247,7 +247,7 @@ public class JobEntryTalendJobExecDialog extends JobEntryDialog implements JobEn
     fdlClassName.top = new FormAttachment(lastControl, margin);
     wlClassName.setLayoutData(fdlClassName);
     wClassName = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-    wClassName.setToolTipText(BaseMessages.getString(PKG, "JobEntryTalendJobExec.ClassName.Tooltip")); //$NON-NLS-1$
+    wClassName.setToolTipText(BaseMessages.getString(PKG, "JobEntryTalendJobExec.ClassName.Tooltip")); 
     props.setLook(wClassName);
     wClassName.addModifyListener(lsMod);
     FormData fdClassName = new FormData();
@@ -259,7 +259,7 @@ public class JobEntryTalendJobExecDialog extends JobEntryDialog implements JobEn
 		
 
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		FormData fd = new FormData();
 		fd.right = new FormAttachment(50, -10);
 		fd.bottom = new FormAttachment(100, 0);
@@ -267,7 +267,7 @@ public class JobEntryTalendJobExecDialog extends JobEntryDialog implements JobEn
 		wOK.setLayoutData(fd);
 
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 		fd = new FormData();
 		fd.left = new FormAttachment(50, 10);
 		fd.bottom = new FormAttachment(100, 0);
@@ -319,7 +319,7 @@ public class JobEntryTalendJobExecDialog extends JobEntryDialog implements JobEn
 		BaseStepDialog.setSize(shell);
 
 		shell.open();
-		props.setDialogSize(shell, "JobEntryTalendJobExec.DialogSize"); //$NON-NLS-1$
+		props.setDialogSize(shell, "JobEntryTalendJobExec.DialogSize"); 
 		while (!shell.isDisposed())
 		{
 			if (!display.readAndDispatch())

@@ -128,7 +128,7 @@ public class JavaFilter extends BaseStep implements StepInterface
 		
         if (checkFeedback(getLinesRead())) 
         {
-        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "JavaFilter.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "JavaFilter.Log.LineNumber")+getLinesRead()); 
         }
         
 		return true;
@@ -221,7 +221,7 @@ public class JavaFilter extends BaseStep implements StepInterface
         	
             if (targetStreams.get(0).getStepMeta()!=null ^ targetStreams.get(1).getStepMeta()!=null)
             {
-                logError(BaseMessages.getString(PKG, "JavaFilter.Log.BothTrueAndFalseNeeded")); //$NON-NLS-1$
+                logError(BaseMessages.getString(PKG, "JavaFilter.Log.BothTrueAndFalseNeeded")); 
             }
             else
             {

@@ -81,7 +81,7 @@ public class ConcatFields extends TextFileOutput implements StepInterface
 			data.posTargetField=data.outputRowMeta.indexOfValue(meta.getTargetFieldName());
 			if (data.posTargetField < 0) {
 				throw new KettleStepException(
-						BaseMessages.getString(PKG, "ConcatFields.Error.TargetFieldNotFoundOutputStream", ""+meta.getTargetFieldName())); //$NON-NLS-1$
+						BaseMessages.getString(PKG, "ConcatFields.Error.TargetFieldNotFoundOutputStream", ""+meta.getTargetFieldName())); 
 			}			
 
 			if (!meta.isFileAppended() && (meta.isHeaderEnabled() || meta.isFooterEnabled())) // See if we have to write a header-line)
@@ -99,7 +99,7 @@ public class ConcatFields extends TextFileOutput implements StepInterface
 				data.fieldnrs[i] = data.inputRowMetaModified.indexOfValue(meta.getOutputFields()[i].getName());
 				if (data.fieldnrs[i] < 0) {
 					throw new KettleStepException(
-							BaseMessages.getString(PKG, "ConcatFields.Error.FieldNotFoundInputStream", ""+meta.getOutputFields()[i].getName())); //$NON-NLS-1$
+							BaseMessages.getString(PKG, "ConcatFields.Error.FieldNotFoundInputStream", ""+meta.getOutputFields()[i].getName())); 
 				}
 			}
 			
@@ -121,7 +121,7 @@ public class ConcatFields extends TextFileOutput implements StepInterface
 					data.remainingFieldsInputOutputMapping[i]=data.inputRowMetaModified.indexOfValue(fieldNames[i]);
 					if (data.remainingFieldsInputOutputMapping[i] < 0) {
 						throw new KettleStepException(
-								BaseMessages.getString(PKG, "ConcatFields.Error.RemainingFieldNotFoundInputStream", ""+fieldNames[i])); //$NON-NLS-1$
+								BaseMessages.getString(PKG, "ConcatFields.Error.RemainingFieldNotFoundInputStream", ""+fieldNames[i])); 
 					}
 				}
 			}
@@ -169,9 +169,9 @@ public class ConcatFields extends TextFileOutput implements StepInterface
 			putRowFastDataDump(r);
 		}
 		
-        if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "ConcatFields.Log.WriteRow")+getLinesWritten()+" : "+data.outputRowMeta.getString(r)); //$NON-NLS-1$ //$NON-NLS-2$
+        if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "ConcatFields.Log.WriteRow")+getLinesWritten()+" : "+data.outputRowMeta.getString(r));  
 		if (checkFeedback(getLinesRead())) {
-			if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "ConcatFields.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+			if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "ConcatFields.Log.LineNumber")+getLinesRead()); 
 		}
 
 		return result;
@@ -197,7 +197,7 @@ public class ConcatFields extends TextFileOutput implements StepInterface
 					outputRowData[data.posTargetField]=new String(targetBinary, meta.getEncoding());
 				} catch (UnsupportedEncodingException e) {
 					throw new KettleStepException(
-							BaseMessages.getString(PKG, "ConcatFields.Error.UnsupportedEncoding", ""+meta.getEncoding())); //$NON-NLS-1$
+							BaseMessages.getString(PKG, "ConcatFields.Error.UnsupportedEncoding", ""+meta.getEncoding())); 
 				}
 			}
 		} else {

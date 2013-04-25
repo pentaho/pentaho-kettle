@@ -77,7 +77,7 @@ public class JobEntryPGPVerify extends JobEntryBase implements Cloneable, JobEnt
 
 	public JobEntryPGPVerify(String n)
 	{
-		super(n, ""); //$NON-NLS-1$
+		super(n, ""); 
 		gpglocation=null;
 		filename=null;
 		detachedfilename=null;
@@ -87,7 +87,7 @@ public class JobEntryPGPVerify extends JobEntryBase implements Cloneable, JobEnt
 
 	public JobEntryPGPVerify()
 	{
-		this(""); //$NON-NLS-1$
+		this(""); 
 	}
 
     public Object clone()
@@ -101,7 +101,7 @@ public class JobEntryPGPVerify extends JobEntryBase implements Cloneable, JobEnt
         StringBuffer retval = new StringBuffer();
 
 		retval.append(super.getXML());
-		retval.append("      ").append(XMLHandler.addTagValue("gpglocation",   gpglocation)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("gpglocation",   gpglocation));  
 		retval.append("      ").append(XMLHandler.addTagValue("filename",   filename));
 		retval.append("      ").append(XMLHandler.addTagValue("detachedfilename",   detachedfilename));
 		retval.append("      ").append(XMLHandler.addTagValue("useDetachedSignature",   useDetachedSignature));
@@ -113,15 +113,15 @@ public class JobEntryPGPVerify extends JobEntryBase implements Cloneable, JobEnt
 		try
 		{
 			super.loadXML(entrynode, databases, slaveServers);
-			gpglocation      = XMLHandler.getTagValue(entrynode, "gpglocation"); //$NON-NLS-1$
+			gpglocation      = XMLHandler.getTagValue(entrynode, "gpglocation"); 
 			filename      = XMLHandler.getTagValue(entrynode, "filename");
 			detachedfilename      = XMLHandler.getTagValue(entrynode, "detachedfilename");
-			useDetachedSignature = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "useDetachedSignature")); //$NON-NLS-1$ //$NON-NLS-2$
+			useDetachedSignature = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "useDetachedSignature"));  
 
 		}
 		catch(KettleXMLException xe)
 		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryPGPVerify.ERROR_0001_Cannot_Load_Job_Entry_From_Xml_Node"), xe); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryPGPVerify.ERROR_0001_Cannot_Load_Job_Entry_From_Xml_Node"), xe); 
 		}
 	}
 
@@ -129,14 +129,14 @@ public class JobEntryPGPVerify extends JobEntryBase implements Cloneable, JobEnt
 	{
 		try
 		{
-			gpglocation = rep.getJobEntryAttributeString(id_jobentry, "gpglocation"); //$NON-NLS-1$
+			gpglocation = rep.getJobEntryAttributeString(id_jobentry, "gpglocation"); 
 			filename = rep.getJobEntryAttributeString(id_jobentry, "filename");
 			detachedfilename = rep.getJobEntryAttributeString(id_jobentry, "detachedfilename");
 			useDetachedSignature = rep.getJobEntryAttributeBoolean(id_jobentry, "useDetachedSignature");
 		}
 		catch(KettleException dbe)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "JobEntryPGPVerify.ERROR_0002_Cannot_Load_Job_From_Repository", id_jobentry), dbe); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "JobEntryPGPVerify.ERROR_0002_Cannot_Load_Job_From_Repository", id_jobentry), dbe); 
 		}
 	}
 
@@ -144,14 +144,14 @@ public class JobEntryPGPVerify extends JobEntryBase implements Cloneable, JobEnt
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_job, getObjectId(), "gpglocation", gpglocation); //$NON-NLS-1$
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "gpglocation", gpglocation); 
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "filename", filename);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "detachedfilename", detachedfilename);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "useDetachedSignature", useDetachedSignature);
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "JobEntryPGPVerify.ERROR_0003_Cannot_Save_Job_Entry", id_job), dbe); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "JobEntryPGPVerify.ERROR_0003_Cannot_Save_Job_Entry", id_job), dbe); 
 		}
 	}
 
@@ -257,7 +257,7 @@ public class JobEntryPGPVerify extends JobEntryBase implements Cloneable, JobEnt
 
   @Override
   public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore) {
-    andValidator().validate(this, "gpglocation", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+    andValidator().validate(this, "gpglocation", remarks, putValidators(notBlankValidator())); 
   }
 
   /**
@@ -297,7 +297,7 @@ public class JobEntryPGPVerify extends JobEntryBase implements Cloneable, JobEnt
 			}
 			return null;
 		} catch (Exception e) {
-			throw new KettleException(e); //$NON-NLS-1$
+			throw new KettleException(e); 
 		}
 	}
 }

@@ -78,22 +78,22 @@ public class GetSlaveSequenceMeta extends BaseStepMeta implements StepMetaInterf
 	private void readData(Node stepnode, List<? extends SharedObjectInterface> databases) throws KettleXMLException {
 		try
 		{
-			valuename    = XMLHandler.getTagValue(stepnode, "valuename"); //$NON-NLS-1$
-      slaveServerName = XMLHandler.getTagValue(stepnode, "slave"); //$NON-NLS-1$
-			sequenceName = XMLHandler.getTagValue(stepnode, "seqname"); //$NON-NLS-1$
-			increment = XMLHandler.getTagValue(stepnode, "increment"); //$NON-NLS-1$
+			valuename    = XMLHandler.getTagValue(stepnode, "valuename"); 
+      slaveServerName = XMLHandler.getTagValue(stepnode, "slave"); 
+			sequenceName = XMLHandler.getTagValue(stepnode, "seqname"); 
+			increment = XMLHandler.getTagValue(stepnode, "increment"); 
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "GetSequenceMeta.Exception.ErrorLoadingStepInfo"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "GetSequenceMeta.Exception.ErrorLoadingStepInfo"), e); 
 		}
 	}
 	
 	public void setDefault() {
-		valuename = "id"; //$NON-NLS-1$
-    slaveServerName = "slave server name"; //$NON-NLS-1$
-    sequenceName = "Slave Sequence Name -- To be configured"; //$NON-NLS-1$
-    increment = "10000"; //$NON-NLS-1$
+		valuename = "id"; 
+    slaveServerName = "slave server name"; 
+    sequenceName = "Slave Sequence Name -- To be configured"; 
+    increment = "10000"; 
 	}
 
 	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
@@ -107,10 +107,10 @@ public class GetSlaveSequenceMeta extends BaseStepMeta implements StepMetaInterf
 	{
     StringBuffer retval = new StringBuffer(300);
 		
-		retval.append("      ").append(XMLHandler.addTagValue("valuename", valuename)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      ").append(XMLHandler.addTagValue("slave", slaveServerName)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      ").append(XMLHandler.addTagValue("seqname", sequenceName)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-    retval.append("      ").append(XMLHandler.addTagValue("increment", increment)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		retval.append("      ").append(XMLHandler.addTagValue("valuename", valuename));  
+		retval.append("      ").append(XMLHandler.addTagValue("slave", slaveServerName));  
+		retval.append("      ").append(XMLHandler.addTagValue("seqname", sequenceName));   //$NON-NLS-3$
+    retval.append("      ").append(XMLHandler.addTagValue("increment", increment));   //$NON-NLS-3$
 
 		return retval.toString();
 	}
@@ -119,14 +119,14 @@ public class GetSlaveSequenceMeta extends BaseStepMeta implements StepMetaInterf
 	{
 		try
 		{
-			valuename       =   rep.getStepAttributeString (id_step, "valuename"); //$NON-NLS-1$
-      slaveServerName =   rep.getStepAttributeString (id_step, "slave"); //$NON-NLS-1$
-      sequenceName    =   rep.getStepAttributeString (id_step, "seqname"); //$NON-NLS-1$
-      increment       =   rep.getStepAttributeString (id_step, "increment"); //$NON-NLS-1$
+			valuename       =   rep.getStepAttributeString (id_step, "valuename"); 
+      slaveServerName =   rep.getStepAttributeString (id_step, "slave"); 
+      sequenceName    =   rep.getStepAttributeString (id_step, "seqname"); 
+      increment       =   rep.getStepAttributeString (id_step, "increment"); 
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "GetSequenceMeta.Exception.UnableToReadStepInfo")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "GetSequenceMeta.Exception.UnableToReadStepInfo")+id_step, e); 
 		}
 	}
 
@@ -135,14 +135,14 @@ public class GetSlaveSequenceMeta extends BaseStepMeta implements StepMetaInterf
 	{
 		try
 		{
-			rep.saveStepAttribute(id_transformation, id_step, "valuename", valuename); //$NON-NLS-1$
-      rep.saveStepAttribute(id_transformation, id_step, "slave", slaveServerName); //$NON-NLS-1$
-      rep.saveStepAttribute(id_transformation, id_step, "seqname", sequenceName); //$NON-NLS-1$
-      rep.saveStepAttribute(id_transformation, id_step, "increment", increment); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "valuename", valuename); 
+      rep.saveStepAttribute(id_transformation, id_step, "slave", slaveServerName); 
+      rep.saveStepAttribute(id_transformation, id_step, "seqname", sequenceName); 
+      rep.saveStepAttribute(id_transformation, id_step, "increment", increment); 
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "GetSequenceMeta.Exception.UnableToSaveStepInfo")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "GetSequenceMeta.Exception.UnableToSaveStepInfo")+id_step, e); 
 		}
 	}
 
@@ -153,12 +153,12 @@ public class GetSlaveSequenceMeta extends BaseStepMeta implements StepMetaInterf
 
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "GetSequenceMeta.CheckResult.StepIsReceving.Title"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "GetSequenceMeta.CheckResult.StepIsReceving.Title"), stepMeta); 
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "GetSequenceMeta.CheckResult.NoInputReceived.Title"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "GetSequenceMeta.CheckResult.NoInputReceived.Title"), stepMeta); 
 			remarks.add(cr);
 		}
 	}

@@ -127,9 +127,9 @@ public class UDJCStepPluginType extends StepPluginType implements PluginTypeInte
 	protected PluginInterface registerUDJCPluginFromXmlResource( Node pluginNode, String path, Class<? extends PluginTypeInterface> pluginType, boolean nativePlugin, URL pluginFolder) throws KettlePluginException {
         try
         {
-        	String name = getTagContent(pluginNode, "name"); //$NON-NLS-1$ 
+        	String name = getTagContent(pluginNode, "name");  
         	String id = name.replace(" ", "");
-            String description = getTagContent(pluginNode, "description"); //$NON-NLS-1$
+            String description = getTagContent(pluginNode, "description"); 
             //String baseDir = path.substring(0, path.indexOf(File.separator+"plugins"));
             String endDir = path.substring(path.indexOf(Const.FILE_SEPARATOR+"plugins"));
             String[] paths = endDir.split(StringEscapeUtils.escapeJava(Const.FILE_SEPARATOR));
@@ -139,10 +139,10 @@ public class UDJCStepPluginType extends StepPluginType implements PluginTypeInte
             String iconfile = iconfileBuf.toString().replace("/", File.separator);
             String tooltip = description;
             String category = "Scripting";
-            String errorHelpfile = getTagOrAttribute(pluginNode, "errorhelpfile"); //$NON-NLS-1$
-            String documentationUrl = getTagOrAttribute(pluginNode, "documentation_url"); //$NON-NLS-1$
-            String casesUrl = getTagOrAttribute(pluginNode, "cases_url"); //$NON-NLS-1$
-            String forumUrl = getTagOrAttribute(pluginNode, "forum_url"); //$NON-NLS-1$
+            String errorHelpfile = getTagOrAttribute(pluginNode, "errorhelpfile"); 
+            String documentationUrl = getTagOrAttribute(pluginNode, "documentation_url"); 
+            String casesUrl = getTagOrAttribute(pluginNode, "cases_url"); 
+            String forumUrl = getTagOrAttribute(pluginNode, "forum_url"); 
             
             // For convenience, use a UserDefinedJavaClassMeta to parse the DOM
             UserDefinedJavaClassMeta udjcm = new UserDefinedJavaClassMeta();
@@ -150,15 +150,15 @@ public class UDJCStepPluginType extends StepPluginType implements PluginTypeInte
             Class<? extends UDJCStepBase> udjcStepClass = cookClasses(udjcm);
             if(udjcStepClass == null) throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.NoValidClassRequested.PLUGINREGISTRY002",udjcm.getName()));
             
-            Node libsnode = XMLHandler.getSubNode(pluginNode, "libraries"); //$NON-NLS-1$
-            int nrlibs = XMLHandler.countNodes(libsnode, "library"); //$NON-NLS-1$
+            Node libsnode = XMLHandler.getSubNode(pluginNode, "libraries"); 
+            int nrlibs = XMLHandler.countNodes(libsnode, "library"); 
 
             List<String> jarFiles = new ArrayList<String>();
             if( path != null ) {
                 for (int j = 0; j < nrlibs; j++)
                 {
-                    Node libnode = XMLHandler.getSubNodeByNr(libsnode, "library", j); //$NON-NLS-1$
-                    String jarfile = XMLHandler.getTagAttribute(libnode, "name"); //$NON-NLS-1$
+                    Node libnode = XMLHandler.getSubNodeByNr(libsnode, "library", j); 
+                    String jarfile = XMLHandler.getTagAttribute(libnode, "name"); 
                     jarFiles.add( new File(path + Const.FILE_SEPARATOR + jarfile).getAbsolutePath() );
                 }
             }
@@ -202,7 +202,7 @@ public class UDJCStepPluginType extends StepPluginType implements PluginTypeInte
             if(classTypesAnnotation != null){
               for(int i=0; i< classTypesAnnotation.classTypes().length; i++){
                 Class<?> classType = classTypesAnnotation.classTypes()[i];
-                String className = getTagOrAttribute(pluginNode, classTypesAnnotation.xmlNodeNames()[i]); //$NON-NLS-1$
+                String className = getTagOrAttribute(pluginNode, classTypesAnnotation.xmlNodeNames()[i]); 
                 
                 classMap.put(classType, className);
               }
@@ -211,7 +211,7 @@ public class UDJCStepPluginType extends StepPluginType implements PluginTypeInte
             // process extra types added at runtime
             Map<Class<?>, String> objectMap = getAdditionalRuntimeObjectTypes();
             for(Map.Entry<Class<?>, String> entry : objectMap.entrySet()){
-              String clzName = getTagOrAttribute(pluginNode, entry.getValue()); //$NON-NLS-1$
+              String clzName = getTagOrAttribute(pluginNode, entry.getValue()); 
               classMap.put(entry.getKey(), clzName); 
             }
             
@@ -225,7 +225,7 @@ public class UDJCStepPluginType extends StepPluginType implements PluginTypeInte
         }
         catch (Throwable e)
         {
-            throw new KettlePluginException( BaseMessages.getString(PKG, "BasePluginType.RuntimeError.UnableToReadPluginXML.PLUGIN0001"), e); //$NON-NLS-1$
+            throw new KettlePluginException( BaseMessages.getString(PKG, "BasePluginType.RuntimeError.UnableToReadPluginXML.PLUGIN0001"), e); 
         }
     }
 	

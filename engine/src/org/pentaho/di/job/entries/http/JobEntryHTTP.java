@@ -210,9 +210,9 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
       headerName = new String[nrHeaders];
       headerValue = new String[nrHeaders];
       for (int i = 0; i < nrHeaders; i++) {
-          Node fnode = XMLHandler.getSubNodeByNr(headers, "header", i); //$NON-NLS-1$
-          headerName[i] = XMLHandler.getTagValue(fnode, "header_name"); //$NON-NLS-1$
-          headerValue[i] = XMLHandler.getTagValue(fnode, "header_value"); //$NON-NLS-1$
+          Node fnode = XMLHandler.getSubNodeByNr(headers, "header", i); 
+          headerName[i] = XMLHandler.getTagValue(fnode, "header_name"); 
+          headerValue[i] = XMLHandler.getTagValue(fnode, "header_value"); 
       }      
     } catch (KettleXMLException xe)
     {
@@ -245,12 +245,12 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
       addfilenameresult = "Y".equalsIgnoreCase(Const.NVL(rep.getJobEntryAttributeString(id_jobentry, "addfilenameresult"), "Y"));
       
       // How many headerName?
-      int argnr = rep.countNrJobEntryAttributes(id_jobentry, "header_name"); //$NON-NLS-1$
+      int argnr = rep.countNrJobEntryAttributes(id_jobentry, "header_name"); 
       headerName = new String[argnr];
       headerValue = new String[argnr];
       for (int a = 0; a < argnr; a++) {
-          headerName[a] = rep.getJobEntryAttributeString(id_jobentry, a, "header_name"); //$NON-NLS-1$
-          headerValue[a] = rep.getJobEntryAttributeString(id_jobentry, a, "header_value"); //$NON-NLS-1$
+          headerName[a] = rep.getJobEntryAttributeString(id_jobentry, a, "header_name"); 
+          headerValue[a] = rep.getJobEntryAttributeString(id_jobentry, a, "header_value"); 
       }
     } catch (KettleException dbe)
     {
@@ -283,8 +283,8 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
       rep.saveJobEntryAttribute(id_job, getObjectId(), "addfilenameresult", addfilenameresult);
       if (headerName != null) {
          for (int i = 0; i < headerName.length; i++) {
-             rep.saveJobEntryAttribute(id_job, getObjectId(), i, "header_name", headerName[i]); //$NON-NLS-1$
-             rep.saveJobEntryAttribute(id_job, getObjectId(), i, "header_value", headerValue[i]); //$NON-NLS-1$
+             rep.saveJobEntryAttribute(id_job, getObjectId(), i, "header_name", headerName[i]); 
+             rep.saveJobEntryAttribute(id_job, getObjectId(), i, "header_value", headerValue[i]); 
          }
       }
     } 
@@ -730,10 +730,10 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
   @Override
   public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore)
   {
-    andValidator().validate(this, "targetFilename", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
-    andValidator().validate(this, "targetFilenameExtention", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
-    andValidator().validate(this, "uploadFilename", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
-    andValidator().validate(this, "proxyPort", remarks, putValidators(integerValidator())); //$NON-NLS-1$
+    andValidator().validate(this, "targetFilename", remarks, putValidators(notBlankValidator())); 
+    andValidator().validate(this, "targetFilenameExtention", remarks, putValidators(notBlankValidator())); 
+    andValidator().validate(this, "uploadFilename", remarks, putValidators(notBlankValidator())); 
+    andValidator().validate(this, "proxyPort", remarks, putValidators(integerValidator())); 
   }
 
 }

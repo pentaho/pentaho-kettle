@@ -32,7 +32,7 @@ public class UserInfo implements IUser{
 	// private static Class<?> PKG = UserInfo.class; // for i18n purposes,
 	// needed by Translator2!! $NON-NLS-1$
 
-	public static final String REPOSITORY_ELEMENT_TYPE = "user"; //$NON-NLS-1$
+	public static final String REPOSITORY_ELEMENT_TYPE = "user"; 
 
 	private ObjectId id;
 

@@ -51,10 +51,10 @@ public class MergeRows extends BaseStep implements StepInterface
 {
 	private static Class<?> PKG = MergeRowsMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-    private static final String VALUE_IDENTICAL  = "identical"; //$NON-NLS-1$ 
-    private static final String VALUE_CHANGED    = "changed"; //$NON-NLS-1$
-    private static final String VALUE_NEW        = "new"; //$NON-NLS-1$
-    private static final String VALUE_DELETED    = "deleted"; //$NON-NLS-1$ 
+    private static final String VALUE_IDENTICAL  = "identical";  
+    private static final String VALUE_CHANGED    = "changed"; 
+    private static final String VALUE_NEW        = "new"; 
+    private static final String VALUE_DELETED    = "deleted";  
     
 	private MergeRowsMeta meta;
 	private MergeRowsData data;
@@ -101,7 +101,7 @@ public class MergeRows extends BaseStep implements StepInterface
                     data.keyNrs[i] = data.oneRowSet.getRowMeta().indexOfValue(meta.getKeyFields()[i]);
                     if (data.keyNrs[i]<0)
                     {
-                        String message = BaseMessages.getString(PKG, "MergeRows.Exception.UnableToFindFieldInReferenceStream",meta.getKeyFields()[i]);  //$NON-NLS-1$ //$NON-NLS-2$
+                        String message = BaseMessages.getString(PKG, "MergeRows.Exception.UnableToFindFieldInReferenceStream",meta.getKeyFields()[i]);   
                         logError(message);
                         throw new KettleStepException(message);
                     }
@@ -116,7 +116,7 @@ public class MergeRows extends BaseStep implements StepInterface
                     data.valueNrs[i] = data.twoRowSet.getRowMeta().indexOfValue(meta.getValueFields()[i]);
                     if (data.valueNrs[i]<0)
                     {
-                        String message = BaseMessages.getString(PKG, "MergeRows.Exception.UnableToFindFieldInReferenceStream",meta.getValueFields()[i]);  //$NON-NLS-1$ //$NON-NLS-2$
+                        String message = BaseMessages.getString(PKG, "MergeRows.Exception.UnableToFindFieldInReferenceStream",meta.getValueFields()[i]);   
                         logError(message);
                         throw new KettleStepException(message);
                     }
@@ -124,7 +124,7 @@ public class MergeRows extends BaseStep implements StepInterface
             }
         }
 
-        if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "MergeRows.Log.DataInfo",data.one+"")+data.two); //$NON-NLS-1$ //$NON-NLS-2$
+        if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "MergeRows.Log.DataInfo",data.one+"")+data.two);  
 
         if (data.one==null && data.two==null)
         {
@@ -219,7 +219,7 @@ public class MergeRows extends BaseStep implements StepInterface
 
         if (checkFeedback(getLinesRead())) 
         {
-        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "MergeRows.LineNumber")+getLinesRead()); //$NON-NLS-1$
+        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "MergeRows.LineNumber")+getLinesRead()); 
         }
 
 		return true;
@@ -239,7 +239,7 @@ public class MergeRows extends BaseStep implements StepInterface
 
             if (infoStreams.get(0).getStepMeta()!=null ^ infoStreams.get(1).getStepMeta()!=null)
             {
-                logError(BaseMessages.getString(PKG, "MergeRows.Log.BothTrueAndFalseNeeded")); //$NON-NLS-1$
+                logError(BaseMessages.getString(PKG, "MergeRows.Log.BothTrueAndFalseNeeded")); 
             }
             else
             {

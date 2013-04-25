@@ -112,9 +112,9 @@ public class YamlInput extends BaseStep implements StepInterface {
         data.indexOfYamlField = getInputRowMeta().indexOfValue(meta.getYamlField());
         if (data.indexOfYamlField < 0) {
           // The field is unreachable !
-          logError(BaseMessages.getString(PKG, "YamlInput.Log.ErrorFindingField", meta.getYamlField())); //$NON-NLS-1$ //$NON-NLS-2$
+          logError(BaseMessages.getString(PKG, "YamlInput.Log.ErrorFindingField", meta.getYamlField()));  
           throw new KettleException(BaseMessages.getString(PKG,
-              "YamlInput.Exception.CouldnotFindField", meta.getYamlField())); //$NON-NLS-1$ //$NON-NLS-2$
+              "YamlInput.Exception.CouldnotFindField", meta.getYamlField()));  
         }
       }
 
@@ -353,7 +353,7 @@ public class YamlInput extends BaseStep implements StepInterface {
         sendToErrorRow = true;
         errorMessage = e.toString();
       } else {
-        logError(BaseMessages.getString(PKG, "YamlInput.ErrorInStepRunning", e.toString())); //$NON-NLS-1$
+        logError(BaseMessages.getString(PKG, "YamlInput.ErrorInStepRunning", e.toString())); 
         setErrors(1);
         stopAll();
         logError(Const.getStackTracker(e));

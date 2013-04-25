@@ -304,7 +304,7 @@ public class SalesforceUpdate extends BaseStep implements StepInterface
 			}
 			catch(KettleException ke)
 			{
-				logError(BaseMessages.getString(PKG, "SalesforceUpdate.Log.ErrorOccurredDuringStepInitialize")+ke.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "SalesforceUpdate.Log.ErrorOccurredDuringStepInitialize")+ke.getMessage()); 
 			}
 			return true;
 		}

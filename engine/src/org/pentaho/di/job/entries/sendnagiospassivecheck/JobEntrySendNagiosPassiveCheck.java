@@ -458,7 +458,7 @@ public class JobEntrySendNagiosPassiveCheck extends JobEntryBase implements Clon
     
 	public Result execute(Result previousResult, int nr)
     {		
-		log.logBasic(BaseMessages.getString(PKG, "JobEntrySendNagiosPassiveCheck.Started", serverName)); //$NON-NLS-1$
+		log.logBasic(BaseMessages.getString(PKG, "JobEntrySendNagiosPassiveCheck.Started", serverName)); 
 		
 		Result result = previousResult;
 		result.setNrErrors(1);
@@ -551,7 +551,7 @@ public class JobEntrySendNagiosPassiveCheck extends JobEntryBase implements Clon
 			result.setResult(true);
 			
 		} catch(Exception e){
-			log.logError(toString(), BaseMessages.getString(PKG, "JobEntrySendNagiosPassiveCheck.ErrorGetting", e.toString())); //$NON-NLS-1$
+			log.logError(toString(), BaseMessages.getString(PKG, "JobEntrySendNagiosPassiveCheck.ErrorGetting", e.toString())); 
 		}
 
 		return result;
@@ -576,7 +576,7 @@ public class JobEntrySendNagiosPassiveCheck extends JobEntryBase implements Clon
       @Override
       public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore)
       {
-        andValidator().validate(this, "serverName", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+        andValidator().validate(this, "serverName", remarks, putValidators(notBlankValidator())); 
       }
 
 

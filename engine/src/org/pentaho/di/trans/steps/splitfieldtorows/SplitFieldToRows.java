@@ -65,19 +65,19 @@ public class SplitFieldToRows extends BaseStep implements StepInterface
 			int numErrors = 0;
 			if (Const.isEmpty(meta.getNewFieldname()))
 			{
-				logError(BaseMessages.getString(PKG, "SplitFieldToRows.Log.NewFieldNameIsNull")); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "SplitFieldToRows.Log.NewFieldNameIsNull")); 
 				numErrors++;
 			}
 
 			if (data.fieldnr < 0)
 			{
-				logError(BaseMessages.getString(PKG, "SplitFieldToRows.Log.CouldNotFindFieldToSplit", realSplitFieldName)); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "SplitFieldToRows.Log.CouldNotFindFieldToSplit", realSplitFieldName)); 
 				numErrors++;
 			}
 			
 			if (!rowMeta.getValueMeta(data.fieldnr).isString())
 			{
-				logError(BaseMessages.getString(PKG, "SplitFieldToRows.Log.SplitFieldNotValid",realSplitFieldName)); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "SplitFieldToRows.Log.SplitFieldNotValid",realSplitFieldName)); 
 				numErrors++;
 			}
 
@@ -146,7 +146,7 @@ public class SplitFieldToRows extends BaseStep implements StepInterface
         if (checkFeedback(getLinesRead())) {
 			if(log.isDetailed()) 
 			{
-				if(log.isDetailed()) logBasic(BaseMessages.getString(PKG, "SplitFieldToRows.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+				if(log.isDetailed()) logBasic(BaseMessages.getString(PKG, "SplitFieldToRows.Log.LineNumber")+getLinesRead()); 
 			}
 		}
 			

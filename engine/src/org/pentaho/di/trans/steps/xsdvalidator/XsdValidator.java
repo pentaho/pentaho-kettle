@@ -105,8 +105,8 @@ public class XsdValidator extends BaseStep implements StepInterface
 				if (data.xmlindex<0)
 				{
 					// The field is unreachable !
-					logError(BaseMessages.getString(PKG, "XsdValidator.Log.ErrorFindingField")+ "[" + meta.getXMLStream()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-					throw new KettleStepException(BaseMessages.getString(PKG, "XsdValidator.Exception.CouldnotFindField",meta.getXMLStream())); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "XsdValidator.Log.ErrorFindingField")+ "[" + meta.getXMLStream()+"]");  
+					throw new KettleStepException(BaseMessages.getString(PKG, "XsdValidator.Exception.CouldnotFindField",meta.getXMLStream()));  
 				}
 					
 					
@@ -114,8 +114,8 @@ public class XsdValidator extends BaseStep implements StepInterface
 				if (meta.getResultfieldname() == null )
 				{
 					//	Result field is missing !
-					logError(BaseMessages.getString(PKG, "XsdValidator.Log.ErrorResultFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
-					throw new KettleStepException(BaseMessages.getString(PKG, "XsdValidator.Exception.ErrorResultFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "XsdValidator.Log.ErrorResultFieldMissing"));  
+					throw new KettleStepException(BaseMessages.getString(PKG, "XsdValidator.Exception.ErrorResultFieldMissing"));  
 				}
 					
 				// Is XSD file is provided?
@@ -123,8 +123,8 @@ public class XsdValidator extends BaseStep implements StepInterface
 				{
 					if(meta.getXSDFilename()==null)
 					{
-						logError(BaseMessages.getString(PKG, "XsdValidator.Log.ErrorXSDFileMissing")); //$NON-NLS-1$ //$NON-NLS-2$
-						throw new KettleStepException(BaseMessages.getString(PKG, "XsdValidator.Exception.ErrorXSDFileMissing")); //$NON-NLS-1$ //$NON-NLS-2$
+						logError(BaseMessages.getString(PKG, "XsdValidator.Log.ErrorXSDFileMissing"));  
+						throw new KettleStepException(BaseMessages.getString(PKG, "XsdValidator.Exception.ErrorXSDFileMissing"));  
 					}
 					else
 					{
@@ -173,8 +173,8 @@ public class XsdValidator extends BaseStep implements StepInterface
 						if (data.xsdindex<0)
 						{
 							// The field is unreachable !
-							logError(BaseMessages.getString(PKG, "XsdValidator.Log.ErrorFindingXSDField",meta.getXSDDefinedField())); //$NON-NLS-1$ //$NON-NLS-2$
-							throw new KettleStepException(BaseMessages.getString(PKG, "XsdValidator.Exception.ErrorFindingXSDField",meta.getXSDDefinedField())); //$NON-NLS-1$ //$NON-NLS-2$
+							logError(BaseMessages.getString(PKG, "XsdValidator.Log.ErrorFindingXSDField",meta.getXSDDefinedField()));  
+							throw new KettleStepException(BaseMessages.getString(PKG, "XsdValidator.Exception.ErrorFindingXSDField",meta.getXSDDefinedField()));  
 						}
 					}
 				}
@@ -184,8 +184,8 @@ public class XsdValidator extends BaseStep implements StepInterface
 			else
 			{
 				// XML stream field is missing !
-				logError(BaseMessages.getString(PKG, "XsdValidator.Log.Error.XmlStreamFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
-				throw new KettleStepException(BaseMessages.getString(PKG, "XsdValidator.Exception.XmlStreamFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
+				logError(BaseMessages.getString(PKG, "XsdValidator.Log.Error.XmlStreamFieldMissing"));  
+				throw new KettleStepException(BaseMessages.getString(PKG, "XsdValidator.Exception.XmlStreamFieldMissing"));  
 			}
 		}
 			
@@ -233,8 +233,8 @@ public class XsdValidator extends BaseStep implements StepInterface
 					File xmlfileValidator = new File(XMLFieldvalue);
 					if (!xmlfileValidator.exists()) 
 					{
-						logError(BaseMessages.getString(PKG, "XsdValidator.Log.Error.XMLfileMissing",XMLFieldvalue)); //$NON-NLS-1$ //$NON-NLS-2$
-						throw new KettleStepException(BaseMessages.getString(PKG, "XsdValidator.Exception.XMLfileMissing",XMLFieldvalue)); //$NON-NLS-1$ //$NON-NLS-2$
+						logError(BaseMessages.getString(PKG, "XsdValidator.Log.Error.XMLfileMissing",XMLFieldvalue));  
+						throw new KettleStepException(BaseMessages.getString(PKG, "XsdValidator.Exception.XMLfileMissing",XMLFieldvalue));  
 					}
 					sourceXML = new StreamSource(xmlfileValidator);
 				}

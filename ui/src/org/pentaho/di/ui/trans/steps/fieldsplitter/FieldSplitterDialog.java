@@ -109,14 +109,14 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "FieldSplitterDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "FieldSplitterDialog.Shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "FieldSplitterDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "FieldSplitterDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -135,7 +135,7 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 
 		// Typefield line
 		wlSplitfield=new Label(shell, SWT.RIGHT);
-		wlSplitfield.setText(BaseMessages.getString(PKG, "FieldSplitterDialog.SplitField.Label")); //$NON-NLS-1$
+		wlSplitfield.setText(BaseMessages.getString(PKG, "FieldSplitterDialog.SplitField.Label")); 
  		props.setLook(wlSplitfield);
 		fdlSplitfield=new FormData();
 		fdlSplitfield.left = new FormAttachment(0, 0);
@@ -143,7 +143,7 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 		fdlSplitfield.top  = new FormAttachment(wStepname, margin);
 		wlSplitfield.setLayoutData(fdlSplitfield);
 		wSplitfield=new  CCombo(shell, SWT.BORDER | SWT.READ_ONLY);
-		wSplitfield.setText(""); //$NON-NLS-1$
+		wSplitfield.setText(""); 
  		props.setLook(wSplitfield);
 		wSplitfield.addModifyListener(lsMod);
 		fdSplitfield=new FormData();
@@ -171,7 +171,7 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 
 		// Typefield line
 		wlDelimiter=new Label(shell, SWT.RIGHT);
-		wlDelimiter.setText(BaseMessages.getString(PKG, "FieldSplitterDialog.Delimiter.Label")); //$NON-NLS-1$
+		wlDelimiter.setText(BaseMessages.getString(PKG, "FieldSplitterDialog.Delimiter.Label")); 
  		props.setLook(wlDelimiter);
 		fdlDelimiter=new FormData();
 		fdlDelimiter.left = new FormAttachment(0, 0);
@@ -180,7 +180,7 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 		wlDelimiter.setLayoutData(fdlDelimiter);
 		wDelimiter=new TextVar(transMeta,shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		wDelimiter.setToolTipText(BaseMessages.getString(PKG, "FieldSplitterDialog.Delimiter.Tooltip"));
-		wDelimiter.setText(""); //$NON-NLS-1$
+		wDelimiter.setText(""); 
  		props.setLook(wDelimiter);
 		wDelimiter.addModifyListener(lsMod);
 		fdDelimiter=new FormData();
@@ -191,7 +191,7 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 		
 		// enclosure
     Label wlEnclosure = new Label(shell, SWT.RIGHT);
-    wlEnclosure.setText(BaseMessages.getString(PKG, "FieldSplitterDialog.Enclosure.Label")); //$NON-NLS-1$
+    wlEnclosure.setText(BaseMessages.getString(PKG, "FieldSplitterDialog.Enclosure.Label")); 
     props.setLook(wlEnclosure);
     FormData fdlEnclosure = new FormData();
     fdlEnclosure.top = new FormAttachment(wDelimiter, margin);
@@ -209,7 +209,7 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
     wEnclosure.setLayoutData(fdEnclosure);
     
 		wlFields=new Label(shell, SWT.RIGHT);
-		wlFields.setText(BaseMessages.getString(PKG, "FieldSplitterDialog.Fields.Label")); //$NON-NLS-1$
+		wlFields.setText(BaseMessages.getString(PKG, "FieldSplitterDialog.Fields.Label")); 
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -217,9 +217,9 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 		wlFields.setLayoutData(fdlFields);
 
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 
@@ -227,29 +227,29 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 
         final ColumnInfo[] colinf = new ColumnInfo[] {
                 new ColumnInfo(
-                        BaseMessages.getString(PKG, "FieldSplitterDialog.ColumnInfo.NewField"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+                        BaseMessages.getString(PKG, "FieldSplitterDialog.ColumnInfo.NewField"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
                 new ColumnInfo(
-                        BaseMessages.getString(PKG, "FieldSplitterDialog.ColumnInfo.ID"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+                        BaseMessages.getString(PKG, "FieldSplitterDialog.ColumnInfo.ID"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
                 new ColumnInfo(
-                        BaseMessages.getString(PKG, "FieldSplitterDialog.ColumnInfo.RemoveID"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "Y", "N" }), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                        BaseMessages.getString(PKG, "FieldSplitterDialog.ColumnInfo.RemoveID"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "Y", "N" }),   //$NON-NLS-3$
                 new ColumnInfo(
-                        BaseMessages.getString(PKG, "FieldSplitterDialog.ColumnInfo.Type"), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes()), //$NON-NLS-1$
+                        BaseMessages.getString(PKG, "FieldSplitterDialog.ColumnInfo.Type"), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes()), 
                 new ColumnInfo(
-                        BaseMessages.getString(PKG, "FieldSplitterDialog.ColumnInfo.Length"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+                        BaseMessages.getString(PKG, "FieldSplitterDialog.ColumnInfo.Length"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
                 new ColumnInfo(
-                        BaseMessages.getString(PKG, "FieldSplitterDialog.ColumnInfo.Precision"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+                        BaseMessages.getString(PKG, "FieldSplitterDialog.ColumnInfo.Precision"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
                 new ColumnInfo(
-                        BaseMessages.getString(PKG, "FieldSplitterDialog.ColumnInfo.Format"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+                        BaseMessages.getString(PKG, "FieldSplitterDialog.ColumnInfo.Format"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
                 new ColumnInfo(
-                        BaseMessages.getString(PKG, "FieldSplitterDialog.ColumnInfo.Group"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+                        BaseMessages.getString(PKG, "FieldSplitterDialog.ColumnInfo.Group"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
                 new ColumnInfo(
-                        BaseMessages.getString(PKG, "FieldSplitterDialog.ColumnInfo.Decimal"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+                        BaseMessages.getString(PKG, "FieldSplitterDialog.ColumnInfo.Decimal"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
                 new ColumnInfo(
-                        BaseMessages.getString(PKG, "FieldSplitterDialog.ColumnInfo.Currency"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+                        BaseMessages.getString(PKG, "FieldSplitterDialog.ColumnInfo.Currency"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
                 new ColumnInfo(
-                        BaseMessages.getString(PKG, "FieldSplitterDialog.ColumnInfo.Nullif"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+                        BaseMessages.getString(PKG, "FieldSplitterDialog.ColumnInfo.Nullif"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
                 new ColumnInfo(
-                        BaseMessages.getString(PKG, "FieldSplitterDialog.ColumnInfo.IfNull"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+                        BaseMessages.getString(PKG, "FieldSplitterDialog.ColumnInfo.IfNull"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
                 new ColumnInfo(BaseMessages.getString(PKG, "FieldSplitterDialog.ColumnInfo.TrimType"),
                         ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.trimTypeDesc, true), };
         wFields = new TableView(transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, fieldsRows,
@@ -323,12 +323,12 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
         ti.setText(1, input.getFieldName()[i]);
       if (input.getFieldID()[i] != null)
         ti.setText(2, input.getFieldID()[i]);
-      ti.setText(3, input.getFieldRemoveID()[i] ? "Y" : "N"); //$NON-NLS-1$ //$NON-NLS-2$
+      ti.setText(3, input.getFieldRemoveID()[i] ? "Y" : "N");  
       ti.setText(4, ValueMeta.getTypeDesc(input.getFieldType()[i]));
       if (input.getFieldLength()[i] >= 0)
-        ti.setText(5, "" + input.getFieldLength()[i]); //$NON-NLS-1$
+        ti.setText(5, "" + input.getFieldLength()[i]); 
       if (input.getFieldPrecision()[i] >= 0)
-        ti.setText(6, "" + input.getFieldPrecision()[i]); //$NON-NLS-1$
+        ti.setText(6, "" + input.getFieldPrecision()[i]); 
       if (input.getFieldFormat()[i] != null)
         ti.setText(7, input.getFieldFormat()[i]);
       if (input.getFieldGroup()[i] != null)
@@ -377,7 +377,7 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
             final TableItem ti = wFields.getNonEmpty(i);
             input.getFieldName()[i] = ti.getText(1);
 			input.getFieldID()[i]       = ti.getText(  2 );
-            input.getFieldRemoveID()[i] = "Y".equalsIgnoreCase(ti.getText(3)); //$NON-NLS-1$
+            input.getFieldRemoveID()[i] = "Y".equalsIgnoreCase(ti.getText(3)); 
 			input.getFieldType()[i]     = ValueMeta.getType( ti.getText( 4 ) );
 			input.getFieldLength()   [i] = Const.toInt( ti.getText( 5 ), -1 );
 			input.getFieldPrecision()[i] = Const.toInt( ti.getText( 6 ), -1 );

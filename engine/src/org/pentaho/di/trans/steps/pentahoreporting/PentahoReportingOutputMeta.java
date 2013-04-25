@@ -154,9 +154,9 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
         }
       }
       
-      outputProcessorType = ProcessorType.getProcessorTypeByCode(XMLHandler.getTagValue(stepnode, "processor_type")); //$NON-NLS-1$
+      outputProcessorType = ProcessorType.getProcessorTypeByCode(XMLHandler.getTagValue(stepnode, "processor_type")); 
     } catch (Exception e) {
-      throw new KettleXMLException(BaseMessages.getString(PKG, "PentahoReportingOutputMeta.Exception.UnableToLoadStepInfo"), e); //$NON-NLS-1$
+      throw new KettleXMLException(BaseMessages.getString(PKG, "PentahoReportingOutputMeta.Exception.UnableToLoadStepInfo"), e); 
     }
   }
 
@@ -167,31 +167,31 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
   public String getXML() {
     StringBuffer retval = new StringBuffer();
 
-    retval.append("  " + XMLHandler.addTagValue("input_file_field", inputFileField)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("  " + XMLHandler.addTagValue("output_file_field", outputFileField)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("  " + XMLHandler.addTagValue("input_file_field", inputFileField));  
+    retval.append("  " + XMLHandler.addTagValue("output_file_field", outputFileField));  
 
-    retval.append("  " + XMLHandler.openTag(XML_TAG_PARAMETERS)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("  " + XMLHandler.openTag(XML_TAG_PARAMETERS));  
     List<String> parameters = new ArrayList<String>();
     parameters.addAll(parameterFieldMap.keySet());
     Collections.sort(parameters);
     for (String name : parameters) {
       String field = parameterFieldMap.get(name);
-      retval.append("   " + XMLHandler.openTag(XML_TAG_PARAMETER)); //$NON-NLS-1$ //$NON-NLS-2$
-      retval.append("   " + XMLHandler.addTagValue("name", name, false)); //$NON-NLS-1$ //$NON-NLS-2$
-      retval.append("   " + XMLHandler.addTagValue("field", field, false)); //$NON-NLS-1$ //$NON-NLS-2$
-      retval.append("   " + XMLHandler.closeTag(XML_TAG_PARAMETER)).append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
+      retval.append("   " + XMLHandler.openTag(XML_TAG_PARAMETER));  
+      retval.append("   " + XMLHandler.addTagValue("name", name, false));  
+      retval.append("   " + XMLHandler.addTagValue("field", field, false));  
+      retval.append("   " + XMLHandler.closeTag(XML_TAG_PARAMETER)).append(Const.CR);  
     }
-    retval.append("  " + XMLHandler.closeTag(XML_TAG_PARAMETERS)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("  " + XMLHandler.closeTag(XML_TAG_PARAMETERS));  
 
-    retval.append("    " + XMLHandler.addTagValue("processor_type", outputProcessorType.getCode())); //$NON-NLS-1$
+    retval.append("    " + XMLHandler.addTagValue("processor_type", outputProcessorType.getCode())); 
 
     return retval.toString();
   }
 
   public void readRep(Repository rep, IMetaStore metaStore, ObjectId idStep, List<DatabaseMeta> databases) throws KettleException {
     try {
-      inputFileField = rep.getStepAttributeString(idStep, "file_input_field"); //$NON-NLS-1$
-      outputFileField = rep.getStepAttributeString(idStep, "file_output_field"); //$NON-NLS-1$
+      inputFileField = rep.getStepAttributeString(idStep, "file_input_field"); 
+      outputFileField = rep.getStepAttributeString(idStep, "file_output_field"); 
       
       parameterFieldMap = new HashMap<String, String>();
       int nrParameters = rep.countNrStepAttributes(idStep, "parameter_name");
@@ -203,16 +203,16 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
         }
       }
       
-      outputProcessorType = ProcessorType.getProcessorTypeByCode( rep.getStepAttributeString(idStep, "processor_type") ); //$NON-NLS-1$
+      outputProcessorType = ProcessorType.getProcessorTypeByCode( rep.getStepAttributeString(idStep, "processor_type") ); 
     } catch (Exception e) {
-      throw new KettleException(BaseMessages.getString(PKG, "PentahoReportingOutputMeta.Exception.UnexpectedErrorInReadingStepInfo"), e); //$NON-NLS-1$
+      throw new KettleException(BaseMessages.getString(PKG, "PentahoReportingOutputMeta.Exception.UnexpectedErrorInReadingStepInfo"), e); 
     }
   }
 
   public void saveRep(Repository rep, IMetaStore metaStore, ObjectId idTransformation, ObjectId idStep) throws KettleException {
     try {
-      rep.saveStepAttribute(idTransformation, idStep, "file_input_field", inputFileField); //$NON-NLS-1$
-      rep.saveStepAttribute(idTransformation, idStep, "file_output_field", outputFileField); //$NON-NLS-1$
+      rep.saveStepAttribute(idTransformation, idStep, "file_input_field", inputFileField); 
+      rep.saveStepAttribute(idTransformation, idStep, "file_output_field", outputFileField); 
 
       List<String> pars = new ArrayList<String>(parameterFieldMap.keySet());
       Collections.sort(pars);
@@ -223,10 +223,10 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
         rep.saveStepAttribute(idTransformation, idStep, i, "parameter_field", fieldname);
       }
 
-      rep.saveStepAttribute(idTransformation, idStep, "processor_type", outputProcessorType.getCode()); //$NON-NLS-1$
+      rep.saveStepAttribute(idTransformation, idStep, "processor_type", outputProcessorType.getCode()); 
       
     } catch (Exception e) {
-      throw new KettleException(BaseMessages.getString(PKG, "PentahoReportingOutputMeta.Exception.UnableToSaveStepInfo") + idStep, e); //$NON-NLS-1$
+      throw new KettleException(BaseMessages.getString(PKG, "PentahoReportingOutputMeta.Exception.UnableToSaveStepInfo") + idStep, e); 
     }
   }
 
@@ -235,11 +235,11 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
 
     // Check output fields
     if (prev != null && prev.size() > 0) {
-      cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "PentahoReportingOutputMeta.CheckResult.ReceivingFields", String.valueOf(prev.size())), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+      cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "PentahoReportingOutputMeta.CheckResult.ReceivingFields", String.valueOf(prev.size())), stepMeta);  
       remarks.add(cr);
     }
 
-    cr = new CheckResult(CheckResult.TYPE_RESULT_COMMENT, BaseMessages.getString(PKG, "PentahoReportingOutputMeta.CheckResult.FileSpecificationsNotChecked"), stepMeta); //$NON-NLS-1$
+    cr = new CheckResult(CheckResult.TYPE_RESULT_COMMENT, BaseMessages.getString(PKG, "PentahoReportingOutputMeta.CheckResult.FileSpecificationsNotChecked"), stepMeta); 
     remarks.add(cr);
   }
 

@@ -137,7 +137,7 @@ public class CheckSum extends BaseStep implements StepInterface {
 
 			if (checkFeedback(getLinesRead())) {
 				if (log.isDetailed())
-					logDetailed(BaseMessages.getString(PKG, "CheckSum.Log.LineNumber", "" + getLinesRead())); //$NON-NLS-1$
+					logDetailed(BaseMessages.getString(PKG, "CheckSum.Log.LineNumber", "" + getLinesRead())); 
 			}
 
 			// add new values to the row.
@@ -151,7 +151,7 @@ public class CheckSum extends BaseStep implements StepInterface {
 				sendToErrorRow = true;
 				errorMessage = e.toString();
 			} else {
-				logError(BaseMessages.getString(PKG, "CheckSum.ErrorInStepRunning") + e.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "CheckSum.ErrorInStepRunning") + e.getMessage()); 
 				setErrors(1);
 				stopAll();
 				setOutputDone(); // signal end to receiver(s)

@@ -17,14 +17,14 @@ import org.pentaho.di.ui.spoon.Spoon;
 
 public class OsHelper {
 
-	public static final String WS_WIN32 = "win32";//$NON-NLS-1$
-	public static final String WS_MOTIF = "motif";//$NON-NLS-1$
-	public static final String WS_GTK = "gtk";//$NON-NLS-1$
-	public static final String WS_PHOTON = "photon";//$NON-NLS-1$
-	public static final String WS_CARBON = "carbon";//$NON-NLS-1$
-	public static final String WS_COCOA = "cocoa";//$NON-NLS-1$
-	public static final String WS_WPF = "wpf";//$NON-NLS-1$
-	public static final String WS_UNKNOWN = "unknown";//$NON-NLS-1$	
+	public static final String WS_WIN32 = "win32";
+	public static final String WS_MOTIF = "motif";
+	public static final String WS_GTK = "gtk";
+	public static final String WS_PHOTON = "photon";
+	public static final String WS_CARBON = "carbon";
+	public static final String WS_COCOA = "cocoa";
+	public static final String WS_WPF = "wpf";
+	public static final String WS_UNKNOWN = "unknown";	
 
 	public static final boolean isWindows() {
 		final String ws = SWT.getPlatform();

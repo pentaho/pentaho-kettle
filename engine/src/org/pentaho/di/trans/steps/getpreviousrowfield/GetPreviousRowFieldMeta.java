@@ -134,27 +134,27 @@ public class GetPreviousRowFieldMeta extends BaseStepMeta implements StepMetaInt
 		{
 			int nrkeys;
 
-			Node lookup = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
-			nrkeys = XMLHandler.countNodes(lookup, "field"); //$NON-NLS-1$
+			Node lookup = XMLHandler.getSubNode(stepnode, "fields"); 
+			nrkeys = XMLHandler.countNodes(lookup, "field"); 
 
 			allocate(nrkeys);
 
 			for (int i = 0; i < nrkeys; i++) {
-				Node fnode = XMLHandler.getSubNodeByNr(lookup, "field", i); //$NON-NLS-1$
+				Node fnode = XMLHandler.getSubNodeByNr(lookup, "field", i); 
 
-				fieldInStream[i] = Const.NVL(XMLHandler.getTagValue(fnode,"in_stream_name"), ""); //$NON-NLS-1$
-				fieldOutStream[i] = Const.NVL(XMLHandler.getTagValue(fnode,"out_stream_name"), ""); //$NON-NLS-1$
+				fieldInStream[i] = Const.NVL(XMLHandler.getTagValue(fnode,"in_stream_name"), ""); 
+				fieldOutStream[i] = Const.NVL(XMLHandler.getTagValue(fnode,"out_stream_name"), ""); 
 			}
 		} catch (Exception e) {
 			throw new KettleXMLException(
-					BaseMessages.getString(PKG, "GetPreviousRowFieldMeta.Exception.UnableToReadStepInfoFromXML"), e); //$NON-NLS-1$
+					BaseMessages.getString(PKG, "GetPreviousRowFieldMeta.Exception.UnableToReadStepInfoFromXML"), e); 
 		}
 	}
 
 	public void setDefault() {
 		fieldInStream = null;
 		fieldOutStream = null;
-		schema = ""; //$NON-NLS-1$
+		schema = ""; 
 
 		int nrkeys = 0;
 
@@ -164,16 +164,16 @@ public class GetPreviousRowFieldMeta extends BaseStepMeta implements StepMetaInt
 	public String getXML() {
 		StringBuffer retval = new StringBuffer(500);
 
-		retval.append("    <fields>").append(Const.CR); //$NON-NLS-1$
+		retval.append("    <fields>").append(Const.CR); 
 
 		for (int i = 0; i < fieldInStream.length; i++) {
-			retval.append("      <field>").append(Const.CR); //$NON-NLS-1$
-			retval.append("        ").append(XMLHandler.addTagValue("in_stream_name", fieldInStream[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("      <field>").append(Const.CR); 
+			retval.append("        ").append(XMLHandler.addTagValue("in_stream_name", fieldInStream[i]));  
 			retval.append("        ").append(XMLHandler.addTagValue("out_stream_name", fieldOutStream[i])); 
-			retval.append("      </field>").append(Const.CR); //$NON-NLS-1$
+			retval.append("      </field>").append(Const.CR); 
 		}
 
-		retval.append("    </fields>").append(Const.CR); //$NON-NLS-1$
+		retval.append("    </fields>").append(Const.CR); 
 
 		return retval.toString();
 	}
@@ -183,34 +183,34 @@ public class GetPreviousRowFieldMeta extends BaseStepMeta implements StepMetaInt
     {
 
 		try {
-			schema = rep.getStepAttributeString(id_step, "schema"); //$NON-NLS-1$
+			schema = rep.getStepAttributeString(id_step, "schema"); 
 
-			int nrkeys = rep.countNrStepAttributes(id_step, "in_stream_name"); //$NON-NLS-1$
+			int nrkeys = rep.countNrStepAttributes(id_step, "in_stream_name"); 
 
 			// TODO NVL
 			allocate(nrkeys);
 			for (int i = 0; i < nrkeys; i++) {
-				fieldInStream[i] = Const.NVL(rep.getStepAttributeString(id_step, i,	"in_stream_name"), ""); //$NON-NLS-1$
+				fieldInStream[i] = Const.NVL(rep.getStepAttributeString(id_step, i,	"in_stream_name"), ""); 
 				fieldOutStream[i] = Const.NVL(rep.getStepAttributeString(id_step, i,	"out_stream_name"), "");
 			}
 		} catch (Exception e) {
 			throw new KettleException(
-					BaseMessages.getString(PKG, "GetPreviousRowFieldMeta.Exception.UnexpectedErrorInReadingStepInfo"), e); //$NON-NLS-1$
+					BaseMessages.getString(PKG, "GetPreviousRowFieldMeta.Exception.UnexpectedErrorInReadingStepInfo"), e); 
 		}
 	}
 
 	public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step)
 			throws KettleException {
 		try {
-			rep.saveStepAttribute(id_transformation, id_step, "schema", schema); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "schema", schema); 
 
 			for (int i = 0; i < fieldInStream.length; i++) {
-				rep.saveStepAttribute(id_transformation, id_step, i,"in_stream_name", fieldInStream[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i,"in_stream_name", fieldInStream[i]); 
 				rep.saveStepAttribute(id_transformation, id_step, i,"out_stream_name", fieldOutStream[i]);
 			}
 		} catch (Exception e) {
 			throw new KettleException(
-					BaseMessages.getString(PKG, "GetPreviousRowFieldMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
+					BaseMessages.getString(PKG, "GetPreviousRowFieldMeta.Exception.UnableToSaveStepInfo") + id_step, e); 
 		}
 	}
 	public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
@@ -238,13 +238,13 @@ public class GetPreviousRowFieldMeta extends BaseStepMeta implements StepMetaInt
 	{
 
 		CheckResult cr;
-		String error_message = ""; //$NON-NLS-1$
+		String error_message = ""; 
 		boolean first = true;
 		boolean error_found = false;
 
 		if (prev == null) {
 
-			error_message += BaseMessages.getString(PKG, "GetPreviousRowFieldMeta.CheckResult.NoInputReceived") + Const.CR; //$NON-NLS-1$
+			error_message += BaseMessages.getString(PKG, "GetPreviousRowFieldMeta.CheckResult.NoInputReceived") + Const.CR; 
 			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR,
 					error_message, stepMeta);
 			remarks.add(cr);
@@ -257,10 +257,10 @@ public class GetPreviousRowFieldMeta extends BaseStepMeta implements StepMetaInt
 				if (v == null) {
 					if (first) {
 						first = false;
-						error_message += BaseMessages.getString(PKG, "GetPreviousRowFieldMeta.CheckResult.MissingInStreamFields") + Const.CR; //$NON-NLS-1$
+						error_message += BaseMessages.getString(PKG, "GetPreviousRowFieldMeta.CheckResult.MissingInStreamFields") + Const.CR; 
 					}
 					error_found = true;
-					error_message += "\t\t" + field + Const.CR; //$NON-NLS-1$
+					error_message += "\t\t" + field + Const.CR; 
 				}
 			}
 			if (error_found) {
@@ -269,7 +269,7 @@ public class GetPreviousRowFieldMeta extends BaseStepMeta implements StepMetaInt
 			} else {
 				cr = new CheckResult(
 						CheckResult.TYPE_RESULT_OK,
-						BaseMessages.getString(PKG, "GetPreviousRowFieldMeta.CheckResult.FoundInStreamFields"), stepMeta); //$NON-NLS-1$
+						BaseMessages.getString(PKG, "GetPreviousRowFieldMeta.CheckResult.FoundInStreamFields"), stepMeta); 
 			}
 			remarks.add(cr);
 
@@ -281,10 +281,10 @@ public class GetPreviousRowFieldMeta extends BaseStepMeta implements StepMetaInt
 				if (Const.isEmpty(field)) {
 						if (first) {
 							first = false;
-							error_message = BaseMessages.getString(PKG, "GetPreviousRowFieldMeta.CheckResult.OutputFieldEmpty",""+i) + Const.CR; //$NON-NLS-1$
+							error_message = BaseMessages.getString(PKG, "GetPreviousRowFieldMeta.CheckResult.OutputFieldEmpty",""+i) + Const.CR; 
 						}
 						error_found = true;
-						error_message += "\t\t" + field + Const.CR; //$NON-NLS-1$
+						error_message += "\t\t" + field + Const.CR; 
 				}
 			}
 			if (error_found) {
@@ -293,7 +293,7 @@ public class GetPreviousRowFieldMeta extends BaseStepMeta implements StepMetaInt
 			} else {
 				cr = new CheckResult(
 						CheckResult.TYPE_RESULT_OK,
-						BaseMessages.getString(PKG, "GetPreviousRowFieldMeta.CheckResult.OutputFieldSpecified"), stepMeta); //$NON-NLS-1$
+						BaseMessages.getString(PKG, "GetPreviousRowFieldMeta.CheckResult.OutputFieldSpecified"), stepMeta); 
 			}
 			remarks.add(cr);
 
@@ -302,7 +302,7 @@ public class GetPreviousRowFieldMeta extends BaseStepMeta implements StepMetaInt
 					if (Const.isEmpty(fieldInStream[idx])) {
 						cr = new CheckResult(
 								CheckResult.TYPE_RESULT_ERROR,
-								BaseMessages.getString(PKG, "GetPreviousRowFieldMeta.CheckResult.InStreamFieldMissing", new Integer(idx + 1).toString()), stepMeta); //$NON-NLS-1$
+								BaseMessages.getString(PKG, "GetPreviousRowFieldMeta.CheckResult.InStreamFieldMissing", new Integer(idx + 1).toString()), stepMeta); 
 						remarks.add(cr);
 					
 					}
@@ -314,7 +314,7 @@ public class GetPreviousRowFieldMeta extends BaseStepMeta implements StepMetaInt
 				for (int jdx = 0; jdx < fieldInStream.length; jdx++) {
 					if (fieldInStream[idx].equals(fieldInStream[jdx])
 							&& idx != jdx && idx < jdx) {
-						error_message = BaseMessages.getString(PKG, "GetPreviousRowFieldMeta.CheckResult.FieldInputError", fieldInStream[idx]); //$NON-NLS-1$
+						error_message = BaseMessages.getString(PKG, "GetPreviousRowFieldMeta.CheckResult.FieldInputError", fieldInStream[idx]); 
 						cr = new CheckResult(
 								CheckResult.TYPE_RESULT_ERROR,
 								error_message, stepMeta);

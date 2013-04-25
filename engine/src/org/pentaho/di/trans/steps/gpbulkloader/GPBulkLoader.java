@@ -93,7 +93,7 @@ public class GPBulkLoader extends BaseStep implements StepInterface
     
     StreamLogger(InputStream is, String type) {
       this.input = is;
-      this.type = type + ">"; //$NON-NLS-1$
+      this.type = type + ">"; 
     }
 
     public void run() {
@@ -451,7 +451,7 @@ public class GPBulkLoader extends BaseStep implements StepInterface
             {
                 // any error???
             	int exitVal = psqlProcess.waitFor();
-				logBasic(BaseMessages.getString(PKG, "GPBulkLoader.Log.ExitValuePsqlPath", "" + exitVal)); //$NON-NLS-1$
+				logBasic(BaseMessages.getString(PKG, "GPBulkLoader.Log.ExitValuePsqlPath", "" + exitVal)); 
             }
         }
         catch ( Exception ex )
@@ -503,7 +503,7 @@ public class GPBulkLoader extends BaseStep implements StepInterface
 				//			if ( psqlProcess != null )
 				//			{
 				//				int exitVal = psqlProcess.waitFor();
-				//				logBasic(BaseMessages.getString(PKG, "GPBulkLoader.Log.ExitValueSqlldr", "" + exitVal)); //$NON-NLS-1$
+				//				logBasic(BaseMessages.getString(PKG, "GPBulkLoader.Log.ExitValueSqlldr", "" + exitVal)); 
 				//			}
 				//			else
 				//			{
@@ -541,7 +541,7 @@ public class GPBulkLoader extends BaseStep implements StepInterface
 		}
 		catch(KettleException e)
 		{
-			logError(BaseMessages.getString(PKG, "GPBulkLoader.Log.ErrorInStep")+e.getMessage()); //$NON-NLS-1$
+			logError(BaseMessages.getString(PKG, "GPBulkLoader.Log.ErrorInStep")+e.getMessage()); 
 			setErrors(1);
 			stopAll();
 			setOutputDone();  // signal end to receiver(s)

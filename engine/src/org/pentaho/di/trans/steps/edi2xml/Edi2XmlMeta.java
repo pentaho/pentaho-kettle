@@ -58,8 +58,8 @@ public class Edi2XmlMeta extends BaseStepMeta implements StepMetaInterface {
 	public String getXML() throws KettleValueException {
 		StringBuffer retval = new StringBuffer();
 
-		retval.append("   " + XMLHandler.addTagValue("inputfield", inputField)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("   " + XMLHandler.addTagValue("outputfield", outputField)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("   " + XMLHandler.addTagValue("inputfield", inputField));  
+		retval.append("   " + XMLHandler.addTagValue("outputfield", outputField));  
 
 		return retval.toString();
 	}
@@ -77,8 +77,8 @@ public class Edi2XmlMeta extends BaseStepMeta implements StepMetaInterface {
 
 	public void readRep(Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases) throws KettleException {
 		try {
-			inputField = rep.getStepAttributeString(id_step, "inputfield"); //$NON-NLS-1$
-			outputField = rep.getStepAttributeString(id_step, "outputfield"); //$NON-NLS-1$
+			inputField = rep.getStepAttributeString(id_step, "inputfield"); 
+			outputField = rep.getStepAttributeString(id_step, "outputfield"); 
 		} catch (Exception e) {
 			throw new KettleException(BaseMessages.getString(PKG, "Edi2Xml.Exception.UnexpectedErrorInReadingStepInfo"), e);
 		}
@@ -86,8 +86,8 @@ public class Edi2XmlMeta extends BaseStepMeta implements StepMetaInterface {
 
 	public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step) throws KettleException {
 		try {
-			rep.saveStepAttribute(id_transformation, id_step, "inputfield", inputField); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "outputfield", outputField); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "inputfield", inputField); 
+			rep.saveStepAttribute(id_transformation, id_step, "outputfield", outputField); 
 		} catch (Exception e) {
 			throw new KettleException(BaseMessages.getString(PKG, "Edi2Xml.Exception.UnableToSaveStepInfoToRepository") + id_step, e);
 		}

@@ -302,7 +302,7 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
         return true;
 
       } catch (Exception e) {
-        logError(BaseMessages.getString(PKG, "ElasticSearchBulk.Log.ErrorOccurredDuringStepInitialize") + e.getMessage()); //$NON-NLS-1$
+        logError(BaseMessages.getString(PKG, "ElasticSearchBulk.Log.ErrorOccurredDuringStepInitialize") + e.getMessage()); 
       }
       return true;
     }

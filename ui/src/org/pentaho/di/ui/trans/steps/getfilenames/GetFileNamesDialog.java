@@ -949,7 +949,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 				 if(excludewildcard!=null) wExcludeWildcardField.setText(excludewildcard);
 	         }
 		 }catch(KettleException ke){
-				new ErrorDialog(shell, BaseMessages.getString(PKG, "GetFileNamesDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "GetFileNamesDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "GetFileNamesDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "GetFileNamesDialog.FailedToGetFields.DialogMessage"), ke);  
 			}
 	 }
 	private void ActiveFileField()

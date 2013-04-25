@@ -123,15 +123,15 @@ public class FilesToResultMeta extends BaseStepMeta implements StepMetaInterface
 		StringBuffer xml = new StringBuffer();
 		
 		xml.append(XMLHandler.addTagValue("filename_field", filenameField));  // $NON-NLS-1
-		xml.append(XMLHandler.addTagValue("file_type", ResultFile.getTypeCode(fileType))); //$NON-NLS-1$
+		xml.append(XMLHandler.addTagValue("file_type", ResultFile.getTypeCode(fileType))); 
 		
 		return xml.toString();
 	}
 	
 	private void readData(Node stepnode)
 	{
-		filenameField = XMLHandler.getTagValue(stepnode, "filename_field"); //$NON-NLS-1$
-		fileType = ResultFile.getType( XMLHandler.getTagValue(stepnode, "file_type") ); //$NON-NLS-1$
+		filenameField = XMLHandler.getTagValue(stepnode, "filename_field"); 
+		fileType = ResultFile.getType( XMLHandler.getTagValue(stepnode, "file_type") ); 
 	}
 
 	public void setDefault()
@@ -143,15 +143,15 @@ public class FilesToResultMeta extends BaseStepMeta implements StepMetaInterface
 	public void readRep(Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases)
 		throws KettleException
 	{
-		filenameField = rep.getStepAttributeString(id_step, "filename_field"); //$NON-NLS-1$
-		fileType = ResultFile.getType( rep.getStepAttributeString(id_step, "file_type") ); //$NON-NLS-1$
+		filenameField = rep.getStepAttributeString(id_step, "filename_field"); 
+		fileType = ResultFile.getType( rep.getStepAttributeString(id_step, "file_type") ); 
 	}
 
 	public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step)
 		throws KettleException
 	{
-		rep.saveStepAttribute(id_transformation, id_step, "filename_field", filenameField); //$NON-NLS-1$
-		rep.saveStepAttribute(id_transformation, id_step, "file_type", ResultFile.getTypeCode(fileType)); //$NON-NLS-1$
+		rep.saveStepAttribute(id_transformation, id_step, "filename_field", filenameField); 
+		rep.saveStepAttribute(id_transformation, id_step, "file_type", ResultFile.getTypeCode(fileType)); 
 	}
 
 	public void getFields(RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
@@ -164,12 +164,12 @@ public class FilesToResultMeta extends BaseStepMeta implements StepMetaInterface
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FilesToResultMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+			CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FilesToResultMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepMeta); 
 			remarks.add(cr);
 		}
 		else
 		{
-			CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "FilesToResultMeta.CheckResult.NoInputReceivedError"), stepMeta); //$NON-NLS-1$
+			CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "FilesToResultMeta.CheckResult.NoInputReceivedError"), stepMeta); 
 			remarks.add(cr);
 		}
 	}

@@ -103,14 +103,14 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
       if (r != null) {
         stepMeta.setObjectId(id_step);
 
-        stepMeta.setName(r.getString(KettleDatabaseRepository.FIELD_STEP_NAME, null)); //$NON-NLS-1$
-        stepMeta.setDescription(r.getString(KettleDatabaseRepository.FIELD_STEP_DESCRIPTION, null)); //$NON-NLS-1$
+        stepMeta.setName(r.getString(KettleDatabaseRepository.FIELD_STEP_NAME, null)); 
+        stepMeta.setDescription(r.getString(KettleDatabaseRepository.FIELD_STEP_DESCRIPTION, null)); 
 
-        long id_step_type = r.getInteger(KettleDatabaseRepository.FIELD_STEP_ID_STEP_TYPE, -1L); //$NON-NLS-1$
+        long id_step_type = r.getInteger(KettleDatabaseRepository.FIELD_STEP_ID_STEP_TYPE, -1L); 
         RowMetaAndData steptyperow = getStepType(new LongObjectId(id_step_type));
 
-        stepMeta.setStepID(steptyperow.getString(KettleDatabaseRepository.FIELD_STEP_TYPE_CODE, null)); //$NON-NLS-1$
-        stepMeta.setDistributes(r.getBoolean(KettleDatabaseRepository.FIELD_STEP_DISTRIBUTE, true)); //$NON-NLS-1$
+        stepMeta.setStepID(steptyperow.getString(KettleDatabaseRepository.FIELD_STEP_TYPE_CODE, null)); 
+        stepMeta.setDistributes(r.getBoolean(KettleDatabaseRepository.FIELD_STEP_DISTRIBUTE, true)); 
         int copies = (int) r.getInteger(KettleDatabaseRepository.FIELD_STEP_COPIES, 1);
         String copiesString = r.getString(KettleDatabaseRepository.FIELD_STEP_COPIES_STRING, null);
         if (!Const.isEmpty(copiesString)) {
@@ -119,17 +119,17 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
           stepMeta.setCopies(copies);
         }
 
-        int x = (int) r.getInteger(KettleDatabaseRepository.FIELD_STEP_GUI_LOCATION_X, 0); //$NON-NLS-1$
-        int y = (int) r.getInteger(KettleDatabaseRepository.FIELD_STEP_GUI_LOCATION_Y, 0); //$NON-NLS-1$
+        int x = (int) r.getInteger(KettleDatabaseRepository.FIELD_STEP_GUI_LOCATION_X, 0); 
+        int y = (int) r.getInteger(KettleDatabaseRepository.FIELD_STEP_GUI_LOCATION_Y, 0); 
         stepMeta.setLocation(new Point(x, y));
-        stepMeta.setDraw(r.getBoolean(KettleDatabaseRepository.FIELD_STEP_GUI_DRAW, false)); //$NON-NLS-1$
+        stepMeta.setDraw(r.getBoolean(KettleDatabaseRepository.FIELD_STEP_GUI_DRAW, false)); 
 
         // Generate the appropriate class...
         PluginInterface sp = registry.findPluginWithId(StepPluginType.class, stepMeta.getStepID());
         if (sp != null) {
           stepMeta.setStepMetaInterface((StepMetaInterface) registry.loadClass(sp));
         } else {
-          throw new KettlePluginLoaderException(stepMeta.getStepID(), BaseMessages.getString(PKG, "StepMeta.Exception.UnableToLoadClass", stepMeta.getStepID() + Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+          throw new KettlePluginLoaderException(stepMeta.getStepID(), BaseMessages.getString(PKG, "StepMeta.Exception.UnableToLoadClass", stepMeta.getStepID() + Const.CR));   //$NON-NLS-3$
         }
 
         if (stepMeta.getStepMetaInterface() != null) {
@@ -155,10 +155,10 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
         //
         return stepMeta;
       } else {
-        throw new KettleException(BaseMessages.getString(PKG, "StepMeta.Exception.StepInfoCouldNotBeFound", String.valueOf(id_step))); //$NON-NLS-1$ //$NON-NLS-2$
+        throw new KettleException(BaseMessages.getString(PKG, "StepMeta.Exception.StepInfoCouldNotBeFound", String.valueOf(id_step)));  
       }
     } catch (KettleDatabaseException dbe) {
-      throw new KettleException(BaseMessages.getString(PKG, "StepMeta.Exception.StepCouldNotBeLoaded", String.valueOf(stepMeta.getObjectId())), dbe); //$NON-NLS-1$ //$NON-NLS-2$
+      throw new KettleException(BaseMessages.getString(PKG, "StepMeta.Exception.StepCouldNotBeLoaded", String.valueOf(stepMeta.getObjectId())), dbe);  
     }
   }
 
@@ -180,7 +180,7 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
 	{
         try
 		{
-			log.logDebug(BaseMessages.getString(PKG, "StepMeta.Log.SaveNewStep")); //$NON-NLS-1$
+			log.logDebug(BaseMessages.getString(PKG, "StepMeta.Log.SaveNewStep")); 
 			// Insert new Step in repository
 			stepMeta.setObjectId(insertStep(	id_transformation,
 									stepMeta.getName(), 
@@ -202,7 +202,7 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
 			// The id_step is known, as well as the id_transformation
 			// This means we can now save the attributes of the step...
 			//
-			log.logDebug(BaseMessages.getString(PKG, "StepMeta.Log.SaveStepDetails")); //$NON-NLS-1$
+			log.logDebug(BaseMessages.getString(PKG, "StepMeta.Log.SaveStepDetails")); 
 			compatibleSaveRep(stepMeta.getStepMetaInterface(), repository, id_transformation, stepMeta.getObjectId());
 			stepMeta.getStepMetaInterface().saveRep(repository, repository.metaStore, id_transformation, stepMeta.getObjectId());
             
@@ -216,7 +216,7 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
 		}
 		catch(KettleException e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "StepMeta.Exception.UnableToSaveStepInfo",String.valueOf(id_transformation)), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "StepMeta.Exception.UnableToSaveStepInfo",String.valueOf(id_transformation)), e); 
 		}
 	}
 

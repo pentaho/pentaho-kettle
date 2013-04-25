@@ -321,26 +321,26 @@ public abstract class BasePluginType implements PluginTypeInterface{
         try
         {
 
-        	String id = XMLHandler.getTagAttribute(pluginNode, "id"); //$NON-NLS-1$
-            String description = getTagOrAttribute(pluginNode, "description"); //$NON-NLS-1$
-            String iconfile = getTagOrAttribute(pluginNode, "iconfile"); //$NON-NLS-1$
-            String tooltip = getTagOrAttribute(pluginNode, "tooltip"); //$NON-NLS-1$
-            String category = getTagOrAttribute(pluginNode, "category"); //$NON-NLS-1$
-            String classname = getTagOrAttribute(pluginNode, "classname"); //$NON-NLS-1$
-            String errorHelpfile = getTagOrAttribute(pluginNode, "errorhelpfile"); //$NON-NLS-1$
-            String documentationUrl = getTagOrAttribute(pluginNode, "documentation_url"); //$NON-NLS-1$
-            String casesUrl = getTagOrAttribute(pluginNode, "cases_url"); //$NON-NLS-1$
-            String forumUrl = getTagOrAttribute(pluginNode, "forum_url"); //$NON-NLS-1$
+        	String id = XMLHandler.getTagAttribute(pluginNode, "id"); 
+            String description = getTagOrAttribute(pluginNode, "description"); 
+            String iconfile = getTagOrAttribute(pluginNode, "iconfile"); 
+            String tooltip = getTagOrAttribute(pluginNode, "tooltip"); 
+            String category = getTagOrAttribute(pluginNode, "category"); 
+            String classname = getTagOrAttribute(pluginNode, "classname"); 
+            String errorHelpfile = getTagOrAttribute(pluginNode, "errorhelpfile"); 
+            String documentationUrl = getTagOrAttribute(pluginNode, "documentation_url"); 
+            String casesUrl = getTagOrAttribute(pluginNode, "cases_url"); 
+            String forumUrl = getTagOrAttribute(pluginNode, "forum_url"); 
             
-            Node libsnode = XMLHandler.getSubNode(pluginNode, "libraries"); //$NON-NLS-1$
-            int nrlibs = XMLHandler.countNodes(libsnode, "library"); //$NON-NLS-1$
+            Node libsnode = XMLHandler.getSubNode(pluginNode, "libraries"); 
+            int nrlibs = XMLHandler.countNodes(libsnode, "library"); 
 
             List<String> jarFiles = new ArrayList<String>();
             if( path != null ) {
                 for (int j = 0; j < nrlibs; j++)
                 {
-                    Node libnode = XMLHandler.getSubNodeByNr(libsnode, "library", j); //$NON-NLS-1$
-                    String jarfile = XMLHandler.getTagAttribute(libnode, "name"); //$NON-NLS-1$
+                    Node libnode = XMLHandler.getSubNodeByNr(libsnode, "library", j); 
+                    String jarfile = XMLHandler.getTagAttribute(libnode, "name"); 
                     jarFiles.add( new File(path + Const.FILE_SEPARATOR + jarfile).getAbsolutePath() );
                 }
             }
@@ -370,7 +370,7 @@ public abstract class BasePluginType implements PluginTypeInterface{
             if(classTypesAnnotation != null){
               for(int i=0; i< classTypesAnnotation.classTypes().length; i++){
                 Class<?> classType = classTypesAnnotation.classTypes()[i];
-                String className = getTagOrAttribute(pluginNode, classTypesAnnotation.xmlNodeNames()[i]); //$NON-NLS-1$
+                String className = getTagOrAttribute(pluginNode, classTypesAnnotation.xmlNodeNames()[i]); 
                 
                 classMap.put(classType, className);
               }
@@ -379,7 +379,7 @@ public abstract class BasePluginType implements PluginTypeInterface{
             // process extra types added at runtime
             Map<Class<?>, String> objectMap = getAdditionalRuntimeObjectTypes();
             for(Map.Entry<Class<?>, String> entry : objectMap.entrySet()){
-              String clzName = getTagOrAttribute(pluginNode, entry.getValue()); //$NON-NLS-1$
+              String clzName = getTagOrAttribute(pluginNode, entry.getValue()); 
               classMap.put(entry.getKey(), clzName); 
             }
             
@@ -390,14 +390,14 @@ public abstract class BasePluginType implements PluginTypeInterface{
         }
         catch (Throwable e)
         {
-            throw new KettlePluginException( BaseMessages.getString(PKG, "BasePluginType.RuntimeError.UnableToReadPluginXML.PLUGIN0001"), e); //$NON-NLS-1$
+            throw new KettlePluginException( BaseMessages.getString(PKG, "BasePluginType.RuntimeError.UnableToReadPluginXML.PLUGIN0001"), e); 
         }
     }
 
     protected String getTagOrAttribute(Node pluginNode, String tag) {
 		String string = XMLHandler.getTagValue(pluginNode, tag);
 		if (string==null) {
-            string = XMLHandler.getTagAttribute(pluginNode, tag); //$NON-NLS-1$
+            string = XMLHandler.getTagAttribute(pluginNode, tag); 
 		}
 		return string;
 	}

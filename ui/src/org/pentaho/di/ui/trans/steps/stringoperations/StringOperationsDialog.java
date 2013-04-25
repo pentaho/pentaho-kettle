@@ -117,14 +117,14 @@ public class StringOperationsDialog extends BaseStepDialog implements StepDialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "StringOperationsDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "StringOperationsDialog.Shell.Title")); 
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname = new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "StringOperationsDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "StringOperationsDialog.Stepname.Label")); 
 		props.setLook(wlStepname);
 		fdlStepname = new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -143,7 +143,7 @@ public class StringOperationsDialog extends BaseStepDialog implements StepDialog
 		
 
 		wlKey = new Label(shell, SWT.NONE);
-		wlKey.setText(BaseMessages.getString(PKG, "StringOperationsDialog.Fields.Label")); //$NON-NLS-1$
+		wlKey.setText(BaseMessages.getString(PKG, "StringOperationsDialog.Fields.Label")); 
 		props.setLook(wlKey);
 		fdlKey = new FormData();
 		fdlKey.left = new FormAttachment(0, 0);
@@ -156,13 +156,13 @@ public class StringOperationsDialog extends BaseStepDialog implements StepDialog
 
 		ciKey = new ColumnInfo[nrFieldCols];
 		ciKey[0] = new ColumnInfo(
-				BaseMessages.getString(PKG, "StringOperationsDialog.ColumnInfo.InStreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+				BaseMessages.getString(PKG, "StringOperationsDialog.ColumnInfo.InStreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); 
 		ciKey[1] = new ColumnInfo(
-				BaseMessages.getString(PKG, "StringOperationsDialog.ColumnInfo.OutStreamField"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
+				BaseMessages.getString(PKG, "StringOperationsDialog.ColumnInfo.OutStreamField"), ColumnInfo.COLUMN_TYPE_TEXT, false); 
 		ciKey[2] = new ColumnInfo(
-				BaseMessages.getString(PKG, "StringOperationsDialog.ColumnInfo.Trim"), ColumnInfo.COLUMN_TYPE_CCOMBO, StringOperationsMeta.trimTypeDesc, true); //$NON-NLS-1$
+				BaseMessages.getString(PKG, "StringOperationsDialog.ColumnInfo.Trim"), ColumnInfo.COLUMN_TYPE_CCOMBO, StringOperationsMeta.trimTypeDesc, true); 
 		ciKey[3] = new ColumnInfo(
-				BaseMessages.getString(PKG, "StringOperationsDialog.ColumnInfo.LowerUpper"), ColumnInfo.COLUMN_TYPE_CCOMBO, StringOperationsMeta.lowerUpperDesc, true); //$NON-NLS-1$
+				BaseMessages.getString(PKG, "StringOperationsDialog.ColumnInfo.LowerUpper"), ColumnInfo.COLUMN_TYPE_CCOMBO, StringOperationsMeta.lowerUpperDesc, true); 
 		ciKey[4] = new ColumnInfo(
 				BaseMessages.getString(PKG, "StringOperationsDialog.ColumnInfo.Padding"), ColumnInfo.COLUMN_TYPE_CCOMBO, StringOperationsMeta.paddingDesc, true); 
 		ciKey[5] = new ColumnInfo(
@@ -199,12 +199,12 @@ public class StringOperationsDialog extends BaseStepDialog implements StepDialog
 		
 		// THE BUTTONS
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		wGet = new Button(shell, SWT.PUSH);
-		wGet.setText(BaseMessages.getString(PKG, "StringOperationsDialog.GetFields.Button")); //$NON-NLS-1$
+		wGet.setText(BaseMessages.getString(PKG, "StringOperationsDialog.GetFields.Button")); 
 		fdGet = new FormData();
 		fdGet.right = new FormAttachment(100, 0);
 		fdGet.top = new FormAttachment(wStepname, 3*middle);
@@ -362,7 +362,7 @@ public class StringOperationsDialog extends BaseStepDialog implements StepDialog
 
 		inf.allocate(nrkeys);
 		if(isDebug())
-			logDebug( BaseMessages.getString(PKG, "StringOperationsDialog.Log.FoundFields", String.valueOf(nrkeys))); //$NON-NLS-1$ //$NON-NLS-2$
+			logDebug( BaseMessages.getString(PKG, "StringOperationsDialog.Log.FoundFields", String.valueOf(nrkeys)));  
 		for (int i = 0; i < nrkeys; i++) {
 			TableItem item = wFields.getNonEmpty(i);
 			inf.getFieldInStream()[i] = item.getText(1);
@@ -419,7 +419,7 @@ public class StringOperationsDialog extends BaseStepDialog implements StepDialog
 			}
 		} catch (KettleException ke) {
 			new ErrorDialog(
-					shell,BaseMessages.getString(PKG, "StringOperationsDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "StringOperationsDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+					shell,BaseMessages.getString(PKG, "StringOperationsDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "StringOperationsDialog.FailedToGetFields.DialogMessage"), ke);  
 		}
 	}
 }

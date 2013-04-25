@@ -223,7 +223,7 @@ public class ZipFileMeta extends BaseStepMeta implements StepMetaInterface
     {
         StringBuffer retval = new StringBuffer();
 
-        retval.append("    " + XMLHandler.addTagValue("sourcefilenamefield", sourcefilenamefield)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    " + XMLHandler.addTagValue("sourcefilenamefield", sourcefilenamefield));  
         retval.append("    " + XMLHandler.addTagValue("targetfilenamefield", targetfilenamefield)); 
         retval.append("    " + XMLHandler.addTagValue("baseFolderField", baseFolderField)); 
         retval.append("    " + XMLHandler.addTagValue("operation_type",getOperationTypeCode(operationType)));
@@ -257,7 +257,7 @@ public class ZipFileMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	    catch (Exception e)
 	    {
-	        throw new KettleXMLException(BaseMessages.getString(PKG, "ZipFileMeta.Exception.UnableToReadStepInfo"), e); //$NON-NLS-1$
+	        throw new KettleXMLException(BaseMessages.getString(PKG, "ZipFileMeta.Exception.UnableToReadStepInfo"), e); 
 	    }
     }
 
@@ -266,7 +266,7 @@ public class ZipFileMeta extends BaseStepMeta implements StepMetaInterface
     {
         try
         {
-        	sourcefilenamefield = rep.getStepAttributeString(id_step, "sourcefilenamefield"); //$NON-NLS-1$
+        	sourcefilenamefield = rep.getStepAttributeString(id_step, "sourcefilenamefield"); 
         	targetfilenamefield = rep.getStepAttributeString(id_step, "targetfilenamefield");
         	baseFolderField = rep.getStepAttributeString(id_step, "baseFolderField");
         	operationType = getOperationTypeByCode(Const.NVL(rep.getStepAttributeString(id_step, "operation_type"), ""));
@@ -279,7 +279,7 @@ public class ZipFileMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleException(BaseMessages.getString(PKG, "ZipFileMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "ZipFileMeta.Exception.UnexpectedErrorReadingStepInfo"), e); 
         }
     }
 
@@ -288,8 +288,8 @@ public class ZipFileMeta extends BaseStepMeta implements StepMetaInterface
 	{
         try
         {
-            rep.saveStepAttribute(id_transformation, id_step, "sourcefilenamefield", sourcefilenamefield); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "targetfilenamefield", targetfilenamefield); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "sourcefilenamefield", sourcefilenamefield); 
+            rep.saveStepAttribute(id_transformation, id_step, "targetfilenamefield", targetfilenamefield); 
             rep.saveStepAttribute(id_transformation, id_step, "baseFolderField", baseFolderField); 
             rep.saveStepAttribute(id_transformation, id_step, "operation_type", getOperationTypeCode(operationType));
             rep.saveStepAttribute(id_transformation, id_step, "addresultfilenames",          addresultfilenames);
@@ -302,25 +302,25 @@ public class ZipFileMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleException(BaseMessages.getString(PKG, "ZipFileMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "ZipFileMeta.Exception.UnableToSaveStepInfo") + id_step, e); 
         }
     }
 
 	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
         CheckResult cr;
-        String error_message = ""; //$NON-NLS-1$
+        String error_message = ""; 
 
         // source filename
         if (Const.isEmpty(sourcefilenamefield))
         {
-            error_message = BaseMessages.getString(PKG, "ZipFileMeta.CheckResult.SourceFileFieldMissing"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "ZipFileMeta.CheckResult.SourceFileFieldMissing"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
             remarks.add(cr);
         }
         else
         {
-            error_message = BaseMessages.getString(PKG, "ZipFileMeta.CheckResult.TargetFileFieldOK"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "ZipFileMeta.CheckResult.TargetFileFieldOK"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
             remarks.add(cr);
         }
@@ -329,12 +329,12 @@ public class ZipFileMeta extends BaseStepMeta implements StepMetaInterface
         // See if we have input streams leading to this step!
         if (input.length > 0)
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ZipFileMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ZipFileMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); 
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "ZipFileMeta.CheckResult.NoInpuReceived"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "ZipFileMeta.CheckResult.NoInpuReceived"), stepMeta); 
             remarks.add(cr);
         }
 

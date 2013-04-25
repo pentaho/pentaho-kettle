@@ -89,11 +89,11 @@ public class DetectLastRow extends BaseStep implements StepInterface {
         putRow(data.outputRowMeta, outputRow); // copy row to output rowset(s);
 
         if (log.isRowLevel()) {
-          logRowlevel(BaseMessages.getString(PKG, "DetectLastRow.Log.WroteRowToNextStep") + data.outputRowMeta.getString(outputRow)); //$NON-NLS-1$
+          logRowlevel(BaseMessages.getString(PKG, "DetectLastRow.Log.WroteRowToNextStep") + data.outputRowMeta.getString(outputRow)); 
         }
 
         if (checkFeedback(getLinesRead())) {
-          logBasic(BaseMessages.getString(PKG, "DetectLastRow.Log.LineNumber") + getLinesRead()); //$NON-NLS-1$
+          logBasic(BaseMessages.getString(PKG, "DetectLastRow.Log.LineNumber") + getLinesRead()); 
         }
       }
 
@@ -106,11 +106,11 @@ public class DetectLastRow extends BaseStep implements StepInterface {
       putRow(data.outputRowMeta, outputRow); // copy row to output rowset(s);
 
       if (log.isRowLevel()) {
-        logRowlevel(BaseMessages.getString(PKG, "DetectLastRow.Log.WroteRowToNextStep") + data.outputRowMeta.getString(outputRow)); //$NON-NLS-1$
+        logRowlevel(BaseMessages.getString(PKG, "DetectLastRow.Log.WroteRowToNextStep") + data.outputRowMeta.getString(outputRow)); 
       }
 
       if (checkFeedback(getLinesRead())) {
-        logBasic(BaseMessages.getString(PKG, "DetectLastRow.Log.LineNumber") + getLinesRead()); //$NON-NLS-1$
+        logBasic(BaseMessages.getString(PKG, "DetectLastRow.Log.LineNumber") + getLinesRead()); 
       }
     }
     // keep track of the current row

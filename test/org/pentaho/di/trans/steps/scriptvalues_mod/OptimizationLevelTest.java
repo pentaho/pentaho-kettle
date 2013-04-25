@@ -67,7 +67,7 @@ public class OptimizationLevelTest {
     * 
     * If we update Ketle with a version of Rhino
     */
-   private static final String RANGE_ERROR_MESSAGE_PREFIX = "Optimization level outside [-1..9]";   //$NON-NLS-1$
+   private static final String RANGE_ERROR_MESSAGE_PREFIX = "Optimization level outside [-1..9]";   
    
    /**
     * Returns a true of the list of CheckResultInterface contains 
@@ -144,7 +144,7 @@ public class OptimizationLevelTest {
 
       // Create a new transformation...
       TransMeta transMeta = new TransMeta();
-      transMeta.setName("Test optimization level exception handling"); //$NON-NLS-1$
+      transMeta.setName("Test optimization level exception handling"); 
 
       PluginRegistry registry = PluginRegistry.getInstance();
 
@@ -158,7 +158,7 @@ public class OptimizationLevelTest {
       transMeta.addStep(injectorStep);
 
       // Create a javascript step
-      String javaScriptStepname = "javascript step"; //$NON-NLS-1$
+      String javaScriptStepname = "javascript step"; 
       
       //  Create the meta and populate
       ScriptValuesMetaMod scriptValuesMetaMod = new ScriptValuesMetaMod();
@@ -167,7 +167,7 @@ public class OptimizationLevelTest {
                                                               "var str = string;\n" +
                                                               "var bool = LuhnCheck(str);") };
       scriptValuesMetaMod.setJSScripts(js);
-      scriptValuesMetaMod.setFieldname(new String[] { "bool" });  //$NON-NLS-1$
+      scriptValuesMetaMod.setFieldname(new String[] { "bool" });  
       scriptValuesMetaMod.setRename(new String[] { "" });
       scriptValuesMetaMod.setType(new int[] { ValueMetaInterface.TYPE_BOOLEAN });
       scriptValuesMetaMod.setLength(new int[] { -1 });
@@ -181,7 +181,7 @@ public class OptimizationLevelTest {
       StepMeta javaScriptStep = new StepMeta(javaScriptStepPid, javaScriptStepname, (StepMetaInterface)scriptValuesMetaMod);
           
       // Create a dummy step
-      String dummyStepname = "dummy step";  //$NON-NLS-1$
+      String dummyStepname = "dummy step";  
       DummyTransMeta dm = new DummyTransMeta();
       String dummyPid = registry.getPluginId(StepPluginType.class, dm);
       StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, (StepMetaInterface)dm);
@@ -211,7 +211,7 @@ public class OptimizationLevelTest {
          scriptValuesMetaMod.check(remarks, transMeta, javaScriptStep, rowMetaAndData.getRowMeta(), input, output, null, transMeta, null, null);         
       }
       else {
-         fail("No data in the inputList");  //$NON-NLS-1$
+         fail("No data in the inputList");  
       }
       
       //  we then return the remarks made by scriptValuesMetaMod.check(....);

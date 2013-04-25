@@ -132,14 +132,14 @@ public class ProcessFilesDialog extends BaseStepDialog implements StepDialogInte
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "ProcessFilesDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "ProcessFilesDialog.Shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin=Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "ProcessFilesDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "ProcessFilesDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -171,7 +171,7 @@ public class ProcessFilesDialog extends BaseStepDialog implements StepDialogInte
 		
 		// Operation
 		wlOperation=new Label(wSettingsGroup, SWT.RIGHT);
-		wlOperation.setText(BaseMessages.getString(PKG, "ProcessFilesDialog.Operation.Label")); //$NON-NLS-1$
+		wlOperation.setText(BaseMessages.getString(PKG, "ProcessFilesDialog.Operation.Label")); 
  		props.setLook(wlOperation);
 		fdlOperation=new FormData();
 		fdlOperation.left = new FormAttachment(0, 0);
@@ -280,7 +280,7 @@ public class ProcessFilesDialog extends BaseStepDialog implements StepDialogInte
 
 		// SourceFileNameField field
 		wlSourceFileNameField=new Label(shell, SWT.RIGHT);
-		wlSourceFileNameField.setText(BaseMessages.getString(PKG, "ProcessFilesDialog.SourceFileNameField.Label")); //$NON-NLS-1$
+		wlSourceFileNameField.setText(BaseMessages.getString(PKG, "ProcessFilesDialog.SourceFileNameField.Label")); 
  		props.setLook(wlSourceFileNameField);
 		fdlSourceFileNameField=new FormData();
 		fdlSourceFileNameField.left = new FormAttachment(0, 0);
@@ -316,7 +316,7 @@ public class ProcessFilesDialog extends BaseStepDialog implements StepDialogInte
     );
 		// TargetFileNameField field
 		wlTargetFileNameField=new Label(shell, SWT.RIGHT);
-		wlTargetFileNameField.setText(BaseMessages.getString(PKG, "ProcessFilesDialog.TargetFileNameField.Label")); //$NON-NLS-1$
+		wlTargetFileNameField.setText(BaseMessages.getString(PKG, "ProcessFilesDialog.TargetFileNameField.Label")); 
  		props.setLook(wlTargetFileNameField);
 		fdlTargetFileNameField=new FormData();
 		fdlTargetFileNameField.left = new FormAttachment(0, 0);
@@ -355,9 +355,9 @@ public class ProcessFilesDialog extends BaseStepDialog implements StepDialogInte
 
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wTargetFileNameField);
 
@@ -406,7 +406,7 @@ public class ProcessFilesDialog extends BaseStepDialog implements StepDialogInte
    */
   public void getData() {
     if (log.isDebug())
-      logDebug(BaseMessages.getString(PKG, "ProcessFilesDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+      logDebug(BaseMessages.getString(PKG, "ProcessFilesDialog.Log.GettingKeyInfo")); 
 
     if (input.getDynamicSourceFileNameField() != null)
       wSourceFileNameField.setText(input.getDynamicSourceFileNameField());
@@ -467,7 +467,7 @@ public class ProcessFilesDialog extends BaseStepDialog implements StepDialogInte
 			}
 			catch(KettleException ke)
 			{
-				new ErrorDialog(shell, BaseMessages.getString(PKG, "ProcessFilesDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "ProcessFilesDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "ProcessFilesDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "ProcessFilesDialog.FailedToGetFields.DialogMessage"), ke);  
 			}
 		 }
 		}

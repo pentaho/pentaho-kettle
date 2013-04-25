@@ -300,12 +300,12 @@ public class JobEntryMailValidator extends JobEntryBase implements Cloneable, Jo
 	  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore)
 	  {
 
-	    andValidator().validate(this, "emailAddress", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
-	    andValidator().validate(this, "emailSender", remarks, putValidators(notBlankValidator(), emailValidator())); //$NON-NLS-1$
+	    andValidator().validate(this, "emailAddress", remarks, putValidators(notBlankValidator())); 
+	    andValidator().validate(this, "emailSender", remarks, putValidators(notBlankValidator(), emailValidator())); 
 
 	    if (isSMTPCheck())
 	    {
-	      andValidator().validate(this, "defaultSMTP", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+	      andValidator().validate(this, "defaultSMTP", remarks, putValidators(notBlankValidator())); 
 	    }
 	  }
 }

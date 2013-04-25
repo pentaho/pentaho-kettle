@@ -80,7 +80,7 @@ public class SwitchCase extends BaseStep implements StepInterface
 
             data.fieldIndex = getInputRowMeta().indexOfValue(meta.getFieldname());
             if (data.fieldIndex<0) {
-            	throw new KettleException(BaseMessages.getString(PKG, "SwitchCase.Exception.UnableToFindFieldName", meta.getFieldname())); //$NON-NLS-1$
+            	throw new KettleException(BaseMessages.getString(PKG, "SwitchCase.Exception.UnableToFindFieldName", meta.getFieldname())); 
             }
 
             data.inputValueMeta = getInputRowMeta().getValueMeta(data.fieldIndex); 
@@ -98,7 +98,7 @@ public class SwitchCase extends BaseStep implements StepInterface
         			   break; // Skip over default option
         			}
         			if (target.caseTargetStep==null) {
-	        			throw new KettleException(BaseMessages.getString(PKG, "SwitchCase.Log.NoTargetStepSpecifiedForValue", target.caseValue)); //$NON-NLS-1$
+	        			throw new KettleException(BaseMessages.getString(PKG, "SwitchCase.Log.NoTargetStepSpecifiedForValue", target.caseValue)); 
 	        		} else {
 	        			RowSet rowSet = findOutputRowSet(target.caseTargetStep.getName());
 	        			if (rowSet!=null) {
@@ -115,10 +115,10 @@ public class SwitchCase extends BaseStep implements StepInterface
 		            			
 		            		}
 		            		catch(Exception e) {
-		            			throw new KettleException(BaseMessages.getString(PKG, "SwitchCase.Log.UnableToConvertValue", target.caseValue), e); //$NON-NLS-1$
+		            			throw new KettleException(BaseMessages.getString(PKG, "SwitchCase.Log.UnableToConvertValue", target.caseValue), e); 
 		            		}
 	        			} else {
-	            			throw new KettleException(BaseMessages.getString(PKG, "SwitchCase.Log.UnableToFindTargetRowSetForStep", target.caseTargetStep)); //$NON-NLS-1$
+	            			throw new KettleException(BaseMessages.getString(PKG, "SwitchCase.Log.UnableToFindTargetRowSetForStep", target.caseTargetStep)); 
 	        			}
 	        		}
 	        	}
@@ -162,7 +162,7 @@ public class SwitchCase extends BaseStep implements StepInterface
         
         if (checkFeedback(getLinesRead())) 
         {
-        	if (log.isBasic()) logBasic(BaseMessages.getString(PKG, "SwitchCase.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+        	if (log.isBasic()) logBasic(BaseMessages.getString(PKG, "SwitchCase.Log.LineNumber")+getLinesRead()); 
         }
 			
 		return true;
@@ -181,7 +181,7 @@ public class SwitchCase extends BaseStep implements StepInterface
             data.outputMap = meta.isContains() ? new ContainsKeyToRowSetMap() : new KeyToRowSetMap();
         	
         	if (Const.isEmpty(meta.getFieldname())) {
-        		logError(BaseMessages.getString(PKG, "SwitchCase.Log.NoFieldSpecifiedToSwitchWith")); //$NON-NLS-1$
+        		logError(BaseMessages.getString(PKG, "SwitchCase.Log.NoFieldSpecifiedToSwitchWith")); 
         		return false;
         	}
         	

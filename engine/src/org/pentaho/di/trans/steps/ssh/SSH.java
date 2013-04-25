@@ -89,7 +89,7 @@ public class SSH extends BaseStep implements StepInterface
 	 				data.indexOfCommand =data.outputRowMeta.indexOfValue(meta.getcommandfieldname());
 	 				if (data.indexOfCommand<0) {
 	 					// The field is unreachable !
-	 					throw new KettleException(BaseMessages.getString(PKG, "SSH.Exception.CouldnotFindField",meta.getcommandfieldname())); //$NON-NLS-1$ //$NON-NLS-2$
+	 					throw new KettleException(BaseMessages.getString(PKG, "SSH.Exception.CouldnotFindField",meta.getcommandfieldname()));  
 	 				}
 	     		} 
 	         }
@@ -159,7 +159,7 @@ public class SSH extends BaseStep implements StepInterface
 			putRow(data.outputRowMeta,rowData); 
                 
             if (checkFeedback(getLinesRead()))  {
-            	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SSH.LineNumber",""+getLinesRead())); //$NON-NLS-1$
+            	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SSH.LineNumber",""+getLinesRead())); 
             }
         } catch(Exception e) {
             
@@ -170,7 +170,7 @@ public class SSH extends BaseStep implements StepInterface
                   sendToErrorRow = true;
                   errorMessage = e.toString();
         	} else {
-	            logError(BaseMessages.getString(PKG, "SSH.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
+	            logError(BaseMessages.getString(PKG, "SSH.ErrorInStepRunning")+e.getMessage()); 
 	            setErrors(1);
 	            stopAll();
 	            setOutputDone();  // signal end to receiver(s)

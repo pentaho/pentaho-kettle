@@ -85,7 +85,7 @@ public class SelectValues extends BaseStep implements StepInterface
 				data.fieldnrs[i]=rowMeta.indexOfValue( meta.getSelectName()[i] );
 				if (data.fieldnrs[i]<0)
 				{
-					logError(BaseMessages.getString(PKG, "SelectValues.Log.CouldNotFindField",meta.getSelectName()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "SelectValues.Log.CouldNotFindField",meta.getSelectName()[i]));  
 					setErrors(1);
 					stopAll();
 					return null;
@@ -106,7 +106,7 @@ public class SelectValues extends BaseStep implements StepInterface
 					
 					if (cnt[i]>1)
 					{
-						logError(BaseMessages.getString(PKG, "SelectValues.Log.FieldCouldNotSpecifiedMoreThanTwice",one)); //$NON-NLS-1$ //$NON-NLS-2$
+						logError(BaseMessages.getString(PKG, "SelectValues.Log.FieldCouldNotSpecifiedMoreThanTwice",one));  
 						setErrors(1);
 						stopAll();
 						return null;
@@ -169,7 +169,7 @@ public class SelectValues extends BaseStep implements StepInterface
 			}
 			else
 			{
-				if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SelectValues.Log.MixingStreamWithDifferentFields")); //$NON-NLS-1$
+				if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SelectValues.Log.MixingStreamWithDifferentFields")); 
 			}			
 		}
 		
@@ -203,7 +203,7 @@ public class SelectValues extends BaseStep implements StepInterface
 				data.removenrs[i]=rowMeta.indexOfValue(meta.getDeleteName()[i]);
 				if (data.removenrs[i]<0)
 				{
-					logError(BaseMessages.getString(PKG, "SelectValues.Log.CouldNotFindField",meta.getDeleteName()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "SelectValues.Log.CouldNotFindField",meta.getDeleteName()[i]));  
 					setErrors(1);
 					stopAll();
 					return null;
@@ -221,7 +221,7 @@ public class SelectValues extends BaseStep implements StepInterface
 					
 					if (cnt[i]>1)
 					{
-						logError(BaseMessages.getString(PKG, "SelectValues.Log.FieldCouldNotSpecifiedMoreThanTwice2",meta.getDeleteName()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+						logError(BaseMessages.getString(PKG, "SelectValues.Log.FieldCouldNotSpecifiedMoreThanTwice2",meta.getDeleteName()[i]));  
 						setErrors(1);
 						stopAll();
 						return null;
@@ -263,7 +263,7 @@ public class SelectValues extends BaseStep implements StepInterface
 				data.metanrs[i]=rowMeta.indexOfValue(meta.getMeta()[i].getName());
 				if (data.metanrs[i]<0)
 				{
-					logError(BaseMessages.getString(PKG, "SelectValues.Log.CouldNotFindField",meta.getMeta()[i].getName())); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "SelectValues.Log.CouldNotFindField",meta.getMeta()[i].getName()));  
 					setErrors(1);
 					stopAll();
 					return null;
@@ -281,7 +281,7 @@ public class SelectValues extends BaseStep implements StepInterface
 					
 					if (cnt[i]>1)
 					{
-						logError(BaseMessages.getString(PKG, "SelectValues.Log.FieldCouldNotSpecifiedMoreThanTwice2",meta.getMeta()[i].getName())); //$NON-NLS-1$ //$NON-NLS-2$
+						logError(BaseMessages.getString(PKG, "SelectValues.Log.FieldCouldNotSpecifiedMoreThanTwice2",meta.getMeta()[i].getName()));  
 						setErrors(1);
 						stopAll();
 						return null;
@@ -364,7 +364,7 @@ public class SelectValues extends BaseStep implements StepInterface
 		  rowCopy = getInputRowMeta().cloneRow(rowData);
 		}
 		
-		if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "SelectValues.Log.GotRowFromPreviousStep")+getInputRowMeta().getString(rowData)); //$NON-NLS-1$
+		if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "SelectValues.Log.GotRowFromPreviousStep")+getInputRowMeta().getString(rowData)); 
 
 		if (first)
 		{
@@ -393,7 +393,7 @@ public class SelectValues extends BaseStep implements StepInterface
           // Send the row on its way
           //
           putRow(data.metadataRowMeta, outputData);
-          if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "SelectValues.Log.WroteRowToNextStep")+data.metadataRowMeta.getString(outputData)); //$NON-NLS-1$
+          if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "SelectValues.Log.WroteRowToNextStep")+data.metadataRowMeta.getString(outputData)); 
             
 		} catch(KettleException e) {
 		  if (getStepMeta().isDoingErrorHandling()) {
@@ -403,7 +403,7 @@ public class SelectValues extends BaseStep implements StepInterface
 		  }
 		}
 	
-        if (checkFeedback(getLinesRead())) logBasic(BaseMessages.getString(PKG, "SelectValues.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+        if (checkFeedback(getLinesRead())) logBasic(BaseMessages.getString(PKG, "SelectValues.Log.LineNumber")+getLinesRead()); 
 
 		return true;
 	}
@@ -431,7 +431,7 @@ public class SelectValues extends BaseStep implements StepInterface
 			if (!atLeastOne)
 			{
 				setErrors(1);
-				logError(BaseMessages.getString(PKG, "SelectValues.Log.InputShouldContainData")); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "SelectValues.Log.InputShouldContainData")); 
 			}
 			
 			return atLeastOne; // One of those three has to work!

@@ -184,15 +184,15 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
   }
 
   public String getXML(boolean includeInterface) throws KettleException {
-    StringBuffer retval = new StringBuffer(200); //$NON-NLS-1$
+    StringBuffer retval = new StringBuffer(200); 
 
-    retval.append("  <").append(XML_TAG).append('>').append(Const.CR); //$NON-NLS-1$
-    retval.append("    ").append(XMLHandler.addTagValue("name", getName())); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("type", getStepID())); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("description", description)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("distribute", distributes)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("loadbalance", loadBalancing)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("copies", copiesString)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("  <").append(XML_TAG).append('>').append(Const.CR); 
+    retval.append("    ").append(XMLHandler.addTagValue("name", getName()));  
+    retval.append("    ").append(XMLHandler.addTagValue("type", getStepID()));  
+    retval.append("    ").append(XMLHandler.addTagValue("description", description));  
+    retval.append("    ").append(XMLHandler.addTagValue("distribute", distributes));  
+    retval.append("    ").append(XMLHandler.addTagValue("loadbalance", loadBalancing));  
+    retval.append("    ").append(XMLHandler.addTagValue("copies", copiesString));  
 
     retval.append(stepPartitioningMeta.getXML());
     if (targetStepPartitioningMeta != null) {
@@ -227,12 +227,12 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     retval.append("   </output>");
     retval.append(" </remotesteps>");
 
-    retval.append("    <GUI>").append(Const.CR); //$NON-NLS-1$
-    retval.append("      <xloc>").append(location.x).append("</xloc>").append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("      <yloc>").append(location.y).append("</yloc>").append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("      <draw>").append((drawstep ? "Y" : "N")).append("</draw>").append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-    retval.append("      </GUI>").append(Const.CR); //$NON-NLS-1$
-    retval.append("    </" + XML_TAG + ">").append(Const.CR).append(Const.CR); //$NON-NLS-1$
+    retval.append("    <GUI>").append(Const.CR); 
+    retval.append("      <xloc>").append(location.x).append("</xloc>").append(Const.CR);  
+    retval.append("      <yloc>").append(location.y).append("</yloc>").append(Const.CR);  
+    retval.append("      <draw>").append((drawstep ? "Y" : "N")).append("</draw>").append(Const.CR);   //$NON-NLS-3$ //$NON-NLS-4$
+    retval.append("      </GUI>").append(Const.CR); 
+    retval.append("    </" + XML_TAG + ">").append(Const.CR).append(Const.CR); 
 
     return retval.toString();
   }
@@ -911,7 +911,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
   }
 
   public String getHolderType() {
-    return "STEP"; //$NON-NLS-1$
+    return "STEP"; 
   }
 
   public boolean isClustered() {

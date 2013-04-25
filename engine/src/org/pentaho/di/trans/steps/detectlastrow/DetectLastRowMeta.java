@@ -91,7 +91,7 @@ public class DetectLastRowMeta extends BaseStepMeta implements StepMetaInterface
 
     public void setDefault()
     {
-        resultfieldname = "result"; //$NON-NLS-1$
+        resultfieldname = "result"; 
     }
     
     public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException {
@@ -107,7 +107,7 @@ public class DetectLastRowMeta extends BaseStepMeta implements StepMetaInterface
     public String getXML()
     {
         StringBuilder retval = new StringBuilder();
-        retval.append("    " + XMLHandler.addTagValue("resultfieldname", resultfieldname)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    " + XMLHandler.addTagValue("resultfieldname", resultfieldname));  
         return retval.toString();
     }
 
@@ -119,16 +119,16 @@ public class DetectLastRowMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleXMLException(BaseMessages.getString(PKG, "DetectLastRowMeta.Exception.UnableToReadStepInfo"), e); //$NON-NLS-1$
+            throw new KettleXMLException(BaseMessages.getString(PKG, "DetectLastRowMeta.Exception.UnableToReadStepInfo"), e); 
         }
     }
 
     public void readRep(Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases) throws KettleException {
       try {
-        resultfieldname = rep.getStepAttributeString(id_step, "resultfieldname"); //$NON-NLS-1$
+        resultfieldname = rep.getStepAttributeString(id_step, "resultfieldname"); 
       } catch (Exception e) {
         throw new KettleException(BaseMessages.getString(PKG,
-            "DetectLastRowMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
+            "DetectLastRowMeta.Exception.UnexpectedErrorReadingStepInfo"), e); 
       }
     }
 
@@ -136,27 +136,27 @@ public class DetectLastRowMeta extends BaseStepMeta implements StepMetaInterface
     {
         try
         {
-            rep.saveStepAttribute(id_transformation, id_step, "resultfieldname", resultfieldname); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "resultfieldname", resultfieldname); 
         }
         catch (Exception e)
         {
-            throw new KettleException(BaseMessages.getString(PKG, "DetectLastRowMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "DetectLastRowMeta.Exception.UnableToSaveStepInfo") + id_step, e); 
         }
     }
 
     public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore) {
         CheckResult cr;
-        String error_message = ""; //$NON-NLS-1$
+        String error_message = ""; 
       
         if (Const.isEmpty(resultfieldname))
         {
-            error_message = BaseMessages.getString(PKG, "DetectLastRowMeta.CheckResult.ResultFieldMissing"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "DetectLastRowMeta.CheckResult.ResultFieldMissing"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
             remarks.add(cr);
         }
         else
         {
-            error_message = BaseMessages.getString(PKG, "DetectLastRowMeta.CheckResult.ResultFieldOK"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "DetectLastRowMeta.CheckResult.ResultFieldOK"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
             remarks.add(cr);
         }
@@ -164,12 +164,12 @@ public class DetectLastRowMeta extends BaseStepMeta implements StepMetaInterface
         // See if we have input streams leading to this step!
         if (input.length > 0)
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "DetectLastRowMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "DetectLastRowMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); 
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "DetectLastRowMeta.CheckResult.NoInpuReceived"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "DetectLastRowMeta.CheckResult.NoInpuReceived"), stepMeta); 
             remarks.add(cr);
         }
     }

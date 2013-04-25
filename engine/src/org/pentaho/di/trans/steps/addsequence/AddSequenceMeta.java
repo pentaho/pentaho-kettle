@@ -243,37 +243,37 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			valuename    = XMLHandler.getTagValue(stepnode, "valuename"); //$NON-NLS-1$
+			valuename    = XMLHandler.getTagValue(stepnode, "valuename"); 
 			
-			useDatabase  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_database")); //$NON-NLS-1$ //$NON-NLS-2$
-			String conn  = XMLHandler.getTagValue(stepnode, "connection"); //$NON-NLS-1$
+			useDatabase  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_database"));  
+			String conn  = XMLHandler.getTagValue(stepnode, "connection"); 
 			database     = DatabaseMeta.findDatabase(databases, conn);
-            schemaName   = XMLHandler.getTagValue(stepnode, "schema"); //$NON-NLS-1$
-			sequenceName = XMLHandler.getTagValue(stepnode, "seqname"); //$NON-NLS-1$
+            schemaName   = XMLHandler.getTagValue(stepnode, "schema"); 
+			sequenceName = XMLHandler.getTagValue(stepnode, "seqname"); 
 			
-			useCounter   = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_counter")); //$NON-NLS-1$ //$NON-NLS-2$
-            counterName  = XMLHandler.getTagValue(stepnode, "counter_name"); //$NON-NLS-1$
-          	startAt      = XMLHandler.getTagValue(stepnode, "start_at"); //$NON-NLS-1$
-			incrementBy  = XMLHandler.getTagValue(stepnode, "increment_by"); //$NON-NLS-1$
-			maxValue     = XMLHandler.getTagValue(stepnode, "max_value"); //$NON-NLS-1$
+			useCounter   = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_counter"));  
+            counterName  = XMLHandler.getTagValue(stepnode, "counter_name"); 
+          	startAt      = XMLHandler.getTagValue(stepnode, "start_at"); 
+			incrementBy  = XMLHandler.getTagValue(stepnode, "increment_by"); 
+			maxValue     = XMLHandler.getTagValue(stepnode, "max_value"); 
             
-// TODO		startAt      = Const.toLong(XMLHandler.getTagValue(stepnode, "start_at"), 1); //$NON-NLS-1$
-//			incrementBy  = Const.toLong(XMLHandler.getTagValue(stepnode, "increment_by"), 1); //$NON-NLS-1$
-//			maxValue     = Const.toLong(XMLHandler.getTagValue(stepnode, "max_value"), 999999999L); //$NON-NLS-1$
+// TODO		startAt      = Const.toLong(XMLHandler.getTagValue(stepnode, "start_at"), 1); 
+//			incrementBy  = Const.toLong(XMLHandler.getTagValue(stepnode, "increment_by"), 1); 
+//			maxValue     = Const.toLong(XMLHandler.getTagValue(stepnode, "max_value"), 999999999L); 
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "AddSequenceMeta.Exception.ErrorLoadingStepInfo"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "AddSequenceMeta.Exception.ErrorLoadingStepInfo"), e); 
 		}
 	}
 	
 	public void setDefault()
 	{
-		valuename    = "valuename"; //$NON-NLS-1$
+		valuename    = "valuename"; 
 		
 		useDatabase  = false;
-        schemaName   = ""; //$NON-NLS-1$
-		sequenceName = "SEQ_"; //$NON-NLS-1$
+        schemaName   = ""; 
+		sequenceName = "SEQ_"; 
 		database     = null;
 		
 		useCounter   = true;
@@ -295,17 +295,17 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 	{
         StringBuffer retval = new StringBuffer(300);
 		
-		retval.append("      ").append(XMLHandler.addTagValue("valuename", valuename)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      ").append(XMLHandler.addTagValue("use_database", useDatabase)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      ").append(XMLHandler.addTagValue("connection", database==null?"":database.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        retval.append("      ").append(XMLHandler.addTagValue("schema", schemaName)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      ").append(XMLHandler.addTagValue("seqname", sequenceName)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("valuename", valuename));  
+		retval.append("      ").append(XMLHandler.addTagValue("use_database", useDatabase));  
+		retval.append("      ").append(XMLHandler.addTagValue("connection", database==null?"":database.getName()));   //$NON-NLS-3$
+        retval.append("      ").append(XMLHandler.addTagValue("schema", schemaName));  
+		retval.append("      ").append(XMLHandler.addTagValue("seqname", sequenceName));  
 
-		retval.append("      ").append(XMLHandler.addTagValue("use_counter", useCounter)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("      ").append(XMLHandler.addTagValue("counter_name", counterName)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      ").append(XMLHandler.addTagValue("start_at", startAt)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      ").append(XMLHandler.addTagValue("increment_by", incrementBy)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      ").append(XMLHandler.addTagValue("max_value", maxValue)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("use_counter", useCounter));  
+        retval.append("      ").append(XMLHandler.addTagValue("counter_name", counterName));  
+		retval.append("      ").append(XMLHandler.addTagValue("start_at", startAt));  
+		retval.append("      ").append(XMLHandler.addTagValue("increment_by", incrementBy));  
+		retval.append("      ").append(XMLHandler.addTagValue("max_value", maxValue));  
 		
 		return retval.toString();
 	}
@@ -314,44 +314,44 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			valuename          =   rep.getStepAttributeString (id_step, "valuename"); //$NON-NLS-1$
+			valuename          =   rep.getStepAttributeString (id_step, "valuename"); 
 	
-			useDatabase        =   rep.getStepAttributeBoolean(id_step, "use_database");  //$NON-NLS-1$
+			useDatabase        =   rep.getStepAttributeBoolean(id_step, "use_database");  
 			
 			database = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);
 			
-            schemaName         =   rep.getStepAttributeString (id_step, "schema"); //$NON-NLS-1$
-			sequenceName       =   rep.getStepAttributeString (id_step, "seqname"); //$NON-NLS-1$
+            schemaName         =   rep.getStepAttributeString (id_step, "schema"); 
+			sequenceName       =   rep.getStepAttributeString (id_step, "seqname"); 
 	
-			useCounter      =      rep.getStepAttributeBoolean(id_step, "use_counter");  //$NON-NLS-1$
-            counterName     =      rep.getStepAttributeString (id_step, "counter_name");  //$NON-NLS-1$
+			useCounter      =      rep.getStepAttributeBoolean(id_step, "use_counter");  
+            counterName     =      rep.getStepAttributeString (id_step, "counter_name");  
             
-			startAt         =      rep.getStepAttributeString(id_step, "start_at");  //$NON-NLS-1$
-			incrementBy     =      rep.getStepAttributeString(id_step, "increment_by");  //$NON-NLS-1$
-			maxValue        =      rep.getStepAttributeString(id_step, "max_value"); //$NON-NLS-1$
+			startAt         =      rep.getStepAttributeString(id_step, "start_at");  
+			incrementBy     =      rep.getStepAttributeString(id_step, "increment_by");  
+			maxValue        =      rep.getStepAttributeString(id_step, "max_value"); 
 
 			// Fix for backwards compatibility, only to be used from previous versions (TO DO Sven Boden: remove in later versions)
 			if ( startAt == null )
 			{
-				long start = rep.getStepAttributeInteger(id_step, "start_at");  //$NON-NLS-1$
+				long start = rep.getStepAttributeInteger(id_step, "start_at");  
 				startAt = Long.toString(start);
 			}
 			
 			if ( incrementBy == null )
 			{
-				long increment = rep.getStepAttributeInteger(id_step, "increment_by");  //$NON-NLS-1$
+				long increment = rep.getStepAttributeInteger(id_step, "increment_by");  
 			    incrementBy = Long.toString(increment);      
 			}
 			
 			if ( maxValue == null )
 			{
-				long max = rep.getStepAttributeInteger(id_step, "max_value"); //$NON-NLS-1$
+				long max = rep.getStepAttributeInteger(id_step, "max_value"); 
 				maxValue = Long.toString(max);
 			}      
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "AddSequenceMeta.Exception.UnableToReadStepInfo")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "AddSequenceMeta.Exception.UnableToReadStepInfo")+id_step, e); 
 		}
 	}
 
@@ -360,27 +360,27 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			rep.saveStepAttribute(id_transformation, id_step, "valuename",       valuename); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "valuename",       valuename); 
 			
-			rep.saveStepAttribute(id_transformation, id_step, "use_database",    useDatabase); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "use_database",    useDatabase); 
 			
-			rep.saveDatabaseMetaStepAttribute(id_transformation, id_step, "id_connection", database); //$NON-NLS-1$
+			rep.saveDatabaseMetaStepAttribute(id_transformation, id_step, "id_connection", database); 
 			
-            rep.saveStepAttribute(id_transformation, id_step, "schema",          schemaName); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "seqname",         sequenceName); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "schema",          schemaName); 
+			rep.saveStepAttribute(id_transformation, id_step, "seqname",         sequenceName); 
 					
-			rep.saveStepAttribute(id_transformation, id_step, "use_counter",     useCounter); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "counter_name",    counterName); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "start_at",        startAt); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "increment_by",    incrementBy); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "max_value",       maxValue); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "use_counter",     useCounter); 
+			rep.saveStepAttribute(id_transformation, id_step, "counter_name",    counterName); 
+            rep.saveStepAttribute(id_transformation, id_step, "start_at",        startAt); 
+			rep.saveStepAttribute(id_transformation, id_step, "increment_by",    incrementBy); 
+			rep.saveStepAttribute(id_transformation, id_step, "max_value",       maxValue); 
 			
 			// Also, save the step-database relationship!
 			if (database!=null) rep.insertStepDatabase(id_transformation, id_step, database.getObjectId());
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "AddSequenceMeta.Exception.UnableToSaveStepInfo")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "AddSequenceMeta.Exception.UnableToSaveStepInfo")+id_step, e); 
 		}
 	}
 
@@ -399,16 +399,16 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 				db.connect();
 				if (db.checkSequenceExists(transMeta.environmentSubstitute(schemaName), transMeta.environmentSubstitute(sequenceName)))
 				{
-					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "AddSequenceMeta.CheckResult.SequenceExists.Title"), stepMeta); //$NON-NLS-1$
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "AddSequenceMeta.CheckResult.SequenceExists.Title"), stepMeta); 
 				}
 				else
 				{
-					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "AddSequenceMeta.CheckResult.SequenceCouldNotBeFound.Title",sequenceName), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "AddSequenceMeta.CheckResult.SequenceCouldNotBeFound.Title",sequenceName), stepMeta);  
 				}
 			}
 			catch(KettleException e)
 			{
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "AddSequenceMeta.CheckResult.UnableToConnectDB.Title")+Const.CR+e.getMessage(), stepMeta); //$NON-NLS-1$
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "AddSequenceMeta.CheckResult.UnableToConnectDB.Title")+Const.CR+e.getMessage(), stepMeta); 
 			}
 			finally
 			{
@@ -419,12 +419,12 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 		
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "AddSequenceMeta.CheckResult.StepIsReceving.Title"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "AddSequenceMeta.CheckResult.StepIsReceving.Title"), stepMeta); 
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "AddSequenceMeta.CheckResult.NoInputReceived.Title"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "AddSequenceMeta.CheckResult.NoInputReceived.Title"), stepMeta); 
 			remarks.add(cr);
 		}
 	}
@@ -455,7 +455,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 				}
 				catch(KettleException e)
 				{
-					retval.setError(BaseMessages.getString(PKG, "AddSequenceMeta.ErrorMessage.UnableToConnectDB")+Const.CR+e.getMessage()); //$NON-NLS-1$
+					retval.setError(BaseMessages.getString(PKG, "AddSequenceMeta.ErrorMessage.UnableToConnectDB")+Const.CR+e.getMessage()); 
 				}
 				finally
 				{
@@ -464,7 +464,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 			}
 			else
 			{
-				retval.setError(BaseMessages.getString(PKG, "AddSequenceMeta.ErrorMessage.NoConnectionDefined")); //$NON-NLS-1$
+				retval.setError(BaseMessages.getString(PKG, "AddSequenceMeta.ErrorMessage.NoConnectionDefined")); 
 			}
 		}
 

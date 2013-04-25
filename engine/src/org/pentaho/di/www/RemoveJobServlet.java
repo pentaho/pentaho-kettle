@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
@@ -99,7 +99,7 @@ public class RemoveJobServlet extends BaseHttpServlet implements CartePluginInte
     
     if (job != null) {
       
-      CentralLogStore.discardLines(job.getLogChannelId(), true);
+      KettleLogStore.discardLines(job.getLogChannelId(), true);
       getJobMap().removeJob(entry);
       
       if (useXML) {

@@ -227,7 +227,7 @@ public class BlockUntilStepsFinishMeta extends BaseStepMeta implements StepMetaI
 		
 		if (prev==null || prev.size()==0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "BlockUntilStepsFinishMeta.CheckResult.NotReceivingFields"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "BlockUntilStepsFinishMeta.CheckResult.NotReceivingFields"), stepMeta); 
 		}
 		else
 		{
@@ -241,9 +241,9 @@ public class BlockUntilStepsFinishMeta extends BaseStepMeta implements StepMetaI
 		
 		// See if we have input streams leading to this step!
 		if (input.length>0)
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "BlockUntilStepsFinishMeta.CheckResult.StepRecevingData2"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "BlockUntilStepsFinishMeta.CheckResult.StepRecevingData2"), stepMeta); 
 		else
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "BlockUntilStepsFinishMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "BlockUntilStepsFinishMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepMeta); 
 		remarks.add(cr);
 		
 	}

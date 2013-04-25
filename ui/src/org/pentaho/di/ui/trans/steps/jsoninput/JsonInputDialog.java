@@ -1164,7 +1164,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
              }
              if(value!=null) wFieldValue.setText(value);
 		 }catch(KettleException ke){
-				new ErrorDialog(shell, BaseMessages.getString(PKG, "JsonInputDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "JsonInputDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "JsonInputDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "JsonInputDialog.FailedToGetFields.DialogMessage"), ke);  
 			}
 	 }
 	 

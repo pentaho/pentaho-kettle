@@ -395,11 +395,11 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 		
 		if (tableViewFields.table.getItemCount() > 0) {
 			// Ask what we should do with the existing data in the step.
-			MessageDialog md = new MessageDialog(tableViewFields.getShell(), BaseMessages.getString(PKGStepInterface, "BaseStepDialog.GetFieldsChoice.Title"),//"Warning!"  //$NON-NLS-1$
-					null, BaseMessages.getString(PKGStepInterface, "BaseStepDialog.GetFieldsChoice.Message", "" + tableViewFields.table.getItemCount(), "" + mappings.size()), //$NON-NLS-1$  //$NON-NLS-2$  //$NON-NLS-3$
-					MessageDialog.WARNING, new String[] { BaseMessages.getString(PKGStepInterface, "BaseStepDialog.AddNew"), //$NON-NLS-1$
-				BaseMessages.getString(PKGStepInterface, "BaseStepDialog.ClearAndAdd"), //$NON-NLS-1$  //$NON-NLS-2$
-				BaseMessages.getString(PKGStepInterface, "BaseStepDialog.Cancel"), }, 0); //$NON-NLS-1$
+			MessageDialog md = new MessageDialog(tableViewFields.getShell(), BaseMessages.getString(PKGStepInterface, "BaseStepDialog.GetFieldsChoice.Title"),//"Warning!"  
+					null, BaseMessages.getString(PKGStepInterface, "BaseStepDialog.GetFieldsChoice.Message", "" + tableViewFields.table.getItemCount(), "" + mappings.size()),     //$NON-NLS-3$
+					MessageDialog.WARNING, new String[] { BaseMessages.getString(PKGStepInterface, "BaseStepDialog.AddNew"), 
+				BaseMessages.getString(PKGStepInterface, "BaseStepDialog.ClearAndAdd"),   
+				BaseMessages.getString(PKGStepInterface, "BaseStepDialog.Cancel"), }, 0); 
 			MessageDialog.setDefaultImage(GUIResource.getInstance().getImageSpoon());
 			int idx = md.open();
 			choice = idx & 0xFF;

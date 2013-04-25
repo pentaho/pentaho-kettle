@@ -214,7 +214,7 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		 catch (Exception e)
 	     {
-	        throw new KettleException(BaseMessages.getString(PKG, "CloneRowMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
+	        throw new KettleException(BaseMessages.getString(PKG, "CloneRowMeta.Exception.UnexpectedErrorReadingStepInfo"), e); 
 	     }
 	}
 	
@@ -235,7 +235,7 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch (Exception e)
         {
-            throw new KettleException(BaseMessages.getString(PKG, "CloneRowMeta.Exception.UnexpectedErrorSavingStepInfo"), e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "CloneRowMeta.Exception.UnexpectedErrorSavingStepInfo"), e); 
         }
 	}
 	
@@ -272,12 +272,12 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface
 		
 		if (Const.isEmpty(nrclones))
         {
-            error_message = BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.NrClonesdMissing"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.NrClonesdMissing"); 
             cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
         }
         else
         {
-            error_message = BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.NrClonesOK"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.NrClonesOK"); 
             cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, error_message, stepMeta);
         }
 		remarks.add(cr);
@@ -286,12 +286,12 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			if (Const.isEmpty(cloneflagfield))
 	        {
-	            error_message = BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneFlagFieldMissing"); //$NON-NLS-1$
+	            error_message = BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneFlagFieldMissing"); 
 	            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 	        }
 	        else
 	        {
-	            error_message = BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneFlagFieldOk"); //$NON-NLS-1$
+	            error_message = BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneFlagFieldOk"); 
 	            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, error_message, stepMeta);
 	        }
 			remarks.add(cr);
@@ -300,12 +300,12 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			if (Const.isEmpty(clonenumfield))
 	        {
-	            error_message = BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneNumFieldMissing"); //$NON-NLS-1$
+	            error_message = BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneNumFieldMissing"); 
 	            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 	        }
 	        else
 	        {
-	            error_message = BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneNumFieldOk"); //$NON-NLS-1$
+	            error_message = BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneNumFieldOk"); 
 	            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, error_message, stepMeta);
 	        }
 			remarks.add(cr);
@@ -314,12 +314,12 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			if (Const.isEmpty(nrclonefield))
 	        {
-	            error_message = BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.NrCloneFieldMissing"); //$NON-NLS-1$
+	            error_message = BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.NrCloneFieldMissing"); 
 	            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
 	        }
 	        else
 	        {
-	            error_message = BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.NrCloneFieldOk"); //$NON-NLS-1$
+	            error_message = BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.NrCloneFieldOk"); 
 	            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
 	        }
 			remarks.add(cr);
@@ -327,22 +327,22 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface
 	
 		if (prev==null || prev.size()==0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.NotReceivingFields"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.NotReceivingFields"), stepMeta); 
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.StepRecevingData",prev.size()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.StepRecevingData",prev.size()+""), stepMeta);  
 		}
 		remarks.add(cr);
 		
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.StepRecevingData2"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.StepRecevingData2"), stepMeta); 
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepMeta); 
 		}
 		remarks.add(cr);
 	}

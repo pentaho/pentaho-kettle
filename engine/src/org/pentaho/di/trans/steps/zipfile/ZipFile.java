@@ -107,14 +107,14 @@ public class ZipFile extends BaseStep implements StepInterface
 				data.indexOfSourceFilename =getInputRowMeta().indexOfValue(meta.getDynamicSourceFileNameField());
 				if (data.indexOfSourceFilename<0) {
 					// The field is unreachable !
-					throw new KettleException(BaseMessages.getString(PKG, "ZipFile.Exception.CouldnotFindField",meta.getDynamicSourceFileNameField())); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleException(BaseMessages.getString(PKG, "ZipFile.Exception.CouldnotFindField",meta.getDynamicSourceFileNameField()));  
 				}
 			}
 
 			data.indexOfZipFilename =getInputRowMeta().indexOfValue(meta.getDynamicTargetFileNameField());
 			if (data.indexOfZipFilename<0) {
 				// The field is unreachable !
-				throw new KettleException(BaseMessages.getString(PKG, "ZipFile.Exception.CouldnotFindField",meta.getDynamicTargetFileNameField())); //$NON-NLS-1$ //$NON-NLS-2$
+				throw new KettleException(BaseMessages.getString(PKG, "ZipFile.Exception.CouldnotFindField",meta.getDynamicTargetFileNameField()));  
 			}
 			
 
@@ -124,7 +124,7 @@ public class ZipFile extends BaseStep implements StepInterface
 					data.indexOfBaseFolder =getInputRowMeta().indexOfValue(meta.getBaseFolderField());
 					if (data.indexOfBaseFolder<0) {
 						// The field is unreachable !
-						throw new KettleException(BaseMessages.getString(PKG, "ZipFile.Exception.CouldnotFindField",meta.getBaseFolderField())); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new KettleException(BaseMessages.getString(PKG, "ZipFile.Exception.CouldnotFindField",meta.getBaseFolderField()));  
 					}
 				}
 			}
@@ -137,7 +137,7 @@ public class ZipFile extends BaseStep implements StepInterface
 				data.indexOfMoveToFolder=getInputRowMeta().indexOfValue(meta.getMoveToFolderField());
 				if (data.indexOfMoveToFolder<0) {
 					// The field is unreachable !
-					throw new KettleException(BaseMessages.getString(PKG, "ZipFile.Exception.CouldnotFindField",meta.getMoveToFolderField())); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleException(BaseMessages.getString(PKG, "ZipFile.Exception.CouldnotFindField",meta.getMoveToFolderField()));  
 				}
 			}
 			
@@ -225,14 +225,14 @@ public class ZipFile extends BaseStep implements StepInterface
             putRow(data.outputRowMeta, r);  // copy row to output rowset(s);
                 
             if (checkFeedback(getLinesRead()))  {
-            	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "ZipFile.LineNumber",""+getLinesRead())); //$NON-NLS-1$
+            	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "ZipFile.LineNumber",""+getLinesRead())); 
             }
         }  catch(Exception e) {
         	if (getStepMeta().isDoingErrorHandling()) {
                   sendToErrorRow = true;
                   errorMessage = e.toString();
         	} else {
-	            logError(BaseMessages.getString(PKG, "ZipFile.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
+	            logError(BaseMessages.getString(PKG, "ZipFile.ErrorInStepRunning")+e.getMessage()); 
 	            setErrors(1);
 	            stopAll();
 	            setOutputDone();  // signal end to receiver(s)

@@ -136,7 +136,7 @@ public class FileLockedMeta extends BaseStepMeta implements StepMetaInterface
 
     public void setDefault()
     {
-        resultfieldname = "result"; //$NON-NLS-1$
+        resultfieldname = "result"; 
         addresultfilenames=false;
     }
 	public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
@@ -154,8 +154,8 @@ public class FileLockedMeta extends BaseStepMeta implements StepMetaInterface
     {
         StringBuffer retval = new StringBuffer();
 
-        retval.append("    " + XMLHandler.addTagValue("filenamefield", filenamefield)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("    " + XMLHandler.addTagValue("resultfieldname", resultfieldname)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    " + XMLHandler.addTagValue("filenamefield", filenamefield));  
+        retval.append("    " + XMLHandler.addTagValue("resultfieldname", resultfieldname));  
         retval.append("    ").append(XMLHandler.addTagValue("addresultfilenames",       addresultfilenames));
         return retval.toString();
     }
@@ -165,13 +165,13 @@ public class FileLockedMeta extends BaseStepMeta implements StepMetaInterface
 	{
 	    try
 	    {
-            filenamefield = XMLHandler.getTagValue(stepnode, "filenamefield"); //$NON-NLS-1$
+            filenamefield = XMLHandler.getTagValue(stepnode, "filenamefield"); 
             resultfieldname = XMLHandler.getTagValue(stepnode, "resultfieldname");
             addresultfilenames  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "addresultfilenames"));   
         }
         catch (Exception e)
         {
-            throw new KettleXMLException(BaseMessages.getString(PKG, "FileLockedMeta.Exception.UnableToReadStepInfo"), e); //$NON-NLS-1$
+            throw new KettleXMLException(BaseMessages.getString(PKG, "FileLockedMeta.Exception.UnableToReadStepInfo"), e); 
         }
     }
 
@@ -180,13 +180,13 @@ public class FileLockedMeta extends BaseStepMeta implements StepMetaInterface
 	{
         try
         {
-            filenamefield = rep.getStepAttributeString(id_step, "filenamefield"); //$NON-NLS-1$
-            resultfieldname = rep.getStepAttributeString(id_step, "resultfieldname"); //$NON-NLS-1$
+            filenamefield = rep.getStepAttributeString(id_step, "filenamefield"); 
+            resultfieldname = rep.getStepAttributeString(id_step, "resultfieldname"); 
             addresultfilenames  = rep.getStepAttributeBoolean(id_step, "addresultfilenames");   
         }
         catch (Exception e)
         {
-            throw new KettleException(BaseMessages.getString(PKG, "FileLockedMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "FileLockedMeta.Exception.UnexpectedErrorReadingStepInfo"), e); 
         }
     }
 
@@ -194,55 +194,55 @@ public class FileLockedMeta extends BaseStepMeta implements StepMetaInterface
     {
         try
         {
-            rep.saveStepAttribute(id_transformation, id_step, "filenamefield", filenamefield); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "resultfieldname", resultfieldname); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "filenamefield", filenamefield); 
+            rep.saveStepAttribute(id_transformation, id_step, "resultfieldname", resultfieldname); 
 			rep.saveStepAttribute(id_transformation, id_step, "addresultfilenames",          addresultfilenames);
         }
         catch (Exception e)
         {
-            throw new KettleException(BaseMessages.getString(PKG, "FileLockedMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "FileLockedMeta.Exception.UnableToSaveStepInfo") + id_step, e); 
         }
     }
     
 	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
         CheckResult cr;
-        String error_message = ""; //$NON-NLS-1$
+        String error_message = ""; 
 
       
         if (Const.isEmpty(resultfieldname))
         {
-            error_message = BaseMessages.getString(PKG, "FileLockedMeta.CheckResult.ResultFieldMissing"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "FileLockedMeta.CheckResult.ResultFieldMissing"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
             remarks.add(cr);
         }
         else
         {
-            error_message = BaseMessages.getString(PKG, "FileLockedMeta.CheckResult.ResultFieldOK"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "FileLockedMeta.CheckResult.ResultFieldOK"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
             remarks.add(cr);
         }
         if (Const.isEmpty(filenamefield))
         {
-            error_message = BaseMessages.getString(PKG, "FileLockedMeta.CheckResult.FileFieldMissing"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "FileLockedMeta.CheckResult.FileFieldMissing"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
             remarks.add(cr);
         }
         else
         {
-            error_message = BaseMessages.getString(PKG, "FileLockedMeta.CheckResult.FileFieldOK"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "FileLockedMeta.CheckResult.FileFieldOK"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
             remarks.add(cr);
         }
         // See if we have input streams leading to this step!
         if (input.length > 0)
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FileLockedMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FileLockedMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); 
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "FileLockedMeta.CheckResult.NoInpuReceived"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "FileLockedMeta.CheckResult.NoInpuReceived"), stepMeta); 
             remarks.add(cr);
         }
 

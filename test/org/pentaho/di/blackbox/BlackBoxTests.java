@@ -46,7 +46,7 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogLevel;
@@ -75,10 +75,10 @@ public class BlackBoxTests {
       Locale.setDefault(Locale.US);
         
         // set the locale to English so that log file comparisons work
-        GlobalMessages.setLocale(EnvUtil.createLocale("en-US")); //$NON-NLS-1$
+        GlobalMessages.setLocale(EnvUtil.createLocale("en-US")); 
         
         // Keep all log rows for at least 60 minutes as per BaseCluster.java
-        CentralLogStore.init(0, 60);
+        KettleLogStore.init(0, 60);
     }   
 
     @Parameters
@@ -232,7 +232,7 @@ public class BlackBoxTests {
         // We didn't get a result, so the only expected file should be a ".fail.txt" file
         //
         if( !result.getResult() ) {
-            String logStr = CentralLogStore.getAppender().getBuffer(result.getLogChannelId(), true).toString();
+            String logStr = KettleLogStore.getAppender().getBuffer(result.getLogChannelId(), true).toString();
             
             if (expectedFiles.size()==0) {
                 // We haven't got a ".fail.txt" file, so this is a real failure

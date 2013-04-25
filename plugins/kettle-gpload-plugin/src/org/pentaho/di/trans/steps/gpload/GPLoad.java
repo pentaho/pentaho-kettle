@@ -91,7 +91,7 @@ public class GPLoad extends BaseStep implements StepInterface
     
     StreamLogger(InputStream is, String type) {
       this.input = is;
-      this.type = type + ">"; //$NON-NLS-1$
+      this.type = type + ">"; 
     }
 
     public void run() {
@@ -543,9 +543,9 @@ public class GPLoad extends BaseStep implements StepInterface
             {
                 // any error???
             	gpLoadExitVal = gploadProcess.waitFor();
-				logBasic(BaseMessages.getString(PKG, "GPLoad.Log.ExitValuePsqlPath", "" + gpLoadExitVal)); //$NON-NLS-1$
+				logBasic(BaseMessages.getString(PKG, "GPLoad.Log.ExitValuePsqlPath", "" + gpLoadExitVal)); 
                 if (gpLoadExitVal != -0) {
-                	throw new KettleException(BaseMessages.getString(PKG, "GPLoad.Log.ExitValuePsqlPath", "" + gpLoadExitVal)); //$NON-NLS-1$)
+                	throw new KettleException(BaseMessages.getString(PKG, "GPLoad.Log.ExitValuePsqlPath", "" + gpLoadExitVal));
                 }
             }
         }
@@ -640,7 +640,7 @@ public class GPLoad extends BaseStep implements StepInterface
 		}
 		catch(KettleException e)
 		{
-			logError(BaseMessages.getString(PKG, "GPLoad.Log.ErrorInStep")+e.getMessage()); //$NON-NLS-1$
+			logError(BaseMessages.getString(PKG, "GPLoad.Log.ErrorInStep")+e.getMessage()); 
 			setErrors(1);
 			stopAll();
 			setOutputDone();  // signal end to receiver(s)

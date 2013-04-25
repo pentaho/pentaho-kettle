@@ -1173,7 +1173,7 @@ public class LDIFInputDialog extends BaseStepDialog implements
 					gotPreviousField=true;
 					if(value!=null) wFilenameField.setText(value);
 			 }catch(KettleException ke){
-					new ErrorDialog(shell, BaseMessages.getString(PKG, "LDIFInputDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "LDIFInputDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+					new ErrorDialog(shell, BaseMessages.getString(PKG, "LDIFInputDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "LDIFInputDialog.FailedToGetFields.DialogMessage"), ke);  
 				}
 		 }
 	 }

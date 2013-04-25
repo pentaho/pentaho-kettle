@@ -71,17 +71,17 @@ public class XulDatabaseDialog {
   
   private LogChannelInterface log;
   
-  private static final String EVENT_ID = "dataHandler"; //$NON-NLS-1$
+  private static final String EVENT_ID = "dataHandler"; 
   
-  private static final String MESSAGES = "org.pentaho.di.ui.core.database.dialog.messages.messages"; //$NON-NLS-1$
+  private static final String MESSAGES = "org.pentaho.di.ui.core.database.dialog.messages.messages"; 
   
-  private static final String DIALOG_FRAGMENT_FILE = "/feature_override.xul"; //$NON-NLS-1$
+  private static final String DIALOG_FRAGMENT_FILE = "/feature_override.xul"; 
   
-  private static final String FRAGMENT_ID = "test-button-box"; //$NON-NLS-1$
+  private static final String FRAGMENT_ID = "test-button-box"; 
   
-  private static final String EXTENDED_WIDGET_CLASSNAME = "org.pentaho.di.ui.core.database.dialog.tags.ExtTextbox"; //$NON-NLS-1$
+  private static final String EXTENDED_WIDGET_CLASSNAME = "org.pentaho.di.ui.core.database.dialog.tags.ExtTextbox"; 
   
-  private static final String EXTENDED_WIDGET_ID = "VARIABLETEXTBOX"; //$NON-NLS-1$
+  private static final String EXTENDED_WIDGET_ID = "VARIABLETEXTBOX"; 
   
   private DatabaseConnectionDialog databaseDialogInstance;
   
@@ -126,8 +126,8 @@ public class XulDatabaseDialog {
       }
       
     } catch (Exception e) {
-      new ErrorDialog(parentShell, BaseMessages.getString(PKG, "XulDatabaseDialog.Error.Title"), //$NON-NLS-1$ 
-    		 BaseMessages.getString(PKG, "XulDatabaseDialog.Error.Dialog"), e); //$NON-NLS-1$
+      new ErrorDialog(parentShell, BaseMessages.getString(PKG, "XulDatabaseDialog.Error.Title"),  
+    		 BaseMessages.getString(PKG, "XulDatabaseDialog.Error.Dialog"), e); 
       return null;
     }
     return databaseName;
@@ -151,8 +151,8 @@ public class XulDatabaseDialog {
       dataHandler.getControls();
 
     } catch (XulException e) {
-      new ErrorDialog(parentShell, BaseMessages.getString(PKG, "XulDatabaseDialog.Error.Title"), //$NON-NLS-1$ 
-         BaseMessages.getString(PKG, "XulDatabaseDialog.Error.HandleXul"), e); //$NON-NLS-1$
+      new ErrorDialog(parentShell, BaseMessages.getString(PKG, "XulDatabaseDialog.Error.Title"),  
+         BaseMessages.getString(PKG, "XulDatabaseDialog.Error.HandleXul"), e); 
       return;
     }
 
@@ -172,10 +172,10 @@ public class XulDatabaseDialog {
           res = GlobalMessages.getBundle(failOverLocale, MESSAGES);
         }catch(MissingResourceException e2){
           res = null;
-          log.logError(BaseMessages.getString(PKG, "XulDatabaseDialog.Error.ResourcesNotFound.Title"),  //$NON-NLS-1$
-              BaseMessages.getString(PKG, "XulDatabaseDialog.Error.ResourcesNotFound",   //$NON-NLS-1$
-                  primaryLocale == null ? "" : primaryLocale.toString(),  //$NON-NLS-1$
-                  failOverLocale == null ? "" : failOverLocale.toString()),   //$NON-NLS-1$
+          log.logError(BaseMessages.getString(PKG, "XulDatabaseDialog.Error.ResourcesNotFound.Title"),  
+              BaseMessages.getString(PKG, "XulDatabaseDialog.Error.ResourcesNotFound",   
+                  primaryLocale == null ? "" : primaryLocale.toString(),  
+                  failOverLocale == null ? "" : failOverLocale.toString()),   
               e2);
         }
       }
@@ -195,8 +195,8 @@ public class XulDatabaseDialog {
       parentElement.replaceChild(boxElement, newBox);
 
     } catch (Exception e) {
-      new ErrorDialog(parentShell, BaseMessages.getString(PKG, "XulDatabaseDialog.Error.Title"), //$NON-NLS-1$ 
-          BaseMessages.getString(PKG, "XulDatabaseDialog.Error.HandleXul"), e); //$NON-NLS-1$
+      new ErrorDialog(parentShell, BaseMessages.getString(PKG, "XulDatabaseDialog.Error.Title"),  
+          BaseMessages.getString(PKG, "XulDatabaseDialog.Error.HandleXul"), e); 
       return;
     }
 
@@ -213,8 +213,8 @@ public class XulDatabaseDialog {
       });
    
     } catch (Exception e) {
-      new ErrorDialog(parentShell, BaseMessages.getString(PKG, "XulDatabaseDialog.Error.Title"), //$NON-NLS-1$ 
-         BaseMessages.getString(PKG, "XulDatabaseDialog.Error.Dialog"), e); //$NON-NLS-1$
+      new ErrorDialog(parentShell, BaseMessages.getString(PKG, "XulDatabaseDialog.Error.Title"),  
+         BaseMessages.getString(PKG, "XulDatabaseDialog.Error.Dialog"), e); 
       return;
     }
   }

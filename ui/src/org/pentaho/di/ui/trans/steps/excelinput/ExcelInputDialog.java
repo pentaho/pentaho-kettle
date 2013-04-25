@@ -525,7 +525,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         // Accepting filenames group
         // 
         gAccepting = new Group(wFileComp, SWT.SHADOW_ETCHED_IN);
-        gAccepting.setText(BaseMessages.getString(PKG, "ExcelInputDialog.AcceptingGroup.Label")); //$NON-NLS-1$;
+        gAccepting.setText(BaseMessages.getString(PKG, "ExcelInputDialog.AcceptingGroup.Label")); ;
         FormLayout acceptingLayout = new FormLayout();
         acceptingLayout.marginWidth  = 3;
         acceptingLayout.marginHeight = 3;
@@ -1262,8 +1262,8 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
     wAccFilenames.setSelection(meta.isAcceptingFilenames());
 
-    if (meta.getAcceptingField() != null && !meta.getAcceptingField().equals(""))wAccField.select(wAccField.indexOf(meta.getAcceptingField())); //$NON-NLS-1$
-    if (meta.getAcceptingStepName() != null && !meta.getAcceptingStepName().equals(""))wAccStep.select(wAccStep.indexOf(meta.getAcceptingStepName())); //$NON-NLS-1$
+    if (meta.getAcceptingField() != null && !meta.getAcceptingField().equals(""))wAccField.select(wAccField.indexOf(meta.getAcceptingField())); 
+    if (meta.getAcceptingStepName() != null && !meta.getAcceptingStepName().equals(""))wAccStep.select(wAccStep.indexOf(meta.getAcceptingStepName())); 
 
     wHeader.setSelection(meta.startsWithHeader());
     wNoempty.setSelection(meta.ignoreEmptyRows());

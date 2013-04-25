@@ -32,6 +32,6 @@ public class ManageUserUISupport extends AbstractRepositoryExplorerUISupport{
     SecurityController securityController = new SecurityController();
     controllerNames.add(securityController.getName());
     handlers.add(securityController);
-    overlays.add(new RepositoryExplorerDefaultXulOverlay("org/pentaho/di/ui/repository/repositoryexplorer/xul/security-enabled-layout-overlay.xul", RepositoryExplorer.class)); //$NON-NLS-1$
+    overlays.add(new RepositoryExplorerDefaultXulOverlay("org/pentaho/di/ui/repository/repositoryexplorer/xul/security-enabled-layout-overlay.xul", RepositoryExplorer.class)); 
   }
 }

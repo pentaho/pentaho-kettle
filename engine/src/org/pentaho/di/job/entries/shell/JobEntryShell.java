@@ -49,7 +49,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.FileLoggingEventListener;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.util.StreamLogger;
@@ -328,7 +328,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 
       try {
         loggingEventListener = new FileLoggingEventListener(getLogChannelId(), realLogFilename, setAppendLogfile);
-        CentralLogStore.getAppender().addLoggingEventListener(loggingEventListener);
+        KettleLogStore.getAppender().addLoggingEventListener(loggingEventListener);
       } catch (KettleException e) {
         logError(BaseMessages.getString(PKG, "JobEntryShell.Error.UnableopenAppenderFile", getLogFilename(),
             e.toString()));
@@ -417,7 +417,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 
     if (setLogfile) {
       if (loggingEventListener != null) {
-        CentralLogStore.getAppender().removeLoggingEventListener(loggingEventListener);
+        KettleLogStore.getAppender().removeLoggingEventListener(loggingEventListener);
         loggingEventListener.close();
 
         ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_LOG, loggingEventListener.getFile(), parentJob.getJobname(),
@@ -696,11 +696,11 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
     putVariableSpace(ctx, getVariables());
     putValidators(ctx, notBlankValidator(), fileExistsValidator());
 
-    andValidator().validate(this, "workDirectory", remarks, ctx); //$NON-NLS-1$
-    andValidator().validate(this, "filename", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+    andValidator().validate(this, "workDirectory", remarks, ctx); 
+    andValidator().validate(this, "filename", remarks, putValidators(notBlankValidator())); 
 
     if (setLogfile) {
-      andValidator().validate(this, "logfile", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+      andValidator().validate(this, "logfile", remarks, putValidators(notBlankValidator())); 
     }
   }
 

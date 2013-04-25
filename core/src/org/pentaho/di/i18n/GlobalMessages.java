@@ -48,7 +48,7 @@ public class GlobalMessages extends AbstractMessageHandler
 
     protected static final String      SYSTEM_BUNDLE_PACKAGE = GlobalMessages.class.getPackage().getName();
 
-    protected static final String      BUNDLE_NAME           = "messages.messages";                                  //$NON-NLS-1$
+    protected static final String      BUNDLE_NAME           = "messages.messages";                                  
 
     protected static final Map<String,ResourceBundle>         locales               = Collections.synchronizedMap(new HashMap<String,ResourceBundle>());
 

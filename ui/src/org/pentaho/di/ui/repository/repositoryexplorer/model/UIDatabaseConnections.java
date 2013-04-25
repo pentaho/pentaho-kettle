@@ -39,7 +39,7 @@ public class UIDatabaseConnections extends AbstractModelList<UIDatabaseConnectio
   
   @Override
   protected void fireCollectionChanged() {
-    this.changeSupport.firePropertyChange("children", null, this.getChildren()); //$NON-NLS-1$
+    this.changeSupport.firePropertyChange("children", null, this.getChildren()); 
   }
 
 }

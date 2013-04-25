@@ -52,7 +52,7 @@ public class KettleGenericFileSystemConfigBuilder extends FileSystemConfigBuilde
     String result = null;
     
     // Frame the parameter name
-    int begin = parameter.indexOf(".", parameter.indexOf(".") + 1) + 1; // Get the index of the second "." (vfs.scheme.parameter)  //$NON-NLS-1$//$NON-NLS-2$
+    int begin = parameter.indexOf(".", parameter.indexOf(".") + 1) + 1; // Get the index of the second "." (vfs.scheme.parameter)  
     int end = -1;
     
     end = parameter.indexOf('.', begin);
@@ -80,15 +80,15 @@ public class KettleGenericFileSystemConfigBuilder extends FileSystemConfigBuilde
     String result = null;
     
     // Verify that this is a Kettle VFS configuration parameter
-    if( (fullParameterName != null) && (fullParameterName.length() > 4) && (fullParameterName.startsWith("vfs.")) ) { //$NON-NLS-1$
-      int schemeEnd = fullParameterName.indexOf(".", 4); //$NON-NLS-1$
+    if( (fullParameterName != null) && (fullParameterName.length() > 4) && (fullParameterName.startsWith("vfs.")) ) { 
+      int schemeEnd = fullParameterName.indexOf(".", 4); 
       if(schemeEnd > 4) {
         result = fullParameterName.substring(4, schemeEnd);
       } else {
-        throw new IllegalArgumentException("The configuration parameter does not match a valid scheme: " + fullParameterName); //$NON-NLS-1$
+        throw new IllegalArgumentException("The configuration parameter does not match a valid scheme: " + fullParameterName); 
       }
     } else {
-      throw new IllegalArgumentException("The configuration parameter does not match a valid scheme: " + fullParameterName); //$NON-NLS-1$
+      throw new IllegalArgumentException("The configuration parameter does not match a valid scheme: " + fullParameterName); 
     }
     
     return result;
@@ -112,12 +112,12 @@ public class KettleGenericFileSystemConfigBuilder extends FileSystemConfigBuilde
       if(scheme != null) {
         delegateFSOptionsBuilder.setConfigString(opts, scheme, name, value);
       } else {
-    	  log.logMinimal("Warning: Cannot process VFS parameters if no scheme is specified: " + vfsUrl); //$NON-NLS-1$
+    	  log.logMinimal("Warning: Cannot process VFS parameters if no scheme is specified: " + vfsUrl); 
       }
     } catch (FileSystemException e) {
-      if(e.getCode().equalsIgnoreCase("vfs.provider/config-key-invalid.error")) { //$NON-NLS-1$
+      if(e.getCode().equalsIgnoreCase("vfs.provider/config-key-invalid.error")) { 
         // This key is not supported by the default scheme config builder. This may be a custom key of another config builder
-        log.logMinimal("Warning: The configuration parameter [" + name + "] is not supported by the default configuration builder for scheme: " + scheme);  //$NON-NLS-1$//$NON-NLS-2$
+        log.logMinimal("Warning: The configuration parameter [" + name + "] is not supported by the default configuration builder for scheme: " + scheme);  
       } else {
         // An unexpected error has occurred loading in parameters
         throw new IOException(e.getLocalizedMessage());

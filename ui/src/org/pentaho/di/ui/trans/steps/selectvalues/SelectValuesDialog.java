@@ -164,14 +164,14 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "SelectValuesDialog.Shell.Label")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "SelectValuesDialog.Shell.Label")); 
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "SelectValuesDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "SelectValuesDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -197,7 +197,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		//////////////////////////
 		
 		wSelectTab=new CTabItem(wTabFolder, SWT.NONE);
-		wSelectTab.setText(BaseMessages.getString(PKG, "SelectValuesDialog.SelectTab.TabItem")); //$NON-NLS-1$
+		wSelectTab.setText(BaseMessages.getString(PKG, "SelectValuesDialog.SelectTab.TabItem")); 
 		
 		wSelectComp = new Composite(wTabFolder, SWT.NONE);
  		props.setLook(wSelectComp);
@@ -208,7 +208,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		wSelectComp.setLayout(selectLayout);
 
 		wlUnspecified=new Label(wSelectComp, SWT.RIGHT);
-		wlUnspecified.setText(BaseMessages.getString(PKG, "SelectValuesDialog.Unspecified.Label")); //$NON-NLS-1$
+		wlUnspecified.setText(BaseMessages.getString(PKG, "SelectValuesDialog.Unspecified.Label")); 
  		props.setLook(wlUnspecified);
 		fdlUnspecified=new FormData();
 		fdlUnspecified.left = new FormAttachment(0, 0);
@@ -226,7 +226,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 
 		
 		wlFields=new Label(wSelectComp, SWT.NONE);
-		wlFields.setText(BaseMessages.getString(PKG, "SelectValuesDialog.Fields.Label")); //$NON-NLS-1$
+		wlFields.setText(BaseMessages.getString(PKG, "SelectValuesDialog.Fields.Label")); 
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -237,10 +237,10 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		final int FieldsRows=input.getSelectName().length;
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Fieldname"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[]{BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Loading")},   false ); //$NON-NLS-1$
-		colinf[1]=new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.RenameTo"), ColumnInfo.COLUMN_TYPE_TEXT,   false ); //$NON-NLS-1$
-		colinf[2]=new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Length"),    ColumnInfo.COLUMN_TYPE_TEXT,   false ); //$NON-NLS-1$
-		colinf[3]=new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Precision"), ColumnInfo.COLUMN_TYPE_TEXT,   false ); //$NON-NLS-1$
+		colinf[0]=new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Fieldname"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[]{BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Loading")},   false ); 
+		colinf[1]=new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.RenameTo"), ColumnInfo.COLUMN_TYPE_TEXT,   false ); 
+		colinf[2]=new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Length"),    ColumnInfo.COLUMN_TYPE_TEXT,   false ); 
+		colinf[3]=new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Precision"), ColumnInfo.COLUMN_TYPE_TEXT,   false ); 
 
 		fieldColumns.add(colinf[0]);
 		wFields=new TableView(transMeta, wSelectComp, 
@@ -252,7 +252,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 						      );
 
 		wGetSelect = new Button(wSelectComp, SWT.PUSH);
-		wGetSelect.setText(BaseMessages.getString(PKG, "SelectValuesDialog.GetSelect.Button")); //$NON-NLS-1$
+		wGetSelect.setText(BaseMessages.getString(PKG, "SelectValuesDialog.GetSelect.Button")); 
 		wGetSelect.addListener(SWT.Selection, lsGet);
 		fdGetSelect = new FormData();
 		fdGetSelect.right = new FormAttachment(100, 0);
@@ -260,7 +260,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		wGetSelect.setLayoutData(fdGetSelect);
 
 		wDoMapping = new Button(wSelectComp, SWT.PUSH);
-		wDoMapping.setText(BaseMessages.getString(PKG, "SelectValuesDialog.DoMapping.Button")); //$NON-NLS-1$
+		wDoMapping.setText(BaseMessages.getString(PKG, "SelectValuesDialog.DoMapping.Button")); 
 
 		wDoMapping.addListener(SWT.Selection, new Listener() { 	public void handleEvent(Event arg0) { generateMappings();}});
 
@@ -294,7 +294,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		// START OF REMOVE TAB 
 		/////////////////////////////////////////////////////////////
 		wRemoveTab=new CTabItem(wTabFolder, SWT.NONE);
-		wRemoveTab.setText(BaseMessages.getString(PKG, "SelectValuesDialog.RemoveTab.TabItem")); //$NON-NLS-1$
+		wRemoveTab.setText(BaseMessages.getString(PKG, "SelectValuesDialog.RemoveTab.TabItem")); 
 
 		FormLayout contentLayout = new FormLayout ();
 		contentLayout.marginWidth  = margin;
@@ -305,7 +305,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		wRemoveComp.setLayout(contentLayout);
 
 		wlRemove=new Label(wRemoveComp, SWT.NONE);
-		wlRemove.setText(BaseMessages.getString(PKG, "SelectValuesDialog.Remove.Label")); //$NON-NLS-1$
+		wlRemove.setText(BaseMessages.getString(PKG, "SelectValuesDialog.Remove.Label")); 
  		props.setLook(wlRemove);
 		fdlRemove=new FormData();
 		fdlRemove.left = new FormAttachment(0, 0);
@@ -316,7 +316,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		final int RemoveRows=input.getDeleteName().length;
 		
 		ColumnInfo[] colrem=new ColumnInfo[RemoveCols];
-		colrem[0]=new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Fieldname"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[]{BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Loading")},  false ); //$NON-NLS-1$
+		colrem[0]=new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Fieldname"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[]{BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Loading")},  false ); 
 		fieldColumns.add(colrem[0]);
 		wRemove=new TableView(transMeta, wRemoveComp, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -327,7 +327,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 						      );
 
 		wGetRemove = new Button(wRemoveComp, SWT.PUSH);
-		wGetRemove.setText(BaseMessages.getString(PKG, "SelectValuesDialog.GetRemove.Button")); //$NON-NLS-1$
+		wGetRemove.setText(BaseMessages.getString(PKG, "SelectValuesDialog.GetRemove.Button")); 
 		wGetRemove.addListener(SWT.Selection, lsGet);
 		fdGetRemove = new FormData();
 		fdGetRemove.right = new FormAttachment(100, 0);
@@ -361,7 +361,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		//////////////////////////
 		
 		wMetaTab=new CTabItem(wTabFolder, SWT.NONE);
-		wMetaTab.setText(BaseMessages.getString(PKG, "SelectValuesDialog.MetaTab.TabItem")); //$NON-NLS-1$
+		wMetaTab.setText(BaseMessages.getString(PKG, "SelectValuesDialog.MetaTab.TabItem")); 
 		
 		wMetaComp = new Composite(wTabFolder, SWT.NONE);
  		props.setLook(wMetaComp);
@@ -372,7 +372,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		wMetaComp.setLayout(metaLayout);
 		
 		wlMeta=new Label(wMetaComp, SWT.NONE);
-		wlMeta.setText(BaseMessages.getString(PKG, "SelectValuesDialog.Meta.Label")); //$NON-NLS-1$
+		wlMeta.setText(BaseMessages.getString(PKG, "SelectValuesDialog.Meta.Label")); 
  		props.setLook(wlMeta);
 		fdlMeta=new FormData();
 		fdlMeta.left = new FormAttachment(0, 0);
@@ -382,23 +382,23 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		final int MetaRows=input.getMeta().length;
 		
 		ColumnInfo[] colmeta=new ColumnInfo[] {
-			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Fieldname"),     ColumnInfo.COLUMN_TYPE_CCOMBO,   new String[]{BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Loading")}, false ), //$NON-NLS-1$ //$NON-NLS-2$
-			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Renameto"),      ColumnInfo.COLUMN_TYPE_TEXT,     false ), //$NON-NLS-1$
-			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Type"),          ColumnInfo.COLUMN_TYPE_CCOMBO,   ValueMeta.getAllTypes(), false), //$NON-NLS-1$
-			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Length"),        ColumnInfo.COLUMN_TYPE_TEXT,     false ), //$NON-NLS-1$
-			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Precision"),     ColumnInfo.COLUMN_TYPE_TEXT,     false ), //$NON-NLS-1$
-			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Storage.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO,   new String[] {BaseMessages.getString(PKG, "System.Combo.Yes"), BaseMessages.getString(PKG, "System.Combo.No"), } ), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Format"),        ColumnInfo.COLUMN_TYPE_FORMAT,   3), //$NON-NLS-1$
-			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.DateLenient"),   ColumnInfo.COLUMN_TYPE_CCOMBO,   new String[] {BaseMessages.getString(PKG, "System.Combo.Yes"), BaseMessages.getString(PKG, "System.Combo.No"), } ), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-      new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.DateFormatLocale"),  ColumnInfo.COLUMN_TYPE_CCOMBO,  EnvUtil.getLocaleList()  ), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-      new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.DateFormatTimeZone"), ColumnInfo.COLUMN_TYPE_CCOMBO,   EnvUtil.getTimeZones() ), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.LenientStringToNumber"),   ColumnInfo.COLUMN_TYPE_CCOMBO,   new String[] {BaseMessages.getString(PKG, "System.Combo.Yes"), BaseMessages.getString(PKG, "System.Combo.No"), } ), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Encoding"),      ColumnInfo.COLUMN_TYPE_CCOMBO,   getCharsets(), false), //$NON-NLS-1$
-			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Decimal"),       ColumnInfo.COLUMN_TYPE_TEXT,     false), //$NON-NLS-1$
-			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Grouping"),      ColumnInfo.COLUMN_TYPE_TEXT,     false), //$NON-NLS-1$
-			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Currency"),      ColumnInfo.COLUMN_TYPE_TEXT,     false), //$NON-NLS-1$
+			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Fieldname"),     ColumnInfo.COLUMN_TYPE_CCOMBO,   new String[]{BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Loading")}, false ),  
+			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Renameto"),      ColumnInfo.COLUMN_TYPE_TEXT,     false ), 
+			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Type"),          ColumnInfo.COLUMN_TYPE_CCOMBO,   ValueMeta.getAllTypes(), false), 
+			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Length"),        ColumnInfo.COLUMN_TYPE_TEXT,     false ), 
+			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Precision"),     ColumnInfo.COLUMN_TYPE_TEXT,     false ), 
+			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Storage.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO,   new String[] {BaseMessages.getString(PKG, "System.Combo.Yes"), BaseMessages.getString(PKG, "System.Combo.No"), } ),   //$NON-NLS-3$
+			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Format"),        ColumnInfo.COLUMN_TYPE_FORMAT,   3), 
+			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.DateLenient"),   ColumnInfo.COLUMN_TYPE_CCOMBO,   new String[] {BaseMessages.getString(PKG, "System.Combo.Yes"), BaseMessages.getString(PKG, "System.Combo.No"), } ),   //$NON-NLS-3$
+      new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.DateFormatLocale"),  ColumnInfo.COLUMN_TYPE_CCOMBO,  EnvUtil.getLocaleList()  ),   //$NON-NLS-3$
+      new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.DateFormatTimeZone"), ColumnInfo.COLUMN_TYPE_CCOMBO,   EnvUtil.getTimeZones() ),   //$NON-NLS-3$
+			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.LenientStringToNumber"),   ColumnInfo.COLUMN_TYPE_CCOMBO,   new String[] {BaseMessages.getString(PKG, "System.Combo.Yes"), BaseMessages.getString(PKG, "System.Combo.No"), } ),   //$NON-NLS-3$
+			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Encoding"),      ColumnInfo.COLUMN_TYPE_CCOMBO,   getCharsets(), false), 
+			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Decimal"),       ColumnInfo.COLUMN_TYPE_TEXT,     false), 
+			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Grouping"),      ColumnInfo.COLUMN_TYPE_TEXT,     false), 
+			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Currency"),      ColumnInfo.COLUMN_TYPE_TEXT,     false), 
 		};
-		colmeta[5].setToolTip(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Storage.Tooltip")); //$NON-NLS-1$
+		colmeta[5].setToolTip(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Storage.Tooltip")); 
 		fieldColumns.add(colmeta[0]);
 		wMeta=new TableView(transMeta, wMetaComp, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -409,7 +409,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 						      );
 
 		wGetMeta = new Button(wMetaComp, SWT.PUSH);
-		wGetMeta.setText(BaseMessages.getString(PKG, "SelectValuesDialog.GetMeta.Button")); //$NON-NLS-1$
+		wGetMeta.setText(BaseMessages.getString(PKG, "SelectValuesDialog.GetMeta.Button")); 
 		wGetMeta.addListener(SWT.Selection, lsGet);
 		fdGetMeta = new FormData();
 		fdGetMeta.right = new FormAttachment(100, 0);
@@ -452,9 +452,9 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		
 		
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wTabFolder);
 
@@ -558,8 +558,8 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
           item.setText(1, input.getSelectName()[i]);
         if (input.getSelectRename()[i] != null && !input.getSelectRename()[i].equals(input.getSelectName()[i]))
           item.setText(2, input.getSelectRename()[i]);
-        item.setText(3, input.getSelectLength()[i] < 0 ? "" : "" + input.getSelectLength()[i]); //$NON-NLS-1$ //$NON-NLS-2$
-        item.setText(4, input.getSelectPrecision()[i] < 0 ? "" : "" + input.getSelectPrecision()[i]); //$NON-NLS-1$ //$NON-NLS-2$
+        item.setText(3, input.getSelectLength()[i] < 0 ? "" : "" + input.getSelectLength()[i]);  
+        item.setText(4, input.getSelectPrecision()[i] < 0 ? "" : "" + input.getSelectPrecision()[i]);  
       }
       wFields.setRowNums();
       wFields.optWidth(true);
@@ -597,21 +597,21 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
           index++;
         }
         item.setText(index++, ValueMeta.getTypeDesc(change.getType()));
-        item.setText(index++, change.getLength() < 0 ? "" : "" + change.getLength()); //$NON-NLS-1$ //$NON-NLS-2$
-        item.setText(index++, change.getPrecision() < 0 ? "" : "" + change.getPrecision()); //$NON-NLS-1$ //$NON-NLS-2$
+        item.setText(index++, change.getLength() < 0 ? "" : "" + change.getLength());  
+        item.setText(index++, change.getPrecision() < 0 ? "" : "" + change.getPrecision());  
         item.setText(
             index++,
             change.getStorageType() == ValueMetaInterface.STORAGE_TYPE_NORMAL ? BaseMessages.getString(PKG,
-                "System.Combo.Yes") : BaseMessages.getString(PKG, "System.Combo.No")); //$NON-NLS-1$ //$NON-NLS-2$
+                "System.Combo.Yes") : BaseMessages.getString(PKG, "System.Combo.No"));  
         item.setText(index++, Const.NVL(change.getConversionMask(), ""));
         item.setText(
             index++,
-            change.isDateFormatLenient() ? BaseMessages.getString(PKG, "System.Combo.Yes") : BaseMessages.getString(PKG, "System.Combo.No")); //$NON-NLS-1$ //$NON-NLS-2$
+            change.isDateFormatLenient() ? BaseMessages.getString(PKG, "System.Combo.Yes") : BaseMessages.getString(PKG, "System.Combo.No"));  
         item.setText(index++, change.getDateFormatLocale() == null ? "" : change.getDateFormatLocale().toString());
         item.setText(index++, change.getDateFormatTimeZone() == null ? "" : change.getDateFormatTimeZone().toString());
         item.setText(
             index++,
-            change.isLenientStringToNumber() ? BaseMessages.getString(PKG, "System.Combo.Yes") : BaseMessages.getString(PKG, "System.Combo.No")); //$NON-NLS-1$ //$NON-NLS-2$
+            change.isLenientStringToNumber() ? BaseMessages.getString(PKG, "System.Combo.Yes") : BaseMessages.getString(PKG, "System.Combo.No"));  
         item.setText(index++, Const.NVL(change.getEncoding(), ""));
         item.setText(index++, Const.NVL(change.getDecimalSymbol(), ""));
         item.setText(index++, Const.NVL(change.getGroupingSymbol(), ""));
@@ -739,7 +739,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "SelectValuesDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "SelectValuesDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "SelectValuesDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "SelectValuesDialog.FailedToGetFields.DialogMessage"), ke);  
 		}
 	}
 	

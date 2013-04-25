@@ -55,7 +55,7 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.gui.JobTracker;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.ChannelLogTable;
 import org.pentaho.di.core.logging.CheckpointLogTable;
 import org.pentaho.di.core.logging.DefaultLogLevel;
@@ -758,7 +758,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
       // Also capture the logging text after the execution...
       //
-      LoggingBuffer loggingBuffer = CentralLogStore.getAppender();
+      LoggingBuffer loggingBuffer = KettleLogStore.getAppender();
       StringBuffer logTextBuffer = loggingBuffer.getBuffer(cloneJei.getLogChannel().getLogChannelId(), false);
       result.setLogText(logTextBuffer.toString()+result.getLogText());
 
@@ -1776,16 +1776,16 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, "");
       }
     } else {
-      var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, ""); //$NON-NLS-1$
-      var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, ""); //$NON-NLS-1$
+      var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, ""); 
+      var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, ""); 
     }
 
     // The name of the job
-    var.setVariable(Const.INTERNAL_VARIABLE_JOB_NAME, Const.NVL(jobMeta.getName(), "")); //$NON-NLS-1$
+    var.setVariable(Const.INTERNAL_VARIABLE_JOB_NAME, Const.NVL(jobMeta.getName(), "")); 
 
     // The name of the directory in the repository
     var.setVariable(Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY,
-        jobMeta.getRepositoryDirectory() != null ? jobMeta.getRepositoryDirectory().getPath() : ""); //$NON-NLS-1$
+        jobMeta.getRepositoryDirectory() != null ? jobMeta.getRepositoryDirectory().getPath() : ""); 
 
     // Undefine the transformation specific variables
     var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, null);
@@ -2458,8 +2458,17 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
     // Don't close any connections if the parent job is using the same transaction
     // 
-    if (parentJob != null && transactionId != null && parentJob.getTransactionId() != null
+    if (parentJob.getJobMeta().isUsingUniqueConnections() && 
+        parentJob != null && transactionId != null && parentJob.getTransactionId() != null
         && transactionId.equals(parentJob.getTransactionId())) {
+      return;
+    }
+
+    // Don't close any connections if the parent transformation is using the same transaction
+    // 
+    if (parentTrans.getTransMeta().isUsingUniqueConnections() && 
+        parentTrans != null && transactionId != null && parentTrans.getTransactionId() != null
+        && transactionId.equals(parentTrans.getTransactionId())) {
       return;
     }
 

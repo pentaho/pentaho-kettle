@@ -276,7 +276,7 @@ public class TransDialog extends Dialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "TransDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "TransDialog.Shell.Title")); 
 		
 		middle = props.getMiddlePct();
 		margin = Const.MARGIN;
@@ -304,11 +304,11 @@ public class TransDialog extends Dialog
 
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wSQL=new Button(shell, SWT.PUSH);
-		wSQL.setText(BaseMessages.getString(PKG, "System.Button.SQL")); //$NON-NLS-1$
+		wSQL.setText(BaseMessages.getString(PKG, "System.Button.SQL")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 		
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wSQL, wCancel }, Const.MARGIN, null);
 		
@@ -375,7 +375,7 @@ public class TransDialog extends Dialog
         // START OF TRANS TAB///
         ///
         wTransTab=new CTabItem(wTabFolder, SWT.NONE);
-        wTransTab.setText(BaseMessages.getString(PKG, "TransDialog.TransTab.Label")); //$NON-NLS-1$
+        wTransTab.setText(BaseMessages.getString(PKG, "TransDialog.TransTab.Label")); 
         
         Composite wTransComp = new Composite(wTabFolder, SWT.NONE);
         props.setLook(wTransComp);
@@ -388,7 +388,7 @@ public class TransDialog extends Dialog
 
         // Transformation name:
         Label wlTransname = new Label(wTransComp, SWT.RIGHT);
-        wlTransname.setText(BaseMessages.getString(PKG, "TransDialog.Transname.Label")); //$NON-NLS-1$
+        wlTransname.setText(BaseMessages.getString(PKG, "TransDialog.Transname.Label")); 
         props.setLook(wlTransname);
         FormData fdlTransname = new FormData();
         fdlTransname.left = new FormAttachment(0, 0);
@@ -406,7 +406,7 @@ public class TransDialog extends Dialog
 
         // Transformation name:
         Label wlTransFilename = new Label(wTransComp, SWT.RIGHT);
-        wlTransFilename.setText(BaseMessages.getString(PKG, "TransDialog.TransFilename.Label")); //$NON-NLS-1$
+        wlTransFilename.setText(BaseMessages.getString(PKG, "TransDialog.TransFilename.Label")); 
         props.setLook(wlTransFilename);
         FormData fdlTransFilename = new FormData();
         fdlTransFilename.left = new FormAttachment(0, 0);
@@ -426,7 +426,7 @@ public class TransDialog extends Dialog
 
 		// Transformation description:
 		Label wlTransdescription = new Label(wTransComp, SWT.RIGHT);
-		wlTransdescription.setText(BaseMessages.getString(PKG, "TransDialog.Transdescription.Label")); //$NON-NLS-1$
+		wlTransdescription.setText(BaseMessages.getString(PKG, "TransDialog.Transdescription.Label")); 
 		props.setLook(wlTransdescription);
 		FormData fdlTransdescription = new FormData();
 		fdlTransdescription.left = new FormAttachment(0, 0);
@@ -488,7 +488,7 @@ public class TransDialog extends Dialog
 
 		// Transformation Transversion:
 		Label wlTransversion = new Label(wTransComp, SWT.RIGHT);
-		wlTransversion.setText(BaseMessages.getString(PKG, "TransDialog.Transversion.Label")); //$NON-NLS-1$
+		wlTransversion.setText(BaseMessages.getString(PKG, "TransDialog.Transversion.Label")); 
 		props.setLook(wlTransversion);
 		FormData fdlTransversion = new FormData();
 		fdlTransversion.left = new FormAttachment(0, 0);
@@ -506,7 +506,7 @@ public class TransDialog extends Dialog
 
 		// Directory:
 		wlDirectory = new Label(wTransComp, SWT.RIGHT);
-		wlDirectory.setText(BaseMessages.getString(PKG, "TransDialog.Directory.Label")); //$NON-NLS-1$
+		wlDirectory.setText(BaseMessages.getString(PKG, "TransDialog.Directory.Label")); 
 		props.setLook(wlDirectory);
 		FormData fdlDirectory = new FormData();
 		fdlDirectory.left = new FormAttachment(0, 0);
@@ -515,7 +515,7 @@ public class TransDialog extends Dialog
 		wlDirectory.setLayoutData(fdlDirectory);
 
 		wbDirectory=new Button(wTransComp, SWT.PUSH);
-		wbDirectory.setToolTipText(BaseMessages.getString(PKG, "TransDialog.selectTransFolder.Tooltip")); //$NON-NLS-1$
+		wbDirectory.setToolTipText(BaseMessages.getString(PKG, "TransDialog.selectTransFolder.Tooltip")); 
 		wbDirectory.setImage(GUIResource.getInstance().getImageArrow());
 		props.setLook(wbDirectory);
 		FormData fdbDirectory = new FormData();
@@ -568,7 +568,7 @@ public class TransDialog extends Dialog
 
 		// Create User:
 		Label wlCreateUser = new Label(wTransComp, SWT.RIGHT);
-		wlCreateUser.setText(BaseMessages.getString(PKG, "TransDialog.CreateUser.Label")); //$NON-NLS-1$
+		wlCreateUser.setText(BaseMessages.getString(PKG, "TransDialog.CreateUser.Label")); 
 		props.setLook(wlCreateUser);
 		FormData fdlCreateUser = new FormData();
 		fdlCreateUser.left = new FormAttachment(0, 0);
@@ -587,7 +587,7 @@ public class TransDialog extends Dialog
 
 		// Created Date:
 		Label wlCreateDate = new Label(wTransComp, SWT.RIGHT);
-		wlCreateDate.setText(BaseMessages.getString(PKG, "TransDialog.CreateDate.Label")); //$NON-NLS-1$
+		wlCreateDate.setText(BaseMessages.getString(PKG, "TransDialog.CreateDate.Label")); 
 		props.setLook(wlCreateDate);
 		FormData fdlCreateDate = new FormData();
 		fdlCreateDate.left = new FormAttachment(0, 0);
@@ -607,7 +607,7 @@ public class TransDialog extends Dialog
 
         // Modified User:
         Label wlModUser = new Label(wTransComp, SWT.RIGHT);
-        wlModUser.setText(BaseMessages.getString(PKG, "TransDialog.LastModifiedUser.Label")); //$NON-NLS-1$
+        wlModUser.setText(BaseMessages.getString(PKG, "TransDialog.LastModifiedUser.Label")); 
         props.setLook(wlModUser);
         FormData fdlModUser = new FormData();
         fdlModUser.left = new FormAttachment(0, 0);
@@ -626,7 +626,7 @@ public class TransDialog extends Dialog
 
         // Modified Date:
         Label wlModDate = new Label(wTransComp, SWT.RIGHT);
-        wlModDate.setText(BaseMessages.getString(PKG, "TransDialog.LastModifiedDate.Label")); //$NON-NLS-1$
+        wlModDate.setText(BaseMessages.getString(PKG, "TransDialog.LastModifiedDate.Label")); 
         props.setLook(wlModDate);
         FormData fdlModDate = new FormData();
         fdlModDate.left = new FormAttachment(0, 0);
@@ -664,7 +664,7 @@ public class TransDialog extends Dialog
         // START OF PARAM TAB
         ///
         wParamTab=new CTabItem(wTabFolder, SWT.NONE);
-        wParamTab.setText(BaseMessages.getString(PKG, "TransDialog.ParamTab.Label")); //$NON-NLS-1$
+        wParamTab.setText(BaseMessages.getString(PKG, "TransDialog.ParamTab.Label")); 
 
         FormLayout paramLayout = new FormLayout ();
         paramLayout.marginWidth  = Const.MARGIN;
@@ -675,7 +675,7 @@ public class TransDialog extends Dialog
         wParamComp.setLayout(paramLayout);
 
         Label wlFields = new Label(wParamComp, SWT.RIGHT);
-        wlFields.setText(BaseMessages.getString(PKG, "TransDialog.Parameters.Label")); //$NON-NLS-1$
+        wlFields.setText(BaseMessages.getString(PKG, "TransDialog.Parameters.Label")); 
         props.setLook(wlFields);
         FormData fdlFields = new FormData();
         fdlFields.left = new FormAttachment(0, 0);
@@ -686,9 +686,9 @@ public class TransDialog extends Dialog
         final int FieldsRows=transMeta.listParameters().length;
         
         ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-        colinf[0]=new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.ColumnInfo.Parameter.Label"),   ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-        colinf[1]=new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.ColumnInfo.Default.Label"),     ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-        colinf[2]=new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.ColumnInfo.Description.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+        colinf[0]=new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.ColumnInfo.Parameter.Label"),   ColumnInfo.COLUMN_TYPE_TEXT,   false); 
+        colinf[1]=new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.ColumnInfo.Default.Label"),     ColumnInfo.COLUMN_TYPE_TEXT,   false); 
+        colinf[2]=new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.ColumnInfo.Description.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false); 
     
         
         wParamFields=new TableView(transMeta, wParamComp, 
@@ -727,7 +727,7 @@ public class TransDialog extends Dialog
         // START OF LOG TAB///
         ///
         wLogTab=new CTabItem(wTabFolder, SWT.NONE);
-        wLogTab.setText(BaseMessages.getString(PKG, "TransDialog.LogTab.Label")); //$NON-NLS-1$
+        wLogTab.setText(BaseMessages.getString(PKG, "TransDialog.LogTab.Label")); 
 
         FormLayout LogLayout = new FormLayout ();
         LogLayout.marginWidth  = Const.MARGIN;
@@ -855,7 +855,7 @@ public class TransDialog extends Dialog
 		// Log table connection...
 		//
         Label wlLogconnection = new Label(wLogOptionsComposite, SWT.RIGHT);
-        wlLogconnection.setText(BaseMessages.getString(PKG, "TransDialog.LogConnection.Label")); //$NON-NLS-1$
+        wlLogconnection.setText(BaseMessages.getString(PKG, "TransDialog.LogConnection.Label")); 
         props.setLook(wlLogconnection);
         FormData fdlLogconnection = new FormData();
         fdlLogconnection.left = new FormAttachment(0, 0);
@@ -864,7 +864,7 @@ public class TransDialog extends Dialog
         wlLogconnection.setLayoutData(fdlLogconnection);
 
         wbLogconnection=new Button(wLogOptionsComposite, SWT.PUSH);
-        wbLogconnection.setText(BaseMessages.getString(PKG, "TransDialog.LogconnectionButton.Label")); //$NON-NLS-1$
+        wbLogconnection.setText(BaseMessages.getString(PKG, "TransDialog.LogconnectionButton.Label")); 
         wbLogconnection.addSelectionListener(new SelectionAdapter() 
         {
             public void widgetSelected(SelectionEvent e) 
@@ -901,7 +901,7 @@ public class TransDialog extends Dialog
         // Log schema ...
         //
         Label wlLogSchema = new Label(wLogOptionsComposite, SWT.RIGHT);
-        wlLogSchema.setText(BaseMessages.getString(PKG, "TransDialog.LogSchema.Label")); //$NON-NLS-1$
+        wlLogSchema.setText(BaseMessages.getString(PKG, "TransDialog.LogSchema.Label")); 
         props.setLook(wlLogSchema);
         FormData fdlLogSchema = new FormData();
         fdlLogSchema.left = new FormAttachment(0, 0);
@@ -922,7 +922,7 @@ public class TransDialog extends Dialog
         // Log table...
         //
         Label wlLogtable = new Label(wLogOptionsComposite, SWT.RIGHT);
-        wlLogtable.setText(BaseMessages.getString(PKG, "TransDialog.Logtable.Label")); //$NON-NLS-1$
+        wlLogtable.setText(BaseMessages.getString(PKG, "TransDialog.Logtable.Label")); 
         props.setLook(wlLogtable);
         FormData fdlLogtable = new FormData();
         fdlLogtable.left = new FormAttachment(0, 0);
@@ -953,7 +953,7 @@ public class TransDialog extends Dialog
         // Log interval...
         //
         Label wlLogInterval = new Label(wLogOptionsComposite, SWT.RIGHT);
-        wlLogInterval.setText(BaseMessages.getString(PKG, "TransDialog.LogInterval.Label")); //$NON-NLS-1$
+        wlLogInterval.setText(BaseMessages.getString(PKG, "TransDialog.LogInterval.Label")); 
         props.setLook(wlLogInterval);
         FormData fdlLogInterval = new FormData();
         fdlLogInterval.left = new FormAttachment(0, 0);
@@ -973,8 +973,8 @@ public class TransDialog extends Dialog
         // The log timeout in days
         //
         Label wlLogTimeout = new Label(wLogOptionsComposite, SWT.RIGHT);
-        wlLogTimeout.setText(BaseMessages.getString(PKG, "TransDialog.LogTimeout.Label")); //$NON-NLS-1$
-        wlLogTimeout.setToolTipText(BaseMessages.getString(PKG, "TransDialog.LogTimeout.Tooltip")); //$NON-NLS-1$
+        wlLogTimeout.setText(BaseMessages.getString(PKG, "TransDialog.LogTimeout.Label")); 
+        wlLogTimeout.setToolTipText(BaseMessages.getString(PKG, "TransDialog.LogTimeout.Tooltip")); 
         props.setLook(wlLogTimeout);
         FormData fdlLogTimeout = new FormData();
         fdlLogTimeout.left = new FormAttachment(0, 0);
@@ -982,7 +982,7 @@ public class TransDialog extends Dialog
         fdlLogTimeout.top  = new FormAttachment(wLogInterval, margin);
         wlLogTimeout.setLayoutData(fdlLogTimeout);
         wLogTimeout=new TextVar(transMeta, wLogOptionsComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        wLogTimeout.setToolTipText(BaseMessages.getString(PKG, "TransDialog.LogTimeout.Tooltip")); //$NON-NLS-1$
+        wLogTimeout.setToolTipText(BaseMessages.getString(PKG, "TransDialog.LogTimeout.Tooltip")); 
         props.setLook(wLogTimeout);
         wLogTimeout.addModifyListener(lsMod);
         FormData fdLogTimeout = new FormData();
@@ -995,8 +995,8 @@ public class TransDialog extends Dialog
         // The log size limit
         //
         Label wlLogSizeLimit = new Label(wLogOptionsComposite, SWT.RIGHT);
-        wlLogSizeLimit.setText(BaseMessages.getString(PKG, "TransDialog.LogSizeLimit.Label")); //$NON-NLS-1$
-        wlLogSizeLimit.setToolTipText(BaseMessages.getString(PKG, "TransDialog.LogSizeLimit.Tooltip")); //$NON-NLS-1$
+        wlLogSizeLimit.setText(BaseMessages.getString(PKG, "TransDialog.LogSizeLimit.Label")); 
+        wlLogSizeLimit.setToolTipText(BaseMessages.getString(PKG, "TransDialog.LogSizeLimit.Tooltip")); 
         props.setLook(wlLogSizeLimit);
         FormData fdlLogSizeLimit = new FormData();
         fdlLogSizeLimit.left = new FormAttachment(0, 0);
@@ -1004,7 +1004,7 @@ public class TransDialog extends Dialog
         fdlLogSizeLimit.top  = new FormAttachment(wLogTimeout, margin);
         wlLogSizeLimit.setLayoutData(fdlLogSizeLimit);
         wLogSizeLimit=new TextVar(transMeta, wLogOptionsComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        wLogSizeLimit.setToolTipText(BaseMessages.getString(PKG, "TransDialog.LogSizeLimit.Tooltip")); //$NON-NLS-1$
+        wLogSizeLimit.setToolTipText(BaseMessages.getString(PKG, "TransDialog.LogSizeLimit.Tooltip")); 
         props.setLook(wLogSizeLimit);
         wLogSizeLimit.addModifyListener(lsMod);
         FormData fdLogSizeLimit = new FormData();
@@ -1017,7 +1017,7 @@ public class TransDialog extends Dialog
         // Add the fields grid...
         //
 		Label wlFields = new Label(wLogOptionsComposite, SWT.NONE);
-		wlFields.setText(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.Label")); //$NON-NLS-1$
+		wlFields.setText(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.Label")); 
  		props.setLook(wlFields);
 		FormData fdlFields = new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -1028,9 +1028,9 @@ public class TransDialog extends Dialog
 		final int nrRows=fields.size();
 		
 		ColumnInfo[] colinf=new ColumnInfo[] {
-			new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.FieldName"), ColumnInfo.COLUMN_TYPE_TEXT, false ), //$NON-NLS-1$
-			new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.StepName"), ColumnInfo.COLUMN_TYPE_CCOMBO, transMeta.getStepNames()), //$NON-NLS-1$
-			new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.Description"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+			new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.FieldName"), ColumnInfo.COLUMN_TYPE_TEXT, false ), 
+			new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.StepName"), ColumnInfo.COLUMN_TYPE_CCOMBO, transMeta.getStepNames()), 
+			new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.Description"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
 		};
 		
 		FieldDisabledListener disabledListener = new FieldDisabledListener() {
@@ -1118,7 +1118,7 @@ public class TransDialog extends Dialog
         // Log interval...
         //
         Label wlLogInterval = new Label(wLogOptionsComposite, SWT.RIGHT);
-        wlLogInterval.setText(BaseMessages.getString(PKG, "TransDialog.LogInterval.Label")); //$NON-NLS-1$
+        wlLogInterval.setText(BaseMessages.getString(PKG, "TransDialog.LogInterval.Label")); 
         props.setLook(wlLogInterval);
         FormData fdlLogInterval = new FormData();
         fdlLogInterval.left = new FormAttachment(0, 0);
@@ -1138,8 +1138,8 @@ public class TransDialog extends Dialog
         // The log timeout in days
         //
         Label wlLogTimeout = new Label(wLogOptionsComposite, SWT.RIGHT);
-        wlLogTimeout.setText(BaseMessages.getString(PKG, "TransDialog.LogTimeout.Label")); //$NON-NLS-1$
-        wlLogTimeout.setToolTipText(BaseMessages.getString(PKG, "TransDialog.LogTimeout.Tooltip")); //$NON-NLS-1$
+        wlLogTimeout.setText(BaseMessages.getString(PKG, "TransDialog.LogTimeout.Label")); 
+        wlLogTimeout.setToolTipText(BaseMessages.getString(PKG, "TransDialog.LogTimeout.Tooltip")); 
         props.setLook(wlLogTimeout);
         FormData fdlLogTimeout = new FormData();
         fdlLogTimeout.left = new FormAttachment(0, 0);
@@ -1147,7 +1147,7 @@ public class TransDialog extends Dialog
         fdlLogTimeout.top  = new FormAttachment(wLogInterval, margin);
         wlLogTimeout.setLayoutData(fdlLogTimeout);
         wLogTimeout=new TextVar(transMeta, wLogOptionsComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        wLogTimeout.setToolTipText(BaseMessages.getString(PKG, "TransDialog.LogTimeout.Tooltip")); //$NON-NLS-1$
+        wLogTimeout.setToolTipText(BaseMessages.getString(PKG, "TransDialog.LogTimeout.Tooltip")); 
         props.setLook(wLogTimeout);
         wLogTimeout.addModifyListener(lsMod);
         FormData fdLogTimeout = new FormData();
@@ -1160,7 +1160,7 @@ public class TransDialog extends Dialog
         // Add the fields grid...
         //
 		Label wlFields = new Label(wLogOptionsComposite, SWT.NONE);
-		wlFields.setText(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.Label")); //$NON-NLS-1$
+		wlFields.setText(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.Label")); 
  		props.setLook(wlFields);
 		FormData fdlFields = new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -1171,8 +1171,8 @@ public class TransDialog extends Dialog
 		final int nrRows=fields.size();
 		
 		ColumnInfo[] colinf=new ColumnInfo[] {
-			new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.FieldName"), ColumnInfo.COLUMN_TYPE_TEXT, false ), //$NON-NLS-1$
-			new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.Description"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+			new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.FieldName"), ColumnInfo.COLUMN_TYPE_TEXT, false ), 
+			new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.Description"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
 		};
 		
 		FieldDisabledListener disabledListener = new FieldDisabledListener() {
@@ -1274,8 +1274,8 @@ public class TransDialog extends Dialog
         // The log timeout in days
         //
         Label wlLogTimeout = new Label(wLogOptionsComposite, SWT.RIGHT);
-        wlLogTimeout.setText(BaseMessages.getString(PKG, "TransDialog.LogTimeout.Label")); //$NON-NLS-1$
-        wlLogTimeout.setToolTipText(BaseMessages.getString(PKG, "TransDialog.LogTimeout.Tooltip")); //$NON-NLS-1$
+        wlLogTimeout.setText(BaseMessages.getString(PKG, "TransDialog.LogTimeout.Label")); 
+        wlLogTimeout.setToolTipText(BaseMessages.getString(PKG, "TransDialog.LogTimeout.Tooltip")); 
         props.setLook(wlLogTimeout);
         FormData fdlLogTimeout = new FormData();
         fdlLogTimeout.left = new FormAttachment(0, 0);
@@ -1283,7 +1283,7 @@ public class TransDialog extends Dialog
         fdlLogTimeout.top  = new FormAttachment(wLogTable, margin);
         wlLogTimeout.setLayoutData(fdlLogTimeout);
         wLogTimeout=new TextVar(transMeta, wLogOptionsComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        wLogTimeout.setToolTipText(BaseMessages.getString(PKG, "TransDialog.LogTimeout.Tooltip")); //$NON-NLS-1$
+        wLogTimeout.setToolTipText(BaseMessages.getString(PKG, "TransDialog.LogTimeout.Tooltip")); 
         props.setLook(wLogTimeout);
         wLogTimeout.addModifyListener(lsMod);
         FormData fdLogTimeout = new FormData();
@@ -1296,7 +1296,7 @@ public class TransDialog extends Dialog
         // Add the fields grid...
         //
 		Label wlFields = new Label(wLogOptionsComposite, SWT.NONE);
-		wlFields.setText(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.Label")); //$NON-NLS-1$
+		wlFields.setText(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.Label")); 
  		props.setLook(wlFields);
 		FormData fdlFields = new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -1307,8 +1307,8 @@ public class TransDialog extends Dialog
 		final int nrRows=fields.size();
 		
 		ColumnInfo[] colinf=new ColumnInfo[] {
-			new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.FieldName"), ColumnInfo.COLUMN_TYPE_TEXT, false ), //$NON-NLS-1$
-			new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.Description"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+			new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.FieldName"), ColumnInfo.COLUMN_TYPE_TEXT, false ), 
+			new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.Description"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
 		};
 		
 		FieldDisabledListener disabledListener = new FieldDisabledListener() {
@@ -1368,8 +1368,8 @@ public class TransDialog extends Dialog
       // The log timeout in days
       //
       Label wlLogTimeout = new Label(wLogOptionsComposite, SWT.RIGHT);
-      wlLogTimeout.setText(BaseMessages.getString(PKG, "TransDialog.LogTimeout.Label")); //$NON-NLS-1$
-      wlLogTimeout.setToolTipText(BaseMessages.getString(PKG, "TransDialog.LogTimeout.Tooltip")); //$NON-NLS-1$
+      wlLogTimeout.setText(BaseMessages.getString(PKG, "TransDialog.LogTimeout.Label")); 
+      wlLogTimeout.setToolTipText(BaseMessages.getString(PKG, "TransDialog.LogTimeout.Tooltip")); 
       props.setLook(wlLogTimeout);
       FormData fdlLogTimeout = new FormData();
       fdlLogTimeout.left = new FormAttachment(0, 0);
@@ -1377,7 +1377,7 @@ public class TransDialog extends Dialog
       fdlLogTimeout.top  = new FormAttachment(wLogTable, margin);
       wlLogTimeout.setLayoutData(fdlLogTimeout);
       wLogTimeout=new TextVar(transMeta, wLogOptionsComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-      wLogTimeout.setToolTipText(BaseMessages.getString(PKG, "TransDialog.LogTimeout.Tooltip")); //$NON-NLS-1$
+      wLogTimeout.setToolTipText(BaseMessages.getString(PKG, "TransDialog.LogTimeout.Tooltip")); 
       props.setLook(wLogTimeout);
       wLogTimeout.addModifyListener(lsMod);
       FormData fdLogTimeout = new FormData();
@@ -1390,7 +1390,7 @@ public class TransDialog extends Dialog
 	        // Add the fields grid...
 	        //
 	    Label wlFields = new Label(wLogOptionsComposite, SWT.NONE);
-	    wlFields.setText(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.Label")); //$NON-NLS-1$
+	    wlFields.setText(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.Label")); 
 	    props.setLook(wlFields);
 	    FormData fdlFields = new FormData();
 	    fdlFields.left = new FormAttachment(0, 0);
@@ -1401,8 +1401,8 @@ public class TransDialog extends Dialog
 	    final int nrRows=fields.size();
 	    
 	    ColumnInfo[] colinf=new ColumnInfo[] {
-	      new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.FieldName"), ColumnInfo.COLUMN_TYPE_TEXT, false ), //$NON-NLS-1$
-	      new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.Description"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+	      new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.FieldName"), ColumnInfo.COLUMN_TYPE_TEXT, false ), 
+	      new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.Description"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
 	    };
 	    
 	    FieldDisabledListener disabledListener = new FieldDisabledListener() {
@@ -1482,8 +1482,8 @@ public class TransDialog extends Dialog
         // The log timeout in days
         //
         Label wlLogTimeout = new Label(wLogOptionsComposite, SWT.RIGHT);
-        wlLogTimeout.setText(BaseMessages.getString(PKG, "TransDialog.LogTimeout.Label")); //$NON-NLS-1$
-        wlLogTimeout.setToolTipText(BaseMessages.getString(PKG, "TransDialog.LogTimeout.Tooltip")); //$NON-NLS-1$
+        wlLogTimeout.setText(BaseMessages.getString(PKG, "TransDialog.LogTimeout.Label")); 
+        wlLogTimeout.setToolTipText(BaseMessages.getString(PKG, "TransDialog.LogTimeout.Tooltip")); 
         props.setLook(wlLogTimeout);
         FormData fdlLogTimeout = new FormData();
         fdlLogTimeout.left = new FormAttachment(0, 0);
@@ -1491,7 +1491,7 @@ public class TransDialog extends Dialog
         fdlLogTimeout.top  = new FormAttachment(wLogTable, margin);
         wlLogTimeout.setLayoutData(fdlLogTimeout);
         wLogTimeout=new TextVar(transMeta, wLogOptionsComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        wLogTimeout.setToolTipText(BaseMessages.getString(PKG, "TransDialog.LogTimeout.Tooltip")); //$NON-NLS-1$
+        wLogTimeout.setToolTipText(BaseMessages.getString(PKG, "TransDialog.LogTimeout.Tooltip")); 
         props.setLook(wLogTimeout);
         wLogTimeout.addModifyListener(lsMod);
         FormData fdLogTimeout = new FormData();
@@ -1505,7 +1505,7 @@ public class TransDialog extends Dialog
         // Add the fields grid...
         //
 		Label wlFields = new Label(wLogOptionsComposite, SWT.NONE);
-		wlFields.setText(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.Label")); //$NON-NLS-1$
+		wlFields.setText(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.Label")); 
  		props.setLook(wlFields);
 		FormData fdlFields = new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -1516,8 +1516,8 @@ public class TransDialog extends Dialog
 		final int nrRows=fields.size();
 		
 		ColumnInfo[] colinf=new ColumnInfo[] {
-			new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.FieldName"), ColumnInfo.COLUMN_TYPE_TEXT, false ), //$NON-NLS-1$
-			new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.Description"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+			new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.FieldName"), ColumnInfo.COLUMN_TYPE_TEXT, false ), 
+			new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.Description"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
 		};
 		
 		FieldDisabledListener disabledListener = new FieldDisabledListener() {
@@ -1575,7 +1575,7 @@ public class TransDialog extends Dialog
         // START OF DATE TAB///
         ///
         wDateTab=new CTabItem(wTabFolder, SWT.NONE);
-        wDateTab.setText(BaseMessages.getString(PKG, "TransDialog.DateTab.Label")); //$NON-NLS-1$
+        wDateTab.setText(BaseMessages.getString(PKG, "TransDialog.DateTab.Label")); 
 
         FormLayout DateLayout = new FormLayout ();
         DateLayout.marginWidth  = Const.MARGIN;
@@ -1587,7 +1587,7 @@ public class TransDialog extends Dialog
 
         // Max date table connection...
         Label wlMaxdateconnection = new Label(wDateComp, SWT.RIGHT);
-        wlMaxdateconnection.setText(BaseMessages.getString(PKG, "TransDialog.MaxdateConnection.Label")); //$NON-NLS-1$
+        wlMaxdateconnection.setText(BaseMessages.getString(PKG, "TransDialog.MaxdateConnection.Label")); 
         props.setLook(wlMaxdateconnection);
         FormData fdlMaxdateconnection = new FormData();
         fdlMaxdateconnection.left = new FormAttachment(0, 0);
@@ -1605,7 +1605,7 @@ public class TransDialog extends Dialog
 
         // Maxdate table...:
         Label wlMaxdatetable = new Label(wDateComp, SWT.RIGHT);
-        wlMaxdatetable.setText(BaseMessages.getString(PKG, "TransDialog.MaxdateTable.Label")); //$NON-NLS-1$
+        wlMaxdatetable.setText(BaseMessages.getString(PKG, "TransDialog.MaxdateTable.Label")); 
         props.setLook(wlMaxdatetable);
         FormData fdlMaxdatetable = new FormData();
         fdlMaxdatetable.left = new FormAttachment(0, 0);
@@ -1623,7 +1623,7 @@ public class TransDialog extends Dialog
 
         // Maxdate field...:
         Label wlMaxdatefield = new Label(wDateComp, SWT.RIGHT);
-        wlMaxdatefield.setText(BaseMessages.getString(PKG, "TransDialog.MaxdateField.Label")); //$NON-NLS-1$
+        wlMaxdatefield.setText(BaseMessages.getString(PKG, "TransDialog.MaxdateField.Label")); 
         props.setLook(wlMaxdatefield);
         FormData fdlMaxdatefield = new FormData();
         fdlMaxdatefield.left = new FormAttachment(0, 0);
@@ -1641,7 +1641,7 @@ public class TransDialog extends Dialog
 
         // Maxdate offset...:
         Label wlMaxdateoffset = new Label(wDateComp, SWT.RIGHT);
-        wlMaxdateoffset.setText(BaseMessages.getString(PKG, "TransDialog.MaxdateOffset.Label")); //$NON-NLS-1$
+        wlMaxdateoffset.setText(BaseMessages.getString(PKG, "TransDialog.MaxdateOffset.Label")); 
         props.setLook(wlMaxdateoffset);
         FormData fdlMaxdateoffset = new FormData();
         fdlMaxdateoffset.left = new FormAttachment(0, 0);
@@ -1659,7 +1659,7 @@ public class TransDialog extends Dialog
 
         // Maxdate diff...:
         Label wlMaxdatediff = new Label(wDateComp, SWT.RIGHT);
-        wlMaxdatediff.setText(BaseMessages.getString(PKG, "TransDialog.Maxdatediff.Label")); //$NON-NLS-1$
+        wlMaxdatediff.setText(BaseMessages.getString(PKG, "TransDialog.Maxdatediff.Label")); 
         props.setLook(wlMaxdatediff);
         FormData fdlMaxdatediff = new FormData();
         fdlMaxdatediff.left = new FormAttachment(0, 0);
@@ -1706,7 +1706,7 @@ public class TransDialog extends Dialog
         // START OF Dep TAB///
         ///
         wDepTab=new CTabItem(wTabFolder, SWT.NONE);
-        wDepTab.setText(BaseMessages.getString(PKG, "TransDialog.DepTab.Label")); //$NON-NLS-1$
+        wDepTab.setText(BaseMessages.getString(PKG, "TransDialog.DepTab.Label")); 
 
         FormLayout DepLayout = new FormLayout ();
         DepLayout.marginWidth  = Const.MARGIN;
@@ -1717,7 +1717,7 @@ public class TransDialog extends Dialog
         wDepComp.setLayout(DepLayout);
 
         Label wlFields = new Label(wDepComp, SWT.RIGHT);
-        wlFields.setText(BaseMessages.getString(PKG, "TransDialog.Fields.Label")); //$NON-NLS-1$
+        wlFields.setText(BaseMessages.getString(PKG, "TransDialog.Fields.Label")); 
         props.setLook(wlFields);
         FormData fdlFields = new FormData();
         fdlFields.left = new FormAttachment(0, 0);
@@ -1728,9 +1728,9 @@ public class TransDialog extends Dialog
         final int FieldsRows=transMeta.nrDependencies();
         
         ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-        colinf[0]=new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.ColumnInfo.Connection.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO, connectionNames); //$NON-NLS-1$
-        colinf[1]=new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.ColumnInfo.Table.Label"),      ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-        colinf[2]=new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.ColumnInfo.Field.Label"),      ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+        colinf[0]=new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.ColumnInfo.Connection.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO, connectionNames); 
+        colinf[1]=new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.ColumnInfo.Table.Label"),      ColumnInfo.COLUMN_TYPE_TEXT,   false); 
+        colinf[2]=new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.ColumnInfo.Field.Label"),      ColumnInfo.COLUMN_TYPE_TEXT,   false); 
         
         wFields=new TableView(transMeta, wDepComp, 
                               SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -1741,7 +1741,7 @@ public class TransDialog extends Dialog
                               );
 
         wGet=new Button(wDepComp, SWT.PUSH);
-        wGet.setText(BaseMessages.getString(PKG, "TransDialog.GetDependenciesButton.Label")); //$NON-NLS-1$
+        wGet.setText(BaseMessages.getString(PKG, "TransDialog.GetDependenciesButton.Label")); 
 
         fdGet = new FormData();
         fdGet.bottom = new FormAttachment(100, 0);
@@ -1777,7 +1777,7 @@ public class TransDialog extends Dialog
         // START OF PERFORMANCE TAB///
         ///
         wMiscTab=new CTabItem(wTabFolder, SWT.NONE);
-        wMiscTab.setText(BaseMessages.getString(PKG, "TransDialog.MiscTab.Label")); //$NON-NLS-1$
+        wMiscTab.setText(BaseMessages.getString(PKG, "TransDialog.MiscTab.Label")); 
         
         Composite wMiscComp = new Composite(wTabFolder, SWT.NONE);
         props.setLook(wMiscComp);
@@ -1790,8 +1790,8 @@ public class TransDialog extends Dialog
 
         // Rows in Rowset:
         Label wlSizeRowset = new Label(wMiscComp, SWT.RIGHT);
-        wlSizeRowset.setText(BaseMessages.getString(PKG, "TransDialog.SizeRowset.Label")); //$NON-NLS-1$
-        wlSizeRowset.setToolTipText(BaseMessages.getString(PKG, "TransDialog.SizeRowset.Tooltip")); //$NON-NLS-1$
+        wlSizeRowset.setText(BaseMessages.getString(PKG, "TransDialog.SizeRowset.Label")); 
+        wlSizeRowset.setToolTipText(BaseMessages.getString(PKG, "TransDialog.SizeRowset.Tooltip")); 
         props.setLook(wlSizeRowset);
         FormData fdlSizeRowset = new FormData();
         fdlSizeRowset.left = new FormAttachment(0, 0);
@@ -1799,7 +1799,7 @@ public class TransDialog extends Dialog
         fdlSizeRowset.top  = new FormAttachment(0, margin);
         wlSizeRowset.setLayoutData(fdlSizeRowset);
         wSizeRowset=new Text(wMiscComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        wSizeRowset.setToolTipText(BaseMessages.getString(PKG, "TransDialog.SizeRowset.Tooltip")); //$NON-NLS-1$
+        wSizeRowset.setToolTipText(BaseMessages.getString(PKG, "TransDialog.SizeRowset.Tooltip")); 
         props.setLook(wSizeRowset);
         wSizeRowset.addModifyListener(lsMod);
         FormData fdSizeRowset = new FormData();
@@ -1846,7 +1846,7 @@ public class TransDialog extends Dialog
         
         // Unique connections
         Label wlUniqueConnections = new Label(wMiscComp, SWT.RIGHT);
-        wlUniqueConnections.setText(BaseMessages.getString(PKG, "TransDialog.UniqueConnections.Label")); //$NON-NLS-1$
+        wlUniqueConnections.setText(BaseMessages.getString(PKG, "TransDialog.UniqueConnections.Label")); 
         props.setLook(wlUniqueConnections);
         FormData fdlUniqueConnections = new FormData();
         fdlUniqueConnections.left = new FormAttachment(0, 0);
@@ -1864,7 +1864,7 @@ public class TransDialog extends Dialog
 
         // Shared objects file
         Label wlSharedObjectsFile = new Label(wMiscComp, SWT.RIGHT);
-        wlSharedObjectsFile.setText(BaseMessages.getString(PKG, "TransDialog.SharedObjectsFile.Label")); //$NON-NLS-1$
+        wlSharedObjectsFile.setText(BaseMessages.getString(PKG, "TransDialog.SharedObjectsFile.Label")); 
         props.setLook(wlSharedObjectsFile);
         FormData fdlSharedObjectsFile = new FormData();
         fdlSharedObjectsFile.left = new FormAttachment(0, 0);
@@ -1872,8 +1872,8 @@ public class TransDialog extends Dialog
         fdlSharedObjectsFile.top  = new FormAttachment(wUniqueConnections, margin);
         wlSharedObjectsFile.setLayoutData(fdlSharedObjectsFile);
         wSharedObjectsFile=new TextVar(transMeta, wMiscComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        wlSharedObjectsFile.setToolTipText(BaseMessages.getString(PKG, "TransDialog.SharedObjectsFile.Tooltip")); //$NON-NLS-1$
-        wSharedObjectsFile.setToolTipText(BaseMessages.getString(PKG, "TransDialog.SharedObjectsFile.Tooltip")); //$NON-NLS-1$
+        wlSharedObjectsFile.setToolTipText(BaseMessages.getString(PKG, "TransDialog.SharedObjectsFile.Tooltip")); 
+        wSharedObjectsFile.setToolTipText(BaseMessages.getString(PKG, "TransDialog.SharedObjectsFile.Tooltip")); 
         props.setLook(wSharedObjectsFile);
         FormData fdSharedObjectsFile = new FormData();
         fdSharedObjectsFile.left = new FormAttachment(middle, 0);
@@ -1909,8 +1909,8 @@ public class TransDialog extends Dialog
 
 		// Single threaded option ...
 		Label wlTransformationType = new Label(wMiscComp, SWT.RIGHT);
-		wlTransformationType.setText(BaseMessages.getString(PKG, "TransDialog.TransformationType.Label")); //$NON-NLS-1$
-		wlTransformationType.setToolTipText(BaseMessages.getString(PKG, "TransDialog.TransformationType.Tooltip", Const.CR)); //$NON-NLS-1$
+		wlTransformationType.setText(BaseMessages.getString(PKG, "TransDialog.TransformationType.Label")); 
+		wlTransformationType.setToolTipText(BaseMessages.getString(PKG, "TransDialog.TransformationType.Tooltip", Const.CR)); 
 		props.setLook(wlTransformationType);
 		FormData fdlTransformationType = new FormData();
 		fdlTransformationType.left = new FormAttachment(0, 0);
@@ -1918,7 +1918,7 @@ public class TransDialog extends Dialog
 		fdlTransformationType.top = new FormAttachment(wManageThreads, margin);
 		wlTransformationType.setLayoutData(fdlTransformationType);
 		wTransformationType = new CCombo(wMiscComp, SWT.NORMAL);
-		wTransformationType.setToolTipText(BaseMessages.getString(PKG, "TransDialog.TransformationType.Tooltip", Const.CR)); //$NON-NLS-1$
+		wTransformationType.setToolTipText(BaseMessages.getString(PKG, "TransDialog.TransformationType.Tooltip", Const.CR)); 
         wTransformationType.addSelectionListener(lsModSel);
 		props.setLook(wTransformationType);
 		FormData fdTransformationType = new FormData();
@@ -1951,7 +1951,7 @@ public class TransDialog extends Dialog
     // START OF MONITORING TAB///
     // /
     wMonitorTab = new CTabItem(wTabFolder, SWT.NONE);
-    wMonitorTab.setText(BaseMessages.getString(PKG, "TransDialog.MonitorTab.Label")); //$NON-NLS-1$
+    wMonitorTab.setText(BaseMessages.getString(PKG, "TransDialog.MonitorTab.Label")); 
 
     Composite wMonitorComp = new Composite(wTabFolder, SWT.NONE);
     props.setLook(wMonitorComp);
@@ -1965,7 +1965,7 @@ public class TransDialog extends Dialog
     // Enable step performance monitoring?
     //
     Label wlEnableStepPerfMonitor = new Label(wMonitorComp, SWT.LEFT);
-    wlEnableStepPerfMonitor.setText(BaseMessages.getString(PKG, "TransDialog.StepPerformanceMonitoring.Label")); //$NON-NLS-1$
+    wlEnableStepPerfMonitor.setText(BaseMessages.getString(PKG, "TransDialog.StepPerformanceMonitoring.Label")); 
     props.setLook(wlEnableStepPerfMonitor);
     FormData fdlSchemaName = new FormData();
     fdlSchemaName.left = new FormAttachment(0, 0);
@@ -1990,7 +1990,7 @@ public class TransDialog extends Dialog
     // Step performance interval
     //
     Label wlStepPerfInterval = new Label(wMonitorComp, SWT.LEFT);
-    wlStepPerfInterval.setText(BaseMessages.getString(PKG, "TransDialog.StepPerformanceInterval.Label")); //$NON-NLS-1$
+    wlStepPerfInterval.setText(BaseMessages.getString(PKG, "TransDialog.StepPerformanceInterval.Label")); 
     props.setLook(wlStepPerfInterval);
     FormData fdlStepPerfInterval = new FormData();
     fdlStepPerfInterval.left = new FormAttachment(0, 0);
@@ -2010,7 +2010,7 @@ public class TransDialog extends Dialog
     // Step performance interval
     //
     Label wlStepPerfMaxSize = new Label(wMonitorComp, SWT.LEFT);
-    wlStepPerfMaxSize.setText(BaseMessages.getString(PKG, "TransDialog.StepPerformanceMaxSize.Label")); //$NON-NLS-1$
+    wlStepPerfMaxSize.setText(BaseMessages.getString(PKG, "TransDialog.StepPerformanceMaxSize.Label")); 
     wlStepPerfMaxSize.setToolTipText(BaseMessages.getString(PKG, "TransDialog.StepPerformanceMaxSize.Tooltip"));
     props.setLook(wlStepPerfMaxSize);
     FormData fdlStepPerfMaxSize = new FormData();
@@ -2049,7 +2049,7 @@ public class TransDialog extends Dialog
     // START OF DATA SERVICE TAB///
     // /
     wDataServiceTab = new CTabItem(wTabFolder, SWT.NONE);
-    wDataServiceTab.setText(BaseMessages.getString(PKG, "TransDialog.DataServiceTab.Label")); //$NON-NLS-1$
+    wDataServiceTab.setText(BaseMessages.getString(PKG, "TransDialog.DataServiceTab.Label")); 
 
     Composite wDataServiceComp = new Composite(wTabFolder, SWT.NONE);
     props.setLook(wDataServiceComp);
@@ -2063,7 +2063,7 @@ public class TransDialog extends Dialog
     // Service name
     //
     Label wlServiceName = new Label(wDataServiceComp, SWT.LEFT);
-    wlServiceName.setText(BaseMessages.getString(PKG, "TransDialog.DataServiceName.Label")); //$NON-NLS-1$
+    wlServiceName.setText(BaseMessages.getString(PKG, "TransDialog.DataServiceName.Label")); 
     wlServiceName.setToolTipText(BaseMessages.getString(PKG, "TransDialog.DataServiceName.Tooltip"));
     props.setLook(wlServiceName);
     FormData fdlServiceName = new FormData();
@@ -2085,7 +2085,7 @@ public class TransDialog extends Dialog
     // Service step
     //
     Label wlServiceStep = new Label(wDataServiceComp, SWT.LEFT);
-    wlServiceStep.setText(BaseMessages.getString(PKG, "TransDialog.DataServiceStep.Label")); //$NON-NLS-1$
+    wlServiceStep.setText(BaseMessages.getString(PKG, "TransDialog.DataServiceStep.Label")); 
     wlServiceStep.setToolTipText(BaseMessages.getString(PKG, "TransDialog.DataServiceStep.Tooltip"));
     props.setLook(wlServiceStep);
     FormData fdlServiceStep = new FormData();
@@ -2110,7 +2110,7 @@ public class TransDialog extends Dialog
     // Service step
     //
     Label wlServiceCacheMethod = new Label(wDataServiceComp, SWT.LEFT);
-    wlServiceCacheMethod.setText(BaseMessages.getString(PKG, "TransDialog.DataServiceCacheMethod.Label")); //$NON-NLS-1$
+    wlServiceCacheMethod.setText(BaseMessages.getString(PKG, "TransDialog.DataServiceCacheMethod.Label")); 
     wlServiceCacheMethod.setToolTipText(BaseMessages.getString(PKG, "TransDialog.DataServiceCacheMethod.Tooltip"));
     props.setLook(wlServiceCacheMethod);
     FormData fdlServiceCacheMethod = new FormData();
@@ -2135,7 +2135,7 @@ public class TransDialog extends Dialog
     // output service?
     //
     Label wlServiceOutput = new Label(wDataServiceComp, SWT.LEFT);
-    wlServiceOutput.setText(BaseMessages.getString(PKG, "TransDialog.DataServiceOutput.Label")); //$NON-NLS-1$
+    wlServiceOutput.setText(BaseMessages.getString(PKG, "TransDialog.DataServiceOutput.Label")); 
     props.setLook(wlServiceOutput);
     FormData fdlServiceOutput = new FormData();
     fdlServiceOutput.left = new FormAttachment(0, 0);
@@ -2156,7 +2156,7 @@ public class TransDialog extends Dialog
     // Allow optimisation?
     //
     Label wlServiceAllowOptimization = new Label(wDataServiceComp, SWT.LEFT);
-    wlServiceAllowOptimization.setText(BaseMessages.getString(PKG, "TransDialog.DataServiceAllowOptimization.Label")); //$NON-NLS-1$
+    wlServiceAllowOptimization.setText(BaseMessages.getString(PKG, "TransDialog.DataServiceAllowOptimization.Label")); 
     props.setLook(wlServiceAllowOptimization);
     FormData fdlServiceAllowOptimization = new FormData();
     fdlServiceAllowOptimization.left = new FormAttachment(0, 0);
@@ -2356,8 +2356,8 @@ public class TransDialog extends Dialog
 			transMeta.setMaxDateOffset(Double.parseDouble(wMaxdateoffset.getText()));
 		} catch (Exception e) {
 			MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-			mb.setText(BaseMessages.getString(PKG, "TransDialog.InvalidOffsetNumber.DialogTitle")); //$NON-NLS-1$
-			mb.setMessage(BaseMessages.getString(PKG, "TransDialog.InvalidOffsetNumber.DialogMessage")); //$NON-NLS-1$
+			mb.setText(BaseMessages.getString(PKG, "TransDialog.InvalidOffsetNumber.DialogTitle")); 
+			mb.setMessage(BaseMessages.getString(PKG, "TransDialog.InvalidOffsetNumber.DialogMessage")); 
 			mb.open();
 			wMaxdateoffset.setFocus();
 			wMaxdateoffset.selectAll();
@@ -2368,8 +2368,8 @@ public class TransDialog extends Dialog
 			transMeta.setMaxDateDifference(Double.parseDouble(wMaxdatediff.getText()));
 		} catch (Exception e) {
 			MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-			mb.setText(BaseMessages.getString(PKG, "TransDialog.InvalidDateDifferenceNumber.DialogTitle")); //$NON-NLS-1$
-			mb.setMessage(BaseMessages.getString(PKG, "TransDialog.InvalidDateDifferenceNumber.DialogMessage")); //$NON-NLS-1$
+			mb.setText(BaseMessages.getString(PKG, "TransDialog.InvalidDateDifferenceNumber.DialogTitle")); 
+			mb.setMessage(BaseMessages.getString(PKG, "TransDialog.InvalidDateDifferenceNumber.DialogMessage")); 
 			mb.open();
 			wMaxdatediff.setFocus();
 			wMaxdatediff.selectAll();
@@ -2423,7 +2423,7 @@ public class TransDialog extends Dialog
 				} catch (KettleException ke) {
 					transMeta.setRepositoryDirectory(dirFrom);
 					OK = false;
-					new ErrorDialog(shell, BaseMessages.getString(PKG, "TransDialog.ErrorMovingTransformation.DialogTitle"), BaseMessages.getString(PKG, "TransDialog.ErrorMovingTransformation.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+					new ErrorDialog(shell, BaseMessages.getString(PKG, "TransDialog.ErrorMovingTransformation.DialogTitle"), BaseMessages.getString(PKG, "TransDialog.ErrorMovingTransformation.DialogMessage"), ke);  
 				}
 			}
 		} else {
@@ -2452,8 +2452,8 @@ public class TransDialog extends Dialog
       }
 		} catch (Exception e) {
 			MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-			mb.setText(BaseMessages.getString(PKG, "TransDialog.InvalidStepPerfIntervalNumber.DialogTitle")); //$NON-NLS-1$
-			mb.setMessage(BaseMessages.getString(PKG, "TransDialog.InvalidStepPerfIntervalNumber.DialogMessage")); //$NON-NLS-1$
+			mb.setText(BaseMessages.getString(PKG, "TransDialog.InvalidStepPerfIntervalNumber.DialogTitle")); 
+			mb.setMessage(BaseMessages.getString(PKG, "TransDialog.InvalidStepPerfIntervalNumber.DialogMessage")); 
 			mb.open();
 			wStepPerfInterval.setFocus();
 			wStepPerfInterval.selectAll();
@@ -2524,8 +2524,8 @@ public class TransDialog extends Dialog
 	{
 		if (sql==null) return null;
 		
-		int idxfrom = sql.toUpperCase().indexOf("FROM"); //$NON-NLS-1$
-		int idxto   = sql.toUpperCase().indexOf("WHERE"); //$NON-NLS-1$
+		int idxfrom = sql.toUpperCase().indexOf("FROM"); 
+		int idxto   = sql.toUpperCase().indexOf("WHERE"); 
 		if (idxfrom==-1) return null;
 		if (idxto==-1) idxto=sql.length();
 		return sql.substring(idxfrom+5, idxto);
@@ -2594,8 +2594,8 @@ public class TransDialog extends Dialog
 			
 			if (allOK) {
               MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
-              mb.setText(BaseMessages.getString(PKG, "TransDialog.NoSqlNedds.DialogTitle")); //$NON-NLS-1$
-              mb.setMessage(BaseMessages.getString(PKG, "TransDialog.NoSqlNedds.DialogMessage")); //$NON-NLS-1$
+              mb.setText(BaseMessages.getString(PKG, "TransDialog.NoSqlNedds.DialogTitle")); 
+              mb.setMessage(BaseMessages.getString(PKG, "TransDialog.NoSqlNedds.DialogMessage")); 
               mb.open();
 			}
 		

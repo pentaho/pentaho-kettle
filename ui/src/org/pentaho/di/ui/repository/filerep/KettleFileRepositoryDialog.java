@@ -107,7 +107,7 @@ public class KettleFileRepositoryDialog implements RepositoryDialogInterface {
 
     //this.repositories = repositoriesMeta;
     shell = new Shell(parent, style | SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
-    shell.setText(BaseMessages.getString(PKG, "KettleFileRepositoryDialog.Dialog.Main.Title")); //$NON-NLS-1$
+    shell.setText(BaseMessages.getString(PKG, "KettleFileRepositoryDialog.Dialog.Main.Title")); 
   }
 
   public KettleFileRepositoryMeta open(final MODE mode){
@@ -120,14 +120,14 @@ public class KettleFileRepositoryDialog implements RepositoryDialogInterface {
 
     shell.setLayout(formLayout);
     shell.setImage(GUIResource.getInstance().getImageSpoon());
-    shell.setText(BaseMessages.getString(PKG, "KettleFileRepositoryDialog.Dialog.Main.Title2")); //$NON-NLS-1$
+    shell.setText(BaseMessages.getString(PKG, "KettleFileRepositoryDialog.Dialog.Main.Title2")); 
 
     int middle = props.getMiddlePct();
     int margin = Const.MARGIN;
 
     // Add the connection buttons :
     wbBaseDir = new Button(shell, SWT.PUSH);
-    wbBaseDir.setText(BaseMessages.getString(PKG, "System.Button.Browse")); //$NON-NLS-1$
+    wbBaseDir.setText(BaseMessages.getString(PKG, "System.Button.Browse")); 
 
     fdbBaseDir = new FormData();
     fdbBaseDir.right = new FormAttachment(100, 0);
@@ -144,7 +144,7 @@ public class KettleFileRepositoryDialog implements RepositoryDialogInterface {
 
     // Base directory line
     wlBaseDir = new Label(shell, SWT.RIGHT);
-    wlBaseDir.setText(BaseMessages.getString(PKG, "KettleFileRepositoryDialog.Label.BaseDirectory")); //$NON-NLS-1$
+    wlBaseDir.setText(BaseMessages.getString(PKG, "KettleFileRepositoryDialog.Label.BaseDirectory")); 
     props.setLook(wlBaseDir);
     fdlBaseDir = new FormData();
     fdlBaseDir.left = new FormAttachment(0, 0);
@@ -154,7 +154,7 @@ public class KettleFileRepositoryDialog implements RepositoryDialogInterface {
 
     // ReadOnly line
     wlReadOnly = new Label(shell, SWT.RIGHT);
-    wlReadOnly.setText(BaseMessages.getString(PKG, "KettleFileRepositoryDialog.Label.ReadOnly")); //$NON-NLS-1$
+    wlReadOnly.setText(BaseMessages.getString(PKG, "KettleFileRepositoryDialog.Label.ReadOnly")); 
     props.setLook(wlReadOnly);
     fdlReadOnly = new FormData();
     fdlReadOnly.left = new FormAttachment(0, 0);
@@ -171,7 +171,7 @@ public class KettleFileRepositoryDialog implements RepositoryDialogInterface {
 
     // HidesHiddenFiles line
     wlHidesHiddenFiles = new Label(shell, SWT.RIGHT);
-    wlHidesHiddenFiles.setText(BaseMessages.getString(PKG, "KettleFileRepositoryDialog.Label.HidesHiddenFiles")); //$NON-NLS-1$
+    wlHidesHiddenFiles.setText(BaseMessages.getString(PKG, "KettleFileRepositoryDialog.Label.HidesHiddenFiles")); 
     props.setLook(wlHidesHiddenFiles);
     fdlHidesHiddenFiles = new FormData();
     fdlHidesHiddenFiles.left = new FormAttachment(0, 0);
@@ -202,7 +202,7 @@ public class KettleFileRepositoryDialog implements RepositoryDialogInterface {
 
     // ID line
     wlId = new Label(shell, SWT.RIGHT);
-    wlId.setText(BaseMessages.getString(PKG, "KettleFileRepositoryDialog.Label.DisplayId")); //$NON-NLS-1$
+    wlId.setText(BaseMessages.getString(PKG, "KettleFileRepositoryDialog.Label.DisplayId")); 
     props.setLook(wlId);
     fdlId = new FormData();
     fdlId.left = new FormAttachment(0, 0);
@@ -219,7 +219,7 @@ public class KettleFileRepositoryDialog implements RepositoryDialogInterface {
 
     // Name line
     wlName = new Label(shell, SWT.RIGHT);
-    wlName.setText(BaseMessages.getString(PKG, "KettleFileRepositoryDialog.Label.Name")); //$NON-NLS-1$
+    wlName.setText(BaseMessages.getString(PKG, "KettleFileRepositoryDialog.Label.Name")); 
     props.setLook(wlName);
     fdlName = new FormData();
     fdlName.left = new FormAttachment(0, 0);
@@ -235,7 +235,7 @@ public class KettleFileRepositoryDialog implements RepositoryDialogInterface {
     wName.setLayoutData(fdName);
 
     wOK = new Button(shell, SWT.PUSH);
-    wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+    wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
     lsOK = new Listener() {
       public void handleEvent(Event e) {
         ok();
@@ -244,7 +244,7 @@ public class KettleFileRepositoryDialog implements RepositoryDialogInterface {
     wOK.addListener(SWT.Selection, lsOK);
 
     wCancel = new Button(shell, SWT.PUSH);
-    wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+    wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
     lsCancel = new Listener() {
       public void handleEvent(Event e) {
         cancel();
@@ -326,28 +326,28 @@ public class KettleFileRepositoryDialog implements RepositoryDialogInterface {
           }
         } else {
           MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-          box.setMessage(BaseMessages.getString(PKG, "KettleFileRepositoryDialog.Dialog.ErrorNoName.Message")); //$NON-NLS-1$
-          box.setText(BaseMessages.getString(PKG, "KettleFileRepositoryDialog.Dialog.ErrorNoName.Title")); //$NON-NLS-1$
+          box.setMessage(BaseMessages.getString(PKG, "KettleFileRepositoryDialog.Dialog.ErrorNoName.Message")); 
+          box.setText(BaseMessages.getString(PKG, "KettleFileRepositoryDialog.Dialog.ErrorNoName.Title")); 
           box.open();
         }
       } else {
         MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-        box.setMessage(BaseMessages.getString(PKG, "KettleFileRepositoryDialog.Dialog.ErrorNoId.Message")); //$NON-NLS-1$
-        box.setText(BaseMessages.getString(PKG, "KettleFileRepositoryDialog.Dialog.ErrorNoId.Title")); //$NON-NLS-1$
+        box.setMessage(BaseMessages.getString(PKG, "KettleFileRepositoryDialog.Dialog.ErrorNoId.Message")); 
+        box.setText(BaseMessages.getString(PKG, "KettleFileRepositoryDialog.Dialog.ErrorNoId.Title")); 
         box.open();
       }
     } else {
       MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-      box.setMessage(BaseMessages.getString(PKG, "KettleFileRepositoryDialog.Dialog.ErrorNoBaseDir.Message")); //$NON-NLS-1$
-      box.setText(BaseMessages.getString(PKG, "KettleFileRepositoryDialog.Dialog.ErrorNoBaseDir.Title")); //$NON-NLS-1$
+      box.setMessage(BaseMessages.getString(PKG, "KettleFileRepositoryDialog.Dialog.ErrorNoBaseDir.Message")); 
+      box.setText(BaseMessages.getString(PKG, "KettleFileRepositoryDialog.Dialog.ErrorNoBaseDir.Title")); 
       box.open();
     }
   }
   
   private void  displayRepositoryAlreadyExistMessage(String name) {
     MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-    box.setMessage(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.ErrorIdExist.Message", name)); //$NON-NLS-1$
-    box.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.Error.Title")); //$NON-NLS-1$
+    box.setMessage(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.ErrorIdExist.Message", name)); 
+    box.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.Error.Title")); 
     box.open();                   
   }
 }

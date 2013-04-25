@@ -473,9 +473,9 @@ public class SalesforceDeleteDialog extends BaseStepDialog implements StepDialog
 
 		// THE BUTTONS
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 		
@@ -549,8 +549,8 @@ public class SalesforceDeleteDialog extends BaseStepDialog implements StepDialog
 			}
 			catch (KettleException ke)
 			{
-				new ErrorDialog(shell, BaseMessages.getString(PKG, "SalesforceDeleteDialog.FailedToGetFields.DialogTitle"), //$NON-NLS-1$
-						BaseMessages.getString(PKG, "SalesforceDeleteDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "SalesforceDeleteDialog.FailedToGetFields.DialogTitle"), 
+						BaseMessages.getString(PKG, "SalesforceDeleteDialog.FailedToGetFields.DialogMessage"), ke); 
 			}
 			gotPrevious=true;
 		}

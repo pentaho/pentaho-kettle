@@ -210,7 +210,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
 			checksumtype = XMLHandler.getTagValue(stepnode, "checksumtype");
 			resultfieldName = XMLHandler.getTagValue(stepnode,"resultfieldName");
 			resultType = getResultTypeByCode(Const.NVL(XMLHandler.getTagValue(stepnode,"resultType"), ""));
-			compatibilityMode = parseCompatibilityMode(XMLHandler.getTagValue(stepnode, "compatibilityMode")); //$NON-NLS-1$
+			compatibilityMode = parseCompatibilityMode(XMLHandler.getTagValue(stepnode, "compatibilityMode")); 
 
 			Node fields = XMLHandler.getSubNode(stepnode, "fields");
 			int nrfields = XMLHandler.countNodes(fields, "field");
@@ -230,7 +230,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
     if (compatibilityMode == null) {
       return true; // It was previously not saved
     } else {
-      return Boolean.parseBoolean(compatibilityMode) || "Y".equalsIgnoreCase(compatibilityMode); //$NON-NLS-1$
+      return Boolean.parseBoolean(compatibilityMode) || "Y".equalsIgnoreCase(compatibilityMode); 
     }
   }
 	private static String getResultTypeCode(int i) {
@@ -244,7 +244,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
 		retval.append("      ").append(XMLHandler.addTagValue("checksumtype", checksumtype));
 		retval.append("      ").append(XMLHandler.addTagValue("resultfieldName", resultfieldName));
 		retval.append("      ").append(XMLHandler.addTagValue("resultType",getResultTypeCode(resultType)));
-		retval.append("      ").append(XMLHandler.addTagValue("compatibilityMode", compatibilityMode)); //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("compatibilityMode", compatibilityMode)); 
 
 		retval.append("    <fields>").append(Const.CR);
 		for (int i = 0; i < fieldName.length; i++) {
@@ -277,7 +277,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
 
 			resultfieldName = rep.getStepAttributeString(id_step,"resultfieldName");
 			resultType = getResultTypeByCode(Const.NVL(rep.getStepAttributeString(id_step, "resultType"), ""));
-			compatibilityMode = parseCompatibilityMode(rep.getStepAttributeString(id_step, "compatibilityMode")); //$NON-NLS-1$
+			compatibilityMode = parseCompatibilityMode(rep.getStepAttributeString(id_step, "compatibilityMode")); 
 
 			int nrfields = rep.countNrStepAttributes(id_step, "field_name");
 
@@ -301,7 +301,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
 
 			rep.saveStepAttribute(id_transformation, id_step,"resultfieldName", resultfieldName);
 			rep.saveStepAttribute(id_transformation, id_step, "resultType", getResultTypeCode(resultType));
-			rep.saveStepAttribute(id_transformation, id_step, "compatibilityMode", compatibilityMode); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "compatibilityMode", compatibilityMode); 
 
 			for (int i = 0; i < fieldName.length; i++) {
 				rep.saveStepAttribute(id_transformation, id_step, i,
@@ -344,11 +344,11 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
 		String error_message = "";
 
 		if (Const.isEmpty(resultfieldName)) {
-			error_message = BaseMessages.getString(PKG, "CheckSumMeta.CheckResult.ResultFieldMissing"); //$NON-NLS-1$
+			error_message = BaseMessages.getString(PKG, "CheckSumMeta.CheckResult.ResultFieldMissing"); 
 			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message,
 					stepMeta);
 		} else {
-			error_message = BaseMessages.getString(PKG, "CheckSumMeta.CheckResult.ResultFieldOK"); //$NON-NLS-1$
+			error_message = BaseMessages.getString(PKG, "CheckSumMeta.CheckResult.ResultFieldOK"); 
 			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message,
 					stepMeta);
 		}
@@ -357,12 +357,12 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
 		if (prev == null || prev.size() == 0) {
 			cr = new CheckResult(
 					CheckResult.TYPE_RESULT_WARNING,
-					BaseMessages.getString(PKG, "CheckSumMeta.CheckResult.NotReceivingFields"), stepMeta); //$NON-NLS-1$
+					BaseMessages.getString(PKG, "CheckSumMeta.CheckResult.NotReceivingFields"), stepMeta); 
 			remarks.add(cr);
 		} else {
 			cr = new CheckResult(
 					CheckResult.TYPE_RESULT_OK,
-					BaseMessages.getString(PKG, "CheckSumMeta.CheckResult.StepRecevingData", prev.size() + ""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+					BaseMessages.getString(PKG, "CheckSumMeta.CheckResult.StepRecevingData", prev.size() + ""), stepMeta);  
 			remarks.add(cr);
 
 			boolean error_found = false;
@@ -404,12 +404,12 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
 		if (input.length > 0) {
 			cr = new CheckResult(
 					CheckResult.TYPE_RESULT_OK,
-					BaseMessages.getString(PKG, "CheckSumMeta.CheckResult.StepRecevingData2"), stepMeta); //$NON-NLS-1$
+					BaseMessages.getString(PKG, "CheckSumMeta.CheckResult.StepRecevingData2"), stepMeta); 
 			remarks.add(cr);
 		} else {
 			cr = new CheckResult(
 					CheckResult.TYPE_RESULT_ERROR,
-					BaseMessages.getString(PKG, "CheckSumMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepMeta); //$NON-NLS-1$
+					BaseMessages.getString(PKG, "CheckSumMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepMeta); 
 			remarks.add(cr);
 		}
 	}

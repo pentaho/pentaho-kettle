@@ -420,7 +420,7 @@ public class EnterOptionsDialog extends Dialog
 			{
 				pe.gc.setFont(fixedFont);
 				Rectangle max = wFFont.getBounds();
-				String name = fixedFontData.getName() + " - " + fixedFontData.getHeight(); //$NON-NLS-1$
+				String name = fixedFontData.getName() + " - " + fixedFontData.getHeight(); 
 				Point size = pe.gc.textExtent(name);
 
 				pe.gc.drawText(name, (max.width - size.x) / 2, (max.height - size.y) / 2, true);
@@ -497,7 +497,7 @@ public class EnterOptionsDialog extends Dialog
 			{
 				pe.gc.setFont(graphFont);
 				Rectangle max = wGFont.getBounds();
-				String name = graphFontData.getName() + " - " + graphFontData.getHeight(); //$NON-NLS-1$
+				String name = graphFontData.getName() + " - " + graphFontData.getHeight(); 
 				Point size = pe.gc.textExtent(name);
 
 				pe.gc.drawText(name, (max.width - size.x) / 2, (max.height - size.y) / 2, true);
@@ -573,7 +573,7 @@ public class EnterOptionsDialog extends Dialog
 			{
 				pe.gc.setFont(noteFont);
 				Rectangle max = wNFont.getBounds();
-				String name = noteFontData.getName() + " - " + noteFontData.getHeight(); //$NON-NLS-1$
+				String name = noteFontData.getName() + " - " + noteFontData.getHeight(); 
 				Point size = pe.gc.textExtent(name);
 
 				pe.gc.drawText(name, (max.width - size.x) / 2, (max.height - size.y) / 2, true);

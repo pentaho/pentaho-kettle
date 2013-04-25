@@ -159,7 +159,7 @@ public class CsvInput extends BaseStep implements StepInterface
 				putRow(data.outputRowMeta, outputRowData);     // copy row to possible alternate rowset(s).
 		        if (checkFeedback(getLinesInput())) 
 		        {
-		        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "CsvInput.Log.LineNumber", Long.toString(getLinesInput()))); //$NON-NLS-1$
+		        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "CsvInput.Log.LineNumber", Long.toString(getLinesInput()))); 
 		        }
 			}
 		}
@@ -169,14 +169,14 @@ public class CsvInput extends BaseStep implements StepInterface
 				StringBuffer errorFields = new StringBuffer(50);
 				for (int i=0;i<e.getCauses().size();i++) {
 					if (i>0) {
-						errorDescriptions.append(", "); //$NON-NLS-1$
-						errorFields.append(", "); //$NON-NLS-1$
+						errorDescriptions.append(", "); 
+						errorFields.append(", "); 
 					}
 					errorDescriptions.append(e.getCauses().get(i).getMessage());
 					errorFields.append(e.getFields().get(i).toStringMeta());
 				}
 				
-				putError(data.outputRowMeta, e.getRowData(), e.getCauses().size(), errorDescriptions.toString(), errorFields.toString(), "CSVINPUT001"); //$NON-NLS-1$
+				putError(data.outputRowMeta, e.getRowData(), e.getCauses().size(), errorDescriptions.toString(), errorFields.toString(), "CSVINPUT001"); 
 			} else {
 			  // Only forward the first cause.
 			  //
@@ -248,10 +248,10 @@ public class CsvInput extends BaseStep implements StepInterface
 	        }
 	        
 	        if (data.filenames.length > 0)
-	        	logBasic(BaseMessages.getString(PKG, "CsvInput.Log.ParallelFileNrAndPositionFeedback", data.filenames[data.filenr], Long.toString(data.fileSizes.get(data.filenr)), Long.toString(data.bytesToSkipInFirstFile), Long.toString(data.blockToRead))); //$NON-NLS-1$
+	        	logBasic(BaseMessages.getString(PKG, "CsvInput.Log.ParallelFileNrAndPositionFeedback", data.filenames[data.filenr], Long.toString(data.fileSizes.get(data.filenr)), Long.toString(data.bytesToSkipInFirstFile), Long.toString(data.blockToRead))); 
 		}
 		catch(Exception e) {
-			throw new KettleException(BaseMessages.getString(PKG, "CsvInput.Exception.ErrorPreparingParallelRun"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "CsvInput.Exception.ErrorPreparingParallelRun"), e); 
 		}
 	}
 
@@ -270,7 +270,7 @@ public class CsvInput extends BaseStep implements StepInterface
 				String filenameField = environmentSubstitute(meta.getFilenameField());
 				index = getInputRowMeta().indexOfValue(filenameField);
 				if (index<0) {
-					throw new KettleException(BaseMessages.getString(PKG, "CsvInput.Exception.FilenameFieldNotFound", filenameField)); //$NON-NLS-1$
+					throw new KettleException(BaseMessages.getString(PKG, "CsvInput.Exception.FilenameFieldNotFound", filenameField)); 
 				}
 			}
 				
@@ -282,7 +282,7 @@ public class CsvInput extends BaseStep implements StepInterface
 		
 		data.filenames = filenames.toArray(new String[filenames.size()]);
 		
-		logBasic(BaseMessages.getString(PKG, "CsvInput.Log.ReadingFromNrFiles", Integer.toString(data.filenames.length))); //$NON-NLS-1$
+		logBasic(BaseMessages.getString(PKG, "CsvInput.Log.ReadingFromNrFiles", Integer.toString(data.filenames.length))); 
 	}
 	
 	@Override
@@ -331,7 +331,7 @@ public class CsvInput extends BaseStep implements StepInterface
 			if (!(fileObject instanceof LocalFile)) {
 				// We can only use NIO on local files at the moment, so that's what we limit ourselves to.
 				//
-				throw new KettleException(BaseMessages.getString(PKG, "CsvInput.Log.OnlyLocalFilesAreSupported")); //$NON-NLS-1$
+				throw new KettleException(BaseMessages.getString(PKG, "CsvInput.Log.OnlyLocalFilesAreSupported")); 
 			}
 			
 			if (meta.isLazyConversionActive()) {
@@ -375,7 +375,7 @@ public class CsvInput extends BaseStep implements StepInterface
 					(data.parallel && data.bytesToSkipInFirstFile<=0)
 					) {
 					readOneRow(false); // skip this row.
-					logBasic(BaseMessages.getString(PKG, "CsvInput.Log.HeaderRowSkipped", data.filenames[data.filenr-1])); //$NON-NLS-1$
+					logBasic(BaseMessages.getString(PKG, "CsvInput.Log.HeaderRowSkipped", data.filenames[data.filenr-1])); 
 				}
 			}
 			
@@ -815,7 +815,7 @@ public class CsvInput extends BaseStep implements StepInterface
 				String filename = environmentSubstitute(meta.getFilename());
 
 				if (Const.isEmpty(filename)) {
-					logError(BaseMessages.getString(PKG, "CsvInput.MissingFilename.Message")); //$NON-NLS-1$
+					logError(BaseMessages.getString(PKG, "CsvInput.MissingFilename.Message")); 
 					return false;
 				}
 
@@ -842,7 +842,7 @@ public class CsvInput extends BaseStep implements StepInterface
   			  }
   			  
             } catch (UnsupportedEncodingException e) {
-              logError(BaseMessages.getString(PKG, "CsvInput.BadEncoding.Message"), e); //$NON-NLS-1$
+              logError(BaseMessages.getString(PKG, "CsvInput.BadEncoding.Message"), e); 
               return false;
             }
 			
@@ -954,7 +954,7 @@ public class CsvInput extends BaseStep implements StepInterface
         // "aa;aa";123;"aaa-aaa";000;...
         if (len_encl > 0 && line.substring(from, from + len_encl).equalsIgnoreCase(enclosure))
         {
-                      if (log.isRowLevel()) log.logRowlevel(BaseMessages.getString(PKG, "CsvInput.Log.ConvertLineToRowTitle"), BaseMessages.getString(PKG, "CsvInput.Log.ConvertLineToRow",line.substring(from, from + len_encl))); //$NON-NLS-1$ //$NON-NLS-2$
+                      if (log.isRowLevel()) log.logRowlevel(BaseMessages.getString(PKG, "CsvInput.Log.ConvertLineToRowTitle"), BaseMessages.getString(PKG, "CsvInput.Log.ConvertLineToRow",line.substring(from, from + len_encl)));  
           encl_found = true;
           int p = from + len_encl;
 
@@ -1007,7 +1007,7 @@ public class CsvInput extends BaseStep implements StepInterface
           if (p >= length) next = p;
           else next = p + len_encl;
 
-                      if (log.isRowLevel()) log.logRowlevel(BaseMessages.getString(PKG, "CsvInput.Log.ConvertLineToRowTitle"), BaseMessages.getString(PKG, "CsvInput.Log.EndOfEnclosure", ""+ p)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                      if (log.isRowLevel()) log.logRowlevel(BaseMessages.getString(PKG, "CsvInput.Log.ConvertLineToRowTitle"), BaseMessages.getString(PKG, "CsvInput.Log.EndOfEnclosure", ""+ p));   //$NON-NLS-3$
         }
         else
         {
@@ -1046,12 +1046,12 @@ public class CsvInput extends BaseStep implements StepInterface
         if (encl_found)
         {
           pol = line.substring(from + len_encl, next - len_encl);
-                      if (log.isRowLevel()) log.logRowlevel(BaseMessages.getString(PKG, "CsvInput.Log.ConvertLineToRowTitle"), BaseMessages.getString(PKG, "CsvInput.Log.EnclosureFieldFound", ""+ pol)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                      if (log.isRowLevel()) log.logRowlevel(BaseMessages.getString(PKG, "CsvInput.Log.ConvertLineToRowTitle"), BaseMessages.getString(PKG, "CsvInput.Log.EnclosureFieldFound", ""+ pol));   //$NON-NLS-3$
         }
         else
         {
           pol = line.substring(from, next);
-                      if (log.isRowLevel()) log.logRowlevel(BaseMessages.getString(PKG, "CsvInput.Log.ConvertLineToRowTitle"), BaseMessages.getString(PKG, "CsvInput.Log.NormalFieldFound",""+ pol)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                      if (log.isRowLevel()) log.logRowlevel(BaseMessages.getString(PKG, "CsvInput.Log.ConvertLineToRowTitle"), BaseMessages.getString(PKG, "CsvInput.Log.NormalFieldFound",""+ pol));   //$NON-NLS-3$
         }
 
         if (dencl)
@@ -1091,13 +1091,13 @@ public class CsvInput extends BaseStep implements StepInterface
       }
       if ( pos == length )
       {
-        if (log.isRowLevel()) log.logRowlevel(BaseMessages.getString(PKG, "CsvInput.Log.ConvertLineToRowTitle"), BaseMessages.getString(PKG, "CsvInput.Log.EndOfEmptyLineFound")); //$NON-NLS-1$ //$NON-NLS-2$
-        strings.add(""); //$NON-NLS-1$
+        if (log.isRowLevel()) log.logRowlevel(BaseMessages.getString(PKG, "CsvInput.Log.ConvertLineToRowTitle"), BaseMessages.getString(PKG, "CsvInput.Log.EndOfEmptyLineFound"));  
+        strings.add(""); 
       }
     }
     catch (Exception e)
     {
-      throw new KettleException(BaseMessages.getString(PKG, "CsvInput.Log.Error.ErrorConvertingLine",e.toString()), e); //$NON-NLS-1$
+      throw new KettleException(BaseMessages.getString(PKG, "CsvInput.Log.Error.ErrorConvertingLine",e.toString()), e); 
     }
 
     return strings.toArray(new String[strings.size()]);

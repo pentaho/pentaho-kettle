@@ -90,44 +90,44 @@ public class ResourceReference {
   
   public String toXml(ResourceXmlPropertyEmitterInterface injector, int indentLevel) {
     StringBuffer buff = new StringBuffer();
-    addXmlElementWithAttribute(buff, indentLevel, "ActionComponent", "type", resourceReferenceHolder.getHolderType()); //$NON-NLS-1$ //$NON-NLS-2$
+    addXmlElementWithAttribute(buff, indentLevel, "ActionComponent", "type", resourceReferenceHolder.getHolderType());  
     indentLevel++;
-    addXmlElement(buff, indentLevel, "ComponentName", resourceReferenceHolder.getName()); //$NON-NLS-1$
-    addXmlElement(buff, indentLevel, "ComponentId", resourceReferenceHolder.getTypeId()); //$NON-NLS-1$
-    addXmlElement(buff, indentLevel, "ComponentResources"); //$NON-NLS-1$
+    addXmlElement(buff, indentLevel, "ComponentName", resourceReferenceHolder.getName()); 
+    addXmlElement(buff, indentLevel, "ComponentId", resourceReferenceHolder.getTypeId()); 
+    addXmlElement(buff, indentLevel, "ComponentResources"); 
     indentLevel++;
     for (ResourceEntry entry : this.getEntries()) {
       buff.append(entry.toXml(indentLevel));
     }
     indentLevel--;
-    addXmlCloseElement(buff, indentLevel, "ComponentResources"); //$NON-NLS-1$
+    addXmlCloseElement(buff, indentLevel, "ComponentResources"); 
     if (injector != null) {
-      addXmlElement(buff, indentLevel, "ComponentProperties"); //$NON-NLS-1$
+      addXmlElement(buff, indentLevel, "ComponentProperties"); 
       indentLevel++;
       buff.append(injector.getExtraResourceProperties(resourceReferenceHolder, indentLevel));
       indentLevel--;
-      addXmlCloseElement(buff, indentLevel, "ComponentProperties"); //$NON-NLS-1$
+      addXmlCloseElement(buff, indentLevel, "ComponentProperties"); 
     }
     indentLevel--;
-    addXmlCloseElement(buff, indentLevel, "ActionComponent"); //$NON-NLS-1$
+    addXmlCloseElement(buff, indentLevel, "ActionComponent"); 
     return buff.toString();
   }
 
   public void addXmlElementWithAttribute(StringBuffer buff, int indentLevel, String elementName, String attrName, String attrValue) {
-    buff.append(StringUtil.getIndent(indentLevel)).append("<").append(elementName).append(" ").append(attrName).append("='");  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-    buff.append(attrValue).append("'>").append(StringUtil.CRLF); //$NON-NLS-1$
+    buff.append(StringUtil.getIndent(indentLevel)).append("<").append(elementName).append(" ").append(attrName).append("='");    //$NON-NLS-3$
+    buff.append(attrValue).append("'>").append(StringUtil.CRLF); 
   }
   
   public void addXmlCloseElement(StringBuffer buff, int indentLevel, String elementName) {
-    buff.append(StringUtil.getIndent(indentLevel)).append("</").append(elementName).append(">").append(StringUtil.CRLF);//$NON-NLS-1$ //$NON-NLS-2$
+    buff.append(StringUtil.getIndent(indentLevel)).append("</").append(elementName).append(">").append(StringUtil.CRLF); 
   }
   
   public void addXmlElement(StringBuffer buff, int indentLevel, String elementName) {
-    buff.append(StringUtil.getIndent(indentLevel)).append("<").append(elementName).append(">").append(StringUtil.CRLF);//$NON-NLS-1$ //$NON-NLS-2$ 
+    buff.append(StringUtil.getIndent(indentLevel)).append("<").append(elementName).append(">").append(StringUtil.CRLF);  
   }
   
   public void addXmlElement(StringBuffer buff, int indentLevel, String elementName, String elementValue) {
-    buff.append(StringUtil.getIndent(indentLevel)).append("<").append(elementName).append("><![CDATA[").append(elementValue).append("]]></").append(elementName).append(">").append(StringUtil.CRLF); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+    buff.append(StringUtil.getIndent(indentLevel)).append("<").append(elementName).append("><![CDATA[").append(elementValue).append("]]></").append(elementName).append(">").append(StringUtil.CRLF);   //$NON-NLS-3$ //$NON-NLS-4$
   }
 
 }

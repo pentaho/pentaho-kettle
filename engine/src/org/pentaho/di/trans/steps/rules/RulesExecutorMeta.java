@@ -64,12 +64,12 @@ public class RulesExecutorMeta extends BaseStepMeta implements StepMetaInterface
 
   // Contain storage keys in single location to cut down on save/load bugs
   private static enum StorageKeys {
-    NODE_FIELDS("fields"), //$NON-NLS-1$
-    SUBNODE_FIELD("field"), //$NON-NLS-1$
-    COLUMN_NAME("column-name"), //$NON-NLS-1$
-    COLUMN_TYPE("column-type"), //$NON-NLS-1$
-    RULE_FILE("rule-file"), //$NON-NLS-1$
-    RULE_DEFINITION("rule-definition"); //$NON-NLS-1$
+    NODE_FIELDS("fields"), 
+    SUBNODE_FIELD("field"), 
+    COLUMN_NAME("column-name"), 
+    COLUMN_TYPE("column-type"), 
+    RULE_FILE("rule-file"), 
+    RULE_DEFINITION("rule-definition"); 
 
     private final String storageKey;
 
@@ -154,25 +154,25 @@ public class RulesExecutorMeta extends BaseStepMeta implements StepMetaInterface
       setRuleFile(XMLHandler.getTagValue(stepnode, StorageKeys.RULE_FILE.toString()));
       setRuleDefinition(XMLHandler.getTagValue(stepnode, StorageKeys.RULE_DEFINITION.toString()));
     } catch (Exception e) {
-      throw new KettleXMLException(BaseMessages.getString(PKG, "RulesMeta.Error.LoadFromXML"), e); //$NON-NLS-1$
+      throw new KettleXMLException(BaseMessages.getString(PKG, "RulesMeta.Error.LoadFromXML"), e); 
     }
   }
 
   public String getXML() {
     StringBuffer retval = new StringBuffer(300);
 
-    retval.append("    <" + StorageKeys.NODE_FIELDS + ">").append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("    <" + StorageKeys.NODE_FIELDS + ">").append(Const.CR);  
     for (int i = 0; i < ruleResultColumns.size(); i++) {
-      retval.append("      <" + StorageKeys.SUBNODE_FIELD + ">").append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
+      retval.append("      <" + StorageKeys.SUBNODE_FIELD + ">").append(Const.CR);  
       retval
-          .append("        ").append(XMLHandler.addTagValue(StorageKeys.COLUMN_NAME.toString(), ruleResultColumns.get(i).getName())); //$NON-NLS-1$
+          .append("        ").append(XMLHandler.addTagValue(StorageKeys.COLUMN_NAME.toString(), ruleResultColumns.get(i).getName())); 
       retval
-          .append("        ").append(XMLHandler.addTagValue(StorageKeys.COLUMN_TYPE.toString(), ruleResultColumns.get(i).getTypeDesc())); //$NON-NLS-1$
-      retval.append("      </" + StorageKeys.SUBNODE_FIELD + ">").append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
+          .append("        ").append(XMLHandler.addTagValue(StorageKeys.COLUMN_TYPE.toString(), ruleResultColumns.get(i).getTypeDesc())); 
+      retval.append("      </" + StorageKeys.SUBNODE_FIELD + ">").append(Const.CR);  
     }
-    retval.append("    </" + StorageKeys.NODE_FIELDS + ">").append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue(StorageKeys.RULE_FILE.toString(), getRuleFile())); //$NON-NLS-1$
-    retval.append("    ").append(XMLHandler.addTagValue(StorageKeys.RULE_DEFINITION.toString(), getRuleDefinition())); //$NON-NLS-1$
+    retval.append("    </" + StorageKeys.NODE_FIELDS + ">").append(Const.CR);  
+    retval.append("    ").append(XMLHandler.addTagValue(StorageKeys.RULE_FILE.toString(), getRuleFile())); 
+    retval.append("    ").append(XMLHandler.addTagValue(StorageKeys.RULE_DEFINITION.toString(), getRuleDefinition())); 
 
     return retval.toString();
   }

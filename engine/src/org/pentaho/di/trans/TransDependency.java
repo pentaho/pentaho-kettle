@@ -66,11 +66,11 @@ public class TransDependency implements XMLInterface, Cloneable
     {
         StringBuilder xml = new StringBuilder(200);
         
-        xml.append("      ").append(XMLHandler.openTag(XML_TAG)).append(Const.CR); //$NON-NLS-1$
-        xml.append("        ").append(XMLHandler.addTagValue("connection", db==null?"":db.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        xml.append("        ").append(XMLHandler.addTagValue("table",      tablename)); //$NON-NLS-1$ //$NON-NLS-2$
-        xml.append("        ").append(XMLHandler.addTagValue("field",      fieldname)); //$NON-NLS-1$ //$NON-NLS-2$
-        xml.append("      ").append(XMLHandler.closeTag(XML_TAG)).append(Const.CR); //$NON-NLS-1$
+        xml.append("      ").append(XMLHandler.openTag(XML_TAG)).append(Const.CR); 
+        xml.append("        ").append(XMLHandler.addTagValue("connection", db==null?"":db.getName()));   //$NON-NLS-3$
+        xml.append("        ").append(XMLHandler.addTagValue("table",      tablename));  
+        xml.append("        ").append(XMLHandler.addTagValue("field",      fieldname));  
+        xml.append("      ").append(XMLHandler.closeTag(XML_TAG)).append(Const.CR); 
         
         return xml.toString();
     }
@@ -79,14 +79,14 @@ public class TransDependency implements XMLInterface, Cloneable
 	{
 		try
 		{
-			String depcon    = XMLHandler.getTagValue(depnode, "connection"); //$NON-NLS-1$
+			String depcon    = XMLHandler.getTagValue(depnode, "connection"); 
 			db = DatabaseMeta.findDatabase(databases, depcon);
-			tablename        = XMLHandler.getTagValue(depnode, "table"); //$NON-NLS-1$
-			fieldname        = XMLHandler.getTagValue(depnode, "field"); //$NON-NLS-1$
+			tablename        = XMLHandler.getTagValue(depnode, "table"); 
+			fieldname        = XMLHandler.getTagValue(depnode, "field"); 
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "TransDependency.Exception.UnableToLoadTransformation"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "TransDependency.Exception.UnableToLoadTransformation"), e); 
 		}
 	}
 	

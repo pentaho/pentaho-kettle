@@ -56,12 +56,12 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
   private String messageAbort;
 
   public JobEntryAbort(String n, String scr) {
-    super(n, ""); //$NON-NLS-1$
+    super(n, ""); 
     messageAbort = null;
   }
 
   public JobEntryAbort() {
-    this("", ""); //$NON-NLS-1$//$NON-NLS-2$
+    this("", ""); 
   }
 
   public Object clone() {
@@ -73,7 +73,7 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
     StringBuffer retval = new StringBuffer();
 
     retval.append(super.getXML());
-    retval.append("      ").append(XMLHandler.addTagValue("message", messageAbort)); //$NON-NLS-1$//$NON-NLS-2$
+    retval.append("      ").append(XMLHandler.addTagValue("message", messageAbort)); 
 
     return retval.toString();
   }
@@ -81,17 +81,17 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
   public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep, IMetaStore metaStore) throws KettleXMLException {
     try {
       super.loadXML(entrynode, databases, slaveServers);
-      messageAbort = XMLHandler.getTagValue(entrynode, "message"); //$NON-NLS-1$
+      messageAbort = XMLHandler.getTagValue(entrynode, "message"); 
     } catch (Exception e) {
-      throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryAbort.UnableToLoadFromXml.Label"), e); //$NON-NLS-1$
+      throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryAbort.UnableToLoadFromXml.Label"), e); 
     }
   }
 
   public void loadRep(Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
     try {
-      messageAbort = rep.getJobEntryAttributeString(id_jobentry, "message"); //$NON-NLS-1$
+      messageAbort = rep.getJobEntryAttributeString(id_jobentry, "message"); 
     } catch (KettleDatabaseException dbe) {
-      throw new KettleException(BaseMessages.getString(PKG, "JobEntryAbort.UnableToLoadFromRepo.Label", String.valueOf(id_jobentry)), dbe); //$NON-NLS-1$
+      throw new KettleException(BaseMessages.getString(PKG, "JobEntryAbort.UnableToLoadFromRepo.Label", String.valueOf(id_jobentry)), dbe); 
     }
   }
 
@@ -99,11 +99,11 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
   //
   public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_job) throws KettleException {
     try {
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "message", messageAbort); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "message", messageAbort); 
 
     } catch (KettleDatabaseException dbe) {
       throw new KettleException(
-          BaseMessages.getString(PKG, "JobEntryAbort.UnableToSaveToRepo.Label", String.valueOf(id_job)), dbe); //$NON-NLS-1$
+          BaseMessages.getString(PKG, "JobEntryAbort.UnableToSaveToRepo.Label", String.valueOf(id_job)), dbe); 
     }
   }
 
@@ -114,7 +114,7 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
     try {
       // Return False
       if (RealMessageabort == null) {
-        Returnmessage = BaseMessages.getString(PKG, "JobEntryAbort.Meta.CheckResult.Label"); //$NON-NLS-1$
+        Returnmessage = BaseMessages.getString(PKG, "JobEntryAbort.Meta.CheckResult.Label"); 
       } else {
         Returnmessage = RealMessageabort;
 
@@ -124,7 +124,7 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
       return false;
     } catch (Exception e) {
       result.setNrErrors(1);
-      logError(BaseMessages.getString(PKG, "JobEntryAbort.Meta.CheckResult.CouldNotExecute") + e.toString()); //$NON-NLS-1$
+      logError(BaseMessages.getString(PKG, "JobEntryAbort.Meta.CheckResult.CouldNotExecute") + e.toString()); 
       return false;
     }
   }
@@ -166,6 +166,6 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
   }
 
   public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore) {
-    addOkRemark(this, "messageabort", remarks); //$NON-NLS-1$
+    addOkRemark(this, "messageabort", remarks); 
   }  
 }

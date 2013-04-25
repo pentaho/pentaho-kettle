@@ -40,7 +40,7 @@ public class IntegerValidator implements JobEntryValidator {
 
   public static final IntegerValidator INSTANCE = new IntegerValidator();
 
-  private String VALIDATOR_NAME = "integer"; //$NON-NLS-1$
+  private String VALIDATOR_NAME = "integer"; 
 
   public boolean validate(CheckResultSourceInterface source, String propertyName, List<CheckResultInterface> remarks,
       ValidatorContext context) {

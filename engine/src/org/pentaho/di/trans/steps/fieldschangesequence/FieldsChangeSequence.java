@@ -129,7 +129,7 @@ public class FieldsChangeSequence extends BaseStep implements StepInterface
 			
 			if(change) data.seq=data.startAt;
 			
-		    if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "FieldsChangeSequence.Log.ReadRow")+getLinesRead()+" : "+getInputRowMeta().getString(r)); //$NON-NLS-1$ //$NON-NLS-2$
+		    if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "FieldsChangeSequence.Log.ReadRow")+getLinesRead()+" : "+getInputRowMeta().getString(r));  
 
 		    //reserve room and add value!
 			Object[] outputRowData=RowDataUtil.addValueData(r,data.nextIndexField, data.seq);
@@ -138,11 +138,11 @@ public class FieldsChangeSequence extends BaseStep implements StepInterface
 			
 			data.seq+=data.incrementBy;		
 			
-	        if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "FieldsChangeSequence.Log.WriteRow")+getLinesWritten()+" : "+getInputRowMeta().getString(r)); //$NON-NLS-1$ //$NON-NLS-2$
+	        if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "FieldsChangeSequence.Log.WriteRow")+getLinesWritten()+" : "+getInputRowMeta().getString(r));  
 			
 	        if (checkFeedback(getLinesRead())) 
 			{
-				if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "FieldsChangeSequence.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+				if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "FieldsChangeSequence.Log.LineNumber")+getLinesRead()); 
 			}
 			
 		}catch(Exception e) {
@@ -155,7 +155,7 @@ public class FieldsChangeSequence extends BaseStep implements StepInterface
         	}
         	else
         	{
-	            logError(BaseMessages.getString(PKG, "FieldsChangeSequence.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
+	            logError(BaseMessages.getString(PKG, "FieldsChangeSequence.ErrorInStepRunning")+e.getMessage()); 
 	            logError(Const.getStackTracker(e));
 	            setErrors(1);
 	            stopAll();

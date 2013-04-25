@@ -162,7 +162,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 
 	private XMLInputSaxMeta input;
 
-	private static final String STRING_PREVIEW_ROWS = BaseMessages.getString(PKG, "XMLInputSaxDialog.Button.PreviewRows.Label"); //$NON-NLS-1$
+	private static final String STRING_PREVIEW_ROWS = BaseMessages.getString(PKG, "XMLInputSaxDialog.Button.PreviewRows.Label"); 
 
 	public static final int dateLengths[] = new int[] { 23, 19, 14, 10, 10, 10, 10, 8, 8, 8, 8, 6, 6 };
 
@@ -195,14 +195,14 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.Shell.Text")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.Shell.Text")); 
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname = new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.StepName.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.StepName.Label")); 
 		props.setLook(wlStepname);
 		fdlStepname = new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -226,7 +226,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 		// START OF FILE TAB ///
 		// ////////////////////////
 		wFileTab = new CTabItem(wTabFolder, SWT.NONE);
-		wFileTab.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.File.Label")); //$NON-NLS-1$
+		wFileTab.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.File.Label")); 
 
 		wFileComp = new Composite(wTabFolder, SWT.NONE);
 		props.setLook(wFileComp);
@@ -238,7 +238,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 
 		// Filename line
 		wlFilename = new Label(wFileComp, SWT.RIGHT);
-		wlFilename.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.FileOrDirectory.Label")); //$NON-NLS-1$
+		wlFilename.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.FileOrDirectory.Label")); 
 		props.setLook(wlFilename);
 		fdlFilename = new FormData();
 		fdlFilename.left = new FormAttachment(0, 0);
@@ -248,8 +248,8 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 
 		wbbFilename = new Button(wFileComp, SWT.PUSH | SWT.CENTER);
 		props.setLook(wbbFilename);
-		wbbFilename.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.System.Button.Browse")); //$NON-NLS-1$
-		wbbFilename.setToolTipText(BaseMessages.getString(PKG, "XMLInputSaxDialog.Button.Brows.ToolTip")); //$NON-NLS-1$
+		wbbFilename.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.System.Button.Browse")); 
+		wbbFilename.setToolTipText(BaseMessages.getString(PKG, "XMLInputSaxDialog.Button.Brows.ToolTip")); 
 		fdbFilename = new FormData();
 		fdbFilename.right = new FormAttachment(100, 0);
 		fdbFilename.top = new FormAttachment(0, 0);
@@ -257,8 +257,8 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 
 		wbaFilename = new Button(wFileComp, SWT.PUSH | SWT.CENTER);
 		props.setLook(wbaFilename);
-		wbaFilename.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.Button.AddFile.Label")); //$NON-NLS-1$
-		wbaFilename.setToolTipText(BaseMessages.getString(PKG, "XMLInputSaxDialog.Button.AddFile.ToolTip")); //$NON-NLS-1$
+		wbaFilename.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.Button.AddFile.Label")); 
+		wbaFilename.setToolTipText(BaseMessages.getString(PKG, "XMLInputSaxDialog.Button.AddFile.ToolTip")); 
 		fdbaFilename = new FormData();
 		fdbaFilename.right = new FormAttachment(wbbFilename, -margin);
 		fdbaFilename.top = new FormAttachment(0, 0);
@@ -274,7 +274,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 		wFilename.setLayoutData(fdFilename);
 
 		wlFilemask = new Label(wFileComp, SWT.RIGHT);
-		wlFilemask.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.FileMaskRegExp.Label")); //$NON-NLS-1$
+		wlFilemask.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.FileMaskRegExp.Label")); 
 		props.setLook(wlFilemask);
 		fdlFilemask = new FormData();
 		fdlFilemask.left = new FormAttachment(0, 0);
@@ -292,7 +292,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 
 		// Filename list line
 		wlFilenameList = new Label(wFileComp, SWT.RIGHT);
-		wlFilenameList.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.SelectedFiles.Label")); //$NON-NLS-1$
+		wlFilenameList.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.SelectedFiles.Label")); 
 		props.setLook(wlFilenameList);
 		fdlFilenameList = new FormData();
 		fdlFilenameList.left = new FormAttachment(0, 0);
@@ -303,8 +303,8 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 		// Buttons to the right of the screen...
 		wbdFilename = new Button(wFileComp, SWT.PUSH | SWT.CENTER);
 		props.setLook(wbdFilename);
-		wbdFilename.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.Button.DeleteEntry.Label")); //$NON-NLS-1$
-		wbdFilename.setToolTipText(BaseMessages.getString(PKG, "XMLInputSaxDialog.Button.DeleteEntry.ToolTip")); //$NON-NLS-1$
+		wbdFilename.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.Button.DeleteEntry.Label")); 
+		wbdFilename.setToolTipText(BaseMessages.getString(PKG, "XMLInputSaxDialog.Button.DeleteEntry.ToolTip")); 
 		fdbdFilename = new FormData();
 		fdbdFilename.right = new FormAttachment(100, 0);
 		fdbdFilename.top = new FormAttachment(wFilemask, 40);
@@ -312,8 +312,8 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 
 		wbeFilename = new Button(wFileComp, SWT.PUSH | SWT.CENTER);
 		props.setLook(wbeFilename);
-		wbeFilename.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.Button.EditEntry.Label")); //$NON-NLS-1$
-		wbeFilename.setToolTipText(BaseMessages.getString(PKG, "XMLInputSaxDialog.Button.EditEntry.ToolTip")); //$NON-NLS-1$
+		wbeFilename.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.Button.EditEntry.Label")); 
+		wbeFilename.setToolTipText(BaseMessages.getString(PKG, "XMLInputSaxDialog.Button.EditEntry.ToolTip")); 
 		fdbeFilename = new FormData();
 		fdbeFilename.right = new FormAttachment(100, 0);
 		fdbeFilename.top = new FormAttachment(wbdFilename, margin);
@@ -321,18 +321,18 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 
 		wbShowFiles = new Button(wFileComp, SWT.PUSH | SWT.CENTER);
 		props.setLook(wbShowFiles);
-		wbShowFiles.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.Button.ShowFilenames.Label")); //$NON-NLS-1$
+		wbShowFiles.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.Button.ShowFilenames.Label")); 
 		fdbShowFiles = new FormData();
 		fdbShowFiles.left = new FormAttachment(middle, 0);
 		fdbShowFiles.bottom = new FormAttachment(100, 0);
 		wbShowFiles.setLayoutData(fdbShowFiles);
 
 		ColumnInfo[] colinfo = new ColumnInfo[2];
-		colinfo[0] = new ColumnInfo( BaseMessages.getString(PKG, "XMLInputSaxDialog.Column.FileDirectory.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
-		colinfo[1] = new ColumnInfo( BaseMessages.getString(PKG, "XMLInputSaxDialog.Column.Wildcard.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
+		colinfo[0] = new ColumnInfo( BaseMessages.getString(PKG, "XMLInputSaxDialog.Column.FileDirectory.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false); 
+		colinfo[1] = new ColumnInfo( BaseMessages.getString(PKG, "XMLInputSaxDialog.Column.Wildcard.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false); 
 
 		colinfo[0].setUsingVariables(true);
-		colinfo[1].setToolTip(BaseMessages.getString(PKG, "XMLInputSaxDialog.Column.FileDirectory.ToolTip")); //$NON-NLS-1$
+		colinfo[1].setToolTip(BaseMessages.getString(PKG, "XMLInputSaxDialog.Column.FileDirectory.ToolTip")); 
 
 		wFilenameList = new TableView(transMeta, wFileComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 2,
 				lsMod, props);
@@ -362,7 +362,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 		// START OF CONTENT TAB///
 		// /
 		wContentTab = new CTabItem(wTabFolder, SWT.NONE);
-		wContentTab.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.Tab.Content.Label")); //$NON-NLS-1$
+		wContentTab.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.Tab.Content.Label")); 
 
 		FormLayout contentLayout = new FormLayout();
 		contentLayout.marginWidth = 3;
@@ -373,7 +373,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 		wContentComp.setLayout(contentLayout);
 
 		wlInclFilename = new Label(wContentComp, SWT.RIGHT);
-		wlInclFilename.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.IncludeFilename.Label")); //$NON-NLS-1$
+		wlInclFilename.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.IncludeFilename.Label")); 
 		props.setLook(wlInclFilename);
 		fdlInclFilename = new FormData();
 		fdlInclFilename.left = new FormAttachment(0, 0);
@@ -382,14 +382,14 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 		wlInclFilename.setLayoutData(fdlInclFilename);
 		wInclFilename = new Button(wContentComp, SWT.CHECK);
 		props.setLook(wInclFilename);
-		wInclFilename.setToolTipText(BaseMessages.getString(PKG, "XMLInputSaxDialog.IncludeFilename.ToolTip")); //$NON-NLS-1$
+		wInclFilename.setToolTipText(BaseMessages.getString(PKG, "XMLInputSaxDialog.IncludeFilename.ToolTip")); 
 		fdInclFilename = new FormData();
 		fdInclFilename.left = new FormAttachment(middle, 0);
 		fdInclFilename.top = new FormAttachment(0, 0);
 		wInclFilename.setLayoutData(fdInclFilename);
 
 		wlInclFilenameField = new Label(wContentComp, SWT.LEFT);
-		wlInclFilenameField.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.FilenameFieldname.Label")); //$NON-NLS-1$
+		wlInclFilenameField.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.FilenameFieldname.Label")); 
 		props.setLook(wlInclFilenameField);
 		fdlInclFilenameField = new FormData();
 		fdlInclFilenameField.left = new FormAttachment(wInclFilename, margin);
@@ -405,7 +405,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 		wInclFilenameField.setLayoutData(fdInclFilenameField);
 
 		wlInclRownum = new Label(wContentComp, SWT.RIGHT);
-		wlInclRownum.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.RowNumInOutput.Label")); //$NON-NLS-1$
+		wlInclRownum.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.RowNumInOutput.Label")); 
 		props.setLook(wlInclRownum);
 		fdlInclRownum = new FormData();
 		fdlInclRownum.left = new FormAttachment(0, 0);
@@ -414,14 +414,14 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 		wlInclRownum.setLayoutData(fdlInclRownum);
 		wInclRownum = new Button(wContentComp, SWT.CHECK);
 		props.setLook(wInclRownum);
-		wInclRownum.setToolTipText(BaseMessages.getString(PKG, "XMLInputSaxDialog.RowNumInOutput.ToolTip")); //$NON-NLS-1$
+		wInclRownum.setToolTipText(BaseMessages.getString(PKG, "XMLInputSaxDialog.RowNumInOutput.ToolTip")); 
 		fdRownum = new FormData();
 		fdRownum.left = new FormAttachment(middle, 0);
 		fdRownum.top = new FormAttachment(wInclFilenameField, margin);
 		wInclRownum.setLayoutData(fdRownum);
 
 		wlInclRownumField = new Label(wContentComp, SWT.RIGHT);
-		wlInclRownumField.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.RowNumInOutputField.Label")); //$NON-NLS-1$
+		wlInclRownumField.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.RowNumInOutputField.Label")); 
 		props.setLook(wlInclRownumField);
 		fdlInclRownumField = new FormData();
 		fdlInclRownumField.left = new FormAttachment(wInclRownum, margin);
@@ -437,7 +437,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 		wInclRownumField.setLayoutData(fdInclRownumField);
 
 		wlLimit = new Label(wContentComp, SWT.RIGHT);
-		wlLimit.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.Limit.Label")); //$NON-NLS-1$
+		wlLimit.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.Limit.Label")); 
 		props.setLook(wlLimit);
 		fdlLimit = new FormData();
 		fdlLimit.left = new FormAttachment(0, 0);
@@ -453,10 +453,10 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 		fdLimit.right = new FormAttachment(100, 0);
 		wLimit.setLayoutData(fdLimit);
 
-		String positionHelp = BaseMessages.getString(PKG, "XMLInputSaxDialog.Location.ToolTip"); //$NON-NLS-1$
+		String positionHelp = BaseMessages.getString(PKG, "XMLInputSaxDialog.Location.ToolTip"); 
 
 		wlPosition = new Label(wContentComp, SWT.RIGHT);
-		wlPosition.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.Location.Label")); //$NON-NLS-1$
+		wlPosition.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.Location.Label")); 
 		wlPosition.setToolTipText(positionHelp);
 		props.setLook(wlPosition);
 		fdlPosition = new FormData();
@@ -465,7 +465,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 		fdlPosition.right = new FormAttachment(middle, -margin);
 		wlPosition.setLayoutData(fdlPosition);
 
-		ColumnInfo[] locationColumns = new ColumnInfo[] { new ColumnInfo(BaseMessages.getString(PKG, "XMLInputSaxDialog.Column.Elements.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false) //$NON-NLS-1$
+		ColumnInfo[] locationColumns = new ColumnInfo[] { new ColumnInfo(BaseMessages.getString(PKG, "XMLInputSaxDialog.Column.Elements.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false) 
 		};
 		locationColumns[0].setToolTip(positionHelp);
 
@@ -499,7 +499,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 		// Fields tab...
 		//
 		wFieldsTab = new CTabItem(wTabFolder, SWT.NONE);
-		wFieldsTab.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.Tab.Fields.Label")); //$NON-NLS-1$
+		wFieldsTab.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.Tab.Fields.Label")); 
 
 		FormLayout fieldsLayout = new FormLayout();
 		fieldsLayout.marginWidth = Const.FORM_MARGIN;
@@ -510,7 +510,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 		props.setLook(wFieldsComp);
 
 		wGet = new Button(wFieldsComp, SWT.PUSH);
-		wGet.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.Button.GetFields.Label")); //$NON-NLS-1$
+		wGet.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.Button.GetFields.Label")); 
 		fdGet = new FormData();
 		fdGet.left = new FormAttachment(50, 0);
 		fdGet.bottom = new FormAttachment(100, 0);
@@ -530,27 +530,27 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 
 		ColumnInfo[] colinf = new ColumnInfo[] {
 				new ColumnInfo(
-						BaseMessages.getString(PKG, "XMLInputSaxDialog.Column.Name.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+						BaseMessages.getString(PKG, "XMLInputSaxDialog.Column.Name.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
 				new ColumnInfo(
-						BaseMessages.getString(PKG, "XMLInputSaxDialog.Column.Type.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getTypes(), true), //$NON-NLS-1$
+						BaseMessages.getString(PKG, "XMLInputSaxDialog.Column.Type.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getTypes(), true), 
 				new ColumnInfo(
-						BaseMessages.getString(PKG, "XMLInputSaxDialog.Column.Format.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO, formats), //$NON-NLS-1$
+						BaseMessages.getString(PKG, "XMLInputSaxDialog.Column.Format.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO, formats), 
 				new ColumnInfo(
-						BaseMessages.getString(PKG, "XMLInputSaxDialog.Column.Length.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+						BaseMessages.getString(PKG, "XMLInputSaxDialog.Column.Length.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
 				new ColumnInfo(
-						BaseMessages.getString(PKG, "XMLInputSaxDialog.Column.Precision.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+						BaseMessages.getString(PKG, "XMLInputSaxDialog.Column.Precision.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
 				new ColumnInfo(
-						BaseMessages.getString(PKG, "XMLInputSaxDialog.Column.Currency.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+						BaseMessages.getString(PKG, "XMLInputSaxDialog.Column.Currency.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
 				new ColumnInfo(
-						BaseMessages.getString(PKG, "XMLInputSaxDialog.Column.Decimal.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+						BaseMessages.getString(PKG, "XMLInputSaxDialog.Column.Decimal.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
 				new ColumnInfo(
-						BaseMessages.getString(PKG, "XMLInputSaxDialog.Column.Group.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+						BaseMessages.getString(PKG, "XMLInputSaxDialog.Column.Group.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
 				new ColumnInfo(
-						BaseMessages.getString(PKG, "XMLInputSaxDialog.Column.TrimType.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO, XMLInputSaxField.trimTypeDesc, true), //$NON-NLS-1$
+						BaseMessages.getString(PKG, "XMLInputSaxDialog.Column.TrimType.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO, XMLInputSaxField.trimTypeDesc, true), 
 				new ColumnInfo(
-						BaseMessages.getString(PKG, "XMLInputSaxDialog.Column.Repeat.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "Y", "N" }, true), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+						BaseMessages.getString(PKG, "XMLInputSaxDialog.Column.Repeat.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "Y", "N" }, true),   //$NON-NLS-3$
 				new ColumnInfo(
-						BaseMessages.getString(PKG, "XMLInputSaxDialog.Column.Position.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+						BaseMessages.getString(PKG, "XMLInputSaxDialog.Column.Position.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
 		};
 
 		wFields = new TableView(transMeta, wFieldsComp, SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props);
@@ -559,9 +559,9 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 
 		ColumnInfo[] colinfatt = new ColumnInfo[] {
 				new ColumnInfo(
-						BaseMessages.getString(PKG, "XMLInputSaxDialog.Column.Element.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+						BaseMessages.getString(PKG, "XMLInputSaxDialog.Column.Element.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
 				new ColumnInfo(
-						BaseMessages.getString(PKG, "XMLInputSaxDialog.Column.DefiningAttribute.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+						BaseMessages.getString(PKG, "XMLInputSaxDialog.Column.DefiningAttribute.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
 		};
 
 		wAttributes = new TableView(transMeta, wFieldsComp, SWT.FULL_SELECTION | SWT.MULTI, colinfatt, AttributesRows,
@@ -599,13 +599,13 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 		wTabFolder.setLayoutData(fdTabFolder);
 
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 
 		wPreview = new Button(shell, SWT.PUSH);
 		wPreview.setText(STRING_PREVIEW_ROWS);
 
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, wTabFolder);
 
@@ -663,8 +663,8 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 			public void widgetSelected(SelectionEvent arg0)
 			{
 				wFilenameList.add(new String[] { wFilename.getText(), wFilemask.getText() });
-				wFilename.setText(""); //$NON-NLS-1$
-				wFilemask.setText(""); //$NON-NLS-1$
+				wFilename.setText(""); 
+				wFilemask.setText(""); 
 				wFilenameList.removeEmptyRows();
 				wFilenameList.setRowNums();
 				wFilenameList.optWidth(true);
@@ -718,21 +718,21 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 						EnterSelectionDialog esd = new EnterSelectionDialog(
 								shell,
 								files,
-								BaseMessages.getString(PKG, "XMLInputSaxDialog.Dialog.FilesRead.Title"), BaseMessages.getString(PKG, "XMLInputSaxDialog.Dialog.FilesRead.Message")); //$NON-NLS-1$ //$NON-NLS-2$
+								BaseMessages.getString(PKG, "XMLInputSaxDialog.Dialog.FilesRead.Title"), BaseMessages.getString(PKG, "XMLInputSaxDialog.Dialog.FilesRead.Message"));  
 						esd.setViewOnly();
 						esd.open();
 					} else
 					{
 						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-						mb.setMessage(BaseMessages.getString(PKG, "XMLInputSaxDialog.Dialog.NoFilesFound.Message")); //$NON-NLS-1$
-						mb.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.Dialog.NoFilesFound.Title")); //$NON-NLS-1$
+						mb.setMessage(BaseMessages.getString(PKG, "XMLInputSaxDialog.Dialog.NoFilesFound.Message")); 
+						mb.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.Dialog.NoFilesFound.Title")); 
 						mb.open();
 					}
 				} catch (KettleException ex)
 				{
 					new ErrorDialog(
 							shell,
-							BaseMessages.getString(PKG, "XMLInputSaxDialog.Dialog.ErrorParsingInputData.Title"), BaseMessages.getString(PKG, "XMLInputSaxDialog.Dialog.ErrorParsingInputData.Message"), ex); //$NON-NLS-1$ //$NON-NLS-2$
+							BaseMessages.getString(PKG, "XMLInputSaxDialog.Dialog.ErrorParsingInputData.Title"), BaseMessages.getString(PKG, "XMLInputSaxDialog.Dialog.ErrorParsingInputData.Message"), ex);  
 				}
 			}
 		});
@@ -791,7 +791,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 				} else
 				{
 					FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-					dialog.setFilterExtensions(new String[] { "*.xml;*.XML", "*" }); //$NON-NLS-1$ //$NON-NLS-2$
+					dialog.setFilterExtensions(new String[] { "*.xml;*.XML", "*" });  
 					if (wFilename.getText() != null)
 					{
 						String fname = transMeta.environmentSubstitute(wFilename.getText());
@@ -800,12 +800,12 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 
 					dialog
 							.setFilterNames(new String[] {
-									BaseMessages.getString(PKG, "XMLInputSaxDialog.60"), BaseMessages.getString(PKG, "XMLInputSaxDialog.68") }); //$NON-NLS-1$ //$NON-NLS-2$
+									BaseMessages.getString(PKG, "XMLInputSaxDialog.60"), BaseMessages.getString(PKG, "XMLInputSaxDialog.68") });  
 
 					if (dialog.open() != null)
 					{
 						String str = dialog.getFilterPath()
-								+ System.getProperty("file.separator") + dialog.getFileName(); //$NON-NLS-1$
+								+ System.getProperty("file.separator") + dialog.getFileName(); 
 						wFilename.setText(str);
 					}
 				}
@@ -882,9 +882,9 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
       wInclFilenameField.setText(in.getFilenameField());
     if (in.getRowNumberField() != null)
       wInclRownumField.setText(in.getRowNumberField());
-    wLimit.setText("" + in.getRowLimit()); //$NON-NLS-1$
+    wLimit.setText("" + in.getRowLimit()); 
 
-    logDebug("getting fields info..."); //$NON-NLS-1$
+    logDebug("getting fields info..."); 
     for (int i = 0; i < in.getInputFields().length; i++) {
       XMLInputSaxField field = in.getInputFields()[i];
 
@@ -893,13 +893,13 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
         String name = field.getName();
         String type = field.getTypeDesc();
         String format = field.getFormat();
-        String length = "" + field.getLength(); //$NON-NLS-1$
-        String prec = "" + field.getPrecision(); //$NON-NLS-1$
+        String length = "" + field.getLength(); 
+        String prec = "" + field.getPrecision(); 
         String curr = field.getCurrencySymbol();
         String group = field.getGroupSymbol();
         String decim = field.getDecimalSymbol();
         String trim = field.getTrimTypeDesc();
-        String rep = field.isRepeated() ? "Y" : "N"; //$NON-NLS-1$ //$NON-NLS-2$
+        String rep = field.isRepeated() ? "Y" : "N";  
 
         if (name != null)
           item.setText(1, name);
@@ -907,8 +907,8 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
           item.setText(2, type);
         if (format != null)
           item.setText(3, format);
-        if (length != null && !"-1".equals(length))item.setText(4, length); //$NON-NLS-1$
-        if (prec != null && !"-1".equals(prec))item.setText(5, prec); //$NON-NLS-1$
+        if (length != null && !"-1".equals(length))item.setText(4, length); 
+        if (prec != null && !"-1".equals(prec))item.setText(5, prec); 
         if (curr != null)
           item.setText(6, curr);
         if (decim != null)
@@ -970,7 +970,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 		{
 			new ErrorDialog(
 					shell,
-					BaseMessages.getString(PKG, "XMLInputSaxDialog.Dialog.ErrorParsingInputData.Title"), BaseMessages.getString(PKG, "XMLInputSaxDialog.Dialog.ErrorParsingInputData.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+					BaseMessages.getString(PKG, "XMLInputSaxDialog.Dialog.ErrorParsingInputData.Title"), BaseMessages.getString(PKG, "XMLInputSaxDialog.Dialog.ErrorParsingInputData.Message"), e);  
 		}
 		dispose();
 	}
@@ -1020,7 +1020,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 			field.setDecimalSymbol(item.getText(7));
 			field.setGroupSymbol(item.getText(8));
 			field.setTrimType(XMLInputSaxField.getTrimType(item.getText(9)));
-			field.setRepeated("Y".equalsIgnoreCase(item.getText(10))); //$NON-NLS-1$
+			field.setRepeated("Y".equalsIgnoreCase(item.getText(10))); 
 			field.setFieldPosition(item.getText(11));
 
 			in.getInputFields()[i] = field;
@@ -1056,8 +1056,8 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 			{
 				//error
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-				mb.setMessage(BaseMessages.getString(PKG, "XMLInputSaxDialog.Dialog.NoElements.Message")); //$NON-NLS-1$
-				mb.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.Dialog.NoElements.Title")); //$NON-NLS-1$
+				mb.setMessage(BaseMessages.getString(PKG, "XMLInputSaxDialog.Dialog.NoElements.Message")); 
+				mb.setText(BaseMessages.getString(PKG, "XMLInputSaxDialog.Dialog.NoElements.Title")); 
 				mb.open();
 				return;
 			}
@@ -1084,7 +1084,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 		{
 			new ErrorDialog(
 					shell,
-					BaseMessages.getString(PKG, "XMLInputSaxDialog.Dialog.ErrorParsingInputData.Title"), BaseMessages.getString(PKG, "XMLInputSaxDialog.Dialog.ErrorParsingInputData.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+					BaseMessages.getString(PKG, "XMLInputSaxDialog.Dialog.ErrorParsingInputData.Title"), BaseMessages.getString(PKG, "XMLInputSaxDialog.Dialog.ErrorParsingInputData.Message"), e);  
 			System.out.println(e.getMessage());
 		}
 	}
@@ -1104,7 +1104,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 			EnterNumberDialog numberDialog = new EnterNumberDialog(
 					shell,
 					props.getDefaultPreviewSize(),
-					BaseMessages.getString(PKG, "XMLInputSaxDialog.Dialog.EnterPreviewSize.Title"), BaseMessages.getString(PKG, "XMLInputSaxDialog.Dialog.EnterPreviewSize.Message")); //$NON-NLS-1$ //$NON-NLS-2$
+					BaseMessages.getString(PKG, "XMLInputSaxDialog.Dialog.EnterPreviewSize.Title"), BaseMessages.getString(PKG, "XMLInputSaxDialog.Dialog.EnterPreviewSize.Message"));  
 			int previewSize = numberDialog.open();
 			if (previewSize > 0)
 			{
@@ -1124,7 +1124,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 		{
 			new ErrorDialog(
 					shell,
-					BaseMessages.getString(PKG, "XMLInputSaxDialog.Dialog.ErrorDisplayingPreviewData.Title"), BaseMessages.getString(PKG, "XMLInputSaxDialog.Dialog.ErrorDisplayingPreviewData.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+					BaseMessages.getString(PKG, "XMLInputSaxDialog.Dialog.ErrorDisplayingPreviewData.Title"), BaseMessages.getString(PKG, "XMLInputSaxDialog.Dialog.ErrorDisplayingPreviewData.Message"), e);  
 		}
 	}
 }

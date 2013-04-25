@@ -92,7 +92,7 @@ public class Xslt extends BaseStep implements StepInterface
 			if (Const.isEmpty(meta.getResultfieldname()))
 			{
 				// Result Field is missing !
-				logError(BaseMessages.getString(PKG, "Xslt.Log.ErrorResultFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
+				logError(BaseMessages.getString(PKG, "Xslt.Log.ErrorResultFieldMissing"));  
 				throw new KettleStepException(BaseMessages.getString(PKG, "Xslt.Exception.ErrorResultFieldMissing")); 
 			}
 		
@@ -100,7 +100,7 @@ public class Xslt extends BaseStep implements StepInterface
 			if (Const.isEmpty(meta.getFieldname()))
 			{
 				// Result Field is missing !
-				logError(BaseMessages.getString(PKG, "Xslt.Exception.ErrorXMLFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
+				logError(BaseMessages.getString(PKG, "Xslt.Exception.ErrorXMLFieldMissing"));  
 				throw new KettleStepException(BaseMessages.getString(PKG, "Xslt.Exception.ErrorXMLFieldMissing")); 
 			}
 			
@@ -110,8 +110,8 @@ public class Xslt extends BaseStep implements StepInterface
 			if (data.fieldposition<0)
 			{
 				// The field is unreachable !
-				logError(BaseMessages.getString(PKG, "Xslt.Log.ErrorFindingField")+ "[" + meta.getFieldname()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-				throw new KettleStepException(BaseMessages.getString(PKG, "Xslt.Exception.CouldnotFindField",meta.getFieldname())); //$NON-NLS-1$ //$NON-NLS-2$
+				logError(BaseMessages.getString(PKG, "Xslt.Log.ErrorFindingField")+ "[" + meta.getFieldname()+"]");  
+				throw new KettleStepException(BaseMessages.getString(PKG, "Xslt.Exception.CouldnotFindField",meta.getFieldname()));  
 			}
 				
 			// Check if the XSL Filename is contained in a column
@@ -121,8 +121,8 @@ public class Xslt extends BaseStep implements StepInterface
 				{
 					// The field is missing
 					//	Result field is missing !
-					logError(BaseMessages.getString(PKG, "Xslt.Log.ErrorXSLFileFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
-					throw new KettleStepException(BaseMessages.getString(PKG, "Xslt.Exception.ErrorXSLFileFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "Xslt.Log.ErrorXSLFileFieldMissing"));  
+					throw new KettleStepException(BaseMessages.getString(PKG, "Xslt.Exception.ErrorXSLFileFieldMissing"));  
 				}
 			
 				// Try to get Field index
@@ -132,8 +132,8 @@ public class Xslt extends BaseStep implements StepInterface
 				if (data.fielxslfiledposition<0)
 				{
 					//	 The field is unreachable !
-					logError(BaseMessages.getString(PKG, "Xslt.Log.ErrorXSLFileFieldFinding")+ "[" + meta.getXSLFileField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-					throw new KettleStepException(BaseMessages.getString(PKG, "Xslt.Exception.ErrorXSLFileFieldFinding",meta.getXSLFileField())); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "Xslt.Log.ErrorXSLFileFieldFinding")+ "[" + meta.getXSLFileField()+"]");  
+					throw new KettleStepException(BaseMessages.getString(PKG, "Xslt.Exception.ErrorXSLFileFieldFinding",meta.getXSLFileField()));  
 				}	
 				
 			}else {
@@ -149,13 +149,13 @@ public class Xslt extends BaseStep implements StepInterface
 					file=KettleVFS.getFileObject(data.xslfilename);
 					if(!file.exists())
 					{
-						logError(BaseMessages.getString(PKG, "Xslt.Log.ErrorXSLFileNotExists",data.xslfilename)); //$NON-NLS-1$ //$NON-NLS-2$
-						throw new KettleStepException(BaseMessages.getString(PKG, "Xslt.Exception.ErrorXSLFileNotExists",data.xslfilename)); //$NON-NLS-1$ //$NON-NLS-2$
+						logError(BaseMessages.getString(PKG, "Xslt.Log.ErrorXSLFileNotExists",data.xslfilename));  
+						throw new KettleStepException(BaseMessages.getString(PKG, "Xslt.Exception.ErrorXSLFileNotExists",data.xslfilename));  
 					}
 					if(file.getType()!=FileType.FILE)
 					{
-						logError(BaseMessages.getString(PKG, "Xslt.Log.ErrorXSLNotAFile",data.xslfilename)); //$NON-NLS-1$ //$NON-NLS-2$
-						throw new KettleStepException(BaseMessages.getString(PKG, "Xslt.Exception.ErrorXSLNotAFile",data.xslfilename)); //$NON-NLS-1$ //$NON-NLS-2$
+						logError(BaseMessages.getString(PKG, "Xslt.Log.ErrorXSLNotAFile",data.xslfilename));  
+						throw new KettleStepException(BaseMessages.getString(PKG, "Xslt.Exception.ErrorXSLNotAFile",data.xslfilename));  
 					}
 				}catch(Exception e) {
 					throw new KettleStepException(e);

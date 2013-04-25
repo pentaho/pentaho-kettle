@@ -266,24 +266,24 @@ public class FieldsChangeSequenceMeta extends BaseStepMeta implements StepMetaIn
 		
 		if (Const.isEmpty(resultfieldName))
         {
-            error_message = BaseMessages.getString(PKG, "FieldsChangeSequenceMeta.CheckResult.ResultFieldMissing"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "FieldsChangeSequenceMeta.CheckResult.ResultFieldMissing"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
         }
         else
         {
-            error_message = BaseMessages.getString(PKG, "FieldsChangeSequenceMeta.CheckResult.ResultFieldOK"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "FieldsChangeSequenceMeta.CheckResult.ResultFieldOK"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
         }
 		remarks.add(cr);
 		
 		if (prev==null || prev.size()==0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "FieldsChangeSequenceMeta.CheckResult.NotReceivingFields"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "FieldsChangeSequenceMeta.CheckResult.NotReceivingFields"), stepMeta); 
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FieldsChangeSequenceMeta.CheckResult.StepRecevingData",prev.size()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FieldsChangeSequenceMeta.CheckResult.StepRecevingData",prev.size()+""), stepMeta);  
 			remarks.add(cr);
 			
 	        boolean error_found = false;
@@ -325,12 +325,12 @@ public class FieldsChangeSequenceMeta extends BaseStepMeta implements StepMetaIn
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FieldsChangeSequenceMeta.CheckResult.StepRecevingData2"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FieldsChangeSequenceMeta.CheckResult.StepRecevingData2"), stepMeta); 
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "FieldsChangeSequenceMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "FieldsChangeSequenceMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepMeta); 
 			remarks.add(cr);
 		}
 	}

@@ -59,12 +59,12 @@ public class MappingTest extends TestCase {
     String rowGeneratorPid = registry.getPluginId(StepPluginType.class, rm);
     StepMeta rowGeneratorStep = new StepMeta(rowGeneratorPid, stepName, rm);
 
-    String fieldName[] = { "string" }; //$NON-NLS-1$
-    String type[] = { "String" }; //$NON-NLS-1$
-    String value[] = { "string_value" }; //$NON-NLS-1$
-    String fieldFormat[] = { "" }; //$NON-NLS-1$
-    String group[] = { "" }; //$NON-NLS-1$
-    String decimal[] = { "" }; //$NON-NLS-1$
+    String fieldName[] = { "string" }; 
+    String type[] = { "String" }; 
+    String value[] = { "string_value" }; 
+    String fieldFormat[] = { "" }; 
+    String group[] = { "" }; 
+    String decimal[] = { "" }; 
     String currency[]     = { "", };
     int intDummies[] = { -1, -1, -1 };
     boolean    setEmptystring[]  = { false, false, false};
@@ -75,7 +75,7 @@ public class MappingTest extends TestCase {
     rm.setValue(value);
     rm.setFieldLength(intDummies);
     rm.setFieldPrecision(intDummies);
-    rm.setRowLimit("1"); //$NON-NLS-1$
+    rm.setRowLimit("1"); 
     rm.setFieldFormat(fieldFormat);
     rm.setGroup(group);
     rm.setDecimal(decimal);
@@ -105,17 +105,17 @@ public class MappingTest extends TestCase {
     // Create a new transformation with a row generator that feeds a Mapping (Sub-Transformation) Step
     //
     TransMeta transMeta = new TransMeta();
-    transMeta.setName("Mapping Info Test"); //$NON-NLS-1$
-    StepMeta rowGenerator = buildRowGeneratorStep(registry, "Generate Rows"); //$NON-NLS-1$
+    transMeta.setName("Mapping Info Test"); 
+    StepMeta rowGenerator = buildRowGeneratorStep(registry, "Generate Rows"); 
     transMeta.addStep(rowGenerator);
 
-    String mappingName = "mapping"; //$NON-NLS-1$
+    String mappingName = "mapping"; 
     MappingMeta mappingMeta = new MappingMeta();
     mappingMeta.setSpecificationMethod(ObjectLocationSpecificationMethod.FILENAME);
-    mappingMeta.setFileName("test-src/org/pentaho/di/trans/steps/mapping/subtrans.ktr"); //$NON-NLS-1$
-    String mappingInputStepName = "input"; //$NON-NLS-1$
+    mappingMeta.setFileName("test-src/org/pentaho/di/trans/steps/mapping/subtrans.ktr"); 
+    String mappingInputStepName = "input"; 
     mappingMeta
-        .setInputMappings(Collections.singletonList(createMappingDef(rowGenerator.getName(), mappingInputStepName, "string", "a"))); //$NON-NLS-1$ //$NON-NLS-2$
+        .setInputMappings(Collections.singletonList(createMappingDef(rowGenerator.getName(), mappingInputStepName, "string", "a")));  
     String mappingPid = registry.getPluginId(StepPluginType.class, mappingMeta);
     StepMeta mapping = new StepMeta(mappingPid, mappingName, mappingMeta);
     transMeta.addStep(mapping);
@@ -137,17 +137,17 @@ public class MappingTest extends TestCase {
     }
 
     // Verify the transformation was configured properly
-    assertEquals("Transformation not initialized properly", 2, transMeta.nrSteps()); //$NON-NLS-1$
+    assertEquals("Transformation not initialized properly", 2, transMeta.nrSteps()); 
 
     StepMeta meta = transMeta.getStep(1);
-    assertTrue("Transformation not initialized properly", meta.getStepMetaInterface() instanceof MappingMeta); //$NON-NLS-1$
+    assertTrue("Transformation not initialized properly", meta.getStepMetaInterface() instanceof MappingMeta); 
 
     MappingMeta loadedMappingMeta = (MappingMeta) meta.getStepMetaInterface();
-    assertEquals("Expected a single input mapping definition", 1, loadedMappingMeta.getInputMappings().size()); //$NON-NLS-1$
+    assertEquals("Expected a single input mapping definition", 1, loadedMappingMeta.getInputMappings().size()); 
 
     StepIOMetaInterface ioMeta = loadedMappingMeta.getStepIOMeta();
-    assertEquals("Expected a single Info Stream", 1, ioMeta.getInfoStreams().size()); //$NON-NLS-1$
-    assertEquals("Expected a single Info Step", 1, loadedMappingMeta.getInfoSteps().length); //$NON-NLS-1$
+    assertEquals("Expected a single Info Stream", 1, ioMeta.getInfoStreams().size()); 
+    assertEquals("Expected a single Info Step", 1, loadedMappingMeta.getInfoSteps().length); 
 
     // Verify the transformation can be executed
     StepInterface si = trans.getStepInterface(mappingName, 0);
@@ -172,24 +172,24 @@ public class MappingTest extends TestCase {
     // Create a new transformation with a row generator that feeds a Mapping (Sub-Transformation) Step
     //
     TransMeta transMeta = new TransMeta();
-    transMeta.setName("Mapping Info Test"); //$NON-NLS-1$
+    transMeta.setName("Mapping Info Test"); 
 
-    StepMeta rowGenerator = buildRowGeneratorStep(registry, "Generate Rows"); //$NON-NLS-1$
+    StepMeta rowGenerator = buildRowGeneratorStep(registry, "Generate Rows"); 
     transMeta.addStep(rowGenerator);
 
-    StepMeta rowGeneratorMain = buildRowGeneratorStep(registry, "Generate Rows Main"); //$NON-NLS-1$
+    StepMeta rowGeneratorMain = buildRowGeneratorStep(registry, "Generate Rows Main"); 
     transMeta.addStep(rowGeneratorMain);
 
-    String mappingName = "mapping"; //$NON-NLS-1$
+    String mappingName = "mapping"; 
     MappingMeta mappingMeta = new MappingMeta();
     mappingMeta.setSpecificationMethod(ObjectLocationSpecificationMethod.FILENAME);
-    mappingMeta.setFileName("test-src/org/pentaho/di/trans/steps/mapping/subtrans.ktr"); //$NON-NLS-1$
+    mappingMeta.setFileName("test-src/org/pentaho/di/trans/steps/mapping/subtrans.ktr"); 
     List<MappingIODefinition> inputMappings = new ArrayList<MappingIODefinition>();
-    String mappingInputStepName = "input"; //$NON-NLS-1$
-    inputMappings.add(createMappingDef(rowGenerator.getName(), mappingInputStepName, "string", "a")); //$NON-NLS-1$ //$NON-NLS-2$
+    String mappingInputStepName = "input"; 
+    inputMappings.add(createMappingDef(rowGenerator.getName(), mappingInputStepName, "string", "a"));  
     
     // Create the main data path mapping
-    MappingIODefinition mainMappingDef = createMappingDef(rowGeneratorMain.getName(), mappingInputStepName, "string", "a"); //$NON-NLS-1$ //$NON-NLS-2$
+    MappingIODefinition mainMappingDef = createMappingDef(rowGeneratorMain.getName(), mappingInputStepName, "string", "a");  
     mainMappingDef.setMainDataPath(true);
     inputMappings.add(mainMappingDef);
 
@@ -217,16 +217,16 @@ public class MappingTest extends TestCase {
     }
 
     // Verify the transformation was configured properly
-    assertEquals("Transformation not initialized properly", 3, transMeta.nrSteps()); //$NON-NLS-1$
+    assertEquals("Transformation not initialized properly", 3, transMeta.nrSteps()); 
 
     StepMeta meta = transMeta.getStep(2);
-    assertTrue("Transformation not initialized properly", meta.getStepMetaInterface() instanceof MappingMeta); //$NON-NLS-1$
+    assertTrue("Transformation not initialized properly", meta.getStepMetaInterface() instanceof MappingMeta); 
 
     MappingMeta loadedMappingMeta = (MappingMeta) meta.getStepMetaInterface();
-    assertEquals("Expected a two input mapping definition", 2, loadedMappingMeta.getInputMappings().size()); //$NON-NLS-1$
+    assertEquals("Expected a two input mapping definition", 2, loadedMappingMeta.getInputMappings().size()); 
 
     StepIOMetaInterface ioMeta = loadedMappingMeta.getStepIOMeta();
-    assertEquals("Expected a single Info Stream", 1, ioMeta.getInfoStreams().size()); //$NON-NLS-1$
-    assertEquals("Expected a single Info Step", 1, loadedMappingMeta.getInfoSteps().length); //$NON-NLS-1$    
+    assertEquals("Expected a single Info Stream", 1, ioMeta.getInfoStreams().size()); 
+    assertEquals("Expected a single Info Step", 1, loadedMappingMeta.getInfoSteps().length);     
   }
 }

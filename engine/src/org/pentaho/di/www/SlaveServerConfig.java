@@ -53,15 +53,15 @@ import org.pentaho.metastore.stores.xml.XmlMetaStore;
 import org.w3c.dom.Node;
 
 public class SlaveServerConfig {
-	public static final String XML_TAG = "slave_config"; //$NON-NLS-1$
-	public static final String XML_TAG_MASTERS = "masters"; //$NON-NLS-1$
+	public static final String XML_TAG = "slave_config"; 
+	public static final String XML_TAG_MASTERS = "masters"; 
 
-	public static final String XML_TAG_REPOSITORY = "repository"; //$NON-NLS-1$
-  public static final String XML_TAG_SEQUENCES = "sequences"; //$NON-NLS-1$
-	public static final String XML_TAG_AUTOSEQUENCE = "autosequence"; //$NON-NLS-1$
-  public static final String XML_TAG_AUTO_CREATE= "autocreate"; //$NON-NLS-1$
-  public static final String XML_TAG_SERVICES= "services"; //$NON-NLS-1$
-  public static final String XML_TAG_SERVICE= "service"; //$NON-NLS-1$
+	public static final String XML_TAG_REPOSITORY = "repository"; 
+  public static final String XML_TAG_SEQUENCES = "sequences"; 
+	public static final String XML_TAG_AUTOSEQUENCE = "autosequence"; 
+  public static final String XML_TAG_AUTO_CREATE= "autocreate"; 
+  public static final String XML_TAG_SERVICES= "services"; 
+  public static final String XML_TAG_SERVICE= "service"; 
 
 	private List<SlaveServer> masters;
 	
@@ -94,6 +94,8 @@ public class SlaveServerConfig {
 	private String repositoryPassword;
 	
   private DelegatingMetaStore metaStore;
+  
+  private String passwordFile;
 
 	public SlaveServerConfig() {
 		masters=new ArrayList<SlaveServer>();
@@ -102,6 +104,7 @@ public class SlaveServerConfig {
 		automaticCreationAllowed=false;
 		services = new ArrayList<TransDataService>();
 		metaStore = new DelegatingMetaStore();
+		passwordFile = null; // force lookup by server in ~/.kettle or local folder
 	}
 	
 	public SlaveServerConfig(SlaveServer slaveServer) {
@@ -586,6 +589,14 @@ public class SlaveServerConfig {
 
   public void setMetaStore(DelegatingMetaStore metaStore) {
     this.metaStore = metaStore;
+  }
+
+  public String getPasswordFile() {
+    return passwordFile;
+  }
+
+  public void setPasswordFile(String passwordFile) {
+    this.passwordFile = passwordFile;
   }
   
   

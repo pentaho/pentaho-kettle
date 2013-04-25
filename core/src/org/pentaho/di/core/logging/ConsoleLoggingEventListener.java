@@ -17,9 +17,9 @@ public class ConsoleLoggingEventListener implements KettleLoggingEventListener {
     String logText = layout.format(event);
     
     if (event.getLevel()==LogLevel.ERROR) {
-      CentralLogStore.OriginalSystemErr.println(logText);
+      KettleLogStore.OriginalSystemErr.println(logText);
     } else {
-      CentralLogStore.OriginalSystemOut.println(logText);
+      KettleLogStore.OriginalSystemOut.println(logText);
     }
   }  
 }

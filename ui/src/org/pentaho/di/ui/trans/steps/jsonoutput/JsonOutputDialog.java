@@ -252,7 +252,7 @@ public class JsonOutputDialog extends BaseStepDialog implements StepDialogInterf
 
         // Operation
 		wlOperation=new Label(wGeneralComp, SWT.RIGHT);
-		wlOperation.setText(BaseMessages.getString(PKG, "JsonOutputDialog.Operation.Label")); //$NON-NLS-1$
+		wlOperation.setText(BaseMessages.getString(PKG, "JsonOutputDialog.Operation.Label")); 
  		props.setLook(wlOperation);
 		fdlOperation=new FormData();
 		fdlOperation.left = new FormAttachment(0, 0);

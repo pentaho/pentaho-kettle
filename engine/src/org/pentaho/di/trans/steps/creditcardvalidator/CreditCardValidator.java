@@ -97,7 +97,7 @@ public class CreditCardValidator extends BaseStep implements StepInterface
 				data.indexOfField =getInputRowMeta().indexOfValue(meta.getDynamicField());
 				if (data.indexOfField<0) {
 					// The field is unreachable !
-					throw new KettleException(BaseMessages.getString(PKG, "CreditCardValidator.Exception.CouldnotFindField",meta.getDynamicField())); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleException(BaseMessages.getString(PKG, "CreditCardValidator.Exception.CouldnotFindField",meta.getDynamicField()));  
 				}
 			}
 			data.realResultFieldname=environmentSubstitute(meta.getResultFieldName());
@@ -161,7 +161,7 @@ public class CreditCardValidator extends BaseStep implements StepInterface
         	}
         	else
         	{
-	            logError(BaseMessages.getString(PKG, "CreditCardValidator.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
+	            logError(BaseMessages.getString(PKG, "CreditCardValidator.ErrorInStepRunning")+e.getMessage()); 
 	            setErrors(1);
 	            stopAll();
 	            setOutputDone();  // signal end to receiver(s)

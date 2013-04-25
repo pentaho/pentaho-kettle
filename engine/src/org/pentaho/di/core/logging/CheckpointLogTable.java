@@ -122,16 +122,16 @@ public class CheckpointLogTable extends BaseLogTable implements Cloneable, LogTa
     StringBuffer retval = new StringBuffer();
 
     retval.append(XMLHandler.openTag(XML_TAG));
-    retval.append(XMLHandler.addTagValue("connection", connectionName)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-    retval.append(XMLHandler.addTagValue("schema", schemaName)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append(XMLHandler.addTagValue("table", tableName)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append(XMLHandler.addTagValue("timeout_days", timeoutInDays)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append(XMLHandler.addTagValue(MAX_NR_RETRIES, maxNrRetries)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append(XMLHandler.addTagValue(RUN_RETRY_PERIOD, runRetryPeriod)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append(XMLHandler.addTagValue(NAMESPACE_PARAMETER, namespaceParameter)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append(XMLHandler.addTagValue(SAVE_PARAMETERS, saveParameters)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append(XMLHandler.addTagValue(SAVE_RESULT_ROWS, saveResultRows)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append(XMLHandler.addTagValue(SAVE_RESULT_FILES, saveResultFiles)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append(XMLHandler.addTagValue("connection", connectionName));   //$NON-NLS-3$
+    retval.append(XMLHandler.addTagValue("schema", schemaName));  
+    retval.append(XMLHandler.addTagValue("table", tableName));  
+    retval.append(XMLHandler.addTagValue("timeout_days", timeoutInDays));  
+    retval.append(XMLHandler.addTagValue(MAX_NR_RETRIES, maxNrRetries));  
+    retval.append(XMLHandler.addTagValue(RUN_RETRY_PERIOD, runRetryPeriod));  
+    retval.append(XMLHandler.addTagValue(NAMESPACE_PARAMETER, namespaceParameter));  
+    retval.append(XMLHandler.addTagValue(SAVE_PARAMETERS, saveParameters));  
+    retval.append(XMLHandler.addTagValue(SAVE_RESULT_ROWS, saveResultRows));  
+    retval.append(XMLHandler.addTagValue(SAVE_RESULT_FILES, saveResultFiles));  
     retval.append(super.getFieldsXML());
     retval.append(XMLHandler.closeTag(XML_TAG)).append(Const.CR);
 

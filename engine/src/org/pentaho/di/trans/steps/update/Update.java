@@ -100,7 +100,7 @@ public class Update extends BaseStep implements StepInterface
 		if(!meta.isSkipLookup())
 		{
 			data.db.setValues(data.lookupParameterRowMeta, lookupRow, data.prepStatementLookup);
-			if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "Update.Log.ValuesSetForLookup", data.lookupParameterRowMeta.getString(lookupRow), rowMeta.getString(row))); //$NON-NLS-1$ //$NON-NLS-2$
+			if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "Update.Log.ValuesSetForLookup", data.lookupParameterRowMeta.getString(lookupRow), rowMeta.getString(row)));  
 			add = data.db.getLookup(data.prepStatementLookup);
 			returnRowMeta = data.db.getReturnRowMeta();
 		}else add=null;
@@ -130,12 +130,12 @@ public class Update extends BaseStep implements StepInterface
                 }
                 else
                 {
-                    throw new KettleDatabaseException(BaseMessages.getString(PKG, "Update.Exception.KeyCouldNotFound")+data.lookupParameterRowMeta.getString(lookupRow)); //$NON-NLS-1$
+                    throw new KettleDatabaseException(BaseMessages.getString(PKG, "Update.Exception.KeyCouldNotFound")+data.lookupParameterRowMeta.getString(lookupRow)); 
                 }
             }
             else
             {
-                if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "Update.Log.KeyCouldNotFound")+data.lookupParameterRowMeta.getString(lookupRow)); //$NON-NLS-1$
+                if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "Update.Log.KeyCouldNotFound")+data.lookupParameterRowMeta.getString(lookupRow)); 
                 if (!Const.isEmpty( meta.getIgnoreFlagField())) // set flag field!
                 {
                     outputRow[rowMeta.size()] = Boolean.FALSE;
@@ -146,7 +146,7 @@ public class Update extends BaseStep implements StepInterface
 		{		
 			if(!meta.isSkipLookup()) 
 			{
-				if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "Update.Log.FoundRow")+data.lookupReturnRowMeta.getString(add)); //$NON-NLS-1$
+				if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "Update.Log.FoundRow")+data.lookupReturnRowMeta.getString(add)); 
 			}
 			
 			/* Row was found:
@@ -191,7 +191,7 @@ public class Update extends BaseStep implements StepInterface
                     updateRow[data.valuenrs.length+i] = lookupRow[i];
                 }
                 
-				if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "Update.Log.UpdateRow")+data.lookupParameterRowMeta.getString(lookupRow)); //$NON-NLS-1$
+				if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "Update.Log.UpdateRow")+data.lookupParameterRowMeta.getString(lookupRow)); 
 				data.db.setValues(data.updateParameterRowMeta, updateRow, data.prepStatementUpdate);
 				data.db.insertRow(data.prepStatementUpdate, meta.useBatchUpdate(), true);
 				incrementLinesUpdated();
@@ -237,7 +237,7 @@ public class Update extends BaseStep implements StepInterface
             		                                                                  environmentSubstitute(meta.getTableName()));
                         
             // lookup the values!
-            if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "Update.Log.CheckingRow")+getInputRowMeta().getString(r)); //$NON-NLS-1$
+            if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "Update.Log.CheckingRow")+getInputRowMeta().getString(r)); 
             
             ArrayList<Integer> keynrs = new ArrayList<Integer>(meta.getKeyStream().length);
             ArrayList<Integer> keynrs2 = new ArrayList<Integer>(meta.getKeyStream().length);
@@ -248,11 +248,11 @@ public class Update extends BaseStep implements StepInterface
                 int keynr=getInputRowMeta().indexOfValue(meta.getKeyStream()[i]);
                 
                 if (keynr<0 &&  // couldn't find field!
-                    !"IS NULL".equalsIgnoreCase(meta.getKeyCondition()[i]) &&   // No field needed! //$NON-NLS-1$
-                    !"IS NOT NULL".equalsIgnoreCase(meta.getKeyCondition()[i])  // No field needed! //$NON-NLS-1$
+                    !"IS NULL".equalsIgnoreCase(meta.getKeyCondition()[i]) &&   // No field needed! 
+                    !"IS NOT NULL".equalsIgnoreCase(meta.getKeyCondition()[i])  // No field needed! 
                    )
                 {
-                    throw new KettleStepException(BaseMessages.getString(PKG, "Update.Exception.FieldRequired",meta.getKeyStream()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+                    throw new KettleStepException(BaseMessages.getString(PKG, "Update.Exception.FieldRequired",meta.getKeyStream()[i]));  
                 }
                 keynrs.add(keynr);
                 
@@ -264,14 +264,14 @@ public class Update extends BaseStep implements StepInterface
                 
                 int keynr2=getInputRowMeta().indexOfValue(meta.getKeyStream2()[i]);
                 if (keynr2<0 &&  // couldn't find field!
-                    "BETWEEN".equalsIgnoreCase(meta.getKeyCondition()[i])   // 2 fields needed! //$NON-NLS-1$
+                    "BETWEEN".equalsIgnoreCase(meta.getKeyCondition()[i])   // 2 fields needed! 
                    )
                 {
-                    throw new KettleStepException(BaseMessages.getString(PKG, "Update.Exception.FieldRequired",meta.getKeyStream2()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+                    throw new KettleStepException(BaseMessages.getString(PKG, "Update.Exception.FieldRequired",meta.getKeyStream2()[i]));  
                 }
                 keynrs2.add(keynr2);
 
-                if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "Update.Log.FieldHasDataNumbers",meta.getKeyStream()[i])+""+keynrs.get(keynrs.size()-1)); //$NON-NLS-1$ //$NON-NLS-2$
+                if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "Update.Log.FieldHasDataNumbers",meta.getKeyStream()[i])+""+keynrs.get(keynrs.size()-1));  
             }
             
             data.keynrs  = ArrayUtils.toPrimitive(keynrs.toArray(new Integer[0]));
@@ -285,9 +285,9 @@ public class Update extends BaseStep implements StepInterface
                 data.valuenrs[i]=getInputRowMeta().indexOfValue(meta.getUpdateStream()[i]);
                 if (data.valuenrs[i]<0)  // couldn't find field!
                 {
-                    throw new KettleStepException(BaseMessages.getString(PKG, "Update.Exception.FieldRequired",meta.getUpdateStream()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+                    throw new KettleStepException(BaseMessages.getString(PKG, "Update.Exception.FieldRequired",meta.getUpdateStream()[i]));  
                 }
-                if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "Update.Log.FieldHasDataNumbers",meta.getUpdateStream()[i])+""+data.valuenrs[i]); //$NON-NLS-1$ //$NON-NLS-2$
+                if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "Update.Log.FieldHasDataNumbers",meta.getUpdateStream()[i])+""+data.valuenrs[i]);  
             }
             if(meta.isSkipLookup())
             {
@@ -328,7 +328,7 @@ public class Update extends BaseStep implements StepInterface
 	        if (outputRow!=null) putRow(data.outputRowMeta, outputRow); // copy non-ignored rows to output rowset(s);
 	        if (checkFeedback(getLinesRead())) 
 	        {
-	        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "Update.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+	        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "Update.Log.LineNumber")+getLinesRead()); 
 	        }
         }
         catch(KettleException e)
@@ -340,7 +340,7 @@ public class Update extends BaseStep implements StepInterface
 	        }
 	        else
 	        {
-				logError(BaseMessages.getString(PKG, "Update.Log.ErrorInStep"), e); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "Update.Log.ErrorInStep"), e); 
 				setErrors(1);
 				stopAll();
 				setOutputDone();  // signal end to receiver(s)
@@ -530,7 +530,7 @@ public class Update extends BaseStep implements StepInterface
                     data.db.connect(getPartitionID());
                 }
                 
-                if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "Update.Log.ConnectedToDB")); //$NON-NLS-1$
+                if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "Update.Log.ConnectedToDB")); 
 				
 				data.db.setCommit(meta.getCommitSize());
 
@@ -538,7 +538,7 @@ public class Update extends BaseStep implements StepInterface
 			}
 			catch(KettleException ke)
 			{
-				logError(BaseMessages.getString(PKG, "Update.Log.ErrorOccurred")+ke.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "Update.Log.ErrorOccurred")+ke.getMessage()); 
 				setErrors(1);
 				stopAll();
 			}
@@ -570,7 +570,7 @@ public class Update extends BaseStep implements StepInterface
 	        }
 	        catch(KettleDatabaseException e)
 	        {
-	            logError(BaseMessages.getString(PKG, "Update.Log.UnableToCommitUpdateConnection")+data.db+"] :"+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+	            logError(BaseMessages.getString(PKG, "Update.Log.UnableToCommitUpdateConnection")+data.db+"] :"+e.toString());  
 	            setErrors(1);
 	        }
 	        finally

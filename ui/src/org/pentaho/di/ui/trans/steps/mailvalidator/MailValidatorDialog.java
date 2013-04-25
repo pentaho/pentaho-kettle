@@ -153,14 +153,14 @@ public class MailValidatorDialog extends BaseStepDialog implements StepDialogInt
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "MailValidatorDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "MailValidatorDialog.Shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin=Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "MailValidatorDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "MailValidatorDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -179,7 +179,7 @@ public class MailValidatorDialog extends BaseStepDialog implements StepDialogInt
 
 		// emailFieldName field
 		wlemailFieldName=new Label(shell, SWT.RIGHT);
-		wlemailFieldName.setText(BaseMessages.getString(PKG, "MailValidatorDialog.emailFieldName.Label")); //$NON-NLS-1$
+		wlemailFieldName.setText(BaseMessages.getString(PKG, "MailValidatorDialog.emailFieldName.Label")); 
  		props.setLook(wlemailFieldName);
 		fdlemailFieldName=new FormData();
 		fdlemailFieldName.left = new FormAttachment(0, 0);
@@ -253,7 +253,7 @@ public class MailValidatorDialog extends BaseStepDialog implements StepDialogInt
 
 		// TimeOut fieldname ...
 		wlTimeOut=new Label(wSettingsGroup, SWT.RIGHT);
-		wlTimeOut.setText(BaseMessages.getString(PKG, "MailValidatorDialog.TimeOutField.Label")); //$NON-NLS-1$
+		wlTimeOut.setText(BaseMessages.getString(PKG, "MailValidatorDialog.TimeOutField.Label")); 
  		props.setLook(wlTimeOut);
 		fdlTimeOut=new FormData();
 		fdlTimeOut.left = new FormAttachment(0, 0);
@@ -273,7 +273,7 @@ public class MailValidatorDialog extends BaseStepDialog implements StepDialogInt
 		
 		// eMailSender fieldname ...
 		wleMailSender=new Label(wSettingsGroup, SWT.RIGHT);
-		wleMailSender.setText(BaseMessages.getString(PKG, "MailValidatorDialog.eMailSenderField.Label")); //$NON-NLS-1$
+		wleMailSender.setText(BaseMessages.getString(PKG, "MailValidatorDialog.eMailSenderField.Label")); 
  		props.setLook(wleMailSender);
 		fdleMailSender=new FormData();
 		fdleMailSender.left = new FormAttachment(0, 0);
@@ -294,7 +294,7 @@ public class MailValidatorDialog extends BaseStepDialog implements StepDialogInt
 
 		// DefaultSMTP fieldname ...
 		wlDefaultSMTP=new Label(wSettingsGroup, SWT.RIGHT);
-		wlDefaultSMTP.setText(BaseMessages.getString(PKG, "MailValidatorDialog.DefaultSMTPField.Label")); //$NON-NLS-1$
+		wlDefaultSMTP.setText(BaseMessages.getString(PKG, "MailValidatorDialog.DefaultSMTPField.Label")); 
  		props.setLook(wlDefaultSMTP);
 		fdlDefaultSMTP=new FormData();
 		fdlDefaultSMTP.left = new FormAttachment(0, 0);
@@ -338,7 +338,7 @@ public class MailValidatorDialog extends BaseStepDialog implements StepDialogInt
 		
 		// defaultSMTPField field
 		wldefaultSMTPField=new Label(wSettingsGroup, SWT.RIGHT);
-		wldefaultSMTPField.setText(BaseMessages.getString(PKG, "MailValidatorDialog.defaultSMTPField.Label")); //$NON-NLS-1$
+		wldefaultSMTPField.setText(BaseMessages.getString(PKG, "MailValidatorDialog.defaultSMTPField.Label")); 
  		props.setLook(wldefaultSMTPField);
 		fdldefaultSMTPField=new FormData();
 		fdldefaultSMTPField.left = new FormAttachment(0, 0);
@@ -399,7 +399,7 @@ public class MailValidatorDialog extends BaseStepDialog implements StepDialogInt
 		
 		// Result fieldname ...
 		wlResult=new Label(wResultGroup, SWT.RIGHT);
-		wlResult.setText(BaseMessages.getString(PKG, "MailValidatorDialog.ResultField.Label")); //$NON-NLS-1$
+		wlResult.setText(BaseMessages.getString(PKG, "MailValidatorDialog.ResultField.Label")); 
  		props.setLook(wlResult);
 		fdlResult=new FormData();
 		fdlResult.left = new FormAttachment(0, 0);
@@ -443,7 +443,7 @@ public class MailValidatorDialog extends BaseStepDialog implements StepDialogInt
 		
 		// ResultStringTrue fieldname ...
 		wlResultStringTrue=new Label(wResultGroup, SWT.RIGHT);
-		wlResultStringTrue.setText(BaseMessages.getString(PKG, "MailValidatorDialog.ResultStringTrueField.Label")); //$NON-NLS-1$
+		wlResultStringTrue.setText(BaseMessages.getString(PKG, "MailValidatorDialog.ResultStringTrueField.Label")); 
  		props.setLook(wlResultStringTrue);
 		fdlResultStringTrue=new FormData();
 		fdlResultStringTrue.left = new FormAttachment(0, 0);
@@ -463,7 +463,7 @@ public class MailValidatorDialog extends BaseStepDialog implements StepDialogInt
 		
 		// ResultStringFalse fieldname ...
 		wlResultStringFalse=new Label(wResultGroup, SWT.RIGHT);
-		wlResultStringFalse.setText(BaseMessages.getString(PKG, "MailValidatorDialog.ResultStringFalseField.Label")); //$NON-NLS-1$
+		wlResultStringFalse.setText(BaseMessages.getString(PKG, "MailValidatorDialog.ResultStringFalseField.Label")); 
  		props.setLook(wlResultStringFalse);
 		fdlResultStringFalse=new FormData();
 		fdlResultStringFalse.left = new FormAttachment(0, 0);
@@ -484,7 +484,7 @@ public class MailValidatorDialog extends BaseStepDialog implements StepDialogInt
 		
 		// ErrorMsg fieldname ...
 		wlErrorMsg=new Label(wResultGroup, SWT.RIGHT);
-		wlErrorMsg.setText(BaseMessages.getString(PKG, "MailValidatorDialog.ErrorMsgField.Label")); //$NON-NLS-1$
+		wlErrorMsg.setText(BaseMessages.getString(PKG, "MailValidatorDialog.ErrorMsgField.Label")); 
  		props.setLook(wlErrorMsg);
 		fdlErrorMsg=new FormData();
 		fdlErrorMsg.left = new FormAttachment(0, 0);
@@ -516,9 +516,9 @@ public class MailValidatorDialog extends BaseStepDialog implements StepDialogInt
     	
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wResultGroup);
 
@@ -663,7 +663,7 @@ public class MailValidatorDialog extends BaseStepDialog implements StepDialogInt
 				gotPreviousFields=true;
 			}
 			catch(KettleException ke){
-				new ErrorDialog(shell, BaseMessages.getString(PKG, "MailValidatorDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "MailValidatorDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "MailValidatorDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "MailValidatorDialog.FailedToGetFields.DialogMessage"), ke);  
 			}
 		 }
 		}

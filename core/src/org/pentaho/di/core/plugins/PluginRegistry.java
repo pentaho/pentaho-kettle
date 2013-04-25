@@ -38,7 +38,7 @@ import java.util.Map;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettlePluginException;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.Metrics;
@@ -342,7 +342,7 @@ public class PluginRegistry {
  public <T> T loadClass(PluginInterface plugin, Class<T> pluginClass) throws KettlePluginException {
     if (plugin == null)
     {
-      throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.NoValidStepOrPlugin.PLUGINREGISTRY001")); //$NON-NLS-1$
+      throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.NoValidStepOrPlugin.PLUGINREGISTRY001")); 
     }
 
     if (plugin instanceof ClassLoadingPluginInterface) {
@@ -350,7 +350,7 @@ public class PluginRegistry {
     } else {
       String className = plugin.getClassMap().get(pluginClass);
       if (className == null) {
-        throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.NoValidClassRequested.PLUGINREGISTRY002", pluginClass.getName())); //$NON-NLS-1$
+        throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.NoValidClassRequested.PLUGINREGISTRY002", pluginClass.getName())); 
       }
 
       try
@@ -422,16 +422,16 @@ public class PluginRegistry {
 
         return cl.newInstance();
       } catch (ClassNotFoundException e) {
-        throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.ClassNotFound.PLUGINREGISTRY003"), e); //$NON-NLS-1$
+        throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.ClassNotFound.PLUGINREGISTRY003"), e); 
       } catch (InstantiationException e) {
-        throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.UnableToInstantiateClass.PLUGINREGISTRY004"), e); //$NON-NLS-1$
+        throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.UnableToInstantiateClass.PLUGINREGISTRY004"), e); 
       } catch (IllegalAccessException e) {
-        throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.IllegalAccessToClass.PLUGINREGISTRY005"), e); //$NON-NLS-1$
+        throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.IllegalAccessToClass.PLUGINREGISTRY005"), e); 
       } catch (MalformedURLException e) {
-        throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.MalformedURL.PLUGINREGISTRY006"), e); //$NON-NLS-1$
+        throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.MalformedURL.PLUGINREGISTRY006"), e); 
       } catch (Throwable e) {
         e.printStackTrace();
-        throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.UnExpectedErrorLoadingClass.PLUGINREGISTRY007"), e); //$NON-NLS-1$
+        throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.UnExpectedErrorLoadingClass.PLUGINREGISTRY007"), e); 
       }
     }
   }
@@ -534,17 +534,17 @@ public class PluginRegistry {
                   //
                   pluginType.handlePluginAnnotation(clazz, annotation, new ArrayList<String>(), true, null);
                 } else {
-                  if (CentralLogStore.isInitialized()) {
+                  if (KettleLogStore.isInitialized()) {
                     LogChannel.GENERAL.logDebug("Plugin class "+className+" doesn't contain annotation for plugin type "+pluginType.getName());
                   }
                 }
               } else {
-                if (CentralLogStore.isInitialized()) {
+                if (KettleLogStore.isInitialized()) {
                   LogChannel.GENERAL.logDebug("Plugin class "+className+" doesn't contain valid class for plugin type "+pluginType.getName());
                 }
               }
             } catch(Exception e) {
-              if (CentralLogStore.isInitialized()) {
+              if (KettleLogStore.isInitialized()) {
                 LogChannel.GENERAL.logError("Error registring plugin class from KETTLE_PLUGIN_CLASSES: "+className+Const.CR+Const.getStackTracker(e));
               }
             }
@@ -801,7 +801,7 @@ public class PluginRegistry {
   public ClassLoader getClassLoader(PluginInterface plugin) throws KettlePluginException {
 
     if (plugin == null) {
-      throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.NoValidStepOrPlugin.PLUGINREGISTRY001")); //$NON-NLS-1$
+      throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.NoValidStepOrPlugin.PLUGINREGISTRY001")); 
     }
 
     try {
@@ -880,10 +880,10 @@ public class PluginRegistry {
         return ucl;
       }
     } catch (MalformedURLException e) {
-      throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.MalformedURL.PLUGINREGISTRY006"), e); //$NON-NLS-1$
+      throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.MalformedURL.PLUGINREGISTRY006"), e); 
     } catch (Throwable e) {
       e.printStackTrace();
-      throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.UnExpectedCreatingClassLoader.PLUGINREGISTRY008"), e); //$NON-NLS-1$
+      throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.UnExpectedCreatingClassLoader.PLUGINREGISTRY008"), e); 
     }
   }
     /**

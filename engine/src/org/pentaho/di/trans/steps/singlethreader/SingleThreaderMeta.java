@@ -107,33 +107,33 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
       String transId = XMLHandler.getTagValue(stepnode, "trans_object_id");
       transObjectId = Const.isEmpty(transId) ? null : new StringObjectId(transId);
 
-      transName = XMLHandler.getTagValue(stepnode, "trans_name"); //$NON-NLS-1$
-      fileName = XMLHandler.getTagValue(stepnode, "filename"); //$NON-NLS-1$
-      directoryPath = XMLHandler.getTagValue(stepnode, "directory_path"); //$NON-NLS-1$
+      transName = XMLHandler.getTagValue(stepnode, "trans_name"); 
+      fileName = XMLHandler.getTagValue(stepnode, "filename"); 
+      directoryPath = XMLHandler.getTagValue(stepnode, "directory_path"); 
 
-      batchSize = XMLHandler.getTagValue(stepnode, "batch_size"); //$NON-NLS-1$
-      batchTime = XMLHandler.getTagValue(stepnode, "batch_time"); //$NON-NLS-1$
-      injectStep = XMLHandler.getTagValue(stepnode, "inject_step"); //$NON-NLS-1$
-      retrieveStep = XMLHandler.getTagValue(stepnode, "retrieve_step"); //$NON-NLS-1$
+      batchSize = XMLHandler.getTagValue(stepnode, "batch_size"); 
+      batchTime = XMLHandler.getTagValue(stepnode, "batch_time"); 
+      injectStep = XMLHandler.getTagValue(stepnode, "inject_step"); 
+      retrieveStep = XMLHandler.getTagValue(stepnode, "retrieve_step"); 
       
-      Node parametersNode = XMLHandler.getSubNode(stepnode, "parameters"); //$NON-NLS-1$
+      Node parametersNode = XMLHandler.getSubNode(stepnode, "parameters"); 
 
       String passAll = XMLHandler.getTagValue(parametersNode, "pass_all_parameters");
       passingAllParameters = Const.isEmpty(passAll) || "Y".equalsIgnoreCase(passAll);
       
-      int nrParameters = XMLHandler.countNodes(parametersNode, "parameter"); //$NON-NLS-1$
+      int nrParameters = XMLHandler.countNodes(parametersNode, "parameter"); 
 
       parameters = new String[nrParameters];
       parameterValues = new String[nrParameters];
 
       for (int i = 0; i < nrParameters; i++) {
-        Node knode = XMLHandler.getSubNodeByNr(parametersNode, "parameter", i); //$NON-NLS-1$
+        Node knode = XMLHandler.getSubNodeByNr(parametersNode, "parameter", i); 
 
-        parameters[i] = XMLHandler.getTagValue(knode, "name"); //$NON-NLS-1$
-        parameterValues[i] = XMLHandler.getTagValue(knode, "value"); //$NON-NLS-1$
+        parameters[i] = XMLHandler.getTagValue(knode, "name"); 
+        parameterValues[i] = XMLHandler.getTagValue(knode, "value"); 
       }
     } catch (Exception e) {
-      throw new KettleXMLException(BaseMessages.getString(PKG, "SingleThreaderMeta.Exception.ErrorLoadingTransformationStepFromXML"), e); //$NON-NLS-1$
+      throw new KettleXMLException(BaseMessages.getString(PKG, "SingleThreaderMeta.Exception.ErrorLoadingTransformationStepFromXML"), e); 
     }
   }
 
@@ -160,14 +160,14 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
         // Ignore object reference problems.  It simply means that the reference is no longer valid.
       }
     }
-    retval.append("    ").append(XMLHandler.addTagValue("trans_name", transName)); //$NON-NLS-1$
-    retval.append("    ").append(XMLHandler.addTagValue("filename", fileName)); //$NON-NLS-1$
-    retval.append("    ").append(XMLHandler.addTagValue("directory_path", directoryPath)); //$NON-NLS-1$
+    retval.append("    ").append(XMLHandler.addTagValue("trans_name", transName)); 
+    retval.append("    ").append(XMLHandler.addTagValue("filename", fileName)); 
+    retval.append("    ").append(XMLHandler.addTagValue("directory_path", directoryPath)); 
 
-    retval.append("    ").append(XMLHandler.addTagValue("batch_size", batchSize)); //$NON-NLS-1$
-    retval.append("    ").append(XMLHandler.addTagValue("batch_time", batchTime)); //$NON-NLS-1$
-    retval.append("    ").append(XMLHandler.addTagValue("inject_step", injectStep)); //$NON-NLS-1$
-    retval.append("    ").append(XMLHandler.addTagValue("retrieve_step", retrieveStep)); //$NON-NLS-1$
+    retval.append("    ").append(XMLHandler.addTagValue("batch_size", batchSize)); 
+    retval.append("    ").append(XMLHandler.addTagValue("batch_time", batchTime)); 
+    retval.append("    ").append(XMLHandler.addTagValue("inject_step", injectStep)); 
+    retval.append("    ").append(XMLHandler.addTagValue("retrieve_step", retrieveStep)); 
 
     if (parameters != null) {
       retval.append("      ").append(XMLHandler.openTag("parameters"));
@@ -193,14 +193,14 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
     specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode(method);
     String transId = rep.getStepAttributeString(id_step, "trans_object_id");
     transObjectId = Const.isEmpty(transId) ? null : new StringObjectId(transId);
-    transName = rep.getStepAttributeString(id_step, "trans_name"); //$NON-NLS-1$
-    fileName = rep.getStepAttributeString(id_step, "filename"); //$NON-NLS-1$
-    directoryPath = rep.getStepAttributeString(id_step, "directory_path"); //$NON-NLS-1$
+    transName = rep.getStepAttributeString(id_step, "trans_name"); 
+    fileName = rep.getStepAttributeString(id_step, "filename"); 
+    directoryPath = rep.getStepAttributeString(id_step, "directory_path"); 
 
-    batchSize = rep.getStepAttributeString(id_step, "batch_size"); //$NON-NLS-1$
-    batchTime = rep.getStepAttributeString(id_step, "batch_time"); //$NON-NLS-1$
-    injectStep = rep.getStepAttributeString(id_step, "inject_step"); //$NON-NLS-1$
-    retrieveStep = rep.getStepAttributeString(id_step, "retrieve_step"); //$NON-NLS-1$
+    batchSize = rep.getStepAttributeString(id_step, "batch_size"); 
+    batchTime = rep.getStepAttributeString(id_step, "batch_time"); 
+    injectStep = rep.getStepAttributeString(id_step, "inject_step"); 
+    retrieveStep = rep.getStepAttributeString(id_step, "retrieve_step"); 
 
     // The parameters...
     //
@@ -220,14 +220,14 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
   public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step) throws KettleException {
     rep.saveStepAttribute(id_transformation, id_step, "specification_method", specificationMethod==null ? null : specificationMethod.getCode());
     rep.saveStepAttribute(id_transformation, id_step, "trans_object_id", transObjectId==null ? null : transObjectId.toString());
-    rep.saveStepAttribute(id_transformation, id_step, "filename", fileName); //$NON-NLS-1$
-    rep.saveStepAttribute(id_transformation, id_step, "trans_name", transName); //$NON-NLS-1$
-    rep.saveStepAttribute(id_transformation, id_step, "directory_path", directoryPath); //$NON-NLS-1$
+    rep.saveStepAttribute(id_transformation, id_step, "filename", fileName); 
+    rep.saveStepAttribute(id_transformation, id_step, "trans_name", transName); 
+    rep.saveStepAttribute(id_transformation, id_step, "directory_path", directoryPath); 
 
-    rep.saveStepAttribute(id_transformation, id_step, "batch_size", batchSize); //$NON-NLS-1$
-    rep.saveStepAttribute(id_transformation, id_step, "batch_time", batchTime); //$NON-NLS-1$
-    rep.saveStepAttribute(id_transformation, id_step, "inject_step", injectStep); //$NON-NLS-1$
-    rep.saveStepAttribute(id_transformation, id_step, "retrieve_step", retrieveStep); //$NON-NLS-1$
+    rep.saveStepAttribute(id_transformation, id_step, "batch_size", batchSize); 
+    rep.saveStepAttribute(id_transformation, id_step, "batch_time", batchTime); 
+    rep.saveStepAttribute(id_transformation, id_step, "inject_step", injectStep); 
+    rep.saveStepAttribute(id_transformation, id_step, "retrieve_step", retrieveStep); 
     
     // The parameters...
     //
@@ -316,7 +316,7 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
             throw new KettleException("Unable to load transformation [" + realTransname + "]", e);
           }
         } else {
-          throw new KettleException(BaseMessages.getString(PKG, "SingleThreaderMeta.Exception.UnableToLoadTransformation", realTransname) + realDirectory); //$NON-NLS-1$ //$NON-NLS-2$
+          throw new KettleException(BaseMessages.getString(PKG, "SingleThreaderMeta.Exception.UnableToLoadTransformation", realTransname) + realDirectory);  
         }
       }
       break;
@@ -339,19 +339,19 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
   public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore) {
     CheckResult cr;
     if (prev == null || prev.size() == 0) {
-      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "SingleThreaderMeta.CheckResult.NotReceivingAnyFields"), stepMeta); //$NON-NLS-1$
+      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "SingleThreaderMeta.CheckResult.NotReceivingAnyFields"), stepMeta); 
       remarks.add(cr);
     } else {
-      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SingleThreaderMeta.CheckResult.StepReceivingFields", prev.size() + ""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SingleThreaderMeta.CheckResult.StepReceivingFields", prev.size() + ""), stepMeta);  
       remarks.add(cr);
     }
 
     // See if we have input streams leading to this step!
     if (input.length > 0) {
-      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SingleThreaderMeta.CheckResult.StepReceivingFieldsFromOtherSteps"), stepMeta); //$NON-NLS-1$
+      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SingleThreaderMeta.CheckResult.StepReceivingFieldsFromOtherSteps"), stepMeta); 
       remarks.add(cr);
     } else {
-      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SingleThreaderMeta.CheckResult.NoInputReceived"), stepMeta); //$NON-NLS-1$
+      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SingleThreaderMeta.CheckResult.NoInputReceived"), stepMeta); 
       remarks.add(cr);
     }
 
@@ -472,7 +472,7 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
 
       return proposedNewFilename;
     } catch (Exception e) {
-      throw new KettleException(BaseMessages.getString(PKG, "SingleThreaderMeta.Exception.UnableToLoadTransformation", fileName)); //$NON-NLS-1$
+      throw new KettleException(BaseMessages.getString(PKG, "SingleThreaderMeta.Exception.UnableToLoadTransformation", fileName)); 
     }
   }
 

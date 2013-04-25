@@ -104,7 +104,7 @@ public class ClosureGeneratorDialog extends BaseStepDialog implements StepDialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "ClosureGeneratorDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "ClosureGeneratorDialog.Shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
@@ -112,7 +112,7 @@ public class ClosureGeneratorDialog extends BaseStepDialog implements StepDialog
         // Stepname line
 		//
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "ClosureGeneratorDialog.StepName")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "ClosureGeneratorDialog.StepName")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -132,7 +132,7 @@ public class ClosureGeneratorDialog extends BaseStepDialog implements StepDialog
 		// Parent ...
 		//
 		wlParent=new Label(shell, SWT.RIGHT);
-		wlParent.setText(BaseMessages.getString(PKG, "ClosureGeneratorDialog.ParentField.Label")); //$NON-NLS-1$
+		wlParent.setText(BaseMessages.getString(PKG, "ClosureGeneratorDialog.ParentField.Label")); 
  		props.setLook(wlParent);
 		fdlParent=new FormData();
 		fdlParent.left = new FormAttachment(0, 0);
@@ -152,7 +152,7 @@ public class ClosureGeneratorDialog extends BaseStepDialog implements StepDialog
 		// Child ...
 		//
 		wlChild=new Label(shell, SWT.RIGHT);
-		wlChild.setText(BaseMessages.getString(PKG, "ClosureGeneratorDialog.ChildField.Label")); //$NON-NLS-1$
+		wlChild.setText(BaseMessages.getString(PKG, "ClosureGeneratorDialog.ChildField.Label")); 
  		props.setLook(wlChild);
 		fdlChild=new FormData();
 		fdlChild.left = new FormAttachment(0, 0);
@@ -172,7 +172,7 @@ public class ClosureGeneratorDialog extends BaseStepDialog implements StepDialog
 		// Distance ...
 		//
 		wlDistance=new Label(shell, SWT.RIGHT);
-		wlDistance.setText(BaseMessages.getString(PKG, "ClosureGeneratorDialog.DistanceField.Label")); //$NON-NLS-1$
+		wlDistance.setText(BaseMessages.getString(PKG, "ClosureGeneratorDialog.DistanceField.Label")); 
  		props.setLook(wlDistance);
 		fdlDistance=new FormData();
 		fdlDistance.left = new FormAttachment(0, 0);
@@ -192,7 +192,7 @@ public class ClosureGeneratorDialog extends BaseStepDialog implements StepDialog
 		// Root is zero(Integer)?
 		//
 		wlRootZero=new Label(shell, SWT.RIGHT);
-		wlRootZero.setText(BaseMessages.getString(PKG, "ClosureGeneratorDialog.RootZero.Label")); //$NON-NLS-1$
+		wlRootZero.setText(BaseMessages.getString(PKG, "ClosureGeneratorDialog.RootZero.Label")); 
  		props.setLook(wlRootZero);
 		fdlRootZero=new FormData();
 		fdlRootZero.left = new FormAttachment(0, 0);
@@ -234,9 +234,9 @@ public class ClosureGeneratorDialog extends BaseStepDialog implements StepDialog
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel, }, margin, null);
 

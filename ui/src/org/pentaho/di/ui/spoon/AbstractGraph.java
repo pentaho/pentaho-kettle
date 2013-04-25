@@ -105,7 +105,7 @@ public abstract class AbstractGraph extends Composite {
   }
   
   protected void setZoomLabel() {
-    zoomLabel.setText(Integer.toString(Math.round(magnification * 100)) + "%"); //$NON-NLS-1$
+    zoomLabel.setText(Integer.toString(Math.round(magnification * 100)) + "%"); 
   }
   
   public void redraw() {

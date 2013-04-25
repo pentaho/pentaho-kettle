@@ -205,7 +205,7 @@ public class JsonOutput extends BaseStep implements StepInterface
         	for (int i=0;i<data.nrFields;i++) {
         		data.fieldIndexes[i] = data.inputRowMeta.indexOfValue(meta.getOutputFields()[i].getFieldName());
         		if (data.fieldIndexes[i]<0) {
-        			throw new KettleException(BaseMessages.getString(PKG, "JsonOutput.Exception.FieldNotFound")); //$NON-NLS-1$
+        			throw new KettleException(BaseMessages.getString(PKG, "JsonOutput.Exception.FieldNotFound")); 
         		}
         		JsonOutputField field = meta.getOutputFields()[i];
         		field.setElementName(environmentSubstitute(field.getElementName()));

@@ -356,46 +356,46 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 			String csize;
 			int nrkeys, nrvalues;
 			
-			String con = XMLHandler.getTagValue(stepnode, "connection"); //$NON-NLS-1$
+			String con = XMLHandler.getTagValue(stepnode, "connection"); 
 			databaseMeta = DatabaseMeta.findDatabase(databases, con);
-			csize      = XMLHandler.getTagValue(stepnode, "commit"); //$NON-NLS-1$
+			csize      = XMLHandler.getTagValue(stepnode, "commit"); 
 			commitSize=Const.toInt(csize, 0);
             useBatchUpdate = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_batch")); 
 			skipLookup = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "skip_lookup")); 
-            errorIgnored = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "error_ignored")); //$NON-NLS-1$ //$NON-NLS-2$
-            ignoreFlagField = XMLHandler.getTagValue(stepnode, "ignore_flag_field"); //$NON-NLS-1$
-            schemaName     = XMLHandler.getTagValue(stepnode, "lookup", "schema"); //$NON-NLS-1$ //$NON-NLS-2$
-			tableName      = XMLHandler.getTagValue(stepnode, "lookup", "table"); //$NON-NLS-1$ //$NON-NLS-2$
+            errorIgnored = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "error_ignored"));  
+            ignoreFlagField = XMLHandler.getTagValue(stepnode, "ignore_flag_field"); 
+            schemaName     = XMLHandler.getTagValue(stepnode, "lookup", "schema");  
+			tableName      = XMLHandler.getTagValue(stepnode, "lookup", "table");  
 	
-			Node lookup = XMLHandler.getSubNode(stepnode, "lookup"); //$NON-NLS-1$
-			nrkeys    = XMLHandler.countNodes(lookup, "key"); //$NON-NLS-1$
-			nrvalues  = XMLHandler.countNodes(lookup, "value"); //$NON-NLS-1$
+			Node lookup = XMLHandler.getSubNode(stepnode, "lookup"); 
+			nrkeys    = XMLHandler.countNodes(lookup, "key"); 
+			nrvalues  = XMLHandler.countNodes(lookup, "value"); 
 			
 			allocate(nrkeys, nrvalues);
 			
 			for (int i=0;i<nrkeys;i++)
 			{
-				Node knode = XMLHandler.getSubNodeByNr(lookup, "key", i); //$NON-NLS-1$
+				Node knode = XMLHandler.getSubNodeByNr(lookup, "key", i); 
 				
-				keyStream         [i] = XMLHandler.getTagValue(knode, "name"); //$NON-NLS-1$
-				keyLookup   [i] = XMLHandler.getTagValue(knode, "field"); //$NON-NLS-1$
-				keyCondition[i] = XMLHandler.getTagValue(knode, "condition"); //$NON-NLS-1$
-				if (keyCondition[i]==null) keyCondition[i]="="; //$NON-NLS-1$
-				keyStream2        [i] = XMLHandler.getTagValue(knode, "name2"); //$NON-NLS-1$
+				keyStream         [i] = XMLHandler.getTagValue(knode, "name"); 
+				keyLookup   [i] = XMLHandler.getTagValue(knode, "field"); 
+				keyCondition[i] = XMLHandler.getTagValue(knode, "condition"); 
+				if (keyCondition[i]==null) keyCondition[i]="="; 
+				keyStream2        [i] = XMLHandler.getTagValue(knode, "name2"); 
 			}
 	
 			for (int i=0;i<nrvalues;i++)
 			{
-				Node vnode = XMLHandler.getSubNodeByNr(lookup, "value", i); //$NON-NLS-1$
+				Node vnode = XMLHandler.getSubNodeByNr(lookup, "value", i); 
 				
-				updateLookup[i]        = XMLHandler.getTagValue(vnode, "name"); //$NON-NLS-1$
-				updateStream[i]    = XMLHandler.getTagValue(vnode, "rename"); //$NON-NLS-1$
+				updateLookup[i]        = XMLHandler.getTagValue(vnode, "name"); 
+				updateStream[i]    = XMLHandler.getTagValue(vnode, "rename"); 
 				if (updateStream[i]==null) updateStream[i]=updateLookup[i]; // default: the same name!
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "UpdateMeta.Exception.UnableToReadStepInfoFromXML"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "UpdateMeta.Exception.UnableToReadStepInfoFromXML"), e); 
 		}
 	}
 
@@ -406,8 +406,8 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 		updateLookup = null;
 		databaseMeta = null;
 		commitSize   = 100;
-        schemaName   = ""; //$NON-NLS-1$
-		tableName    = BaseMessages.getString(PKG, "UpdateMeta.DefaultTableName"); //$NON-NLS-1$
+        schemaName   = ""; 
+		tableName    = BaseMessages.getString(PKG, "UpdateMeta.DefaultTableName"); 
 
 		int nrkeys   = 0;
 		int nrvalues = 0;
@@ -416,16 +416,16 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 		
 		for (int i=0;i<nrkeys;i++)
 		{
-			keyLookup[i]    = "age"; //$NON-NLS-1$
-			keyCondition[i] = "BETWEEN"; //$NON-NLS-1$
-			keyStream[i]    = "age_from"; //$NON-NLS-1$
-			keyStream2[i]   = "age_to"; //$NON-NLS-1$
+			keyLookup[i]    = "age"; 
+			keyCondition[i] = "BETWEEN"; 
+			keyStream[i]    = "age_from"; 
+			keyStream2[i]   = "age_to"; 
 		}
 
 		for (int i=0;i<nrvalues;i++)
 		{
-			updateLookup[i]=BaseMessages.getString(PKG, "UpdateMeta.ColumnName.ReturnField")+i; //$NON-NLS-1$
-			updateStream[i]=BaseMessages.getString(PKG, "UpdateMeta.ColumnName.NewName")+i; //$NON-NLS-1$
+			updateLookup[i]=BaseMessages.getString(PKG, "UpdateMeta.ColumnName.ReturnField")+i; 
+			updateStream[i]=BaseMessages.getString(PKG, "UpdateMeta.ColumnName.NewName")+i; 
 		}
 	}
 
@@ -433,35 +433,35 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		StringBuffer retval=new StringBuffer();
 		
-		retval.append("    "+XMLHandler.addTagValue("connection", databaseMeta==null?"":databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		retval.append("    "+XMLHandler.addTagValue("connection", databaseMeta==null?"":databaseMeta.getName()));   //$NON-NLS-3$
 		retval.append("    "+XMLHandler.addTagValue("skip_lookup", skipLookup));
-		retval.append("    "+XMLHandler.addTagValue("commit", commitSize)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    "+XMLHandler.addTagValue("commit", commitSize));  
         retval.append("    "+XMLHandler.addTagValue("use_batch",      useBatchUpdate));
-        retval.append("    "+XMLHandler.addTagValue("error_ignored", errorIgnored)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("    "+XMLHandler.addTagValue("ignore_flag_field", ignoreFlagField)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    <lookup>"+Const.CR); //$NON-NLS-1$
-        retval.append("      "+XMLHandler.addTagValue("schema", schemaName)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      "+XMLHandler.addTagValue("table", tableName)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    "+XMLHandler.addTagValue("error_ignored", errorIgnored));  
+        retval.append("    "+XMLHandler.addTagValue("ignore_flag_field", ignoreFlagField));  
+		retval.append("    <lookup>"+Const.CR); 
+        retval.append("      "+XMLHandler.addTagValue("schema", schemaName));  
+		retval.append("      "+XMLHandler.addTagValue("table", tableName));  
 
 		for (int i=0;i<keyStream.length;i++)
 		{
-			retval.append("      <key>"+Const.CR); //$NON-NLS-1$
-			retval.append("        "+XMLHandler.addTagValue("name", keyStream[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("field", keyLookup[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("condition", keyCondition[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("name2", keyStream2[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        </key>"+Const.CR); //$NON-NLS-1$
+			retval.append("      <key>"+Const.CR); 
+			retval.append("        "+XMLHandler.addTagValue("name", keyStream[i]));  
+			retval.append("        "+XMLHandler.addTagValue("field", keyLookup[i]));  
+			retval.append("        "+XMLHandler.addTagValue("condition", keyCondition[i]));  
+			retval.append("        "+XMLHandler.addTagValue("name2", keyStream2[i]));  
+			retval.append("        </key>"+Const.CR); 
 		}
 
 		for (int i=0;i<updateLookup.length;i++)
 		{
-			retval.append("      <value>"+Const.CR); //$NON-NLS-1$
-			retval.append("        "+XMLHandler.addTagValue("name", updateLookup[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("rename", updateStream[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        </value>"+Const.CR); //$NON-NLS-1$
+			retval.append("      <value>"+Const.CR); 
+			retval.append("        "+XMLHandler.addTagValue("name", updateLookup[i]));  
+			retval.append("        "+XMLHandler.addTagValue("rename", updateStream[i]));  
+			retval.append("        </value>"+Const.CR); 
 		}
 
-		retval.append("      </lookup>"+Const.CR); //$NON-NLS-1$
+		retval.append("      </lookup>"+Const.CR); 
 
 		return retval.toString();
 	}
@@ -471,38 +471,38 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);  //$NON-NLS-1$
+			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);  
 			skipLookup =     rep.getStepAttributeBoolean (id_step, "skip_lookup");
-			commitSize     = (int)rep.getStepAttributeInteger(id_step, "commit"); //$NON-NLS-1$
+			commitSize     = (int)rep.getStepAttributeInteger(id_step, "commit"); 
             useBatchUpdate   =      rep.getStepAttributeBoolean(id_step, "use_batch"); 
-            schemaName     =      rep.getStepAttributeString(id_step, "schema"); //$NON-NLS-1$
-			tableName      =      rep.getStepAttributeString(id_step, "table"); //$NON-NLS-1$
+            schemaName     =      rep.getStepAttributeString(id_step, "schema"); 
+			tableName      =      rep.getStepAttributeString(id_step, "table"); 
             
-            errorIgnored    =     rep.getStepAttributeBoolean(id_step, "error_ignored"); //$NON-NLS-1$
-            ignoreFlagField =     rep.getStepAttributeString (id_step, "ignore_flag_field"); //$NON-NLS-1$
+            errorIgnored    =     rep.getStepAttributeBoolean(id_step, "error_ignored"); 
+            ignoreFlagField =     rep.getStepAttributeString (id_step, "ignore_flag_field"); 
 	
-			int nrkeys   = rep.countNrStepAttributes(id_step, "key_name"); //$NON-NLS-1$
-			int nrvalues = rep.countNrStepAttributes(id_step, "value_name"); //$NON-NLS-1$
+			int nrkeys   = rep.countNrStepAttributes(id_step, "key_name"); 
+			int nrvalues = rep.countNrStepAttributes(id_step, "value_name"); 
 			
 			allocate(nrkeys, nrvalues);
 			
 			for (int i=0;i<nrkeys;i++)
 			{
-				keyStream[i]          = rep.getStepAttributeString(id_step, i, "key_name"); //$NON-NLS-1$
-				keyLookup[i]    = rep.getStepAttributeString(id_step, i, "key_field"); //$NON-NLS-1$
-				keyCondition[i] = rep.getStepAttributeString(id_step, i, "key_condition"); //$NON-NLS-1$
-				keyStream2[i]         = rep.getStepAttributeString(id_step, i, "key_name2"); //$NON-NLS-1$
+				keyStream[i]          = rep.getStepAttributeString(id_step, i, "key_name"); 
+				keyLookup[i]    = rep.getStepAttributeString(id_step, i, "key_field"); 
+				keyCondition[i] = rep.getStepAttributeString(id_step, i, "key_condition"); 
+				keyStream2[i]         = rep.getStepAttributeString(id_step, i, "key_name2"); 
 			}
 			
 			for (int i=0;i<nrvalues;i++)
 			{
-				updateLookup[i]        = rep.getStepAttributeString(id_step, i, "value_name"); //$NON-NLS-1$
-				updateStream[i]    = rep.getStepAttributeString(id_step, i, "value_rename"); //$NON-NLS-1$
+				updateLookup[i]        = rep.getStepAttributeString(id_step, i, "value_name"); 
+				updateStream[i]    = rep.getStepAttributeString(id_step, i, "value_rename"); 
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "UpdateMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "UpdateMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository"), e); 
 		}
 	}
 
@@ -513,26 +513,26 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			rep.saveDatabaseMetaStepAttribute(id_transformation, id_step, "id_connection", databaseMeta);
 			rep.saveStepAttribute(id_transformation, id_step, "skip_lookup",    skipLookup);
-			rep.saveStepAttribute(id_transformation, id_step, "commit",        commitSize); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "commit",        commitSize); 
             rep.saveStepAttribute(id_transformation, id_step, "use_batch",       useBatchUpdate);
-            rep.saveStepAttribute(id_transformation, id_step, "schema",        schemaName); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "table",         tableName); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "schema",        schemaName); 
+			rep.saveStepAttribute(id_transformation, id_step, "table",         tableName); 
 
-            rep.saveStepAttribute(id_transformation, id_step, "error_ignored",        errorIgnored); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "ignore_flag_field",    ignoreFlagField); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "error_ignored",        errorIgnored); 
+            rep.saveStepAttribute(id_transformation, id_step, "ignore_flag_field",    ignoreFlagField); 
 
 			for (int i=0;i<keyStream.length;i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "key_name",      keyStream[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "key_field",     keyLookup[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "key_condition", keyCondition[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "key_name2",     keyStream2[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "key_name",      keyStream[i]); 
+				rep.saveStepAttribute(id_transformation, id_step, i, "key_field",     keyLookup[i]); 
+				rep.saveStepAttribute(id_transformation, id_step, i, "key_condition", keyCondition[i]); 
+				rep.saveStepAttribute(id_transformation, id_step, i, "key_name2",     keyStream2[i]); 
 			}
 	
 			for (int i=0;i<updateLookup.length;i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "value_name",    updateLookup[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "value_rename",  updateStream[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "value_name",    updateLookup[i]); 
+				rep.saveStepAttribute(id_transformation, id_step, i, "value_rename",  updateStream[i]); 
 			}
 			
 			// Also, save the step-database relationship!
@@ -540,7 +540,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "UpdateMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "UpdateMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); 
 		}
 	}
     
@@ -558,7 +558,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
     public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		CheckResult cr;
-		String error_message = ""; //$NON-NLS-1$
+		String error_message = ""; 
 		
 		if (databaseMeta!=null)
 		{
@@ -570,19 +570,19 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 				
 				if (!Const.isEmpty(tableName))
 				{
-					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UpdateMeta.CheckResult.TableNameOK"), stepMeta); //$NON-NLS-1$
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UpdateMeta.CheckResult.TableNameOK"), stepMeta); 
 					remarks.add(cr);
 			
 					boolean first=true;
 					boolean error_found=false;
-					error_message = ""; //$NON-NLS-1$
+					error_message = ""; 
 					
 					// Check fields in table
                     String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
 					RowMetaInterface r = db.getTableFields( schemaTable );
 					if (r!=null)
 					{
-						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UpdateMeta.CheckResult.TableExists"), stepMeta); //$NON-NLS-1$
+						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UpdateMeta.CheckResult.TableExists"), stepMeta); 
 						remarks.add(cr);
 			
 						for (int i=0;i<keyLookup.length;i++)
@@ -595,10 +595,10 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 								if (first)
 								{
 									first=false;
-									error_message+=BaseMessages.getString(PKG, "UpdateMeta.CheckResult.MissingCompareFieldsInTargetTable")+Const.CR; //$NON-NLS-1$
+									error_message+=BaseMessages.getString(PKG, "UpdateMeta.CheckResult.MissingCompareFieldsInTargetTable")+Const.CR; 
 								}
 								error_found=true;
-								error_message+="\t\t"+lufield+Const.CR;  //$NON-NLS-1$
+								error_message+="\t\t"+lufield+Const.CR;  
 							}
 						}
 						if (error_found)
@@ -607,14 +607,14 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 						}
 						else
 						{
-							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UpdateMeta.CheckResult.AllLookupFieldsFound"), stepMeta); //$NON-NLS-1$
+							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UpdateMeta.CheckResult.AllLookupFieldsFound"), stepMeta); 
 						}
 						remarks.add(cr);
 						
 						// How about the fields to insert/update in the table?
 						first=true;
 						error_found=false;
-						error_message = ""; //$NON-NLS-1$
+						error_message = ""; 
 
 						for (int i=0;i<updateLookup.length;i++)
 						{
@@ -626,10 +626,10 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 								if (first)
 								{
 									first=false;
-									error_message+=BaseMessages.getString(PKG, "UpdateMeta.CheckResult.MissingFieldsToUpdateInTargetTable")+Const.CR; //$NON-NLS-1$
+									error_message+=BaseMessages.getString(PKG, "UpdateMeta.CheckResult.MissingFieldsToUpdateInTargetTable")+Const.CR; 
 								}
 								error_found=true;
-								error_message+="\t\t"+lufield+Const.CR;  //$NON-NLS-1$
+								error_message+="\t\t"+lufield+Const.CR;  
 							}
 						}
 						if (error_found)
@@ -638,13 +638,13 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 						}
 						else
 						{
-							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UpdateMeta.CheckResult.AllFieldsToUpdateFoundInTargetTable"), stepMeta); //$NON-NLS-1$
+							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UpdateMeta.CheckResult.AllFieldsToUpdateFoundInTargetTable"), stepMeta); 
 						}
 						remarks.add(cr);
 					}
 					else
 					{
-						error_message=BaseMessages.getString(PKG, "UpdateMeta.CheckResult.CouldNotReadTableInfo"); //$NON-NLS-1$
+						error_message=BaseMessages.getString(PKG, "UpdateMeta.CheckResult.CouldNotReadTableInfo"); 
 						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 						remarks.add(cr);
 					}
@@ -653,11 +653,11 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 				// Look up fields in the input stream <prev>
 				if (prev!=null && prev.size()>0)
 				{
-					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UpdateMeta.CheckResult.StepReceivingDatas",prev.size()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UpdateMeta.CheckResult.StepReceivingDatas",prev.size()+""), stepMeta);  
 					remarks.add(cr);
 			
 					boolean first=true;
-					error_message = ""; //$NON-NLS-1$
+					error_message = ""; 
 					boolean error_found = false;
 					
 					for (int i=0;i<keyStream.length;i++)
@@ -668,10 +668,10 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 							if (first)
 							{
 								first=false;
-								error_message+=BaseMessages.getString(PKG, "UpdateMeta.CheckResult.MissingFieldsInInput")+Const.CR; //$NON-NLS-1$
+								error_message+=BaseMessages.getString(PKG, "UpdateMeta.CheckResult.MissingFieldsInInput")+Const.CR; 
 							}
 							error_found=true;
-							error_message+="\t\t"+keyStream[i]+Const.CR;  //$NON-NLS-1$
+							error_message+="\t\t"+keyStream[i]+Const.CR;  
 						}
 					}
 					for (int i=0;i<keyStream2.length;i++)
@@ -684,10 +684,10 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 								if (first)
 								{
 									first=false;
-									error_message+=BaseMessages.getString(PKG, "UpdateMeta.CheckResult.MissingFieldsInInput2")+Const.CR; //$NON-NLS-1$
+									error_message+=BaseMessages.getString(PKG, "UpdateMeta.CheckResult.MissingFieldsInInput2")+Const.CR; 
 								}
 								error_found=true;
-								error_message+="\t\t"+keyStream[i]+Const.CR;  //$NON-NLS-1$
+								error_message+="\t\t"+keyStream[i]+Const.CR;  
 							}
 						}
 					}
@@ -697,14 +697,14 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 					}
 					else
 					{
-						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UpdateMeta.CheckResult.AllFieldsFoundInInput"), stepMeta); //$NON-NLS-1$
+						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UpdateMeta.CheckResult.AllFieldsFoundInInput"), stepMeta); 
 					}
 					remarks.add(cr);
 
 					// How about the fields to insert/update the table with?
 					first=true;
 					error_found=false;
-					error_message = ""; //$NON-NLS-1$
+					error_message = ""; 
 
 					for (int i=0;i<updateStream.length;i++)
 					{
@@ -716,10 +716,10 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 							if (first)
 							{
 								first=false;
-								error_message+=BaseMessages.getString(PKG, "UpdateMeta.CheckResult.MissingInputStreamFields")+Const.CR; //$NON-NLS-1$
+								error_message+=BaseMessages.getString(PKG, "UpdateMeta.CheckResult.MissingInputStreamFields")+Const.CR; 
 							}
 							error_found=true;
-							error_message+="\t\t"+lufield+Const.CR;  //$NON-NLS-1$
+							error_message+="\t\t"+lufield+Const.CR;  
 						}
 					}
 					if (error_found)
@@ -728,20 +728,20 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 					}
 					else
 					{
-						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UpdateMeta.CheckResult.AllFieldsFoundInInput2"), stepMeta); //$NON-NLS-1$
+						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UpdateMeta.CheckResult.AllFieldsFoundInInput2"), stepMeta); 
 					}
 					remarks.add(cr);
 				}
 				else
 				{
-					error_message=BaseMessages.getString(PKG, "UpdateMeta.CheckResult.MissingFieldsInInput3")+Const.CR; //$NON-NLS-1$
+					error_message=BaseMessages.getString(PKG, "UpdateMeta.CheckResult.MissingFieldsInInput3")+Const.CR; 
 					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 					remarks.add(cr);
 				}
 			}
 			catch(KettleException e)
 			{
-				error_message = BaseMessages.getString(PKG, "UpdateMeta.CheckResult.DatabaseErrorOccurred")+e.getMessage(); //$NON-NLS-1$
+				error_message = BaseMessages.getString(PKG, "UpdateMeta.CheckResult.DatabaseErrorOccurred")+e.getMessage(); 
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
@@ -752,7 +752,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		else
 		{
-			error_message = BaseMessages.getString(PKG, "UpdateMeta.CheckResult.InvalidConnection"); //$NON-NLS-1$
+			error_message = BaseMessages.getString(PKG, "UpdateMeta.CheckResult.InvalidConnection"); 
 			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 			remarks.add(cr);
 		}
@@ -760,12 +760,12 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UpdateMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UpdateMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepMeta); 
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "UpdateMeta.CheckResult.NoInputError"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "UpdateMeta.CheckResult.NoInputError"), stepMeta); 
 			remarks.add(cr);
 		}
 	}
@@ -802,7 +802,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 													true
 													);
 						
-						String cr_index = ""; //$NON-NLS-1$
+						String cr_index = ""; 
 						String idx_fields[] = null;
 						
 						if (keyLookup!=null && keyLookup.length>0)
@@ -812,14 +812,14 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 						}
 						else
 						{
-							retval.setError(BaseMessages.getString(PKG, "UpdateMeta.CheckResult.MissingKeyFields")); //$NON-NLS-1$
+							retval.setError(BaseMessages.getString(PKG, "UpdateMeta.CheckResult.MissingKeyFields")); 
 						}
 
 						// Key lookup dimensions...
 						if (idx_fields!=null && idx_fields.length>0 && !db.checkIndexExists(schemaName, tableName, idx_fields)
 						   )
 						{
-							String indexname = "idx_"+tableName+"_lookup"; //$NON-NLS-1$ //$NON-NLS-2$
+							String indexname = "idx_"+tableName+"_lookup";  
 							cr_index = db.getCreateIndexStatement(schemaName, tableName, indexname, idx_fields, false, false, false, true);
 						}
 						
@@ -828,22 +828,22 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 					}
 					catch(KettleException e)
 					{
-						retval.setError(BaseMessages.getString(PKG, "UpdateMeta.ReturnValue.ErrorOccurred")+e.getMessage()); //$NON-NLS-1$
+						retval.setError(BaseMessages.getString(PKG, "UpdateMeta.ReturnValue.ErrorOccurred")+e.getMessage()); 
 					}
 				}
 				else
 				{
-					retval.setError(BaseMessages.getString(PKG, "UpdateMeta.ReturnValue.NoTableDefinedOnConnection")); //$NON-NLS-1$
+					retval.setError(BaseMessages.getString(PKG, "UpdateMeta.ReturnValue.NoTableDefinedOnConnection")); 
 				}
 			}
 			else
 			{
-				retval.setError(BaseMessages.getString(PKG, "UpdateMeta.ReturnValue.NotReceivingAnyFields")); //$NON-NLS-1$
+				retval.setError(BaseMessages.getString(PKG, "UpdateMeta.ReturnValue.NotReceivingAnyFields")); 
 			}
 		}
 		else
 		{
-			retval.setError(BaseMessages.getString(PKG, "UpdateMeta.ReturnValue.NoConnectionDefined")); //$NON-NLS-1$
+			retval.setError(BaseMessages.getString(PKG, "UpdateMeta.ReturnValue.NoConnectionDefined")); 
 		}
 
 		return retval;
@@ -862,7 +862,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
                 ValueMetaInterface v = prev.searchValueMeta(keyStream[i]);
 
                 DatabaseImpact ii = new DatabaseImpact(DatabaseImpact.TYPE_IMPACT_READ, transMeta.getName(), stepMeta.getName(), databaseMeta
-                        .getDatabaseName(), tableName, keyLookup[i], keyStream[i], v!=null?v.getOrigin():"?", "", "Type = " + v.toStringMeta()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                        .getDatabaseName(), tableName, keyLookup[i], keyStream[i], v!=null?v.getOrigin():"?", "", "Type = " + v.toStringMeta());   //$NON-NLS-3$
                 impact.add(ii);
             }
 
@@ -872,7 +872,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
                 ValueMetaInterface v = prev.searchValueMeta(updateStream[i]);
 
                 DatabaseImpact ii = new DatabaseImpact(DatabaseImpact.TYPE_IMPACT_UPDATE, transMeta.getName(), stepMeta.getName(), databaseMeta
-                        .getDatabaseName(), tableName, updateLookup[i], updateStream[i], v!=null?v.getOrigin():"?", "", "Type = " + v.toStringMeta()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                        .getDatabaseName(), tableName, updateLookup[i], updateStream[i], v!=null?v.getOrigin():"?", "", "Type = " + v.toStringMeta());   //$NON-NLS-3$
                 impact.add(ii);
             }
         }

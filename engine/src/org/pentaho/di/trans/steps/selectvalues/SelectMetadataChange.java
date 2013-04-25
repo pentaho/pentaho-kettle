@@ -127,43 +127,43 @@ public class SelectMetadataChange implements Cloneable, XMLInterface{
 	
 	public String getXML() {
 		StringBuffer retval = new StringBuffer();
-		retval.append("      ").append(XMLHandler.openTag(XML_TAG)); //$NON-NLS-1$
-		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_NAME"),            name)); //$NON-NLS-1$
-		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_RENAME"),          rename)); //$NON-NLS-1$
-		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_TYPE"),            ValueMeta.getTypeDesc(type)) ); //$NON-NLS-1$
-		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_LENGTH"),          length)); //$NON-NLS-1$ 
-		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_PRECISION"),       precision)); //$NON-NLS-1$ 
-		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_CONVERSION_MASK"), conversionMask)); //$NON-NLS-1$
-		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_DATE_FORMAT_LENIENT"),   Boolean.toString(dateFormatLenient))); //$NON-NLS-1$
-    retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_DATE_FORMAT_LOCALE"),   dateFormatLocale)); //$NON-NLS-1$
-    retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_DATE_FORMAT_TIMEZONE"),   dateFormatTimeZone)); //$NON-NLS-1$
-		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_LENIENT_STRING_TO_NUMBER"),   Boolean.toString(lenientStringToNumber))); //$NON-NLS-1$
-		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_ENCODING"),        encoding)); //$NON-NLS-1$
-		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_DECIMAL"),         decimalSymbol)); //$NON-NLS-1$
-		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_GROUPING"),        groupingSymbol)); //$NON-NLS-1$
-		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_CURRENCY"),        currencySymbol)); //$NON-NLS-1$		
-		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_STORAGE_TYPE"),    ValueMeta.getStorageTypeCode(storageType))); //$NON-NLS-1$		
-		retval.append("      ").append(XMLHandler.closeTag(XML_TAG)); //$NON-NLS-1$
+		retval.append("      ").append(XMLHandler.openTag(XML_TAG)); 
+		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_NAME"),            name)); 
+		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_RENAME"),          rename)); 
+		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_TYPE"),            ValueMeta.getTypeDesc(type)) ); 
+		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_LENGTH"),          length));  
+		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_PRECISION"),       precision));  
+		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_CONVERSION_MASK"), conversionMask)); 
+		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_DATE_FORMAT_LENIENT"),   Boolean.toString(dateFormatLenient))); 
+    retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_DATE_FORMAT_LOCALE"),   dateFormatLocale)); 
+    retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_DATE_FORMAT_TIMEZONE"),   dateFormatTimeZone)); 
+		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_LENIENT_STRING_TO_NUMBER"),   Boolean.toString(lenientStringToNumber))); 
+		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_ENCODING"),        encoding)); 
+		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_DECIMAL"),         decimalSymbol)); 
+		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_GROUPING"),        groupingSymbol)); 
+		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_CURRENCY"),        currencySymbol)); 		
+		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_STORAGE_TYPE"),    ValueMeta.getStorageTypeCode(storageType))); 		
+		retval.append("      ").append(XMLHandler.closeTag(XML_TAG)); 
 		return retval.toString();
 	}
 	
 	public void loadXML(Node metaNode) {
-		name           = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_NAME")); //$NON-NLS-1$
-		rename         = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_RENAME")); //$NON-NLS-1$
-		type           = ValueMeta.getType(XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_TYPE"))); //$NON-NLS-1$
-		length         = Const.toInt(XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_LENGTH")), -2); //$NON-NLS-1$
-		precision      = Const.toInt(XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_PRECISION")), -2); //$NON-NLS-1$
-		storageType    = ValueMeta.getStorageType( XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_STORAGE_TYPE")) ); //$NON-NLS-1$
-		conversionMask = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_CONVERSION_MASK")); //$NON-NLS-1$
-		dateFormatLenient = Boolean.parseBoolean(XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_DATE_FORMAT_LENIENT"))); //$NON-NLS-1$
-    dateFormatLocale = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_DATE_FORMAT_LOCALE")); //$NON-NLS-1$
-    dateFormatTimeZone = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_DATE_FORMAT_TIMEZONE")); //$NON-NLS-1$
-    encoding       = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_ENCODING")); //$NON-NLS-1$
-		lenientStringToNumber = Boolean.parseBoolean(XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_LENIENT_STRING_TO_NUMBER"))); //$NON-NLS-1$
-		encoding       = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_ENCODING")); //$NON-NLS-1$
-		decimalSymbol  = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_DECIMAL")); //$NON-NLS-1$
-		groupingSymbol = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_GROUPING")); //$NON-NLS-1$
-		currencySymbol = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_CURRENCY")); //$NON-NLS-1$
+		name           = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_NAME")); 
+		rename         = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_RENAME")); 
+		type           = ValueMeta.getType(XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_TYPE"))); 
+		length         = Const.toInt(XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_LENGTH")), -2); 
+		precision      = Const.toInt(XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_PRECISION")), -2); 
+		storageType    = ValueMeta.getStorageType( XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_STORAGE_TYPE")) ); 
+		conversionMask = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_CONVERSION_MASK")); 
+		dateFormatLenient = Boolean.parseBoolean(XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_DATE_FORMAT_LENIENT"))); 
+    dateFormatLocale = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_DATE_FORMAT_LOCALE")); 
+    dateFormatTimeZone = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_DATE_FORMAT_TIMEZONE")); 
+    encoding       = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_ENCODING")); 
+		lenientStringToNumber = Boolean.parseBoolean(XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_LENIENT_STRING_TO_NUMBER"))); 
+		encoding       = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_ENCODING")); 
+		decimalSymbol  = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_DECIMAL")); 
+		groupingSymbol = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_GROUPING")); 
+		currencySymbol = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_CURRENCY")); 
 	}
 	
 	public SelectMetadataChange clone() {

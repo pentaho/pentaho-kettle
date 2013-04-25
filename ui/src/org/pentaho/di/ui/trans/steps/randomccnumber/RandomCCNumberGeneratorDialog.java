@@ -159,7 +159,7 @@ public class RandomCCNumberGeneratorDialog extends BaseStepDialog implements Ste
 		
 		// CCNumberField fieldname ...
 		wlCCNumberField=new Label(wOutputFields, SWT.RIGHT);
-		wlCCNumberField.setText(BaseMessages.getString(PKG, "RandomCCNumberGeneratorDialog.CCNumberFieldName.Label")); //$NON-NLS-1$
+		wlCCNumberField.setText(BaseMessages.getString(PKG, "RandomCCNumberGeneratorDialog.CCNumberFieldName.Label")); 
  		props.setLook(wlCCNumberField);
 		fdlCCNumberField=new FormData();
 		fdlCCNumberField.left = new FormAttachment(0, 0);
@@ -178,7 +178,7 @@ public class RandomCCNumberGeneratorDialog extends BaseStepDialog implements Ste
 		
 		// CCTypeField fieldname ...
 		wlCCTypeField=new Label(wOutputFields, SWT.RIGHT);
-		wlCCTypeField.setText(BaseMessages.getString(PKG, "RandomCCNumberGeneratorDialog.CCType.Label")); //$NON-NLS-1$
+		wlCCTypeField.setText(BaseMessages.getString(PKG, "RandomCCNumberGeneratorDialog.CCType.Label")); 
  		props.setLook(wlCCTypeField);
 		fdlCCTypeField=new FormData();
 		fdlCCTypeField.left = new FormAttachment(0, 0);
@@ -197,7 +197,7 @@ public class RandomCCNumberGeneratorDialog extends BaseStepDialog implements Ste
 		
 		// CCLengthField fieldname ...
 		wlCCLengthField=new Label(wOutputFields, SWT.RIGHT);
-		wlCCLengthField.setText(BaseMessages.getString(PKG, "RandomCCNumberGeneratorDialog.CCLength.Label")); //$NON-NLS-1$
+		wlCCLengthField.setText(BaseMessages.getString(PKG, "RandomCCNumberGeneratorDialog.CCLength.Label")); 
  		props.setLook(wlCCLengthField);
 		fdlCCLengthField=new FormData();
 		fdlCCLengthField.left = new FormAttachment(0, 0);

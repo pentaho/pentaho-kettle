@@ -81,7 +81,7 @@ public class ImportRulesDialog extends Dialog implements XulEventHandler {
 
   private static Class<?> PKG = ImportRulesDialog.class; // for i18n
 
-  private static final String XUL_FILE_TOOLBAR = "ui/import-rules-toolbar.xul"; //$NON-NLS-1$
+  private static final String XUL_FILE_TOOLBAR = "ui/import-rules-toolbar.xul"; 
 
   private Shell parentShell;
   private Display display;
@@ -120,7 +120,7 @@ public class ImportRulesDialog extends Dialog implements XulEventHandler {
     formLayout.marginHeight = Const.FORM_MARGIN;
 
     shell.setLayout(formLayout);
-    shell.setText(BaseMessages.getString(PKG, "ImportRulesDialog.Shell.Title")); //$NON-NLS-1$
+    shell.setText(BaseMessages.getString(PKG, "ImportRulesDialog.Shell.Title")); 
 
     // Add the buttons at the very bottom
     //
@@ -209,15 +209,15 @@ public class ImportRulesDialog extends Dialog implements XulEventHandler {
       ResourceBundle bundle = new XulSpoonResourceBundle(Spoon.class);
       XulDomContainer xulDomContainer = loader.loadXul(XUL_FILE_TOOLBAR, bundle);
       xulDomContainer.addEventHandler(this);
-      toolbar = (XulToolbar) xulDomContainer.getDocumentRoot().getElementById("import-rules-toolbar"); //$NON-NLS-1$
+      toolbar = (XulToolbar) xulDomContainer.getDocumentRoot().getElementById("import-rules-toolbar"); 
 
       ToolBar swtToolbar = (ToolBar) toolbar.getManagedObject();
       swtToolbar.layout(true, true);
     } catch (Throwable t) {
       LogChannel.GENERAL.logError(Const.getStackTracker(t));
       new ErrorDialog(shell, 
-          BaseMessages.getString(PKG, "ImportRulesDialog.Exception.ErrorReadingXULFile.Title"), //$NON-NLS-1$ 
-          BaseMessages.getString(PKG, "ImportRulesDialog.Exception.ErrorReadingXULFile.Message", XUL_FILE_TOOLBAR), new Exception(t)); //$NON-NLS-1$
+          BaseMessages.getString(PKG, "ImportRulesDialog.Exception.ErrorReadingXULFile.Title"),  
+          BaseMessages.getString(PKG, "ImportRulesDialog.Exception.ErrorReadingXULFile.Message", XUL_FILE_TOOLBAR), new Exception(t)); 
     }
   }
 
@@ -504,7 +504,7 @@ public class ImportRulesDialog extends Dialog implements XulEventHandler {
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getName()
    */
   public String getName() {
-    return "importRules"; //$NON-NLS-1$
+    return "importRules"; 
   }
 
   /* (non-Javadoc)

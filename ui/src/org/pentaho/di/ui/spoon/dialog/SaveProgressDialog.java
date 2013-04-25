@@ -79,7 +79,7 @@ public class SaveProgressDialog
 				}
 				catch(KettleException e)
 				{
-					throw new InvocationTargetException(e, BaseMessages.getString(PKG, "TransSaveProgressDialog.Exception.ErrorSavingTransformation")+e.toString()); //$NON-NLS-1$
+					throw new InvocationTargetException(e, BaseMessages.getString(PKG, "TransSaveProgressDialog.Exception.ErrorSavingTransformation")+e.toString()); 
 				}
 			}
 		};
@@ -91,12 +91,12 @@ public class SaveProgressDialog
 		}
 		catch (InvocationTargetException e)
 		{
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "TransSaveProgressDialog.ErrorSavingTransformation.DialogTitle"), BaseMessages.getString(PKG, "TransSaveProgressDialog.ErrorSavingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "TransSaveProgressDialog.ErrorSavingTransformation.DialogTitle"), BaseMessages.getString(PKG, "TransSaveProgressDialog.ErrorSavingTransformation.DialogMessage"), e);  
 			retval=false;
 		}
 		catch (InterruptedException e)
 		{
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "TransSaveProgressDialog.ErrorSavingTransformation.DialogTitle"), BaseMessages.getString(PKG, "TransSaveProgressDialog.ErrorSavingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "TransSaveProgressDialog.ErrorSavingTransformation.DialogTitle"), BaseMessages.getString(PKG, "TransSaveProgressDialog.ErrorSavingTransformation.DialogMessage"), e);  
 			retval=false;
 		}
 

@@ -108,8 +108,8 @@ public class GetTableNames extends BaseStep implements StepInterface
 					data.indexOfSchemaField =data.inputRowMeta.indexOfValue(meta.getSchemaFieldName());
 					if (data.indexOfSchemaField<0) {
 						// The field is unreachable !
-						logError(BaseMessages.getString(PKG, "GetTableNames.Log.ErrorFindingField")+ "[" + meta.getSchemaFieldName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-						throw new KettleException(BaseMessages.getString(PKG, "GetTableNames.Exception.CouldnotFindField",meta.getSchemaFieldName())); //$NON-NLS-1$ //$NON-NLS-2$
+						logError(BaseMessages.getString(PKG, "GetTableNames.Log.ErrorFindingField")+ "[" + meta.getSchemaFieldName()+"]");  
+						throw new KettleException(BaseMessages.getString(PKG, "GetTableNames.Exception.CouldnotFindField",meta.getSchemaFieldName()));  
 					}
 				}   
 	        	
@@ -163,7 +163,7 @@ public class GetTableNames extends BaseStep implements StepInterface
 	    		putRow(data.outputRowMeta, outputRowCatalog);  // copy row to output rowset(s);
 	
 	            if (checkFeedback(getLinesRead())) {
-	            	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetTableNames.LineNumber",""+getLinesRead())); //$NON-NLS-1$
+	            	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetTableNames.LineNumber",""+getLinesRead())); 
 	            }
 	            if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "GetTableNames.Log.PutoutRow",data.outputRowMeta.getString(outputRowCatalog)));
 			}
@@ -203,7 +203,7 @@ public class GetTableNames extends BaseStep implements StepInterface
 	    		putRow(data.outputRowMeta, outputRowSchema);  // copy row to output rowset(s);
 	
 	            if (checkFeedback(getLinesRead())) {
-	            	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetTableNames.LineNumber",""+getLinesRead())); //$NON-NLS-1$
+	            	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetTableNames.LineNumber",""+getLinesRead())); 
 	            }
 	            if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "GetTableNames.Log.PutoutRow",data.outputRowMeta.getString(outputRowSchema)));
 			}
@@ -263,7 +263,7 @@ public class GetTableNames extends BaseStep implements StepInterface
 	    		putRow(data.outputRowMeta, outputRowTable);  // copy row to output rowset(s);
 	
 	            if (checkFeedback(getLinesRead()))  {
-	            	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetTableNames.LineNumber",""+getLinesRead())); //$NON-NLS-1$
+	            	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetTableNames.LineNumber",""+getLinesRead())); 
 	            }
 	            if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "GetTableNames.Log.PutoutRow",data.outputRowMeta.getString(outputRowTable)));
 			}
@@ -302,9 +302,9 @@ public class GetTableNames extends BaseStep implements StepInterface
     	    		
     	            if (checkFeedback(getLinesRead())) 
     	            {
-    	            	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetTableNames.LineNumber",""+getLinesRead())); //$NON-NLS-1$
+    	            	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetTableNames.LineNumber",""+getLinesRead())); 
     	            }
-    	            if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "GetTableNames.Log.PutoutRow",data.outputRowMeta.getString(outputRowView))); //$NON-NLS-1$  
+    	            if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "GetTableNames.Log.PutoutRow",data.outputRowMeta.getString(outputRowView)));   
     	        }
             }catch(Exception e){};
         }
@@ -337,9 +337,9 @@ public class GetTableNames extends BaseStep implements StepInterface
 	    		
 	            if (checkFeedback(getLinesRead())) 
 	            {
-	            	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetTableNames.LineNumber",""+getLinesRead())); //$NON-NLS-1$
+	            	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetTableNames.LineNumber",""+getLinesRead())); 
 	            }
-	            if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "GetTableNames.Log.PutoutRow",data.outputRowMeta.getString(outputRowProc))); //$NON-NLS-1$  
+	            if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "GetTableNames.Log.PutoutRow",data.outputRowMeta.getString(outputRowProc)));   
 	        }
 	     }
         if(meta.isIncludeSynonym())
@@ -373,10 +373,10 @@ public class GetTableNames extends BaseStep implements StepInterface
 	    		
 	            if (checkFeedback(getLinesRead())) 
 	            {
-	            	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetTableNames.LineNumber",""+getLinesRead())); //$NON-NLS-1$
+	            	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetTableNames.LineNumber",""+getLinesRead())); 
 	            }
 	            
-	            if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "GetTableNames.Log.PutoutRow",data.outputRowMeta.getString(outputRowSyn))); //$NON-NLS-1$   
+	            if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "GetTableNames.Log.PutoutRow",data.outputRowMeta.getString(outputRowSyn)));    
 	        }
 	   }
 
@@ -440,13 +440,13 @@ public class GetTableNames extends BaseStep implements StepInterface
                     data.db.connect(getPartitionID());
                 }
 
-                if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetTableNames.Log.ConnectedToDB")); //$NON-NLS-1$
+                if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetTableNames.Log.ConnectedToDB")); 
                 
                 return true;
             }
             catch(KettleException e)
             {
-                logError(BaseMessages.getString(PKG, "GetTableNames.Log.DBException")+e.getMessage()); //$NON-NLS-1$
+                logError(BaseMessages.getString(PKG, "GetTableNames.Log.DBException")+e.getMessage()); 
                 if(data.db!=null) data.db.disconnect();
             }
         }

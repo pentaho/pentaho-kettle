@@ -64,13 +64,13 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
   private String script;
 
   public JobEntryEval(String n, String scr) {
-    super(n, ""); //$NON-NLS-1$
+    super(n, ""); 
     script = scr;
     setID(-1L);
   }
 
   public JobEntryEval() {
-    this("", ""); //$NON-NLS-1$ //$NON-NLS-2$
+    this("", "");  
   }
 
   public Object clone() {
@@ -82,7 +82,7 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
     StringBuffer retval = new StringBuffer();
 
     retval.append(super.getXML());
-    retval.append("      ").append(XMLHandler.addTagValue("script", script)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      ").append(XMLHandler.addTagValue("script", script));  
 
     return retval.toString();
   }
@@ -90,18 +90,18 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
   public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep, IMetaStore metaStore) throws KettleXMLException {
     try {
       super.loadXML(entrynode, databases, slaveServers);
-      script = XMLHandler.getTagValue(entrynode, "script"); //$NON-NLS-1$
+      script = XMLHandler.getTagValue(entrynode, "script"); 
     } catch (Exception e) {
-      throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryEval.UnableToLoadFromXml"), e); //$NON-NLS-1$
+      throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryEval.UnableToLoadFromXml"), e); 
     }
   }
 
   public void loadRep(Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
     try {
-       script = rep.getJobEntryAttributeString(id_jobentry, "script"); //$NON-NLS-1$
+       script = rep.getJobEntryAttributeString(id_jobentry, "script"); 
     } catch (KettleDatabaseException dbe) {
       throw new KettleException(
-          BaseMessages.getString(PKG, "JobEntryEval.UnableToLoadFromRepo", String.valueOf(id_jobentry)), dbe); //$NON-NLS-1$
+          BaseMessages.getString(PKG, "JobEntryEval.UnableToLoadFromRepo", String.valueOf(id_jobentry)), dbe); 
     }
   }
 
@@ -109,9 +109,9 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
   //
   public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_job) throws KettleException {
     try {
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "script", script); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "script", script); 
     } catch (KettleDatabaseException dbe) {
-      throw new KettleException(BaseMessages.getString(PKG, "JobEntryEval.UnableToSaveToRepo", String.valueOf(id_job)), //$NON-NLS-1$
+      throw new KettleException(BaseMessages.getString(PKG, "JobEntryEval.UnableToSaveToRepo", String.valueOf(id_job)), 
           dbe);
     }
   }
@@ -151,30 +151,30 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
       Long files_retrieved = new Long(result.getNrFilesRetrieved());
       Long nr = new Long(result.getEntryNr());
 
-      scope.put("errors", scope, errors); //$NON-NLS-1$
-      scope.put("lines_input", scope, lines_input); //$NON-NLS-1$
-      scope.put("lines_output", scope, lines_output); //$NON-NLS-1$
-      scope.put("lines_updated", scope, lines_updated); //$NON-NLS-1$
-      scope.put("lines_rejected", scope, lines_rejected); //$NON-NLS-1$
-      scope.put("lines_read", scope, lines_read); //$NON-NLS-1$
-      scope.put("lines_written", scope, lines_written); //$NON-NLS-1$
-      scope.put("files_retrieved", scope, files_retrieved); //$NON-NLS-1$
-      scope.put("exit_status", scope, exit_status); //$NON-NLS-1$
-      scope.put("nr", scope, nr); //$NON-NLS-1$
-      scope.put("is_windows", scope, Boolean.valueOf(Const.isWindows())); //$NON-NLS-1$
-      scope.put("_entry_", scope, this); //$NON-NLS-1$
+      scope.put("errors", scope, errors); 
+      scope.put("lines_input", scope, lines_input); 
+      scope.put("lines_output", scope, lines_output); 
+      scope.put("lines_updated", scope, lines_updated); 
+      scope.put("lines_rejected", scope, lines_rejected); 
+      scope.put("lines_read", scope, lines_read); 
+      scope.put("lines_written", scope, lines_written); 
+      scope.put("files_retrieved", scope, files_retrieved); 
+      scope.put("exit_status", scope, exit_status); 
+      scope.put("nr", scope, nr); 
+      scope.put("is_windows", scope, Boolean.valueOf(Const.isWindows())); 
+      scope.put("_entry_", scope, this); 
 
       Object array[] = null;
       if (result.getRows() != null) {
         array = result.getRows().toArray();
       }
 
-      scope.put("rows", scope, array); //$NON-NLS-1$
-      scope.put("parent_job", scope, parentJob); //$NON-NLS-1$
-      scope.put("previous_result", scope, prev_result); //$NON-NLS-1$
+      scope.put("rows", scope, array); 
+      scope.put("parent_job", scope, parentJob); 
+      scope.put("previous_result", scope, prev_result); 
 
       try {
-        Object res = cx.evaluateString(scope, this.script, "<cmd>", 1, null); //$NON-NLS-1$
+        Object res = cx.evaluateString(scope, this.script, "<cmd>", 1, null); 
         boolean retval = Context.toBoolean(res);
         // System.out.println(result.toString()+" + ["+this.script+"] --> "+retval);
         result.setNrErrors(0);
@@ -182,12 +182,12 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
         return retval;
       } catch (Exception e) {
         result.setNrErrors(1);
-        logError(BaseMessages.getString(PKG, "JobEntryEval.CouldNotCompile", e.toString())); //$NON-NLS-1$
+        logError(BaseMessages.getString(PKG, "JobEntryEval.CouldNotCompile", e.toString())); 
         return false;
       }
     } catch (Exception e) {
       result.setNrErrors(1);
-      logError(BaseMessages.getString(PKG, "JobEntryEval.ErrorEvaluating", e.toString())); //$NON-NLS-1$
+      logError(BaseMessages.getString(PKG, "JobEntryEval.ErrorEvaluating", e.toString())); 
       return false;
     } finally {
       Context.exit();
@@ -221,7 +221,7 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
 
   public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore)
   {
-    andValidator().validate(this, "script", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+    andValidator().validate(this, "script", remarks, putValidators(notBlankValidator())); 
   }
 
 }

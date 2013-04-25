@@ -158,7 +158,7 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface
 			putRow(data.outputRowMeta, outputRowData);     // copy row to possible alternate rowset(s).
 	        if (checkFeedback(getLinesInput())) 
 	        {
-	        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "ParGzipCsvInput.Log.LineNumber", Long.toString(getLinesInput()))); //$NON-NLS-1$
+	        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "ParGzipCsvInput.Log.LineNumber", Long.toString(getLinesInput()))); 
 	        }
 		}
 			

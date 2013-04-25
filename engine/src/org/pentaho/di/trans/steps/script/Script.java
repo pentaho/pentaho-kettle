@@ -121,14 +121,14 @@ public class Script extends BaseStep implements StepInterface {
 			String valname = row.getValueMeta(i).getName();
 			if (strTransformScript.indexOf(valname) >= 0) {
 				if (log.isDetailed())
-					logDetailed(BaseMessages.getString(PKG, "Script.Log.UsedValueName", String.valueOf(i), valname)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					logDetailed(BaseMessages.getString(PKG, "Script.Log.UsedValueName", String.valueOf(i), valname));   //$NON-NLS-3$
 				data.fields_used[nr] = i;
 				nr++;
 			}
 		}
 
 		if (log.isDetailed())
-			logDetailed(BaseMessages.getString(PKG, "Script.Log.UsingValuesFromInputStream", String.valueOf(data.fields_used.length))); //$NON-NLS-1$ //$NON-NLS-2$
+			logDetailed(BaseMessages.getString(PKG, "Script.Log.UsingValuesFromInputStream", String.valueOf(data.fields_used.length)));  
 	}
 
 	private boolean addValues(RowMetaInterface rowMeta, Object[] row) throws KettleException {
@@ -169,7 +169,7 @@ public class Script extends BaseStep implements StepInterface {
 
 			bFirstRun = true;
 
-			data.scope.put("_step_", this); //$NON-NLS-1$
+			data.scope.put("_step_", this); 
 
 			// Adding the existing Scripts to the Context
 			//
@@ -188,7 +188,7 @@ public class Script extends BaseStep implements StepInterface {
 
 				// Add the old style row object for compatibility reasons...
 				//
-				data.scope.put("row", row); //$NON-NLS-1$
+				data.scope.put("row", row); 
 
 				// Add the used fields...
 				//
@@ -202,7 +202,7 @@ public class Script extends BaseStep implements StepInterface {
 
 				// also add the meta information for the whole row
 				//
-				data.scope.put("rowMeta", rowMeta); //$NON-NLS-1$
+				data.scope.put("rowMeta", rowMeta); 
 
 				// Modification for Additional Script parsing
 				//
@@ -219,7 +219,7 @@ public class Script extends BaseStep implements StepInterface {
 						}
 					}
 				} catch (Exception e) {
-					throw new KettleValueException(BaseMessages.getString(PKG, "Script.Log.CouldNotAttachAdditionalScripts"), e); //$NON-NLS-1$
+					throw new KettleValueException(BaseMessages.getString(PKG, "Script.Log.CouldNotAttachAdditionalScripts"), e); 
 				}
 
 				// Adding some default JavaScriptFunctions to the System
@@ -232,7 +232,7 @@ public class Script extends BaseStep implements StepInterface {
 				// ScriptValuesAddedFunctions.class, ScriptableObject.DONTENUM);
 				// } catch (Exception ex) {
 				// // System.out.println(ex.toString());
-				// throw new KettleValueException(BaseMessages.getString(PKG, "Script.Log.CouldNotAddDefaultFunctions"), ex); //$NON-NLS-1$
+				// throw new KettleValueException(BaseMessages.getString(PKG, "Script.Log.CouldNotAddDefaultFunctions"), ex); 
 				// }
 				// ;
 
@@ -288,7 +288,7 @@ public class Script extends BaseStep implements StepInterface {
 
 		try {
 			try {
-				data.scope.put("row", row); //$NON-NLS-1$
+				data.scope.put("row", row); 
 
 				for (int i = 0; i < data.fields_used.length; i++) {
 					ValueMetaInterface valueMeta = rowMeta.getValueMeta(data.fields_used[i]);
@@ -300,9 +300,9 @@ public class Script extends BaseStep implements StepInterface {
 
 				// also add the meta information for the hole row
 				//
-				data.scope.put("rowMeta", rowMeta); //$NON-NLS-1$
+				data.scope.put("rowMeta", rowMeta); 
 			} catch (Exception e) {
-				throw new KettleValueException(BaseMessages.getString(PKG, "Script.Log.UnexpectedeError"), e); //$NON-NLS-1$ //$NON-NLS-2$
+				throw new KettleValueException(BaseMessages.getString(PKG, "Script.Log.UnexpectedeError"), e);  
 			}
 
 			data.script.eval(data.scope);
@@ -315,10 +315,10 @@ public class Script extends BaseStep implements StepInterface {
 										// ScriptableObject.NOT_FOUND
 					bWithTransStat = true;
 					if (log.isDetailed())
-						logDetailed(("tran_Status found. Checking transformation status while script execution.")); //$NON-NLS-1$ //$NON-NLS-2$
+						logDetailed(("tran_Status found. Checking transformation status while script execution."));  
 				} else {
 					if (log.isDetailed())
-						logDetailed(("No tran_Status found. Transformation status checking not available.")); //$NON-NLS-1$ //$NON-NLS-2$
+						logDetailed(("No tran_Status found. Transformation status checking not available."));  
 					bWithTransStat = false;
 				}
 			}
@@ -376,7 +376,7 @@ public class Script extends BaseStep implements StepInterface {
 				//
 			}
 		} catch (ScriptException e) {
-			throw new KettleValueException(BaseMessages.getString(PKG, "Script.Log.JavascriptError"), e); //$NON-NLS-1$
+			throw new KettleValueException(BaseMessages.getString(PKG, "Script.Log.JavascriptError"), e); 
 		}
 		return bRC;
 	}
@@ -451,7 +451,7 @@ public class Script extends BaseStep implements StepInterface {
 						}
 
 					case ValueMetaInterface.TYPE_STRING:
-						if (classType.equalsIgnoreCase("org.mozilla.javascript.NativeJavaObject") || //$NON-NLS-1$
+						if (classType.equalsIgnoreCase("org.mozilla.javascript.NativeJavaObject") || 
 								classType.equalsIgnoreCase("org.mozilla.javascript.Undefined")) {
 							// Is it a java Value class ?
 							try {
@@ -567,7 +567,7 @@ public class Script extends BaseStep implements StepInterface {
 					return null;
 				}
 			} catch (Exception e) {
-				throw new KettleValueException(BaseMessages.getString(PKG, "Script.Log.JavascriptError"), e); //$NON-NLS-1$
+				throw new KettleValueException(BaseMessages.getString(PKG, "Script.Log.JavascriptError"), e); 
 			}
 		} else {
 			throw new KettleValueException("No name was specified for result value #" + (i + 1));
@@ -603,8 +603,8 @@ public class Script extends BaseStep implements StepInterface {
 					}
 				}
 			} catch (Exception e) {
-				logError(BaseMessages.getString(PKG, "Script.Log.UnexpectedeError") + " : " + e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
-				logError(BaseMessages.getString(PKG, "Script.Log.ErrorStackTrace") + Const.CR + Const.getStackTracker(e)); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "Script.Log.UnexpectedeError") + " : " + e.toString());  
+				logError(BaseMessages.getString(PKG, "Script.Log.ErrorStackTrace") + Const.CR + Const.getStackTracker(e)); 
 				setErrors(1);
 				stopAll();
 			}
@@ -623,7 +623,7 @@ public class Script extends BaseStep implements StepInterface {
 			if (e.getCause() instanceof ScriptException) {
 				ScriptException ee = (ScriptException) e.getCause();
 				location = "--> " + ee.getLineNumber() + ":" + ee.getColumnNumber(); // $NON-NLS-1$
-																						// $NON-NLS-2$
+																						// 
 			}
 
 			if (getStepMeta().isDoingErrorHandling()) {
@@ -636,7 +636,7 @@ public class Script extends BaseStep implements StepInterface {
 		}
 
 		if (checkFeedback(getLinesRead()))
-			logBasic(BaseMessages.getString(PKG, "Script.Log.LineNumber") + getLinesRead()); //$NON-NLS-1$
+			logBasic(BaseMessages.getString(PKG, "Script.Log.LineNumber") + getLinesRead()); 
 		return bRC;
 	}
 

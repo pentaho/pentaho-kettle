@@ -50,7 +50,7 @@ import org.pentaho.ui.xul.swt.SwtXulRunner;
  *
  */
 public class FileOverwriteDialogController extends AbstractXulEventHandler {
-  private static final String name = "fileOverwriteDialogController"; //$NON-NLS-1$
+  private static final String name = "fileOverwriteDialogController"; 
   private static final Class<?> PKG = RepositoryExplorer.class;
   
   private static final ResourceBundle resourceBundle = new ResourceBundle() {
@@ -80,7 +80,7 @@ public class FileOverwriteDialogController extends AbstractXulEventHandler {
       KettleXulLoader swtLoader = new KettleXulLoader();
       swtLoader.setOuterContext(shell);
       swtLoader.setSettingsManager(XulSpoonSettingsManager.getInstance());
-      XulDomContainer container = swtLoader.loadXul("org/pentaho/di/ui/repository/repositoryexplorer/xul/file-overwrite-dialog.xul", resourceBundle); //$NON-NLS-1$
+      XulDomContainer container = swtLoader.loadXul("org/pentaho/di/ui/repository/repositoryexplorer/xul/file-overwrite-dialog.xul", resourceBundle); 
       final XulRunner runner = new SwtXulRunner();
       runner.addContainer(container);
       
@@ -99,7 +99,7 @@ public class FileOverwriteDialogController extends AbstractXulEventHandler {
   protected FileOverwriteDialogController(XulDomContainer container, List<UIRepositoryObject> objects) {
     this.container = container;
     this.objects = new UIRepositoryObjectsList(objects);
-    this.dialog = (XulDialog) this.container.getDocumentRoot().getElementById("file-overwrite-dialog"); //$NON-NLS-1$
+    this.dialog = (XulDialog) this.container.getDocumentRoot().getElementById("file-overwrite-dialog"); 
     this.bf = new DefaultBindingFactory();
   }
   
@@ -108,9 +108,9 @@ public class FileOverwriteDialogController extends AbstractXulEventHandler {
       bf.setDocument(container.getDocumentRoot());
       
       bf.setBindingType(Binding.Type.ONE_WAY);
-      bf.createBinding(objects, "children", "file-list", "elements").fireSourceChanged(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+      bf.createBinding(objects, "children", "file-list", "elements").fireSourceChanged();   //$NON-NLS-3$
     } catch (Exception e) {
-      new ErrorDialog((Shell)container.getOuterContext(), BaseMessages.getString(PKG, "FileOverwriteDialog.ErrorDialog.Title"), BaseMessages.getString(PKG, "FileOverwriteDialog.ErrorDialog.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+      new ErrorDialog((Shell)container.getOuterContext(), BaseMessages.getString(PKG, "FileOverwriteDialog.ErrorDialog.Title"), BaseMessages.getString(PKG, "FileOverwriteDialog.ErrorDialog.Message"), e);  
     }
   }
   

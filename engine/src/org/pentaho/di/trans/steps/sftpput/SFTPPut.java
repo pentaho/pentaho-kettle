@@ -274,7 +274,7 @@ public class SFTPPut extends BaseStep implements StepInterface
 	
 	        if (checkFeedback(getLinesRead())) 
 	        {
-	        	if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "SFTPPut.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+	        	if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "SFTPPut.Log.LineNumber")+getLinesRead()); 
 	        }
 		}	
     	catch(Exception e)
@@ -288,7 +288,7 @@ public class SFTPPut extends BaseStep implements StepInterface
 	        else
 	        {
 			
-				logError(BaseMessages.getString(PKG, "SFTPPut.Log.ErrorInStep"), e); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "SFTPPut.Log.ErrorInStep"), e); 
 				setErrors(1);
 				stopAll();
 				setOutputDone();  // signal end to receiver(s)

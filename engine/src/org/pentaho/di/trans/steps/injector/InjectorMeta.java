@@ -162,35 +162,35 @@ public class InjectorMeta extends BaseStepMeta implements StepMetaInterface
     public String getXML()
     {
         StringBuilder retval=new StringBuilder(300);
-        retval.append("    <fields>"); //$NON-NLS-1$
+        retval.append("    <fields>"); 
         for (int i=0;i<fieldname.length;i++)
         {
-            retval.append("      <field>"); //$NON-NLS-1$
-            retval.append("        ").append(XMLHandler.addTagValue("name",      fieldname[i])); //$NON-NLS-1$ //$NON-NLS-2$
-            retval.append("        ").append(XMLHandler.addTagValue("type",      ValueMeta.getTypeDesc(type[i]))); //$NON-NLS-1$ //$NON-NLS-2$
-            retval.append("        ").append(XMLHandler.addTagValue("length",    length[i])); //$NON-NLS-1$ //$NON-NLS-2$
-            retval.append("        ").append(XMLHandler.addTagValue("precision", precision[i])); //$NON-NLS-1$ //$NON-NLS-2$
-            retval.append("      </field>"); //$NON-NLS-1$
+            retval.append("      <field>"); 
+            retval.append("        ").append(XMLHandler.addTagValue("name",      fieldname[i]));  
+            retval.append("        ").append(XMLHandler.addTagValue("type",      ValueMeta.getTypeDesc(type[i])));  
+            retval.append("        ").append(XMLHandler.addTagValue("length",    length[i]));  
+            retval.append("        ").append(XMLHandler.addTagValue("precision", precision[i]));  
+            retval.append("      </field>"); 
         }
-        retval.append("    </fields>"); //$NON-NLS-1$
+        retval.append("    </fields>"); 
 
         return retval.toString();
     }
     
 	private void readData(Node stepnode)
 	{
-        Node fields = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
-        int nrfields   = XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
+        Node fields = XMLHandler.getSubNode(stepnode, "fields"); 
+        int nrfields   = XMLHandler.countNodes(fields, "field"); 
 
         allocate(nrfields);
         
         for (int i=0;i<nrfields;i++)
         {
-            Node line = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
-            fieldname     [i] = XMLHandler.getTagValue(line, "name"); //$NON-NLS-1$
-            type     [i] = ValueMeta.getType(XMLHandler.getTagValue(line, "type")); //$NON-NLS-1$
-            length   [i] = Const.toInt(XMLHandler.getTagValue(line, "length"), -2); //$NON-NLS-1$
-            precision[i] = Const.toInt(XMLHandler.getTagValue(line, "precision"), -2); //$NON-NLS-1$
+            Node line = XMLHandler.getSubNodeByNr(fields, "field", i); 
+            fieldname     [i] = XMLHandler.getTagValue(line, "name"); 
+            type     [i] = ValueMeta.getType(XMLHandler.getTagValue(line, "type")); 
+            length   [i] = Const.toInt(XMLHandler.getTagValue(line, "length"), -2); 
+            precision[i] = Const.toInt(XMLHandler.getTagValue(line, "precision"), -2); 
         }
 
 	}
@@ -205,20 +205,20 @@ public class InjectorMeta extends BaseStepMeta implements StepMetaInterface
 	{
         try
         {
-           int nrfields = rep.countNrStepAttributes(id_step, "field_name"); //$NON-NLS-1$
+           int nrfields = rep.countNrStepAttributes(id_step, "field_name"); 
             allocate(nrfields);
     
             for (int i=0;i<nrfields;i++)
             {
-                fieldname[i]      = rep.getStepAttributeString (id_step, i, "field_name"); //$NON-NLS-1$
-                type[i]      = ValueMeta.getType( rep.getStepAttributeString (id_step, i, "field_type")); //$NON-NLS-1$
-                length[i]    = (int)rep.getStepAttributeInteger(id_step, i, "field_length"); //$NON-NLS-1$
-                precision[i] = (int)rep.getStepAttributeInteger(id_step, i, "field_precision"); //$NON-NLS-1$
+                fieldname[i]      = rep.getStepAttributeString (id_step, i, "field_name"); 
+                type[i]      = ValueMeta.getType( rep.getStepAttributeString (id_step, i, "field_type")); 
+                length[i]    = (int)rep.getStepAttributeInteger(id_step, i, "field_length"); 
+                precision[i] = (int)rep.getStepAttributeInteger(id_step, i, "field_precision"); 
             }
         }
         catch(Exception e)
         {
-            throw new KettleException(BaseMessages.getString(PKG, "InjectorMeta.Exception.ErrorReadingStepInfoFromRepository"), e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "InjectorMeta.Exception.ErrorReadingStepInfoFromRepository"), e); 
         }
 
 	}
@@ -230,15 +230,15 @@ public class InjectorMeta extends BaseStepMeta implements StepMetaInterface
         {
             for (int i=0;i<fieldname.length;i++)
             {
-                rep.saveStepAttribute(id_transformation, id_step, i, "field_name",      fieldname[i]); //$NON-NLS-1$
-                rep.saveStepAttribute(id_transformation, id_step, i, "field_type",      ValueMeta.getTypeDesc(type[i])); //$NON-NLS-1$
-                rep.saveStepAttribute(id_transformation, id_step, i, "field_length",    length[i]); //$NON-NLS-1$
-                rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", precision[i]); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_name",      fieldname[i]); 
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_type",      ValueMeta.getTypeDesc(type[i])); 
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_length",    length[i]); 
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", precision[i]); 
             }
         }
         catch(Exception e)
         {
-            throw new KettleException(BaseMessages.getString(PKG, "InjectorMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "InjectorMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); 
         }
 	}
     
@@ -250,21 +250,35 @@ public class InjectorMeta extends BaseStepMeta implements StepMetaInterface
             inputRowMeta.addValueMeta(v);
         }
     }
+    
+    @Override
+    @Deprecated
+    public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
+        VariableSpace space) throws KettleStepException {
+      getFields(inputRowMeta, name, info, nextStep, space, null, null);
+    }
 
     public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "InjectorMeta.CheckResult.StepExpectingNoReadingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+			CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "InjectorMeta.CheckResult.StepExpectingNoReadingInfoFromOtherSteps"), stepMeta); 
 			remarks.add(cr);
 		}
 		else
 		{
-			CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "InjectorMeta.CheckResult.NoInputReceivedError"), stepMeta); //$NON-NLS-1$
+			CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "InjectorMeta.CheckResult.NoInputReceivedError"), stepMeta); 
 			remarks.add(cr);
 		}
 	}
+    
+  @Deprecated
+  public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
+        String input[], String output[], RowMetaInterface info) {
+    check(remarks, transMeta, stepMeta, prev, input, output, info, transMeta, repository, repository!=null ? repository.getMetaStore() : null);
+  }
+
 
 	public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta, Trans trans)
 	{

@@ -57,7 +57,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 {
 	private static Class<?> PKG = DatabaseLookupMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	public static final String[] conditionStrings = new String[] { "=", "<>", "<", "<=", ">", ">=", "LIKE", "BETWEEN", "IS NULL", "IS NOT NULL", };  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$
+	public static final String[] conditionStrings = new String[] { "=", "<>", "<", "<=", ">", ">=", "LIKE", "BETWEEN", "IS NULL", "IS NOT NULL", };    //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$
 	
 	public static final int CONDITION_EQ          = 0;
 	public static final int CONDITION_NE          = 1;
@@ -407,42 +407,42 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 			String dtype;
 			String csize;
 			
-			String con = XMLHandler.getTagValue(stepnode, "connection"); //$NON-NLS-1$
+			String con = XMLHandler.getTagValue(stepnode, "connection"); 
 			databaseMeta = DatabaseMeta.findDatabase(databases, con);
-			cached      = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "cache")); //$NON-NLS-1$ //$NON-NLS-2$
-			loadingAllDataInCache = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "cache_load_all")); //$NON-NLS-1$ //$NON-NLS-2$
-			csize      = XMLHandler.getTagValue(stepnode, "cache_size"); //$NON-NLS-1$
+			cached      = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "cache"));  
+			loadingAllDataInCache = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "cache_load_all"));  
+			csize      = XMLHandler.getTagValue(stepnode, "cache_size"); 
 			cacheSize=Const.toInt(csize, 0);
-            schemaName = XMLHandler.getTagValue(stepnode, "lookup", "schema"); //$NON-NLS-1$ //$NON-NLS-2$
-			tablename = XMLHandler.getTagValue(stepnode, "lookup", "table"); //$NON-NLS-1$ //$NON-NLS-2$
+            schemaName = XMLHandler.getTagValue(stepnode, "lookup", "schema");  
+			tablename = XMLHandler.getTagValue(stepnode, "lookup", "table");  
 	
-			Node lookup = XMLHandler.getSubNode(stepnode, "lookup"); //$NON-NLS-1$
+			Node lookup = XMLHandler.getSubNode(stepnode, "lookup"); 
 			
-			int nrkeys   = XMLHandler.countNodes(lookup, "key"); //$NON-NLS-1$
-			int nrvalues = XMLHandler.countNodes(lookup, "value"); //$NON-NLS-1$
+			int nrkeys   = XMLHandler.countNodes(lookup, "key"); 
+			int nrvalues = XMLHandler.countNodes(lookup, "value"); 
 	
 			allocate(nrkeys, nrvalues);
 					
 			for (int i=0;i<nrkeys;i++)
 			{
-				Node knode = XMLHandler.getSubNodeByNr(lookup, "key", i); //$NON-NLS-1$
+				Node knode = XMLHandler.getSubNodeByNr(lookup, "key", i); 
 				
-				streamKeyField1         [i] = XMLHandler.getTagValue(knode, "name"); //$NON-NLS-1$
-				tableKeyField   [i] = XMLHandler.getTagValue(knode, "field"); //$NON-NLS-1$
-				keyCondition[i] = XMLHandler.getTagValue(knode, "condition"); //$NON-NLS-1$
-				if (keyCondition[i]==null) keyCondition[i]="="; //$NON-NLS-1$
-				streamKeyField2        [i] = XMLHandler.getTagValue(knode, "name2"); //$NON-NLS-1$
+				streamKeyField1         [i] = XMLHandler.getTagValue(knode, "name"); 
+				tableKeyField   [i] = XMLHandler.getTagValue(knode, "field"); 
+				keyCondition[i] = XMLHandler.getTagValue(knode, "condition"); 
+				if (keyCondition[i]==null) keyCondition[i]="="; 
+				streamKeyField2        [i] = XMLHandler.getTagValue(knode, "name2"); 
 			}
 	
 			for (int i=0;i<nrvalues;i++)
 			{
-				Node vnode = XMLHandler.getSubNodeByNr(lookup, "value", i); //$NON-NLS-1$
+				Node vnode = XMLHandler.getSubNodeByNr(lookup, "value", i); 
 				
-				returnValueField[i]        = XMLHandler.getTagValue(vnode, "name"); //$NON-NLS-1$
-				returnValueNewName[i]    = XMLHandler.getTagValue(vnode, "rename"); //$NON-NLS-1$
+				returnValueField[i]        = XMLHandler.getTagValue(vnode, "name"); 
+				returnValueNewName[i]    = XMLHandler.getTagValue(vnode, "rename"); 
 				if (returnValueNewName[i]==null) returnValueNewName[i]=returnValueField[i]; // default: the same name!
-				returnValueDefault[i]     = XMLHandler.getTagValue(vnode, "default"); //$NON-NLS-1$
-				dtype           = XMLHandler.getTagValue(vnode, "type"); //$NON-NLS-1$
+				returnValueDefault[i]     = XMLHandler.getTagValue(vnode, "default"); 
+				dtype           = XMLHandler.getTagValue(vnode, "type"); 
 				returnValueDefaultType[i] = ValueMeta.getType(dtype);
 				if (returnValueDefaultType[i]<0)
 				{
@@ -450,13 +450,13 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 					returnValueDefaultType[i]=ValueMetaInterface.TYPE_STRING;
 				}
 			}		
-			orderByClause = XMLHandler.getTagValue(lookup, "orderby"); //Optional, can by null //$NON-NLS-1$
-            failingOnMultipleResults = "Y".equalsIgnoreCase(XMLHandler.getTagValue(lookup, "fail_on_multiple"));  //$NON-NLS-1$ //$NON-NLS-2$
-            eatingRowOnLookupFailure = "Y".equalsIgnoreCase(XMLHandler.getTagValue(lookup, "eat_row_on_failure"));  //$NON-NLS-1$ //$NON-NLS-2$
+			orderByClause = XMLHandler.getTagValue(lookup, "orderby"); //Optional, can by null 
+            failingOnMultipleResults = "Y".equalsIgnoreCase(XMLHandler.getTagValue(lookup, "fail_on_multiple"));   
+            eatingRowOnLookupFailure = "Y".equalsIgnoreCase(XMLHandler.getTagValue(lookup, "eat_row_on_failure"));   
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "DatabaseLookupMeta.ERROR0001.UnableToLoadStepFromXML"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "DatabaseLookupMeta.ERROR0001.UnableToLoadStepFromXML"), e); 
 		}
 	}
 
@@ -467,8 +467,8 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 		databaseMeta     = null;
 		cached           = false;
 		cacheSize        = 0;
-        schemaName       = ""; //$NON-NLS-1$
-		tablename        = BaseMessages.getString(PKG, "DatabaseLookupMeta.Default.TableName"); //$NON-NLS-1$
+        schemaName       = ""; 
+		tablename        = BaseMessages.getString(PKG, "DatabaseLookupMeta.Default.TableName"); 
 
 		int nrkeys   = 0;
 		int nrvalues = 0;
@@ -477,21 +477,21 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 		
 		for (int i=0;i<nrkeys;i++)
 		{
-			tableKeyField[i]   = BaseMessages.getString(PKG, "DatabaseLookupMeta.Default.KeyFieldPrefix"); //$NON-NLS-1$
-			keyCondition[i]    = BaseMessages.getString(PKG, "DatabaseLookupMeta.Default.KeyCondition"); //$NON-NLS-1$
-			streamKeyField1[i] = BaseMessages.getString(PKG, "DatabaseLookupMeta.Default.KeyStreamField1"); //$NON-NLS-1$
-			streamKeyField2[i] = BaseMessages.getString(PKG, "DatabaseLookupMeta.Default.KeyStreamField2"); //$NON-NLS-1$
+			tableKeyField[i]   = BaseMessages.getString(PKG, "DatabaseLookupMeta.Default.KeyFieldPrefix"); 
+			keyCondition[i]    = BaseMessages.getString(PKG, "DatabaseLookupMeta.Default.KeyCondition"); 
+			streamKeyField1[i] = BaseMessages.getString(PKG, "DatabaseLookupMeta.Default.KeyStreamField1"); 
+			streamKeyField2[i] = BaseMessages.getString(PKG, "DatabaseLookupMeta.Default.KeyStreamField2"); 
 		}
 
 		for (int i=0;i<nrvalues;i++)
 		{
-			returnValueField[i]=BaseMessages.getString(PKG, "DatabaseLookupMeta.Default.ReturnFieldPrefix")+i; //$NON-NLS-1$
-			returnValueNewName[i]=BaseMessages.getString(PKG, "DatabaseLookupMeta.Default.ReturnNewNamePrefix")+i; //$NON-NLS-1$
-			returnValueDefault[i]=BaseMessages.getString(PKG, "DatabaseLookupMeta.Default.ReturnDefaultValuePrefix")+i; //$NON-NLS-1$
+			returnValueField[i]=BaseMessages.getString(PKG, "DatabaseLookupMeta.Default.ReturnFieldPrefix")+i; 
+			returnValueNewName[i]=BaseMessages.getString(PKG, "DatabaseLookupMeta.Default.ReturnNewNamePrefix")+i; 
+			returnValueDefault[i]=BaseMessages.getString(PKG, "DatabaseLookupMeta.Default.ReturnDefaultValuePrefix")+i; 
 			returnValueDefaultType[i]=ValueMetaInterface.TYPE_STRING;
 		}
 		
-		orderByClause = ""; //$NON-NLS-1$
+		orderByClause = ""; 
         failingOnMultipleResults = false;
         eatingRowOnLookupFailure = false;
 	}
@@ -526,38 +526,38 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 	{
         StringBuffer retval = new StringBuffer(500);
 		
-		retval.append("    ").append(XMLHandler.addTagValue("connection", databaseMeta==null?"":databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		retval.append("    ").append(XMLHandler.addTagValue("cache", cached)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("cache_load_all", loadingAllDataInCache)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("cache_size", cacheSize)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    <lookup>").append(Const.CR); //$NON-NLS-1$
-        retval.append("      ").append(XMLHandler.addTagValue("schema", schemaName)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      ").append(XMLHandler.addTagValue("table", tablename)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      ").append(XMLHandler.addTagValue("orderby", orderByClause)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("      ").append(XMLHandler.addTagValue("fail_on_multiple", failingOnMultipleResults)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("      ").append(XMLHandler.addTagValue("eat_row_on_failure", eatingRowOnLookupFailure)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("connection", databaseMeta==null?"":databaseMeta.getName()));   //$NON-NLS-3$
+		retval.append("    ").append(XMLHandler.addTagValue("cache", cached));  
+		retval.append("    ").append(XMLHandler.addTagValue("cache_load_all", loadingAllDataInCache));  
+		retval.append("    ").append(XMLHandler.addTagValue("cache_size", cacheSize));  
+		retval.append("    <lookup>").append(Const.CR); 
+        retval.append("      ").append(XMLHandler.addTagValue("schema", schemaName));  
+		retval.append("      ").append(XMLHandler.addTagValue("table", tablename));  
+		retval.append("      ").append(XMLHandler.addTagValue("orderby", orderByClause));  
+        retval.append("      ").append(XMLHandler.addTagValue("fail_on_multiple", failingOnMultipleResults));  
+        retval.append("      ").append(XMLHandler.addTagValue("eat_row_on_failure", eatingRowOnLookupFailure));  
         
 		for (int i=0;i<streamKeyField1.length;i++)
 		{
-			retval.append("      <key>").append(Const.CR); //$NON-NLS-1$
-			retval.append("        ").append(XMLHandler.addTagValue("name", streamKeyField1[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        ").append(XMLHandler.addTagValue("field", tableKeyField[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        ").append(XMLHandler.addTagValue("condition", keyCondition[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        ").append(XMLHandler.addTagValue("name2", streamKeyField2[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("      </key>").append(Const.CR); //$NON-NLS-1$
+			retval.append("      <key>").append(Const.CR); 
+			retval.append("        ").append(XMLHandler.addTagValue("name", streamKeyField1[i]));  
+			retval.append("        ").append(XMLHandler.addTagValue("field", tableKeyField[i]));  
+			retval.append("        ").append(XMLHandler.addTagValue("condition", keyCondition[i]));  
+			retval.append("        ").append(XMLHandler.addTagValue("name2", streamKeyField2[i]));  
+			retval.append("      </key>").append(Const.CR); 
 		}
 
 		for (int i=0;i<returnValueField.length;i++)
 		{
-			retval.append("      <value>").append(Const.CR); //$NON-NLS-1$
-			retval.append("        ").append(XMLHandler.addTagValue("name", returnValueField[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        ").append(XMLHandler.addTagValue("rename", returnValueNewName[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        ").append(XMLHandler.addTagValue("default", returnValueDefault[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        ").append(XMLHandler.addTagValue("type", ValueMeta.getTypeDesc(returnValueDefaultType[i]))); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("      </value>").append(Const.CR); //$NON-NLS-1$
+			retval.append("      <value>").append(Const.CR); 
+			retval.append("        ").append(XMLHandler.addTagValue("name", returnValueField[i]));  
+			retval.append("        ").append(XMLHandler.addTagValue("rename", returnValueNewName[i]));  
+			retval.append("        ").append(XMLHandler.addTagValue("default", returnValueDefault[i]));  
+			retval.append("        ").append(XMLHandler.addTagValue("type", ValueMeta.getTypeDesc(returnValueDefaultType[i])));  
+			retval.append("      </value>").append(Const.CR); 
 		}
 
-		retval.append("    </lookup>").append(Const.CR); //$NON-NLS-1$
+		retval.append("    </lookup>").append(Const.CR); 
 
 		return retval.toString();
 	}
@@ -569,39 +569,39 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 		{
 			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);
 
-			cached                   =      rep.getStepAttributeBoolean(id_step, "cache"); //$NON-NLS-1$
-			loadingAllDataInCache    =      rep.getStepAttributeBoolean(id_step, "cache_load_all"); //$NON-NLS-1$
-			cacheSize                = (int)rep.getStepAttributeInteger(id_step, "cache_size"); //$NON-NLS-1$
-            schemaName               =      rep.getStepAttributeString (id_step, "lookup_schema");  //$NON-NLS-1$
-			tablename                =      rep.getStepAttributeString (id_step, "lookup_table");  //$NON-NLS-1$
-			orderByClause            =      rep.getStepAttributeString (id_step, "lookup_orderby");  //$NON-NLS-1$
-            failingOnMultipleResults =      rep.getStepAttributeBoolean(id_step, "fail_on_multiple");  //$NON-NLS-1$
-            eatingRowOnLookupFailure =      rep.getStepAttributeBoolean(id_step, "eat_row_on_failure");  //$NON-NLS-1$
+			cached                   =      rep.getStepAttributeBoolean(id_step, "cache"); 
+			loadingAllDataInCache    =      rep.getStepAttributeBoolean(id_step, "cache_load_all"); 
+			cacheSize                = (int)rep.getStepAttributeInteger(id_step, "cache_size"); 
+            schemaName               =      rep.getStepAttributeString (id_step, "lookup_schema");  
+			tablename                =      rep.getStepAttributeString (id_step, "lookup_table");  
+			orderByClause            =      rep.getStepAttributeString (id_step, "lookup_orderby");  
+            failingOnMultipleResults =      rep.getStepAttributeBoolean(id_step, "fail_on_multiple");  
+            eatingRowOnLookupFailure =      rep.getStepAttributeBoolean(id_step, "eat_row_on_failure");  
             
-			int nrkeys   = rep.countNrStepAttributes(id_step, "lookup_key_field"); //$NON-NLS-1$
-			int nrvalues = rep.countNrStepAttributes(id_step, "return_value_name"); //$NON-NLS-1$
+			int nrkeys   = rep.countNrStepAttributes(id_step, "lookup_key_field"); 
+			int nrvalues = rep.countNrStepAttributes(id_step, "return_value_name"); 
 			
 			allocate(nrkeys, nrvalues);
 			
 			for (int i=0;i<nrkeys;i++)
 			{
-				streamKeyField1[i] = rep.getStepAttributeString(id_step, i, "lookup_key_name"); //$NON-NLS-1$
-				tableKeyField[i]   = rep.getStepAttributeString(id_step, i, "lookup_key_field"); //$NON-NLS-1$
-				keyCondition[i]    = rep.getStepAttributeString(id_step, i, "lookup_key_condition"); //$NON-NLS-1$
-				streamKeyField2[i] = rep.getStepAttributeString(id_step, i, "lookup_key_name2"); //$NON-NLS-1$
+				streamKeyField1[i] = rep.getStepAttributeString(id_step, i, "lookup_key_name"); 
+				tableKeyField[i]   = rep.getStepAttributeString(id_step, i, "lookup_key_field"); 
+				keyCondition[i]    = rep.getStepAttributeString(id_step, i, "lookup_key_condition"); 
+				streamKeyField2[i] = rep.getStepAttributeString(id_step, i, "lookup_key_name2"); 
 			}
 	
 			for (int i=0;i<nrvalues;i++)
 			{
-				returnValueField[i]       = rep.getStepAttributeString (id_step, i, "return_value_name"); //$NON-NLS-1$
-				returnValueNewName[i]     = rep.getStepAttributeString (id_step, i, "return_value_rename"); //$NON-NLS-1$
-				returnValueDefault[i]     = rep.getStepAttributeString (id_step, i, "return_value_default"); //$NON-NLS-1$
-				returnValueDefaultType[i] = ValueMeta.getType( rep.getStepAttributeString (id_step, i, "return_value_type") ); //$NON-NLS-1$
+				returnValueField[i]       = rep.getStepAttributeString (id_step, i, "return_value_name"); 
+				returnValueNewName[i]     = rep.getStepAttributeString (id_step, i, "return_value_rename"); 
+				returnValueDefault[i]     = rep.getStepAttributeString (id_step, i, "return_value_default"); 
+				returnValueDefaultType[i] = ValueMeta.getType( rep.getStepAttributeString (id_step, i, "return_value_type") ); 
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "DatabaseLookupMeta.ERROR0002.UnexpectedErrorReadingFromTheRepository"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "DatabaseLookupMeta.ERROR0002.UnexpectedErrorReadingFromTheRepository"), e); 
 		}
 	}
 	
@@ -612,30 +612,30 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 		try
 		{
 			rep.saveDatabaseMetaStepAttribute(id_transformation, id_step, "id_connection", databaseMeta);
-			rep.saveStepAttribute(id_transformation, id_step, "cache",              cached); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "cache_load_all",     loadingAllDataInCache); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "cache_size",         cacheSize); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "lookup_schema",      schemaName); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "lookup_table",       tablename); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "lookup_orderby",     orderByClause); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "fail_on_multiple",   failingOnMultipleResults); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "eat_row_on_failure", eatingRowOnLookupFailure); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "cache",              cached); 
+			rep.saveStepAttribute(id_transformation, id_step, "cache_load_all",     loadingAllDataInCache); 
+			rep.saveStepAttribute(id_transformation, id_step, "cache_size",         cacheSize); 
+            rep.saveStepAttribute(id_transformation, id_step, "lookup_schema",      schemaName); 
+			rep.saveStepAttribute(id_transformation, id_step, "lookup_table",       tablename); 
+			rep.saveStepAttribute(id_transformation, id_step, "lookup_orderby",     orderByClause); 
+            rep.saveStepAttribute(id_transformation, id_step, "fail_on_multiple",   failingOnMultipleResults); 
+            rep.saveStepAttribute(id_transformation, id_step, "eat_row_on_failure", eatingRowOnLookupFailure); 
 			
             
 			for (int i=0;i<streamKeyField1.length;i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "lookup_key_name",      streamKeyField1[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "lookup_key_field",     tableKeyField[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "lookup_key_condition", keyCondition[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "lookup_key_name2",     streamKeyField2[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "lookup_key_name",      streamKeyField1[i]); 
+				rep.saveStepAttribute(id_transformation, id_step, i, "lookup_key_field",     tableKeyField[i]); 
+				rep.saveStepAttribute(id_transformation, id_step, i, "lookup_key_condition", keyCondition[i]); 
+				rep.saveStepAttribute(id_transformation, id_step, i, "lookup_key_name2",     streamKeyField2[i]); 
 			}
 	
 			for (int i=0;i<returnValueField.length;i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "return_value_name",      returnValueField[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "return_value_rename",    returnValueNewName[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "return_value_default",   returnValueDefault[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "return_value_type",      ValueMeta.getTypeDesc(returnValueDefaultType[i])); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "return_value_name",      returnValueField[i]); 
+				rep.saveStepAttribute(id_transformation, id_step, i, "return_value_rename",    returnValueNewName[i]); 
+				rep.saveStepAttribute(id_transformation, id_step, i, "return_value_default",   returnValueDefault[i]); 
+				rep.saveStepAttribute(id_transformation, id_step, i, "return_value_type",      ValueMeta.getTypeDesc(returnValueDefaultType[i])); 
 			}	
 			
 			// Also, save the step-database relationship!
@@ -643,7 +643,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "DatabaseLookupMeta.ERROR0003.UnableToSaveStepToRepository")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "DatabaseLookupMeta.ERROR0003.UnableToSaveStepToRepository")+id_step, e); 
 		}
 
 	}
@@ -651,7 +651,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		CheckResult cr;
-		String error_message = ""; //$NON-NLS-1$
+		String error_message = ""; 
 		
 		if (databaseMeta!=null)
 		{
@@ -667,7 +667,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 				{
 					boolean first=true;
 					boolean error_found=false;
-					error_message = ""; //$NON-NLS-1$
+					error_message = ""; 
 					
                     String schemaTable = databaseMeta.getQuotedSchemaTableCombination(db.environmentSubstitute(schemaName), db.environmentSubstitute(tablename));
                     RowMetaInterface r = db.getTableFields( schemaTable );
@@ -685,10 +685,10 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 								if (first)
 								{
 									first=false;
-									error_message+=BaseMessages.getString(PKG, "DatabaseLookupMeta.Check.MissingCompareFieldsInLookupTable")+Const.CR; //$NON-NLS-1$
+									error_message+=BaseMessages.getString(PKG, "DatabaseLookupMeta.Check.MissingCompareFieldsInLookupTable")+Const.CR; 
 								}
 								error_found=true;
-								error_message+="\t\t"+lufield+Const.CR;  //$NON-NLS-1$
+								error_message+="\t\t"+lufield+Const.CR;  
 							}
 						}
 						if (error_found)
@@ -697,7 +697,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 						}
 						else
 						{
-							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "DatabaseLookupMeta.Check.AllLookupFieldsFoundInTable"), stepMeta); //$NON-NLS-1$
+							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "DatabaseLookupMeta.Check.AllLookupFieldsFoundInTable"), stepMeta); 
 						}
 						remarks.add(cr);
 						
@@ -713,10 +713,10 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 								if (first)
 								{
 									first=false;
-									error_message+=BaseMessages.getString(PKG, "DatabaseLookupMeta.Check.MissingReturnFieldsInLookupTable")+Const.CR; //$NON-NLS-1$
+									error_message+=BaseMessages.getString(PKG, "DatabaseLookupMeta.Check.MissingReturnFieldsInLookupTable")+Const.CR; 
 								}
 								error_found=true;
-								error_message+="\t\t"+lufield+Const.CR;  //$NON-NLS-1$
+								error_message+="\t\t"+lufield+Const.CR;  
 							}
 						}
 						if (error_found)
@@ -725,14 +725,14 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 						}
 						else
 						{
-							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "DatabaseLookupMeta.Check.AllReturnFieldsFoundInTable"), stepMeta); //$NON-NLS-1$
+							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "DatabaseLookupMeta.Check.AllReturnFieldsFoundInTable"), stepMeta); 
 						}
 						remarks.add(cr);
 
 					}
 					else
 					{
-						error_message=BaseMessages.getString(PKG, "DatabaseLookupMeta.Check.CouldNotReadTableInfo"); //$NON-NLS-1$
+						error_message=BaseMessages.getString(PKG, "DatabaseLookupMeta.Check.CouldNotReadTableInfo"); 
 						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 						remarks.add(cr);
 					}
@@ -742,7 +742,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 				if (prev!=null && prev.size()>0)
 				{
 					boolean first=true;
-					error_message = ""; //$NON-NLS-1$
+					error_message = ""; 
 					boolean error_found = false;
 					
 					for (int i=0;i<streamKeyField1.length;i++)
@@ -753,10 +753,10 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 							if (first)
 							{
 								first=false;
-								error_message+=BaseMessages.getString(PKG, "DatabaseLookupMeta.Check.MissingFieldsNotFoundInInput")+Const.CR; //$NON-NLS-1$
+								error_message+=BaseMessages.getString(PKG, "DatabaseLookupMeta.Check.MissingFieldsNotFoundInInput")+Const.CR; 
 							}
 							error_found=true;
-							error_message+="\t\t"+streamKeyField1[i]+Const.CR;  //$NON-NLS-1$
+							error_message+="\t\t"+streamKeyField1[i]+Const.CR;  
 						}
 					}
 					if (error_found)
@@ -765,20 +765,20 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 					}
 					else
 					{
-						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "DatabaseLookupMeta.Check.AllFieldsFoundInInput"), stepMeta); //$NON-NLS-1$
+						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "DatabaseLookupMeta.Check.AllFieldsFoundInInput"), stepMeta); 
 					}
 					remarks.add(cr);
 				}
 				else
 				{
-					error_message=BaseMessages.getString(PKG, "DatabaseLookupMeta.Check.CouldNotReadFromPreviousSteps")+Const.CR; //$NON-NLS-1$
+					error_message=BaseMessages.getString(PKG, "DatabaseLookupMeta.Check.CouldNotReadFromPreviousSteps")+Const.CR; 
 					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 					remarks.add(cr);
 				}
 			}
 			catch(KettleDatabaseException dbe)
 			{
-				error_message = BaseMessages.getString(PKG, "DatabaseLookupMeta.Check.DatabaseErrorWhileChecking")+dbe.getMessage(); //$NON-NLS-1$
+				error_message = BaseMessages.getString(PKG, "DatabaseLookupMeta.Check.DatabaseErrorWhileChecking")+dbe.getMessage(); 
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
@@ -789,7 +789,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 		}
 		else
 		{
-			error_message = BaseMessages.getString(PKG, "DatabaseLookupMeta.Check.MissingConnectionError"); //$NON-NLS-1$
+			error_message = BaseMessages.getString(PKG, "DatabaseLookupMeta.Check.MissingConnectionError"); 
 			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 			remarks.add(cr);
 		}
@@ -797,12 +797,12 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "DatabaseLookupMeta.Check.StepIsReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "DatabaseLookupMeta.Check.StepIsReceivingInfoFromOtherSteps"), stepMeta); 
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "DatabaseLookupMeta.Check.NoInputReceivedFromOtherSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "DatabaseLookupMeta.Check.NoInputReceivedFromOtherSteps"), stepMeta); 
 			remarks.add(cr);
 		}
 	}
@@ -823,7 +823,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 			}
 			catch(KettleDatabaseException dbe)
 			{
-				logError(BaseMessages.getString(PKG, "DatabaseLookupMeta.ERROR0004.ErrorGettingTableFields")+dbe.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "DatabaseLookupMeta.ERROR0004.ErrorGettingTableFields")+dbe.getMessage()); 
 			}
 			finally
 			{
@@ -858,9 +858,9 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 					tablename,
 					tableKeyField[i],
 					streamKeyField1[i],
-					v!=null?v.getOrigin():"?", //$NON-NLS-1$
-					"", //$NON-NLS-1$
-					BaseMessages.getString(PKG, "DatabaseLookupMeta.Impact.Key") //$NON-NLS-1$
+					v!=null?v.getOrigin():"?", 
+					"", 
+					BaseMessages.getString(PKG, "DatabaseLookupMeta.Impact.Key") 
 				);
 			impact.add(ii);
 		}
@@ -874,10 +874,10 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 											databaseMeta.getDatabaseName(),
 											tablename,
 											returnValueField[i],
-											"", //$NON-NLS-1$
-											"", //$NON-NLS-1$
-											"", //$NON-NLS-1$
-											BaseMessages.getString(PKG, "DatabaseLookupMeta.Impact.ReturnValue") //$NON-NLS-1$
+											"", 
+											"", 
+											"", 
+											BaseMessages.getString(PKG, "DatabaseLookupMeta.Impact.ReturnValue") 
 											);
 			impact.add(ii);
 		}

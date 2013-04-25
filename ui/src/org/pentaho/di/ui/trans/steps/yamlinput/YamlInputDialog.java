@@ -1057,7 +1057,7 @@ public class YamlInputDialog extends BaseStepDialog implements StepDialogInterfa
 						}
 				}
 		 }catch(KettleException ke){
-				new ErrorDialog(shell, BaseMessages.getString(PKG, "YamlInputDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "YamlInputDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "YamlInputDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "YamlInputDialog.FailedToGetFields.DialogMessage"), ke);  
 			}
 	 }
 	 

@@ -84,7 +84,7 @@ public class SQLStatementParserTest extends TestCase {
 
   public void testParseStatements_simple() {
     BaseDatabaseMeta dbMeta = new BaseDatabaseMetaForTest();
-    String sqlScript = "SELECT FROM table;"; //$NON-NLS-1$
+    String sqlScript = "SELECT FROM table;"; 
     List<String> statements = dbMeta.parseStatements(sqlScript);
     assertEquals(1, statements.size());
     assertEquals(sqlScript, statements.get(0));
@@ -92,9 +92,9 @@ public class SQLStatementParserTest extends TestCase {
 
   public void testParseStatements_simple_multiple() {
     BaseDatabaseMeta dbMeta = new BaseDatabaseMetaForTest();
-    String statement1 = "SELECT * FROM table"; //$NON-NLS-1$
-    String statement2 = "SELECT * FROM table2"; //$NON-NLS-1$
-    String sqlScript = statement1 + ";" + Const.CR + statement2 + "; "; //$NON-NLS-1$ //$NON-NLS-2$
+    String statement1 = "SELECT * FROM table"; 
+    String statement2 = "SELECT * FROM table2"; 
+    String sqlScript = statement1 + ";" + Const.CR + statement2 + "; ";  
     List<String> statements = dbMeta.parseStatements(sqlScript);
     assertEquals(2, statements.size());
     assertEquals(statement1, statements.get(0));
@@ -103,7 +103,7 @@ public class SQLStatementParserTest extends TestCase {
 
   public void testParseStatements_appostrophy_in_backticks() throws KettleFileException {
     BaseDatabaseMeta dbMeta = new BaseDatabaseMetaForTest();
-    String sqlScript = "CREATE TABLE sfdcom_test ( `Rep's Scoring` VARCHAR(255) );"; //$NON-NLS-1$
+    String sqlScript = "CREATE TABLE sfdcom_test ( `Rep's Scoring` VARCHAR(255) );"; 
     List<String> statements = dbMeta.parseStatements(sqlScript);
     assertEquals(1, statements.size());
     assertEquals(sqlScript, statements.get(0));

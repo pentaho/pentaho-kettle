@@ -38,9 +38,9 @@ public class AndValidator implements JobEntryValidator {
 
   public static final AndValidator INSTANCE = new AndValidator();
 
-  private static final String KEY_VALIDATORS = "validators"; //$NON-NLS-1$
+  private static final String KEY_VALIDATORS = "validators"; 
 
-  private static final String VALIDATOR_NAME = "and"; //$NON-NLS-1$
+  private static final String VALIDATOR_NAME = "and"; 
 
   public boolean validate(CheckResultSourceInterface source, String propertyName, List<CheckResultInterface> remarks,
       ValidatorContext context) {

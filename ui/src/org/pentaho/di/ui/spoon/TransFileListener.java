@@ -48,13 +48,13 @@ public class TransFileListener implements FileListener {
     final PropsUI props = PropsUI.getInstance();
     try {
       TransMeta transMeta = new TransMeta();
-      transMeta.loadXML(transNode, fname, spoon.getRepository(), true, new Variables(), new OverwritePrompter() {
+      transMeta.loadXML(transNode, fname, spoon.getMetaStore(), spoon.getRepository(), true, new Variables(), new OverwritePrompter() {
 
         public boolean overwritePrompt(String message, String rememberText, String rememberPropertyName) {
           MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
           Object res[] = spoon.messageDialogWithToggle(BaseMessages.getString(PKG, "System.Button.Yes"), null, message,
-              Const.WARNING, new String[] { BaseMessages.getString(PKG, "System.Button.Yes"), //$NON-NLS-1$ 
-                  BaseMessages.getString(PKG, "System.Button.No") },//$NON-NLS-1$
+              Const.WARNING, new String[] { BaseMessages.getString(PKG, "System.Button.Yes"),  
+                  BaseMessages.getString(PKG, "System.Button.No") },
               1, rememberText, !props.askAboutReplacingDatabaseConnections());
           int idx = ((Integer) res[0]).intValue();
           boolean toggleState = ((Boolean) res[1]).booleanValue();

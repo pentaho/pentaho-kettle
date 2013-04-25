@@ -71,16 +71,16 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 	 
 	public final static String aggregateTypeDesc[] =
 		{
-			BaseMessages.getString(PKG, "AggregateRowsMeta.AggregateTypeDesc.NONE"),     //$NON-NLS-1$
-			BaseMessages.getString(PKG, "AggregateRowsMeta.AggregateTypeDesc.SUM"),     //$NON-NLS-1$
-            BaseMessages.getString(PKG, "AggregateRowsMeta.AggregateTypeDesc.AVERAGE"),//$NON-NLS-1$
-            BaseMessages.getString(PKG, "AggregateRowsMeta.AggregateTypeDesc.COUNT"), //$NON-NLS-1$
-            BaseMessages.getString(PKG, "AggregateRowsMeta.AggregateTypeDesc.MIN"),  //$NON-NLS-1$
-            BaseMessages.getString(PKG, "AggregateRowsMeta.AggregateTypeDesc.MAX"),          //$NON-NLS-1$
-            BaseMessages.getString(PKG, "AggregateRowsMeta.AggregateTypeDesc.FIRST"),        //$NON-NLS-1$
-            BaseMessages.getString(PKG, "AggregateRowsMeta.AggregateTypeDesc.LAST"),        //$NON-NLS-1$
-            BaseMessages.getString(PKG, "AggregateRowsMeta.AggregateTypeDesc.FIRST_NULL"), //$NON-NLS-1$
-            BaseMessages.getString(PKG, "AggregateRowsMeta.AggregateTypeDesc.LAST_NULL"), //$NON-NLS-1$
+			BaseMessages.getString(PKG, "AggregateRowsMeta.AggregateTypeDesc.NONE"),     
+			BaseMessages.getString(PKG, "AggregateRowsMeta.AggregateTypeDesc.SUM"),     
+            BaseMessages.getString(PKG, "AggregateRowsMeta.AggregateTypeDesc.AVERAGE"),
+            BaseMessages.getString(PKG, "AggregateRowsMeta.AggregateTypeDesc.COUNT"), 
+            BaseMessages.getString(PKG, "AggregateRowsMeta.AggregateTypeDesc.MIN"),  
+            BaseMessages.getString(PKG, "AggregateRowsMeta.AggregateTypeDesc.MAX"),          
+            BaseMessages.getString(PKG, "AggregateRowsMeta.AggregateTypeDesc.FIRST"),        
+            BaseMessages.getString(PKG, "AggregateRowsMeta.AggregateTypeDesc.LAST"),        
+            BaseMessages.getString(PKG, "AggregateRowsMeta.AggregateTypeDesc.FIRST_NULL"), 
+            BaseMessages.getString(PKG, "AggregateRowsMeta.AggregateTypeDesc.LAST_NULL"), 
 		};
 	
 	private  String fieldName[];
@@ -196,23 +196,23 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 			int i, nrfields;
 			String type;
 			
-			Node fields = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
-			nrfields= XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
+			Node fields = XMLHandler.getSubNode(stepnode, "fields"); 
+			nrfields= XMLHandler.countNodes(fields, "field"); 
 	
 			allocate(nrfields);
 			
 			for (i=0;i<nrfields;i++)
 			{
-				Node fnode       = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
-				fieldName[i]     = XMLHandler.getTagValue(fnode, "name"); //$NON-NLS-1$
-				fieldNewName[i]  = XMLHandler.getTagValue(fnode, "rename"); //$NON-NLS-1$
-				type             = XMLHandler.getTagValue(fnode, "type"); //$NON-NLS-1$
+				Node fnode       = XMLHandler.getSubNodeByNr(fields, "field", i); 
+				fieldName[i]     = XMLHandler.getTagValue(fnode, "name"); 
+				fieldNewName[i]  = XMLHandler.getTagValue(fnode, "rename"); 
+				type             = XMLHandler.getTagValue(fnode, "type"); 
 				aggregateType[i] = getType(type);
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "AggregateRowsMeta.Exception.UnableToLoadStepInfo"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "AggregateRowsMeta.Exception.UnableToLoadStepInfo"), e); 
 		}
 	}
 
@@ -226,8 +226,8 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 		
 		for (i=0;i<nrfields;i++)
 		{
-			fieldName[i]     = BaseMessages.getString(PKG, "AggregateRowsMeta.Fieldname.Label"); //$NON-NLS-1$
-			fieldNewName[i]  = BaseMessages.getString(PKG, "AggregateRowsMeta.NewName.Label"); //$NON-NLS-1$
+			fieldName[i]     = BaseMessages.getString(PKG, "AggregateRowsMeta.Fieldname.Label"); 
+			fieldNewName[i]  = BaseMessages.getString(PKG, "AggregateRowsMeta.NewName.Label"); 
 			aggregateType[i] = TYPE_AGGREGATE_SUM; 
 		}
 	}
@@ -274,16 +274,16 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 	{
         StringBuffer retval = new StringBuffer(300);
 		
-		retval.append("    <fields>").append(Const.CR); //$NON-NLS-1$
+		retval.append("    <fields>").append(Const.CR); 
 		for (int i=0;i<fieldName.length;i++)
 		{
-    		retval.append("      <field>").append(Const.CR); //$NON-NLS-1$
-    		retval.append("        ").append(XMLHandler.addTagValue("name", fieldName[i])); //$NON-NLS-1$ //$NON-NLS-2$
-    		retval.append("        ").append(XMLHandler.addTagValue("rename", fieldNewName[i])); //$NON-NLS-1$ //$NON-NLS-2$
-    		retval.append("        ").append(XMLHandler.addTagValue("type", getTypeDesc(aggregateType[i]))); //$NON-NLS-1$ //$NON-NLS-2$
-    		retval.append("      </field>").append(Const.CR); //$NON-NLS-1$
+    		retval.append("      <field>").append(Const.CR); 
+    		retval.append("        ").append(XMLHandler.addTagValue("name", fieldName[i]));  
+    		retval.append("        ").append(XMLHandler.addTagValue("rename", fieldNewName[i]));  
+    		retval.append("        ").append(XMLHandler.addTagValue("type", getTypeDesc(aggregateType[i])));  
+    		retval.append("      </field>").append(Const.CR); 
 		}
-		retval.append("    </fields>").append(Const.CR); //$NON-NLS-1$
+		retval.append("    </fields>").append(Const.CR); 
 
 		return retval.toString();
 	}
@@ -292,20 +292,20 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 	
 		try
 		{
-			int nrfields = rep.countNrStepAttributes(id_step, "field_name"); //$NON-NLS-1$
+			int nrfields = rep.countNrStepAttributes(id_step, "field_name"); 
 			
 			allocate(nrfields);
 	
 			for (int i=0;i<nrfields;i++)
 			{
-				fieldName[i] = rep.getStepAttributeString(id_step, i, "field_name"); //$NON-NLS-1$
-				fieldNewName[i] = rep.getStepAttributeString(id_step, i, "field_rename"); //$NON-NLS-1$
-				aggregateType[i] = getType( rep.getStepAttributeString(id_step, i, "field_type")); //$NON-NLS-1$
+				fieldName[i] = rep.getStepAttributeString(id_step, i, "field_name"); 
+				fieldNewName[i] = rep.getStepAttributeString(id_step, i, "field_rename"); 
+				aggregateType[i] = getType( rep.getStepAttributeString(id_step, i, "field_type")); 
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "AggregateRowsMeta.Exception.UnexpectedErrorWhileReadingStepInfo"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "AggregateRowsMeta.Exception.UnexpectedErrorWhileReadingStepInfo"), e); 
 		}
 
 	}
@@ -316,14 +316,14 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			for (int i=0;i<fieldName.length;i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",    fieldName[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_rename",  fieldNewName[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_type",    getTypeDesc(aggregateType[i])); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",    fieldName[i]); 
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_rename",  fieldNewName[i]); 
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_type",    getTypeDesc(aggregateType[i])); 
 			}
 		}
 		catch(KettleException e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "AggregateRowsMeta.Exception.UnableToSaveStepInfo")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "AggregateRowsMeta.Exception.UnableToSaveStepInfo")+id_step, e); 
 		}
 	}
 	
@@ -332,18 +332,18 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 	    VariableSpace space, Repository repository, IMetaStore metaStore) {
 
 		CheckResult cr;
-		String message = ""; //$NON-NLS-1$
+		String message = ""; 
 		
 		if (fieldName.length>0)
 		{
 			boolean error_found=false;
 			// See if all fields are available in the input stream...
-			message=BaseMessages.getString(PKG, "AggregateRowsMeta.CheckResult.FieldsNotFound.DialogMessage")+Const.CR; //$NON-NLS-1$
+			message=BaseMessages.getString(PKG, "AggregateRowsMeta.CheckResult.FieldsNotFound.DialogMessage")+Const.CR; 
 			for (int i=0;i<fieldName.length;i++)
 			{
 				if (prev.indexOfValue(fieldName[i])<0)
 				{
-					message+="  "+fieldName[i]+Const.CR; //$NON-NLS-1$
+					message+="  "+fieldName[i]+Const.CR; 
 					error_found=true;
 				}
 			}
@@ -353,13 +353,13 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 			}
 			else
 			{
-				message = BaseMessages.getString(PKG, "AggregateRowsMeta.CheckResult.AllFieldsOK.DialogMessage"); //$NON-NLS-1$
+				message = BaseMessages.getString(PKG, "AggregateRowsMeta.CheckResult.AllFieldsOK.DialogMessage"); 
 				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, message, stepMeta);
 			}
 			remarks.add(cr);
 			
 			// See which fields are dropped: comment on it!
-			message=BaseMessages.getString(PKG, "AggregateRowsMeta.CheckResult.IgnoredFields.DialogMessage")+Const.CR; //$NON-NLS-1$
+			message=BaseMessages.getString(PKG, "AggregateRowsMeta.CheckResult.IgnoredFields.DialogMessage")+Const.CR; 
 			error_found=false;
 			
 			for (int i=0;i<prev.size();i++)
@@ -375,7 +375,7 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 				}
 				if (!value_found)
 				{
-					message+="  "+v.getName()+" ("+v.toStringMeta()+")"+Const.CR; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					message+="  "+v.getName()+" ("+v.toStringMeta()+")"+Const.CR;   //$NON-NLS-3$
 					error_found=true;
 				}
 			}
@@ -385,26 +385,26 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 			}
 			else
 			{
-				message = BaseMessages.getString(PKG, "AggregateRowsMeta.CheckResult.AllFieldsUsed.DialogMessage"); //$NON-NLS-1$
+				message = BaseMessages.getString(PKG, "AggregateRowsMeta.CheckResult.AllFieldsUsed.DialogMessage"); 
 				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, message, stepMeta);
 			}
 			remarks.add(cr);
 		}
 		else
 		{
-			message = BaseMessages.getString(PKG, "AggregateRowsMeta.CheckResult.NothingSpecified.DialogMessage"); //$NON-NLS-1$
+			message = BaseMessages.getString(PKG, "AggregateRowsMeta.CheckResult.NothingSpecified.DialogMessage"); 
 			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, message, stepMeta);
 			remarks.add(cr);
 		}
 
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "AggregateRowsMeta.CheckResult.StepReceiveInfo.DialogMessage"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "AggregateRowsMeta.CheckResult.StepReceiveInfo.DialogMessage"), stepMeta); 
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "AggregateRowsMeta.CheckResult.NoInputReceived.DialogMessage"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "AggregateRowsMeta.CheckResult.NoInputReceived.DialogMessage"), stepMeta); 
 			remarks.add(cr);
 		}
 		

@@ -70,6 +70,14 @@ public class SortRowsData extends BaseStepData implements StepDataInterface
 	public int freeMemoryPctLimit;
 	public int memoryReporting;
 	
+    /*
+     * Group Fields Implemenation
+     * haric
+     */
+	public Object previous[];
+	public int  groupnrs[];   
+    public boolean newBatch;	
+	
 	
 	/**
 	 * 
@@ -83,6 +91,8 @@ public class SortRowsData extends BaseStepData implements StepDataInterface
         gzis  = new ArrayList<GZIPInputStream>();
         dis = new ArrayList<DataInputStream>();
         bufferSizes = new ArrayList<Integer>();
+        
+        previous=null;	//haric
 	}
 
 }

@@ -189,7 +189,7 @@ public class ChangeFileEncodingMeta extends BaseStepMeta implements StepMetaInte
     {
         StringBuffer retval = new StringBuffer();
 
-        retval.append("    " + XMLHandler.addTagValue("filenamefield", filenamefield)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    " + XMLHandler.addTagValue("filenamefield", filenamefield));  
         retval.append("    " + XMLHandler.addTagValue("targetfilenamefield", targetfilenamefield)); 
         retval.append("    " + XMLHandler.addTagValue("sourceencoding", sourceencoding)); 
         retval.append("    " + XMLHandler.addTagValue("targetencoding", targetencoding)); 
@@ -205,7 +205,7 @@ public class ChangeFileEncodingMeta extends BaseStepMeta implements StepMetaInte
 	{
     	try
     	{
-            filenamefield = XMLHandler.getTagValue(stepnode, "filenamefield"); //$NON-NLS-1$
+            filenamefield = XMLHandler.getTagValue(stepnode, "filenamefield"); 
             targetfilenamefield = XMLHandler.getTagValue(stepnode, "targetfilenamefield"); 
             sourceencoding = XMLHandler.getTagValue(stepnode, "sourceencoding"); 
             targetencoding = XMLHandler.getTagValue(stepnode, "targetencoding"); 
@@ -216,7 +216,7 @@ public class ChangeFileEncodingMeta extends BaseStepMeta implements StepMetaInte
         }
         catch (Exception e)
         {
-            throw new KettleXMLException(BaseMessages.getString(PKG, "ChangeFileEncodingMeta.Exception.UnableToReadStepInfo"), e); //$NON-NLS-1$
+            throw new KettleXMLException(BaseMessages.getString(PKG, "ChangeFileEncodingMeta.Exception.UnableToReadStepInfo"), e); 
         }
     }
 
@@ -225,7 +225,7 @@ public class ChangeFileEncodingMeta extends BaseStepMeta implements StepMetaInte
 	{
     	try
 		{
-            filenamefield = rep.getStepAttributeString(id_step, "filenamefield"); //$NON-NLS-1$
+            filenamefield = rep.getStepAttributeString(id_step, "filenamefield"); 
             targetfilenamefield = rep.getStepAttributeString(id_step, "targetfilenamefield"); 
             sourceencoding = rep.getStepAttributeString(id_step, "sourceencoding"); 
             targetencoding = rep.getStepAttributeString(id_step, "targetencoding"); 
@@ -237,7 +237,7 @@ public class ChangeFileEncodingMeta extends BaseStepMeta implements StepMetaInte
         }
         catch (Exception e)
         {
-            throw new KettleException(BaseMessages.getString(PKG, "ChangeFileEncodingMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "ChangeFileEncodingMeta.Exception.UnexpectedErrorReadingStepInfo"), e); 
         }
     }
 
@@ -245,7 +245,7 @@ public class ChangeFileEncodingMeta extends BaseStepMeta implements StepMetaInte
     {
         try
         {
-            rep.saveStepAttribute(id_transformation, id_step, "filenamefield", filenamefield); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "filenamefield", filenamefield); 
             rep.saveStepAttribute(id_transformation, id_step, "targetfilenamefield", targetfilenamefield);
             rep.saveStepAttribute(id_transformation, id_step, "sourceencoding", sourceencoding);
             rep.saveStepAttribute(id_transformation, id_step, "targetencoding", targetencoding);
@@ -257,63 +257,63 @@ public class ChangeFileEncodingMeta extends BaseStepMeta implements StepMetaInte
         }
         catch (Exception e)
         {
-            throw new KettleException(BaseMessages.getString(PKG, "ChangeFileEncodingMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "ChangeFileEncodingMeta.Exception.UnableToSaveStepInfo") + id_step, e); 
         }
     }
 
 	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
         CheckResult cr;
-        String error_message = ""; //$NON-NLS-1$
+        String error_message = ""; 
 
 
         if (Const.isEmpty(filenamefield))
         {
-            error_message = BaseMessages.getString(PKG, "ChangeFileEncodingMeta.CheckResult.FileFieldMissing"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "ChangeFileEncodingMeta.CheckResult.FileFieldMissing"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
             remarks.add(cr);
         }
         else
         {
-            error_message = BaseMessages.getString(PKG, "ChangeFileEncodingMeta.CheckResult.FileFieldOK"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "ChangeFileEncodingMeta.CheckResult.FileFieldOK"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
             remarks.add(cr);
         }
         if (Const.isEmpty(targetfilenamefield))
         {
-            error_message = BaseMessages.getString(PKG, "ChangeFileEncodingMeta.CheckResult.TargetFileFieldMissing"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "ChangeFileEncodingMeta.CheckResult.TargetFileFieldMissing"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
             remarks.add(cr);
         }
         else
         {
-            error_message = BaseMessages.getString(PKG, "ChangeFileEncodingMeta.CheckResult.TargetFileFieldOK"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "ChangeFileEncodingMeta.CheckResult.TargetFileFieldOK"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
             remarks.add(cr);
         }
         String realSourceEncoding=transMeta.environmentSubstitute(getSourceEncoding());
         if (Const.isEmpty(realSourceEncoding))
         {
-            error_message = BaseMessages.getString(PKG, "ChangeFileEncodingMeta.CheckResult.SourceEncodingMissing"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "ChangeFileEncodingMeta.CheckResult.SourceEncodingMissing"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
             remarks.add(cr);
         }
         else
         {
-            error_message = BaseMessages.getString(PKG, "ChangeFileEncodingMeta.CheckResult.SourceEncodingOK"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "ChangeFileEncodingMeta.CheckResult.SourceEncodingOK"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
             remarks.add(cr);
         }
         String realTargetEncoding=transMeta.environmentSubstitute(getTargetEncoding());
         if (Const.isEmpty(realTargetEncoding))
         {
-            error_message = BaseMessages.getString(PKG, "ChangeFileEncodingMeta.CheckResult.TargetEncodingMissing"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "ChangeFileEncodingMeta.CheckResult.TargetEncodingMissing"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
             remarks.add(cr);
         }
         else
         {
-            error_message = BaseMessages.getString(PKG, "ChangeFileEncodingMeta.CheckResult.TargetEncodingOK"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "ChangeFileEncodingMeta.CheckResult.TargetEncodingOK"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
             remarks.add(cr);
         }
@@ -322,12 +322,12 @@ public class ChangeFileEncodingMeta extends BaseStepMeta implements StepMetaInte
         // See if we have input streams leading to this step!
         if (input.length > 0)
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ChangeFileEncodingMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ChangeFileEncodingMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); 
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "ChangeFileEncodingMeta.CheckResult.NoInpuReceived"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "ChangeFileEncodingMeta.CheckResult.NoInpuReceived"), stepMeta); 
             remarks.add(cr);
         }
 

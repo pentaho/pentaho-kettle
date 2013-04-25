@@ -113,14 +113,14 @@ public class FilterRowsDialog extends BaseStepDialog implements StepDialogInterf
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "FilterRowsDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "FilterRowsDialog.Shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "FilterRowsDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "FilterRowsDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -139,7 +139,7 @@ public class FilterRowsDialog extends BaseStepDialog implements StepDialogInterf
 
 		// Send 'True' data to...
 		wlTrueTo=new Label(shell, SWT.RIGHT);
-		wlTrueTo.setText(BaseMessages.getString(PKG, "FilterRowsDialog.SendTrueTo.Label")); //$NON-NLS-1$
+		wlTrueTo.setText(BaseMessages.getString(PKG, "FilterRowsDialog.SendTrueTo.Label")); 
  		props.setLook(wlTrueTo);
 		fdlTrueTo=new FormData();
 		fdlTrueTo.left = new FormAttachment(0, 0);
@@ -169,7 +169,7 @@ public class FilterRowsDialog extends BaseStepDialog implements StepDialogInterf
 
 		// Send 'False' data to...
 		wlFalseTo=new Label(shell, SWT.RIGHT);
-		wlFalseTo.setText(BaseMessages.getString(PKG, "FilterRowsDialog.SendFalseTo.Label")); //$NON-NLS-1$
+		wlFalseTo.setText(BaseMessages.getString(PKG, "FilterRowsDialog.SendFalseTo.Label")); 
  		props.setLook(wlFalseTo);
 		fdlFalseTo=new FormData();
 		fdlFalseTo.left = new FormAttachment(0, 0);
@@ -199,7 +199,7 @@ public class FilterRowsDialog extends BaseStepDialog implements StepDialogInterf
 
 		
 		wlCondition=new Label(shell, SWT.NONE);
-		wlCondition.setText(BaseMessages.getString(PKG, "FilterRowsDialog.Condition.Label")); //$NON-NLS-1$
+		wlCondition.setText(BaseMessages.getString(PKG, "FilterRowsDialog.Condition.Label")); 
  		props.setLook(wlCondition);
 		fdlCondition=new FormData();
 		fdlCondition.left  = new FormAttachment(0, 0);
@@ -214,14 +214,14 @@ public class FilterRowsDialog extends BaseStepDialog implements StepDialogInterf
 		catch(KettleException ke)
 		{
 			inputfields = new RowMeta();
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "FilterRowsDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "FilterRowsDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "FilterRowsDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "FilterRowsDialog.FailedToGetFields.DialogMessage"), ke);  
 		}
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 

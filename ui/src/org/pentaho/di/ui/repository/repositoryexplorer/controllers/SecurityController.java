@@ -104,7 +104,7 @@ public class SecurityController extends LazilyInitializedController implements I
     try {
       managed = service.isManaged();
       createModel();
-      messageBox = (XulMessageBox) document.createElement("messagebox");//$NON-NLS-1$
+      messageBox = (XulMessageBox) document.createElement("messagebox");
       bf = new SwtBindingFactory();
       bf.setDocument(this.getXulDomContainer().getDocumentRoot());
     } catch (Exception e) {
@@ -158,28 +158,28 @@ public class SecurityController extends LazilyInitializedController implements I
   }
   protected void createBindings() {
     //User Details Binding
-    userAddButton =  (XulButton) document.getElementById("user-add");//$NON-NLS-1$
-    userEditButton = (XulButton) document.getElementById("user-edit");//$NON-NLS-1$
-    userRemoveButton = (XulButton) document.getElementById("user-remove");//$NON-NLS-1$
-    userDialog = (XulDialog) document.getElementById("add-user-dialog");//$NON-NLS-1$
-    userListBox = (XulListbox) document.getElementById("users-list");//$NON-NLS-1$
+    userAddButton =  (XulButton) document.getElementById("user-add");
+    userEditButton = (XulButton) document.getElementById("user-edit");
+    userRemoveButton = (XulButton) document.getElementById("user-remove");
+    userDialog = (XulDialog) document.getElementById("add-user-dialog");
+    userListBox = (XulListbox) document.getElementById("users-list");
 
     // Add User Binding
 
-    username = (XulTextbox) document.getElementById("user-name");//$NON-NLS-1$
-    userPassword = (XulTextbox) document.getElementById("user-password");//$NON-NLS-1$
-    userDescription = (XulTextbox) document.getElementById("user-description");//$NON-NLS-1$
+    username = (XulTextbox) document.getElementById("user-name");
+    userPassword = (XulTextbox) document.getElementById("user-password");
+    userDescription = (XulTextbox) document.getElementById("user-description");
 
     bf.setBindingType(Binding.Type.BI_DIRECTIONAL);
-    bf.createBinding(securityUser, "name", username, "value");//$NON-NLS-1$ //$NON-NLS-2$
-    bf.createBinding(securityUser, "password", userPassword, "value");//$NON-NLS-1$ //$NON-NLS-2$
-    bf.createBinding(securityUser, "description", userDescription, "value");//$NON-NLS-1$ //$NON-NLS-2$
-    bf.createBinding(security, "selectedUserIndex", userListBox, "selectedIndex");//$NON-NLS-1$ //$NON-NLS-2$
+    bf.createBinding(securityUser, "name", username, "value"); 
+    bf.createBinding(securityUser, "password", userPassword, "value"); 
+    bf.createBinding(securityUser, "description", userDescription, "value"); 
+    bf.createBinding(security, "selectedUserIndex", userListBox, "selectedIndex"); 
     bf.setBindingType(Binding.Type.ONE_WAY);
     try {
-      bf.createBinding(userListBox, "selectedIndex", this, "enableButtons");//$NON-NLS-1$ //$NON-NLS-2$
-      bf.createBinding(userListBox, "selectedItem", security, "selectedUser");//$NON-NLS-1$ //$NON-NLS-2$
-      bf.createBinding(security, "userList", userListBox, "elements").fireSourceChanged();//$NON-NLS-1$ //$NON-NLS-2$
+      bf.createBinding(userListBox, "selectedIndex", this, "enableButtons"); 
+      bf.createBinding(userListBox, "selectedItem", security, "selectedUser"); 
+      bf.createBinding(security, "userList", userListBox, "elements").fireSourceChanged(); 
 
       BindingConvertor<Mode, Boolean> modeBindingConverter = new BindingConvertor<Mode, Boolean>() {
 
@@ -198,7 +198,7 @@ public class SecurityController extends LazilyInitializedController implements I
         }
 
       };
-      bf.createBinding(securityUser, "mode", username, "disabled", modeBindingConverter);//$NON-NLS-1$ //$NON-NLS-2$
+      bf.createBinding(securityUser, "mode", username, "disabled", modeBindingConverter); 
       
     } catch (Exception e) {
       // convert to runtime exception so it bubbles up through the UI
@@ -207,13 +207,13 @@ public class SecurityController extends LazilyInitializedController implements I
   }
 
   public String getName() {
-    return "iSecurityController"; //$NON-NLS-1$
+    return "iSecurityController"; 
   }
 
   public void showAddUserDialog() throws Exception {
       securityUser.clear();
       securityUser.setMode(Mode.ADD);
-      userDialog.setTitle(BaseMessages.getString(PKG, "AddUserDialog.Title"));//$NON-NLS-1$
+      userDialog.setTitle(BaseMessages.getString(PKG, "AddUserDialog.Title"));
       userDialog.show();
   }
 
@@ -233,10 +233,10 @@ public class SecurityController extends LazilyInitializedController implements I
         security.addUser(UIObjectRegistry.getInstance().constructUIRepositoryUser(securityUser.getUserInfo()));
         userDialog.hide();        
       } catch (Throwable th) {
-        messageBox.setTitle(BaseMessages.getString(PKG, "Dialog.Error"));//$NON-NLS-1$
-        messageBox.setAcceptLabel(BaseMessages.getString(PKG, "Dialog.Ok"));//$NON-NLS-1$
+        messageBox.setTitle(BaseMessages.getString(PKG, "Dialog.Error"));
+        messageBox.setAcceptLabel(BaseMessages.getString(PKG, "Dialog.Ok"));
         messageBox.setMessage(BaseMessages.getString(PKG,
-            "AddUser.UnableToAddUser", th.getLocalizedMessage()));//$NON-NLS-1$
+            "AddUser.UnableToAddUser", th.getLocalizedMessage()));
         messageBox.open();
       }
     }
@@ -247,7 +247,7 @@ public class SecurityController extends LazilyInitializedController implements I
       securityUser.clear();
       securityUser.setUser(security.getSelectedUser());
       securityUser.setMode(Mode.EDIT);
-      userDialog.setTitle(BaseMessages.getString(PKG, "EditUserDialog.Title"));//$NON-NLS-1$
+      userDialog.setTitle(BaseMessages.getString(PKG, "EditUserDialog.Title"));
       userDialog.show();
     }
   }
@@ -268,10 +268,10 @@ public class SecurityController extends LazilyInitializedController implements I
         security.updateUser(uiUser);
         userDialog.hide();        
       } catch (Throwable th) {
-        messageBox.setTitle(BaseMessages.getString(PKG, "Dialog.Error"));//$NON-NLS-1$
-        messageBox.setAcceptLabel(BaseMessages.getString(PKG, "Dialog.Ok"));//$NON-NLS-1$
+        messageBox.setTitle(BaseMessages.getString(PKG, "Dialog.Error"));
+        messageBox.setAcceptLabel(BaseMessages.getString(PKG, "Dialog.Ok"));
         messageBox.setMessage(BaseMessages.getString(PKG,
-            "UpdateUser.UnableToUpdateUser", th.getLocalizedMessage()));//$NON-NLS-1$
+            "UpdateUser.UnableToUpdateUser", th.getLocalizedMessage()));
         messageBox.open();
       }
     }
@@ -284,11 +284,11 @@ public class SecurityController extends LazilyInitializedController implements I
    * @throws Exception
    */
   public void removeUser() throws Exception {
-    XulConfirmBox confirmBox = (XulConfirmBox) document.createElement("confirmbox");//$NON-NLS-1$
-    confirmBox.setTitle(BaseMessages.getString(PKG, "ConfirmDialog.Title"));//$NON-NLS-1$
-    confirmBox.setMessage(BaseMessages.getString(PKG, "RemoveUserConfirmDialog.Message"));//$NON-NLS-1$
-    confirmBox.setAcceptLabel(BaseMessages.getString(PKG, "Dialog.Ok"));//$NON-NLS-1$
-    confirmBox.setCancelLabel(BaseMessages.getString(PKG, "Dialog.Cancel"));//$NON-NLS-1$
+    XulConfirmBox confirmBox = (XulConfirmBox) document.createElement("confirmbox");
+    confirmBox.setTitle(BaseMessages.getString(PKG, "ConfirmDialog.Title"));
+    confirmBox.setMessage(BaseMessages.getString(PKG, "RemoveUserConfirmDialog.Message"));
+    confirmBox.setAcceptLabel(BaseMessages.getString(PKG, "Dialog.Ok"));
+    confirmBox.setCancelLabel(BaseMessages.getString(PKG, "Dialog.Cancel"));
     confirmBox.addDialogCallback(new XulDialogCallback<Object>() {
 
       public void onClose(XulComponent sender, Status returnCode, Object retVal) {
@@ -299,16 +299,16 @@ public class SecurityController extends LazilyInitializedController implements I
                 service.delUser(security.getSelectedUser().getName());
                 security.removeUser(security.getSelectedUser().getName());
               } catch (Throwable th) {
-                messageBox.setTitle(BaseMessages.getString(PKG, "Dialog.Error"));//$NON-NLS-1$
-                messageBox.setAcceptLabel(BaseMessages.getString(PKG, "Dialog.Ok"));//$NON-NLS-1$
+                messageBox.setTitle(BaseMessages.getString(PKG, "Dialog.Error"));
+                messageBox.setAcceptLabel(BaseMessages.getString(PKG, "Dialog.Ok"));
                 messageBox.setMessage(BaseMessages.getString(PKG,
-                    "RemoveUser.UnableToRemoveUser", th.getLocalizedMessage()));//$NON-NLS-1$
+                    "RemoveUser.UnableToRemoveUser", th.getLocalizedMessage()));
                 messageBox.open();
               }
             } else {
-              messageBox.setTitle(BaseMessages.getString(PKG, "Dialog.Error"));//$NON-NLS-1$
-              messageBox.setAcceptLabel(BaseMessages.getString(PKG, "Dialog.Ok"));//$NON-NLS-1$
-              messageBox.setMessage(BaseMessages.getString(PKG, "RemoveUser.NoUserSelected"));//$NON-NLS-1$
+              messageBox.setTitle(BaseMessages.getString(PKG, "Dialog.Error"));
+              messageBox.setAcceptLabel(BaseMessages.getString(PKG, "Dialog.Ok"));
+              messageBox.setMessage(BaseMessages.getString(PKG, "RemoveUser.NoUserSelected"));
               messageBox.open();
             }
           }
@@ -316,10 +316,10 @@ public class SecurityController extends LazilyInitializedController implements I
       }
 
       public void onError(XulComponent sender, Throwable t) {
-        messageBox.setTitle(BaseMessages.getString(PKG, "Dialog.Error"));//$NON-NLS-1$
-        messageBox.setAcceptLabel(BaseMessages.getString(PKG, "Dialog.Ok"));//$NON-NLS-1$
+        messageBox.setTitle(BaseMessages.getString(PKG, "Dialog.Error"));
+        messageBox.setAcceptLabel(BaseMessages.getString(PKG, "Dialog.Ok"));
         messageBox.setMessage(BaseMessages.getString(PKG,
-            "RemoveUser.UnableToRemoveUser", t.getLocalizedMessage()));//$NON-NLS-1$
+            "RemoveUser.UnableToRemoveUser", t.getLocalizedMessage()));
         messageBox.open();
       }
     });

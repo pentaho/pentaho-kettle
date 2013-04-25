@@ -226,7 +226,7 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         wPreview=new Button(shell, SWT.PUSH);
-        wPreview.setText(BaseMessages.getString(PKG, "System.Button.Preview")); //$NON-NLS-1$
+        wPreview.setText(BaseMessages.getString(PKG, "System.Button.Preview")); 
         wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 		
@@ -470,7 +470,7 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
         
         TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
         
-        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), BaseMessages.getString(PKG, "DataGridDialog.EnterPreviewSize.Title"), BaseMessages.getString(PKG, "DataGridDialog.EnterPreviewSize.Message")); //$NON-NLS-1$ //$NON-NLS-2$
+        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), BaseMessages.getString(PKG, "DataGridDialog.EnterPreviewSize.Title"), BaseMessages.getString(PKG, "DataGridDialog.EnterPreviewSize.Message"));  
         int previewSize = numberDialog.open();
         if (previewSize>0)
         {

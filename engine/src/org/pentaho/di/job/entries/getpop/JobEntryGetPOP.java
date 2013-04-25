@@ -1156,16 +1156,16 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 
   public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore)
   {
-    andValidator().validate(this, "serverName", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
-    andValidator().validate(this, "userName", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
-    andValidator().validate(this, "password", remarks, putValidators(notNullValidator())); //$NON-NLS-1$
+    andValidator().validate(this, "serverName", remarks, putValidators(notBlankValidator())); 
+    andValidator().validate(this, "userName", remarks, putValidators(notBlankValidator())); 
+    andValidator().validate(this, "password", remarks, putValidators(notNullValidator())); 
 
     ValidatorContext ctx = new ValidatorContext();
     putVariableSpace(ctx, getVariables());
     putValidators(ctx, notBlankValidator(), fileExistsValidator());
-    andValidator().validate(this, "outputDirectory", remarks, ctx);//$NON-NLS-1$
+    andValidator().validate(this, "outputDirectory", remarks, ctx);
 
-    andValidator().validate(this, "SSLPort", remarks, putValidators(integerValidator())); //$NON-NLS-1$
+    andValidator().validate(this, "SSLPort", remarks, putValidators(integerValidator())); 
   }
 
   public List<ResourceReference> getResourceDependencies(JobMeta jobMeta)

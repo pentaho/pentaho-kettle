@@ -107,7 +107,7 @@ public class SimpleResourceNaming implements ResourceNamingInterface {
 	    assert prefix != null;
 	    assert extension != null;
 	    
-	    String lookup = (originalFilePath != null ? originalFilePath : "") + "/" + prefix + "." + extension;  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	    String lookup = (originalFilePath != null ? originalFilePath : "") + "/" + prefix + "." + extension;    //$NON-NLS-3$
 	    String rtn = namedResources.get(lookup);
 	    if (rtn == null) {
 	      // Never generated a name for this... Generate a new file name
@@ -116,16 +116,16 @@ public class SimpleResourceNaming implements ResourceNamingInterface {
 	        fixedPath = fixPath(originalFilePath);
 	      }
 	      
-	      rtn = (fileSystemPrefix != null ? fileSystemPrefix : "") + //$NON-NLS-1$ 
-	          (fixedPath != null ? fixedPath + (fixedPath.endsWith("/") ? "" : "/")  : "") + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+	      rtn = (fileSystemPrefix != null ? fileSystemPrefix : "") +  
+	          (fixedPath != null ? fixedPath + (fixedPath.endsWith("/") ? "" : "/")  : "") +   //$NON-NLS-3$ //$NON-NLS-4$
 	          fixFileName(prefix, extension)
 	          ;
 	      
 	      String ext = (extension.charAt(0) == '.' ? extension : "." + extension);
 	      
 	      String uniqueId = this.getFileNameUniqueIdentifier(rtn, extension);
-	      rtn += (uniqueId != null ? "_" + uniqueId : ""); //$NON-NLS-1$ //$NON-NLS-2$
-	      rtn += ext; //$NON-NLS-1$ //$NON-NLS-2$
+	      rtn += (uniqueId != null ? "_" + uniqueId : "");  
+	      rtn += ext;  
 	      
 	      namedResources.put(lookup, rtn); // Keep track of already generated object names...
 	    }

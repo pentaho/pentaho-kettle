@@ -195,14 +195,14 @@ public class JoinRowsMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			directory  = XMLHandler.getTagValue(stepnode, "directory"); //$NON-NLS-1$
-			prefix     = XMLHandler.getTagValue(stepnode, "prefix"); //$NON-NLS-1$
-			cacheSize = Const.toInt( XMLHandler.getTagValue(stepnode, "cache_size"), -1); //$NON-NLS-1$
+			directory  = XMLHandler.getTagValue(stepnode, "directory"); 
+			prefix     = XMLHandler.getTagValue(stepnode, "prefix"); 
+			cacheSize = Const.toInt( XMLHandler.getTagValue(stepnode, "cache_size"), -1); 
 			
-			mainStepname = XMLHandler.getTagValue(stepnode, "main"); //$NON-NLS-1$
+			mainStepname = XMLHandler.getTagValue(stepnode, "main"); 
 
-			Node compare = XMLHandler.getSubNode(stepnode, "compare"); //$NON-NLS-1$
-			Node condnode = XMLHandler.getSubNode(compare, "condition"); //$NON-NLS-1$
+			Node compare = XMLHandler.getSubNode(stepnode, "compare"); 
+			Node condnode = XMLHandler.getSubNode(compare, "condition"); 
 	
 			// The new situation...
 			if (condnode!=null)
@@ -217,14 +217,14 @@ public class JoinRowsMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "JoinRowsMeta.Exception.UnableToReadStepInfoFromXML"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "JoinRowsMeta.Exception.UnableToReadStepInfoFromXML"), e); 
 		}
 	}
 
 	public void setDefault()
 	{
-		directory = "%%java.io.tmpdir%%";; //$NON-NLS-1$
-		prefix     = "out"; //$NON-NLS-1$
+		directory = "%%java.io.tmpdir%%";; 
+		prefix     = "out"; 
 		cacheSize = 500;
 
 		mainStepname = null;
@@ -234,20 +234,20 @@ public class JoinRowsMeta extends BaseStepMeta implements StepMetaInterface
 	{
         StringBuffer retval = new StringBuffer(300);
 
-		retval.append("      ").append(XMLHandler.addTagValue("directory",  directory)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      ").append(XMLHandler.addTagValue("prefix",     prefix)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      ").append(XMLHandler.addTagValue("cache_size", cacheSize)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("directory",  directory));  
+		retval.append("      ").append(XMLHandler.addTagValue("prefix",     prefix));  
+		retval.append("      ").append(XMLHandler.addTagValue("cache_size", cacheSize));  
 		
-		retval.append("      ").append(XMLHandler.addTagValue("main", getLookupStepname())); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("main", getLookupStepname()));  
 
-		retval.append("    <compare>").append(Const.CR); //$NON-NLS-1$
+		retval.append("    <compare>").append(Const.CR); 
 		
 		if (condition!=null)
 		{
 			retval.append(condition.getXML());
 		}
 		
-		retval.append("    </compare>").append(Const.CR); //$NON-NLS-1$
+		retval.append("    </compare>").append(Const.CR); 
 
 		return retval.toString();	
 	}
@@ -256,11 +256,11 @@ public class JoinRowsMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			directory        =      rep.getStepAttributeString (id_step, "directory"); //$NON-NLS-1$
-			prefix           =      rep.getStepAttributeString (id_step, "prefix"); //$NON-NLS-1$
-			cacheSize        = (int)rep.getStepAttributeInteger(id_step, "cache_size"); //$NON-NLS-1$
+			directory        =      rep.getStepAttributeString (id_step, "directory"); 
+			prefix           =      rep.getStepAttributeString (id_step, "prefix"); 
+			cacheSize        = (int)rep.getStepAttributeInteger(id_step, "cache_size"); 
 	
-			mainStepname     =  rep.getStepAttributeString (id_step, "main"); //$NON-NLS-1$
+			mainStepname     =  rep.getStepAttributeString (id_step, "main"); 
 
 			condition = rep.loadConditionFromStepAttribute(id_step, "id_condition");
 			if (condition==null) {
@@ -269,7 +269,7 @@ public class JoinRowsMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "JoinRowsMeta.Exception.UnexpectedErrorInReadStepInfoFromRepository"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "JoinRowsMeta.Exception.UnexpectedErrorInReadStepInfoFromRepository"), e); 
 		}
 	}
 
@@ -277,17 +277,17 @@ public class JoinRowsMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			rep.saveStepAttribute(id_transformation, id_step, "directory",       directory); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "prefix",          prefix); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "cache_size",      cacheSize); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "directory",       directory); 
+			rep.saveStepAttribute(id_transformation, id_step, "prefix",          prefix); 
+			rep.saveStepAttribute(id_transformation, id_step, "cache_size",      cacheSize); 
 	
-			rep.saveStepAttribute(id_transformation, id_step, "main",  getLookupStepname()); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "main",  getLookupStepname()); 
 			
 			rep.saveConditionStepAttribute(id_transformation, id_step, "id_condition", condition);
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "JoinRowsMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "JoinRowsMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); 
 		}
 	}
 
@@ -315,7 +315,7 @@ public class JoinRowsMeta extends BaseStepMeta implements StepMetaInterface
 		
 		if (prev!=null && prev.size()>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "JoinRowsMeta.CheckResult.StepReceivingDatas",prev.size()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "JoinRowsMeta.CheckResult.StepReceivingDatas",prev.size()+""), stepMeta);  
 			remarks.add(cr);
 			
 			// Check the sort directory
@@ -325,36 +325,36 @@ public class JoinRowsMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				if (f.isDirectory())
 				{
-					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, "["+realDirectory+BaseMessages.getString(PKG, "JoinRowsMeta.CheckResult.DirectoryExists"), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, "["+realDirectory+BaseMessages.getString(PKG, "JoinRowsMeta.CheckResult.DirectoryExists"), stepMeta);  
 					remarks.add(cr);
 				}
 				else
 				{
-					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, "["+realDirectory+BaseMessages.getString(PKG, "JoinRowsMeta.CheckResult.DirectoryExistsButNotValid"), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, "["+realDirectory+BaseMessages.getString(PKG, "JoinRowsMeta.CheckResult.DirectoryExistsButNotValid"), stepMeta);  
 					remarks.add(cr);
 				}
 			}
 			else
 			{
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "JoinRowsMeta.CheckResult.DirectoryDoesNotExist",realDirectory), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "JoinRowsMeta.CheckResult.DirectoryDoesNotExist",realDirectory), stepMeta);  
 				remarks.add(cr);
 			}
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "JoinRowsMeta.CheckResult.CouldNotFindFieldsFromPreviousSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "JoinRowsMeta.CheckResult.CouldNotFindFieldsFromPreviousSteps"), stepMeta); 
 			remarks.add(cr);
 		}
 		
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "JoinRowsMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "JoinRowsMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepMeta); 
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "JoinRowsMeta.CheckResult.NoInputReceived"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "JoinRowsMeta.CheckResult.NoInputReceived"), stepMeta); 
 			remarks.add(cr);
 		}
 	}

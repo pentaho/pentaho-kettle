@@ -35,9 +35,9 @@ public class FileErrorHandlerMissingFiles extends
 
 	private static Class<?> PKG = FileErrorHandlerMissingFiles.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	public static final String THIS_FILE_DOES_NOT_EXIST = BaseMessages.getString(PKG, "FileErrorHandlerMissingFiles.FILE_DOES_NOT_EXIST"); //$NON-NLS-1$
+	public static final String THIS_FILE_DOES_NOT_EXIST = BaseMessages.getString(PKG, "FileErrorHandlerMissingFiles.FILE_DOES_NOT_EXIST"); 
 
-	public static final String THIS_FILE_WAS_NOT_ACCESSIBLE = BaseMessages.getString(PKG, "FileErrorHandlerMissingFiles.FILE_WAS_NOT_ACCESSIBLE"); //$NON-NLS-1$
+	public static final String THIS_FILE_WAS_NOT_ACCESSIBLE = BaseMessages.getString(PKG, "FileErrorHandlerMissingFiles.FILE_WAS_NOT_ACCESSIBLE"); 
 
 	public FileErrorHandlerMissingFiles(Date date,
 			String destinationDirectory, String fileExtension, String encoding, BaseStep baseStep) {
@@ -54,7 +54,7 @@ public class FileErrorHandlerMissingFiles extends
 			getWriter(NO_PARTS).write(THIS_FILE_DOES_NOT_EXIST);
 			getWriter(NO_PARTS).write(Const.CR);
 		} catch (Exception e) {
-			throw new KettleException(BaseMessages.getString(PKG, "FileErrorHandlerMissingFiles.Exception.CouldNotCreateNonExistantFile") //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "FileErrorHandlerMissingFiles.Exception.CouldNotCreateNonExistantFile") 
 					+ file.getName().getURI(), e);
 		}
 	}
@@ -66,7 +66,7 @@ public class FileErrorHandlerMissingFiles extends
 			getWriter(NO_PARTS).write(Const.CR);
 		} catch (Exception e) {
 			throw new KettleException(
-					BaseMessages.getString(PKG, "FileErrorHandlerMissingFiles.Exception.CouldNotCreateNonAccessibleFile") + file.getName().getURI(), //$NON-NLS-1$
+					BaseMessages.getString(PKG, "FileErrorHandlerMissingFiles.Exception.CouldNotCreateNonAccessibleFile") + file.getName().getURI(), 
 					e);
 		}
 	}

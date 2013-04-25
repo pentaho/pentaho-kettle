@@ -238,16 +238,16 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface
 		{
 
 			
-			xsdFilename     = XMLHandler.getTagValue(stepnode, "xdsfilename"); //$NON-NLS-1$
-			xmlStream     = XMLHandler.getTagValue(stepnode, "xmlstream"); //$NON-NLS-1$
-			resultFieldname     = XMLHandler.getTagValue(stepnode, "resultfieldname"); //$NON-NLS-1$
+			xsdFilename     = XMLHandler.getTagValue(stepnode, "xdsfilename"); 
+			xmlStream     = XMLHandler.getTagValue(stepnode, "xmlstream"); 
+			resultFieldname     = XMLHandler.getTagValue(stepnode, "resultfieldname"); 
 			xsdDefinedField     = XMLHandler.getTagValue(stepnode, "xsddefinedfield");
 			xsdSource     = XMLHandler.getTagValue(stepnode, "xsdsource");
 			
 			
 			addValidationMessage = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "addvalidationmsg"));
 			
-			validationMessageField     = XMLHandler.getTagValue(stepnode, "validationmsgfield"); //$NON-NLS-1$
+			validationMessageField     = XMLHandler.getTagValue(stepnode, "validationmsgfield"); 
 			ifXmlValid     = XMLHandler.getTagValue(stepnode, "ifxmlvalid");
 			ifXmlInvalid     = XMLHandler.getTagValue(stepnode, "ifxmlunvalid");
 			outputStringField = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "outputstringfield"));
@@ -257,13 +257,13 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "XsdValidatorMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "XsdValidatorMeta.Exception.UnableToLoadStepInfoFromXML"), e); 
 		}
 	}
 
 	public void setDefault()
 	{
-		xsdFilename = ""; //$NON-NLS-1$
+		xsdFilename = ""; 
 		xmlStream = "";
 		resultFieldname="result";
 		addValidationMessage=false;
@@ -310,8 +310,8 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface
 	{
         StringBuffer retval = new StringBuffer();
 		
-		retval.append("    "+XMLHandler.addTagValue("xdsfilename", xsdFilename)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    "+XMLHandler.addTagValue("xmlstream", xmlStream)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    "+XMLHandler.addTagValue("xdsfilename", xsdFilename));  
+		retval.append("    "+XMLHandler.addTagValue("xmlstream", xmlStream));  
 		retval.append("    "+XMLHandler.addTagValue("resultfieldname",resultFieldname));
 		retval.append("    "+XMLHandler.addTagValue("addvalidationmsg",addValidationMessage));
 		retval.append("    "+XMLHandler.addTagValue("validationmsgfield", validationMessageField));
@@ -331,9 +331,9 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			xsdFilename     = rep.getStepAttributeString(id_step, "xdsfilename"); //$NON-NLS-1$
-			xmlStream     = rep.getStepAttributeString(id_step, "xmlstream"); //$NON-NLS-1$
-			resultFieldname     = rep.getStepAttributeString(id_step, "resultfieldname"); //$NON-NLS-1$
+			xsdFilename     = rep.getStepAttributeString(id_step, "xdsfilename"); 
+			xmlStream     = rep.getStepAttributeString(id_step, "xmlstream"); 
+			resultFieldname     = rep.getStepAttributeString(id_step, "resultfieldname"); 
 			
 			xmlSourceFile    =      rep.getStepAttributeBoolean(id_step, "xmlsourcefile"); 
 			addValidationMessage    =      rep.getStepAttributeBoolean(id_step, "addvalidationmsg"); 
@@ -348,7 +348,7 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "XsdValidatorMeta.Exception.UnexpectedErrorInReadingStepInfo"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "XsdValidatorMeta.Exception.UnexpectedErrorInReadingStepInfo"), e); 
 		}
 	}
 
@@ -357,8 +357,8 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			rep.saveStepAttribute(id_transformation, id_step, "xdsfilename", xsdFilename); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "xmlstream", xmlStream); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "xdsfilename", xsdFilename); 
+			rep.saveStepAttribute(id_transformation, id_step, "xmlstream", xmlStream); 
 			rep.saveStepAttribute(id_transformation, id_step, "resultfieldname",resultFieldname);
 			rep.saveStepAttribute(id_transformation, id_step, "xmlsourcefile",  xmlSourceFile);
 			rep.saveStepAttribute(id_transformation, id_step, "addvalidationmsg",  addValidationMessage);
@@ -375,7 +375,7 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "XsdValidatorMeta.Exception.UnableToSaveStepInfo")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "XsdValidatorMeta.Exception.UnableToSaveStepInfo")+id_step, e); 
 		}
 	}
 
@@ -388,20 +388,20 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface
 		// Check XML stream field
 		if(Const.isEmpty(xmlStream))
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XsdValidatorMeta.CheckResult.XMLStreamFieldEmpty"), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XsdValidatorMeta.CheckResult.XMLStreamFieldEmpty"), stepinfo);  
 			remarks.add(cr);
 		}else{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XsdValidatorMeta.CheckResult.XMLStreamFieldOK"), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XsdValidatorMeta.CheckResult.XMLStreamFieldOK"), stepinfo);  
 			remarks.add(cr);
 		}
 		
 		// Check result fieldname
 		if(Const.isEmpty(resultFieldname))
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XsdValidatorMeta.CheckResult.ResultFieldEmpty"), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XsdValidatorMeta.CheckResult.ResultFieldEmpty"), stepinfo);  
 			remarks.add(cr);
 		}else{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XsdValidatorMeta.CheckResult.ResultFieldOK"), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XsdValidatorMeta.CheckResult.ResultFieldOK"), stepinfo);  
 			remarks.add(cr);
 		}
 		
@@ -409,19 +409,19 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			if(Const.isEmpty(xsdFilename))
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XsdValidatorMeta.CheckResult.XSDFieldEmpty"), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
+				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XsdValidatorMeta.CheckResult.XSDFieldEmpty"), stepinfo);  
 				remarks.add(cr);				
 			}
 		}
 		
 		if (prev!=null && prev.size()>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XsdValidatorMeta.CheckResult.ConnectedStepOK",String.valueOf(prev.size())), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XsdValidatorMeta.CheckResult.ConnectedStepOK",String.valueOf(prev.size())), stepinfo);  
 			remarks.add(cr);
 		}
         else
         {	
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XsdValidatorMeta.CheckResult.NoInputReceived"), stepinfo); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XsdValidatorMeta.CheckResult.NoInputReceived"), stepinfo); 
             remarks.add(cr);
         }
 		
@@ -489,7 +489,7 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface
 		
 			return null;
 		} catch (Exception e) {
-			throw new KettleException(e); //$NON-NLS-1$
+			throw new KettleException(e); 
 		}
 	}
 }

@@ -101,7 +101,8 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
   // File
   //
   private Button                            radioFilename;
-  private Button                            wbbFilename;
+  private Button                            wbbFilenameVfs;
+  private Button                            wbbFilenameLocal;
   private TextVar                           wFilename;
 
   // Repository by name
@@ -185,14 +186,14 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     formLayout.marginHeight = Const.FORM_MARGIN;
 
     shell.setLayout(formLayout);
-    shell.setText(BaseMessages.getString(PKG, "MetaInjectDialog.Shell.Title")); //$NON-NLS-1$
+    shell.setText(BaseMessages.getString(PKG, "MetaInjectDialog.Shell.Title")); 
 
     middle = props.getMiddlePct();
     margin = Const.MARGIN;
 
     // Stepname line
     wlStepname = new Label(shell, SWT.RIGHT);
-    wlStepname.setText(BaseMessages.getString(PKG, "MetaInjectDialog.Stepname.Label")); //$NON-NLS-1$
+    wlStepname.setText(BaseMessages.getString(PKG, "MetaInjectDialog.Stepname.Label")); 
     props.setLook(wlStepname);
     fdlStepname = new FormData();
     fdlStepname.left = new FormAttachment(0, 0);
@@ -218,7 +219,7 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     // //////////////////////////////////////////////////
     //
     gTransGroup = new Group(shell, SWT.SHADOW_ETCHED_IN);
-    gTransGroup.setText(BaseMessages.getString(PKG, "MetaInjectDialog.TransGroup.Label")); //$NON-NLS-1$;
+    gTransGroup.setText(BaseMessages.getString(PKG, "MetaInjectDialog.TransGroup.Label")); ;
     gTransGroup.setBackground(shell.getBackground()); // the default looks
     // ugly
     FormLayout transGroupLayout = new FormLayout();
@@ -233,8 +234,8 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     radioFilename = new Button(gTransGroup, SWT.RADIO);
     props.setLook(radioFilename);
     radioFilename.setSelection(false);
-    radioFilename.setText(BaseMessages.getString(PKG, "MetaInjectDialog.RadioFile.Label")); //$NON-NLS-1$
-    radioFilename.setToolTipText(BaseMessages.getString(PKG, "MetaInjectDialog.RadioFile.Tooltip", Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
+    radioFilename.setText(BaseMessages.getString(PKG, "MetaInjectDialog.RadioFile.Label")); 
+    radioFilename.setToolTipText(BaseMessages.getString(PKG, "MetaInjectDialog.RadioFile.Tooltip", Const.CR));  
     FormData fdFileRadio = new FormData();
     fdFileRadio.left = new FormAttachment(0, 0);
     fdFileRadio.right = new FormAttachment(100, 0);
@@ -247,17 +248,31 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
       }
     });
 
-    wbbFilename = new Button(gTransGroup, SWT.PUSH | SWT.CENTER); // Browse
-    props.setLook(wbbFilename);
-    wbbFilename.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
-    wbbFilename.setToolTipText(BaseMessages.getString(PKG, "System.Tooltip.BrowseForFileOrDirAndAdd"));
-    FormData fdbFilename = new FormData();
-    fdbFilename.right = new FormAttachment(100, 0);
-    fdbFilename.top = new FormAttachment(radioFilename, margin);
-    wbbFilename.setLayoutData(fdbFilename);
-    wbbFilename.addSelectionListener(new SelectionAdapter() {
+    wbbFilenameVfs = new Button(gTransGroup, SWT.PUSH | SWT.CENTER); // Browse
+    props.setLook(wbbFilenameVfs);
+    wbbFilenameVfs.setText(BaseMessages.getString(PKG, "System.Button.BrowseVfs"));
+    wbbFilenameVfs.setToolTipText(BaseMessages.getString(PKG, "System.Tooltip.BrowseVfs"));
+    FormData fdbFilenameVfs = new FormData();
+    fdbFilenameVfs.right = new FormAttachment(100, 0);
+    fdbFilenameVfs.top = new FormAttachment(radioFilename, margin);
+    wbbFilenameVfs.setLayoutData(fdbFilenameVfs);
+    wbbFilenameVfs.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
-        selectFileTrans();
+        selectFileTrans(true);
+      }
+    });
+
+    wbbFilenameLocal = new Button(gTransGroup, SWT.PUSH | SWT.CENTER); // Browse
+    props.setLook(wbbFilenameLocal);
+    wbbFilenameLocal.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
+    wbbFilenameLocal.setToolTipText(BaseMessages.getString(PKG, "System.Tooltip.Browse"));
+    FormData fdbFilenameLocal = new FormData();
+    fdbFilenameLocal.right = new FormAttachment(wbbFilenameVfs, -margin);
+    fdbFilenameLocal.top = new FormAttachment(radioFilename, margin);
+    wbbFilenameLocal.setLayoutData(fdbFilenameLocal);
+    wbbFilenameLocal.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent e) {
+        selectFileTrans(false);
       }
     });
 
@@ -266,8 +281,8 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     wFilename.addModifyListener(lsMod);
     FormData fdFilename = new FormData();
     fdFilename.left = new FormAttachment(0, 25);
-    fdFilename.right = new FormAttachment(wbbFilename, -margin);
-    fdFilename.top = new FormAttachment(wbbFilename, 0, SWT.CENTER);
+    fdFilename.right = new FormAttachment(wbbFilenameVfs, -margin);
+    fdFilename.top = new FormAttachment(wbbFilenameVfs, 0, SWT.CENTER);
     wFilename.setLayoutData(fdFilename);
     wFilename.addModifyListener(new ModifyListener() {
       public void modifyText(ModifyEvent e) {
@@ -281,12 +296,12 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     radioByName = new Button(gTransGroup, SWT.RADIO);
     props.setLook(radioByName);
     radioByName.setSelection(false);
-    radioByName.setText(BaseMessages.getString(PKG, "MetaInjectDialog.RadioRep.Label")); //$NON-NLS-1$
-    radioByName.setToolTipText(BaseMessages.getString(PKG, "MetaInjectDialog.RadioRep.Tooltip", Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
+    radioByName.setText(BaseMessages.getString(PKG, "MetaInjectDialog.RadioRep.Label")); 
+    radioByName.setToolTipText(BaseMessages.getString(PKG, "MetaInjectDialog.RadioRep.Tooltip", Const.CR));  
     FormData fdRepRadio = new FormData();
     fdRepRadio.left = new FormAttachment(0, 0);
     fdRepRadio.right = new FormAttachment(100, 0);
-    fdRepRadio.top = new FormAttachment(wbbFilename, 2 * margin);
+    fdRepRadio.top = new FormAttachment(wbbFilenameVfs, 2 * margin);
     radioByName.setLayoutData(fdRepRadio);
     radioByName.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
@@ -343,8 +358,8 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     radioByReference = new Button(gTransGroup, SWT.RADIO);
     props.setLook(radioByReference);
     radioByReference.setSelection(false);
-    radioByReference.setText(BaseMessages.getString(PKG, "MetaInjectDialog.RadioRepByReference.Label")); //$NON-NLS-1$
-    radioByReference.setToolTipText(BaseMessages.getString(PKG, "MetaInjectDialog.RadioRepByReference.Tooltip", Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
+    radioByReference.setText(BaseMessages.getString(PKG, "MetaInjectDialog.RadioRepByReference.Label")); 
+    radioByReference.setToolTipText(BaseMessages.getString(PKG, "MetaInjectDialog.RadioRepByReference.Tooltip", Const.CR));  
     FormData fdRadioByReference = new FormData();
     fdRadioByReference.left = new FormAttachment(0, 0);
     fdRadioByReference.right = new FormAttachment(100, 0);
@@ -436,7 +451,7 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     Control lastControl = gTransGroup;
     
     Label wlSourceStep = new Label(shell, SWT.RIGHT);
-    wlSourceStep.setText(BaseMessages.getString(PKG, "MetaInjectDialog.SourceStep.Label")); //$NON-NLS-1$
+    wlSourceStep.setText(BaseMessages.getString(PKG, "MetaInjectDialog.SourceStep.Label")); 
     props.setLook(wlSourceStep);
     FormData fdlSourceStep = new FormData();
     fdlSourceStep.left = new FormAttachment(0, 0);
@@ -454,7 +469,7 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     lastControl = wSourceStep;
 
     Label wlTargetFile = new Label(shell, SWT.RIGHT);
-    wlTargetFile.setText(BaseMessages.getString(PKG, "MetaInjectDialog.TargetFile.Label")); //$NON-NLS-1$
+    wlTargetFile.setText(BaseMessages.getString(PKG, "MetaInjectDialog.TargetFile.Label")); 
     props.setLook(wlTargetFile);
     FormData fdlTargetFile = new FormData();
     fdlTargetFile.left = new FormAttachment(0, 0);
@@ -472,7 +487,7 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     lastControl = wTargetFile;
 
     Label wlNoExecution = new Label(shell, SWT.RIGHT);
-    wlNoExecution.setText(BaseMessages.getString(PKG, "MetaInjectDialog.NoExecution.Label")); //$NON-NLS-1$
+    wlNoExecution.setText(BaseMessages.getString(PKG, "MetaInjectDialog.NoExecution.Label")); 
     props.setLook(wlNoExecution);
     FormData fdlNoExecution = new FormData();
     fdlNoExecution.left = new FormAttachment(0, 0);
@@ -490,9 +505,9 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
 
     // Some buttons
     wOK = new Button(shell, SWT.PUSH);
-    wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+    wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
     wCancel = new Button(shell, SWT.PUSH);
-    wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+    wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
     setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
     
     // Now the tree with the field selection etc.
@@ -572,9 +587,10 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
         wDirectory.setText(injectTransMeta.getRepositoryDirectory().getPath());
         radioByName.setSelection(true);
         radioFilename.setSelection(false);
+        validateTrans();
       }
     } catch (KettleException ke) {
-      new ErrorDialog(shell, BaseMessages.getString(PKG, "MetaInjectDialog.ErrorSelectingObject.DialogTitle"), BaseMessages.getString(PKG, "MetaInjectDialog.ErrorSelectingObject.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+      new ErrorDialog(shell, BaseMessages.getString(PKG, "MetaInjectDialog.ErrorSelectingObject.DialogTitle"), BaseMessages.getString(PKG, "MetaInjectDialog.ErrorSelectingObject.DialogMessage"), ke);  
     }
   }
 
@@ -585,35 +601,42 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     injectTransMeta.clearChanged();
   }
 
-  private void selectFileTrans() {
+  private void selectFileTrans(boolean useVfs) {
     String curFile = wFilename.getText();
-    FileObject root = null;
-
-    try {
-      root = KettleVFS.getFileObject(curFile != null ? curFile : Const.getUserHomeDirectory());
-
-      VfsFileChooserDialog vfsFileChooser = Spoon.getInstance().getVfsFileChooserDialog(root.getParent(), root);
-      FileObject file = vfsFileChooser.open(shell, null, Const.STRING_TRANS_FILTER_EXT, Const.getTransformationFilterNames(), VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE);
-      if (file == null) {
-        return;
+    
+    if (useVfs) {
+      FileObject root = null;
+  
+      try {
+        root = KettleVFS.getFileObject(curFile != null ? curFile : Const.getUserHomeDirectory());
+  
+        VfsFileChooserDialog vfsFileChooser = Spoon.getInstance().getVfsFileChooserDialog(root.getParent(), root);
+        FileObject file = vfsFileChooser.open(shell, null, Const.STRING_TRANS_FILTER_EXT, Const.getTransformationFilterNames(), VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE);
+        if (file == null) {
+          return;
+        }
+        String fname = null;
+  
+        fname = file.getURL().getFile();
+  
+        if (fname != null) {
+  
+          loadFileTrans(fname);
+          wFilename.setText(injectTransMeta.getFilename());
+          wTransname.setText(Const.NVL(injectTransMeta.getName(), ""));
+          wDirectory.setText("");
+          specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
+          setRadioButtons();
+        }
+      } catch (IOException e) {
+        new ErrorDialog(shell, BaseMessages.getString(PKG, "MetaInjectDialog.ErrorLoadingTransformation.DialogTitle"), BaseMessages.getString(PKG, "MetaInjectDialog.ErrorLoadingTransformation.DialogMessage"), e);  
+      } catch (KettleException e) {
+        new ErrorDialog(shell, BaseMessages.getString(PKG, "MetaInjectDialog.ErrorLoadingTransformation.DialogTitle"), BaseMessages.getString(PKG, "MetaInjectDialog.ErrorLoadingTransformation.DialogMessage"), e);  
       }
-      String fname = null;
-
-      fname = file.getURL().getFile();
-
-      if (fname != null) {
-
-        loadFileTrans(fname);
-        wFilename.setText(injectTransMeta.getFilename());
-        wTransname.setText(Const.NVL(injectTransMeta.getName(), ""));
-        wDirectory.setText("");
-        specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
-        setRadioButtons();
-      }
-    } catch (IOException e) {
-      new ErrorDialog(shell, BaseMessages.getString(PKG, "MetaInjectDialog.ErrorLoadingTransformation.DialogTitle"), BaseMessages.getString(PKG, "MetaInjectDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
-    } catch (KettleException e) {
-      new ErrorDialog(shell, BaseMessages.getString(PKG, "MetaInjectDialog.ErrorLoadingTransformation.DialogTitle"), BaseMessages.getString(PKG, "MetaInjectDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+    } else {
+      // Local file open dialog, ask for .ktr & xml files...
+      //
+      
     }
   }
 
@@ -684,7 +707,7 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     radioByName.setEnabled(repository != null);
     radioByReference.setEnabled(repository != null && supportsReferences);
     wFilename.setEnabled(radioFilename.getSelection());
-    wbbFilename.setEnabled(radioFilename.getSelection());
+    wbbFilenameVfs.setEnabled(radioFilename.getSelection());
     wTransname.setEnabled(repository != null && radioByName.getSelection());
 
     wDirectory.setEnabled(repository != null && radioByName.getSelection());
@@ -760,10 +783,10 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     wTree.setLayoutData(fdTree);
     
     ColumnInfo[] colinf = new ColumnInfo[] { 
-        new ColumnInfo(BaseMessages.getString(PKG, "MetaInjectDialog.Column.TargetStep"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-        new ColumnInfo(BaseMessages.getString(PKG, "MetaInjectDialog.Column.TargetDescription"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-        new ColumnInfo(BaseMessages.getString(PKG, "MetaInjectDialog.Column.SourceStep"), ColumnInfo.COLUMN_TYPE_CCOMBO, false, true), //$NON-NLS-1$
-        new ColumnInfo(BaseMessages.getString(PKG, "MetaInjectDialog.Column.SourceField"), ColumnInfo.COLUMN_TYPE_CCOMBO, false, true), //$NON-NLS-1$
+        new ColumnInfo(BaseMessages.getString(PKG, "MetaInjectDialog.Column.TargetStep"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
+        new ColumnInfo(BaseMessages.getString(PKG, "MetaInjectDialog.Column.TargetDescription"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
+        new ColumnInfo(BaseMessages.getString(PKG, "MetaInjectDialog.Column.SourceStep"), ColumnInfo.COLUMN_TYPE_CCOMBO, false, true), 
+        new ColumnInfo(BaseMessages.getString(PKG, "MetaInjectDialog.Column.SourceField"), ColumnInfo.COLUMN_TYPE_CCOMBO, false, true), 
     };
     
     wTree.setHeaderVisible(true);

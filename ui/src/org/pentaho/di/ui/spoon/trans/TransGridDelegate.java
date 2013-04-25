@@ -144,19 +144,19 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
     toolbarControl.setParent(transGridComposite);
 		
 		ColumnInfo[] colinf = new ColumnInfo[] { 
-                new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Stepname"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Copynr"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Read"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Written"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Input"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Output"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Updated"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-                new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Rejected"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Errors"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Active"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Time"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Speed"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.PriorityBufferSizes"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+                new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Stepname"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
+				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Copynr"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
+				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Read"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
+				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Written"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
+				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Input"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
+				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Output"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
+				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Updated"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
+                new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Rejected"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
+				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Errors"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
+				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Active"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
+				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Time"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
+				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Speed"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
+				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.PriorityBufferSizes"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
 		};
 
 		colinf[1].setAllignement(SWT.RIGHT);

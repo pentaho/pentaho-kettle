@@ -134,7 +134,7 @@ public class Delay extends BaseStep implements StepInterface
 		  
 		if (checkFeedback(getLinesRead())) 
 		{
-			if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "Delay.Log.LineNumber",""+getLinesRead())); //$NON-NLS-1$
+			if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "Delay.Log.LineNumber",""+getLinesRead())); 
 		}
 		
 		return true;

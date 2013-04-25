@@ -204,9 +204,9 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
 		retval.append("      ").append(XMLHandler.addTagValue("isaddresult",  isaddresult));
 		retval.append("      ").append(XMLHandler.addTagValue("createmovefolder",  createmovefolder));
 		
-	    retval.append("      ").append(XMLHandler.addTagValue("proxy_host", proxyHost)); //$NON-NLS-1$ //$NON-NLS-2$
-	    retval.append("      ").append(XMLHandler.addTagValue("proxy_port", proxyPort)); //$NON-NLS-1$ //$NON-NLS-2$
-	    retval.append("      ").append(XMLHandler.addTagValue("proxy_username", proxyUsername)); //$NON-NLS-1$ //$NON-NLS-2$
+	    retval.append("      ").append(XMLHandler.addTagValue("proxy_host", proxyHost));  
+	    retval.append("      ").append(XMLHandler.addTagValue("proxy_port", proxyPort));  
+	    retval.append("      ").append(XMLHandler.addTagValue("proxy_username", proxyUsername));  
 		retval.append("      ").append(XMLHandler.addTagValue("proxy_password", Encr.encryptPasswordIfNotUsingVariables(proxyPassword)));
 		
 	    retval.append("      ").append(XMLHandler.addTagValue("ifFileExists", SifFileExists));
@@ -254,9 +254,9 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
 			
 			createmovefolder = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "createmovefolder"));
 			
-		    proxyHost = XMLHandler.getTagValue(entrynode, "proxy_host"); //$NON-NLS-1$
-		    proxyPort = XMLHandler.getTagValue(entrynode, "proxy_port"); //$NON-NLS-1$
-		    proxyUsername = XMLHandler.getTagValue(entrynode, "proxy_username"); //$NON-NLS-1$
+		    proxyHost = XMLHandler.getTagValue(entrynode, "proxy_host"); 
+		    proxyPort = XMLHandler.getTagValue(entrynode, "proxy_port"); 
+		    proxyUsername = XMLHandler.getTagValue(entrynode, "proxy_username"); 
 		    proxyPassword      = Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(entrynode, "proxy_password"));
 			
 		    SifFileExists=XMLHandler.getTagValue(entrynode, "ifFileExists"); 
@@ -317,9 +317,9 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
 			
 			createmovefolder=rep.getJobEntryAttributeBoolean(id_jobentry, "createmovefolder");
 			
-		    proxyHost	= rep.getJobEntryAttributeString(id_jobentry, "proxy_host"); //$NON-NLS-1$
-		    proxyPort	= rep.getJobEntryAttributeString(id_jobentry, "proxy_port"); //$NON-NLS-1$
-		    proxyUsername	= rep.getJobEntryAttributeString(id_jobentry, "proxy_username"); //$NON-NLS-1$
+		    proxyHost	= rep.getJobEntryAttributeString(id_jobentry, "proxy_host"); 
+		    proxyPort	= rep.getJobEntryAttributeString(id_jobentry, "proxy_port"); 
+		    proxyUsername	= rep.getJobEntryAttributeString(id_jobentry, "proxy_username"); 
 		    proxyPassword        = Encr.decryptPasswordOptionallyEncrypted(rep.getJobEntryAttributeString(id_jobentry, "proxy_password"));
 			
 		    SifFileExists = rep.getJobEntryAttributeString(id_jobentry, "ifFileExists");
@@ -374,9 +374,9 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "isaddresult", isaddresult);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "createmovefolder", createmovefolder);
 			
-		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_host", proxyHost); //$NON-NLS-1$
-		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_port", proxyPort); //$NON-NLS-1$
-		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_username", proxyUsername); //$NON-NLS-1$
+		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_host", proxyHost); 
+		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_port", proxyPort); 
+		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_username", proxyUsername); 
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_password", Encr.encryptPasswordIfNotUsingVariables(proxyPassword));
 		    rep.saveJobEntryAttribute(id_job, getObjectId(), "ifFileExists", SifFileExists);
 		    
@@ -755,7 +755,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
 	public Result execute(Result previousResult, int nr) throws KettleException 
 	{
 		//LogWriter log = LogWriter.getInstance();
-		logBasic(BaseMessages.getString(PKG, "JobEntryFTPS.Started", serverName)); //$NON-NLS-1$
+		logBasic(BaseMessages.getString(PKG, "JobEntryFTPS.Started", serverName)); 
 		
 		Result result = previousResult;
 		result.setNrErrors(1);
@@ -777,7 +777,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
 		
 		localFolder = environmentSubstitute(targetDirectory);
 		
-		if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryFTPS.Start")); //$NON-NLS-1$
+		if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryFTPS.Start")); 
 
         FTPSConnection connection=null;
         
@@ -820,10 +820,10 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
 			// set activeConnection connectmode ...
             if (activeConnection){
                 connection.setPassiveMode(false);
-                if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobEntryFTPS.SetActive")); //$NON-NLS-1$
+                if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobEntryFTPS.SetActive")); 
             } else{
             	connection.setPassiveMode(true);
-                if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobEntryFTPS.SetPassive")); //$NON-NLS-1$
+                if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobEntryFTPS.SetPassive")); 
             }
 			
             // Set binary mode
@@ -834,7 +834,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
             
 			// Set the timeout
             connection.setTimeOut(timeout);
-		    if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobEntryFTPS.SetTimeout", String.valueOf(timeout))); //$NON-NLS-1$
+		    if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobEntryFTPS.SetTimeout", String.valueOf(timeout))); 
 			
 			// login to FTPS host ...
             connection.connect();
@@ -849,7 +849,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
                 String realFTPSDirectory = environmentSubstitute(FTPSDirectory);
                 realFTPSDirectory=normalizePath(realFTPSDirectory);
                 connection.changeDirectory(realFTPSDirectory);
-                if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobEntryFTPS.ChangedDir", realFTPSDirectory)); //$NON-NLS-1$
+                if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobEntryFTPS.ChangedDir", realFTPSDirectory)); 
 			}
 
 			//Create move to folder if necessary
@@ -887,13 +887,13 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
 
 		} catch(Exception e){
 			if(!successConditionBroken && !exitjobentry) updateErrors();
-			logError( BaseMessages.getString(PKG, "JobEntryFTPS.ErrorGetting", e.getMessage())); //$NON-NLS-1$
+			logError( BaseMessages.getString(PKG, "JobEntryFTPS.ErrorGetting", e.getMessage())); 
 		}  finally{
             if (connection!=null) {
                 try {
                 	connection.disconnect();
                 } catch(Exception e) {
-                	logError( BaseMessages.getString(PKG, "JobEntryFTPS.ErrorQuitting", e.getMessage())); //$NON-NLS-1$
+                	logError( BaseMessages.getString(PKG, "JobEntryFTPS.ErrorQuitting", e.getMessage())); 
                 }
             }
         }
@@ -911,7 +911,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
 			Pattern pattern, Result result) throws KettleException {
 		
 	 List<FTPFile> fileList = connection.getFileList(folder);
-	 if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobEntryFTPS.FoundNFiles", fileList.size())); //$NON-NLS-1$
+	 if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobEntryFTPS.FoundNFiles", fileList.size())); 
 		
         for (int i = 0; i < fileList.size(); i++) {
         	
@@ -946,7 +946,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
 		        			if ((!onlyGettingNewFiles) 
         					   || (onlyGettingNewFiles && needsDownload(localFilename))) {
         			        	
-		        				if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobEntryFTPS.GettingFile",file.getName(), targetDirectory));  //$NON-NLS-1$
+		        				if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobEntryFTPS.GettingFile",file.getName(), targetDirectory));  
         			        	
         			        	// download file
         			        	connection.downloadFile(file, returnTargetFilename(file.getName()));
@@ -954,7 +954,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
         			        	// Update retrieved files
         		    			updateRetrievedFiles();
         		    			
-        		    			if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobEntryFTPS.GotFile", file.getName())); //$NON-NLS-1$	
+        		    			if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobEntryFTPS.GotFile", file.getName())); 	
         		               
         		    			// Add filename to result filenames
         		                addFilenameToResultFilenames(result, localFilename);
@@ -964,7 +964,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
         		    				connection.deleteFile(file);
         		    				
         		    				if(isDetailed()) 
-        		    		            if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobEntryFTPS.DeletedFile", file.getName())); //$NON-NLS-1$
+        		    		            if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobEntryFTPS.DeletedFile", file.getName())); 
         		    			}else {
         		    				if(movefiles){
         		    					// Try to move file to destination folder ...
@@ -1011,10 +1011,10 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
 				
 				// Add to the result files...
 				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, targetFile, parentJob.getJobname(), toString());
-	            resultFile.setComment(BaseMessages.getString(PKG, "JobEntryFTPS.Downloaded", serverName)); //$NON-NLS-1$
+	            resultFile.setComment(BaseMessages.getString(PKG, "JobEntryFTPS.Downloaded", serverName)); 
 				result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 				
-	            if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobEntryFTPS.FileAddedToResult", filename)); //$NON-NLS-1$
+	            if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobEntryFTPS.FileAddedToResult", filename)); 
 			}catch (Exception e){
 				throw new KettleException(e);
 			} finally{
@@ -1214,12 +1214,12 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
 		  @Override
 		  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore)
 		  {
-		    andValidator().validate(this, "serverName", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+		    andValidator().validate(this, "serverName", remarks, putValidators(notBlankValidator())); 
 		    andValidator()
-		        .validate(this, "localDirectory", remarks, putValidators(notBlankValidator(), fileExistsValidator())); //$NON-NLS-1$
-		    andValidator().validate(this, "userName", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
-		    andValidator().validate(this, "password", remarks, putValidators(notNullValidator())); //$NON-NLS-1$
-		    andValidator().validate(this, "serverPort", remarks, putValidators(integerValidator())); //$NON-NLS-1$
+		        .validate(this, "localDirectory", remarks, putValidators(notBlankValidator(), fileExistsValidator())); 
+		    andValidator().validate(this, "userName", remarks, putValidators(notBlankValidator())); 
+		    andValidator().validate(this, "password", remarks, putValidators(notNullValidator())); 
+		    andValidator().validate(this, "serverPort", remarks, putValidators(integerValidator())); 
 		  }
 
 }

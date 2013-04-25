@@ -116,7 +116,11 @@ public class TextFileInputData extends BaseStepData implements
 	 * The separator (delimiter)
 	 */
 	public String separator;
+
+	public String enclosure;
 	
+	public String escapeCharacter;
+
 	
 	public boolean addShortFilename;
 	public boolean addExtension;

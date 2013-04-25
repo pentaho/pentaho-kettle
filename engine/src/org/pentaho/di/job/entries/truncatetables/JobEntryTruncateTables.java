@@ -106,16 +106,16 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 		retval.append(super.getXML());
 		retval.append("      ").append(XMLHandler.addTagValue("connection", this.connection==null?null:this.connection.getName()));
 		retval.append("      ").append(XMLHandler.addTagValue("arg_from_previous", this.argFromPrevious));
-		retval.append("      <fields>").append(Const.CR); //$NON-NLS-1$
+		retval.append("      <fields>").append(Const.CR); 
 	    if (arguments != null) {
 	      for (int i = 0; i < this.arguments.length; i++) {
-	        retval.append("        <field>").append(Const.CR); //$NON-NLS-1$
-	        retval.append("          ").append(XMLHandler.addTagValue("name", this.arguments[i])); //$NON-NLS-1$ //$NON-NLS-2$
-	        retval.append("          ").append(XMLHandler.addTagValue("schemaname", this.schemaname[i])); //$NON-NLS-1$ //$NON-NLS-2$
-	        retval.append("        </field>").append(Const.CR); //$NON-NLS-1$
+	        retval.append("        <field>").append(Const.CR); 
+	        retval.append("          ").append(XMLHandler.addTagValue("name", this.arguments[i]));  
+	        retval.append("          ").append(XMLHandler.addTagValue("schemaname", this.schemaname[i]));  
+	        retval.append("        </field>").append(Const.CR); 
 	      }
 	    }
-	    retval.append("      </fields>").append(Const.CR); //$NON-NLS-1$
+	    retval.append("      </fields>").append(Const.CR); 
 		return retval.toString();
 	}
 	
@@ -129,18 +129,18 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 			this.connection    = DatabaseMeta.findDatabase(databases, dbname);
 			this.argFromPrevious = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "arg_from_previous")); 
 			  
-		    Node fields = XMLHandler.getSubNode(entrynode, "fields"); //$NON-NLS-1$
+		    Node fields = XMLHandler.getSubNode(entrynode, "fields"); 
 
 		      // How many field arguments?
-		      int nrFields = XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
+		      int nrFields = XMLHandler.countNodes(fields, "field"); 
 		      this.arguments = new String[nrFields];
 		      this.schemaname = new String[nrFields];
 
 		      // Read them all...
 		      for (int i = 0; i < nrFields; i++) {
-		        Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
-		        this.arguments[i] = XMLHandler.getTagValue(fnode, "name"); //$NON-NLS-1$
-		        this.schemaname[i] = XMLHandler.getTagValue(fnode, "schemaname"); //$NON-NLS-1$
+		        Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); 
+		        this.arguments[i] = XMLHandler.getTagValue(fnode, "name"); 
+		        this.schemaname[i] = XMLHandler.getTagValue(fnode, "schemaname"); 
 		      }
 		}
 		catch(KettleException e)
@@ -157,14 +157,14 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 			
 			this.argFromPrevious = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous");
 			 // How many arguments?
-		      int argnr = rep.countNrJobEntryAttributes(id_jobentry, "name"); //$NON-NLS-1$
+		      int argnr = rep.countNrJobEntryAttributes(id_jobentry, "name"); 
 		      this.arguments = new String[argnr];
 		      this.schemaname = new String[argnr];
 
 		      // Read them all...
 		      for (int a = 0; a < argnr; a++) {
-		    	  this.arguments[a] = rep.getJobEntryAttributeString(id_jobentry, a, "name"); //$NON-NLS-1$
-		    	  this.schemaname[a] = rep.getJobEntryAttributeString(id_jobentry, a, "schemaname"); //$NON-NLS-1$
+		    	  this.arguments[a] = rep.getJobEntryAttributeString(id_jobentry, a, "name"); 
+		    	  this.schemaname[a] = rep.getJobEntryAttributeString(id_jobentry, a, "schemaname"); 
 		      }
 
 		}
@@ -185,8 +185,8 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 		      // save the arguments...
 		      if (this.arguments != null) {
 		        for (int i = 0; i < this.arguments.length; i++) {
-		          rep.saveJobEntryAttribute(id_job, getObjectId(), i, "name", this.arguments[i]); //$NON-NLS-1$
-		          rep.saveJobEntryAttribute(id_job, getObjectId(), i, "schemaname", this.schemaname[i]); //$NON-NLS-1$
+		          rep.saveJobEntryAttribute(id_job, getObjectId(), i, "name", this.arguments[i]); 
+		          rep.saveJobEntryAttribute(id_job, getObjectId(), i, "schemaname", this.schemaname[i]); 
 		        }
 		      }
 		}
@@ -258,7 +258,7 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 		
 	    if (argFromPrevious) {
 		      if(log.isDetailed()) 
-		    	  logDetailed(BaseMessages.getString(PKG, "JobEntryTruncateTables.FoundPreviousRows", String.valueOf((rows != null ? rows.size() : 0)))); //$NON-NLS-1$
+		    	  logDetailed(BaseMessages.getString(PKG, "JobEntryTruncateTables.FoundPreviousRows", String.valueOf((rows != null ? rows.size() : 0)))); 
 		      if(rows.size()==0) return result;
 	    }
 		if (connection!=null)
@@ -280,7 +280,7 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 				        
 					        if(!Const.isEmpty(tablename_previous))  {
 					            if(log.isDetailed()) 
-					          	  logDetailed(BaseMessages.getString(PKG, "JobEntryTruncateTables.ProcessingRow", tablename_previous, schemaname_previous)); //$NON-NLS-1$
+					          	  logDetailed(BaseMessages.getString(PKG, "JobEntryTruncateTables.ProcessingRow", tablename_previous, schemaname_previous)); 
 					        
 					            // let's truncate table
 					            if(truncateTables(tablename_previous, schemaname_previous, db)) 
@@ -288,7 +288,7 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 					            else
 					            	updateErrors();
 					        }else{
-					      	  logError(BaseMessages.getString(PKG, "JobEntryTruncateTables.RowEmpty")); //$NON-NLS-1$ 
+					      	  logError(BaseMessages.getString(PKG, "JobEntryTruncateTables.RowEmpty"));  
 					        }
 				      }
 			        
@@ -298,7 +298,7 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 	             		 String realSchemaname = environmentSubstitute(schemaname[i]); 
 	        			 if(!Const.isEmpty(realTablename)) {
 		        	    	  if(log.isDetailed()) 
-		        	    		  logDetailed(BaseMessages.getString(PKG, "JobEntryTruncateTables.ProcessingArg", arguments[i], schemaname[i])); //$NON-NLS-1$
+		        	    		  logDetailed(BaseMessages.getString(PKG, "JobEntryTruncateTables.ProcessingArg", arguments[i], schemaname[i])); 
 		        			
 		        	    	  // let's truncate table
 		        	    	  if(truncateTables(realTablename, realSchemaname, db)) 
@@ -306,7 +306,7 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 		        	    	  else
 		        	    		  updateErrors();
 	        			 }else{
-	        				  logError(BaseMessages.getString(PKG, "JobEntryTruncateTables.ArgEmpty", arguments[i], schemaname[i])); //$NON-NLS-1$ 
+	        				  logError(BaseMessages.getString(PKG, "JobEntryTruncateTables.ArgEmpty", arguments[i], schemaname[i]));  
 	        			 }
 	        	      }	
 			      }
@@ -343,7 +343,7 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
         return new DatabaseMeta[] { connection, };
     }
     public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore) {
-        boolean res = andValidator().validate(this, "arguments", remarks, putValidators(notNullValidator())); //$NON-NLS-1$
+        boolean res = andValidator().validate(this, "arguments", remarks, putValidators(notNullValidator())); 
 
         if (res == false) {
           return;
@@ -354,7 +354,7 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
         putValidators(ctx, notNullValidator(), fileExistsValidator());
 
         for (int i = 0; i < arguments.length; i++) {
-          andValidator().validate(this, "arguments[" + i + "]", remarks, ctx); //$NON-NLS-1$ //$NON-NLS-2$
+          andValidator().validate(this, "arguments[" + i + "]", remarks, ctx);  
         }
       }
 

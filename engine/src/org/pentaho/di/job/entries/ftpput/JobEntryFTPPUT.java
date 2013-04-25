@@ -158,14 +158,14 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
         retval.append("      ").append(XMLHandler.addTagValue("active",       activeConnection));
         retval.append("      ").append(XMLHandler.addTagValue("control_encoding",  controlEncoding));
         
-	    retval.append("      ").append(XMLHandler.addTagValue("proxy_host", proxyHost)); //$NON-NLS-1$ //$NON-NLS-2$
-	    retval.append("      ").append(XMLHandler.addTagValue("proxy_port", proxyPort)); //$NON-NLS-1$ //$NON-NLS-2$
-	    retval.append("      ").append(XMLHandler.addTagValue("proxy_username", proxyUsername)); //$NON-NLS-1$ //$NON-NLS-2$
-	    retval.append("      ").append(XMLHandler.addTagValue("proxy_password", Encr.encryptPasswordIfNotUsingVariables(proxyPassword))); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("      ").append(XMLHandler.addTagValue("socksproxy_host", socksProxyHost)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("      ").append(XMLHandler.addTagValue("socksproxy_port", socksProxyPort)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("      ").append(XMLHandler.addTagValue("socksproxy_username", socksProxyUsername)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("      ").append(XMLHandler.addTagValue("socksproxy_password", Encr.encryptPasswordIfNotUsingVariables(socksProxyPassword))); //$NON-NLS-1$ //$NON-NLS-2$
+	    retval.append("      ").append(XMLHandler.addTagValue("proxy_host", proxyHost));  
+	    retval.append("      ").append(XMLHandler.addTagValue("proxy_port", proxyPort));  
+	    retval.append("      ").append(XMLHandler.addTagValue("proxy_username", proxyUsername));  
+	    retval.append("      ").append(XMLHandler.addTagValue("proxy_password", Encr.encryptPasswordIfNotUsingVariables(proxyPassword)));  
+        retval.append("      ").append(XMLHandler.addTagValue("socksproxy_host", socksProxyHost));  
+        retval.append("      ").append(XMLHandler.addTagValue("socksproxy_port", socksProxyPort));  
+        retval.append("      ").append(XMLHandler.addTagValue("socksproxy_username", socksProxyUsername));  
+        retval.append("      ").append(XMLHandler.addTagValue("socksproxy_password", Encr.encryptPasswordIfNotUsingVariables(socksProxyPassword)));  
 	    
 		
 		return retval.toString();
@@ -190,14 +190,14 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
             activeConnection    = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "active") );
             controlEncoding     = XMLHandler.getTagValue(entrynode, "control_encoding");
             
-		    proxyHost = XMLHandler.getTagValue(entrynode, "proxy_host"); //$NON-NLS-1$
-		    proxyPort = XMLHandler.getTagValue(entrynode, "proxy_port"); //$NON-NLS-1$
-		    proxyUsername = XMLHandler.getTagValue(entrynode, "proxy_username"); //$NON-NLS-1$
-		    proxyPassword = Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(entrynode, "proxy_password")); //$NON-NLS-1$
-            socksProxyHost = XMLHandler.getTagValue(entrynode, "socksproxy_host"); //$NON-NLS-1$
-            socksProxyPort = XMLHandler.getTagValue(entrynode, "socksproxy_port"); //$NON-NLS-1$
-            socksProxyUsername = XMLHandler.getTagValue(entrynode, "socksproxy_username"); //$NON-NLS-1$
-            socksProxyPassword = Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(entrynode, "socksproxy_password")); //$NON-NLS-1$
+		    proxyHost = XMLHandler.getTagValue(entrynode, "proxy_host"); 
+		    proxyPort = XMLHandler.getTagValue(entrynode, "proxy_port"); 
+		    proxyUsername = XMLHandler.getTagValue(entrynode, "proxy_username"); 
+		    proxyPassword = Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(entrynode, "proxy_password")); 
+            socksProxyHost = XMLHandler.getTagValue(entrynode, "socksproxy_host"); 
+            socksProxyPort = XMLHandler.getTagValue(entrynode, "socksproxy_port"); 
+            socksProxyUsername = XMLHandler.getTagValue(entrynode, "socksproxy_username"); 
+            socksProxyPassword = Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(entrynode, "socksproxy_password")); 
             
             if ( controlEncoding == null )
             {
@@ -239,14 +239,14 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
             	controlEncoding = LEGACY_CONTROL_ENCODING;
             }
             
-		    proxyHost	= rep.getJobEntryAttributeString(id_jobentry, "proxy_host"); //$NON-NLS-1$
-		    proxyPort	= rep.getJobEntryAttributeString(id_jobentry, "proxy_port"); //$NON-NLS-1$
-		    proxyUsername	= rep.getJobEntryAttributeString(id_jobentry, "proxy_username"); //$NON-NLS-1$
-		    proxyPassword = Encr.decryptPasswordOptionallyEncrypted(rep.getJobEntryAttributeString(id_jobentry, "proxy_password") ); //$NON-NLS-1$
-	        socksProxyHost   = rep.getJobEntryAttributeString(id_jobentry, "socksproxy_host"); //$NON-NLS-1$
-	        socksProxyPort   = rep.getJobEntryAttributeString(id_jobentry, "socksproxy_port"); //$NON-NLS-1$
-	        socksProxyUsername   = rep.getJobEntryAttributeString(id_jobentry, "socksproxy_username"); //$NON-NLS-1$
-	        socksProxyPassword = Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString(id_jobentry, "socksproxy_password")); //$NON-NLS-1$
+		    proxyHost	= rep.getJobEntryAttributeString(id_jobentry, "proxy_host"); 
+		    proxyPort	= rep.getJobEntryAttributeString(id_jobentry, "proxy_port"); 
+		    proxyUsername	= rep.getJobEntryAttributeString(id_jobentry, "proxy_username"); 
+		    proxyPassword = Encr.decryptPasswordOptionallyEncrypted(rep.getJobEntryAttributeString(id_jobentry, "proxy_password") ); 
+	        socksProxyHost   = rep.getJobEntryAttributeString(id_jobentry, "socksproxy_host"); 
+	        socksProxyPort   = rep.getJobEntryAttributeString(id_jobentry, "socksproxy_port"); 
+	        socksProxyUsername   = rep.getJobEntryAttributeString(id_jobentry, "socksproxy_username"); 
+	        socksProxyPassword = Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString(id_jobentry, "socksproxy_password")); 
 		    
 		}
 		catch(KettleException dbe)
@@ -273,19 +273,19 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
             rep.saveJobEntryAttribute(id_job, getObjectId(), "active",          activeConnection);
             rep.saveJobEntryAttribute(id_job, getObjectId(), "control_encoding",controlEncoding);
             
-		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_host", proxyHost); //$NON-NLS-1$
-		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_port", proxyPort); //$NON-NLS-1$
-		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_username", proxyUsername); //$NON-NLS-1$
-		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_password", Encr.encryptPasswordIfNotUsingVariables(proxyPassword)); //$NON-NLS-1$
-            rep.saveJobEntryAttribute(id_job, getObjectId(), "socksproxy_host", socksProxyHost); //$NON-NLS-1$
-            rep.saveJobEntryAttribute(id_job, getObjectId(), "socksproxy_port", socksProxyPort); //$NON-NLS-1$
-            rep.saveJobEntryAttribute(id_job, getObjectId(), "socksproxy_username", socksProxyUsername); //$NON-NLS-1$
-            rep.saveJobEntryAttribute(id_job, getObjectId(), "socksproxy_password", Encr.encryptPasswordIfNotUsingVariables(socksProxyPassword)); //$NON-NLS-1$
+		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_host", proxyHost); 
+		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_port", proxyPort); 
+		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_username", proxyUsername); 
+		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_password", Encr.encryptPasswordIfNotUsingVariables(proxyPassword)); 
+            rep.saveJobEntryAttribute(id_job, getObjectId(), "socksproxy_host", socksProxyHost); 
+            rep.saveJobEntryAttribute(id_job, getObjectId(), "socksproxy_port", socksProxyPort); 
+            rep.saveJobEntryAttribute(id_job, getObjectId(), "socksproxy_username", socksProxyUsername); 
+            rep.saveJobEntryAttribute(id_job, getObjectId(), "socksproxy_password", Encr.encryptPasswordIfNotUsingVariables(socksProxyPassword)); 
 		
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "JobFTPPUT.UnableToSaveToRepo", String.valueOf(id_job)), dbe); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "JobFTPPUT.UnableToSaveToRepo", String.valueOf(id_job)), dbe); 
 		}
 	}
 	
@@ -869,12 +869,12 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 		  @Override
 		  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore)
 		  {
-		    andValidator().validate(this, "serverName", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+		    andValidator().validate(this, "serverName", remarks, putValidators(notBlankValidator())); 
 		    andValidator()
-		        .validate(this, "localDirectory", remarks, putValidators(notBlankValidator(), fileExistsValidator())); //$NON-NLS-1$
-		    andValidator().validate(this, "userName", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
-		    andValidator().validate(this, "password", remarks, putValidators(notNullValidator())); //$NON-NLS-1$
-		    andValidator().validate(this, "serverPort", remarks, putValidators(integerValidator())); //$NON-NLS-1$
+		        .validate(this, "localDirectory", remarks, putValidators(notBlankValidator(), fileExistsValidator())); 
+		    andValidator().validate(this, "userName", remarks, putValidators(notBlankValidator())); 
+		    andValidator().validate(this, "password", remarks, putValidators(notNullValidator())); 
+		    andValidator().validate(this, "serverPort", remarks, putValidators(integerValidator())); 
 		  }
  
 	    /**

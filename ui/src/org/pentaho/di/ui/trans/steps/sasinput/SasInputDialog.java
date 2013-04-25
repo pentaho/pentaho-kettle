@@ -99,14 +99,14 @@ public class SasInputDialog extends BaseStepDialog implements StepDialogInterfac
     formLayout.marginHeight = Const.FORM_MARGIN;
 
     shell.setLayout(formLayout);
-    shell.setText(BaseMessages.getString(PKG, "SASInputDialog.Dialog.Title")); //$NON-NLS-1$
+    shell.setText(BaseMessages.getString(PKG, "SASInputDialog.Dialog.Title")); 
 
     int middle = props.getMiddlePct();
     int margin = Const.MARGIN;
 
     // Stepname line
     wlStepname = new Label(shell, SWT.RIGHT);
-    wlStepname.setText(BaseMessages.getString(PKG, "System.Label.StepName")); //$NON-NLS-1$
+    wlStepname.setText(BaseMessages.getString(PKG, "System.Label.StepName")); 
     props.setLook(wlStepname);
     fdlStepname = new FormData();
     fdlStepname.left = new FormAttachment(0, 0);
@@ -155,13 +155,13 @@ public class SasInputDialog extends BaseStepDialog implements StepDialogInterfac
 
     // Some buttons
     wOK = new Button(shell, SWT.PUSH);
-    wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+    wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
     wOK.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { ok(); } });
     wGet = new Button(shell, SWT.PUSH);
-    wGet.setText(BaseMessages.getString(PKG, "System.Button.GetFields")); //$NON-NLS-1$
+    wGet.setText(BaseMessages.getString(PKG, "System.Button.GetFields")); 
     wGet.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { get(); } });
     wCancel = new Button(shell, SWT.PUSH);
-    wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+    wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
     wCancel.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { cancel(); } });
 
     setButtonPositions(new Button[] { wOK, wGet, wCancel }, margin, null);
@@ -326,7 +326,7 @@ public class SasInputDialog extends BaseStepDialog implements StepDialogInterfac
     } catch (KettleStepException e) {
       MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
       mb.setMessage(e.toString());
-      mb.setText(BaseMessages.getString(PKG, "System.Warning")); //$NON-NLS-1$
+      mb.setText(BaseMessages.getString(PKG, "System.Warning")); 
       mb.open();
     }
     dispose();

@@ -109,14 +109,14 @@ public class GetPreviousRowFieldDialog extends BaseStepDialog implements StepDia
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "GetPreviousRowFieldDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "GetPreviousRowFieldDialog.Shell.Title")); 
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname = new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "GetPreviousRowFieldDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "GetPreviousRowFieldDialog.Stepname.Label")); 
 		props.setLook(wlStepname);
 		fdlStepname = new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -135,7 +135,7 @@ public class GetPreviousRowFieldDialog extends BaseStepDialog implements StepDia
 		
 
 		wlKey = new Label(shell, SWT.NONE);
-		wlKey.setText(BaseMessages.getString(PKG, "GetPreviousRowFieldDialog.Fields.Label")); //$NON-NLS-1$
+		wlKey.setText(BaseMessages.getString(PKG, "GetPreviousRowFieldDialog.Fields.Label")); 
 		props.setLook(wlKey);
 		fdlKey = new FormData();
 		fdlKey.left = new FormAttachment(0, 0);
@@ -147,9 +147,9 @@ public class GetPreviousRowFieldDialog extends BaseStepDialog implements StepDia
 
 		ciKey = new ColumnInfo[nrFieldCols];
 		ciKey[0] = new ColumnInfo(
-				BaseMessages.getString(PKG, "GetPreviousRowFieldDialog.ColumnInfo.InStreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false);//$NON-NLS-1$
+				BaseMessages.getString(PKG, "GetPreviousRowFieldDialog.ColumnInfo.InStreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false);
 		ciKey[1] = new ColumnInfo(
-				BaseMessages.getString(PKG, "GetPreviousRowFieldDialog.ColumnInfo.OutStreamField"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
+				BaseMessages.getString(PKG, "GetPreviousRowFieldDialog.ColumnInfo.OutStreamField"), ColumnInfo.COLUMN_TYPE_TEXT, false); 
 		ciKey[1].setUsingVariables(true);
 		wFields = new TableView(transMeta,shell, SWT.BORDER
 				| SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
@@ -197,12 +197,12 @@ public class GetPreviousRowFieldDialog extends BaseStepDialog implements StepDia
 		
 		// THE BUTTONS
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		wGet = new Button(shell, SWT.PUSH);
-		wGet.setText(BaseMessages.getString(PKG, "GetPreviousRowFieldDialog.GetFields.Button")); //$NON-NLS-1$
+		wGet.setText(BaseMessages.getString(PKG, "GetPreviousRowFieldDialog.GetFields.Button")); 
 		fdGet = new FormData();
 		fdGet.right = new FormAttachment(100, 0);
 		fdGet.top = new FormAttachment(wStepname, 3*middle);
@@ -318,7 +318,7 @@ public class GetPreviousRowFieldDialog extends BaseStepDialog implements StepDia
 
 		inf.allocate(nrkeys);
 
-		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "GetPreviousRowFieldDialog.Log.FoundFields", String.valueOf(nrkeys))); //$NON-NLS-1$ //$NON-NLS-2$
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "GetPreviousRowFieldDialog.Log.FoundFields", String.valueOf(nrkeys)));  
 		for (int i = 0; i < nrkeys; i++) {
 			TableItem item = wFields.getNonEmpty(i);
 			inf.getFieldInStream()[i] = item.getText(1);
@@ -354,7 +354,7 @@ public class GetPreviousRowFieldDialog extends BaseStepDialog implements StepDia
 			}
 		} catch (KettleException ke) {
 			new ErrorDialog(
-					shell,BaseMessages.getString(PKG, "GetPreviousRowFieldDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "GetPreviousRowFieldDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+					shell,BaseMessages.getString(PKG, "GetPreviousRowFieldDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "GetPreviousRowFieldDialog.FailedToGetFields.DialogMessage"), ke);  
 		}
 	}
 }

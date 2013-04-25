@@ -118,13 +118,13 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface
 	{
         StringBuffer retval = new StringBuffer(200);
 
-		retval.append(XMLHandler.addTagValue("fieldname", fieldname));		             //$NON-NLS-1$
-        retval.append(XMLHandler.addTagValue("use_contains", isContains));                   //$NON-NLS-1$
-		retval.append(XMLHandler.addTagValue("case_value_type", ValueMeta.getTypeDesc(caseValueType)));	 //$NON-NLS-1$
-		retval.append(XMLHandler.addTagValue("case_value_format", caseValueFormat));	 //$NON-NLS-1$
-		retval.append(XMLHandler.addTagValue("case_value_decimal", caseValueDecimal));	 //$NON-NLS-1$
-		retval.append(XMLHandler.addTagValue("case_value_group", caseValueGroup));		 //$NON-NLS-1$
-		retval.append(XMLHandler.addTagValue("default_target_step", defaultTargetStep==null ? null : defaultTargetStep.getName())); //$NON-NLS-1$
+		retval.append(XMLHandler.addTagValue("fieldname", fieldname));		             
+        retval.append(XMLHandler.addTagValue("use_contains", isContains));                   
+		retval.append(XMLHandler.addTagValue("case_value_type", ValueMeta.getTypeDesc(caseValueType)));	 
+		retval.append(XMLHandler.addTagValue("case_value_format", caseValueFormat));	 
+		retval.append(XMLHandler.addTagValue("case_value_decimal", caseValueDecimal));	 
+		retval.append(XMLHandler.addTagValue("case_value_group", caseValueGroup));		 
+		retval.append(XMLHandler.addTagValue("default_target_step", defaultTargetStep==null ? null : defaultTargetStep.getName())); 
 		
 		retval.append(XMLHandler.openTag(XML_TAG_CASE_VALUES));
 		for (SwitchCaseTarget target : caseTargets) {
@@ -142,12 +142,12 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			fieldname = XMLHandler.getTagValue(stepnode, "fieldname"); //$NON-NLS-1$
-            isContains = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_contains")); //$NON-NLS-1$
-			caseValueType = ValueMeta.getType(XMLHandler.getTagValue(stepnode, "case_value_type")); //$NON-NLS-1$
-			caseValueFormat = XMLHandler.getTagValue(stepnode, "case_value_format"); //$NON-NLS-1$
-			caseValueDecimal = XMLHandler.getTagValue(stepnode, "case_value_decimal"); //$NON-NLS-1$
-			caseValueGroup = XMLHandler.getTagValue(stepnode, "case_value_group"); //$NON-NLS-1$
+			fieldname = XMLHandler.getTagValue(stepnode, "fieldname"); 
+            isContains = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_contains")); 
+			caseValueType = ValueMeta.getType(XMLHandler.getTagValue(stepnode, "case_value_type")); 
+			caseValueFormat = XMLHandler.getTagValue(stepnode, "case_value_format"); 
+			caseValueDecimal = XMLHandler.getTagValue(stepnode, "case_value_decimal"); 
+			caseValueGroup = XMLHandler.getTagValue(stepnode, "case_value_group"); 
 			
 			defaultTargetStepname = XMLHandler.getTagValue(stepnode, "default_target_step"); // $NON-NLS-1$
 			
@@ -164,7 +164,7 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "SwitchCaseMeta.Exception..UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "SwitchCaseMeta.Exception..UnableToLoadStepInfoFromXML"), e); 
 		}
 	}
 	
@@ -177,12 +177,12 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			fieldname        = rep.getStepAttributeString (id_step, "fieldname");  //$NON-NLS-1$
-            isContains       = rep.getStepAttributeBoolean (id_step, "use_contains");  //$NON-NLS-1$
-			caseValueType    = ValueMeta.getType(rep.getStepAttributeString (id_step, "case_value_type"));  //$NON-NLS-1$
-			caseValueFormat  = rep.getStepAttributeString (id_step, "case_value_format");  //$NON-NLS-1$
-			caseValueDecimal = rep.getStepAttributeString (id_step, "case_value_decimal");  //$NON-NLS-1$
-			caseValueGroup   = rep.getStepAttributeString (id_step, "case_value_group");  //$NON-NLS-1$
+			fieldname        = rep.getStepAttributeString (id_step, "fieldname");  
+            isContains       = rep.getStepAttributeBoolean (id_step, "use_contains");  
+			caseValueType    = ValueMeta.getType(rep.getStepAttributeString (id_step, "case_value_type"));  
+			caseValueFormat  = rep.getStepAttributeString (id_step, "case_value_format");  
+			caseValueDecimal = rep.getStepAttributeString (id_step, "case_value_decimal");  
+			caseValueGroup   = rep.getStepAttributeString (id_step, "case_value_group");  
 			
 			defaultTargetStepname = rep.getStepAttributeString(id_step, "default_target_step"); // $NON-NLS-1$
 			
@@ -197,7 +197,7 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "SwitchCaseMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "SwitchCaseMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository"), e); 
 		}
 	}
 
@@ -205,12 +205,12 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			rep.saveStepAttribute(id_transformation, id_step, "fieldname", fieldname); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "use_contains", isContains); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "case_value_type", ValueMeta.getTypeDesc(caseValueType)); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "case_value_format", caseValueFormat); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "case_value_decimal", caseValueDecimal); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "case_value_group", caseValueGroup); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "fieldname", fieldname); 
+            rep.saveStepAttribute(id_transformation, id_step, "use_contains", isContains); 
+			rep.saveStepAttribute(id_transformation, id_step, "case_value_type", ValueMeta.getTypeDesc(caseValueType)); 
+			rep.saveStepAttribute(id_transformation, id_step, "case_value_format", caseValueFormat); 
+			rep.saveStepAttribute(id_transformation, id_step, "case_value_decimal", caseValueDecimal); 
+			rep.saveStepAttribute(id_transformation, id_step, "case_value_group", caseValueGroup); 
 			
 			rep.saveStepAttribute(id_transformation, id_step, "default_target_step", defaultTargetStep==null ? null : defaultTargetStep.getName());
 
@@ -222,7 +222,7 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "SwitchCaseMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "SwitchCaseMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); 
 		}
 	}
 
@@ -254,19 +254,19 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SwitchCaseMeta.CheckResult.FieldSpecified"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SwitchCaseMeta.CheckResult.FieldSpecified"), stepMeta); 
 		}
 		remarks.add(cr);		
 		
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SwitchCaseMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SwitchCaseMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepMeta); 
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SwitchCaseMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SwitchCaseMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepMeta); 
 			remarks.add(cr);
 		}
 	}

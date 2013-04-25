@@ -101,7 +101,7 @@ public class PGPEncryptStream extends BaseStep implements StepInterface
 					if (data.indexOfKeyName<0)
 					{
 						// The field is unreachable !
-						throw new KettleException(BaseMessages.getString(PKG, "PGPEncryptStream.Exception.CouldnotFindField",meta.getStreamField())); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new KettleException(BaseMessages.getString(PKG, "PGPEncryptStream.Exception.CouldnotFindField",meta.getStreamField()));  
 					}
 				}
 				else
@@ -122,7 +122,7 @@ public class PGPEncryptStream extends BaseStep implements StepInterface
 					if (data.indexOfField<0)
 					{
 						// The field is unreachable !
-						throw new KettleException(BaseMessages.getString(PKG, "PGPEncryptStream.Exception.CouldnotFindField",meta.getStreamField())); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new KettleException(BaseMessages.getString(PKG, "PGPEncryptStream.Exception.CouldnotFindField",meta.getStreamField()));  
 					}
 				}
         	}// End If first 
@@ -176,7 +176,7 @@ public class PGPEncryptStream extends BaseStep implements StepInterface
         	}
         	else
         	{
-	            logError(BaseMessages.getString(PKG, "PGPEncryptStream.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
+	            logError(BaseMessages.getString(PKG, "PGPEncryptStream.ErrorInStepRunning")+e.getMessage()); 
 	            setErrors(1);
 	            stopAll();
 	            setOutputDone();  // signal end to receiver(s)

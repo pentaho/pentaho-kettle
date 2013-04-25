@@ -79,7 +79,7 @@ public class DetectEmptyStream extends BaseStep implements StepInterface
 		        if (checkFeedback(getLinesRead())) 
 		        {
 		        	if (log.isBasic()) {
-		        		logBasic(BaseMessages.getString(PKG, "DetectEmptyStream.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+		        		logBasic(BaseMessages.getString(PKG, "DetectEmptyStream.Log.LineNumber")+getLinesRead()); 
 		        	}
 		        }   
 			}

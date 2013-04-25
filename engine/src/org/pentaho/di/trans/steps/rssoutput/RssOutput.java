@@ -465,7 +465,7 @@ public class RssOutput extends BaseStep implements StepInterface
 					data.customchannels[i] =data.inputRowMeta.indexOfValue(meta.getChannelCustomFields()[i]);
 					if (data.customchannels[i]<0) // couldn't find field!
 					{
-						throw new KettleStepException(BaseMessages.getString(PKG, "RssOutput.Exception.FieldRequired",meta.getChannelCustomFields()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new KettleStepException(BaseMessages.getString(PKG, "RssOutput.Exception.FieldRequired",meta.getChannelCustomFields()[i]));  
 					}
 				}
 				// Check Custom channel fields
@@ -475,7 +475,7 @@ public class RssOutput extends BaseStep implements StepInterface
 					data.customitems[i] =data.inputRowMeta.indexOfValue(meta.getItemCustomFields()[i]);
 					if (data.customitems[i]<0)  // couldn't find field!
 					{
-						throw new KettleStepException(BaseMessages.getString(PKG, "RssOutput.Exception.FieldRequired",meta.getItemCustomFields()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new KettleStepException(BaseMessages.getString(PKG, "RssOutput.Exception.FieldRequired",meta.getItemCustomFields()[i]));  
 					}
 				}
 				// Prepare Output RSS Custom document
@@ -574,7 +574,7 @@ public class RssOutput extends BaseStep implements StepInterface
 		}
 		catch(KettleStepException e)
 		{
-			logError(BaseMessages.getString(PKG, "RssOutputMeta.Log.ErrorInStep")+e.getMessage()); //$NON-NLS-1$
+			logError(BaseMessages.getString(PKG, "RssOutputMeta.Log.ErrorInStep")+e.getMessage()); 
 			setErrors(1);
 			stopAll();
 			setOutputDone();  // signal end to receiver(s)

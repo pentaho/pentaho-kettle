@@ -66,9 +66,9 @@ public class XMLInputStream extends BaseStep implements StepInterface
 
 	private XMLInputStreamData data;
 
-	static final String[] eventDescription= {"UNKNOWN","START_ELEMENT","END_ELEMENT","PROCESSING_INSTRUCTION","CHARACTERS","COMMENT","SPACE", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
-		"START_DOCUMENT","END_DOCUMENT","ENTITY_REFERENCE","ATTRIBUTE","DTD","CDATA","NAMESPACE", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
-		"NOTATION_DECLARATION","ENTITY_DECLARATION"}; //$NON-NLS-1$ //$NON-NLS-2$
+	static final String[] eventDescription= {"UNKNOWN","START_ELEMENT","END_ELEMENT","PROCESSING_INSTRUCTION","CHARACTERS","COMMENT","SPACE",   //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+		"START_DOCUMENT","END_DOCUMENT","ENTITY_REFERENCE","ATTRIBUTE","DTD","CDATA","NAMESPACE",   //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+		"NOTATION_DECLARATION","ENTITY_DECLARATION"};  
 
 	public XMLInputStream(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
 			TransMeta transMeta, Trans trans)
@@ -166,7 +166,7 @@ public class XMLInputStream extends BaseStep implements StepInterface
 		
 		// Skip rows? (not exact science since some attributes could be mixed within the last row)
 		if (data.nrRowsToSkip == 0 || data.rowNumber > data.nrRowsToSkip) {
-			if (log.isRowLevel()) logRowlevel("Read row: " + data.outputRowMeta.getString(r)); //$NON-NLS-1$
+			if (log.isRowLevel()) logRowlevel("Read row: " + data.outputRowMeta.getString(r)); 
 			putRow(data.outputRowMeta, r);
 		}
 	}
@@ -180,7 +180,7 @@ public class XMLInputStream extends BaseStep implements StepInterface
 			outputRowData = processEvent();
 			// log all events (but no attributes sent by the EventReader)
 			incrementLinesInput();
-			if (checkFeedback(getLinesInput()) && isBasic()) logBasic(BaseMessages.getString(PKG, "XMLInputStream.Log.LineNumber", Long.toString(getLinesInput()))); //$NON-NLS-1$
+			if (checkFeedback(getLinesInput()) && isBasic()) logBasic(BaseMessages.getString(PKG, "XMLInputStream.Log.LineNumber", Long.toString(getLinesInput()))); 
 		}
 
 		return outputRowData;

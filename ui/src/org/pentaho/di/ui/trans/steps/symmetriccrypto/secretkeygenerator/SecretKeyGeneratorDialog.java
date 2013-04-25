@@ -178,7 +178,7 @@ public class SecretKeyGeneratorDialog extends BaseStepDialog implements StepDial
 		
 		// SecretKeyField fieldname ...
 		wlSecretKeyField=new Label(wOutputFields, SWT.RIGHT);
-		wlSecretKeyField.setText(BaseMessages.getString(PKG, "SecretKeyGeneratorDialog.SecretKeyFieldName.Label")); //$NON-NLS-1$
+		wlSecretKeyField.setText(BaseMessages.getString(PKG, "SecretKeyGeneratorDialog.SecretKeyFieldName.Label")); 
  		props.setLook(wlSecretKeyField);
 		fdlSecretKeyField=new FormData();
 		fdlSecretKeyField.left = new FormAttachment(0, 0);
@@ -197,7 +197,7 @@ public class SecretKeyGeneratorDialog extends BaseStepDialog implements StepDial
 		
 		// AlgorithmField fieldname ...
 		wlAlgorithmField=new Label(wOutputFields, SWT.RIGHT);
-		wlAlgorithmField.setText(BaseMessages.getString(PKG, "SecretKeyGeneratorDialog.Algorithm.Label")); //$NON-NLS-1$
+		wlAlgorithmField.setText(BaseMessages.getString(PKG, "SecretKeyGeneratorDialog.Algorithm.Label")); 
  		props.setLook(wlAlgorithmField);
 		fdlAlgorithmField=new FormData();
 		fdlAlgorithmField.left = new FormAttachment(0, 0);
@@ -216,7 +216,7 @@ public class SecretKeyGeneratorDialog extends BaseStepDialog implements StepDial
 		
 		// SecretKeyLengthField fieldname ...
 		wlSecretKeyLengthField=new Label(wOutputFields, SWT.RIGHT);
-		wlSecretKeyLengthField.setText(BaseMessages.getString(PKG, "SecretKeyGeneratorDialog.SecretKeyLength.Label")); //$NON-NLS-1$
+		wlSecretKeyLengthField.setText(BaseMessages.getString(PKG, "SecretKeyGeneratorDialog.SecretKeyLength.Label")); 
  		props.setLook(wlSecretKeyLengthField);
 		fdlSecretKeyLengthField=new FormData();
 		fdlSecretKeyLengthField.left = new FormAttachment(0, 0);
@@ -235,7 +235,7 @@ public class SecretKeyGeneratorDialog extends BaseStepDialog implements StepDial
 		
 
         wlOutputKeyAsByinary=new Label(wOutputFields, SWT.RIGHT);
-        wlOutputKeyAsByinary.setText(BaseMessages.getString(PKG, "SecretKeyGeneratorDialog.OutputKeyAsByinary.Label")); //$NON-NLS-1$
+        wlOutputKeyAsByinary.setText(BaseMessages.getString(PKG, "SecretKeyGeneratorDialog.OutputKeyAsByinary.Label")); 
         props.setLook(wlOutputKeyAsByinary);
         fdlOutputKeyAsByinary=new FormData();
         fdlOutputKeyAsByinary.left = new FormAttachment(0, 0);

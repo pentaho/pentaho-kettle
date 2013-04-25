@@ -236,38 +236,38 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 	{
 		try
 		{
-			String con     = XMLHandler.getTagValue(stepnode, "connection");   //$NON-NLS-1$
+			String con     = XMLHandler.getTagValue(stepnode, "connection");   
 			databaseMeta   = DatabaseMeta.findDatabase(databases, con);
 
-			String serror   = XMLHandler.getTagValue(stepnode, "errors");       //$NON-NLS-1$
+			String serror   = XMLHandler.getTagValue(stepnode, "errors");       
 			maxErrors      = Const.toInt(serror, 0);      // default to 0.
             
-			bufferSize = XMLHandler.getTagValue(stepnode, "buffer_size");       //$NON-NLS-1$
+			bufferSize = XMLHandler.getTagValue(stepnode, "buffer_size");       
 
-            schemaName     = XMLHandler.getTagValue(stepnode, "schema");       //$NON-NLS-1$
-			tableName      = XMLHandler.getTagValue(stepnode, "table");        //$NON-NLS-1$
+            schemaName     = XMLHandler.getTagValue(stepnode, "schema");       
+			tableName      = XMLHandler.getTagValue(stepnode, "table");        
 
-			fifoDirectory  = XMLHandler.getTagValue(stepnode, "fifo_directory");        //$NON-NLS-1$
-			fifoServerName = XMLHandler.getTagValue(stepnode, "fifo_server_name");        //$NON-NLS-1$
+			fifoDirectory  = XMLHandler.getTagValue(stepnode, "fifo_directory");        
+			fifoServerName = XMLHandler.getTagValue(stepnode, "fifo_server_name");        
 
-			encoding       = XMLHandler.getTagValue(stepnode, "encoding");         //$NON-NLS-1$
+			encoding       = XMLHandler.getTagValue(stepnode, "encoding");         
 
-			int nrvalues = XMLHandler.countNodes(stepnode, "mapping");      //$NON-NLS-1$
+			int nrvalues = XMLHandler.countNodes(stepnode, "mapping");      
 			allocate(nrvalues);
 
 			for (int i=0;i<nrvalues;i++)
 			{
-				Node vnode = XMLHandler.getSubNodeByNr(stepnode, "mapping", i);    //$NON-NLS-1$
+				Node vnode = XMLHandler.getSubNodeByNr(stepnode, "mapping", i);    
 
-				fieldTable[i]      = XMLHandler.getTagValue(vnode, "stream_name"); //$NON-NLS-1$
-				fieldStream[i]     = XMLHandler.getTagValue(vnode, "field_name");  //$NON-NLS-1$
+				fieldTable[i]      = XMLHandler.getTagValue(vnode, "stream_name"); 
+				fieldStream[i]     = XMLHandler.getTagValue(vnode, "field_name");  
 				if (fieldStream[i]==null) fieldStream[i]=fieldTable[i];            // default: the same name!
-				fieldFormatOk[i]  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(vnode, "field_format_ok"));  //$NON-NLS-1$
+				fieldFormatOk[i]  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(vnode, "field_format_ok"));  
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.Exception.UnableToReadStepInfoFromXML"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.Exception.UnableToReadStepInfoFromXML"), e); 
 		}
 	}
 
@@ -277,9 +277,9 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 		databaseMeta = null;
 		maxErrors    = 0;
 		bufferSize   = "100000";
-        schemaName   = "";                //$NON-NLS-1$
-		tableName    = BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.DefaultTableName"); //$NON-NLS-1$
-        encoding     = "";                                       //$NON-NLS-1$
+        schemaName   = "";                
+		tableName    = BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.DefaultTableName"); 
+        encoding     = "";                                       
         fifoDirectory = "/tmp/fifo/";
         
 		allocate(0);
@@ -289,23 +289,23 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 	{
         StringBuffer retval = new StringBuffer(300);
 
-		retval.append("    ").append(XMLHandler.addTagValue("connection",   databaseMeta==null?"":databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		retval.append("    ").append(XMLHandler.addTagValue("errors",       maxErrors));     //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("buffer_size",  bufferSize));     //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("    ").append(XMLHandler.addTagValue("schema",       schemaName));    //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("table",        tableName));     //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("encoding",     encoding));      //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("connection",   databaseMeta==null?"":databaseMeta.getName()));   //$NON-NLS-3$
+		retval.append("    ").append(XMLHandler.addTagValue("errors",       maxErrors));      
+		retval.append("    ").append(XMLHandler.addTagValue("buffer_size",  bufferSize));      
+        retval.append("    ").append(XMLHandler.addTagValue("schema",       schemaName));     
+		retval.append("    ").append(XMLHandler.addTagValue("table",        tableName));      
+		retval.append("    ").append(XMLHandler.addTagValue("encoding",     encoding));       
 
-		retval.append("    ").append(XMLHandler.addTagValue("fifo_directory",   fifoDirectory));      //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("fifo_server_name", fifoServerName));      //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("fifo_directory",   fifoDirectory));       
+		retval.append("    ").append(XMLHandler.addTagValue("fifo_server_name", fifoServerName));       
 
 		for (int i=0;i<fieldTable.length;i++)
 		{
-			retval.append("      <mapping>").append(Const.CR); //$NON-NLS-1$
-			retval.append("        ").append(XMLHandler.addTagValue("stream_name", fieldTable[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        ").append(XMLHandler.addTagValue("field_name",  fieldStream[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        ").append(XMLHandler.addTagValue("field_format_ok",  fieldFormatOk[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("      </mapping>").append(Const.CR); //$NON-NLS-1$
+			retval.append("      <mapping>").append(Const.CR); 
+			retval.append("        ").append(XMLHandler.addTagValue("stream_name", fieldTable[i]));  
+			retval.append("        ").append(XMLHandler.addTagValue("field_name",  fieldStream[i]));  
+			retval.append("        ").append(XMLHandler.addTagValue("field_format_ok",  fieldFormatOk[i]));  
+			retval.append("      </mapping>").append(Const.CR); 
 		}
 
 		return retval.toString();
@@ -317,29 +317,29 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 		try
 		{
 			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);
-			maxErrors      = (int)rep.getStepAttributeInteger(id_step, "errors");         //$NON-NLS-1$
-     		bufferSize     =      rep.getStepAttributeString(id_step, "buffer_size");         //$NON-NLS-1$
-            schemaName     =      rep.getStepAttributeString(id_step,  "schema");         //$NON-NLS-1$
-			tableName      =      rep.getStepAttributeString(id_step,  "table");          //$NON-NLS-1$
-			encoding       =      rep.getStepAttributeString(id_step,  "encoding");       //$NON-NLS-1$
-			fifoDirectory  =      rep.getStepAttributeString(id_step,  "fifo_directory");       //$NON-NLS-1$
-			fifoServerName =      rep.getStepAttributeString(id_step,  "fifo_server_name");       //$NON-NLS-1$
+			maxErrors      = (int)rep.getStepAttributeInteger(id_step, "errors");         
+     		bufferSize     =      rep.getStepAttributeString(id_step, "buffer_size");         
+            schemaName     =      rep.getStepAttributeString(id_step,  "schema");         
+			tableName      =      rep.getStepAttributeString(id_step,  "table");          
+			encoding       =      rep.getStepAttributeString(id_step,  "encoding");       
+			fifoDirectory  =      rep.getStepAttributeString(id_step,  "fifo_directory");       
+			fifoServerName =      rep.getStepAttributeString(id_step,  "fifo_server_name");       
 			
-			int nrvalues = rep.countNrStepAttributes(id_step, "stream_name");             //$NON-NLS-1$
+			int nrvalues = rep.countNrStepAttributes(id_step, "stream_name");             
 
 			allocate(nrvalues);
 
 			for (int i=0;i<nrvalues;i++)
 			{
-				fieldTable[i]  = rep.getStepAttributeString(id_step, i, "stream_name");   //$NON-NLS-1$
-				fieldStream[i] = rep.getStepAttributeString(id_step, i, "field_name");    //$NON-NLS-1$
+				fieldTable[i]  = rep.getStepAttributeString(id_step, i, "stream_name");   
+				fieldStream[i] = rep.getStepAttributeString(id_step, i, "field_name");    
 				if (fieldStream[i]==null) fieldStream[i]=fieldTable[i];        
-				fieldFormatOk[i] = rep.getStepAttributeBoolean(id_step, i, "field_format_ok");    //$NON-NLS-1$
+				fieldFormatOk[i] = rep.getStepAttributeBoolean(id_step, i, "field_format_ok");    
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository"), e); 
 		}
 	}
 
@@ -349,21 +349,21 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 		try
 		{
 			rep.saveDatabaseMetaStepAttribute(id_transformation, id_step, "id_connection", databaseMeta);
-			rep.saveStepAttribute(id_transformation, id_step, "errors",          maxErrors);     //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "buffer_size",      bufferSize);     //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "schema",           schemaName);    //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "table",            tableName);     //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "errors",          maxErrors);     
+			rep.saveStepAttribute(id_transformation, id_step, "buffer_size",      bufferSize);     
+            rep.saveStepAttribute(id_transformation, id_step, "schema",           schemaName);    
+			rep.saveStepAttribute(id_transformation, id_step, "table",            tableName);     
 			
-			rep.saveStepAttribute(id_transformation, id_step, "encoding",         encoding);      //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "encoding",         encoding);      
 
-			rep.saveStepAttribute(id_transformation, id_step, "fifo_directory",   fifoDirectory);      //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "fifo_server_name", fifoServerName);      //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "fifo_directory",   fifoDirectory);      
+			rep.saveStepAttribute(id_transformation, id_step, "fifo_server_name", fifoServerName);      
 
 			for (int i=0;i<fieldTable.length;i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "stream_name", fieldTable[i]);  //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",  fieldStream[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_format_ok",  fieldFormatOk[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "stream_name", fieldTable[i]);  
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",  fieldStream[i]); 
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_format_ok",  fieldFormatOk[i]); 
 			}
 
 			// Also, save the step-database relationship!
@@ -371,7 +371,7 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); 
 		}
 	}
 	
@@ -383,7 +383,7 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		CheckResult cr;
-		String error_message = ""; //$NON-NLS-1$
+		String error_message = ""; 
 
 		if (databaseMeta!=null)
 		{
@@ -395,12 +395,12 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 
 				if (!Const.isEmpty(tableName))
 				{
-					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.TableNameOK"), stepMeta); //$NON-NLS-1$
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.TableNameOK"), stepMeta); 
 					remarks.add(cr);
 
 					boolean first=true;
 					boolean error_found=false;
-					error_message = ""; //$NON-NLS-1$
+					error_message = ""; 
 					
 					// Check fields in table
                     String schemaTable = databaseMeta.getQuotedSchemaTableCombination(
@@ -409,13 +409,13 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 					RowMetaInterface r = db.getTableFields(schemaTable);
 					if (r!=null)
 					{
-						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.TableExists"), stepMeta); //$NON-NLS-1$
+						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.TableExists"), stepMeta); 
 						remarks.add(cr);
 
 						// How about the fields to insert/dateMask in the table?
 						first=true;
 						error_found=false;
-						error_message = ""; //$NON-NLS-1$
+						error_message = ""; 
 						
 						for (int i=0;i<fieldTable.length;i++)
 						{
@@ -427,10 +427,10 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 								if (first)
 								{
 									first=false;
-									error_message+=BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.MissingFieldsToLoadInTargetTable")+Const.CR; //$NON-NLS-1$
+									error_message+=BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.MissingFieldsToLoadInTargetTable")+Const.CR; 
 								}
 								error_found=true;
-								error_message+="\t\t"+field+Const.CR;  //$NON-NLS-1$
+								error_message+="\t\t"+field+Const.CR;  
 							}
 						}
 						if (error_found)
@@ -439,13 +439,13 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 						}
 						else
 						{
-							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.AllFieldsFoundInTargetTable"), stepMeta); //$NON-NLS-1$
+							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.AllFieldsFoundInTargetTable"), stepMeta); 
 						}
 						remarks.add(cr);
 					}
 					else
 					{
-						error_message=BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.CouldNotReadTableInfo"); //$NON-NLS-1$
+						error_message=BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.CouldNotReadTableInfo"); 
 						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 						remarks.add(cr);
 					}
@@ -454,11 +454,11 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 				// Look up fields in the input stream <prev>
 				if (prev!=null && prev.size()>0)
 				{
-					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.StepReceivingDatas",prev.size()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.StepReceivingDatas",prev.size()+""), stepMeta);  
 					remarks.add(cr);
 
 					boolean first=true;
-					error_message = ""; //$NON-NLS-1$
+					error_message = ""; 
 					boolean error_found = false;
 
 					for (int i=0;i<fieldStream.length;i++)
@@ -469,10 +469,10 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 							if (first)
 							{
 								first=false;
-								error_message+=BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.MissingFieldsInInput")+Const.CR; //$NON-NLS-1$
+								error_message+=BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.MissingFieldsInInput")+Const.CR; 
 							}
 							error_found=true;
-							error_message+="\t\t"+fieldStream[i]+Const.CR;  //$NON-NLS-1$
+							error_message+="\t\t"+fieldStream[i]+Const.CR;  
 						}
 					}
 					if (error_found)
@@ -481,20 +481,20 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 					}
 					else
 					{
-						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.AllFieldsFoundInInput"), stepMeta); //$NON-NLS-1$
+						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.AllFieldsFoundInInput"), stepMeta); 
 					}
 					remarks.add(cr);
 				}
 				else
 				{
-					error_message=BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.MissingFieldsInInput3")+Const.CR; //$NON-NLS-1$
+					error_message=BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.MissingFieldsInInput3")+Const.CR; 
 					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 					remarks.add(cr);
 				}
 			}
 			catch(KettleException e)
 			{
-				error_message = BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.DatabaseErrorOccurred")+e.getMessage(); //$NON-NLS-1$
+				error_message = BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.DatabaseErrorOccurred")+e.getMessage(); 
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
@@ -505,7 +505,7 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 		}
 		else
 		{
-			error_message = BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.InvalidConnection"); //$NON-NLS-1$
+			error_message = BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.InvalidConnection"); 
 			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 			remarks.add(cr);
 		}
@@ -513,12 +513,12 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepMeta); 
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.NoInputError"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.CheckResult.NoInputError"), stepMeta); 
 			remarks.add(cr);
 		}
 	}
@@ -576,22 +576,22 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 					}
 					catch(KettleException e)
 					{
-						retval.setError(BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.GetSQL.ErrorOccurred")+e.getMessage()); //$NON-NLS-1$
+						retval.setError(BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.GetSQL.ErrorOccurred")+e.getMessage()); 
 					}
 				}
 				else
 				{
-					retval.setError(BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.GetSQL.NoTableDefinedOnConnection")); //$NON-NLS-1$
+					retval.setError(BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.GetSQL.NoTableDefinedOnConnection")); 
 				}
 			}
 			else
 			{
-				retval.setError(BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.GetSQL.NotReceivingAnyFields")); //$NON-NLS-1$
+				retval.setError(BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.GetSQL.NotReceivingAnyFields")); 
 			}
 		}
 		else
 		{
-			retval.setError(BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.GetSQL.NoConnectionDefined")); //$NON-NLS-1$
+			retval.setError(BaseMessages.getString(PKG, "LucidDBBulkLoaderMeta.GetSQL.NoConnectionDefined")); 
 		}
 
 		return retval;
@@ -608,7 +608,7 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
                 ValueMetaInterface v = prev.searchValueMeta(fieldStream[i]);
 
                 DatabaseImpact ii = new DatabaseImpact(DatabaseImpact.TYPE_IMPACT_READ_WRITE, transMeta.getName(), stepMeta.getName(), databaseMeta
-                        .getDatabaseName(), transMeta.environmentSubstitute(tableName), fieldTable[i], fieldStream[i], v!=null?v.getOrigin():"?", "", "Type = " + v.toStringMeta()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                        .getDatabaseName(), transMeta.environmentSubstitute(tableName), fieldTable[i], fieldStream[i], v!=null?v.getOrigin():"?", "", "Type = " + v.toStringMeta());   //$NON-NLS-3$
                 impact.add(ii);
             }
         }

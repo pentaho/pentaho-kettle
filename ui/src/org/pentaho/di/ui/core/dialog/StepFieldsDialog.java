@@ -307,8 +307,8 @@ public class StepFieldsDialog extends Dialog {
     } else {
       stepname = null;
       MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-      mb.setText(BaseMessages.getString(PKG, "StepFieldsDialog.OriginStep.Title")); //$NON-NLS-1$
-      mb.setMessage(BaseMessages.getString(PKG, "StepFieldsDialog.OriginStep.Message")); //$NON-NLS-1$
+      mb.setText(BaseMessages.getString(PKG, "StepFieldsDialog.OriginStep.Title")); 
+      mb.setMessage(BaseMessages.getString(PKG, "StepFieldsDialog.OriginStep.Message")); 
       mb.open();
     }
   }

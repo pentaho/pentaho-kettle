@@ -44,7 +44,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
@@ -437,7 +437,7 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
           //
           for (StepMetaDataCombi combi : trans.getSteps()) {
             if (combi.copy==0) {
-              StringBuffer logBuffer = CentralLogStore.getAppender().getBuffer(combi.step.getLogChannel().getLogChannelId(), false);
+              StringBuffer logBuffer = KettleLogStore.getAppender().getBuffer(combi.step.getLogChannel().getLogChannelId(), false);
               previewLogMap.put(combi.stepMeta, logBuffer);
             }
           }

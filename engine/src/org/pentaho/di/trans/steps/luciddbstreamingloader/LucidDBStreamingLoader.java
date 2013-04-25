@@ -367,7 +367,7 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
       return true;
     } catch (Exception e) {
       logError(BaseMessages.getString(PKG,
-          "LucidDBStreamingLoader.Log.ErrorInStep"), e); //$NON-NLS-1$
+          "LucidDBStreamingLoader.Log.ErrorInStep"), e); 
       setErrors(1);
       stopAll();
       setOutputDone(); // signal end to receiver(s)

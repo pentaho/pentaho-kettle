@@ -161,14 +161,14 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       formLayout.marginHeight = Const.FORM_MARGIN;
 
       shell.setLayout(formLayout);
-      shell.setText(BaseMessages.getString(PKG, "GPLoadDialog.Shell.Title")); //$NON-NLS-1$
+      shell.setText(BaseMessages.getString(PKG, "GPLoadDialog.Shell.Title")); 
 
       int middle = props.getMiddlePct();
       int margin = Const.MARGIN;
 
       // Stepname line
       wlStepname = new Label(shell, SWT.RIGHT);
-      wlStepname.setText(BaseMessages.getString(PKG, "GPLoadDialog.Stepname.Label")); //$NON-NLS-1$
+      wlStepname.setText(BaseMessages.getString(PKG, "GPLoadDialog.Stepname.Label")); 
       props.setLook(wlStepname);
       fdlStepname = new FormData();
       fdlStepname.left = new FormAttachment(0, 0);
@@ -194,7 +194,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
 
       // Schema line...
       Label wlSchema = new Label(shell, SWT.RIGHT);
-      wlSchema.setText(BaseMessages.getString(PKG, "GPLoadDialog.TargetSchema.Label")); //$NON-NLS-1$
+      wlSchema.setText(BaseMessages.getString(PKG, "GPLoadDialog.TargetSchema.Label")); 
       props.setLook(wlSchema);
       FormData fdlSchema = new FormData();
       fdlSchema.left = new FormAttachment(0, 0);
@@ -214,7 +214,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
 
       // Table line...
       Label wlTable = new Label(shell, SWT.RIGHT);
-      wlTable.setText(BaseMessages.getString(PKG, "GPLoadDialog.TargetTable.Label")); //$NON-NLS-1$
+      wlTable.setText(BaseMessages.getString(PKG, "GPLoadDialog.TargetTable.Label")); 
       props.setLook(wlTable);
       FormData fdlTable = new FormData();
       fdlTable.left = new FormAttachment(0, 0);
@@ -224,7 +224,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
 
       Button wbTable = new Button(shell, SWT.PUSH | SWT.CENTER);
       props.setLook(wbTable);
-      wbTable.setText(BaseMessages.getString(PKG, "GPLoadDialog.Browse.Button")); //$NON-NLS-1$
+      wbTable.setText(BaseMessages.getString(PKG, "GPLoadDialog.Browse.Button")); 
       FormData fdbTable = new FormData();
       fdbTable.right = new FormAttachment(100, 0);
       fdbTable.top = new FormAttachment(wSchema, margin);
@@ -266,7 +266,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       
       // Erase files line
       Label wlEraseFiles = new Label(shell, SWT.RIGHT);
-      wlEraseFiles.setText(BaseMessages.getString(PKG, "GPLoadDialog.EraseFiles.Label")); //$NON-NLS-1$
+      wlEraseFiles.setText(BaseMessages.getString(PKG, "GPLoadDialog.EraseFiles.Label")); 
       props.setLook(wlEraseFiles);
       FormData fdlEraseFiles = new FormData();
       fdlEraseFiles.left = new FormAttachment(0, 0);
@@ -310,11 +310,11 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       
       // THE BUTTONS
       wOK = new Button(shell, SWT.PUSH);
-      wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+      wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
       wSQL = new Button(shell, SWT.PUSH);
-      wSQL.setText(BaseMessages.getString(PKG, "GPLoadDialog.SQL.Button")); //$NON-NLS-1$
+      wSQL.setText(BaseMessages.getString(PKG, "GPLoadDialog.SQL.Button")); 
       wCancel = new Button(shell, SWT.PUSH);
-      wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+      wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
       setButtonPositions(new Button[] { wOK, wSQL, wCancel }, margin, wTabFolder);
 
@@ -616,10 +616,10 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       int i;
       if (log.isDebug())
          logDebug(BaseMessages
-               .getString(PKG, "GPLoadDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+               .getString(PKG, "GPLoadDialog.Log.GettingKeyInfo")); 
 
       if (input.getMaxErrors() != null) {
-         wMaxErrors.setText(input.getMaxErrors()); //$NON-NLS-1$
+         wMaxErrors.setText(input.getMaxErrors()); 
       }
       
       if (input.getFieldTable() != null)
@@ -711,7 +711,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
          wLoadMethod.select(1);
       } else {
          if (log.isDebug())
-            logDebug("Internal error: load_method set to default 'auto at end'"); //$NON-NLS-1$
+            logDebug("Internal error: load_method set to default 'auto at end'"); 
          wLoadMethod.select(0);
       }
 
@@ -724,7 +724,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
          wLoadAction.select(2);
       } else {
          if (log.isDebug())
-            logDebug("Internal error: load_action set to default '" + GPLoadMeta.ACTION_INSERT + "'"); //$NON-NLS-1$
+            logDebug("Internal error: load_action set to default '" + GPLoadMeta.ACTION_INSERT + "'"); 
          wLoadAction.select(0);
       }
 
@@ -746,7 +746,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       inf.setMaxErrors(wMaxErrors.getText());
 
       if (log.isDebug()) {
-         logDebug(BaseMessages.getString(PKG, "GPLoadDialog.Log.FoundFields", "" + nrfields)); //$NON-NLS-1$ //$NON-NLS-2$
+         logDebug(BaseMessages.getString(PKG, "GPLoadDialog.Log.FoundFields", "" + nrfields));  
       }
       
       for (int i = 0; i < nrfields; i++) {
@@ -808,7 +808,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
          inf.setLoadMethod(GPLoadMeta.METHOD_MANUAL);
       } else {
          if (log.isDebug())
-            logDebug("Internal error: load_method set to default 'auto concurrent', value found '" + method + "'."); //$NON-NLS-1$
+            logDebug("Internal error: load_method set to default 'auto concurrent', value found '" + method + "'."); 
          inf.setLoadMethod(GPLoadMeta.METHOD_AUTO_END);
       }
 
@@ -827,7 +827,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
          inf.setLoadAction(GPLoadMeta.ACTION_MERGE);
       } else {
          if (log.isDebug())
-            logDebug("Internal error: load_action set to default 'append', value found '" + action + "'."); //$NON-NLS-1$
+            logDebug("Internal error: load_action set to default 'append', value found '" + action + "'."); 
          inf.setLoadAction(GPLoadMeta.ACTION_INSERT);
       }
 
@@ -843,8 +843,8 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
 
       if (input.getDatabaseMeta() == null) {
          MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-         mb.setMessage(BaseMessages.getString(PKG, "GPLoadDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
-         mb.setText(BaseMessages.getString(PKG, "GPLoadDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
+         mb.setMessage(BaseMessages.getString(PKG, "GPLoadDialog.InvalidConnection.DialogMessage")); 
+         mb.setText(BaseMessages.getString(PKG, "GPLoadDialog.InvalidConnection.DialogTitle")); 
          mb.open();
       }
 
@@ -861,7 +861,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       if (inf != null) {
          if (log.isDebug())
             logDebug(BaseMessages.getString(PKG,
-                  "GPLoadDialog.Log.LookingAtConnection") + inf.toString()); //$NON-NLS-1$
+                  "GPLoadDialog.Log.LookingAtConnection") + inf.toString()); 
 
          DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell,
                SWT.NONE, inf, transMeta.getDatabases());
@@ -873,9 +873,9 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       } else {
          MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
          mb.setMessage(BaseMessages.getString(PKG,
-               "GPLoadDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
+               "GPLoadDialog.InvalidConnection.DialogMessage")); 
          mb.setText(BaseMessages.getString(PKG,
-               "GPLoadDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
+               "GPLoadDialog.InvalidConnection.DialogTitle")); 
          mb.open();
       }
    }
@@ -902,9 +902,9 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
          }
       } catch (KettleException ke) {
          new ErrorDialog(shell, BaseMessages.getString(PKG,
-               "GPLoadDialog.FailedToGetFields.DialogTitle"), //$NON-NLS-1$
+               "GPLoadDialog.FailedToGetFields.DialogTitle"), 
                BaseMessages.getString(PKG,
-                     "GPLoadDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$
+                     "GPLoadDialog.FailedToGetFields.DialogMessage"), ke); 
       }
    }
 
@@ -918,7 +918,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
          String name = stepname; // new name might not yet be linked to other
                                  // steps!
          StepMeta stepMeta = new StepMeta(BaseMessages.getString(PKG,
-               "GPLoadDialog.StepMeta.Title"), name, info); //$NON-NLS-1$
+               "GPLoadDialog.StepMeta.Title"), name, info); 
          RowMetaInterface prev = transMeta.getPrevStepFields(stepname);
 
          SQLStatement sql = info.getSQLStatements(transMeta, stepMeta, prev, repository, metaStore);
@@ -932,23 +932,23 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
                MessageBox mb = new MessageBox(shell, SWT.OK
                      | SWT.ICON_INFORMATION);
                mb.setMessage(BaseMessages.getString(PKG,
-                     "GPLoadDialog.NoSQLNeeds.DialogMessage")); //$NON-NLS-1$
+                     "GPLoadDialog.NoSQLNeeds.DialogMessage")); 
                mb.setText(BaseMessages.getString(PKG,
-                     "GPLoadDialog.NoSQLNeeds.DialogTitle")); //$NON-NLS-1$
+                     "GPLoadDialog.NoSQLNeeds.DialogTitle")); 
                mb.open();
             }
          } else {
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
             mb.setMessage(sql.getError());
             mb.setText(BaseMessages.getString(PKG,
-                  "GPLoadDialog.SQLError.DialogTitle")); //$NON-NLS-1$
+                  "GPLoadDialog.SQLError.DialogTitle")); 
             mb.open();
          }
       } catch (KettleException ke) {
          new ErrorDialog(shell, BaseMessages.getString(PKG,
-               "GPLoadDialog.CouldNotBuildSQL.DialogTitle"), //$NON-NLS-1$
+               "GPLoadDialog.CouldNotBuildSQL.DialogTitle"), 
                BaseMessages.getString(PKG,
-                     "GPLoadDialog.CouldNotBuildSQL.DialogMessage"), ke); //$NON-NLS-1$
+                     "GPLoadDialog.CouldNotBuildSQL.DialogMessage"), ke); 
       }
 
    }
@@ -997,14 +997,14 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       wLoadAction.setLayoutData(fdLoadAction); 
 
       wDoMapping = new Button(wFieldsComp, SWT.PUSH);
-      wDoMapping.setText(BaseMessages.getString(PKG, "GPLoadDialog.EditMapping.Label")); //$NON-NLS-1$
+      wDoMapping.setText(BaseMessages.getString(PKG, "GPLoadDialog.EditMapping.Label")); 
       fdDoMapping = new FormData();
       fdDoMapping.top = new FormAttachment(0, margin);;
       fdDoMapping.right = new FormAttachment(75, 0);
       wDoMapping.setLayoutData(fdDoMapping);
       
       Button wGetLU = new Button(wFieldsComp, SWT.PUSH);
-      wGetLU.setText(BaseMessages.getString(PKG, "GPLoadDialog.GetFields.Label")); //$NON-NLS-1$
+      wGetLU.setText(BaseMessages.getString(PKG, "GPLoadDialog.GetFields.Label")); 
       FormData fdGetLU = new FormData();
       fdGetLU.top = new FormAttachment(0, margin);
       fdGetLU.right = new FormAttachment(wDoMapping, -margin);
@@ -1024,15 +1024,15 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       ciReturn = new ColumnInfo[numberOfColumns];
 
       ciReturn[0] = new ColumnInfo(
-            BaseMessages.getString(PKG, "GPLoadDialog.ColumnInfo.TableField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+            BaseMessages.getString(PKG, "GPLoadDialog.ColumnInfo.TableField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); 
       
       ciReturn[1] = new ColumnInfo(
-            BaseMessages.getString(PKG, "GPLoadDialog.ColumnInfo.StreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+            BaseMessages.getString(PKG, "GPLoadDialog.ColumnInfo.StreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); 
       
       ciReturn[2] = new ColumnInfo(BaseMessages.getString(PKG,
             "GPLoadDialog.ColumnInfo.DateMask"), ColumnInfo.COLUMN_TYPE_CCOMBO,
             new String[] {
-                  "", //$NON-NLS-1$
+                  "", 
                   BaseMessages.getString(PKG, "GPLoadDialog.DateMask.Label"),
                   BaseMessages.getString(PKG, "GPLoadDialog.DateTimeMask.Label") },
             true);
@@ -1110,7 +1110,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
 
       // Master Port line...
       Label wlLocalhostPort = new Label(wLocalHostsComp, SWT.NONE);
-      wlLocalhostPort.setText(BaseMessages.getString(PKG, "GPLoadDialog.Port.Label")); //$NON-NLS-1$
+      wlLocalhostPort.setText(BaseMessages.getString(PKG, "GPLoadDialog.Port.Label")); 
       props.setLook(wlLocalhostPort);
       FormData fdlLocalhostPort = new FormData();
       fdlLocalhostPort.left = new FormAttachment(0, 0);
@@ -1130,7 +1130,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
 
       // Local Hosts Label
       Label wlLocalHosts = new Label(wLocalHostsComp, SWT.NONE);
-      wlLocalHosts.setText(BaseMessages.getString(PKG, "GPLoadDialog.LocalHosts.Label")); //$NON-NLS-1$
+      wlLocalHosts.setText(BaseMessages.getString(PKG, "GPLoadDialog.LocalHosts.Label")); 
       props.setLook(wlLocalHosts);
       FormData fdlLocalHosts = new FormData();
       fdlLocalHosts.left = new FormAttachment(0, 0);
@@ -1142,7 +1142,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       int LocalHostsRows = (input.getLocalHosts() != null ? input.getLocalHosts().length : 1);
       ciLocalHosts = new ColumnInfo[LocalHostsColumns];
       ciLocalHosts[0] = new ColumnInfo(
-            BaseMessages.getString(PKG, "GPLoadDialog.ColumnInfo.LocalHosts"), ColumnInfo.COLUMN_TYPE_TEXT, new String[] { "" }, false); //$NON-NLS-1$
+            BaseMessages.getString(PKG, "GPLoadDialog.ColumnInfo.LocalHosts"), ColumnInfo.COLUMN_TYPE_TEXT, new String[] { "" }, false); 
 
       localHostsColumns.add(ciReturn[0]);
       wLocalHosts = new TableView(transMeta, wLocalHostsComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
@@ -1177,7 +1177,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       
       // GPLoad line...
       Label wlGploadPath = new Label(wGPConfigTabComp, SWT.RIGHT);
-      wlGploadPath.setText(BaseMessages.getString(PKG, "GPLoadDialog.GPLoadPath.Label")); //$NON-NLS-1$
+      wlGploadPath.setText(BaseMessages.getString(PKG, "GPLoadDialog.GPLoadPath.Label")); 
       props.setLook(wlGploadPath);
       FormData fdlGploadPath = new FormData();
       fdlGploadPath.left = new FormAttachment(0, 0);
@@ -1187,7 +1187,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
 
       Button wbGploadPath = new Button(wGPConfigTabComp, SWT.PUSH | SWT.CENTER);
       props.setLook(wbGploadPath);
-      wbGploadPath.setText(BaseMessages.getString(PKG, "GPLoadDialog.Browse.Button")); //$NON-NLS-1$
+      wbGploadPath.setText(BaseMessages.getString(PKG, "GPLoadDialog.Browse.Button")); 
       FormData fdbGploadPath = new FormData();
       fdbGploadPath.right = new FormAttachment(75, 0);
       fdbGploadPath.top = new FormAttachment(0, margin);
@@ -1203,7 +1203,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       wGploadPath.setLayoutData(fdGploadPath);
 
       Label wlControlFile = new Label(wGPConfigTabComp, SWT.RIGHT);
-      wlControlFile.setText(BaseMessages.getString(PKG, "GPLoadDialog.ControlFile.Label")); //$NON-NLS-1$
+      wlControlFile.setText(BaseMessages.getString(PKG, "GPLoadDialog.ControlFile.Label")); 
       props.setLook(wlControlFile);
       FormData fdlControlFile = new FormData();
       fdlControlFile.left = new FormAttachment(0, 0);
@@ -1213,7 +1213,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       
       Button wbControlFile = new Button(wGPConfigTabComp, SWT.PUSH | SWT.CENTER);
       props.setLook(wbControlFile);
-      wbControlFile.setText(BaseMessages.getString(PKG, "GPLoadDialog.Browse.Button")); //$NON-NLS-1$
+      wbControlFile.setText(BaseMessages.getString(PKG, "GPLoadDialog.Browse.Button")); 
       FormData fdbControlFile = new FormData();
       fdbControlFile.right = new FormAttachment(75, 0);
       fdbControlFile.top = new FormAttachment(wGploadPath, margin);
@@ -1230,7 +1230,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       
       // Error Table line...
       Label wlErrorTable = new Label(wGPConfigTabComp, SWT.RIGHT);
-      wlErrorTable.setText(BaseMessages.getString(PKG, "GPLoadDialog.ErrorTable.Label")); //$NON-NLS-1$
+      wlErrorTable.setText(BaseMessages.getString(PKG, "GPLoadDialog.ErrorTable.Label")); 
       props.setLook(wlErrorTable);
       FormData fdlErrorTable = new FormData();
       fdlErrorTable.left = new FormAttachment(0, 0);
@@ -1240,7 +1240,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
 
       Button wbErrorTable = new Button(wGPConfigTabComp, SWT.PUSH | SWT.CENTER);
       props.setLook(wbErrorTable);
-      wbErrorTable.setText(BaseMessages.getString(PKG, "GPLoadDialog.Browse.Button")); //$NON-NLS-1$
+      wbErrorTable.setText(BaseMessages.getString(PKG, "GPLoadDialog.Browse.Button")); 
       FormData fdbErrorTable = new FormData();
       fdbErrorTable.right = new FormAttachment(75, 0);
       fdbErrorTable.top = new FormAttachment(wControlFile, margin);
@@ -1257,7 +1257,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       
       // MaxErrors 
       Label wlMaxErrors = new Label(wGPConfigTabComp, SWT.RIGHT);
-      wlMaxErrors.setText(BaseMessages.getString(PKG, "GPLoadDialog.MaxErrors.Label")); //$NON-NLS-1$
+      wlMaxErrors.setText(BaseMessages.getString(PKG, "GPLoadDialog.MaxErrors.Label")); 
       props.setLook(wlMaxErrors);
       FormData fdlMaxErrors = new FormData();
       fdlMaxErrors.left = new FormAttachment(wbErrorTable, margin);
@@ -1276,7 +1276,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
 
       // Log file line
       Label wlLogFile = new Label(wGPConfigTabComp, SWT.RIGHT);
-      wlLogFile.setText(BaseMessages.getString(PKG, "GPLoadDialog.LogFile.Label")); //$NON-NLS-1$ 
+      wlLogFile.setText(BaseMessages.getString(PKG, "GPLoadDialog.LogFile.Label"));  
       props.setLook(wlLogFile);
       FormData fdlLogFile = new FormData();
       fdlLogFile.left = new FormAttachment(0, 0);
@@ -1286,7 +1286,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       
       Button wbLogFile = new Button(wGPConfigTabComp, SWT.PUSH | SWT.CENTER);
       props.setLook(wbLogFile);
-      wbLogFile.setText(BaseMessages.getString(PKG, "GPLoadDialog.Browse.Button")); //$NON-NLS-1$
+      wbLogFile.setText(BaseMessages.getString(PKG, "GPLoadDialog.Browse.Button")); 
       FormData fdbLogFile = new FormData();
       fdbLogFile.right = new FormAttachment(75, 0);
       fdbLogFile.top = new FormAttachment(wErrorTable, margin);
@@ -1303,7 +1303,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       
       // Data file line
       Label wlDataFile = new Label(wGPConfigTabComp, SWT.RIGHT);
-      wlDataFile.setText(BaseMessages.getString(PKG, "GPLoadDialog.DataFile.Label")); //$NON-NLS-1$
+      wlDataFile.setText(BaseMessages.getString(PKG, "GPLoadDialog.DataFile.Label")); 
       props.setLook(wlDataFile);
       FormData fdlDataFile = new FormData();
       fdlDataFile.left = new FormAttachment(0, 0);
@@ -1313,7 +1313,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       
       Button wbDataFile = new Button(wGPConfigTabComp, SWT.PUSH | SWT.CENTER);
       props.setLook(wbDataFile);
-      wbDataFile.setText(BaseMessages.getString(PKG, "GPLoadDialog.Browse.Button")); //$NON-NLS-1$
+      wbDataFile.setText(BaseMessages.getString(PKG, "GPLoadDialog.Browse.Button")); 
       FormData fdbDataFile = new FormData();
       fdbDataFile.right = new FormAttachment(75, 0);
       fdbDataFile.top = new FormAttachment(wLogFile, margin);
@@ -1329,7 +1329,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       wDataFile.setLayoutData(fdDataFile);
       
       Label wlDelimiter = new Label(wGPConfigTabComp, SWT.RIGHT);
-      wlDelimiter.setText(BaseMessages.getString(PKG, "GPLoadDialog.Delimiter.Label")); //$NON-NLS-1$
+      wlDelimiter.setText(BaseMessages.getString(PKG, "GPLoadDialog.Delimiter.Label")); 
       props.setLook(wlDelimiter);
       FormData fdlDelimiter = new FormData();
       fdlDelimiter.left = new FormAttachment(wbDataFile, margin);

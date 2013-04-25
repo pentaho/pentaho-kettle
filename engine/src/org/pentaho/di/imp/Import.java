@@ -361,7 +361,7 @@ public class Import {
       try {
         return Integer.parseInt(option.getArgument().toString());
       } catch (NumberFormatException ex) {
-        throw new KettleException(BaseMessages.getString(PKG, "Import.Error.InvalidNumberArgument", option.getOption(), option.getArgument())); //$NON-NLS-1$
+        throw new KettleException(BaseMessages.getString(PKG, "Import.Error.InvalidNumberArgument", option.getOption(), option.getArgument())); 
       }
     }
     return def;

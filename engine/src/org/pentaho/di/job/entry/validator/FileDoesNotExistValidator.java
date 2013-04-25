@@ -40,11 +40,11 @@ import org.pentaho.di.core.vfs.KettleVFS;
 public class FileDoesNotExistValidator extends AbstractFileValidator
 {
 
-  private static final String KEY_FAIL_IF_EXISTS = "org.pentaho.di.job.entries.createfile.failIfExists"; //$NON-NLS-1$
+  private static final String KEY_FAIL_IF_EXISTS = "org.pentaho.di.job.entries.createfile.failIfExists"; 
 
   public static final FileDoesNotExistValidator INSTANCE = new FileDoesNotExistValidator();
 
-  static final String VALIDATOR_NAME = "fileDoesNotExist"; //$NON-NLS-1$
+  static final String VALIDATOR_NAME = "fileDoesNotExist"; 
 
   public boolean validate(CheckResultSourceInterface source, String propertyName, List<CheckResultInterface> remarks,
       ValidatorContext context)

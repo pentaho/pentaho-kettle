@@ -63,9 +63,9 @@ public class FilterRows extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			String message = BaseMessages.getString(PKG, "FilterRows.Exception.UnexpectedErrorFoundInEvaluationFuction");  //$NON-NLS-1$
+			String message = BaseMessages.getString(PKG, "FilterRows.Exception.UnexpectedErrorFoundInEvaluationFuction");  
 			logError(message);
-			logError(BaseMessages.getString(PKG, "FilterRows.Log.ErrorOccurredForRow")+rowMeta.getString(row)); //$NON-NLS-1$
+			logError(BaseMessages.getString(PKG, "FilterRows.Log.ErrorOccurredForRow")+rowMeta.getString(row)); 
 			logError(Const.getStackTracker(e));
 			throw new KettleException(message, e);
 		}
@@ -147,7 +147,7 @@ public class FilterRows extends BaseStep implements StepInterface
 		
     if (checkFeedback(getLinesRead())) 
     {
-    	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "FilterRows.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+    	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "FilterRows.Log.LineNumber")+getLinesRead()); 
     }
 			
 		return true;

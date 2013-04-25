@@ -97,14 +97,14 @@ public class GetSlaveSequenceDialog extends BaseStepDialog implements StepDialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "GetSequenceDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "GetSequenceDialog.Shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "GetSequenceDialog.StepName.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "GetSequenceDialog.StepName.Label")); 
  		props.setLook(		wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -123,7 +123,7 @@ public class GetSlaveSequenceDialog extends BaseStepDialog implements StepDialog
 
 		// Valuename line
 		wlValuename=new Label(shell, SWT.RIGHT);
-		wlValuename.setText(BaseMessages.getString(PKG, "GetSequenceDialog.Valuename.Label")); //$NON-NLS-1$
+		wlValuename.setText(BaseMessages.getString(PKG, "GetSequenceDialog.Valuename.Label")); 
  		props.setLook(wlValuename);
 		FormData fdlValuename = new FormData();
 		fdlValuename.left = new FormAttachment(0, 0);
@@ -131,7 +131,7 @@ public class GetSlaveSequenceDialog extends BaseStepDialog implements StepDialog
 		fdlValuename.right= new FormAttachment(middle, -margin);
 		wlValuename.setLayoutData(fdlValuename);
 		wValuename=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wValuename.setText(""); //$NON-NLS-1$
+		wValuename.setText(""); 
  		props.setLook(wValuename);
 		wValuename.addModifyListener(lsMod);
 		FormData fdValuename = new FormData();
@@ -143,7 +143,7 @@ public class GetSlaveSequenceDialog extends BaseStepDialog implements StepDialog
 		// Connection line
 		//
 		wlSlaveServer = new Label(shell, SWT.RIGHT);
-		wlSlaveServer.setText(BaseMessages.getString(PKG, "GetSequenceDialog.SlaveServer.Label")); //$NON-NLS-1$
+		wlSlaveServer.setText(BaseMessages.getString(PKG, "GetSequenceDialog.SlaveServer.Label")); 
     props.setLook(wlSlaveServer);
     FormData fdlSlaveServer = new FormData();
     fdlSlaveServer.left = new FormAttachment(0, 0);
@@ -160,7 +160,7 @@ public class GetSlaveSequenceDialog extends BaseStepDialog implements StepDialog
 
 		// Seqname line
 		wlSeqname=new Label(shell, SWT.RIGHT);
-		wlSeqname.setText(BaseMessages.getString(PKG, "GetSequenceDialog.Seqname.Label")); //$NON-NLS-1$
+		wlSeqname.setText(BaseMessages.getString(PKG, "GetSequenceDialog.Seqname.Label")); 
  		props.setLook(wlSeqname);
 		FormData fdlSeqname = new FormData();
 		fdlSeqname.left = new FormAttachment(0, 0);
@@ -169,7 +169,7 @@ public class GetSlaveSequenceDialog extends BaseStepDialog implements StepDialog
 		wlSeqname.setLayoutData(fdlSeqname);
 		
 		wSeqname=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wSeqname.setText(""); //$NON-NLS-1$
+		wSeqname.setText(""); 
  		props.setLook(wSeqname);
 		wSeqname.addModifyListener(lsMod);
 		FormData fdSeqname = new FormData();
@@ -180,7 +180,7 @@ public class GetSlaveSequenceDialog extends BaseStepDialog implements StepDialog
 
     // Increment line
     wlIncrement=new Label(shell, SWT.RIGHT);
-    wlIncrement.setText(BaseMessages.getString(PKG, "GetSequenceDialog.Increment.Label")); //$NON-NLS-1$
+    wlIncrement.setText(BaseMessages.getString(PKG, "GetSequenceDialog.Increment.Label")); 
     props.setLook(wlIncrement);
     FormData fdlIncrement = new FormData();
     fdlIncrement.left = new FormAttachment(0, 0);
@@ -189,7 +189,7 @@ public class GetSlaveSequenceDialog extends BaseStepDialog implements StepDialog
     wlIncrement.setLayoutData(fdlIncrement);
     
     wIncrement=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-    wIncrement.setText(""); //$NON-NLS-1$
+    wIncrement.setText(""); 
     props.setLook(wIncrement);
     wIncrement.addModifyListener(lsMod);
     FormData fdIncrement = new FormData();
@@ -200,9 +200,9 @@ public class GetSlaveSequenceDialog extends BaseStepDialog implements StepDialog
 
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wIncrement);
 
@@ -241,7 +241,7 @@ public class GetSlaveSequenceDialog extends BaseStepDialog implements StepDialog
    * Copy information from the meta-data input to the dialog fields.
    */
   public void getData() {
-    logDebug(BaseMessages.getString(PKG, "GetSequenceDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+    logDebug(BaseMessages.getString(PKG, "GetSequenceDialog.Log.GettingKeyInfo")); 
 
     wValuename.setText(Const.NVL(input.getValuename(), ""));
     wSlaveServer.setText(Const.NVL(input.getSlaveServerName(), ""));

@@ -356,7 +356,7 @@ public class DataHandler extends AbstractXulEventHandler {
     String url = database.getExtraOptionsHelpText();
 
     if ((url == null) || (url.trim().length() == 0)) {
-      message = Messages.getString("DataHandler.USER_NO_HELP_AVAILABLE"); //$NON-NLS-1$
+      message = Messages.getString("DataHandler.USER_NO_HELP_AVAILABLE"); 
       showMessage(message, false);
       return;
     }
@@ -364,7 +364,7 @@ public class DataHandler extends AbstractXulEventHandler {
     Status status = Launch.openURL(url);
 
     if (status.equals(Status.Failed)) {
-      message = Messages.getString("DataHandler.USER_UNABLE_TO_LAUNCH_BROWSER", url);  //$NON-NLS-1$
+      message = Messages.getString("DataHandler.USER_UNABLE_TO_LAUNCH_BROWSER", url);  
       showMessage(message, false);
     }
 
@@ -472,7 +472,7 @@ public class DataHandler extends AbstractXulEventHandler {
   }
   
   private void close(){
-  	XulComponent window = document.getElementById("general-datasource-window"); //$NON-NLS-1$
+  	XulComponent window = document.getElementById("general-datasource-window"); 
   	
   	if(window == null){ //window must be root
   		window = document.getRootElement();
@@ -486,7 +486,7 @@ public class DataHandler extends AbstractXulEventHandler {
   
   private boolean windowClosed(){
     boolean closedWindow = true; 
-    XulComponent window = document.getElementById("general-datasource-window"); //$NON-NLS-1$
+    XulComponent window = document.getElementById("general-datasource-window"); 
     
     if(window == null){ //window must be root
       window = document.getRootElement();
@@ -508,11 +508,11 @@ public class DataHandler extends AbstractXulEventHandler {
     }
     
     String[] remarks = database.checkParameters();
-    String message = ""; //$NON-NLS-1$
+    String message = ""; 
 
     if (remarks.length != 0) {
       for (int i = 0; i < remarks.length; i++) {
-        message = message.concat("* ").concat(remarks[i]).concat(System.getProperty("line.separator")); //$NON-NLS-1$ //$NON-NLS-2$
+        message = message.concat("* ").concat(remarks[i]).concat(System.getProperty("line.separator"));  
       }
       showMessage(message, false);
     } else {
@@ -531,11 +531,11 @@ public class DataHandler extends AbstractXulEventHandler {
 
     getInfo(database);
     String[] remarks = database.checkParameters();
-    String message = ""; //$NON-NLS-1$
+    String message = ""; 
 
     if (remarks.length != 0) {
       for (int i = 0; i < remarks.length; i++) {
-        message = message.concat("* ").concat(remarks[i]).concat(System.getProperty("line.separator")); //$NON-NLS-1$  //$NON-NLS-2$
+        message = message.concat("* ").concat(remarks[i]).concat(System.getProperty("line.separator"));   
       }
     } else {
       message = database.testConnection();
@@ -590,7 +590,7 @@ public class DataHandler extends AbstractXulEventHandler {
         String value = (String) values[i][1];
 
         if (value == null) {
-          value = ""; //$NON-NLS-1$
+          value = ""; 
         }
 
         String dbType = meta.getPluginId();
@@ -789,11 +789,11 @@ public class DataHandler extends AbstractXulEventHandler {
     }
 
     if (preferredSchemaName != null) {
-        preferredSchemaName.setValue(Const.NVL(meta.getPreferredSchemaName(), "")); //$NON-NLS-1$^M
+        preferredSchemaName.setValue(Const.NVL(meta.getPreferredSchemaName(), "")); 
     }
 
     if (sqlBox != null) {
-      sqlBox.setValue(meta.getConnectSQL() == null ? "" : meta.getConnectSQL()); //$NON-NLS-1$
+      sqlBox.setValue(meta.getConnectSQL() == null ? "" : meta.getConnectSQL()); 
     }
 
     // Clustering panel settings
@@ -888,12 +888,12 @@ public class DataHandler extends AbstractXulEventHandler {
 
       }
       if (returnList.size() > 0){
-        String parameters = System.getProperty("line.separator"); //$NON-NLS-1$
+        String parameters = System.getProperty("line.separator"); 
         for (String parameter : returnList){
-          parameters = parameters.concat(parameter).concat(System.getProperty("line.separator")); //$NON-NLS-1$
+          parameters = parameters.concat(parameter).concat(System.getProperty("line.separator")); 
         }
         
-        String message = Messages.getString("DataHandler.USER_INVALID_PARAMETERS").concat(parameters); //$NON-NLS-1$
+        String message = Messages.getString("DataHandler.USER_INVALID_PARAMETERS").concat(parameters); 
         showMessage(message, false);
       }
     }
@@ -912,7 +912,7 @@ public class DataHandler extends AbstractXulEventHandler {
           continue;
         }
         XulTreeItem item = poolParameterTree.getRootChildren().getItem(i);
-        item.getRow().addCellText(0, "true"); // checks the checkbox //$NON-NLS-1$
+        item.getRow().addCellText(0, "true"); // checks the checkbox 
 
         String value = properties.getProperty(parameter);
         item.getRow().addCellText(2, value);
@@ -941,7 +941,7 @@ public class DataHandler extends AbstractXulEventHandler {
     if (poolParameterTree != null) {
       for (DatabaseConnectionPoolParameter parameter : BaseDatabaseMeta.poolingParameters){
         XulTreeRow row = poolParameterTree.getRootChildren().addNewRow();
-        row.addCellText(0, "false"); //$NON-NLS-1$
+        row.addCellText(0, "false"); 
         row.addCellText(1, parameter.getParameter());
         row.addCellText(2, parameter.getDefaultValue());
       }
@@ -1006,7 +1006,7 @@ public class DataHandler extends AbstractXulEventHandler {
         String parameter = keys.next();
         String value = extraOptions.get(parameter);
         if ((value == null) || (value.trim().length() <= 0) || (value.equals(DatabaseMeta.EMPTY_OPTIONS_STRING))) {
-          value = ""; //$NON-NLS-1$
+          value = ""; 
         }
 
         // If the parameter starts with a database type code we show it in the options, otherwise we don't.
@@ -1054,12 +1054,12 @@ public class DataHandler extends AbstractXulEventHandler {
 
         PartitionDatabaseMeta meta = clusterInformation[i];
         XulTreeRow row = clusterParameterTree.getRootChildren().addNewRow();
-        row.addCellText(0, Const.NVL(meta.getPartitionId(), "")); //$NON-NLS-1$
-        row.addCellText(1, Const.NVL(meta.getHostname(), "")); //$NON-NLS-1$
-        row.addCellText(2, Const.NVL(meta.getPort(), "")); //$NON-NLS-1$
-        row.addCellText(3, Const.NVL(meta.getDatabaseName(), "")); //$NON-NLS-1$
-        row.addCellText(4, Const.NVL(meta.getUsername(), "")); //$NON-NLS-1$
-        row.addCellText(5, Const.NVL(meta.getPassword(), "")); //$NON-NLS-1$
+        row.addCellText(0, Const.NVL(meta.getPartitionId(), "")); 
+        row.addCellText(1, Const.NVL(meta.getHostname(), "")); 
+        row.addCellText(2, Const.NVL(meta.getPort(), "")); 
+        row.addCellText(3, Const.NVL(meta.getDatabaseName(), "")); 
+        row.addCellText(4, Const.NVL(meta.getUsername(), "")); 
+        row.addCellText(5, Const.NVL(meta.getPassword(), "")); 
       }
     }
     
@@ -1095,7 +1095,7 @@ public class DataHandler extends AbstractXulEventHandler {
       
       XulTreeRow row = poolParameterTree.getRootChildren().getItem(idx).getRow();
       if (row.getSelectedColumnIndex() == 2){
-        row.addCellText(0, "true"); //$NON-NLS-1$
+        row.addCellText(0, "true"); 
       }
       
     }
@@ -1183,7 +1183,7 @@ public class DataHandler extends AbstractXulEventHandler {
     if (useIntegratedSecurityCheck != null) {
       Boolean useIntegratedSecurity = useIntegratedSecurityCheck.isChecked();
       meta.getAttributes().put(MSSQLServerNativeDatabaseMeta.ATTRIBUTE_USE_INTEGRATED_SECURITY,
-          useIntegratedSecurity != null ? useIntegratedSecurity.toString(): "false"); //$NON-NLS-1$
+          useIntegratedSecurity != null ? useIntegratedSecurity.toString(): "false"); 
     }
   }
 
@@ -1280,53 +1280,53 @@ public class DataHandler extends AbstractXulEventHandler {
     // Not all of these controls are created at the same time.. that's OK, for now, just check
     // each one for null before using.
 
-    dialogDeck = (XulDeck) document.getElementById("dialog-panel-deck"); //$NON-NLS-1$
-    deckOptionsBox = (XulListbox) document.getElementById("deck-options-list"); //$NON-NLS-1$
-    connectionBox = (XulListbox) document.getElementById("connection-type-list"); //$NON-NLS-1$
-    accessBox = (XulListbox) document.getElementById("access-type-list"); //$NON-NLS-1$
-    connectionNameBox = (XulTextbox) document.getElementById("connection-name-text"); //$NON-NLS-1$
-    hostNameBox = (XulTextbox) document.getElementById("server-host-name-text"); //$NON-NLS-1$
-    databaseNameBox = (XulTextbox) document.getElementById("database-name-text"); //$NON-NLS-1$
-    portNumberBox = (XulTextbox) document.getElementById("port-number-text"); //$NON-NLS-1$
-    userNameBox = (XulTextbox) document.getElementById("username-text"); //$NON-NLS-1$
-    passwordBox = (XulTextbox) document.getElementById("password-text"); //$NON-NLS-1$
-    dataTablespaceBox = (XulTextbox) document.getElementById("data-tablespace-text"); //$NON-NLS-1$
-    indexTablespaceBox = (XulTextbox) document.getElementById("index-tablespace-text"); //$NON-NLS-1$
-    serverInstanceBox = (XulTextbox) document.getElementById("instance-text"); //$NON-NLS-1$
-    serverNameBox = (XulTextbox) document.getElementById("server-name-text"); //$NON-NLS-1$
-    customUrlBox = (XulTextbox) document.getElementById("custom-url-text"); //$NON-NLS-1$
-    customDriverClassBox = (XulTextbox) document.getElementById("custom-driver-class-text"); //$NON-NLS-1$
-    languageBox = (XulTextbox) document.getElementById("language-text"); //$NON-NLS-1$
-    systemNumberBox = (XulTextbox) document.getElementById("system-number-text"); //$NON-NLS-1$
-    clientBox = (XulTextbox) document.getElementById("client-text"); //$NON-NLS-1$
-    doubleDecimalSeparatorCheck = (XulCheckbox) document.getElementById("decimal-separator-check"); //$NON-NLS-1$
-    resultStreamingCursorCheck = (XulCheckbox) document.getElementById("result-streaming-check"); //$NON-NLS-1$
-    poolingCheck = (XulCheckbox) document.getElementById("use-pool-check"); //$NON-NLS-1$
-    clusteringCheck = (XulCheckbox) document.getElementById("use-cluster-check"); //$NON-NLS-1$
-    clusterParameterDescriptionLabel = (XulLabel) document.getElementById("cluster-parameter-description-label"); //$NON-NLS-1$
-    poolSizeLabel = (XulLabel) document.getElementById("pool-size-label"); //$NON-NLS-1$
-    poolSizeBox = (XulTextbox) document.getElementById("pool-size-text"); //$NON-NLS-1$
-    maxPoolSizeLabel = (XulLabel) document.getElementById("max-pool-size-label"); //$NON-NLS-1$
-    maxPoolSizeBox = (XulTextbox) document.getElementById("max-pool-size-text"); //$NON-NLS-1$
-    poolParameterTree = (XulTree) document.getElementById("pool-parameter-tree"); //$NON-NLS-1$
-    clusterParameterTree = (XulTree) document.getElementById("cluster-parameter-tree"); //$NON-NLS-1$
-    optionsParameterTree = (XulTree) document.getElementById("options-parameter-tree"); //$NON-NLS-1$
-    poolingDescription = (XulTextbox) document.getElementById("pooling-description"); //$NON-NLS-1$ 
-    poolingParameterDescriptionLabel = (XulLabel) document.getElementById("pool-parameter-description-label"); //$NON-NLS-1$ 
-    poolingDescriptionLabel = (XulLabel) document.getElementById("pooling-description-label"); //$NON-NLS-1$ 
-    supportBooleanDataType = (XulCheckbox) document.getElementById("supports-boolean-data-type"); //$NON-NLS-1$;
-    supportTimestampDataType = (XulCheckbox) document.getElementById("supports-timestamp-data-type"); //$NON-NLS-1$;
-    quoteIdentifiersCheck = (XulCheckbox) document.getElementById("quote-identifiers-check"); //$NON-NLS-1$;
-    lowerCaseIdentifiersCheck = (XulCheckbox) document.getElementById("force-lower-case-check"); //$NON-NLS-1$;
-    upperCaseIdentifiersCheck = (XulCheckbox) document.getElementById("force-upper-case-check"); //$NON-NLS-1$;
-    preserveReservedCaseCheck = (XulCheckbox) document.getElementById("preserve-reserved-case"); //$NON-NLS-1$;
-    preferredSchemaName = (XulTextbox) document.getElementById("preferred-schema-name-text"); //$NON-NLS-1$;
-    sqlBox = (XulTextbox) document.getElementById("sql-text"); //$NON-NLS-1$;
-    useIntegratedSecurityCheck = (XulCheckbox) document.getElementById("use-integrated-security-check"); //$NON-NLS-1$;
-    acceptButton = (XulButton) document.getElementById("general-datasource-window_accept"); //$NON-NLS-1$;
-    cancelButton = (XulButton) document.getElementById("general-datasource-window_cancel"); //$NON-NLS-1$;
-    testButton = (XulButton) document.getElementById("test-button"); //$NON-NLS-1$;
-    noticeLabel = (XulLabel) document.getElementById("notice-label"); //$NON-NLS-1$;
+    dialogDeck = (XulDeck) document.getElementById("dialog-panel-deck"); 
+    deckOptionsBox = (XulListbox) document.getElementById("deck-options-list"); 
+    connectionBox = (XulListbox) document.getElementById("connection-type-list"); 
+    accessBox = (XulListbox) document.getElementById("access-type-list"); 
+    connectionNameBox = (XulTextbox) document.getElementById("connection-name-text"); 
+    hostNameBox = (XulTextbox) document.getElementById("server-host-name-text"); 
+    databaseNameBox = (XulTextbox) document.getElementById("database-name-text"); 
+    portNumberBox = (XulTextbox) document.getElementById("port-number-text"); 
+    userNameBox = (XulTextbox) document.getElementById("username-text"); 
+    passwordBox = (XulTextbox) document.getElementById("password-text"); 
+    dataTablespaceBox = (XulTextbox) document.getElementById("data-tablespace-text"); 
+    indexTablespaceBox = (XulTextbox) document.getElementById("index-tablespace-text"); 
+    serverInstanceBox = (XulTextbox) document.getElementById("instance-text"); 
+    serverNameBox = (XulTextbox) document.getElementById("server-name-text"); 
+    customUrlBox = (XulTextbox) document.getElementById("custom-url-text"); 
+    customDriverClassBox = (XulTextbox) document.getElementById("custom-driver-class-text"); 
+    languageBox = (XulTextbox) document.getElementById("language-text"); 
+    systemNumberBox = (XulTextbox) document.getElementById("system-number-text"); 
+    clientBox = (XulTextbox) document.getElementById("client-text"); 
+    doubleDecimalSeparatorCheck = (XulCheckbox) document.getElementById("decimal-separator-check"); 
+    resultStreamingCursorCheck = (XulCheckbox) document.getElementById("result-streaming-check"); 
+    poolingCheck = (XulCheckbox) document.getElementById("use-pool-check"); 
+    clusteringCheck = (XulCheckbox) document.getElementById("use-cluster-check"); 
+    clusterParameterDescriptionLabel = (XulLabel) document.getElementById("cluster-parameter-description-label"); 
+    poolSizeLabel = (XulLabel) document.getElementById("pool-size-label"); 
+    poolSizeBox = (XulTextbox) document.getElementById("pool-size-text"); 
+    maxPoolSizeLabel = (XulLabel) document.getElementById("max-pool-size-label"); 
+    maxPoolSizeBox = (XulTextbox) document.getElementById("max-pool-size-text"); 
+    poolParameterTree = (XulTree) document.getElementById("pool-parameter-tree"); 
+    clusterParameterTree = (XulTree) document.getElementById("cluster-parameter-tree"); 
+    optionsParameterTree = (XulTree) document.getElementById("options-parameter-tree"); 
+    poolingDescription = (XulTextbox) document.getElementById("pooling-description");  
+    poolingParameterDescriptionLabel = (XulLabel) document.getElementById("pool-parameter-description-label");  
+    poolingDescriptionLabel = (XulLabel) document.getElementById("pooling-description-label");  
+    supportBooleanDataType = (XulCheckbox) document.getElementById("supports-boolean-data-type"); ;
+    supportTimestampDataType = (XulCheckbox) document.getElementById("supports-timestamp-data-type"); ;
+    quoteIdentifiersCheck = (XulCheckbox) document.getElementById("quote-identifiers-check"); ;
+    lowerCaseIdentifiersCheck = (XulCheckbox) document.getElementById("force-lower-case-check"); ;
+    upperCaseIdentifiersCheck = (XulCheckbox) document.getElementById("force-upper-case-check"); ;
+    preserveReservedCaseCheck = (XulCheckbox) document.getElementById("preserve-reserved-case"); ;
+    preferredSchemaName = (XulTextbox) document.getElementById("preferred-schema-name-text"); ;
+    sqlBox = (XulTextbox) document.getElementById("sql-text"); ;
+    useIntegratedSecurityCheck = (XulCheckbox) document.getElementById("use-integrated-security-check"); ;
+    acceptButton = (XulButton) document.getElementById("general-datasource-window_accept"); ;
+    cancelButton = (XulButton) document.getElementById("general-datasource-window_cancel"); ;
+    testButton = (XulButton) document.getElementById("test-button"); ;
+    noticeLabel = (XulLabel) document.getElementById("notice-label"); ;
     
     if (portNumberBox != null && serverInstanceBox != null) {
       if (Boolean.parseBoolean(serverInstanceBox.getAttributeValue("shouldDisablePortIfPopulated"))) {
@@ -1354,7 +1354,7 @@ public class DataHandler extends AbstractXulEventHandler {
 
   protected void showMessage(String message, boolean scroll){
     try{
-      XulMessageBox box = (XulMessageBox) document.createElement("messagebox"); //$NON-NLS-1$
+      XulMessageBox box = (XulMessageBox) document.createElement("messagebox"); 
       box.setMessage(message);
       box.setModalParent( ((XulRoot)document.getElementById("general-datasource-window")).getRootObject());
       if(scroll){

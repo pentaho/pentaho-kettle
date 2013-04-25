@@ -208,14 +208,14 @@ public class UDJCStepDialog extends BaseStepDialog implements StepDialogInterfac
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Shell.Title")); 
 
 		middle = props.getMiddlePct();
 		margin = Const.MARGIN;
 
 		// Filename line
 		wlStepname = new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Stepname.Label")); 
 		props.setLook(wlStepname);
 		fdlStepname = new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -246,7 +246,7 @@ public class UDJCStepDialog extends BaseStepDialog implements StepDialogInterfac
 
 		// Script line
 		Label wlScriptFunctions = new Label(wTop, SWT.NONE);
-		wlScriptFunctions.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ClassesAndSnippits.Label")); //$NON-NLS-1$
+		wlScriptFunctions.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ClassesAndSnippits.Label")); 
 		props.setLook(wlScriptFunctions);
 		FormData fdlScriptFunctions = new FormData();
 		fdlScriptFunctions.left = new FormAttachment(0, 0);
@@ -265,7 +265,7 @@ public class UDJCStepDialog extends BaseStepDialog implements StepDialogInterfac
 
 		// Script line
 		Label wlScript = new Label(wTop, SWT.NONE);
-		wlScript.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Class.Label")); //$NON-NLS-1$
+		wlScript.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Class.Label")); 
 		props.setLook(wlScript);
 		FormData fdlScript = new FormData();
 		fdlScript.left = new FormAttachment(wTree, margin);
@@ -284,7 +284,7 @@ public class UDJCStepDialog extends BaseStepDialog implements StepDialogInterfac
 		folder.setLayoutData(fdScript);
 
 		wlPosition = new Label(wTop, SWT.NONE);
-		wlPosition.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Position.Label")); //$NON-NLS-1$
+		wlPosition.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Position.Label")); 
 		props.setLook(wlPosition);
 		FormData fdlPosition = new FormData();
 		fdlPosition.left = new FormAttachment(wTree, margin);
@@ -357,9 +357,9 @@ public class UDJCStepDialog extends BaseStepDialog implements StepDialogInterfac
 		wSash.setWeights(new int[] { 75, 25 });
 
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 
@@ -544,7 +544,7 @@ public class UDJCStepDialog extends BaseStepDialog implements StepDialogInterfac
 		wBottom.setLayout(bottomLayout);
 
 		Label wlFields = new Label(wBottom, SWT.NONE);
-		wlFields.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Fields.Label")); //$NON-NLS-1$
+		wlFields.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Fields.Label")); 
 		props.setLook(wlFields);
 		FormData fdlFields = new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -552,7 +552,7 @@ public class UDJCStepDialog extends BaseStepDialog implements StepDialogInterfac
 		wlFields.setLayoutData(fdlFields);
 
 		wClearResultFields = new Button(wBottom, SWT.CHECK);
-		wClearResultFields.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ClearResultFields.Label")); //$NON-NLS-1$
+		wClearResultFields.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ClearResultFields.Label")); 
 		props.setLook(wClearResultFields);
 		FormData fdClearResultFields = new FormData();
 		fdClearResultFields.right = new FormAttachment(100, 0);
@@ -563,13 +563,13 @@ public class UDJCStepDialog extends BaseStepDialog implements StepDialogInterfac
 
 		ColumnInfo[] colinf = new ColumnInfo[] {
 						new ColumnInfo(
-										BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ColumnInfo.Filename"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+										BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ColumnInfo.Filename"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
 						new ColumnInfo(
-										BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ColumnInfo.Type"), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes()), //$NON-NLS-1$
+										BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ColumnInfo.Type"), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes()), 
 						new ColumnInfo(
-										BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ColumnInfo.Length"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+										BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ColumnInfo.Length"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
 						new ColumnInfo(
-										BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ColumnInfo.Precision"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+										BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ColumnInfo.Precision"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
 		};
 
 		wFields = new TableView(transMeta, wBottom, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, fieldsRows,
@@ -605,7 +605,7 @@ public class UDJCStepDialog extends BaseStepDialog implements StepDialogInterfac
 		wBottom.setLayout(bottomLayout);
 
 		Label wlFields = new Label(wBottom, SWT.NONE);
-		wlFields.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.InfoSteps.Label")); //$NON-NLS-1$
+		wlFields.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.InfoSteps.Label")); 
 		props.setLook(wlFields);
 		FormData fdlFields = new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -615,12 +615,12 @@ public class UDJCStepDialog extends BaseStepDialog implements StepDialogInterfac
 		final int nrRows = input.getInfoStepDefinitions().size();
 		ColumnInfo[] colinf = new ColumnInfo[] {
 						new ColumnInfo(
-										BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ColumnInfo.StepTag"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+										BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ColumnInfo.StepTag"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
 						new ColumnInfo(
-										BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ColumnInfo.StepName"), ColumnInfo.COLUMN_TYPE_CCOMBO, prevStepNames), //$NON-NLS-1$
+										BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ColumnInfo.StepName"), ColumnInfo.COLUMN_TYPE_CCOMBO, prevStepNames), 
 						new ColumnInfo(
 										BaseMessages.getString(PKG,
-														"UserDefinedJavaClassDialog.ColumnInfo.StepDescription"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+														"UserDefinedJavaClassDialog.ColumnInfo.StepDescription"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
 		};
 
 		wInfoSteps = new TableView(transMeta, wBottom, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, nrRows,
@@ -655,7 +655,7 @@ public class UDJCStepDialog extends BaseStepDialog implements StepDialogInterfac
 		wBottom.setLayout(bottomLayout);
 
 		Label wlFields = new Label(wBottom, SWT.NONE);
-		wlFields.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.TargetSteps.Label")); //$NON-NLS-1$
+		wlFields.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.TargetSteps.Label")); 
 		props.setLook(wlFields);
 		FormData fdlFields = new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -665,12 +665,12 @@ public class UDJCStepDialog extends BaseStepDialog implements StepDialogInterfac
 		final int nrRows = input.getTargetStepDefinitions().size();
 		ColumnInfo[] colinf = new ColumnInfo[] {
 						new ColumnInfo(
-										BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ColumnInfo.StepTag"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+										BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ColumnInfo.StepTag"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
 						new ColumnInfo(
-										BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ColumnInfo.StepName"), ColumnInfo.COLUMN_TYPE_CCOMBO, nextStepNames), //$NON-NLS-1$
+										BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ColumnInfo.StepName"), ColumnInfo.COLUMN_TYPE_CCOMBO, nextStepNames), 
 						new ColumnInfo(
 										BaseMessages.getString(PKG,
-														"UserDefinedJavaClassDialog.ColumnInfo.StepDescription"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+														"UserDefinedJavaClassDialog.ColumnInfo.StepDescription"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
 		};
 
 		wTargetSteps = new TableView(transMeta, wBottom, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, nrRows,
@@ -706,7 +706,7 @@ public class UDJCStepDialog extends BaseStepDialog implements StepDialogInterfac
 		wBottom.setLayout(bottomLayout);
 
 		Label wlFields = new Label(wBottom, SWT.NONE);
-		wlFields.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Parameters.Label")); //$NON-NLS-1$
+		wlFields.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Parameters.Label")); 
 		props.setLook(wlFields);
 		FormData fdlFields = new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -717,13 +717,13 @@ public class UDJCStepDialog extends BaseStepDialog implements StepDialogInterfac
 		ColumnInfo[] colinf = new ColumnInfo[] {
 						new ColumnInfo(
 										BaseMessages.getString(PKG,
-														"UserDefinedJavaClassDialog.ColumnInfo.ParameterTag"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+														"UserDefinedJavaClassDialog.ColumnInfo.ParameterTag"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
 						new ColumnInfo(
 										BaseMessages.getString(PKG,
-														"UserDefinedJavaClassDialog.ColumnInfo.ParameterValue"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+														"UserDefinedJavaClassDialog.ColumnInfo.ParameterValue"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
 						new ColumnInfo(
 										BaseMessages.getString(PKG,
-														"UserDefinedJavaClassDialog.ColumnInfo.ParameterDescription"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+														"UserDefinedJavaClassDialog.ColumnInfo.ParameterDescription"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
 		};
 		colinf[1].setUsingVariables(true);
 
@@ -944,7 +944,7 @@ public class UDJCStepDialog extends BaseStepDialog implements StepDialogInterfac
 			colnr++;
 		}
 		wlPosition
-						.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Position.Label2") + linenr + ", " + colnr); //$NON-NLS-1$ //$NON-NLS-2$
+						.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Position.Label2") + linenr + ", " + colnr);  
 	}
 
   /**
@@ -958,9 +958,9 @@ public class UDJCStepDialog extends BaseStepDialog implements StepDialogInterfac
       item.setText(1, fi.name);
       item.setText(2, ValueMeta.getTypeDesc(fi.type));
       if (fi.length >= 0)
-        item.setText(3, "" + fi.length); //$NON-NLS-1$
+        item.setText(3, "" + fi.length); 
       if (fi.precision >= 0)
-        item.setText(4, "" + fi.precision); //$NON-NLS-1$
+        item.setText(4, "" + fi.precision); 
     }
 
     List<UDJCStepDef> definitions = input.getDefinitions();
@@ -1135,7 +1135,7 @@ public class UDJCStepDialog extends BaseStepDialog implements StepDialogInterfac
 		if (getCTabItemByName(strActiveScript) == null) {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.CANCEL | SWT.ICON_ERROR);
 			mb.setMessage(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.NoTransformClassSet"));
-			mb.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ERROR.Label")); //$NON-NLS-1$
+			mb.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ERROR.Label")); 
 			switch (mb.open()) {
 				case SWT.OK:
 					strActiveScript = folder.getItem(0).getText();

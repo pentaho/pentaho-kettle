@@ -296,7 +296,7 @@ public class BaseStepDialog extends Dialog {
 
       // Also, set the tooltip the same as the name if we don't have one...
       if (buttons[i].getToolTipText() == null) {
-        buttons[i].setToolTipText(Const.replace(buttons[i].getText(), "&", "")); //$NON-NLS-1$ //$NON-NLS-2$
+        buttons[i].setToolTipText(Const.replace(buttons[i].getText(), "&", ""));  
       }
     }
 
@@ -391,10 +391,10 @@ public class BaseStepDialog extends Dialog {
    * @return a constant which indicates the button alignment
    */
   protected static int getButtonAlignment() {
-    String buttonAlign = BasePropertyHandler.getProperty("Button_Position", "center").toLowerCase(); //$NON-NLS-1$ //$NON-NLS-2$
-    if ("center".equals(buttonAlign)) { //$NON-NLS-1$
+    String buttonAlign = BasePropertyHandler.getProperty("Button_Position", "center").toLowerCase();  
+    if ("center".equals(buttonAlign)) { 
       return BUTTON_ALIGNMENT_CENTER;
-    } else if ("left".equals(buttonAlign)) { //$NON-NLS-1$
+    } else if ("left".equals(buttonAlign)) { 
       return BUTTON_ALIGNMENT_LEFT;
     } else {
       return BUTTON_ALIGNMENT_RIGHT;
@@ -635,7 +635,7 @@ public class BaseStepDialog extends Dialog {
 
     addDatabases(wConnection);
 
-    wlConnection.setText(BaseMessages.getString(PKG, "BaseStepDialog.Connection.Label")); //$NON-NLS-1$
+    wlConnection.setText(BaseMessages.getString(PKG, "BaseStepDialog.Connection.Label")); 
     props.setLook(wlConnection);
     fdlConnection = new FormData();
     fdlConnection.left = new FormAttachment(0, 0);
@@ -649,7 +649,7 @@ public class BaseStepDialog extends Dialog {
     // 
     // Wizard button
     //
-    wbwConnection.setText(BaseMessages.getString(PKG, "BaseStepDialog.WizardConnectionButton.Label")); //$NON-NLS-1$
+    wbwConnection.setText(BaseMessages.getString(PKG, "BaseStepDialog.WizardConnectionButton.Label")); 
     wbwConnection.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
     	CreateDatabaseWizard cdw = new CreateDatabaseWizard();
@@ -674,7 +674,7 @@ public class BaseStepDialog extends Dialog {
     // 
     // NEW button
     //
-    wbnConnection.setText(BaseMessages.getString(PKG, "BaseStepDialog.NewConnectionButton.Label")); //$NON-NLS-1$
+    wbnConnection.setText(BaseMessages.getString(PKG, "BaseStepDialog.NewConnectionButton.Label")); 
     wbnConnection.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
         DatabaseMeta databaseMeta = new DatabaseMeta();
@@ -701,7 +701,7 @@ public class BaseStepDialog extends Dialog {
     //
     // Edit button
     //
-    wbeConnection.setText(BaseMessages.getString(PKG, "BaseStepDialog.EditConnectionButton.Label")); //$NON-NLS-1$
+    wbeConnection.setText(BaseMessages.getString(PKG, "BaseStepDialog.EditConnectionButton.Label")); 
     wbeConnection.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
         DatabaseMeta databaseMeta = transMeta.findDatabase(wConnection.getText());
@@ -926,7 +926,7 @@ public class BaseStepDialog extends Dialog {
     } catch (KettleException ke) {
       new ErrorDialog(
           tableView.getShell(),
-          BaseMessages.getString(PKG, "BaseStepDialog.FailedToGetFields.Title"), BaseMessages.getString(PKG, "BaseStepDialog.FailedToGetFields.Message", stepMeta.getName()), ke); //$NON-NLS-1$ //$NON-NLS-2$
+          BaseMessages.getString(PKG, "BaseStepDialog.FailedToGetFields.Title"), BaseMessages.getString(PKG, "BaseStepDialog.FailedToGetFields.Message", stepMeta.getName()), ke);  
     }
   }
 
@@ -964,11 +964,11 @@ public class BaseStepDialog extends Dialog {
     if (keys.size() > 0) {
       // Ask what we should do with the existing data in the step.
       //
-      MessageDialog md = new MessageDialog(tableView.getShell(), BaseMessages.getString(PKG, "BaseStepDialog.GetFieldsChoice.Title"),//"Warning!"  //$NON-NLS-1$
-          null, BaseMessages.getString(PKG, "BaseStepDialog.GetFieldsChoice.Message", "" + keys.size(), "" + row.size()), //$NON-NLS-1$  //$NON-NLS-2$  //$NON-NLS-3$
-          MessageDialog.WARNING, new String[] { BaseMessages.getString(PKG, "BaseStepDialog.AddNew"), //$NON-NLS-1$
-              BaseMessages.getString(PKG, "BaseStepDialog.Add"), BaseMessages.getString(PKG, "BaseStepDialog.ClearAndAdd"), //$NON-NLS-1$  //$NON-NLS-2$
-              BaseMessages.getString(PKG, "BaseStepDialog.Cancel"), }, 0); //$NON-NLS-1$
+      MessageDialog md = new MessageDialog(tableView.getShell(), BaseMessages.getString(PKG, "BaseStepDialog.GetFieldsChoice.Title"),//"Warning!"  
+          null, BaseMessages.getString(PKG, "BaseStepDialog.GetFieldsChoice.Message", "" + keys.size(), "" + row.size()),     //$NON-NLS-3$
+          MessageDialog.WARNING, new String[] { BaseMessages.getString(PKG, "BaseStepDialog.AddNew"), 
+              BaseMessages.getString(PKG, "BaseStepDialog.Add"), BaseMessages.getString(PKG, "BaseStepDialog.ClearAndAdd"),   
+              BaseMessages.getString(PKG, "BaseStepDialog.Cancel"), }, 0); 
       MessageDialog.setDefaultImage(GUIResource.getInstance().getImageSpoon());
       int idx = md.open();
       choice = idx & 0xFF;
@@ -996,7 +996,7 @@ public class BaseStepDialog extends Dialog {
         TableItem tableItem = new TableItem(table, SWT.NONE);
 
         for (int c = 0; c < nameColumn.length; c++) {
-          tableItem.setText(nameColumn[c], Const.NVL(v.getName(), "")); //$NON-NLS-1$
+          tableItem.setText(nameColumn[c], Const.NVL(v.getName(), "")); 
         }
         if ( dataTypeColumn != null )
         {

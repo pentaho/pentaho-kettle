@@ -422,12 +422,12 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
       incrementLinesOutput();
 
       if (checkFeedback(getLinesOutput()))
-        logBasic(BaseMessages.getString(PKG, "IngresVectorwiseLoader.Log.LineNumber") + getLinesOutput()); //$NON-NLS-1$
+        logBasic(BaseMessages.getString(PKG, "IngresVectorwiseLoader.Log.LineNumber") + getLinesOutput()); 
 
       return true;
 
     } catch (Exception e) {
-      logError(BaseMessages.getString(PKG, "IngresVectorwiseLoader.Log.ErrorInStep"), e); //$NON-NLS-1$
+      logError(BaseMessages.getString(PKG, "IngresVectorwiseLoader.Log.ErrorInStep"), e); 
       setErrors(1);
       stopAll();
       setOutputDone(); // signal end to receiver(s)

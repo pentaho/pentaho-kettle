@@ -147,14 +147,14 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "DBProcDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "DBProcDialog.Shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin=Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "DBProcDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "DBProcDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -179,7 +179,7 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
 		// ProcName line...
 		// add button to get list of procedures on selected connection...
 		wbProcName = new Button(shell, SWT.PUSH);
-		wbProcName.setText(BaseMessages.getString(PKG, "DBProcDialog.Finding.Button")); //$NON-NLS-1$
+		wbProcName.setText(BaseMessages.getString(PKG, "DBProcDialog.Finding.Button")); 
 		fdbProcName = new FormData();
 		fdbProcName.right= new FormAttachment(100, 0);
 		fdbProcName.top  = new FormAttachment(wConnection, margin*2);
@@ -198,7 +198,7 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
 						String[] procs = db.getProcedures();
 						if (procs!=null && procs.length>0)
 						{
-							EnterSelectionDialog esd = new EnterSelectionDialog(shell, procs, BaseMessages.getString(PKG, "DBProcDialog.EnterSelection.DialogTitle"), BaseMessages.getString(PKG, "DBProcDialog.EnterSelection.DialogMessage")); //$NON-NLS-1$ //$NON-NLS-2$
+							EnterSelectionDialog esd = new EnterSelectionDialog(shell, procs, BaseMessages.getString(PKG, "DBProcDialog.EnterSelection.DialogTitle"), BaseMessages.getString(PKG, "DBProcDialog.EnterSelection.DialogMessage"));  
 							String proc = esd.open();
 							if (proc!=null)
 							{
@@ -208,14 +208,14 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
 						else
 						{
 							MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
-							mb.setMessage(BaseMessages.getString(PKG, "DBProcDialog.NoProceduresFound.DialogMessage")); //$NON-NLS-1$
-							mb.setText(BaseMessages.getString(PKG, "DBProcDialog.NoProceduresFound.DialogTitle")); //$NON-NLS-1$
+							mb.setMessage(BaseMessages.getString(PKG, "DBProcDialog.NoProceduresFound.DialogMessage")); 
+							mb.setText(BaseMessages.getString(PKG, "DBProcDialog.NoProceduresFound.DialogTitle")); 
 							mb.open();
 						}
 					}
 					catch(KettleDatabaseException dbe)
 					{
-						new ErrorDialog(shell, BaseMessages.getString(PKG, "DBProcDialog.ErrorGettingProceduresList.DialogTitle"), BaseMessages.getString(PKG, "DBProcDialog.ErrorGettingProceduresList.DialogMessage"), dbe); //$NON-NLS-1$ //$NON-NLS-2$
+						new ErrorDialog(shell, BaseMessages.getString(PKG, "DBProcDialog.ErrorGettingProceduresList.DialogTitle"), BaseMessages.getString(PKG, "DBProcDialog.ErrorGettingProceduresList.DialogMessage"), dbe);  
 					}
 					finally
 					{
@@ -226,7 +226,7 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
 		});
 		
 		wlProcName=new Label(shell, SWT.RIGHT);
-		wlProcName.setText(BaseMessages.getString(PKG, "DBProcDialog.ProcedureName.Label")); //$NON-NLS-1$
+		wlProcName.setText(BaseMessages.getString(PKG, "DBProcDialog.ProcedureName.Label")); 
  		props.setLook(wlProcName);
 		fdlProcName=new FormData();
 		fdlProcName.left = new FormAttachment(0, 0);
@@ -266,7 +266,7 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
 		
 		// Result line...
 		wlResult=new Label(shell, SWT.RIGHT);
-		wlResult.setText(BaseMessages.getString(PKG, "DBProcDialog.Result.Label")); //$NON-NLS-1$
+		wlResult.setText(BaseMessages.getString(PKG, "DBProcDialog.Result.Label")); 
  		props.setLook(wlResult);
 		fdlResult=new FormData();
 		fdlResult.left = new FormAttachment(0, 0);
@@ -285,7 +285,7 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
 
 		// ResultType line
 		wlResultType=new Label(shell, SWT.RIGHT);
-		wlResultType.setText(BaseMessages.getString(PKG, "DBProcDialog.ResultType.Label")); //$NON-NLS-1$
+		wlResultType.setText(BaseMessages.getString(PKG, "DBProcDialog.ResultType.Label")); 
  		props.setLook(wlResultType);
 		fdlResultType=new FormData();
 		fdlResultType.left = new FormAttachment(0, 0);
@@ -305,7 +305,7 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
 		wResultType.setLayoutData(fdResultType);
 
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText(BaseMessages.getString(PKG, "DBProcDialog.Parameters.Label")); //$NON-NLS-1$
+		wlFields.setText(BaseMessages.getString(PKG, "DBProcDialog.Parameters.Label")); 
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -317,8 +317,8 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
 		
 		colinf=new ColumnInfo[FieldsCols];
 		colinf[0]=new ColumnInfo(BaseMessages.getString(PKG, "DBProcDialog.ColumnInfo.Name"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false);
-		colinf[1]=new ColumnInfo(BaseMessages.getString(PKG, "DBProcDialog.ColumnInfo.Direction"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "IN", "OUT", "INOUT" } ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-		colinf[2]=new ColumnInfo(BaseMessages.getString(PKG, "DBProcDialog.ColumnInfo.Type"),       ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ); //$NON-NLS-1$
+		colinf[1]=new ColumnInfo(BaseMessages.getString(PKG, "DBProcDialog.ColumnInfo.Direction"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "IN", "OUT", "INOUT" } );   //$NON-NLS-3$ //$NON-NLS-4$
+		colinf[2]=new ColumnInfo(BaseMessages.getString(PKG, "DBProcDialog.ColumnInfo.Type"),       ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ); 
 		
 		wFields=new TableView(transMeta, shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -369,11 +369,11 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
 
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wGet=new Button(shell, SWT.PUSH);
-		wGet.setText(BaseMessages.getString(PKG, "DBProcDialog.GetFields.Button")); //$NON-NLS-1$
+		wGet.setText(BaseMessages.getString(PKG, "DBProcDialog.GetFields.Button")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel , wGet }, margin, wFields);
 
@@ -441,7 +441,7 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
    */
   public void getData() {
     int i;
-    logDebug(BaseMessages.getString(PKG, "DBProcDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+    logDebug(BaseMessages.getString(PKG, "DBProcDialog.Log.GettingKeyInfo")); 
 
     if (input.getArgument() != null)
       for (i = 0; i < input.getArgument().length; i++) {
@@ -490,7 +490,7 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
 
 		input.allocate(nrargs);
 
-		logDebug(BaseMessages.getString(PKG, "DBProcDialog.Log.FoundArguments",String.valueOf(nrargs))); //$NON-NLS-1$ //$NON-NLS-2$
+		logDebug(BaseMessages.getString(PKG, "DBProcDialog.Log.FoundArguments",String.valueOf(nrargs)));  
 		for (i=0;i<nrargs;i++)
 		{
 			TableItem item = wFields.getNonEmpty(i);
@@ -510,8 +510,8 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
 		if (input.getDatabase()==null)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(BaseMessages.getString(PKG, "DBProcDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
-			mb.setText(BaseMessages.getString(PKG, "DBProcDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "DBProcDialog.InvalidConnection.DialogMessage")); 
+			mb.setText(BaseMessages.getString(PKG, "DBProcDialog.InvalidConnection.DialogTitle")); 
 			mb.open();
 		}
 		
@@ -538,7 +538,7 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "DBProcDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "DBProcDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "DBProcDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "DBProcDialog.FailedToGetFields.DialogMessage"), ke);  
 		}
 
 	}

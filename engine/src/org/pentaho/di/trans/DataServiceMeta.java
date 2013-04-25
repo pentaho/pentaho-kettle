@@ -1,8 +1,11 @@
 package org.pentaho.di.trans;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.sql.ServiceCacheMethod;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 
@@ -30,13 +33,13 @@ public class DataServiceMeta {
 
   protected String stepname;
 
-  protected String transObjectId; // rep: by reference (1st priority)
+  protected ObjectId transObjectId; // rep: by reference (1st priority)
 
   protected String transRepositoryPath; // rep: by name (2nd priority)
 
   protected String transFilename; // file (3rd priority)
 
-  protected ObjectId objectId;
+  protected String id;
 
   protected ServiceCacheMethod cacheMethod;
   
@@ -106,17 +109,17 @@ public class DataServiceMeta {
   }
 
   /**
-   * @return the objectId
+   * @return the (metastore) id
    */
-  public ObjectId getObjectId() {
-    return objectId;
+  public String getId() {
+    return id;
   }
 
   /**
-   * @param objectId the objectId to set
+   * @param id the id to set
    */
-  public void setObjectId(ObjectId objectId) {
-    this.objectId = objectId;
+  public void setId(String id) {
+    this.id = id;
   }
 
   /**
@@ -133,11 +136,11 @@ public class DataServiceMeta {
     this.cacheMethod = cacheMethod;
   }
 
-  public String getTransObjectId() {
+  public ObjectId getTransObjectId() {
     return transObjectId;
   }
 
-  public void setTransObjectId(String transObjectId) {
+  public void setTransObjectId(ObjectId transObjectId) {
     this.transObjectId = transObjectId;
   }
 
@@ -163,6 +166,32 @@ public class DataServiceMeta {
 
   public void setCacheMaxAgeMinutes(int cacheMaxAgeMinutes) {
     this.cacheMaxAgeMinutes = cacheMaxAgeMinutes;
+  }
+
+  /**
+   * Try to look up the transObjectId for transformation which are referenced by path 
+   * @param repository The repository to use.
+   * @throws KettleException
+   */
+  public void lookupTransObjectId(Repository repository) throws KettleException {
+    if (repository==null) return;
+    
+    if (Const.isEmpty(transFilename) && transObjectId==null && !Const.isEmpty(transRepositoryPath)) {
+      // see if there is a path specified to a repository name
+      //
+      String path = "/";
+      String name = transRepositoryPath; 
+      int lastSlashIndex = name.lastIndexOf('/');
+      if (lastSlashIndex>=0) {
+        path = transRepositoryPath.substring(0, lastSlashIndex+1);
+        name = transRepositoryPath.substring(lastSlashIndex+1);
+      }
+      RepositoryDirectoryInterface tree = repository.loadRepositoryDirectoryTree();
+      RepositoryDirectoryInterface rd = tree.findDirectory(path);
+      if (rd==null) rd=tree; // root
+      
+      transObjectId = repository.getTransformationID(name, rd);
+    }
   }
   
   

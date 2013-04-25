@@ -110,20 +110,20 @@ public class KettleDatabaseRepositorySlaveServerDelegate extends KettleDatabaseR
 
     RowMetaAndData row = getSlaveServer(id_slave_server);
     if (row == null) {
-      throw new KettleDatabaseException(BaseMessages.getString(PKG, "SlaveServer.SlaveCouldNotBeFound", id_slave_server.toString())); //$NON-NLS-1$
+      throw new KettleDatabaseException(BaseMessages.getString(PKG, "SlaveServer.SlaveCouldNotBeFound", id_slave_server.toString())); 
     }
 
-    slaveServer.setName(row.getString(KettleDatabaseRepository.FIELD_SLAVE_NAME, null)); //$NON-NLS-1$
-    slaveServer.setHostname(row.getString(KettleDatabaseRepository.FIELD_SLAVE_HOST_NAME, null)); //$NON-NLS-1$
-    slaveServer.setPort(row.getString(KettleDatabaseRepository.FIELD_SLAVE_PORT, null)); //$NON-NLS-1$
-    slaveServer.setWebAppName(row.getString(KettleDatabaseRepository.FIELD_SLAVE_WEB_APP_NAME, null)); //$NON-NLS-1$
-    slaveServer.setUsername(row.getString(KettleDatabaseRepository.FIELD_SLAVE_USERNAME, null)); //$NON-NLS-1$
+    slaveServer.setName(row.getString(KettleDatabaseRepository.FIELD_SLAVE_NAME, null)); 
+    slaveServer.setHostname(row.getString(KettleDatabaseRepository.FIELD_SLAVE_HOST_NAME, null)); 
+    slaveServer.setPort(row.getString(KettleDatabaseRepository.FIELD_SLAVE_PORT, null)); 
+    slaveServer.setWebAppName(row.getString(KettleDatabaseRepository.FIELD_SLAVE_WEB_APP_NAME, null)); 
+    slaveServer.setUsername(row.getString(KettleDatabaseRepository.FIELD_SLAVE_USERNAME, null)); 
     slaveServer.setPassword(Encr.decryptPasswordOptionallyEncrypted(row.getString(
-        KettleDatabaseRepository.FIELD_SLAVE_PASSWORD, null))); //$NON-NLS-1$
-    slaveServer.setProxyHostname(row.getString(KettleDatabaseRepository.FIELD_SLAVE_PROXY_HOST_NAME, null)); //$NON-NLS-1$
-    slaveServer.setProxyPort(row.getString(KettleDatabaseRepository.FIELD_SLAVE_PROXY_PORT, null)); //$NON-NLS-1$
-    slaveServer.setNonProxyHosts(row.getString(KettleDatabaseRepository.FIELD_SLAVE_NON_PROXY_HOSTS, null)); //$NON-NLS-1$
-    slaveServer.setMaster(row.getBoolean(KettleDatabaseRepository.FIELD_SLAVE_MASTER, false)); //$NON-NLS-1$
+        KettleDatabaseRepository.FIELD_SLAVE_PASSWORD, null))); 
+    slaveServer.setProxyHostname(row.getString(KettleDatabaseRepository.FIELD_SLAVE_PROXY_HOST_NAME, null)); 
+    slaveServer.setProxyPort(row.getString(KettleDatabaseRepository.FIELD_SLAVE_PROXY_PORT, null)); 
+    slaveServer.setNonProxyHosts(row.getString(KettleDatabaseRepository.FIELD_SLAVE_NON_PROXY_HOSTS, null)); 
+    slaveServer.setMaster(row.getBoolean(KettleDatabaseRepository.FIELD_SLAVE_MASTER, false)); 
 
     return slaveServer;
   }

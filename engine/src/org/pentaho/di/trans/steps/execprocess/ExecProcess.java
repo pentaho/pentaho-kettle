@@ -95,8 +95,8 @@ public class ExecProcess extends BaseStep implements StepInterface
 				if (data.indexOfProcess<0)
 				{
 					// The field is unreachable !
-					logError(BaseMessages.getString(PKG, "ExecProcess.Exception.CouldnotFindField")+ "[" + meta.getProcessField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-					throw new KettleException(BaseMessages.getString(PKG, "ExecProcess.Exception.CouldnotFindField",meta.getProcessField())); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "ExecProcess.Exception.CouldnotFindField")+ "[" + meta.getProcessField()+"]");  
+					throw new KettleException(BaseMessages.getString(PKG, "ExecProcess.Exception.CouldnotFindField",meta.getProcessField()));  
 				}
 			}
     	}// End If first 
@@ -156,7 +156,7 @@ public class ExecProcess extends BaseStep implements StepInterface
         	}
         	else
         	{
-	            logError(BaseMessages.getString(PKG, "ExecProcess.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
+	            logError(BaseMessages.getString(PKG, "ExecProcess.ErrorInStepRunning")+e.getMessage()); 
 	            setErrors(1);
 	            stopAll();
 	            setOutputDone();  // signal end to receiver(s)

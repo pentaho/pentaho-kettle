@@ -204,7 +204,7 @@ public class RegexEval extends BaseStep implements StepInterface {
 				sendToErrorRow = true;
 				errorMessage = e.toString();
 			} else {
-				throw new KettleStepException(BaseMessages.getString(PKG, "RegexEval.Log.ErrorInStep"), e); //$NON-NLS-1$
+				throw new KettleStepException(BaseMessages.getString(PKG, "RegexEval.Log.ErrorInStep"), e); 
 			}
 
 			if (sendToErrorRow) {

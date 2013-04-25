@@ -156,14 +156,14 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "DeleteDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "DeleteDialog.Shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "DeleteDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "DeleteDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -188,7 +188,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 
         // Schema line...
         wlSchema=new Label(shell, SWT.RIGHT);
-        wlSchema.setText(BaseMessages.getString(PKG, "DeleteDialog.TargetSchema.Label")); //$NON-NLS-1$
+        wlSchema.setText(BaseMessages.getString(PKG, "DeleteDialog.TargetSchema.Label")); 
         props.setLook(wlSchema);
         fdlSchema=new FormData();
         fdlSchema.left = new FormAttachment(0, 0);
@@ -215,7 +215,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 
 		// Table line...
 		wlTable=new Label(shell, SWT.RIGHT);
-		wlTable.setText(BaseMessages.getString(PKG, "DeleteDialog.TargetTable.Label")); //$NON-NLS-1$
+		wlTable.setText(BaseMessages.getString(PKG, "DeleteDialog.TargetTable.Label")); 
  		props.setLook(wlTable);
 		fdlTable=new FormData();
 		fdlTable.left = new FormAttachment(0, 0);
@@ -225,7 +225,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 
 		wbTable=new Button(shell, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbTable);
-		wbTable.setText(BaseMessages.getString(PKG, "DeleteDialog.Browse.Button")); //$NON-NLS-1$
+		wbTable.setText(BaseMessages.getString(PKG, "DeleteDialog.Browse.Button")); 
 		fdbTable=new FormData();
 		fdbTable.right= new FormAttachment(100, 0);
 		fdbTable.top  = new FormAttachment(wbSchema, margin);
@@ -242,7 +242,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 
 		// Commit line
 		wlCommit = new Label(shell, SWT.RIGHT);
-		wlCommit.setText(BaseMessages.getString(PKG, "DeleteDialog.Commit.Label")); //$NON-NLS-1$
+		wlCommit.setText(BaseMessages.getString(PKG, "DeleteDialog.Commit.Label")); 
  		props.setLook(wlCommit);
 		fdlCommit = new FormData();
 		fdlCommit.left = new FormAttachment(0, 0);
@@ -260,7 +260,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
         
        
 		wlKey=new Label(shell, SWT.NONE);
-		wlKey.setText(BaseMessages.getString(PKG, "DeleteDialog.Key.Label")); //$NON-NLS-1$
+		wlKey.setText(BaseMessages.getString(PKG, "DeleteDialog.Key.Label")); 
  		props.setLook(wlKey);
 		fdlKey=new FormData();
 		fdlKey.left  = new FormAttachment(0, 0);
@@ -271,10 +271,10 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 		int nrKeyRows=(input.getKeyStream()!=null?input.getKeyStream().length:1);
 		
 		ciKey=new ColumnInfo[nrKeyCols];
-		ciKey[0]=new ColumnInfo(BaseMessages.getString(PKG, "DeleteDialog.ColumnInfo.TableField"),    ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
-		ciKey[1]=new ColumnInfo(BaseMessages.getString(PKG, "DeleteDialog.ColumnInfo.Comparator"),    ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "=", "<>", "<", "<=", ">", ">=", "LIKE", "BETWEEN", "IS NULL", "IS NOT NULL" } ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$
-		ciKey[2]=new ColumnInfo(BaseMessages.getString(PKG, "DeleteDialog.ColumnInfo.StreamField1"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
-		ciKey[3]=new ColumnInfo(BaseMessages.getString(PKG, "DeleteDialog.ColumnInfo.StreamField2"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+		ciKey[0]=new ColumnInfo(BaseMessages.getString(PKG, "DeleteDialog.ColumnInfo.TableField"),    ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); 
+		ciKey[1]=new ColumnInfo(BaseMessages.getString(PKG, "DeleteDialog.ColumnInfo.Comparator"),    ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "=", "<>", "<", "<=", ">", ">=", "LIKE", "BETWEEN", "IS NULL", "IS NOT NULL" } );   //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$
+		ciKey[2]=new ColumnInfo(BaseMessages.getString(PKG, "DeleteDialog.ColumnInfo.StreamField1"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); 
+		ciKey[3]=new ColumnInfo(BaseMessages.getString(PKG, "DeleteDialog.ColumnInfo.StreamField2"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); 
 		tableFieldColumns.add(ciKey[0]);
 		wKey=new TableView(transMeta, shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
@@ -285,7 +285,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 						      );
 
 		wGet = new Button(shell, SWT.PUSH);
-		wGet.setText(BaseMessages.getString(PKG, "DeleteDialog.GetFields.Button")); //$NON-NLS-1$
+		wGet.setText(BaseMessages.getString(PKG, "DeleteDialog.GetFields.Button")); 
 		fdGet = new FormData();
 		fdGet.right = new FormAttachment(100, 0);
 		fdGet.top = new FormAttachment(wlKey, margin);
@@ -334,9 +334,9 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 		
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 		
@@ -417,9 +417,9 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
    */
   public void getData() {
     if (log.isDebug())
-      logDebug(BaseMessages.getString(PKG, "DeleteDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+      logDebug(BaseMessages.getString(PKG, "DeleteDialog.Log.GettingKeyInfo")); 
 
-    wCommit.setText("" + input.getCommitSize()); //$NON-NLS-1$
+    wCommit.setText("" + input.getCommitSize()); 
 
     if (input.getKeyStream() != null)
       for (int i = 0; i < input.getKeyStream().length; i++) {
@@ -507,7 +507,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 				
 		inf.setCommitSize( Const.toInt( wCommit.getText(), 0) );
 		
-		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "DeleteDialog.Log.FoundKeys",String.valueOf(nrkeys))); //$NON-NLS-1$ //$NON-NLS-2$
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "DeleteDialog.Log.FoundKeys",String.valueOf(nrkeys)));  
 		for (int i=0;i<nrkeys;i++)
 		{
 			TableItem item = wKey.getNonEmpty(i);
@@ -536,8 +536,8 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 		if (input.getDatabaseMeta()==null)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(BaseMessages.getString(PKG, "DeleteDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
-			mb.setText(BaseMessages.getString(PKG, "DeleteDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "DeleteDialog.InvalidConnection.DialogMessage")); 
+			mb.setText(BaseMessages.getString(PKG, "DeleteDialog.InvalidConnection.DialogTitle")); 
 			mb.open();
 			return;
 		}
@@ -601,7 +601,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 		
 		if (inf!=null)
 		{
-			logDebug(BaseMessages.getString(PKG, "DeleteDialog.Log.LookingAtConnection")+inf.toString()); //$NON-NLS-1$
+			logDebug(BaseMessages.getString(PKG, "DeleteDialog.Log.LookingAtConnection")+inf.toString()); 
 		
 			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, transMeta.getDatabases());
       std.setSelectedSchemaAndTable(wSchema.getText(), wTable.getText());
@@ -615,8 +615,8 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 		else
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(BaseMessages.getString(PKG, "DeleteDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
-			mb.setText(BaseMessages.getString(PKG, "DeleteDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "DeleteDialog.InvalidConnection.DialogMessage")); 
+			mb.setText(BaseMessages.getString(PKG, "DeleteDialog.InvalidConnection.DialogTitle")); 
 			mb.open(); 
 		}
 	}
@@ -641,7 +641,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "DeleteDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "DeleteDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "DeleteDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "DeleteDialog.FailedToGetFields.DialogMessage"), ke);  
 		}
 	}
 }

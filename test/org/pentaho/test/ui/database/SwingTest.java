@@ -54,9 +54,9 @@ public class SwingTest {
 
 		try {
 			InputStream in = DatabaseDialogHarness.class.getClassLoader()
-					.getResourceAsStream("org/pentaho/ui/database/databasedialog.xul"); //$NON-NLS-1$
+					.getResourceAsStream("org/pentaho/ui/database/databasedialog.xul"); 
 			if (in == null) {
-				System.out.println("Invalid Input"); //$NON-NLS-1$
+				System.out.println("Invalid Input"); 
 				return;
 			}
 
@@ -77,7 +77,7 @@ public class SwingTest {
 		try {
 			container = new SwingXulLoader().loadXul(DatabaseConnectionDialog.DIALOG_DEFINITION_FILE, Messages.getBundle());
 			if (database != null) {
-				container.getEventHandler("dataHandler").setData(database); //$NON-NLS-1$
+				container.getEventHandler("dataHandler").setData(database); 
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -87,9 +87,9 @@ public class SwingTest {
 		dialog.show();
 		try{
 			@SuppressWarnings("unused")
-      Object data = container.getEventHandler("dataHandler").getData(); //$NON-NLS-1$
+      Object data = container.getEventHandler("dataHandler").getData(); 
 		} catch(XulException e){
-			System.out.println("Error getting data"); //$NON-NLS-1$
+			System.out.println("Error getting data"); 
 		}
 	}
 

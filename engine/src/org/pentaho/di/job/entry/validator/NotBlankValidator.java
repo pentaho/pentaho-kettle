@@ -38,7 +38,7 @@ public class NotBlankValidator implements JobEntryValidator {
 
   public static final NotBlankValidator INSTANCE = new NotBlankValidator();
 
-  private static final String VALIDATOR_NAME = "notBlank"; //$NON-NLS-1$
+  private static final String VALIDATOR_NAME = "notBlank"; 
 
   public boolean validate(CheckResultSourceInterface source, String propertyName, List<CheckResultInterface> remarks,
       ValidatorContext context) {

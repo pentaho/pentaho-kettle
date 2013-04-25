@@ -350,62 +350,62 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 			// String csize, bsize, rsize, serror;
 			// int nrvalues;
 
-			String con     = XMLHandler.getTagValue(stepnode, "connection");   //$NON-NLS-1$
+			String con     = XMLHandler.getTagValue(stepnode, "connection");   
 			databaseMeta   = DatabaseMeta.findDatabase(databases, con);
 			
-			commitSize          = XMLHandler.getTagValue(stepnode, "commit");       //$NON-NLS-1$
+			commitSize          = XMLHandler.getTagValue(stepnode, "commit");       
 			if(StringUtils.isEmpty(commitSize)) {
 			  commitSize = Integer.toString(DEFAULT_COMMIT_SIZE);
 			}
 
-			bindSize          = XMLHandler.getTagValue(stepnode, "bind_size");    //$NON-NLS-1$
+			bindSize          = XMLHandler.getTagValue(stepnode, "bind_size");    
 			if(StringUtils.isEmpty(bindSize)) {
         bindSize = Integer.toString(DEFAULT_BIND_SIZE);
       }
 			
-			readSize       = XMLHandler.getTagValue(stepnode, "read_size");    //$NON-NLS-1$
+			readSize       = XMLHandler.getTagValue(stepnode, "read_size");    
 			if(StringUtils.isEmpty(readSize)) {
         readSize = Integer.toString(DEFAULT_READ_SIZE);
       }
 
-			maxErrors         = XMLHandler.getTagValue(stepnode, "errors");       //$NON-NLS-1$
+			maxErrors         = XMLHandler.getTagValue(stepnode, "errors");       
 			if(StringUtils.isEmpty(maxErrors)) {
         maxErrors = Integer.toString(DEFAULT_MAX_ERRORS);
       }
 
-            schemaName     = XMLHandler.getTagValue(stepnode, "schema");       //$NON-NLS-1$
-			tableName      = XMLHandler.getTagValue(stepnode, "table");        //$NON-NLS-1$
+            schemaName     = XMLHandler.getTagValue(stepnode, "schema");       
+			tableName      = XMLHandler.getTagValue(stepnode, "table");        
 			
-			loadMethod     = XMLHandler.getTagValue(stepnode, "load_method");  //$NON-NLS-1$
-			loadAction     = XMLHandler.getTagValue(stepnode, "load_action");  //$NON-NLS-1$			
-			sqlldr         = XMLHandler.getTagValue(stepnode, "sqlldr");       //$NON-NLS-1$
-			controlFile    = XMLHandler.getTagValue(stepnode, "control_file"); //$NON-NLS-1$
-			dataFile       = XMLHandler.getTagValue(stepnode, "data_file");    //$NON-NLS-1$
-			logFile        = XMLHandler.getTagValue(stepnode, "log_file");     //$NON-NLS-1$
-			badFile        = XMLHandler.getTagValue(stepnode, "bad_file");     //$NON-NLS-1$
-			discardFile    = XMLHandler.getTagValue(stepnode, "discard_file"); //$NON-NLS-1$
-			directPath     = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "direct_path")); //$NON-NLS-1$
-			eraseFiles     = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "erase_files")); //$NON-NLS-1$
-			encoding       = XMLHandler.getTagValue(stepnode, "encoding");         //$NON-NLS-1$
-			dbNameOverride = XMLHandler.getTagValue(stepnode, "dbname_override");  //$NON-NLS-1$#
+			loadMethod     = XMLHandler.getTagValue(stepnode, "load_method");  
+			loadAction     = XMLHandler.getTagValue(stepnode, "load_action");  			
+			sqlldr         = XMLHandler.getTagValue(stepnode, "sqlldr");       
+			controlFile    = XMLHandler.getTagValue(stepnode, "control_file"); 
+			dataFile       = XMLHandler.getTagValue(stepnode, "data_file");    
+			logFile        = XMLHandler.getTagValue(stepnode, "log_file");     
+			badFile        = XMLHandler.getTagValue(stepnode, "bad_file");     
+			discardFile    = XMLHandler.getTagValue(stepnode, "discard_file"); 
+			directPath     = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "direct_path")); 
+			eraseFiles     = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "erase_files")); 
+			encoding       = XMLHandler.getTagValue(stepnode, "encoding");         
+			dbNameOverride = XMLHandler.getTagValue(stepnode, "dbname_override"); 
 			
-			characterSetName = XMLHandler.getTagValue(stepnode, "character_set");                     //$NON-NLS-1$
-			failOnWarning    = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "fail_on_warning")); //$NON-NLS-1$
-			failOnError      = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "fail_on_error"));   //$NON-NLS-1$
-      parallel         = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "parallel"));   //$NON-NLS-1$
-			altRecordTerm    = XMLHandler.getTagValue(stepnode, "alt_rec_term");                           //$NON-NLS-1$
+			characterSetName = XMLHandler.getTagValue(stepnode, "character_set");                     
+			failOnWarning    = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "fail_on_warning")); 
+			failOnError      = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "fail_on_error"));   
+      parallel         = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "parallel"));   
+			altRecordTerm    = XMLHandler.getTagValue(stepnode, "alt_rec_term");                           
 
-			int nrvalues       = XMLHandler.countNodes(stepnode, "mapping");      //$NON-NLS-1$
+			int nrvalues       = XMLHandler.countNodes(stepnode, "mapping");      
 			allocate(nrvalues);
 
 			for (int i=0;i<nrvalues;i++)
 			{
-				Node vnode = XMLHandler.getSubNodeByNr(stepnode, "mapping", i);    //$NON-NLS-1$
+				Node vnode = XMLHandler.getSubNodeByNr(stepnode, "mapping", i);    
 
-				fieldTable[i]      = XMLHandler.getTagValue(vnode, "stream_name"); //$NON-NLS-1$
-				fieldStream[i]     = XMLHandler.getTagValue(vnode, "field_name");  //$NON-NLS-1$
+				fieldTable[i]      = XMLHandler.getTagValue(vnode, "stream_name"); 
+				fieldStream[i]     = XMLHandler.getTagValue(vnode, "field_name");  
 				if (fieldStream[i]==null) fieldStream[i]=fieldTable[i];            // default: the same name!
-				String locDateMask = XMLHandler.getTagValue(vnode, "date_mask");   //$NON-NLS-1$
+				String locDateMask = XMLHandler.getTagValue(vnode, "date_mask");   
 				if(locDateMask==null) {
 					dateMask[i] = "";
 				} else
@@ -424,7 +424,7 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "OraBulkLoaderMeta.Exception.UnableToReadStepInfoFromXML"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "OraBulkLoaderMeta.Exception.UnableToReadStepInfoFromXML"), e); 
 		}
 	}
 
@@ -436,27 +436,27 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 		bindSize     = Integer.toString(DEFAULT_BIND_SIZE);                 // Use platform default         
 		readSize     = Integer.toString(DEFAULT_READ_SIZE);                 // Use platform default
 		maxErrors    = Integer.toString(DEFAULT_MAX_ERRORS);
-        schemaName   = "";                //$NON-NLS-1$
-		tableName    = BaseMessages.getString(PKG, "OraBulkLoaderMeta.DefaultTableName"); //$NON-NLS-1$
+        schemaName   = "";                
+		tableName    = BaseMessages.getString(PKG, "OraBulkLoaderMeta.DefaultTableName"); 
 		loadMethod   = METHOD_AUTO_END;
 		loadAction   = ACTION_APPEND;
-		sqlldr       = "sqlldr";                              //$NON-NLS-1$
-		controlFile  = "control${Internal.Step.CopyNr}.cfg";  //$NON-NLS-1$
-		dataFile     = "load${Internal.Step.CopyNr}.dat";     //$NON-NLS-1$
-		logFile      = "";                                    //$NON-NLS-1$
-		badFile      = "";                                    //$NON-NLS-1$
-		discardFile  = "";                                    //$NON-NLS-1$
-		encoding     = "";                                    //$NON-NLS-1$
+		sqlldr       = "sqlldr";                              
+		controlFile  = "control${Internal.Step.CopyNr}.cfg";  
+		dataFile     = "load${Internal.Step.CopyNr}.dat";     
+		logFile      = "";                                    
+		badFile      = "";                                    
+		discardFile  = "";                                    
+		encoding     = "";                                    
 		dbNameOverride = "";
 			
 		directPath   = false;
 		eraseFiles   = true;
 		
-		characterSetName   = ""; //$NON-NLS-1$
+		characterSetName   = ""; 
 		failOnWarning      = false;
 		failOnError        = false;
     parallel           = false;
-		altRecordTerm      = ""; //$NON-NLS-1$
+		altRecordTerm      = ""; 
 
 		int nrvalues = 0;
 		allocate(nrvalues);
@@ -466,40 +466,40 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 	{
         StringBuffer retval = new StringBuffer(300);
 
-		retval.append("    ").append(XMLHandler.addTagValue("connection",   databaseMeta==null?"":databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		retval.append("    ").append(XMLHandler.addTagValue("commit",       commitSize));    //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("bind_size",    bindSize));      //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("read_size",    readSize));      //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("errors",       maxErrors));     //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("    ").append(XMLHandler.addTagValue("schema",       schemaName));    //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("table",        tableName));     //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("load_method",  loadMethod));    //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("load_action",  loadAction));    //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("sqlldr",       sqlldr));        //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("control_file", controlFile));   //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("data_file",    dataFile));      //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("log_file",     logFile));       //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("bad_file",     badFile));       //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("discard_file", discardFile));   //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("connection",   databaseMeta==null?"":databaseMeta.getName()));   //$NON-NLS-3$
+		retval.append("    ").append(XMLHandler.addTagValue("commit",       commitSize));     
+		retval.append("    ").append(XMLHandler.addTagValue("bind_size",    bindSize));       
+		retval.append("    ").append(XMLHandler.addTagValue("read_size",    readSize));       
+		retval.append("    ").append(XMLHandler.addTagValue("errors",       maxErrors));      
+        retval.append("    ").append(XMLHandler.addTagValue("schema",       schemaName));     
+		retval.append("    ").append(XMLHandler.addTagValue("table",        tableName));      
+		retval.append("    ").append(XMLHandler.addTagValue("load_method",  loadMethod));     
+		retval.append("    ").append(XMLHandler.addTagValue("load_action",  loadAction));     
+		retval.append("    ").append(XMLHandler.addTagValue("sqlldr",       sqlldr));         
+		retval.append("    ").append(XMLHandler.addTagValue("control_file", controlFile));    
+		retval.append("    ").append(XMLHandler.addTagValue("data_file",    dataFile));       
+		retval.append("    ").append(XMLHandler.addTagValue("log_file",     logFile));        
+		retval.append("    ").append(XMLHandler.addTagValue("bad_file",     badFile));        
+		retval.append("    ").append(XMLHandler.addTagValue("discard_file", discardFile));    
 
-		retval.append("    ").append(XMLHandler.addTagValue("direct_path",  directPath));    //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("erase_files",  eraseFiles));    //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("encoding",     encoding));      //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("dbname_override", dbNameOverride));      //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("direct_path",  directPath));     
+		retval.append("    ").append(XMLHandler.addTagValue("erase_files",  eraseFiles));     
+		retval.append("    ").append(XMLHandler.addTagValue("encoding",     encoding));       
+		retval.append("    ").append(XMLHandler.addTagValue("dbname_override", dbNameOverride));       
 		
-		retval.append("    ").append(XMLHandler.addTagValue("character_set", characterSetName));   //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("fail_on_warning", failOnWarning));   //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("fail_on_error", failOnError));       //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("parallel", parallel));       //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("alt_rec_term", altRecordTerm));      //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("character_set", characterSetName));    
+		retval.append("    ").append(XMLHandler.addTagValue("fail_on_warning", failOnWarning));    
+		retval.append("    ").append(XMLHandler.addTagValue("fail_on_error", failOnError));        
+    retval.append("    ").append(XMLHandler.addTagValue("parallel", parallel));        
+		retval.append("    ").append(XMLHandler.addTagValue("alt_rec_term", altRecordTerm));       
 		
 		for (int i=0;i<fieldTable.length;i++)
 		{
-			retval.append("      <mapping>").append(Const.CR); //$NON-NLS-1$
-			retval.append("        ").append(XMLHandler.addTagValue("stream_name", fieldTable[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        ").append(XMLHandler.addTagValue("field_name",  fieldStream[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        ").append(XMLHandler.addTagValue("date_mask",   dateMask[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("      </mapping>").append(Const.CR); //$NON-NLS-1$
+			retval.append("      <mapping>").append(Const.CR); 
+			retval.append("        ").append(XMLHandler.addTagValue("stream_name", fieldTable[i]));  
+			retval.append("        ").append(XMLHandler.addTagValue("field_name",  fieldStream[i]));  
+			retval.append("        ").append(XMLHandler.addTagValue("date_mask",   dateMask[i]));  
+			retval.append("      </mapping>").append(Const.CR); 
 		}
 
 		return retval.toString();
@@ -510,48 +510,48 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);  //$NON-NLS-1$
+			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);  
 
-			commitSize     =      rep.getStepAttributeString(id_step, "commit");         //$NON-NLS-1$
-			bindSize       =      rep.getStepAttributeString(id_step, "bind_size");      //$NON-NLS-1$
-			readSize       =      rep.getStepAttributeString(id_step, "read_size");      //$NON-NLS-1$
-			maxErrors      =      rep.getStepAttributeString(id_step, "errors");         //$NON-NLS-1$
-            schemaName     =      rep.getStepAttributeString(id_step,  "schema");         //$NON-NLS-1$
-			tableName      =      rep.getStepAttributeString(id_step,  "table");          //$NON-NLS-1$
-			loadMethod     =      rep.getStepAttributeString(id_step,  "load_method");    //$NON-NLS-1$
-			loadAction     =      rep.getStepAttributeString(id_step,  "load_action");    //$NON-NLS-1$
-			sqlldr         =      rep.getStepAttributeString(id_step,  "sqlldr");         //$NON-NLS-1$			
-			controlFile    =      rep.getStepAttributeString(id_step,  "control_file");   //$NON-NLS-1$
-			dataFile       =      rep.getStepAttributeString(id_step,  "data_file");      //$NON-NLS-1$
-			logFile        =      rep.getStepAttributeString(id_step,  "log_file");       //$NON-NLS-1$
-			badFile        =      rep.getStepAttributeString(id_step,  "bad_file");       //$NON-NLS-1$
-			discardFile    =      rep.getStepAttributeString(id_step,  "discard_file");   //$NON-NLS-1$
+			commitSize     =      rep.getStepAttributeString(id_step, "commit");         
+			bindSize       =      rep.getStepAttributeString(id_step, "bind_size");      
+			readSize       =      rep.getStepAttributeString(id_step, "read_size");      
+			maxErrors      =      rep.getStepAttributeString(id_step, "errors");         
+            schemaName     =      rep.getStepAttributeString(id_step,  "schema");         
+			tableName      =      rep.getStepAttributeString(id_step,  "table");          
+			loadMethod     =      rep.getStepAttributeString(id_step,  "load_method");    
+			loadAction     =      rep.getStepAttributeString(id_step,  "load_action");    
+			sqlldr         =      rep.getStepAttributeString(id_step,  "sqlldr");         			
+			controlFile    =      rep.getStepAttributeString(id_step,  "control_file");   
+			dataFile       =      rep.getStepAttributeString(id_step,  "data_file");      
+			logFile        =      rep.getStepAttributeString(id_step,  "log_file");       
+			badFile        =      rep.getStepAttributeString(id_step,  "bad_file");       
+			discardFile    =      rep.getStepAttributeString(id_step,  "discard_file");   
 			
-			directPath     =      rep.getStepAttributeBoolean(id_step, "direct_path");    //$NON-NLS-1$
-			eraseFiles     =      rep.getStepAttributeBoolean(id_step, "erase_files");    //$NON-NLS-1$
-			encoding       =      rep.getStepAttributeString(id_step,  "encoding");       //$NON-NLS-1$
-			dbNameOverride =      rep.getStepAttributeString(id_step,  "dbname_override");//$NON-NLS-1$
+			directPath     =      rep.getStepAttributeBoolean(id_step, "direct_path");    
+			eraseFiles     =      rep.getStepAttributeBoolean(id_step, "erase_files");    
+			encoding       =      rep.getStepAttributeString(id_step,  "encoding");       
+			dbNameOverride =      rep.getStepAttributeString(id_step,  "dbname_override");
 			
-			characterSetName =    rep.getStepAttributeString(id_step,  "character_set"); //$NON-NLS-1$
-			failOnWarning    = 	  rep.getStepAttributeBoolean(id_step, "fail_on_warning");    //$NON-NLS-1$
-			failOnError      =    rep.getStepAttributeBoolean(id_step, "fail_on_error");      //$NON-NLS-1$
-      parallel         =    rep.getStepAttributeBoolean(id_step, "parallel");      //$NON-NLS-1$
-			altRecordTerm    =    rep.getStepAttributeString(id_step,  "alt_rec_term");       //$NON-NLS-1$
+			characterSetName =    rep.getStepAttributeString(id_step,  "character_set"); 
+			failOnWarning    = 	  rep.getStepAttributeBoolean(id_step, "fail_on_warning");    
+			failOnError      =    rep.getStepAttributeBoolean(id_step, "fail_on_error");      
+      parallel         =    rep.getStepAttributeBoolean(id_step, "parallel");      
+			altRecordTerm    =    rep.getStepAttributeString(id_step,  "alt_rec_term");       
 			
-			int nrvalues = rep.countNrStepAttributes(id_step, "stream_name");             //$NON-NLS-1$
+			int nrvalues = rep.countNrStepAttributes(id_step, "stream_name");             
 
 			allocate(nrvalues);
 
 			for (int i=0;i<nrvalues;i++)
 			{
-				fieldTable[i]  = rep.getStepAttributeString(id_step, i, "stream_name");   //$NON-NLS-1$
-				fieldStream[i] = rep.getStepAttributeString(id_step, i, "field_name");    //$NON-NLS-1$
-				dateMask[i]    = rep.getStepAttributeString(id_step, i, "date_mask");     //$NON-NLS-1$
+				fieldTable[i]  = rep.getStepAttributeString(id_step, i, "stream_name");   
+				fieldStream[i] = rep.getStepAttributeString(id_step, i, "field_name");    
+				dateMask[i]    = rep.getStepAttributeString(id_step, i, "date_mask");     
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "OraBulkLoaderMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "OraBulkLoaderMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository"), e); 
 		}
 	}
 
@@ -561,38 +561,38 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			rep.saveDatabaseMetaStepAttribute(id_transformation, id_step, "id_connection", databaseMeta);
-			rep.saveStepAttribute(id_transformation, id_step, "commit",          commitSize);    //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "bind_size",       bindSize);      //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "read_size",       readSize);      //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "errors",          maxErrors);     //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "schema",          schemaName);    //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "table",           tableName);     //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "commit",          commitSize);    
+			rep.saveStepAttribute(id_transformation, id_step, "bind_size",       bindSize);      
+			rep.saveStepAttribute(id_transformation, id_step, "read_size",       readSize);      
+			rep.saveStepAttribute(id_transformation, id_step, "errors",          maxErrors);     
+            rep.saveStepAttribute(id_transformation, id_step, "schema",          schemaName);    
+			rep.saveStepAttribute(id_transformation, id_step, "table",           tableName);     
 			
-			rep.saveStepAttribute(id_transformation, id_step, "load_method",     loadMethod);    //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "load_action",     loadAction);    //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "sqlldr",          sqlldr);        //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "control_file",    controlFile);   //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "data_file",       dataFile);      //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "log_file",        logFile);       //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "bad_file",        badFile);       //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "discard_file",    discardFile);   //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "load_method",     loadMethod);    
+			rep.saveStepAttribute(id_transformation, id_step, "load_action",     loadAction);    
+			rep.saveStepAttribute(id_transformation, id_step, "sqlldr",          sqlldr);        
+			rep.saveStepAttribute(id_transformation, id_step, "control_file",    controlFile);   
+			rep.saveStepAttribute(id_transformation, id_step, "data_file",       dataFile);      
+			rep.saveStepAttribute(id_transformation, id_step, "log_file",        logFile);       
+			rep.saveStepAttribute(id_transformation, id_step, "bad_file",        badFile);       
+			rep.saveStepAttribute(id_transformation, id_step, "discard_file",    discardFile);   
 			
-			rep.saveStepAttribute(id_transformation, id_step, "direct_path",     directPath);    //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "erase_files",     eraseFiles);    //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "encoding",        encoding);      //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "dbname_override", dbNameOverride);//$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "direct_path",     directPath);    
+			rep.saveStepAttribute(id_transformation, id_step, "erase_files",     eraseFiles);    
+			rep.saveStepAttribute(id_transformation, id_step, "encoding",        encoding);      
+			rep.saveStepAttribute(id_transformation, id_step, "dbname_override", dbNameOverride);
 			
-			rep.saveStepAttribute(id_transformation, id_step, "character_set", characterSetName);  //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "fail_on_warning",    failOnWarning);     //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "fail_on_error",      failOnError);       //$NON-NLS-1$			
-      rep.saveStepAttribute(id_transformation, id_step, "parallel", parallel);       //$NON-NLS-1$     
-			rep.saveStepAttribute(id_transformation, id_step, "alt_rec_term",       altRecordTerm);     //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "character_set", characterSetName);  
+			rep.saveStepAttribute(id_transformation, id_step, "fail_on_warning",    failOnWarning);     
+			rep.saveStepAttribute(id_transformation, id_step, "fail_on_error",      failOnError);       			
+      rep.saveStepAttribute(id_transformation, id_step, "parallel", parallel);            
+			rep.saveStepAttribute(id_transformation, id_step, "alt_rec_term",       altRecordTerm);     
 
 			for (int i=0;i<fieldTable.length;i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "stream_name", fieldTable[i]);  //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",  fieldStream[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "date_mask",   dateMask[i]);    //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "stream_name", fieldTable[i]);  
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",  fieldStream[i]); 
+				rep.saveStepAttribute(id_transformation, id_step, i, "date_mask",   dateMask[i]);    
 			}
 
 			// Also, save the step-database relationship!
@@ -600,7 +600,7 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "OraBulkLoaderMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "OraBulkLoaderMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); 
 		}
 	}
 	
@@ -612,7 +612,7 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		CheckResult cr;
-		String error_message = ""; //$NON-NLS-1$
+		String error_message = ""; 
 
 		if (databaseMeta!=null)
 		{
@@ -624,12 +624,12 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 
 				if (!Const.isEmpty(tableName))
 				{
-					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "OraBulkLoaderMeta.CheckResult.TableNameOK"), stepMeta); //$NON-NLS-1$
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "OraBulkLoaderMeta.CheckResult.TableNameOK"), stepMeta); 
 					remarks.add(cr);
 
 					boolean first=true;
 					boolean error_found=false;
-					error_message = ""; //$NON-NLS-1$
+					error_message = ""; 
 					
 					// Check fields in table
                     String schemaTable = databaseMeta.getQuotedSchemaTableCombination(
@@ -638,13 +638,13 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 					RowMetaInterface r = db.getTableFields(schemaTable);
 					if (r!=null)
 					{
-						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "OraBulkLoaderMeta.CheckResult.TableExists"), stepMeta); //$NON-NLS-1$
+						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "OraBulkLoaderMeta.CheckResult.TableExists"), stepMeta); 
 						remarks.add(cr);
 
 						// How about the fields to insert/dateMask in the table?
 						first=true;
 						error_found=false;
-						error_message = ""; //$NON-NLS-1$
+						error_message = ""; 
 						
 						for (int i=0;i<fieldTable.length;i++)
 						{
@@ -656,10 +656,10 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 								if (first)
 								{
 									first=false;
-									error_message+=BaseMessages.getString(PKG, "OraBulkLoaderMeta.CheckResult.MissingFieldsToLoadInTargetTable")+Const.CR; //$NON-NLS-1$
+									error_message+=BaseMessages.getString(PKG, "OraBulkLoaderMeta.CheckResult.MissingFieldsToLoadInTargetTable")+Const.CR; 
 								}
 								error_found=true;
-								error_message+="\t\t"+field+Const.CR;  //$NON-NLS-1$
+								error_message+="\t\t"+field+Const.CR;  
 							}
 						}
 						if (error_found)
@@ -668,13 +668,13 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 						}
 						else
 						{
-							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "OraBulkLoaderMeta.CheckResult.AllFieldsFoundInTargetTable"), stepMeta); //$NON-NLS-1$
+							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "OraBulkLoaderMeta.CheckResult.AllFieldsFoundInTargetTable"), stepMeta); 
 						}
 						remarks.add(cr);
 					}
 					else
 					{
-						error_message=BaseMessages.getString(PKG, "OraBulkLoaderMeta.CheckResult.CouldNotReadTableInfo"); //$NON-NLS-1$
+						error_message=BaseMessages.getString(PKG, "OraBulkLoaderMeta.CheckResult.CouldNotReadTableInfo"); 
 						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 						remarks.add(cr);
 					}
@@ -683,11 +683,11 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 				// Look up fields in the input stream <prev>
 				if (prev!=null && prev.size()>0)
 				{
-					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "OraBulkLoaderMeta.CheckResult.StepReceivingDatas",prev.size()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "OraBulkLoaderMeta.CheckResult.StepReceivingDatas",prev.size()+""), stepMeta);  
 					remarks.add(cr);
 
 					boolean first=true;
-					error_message = ""; //$NON-NLS-1$
+					error_message = ""; 
 					boolean error_found = false;
 
 					for (int i=0;i<fieldStream.length;i++)
@@ -698,10 +698,10 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 							if (first)
 							{
 								first=false;
-								error_message+=BaseMessages.getString(PKG, "OraBulkLoaderMeta.CheckResult.MissingFieldsInInput")+Const.CR; //$NON-NLS-1$
+								error_message+=BaseMessages.getString(PKG, "OraBulkLoaderMeta.CheckResult.MissingFieldsInInput")+Const.CR; 
 							}
 							error_found=true;
-							error_message+="\t\t"+fieldStream[i]+Const.CR;  //$NON-NLS-1$
+							error_message+="\t\t"+fieldStream[i]+Const.CR;  
 						}
 					}
 					if (error_found)
@@ -710,20 +710,20 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 					}
 					else
 					{
-						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "OraBulkLoaderMeta.CheckResult.AllFieldsFoundInInput"), stepMeta); //$NON-NLS-1$
+						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "OraBulkLoaderMeta.CheckResult.AllFieldsFoundInInput"), stepMeta); 
 					}
 					remarks.add(cr);
 				}
 				else
 				{
-					error_message=BaseMessages.getString(PKG, "OraBulkLoaderMeta.CheckResult.MissingFieldsInInput3")+Const.CR; //$NON-NLS-1$
+					error_message=BaseMessages.getString(PKG, "OraBulkLoaderMeta.CheckResult.MissingFieldsInInput3")+Const.CR; 
 					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 					remarks.add(cr);
 				}
 			}
 			catch(KettleException e)
 			{
-				error_message = BaseMessages.getString(PKG, "OraBulkLoaderMeta.CheckResult.DatabaseErrorOccurred")+e.getMessage(); //$NON-NLS-1$
+				error_message = BaseMessages.getString(PKG, "OraBulkLoaderMeta.CheckResult.DatabaseErrorOccurred")+e.getMessage(); 
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
@@ -734,7 +734,7 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		else
 		{
-			error_message = BaseMessages.getString(PKG, "OraBulkLoaderMeta.CheckResult.InvalidConnection"); //$NON-NLS-1$
+			error_message = BaseMessages.getString(PKG, "OraBulkLoaderMeta.CheckResult.InvalidConnection"); 
 			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 			remarks.add(cr);
 		}
@@ -742,12 +742,12 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "OraBulkLoaderMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "OraBulkLoaderMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepMeta); 
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "OraBulkLoaderMeta.CheckResult.NoInputError"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "OraBulkLoaderMeta.CheckResult.NoInputError"), stepMeta); 
 			remarks.add(cr);
 		}
 	}
@@ -801,22 +801,22 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 					}
 					catch(KettleException e)
 					{
-						retval.setError(BaseMessages.getString(PKG, "OraBulkLoaderMeta.GetSQL.ErrorOccurred")+e.getMessage()); //$NON-NLS-1$
+						retval.setError(BaseMessages.getString(PKG, "OraBulkLoaderMeta.GetSQL.ErrorOccurred")+e.getMessage()); 
 					}
 				}
 				else
 				{
-					retval.setError(BaseMessages.getString(PKG, "OraBulkLoaderMeta.GetSQL.NoTableDefinedOnConnection")); //$NON-NLS-1$
+					retval.setError(BaseMessages.getString(PKG, "OraBulkLoaderMeta.GetSQL.NoTableDefinedOnConnection")); 
 				}
 			}
 			else
 			{
-				retval.setError(BaseMessages.getString(PKG, "OraBulkLoaderMeta.GetSQL.NotReceivingAnyFields")); //$NON-NLS-1$
+				retval.setError(BaseMessages.getString(PKG, "OraBulkLoaderMeta.GetSQL.NotReceivingAnyFields")); 
 			}
 		}
 		else
 		{
-			retval.setError(BaseMessages.getString(PKG, "OraBulkLoaderMeta.GetSQL.NoConnectionDefined")); //$NON-NLS-1$
+			retval.setError(BaseMessages.getString(PKG, "OraBulkLoaderMeta.GetSQL.NoConnectionDefined")); 
 		}
 
 		return retval;
@@ -833,7 +833,7 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
                 ValueMetaInterface v = prev.searchValueMeta(fieldStream[i]);
 
                 DatabaseImpact ii = new DatabaseImpact(DatabaseImpact.TYPE_IMPACT_READ_WRITE, transMeta.getName(), stepMeta.getName(), databaseMeta
-                        .getDatabaseName(), transMeta.environmentSubstitute(tableName), fieldTable[i], fieldStream[i], v!=null?v.getOrigin():"?", "", "Type = " + v.toStringMeta()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                        .getDatabaseName(), transMeta.environmentSubstitute(tableName), fieldTable[i], fieldStream[i], v!=null?v.getOrigin():"?", "", "Type = " + v.toStringMeta());   //$NON-NLS-3$
                 impact.add(ii);
             }
         }

@@ -113,14 +113,14 @@ public class TableExistsDialog extends BaseStepDialog implements StepDialogInter
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "TableExistsDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "TableExistsDialog.Shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin=Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "TableExistsDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "TableExistsDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -183,7 +183,7 @@ public class TableExistsDialog extends BaseStepDialog implements StepDialogInter
 		wSchemaname.setLayoutData(fdSchemaname);
 
 		wlTableName=new Label(shell, SWT.RIGHT);
-		wlTableName.setText(BaseMessages.getString(PKG, "TableExistsDialog.TableName.Label")); //$NON-NLS-1$
+		wlTableName.setText(BaseMessages.getString(PKG, "TableExistsDialog.TableName.Label")); 
  		props.setLook(wlTableName);
 		fdlTableName=new FormData();
 		fdlTableName.left = new FormAttachment(0, 0);
@@ -219,7 +219,7 @@ public class TableExistsDialog extends BaseStepDialog implements StepDialogInter
 		
 		// Result fieldname ...
 		wlResult=new Label(shell, SWT.RIGHT);
-		wlResult.setText(BaseMessages.getString(PKG, "TableExistsDialog.ResultField.Label")); //$NON-NLS-1$
+		wlResult.setText(BaseMessages.getString(PKG, "TableExistsDialog.ResultField.Label")); 
  		props.setLook(wlResult);
 		fdlResult=new FormData();
 		fdlResult.left = new FormAttachment(0, 0);
@@ -240,9 +240,9 @@ public class TableExistsDialog extends BaseStepDialog implements StepDialogInter
 
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wResult);
 
@@ -280,7 +280,7 @@ public class TableExistsDialog extends BaseStepDialog implements StepDialogInter
    */
   public void getData() {
     if (log.isDebug())
-      logDebug(BaseMessages.getString(PKG, "TableExistsDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+      logDebug(BaseMessages.getString(PKG, "TableExistsDialog.Log.GettingKeyInfo")); 
 
     if (input.getDatabase() != null)
       wConnection.setText(input.getDatabase().getName());
@@ -319,8 +319,8 @@ public class TableExistsDialog extends BaseStepDialog implements StepDialogInter
 		if (input.getDatabase()==null)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(BaseMessages.getString(PKG, "TableExistsDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
-			mb.setText(BaseMessages.getString(PKG, "TableExistsDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "TableExistsDialog.InvalidConnection.DialogMessage")); 
+			mb.setText(BaseMessages.getString(PKG, "TableExistsDialog.InvalidConnection.DialogTitle")); 
 			mb.open();
 		}
 		
@@ -343,7 +343,7 @@ public class TableExistsDialog extends BaseStepDialog implements StepDialogInter
 				}
 
 		 }catch(KettleException ke){
-				new ErrorDialog(shell, BaseMessages.getString(PKG, "TableExistsDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "TableExistsDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "TableExistsDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "TableExistsDialog.FailedToGetFields.DialogMessage"), ke);  
 			}
 
 	 }

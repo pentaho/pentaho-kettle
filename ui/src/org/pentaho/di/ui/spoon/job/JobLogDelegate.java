@@ -38,7 +38,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryCopy;
@@ -60,7 +60,7 @@ import org.pentaho.ui.xul.impl.XulEventHandler;
 public class JobLogDelegate extends SpoonDelegate implements XulEventHandler {
   private static Class<?> PKG = JobGraph.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-  private static final String XUL_FILE_TRANS_LOG_TOOLBAR = "ui/job-log-toolbar.xul"; //$NON-NLS-1$
+  private static final String XUL_FILE_TRANS_LOG_TOOLBAR = "ui/job-log-toolbar.xul"; 
 
   private JobGraph jobGraph;
 
@@ -104,7 +104,7 @@ public class JobLogDelegate extends SpoonDelegate implements XulEventHandler {
     //
     jobLogTab = new CTabItem(jobGraph.extraViewTabFolder, SWT.NONE);
     jobLogTab.setImage(GUIResource.getInstance().getImageShowLog());
-    jobLogTab.setText(BaseMessages.getString(PKG, "JobGraph.LogTab.Name")); //$NON-NLS-1$
+    jobLogTab.setText(BaseMessages.getString(PKG, "JobGraph.LogTab.Name")); 
 
     jobLogComposite = new Composite(jobGraph.extraViewTabFolder, SWT.NONE);
     jobLogComposite.setLayout(new FormLayout());
@@ -140,7 +140,7 @@ public class JobLogDelegate extends SpoonDelegate implements XulEventHandler {
     jobGraph.addDisposeListener(new DisposeListener() {
       public void widgetDisposed(DisposeEvent event) {
         if (jobGraph.job != null) {
-          CentralLogStore.discardLines(jobGraph.job.getLogChannelId(), true);
+          KettleLogStore.discardLines(jobGraph.job.getLogChannelId(), true);
         }
       }
     });
@@ -158,19 +158,19 @@ public class JobLogDelegate extends SpoonDelegate implements XulEventHandler {
       ResourceBundle bundle = new XulSpoonResourceBundle(Spoon.class);
       XulDomContainer xulDomContainer = loader.loadXul(XUL_FILE_TRANS_LOG_TOOLBAR, bundle);
       xulDomContainer.addEventHandler(this);
-      toolbar = (XulToolbar) xulDomContainer.getDocumentRoot().getElementById("nav-toolbar"); //$NON-NLS-1$
+      toolbar = (XulToolbar) xulDomContainer.getDocumentRoot().getElementById("nav-toolbar"); 
 
       ToolBar swtToolbar = (ToolBar) toolbar.getManagedObject();
       swtToolbar.layout(true, true);
     } catch (Throwable t) {
       log.logError(Const.getStackTracker(t));
-      new ErrorDialog(jobLogComposite.getShell(), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_LOG_TOOLBAR), new Exception(t)); //$NON-NLS-1$ //$NON-NLS-2$
+      new ErrorDialog(jobLogComposite.getShell(), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_LOG_TOOLBAR), new Exception(t));  
     }
   }
 
   public void clearLog() {
     if (jobLogText != null && !jobLogText.isDisposed())
-      jobLogText.setText(""); //$NON-NLS-1$
+      jobLogText.setText(""); 
   }
 
   public void showLogSettings() {
@@ -191,8 +191,8 @@ public class JobLogDelegate extends SpoonDelegate implements XulEventHandler {
       if (all.substring(i, i + crlen).equalsIgnoreCase(Const.CR)) {
         line = all.substring(startpos, i);
         lineUpper = line.toUpperCase();
-        if (lineUpper.indexOf(BaseMessages.getString(PKG, "JobLog.System.ERROR")) >= 0 || //$NON-NLS-1$
-            lineUpper.indexOf(BaseMessages.getString(PKG, "JobLog.System.EXCEPTION")) >= 0 //$NON-NLS-1$
+        if (lineUpper.indexOf(BaseMessages.getString(PKG, "JobLog.System.ERROR")) >= 0 || 
+            lineUpper.indexOf(BaseMessages.getString(PKG, "JobLog.System.EXCEPTION")) >= 0 
         ) {
           err.add(line);
         }
@@ -204,8 +204,8 @@ public class JobLogDelegate extends SpoonDelegate implements XulEventHandler {
     }
     line = all.substring(startpos);
     lineUpper = line.toUpperCase();
-    if (lineUpper.indexOf(BaseMessages.getString(PKG, "JobLog.System.ERROR")) >= 0 || //$NON-NLS-1$
-        lineUpper.indexOf(BaseMessages.getString(PKG, "JobLog.System.EXCEPTION")) >= 0 //$NON-NLS-1$
+    if (lineUpper.indexOf(BaseMessages.getString(PKG, "JobLog.System.ERROR")) >= 0 || 
+        lineUpper.indexOf(BaseMessages.getString(PKG, "JobLog.System.EXCEPTION")) >= 0 
     ) {
       err.add(line);
     }
@@ -215,7 +215,7 @@ public class JobLogDelegate extends SpoonDelegate implements XulEventHandler {
       for (i = 0; i < err_lines.length; i++)
         err_lines[i] = err.get(i);
 
-      EnterSelectionDialog esd = new EnterSelectionDialog(jobGraph.getShell(), err_lines, BaseMessages.getString(PKG, "JobLog.Dialog.ErrorLines.Title"), BaseMessages.getString(PKG, "JobLog.Dialog.ErrorLines.Message")); //$NON-NLS-1$ //$NON-NLS-2$
+      EnterSelectionDialog esd = new EnterSelectionDialog(jobGraph.getShell(), err_lines, BaseMessages.getString(PKG, "JobLog.Dialog.ErrorLines.Title"), BaseMessages.getString(PKG, "JobLog.Dialog.ErrorLines.Message"));  
       line = esd.open();
       if (line != null) {
         JobMeta jobMeta = jobGraph.getManagedObject();
@@ -238,7 +238,7 @@ public class JobLogDelegate extends SpoonDelegate implements XulEventHandler {
   }
 
   public void pauseLog() {
-    XulToolbarbutton pauseContinueButton = (XulToolbarbutton) toolbar.getElementById("log-pause"); //$NON-NLS-1$
+    XulToolbarbutton pauseContinueButton = (XulToolbarbutton) toolbar.getElementById("log-pause"); 
     ToolItem swtToolItem = (ToolItem) pauseContinueButton.getManagedObject();
 
     if (logBrowser.isPaused()) {
@@ -266,7 +266,7 @@ public class JobLogDelegate extends SpoonDelegate implements XulEventHandler {
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getName()
    */
   public String getName() {
-    return "joblog"; //$NON-NLS-1$
+    return "joblog"; 
   }
 
   /* (non-Javadoc)

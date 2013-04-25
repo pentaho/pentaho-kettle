@@ -666,11 +666,11 @@ public class LDAPOutputMeta extends BaseStepMeta implements StepMetaInterface
 		
 		for (int i=0;i<updateLookup.length;i++)
 		{
-			retval.append("      <field>").append(Const.CR); //$NON-NLS-1$
-			retval.append("        ").append(XMLHandler.addTagValue("name", updateLookup[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        ").append(XMLHandler.addTagValue("field", updateStream[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("      <field>").append(Const.CR); 
+			retval.append("        ").append(XMLHandler.addTagValue("name", updateLookup[i]));  
+			retval.append("        ").append(XMLHandler.addTagValue("field", updateStream[i]));  
 			retval.append("        ").append(XMLHandler.addTagValue("update", update[i].booleanValue()));
-			retval.append("      </field>").append(Const.CR); //$NON-NLS-1$
+			retval.append("      </field>").append(Const.CR); 
 		}
 		
 		retval.append("      </fields>"+Const.CR);
@@ -717,10 +717,10 @@ public class LDAPOutputMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i);
 				
-				updateLookup[i]    = XMLHandler.getTagValue(fnode, "name"); //$NON-NLS-1$
-				updateStream[i]    = XMLHandler.getTagValue(fnode, "field"); //$NON-NLS-1$
+				updateLookup[i]    = XMLHandler.getTagValue(fnode, "name"); 
+				updateStream[i]    = XMLHandler.getTagValue(fnode, "field"); 
 				if (updateStream[i]==null) updateStream[i]=updateLookup[i]; // default: the same name!
-				String updateValue = XMLHandler.getTagValue(fnode, "update"); //$NON-NLS-1$
+				String updateValue = XMLHandler.getTagValue(fnode, "update"); 
 				if(updateValue==null) {
 					//default TRUE
 					update[i] = Boolean.TRUE;
@@ -766,9 +766,9 @@ public class LDAPOutputMeta extends BaseStepMeta implements StepMetaInterface
 		allocate(nrFields);	
 		
 		for (int i=0;i<nrFields;i++){
-			updateLookup[i]="name"+(i+1); //$NON-NLS-1$
-			updateStream[i]="field"+(i+1); //$NON-NLS-1$
-			update[i]=Boolean.TRUE; //$NON-NLS-1$
+			updateLookup[i]="name"+(i+1); 
+			updateStream[i]="field"+(i+1); 
+			update[i]=Boolean.TRUE; 
 		}
         operationType=OPERATION_TYPE_INSERT;
         referralType = REFERRAL_TYPE_FOLLOW;
@@ -809,8 +809,8 @@ public class LDAPOutputMeta extends BaseStepMeta implements StepMetaInterface
 			
 			for (int i=0;i<nrFields;i++)
 			{
-				updateLookup[i]  = rep.getStepAttributeString(id_step, i, "field_name"); //$NON-NLS-1$
-				updateStream[i]  = rep.getStepAttributeString(id_step, i, "field_attribut"); //$NON-NLS-1$
+				updateLookup[i]  = rep.getStepAttributeString(id_step, i, "field_name"); 
+				updateStream[i]  = rep.getStepAttributeString(id_step, i, "field_attribut"); 
 				update[i]        = Boolean.valueOf(rep.getStepAttributeBoolean(id_step, i, "value_update",true)); 
 			}
 			protocol              =  rep.getStepAttributeString (id_step, "protocol");
@@ -852,8 +852,8 @@ public class LDAPOutputMeta extends BaseStepMeta implements StepMetaInterface
 			
 			for (int i=0;i<updateLookup.length;i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",    updateLookup[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_attribut",  updateStream[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",    updateLookup[i]); 
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_attribut",  updateStream[i]); 
 				rep.saveStepAttribute(id_transformation, id_step, i, "value_update",  update[i].booleanValue());
 
 			}

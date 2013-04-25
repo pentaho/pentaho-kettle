@@ -744,7 +744,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 	    ValidatorContext ctx = new ValidatorContext();
 	    putVariableSpace(ctx, getVariables());
 	    putValidators(ctx, notNullValidator(), fileDoesNotExistValidator());
-	    andValidator().validate(this, "filename", remarks, ctx); //$NON-NLS-1$
+	    andValidator().validate(this, "filename", remarks, ctx); 
 	  }
 
 }

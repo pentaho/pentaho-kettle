@@ -340,7 +340,7 @@ public class JobDialog extends Dialog
 		// START OF JOB TAB///
 		///
 		wJobTab=new CTabItem(wTabFolder, SWT.NONE);
-		wJobTab.setText(BaseMessages.getString(PKG, "JobDialog.JobTab.Label")); //$NON-NLS-1$
+		wJobTab.setText(BaseMessages.getString(PKG, "JobDialog.JobTab.Label")); 
         
 		Composite wJobComp = new Composite(wTabFolder, SWT.NONE);
 		props.setLook(wJobComp);
@@ -392,7 +392,7 @@ public class JobDialog extends Dialog
 
 		// Job description:
 		Label wlJobdescription = new Label(wJobComp, SWT.RIGHT);
-		wlJobdescription.setText(BaseMessages.getString(PKG, "JobDialog.Jobdescription.Label")); //$NON-NLS-1$
+		wlJobdescription.setText(BaseMessages.getString(PKG, "JobDialog.Jobdescription.Label")); 
 		props.setLook(wlJobdescription);
 		FormData fdlJobdescription = new FormData();
 		fdlJobdescription.left = new FormAttachment(0, 0);
@@ -454,7 +454,7 @@ public class JobDialog extends Dialog
 
 		// Job version:
 		Label wlJobversion = new Label(wJobComp, SWT.RIGHT);
-		wlJobversion.setText(BaseMessages.getString(PKG, "JobDialog.Jobversion.Label")); //$NON-NLS-1$
+		wlJobversion.setText(BaseMessages.getString(PKG, "JobDialog.Jobversion.Label")); 
 		props.setLook(wlJobversion);
 		FormData fdlJobversion = new FormData();
 		fdlJobversion.left = new FormAttachment(0, 0);
@@ -529,7 +529,7 @@ public class JobDialog extends Dialog
 
 		// Create User:
 		Label wlCreateUser = new Label(wJobComp, SWT.RIGHT);
-		wlCreateUser.setText(BaseMessages.getString(PKG, "JobDialog.CreateUser.Label")); //$NON-NLS-1$
+		wlCreateUser.setText(BaseMessages.getString(PKG, "JobDialog.CreateUser.Label")); 
 		props.setLook(wlCreateUser);
 		FormData fdlCreateUser = new FormData();
 		fdlCreateUser.left = new FormAttachment(0, 0);
@@ -548,7 +548,7 @@ public class JobDialog extends Dialog
 
 		// Created Date:
 		Label wlCreateDate = new Label(wJobComp, SWT.RIGHT);
-		wlCreateDate.setText(BaseMessages.getString(PKG, "JobDialog.CreateDate.Label")); //$NON-NLS-1$
+		wlCreateDate.setText(BaseMessages.getString(PKG, "JobDialog.CreateDate.Label")); 
 		props.setLook(wlCreateDate);
 		FormData fdlCreateDate = new FormData();
 		fdlCreateDate.left = new FormAttachment(0, 0);
@@ -568,7 +568,7 @@ public class JobDialog extends Dialog
 
 		// Modified User:
 		Label wlModUser = new Label(wJobComp, SWT.RIGHT);
-		wlModUser.setText(BaseMessages.getString(PKG, "JobDialog.LastModifiedUser.Label")); //$NON-NLS-1$
+		wlModUser.setText(BaseMessages.getString(PKG, "JobDialog.LastModifiedUser.Label")); 
 		props.setLook(wlModUser);
 		FormData fdlModUser = new FormData();
 		fdlModUser.left = new FormAttachment(0, 0);
@@ -587,7 +587,7 @@ public class JobDialog extends Dialog
 
 		// Modified Date:
 		Label wlModDate = new Label(wJobComp, SWT.RIGHT);
-		wlModDate.setText(BaseMessages.getString(PKG, "JobDialog.LastModifiedDate.Label")); //$NON-NLS-1$
+		wlModDate.setText(BaseMessages.getString(PKG, "JobDialog.LastModifiedDate.Label")); 
 		props.setLook(wlModDate);
 		FormData fdlModDate = new FormData();
 		fdlModDate.left = new FormAttachment(0, 0);
@@ -625,7 +625,7 @@ public class JobDialog extends Dialog
         // START OF PARAM TAB
         ///
         wParamTab=new CTabItem(wTabFolder, SWT.NONE);
-        wParamTab.setText(BaseMessages.getString(PKG, "JobDialog.ParamTab.Label")); //$NON-NLS-1$
+        wParamTab.setText(BaseMessages.getString(PKG, "JobDialog.ParamTab.Label")); 
 
         FormLayout paramLayout = new FormLayout ();
         paramLayout.marginWidth  = Const.MARGIN;
@@ -636,7 +636,7 @@ public class JobDialog extends Dialog
         wParamComp.setLayout(paramLayout);
 
         Label wlFields = new Label(wParamComp, SWT.RIGHT);
-        wlFields.setText(BaseMessages.getString(PKG, "JobDialog.Parameters.Label")); //$NON-NLS-1$
+        wlFields.setText(BaseMessages.getString(PKG, "JobDialog.Parameters.Label")); 
         props.setLook(wlFields);
         FormData fdlFields = new FormData();
         fdlFields.left = new FormAttachment(0, 0);
@@ -647,9 +647,9 @@ public class JobDialog extends Dialog
         final int FieldsRows=jobMeta.listParameters().length;
         
         ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-        colinf[0]=new ColumnInfo(BaseMessages.getString(PKG, "JobDialog.ColumnInfo.Parameter.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-        colinf[1]=new ColumnInfo(BaseMessages.getString(PKG, "JobDialog.ColumnInfo.Default.Label"),     ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$        
-        colinf[2]=new ColumnInfo(BaseMessages.getString(PKG, "JobDialog.ColumnInfo.Description.Label"),     ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+        colinf[0]=new ColumnInfo(BaseMessages.getString(PKG, "JobDialog.ColumnInfo.Parameter.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false); 
+        colinf[1]=new ColumnInfo(BaseMessages.getString(PKG, "JobDialog.ColumnInfo.Default.Label"),     ColumnInfo.COLUMN_TYPE_TEXT,   false);         
+        colinf[2]=new ColumnInfo(BaseMessages.getString(PKG, "JobDialog.ColumnInfo.Description.Label"),     ColumnInfo.COLUMN_TYPE_TEXT,   false); 
         
         wParamFields=new TableView(jobMeta, wParamComp, 
                               SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -687,7 +687,7 @@ public class JobDialog extends Dialog
         // START OF LOG TAB///
         ///
         wLogTab=new CTabItem(wTabFolder, SWT.NONE);
-        wLogTab.setText(BaseMessages.getString(PKG, "JobDialog.LogTab.Label")); //$NON-NLS-1$
+        wLogTab.setText(BaseMessages.getString(PKG, "JobDialog.LogTab.Label")); 
 
         FormLayout LogLayout = new FormLayout ();
         LogLayout.marginWidth  = Const.MARGIN;
@@ -809,7 +809,7 @@ public class JobDialog extends Dialog
 		// Log table connection...
 		//
         Label wlLogconnection = new Label(wLogOptionsComposite, SWT.RIGHT);
-        wlLogconnection.setText(BaseMessages.getString(PKG, "JobDialog.LogConnection.Label")); //$NON-NLS-1$
+        wlLogconnection.setText(BaseMessages.getString(PKG, "JobDialog.LogConnection.Label")); 
         props.setLook(wlLogconnection);
         FormData fdlLogconnection = new FormData();
         fdlLogconnection.left = new FormAttachment(0, 0);
@@ -818,7 +818,7 @@ public class JobDialog extends Dialog
         wlLogconnection.setLayoutData(fdlLogconnection);
 
         wbLogconnection=new Button(wLogOptionsComposite, SWT.PUSH);
-        wbLogconnection.setText(BaseMessages.getString(PKG, "JobDialog.LogconnectionButton.Label")); //$NON-NLS-1$
+        wbLogconnection.setText(BaseMessages.getString(PKG, "JobDialog.LogconnectionButton.Label")); 
         wbLogconnection.addSelectionListener(new SelectionAdapter() 
         {
             public void widgetSelected(SelectionEvent e) 
@@ -856,7 +856,7 @@ public class JobDialog extends Dialog
         // Log schema ...
         //
         Label wlLogSchema = new Label(wLogOptionsComposite, SWT.RIGHT);
-        wlLogSchema.setText(BaseMessages.getString(PKG, "JobDialog.LogSchema.Label")); //$NON-NLS-1$
+        wlLogSchema.setText(BaseMessages.getString(PKG, "JobDialog.LogSchema.Label")); 
         props.setLook(wlLogSchema);
         FormData fdlLogSchema = new FormData();
         fdlLogSchema.left = new FormAttachment(0, 0);
@@ -877,7 +877,7 @@ public class JobDialog extends Dialog
         // Log table...
         //
         Label wlLogtable = new Label(wLogOptionsComposite, SWT.RIGHT);
-        wlLogtable.setText(BaseMessages.getString(PKG, "JobDialog.Logtable.Label")); //$NON-NLS-1$
+        wlLogtable.setText(BaseMessages.getString(PKG, "JobDialog.Logtable.Label")); 
         props.setLook(wlLogtable);
         FormData fdlLogtable = new FormData();
         fdlLogtable.left = new FormAttachment(0, 0);
@@ -907,7 +907,7 @@ public class JobDialog extends Dialog
         // Log interval...
         //
         Label wlLogInterval = new Label(wLogOptionsComposite, SWT.RIGHT);
-        wlLogInterval.setText(BaseMessages.getString(PKG, "JobDialog.LogInterval.Label")); //$NON-NLS-1$
+        wlLogInterval.setText(BaseMessages.getString(PKG, "JobDialog.LogInterval.Label")); 
         props.setLook(wlLogInterval);
         FormData fdlLogInterval = new FormData();
         fdlLogInterval.left = new FormAttachment(0, 0);
@@ -927,8 +927,8 @@ public class JobDialog extends Dialog
         // The log timeout in days
         //
         Label wlLogTimeout = new Label(wLogOptionsComposite, SWT.RIGHT);
-        wlLogTimeout.setText(BaseMessages.getString(PKG, "JobDialog.LogTimeout.Label")); //$NON-NLS-1$
-        wlLogTimeout.setToolTipText(BaseMessages.getString(PKG, "JobDialog.LogTimeout.Tooltip")); //$NON-NLS-1$
+        wlLogTimeout.setText(BaseMessages.getString(PKG, "JobDialog.LogTimeout.Label")); 
+        wlLogTimeout.setToolTipText(BaseMessages.getString(PKG, "JobDialog.LogTimeout.Tooltip")); 
         props.setLook(wlLogTimeout);
         FormData fdlLogTimeout = new FormData();
         fdlLogTimeout.left = new FormAttachment(0, 0);
@@ -936,7 +936,7 @@ public class JobDialog extends Dialog
         fdlLogTimeout.top  = new FormAttachment(wLogInterval, margin);
         wlLogTimeout.setLayoutData(fdlLogTimeout);
         wLogTimeout=new TextVar(jobMeta, wLogOptionsComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        wLogTimeout.setToolTipText(BaseMessages.getString(PKG, "JobDialog.LogTimeout.Tooltip")); //$NON-NLS-1$
+        wLogTimeout.setToolTipText(BaseMessages.getString(PKG, "JobDialog.LogTimeout.Tooltip")); 
         props.setLook(wLogTimeout);
         wLogTimeout.addModifyListener(lsMod);
         FormData fdLogTimeout = new FormData();
@@ -949,8 +949,8 @@ public class JobDialog extends Dialog
         // The log size limit
         //
         Label wlLogSizeLimit = new Label(wLogOptionsComposite, SWT.RIGHT);
-        wlLogSizeLimit.setText(BaseMessages.getString(PKG, "JobDialog.LogSizeLimit.Label")); //$NON-NLS-1$
-        wlLogSizeLimit.setToolTipText(BaseMessages.getString(PKG, "JobDialog.LogSizeLimit.Tooltip")); //$NON-NLS-1$
+        wlLogSizeLimit.setText(BaseMessages.getString(PKG, "JobDialog.LogSizeLimit.Label")); 
+        wlLogSizeLimit.setToolTipText(BaseMessages.getString(PKG, "JobDialog.LogSizeLimit.Tooltip")); 
         props.setLook(wlLogSizeLimit);
         FormData fdlLogSizeLimit = new FormData();
         fdlLogSizeLimit.left = new FormAttachment(0, 0);
@@ -958,7 +958,7 @@ public class JobDialog extends Dialog
         fdlLogSizeLimit.top  = new FormAttachment(wLogTimeout, margin);
         wlLogSizeLimit.setLayoutData(fdlLogSizeLimit);
         wLogSizeLimit=new TextVar(jobMeta, wLogOptionsComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        wLogSizeLimit.setToolTipText(BaseMessages.getString(PKG, "JobDialog.LogSizeLimit.Tooltip")); //$NON-NLS-1$
+        wLogSizeLimit.setToolTipText(BaseMessages.getString(PKG, "JobDialog.LogSizeLimit.Tooltip")); 
         props.setLook(wLogSizeLimit);
         wLogSizeLimit.addModifyListener(lsMod);
         FormData fdLogSizeLimit = new FormData();
@@ -971,7 +971,7 @@ public class JobDialog extends Dialog
         // Add the fields grid...
         //
 		Label wlFields = new Label(wLogOptionsComposite, SWT.NONE);
-		wlFields.setText(BaseMessages.getString(PKG, "JobDialog.TransLogTable.Fields.Label")); //$NON-NLS-1$
+		wlFields.setText(BaseMessages.getString(PKG, "JobDialog.TransLogTable.Fields.Label")); 
  		props.setLook(wlFields);
 		FormData fdlFields = new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -982,8 +982,8 @@ public class JobDialog extends Dialog
 		final int nrRows=fields.size();
 		
 		ColumnInfo[] colinf=new ColumnInfo[] {
-			new ColumnInfo(BaseMessages.getString(PKG, "JobDialog.TransLogTable.Fields.FieldName"), ColumnInfo.COLUMN_TYPE_TEXT, false ), //$NON-NLS-1$
-			new ColumnInfo(BaseMessages.getString(PKG, "JobDialog.TransLogTable.Fields.Description"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+			new ColumnInfo(BaseMessages.getString(PKG, "JobDialog.TransLogTable.Fields.FieldName"), ColumnInfo.COLUMN_TYPE_TEXT, false ), 
+			new ColumnInfo(BaseMessages.getString(PKG, "JobDialog.TransLogTable.Fields.Description"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
 		};
 		
 		wOptionFields=new TableView(jobMeta, wLogOptionsComposite, 
@@ -1051,8 +1051,8 @@ public class JobDialog extends Dialog
         // The log timeout in days
         //
         Label wlLogTimeout = new Label(wLogOptionsComposite, SWT.RIGHT);
-        wlLogTimeout.setText(BaseMessages.getString(PKG, "JobDialog.LogTimeout.Label")); //$NON-NLS-1$
-        wlLogTimeout.setToolTipText(BaseMessages.getString(PKG, "JobDialog.LogTimeout.Tooltip")); //$NON-NLS-1$
+        wlLogTimeout.setText(BaseMessages.getString(PKG, "JobDialog.LogTimeout.Label")); 
+        wlLogTimeout.setToolTipText(BaseMessages.getString(PKG, "JobDialog.LogTimeout.Tooltip")); 
         props.setLook(wlLogTimeout);
         FormData fdlLogTimeout = new FormData();
         fdlLogTimeout.left = new FormAttachment(0, 0);
@@ -1060,7 +1060,7 @@ public class JobDialog extends Dialog
         fdlLogTimeout.top  = new FormAttachment(wLogTable, margin);
         wlLogTimeout.setLayoutData(fdlLogTimeout);
         wLogTimeout=new TextVar(jobMeta, wLogOptionsComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        wLogTimeout.setToolTipText(BaseMessages.getString(PKG, "JobDialog.LogTimeout.Tooltip")); //$NON-NLS-1$
+        wLogTimeout.setToolTipText(BaseMessages.getString(PKG, "JobDialog.LogTimeout.Tooltip")); 
         props.setLook(wLogTimeout);
         wLogTimeout.addModifyListener(lsMod);
         FormData fdLogTimeout = new FormData();
@@ -1073,7 +1073,7 @@ public class JobDialog extends Dialog
         // Add the fields grid...
         //
 		Label wlFields = new Label(wLogOptionsComposite, SWT.NONE);
-		wlFields.setText(BaseMessages.getString(PKG, "JobDialog.TransLogTable.Fields.Label")); //$NON-NLS-1$
+		wlFields.setText(BaseMessages.getString(PKG, "JobDialog.TransLogTable.Fields.Label")); 
  		props.setLook(wlFields);
 		FormData fdlFields = new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -1084,8 +1084,8 @@ public class JobDialog extends Dialog
 		final int nrRows=fields.size();
 		
 		ColumnInfo[] colinf=new ColumnInfo[] {
-			new ColumnInfo(BaseMessages.getString(PKG, "JobDialog.TransLogTable.Fields.FieldName"), ColumnInfo.COLUMN_TYPE_TEXT, false ), //$NON-NLS-1$
-			new ColumnInfo(BaseMessages.getString(PKG, "JobDialog.TransLogTable.Fields.Description"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+			new ColumnInfo(BaseMessages.getString(PKG, "JobDialog.TransLogTable.Fields.FieldName"), ColumnInfo.COLUMN_TYPE_TEXT, false ), 
+			new ColumnInfo(BaseMessages.getString(PKG, "JobDialog.TransLogTable.Fields.Description"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
 		};
 		
 		FieldDisabledListener disabledListener = new FieldDisabledListener() {
@@ -1164,8 +1164,8 @@ public class JobDialog extends Dialog
         // The log timeout in days
         //
         Label wlLogTimeout = new Label(wLogOptionsComposite, SWT.RIGHT);
-        wlLogTimeout.setText(BaseMessages.getString(PKG, "JobDialog.LogTimeout.Label")); //$NON-NLS-1$
-        wlLogTimeout.setToolTipText(BaseMessages.getString(PKG, "JobDialog.LogTimeout.Tooltip")); //$NON-NLS-1$
+        wlLogTimeout.setText(BaseMessages.getString(PKG, "JobDialog.LogTimeout.Label")); 
+        wlLogTimeout.setToolTipText(BaseMessages.getString(PKG, "JobDialog.LogTimeout.Tooltip")); 
         props.setLook(wlLogTimeout);
         FormData fdlLogTimeout = new FormData();
         fdlLogTimeout.left = new FormAttachment(0, 0);
@@ -1173,7 +1173,7 @@ public class JobDialog extends Dialog
         fdlLogTimeout.top  = new FormAttachment(wLogTable, margin);
         wlLogTimeout.setLayoutData(fdlLogTimeout);
         wLogTimeout=new TextVar(jobMeta, wLogOptionsComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        wLogTimeout.setToolTipText(BaseMessages.getString(PKG, "JobDialog.LogTimeout.Tooltip")); //$NON-NLS-1$
+        wLogTimeout.setToolTipText(BaseMessages.getString(PKG, "JobDialog.LogTimeout.Tooltip")); 
         props.setLook(wLogTimeout);
         wLogTimeout.addModifyListener(lsMod);
         FormData fdLogTimeout = new FormData();
@@ -1187,7 +1187,7 @@ public class JobDialog extends Dialog
         // Add the fields grid...
         //
 		Label wlFields = new Label(wLogOptionsComposite, SWT.NONE);
-		wlFields.setText(BaseMessages.getString(PKG, "JobDialog.TransLogTable.Fields.Label")); //$NON-NLS-1$
+		wlFields.setText(BaseMessages.getString(PKG, "JobDialog.TransLogTable.Fields.Label")); 
  		props.setLook(wlFields);
 		FormData fdlFields = new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -1198,8 +1198,8 @@ public class JobDialog extends Dialog
 		final int nrRows=fields.size();
 		
 		ColumnInfo[] colinf=new ColumnInfo[] {
-			new ColumnInfo(BaseMessages.getString(PKG, "JobDialog.TransLogTable.Fields.FieldName"), ColumnInfo.COLUMN_TYPE_TEXT, false ), //$NON-NLS-1$
-			new ColumnInfo(BaseMessages.getString(PKG, "JobDialog.TransLogTable.Fields.Description"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+			new ColumnInfo(BaseMessages.getString(PKG, "JobDialog.TransLogTable.Fields.FieldName"), ColumnInfo.COLUMN_TYPE_TEXT, false ), 
+			new ColumnInfo(BaseMessages.getString(PKG, "JobDialog.TransLogTable.Fields.Description"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
 		};
 		
 		FieldDisabledListener disabledListener = new FieldDisabledListener() {
@@ -1283,8 +1283,8 @@ public class JobDialog extends Dialog
     // The log timeout in days
     //
     Label wlLogTimeout = new Label(wLogOptionsComposite, SWT.RIGHT);
-    wlLogTimeout.setText(BaseMessages.getString(PKG, "JobDialog.LogTimeout.Label")); //$NON-NLS-1$
-    wlLogTimeout.setToolTipText(BaseMessages.getString(PKG, "JobDialog.LogTimeout.Tooltip")); //$NON-NLS-1$
+    wlLogTimeout.setText(BaseMessages.getString(PKG, "JobDialog.LogTimeout.Label")); 
+    wlLogTimeout.setToolTipText(BaseMessages.getString(PKG, "JobDialog.LogTimeout.Tooltip")); 
     props.setLook(wlLogTimeout);
     FormData fdlLogTimeout = new FormData();
     fdlLogTimeout.left = new FormAttachment(0, 0);
@@ -1292,7 +1292,7 @@ public class JobDialog extends Dialog
     fdlLogTimeout.top  = new FormAttachment(lastControl, margin);
     wlLogTimeout.setLayoutData(fdlLogTimeout);
     wLogTimeout=new TextVar(jobMeta, wLogOptionsComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-    wLogTimeout.setToolTipText(BaseMessages.getString(PKG, "JobDialog.LogTimeout.Tooltip")); //$NON-NLS-1$
+    wLogTimeout.setToolTipText(BaseMessages.getString(PKG, "JobDialog.LogTimeout.Tooltip")); 
     props.setLook(wLogTimeout);
     wLogTimeout.addModifyListener(lsMod);
     FormData fdLogTimeout = new FormData();
@@ -1306,8 +1306,8 @@ public class JobDialog extends Dialog
     // Max nr retries ...
     //
     Label wlMaxNrRetries = new Label(wLogOptionsComposite, SWT.RIGHT);
-    wlMaxNrRetries.setText(BaseMessages.getString(PKG, "JobDialog.MaxNrRetries.Label")); //$NON-NLS-1$
-    wlMaxNrRetries.setToolTipText(BaseMessages.getString(PKG, "JobDialog.MaxNrRetries.Tooltip")); //$NON-NLS-1$
+    wlMaxNrRetries.setText(BaseMessages.getString(PKG, "JobDialog.MaxNrRetries.Label")); 
+    wlMaxNrRetries.setToolTipText(BaseMessages.getString(PKG, "JobDialog.MaxNrRetries.Tooltip")); 
     props.setLook(wlMaxNrRetries);
     FormData fdlMaxNrRetries = new FormData();
     fdlMaxNrRetries.left = new FormAttachment(0, 0);
@@ -1315,7 +1315,7 @@ public class JobDialog extends Dialog
     fdlMaxNrRetries.top = new FormAttachment(lastControl, margin);
     wlMaxNrRetries.setLayoutData(fdlMaxNrRetries);
     wMaxNrRetries = new TextVar(jobMeta, wLogOptionsComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-    wMaxNrRetries.setToolTipText(BaseMessages.getString(PKG, "JobDialog.MaxNrRetries.Tooltip")); //$NON-NLS-1$
+    wMaxNrRetries.setToolTipText(BaseMessages.getString(PKG, "JobDialog.MaxNrRetries.Tooltip")); 
     props.setLook(wMaxNrRetries);
     wMaxNrRetries.addModifyListener(lsMod);
     FormData fdMaxNrRetries = new FormData();
@@ -1329,8 +1329,8 @@ public class JobDialog extends Dialog
     // Run Retry Period
     //
     Label wlRunRetryPeriod = new Label(wLogOptionsComposite, SWT.RIGHT);
-    wlRunRetryPeriod.setText(BaseMessages.getString(PKG, "JobDialog.RunRetryPeriod.Label")); //$NON-NLS-1$
-    wlRunRetryPeriod.setToolTipText(BaseMessages.getString(PKG, "JobDialog.RunRetryPeriod.Tooltip")); //$NON-NLS-1$
+    wlRunRetryPeriod.setText(BaseMessages.getString(PKG, "JobDialog.RunRetryPeriod.Label")); 
+    wlRunRetryPeriod.setToolTipText(BaseMessages.getString(PKG, "JobDialog.RunRetryPeriod.Tooltip")); 
     props.setLook(wlRunRetryPeriod);
     FormData fdlRunRetryPeriod = new FormData();
     fdlRunRetryPeriod.left = new FormAttachment(0, 0);
@@ -1338,7 +1338,7 @@ public class JobDialog extends Dialog
     fdlRunRetryPeriod.top = new FormAttachment(lastControl, margin);
     wlRunRetryPeriod.setLayoutData(fdlRunRetryPeriod);
     wRunRetryPeriod = new TextVar(jobMeta, wLogOptionsComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-    wRunRetryPeriod.setToolTipText(BaseMessages.getString(PKG, "JobDialog.RunRetryPeriod.Tooltip")); //$NON-NLS-1$
+    wRunRetryPeriod.setToolTipText(BaseMessages.getString(PKG, "JobDialog.RunRetryPeriod.Tooltip")); 
     props.setLook(wRunRetryPeriod);
     wRunRetryPeriod.addModifyListener(lsMod);
     FormData fdRunRetryPeriod = new FormData();
@@ -1352,8 +1352,8 @@ public class JobDialog extends Dialog
     // The name space parameter to use
     //
     Label wlNamespaceParameter = new Label(wLogOptionsComposite, SWT.RIGHT);
-    wlNamespaceParameter.setText(BaseMessages.getString(PKG, "JobDialog.NamespaceParameter.Label")); //$NON-NLS-1$
-    wlNamespaceParameter.setToolTipText(BaseMessages.getString(PKG, "JobDialog.NamespaceParameter.Tooltip")); //$NON-NLS-1$
+    wlNamespaceParameter.setText(BaseMessages.getString(PKG, "JobDialog.NamespaceParameter.Label")); 
+    wlNamespaceParameter.setToolTipText(BaseMessages.getString(PKG, "JobDialog.NamespaceParameter.Tooltip")); 
     props.setLook(wlNamespaceParameter);
     FormData fdlNamespaceParameter = new FormData();
     fdlNamespaceParameter.left = new FormAttachment(0, 0);
@@ -1361,7 +1361,7 @@ public class JobDialog extends Dialog
     fdlNamespaceParameter.top = new FormAttachment(lastControl, margin);
     wlNamespaceParameter.setLayoutData(fdlNamespaceParameter);
     wNamespaceParameter = new CCombo(wLogOptionsComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-    wNamespaceParameter.setToolTipText(BaseMessages.getString(PKG, "JobDialog.NamespaceParameter.Tooltip")); //$NON-NLS-1$
+    wNamespaceParameter.setToolTipText(BaseMessages.getString(PKG, "JobDialog.NamespaceParameter.Tooltip")); 
     props.setLook(wNamespaceParameter);
     wNamespaceParameter.addModifyListener(lsMod);
     FormData fdNamespaceParameter = new FormData();
@@ -1376,8 +1376,8 @@ public class JobDialog extends Dialog
     // Save parameters
     //
     Label wlSaveParameters = new Label(wLogOptionsComposite, SWT.RIGHT);
-    wlSaveParameters.setText(BaseMessages.getString(PKG, "JobDialog.SaveParameters.Label")); //$NON-NLS-1$
-    wlSaveParameters.setToolTipText(BaseMessages.getString(PKG, "JobDialog.SaveParameters.Tooltip")); //$NON-NLS-1$
+    wlSaveParameters.setText(BaseMessages.getString(PKG, "JobDialog.SaveParameters.Label")); 
+    wlSaveParameters.setToolTipText(BaseMessages.getString(PKG, "JobDialog.SaveParameters.Tooltip")); 
     props.setLook(wlSaveParameters);
     FormData fdlSaveParameters = new FormData();
     fdlSaveParameters.left = new FormAttachment(0, 0);
@@ -1385,7 +1385,7 @@ public class JobDialog extends Dialog
     fdlSaveParameters.top = new FormAttachment(lastControl, margin);
     wlSaveParameters.setLayoutData(fdlSaveParameters);
     wSaveParameters = new CheckBoxVar(jobMeta, wLogOptionsComposite, SWT.CHECK, "");
-    wSaveParameters.setToolTipText(BaseMessages.getString(PKG, "JobDialog.SaveParameters.Tooltip")); //$NON-NLS-1$
+    wSaveParameters.setToolTipText(BaseMessages.getString(PKG, "JobDialog.SaveParameters.Tooltip")); 
     props.setLook(wSaveParameters);
     wSaveParameters.getTextVar().addModifyListener(lsMod);
     FormData fdSaveParameters = new FormData();
@@ -1407,8 +1407,8 @@ public class JobDialog extends Dialog
     // Save result rows
     //
     Label wlSaveResultRows = new Label(wLogOptionsComposite, SWT.RIGHT);
-    wlSaveResultRows.setText(BaseMessages.getString(PKG, "JobDialog.SaveResultRows.Label")); //$NON-NLS-1$
-    wlSaveResultRows.setToolTipText(BaseMessages.getString(PKG, "JobDialog.SaveResultRows.Tooltip")); //$NON-NLS-1$
+    wlSaveResultRows.setText(BaseMessages.getString(PKG, "JobDialog.SaveResultRows.Label")); 
+    wlSaveResultRows.setToolTipText(BaseMessages.getString(PKG, "JobDialog.SaveResultRows.Tooltip")); 
     props.setLook(wlSaveResultRows);
     FormData fdlSaveResultRows = new FormData();
     fdlSaveResultRows.left = new FormAttachment(0, 0);
@@ -1416,7 +1416,7 @@ public class JobDialog extends Dialog
     fdlSaveResultRows.top = new FormAttachment(lastControl, margin);
     wlSaveResultRows.setLayoutData(fdlSaveResultRows);
     wSaveResultRows = new CheckBoxVar(jobMeta, wLogOptionsComposite, SWT.CHECK, "");
-    wSaveResultRows.setToolTipText(BaseMessages.getString(PKG, "JobDialog.SaveResultRows.Tooltip")); //$NON-NLS-1$
+    wSaveResultRows.setToolTipText(BaseMessages.getString(PKG, "JobDialog.SaveResultRows.Tooltip")); 
     props.setLook(wSaveResultRows);
     wSaveResultRows.getTextVar().addModifyListener(lsMod);
     FormData fdSaveResultRows = new FormData();
@@ -1438,8 +1438,8 @@ public class JobDialog extends Dialog
     // Save result files
     //
     Label wlSaveResultFiles = new Label(wLogOptionsComposite, SWT.RIGHT);
-    wlSaveResultFiles.setText(BaseMessages.getString(PKG, "JobDialog.SaveResultFiles.Label")); //$NON-NLS-1$
-    wlSaveResultFiles.setToolTipText(BaseMessages.getString(PKG, "JobDialog.SaveResultFiles.Tooltip")); //$NON-NLS-1$
+    wlSaveResultFiles.setText(BaseMessages.getString(PKG, "JobDialog.SaveResultFiles.Label")); 
+    wlSaveResultFiles.setToolTipText(BaseMessages.getString(PKG, "JobDialog.SaveResultFiles.Tooltip")); 
     props.setLook(wlSaveResultFiles);
     FormData fdlSaveResultFiles = new FormData();
     fdlSaveResultFiles.left = new FormAttachment(0, 0);
@@ -1447,7 +1447,7 @@ public class JobDialog extends Dialog
     fdlSaveResultFiles.top = new FormAttachment(lastControl, margin);
     wlSaveResultFiles.setLayoutData(fdlSaveResultFiles);
     wSaveResultFiles = new CheckBoxVar(jobMeta, wLogOptionsComposite, SWT.CHECK, "");
-    wSaveResultFiles.setToolTipText(BaseMessages.getString(PKG, "JobDialog.SaveResultFiles.Tooltip")); //$NON-NLS-1$
+    wSaveResultFiles.setToolTipText(BaseMessages.getString(PKG, "JobDialog.SaveResultFiles.Tooltip")); 
     props.setLook(wSaveResultFiles);
     wSaveResultFiles.getTextVar().addModifyListener(lsMod);
     FormData fdSaveResultFiles = new FormData();
@@ -1470,7 +1470,7 @@ public class JobDialog extends Dialog
     // Add the fields grid...
     //
     Label wlFields = new Label(wLogOptionsComposite, SWT.NONE);
-    wlFields.setText(BaseMessages.getString(PKG, "JobDialog.TransLogTable.Fields.Label")); //$NON-NLS-1$
+    wlFields.setText(BaseMessages.getString(PKG, "JobDialog.TransLogTable.Fields.Label")); 
     props.setLook(wlFields);
     FormData fdlFields = new FormData();
     fdlFields.left = new FormAttachment(0, 0);
@@ -1481,8 +1481,8 @@ public class JobDialog extends Dialog
     final int nrRows = fields.size();
 
     ColumnInfo[] colinf = new ColumnInfo[] { 
-        new ColumnInfo(BaseMessages.getString(PKG, "JobDialog.TransLogTable.Fields.FieldName"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
-        new ColumnInfo(BaseMessages.getString(PKG, "JobDialog.TransLogTable.Fields.Description"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+        new ColumnInfo(BaseMessages.getString(PKG, "JobDialog.TransLogTable.Fields.FieldName"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
+        new ColumnInfo(BaseMessages.getString(PKG, "JobDialog.TransLogTable.Fields.Description"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
     };
 
     // Add a checkbox to the left
@@ -1548,7 +1548,7 @@ public class JobDialog extends Dialog
 		// START OF SETTINGS TAB///
 		///
 		wSettingsTab=new CTabItem(wTabFolder, SWT.NONE);
-		wSettingsTab.setText(BaseMessages.getString(PKG, "JobDialog.SettingsTab.Label")); //$NON-NLS-1$
+		wSettingsTab.setText(BaseMessages.getString(PKG, "JobDialog.SettingsTab.Label")); 
 
 		FormLayout LogLayout = new FormLayout ();
 		LogLayout.marginWidth  = Const.MARGIN;
@@ -1868,8 +1868,8 @@ public class JobDialog extends Dialog
 						else
 						{
 							MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
-							mb.setText(BaseMessages.getString(PKG, "JobDialog.NoSqlNedds.DialogTitle")); //$NON-NLS-1$
-							mb.setMessage(logTable.getLogTableType()+Const.CR+Const.CR+BaseMessages.getString(PKG, "JobDialog.NoSqlNedds.DialogMessage")); //$NON-NLS-1$
+							mb.setText(BaseMessages.getString(PKG, "JobDialog.NoSqlNedds.DialogTitle")); 
+							mb.setMessage(logTable.getLogTableType()+Const.CR+Const.CR+BaseMessages.getString(PKG, "JobDialog.NoSqlNedds.DialogMessage")); 
 							mb.open(); 
 						}
 						

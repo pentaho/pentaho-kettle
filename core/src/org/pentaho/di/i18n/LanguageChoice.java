@@ -122,7 +122,7 @@ public class LanguageChoice
         String defaultLocaleStr = properties.getProperty(STRING_DEFAULT_LOCALE,  Const.DEFAULT_LOCALE.toString());
         defaultLocale = EnvUtil.createLocale(defaultLocaleStr);
         
-        String failoverLocaleStr = properties.getProperty(STRING_FAILOVER_LOCALE, "en_US");  //$NON-NLS-1$
+        String failoverLocaleStr = properties.getProperty(STRING_FAILOVER_LOCALE, "en_US");  
         failoverLocale = EnvUtil.createLocale(failoverLocaleStr);
     }
     

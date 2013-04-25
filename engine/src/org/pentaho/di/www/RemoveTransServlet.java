@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -101,7 +101,7 @@ public class RemoveTransServlet extends BaseHttpServlet implements CartePluginIn
     
     if (trans != null) {
       
-      CentralLogStore.discardLines(trans.getLogChannelId(), true);
+      KettleLogStore.discardLines(trans.getLogChannelId(), true);
       getTransformationMap().removeTransformation(entry);
       
       if (useXML) {

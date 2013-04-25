@@ -452,17 +452,17 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface, 
             returningGeneratedKeys = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "return_keys"));
             generatedKeyField      = XMLHandler.getTagValue(stepnode, "return_field");
             
-			Node fields = XMLHandler.getSubNode(stepnode, "fields");   //$NON-NLS-1$
-			int nrRows  = XMLHandler.countNodes(fields, "field");      //$NON-NLS-1$
+			Node fields = XMLHandler.getSubNode(stepnode, "fields");   
+			int nrRows  = XMLHandler.countNodes(fields, "field");      
 			
 			allocate(nrRows);
 			
 			for (int i=0;i<nrRows;i++)
 			{
-				Node knode = XMLHandler.getSubNodeByNr(fields, "field", i);         //$NON-NLS-1$
+				Node knode = XMLHandler.getSubNodeByNr(fields, "field", i);         
 				
-				fieldDatabase   [i] = XMLHandler.getTagValue(knode, "column_name");  //$NON-NLS-1$
-				fieldStream     [i] = XMLHandler.getTagValue(knode, "stream_name"); //$NON-NLS-1$
+				fieldDatabase   [i] = XMLHandler.getTagValue(knode, "column_name");  
+				fieldStream     [i] = XMLHandler.getTagValue(knode, "stream_name"); 
 			}
         }
 		catch(Exception e)
@@ -512,16 +512,16 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface, 
 		retval.append("    "+XMLHandler.addTagValue("return_keys", returningGeneratedKeys));
         retval.append("    "+XMLHandler.addTagValue("return_field", generatedKeyField));
         
-		retval.append("    <fields>").append(Const.CR); //$NON-NLS-1$
+		retval.append("    <fields>").append(Const.CR); 
 
 		for (int i=0;i<fieldDatabase.length;i++)
 		{
-			retval.append("        <field>").append(Const.CR); //$NON-NLS-1$
-			retval.append("          ").append(XMLHandler.addTagValue("column_name", fieldDatabase[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("          ").append(XMLHandler.addTagValue("stream_name", fieldStream[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        </field>").append(Const.CR); //$NON-NLS-1$
+			retval.append("        <field>").append(Const.CR); 
+			retval.append("          ").append(XMLHandler.addTagValue("column_name", fieldDatabase[i]));  
+			retval.append("          ").append(XMLHandler.addTagValue("stream_name", fieldStream[i]));  
+			retval.append("        </field>").append(Const.CR); 
 		}
-		retval.append("    </fields>").append(Const.CR); //$NON-NLS-1$
+		retval.append("    </fields>").append(Const.CR); 
 
 		return retval.toString();
 	}
@@ -530,7 +530,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface, 
 	{
 		try
 		{
-			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);  //$NON-NLS-1$
+			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);  
             schemaName         =   rep.getStepAttributeString (id_step, "schema");
 			tableName =   rep.getStepAttributeString (id_step, "table");
 			long commitSizeInt =   rep.getStepAttributeInteger(id_step, "commit");
@@ -555,8 +555,8 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface, 
             returningGeneratedKeys= rep.getStepAttributeBoolean(id_step, "return_keys");
             generatedKeyField     = rep.getStepAttributeString (id_step, "return_field");
             
-			int nrCols    = rep.countNrStepAttributes(id_step, "column_name"); //$NON-NLS-1$
-			int nrStreams = rep.countNrStepAttributes(id_step, "stream_name"); //$NON-NLS-1$
+			int nrCols    = rep.countNrStepAttributes(id_step, "column_name"); 
+			int nrStreams = rep.countNrStepAttributes(id_step, "stream_name"); 
 			
 			int nrRows = (nrCols < nrStreams ? nrStreams : nrCols);
 			allocate(nrRows);
@@ -564,9 +564,9 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface, 
 			for (int idx=0; idx < nrRows; idx++)
 			{
 				fieldDatabase[idx] = Const.NVL(rep.getStepAttributeString(id_step, 
-						                                                  idx, "column_name"), ""); //$NON-NLS-1$ //$NON-NLS-2$
+						                                                  idx, "column_name"), "");  
 				fieldStream[idx]   = Const.NVL(rep.getStepAttributeString(id_step, 
-						                                                  idx, "stream_name"), ""); //$NON-NLS-1$ //$NON-NLS-2$
+						                                                  idx, "stream_name"), "");  
 			}
 		}
 		catch(Exception e)
@@ -606,8 +606,8 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface, 
 			{
 				String columnName = (idx < fieldDatabase.length ? fieldDatabase[idx] : "");
 				String streamName = (idx < fieldStream.length   ? fieldStream[idx] : "");
-				rep.saveStepAttribute(id_transformation, id_step, idx, "column_name", columnName); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, idx, "stream_name", streamName); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, idx, "column_name", columnName); 
+				rep.saveStepAttribute(id_transformation, id_step, idx, "stream_name", streamName); 
 			}
             
 			// Also, save the step-database relationship!

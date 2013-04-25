@@ -157,7 +157,7 @@ public class Const
      * Path to the simple-jndi directory
      */
     
-    public static String JNDI_DIRECTORY = NVL(System.getProperty("KETTLE_JNDI_ROOT"), System.getProperty("org.osjava.sj.root")); //$NON-NLS-1$ //$NON-NLS-2$
+    public static String JNDI_DIRECTORY = NVL(System.getProperty("KETTLE_JNDI_ROOT"), System.getProperty("org.osjava.sj.root"));  
 
 	/*
 	 * The images directory

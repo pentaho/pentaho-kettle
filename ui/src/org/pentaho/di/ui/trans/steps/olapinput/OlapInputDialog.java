@@ -133,7 +133,7 @@ public class OlapInputDialog extends BaseStepDialog implements
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "OlapInputDialog.OlapInput")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "OlapInputDialog.OlapInput")); 
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
@@ -142,7 +142,7 @@ public class OlapInputDialog extends BaseStepDialog implements
 		//
 		wlStepname = new Label(shell, SWT.RIGHT);
 		wlStepname.setText(BaseMessages.getString(PKG,
-				"OlapInputDialog.StepName")); //$NON-NLS-1$
+				"OlapInputDialog.StepName")); 
 		props.setLook(wlStepname);
 		fdlStepname = new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -162,7 +162,7 @@ public class OlapInputDialog extends BaseStepDialog implements
 		// The URL
 		//
 		wlUrl = new Label(shell, SWT.RIGHT);
-		wlUrl.setText(BaseMessages.getString(PKG, "OlapInputDialog.Url")); //$NON-NLS-1$
+		wlUrl.setText(BaseMessages.getString(PKG, "OlapInputDialog.Url")); 
 		props.setLook(wlUrl);
 		fdlUrl = new FormData();
 		fdlUrl.left = new FormAttachment(0, 0);
@@ -182,7 +182,7 @@ public class OlapInputDialog extends BaseStepDialog implements
 		//
 		wlUsername = new Label(shell, SWT.RIGHT);
 		wlUsername.setText(BaseMessages.getString(PKG,
-				"OlapInputDialog.Username")); //$NON-NLS-1$
+				"OlapInputDialog.Username")); 
 		props.setLook(wlUsername);
 		fdlUsername = new FormData();
 		fdlUsername.left = new FormAttachment(0, 0);
@@ -203,7 +203,7 @@ public class OlapInputDialog extends BaseStepDialog implements
 		//
 		wlPassword = new Label(shell, SWT.RIGHT);
 		wlPassword.setText(BaseMessages.getString(PKG,
-				"OlapInputDialog.Password")); //$NON-NLS-1$
+				"OlapInputDialog.Password")); 
 		props.setLook(wlPassword);
 		fdlPassword = new FormData();
 		fdlPassword.left = new FormAttachment(0, 0);
@@ -224,11 +224,11 @@ public class OlapInputDialog extends BaseStepDialog implements
 		// Some buttons
 		//
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wPreview = new Button(shell, SWT.PUSH);
-		wPreview.setText(BaseMessages.getString(PKG, "System.Button.Preview")); //$NON-NLS-1$
+		wPreview.setText(BaseMessages.getString(PKG, "System.Button.Preview")); 
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 		wAbout = new Button(shell, SWT.PUSH);
 		wAbout.setText(BaseMessages.getString(PKG,
 				"OlapInputDialog.About.Button"));
@@ -240,7 +240,7 @@ public class OlapInputDialog extends BaseStepDialog implements
 
 		wlCatalog = new Label(shell, SWT.RIGHT);
 		wlCatalog.setText(BaseMessages
-				.getString(PKG, "OlapInputDialog.Catalog")); //$NON-NLS-1$
+				.getString(PKG, "OlapInputDialog.Catalog")); 
 		props.setLook(wlCatalog);
 		fdlCatalog = new FormData();
 		fdlCatalog.left = new FormAttachment(0, 0);
@@ -261,7 +261,7 @@ public class OlapInputDialog extends BaseStepDialog implements
 		//
 		wlVariables = new Label(shell, SWT.RIGHT);
 		wlVariables.setText(BaseMessages.getString(PKG,
-				"OlapInputDialog.ReplaceVariables")); //$NON-NLS-1$
+				"OlapInputDialog.ReplaceVariables")); 
 		props.setLook(wlVariables);
 		fdlVariables = new FormData();
 		fdlVariables.left = new FormAttachment(0, 0);
@@ -271,7 +271,7 @@ public class OlapInputDialog extends BaseStepDialog implements
 		wVariables = new Button(shell, SWT.CHECK);
 		props.setLook(wVariables);
 		wVariables.setToolTipText(BaseMessages.getString(PKG,
-				"OlapInputDialog.ReplaceVariables.Tooltip")); //$NON-NLS-1$
+				"OlapInputDialog.ReplaceVariables.Tooltip")); 
 		fdVariables = new FormData();
 		fdVariables.left = new FormAttachment(middle, 0);
 		fdVariables.right = new FormAttachment(100, 0);
@@ -305,7 +305,7 @@ public class OlapInputDialog extends BaseStepDialog implements
 		// Table line...
 		//
 		wlMDX = new Label(shell, SWT.NONE);
-		wlMDX.setText(BaseMessages.getString(PKG, "OlapInputDialog.SQL")); //$NON-NLS-1$
+		wlMDX.setText(BaseMessages.getString(PKG, "OlapInputDialog.SQL")); 
 		props.setLook(wlMDX);
 		fdlMDX = new FormData();
 		fdlMDX.left = new FormAttachment(0, 0);
@@ -513,7 +513,7 @@ public class OlapInputDialog extends BaseStepDialog implements
 		EnterNumberDialog numberDialog = new EnterNumberDialog(
 				shell,
 				props.getDefaultPreviewSize(),
-				BaseMessages.getString(PKG, "OlapInputDialog.EnterPreviewSize"), BaseMessages.getString(PKG, "OlapDialog.NumberOfRowsToPreview")); //$NON-NLS-1$ //$NON-NLS-2$
+				BaseMessages.getString(PKG, "OlapInputDialog.EnterPreviewSize"), BaseMessages.getString(PKG, "OlapDialog.NumberOfRowsToPreview"));  
 		int previewSize = numberDialog.open();
 		if (previewSize > 0) {
 			TransPreviewProgressDialog progressDialog = new TransPreviewProgressDialog(

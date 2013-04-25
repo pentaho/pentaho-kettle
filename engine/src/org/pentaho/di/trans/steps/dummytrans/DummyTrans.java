@@ -60,7 +60,7 @@ public class DummyTrans extends BaseStep implements StepInterface
 
         if (checkFeedback(getLinesRead())) 
         {
-        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "DummyTrans.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "DummyTrans.Log.LineNumber")+getLinesRead()); 
         }
 			
 		return true;

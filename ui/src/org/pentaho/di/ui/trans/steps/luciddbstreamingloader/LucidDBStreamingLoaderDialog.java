@@ -1317,7 +1317,7 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
         getInfo(info);
 
         String name = stepname; // new name might not yet be linked to other steps!
-        StepMeta stepMeta = new StepMeta(BaseMessages.getString(PKG, "LucidDBStreamingLoaderDialog.StepMeta.Title"), name, info); //$NON-NLS-1$
+        StepMeta stepMeta = new StepMeta(BaseMessages.getString(PKG, "LucidDBStreamingLoaderDialog.StepMeta.Title"), name, info); 
         RowMetaInterface prev = transMeta.getPrevStepFields(stepname);
 
         SQLStatement sql = info.getSQLStatements(transMeta, stepMeta, prev, repository, metaStore);
@@ -1332,8 +1332,8 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
           else
           {
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
-            mb.setMessage(BaseMessages.getString(PKG, "LucidDBStreamingLoaderDialog.NoSQLNeeds.DialogMessage")); //$NON-NLS-1$
-            mb.setText(BaseMessages.getString(PKG, "LucidDBStreamingLoaderDialog.NoSQLNeeds.DialogTitle")); //$NON-NLS-1$
+            mb.setMessage(BaseMessages.getString(PKG, "LucidDBStreamingLoaderDialog.NoSQLNeeds.DialogMessage")); 
+            mb.setText(BaseMessages.getString(PKG, "LucidDBStreamingLoaderDialog.NoSQLNeeds.DialogTitle")); 
             mb.open();
           }
         }
@@ -1341,14 +1341,14 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
         {
           MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
           mb.setMessage(sql.getError());
-          mb.setText(BaseMessages.getString(PKG, "LucidDBStreamingLoaderDialog.SQLError.DialogTitle")); //$NON-NLS-1$
+          mb.setText(BaseMessages.getString(PKG, "LucidDBStreamingLoaderDialog.SQLError.DialogTitle")); 
           mb.open();
         }
       }
       catch (KettleException ke)
       {
-        new ErrorDialog(shell, BaseMessages.getString(PKG, "LucidDBStreamingLoaderDialog.CouldNotBuildSQL.DialogTitle"), //$NON-NLS-1$
-            BaseMessages.getString(PKG, "LucidDBStreamingLoaderDialog.CouldNotBuildSQL.DialogMessage"), ke); //$NON-NLS-1$
+        new ErrorDialog(shell, BaseMessages.getString(PKG, "LucidDBStreamingLoaderDialog.CouldNotBuildSQL.DialogTitle"), 
+            BaseMessages.getString(PKG, "LucidDBStreamingLoaderDialog.CouldNotBuildSQL.DialogMessage"), ke); 
       }
 
     }

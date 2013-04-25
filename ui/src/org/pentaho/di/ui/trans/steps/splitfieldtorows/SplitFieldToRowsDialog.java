@@ -120,14 +120,14 @@ public class SplitFieldToRowsDialog extends BaseStepDialog implements StepDialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "SplitFieldToRowsDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "SplitFieldToRowsDialog.Shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "SplitFieldToRowsDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "SplitFieldToRowsDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -146,7 +146,7 @@ public class SplitFieldToRowsDialog extends BaseStepDialog implements StepDialog
 
 		// Typefield line
 		wlSplitfield=new Label(shell, SWT.RIGHT);
-		wlSplitfield.setText(BaseMessages.getString(PKG, "SplitFieldToRowsDialog.SplitField.Label")); //$NON-NLS-1$
+		wlSplitfield.setText(BaseMessages.getString(PKG, "SplitFieldToRowsDialog.SplitField.Label")); 
  		props.setLook(wlSplitfield);
 		fdlSplitfield=new FormData();
 		fdlSplitfield.left = new FormAttachment(0, 0);
@@ -181,7 +181,7 @@ public class SplitFieldToRowsDialog extends BaseStepDialog implements StepDialog
 
 		// Delimiter line
 		wlDelimiter=new Label(shell, SWT.RIGHT);
-		wlDelimiter.setText(BaseMessages.getString(PKG, "SplitFieldToRowsDialog.Delimiter.Label")); //$NON-NLS-1$
+		wlDelimiter.setText(BaseMessages.getString(PKG, "SplitFieldToRowsDialog.Delimiter.Label")); 
  		props.setLook(wlDelimiter);
 		fdlDelimiter=new FormData();
 		fdlDelimiter.left = new FormAttachment(0, 0);
@@ -189,7 +189,7 @@ public class SplitFieldToRowsDialog extends BaseStepDialog implements StepDialog
 		fdlDelimiter.top  = new FormAttachment(wSplitfield, margin);
 		wlDelimiter.setLayoutData(fdlDelimiter);
 		wDelimiter=new TextVar(transMeta,shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wDelimiter.setText(""); //$NON-NLS-1$
+		wDelimiter.setText(""); 
  		props.setLook(wDelimiter);
 		wDelimiter.addModifyListener(lsMod);
 		fdDelimiter=new FormData();
@@ -224,7 +224,7 @@ public class SplitFieldToRowsDialog extends BaseStepDialog implements StepDialog
 
 		// ValName line
 		wlValName=new Label(shell, SWT.RIGHT);
-		wlValName.setText(BaseMessages.getString(PKG, "SplitFieldToRowsDialog.NewFieldName.Label")); //$NON-NLS-1$
+		wlValName.setText(BaseMessages.getString(PKG, "SplitFieldToRowsDialog.NewFieldName.Label")); 
         props.setLook( wlValName );
 		fdlValName=new FormData();
 		fdlValName.left = new FormAttachment(0, 0);
@@ -232,7 +232,7 @@ public class SplitFieldToRowsDialog extends BaseStepDialog implements StepDialog
 		fdlValName.top  = new FormAttachment(wDelimiterIsRegex, margin);
 		wlValName.setLayoutData(fdlValName);
 		wValName=new TextVar(transMeta,shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wValName.setText(""); //$NON-NLS-1$
+		wValName.setText(""); 
         props.setLook( wValName );
 		wValName.addModifyListener(lsMod);
 		fdValName=new FormData();
@@ -323,9 +323,9 @@ public class SplitFieldToRowsDialog extends BaseStepDialog implements StepDialog
 		
 		
         wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
         BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel}, margin, wAdditionalFields);
         

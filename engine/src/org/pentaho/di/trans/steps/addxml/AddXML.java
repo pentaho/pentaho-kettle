@@ -103,7 +103,7 @@ public class AddXML extends BaseStep implements StepInterface
         		data.fieldIndexes[i] = getInputRowMeta().indexOfValue(meta.getOutputFields()[i].getFieldName());
         		if (data.fieldIndexes[i]<0) 
         		{
-        			throw new KettleException(BaseMessages.getString(PKG, "AddXML.Exception.FieldNotFound")); //$NON-NLS-1$
+        			throw new KettleException(BaseMessages.getString(PKG, "AddXML.Exception.FieldNotFound")); 
         		}
         	}
         }
@@ -126,7 +126,7 @@ public class AddXML extends BaseStep implements StepInterface
                   element = fieldname;
               
               if(element == null || element.length() == 0) {
-                  throw new KettleException("XML does not allow empty strings for element names."); //$NON-NLS-1$
+                  throw new KettleException("XML does not allow empty strings for element names."); 
               }
               if(outputField.isAttribute() ){
               	String attributeParentName = outputField.getAttributeParentName();
@@ -185,14 +185,14 @@ public class AddXML extends BaseStep implements StepInterface
 
     private String formatField(ValueMetaInterface valueMeta, Object valueData, XMLField field) throws KettleValueException
     {
-        String retval=""; //$NON-NLS-1$
+        String retval=""; 
         if(field == null)
-            return ""; //$NON-NLS-1$
+            return ""; 
 
         if(valueMeta == null || valueMeta.isNull(valueData)) 
         {
             String defaultNullValue = field.getNullString();
-            return Const.isEmpty(defaultNullValue) ? "" : defaultNullValue ; //$NON-NLS-1$
+            return Const.isEmpty(defaultNullValue) ? "" : defaultNullValue ; 
         }
 
         if (valueMeta.isNumeric())
@@ -302,7 +302,7 @@ public class AddXML extends BaseStep implements StepInterface
             {                   
                 try 
                 {
-                    retval=new String(valueMeta.getBinary(valueData), "UTF-8"); //$NON-NLS-1$
+                    retval=new String(valueMeta.getBinary(valueData), "UTF-8"); 
                 } 
                 catch (UnsupportedEncodingException e) 
                 {
@@ -337,7 +337,7 @@ public class AddXML extends BaseStep implements StepInterface
             }
             
             if(meta.isOmitXMLheader()) {
-                getSerializer().setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes"); //$NON-NLS-1$
+                getSerializer().setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes"); 
             }
         } catch (TransformerConfigurationException e) {
             return false;

@@ -135,7 +135,7 @@ public class MultiMergeJoin extends BaseStep implements StepInterface
                         data.keyNrs[j][i] = data.metas[j].indexOfValue(meta.getKeyFields()[i]);
                         if (data.keyNrs[j][i]<0)
                         {
-                            String message = BaseMessages.getString(PKG, "MultiMergeJoin.Exception.UnableToFindFieldInReferenceStream",meta.getKeyFields()[i]);  //$NON-NLS-1$ //$NON-NLS-2$
+                            String message = BaseMessages.getString(PKG, "MultiMergeJoin.Exception.UnableToFindFieldInReferenceStream",meta.getKeyFields()[i]);   
                             logError(message);
                             throw new KettleStepException(message);
                         }
@@ -147,7 +147,7 @@ public class MultiMergeJoin extends BaseStep implements StepInterface
                         data.keyNrs[j][i] = data.metas[j].indexOfValue(keyFields[i]);
                         if (data.keyNrs[j][i]<0)
                         {
-                            String message = BaseMessages.getString(PKG, "MultiMergeJoin.Exception.UnableToFindFieldInReferenceStream",meta.getKeyFields()[i]);  //$NON-NLS-1$ //$NON-NLS-2$
+                            String message = BaseMessages.getString(PKG, "MultiMergeJoin.Exception.UnableToFindFieldInReferenceStream",meta.getKeyFields()[i]);   
                             logError(message);
                             throw new KettleStepException(message);
                         }
@@ -167,7 +167,7 @@ public class MultiMergeJoin extends BaseStep implements StepInterface
         	String metaString = BaseMessages.getString(PKG, "MultiMergeJoin.Log.DataInfo",data.metas[0].getString(data.rows[0])+"");
         	for (int i = 1; i < data.metas.length; i++)
         		metaString += data.metas[i].getString(data.rows[i]);
-        	logRowlevel(metaString); //$NON-NLS-1$ //$NON-NLS-2$
+        	logRowlevel(metaString);  
         }
 
         /*
@@ -316,7 +316,7 @@ public class MultiMergeJoin extends BaseStep implements StepInterface
                if (isStopped()) return false;
            }
         }
-        if (checkFeedback(getLinesRead())) logBasic(BaseMessages.getString(PKG, "MultiMergeJoin.LineNumber")+getLinesRead()); //$NON-NLS-1$
+        if (checkFeedback(getLinesRead())) logBasic(BaseMessages.getString(PKG, "MultiMergeJoin.LineNumber")+getLinesRead()); 
 		return true;
 	}
 		
@@ -334,7 +334,7 @@ public class MultiMergeJoin extends BaseStep implements StepInterface
             for (int i = 0; i < infoStreams.size(); i++) {
                 if (infoStreams.get(i).getStepMeta()==null)
                 {
-                    logError(BaseMessages.getString(PKG, "MultiMergeJoin.Log.BothTrueAndFalseNeeded")); //$NON-NLS-1$
+                    logError(BaseMessages.getString(PKG, "MultiMergeJoin.Log.BothTrueAndFalseNeeded")); 
                     return false;
                 }
             }
@@ -347,7 +347,7 @@ public class MultiMergeJoin extends BaseStep implements StepInterface
             		return true;
             	}
             }
-           	logError(BaseMessages.getString(PKG, "MultiMergeJoin.Log.InvalidJoinType", meta.getJoinType())); //$NON-NLS-1$
+           	logError(BaseMessages.getString(PKG, "MultiMergeJoin.Log.InvalidJoinType", meta.getJoinType())); 
                return false;
         }
         return true;

@@ -102,16 +102,16 @@ public class ChangeFileEncoding extends BaseStep implements StepInterface
 			if (data.indexOfFileename<0)
 			{
 				// The field is unreachable !
-				logError(BaseMessages.getString(PKG, "ChangeFileEncoding.Exception.CouldnotFindField")+ "[" + meta.getDynamicFilenameField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-				throw new KettleException(BaseMessages.getString(PKG, "ChangeFileEncoding.Exception.CouldnotFindField",meta.getDynamicFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
+				logError(BaseMessages.getString(PKG, "ChangeFileEncoding.Exception.CouldnotFindField")+ "[" + meta.getDynamicFilenameField()+"]");  
+				throw new KettleException(BaseMessages.getString(PKG, "ChangeFileEncoding.Exception.CouldnotFindField",meta.getDynamicFilenameField()));  
 			}
 			// cache the position of the field			
 			data.indexOfTargetFileename =data.inputRowMeta.indexOfValue(meta.getTargetFilenameField());
 			if (data.indexOfTargetFileename<0)
 			{
 				// The field is unreachable !
-				logError(BaseMessages.getString(PKG, "ChangeFileEncoding.Exception.CouldnotFindField")+ "[" + meta.getTargetFilenameField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-				throw new KettleException(BaseMessages.getString(PKG, "ChangeFileEncoding.Exception.CouldnotFindField",meta.getTargetFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
+				logError(BaseMessages.getString(PKG, "ChangeFileEncoding.Exception.CouldnotFindField")+ "[" + meta.getTargetFilenameField()+"]");  
+				throw new KettleException(BaseMessages.getString(PKG, "ChangeFileEncoding.Exception.CouldnotFindField",meta.getTargetFilenameField()));  
 			}
 			
 			// Check source encoding
@@ -171,7 +171,7 @@ public class ChangeFileEncoding extends BaseStep implements StepInterface
         	
 	        putRow(data.inputRowMeta, outputRow);  // copy row to output rowset(s);
                 
-            if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "ChangeFileEncoding.LineNumber",getLinesRead()+" : "+getInputRowMeta().getString(outputRow))); //$NON-NLS-1$
+            if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "ChangeFileEncoding.LineNumber",getLinesRead()+" : "+getInputRowMeta().getString(outputRow))); 
         }
         catch(Exception e)
         {
@@ -185,7 +185,7 @@ public class ChangeFileEncoding extends BaseStep implements StepInterface
         	}
         	else
         	{
-	            logError(BaseMessages.getString(PKG, "ChangeFileEncoding.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
+	            logError(BaseMessages.getString(PKG, "ChangeFileEncoding.ErrorInStepRunning")+e.getMessage()); 
 	            setErrors(1);
 	            stopAll();
 	            setOutputDone();  // signal end to receiver(s)

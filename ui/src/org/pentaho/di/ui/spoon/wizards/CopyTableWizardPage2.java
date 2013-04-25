@@ -67,8 +67,8 @@ public class CopyTableWizardPage2 extends WizardPage
 		super(arg);
 		this.props=PropsUI.getInstance();
 
-		setTitle(BaseMessages.getString(PKG, "CopyTableWizardPage2.Dialog.Title")); //$NON-NLS-1$
-		setDescription(BaseMessages.getString(PKG, "CopyTableWizardPage2.Dialog.Description")); //$NON-NLS-1$
+		setTitle(BaseMessages.getString(PKG, "CopyTableWizardPage2.Dialog.Title")); 
+		setDescription(BaseMessages.getString(PKG, "CopyTableWizardPage2.Dialog.Description")); 
 	}
 	
 	public void createControl(Composite parent)
@@ -86,7 +86,7 @@ public class CopyTableWizardPage2 extends WizardPage
 
  		// Source list to the left...
 		wlListSource  = new Label(composite, SWT.NONE);
-		wlListSource.setText(BaseMessages.getString(PKG, "CopyTableWizardPage2.Dialog.TableList.Label")); //$NON-NLS-1$
+		wlListSource.setText(BaseMessages.getString(PKG, "CopyTableWizardPage2.Dialog.TableList.Label")); 
         props.setLook(wlListSource);
  		FormData fdlListSource = new FormData();
 		fdlListSource.left   = new FormAttachment(0, 0); 
@@ -141,7 +141,7 @@ public class CopyTableWizardPage2 extends WizardPage
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "CopyTableWizardPage2.ErrorGettingTables.DialogTitle"), BaseMessages.getString(PKG, "CopyTableWizardPage2.ErrorGettingTables.DialogMessage"), dbe); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "CopyTableWizardPage2.ErrorGettingTables.DialogTitle"), BaseMessages.getString(PKG, "CopyTableWizardPage2.ErrorGettingTables.DialogMessage"), dbe);  
 			input = null;
 			return false;
 		}

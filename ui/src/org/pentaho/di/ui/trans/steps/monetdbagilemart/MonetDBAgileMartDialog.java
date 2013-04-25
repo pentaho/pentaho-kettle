@@ -119,14 +119,14 @@ public class MonetDBAgileMartDialog extends MonetDBBulkLoaderDialog implements S
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "MonetDBAgileMartDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "MonetDBAgileMartDialog.Shell.Title")); 
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname = new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname = new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -151,7 +151,7 @@ public class MonetDBAgileMartDialog extends MonetDBBulkLoaderDialog implements S
 
         // Schema line...
         wlSchema=new Label(shell, SWT.RIGHT);
-        wlSchema.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.TargetSchema.Label")); //$NON-NLS-1$
+        wlSchema.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.TargetSchema.Label")); 
         props.setLook(wlSchema);
         fdlSchema=new FormData();
         fdlSchema.left = new FormAttachment(0, 0);
@@ -171,7 +171,7 @@ public class MonetDBAgileMartDialog extends MonetDBBulkLoaderDialog implements S
 
 		// Table line...
 		wlTable = new Label(shell, SWT.RIGHT);
-		wlTable.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.TargetTable.Label")); //$NON-NLS-1$
+		wlTable.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.TargetTable.Label")); 
  		props.setLook(wlTable);
 		fdlTable = new FormData();
 		fdlTable.left = new FormAttachment(0, 0);
@@ -181,7 +181,7 @@ public class MonetDBAgileMartDialog extends MonetDBBulkLoaderDialog implements S
 		
 		wbTable = new Button(shell, SWT.PUSH | SWT.CENTER);
  		props.setLook(wbTable);
-		wbTable.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
+		wbTable.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Browse.Button")); 
 		fdbTable = new FormData();
 		fdbTable.right = new FormAttachment(100, 0);
 		fdbTable.top = new FormAttachment(wSchema, margin);
@@ -199,7 +199,7 @@ public class MonetDBAgileMartDialog extends MonetDBBulkLoaderDialog implements S
 
         // Buffer size file line
         wlBufferSize = new Label(shell, SWT.RIGHT);
-        wlBufferSize.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.BufferSize.Label")); //$NON-NLS-1$
+        wlBufferSize.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.BufferSize.Label")); 
         props.setLook(wlBufferSize);
         fdlBufferSize = new FormData();
         fdlBufferSize.left = new FormAttachment(0, 0);
@@ -217,9 +217,9 @@ public class MonetDBAgileMartDialog extends MonetDBBulkLoaderDialog implements S
 
 		// THE BUTTONS
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 
@@ -302,9 +302,9 @@ public class MonetDBAgileMartDialog extends MonetDBBulkLoaderDialog implements S
    */
   public void getData() {
     if (log.isDebug())
-      logDebug(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+      logDebug(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Log.GettingKeyInfo")); 
 
-    wBufferSize.setText("" + input.getBufferSize()); //$NON-NLS-1$
+    wBufferSize.setText("" + input.getBufferSize()); 
 
     if (input.getSchemaName() != null)
       wSchema.setText(input.getSchemaName());

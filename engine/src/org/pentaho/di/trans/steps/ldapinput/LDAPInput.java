@@ -163,14 +163,14 @@ public class LDAPInput extends BaseStep implements StepInterface
 				data.indexOfSearchBaseField =getInputRowMeta().indexOfValue(meta.getDynamicSearchFieldName());
 				if (data.indexOfSearchBaseField<0) {
 					// The field is unreachable !
-					throw new KettleException(BaseMessages.getString(PKG, "LDAPInput.Exception.CouldnotFindField",meta.getDynamicSearchFieldName())); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleException(BaseMessages.getString(PKG, "LDAPInput.Exception.CouldnotFindField",meta.getDynamicSearchFieldName()));  
 				}
 			}
 			if(meta.isDynamicFilter()) {
 				data.indexOfFilterField =getInputRowMeta().indexOfValue(meta.getDynamicFilterFieldName());
 				if (data.indexOfFilterField<0) {
 					// The field is unreachable !
-					throw new KettleException(BaseMessages.getString(PKG, "LDAPInput.Exception.CouldnotFindField",meta.getDynamicFilterFieldName())); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleException(BaseMessages.getString(PKG, "LDAPInput.Exception.CouldnotFindField",meta.getDynamicFilterFieldName()));  
 				}
 			}
 		}// end if

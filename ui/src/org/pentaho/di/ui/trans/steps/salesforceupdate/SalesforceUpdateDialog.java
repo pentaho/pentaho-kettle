@@ -470,7 +470,7 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
         
 		// THE UPDATE/INSERT TABLE
 		wlReturn = new Label(wGeneralComp, SWT.NONE);
-		wlReturn.setText(BaseMessages.getString(PKG, "SalesforceUpdateDialog.UpdateFields.Label")); //$NON-NLS-1$
+		wlReturn.setText(BaseMessages.getString(PKG, "SalesforceUpdateDialog.UpdateFields.Label")); 
  		props.setLook(wlReturn);
 		fdlReturn = new FormData();
 		fdlReturn.left = new FormAttachment(0, 0);
@@ -481,16 +481,16 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
 		int UpInsRows = (input.getUpdateLookup() != null ? input.getUpdateLookup().length : 1);
 
 		ciReturn = new ColumnInfo[UpInsCols];
-		ciReturn[0] = new ColumnInfo(BaseMessages.getString(PKG, "SalesforceUpdateDialog.ColumnInfo.TableField"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
-		ciReturn[1] = new ColumnInfo(BaseMessages.getString(PKG, "SalesforceUpdateDialog.ColumnInfo.StreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
-		ciReturn[2] = new ColumnInfo(BaseMessages.getString(PKG, "SalesforceUpdateDialog.ColumnInfo.UseExternalId"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {"Y","N"}); //$NON-NLS-1$
+		ciReturn[0] = new ColumnInfo(BaseMessages.getString(PKG, "SalesforceUpdateDialog.ColumnInfo.TableField"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); 
+		ciReturn[1] = new ColumnInfo(BaseMessages.getString(PKG, "SalesforceUpdateDialog.ColumnInfo.StreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); 
+		ciReturn[2] = new ColumnInfo(BaseMessages.getString(PKG, "SalesforceUpdateDialog.ColumnInfo.UseExternalId"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {"Y","N"}); 
 		ciReturn[2].setToolTip(BaseMessages.getString(PKG, "SalesforceUpdateDialog.ColumnInfo.UseExternalId.Tooltip"));
 		tableFieldColumns.add(ciReturn[0]);
 		wReturn = new TableView(transMeta, wGeneralComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
 				ciReturn, UpInsRows, lsMod, props);
 
 		wGetLU = new Button(wGeneralComp, SWT.PUSH);
-		wGetLU.setText(BaseMessages.getString(PKG, "SalesforceUpdateDialog.GetAndUpdateFields.Label")); //$NON-NLS-1$
+		wGetLU.setText(BaseMessages.getString(PKG, "SalesforceUpdateDialog.GetAndUpdateFields.Label")); 
 		fdGetLU = new FormData();
 		fdGetLU.top   = new FormAttachment(wlReturn, margin);
 		fdGetLU.right = new FormAttachment(100, 0);
@@ -498,7 +498,7 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
 		
 		
 		wDoMapping = new Button(wGeneralComp, SWT.PUSH);
-		wDoMapping.setText(BaseMessages.getString(PKG, "SalesforceUpdateDialog.EditMapping.Label")); //$NON-NLS-1$
+		wDoMapping.setText(BaseMessages.getString(PKG, "SalesforceUpdateDialog.EditMapping.Label")); 
 		fdDoMapping = new FormData();
 		fdDoMapping.top   = new FormAttachment(wGetLU, margin);
 		fdDoMapping.right = new FormAttachment(100, 0);
@@ -576,9 +576,9 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
 
 		// THE BUTTONS
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 		
@@ -664,8 +664,8 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
 		}
 		catch (KettleException ke)
 		{
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "SalesforceUpdateDialog.FailedToGetFields.DialogTitle"), //$NON-NLS-1$
-					BaseMessages.getString(PKG, "SalesforceUpdateDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "SalesforceUpdateDialog.FailedToGetFields.DialogTitle"), 
+					BaseMessages.getString(PKG, "SalesforceUpdateDialog.FailedToGetFields.DialogMessage"), ke); 
 		}
 	}
  public void checkPasswordVisible()

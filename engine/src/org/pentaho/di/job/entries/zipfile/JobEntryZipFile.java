@@ -995,14 +995,14 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
       // execute method fails if the file already exists; we should too
       putFailIfExists(ctx1, true);
     }
-    andValidator().validate(this, "zipFilename", remarks, ctx1);//$NON-NLS-1$
+    andValidator().validate(this, "zipFilename", remarks, ctx1);
 
     if (2 == afterzip) {
       // setting says to move
-      andValidator().validate(this, "moveToDirectory", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+      andValidator().validate(this, "moveToDirectory", remarks, putValidators(notBlankValidator())); 
     }
 
-    andValidator().validate(this, "sourceDirectory", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+    andValidator().validate(this, "sourceDirectory", remarks, putValidators(notBlankValidator())); 
 
   }
   

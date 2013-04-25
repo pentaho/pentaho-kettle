@@ -482,7 +482,7 @@ public class PropertyOutputDialog extends BaseStepDialog implements StepDialogIn
 
 		// FileNameField Line
 		wlFileNameField=new Label(wFileName, SWT.RIGHT);
-		wlFileNameField.setText(BaseMessages.getString(PKG, "PropertyOutputDialog.FileNameField.Label")); //$NON-NLS-1$
+		wlFileNameField.setText(BaseMessages.getString(PKG, "PropertyOutputDialog.FileNameField.Label")); 
  		props.setLook(wlFileNameField);
 		fdlFileNameField=new FormData();
 		fdlFileNameField.left = new FormAttachment(0, 0);

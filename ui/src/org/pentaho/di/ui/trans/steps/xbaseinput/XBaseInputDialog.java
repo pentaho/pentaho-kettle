@@ -146,14 +146,14 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "XBaseInputDialog.Dialog.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "XBaseInputDialog.Dialog.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "System.Label.StepName")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "System.Label.StepName")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -173,7 +173,7 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 	
 		// Filename line
 		wlFilename=new Label(shell, SWT.RIGHT);
-		wlFilename.setText(BaseMessages.getString(PKG, "System.Label.Filename")); //$NON-NLS-1$
+		wlFilename.setText(BaseMessages.getString(PKG, "System.Label.Filename")); 
  		props.setLook(wlFilename);
 		fdlFilename=new FormData();
 		fdlFilename.left = new FormAttachment(0, 0);
@@ -183,7 +183,7 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 		
 		wbFilename=new Button(shell, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbFilename);
-		wbFilename.setText(BaseMessages.getString(PKG, "System.Button.Browse")); //$NON-NLS-1$
+		wbFilename.setText(BaseMessages.getString(PKG, "System.Button.Browse")); 
 		fdbFilename=new FormData();
 		fdbFilename.right= new FormAttachment(100, 0);
 		fdbFilename.top  = new FormAttachment(wStepname, margin);
@@ -202,7 +202,7 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
         // 
         
         gAccepting = new Group(shell, SWT.SHADOW_ETCHED_IN);
-        gAccepting.setText(BaseMessages.getString(PKG, "XBaseInputDialog.AcceptingGroup.Label")); //$NON-NLS-1$;
+        gAccepting.setText(BaseMessages.getString(PKG, "XBaseInputDialog.AcceptingGroup.Label")); ;
         FormLayout acceptingLayout = new FormLayout();
         acceptingLayout.marginWidth  = 3;
         acceptingLayout.marginHeight = 3;
@@ -291,7 +291,7 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
         
 		// Limit input ...
 		wlLimit=new Label(shell, SWT.RIGHT);
-		wlLimit.setText(BaseMessages.getString(PKG, "XBaseInputDialog.LimitSize.Label")); //$NON-NLS-1$
+		wlLimit.setText(BaseMessages.getString(PKG, "XBaseInputDialog.LimitSize.Label")); 
  		props.setLook(wlLimit);
 		fdlLimit=new FormData();
 		fdlLimit.left = new FormAttachment(0, 0);
@@ -309,7 +309,7 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 
 		// Add rownr (1...)?
 		wlAddRownr=new Label(shell, SWT.RIGHT);
-		wlAddRownr.setText(BaseMessages.getString(PKG, "XBaseInputDialog.AddRowNr.Label")); //$NON-NLS-1$
+		wlAddRownr.setText(BaseMessages.getString(PKG, "XBaseInputDialog.AddRowNr.Label")); 
  		props.setLook(wlAddRownr);
 		fdlAddRownr=new FormData();
 		fdlAddRownr.left = new FormAttachment(0, 0);
@@ -318,7 +318,7 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 		wlAddRownr.setLayoutData(fdlAddRownr);
 		wAddRownr=new Button(shell, SWT.CHECK );
  		props.setLook(wAddRownr);
-		wAddRownr.setToolTipText(BaseMessages.getString(PKG, "XBaseInputDialog.AddRowNr.Tooltip")); //$NON-NLS-1$
+		wAddRownr.setToolTipText(BaseMessages.getString(PKG, "XBaseInputDialog.AddRowNr.Tooltip")); 
 		fdAddRownr=new FormData();
 		fdAddRownr.left = new FormAttachment(middle, 0);
 		fdAddRownr.top  = new FormAttachment(wLimit, margin);
@@ -327,7 +327,7 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 
 		// FieldRownr input ...
 		wlFieldRownr=new Label(shell, SWT.LEFT);
-		wlFieldRownr.setText(BaseMessages.getString(PKG, "XBaseInputDialog.FieldnameOfRowNr.Label")); //$NON-NLS-1$
+		wlFieldRownr.setText(BaseMessages.getString(PKG, "XBaseInputDialog.FieldnameOfRowNr.Label")); 
  		props.setLook(wlFieldRownr);
 		fdlFieldRownr=new FormData();
 		fdlFieldRownr.left = new FormAttachment(wAddRownr, margin);
@@ -397,11 +397,11 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
         wPreview=new Button(shell, SWT.PUSH);
-        wPreview.setText(BaseMessages.getString(PKG, "System.Button.Preview")); //$NON-NLS-1$
+        wPreview.setText(BaseMessages.getString(PKG, "System.Button.Preview")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 		
 		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, wCharactersetName);
 
@@ -436,13 +436,13 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 				public void widgetSelected(SelectionEvent e) 
 				{
 					FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-					dialog.setFilterExtensions(new String[] {"*.dbf;*.DBF", "*"}); //$NON-NLS-1$ //$NON-NLS-2$
+					dialog.setFilterExtensions(new String[] {"*.dbf;*.DBF", "*"});  
 					if (wFilename.getText()!=null)
 					{
 						dialog.setFileName(wFilename.getText());
 					}
 						
-					dialog.setFilterNames(new String[] {BaseMessages.getString(PKG, "XBaseInputDialog.Filter.DBaseFiles"), BaseMessages.getString(PKG, "System.FileType.AllFiles")}); //$NON-NLS-1$ //$NON-NLS-2$
+					dialog.setFilterNames(new String[] {BaseMessages.getString(PKG, "XBaseInputDialog.Filter.DBaseFiles"), BaseMessages.getString(PKG, "System.FileType.AllFiles")});  
 					
 					if (dialog.open()!=null)
 					{
@@ -533,7 +533,7 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
         
 		if (Const.isEmpty(meta.getDbfFileName()) && !meta.isAcceptingFilenames())
 		{
-			throw new KettleStepException(BaseMessages.getString(PKG, "XBaseInputDialog.Exception.SpecifyAFileToUse")); //$NON-NLS-1$
+			throw new KettleStepException(BaseMessages.getString(PKG, "XBaseInputDialog.Exception.SpecifyAFileToUse")); 
 		}
 	}
 	
@@ -550,7 +550,7 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
 			mb.setMessage(e.toString());
-			mb.setText(BaseMessages.getString(PKG, "System.Warning")); //$NON-NLS-1$
+			mb.setText(BaseMessages.getString(PKG, "System.Warning")); 
 			mb.open();
 		}
 		dispose();
@@ -576,7 +576,7 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
             
 	        TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
 	        
-	        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), BaseMessages.getString(PKG, "XBaseInputDialog.PreviewSize.DialogTitle"), BaseMessages.getString(PKG, "XBaseInputDialog.PreviewSize.DialogMessage")); //$NON-NLS-1$ //$NON-NLS-2$
+	        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), BaseMessages.getString(PKG, "XBaseInputDialog.PreviewSize.DialogTitle"), BaseMessages.getString(PKG, "XBaseInputDialog.PreviewSize.DialogMessage"));  
 	        int previewSize = numberDialog.open();
 	        if (previewSize>0)
 	        {
@@ -590,8 +590,8 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 	            {
 	                if (trans.getResult()!=null && trans.getResult().getNrErrors()>0)
 	                {
-	                	EnterTextDialog etd = new EnterTextDialog(shell, BaseMessages.getString(PKG, "System.Dialog.PreviewError.Title"),   //$NON-NLS-1$
-	                			BaseMessages.getString(PKG, "System.Dialog.PreviewError.Message"), loggingText, true ); //$NON-NLS-1$
+	                	EnterTextDialog etd = new EnterTextDialog(shell, BaseMessages.getString(PKG, "System.Dialog.PreviewError.Title"),   
+	                			BaseMessages.getString(PKG, "System.Dialog.PreviewError.Message"), loggingText, true ); 
 	                	etd.setReadOnly();
 	                	etd.open();
 	                }
@@ -603,8 +603,8 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
     	}
     	catch(Exception e)
     	{
-    		new ErrorDialog(shell, BaseMessages.getString(PKG, "System.Dialog.PreviewError.Title"),  //$NON-NLS-1$
-    				BaseMessages.getString(PKG, "System.Dialog.PreviewError.Message"), e); //$NON-NLS-1$
+    		new ErrorDialog(shell, BaseMessages.getString(PKG, "System.Dialog.PreviewError.Title"),  
+    				BaseMessages.getString(PKG, "System.Dialog.PreviewError.Message"), e); 
     	}
     }
 }

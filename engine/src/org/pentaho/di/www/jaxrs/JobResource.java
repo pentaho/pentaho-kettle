@@ -12,7 +12,7 @@ import javax.ws.rs.core.Response;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.job.Job;
@@ -41,9 +41,9 @@ public class JobResource {
   @Path("/log/{id : .+}/{logStart : .+}")
   @Produces({ MediaType.TEXT_PLAIN })
   public String getJobLog(@PathParam("id") String id, @PathParam("logStart") int startLineNr) {
-    int lastLineNr = CentralLogStore.getLastBufferLineNr();
+    int lastLineNr = KettleLogStore.getLastBufferLineNr();
     Job job = CarteResource.getJob(id);
-    String logText = CentralLogStore.getAppender().getBuffer(job.getLogChannel().getLogChannelId(), false, startLineNr, lastLineNr).toString();
+    String logText = KettleLogStore.getAppender().getBuffer(job.getLogChannel().getLogChannelId(), false, startLineNr, lastLineNr).toString();
     return logText;
   }
 
@@ -99,7 +99,7 @@ public class JobResource {
 
           // Discard old log lines from the old job
           //
-          CentralLogStore.discardLines(job.getLogChannelId(), true);
+          KettleLogStore.discardLines(job.getLogChannelId(), true);
 
           CarteSingleton.getInstance().getJobMap().replaceJob(entry, newJob, jobConfiguration);
           job = newJob;
@@ -126,7 +126,7 @@ public class JobResource {
   public Response removeJob(@PathParam("id") String id) {
     Job job = CarteResource.getJob(id);
     CarteObjectEntry entry = CarteResource.getCarteObjectEntry(id);
-    CentralLogStore.discardLines(job.getLogChannelId(), true);
+    KettleLogStore.discardLines(job.getLogChannelId(), true);
     CarteSingleton.getInstance().getJobMap().removeJob(entry);
     return Response.ok().build();
   }

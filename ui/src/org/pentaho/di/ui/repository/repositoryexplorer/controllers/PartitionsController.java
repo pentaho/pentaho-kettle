@@ -68,7 +68,7 @@ public class PartitionsController extends LazilyInitializedController implements
 
   @Override
   public String getName() {
-    return "partitionsController"; //$NON-NLS-1$
+    return "partitionsController"; 
   }
 
   public void init(Repository repository) throws ControllerInitializationException {
@@ -78,10 +78,10 @@ public class PartitionsController extends LazilyInitializedController implements
   public void createBindings() {
     refreshPartitions();
     try {
-      partitionsTable = (XulTree) document.getElementById("partitions-table"); //$NON-NLS-1$
+      partitionsTable = (XulTree) document.getElementById("partitions-table"); 
       bf.setBindingType(Binding.Type.ONE_WAY);
-      bf.createBinding(partitionList, "children", partitionsTable, "elements").fireSourceChanged(); //$NON-NLS-1$ //$NON-NLS-2$
-      bf.createBinding(partitionsTable, "selectedItems", this, "enableButtons"); //$NON-NLS-1$ //$NON-NLS-2$
+      bf.createBinding(partitionList, "children", partitionsTable, "elements").fireSourceChanged();  
+      bf.createBinding(partitionsTable, "selectedItems", this, "enableButtons");  
     } catch (Exception e) {
       // convert to runtime exception so it bubbles up through the UI
       throw new RuntimeException(e);
@@ -90,7 +90,7 @@ public class PartitionsController extends LazilyInitializedController implements
 
   protected boolean doLazyInit() {
     // Load the SWT Shell from the explorer dialog
-    shell = ((SwtDialog) document.getElementById("repository-explorer-dialog")).getShell(); //$NON-NLS-1$
+    shell = ((SwtDialog) document.getElementById("repository-explorer-dialog")).getShell(); 
 
     enableButtons(true, false, false);
     bf = new SwtBindingFactory();
@@ -107,7 +107,7 @@ public class PartitionsController extends LazilyInitializedController implements
   }
 
   public void editPartition() {
-    String partitionSchemaName = ""; //$NON-NLS-1$
+    String partitionSchemaName = ""; 
     try {
       Collection<UIPartition> partitions = partitionsTable.getSelectedItems();
 
@@ -119,36 +119,36 @@ public class PartitionsController extends LazilyInitializedController implements
         ObjectId partitionId = repository.getPartitionSchemaID(partitionSchema.getName());
         if (partitionId == null) {
           MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-          mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.DoesNotExists.Message", partitionSchemaName)); //$NON-NLS-1$
-          mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Edit.Title")); //$NON-NLS-1$
+          mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.DoesNotExists.Message", partitionSchemaName)); 
+          mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Edit.Title")); 
           mb.open();
         } else {
           PartitionSchemaDialog partitionDialog = new PartitionSchemaDialog(shell, partitionSchema, repository
               .readDatabases(), variableSpace);
           if (partitionDialog.open()) {
-            if (partitionSchema.getName() != null && !partitionSchema.getName().equals("")) {//$NON-NLS-1$
+            if (partitionSchema.getName() != null && !partitionSchema.getName().equals("")) {
               repository.insertLogEntry(BaseMessages.getString(RepositoryExplorer.class,
-                  "PartitionsController.Message.UpdatingPartition", partitionSchema.getName()));//$NON-NLS-1$
+                  "PartitionsController.Message.UpdatingPartition", partitionSchema.getName()));
               repository.save(partitionSchema, Const.VERSION_COMMENT_EDIT_VERSION, null);
             } else {
               MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-              mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Edit.InvalidName.Message")); //$NON-NLS-1$
-              mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Edit.Title")); //$NON-NLS-1$
+              mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Edit.InvalidName.Message")); 
+              mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Edit.Title")); 
               mb.open();
             }
           }
         }
       } else {
         MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-        mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.NoItemSelected.Message")); //$NON-NLS-1$
-        mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Edit.Title")); //$NON-NLS-1$
+        mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.NoItemSelected.Message")); 
+        mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Edit.Title")); 
         mb.open();
       }
     } catch (KettleException e) {
       new ErrorDialog(
           shell,
-          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Edit.Title"), //$NON-NLS-1$
-          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Edit.UnexpectedError.Message") + partitionSchemaName + "]", e); //$NON-NLS-1$ //$NON-NLS-2$
+          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Edit.Title"), 
+          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Edit.UnexpectedError.Message") + partitionSchemaName + "]", e);  
     } finally {
       refreshPartitions();
     }
@@ -163,34 +163,34 @@ public class PartitionsController extends LazilyInitializedController implements
         // See if this partition already exists...
         ObjectId idPartition = repository.getPartitionSchemaID(partition.getName());
         if (idPartition == null) {
-          if (partition.getName() != null && !partition.getName().equals("")) {//$NON-NLS-1$
+          if (partition.getName() != null && !partition.getName().equals("")) {
             repository.insertLogEntry(BaseMessages.getString(RepositoryExplorer.class,
-                "PartitionsController.Message.CreatingPartition", partition.getName()));//$NON-NLS-1$
+                "PartitionsController.Message.CreatingPartition", partition.getName()));
             repository.save(partition, Const.VERSION_COMMENT_INITIAL_VERSION, null);
           } else {
             MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-            mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Edit.InvalidName.Message")); //$NON-NLS-1$
-            mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Create.Title")); //$NON-NLS-1$
+            mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Edit.InvalidName.Message")); 
+            mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Create.Title")); 
             mb.open();
           }
         } else {
           MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-          mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Create.AlreadyExists.Message")); //$NON-NLS-1$
-          mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Create.AlreadyExists.Title")); //$NON-NLS-1$
+          mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Create.AlreadyExists.Message")); 
+          mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Create.AlreadyExists.Title")); 
           mb.open();
         }
       }
     } catch (KettleException e) {
       new ErrorDialog(shell, BaseMessages.getString(PKG,
-          "RepositoryExplorerDialog.Partition.Create.UnexpectedError.Title"), //$NON-NLS-1$
-          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Create.UnexpectedError.Message"), e); //$NON-NLS-1$
+          "RepositoryExplorerDialog.Partition.Create.UnexpectedError.Title"), 
+          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Create.UnexpectedError.Message"), e); 
     } finally {
       refreshPartitions();
     }
   }
 
   public void removePartition() {
-    String partitionSchemaName = ""; //$NON-NLS-1$
+    String partitionSchemaName = ""; 
     try {
       Collection<UIPartition> partitions = partitionsTable.getSelectedItems();
 
@@ -204,8 +204,8 @@ public class PartitionsController extends LazilyInitializedController implements
             ObjectId partitionId = repository.getPartitionSchemaID(partitionSchema.getName());
             if (partitionId == null) {
               MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-              mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.DoesNotExists.Message", partitionSchemaName)); //$NON-NLS-1$
-              mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Delete.Title")); //$NON-NLS-1$
+              mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.DoesNotExists.Message", partitionSchemaName)); 
+              mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Delete.Title")); 
               mb.open();
             } else {
               repository.deletePartitionSchema(partitionId);
@@ -214,14 +214,14 @@ public class PartitionsController extends LazilyInitializedController implements
         }
       } else {
         MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-        mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.NoItemSelected.Message")); //$NON-NLS-1$
-        mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Delete.Title")); //$NON-NLS-1$
+        mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.NoItemSelected.Message")); 
+        mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Delete.Title")); 
         mb.open();
       }
     } catch (KettleException e) {
       new ErrorDialog(
           shell,
-          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Delete.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Delete.UnexpectedError.Message") + partitionSchemaName + "]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Delete.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Delete.UnexpectedError.Message") + partitionSchemaName + "]", e);   //$NON-NLS-3$
     } finally {
       refreshPartitions();
     }
@@ -265,9 +265,9 @@ public class PartitionsController extends LazilyInitializedController implements
     enableButtons(true, enableEdit, enableRemove);
   }
   public void enableButtons(boolean enableNew, boolean enableEdit, boolean enableRemove) {
-    XulButton bNew = (XulButton) document.getElementById("partitions-new"); //$NON-NLS-1$
-    XulButton bEdit = (XulButton) document.getElementById("partitions-edit"); //$NON-NLS-1$
-    XulButton bRemove = (XulButton) document.getElementById("partitions-remove"); //$NON-NLS-1$
+    XulButton bNew = (XulButton) document.getElementById("partitions-new"); 
+    XulButton bEdit = (XulButton) document.getElementById("partitions-edit"); 
+    XulButton bRemove = (XulButton) document.getElementById("partitions-remove"); 
 
     bNew.setDisabled(!enableNew);
     bEdit.setDisabled(!enableEdit);

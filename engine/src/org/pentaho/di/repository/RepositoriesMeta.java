@@ -305,11 +305,11 @@ public class RepositoriesMeta
     				  repositoryMeta.setDescription(repositoryMeta.getName());
     				}
     				addRepository(repositoryMeta);
-    				log.logDebug(BaseMessages.getString(PKG, "RepositoryMeta.Log.ReadRepository", repositoryMeta.getName() )); //$NON-NLS-1$
+    				log.logDebug(BaseMessages.getString(PKG, "RepositoryMeta.Log.ReadRepository", repositoryMeta.getName() )); 
   				} else {
             unableToReadIds.append(id);
             unableToReadIds.append(",");
-            log.logDebug(BaseMessages.getString(PKG, "RepositoryMeta.Error.ReadRepositoryId", id )); //$NON-NLS-1$
+            log.logDebug(BaseMessages.getString(PKG, "RepositoryMeta.Error.ReadRepositoryId", id )); 
   				}
 				} catch (KettleException ex) {
 				  // Get to the root cause

@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.gui.Point;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -51,7 +51,7 @@ public class PauseTransServletTest {
 
   @Test
   public void testPauseTransServletEscapesHtmlWhenTransFound() throws ServletException, IOException {
-    CentralLogStore.init();
+    KettleLogStore.init();
     HttpServletRequest mockHttpServletRequest = mock(HttpServletRequest.class);
     HttpServletResponse mockHttpServletResponse = mock(HttpServletResponse.class);
     Trans mockTrans = mock(Trans.class);

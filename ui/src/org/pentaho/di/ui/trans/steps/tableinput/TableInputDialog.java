@@ -146,14 +146,14 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "TableInputDialog.TableInput")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "TableInputDialog.TableInput")); 
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
         // Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "TableInputDialog.StepName")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "TableInputDialog.StepName")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -177,18 +177,18 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 
 		// Some buttons
     wOK = new Button(shell, SWT.PUSH);
-    wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+    wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
     wPreview = new Button(shell, SWT.PUSH);
-    wPreview.setText(BaseMessages.getString(PKG, "System.Button.Preview")); //$NON-NLS-1$
+    wPreview.setText(BaseMessages.getString(PKG, "System.Button.Preview")); 
     wCancel = new Button(shell, SWT.PUSH);
-    wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+    wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
     // wHelp = createHelpButton(shell, stepMeta);
     
 		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, null);
 
 		// Limit input ...
 		wlLimit=new Label(shell, SWT.RIGHT);
-		wlLimit.setText(BaseMessages.getString(PKG, "TableInputDialog.LimitSize")); //$NON-NLS-1$
+		wlLimit.setText(BaseMessages.getString(PKG, "TableInputDialog.LimitSize")); 
  		props.setLook(wlLimit);
 		fdlLimit=new FormData();
 		fdlLimit.left = new FormAttachment(0, 0);
@@ -206,7 +206,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 
     // Execute for each row?
     wlEachRow = new Label(shell, SWT.RIGHT);
-    wlEachRow.setText(BaseMessages.getString(PKG, "TableInputDialog.ExecuteForEachRow")); //$NON-NLS-1$
+    wlEachRow.setText(BaseMessages.getString(PKG, "TableInputDialog.ExecuteForEachRow")); 
     props.setLook(wlEachRow);
     fdlEachRow = new FormData();
     fdlEachRow.left = new FormAttachment(0, 0);
@@ -230,7 +230,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 
     // Read date from...
     wlDatefrom = new Label(shell, SWT.RIGHT);
-    wlDatefrom.setText(BaseMessages.getString(PKG, "TableInputDialog.InsertDataFromStep")); //$NON-NLS-1$
+    wlDatefrom.setText(BaseMessages.getString(PKG, "TableInputDialog.InsertDataFromStep")); 
     props.setLook(wlDatefrom);
     fdlDatefrom = new FormData();
     fdlDatefrom.left = new FormAttachment(0, 0);
@@ -255,7 +255,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
     // Replace variables in SQL?
     //
     wlVariables = new Label(shell, SWT.RIGHT);
-    wlVariables.setText(BaseMessages.getString(PKG, "TableInputDialog.ReplaceVariables")); //$NON-NLS-1$
+    wlVariables.setText(BaseMessages.getString(PKG, "TableInputDialog.ReplaceVariables")); 
     props.setLook(wlVariables);
     fdlVariables = new FormData();
     fdlVariables.left = new FormAttachment(0, 0);
@@ -279,7 +279,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
     // Lazy conversion?
     //
     wlLazyConversion = new Label(shell, SWT.RIGHT);
-    wlLazyConversion.setText(BaseMessages.getString(PKG, "TableInputDialog.LazyConversion")); //$NON-NLS-1$
+    wlLazyConversion.setText(BaseMessages.getString(PKG, "TableInputDialog.LazyConversion")); 
     props.setLook(wlLazyConversion);
     fdlLazyConversion = new FormData();
     fdlLazyConversion.left = new FormAttachment(0, 0);
@@ -310,7 +310,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 
     // Table line...
     wlSQL = new Label(shell, SWT.NONE);
-    wlSQL.setText(BaseMessages.getString(PKG, "TableInputDialog.SQL")); //$NON-NLS-1$
+    wlSQL.setText(BaseMessages.getString(PKG, "TableInputDialog.SQL")); 
     props.setLook(wlSQL);
     fdlSQL = new FormData();
     fdlSQL.left = new FormAttachment(0, 0);
@@ -319,7 +319,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 
     wbTable = new Button(shell, SWT.PUSH | SWT.CENTER);
     props.setLook(wbTable);
-    wbTable.setText(BaseMessages.getString(PKG, "TableInputDialog.GetSQLAndSelectStatement")); //$NON-NLS-1$
+    wbTable.setText(BaseMessages.getString(PKG, "TableInputDialog.GetSQLAndSelectStatement")); 
     fdbTable = new FormData();
     fdbTable.right = new FormAttachment(100, 0);
     fdbTable.top = new FormAttachment(wConnection, margin * 2);
@@ -472,7 +472,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
       wSQL.setText(input.getSQL());
     if (input.getDatabaseMeta() != null)
       wConnection.setText(input.getDatabaseMeta().getName());
-    wLimit.setText(Const.NVL(input.getRowLimit(), "")); //$NON-NLS-1$
+    wLimit.setText(Const.NVL(input.getRowLimit(), "")); 
 
     StreamInterface infoStream = input.getStepIOMeta().getInfoStreams().get(0);
     if (infoStream.getStepMeta() != null) {
@@ -536,8 +536,8 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 
     if (input.getDatabaseMeta() == null) {
       MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-      mb.setMessage(BaseMessages.getString(PKG, "TableInputDialog.SelectValidConnection")); //$NON-NLS-1$
-      mb.setText(BaseMessages.getString(PKG, "TableInputDialog.DialogCaptionError")); //$NON-NLS-1$
+      mb.setMessage(BaseMessages.getString(PKG, "TableInputDialog.SelectValidConnection")); 
+      mb.setText(BaseMessages.getString(PKG, "TableInputDialog.DialogCaptionError")); 
       mb.open();
       return;
     }
@@ -553,12 +553,12 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, transMeta.getDatabases());
 			if (std.open())
 			{
-				String sql = "SELECT *"+Const.CR+"FROM "+inf.getQuotedSchemaTableCombination(std.getSchemaName(), std.getTableName())+Const.CR; //$NON-NLS-1$ //$NON-NLS-2$
+				String sql = "SELECT *"+Const.CR+"FROM "+inf.getQuotedSchemaTableCombination(std.getSchemaName(), std.getTableName())+Const.CR;  
 				wSQL.setText(sql);
 
 				MessageBox yn = new MessageBox(shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_QUESTION);
-				yn.setMessage(BaseMessages.getString(PKG, "TableInputDialog.IncludeFieldNamesInSQL")); //$NON-NLS-1$
-				yn.setText(BaseMessages.getString(PKG, "TableInputDialog.DialogCaptionQuestion")); //$NON-NLS-1$
+				yn.setMessage(BaseMessages.getString(PKG, "TableInputDialog.IncludeFieldNamesInSQL")); 
+				yn.setText(BaseMessages.getString(PKG, "TableInputDialog.DialogCaptionQuestion")); 
 				int id = yn.open();
 				switch(id)
 				{
@@ -573,29 +573,29 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 						RowMetaInterface fields = db.getQueryFields(sql, false);
 						if (fields!=null)
 						{
-							sql = "SELECT"+Const.CR; //$NON-NLS-1$
+							sql = "SELECT"+Const.CR; 
 							for (int i=0;i<fields.size();i++)
 							{
 								ValueMetaInterface field=fields.getValueMeta(i);
-								if (i==0) sql+="  "; else sql+=", "; //$NON-NLS-1$ //$NON-NLS-2$
+								if (i==0) sql+="  "; else sql+=", ";  
 								sql+=inf.quoteField(field.getName())+Const.CR;
 							}
-							sql+="FROM "+inf.getQuotedSchemaTableCombination(std.getSchemaName(), std.getTableName())+Const.CR; //$NON-NLS-1$
+							sql+="FROM "+inf.getQuotedSchemaTableCombination(std.getSchemaName(), std.getTableName())+Const.CR; 
 							wSQL.setText(sql);
 						}
 						else
 						{
 							MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-							mb.setMessage(BaseMessages.getString(PKG, "TableInputDialog.ERROR_CouldNotRetrieveFields")+Const.CR+BaseMessages.getString(PKG, "TableInputDialog.PerhapsNoPermissions")); //$NON-NLS-1$ //$NON-NLS-2$
-							mb.setText(BaseMessages.getString(PKG, "TableInputDialog.DialogCaptionError2")); //$NON-NLS-1$
+							mb.setMessage(BaseMessages.getString(PKG, "TableInputDialog.ERROR_CouldNotRetrieveFields")+Const.CR+BaseMessages.getString(PKG, "TableInputDialog.PerhapsNoPermissions"));  
+							mb.setText(BaseMessages.getString(PKG, "TableInputDialog.DialogCaptionError2")); 
 							mb.open();
 						}
 					}
 					catch(KettleException e)
 					{
 						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-						mb.setText(BaseMessages.getString(PKG, "TableInputDialog.DialogCaptionError3")); //$NON-NLS-1$
-						mb.setMessage(BaseMessages.getString(PKG, "TableInputDialog.AnErrorOccurred")+Const.CR+e.getMessage()); //$NON-NLS-1$
+						mb.setText(BaseMessages.getString(PKG, "TableInputDialog.DialogCaptionError3")); 
+						mb.setMessage(BaseMessages.getString(PKG, "TableInputDialog.AnErrorOccurred")+Const.CR+e.getMessage()); 
 						mb.open(); 
 					}
 					finally
@@ -609,8 +609,8 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 		else
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(BaseMessages.getString(PKG, "TableInputDialog.ConnectionNoLongerAvailable")); //$NON-NLS-1$
-			mb.setText(BaseMessages.getString(PKG, "TableInputDialog.DialogCaptionError4")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "TableInputDialog.ConnectionNoLongerAvailable")); 
+			mb.setText(BaseMessages.getString(PKG, "TableInputDialog.DialogCaptionError4")); 
 			mb.open();
 		}
 					
@@ -648,7 +648,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 
     TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
 
-    EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), BaseMessages.getString(PKG, "TableInputDialog.EnterPreviewSize"), BaseMessages.getString(PKG, "TableInputDialog.NumberOfRowsToPreview")); //$NON-NLS-1$ //$NON-NLS-2$
+    EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), BaseMessages.getString(PKG, "TableInputDialog.EnterPreviewSize"), BaseMessages.getString(PKG, "TableInputDialog.NumberOfRowsToPreview"));  
     int previewSize = numberDialog.open();
     if (previewSize > 0) {
       TransPreviewProgressDialog progressDialog = new TransPreviewProgressDialog(shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize });

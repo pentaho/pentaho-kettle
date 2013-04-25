@@ -89,7 +89,7 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
 
 
   public JobEntryDeleteFolders(String n) {
-    super(n, ""); //$NON-NLS-1$
+    super(n, ""); 
     argFromPrevious = false;
     arguments = null;
 
@@ -99,7 +99,7 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
   }
 
   public JobEntryDeleteFolders() {
-    this(""); //$NON-NLS-1$
+    this(""); 
   }
 
   public Object clone() {
@@ -111,19 +111,19 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
     StringBuffer retval = new StringBuffer(300);
 
     retval.append(super.getXML());
-    retval.append("      ").append(XMLHandler.addTagValue("arg_from_previous", argFromPrevious)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("      ").append(XMLHandler.addTagValue("success_condition", success_condition)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      ").append(XMLHandler.addTagValue("arg_from_previous", argFromPrevious));  
+    retval.append("      ").append(XMLHandler.addTagValue("success_condition", success_condition));  
 	retval.append("      ").append(XMLHandler.addTagValue("limit_folders", limit_folders));
 	
-    retval.append("      <fields>").append(Const.CR); //$NON-NLS-1$
+    retval.append("      <fields>").append(Const.CR); 
     if (arguments != null) {
       for (int i = 0; i < arguments.length; i++) {
-        retval.append("        <field>").append(Const.CR); //$NON-NLS-1$
-        retval.append("          ").append(XMLHandler.addTagValue("name", arguments[i])); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("        </field>").append(Const.CR); //$NON-NLS-1$
+        retval.append("        <field>").append(Const.CR); 
+        retval.append("          ").append(XMLHandler.addTagValue("name", arguments[i]));  
+        retval.append("        </field>").append(Const.CR); 
       }
     }
-    retval.append("      </fields>").append(Const.CR); //$NON-NLS-1$
+    retval.append("      </fields>").append(Const.CR); 
 
     return retval.toString();
   }
@@ -131,61 +131,61 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
   public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep, IMetaStore metaStore) throws KettleXMLException {
     try {
       super.loadXML(entrynode, databases, slaveServers);
-      argFromPrevious = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "arg_from_previous")); //$NON-NLS-1$ //$NON-NLS-2$
+      argFromPrevious = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "arg_from_previous"));  
       success_condition          = XMLHandler.getTagValue(entrynode, "success_condition");
       limit_folders          = XMLHandler.getTagValue(entrynode, "limit_folders");
       
-      Node fields = XMLHandler.getSubNode(entrynode, "fields"); //$NON-NLS-1$
+      Node fields = XMLHandler.getSubNode(entrynode, "fields"); 
 
       // How many field arguments?
-      int nrFields = XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
+      int nrFields = XMLHandler.countNodes(fields, "field"); 
       arguments = new String[nrFields];
 
       // Read them all...
       for (int i = 0; i < nrFields; i++) {
-        Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
+        Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); 
 
-        arguments[i] = XMLHandler.getTagValue(fnode, "name"); //$NON-NLS-1$
+        arguments[i] = XMLHandler.getTagValue(fnode, "name"); 
       }
     } catch (KettleXMLException xe) {
-      throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryDeleteFolders.UnableToLoadFromXml"), xe); //$NON-NLS-1$
+      throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryDeleteFolders.UnableToLoadFromXml"), xe); 
     }
   }
 
   public void loadRep(Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
     try {
-      argFromPrevious = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous"); //$NON-NLS-1$
+      argFromPrevious = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous"); 
       limit_folders  = rep.getJobEntryAttributeString(id_jobentry, "limit_folders");
 		success_condition  = rep.getJobEntryAttributeString(id_jobentry, "success_condition");
 
       // How many arguments?
-      int argnr = rep.countNrJobEntryAttributes(id_jobentry, "name"); //$NON-NLS-1$
+      int argnr = rep.countNrJobEntryAttributes(id_jobentry, "name"); 
       arguments = new String[argnr];
 
       // Read them all...
       for (int a = 0; a < argnr; a++) {
-        arguments[a] = rep.getJobEntryAttributeString(id_jobentry, a, "name"); //$NON-NLS-1$
+        arguments[a] = rep.getJobEntryAttributeString(id_jobentry, a, "name"); 
       }
     } catch (KettleException dbe) {
-      throw new KettleException(BaseMessages.getString(PKG, "JobEntryDeleteFolders.UnableToLoadFromRepo", String.valueOf(id_jobentry)), dbe); //$NON-NLS-1$
+      throw new KettleException(BaseMessages.getString(PKG, "JobEntryDeleteFolders.UnableToLoadFromRepo", String.valueOf(id_jobentry)), dbe); 
     }
   }
 
   public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_job) throws KettleException {
     try {
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "arg_from_previous", argFromPrevious); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "arg_from_previous", argFromPrevious); 
 	  rep.saveJobEntryAttribute(id_job, getObjectId(), "limit_folders",      limit_folders);
 	  rep.saveJobEntryAttribute(id_job, getObjectId(), "success_condition",      success_condition);
 
       // save the arguments...
       if (arguments != null) {
         for (int i = 0; i < arguments.length; i++) {
-          rep.saveJobEntryAttribute(id_job, getObjectId(), i, "name", arguments[i]); //$NON-NLS-1$
+          rep.saveJobEntryAttribute(id_job, getObjectId(), i, "name", arguments[i]); 
         }
       }
     } catch (KettleDatabaseException dbe) {
       throw new KettleException(
-          BaseMessages.getString(PKG, "JobEntryDeleteFolders.UnableToSaveToRepo", String.valueOf(id_job)), dbe); //$NON-NLS-1$
+          BaseMessages.getString(PKG, "JobEntryDeleteFolders.UnableToSaveToRepo", String.valueOf(id_job)), dbe); 
     }
   }
 
@@ -205,7 +205,7 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
 
     if (argFromPrevious) {
       if(log.isDetailed())	
-    	  logDetailed(BaseMessages.getString(PKG, "JobEntryDeleteFolders.FoundPreviousRows", String.valueOf((rows != null ? rows.size() : 0)))); //$NON-NLS-1$
+    	  logDetailed(BaseMessages.getString(PKG, "JobEntryDeleteFolders.FoundPreviousRows", String.valueOf((rows != null ? rows.size() : 0)))); 
     }
 
     if (argFromPrevious && rows != null){
@@ -311,12 +311,12 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
         if (filefolder.getType() == FileType.FOLDER) {
           // It's a folder
           if (log.isDetailed())
-            logDetailed(BaseMessages.getString(PKG, "JobEntryDeleteFolders.ProcessingFolder", foldername)); //$NON-NLS-1$
+            logDetailed(BaseMessages.getString(PKG, "JobEntryDeleteFolders.ProcessingFolder", foldername)); 
           // Delete Files
           int Nr = filefolder.delete(new TextFileSelector());
 
           if (log.isDetailed())
-            logDetailed(BaseMessages.getString(PKG, "JobEntryDeleteFolders.TotalDeleted", foldername,String.valueOf(Nr))); //$NON-NLS-1$
+            logDetailed(BaseMessages.getString(PKG, "JobEntryDeleteFolders.TotalDeleted", foldername,String.valueOf(Nr))); 
           rcode = true;
         } else {
         	// Error...This file is not a folder!
@@ -324,11 +324,11 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
         }
       } else {
         // File already deleted, no reason to try to delete it
-    	  if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "JobEntryDeleteFolders.FolderAlreadyDeleted", foldername)); //$NON-NLS-1$
+    	  if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "JobEntryDeleteFolders.FolderAlreadyDeleted", foldername)); 
         rcode = true;
       }
     } catch (Exception e) {
-      logError(BaseMessages.getString(PKG, "JobEntryDeleteFolders.CouldNotDelete", foldername, e.getMessage()), e); //$NON-NLS-1$
+      logError(BaseMessages.getString(PKG, "JobEntryDeleteFolders.CouldNotDelete", foldername, e.getMessage()), e); 
     } finally {
       if (filefolder != null) {
         try {
@@ -366,7 +366,7 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
   }
 
   public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore) {
-    boolean res = andValidator().validate(this, "arguments", remarks, putValidators(notNullValidator())); //$NON-NLS-1$
+    boolean res = andValidator().validate(this, "arguments", remarks, putValidators(notNullValidator())); 
 
     if (res == false) {
       return;
@@ -377,7 +377,7 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
     putValidators(ctx, notNullValidator(), fileExistsValidator());
 
     for (int i = 0; i < arguments.length; i++) {
-      andValidator().validate(this, "arguments[" + i + "]", remarks, ctx); //$NON-NLS-1$ //$NON-NLS-2$
+      andValidator().validate(this, "arguments[" + i + "]", remarks, ctx);  
     }
   }
 

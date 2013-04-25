@@ -1309,14 +1309,14 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 	    putVariableSpace(ctx1, getVariables());
 	    putValidators(ctx1, notBlankValidator(), fileDoesNotExistValidator());
 	   
-	    andValidator().validate(this, "zipFilename", remarks, ctx1);//$NON-NLS-1$
+	    andValidator().validate(this, "zipFilename", remarks, ctx1);
 
 	    if (2 == afterunzip) {
 	      // setting says to move
-	      andValidator().validate(this, "moveToDirectory", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+	      andValidator().validate(this, "moveToDirectory", remarks, putValidators(notBlankValidator())); 
 	    }
 
-	    andValidator().validate(this, "sourceDirectory", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+	    andValidator().validate(this, "sourceDirectory", remarks, putValidators(notBlankValidator())); 
 
 	  }
 	

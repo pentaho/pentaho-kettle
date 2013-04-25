@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.gui.Point;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
@@ -52,7 +52,7 @@ public class GetJobStatusServletTest {
 
   @Test
   public void testGetJobStatusServletEscapesHtmlWhenTransFound() throws ServletException, IOException {
-    CentralLogStore.init();
+    KettleLogStore.init();
     HttpServletRequest mockHttpServletRequest = mock(HttpServletRequest.class);
     HttpServletResponse mockHttpServletResponse = mock(HttpServletResponse.class);
     Job mockJob = mock(Job.class);

@@ -99,13 +99,13 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface
 		
 	    retval.append("    ").append(XMLHandler.addTagValue("specification_method", specificationMethod == null ? null : specificationMethod.getCode()));
 	    retval.append("    ").append(XMLHandler.addTagValue("trans_object_id", transObjectId == null ? null : transObjectId.toString()));
-	    retval.append("    ").append(XMLHandler.addTagValue("trans_name", transName)); //$NON-NLS-1$
-	    retval.append("    ").append(XMLHandler.addTagValue("filename", fileName)); //$NON-NLS-1$
-	    retval.append("    ").append(XMLHandler.addTagValue("directory_path", directoryPath)); //$NON-NLS-1$
+	    retval.append("    ").append(XMLHandler.addTagValue("trans_name", transName)); 
+	    retval.append("    ").append(XMLHandler.addTagValue("filename", fileName)); 
+	    retval.append("    ").append(XMLHandler.addTagValue("directory_path", directoryPath)); 
 
-	    retval.append("    ").append(XMLHandler.addTagValue("source_step", sourceStepName)); //$NON-NLS-1$
-      retval.append("    ").append(XMLHandler.addTagValue("target_file", targetFile)); //$NON-NLS-1$
-      retval.append("    ").append(XMLHandler.addTagValue("no_execution", noExecution)); //$NON-NLS-1$
+	    retval.append("    ").append(XMLHandler.addTagValue("source_step", sourceStepName)); 
+      retval.append("    ").append(XMLHandler.addTagValue("target_file", targetFile)); 
+      retval.append("    ").append(XMLHandler.addTagValue("no_execution", noExecution)); 
 
 	    retval.append("    ").append(XMLHandler.openTag("mappings"));
 	    for (TargetStepAttribute target : targetSourceMapping.keySet()) {
@@ -132,13 +132,13 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface
         String transId = XMLHandler.getTagValue(stepnode, "trans_object_id");
         transObjectId = Const.isEmpty(transId) ? null : new StringObjectId(transId);
 
-        transName = XMLHandler.getTagValue(stepnode, "trans_name"); //$NON-NLS-1$
-        fileName = XMLHandler.getTagValue(stepnode, "filename"); //$NON-NLS-1$
-        directoryPath = XMLHandler.getTagValue(stepnode, "directory_path"); //$NON-NLS-1$
+        transName = XMLHandler.getTagValue(stepnode, "trans_name"); 
+        fileName = XMLHandler.getTagValue(stepnode, "filename"); 
+        directoryPath = XMLHandler.getTagValue(stepnode, "directory_path"); 
 
-        sourceStepName = XMLHandler.getTagValue(stepnode, "source_step"); //$NON-NLS-1$
-        targetFile = XMLHandler.getTagValue(stepnode, "target_file"); //$NON-NLS-1$
-        noExecution= "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "no_execution")); //$NON-NLS-1$
+        sourceStepName = XMLHandler.getTagValue(stepnode, "source_step"); 
+        targetFile = XMLHandler.getTagValue(stepnode, "target_file"); 
+        noExecution= "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "no_execution")); 
 
         Node mappingsNode = XMLHandler.getSubNode(stepnode, "mappings");
         int nrMappings = XMLHandler.countNodes(mappingsNode, "mapping");
@@ -167,13 +167,13 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface
 		    specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode(method);
 		    String transId = rep.getStepAttributeString(id_step, "trans_object_id");
 		    transObjectId = Const.isEmpty(transId) ? null : new StringObjectId(transId);
-		    transName = rep.getStepAttributeString(id_step, "trans_name"); //$NON-NLS-1$
-		    fileName = rep.getStepAttributeString(id_step, "filename"); //$NON-NLS-1$
-		    directoryPath = rep.getStepAttributeString(id_step, "directory_path"); //$NON-NLS-1$
+		    transName = rep.getStepAttributeString(id_step, "trans_name"); 
+		    fileName = rep.getStepAttributeString(id_step, "filename"); 
+		    directoryPath = rep.getStepAttributeString(id_step, "directory_path"); 
 
-        sourceStepName = rep.getStepAttributeString(id_step, "source_step"); //$NON-NLS-1$
-        targetFile = rep.getStepAttributeString(id_step, "target_file"); //$NON-NLS-1$
-        noExecution = rep.getStepAttributeBoolean(id_step, "no_execution"); //$NON-NLS-1$
+        sourceStepName = rep.getStepAttributeString(id_step, "source_step"); 
+        targetFile = rep.getStepAttributeString(id_step, "target_file"); 
+        noExecution = rep.getStepAttributeBoolean(id_step, "no_execution"); 
 
         int nrMappings = rep.countNrStepAttributes(id_step, "mapping_target_step_name");
         for (int i=0;i<nrMappings;i++) {
@@ -199,13 +199,13 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface
 		try {
 		    rep.saveStepAttribute(id_transformation, id_step, "specification_method", specificationMethod==null ? null : specificationMethod.getCode());
 		    rep.saveStepAttribute(id_transformation, id_step, "trans_object_id", transObjectId==null ? null : transObjectId.toString());
-		    rep.saveStepAttribute(id_transformation, id_step, "filename", fileName); //$NON-NLS-1$
-		    rep.saveStepAttribute(id_transformation, id_step, "trans_name", transName); //$NON-NLS-1$
-		    rep.saveStepAttribute(id_transformation, id_step, "directory_path", directoryPath); //$NON-NLS-1$
+		    rep.saveStepAttribute(id_transformation, id_step, "filename", fileName); 
+		    rep.saveStepAttribute(id_transformation, id_step, "trans_name", transName); 
+		    rep.saveStepAttribute(id_transformation, id_step, "directory_path", directoryPath); 
 
-        rep.saveStepAttribute(id_transformation, id_step, "source_step", sourceStepName); //$NON-NLS-1$
-        rep.saveStepAttribute(id_transformation, id_step, "target_file", targetFile); //$NON-NLS-1$
-        rep.saveStepAttribute(id_transformation, id_step, "no_execution", noExecution); //$NON-NLS-1$
+        rep.saveStepAttribute(id_transformation, id_step, "source_step", sourceStepName); 
+        rep.saveStepAttribute(id_transformation, id_step, "target_file", targetFile); 
+        rep.saveStepAttribute(id_transformation, id_step, "no_execution", noExecution); 
 
         List<TargetStepAttribute> keySet = new ArrayList<TargetStepAttribute>(targetSourceMapping.keySet());
         for (int i=0;i<keySet.size();i++) {
@@ -357,7 +357,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface
             throw new KettleException("Unable to load transformation [" + realTransname + "]", e);
           }
         } else {
-          throw new KettleException(BaseMessages.getString(PKG, "MetaInjectMeta.Exception.UnableToLoadTransformationFromRepository", realTransname, realDirectory)); //$NON-NLS-1$ //$NON-NLS-2$
+          throw new KettleException(BaseMessages.getString(PKG, "MetaInjectMeta.Exception.UnableToLoadTransformationFromRepository", realTransname, realDirectory));  
         }
       }
       break;

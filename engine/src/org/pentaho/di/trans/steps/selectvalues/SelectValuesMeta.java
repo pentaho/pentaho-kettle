@@ -247,39 +247,39 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface,
 	{
 		try
 		{
-			Node fields = XMLHandler.getSubNode(step, "fields"); //$NON-NLS-1$
+			Node fields = XMLHandler.getSubNode(step, "fields"); 
 	
-			int nrfields   = XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
-			int nrremove   = XMLHandler.countNodes(fields, "remove"); //$NON-NLS-1$
-			int nrmeta     = XMLHandler.countNodes(fields, SelectMetadataChange.XML_TAG); //$NON-NLS-1$
+			int nrfields   = XMLHandler.countNodes(fields, "field"); 
+			int nrremove   = XMLHandler.countNodes(fields, "remove"); 
+			int nrmeta     = XMLHandler.countNodes(fields, SelectMetadataChange.XML_TAG); 
 			allocate(nrfields, nrremove, nrmeta);
 			
 			for (int i=0;i<nrfields;i++)
 			{
-				Node line = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
-				selectName     [i] = XMLHandler.getTagValue(line, "name"); //$NON-NLS-1$
-				selectRename   [i] = XMLHandler.getTagValue(line, "rename"); //$NON-NLS-1$
+				Node line = XMLHandler.getSubNodeByNr(fields, "field", i); 
+				selectName     [i] = XMLHandler.getTagValue(line, "name"); 
+				selectRename   [i] = XMLHandler.getTagValue(line, "rename"); 
 				selectLength   [i] = Const.toInt(XMLHandler.getTagValue(line, "length"), -2); //$NON-NtagLS-1$
-				selectPrecision[i] = Const.toInt(XMLHandler.getTagValue(line, "precision"), -2); //$NON-NLS-1$
+				selectPrecision[i] = Const.toInt(XMLHandler.getTagValue(line, "precision"), -2); 
 			}
 			selectingAndSortingUnspecifiedFields = "Y".equalsIgnoreCase(XMLHandler.getTagValue(fields, "select_unspecified"));
 	
 			for (int i=0;i<nrremove;i++)
 			{
-				Node line = XMLHandler.getSubNodeByNr(fields, "remove", i); //$NON-NLS-1$
-				deleteName     [i] = XMLHandler.getTagValue(line, "name"); //$NON-NLS-1$
+				Node line = XMLHandler.getSubNodeByNr(fields, "remove", i); 
+				deleteName     [i] = XMLHandler.getTagValue(line, "name"); 
 			}
 	
 			for (int i=0;i<nrmeta;i++)
 			{
-				Node metaNode = XMLHandler.getSubNodeByNr(fields, SelectMetadataChange.XML_TAG, i); //$NON-NLS-1$
+				Node metaNode = XMLHandler.getSubNodeByNr(fields, SelectMetadataChange.XML_TAG, i); 
 				meta[i] = new SelectMetadataChange(this);
 				meta[i].loadXML(metaNode);
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "SelectValuesMeta.Exception.UnableToReadStepInfoFromXML"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "SelectValuesMeta.Exception.UnableToReadStepInfoFromXML"), e); 
 		}
 	}
 
@@ -457,28 +457,28 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface,
 	{
         StringBuffer retval = new StringBuffer(300);
 		
-		retval.append("    <fields>"); //$NON-NLS-1$
+		retval.append("    <fields>"); 
 		for (int i=0;i<selectName.length;i++)
 		{
-			retval.append("      <field>"); //$NON-NLS-1$
-			retval.append("        ").append(XMLHandler.addTagValue(getXmlCode("FIELD_NAME"),      selectName[i])); //$NON-NLS-1$
-			retval.append("        ").append(XMLHandler.addTagValue(getXmlCode("FIELD_RENAME"),    selectRename[i])); //$NON-NLS-1$
-			retval.append("        ").append(XMLHandler.addTagValue(getXmlCode("FIELD_LENGTH"),    selectLength[i])); //$NON-NLS-1$
-			retval.append("        ").append(XMLHandler.addTagValue(getXmlCode("FIELD_PRECISION"), selectPrecision[i])); //$NON-NLS-1$
-			retval.append("      </field>"); //$NON-NLS-1$
+			retval.append("      <field>"); 
+			retval.append("        ").append(XMLHandler.addTagValue(getXmlCode("FIELD_NAME"),      selectName[i])); 
+			retval.append("        ").append(XMLHandler.addTagValue(getXmlCode("FIELD_RENAME"),    selectRename[i])); 
+			retval.append("        ").append(XMLHandler.addTagValue(getXmlCode("FIELD_LENGTH"),    selectLength[i])); 
+			retval.append("        ").append(XMLHandler.addTagValue(getXmlCode("FIELD_PRECISION"), selectPrecision[i])); 
+			retval.append("      </field>"); 
 		}
-		retval.append("        ").append(XMLHandler.addTagValue(getXmlCode("SELECT_UNSPECIFIED"), selectingAndSortingUnspecifiedFields)); //$NON-NLS-1$
+		retval.append("        ").append(XMLHandler.addTagValue(getXmlCode("SELECT_UNSPECIFIED"), selectingAndSortingUnspecifiedFields)); 
 		for (int i=0;i<deleteName.length;i++)
 		{
-			retval.append("      <remove>"); //$NON-NLS-1$
-			retval.append("        ").append(XMLHandler.addTagValue(getXmlCode("REMOVE_NAME"),      deleteName[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("      </remove>"); //$NON-NLS-1$
+			retval.append("      <remove>"); 
+			retval.append("        ").append(XMLHandler.addTagValue(getXmlCode("REMOVE_NAME"),      deleteName[i]));  
+			retval.append("      </remove>"); 
 		}
 		for (int i=0;i<meta.length;i++)
 		{
 			retval.append(meta[i].getXML());
 		}
-		retval.append("    </fields>"); //$NON-NLS-1$
+		retval.append("    </fields>"); 
 
 		return retval.toString();
 	}
@@ -487,49 +487,49 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface,
 	{
 		try
 		{
-			int nrfields = rep.countNrStepAttributes(id_step, getRepCode("FIELD_NAME")); //$NON-NLS-1$
-			int nrremove = rep.countNrStepAttributes(id_step, getRepCode("REMOVE_NAME")); //$NON-NLS-1$
-			int nrmeta   = rep.countNrStepAttributes(id_step, getRepCode("META_NAME")); //$NON-NLS-1$
+			int nrfields = rep.countNrStepAttributes(id_step, getRepCode("FIELD_NAME")); 
+			int nrremove = rep.countNrStepAttributes(id_step, getRepCode("REMOVE_NAME")); 
+			int nrmeta   = rep.countNrStepAttributes(id_step, getRepCode("META_NAME")); 
 			
 			allocate(nrfields, nrremove, nrmeta);
 	
 			for (int i=0;i<nrfields;i++)
 			{
-				selectName[i]      =      rep.getStepAttributeString (id_step, i, getRepCode("FIELD_NAME")); //$NON-NLS-1$
-				selectRename[i]    =      rep.getStepAttributeString (id_step, i, getRepCode("FIELD_RENAME")); //$NON-NLS-1$
-				selectLength[i]    = (int)rep.getStepAttributeInteger(id_step, i, getRepCode("FIELD_LENGTH")); //$NON-NLS-1$
-				selectPrecision[i] = (int)rep.getStepAttributeInteger(id_step, i, getRepCode("FIELD_PRECISION")); //$NON-NLS-1$
+				selectName[i]      =      rep.getStepAttributeString (id_step, i, getRepCode("FIELD_NAME")); 
+				selectRename[i]    =      rep.getStepAttributeString (id_step, i, getRepCode("FIELD_RENAME")); 
+				selectLength[i]    = (int)rep.getStepAttributeInteger(id_step, i, getRepCode("FIELD_LENGTH")); 
+				selectPrecision[i] = (int)rep.getStepAttributeInteger(id_step, i, getRepCode("FIELD_PRECISION")); 
 			}
 			selectingAndSortingUnspecifiedFields = rep.getStepAttributeBoolean(id_step, getRepCode("SELECT_UNSPECIFIED"));
 			
 			for (int i=0;i<nrremove;i++)
 			{
-				deleteName[i]      =      rep.getStepAttributeString(id_step, i, getRepCode("REMOVE_NAME")); //$NON-NLS-1$
+				deleteName[i]      =      rep.getStepAttributeString(id_step, i, getRepCode("REMOVE_NAME")); 
 			}
 
 			for (int i=0;i<nrmeta;i++)
 			{
 				meta[i] = new SelectMetadataChange(this);
-				meta[i].setName(rep.getStepAttributeString (id_step, i, getRepCode("META_NAME"))); //$NON-NLS-1$
-				meta[i].setRename(rep.getStepAttributeString (id_step, i, getRepCode("META_RENAME"))); //$NON-NLS-1$
-				meta[i].setType((int)rep.getStepAttributeInteger(id_step, i, getRepCode("META_TYPE"))); //$NON-NLS-1$
-				meta[i].setLength((int)rep.getStepAttributeInteger(id_step, i, getRepCode("META_LENGTH"))); //$NON-NLS-1$
-				meta[i].setPrecision((int)rep.getStepAttributeInteger(id_step, i, getRepCode("META_PRECISION"))); //$NON-NLS-1$
-				meta[i].setStorageType(ValueMeta.getStorageType(rep.getStepAttributeString (id_step, i, getRepCode("META_STORAGE_TYPE")))); //$NON-NLS-1$ 
-				meta[i].setConversionMask(rep.getStepAttributeString (id_step, i, getRepCode("META_CONVERSION_MASK"))); //$NON-NLS-1$
-				meta[i].setDateFormatLenient(Boolean.parseBoolean(rep.getStepAttributeString (id_step, i, getRepCode("META_DATE_FORMAT_LENIENT")))); //$NON-NLS-1$
-        meta[i].setDateFormatLocale(rep.getStepAttributeString (id_step, i, getRepCode("META_DATE_FORMAT_LOCALE"))); //$NON-NLS-1$
-        meta[i].setDateFormatTimeZone(rep.getStepAttributeString (id_step, i, getRepCode("META_DATE_FORMAT_TIMEZONE"))); //$NON-NLS-1$
-        meta[i].setLenientStringToNumber(Boolean.parseBoolean(rep.getStepAttributeString (id_step, i, getRepCode("META_LENIENT_STRING_TO_NUMBER")))); //$NON-NLS-1$
-				meta[i].setDecimalSymbol(rep.getStepAttributeString (id_step, i, getRepCode("META_DECIMAL"))); //$NON-NLS-1$
-				meta[i].setGroupingSymbol(rep.getStepAttributeString (id_step, i, getRepCode("META_GROUPING"))); //$NON-NLS-1$
-				meta[i].setCurrencySymbol(rep.getStepAttributeString (id_step, i, getRepCode("META_CURRENCY"))); //$NON-NLS-1$
-        meta[i].setEncoding(rep.getStepAttributeString (id_step, i, getRepCode("META_ENCODING"))); //$NON-NLS-1$
+				meta[i].setName(rep.getStepAttributeString (id_step, i, getRepCode("META_NAME"))); 
+				meta[i].setRename(rep.getStepAttributeString (id_step, i, getRepCode("META_RENAME"))); 
+				meta[i].setType((int)rep.getStepAttributeInteger(id_step, i, getRepCode("META_TYPE"))); 
+				meta[i].setLength((int)rep.getStepAttributeInteger(id_step, i, getRepCode("META_LENGTH"))); 
+				meta[i].setPrecision((int)rep.getStepAttributeInteger(id_step, i, getRepCode("META_PRECISION"))); 
+				meta[i].setStorageType(ValueMeta.getStorageType(rep.getStepAttributeString (id_step, i, getRepCode("META_STORAGE_TYPE"))));  
+				meta[i].setConversionMask(rep.getStepAttributeString (id_step, i, getRepCode("META_CONVERSION_MASK"))); 
+				meta[i].setDateFormatLenient(Boolean.parseBoolean(rep.getStepAttributeString (id_step, i, getRepCode("META_DATE_FORMAT_LENIENT")))); 
+        meta[i].setDateFormatLocale(rep.getStepAttributeString (id_step, i, getRepCode("META_DATE_FORMAT_LOCALE"))); 
+        meta[i].setDateFormatTimeZone(rep.getStepAttributeString (id_step, i, getRepCode("META_DATE_FORMAT_TIMEZONE"))); 
+        meta[i].setLenientStringToNumber(Boolean.parseBoolean(rep.getStepAttributeString (id_step, i, getRepCode("META_LENIENT_STRING_TO_NUMBER")))); 
+				meta[i].setDecimalSymbol(rep.getStepAttributeString (id_step, i, getRepCode("META_DECIMAL"))); 
+				meta[i].setGroupingSymbol(rep.getStepAttributeString (id_step, i, getRepCode("META_GROUPING"))); 
+				meta[i].setCurrencySymbol(rep.getStepAttributeString (id_step, i, getRepCode("META_CURRENCY"))); 
+        meta[i].setEncoding(rep.getStepAttributeString (id_step, i, getRepCode("META_ENCODING"))); 
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "SelectValuesMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "SelectValuesMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository"), e); 
 		}
 	}
 
@@ -540,40 +540,40 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface,
 		{
 			for (int i=0;i<selectName.length;i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("FIELD_NAME"),      selectName[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("FIELD_RENAME"),    selectRename[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("FIELD_LENGTH"),    selectLength[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("FIELD_PRECISION"), selectPrecision[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("FIELD_NAME"),      selectName[i]); 
+				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("FIELD_RENAME"),    selectRename[i]); 
+				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("FIELD_LENGTH"),    selectLength[i]); 
+				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("FIELD_PRECISION"), selectPrecision[i]); 
 			}
-			rep.saveStepAttribute(id_transformation, id_step, getRepCode("SELECT_UNSPECIFIED"), selectingAndSortingUnspecifiedFields); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, getRepCode("SELECT_UNSPECIFIED"), selectingAndSortingUnspecifiedFields); 
 	
 			for (int i=0;i<deleteName.length;i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("REMOVE_NAME"),      deleteName[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("REMOVE_NAME"),      deleteName[i]); 
 			}
 	
 			for (int i=0;i<meta.length;i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_NAME"),            meta[i].getName()); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_RENAME"),          meta[i].getRename()); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_TYPE"),            meta[i].getType()); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_LENGTH"),          meta[i].getLength()); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_PRECISION"),       meta[i].getPrecision()); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_STORAGE_TYPE"),    ValueMeta.getStorageTypeCode(meta[i].getStorageType())); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_CONVERSION_MASK"), meta[i].getConversionMask()); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_DATE_FORMAT_LENIENT"), Boolean.toString(meta[i].isDateFormatLenient())); //$NON-NLS-1$
-        rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_DATE_FORMAT_LOCALE"), meta[i].getDateFormatLocale() == null ? null : meta[i].getDateFormatLocale().toString()); //$NON-NLS-1$
-        rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_DATE_FORMAT_TIMEZONE"), meta[i].getDateFormatTimeZone() == null ? null : meta[i].getDateFormatTimeZone().toString()); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_LENIENT_STRING_TO_NUMBER"), Boolean.toString(meta[i].isLenientStringToNumber())); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_DECIMAL"),  meta[i].getDecimalSymbol()); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_GROUPING"), meta[i].getGroupingSymbol()); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_CURRENCY"), meta[i].getCurrencySymbol()); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_ENCODING"), meta[i].getEncoding()); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_NAME"),            meta[i].getName()); 
+				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_RENAME"),          meta[i].getRename()); 
+				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_TYPE"),            meta[i].getType()); 
+				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_LENGTH"),          meta[i].getLength()); 
+				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_PRECISION"),       meta[i].getPrecision()); 
+				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_STORAGE_TYPE"),    ValueMeta.getStorageTypeCode(meta[i].getStorageType())); 
+				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_CONVERSION_MASK"), meta[i].getConversionMask()); 
+				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_DATE_FORMAT_LENIENT"), Boolean.toString(meta[i].isDateFormatLenient())); 
+        rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_DATE_FORMAT_LOCALE"), meta[i].getDateFormatLocale() == null ? null : meta[i].getDateFormatLocale().toString()); 
+        rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_DATE_FORMAT_TIMEZONE"), meta[i].getDateFormatTimeZone() == null ? null : meta[i].getDateFormatTimeZone().toString()); 
+				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_LENIENT_STRING_TO_NUMBER"), Boolean.toString(meta[i].isLenientStringToNumber())); 
+				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_DECIMAL"),  meta[i].getDecimalSymbol()); 
+				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_GROUPING"), meta[i].getGroupingSymbol()); 
+				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_CURRENCY"), meta[i].getCurrencySymbol()); 
+				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_ENCODING"), meta[i].getEncoding()); 
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "SelectValuesMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "SelectValuesMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); 
 		}
 
 	}
@@ -584,13 +584,13 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface,
 		
 		if (prev!=null && prev.size()>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SelectValuesMeta.CheckResult.StepReceivingFields",prev.size()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SelectValuesMeta.CheckResult.StepReceivingFields",prev.size()+""), stepMeta);  
 			remarks.add(cr);
 
 			/*
 			 * Take care of the normal SELECT fields...
 			 */
-			String  error_message=""; //$NON-NLS-1$
+			String  error_message=""; 
 			boolean error_found=false;
 			
 			// Starting from selected fields in ...
@@ -599,20 +599,20 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface,
 				int idx = prev.indexOfValue(selectName[i]);
 				if (idx<0)
 				{
-					error_message+="\t\t"+selectName[i]+Const.CR; //$NON-NLS-1$
+					error_message+="\t\t"+selectName[i]+Const.CR; 
 					error_found=true;
 				} 
 			}
 			if (error_found) 
 			{
-				error_message=BaseMessages.getString(PKG, "SelectValuesMeta.CheckResult.SelectedFieldsNotFound")+Const.CR+Const.CR+error_message; //$NON-NLS-1$
+				error_message=BaseMessages.getString(PKG, "SelectValuesMeta.CheckResult.SelectedFieldsNotFound")+Const.CR+Const.CR+error_message; 
 
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SelectValuesMeta.CheckResult.AllSelectedFieldsFound"), stepMeta); //$NON-NLS-1$
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SelectValuesMeta.CheckResult.AllSelectedFieldsFound"), stepMeta); 
 				remarks.add(cr);
 			}
 			
@@ -625,20 +625,20 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface,
 					int idx = Const.indexOfString(pv.getName(), selectName);
 					if (idx<0) 
 					{
-						error_message+="\t\t"+pv.getName()+" ("+pv.getTypeDesc()+")"+Const.CR; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+						error_message+="\t\t"+pv.getName()+" ("+pv.getTypeDesc()+")"+Const.CR;   //$NON-NLS-3$
 						error_found=true;
 					} 
 				}
 				if (error_found) 
 				{
-					error_message=BaseMessages.getString(PKG, "SelectValuesMeta.CheckResult.FieldsNotFound")+Const.CR+Const.CR+error_message; //$NON-NLS-1$
+					error_message=BaseMessages.getString(PKG, "SelectValuesMeta.CheckResult.FieldsNotFound")+Const.CR+Const.CR+error_message; 
 	
 					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_COMMENT, error_message, stepMeta);
 					remarks.add(cr);
 				}
 				else
 				{
-					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SelectValuesMeta.CheckResult.AllSelectedFieldsFound2"), stepMeta); //$NON-NLS-1$
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SelectValuesMeta.CheckResult.AllSelectedFieldsFound2"), stepMeta); 
 					remarks.add(cr);
 				}
 			}
@@ -647,7 +647,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface,
 			 * How about the DE-SELECT (remove) fields...
 			 */
 		
-			error_message=""; //$NON-NLS-1$
+			error_message=""; 
 			error_found=false;
 			
 			// Starting from selected fields in ...
@@ -656,27 +656,27 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface,
 				int idx = prev.indexOfValue(deleteName[i]);
 				if (idx<0)
 				{
-					error_message+="\t\t"+deleteName[i]+Const.CR; //$NON-NLS-1$
+					error_message+="\t\t"+deleteName[i]+Const.CR; 
 					error_found=true;
 				} 
 			}
 			if (error_found) 
 			{
-				error_message=BaseMessages.getString(PKG, "SelectValuesMeta.CheckResult.DeSelectedFieldsNotFound")+Const.CR+Const.CR+error_message; //$NON-NLS-1$
+				error_message=BaseMessages.getString(PKG, "SelectValuesMeta.CheckResult.DeSelectedFieldsNotFound")+Const.CR+Const.CR+error_message; 
 
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SelectValuesMeta.CheckResult.AllDeSelectedFieldsFound"), stepMeta); //$NON-NLS-1$
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SelectValuesMeta.CheckResult.AllDeSelectedFieldsFound"), stepMeta); 
 				remarks.add(cr);
 			}
 
 			/*
 			 * How about the Meta-fields...?
 			 */
-			error_message=""; //$NON-NLS-1$
+			error_message=""; 
 			error_found=false;
 			
 			// Starting from selected fields in ...
@@ -685,45 +685,45 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface,
 				int idx = prev.indexOfValue(this.meta[i].getName());
 				if (idx<0)
 				{
-					error_message+="\t\t"+this.meta[i].getName()+Const.CR; //$NON-NLS-1$
+					error_message+="\t\t"+this.meta[i].getName()+Const.CR; 
 					error_found=true;
 				} 
 			}
 			if (error_found) 
 			{
-				error_message=BaseMessages.getString(PKG, "SelectValuesMeta.CheckResult.MetadataFieldsNotFound")+Const.CR+Const.CR+error_message; //$NON-NLS-1$
+				error_message=BaseMessages.getString(PKG, "SelectValuesMeta.CheckResult.MetadataFieldsNotFound")+Const.CR+Const.CR+error_message; 
 
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SelectValuesMeta.CheckResult.AllMetadataFieldsFound"), stepMeta); //$NON-NLS-1$
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SelectValuesMeta.CheckResult.AllMetadataFieldsFound"), stepMeta); 
 				remarks.add(cr);
 			}
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SelectValuesMeta.CheckResult.FieldsNotFound2"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SelectValuesMeta.CheckResult.FieldsNotFound2"), stepMeta); 
 			remarks.add(cr);
 		}
 
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SelectValuesMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SelectValuesMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepMeta); 
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SelectValuesMeta.CheckResult.NoInputReceivedError"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SelectValuesMeta.CheckResult.NoInputReceivedError"), stepMeta); 
 			remarks.add(cr);
 		}
 		
 		// Check for doubles in the selected fields...
 		int cnt[] = new int[selectName.length];
 		boolean error_found = false;
-		String error_message=""; //$NON-NLS-1$
+		String error_message=""; 
 		
 		for (int i=0;i<selectName.length;i++)
 		{
@@ -737,13 +737,13 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface,
 			{
 				if (!error_found) // first time...
 				{
-					error_message=BaseMessages.getString(PKG, "SelectValuesMeta.CheckResult.DuplicateFieldsSpecified")+Const.CR; //$NON-NLS-1$
+					error_message=BaseMessages.getString(PKG, "SelectValuesMeta.CheckResult.DuplicateFieldsSpecified")+Const.CR; 
 				}
 				else
 				{
 					error_found=true;
 				}
-				error_message+=BaseMessages.getString(PKG, "SelectValuesMeta.CheckResult.OccurentRow",i+" : "+selectName[i]+"  ("+cnt[i])+Const.CR; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+				error_message+=BaseMessages.getString(PKG, "SelectValuesMeta.CheckResult.OccurentRow",i+" : "+selectName[i]+"  ("+cnt[i])+Const.CR;   //$NON-NLS-3$ //$NON-NLS-4$
 				error_found=true;
 			}
 		}

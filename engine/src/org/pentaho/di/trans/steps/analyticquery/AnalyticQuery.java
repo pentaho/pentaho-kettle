@@ -93,7 +93,7 @@ public class AnalyticQuery extends BaseStep implements StepInterface
 				data.groupnrs[i] = data.inputRowMeta.indexOfValue(meta.getGroupField()[i]);
 				if (data.groupnrs[i]<0)
 				{
-					logError(BaseMessages.getString(PKG, "AnalyticQuery.Log.GroupFieldCouldNotFound",meta.getGroupField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "AnalyticQuery.Log.GroupFieldCouldNotFound",meta.getGroupField()[i]));  
 					setErrors(1);
 					stopAll();
 					return false;

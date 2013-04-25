@@ -645,7 +645,7 @@ public class OpenERPObjectOutputDialog extends BaseStepDialog implements StepDia
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "OpenERPObjectOutputDialog.FailedToGetFields.Title"), BaseMessages.getString(PKG, "OpenERPObjectOutputDialog.FailedToGetFields.Message"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "OpenERPObjectOutputDialog.FailedToGetFields.Title"), BaseMessages.getString(PKG, "OpenERPObjectOutputDialog.FailedToGetFields.Message"), ke);  
 		}
 	}
 	
@@ -661,7 +661,7 @@ public class OpenERPObjectOutputDialog extends BaseStepDialog implements StepDia
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "OpenERPObjectOutputDialog.FailedToGetFields.Title"), BaseMessages.getString(PKG, "OpenERPObjectOutputDialog.FailedToGetFields.Message"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "OpenERPObjectOutputDialog.FailedToGetFields.Title"), BaseMessages.getString(PKG, "OpenERPObjectOutputDialog.FailedToGetFields.Message"), ke);  
 		}
 	}
 	

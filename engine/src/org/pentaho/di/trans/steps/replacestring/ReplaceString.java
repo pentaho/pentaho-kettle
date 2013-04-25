@@ -168,7 +168,7 @@ public class ReplaceString extends BaseStep implements StepInterface {
             for (int i = 0; i < data.numFields; i++) {
                 data.inStreamNrs[i] = getInputRowMeta().indexOfValue(meta.getFieldInStream()[i]);
                 if (data.inStreamNrs[i] < 0) // couldn't find field!
-                    throw new KettleStepException(BaseMessages.getString(PKG, "ReplaceString.Exception.FieldRequired", meta.getFieldInStream()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+                    throw new KettleStepException(BaseMessages.getString(PKG, "ReplaceString.Exception.FieldRequired", meta.getFieldInStream()[i]));  
 
                 // check field type
                 if(getInputRowMeta().getValueMeta(data.inStreamNrs[i]).getType()!=ValueMeta.TYPE_STRING)
@@ -186,7 +186,7 @@ public class ReplaceString extends BaseStep implements StepInterface {
                 if(!Const.isEmpty(field)) {
                 	data.replaceFieldIndex[i]=getInputRowMeta().indexOfValue(field);
                 	if (data.replaceFieldIndex[i] < 0) // couldn't find field!
-                          throw new KettleStepException(BaseMessages.getString(PKG, "ReplaceString.Exception.FieldRequired", field)); //$NON-NLS-1$ //$NON-NLS-2$
+                          throw new KettleStepException(BaseMessages.getString(PKG, "ReplaceString.Exception.FieldRequired", field));  
                 }else {
                 	data.replaceFieldIndex[i]=-1;
                 	data.replaceByString[i] = environmentSubstitute(meta.getReplaceByString()[i]);
@@ -205,7 +205,7 @@ public class ReplaceString extends BaseStep implements StepInterface {
             if (checkFeedback(getLinesRead()))
             {
                 if(log.isDetailed())
-                    logDetailed(BaseMessages.getString(PKG, "ReplaceString.Log.LineNumber") + getLinesRead()); //$NON-NLS-1$
+                    logDetailed(BaseMessages.getString(PKG, "ReplaceString.Log.LineNumber") + getLinesRead()); 
             }
         } catch (KettleException e) 
         {
@@ -219,7 +219,7 @@ public class ReplaceString extends BaseStep implements StepInterface {
             }
             else
             {
-                logError(BaseMessages.getString(PKG, "ReplaceString.Log.ErrorInStep",e.getMessage())); //$NON-NLS-1$
+                logError(BaseMessages.getString(PKG, "ReplaceString.Log.ErrorInStep",e.getMessage())); 
                 setErrors(1);
                 stopAll();
                 setOutputDone();  // signal end to receiver(s)

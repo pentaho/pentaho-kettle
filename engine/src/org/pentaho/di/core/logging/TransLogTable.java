@@ -123,12 +123,12 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
 		StringBuffer retval = new StringBuffer();
 
 		retval.append(XMLHandler.openTag(XML_TAG));
-        retval.append(XMLHandler.addTagValue("connection", connectionName)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        retval.append(XMLHandler.addTagValue("schema", schemaName)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append(XMLHandler.addTagValue("table", tableName)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append(XMLHandler.addTagValue("size_limit_lines", logSizeLimit)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append(XMLHandler.addTagValue("interval", logInterval)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append(XMLHandler.addTagValue("timeout_days", timeoutInDays)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append(XMLHandler.addTagValue("connection", connectionName));   //$NON-NLS-3$
+        retval.append(XMLHandler.addTagValue("schema", schemaName));  
+        retval.append(XMLHandler.addTagValue("table", tableName));  
+        retval.append(XMLHandler.addTagValue("size_limit_lines", logSizeLimit));  
+        retval.append(XMLHandler.addTagValue("interval", logInterval));  
+        retval.append(XMLHandler.addTagValue("timeout_days", timeoutInDays));  
 		retval.append(super.getFieldsXML());
 		retval.append(XMLHandler.closeTag(XML_TAG)).append(Const.CR);
 		

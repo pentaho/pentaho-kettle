@@ -238,41 +238,41 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 	{
 		try
 		{
-			String con     = XMLHandler.getTagValue(stepnode, "connection");   //$NON-NLS-1$
+			String con     = XMLHandler.getTagValue(stepnode, "connection");   
 			databaseMeta   = DatabaseMeta.findDatabase(databases, con);
             
-            schemaName     = XMLHandler.getTagValue(stepnode, "schema");       //$NON-NLS-1$
-			tableName      = XMLHandler.getTagValue(stepnode, "table");        //$NON-NLS-1$
+            schemaName     = XMLHandler.getTagValue(stepnode, "schema");       
+			tableName      = XMLHandler.getTagValue(stepnode, "table");        
 
- 			fifoFileName   = XMLHandler.getTagValue(stepnode, "fifo_file_name");        //$NON-NLS-1$
+ 			fifoFileName   = XMLHandler.getTagValue(stepnode, "fifo_file_name");        
 
-			encoding       = XMLHandler.getTagValue(stepnode, "encoding");         //$NON-NLS-1$
-			enclosure      = XMLHandler.getTagValue(stepnode, "enclosure");         //$NON-NLS-1$
-			delimiter      = XMLHandler.getTagValue(stepnode, "delimiter");         //$NON-NLS-1$
-			escapeChar     = XMLHandler.getTagValue(stepnode, "escape_char");         //$NON-NLS-1$
+			encoding       = XMLHandler.getTagValue(stepnode, "encoding");         
+			enclosure      = XMLHandler.getTagValue(stepnode, "enclosure");         
+			delimiter      = XMLHandler.getTagValue(stepnode, "delimiter");         
+			escapeChar     = XMLHandler.getTagValue(stepnode, "escape_char");         
 			
-			bulkSize       = XMLHandler.getTagValue(stepnode, "bulk_size");          //$NON-NLS-1$
+			bulkSize       = XMLHandler.getTagValue(stepnode, "bulk_size");          
 			
-			replacingData  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "replace"));         //$NON-NLS-1$
-			ignoringErrors = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "ignore"));         //$NON-NLS-1$
-      localFile      = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "local"));         //$NON-NLS-1$
+			replacingData  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "replace"));         
+			ignoringErrors = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "ignore"));         
+      localFile      = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "local"));         
 
-			int nrvalues = XMLHandler.countNodes(stepnode, "mapping");      //$NON-NLS-1$
+			int nrvalues = XMLHandler.countNodes(stepnode, "mapping");      
 			allocate(nrvalues);
 
 			for (int i=0;i<nrvalues;i++)
 			{
-				Node vnode = XMLHandler.getSubNodeByNr(stepnode, "mapping", i);    //$NON-NLS-1$
+				Node vnode = XMLHandler.getSubNodeByNr(stepnode, "mapping", i);    
 
-				fieldTable[i]      = XMLHandler.getTagValue(vnode, "stream_name"); //$NON-NLS-1$
-				fieldStream[i]     = XMLHandler.getTagValue(vnode, "field_name");  //$NON-NLS-1$
+				fieldTable[i]      = XMLHandler.getTagValue(vnode, "stream_name"); 
+				fieldStream[i]     = XMLHandler.getTagValue(vnode, "field_name");  
 				if (fieldStream[i]==null) fieldStream[i]=fieldTable[i];            // default: the same name!
-				fieldFormatType[i]  = getFieldFormatType(XMLHandler.getTagValue(vnode, "field_format_type"));  //$NON-NLS-1$
+				fieldFormatType[i]  = getFieldFormatType(XMLHandler.getTagValue(vnode, "field_format_type"));  
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.Exception.UnableToReadStepInfoFromXML"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.Exception.UnableToReadStepInfoFromXML"), e); 
 		}
 	}
 
@@ -280,9 +280,9 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 	{
 		fieldTable   = null;
 		databaseMeta = null;
-        schemaName   = "";                //$NON-NLS-1$
-		tableName    = BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.DefaultTableName"); //$NON-NLS-1$
-        encoding     = "";                                       //$NON-NLS-1$
+        schemaName   = "";                
+		tableName    = BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.DefaultTableName"); 
+        encoding     = "";                                       
         fifoFileName = "/tmp/fifo";
         delimiter    = "\t";
         enclosure    = "\"";
@@ -299,26 +299,26 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 	{
         StringBuffer retval = new StringBuffer(300);
 
-		retval.append("    ").append(XMLHandler.addTagValue("connection",     databaseMeta==null?"":databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        retval.append("    ").append(XMLHandler.addTagValue("schema",         schemaName));    //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("table",          tableName));     //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("encoding",       encoding));      //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("delimiter",      delimiter));      //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("enclosure",      enclosure));      //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("escape_char",    escapeChar));      //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("replace",        replacingData));      //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("ignore",         ignoringErrors));      //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("local",          localFile));      //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("fifo_file_name", fifoFileName));      //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("bulk_size",      bulkSize));      //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("connection",     databaseMeta==null?"":databaseMeta.getName()));   //$NON-NLS-3$
+        retval.append("    ").append(XMLHandler.addTagValue("schema",         schemaName));     
+		retval.append("    ").append(XMLHandler.addTagValue("table",          tableName));      
+		retval.append("    ").append(XMLHandler.addTagValue("encoding",       encoding));       
+		retval.append("    ").append(XMLHandler.addTagValue("delimiter",      delimiter));       
+		retval.append("    ").append(XMLHandler.addTagValue("enclosure",      enclosure));       
+		retval.append("    ").append(XMLHandler.addTagValue("escape_char",    escapeChar));       
+		retval.append("    ").append(XMLHandler.addTagValue("replace",        replacingData));       
+		retval.append("    ").append(XMLHandler.addTagValue("ignore",         ignoringErrors));       
+    retval.append("    ").append(XMLHandler.addTagValue("local",          localFile));       
+		retval.append("    ").append(XMLHandler.addTagValue("fifo_file_name", fifoFileName));       
+		retval.append("    ").append(XMLHandler.addTagValue("bulk_size",      bulkSize));       
 
 		for (int i=0;i<fieldTable.length;i++)
 		{
-			retval.append("      <mapping>").append(Const.CR); //$NON-NLS-1$
-			retval.append("        ").append(XMLHandler.addTagValue("stream_name", fieldTable[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        ").append(XMLHandler.addTagValue("field_name",  fieldStream[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        ").append(XMLHandler.addTagValue("field_format_ok",  getFieldFormatTypeCode(fieldFormatType[i]))); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("      </mapping>").append(Const.CR); //$NON-NLS-1$
+			retval.append("      <mapping>").append(Const.CR); 
+			retval.append("        ").append(XMLHandler.addTagValue("stream_name", fieldTable[i]));  
+			retval.append("        ").append(XMLHandler.addTagValue("field_name",  fieldStream[i]));  
+			retval.append("        ").append(XMLHandler.addTagValue("field_format_ok",  getFieldFormatTypeCode(fieldFormatType[i])));  
+			retval.append("      </mapping>").append(Const.CR); 
 		}
 
 		return retval.toString();
@@ -329,34 +329,34 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 	{
 		try
 		{
-			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);  //$NON-NLS-1$
-            schemaName     =      rep.getStepAttributeString(id_step,  "schema");         //$NON-NLS-1$
-			tableName      =      rep.getStepAttributeString(id_step,  "table");          //$NON-NLS-1$
-			encoding       =      rep.getStepAttributeString(id_step,  "encoding");       //$NON-NLS-1$
-			enclosure      =      rep.getStepAttributeString(id_step,  "enclosure");       //$NON-NLS-1$
-			delimiter      =      rep.getStepAttributeString(id_step,  "delimiter");       //$NON-NLS-1$
-			escapeChar     =      rep.getStepAttributeString(id_step,  "escape_char");       //$NON-NLS-1$
-			fifoFileName   =      rep.getStepAttributeString(id_step,  "fifo_file_name");       //$NON-NLS-1$
-			replacingData  =      rep.getStepAttributeBoolean(id_step, "replace");       //$NON-NLS-1$
-			ignoringErrors =      rep.getStepAttributeBoolean(id_step, "ignore");       //$NON-NLS-1$
-      localFile      =      rep.getStepAttributeBoolean(id_step, "local");       //$NON-NLS-1$
-			bulkSize       =      rep.getStepAttributeString(id_step,  "bulk_size");       //$NON-NLS-1$
+			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);  
+            schemaName     =      rep.getStepAttributeString(id_step,  "schema");         
+			tableName      =      rep.getStepAttributeString(id_step,  "table");          
+			encoding       =      rep.getStepAttributeString(id_step,  "encoding");       
+			enclosure      =      rep.getStepAttributeString(id_step,  "enclosure");       
+			delimiter      =      rep.getStepAttributeString(id_step,  "delimiter");       
+			escapeChar     =      rep.getStepAttributeString(id_step,  "escape_char");       
+			fifoFileName   =      rep.getStepAttributeString(id_step,  "fifo_file_name");       
+			replacingData  =      rep.getStepAttributeBoolean(id_step, "replace");       
+			ignoringErrors =      rep.getStepAttributeBoolean(id_step, "ignore");       
+      localFile      =      rep.getStepAttributeBoolean(id_step, "local");       
+			bulkSize       =      rep.getStepAttributeString(id_step,  "bulk_size");       
 			
-			int nrvalues = rep.countNrStepAttributes(id_step, "stream_name");             //$NON-NLS-1$
+			int nrvalues = rep.countNrStepAttributes(id_step, "stream_name");             
 
 			allocate(nrvalues);
 
 			for (int i=0;i<nrvalues;i++)
 			{
-				fieldTable[i]  = rep.getStepAttributeString(id_step, i, "stream_name");   //$NON-NLS-1$
-				fieldStream[i] = rep.getStepAttributeString(id_step, i, "field_name");    //$NON-NLS-1$
+				fieldTable[i]  = rep.getStepAttributeString(id_step, i, "stream_name");   
+				fieldStream[i] = rep.getStepAttributeString(id_step, i, "field_name");    
 				if (fieldStream[i]==null) fieldStream[i]=fieldTable[i];        
-				fieldFormatType[i] = getFieldFormatType(rep.getStepAttributeString(id_step, i, "field_format_type"));    //$NON-NLS-1$
+				fieldFormatType[i] = getFieldFormatType(rep.getStepAttributeString(id_step, i, "field_format_type"));    
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository"), e); 
 		}
 	}
 
@@ -366,23 +366,23 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 		try
 		{
 			rep.saveDatabaseMetaStepAttribute(id_transformation, id_step, "id_connection", databaseMeta);
-            rep.saveStepAttribute(id_transformation, id_step, "schema",           schemaName);    //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "table",            tableName);     //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "encoding",         encoding);      //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "enclosure",        enclosure);      //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "delimiter",        delimiter);      //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "escape_char",      escapeChar);      //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "fifo_file_name",   fifoFileName);      //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "replace",          replacingData);      //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "ignore",           ignoringErrors);      //$NON-NLS-1$
-      rep.saveStepAttribute(id_transformation, id_step, "local",            localFile);      //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "bulk_size",        bulkSize);      //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "schema",           schemaName);    
+			rep.saveStepAttribute(id_transformation, id_step, "table",            tableName);     
+			rep.saveStepAttribute(id_transformation, id_step, "encoding",         encoding);      
+			rep.saveStepAttribute(id_transformation, id_step, "enclosure",        enclosure);      
+			rep.saveStepAttribute(id_transformation, id_step, "delimiter",        delimiter);      
+			rep.saveStepAttribute(id_transformation, id_step, "escape_char",      escapeChar);      
+			rep.saveStepAttribute(id_transformation, id_step, "fifo_file_name",   fifoFileName);      
+			rep.saveStepAttribute(id_transformation, id_step, "replace",          replacingData);      
+			rep.saveStepAttribute(id_transformation, id_step, "ignore",           ignoringErrors);      
+      rep.saveStepAttribute(id_transformation, id_step, "local",            localFile);      
+			rep.saveStepAttribute(id_transformation, id_step, "bulk_size",        bulkSize);      
 
 			for (int i=0;i<fieldTable.length;i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "stream_name", fieldTable[i]);  //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",  fieldStream[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_format_ok",  getFieldFormatTypeCode(fieldFormatType[i])); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "stream_name", fieldTable[i]);  
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",  fieldStream[i]); 
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_format_ok",  getFieldFormatTypeCode(fieldFormatType[i])); 
 			}
 
 			// Also, save the step-database relationship!
@@ -390,7 +390,7 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); 
 		}
 	}
 	
@@ -402,7 +402,7 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		CheckResult cr;
-		String error_message = ""; //$NON-NLS-1$
+		String error_message = ""; 
 
 		if (databaseMeta!=null)
 		{
@@ -414,12 +414,12 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 
 				if (!Const.isEmpty(tableName))
 				{
-					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.TableNameOK"), stepMeta); //$NON-NLS-1$
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.TableNameOK"), stepMeta); 
 					remarks.add(cr);
 
 					boolean first=true;
 					boolean error_found=false;
-					error_message = ""; //$NON-NLS-1$
+					error_message = ""; 
 					
 					// Check fields in table
                     String schemaTable = databaseMeta.getQuotedSchemaTableCombination(
@@ -428,13 +428,13 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 					RowMetaInterface r = db.getTableFields(schemaTable);
 					if (r!=null)
 					{
-						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.TableExists"), stepMeta); //$NON-NLS-1$
+						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.TableExists"), stepMeta); 
 						remarks.add(cr);
 
 						// How about the fields to insert/dateMask in the table?
 						first=true;
 						error_found=false;
-						error_message = ""; //$NON-NLS-1$
+						error_message = ""; 
 						
 						for (int i=0;i<fieldTable.length;i++)
 						{
@@ -446,10 +446,10 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 								if (first)
 								{
 									first=false;
-									error_message+=BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.MissingFieldsToLoadInTargetTable")+Const.CR; //$NON-NLS-1$
+									error_message+=BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.MissingFieldsToLoadInTargetTable")+Const.CR; 
 								}
 								error_found=true;
-								error_message+="\t\t"+field+Const.CR;  //$NON-NLS-1$
+								error_message+="\t\t"+field+Const.CR;  
 							}
 						}
 						if (error_found)
@@ -458,13 +458,13 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 						}
 						else
 						{
-							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.AllFieldsFoundInTargetTable"), stepMeta); //$NON-NLS-1$
+							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.AllFieldsFoundInTargetTable"), stepMeta); 
 						}
 						remarks.add(cr);
 					}
 					else
 					{
-						error_message=BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.CouldNotReadTableInfo"); //$NON-NLS-1$
+						error_message=BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.CouldNotReadTableInfo"); 
 						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 						remarks.add(cr);
 					}
@@ -473,11 +473,11 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 				// Look up fields in the input stream <prev>
 				if (prev!=null && prev.size()>0)
 				{
-					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.StepReceivingDatas",prev.size()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.StepReceivingDatas",prev.size()+""), stepMeta);  
 					remarks.add(cr);
 
 					boolean first=true;
-					error_message = ""; //$NON-NLS-1$
+					error_message = ""; 
 					boolean error_found = false;
 
 					for (int i=0;i<fieldStream.length;i++)
@@ -488,10 +488,10 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 							if (first)
 							{
 								first=false;
-								error_message+=BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.MissingFieldsInInput")+Const.CR; //$NON-NLS-1$
+								error_message+=BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.MissingFieldsInInput")+Const.CR; 
 							}
 							error_found=true;
-							error_message+="\t\t"+fieldStream[i]+Const.CR;  //$NON-NLS-1$
+							error_message+="\t\t"+fieldStream[i]+Const.CR;  
 						}
 					}
 					if (error_found)
@@ -500,20 +500,20 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 					}
 					else
 					{
-						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.AllFieldsFoundInInput"), stepMeta); //$NON-NLS-1$
+						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.AllFieldsFoundInInput"), stepMeta); 
 					}
 					remarks.add(cr);
 				}
 				else
 				{
-					error_message=BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.MissingFieldsInInput3")+Const.CR; //$NON-NLS-1$
+					error_message=BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.MissingFieldsInInput3")+Const.CR; 
 					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 					remarks.add(cr);
 				}
 			}
 			catch(KettleException e)
 			{
-				error_message = BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.DatabaseErrorOccurred")+e.getMessage(); //$NON-NLS-1$
+				error_message = BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.DatabaseErrorOccurred")+e.getMessage(); 
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
@@ -524,7 +524,7 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 		}
 		else
 		{
-			error_message = BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.InvalidConnection"); //$NON-NLS-1$
+			error_message = BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.InvalidConnection"); 
 			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 			remarks.add(cr);
 		}
@@ -532,12 +532,12 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepMeta); 
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.NoInputError"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.CheckResult.NoInputError"), stepMeta); 
 			remarks.add(cr);
 		}
 	}
@@ -592,22 +592,22 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 					}
 					catch(KettleException e)
 					{
-						retval.setError(BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.GetSQL.ErrorOccurred")+e.getMessage()); //$NON-NLS-1$
+						retval.setError(BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.GetSQL.ErrorOccurred")+e.getMessage()); 
 					}
 				}
 				else
 				{
-					retval.setError(BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.GetSQL.NoTableDefinedOnConnection")); //$NON-NLS-1$
+					retval.setError(BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.GetSQL.NoTableDefinedOnConnection")); 
 				}
 			}
 			else
 			{
-				retval.setError(BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.GetSQL.NotReceivingAnyFields")); //$NON-NLS-1$
+				retval.setError(BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.GetSQL.NotReceivingAnyFields")); 
 			}
 		}
 		else
 		{
-			retval.setError(BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.GetSQL.NoConnectionDefined")); //$NON-NLS-1$
+			retval.setError(BaseMessages.getString(PKG, "MySQLBulkLoaderMeta.GetSQL.NoConnectionDefined")); 
 		}
 
 		return retval;
@@ -624,7 +624,7 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
                 ValueMetaInterface v = prev.searchValueMeta(fieldStream[i]);
 
                 DatabaseImpact ii = new DatabaseImpact(DatabaseImpact.TYPE_IMPACT_READ_WRITE, transMeta.getName(), stepMeta.getName(), databaseMeta
-                        .getDatabaseName(), transMeta.environmentSubstitute(tableName), fieldTable[i], fieldStream[i], v!=null?v.getOrigin():"?", "", "Type = " + v.toStringMeta()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                        .getDatabaseName(), transMeta.environmentSubstitute(tableName), fieldTable[i], fieldStream[i], v!=null?v.getOrigin():"?", "", "Type = " + v.toStringMeta());   //$NON-NLS-3$
                 impact.add(ii);
             }
         }

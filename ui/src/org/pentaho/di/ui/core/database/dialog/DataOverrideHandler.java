@@ -86,12 +86,12 @@ public class DataOverrideHandler extends DataHandler {
         ded.open();
       } else {
         MessageBox mb = new MessageBox(parent, SWT.OK | SWT.ICON_INFORMATION);
-        mb.setText(BaseMessages.getString(PKG, "DatabaseDialog.ExplorerNotImplemented.Title")); //$NON-NLS-1$
-        mb.setMessage(BaseMessages.getString(PKG, "DatabaseDialog.ExplorerNotImplemented.Message")); //$NON-NLS-1$
+        mb.setText(BaseMessages.getString(PKG, "DatabaseDialog.ExplorerNotImplemented.Title")); 
+        mb.setMessage(BaseMessages.getString(PKG, "DatabaseDialog.ExplorerNotImplemented.Message")); 
         mb.open();
       }
     } catch (Exception e) {
-      new ErrorDialog( parent, BaseMessages.getString(PKG, "DatabaseDialog.ErrorParameters.title"), BaseMessages.getString(PKG, "DatabaseDialog.ErrorParameters.description"), e); //$NON-NLS-1$ //$NON-NLS-2$
+      new ErrorDialog( parent, BaseMessages.getString(PKG, "DatabaseDialog.ErrorParameters.title"), BaseMessages.getString(PKG, "DatabaseDialog.ErrorParameters.description"), e);  
     }
   }
 
@@ -104,7 +104,7 @@ public class DataOverrideHandler extends DataHandler {
       parent = ((Composite) obj).getShell();
     }
     if( parent == null){
-      throw new IllegalStateException("Could not get Shell reference from Xul Dialog Tree."); //$NON-NLS-1$
+      throw new IllegalStateException("Could not get Shell reference from Xul Dialog Tree."); 
     }
     return parent;
   }
@@ -126,11 +126,11 @@ public class DataOverrideHandler extends DataHandler {
           rowData.add(row.getData());
 
         PreviewRowsDialog prd = new PreviewRowsDialog(parent, dbinfo, SWT.NONE, null, rowMeta, rowData); 
-        prd.setTitleMessage(BaseMessages.getString(PKG, "DatabaseDialog.FeatureList.title"), BaseMessages.getString(PKG, "DatabaseDialog.FeatureList.title")); //$NON-NLS-1$ //$NON-NLS-2$
+        prd.setTitleMessage(BaseMessages.getString(PKG, "DatabaseDialog.FeatureList.title"), BaseMessages.getString(PKG, "DatabaseDialog.FeatureList.title"));  
         prd.open();
       }
     } catch (Exception e) {
-      new ErrorDialog( parent, BaseMessages.getString(PKG, "DatabaseDialog.FeatureListError.title"), BaseMessages.getString(PKG, "DatabaseDialog.FeatureListError.description"), e); //$NON-NLS-1$ //$NON-NLS-2$
+      new ErrorDialog( parent, BaseMessages.getString(PKG, "DatabaseDialog.FeatureListError.title"), BaseMessages.getString(PKG, "DatabaseDialog.FeatureListError.description"), e);  
     }
   }
   
@@ -173,7 +173,7 @@ public class DataOverrideHandler extends DataHandler {
   protected void showMessage(String message, boolean scroll){
     Shell parent = getShell();
     
-    ShowMessageDialog msgDialog = new ShowMessageDialog(parent, SWT.ICON_INFORMATION | SWT.OK, BaseMessages.getString(PKG, "DatabaseDialog.DatabaseConnectionTest.title"), message, scroll); //$NON-NLS-1$
+    ShowMessageDialog msgDialog = new ShowMessageDialog(parent, SWT.ICON_INFORMATION | SWT.OK, BaseMessages.getString(PKG, "DatabaseDialog.DatabaseConnectionTest.title"), message, scroll); 
     msgDialog.open();
   }
 

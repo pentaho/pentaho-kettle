@@ -119,7 +119,7 @@ public class GroupBy extends BaseStep implements StepInterface {
         }
         if (data.subjectnrs[i] < 0) {
           logError(BaseMessages.getString(PKG,
-              "GroupBy.Log.AggregateSubjectFieldCouldNotFound", meta.getSubjectField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+              "GroupBy.Log.AggregateSubjectFieldCouldNotFound", meta.getSubjectField()[i]));  
           setErrors(1);
           stopAll();
           return false;
@@ -151,7 +151,7 @@ public class GroupBy extends BaseStep implements StepInterface {
       for (int i = 0; i < meta.getGroupField().length; i++) {
         data.groupnrs[i] = data.inputRowMeta.indexOfValue(meta.getGroupField()[i]);
         if (data.groupnrs[i] < 0) {
-          logError(BaseMessages.getString(PKG, "GroupBy.Log.GroupFieldCouldNotFound", meta.getGroupField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+          logError(BaseMessages.getString(PKG, "GroupBy.Log.GroupFieldCouldNotFound", meta.getGroupField()[i]));  
           setErrors(1);
           stopAll();
           return false;
@@ -260,7 +260,7 @@ public class GroupBy extends BaseStep implements StepInterface {
 
     if (checkFeedback(getLinesRead())) {
       if (log.isBasic())
-        logBasic(BaseMessages.getString(PKG, "GroupBy.LineNumber") + getLinesRead()); //$NON-NLS-1$
+        logBasic(BaseMessages.getString(PKG, "GroupBy.LineNumber") + getLinesRead()); 
     }
 
     return true;
@@ -595,11 +595,11 @@ public class GroupBy extends BaseStep implements StepInterface {
           break;
         case GroupByMeta.TYPE_GROUP_CONCAT_COMMA:
           vMeta = new ValueMeta(meta.getAggregateField()[i], ValueMetaInterface.TYPE_STRING);
-          v = new StringBuilder(); //$NON-NLS-1$
+          v = new StringBuilder(); 
           break;
         case GroupByMeta.TYPE_GROUP_CONCAT_STRING:
           vMeta = new ValueMeta(meta.getAggregateField()[i], ValueMetaInterface.TYPE_STRING);
-          v = new StringBuilder(); //$NON-NLS-1$
+          v = new StringBuilder(); 
           break;
         default:
           // TODO raise an error here because we cannot continue successfully maybe the UI should validate this
@@ -715,12 +715,12 @@ public class GroupBy extends BaseStep implements StepInterface {
       if (data.rowsOnFile == 0) {
         try {
           data.tempFile = File.createTempFile(meta.getPrefix(),
-              ".tmp", new File(environmentSubstitute(meta.getDirectory()))); //$NON-NLS-1$
+              ".tmp", new File(environmentSubstitute(meta.getDirectory()))); 
           data.fos = new FileOutputStream(data.tempFile);
           data.dos = new DataOutputStream(data.fos);
           data.firstRead = true;
         } catch (IOException e) {
-          throw new KettleFileException(BaseMessages.getString(PKG, "GroupBy.Exception.UnableToCreateTemporaryFile"), e); //$NON-NLS-1$
+          throw new KettleFileException(BaseMessages.getString(PKG, "GroupBy.Exception.UnableToCreateTemporaryFile"), e); 
         }
       }
       // OK, save the oldest rows to disk!
@@ -741,7 +741,7 @@ public class GroupBy extends BaseStep implements StepInterface {
           data.firstRead = false;
         } catch (IOException e) {
           throw new KettleFileException(BaseMessages.getString(PKG,
-              "GroupBy.Exception.UnableToReadBackRowFromTemporaryFile"), e); //$NON-NLS-1$
+              "GroupBy.Exception.UnableToReadBackRowFromTemporaryFile"), e); 
         }
       }
 
@@ -778,7 +778,7 @@ public class GroupBy extends BaseStep implements StepInterface {
       }
       data.firstRead = true;
     } catch (IOException e) {
-      throw new KettleFileException(BaseMessages.getString(PKG, "GroupBy.Exception.UnableToCloseInputStream"), e); //$NON-NLS-1$
+      throw new KettleFileException(BaseMessages.getString(PKG, "GroupBy.Exception.UnableToCloseInputStream"), e); 
     }
   }
 
@@ -793,7 +793,7 @@ public class GroupBy extends BaseStep implements StepInterface {
         data.dis = null;
       }
     } catch (IOException e) {
-      throw new KettleFileException(BaseMessages.getString(PKG, "GroupBy.Exception.UnableToCloseInputStream"), e); //$NON-NLS-1$
+      throw new KettleFileException(BaseMessages.getString(PKG, "GroupBy.Exception.UnableToCloseInputStream"), e); 
     }
   }
 

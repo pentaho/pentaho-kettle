@@ -427,9 +427,9 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
   @Override
   public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore)
   {
-    andValidator().validate(this, "filename", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
-    andValidator().validate(this, "maximumTimeout", remarks, putValidators(integerValidator())); //$NON-NLS-1$
-    andValidator().validate(this, "checkCycleTime", remarks, putValidators(integerValidator())); //$NON-NLS-1$
+    andValidator().validate(this, "filename", remarks, putValidators(notBlankValidator())); 
+    andValidator().validate(this, "maximumTimeout", remarks, putValidators(integerValidator())); 
+    andValidator().validate(this, "checkCycleTime", remarks, putValidators(integerValidator())); 
   }
 
 }

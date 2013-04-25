@@ -29,7 +29,7 @@ import junit.framework.TestCase;
 
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -81,7 +81,7 @@ public class BaseCluster extends TestCase {
     	// Bootstrap the Kettle API...
     	//
     	KettleEnvironment.init();
-    	CentralLogStore.init(5000, 60); // Keep 5000 log rows for at least 60 minutes
+    	KettleLogStore.init(5000, 60); // Keep 5000 log rows for at least 60 minutes
 	}
 
 	public static String loadFileContent(VariableSpace space, String filename) throws Exception {

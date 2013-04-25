@@ -81,13 +81,13 @@ public class Splash {
     
     Rectangle displayBounds = display.getPrimaryMonitor().getBounds();
 
-    kettle_image = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("splash_image")); // "kettle_splash.png" //$NON-NLS-1$
-    kettle_icon = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("splash_icon")); // "spoon.ico" //$NON-NLS-1$
-    exclamation_image = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("exclamation_image")); // "exclamation.png" //$NON-NLS-1$
+    kettle_image = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("splash_image")); // "kettle_splash.png" 
+    kettle_icon = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("splash_icon")); // "spoon.ico" 
+    exclamation_image = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("exclamation_image")); // "exclamation.png" 
 
-    verFont = new Font(display, "Helvetica", 11, SWT.BOLD); //$NON-NLS-1$
-    licFont = new Font(display, "Helvetica", licFontSize, SWT.NORMAL); //$NON-NLS-1$
-    devWarningFont = new Font(display, "Helvetica", 10, SWT.NORMAL); //$NON-NLS-1$
+    verFont = new Font(display, "Helvetica", 11, SWT.BOLD); 
+    licFont = new Font(display, "Helvetica", licFontSize, SWT.NORMAL); 
+    devWarningFont = new Font(display, "Helvetica", 10, SWT.NORMAL); 
     
     // versionWarningBackgroundColor = new Color(display, 255, 253, 213);
     versionWarningBackgroundColor = new Color(display, 255, 255, 255);
@@ -96,24 +96,24 @@ public class Splash {
     splash = new Shell(display, SWT.APPLICATION_MODAL);
     splash.setImage(kettle_icon);
 
-    splash.setText(BaseMessages.getString(PKG, "SplashDialog.Title")); // "Pentaho Data Integration" //$NON-NLS-1$
+    splash.setText(BaseMessages.getString(PKG, "SplashDialog.Title")); // "Pentaho Data Integration" 
     
     splash.addPaintListener(new PaintListener() {
       public void paintControl(PaintEvent e) {
-        String versionText = BaseMessages.getString(PKG, "SplashDialog.Version") + " " + Const.VERSION; //$NON-NLS-1$ //$NON-NLS-2$
+        String versionText = BaseMessages.getString(PKG, "SplashDialog.Version") + " " + Const.VERSION;  
         
         StringBuilder sb = new StringBuilder();
         String line = null;
         
         try {
-          BufferedReader reader = new BufferedReader(new InputStreamReader(Splash.class.getClassLoader().getResourceAsStream("org/pentaho/di/ui/core/dialog/license/license.txt"))); //$NON-NLS-1$
+          BufferedReader reader = new BufferedReader(new InputStreamReader(Splash.class.getClassLoader().getResourceAsStream("org/pentaho/di/ui/core/dialog/license/license.txt"))); 
           
           while((line = reader.readLine()) != null) {
-            sb.append(line + System.getProperty("line.separator")); //$NON-NLS-1$
+            sb.append(line + System.getProperty("line.separator")); 
           }
         } catch (Exception ex) {
-          sb.append(""); //$NON-NLS-1$
-          log.logError(BaseMessages.getString(PKG, "SplashDialog.LicenseTextNotFound"), ex); //$NON-NLS-1$
+          sb.append(""); 
+          log.logError(BaseMessages.getString(PKG, "SplashDialog.LicenseTextNotFound"), ex); 
         }
         Calendar cal = Calendar.getInstance();
         String licenseText = String.format(sb.toString(), cal);
@@ -121,16 +121,16 @@ public class Splash {
 
         // If this is a Milestone or RC release, warn the user
         if (Const.RELEASE.equals(Const.ReleaseType.MILESTONE)) {
-        versionText = BaseMessages.getString(PKG, "SplashDialog.DeveloperRelease") + " - " + versionText; //$NON-NLS-1$ //$NON-NLS-2$
+        versionText = BaseMessages.getString(PKG, "SplashDialog.DeveloperRelease") + " - " + versionText;  
           drawVersionWarning(e);
         } else if (Const.RELEASE.equals(Const.ReleaseType.RELEASE_CANDIDATE)) {
-          versionText = BaseMessages.getString(PKG, "SplashDialog.ReleaseCandidate") + " - " + versionText;  //$NON-NLS-1$//$NON-NLS-2$
+          versionText = BaseMessages.getString(PKG, "SplashDialog.ReleaseCandidate") + " - " + versionText;  
         }
         else if (Const.RELEASE.equals(Const.ReleaseType.PREVIEW)) {
-          versionText = BaseMessages.getString(PKG, "SplashDialog.PreviewRelease") + " - " + versionText;  //$NON-NLS-1$//$NON-NLS-2$
+          versionText = BaseMessages.getString(PKG, "SplashDialog.PreviewRelease") + " - " + versionText;  
         }
         else if (Const.RELEASE.equals(Const.ReleaseType.GA)) {
-            versionText = BaseMessages.getString(PKG, "SplashDialog.GA") + " - " + versionText;  //$NON-NLS-1$//$NON-NLS-2$
+            versionText = BaseMessages.getString(PKG, "SplashDialog.GA") + " - " + versionText;  
           }
         
         e.gc.setFont(verFont);
@@ -145,7 +145,7 @@ public class Splash {
           if (licFont != null) {
             licFont.dispose();
           }
-          licFont = new Font(e.display, "Helvetica", licFontSize, SWT.NORMAL); //$NON-NLS-1$
+          licFont = new Font(e.display, "Helvetica", licFontSize, SWT.NORMAL); 
           e.gc.setFont(licFont);          
         }
         
@@ -225,7 +225,7 @@ public class Splash {
     gc.drawImage(exclamation_image, 304, 243);
 
     gc.setFont(devWarningFont);
-    gc.drawText(BaseMessages.getString(PKG, "SplashDialog.DevelopmentWarning"), 335, 241); //$NON-NLS-1$
+    gc.drawText(BaseMessages.getString(PKG, "SplashDialog.DevelopmentWarning"), 335, 241); 
   }
 
   public void dispose() {

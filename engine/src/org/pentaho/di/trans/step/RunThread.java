@@ -25,7 +25,7 @@ package org.pentaho.di.trans.step;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingRegistry;
@@ -55,7 +55,7 @@ public class RunThread implements Runnable {
 			step.setRunning(true);
 			step.getLogChannel().snap(Metrics.METRIC_STEP_EXECUTION_START);
 			
-			if (log.isDetailed()) log.logDetailed(BaseMessages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
+			if (log.isDetailed()) log.logDetailed(BaseMessages.getString("System.Log.StartingToRun")); 
 
 			while (step.processRow(meta, data) && !step.isStopped());
 		}
@@ -68,10 +68,10 @@ public class RunThread implements Runnable {
 		            // Handle this different with as less overhead as possible to get an error message in the log.
 		            // Otherwise it crashes likely with another OOME in Me$$ages.getString() and does not log
 		            // nor call the setErrors() and stopAll() below.
-		        	log.logError("UnexpectedError: ", t); //$NON-NLS-1$
+		        	log.logError("UnexpectedError: ", t); 
 		        } else {
 		          t.printStackTrace();
-		        	log.logError(BaseMessages.getString("System.Log.UnexpectedError"), t); //$NON-NLS-1$ //$NON-NLS-2$
+		        	log.logError(BaseMessages.getString("System.Log.UnexpectedError"), t);  
 		        }
 		        
 		        String logChannelId = log.getLogChannelId();
@@ -80,7 +80,7 @@ public class RunThread implements Runnable {
 		        List<String> logChannelChildren = LoggingRegistry.getInstance().getLogChannelChildren(parentLogChannelId);
 		        int childIndex = Const.indexOfString(log.getLogChannelId(), logChannelChildren);
 		        System.out.println("child index = "+childIndex+", logging object : "+loggingObject.toString()+" parent="+parentLogChannelId);
-		        CentralLogStore.getAppender().getBuffer("2bcc6b3f-c660-4a8b-8b17-89e8cbd5b29b", false);
+		        KettleLogStore.getAppender().getBuffer("2bcc6b3f-c660-4a8b-8b17-89e8cbd5b29b", false);
 		        // baseStep.logError(Const.getStackTracker(t));
 		    }
 		    catch(OutOfMemoryError e)
@@ -113,7 +113,7 @@ public class RunThread implements Runnable {
 				//
 				// it's likely an OOME, so we don't want to introduce overhead by using BaseMessages.getString(), see above
 				//
-				log.logError("UnexpectedError: " + Const.getStackTracker(t)); //$NON-NLS-1$
+				log.logError("UnexpectedError: " + Const.getStackTracker(t)); 
 			} finally {
 				step.markStop();
 			}

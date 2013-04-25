@@ -32,12 +32,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.EnvUtil;
 
-public class CentralLogStore {
+public class KettleLogStore {
   
   public static final PrintStream OriginalSystemOut = System.out;
   public static final PrintStream OriginalSystemErr = System.err;
   
-	private static CentralLogStore store;
+	private static KettleLogStore store;
 	
 	private LoggingBuffer appender;
 
@@ -51,7 +51,7 @@ public class CentralLogStore {
 	 * @param maxSize the maximum size
 	 * @param maxLogTimeoutMinutes The maximum time that a log line times out in Minutes.
 	 */
-	private CentralLogStore(int maxSize, int maxLogTimeoutMinutes, boolean redirectStdOut, boolean redirectStdErr) {
+	private KettleLogStore(int maxSize, int maxLogTimeoutMinutes, boolean redirectStdOut, boolean redirectStdErr) {
 		this.appender = new LoggingBuffer(maxSize);
 		replaceLogCleaner(maxLogTimeoutMinutes);
 		
@@ -150,12 +150,12 @@ public class CentralLogStore {
       store.appender.setMaxNrLines(maxSize);
       store.replaceLogCleaner(maxLogTimeoutMinutes);
     } else  {
-      store = new CentralLogStore(maxSize, maxLogTimeoutMinutes, redirectStdOut, redirectStdErr);
+      store = new KettleLogStore(maxSize, maxLogTimeoutMinutes, redirectStdOut, redirectStdErr);
     }
     initialized.set(true);
 	}
 	
-	private static CentralLogStore getInstance() {
+	public static KettleLogStore getInstance() {
 		if (store==null) {
 			throw new RuntimeException("Central Log Store is not initialized!!!");
 		}

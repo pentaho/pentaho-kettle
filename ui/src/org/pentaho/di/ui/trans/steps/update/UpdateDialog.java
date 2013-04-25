@@ -180,14 +180,14 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "UpdateDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "UpdateDialog.Shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "UpdateDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "UpdateDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -212,7 +212,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		
         // Schema line...
         wlSchema=new Label(shell, SWT.RIGHT);
-        wlSchema.setText(BaseMessages.getString(PKG, "UpdateDialog.TargetSchema.Label")); //$NON-NLS-1$
+        wlSchema.setText(BaseMessages.getString(PKG, "UpdateDialog.TargetSchema.Label")); 
         props.setLook(wlSchema);
         fdlSchema=new FormData();
         fdlSchema.left = new FormAttachment(0, 0);
@@ -239,7 +239,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 
 		// Table line...
 		wlTable=new Label(shell, SWT.RIGHT);
-		wlTable.setText(BaseMessages.getString(PKG, "UpdateDialog.TargetTable.Label")); //$NON-NLS-1$
+		wlTable.setText(BaseMessages.getString(PKG, "UpdateDialog.TargetTable.Label")); 
  		props.setLook(wlTable);
 		fdlTable=new FormData();
 		fdlTable.left = new FormAttachment(0, 0);
@@ -249,7 +249,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 
 		wbTable=new Button(shell, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbTable);
-		wbTable.setText(BaseMessages.getString(PKG, "UpdateDialog.Browse.Button")); //$NON-NLS-1$
+		wbTable.setText(BaseMessages.getString(PKG, "UpdateDialog.Browse.Button")); 
 		fdbTable=new FormData();
 		fdbTable.right= new FormAttachment(100, 0);
 		fdbTable.top  = new FormAttachment(wbSchema, margin);
@@ -266,7 +266,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 
 		// Commit line
 		wlCommit = new Label(shell, SWT.RIGHT);
-		wlCommit.setText(BaseMessages.getString(PKG, "UpdateDialog..Commit.Label")); //$NON-NLS-1$
+		wlCommit.setText(BaseMessages.getString(PKG, "UpdateDialog..Commit.Label")); 
  		props.setLook(wlCommit);
 		fdlCommit = new FormData();
 		fdlCommit.left = new FormAttachment(0, 0);
@@ -336,7 +336,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
         );		
 		
         wlErrorIgnored=new Label(shell, SWT.RIGHT);
-        wlErrorIgnored.setText(BaseMessages.getString(PKG, "UpdateDialog.ErrorIgnored.Label")); //$NON-NLS-1$
+        wlErrorIgnored.setText(BaseMessages.getString(PKG, "UpdateDialog.ErrorIgnored.Label")); 
  		props.setLook(wlErrorIgnored);
         fdlErrorIgnored=new FormData();
         fdlErrorIgnored.left = new FormAttachment(0, 0);
@@ -346,7 +346,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
         
         wErrorIgnored=new Button(shell, SWT.CHECK );
  		props.setLook(        wErrorIgnored);
-        wErrorIgnored.setToolTipText(BaseMessages.getString(PKG, "UpdateDialog.ErrorIgnored.ToolTip")); //$NON-NLS-1$
+        wErrorIgnored.setToolTipText(BaseMessages.getString(PKG, "UpdateDialog.ErrorIgnored.ToolTip")); 
         fdErrorIgnored=new FormData();
         fdErrorIgnored.left = new FormAttachment(middle, 0);
         fdErrorIgnored.top  = new FormAttachment(wSkipLookup, margin);
@@ -362,7 +362,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
         );
 
         wlIgnoreFlagField=new Label(shell, SWT.LEFT);
-        wlIgnoreFlagField.setText(BaseMessages.getString(PKG, "UpdateDialog.FlagField.Label")); //$NON-NLS-1$
+        wlIgnoreFlagField.setText(BaseMessages.getString(PKG, "UpdateDialog.FlagField.Label")); 
  		props.setLook(        wlIgnoreFlagField);
         fdlIgnoreFlagField=new FormData();
         fdlIgnoreFlagField.left = new FormAttachment(wErrorIgnored, margin);
@@ -379,7 +379,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 
 
 		wlKey=new Label(shell, SWT.NONE);
-		wlKey.setText(BaseMessages.getString(PKG, "UpdateDialog.Key.Label")); //$NON-NLS-1$
+		wlKey.setText(BaseMessages.getString(PKG, "UpdateDialog.Key.Label")); 
  		props.setLook(wlKey);
 		fdlKey=new FormData();
 		fdlKey.left  = new FormAttachment(0, 0);
@@ -390,10 +390,10 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		int nrKeyRows=(input.getKeyStream()!=null?input.getKeyStream().length:1);
 		
 		ciKey=new ColumnInfo[nrKeyCols];
-		ciKey[0]=new ColumnInfo(BaseMessages.getString(PKG, "UpdateDialog.ColumnInfo.TableField"),    ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
-		ciKey[1]=new ColumnInfo(BaseMessages.getString(PKG, "UpdateDialog.ColumnInfo.Comparator"),    ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "=", "= ~NULL", "<>", "<", "<=", ">", ">=", "LIKE", "BETWEEN", "IS NULL", "IS NOT NULL" } ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$
-		ciKey[2]=new ColumnInfo(BaseMessages.getString(PKG, "UpdateDialog.ColumnInfo.StreamField1"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
-		ciKey[3]=new ColumnInfo(BaseMessages.getString(PKG, "UpdateDialog.ColumnInfo.StreamField2"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+		ciKey[0]=new ColumnInfo(BaseMessages.getString(PKG, "UpdateDialog.ColumnInfo.TableField"),    ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); 
+		ciKey[1]=new ColumnInfo(BaseMessages.getString(PKG, "UpdateDialog.ColumnInfo.Comparator"),    ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "=", "= ~NULL", "<>", "<", "<=", ">", ">=", "LIKE", "BETWEEN", "IS NULL", "IS NOT NULL" } );   //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$
+		ciKey[2]=new ColumnInfo(BaseMessages.getString(PKG, "UpdateDialog.ColumnInfo.StreamField1"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); 
+		ciKey[3]=new ColumnInfo(BaseMessages.getString(PKG, "UpdateDialog.ColumnInfo.StreamField2"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); 
 		tableFieldColumns.add(ciKey[0]);
 		wKey=new TableView(transMeta, shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
@@ -404,7 +404,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 						      );
 
 		wGet = new Button(shell, SWT.PUSH);
-		wGet.setText(BaseMessages.getString(PKG, "UpdateDialog.GetFields.Button")); //$NON-NLS-1$
+		wGet.setText(BaseMessages.getString(PKG, "UpdateDialog.GetFields.Button")); 
 		fdGet = new FormData();
 		fdGet.right = new FormAttachment(100, 0);
 		fdGet.top = new FormAttachment(wlKey, margin);
@@ -419,18 +419,18 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wSQL=new Button(shell, SWT.PUSH);
-		wSQL.setText(BaseMessages.getString(PKG, "UpdateDialog.SQL.Button")); //$NON-NLS-1$
+		wSQL.setText(BaseMessages.getString(PKG, "UpdateDialog.SQL.Button")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel , wSQL }, margin, null);
 
 		
 		// THE UPDATE/INSERT TABLE
 		wlReturn=new Label(shell, SWT.NONE);
-		wlReturn.setText(BaseMessages.getString(PKG, "UpdateDialog.Return.Label")); //$NON-NLS-1$
+		wlReturn.setText(BaseMessages.getString(PKG, "UpdateDialog.Return.Label")); 
  		props.setLook(wlReturn);
 		fdlReturn=new FormData();
 		fdlReturn.left  = new FormAttachment(0, 0);
@@ -441,8 +441,8 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		int UpInsRows= (input.getUpdateLookup()!=null?input.getUpdateLookup().length:1);
 		
 		ciReturn=new ColumnInfo[UpInsCols];
-		ciReturn[0]=new ColumnInfo(BaseMessages.getString(PKG, "UpdateDialog.ColumnInfo.TableField"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
-		ciReturn[1]=new ColumnInfo(BaseMessages.getString(PKG, "UpdateDialog.ColumnInfo.StreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+		ciReturn[0]=new ColumnInfo(BaseMessages.getString(PKG, "UpdateDialog.ColumnInfo.TableField"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); 
+		ciReturn[1]=new ColumnInfo(BaseMessages.getString(PKG, "UpdateDialog.ColumnInfo.StreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); 
 		tableFieldColumns.add(ciReturn[0]);
 		wReturn=new TableView(transMeta, shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
@@ -453,7 +453,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 							  );
 
 		wGetLU = new Button(shell, SWT.PUSH);
-		wGetLU.setText(BaseMessages.getString(PKG, "UpdateDialog.GetAndUpdateFields")); //$NON-NLS-1$
+		wGetLU.setText(BaseMessages.getString(PKG, "UpdateDialog.GetAndUpdateFields")); 
 		fdGetLU = new FormData();
 		fdGetLU.top   = new FormAttachment(wlReturn, margin);
 		fdGetLU.right = new FormAttachment(100, 0);
@@ -655,9 +655,9 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
    */
   public void getData() {
     if (log.isDebug())
-      logDebug(BaseMessages.getString(PKG, "UpdateDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+      logDebug(BaseMessages.getString(PKG, "UpdateDialog.Log.GettingKeyInfo")); 
 
-    wCommit.setText("" + input.getCommitSize()); //$NON-NLS-1$
+    wCommit.setText("" + input.getCommitSize()); 
     wBatch.setSelection(input.useBatchUpdate());
     wSkipLookup.setSelection(input.isSkipLookup());
     wErrorIgnored.setSelection(input.isErrorIgnored());
@@ -726,7 +726,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		inf.setUseBatchUpdate( wBatch.getSelection() );
 		inf.setSkipLookup(wSkipLookup.getSelection() );
 		
-		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "UpdateDialog.Log.FoundKeys",nrkeys+"")); //$NON-NLS-1$ //$NON-NLS-2$
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "UpdateDialog.Log.FoundKeys",nrkeys+""));  
 		for (int i=0;i<nrkeys;i++)
 		{
 			TableItem item = wKey.getNonEmpty(i);
@@ -738,7 +738,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 
 		//Table ftable = wReturn.table;
 
-		logDebug(BaseMessages.getString(PKG, "UpdateDialog.Log.FoundFields",nrfields+"")); //$NON-NLS-1$ //$NON-NLS-2$
+		logDebug(BaseMessages.getString(PKG, "UpdateDialog.Log.FoundFields",nrfields+""));  
 		for (int i=0;i<nrfields;i++)
 		{
 			TableItem item  = wReturn.getNonEmpty(i);
@@ -768,8 +768,8 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		if (input.getDatabaseMeta()==null)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(BaseMessages.getString(PKG, "UpdateDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
-			mb.setText(BaseMessages.getString(PKG, "UpdateDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "UpdateDialog.InvalidConnection.DialogMessage")); 
+			mb.setText(BaseMessages.getString(PKG, "UpdateDialog.InvalidConnection.DialogTitle")); 
 			mb.open();
 			return;
 		}
@@ -786,7 +786,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		
 		if (inf!=null)
 		{
-			if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "UpdateDialog.Log.LookingAtConnection")+inf.toString()); //$NON-NLS-1$
+			if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "UpdateDialog.Log.LookingAtConnection")+inf.toString()); 
 		
 			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, transMeta.getDatabases());
       std.setSelectedSchemaAndTable(wSchema.getText(), wTable.getText());
@@ -800,8 +800,8 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		else
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(BaseMessages.getString(PKG, "UpdateDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
-			mb.setText(BaseMessages.getString(PKG, "UpdateDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "UpdateDialog.InvalidConnection.DialogMessage")); 
+			mb.setText(BaseMessages.getString(PKG, "UpdateDialog.InvalidConnection.DialogTitle")); 
 			mb.open(); 
 		}
 	}
@@ -826,7 +826,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "UpdateDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "UpdateDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "UpdateDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "UpdateDialog.FailedToGetFields.DialogMessage"), ke);  
 		}
 	}
 
@@ -842,7 +842,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "UpdateDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "UpdateDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "UpdateDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "UpdateDialog.FailedToGetFields.DialogMessage"), ke);  
 		}
 
 	}
@@ -857,7 +857,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 			getInfo(info);
 	
 			String name = stepname;  // new name might not yet be linked to other steps! 
-			StepMeta stepinfo = new StepMeta(BaseMessages.getString(PKG, "UpdateDialog.StepMeta.Title"), name, info); //$NON-NLS-1$
+			StepMeta stepinfo = new StepMeta(BaseMessages.getString(PKG, "UpdateDialog.StepMeta.Title"), name, info); 
 			RowMetaInterface prev = transMeta.getPrevStepFields(stepname);
 			
 			SQLStatement sql = info.getSQLStatements(transMeta, stepinfo, prev, repository, metaStore);
@@ -871,8 +871,8 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 				else
 				{
 					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
-					mb.setMessage(BaseMessages.getString(PKG, "UpdateDialog.NoSQLNeeds.DialogMessage")); //$NON-NLS-1$
-					mb.setText(BaseMessages.getString(PKG, "UpdateDialog.NoSQLNeeds.DialogTitle")); //$NON-NLS-1$
+					mb.setMessage(BaseMessages.getString(PKG, "UpdateDialog.NoSQLNeeds.DialogMessage")); 
+					mb.setText(BaseMessages.getString(PKG, "UpdateDialog.NoSQLNeeds.DialogTitle")); 
 					mb.open(); 
 				}
 			}
@@ -880,13 +880,13 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 			{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
 				mb.setMessage(sql.getError());
-				mb.setText(BaseMessages.getString(PKG, "UpdateDialog.SQLError.DialogTitle")); //$NON-NLS-1$
+				mb.setText(BaseMessages.getString(PKG, "UpdateDialog.SQLError.DialogTitle")); 
 				mb.open(); 
 			}
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "UpdateDialog.CouldNotBuildSQL.DialogTitle"), BaseMessages.getString(PKG, "UpdateDialog.CouldNotBuildSQL.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "UpdateDialog.CouldNotBuildSQL.DialogTitle"), BaseMessages.getString(PKG, "UpdateDialog.CouldNotBuildSQL.DialogMessage"), ke);  
 		}
 
 	}

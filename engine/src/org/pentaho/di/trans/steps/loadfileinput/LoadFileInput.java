@@ -122,8 +122,8 @@ public class LoadFileInput extends BaseStep implements StepInterface
 							if (data.indexOfFilenameField<0)
 							{
 								// The field is unreachable !
-								logError(BaseMessages.getString(PKG, "LoadFileInput.Log.ErrorFindingField")+ "[" + meta.getDynamicFilenameField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-								throw new KettleException(BaseMessages.getString(PKG, "LoadFileInput.Exception.CouldnotFindField",meta.getDynamicFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
+								logError(BaseMessages.getString(PKG, "LoadFileInput.Log.ErrorFindingField")+ "[" + meta.getDynamicFilenameField()+"]");  
+								throw new KettleException(BaseMessages.getString(PKG, "LoadFileInput.Exception.CouldnotFindField",meta.getDynamicFilenameField()));  
 							}
 						}
 						// Get the number of previous fields
@@ -249,7 +249,7 @@ public class LoadFileInput extends BaseStep implements StepInterface
 		     }	
 		}catch(KettleException e)
 		{
-			logError(BaseMessages.getString(PKG, "LoadFileInput.ErrorInStepRunning",e.getMessage())); //$NON-NLS-1$
+			logError(BaseMessages.getString(PKG, "LoadFileInput.ErrorInStepRunning",e.getMessage())); 
 			logError(Const.getStackTracker(e));
 			setErrors(1);
 			stopAll();

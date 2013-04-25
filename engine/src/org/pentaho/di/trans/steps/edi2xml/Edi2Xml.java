@@ -63,12 +63,12 @@ public class Edi2Xml extends BaseStep implements StepInterface {
 			int numErrors = 0;
 
 			if (data.inputFieldIndex < 0) {
-				logError(BaseMessages.getString(PKG, "Edi2Xml.Log.CouldNotFindInputField", realInputField)); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "Edi2Xml.Log.CouldNotFindInputField", realInputField)); 
 				numErrors++;
 			}
 
 			if (!data.inputRowMeta.getValueMeta(data.inputFieldIndex).isString()) {
-				logError(BaseMessages.getString(PKG, "Edi2Xml.Log.InputFieldIsNotAString", realInputField)); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "Edi2Xml.Log.InputFieldIsNotAString", realInputField)); 
 				numErrors++;
 			}
 

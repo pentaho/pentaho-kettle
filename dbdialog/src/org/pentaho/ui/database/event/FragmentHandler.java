@@ -50,7 +50,7 @@ public class FragmentHandler extends AbstractXulEventHandler {
   private XulListbox connectionBox;
   private XulListbox accessBox;
 
-  private String packagePath = "org/pentaho/ui/database/"; //$NON-NLS-1$
+  private String packagePath = "org/pentaho/ui/database/"; 
   
   public FragmentHandler() {
   }
@@ -58,7 +58,7 @@ public class FragmentHandler extends AbstractXulEventHandler {
   private void loadDatabaseOptionsFragment(String fragmentUri) throws XulException{
     
     
-    XulComponent groupElement = document.getElementById("database-options-box"); //$NON-NLS-1$
+    XulComponent groupElement = document.getElementById("database-options-box"); 
     XulComponent parentElement = groupElement.getParent();
 
     XulDomContainer fragmentContainer = null;
@@ -88,8 +88,8 @@ public class FragmentHandler extends AbstractXulEventHandler {
    */
   public void refreshOptions(){
 
-    connectionBox = (XulListbox)document.getElementById("connection-type-list"); //$NON-NLS-1$
-    accessBox = (XulListbox)document.getElementById("access-type-list"); //$NON-NLS-1$
+    connectionBox = (XulListbox)document.getElementById("connection-type-list"); 
+    accessBox = (XulListbox)document.getElementById("access-type-list"); 
     
     Object connectionKey = DataHandler.connectionNametoID.get(connectionBox.getSelectedItem());
     String databaseName = null;
@@ -108,7 +108,7 @@ public class FragmentHandler extends AbstractXulEventHandler {
 
     DataHandler dataHandler=null;
     try {
-      dataHandler = (DataHandler)xulDomContainer.getEventHandler("dataHandler"); //$NON-NLS-1$
+      dataHandler = (DataHandler)xulDomContainer.getEventHandler("dataHandler"); 
       dataHandler.pushCache();
     } catch (XulException e) {
       // TODO not a critical function, but should log a problem...
@@ -116,19 +116,19 @@ public class FragmentHandler extends AbstractXulEventHandler {
 
     switch(access){
       case DatabaseMeta.TYPE_ACCESS_JNDI:
-        fragment = getFragment(database, databaseName, "_jndi.xul", "common_jndi.xul"); //$NON-NLS-1$ //$NON-NLS-2$
+        fragment = getFragment(database, databaseName, "_jndi.xul", "common_jndi.xul");  
         break;
       case DatabaseMeta.TYPE_ACCESS_NATIVE:
-        fragment = getFragment(database, databaseName, "_native.xul", "common_native.xul"); //$NON-NLS-1$ //$NON-NLS-2$
+        fragment = getFragment(database, databaseName, "_native.xul", "common_native.xul");  
         break;
       case DatabaseMeta.TYPE_ACCESS_OCI:
-        fragment = getFragment(database, databaseName, "_oci.xul", "common_native.xul"); //$NON-NLS-1$ //$NON-NLS-2$
+        fragment = getFragment(database, databaseName, "_oci.xul", "common_native.xul");  
         break;
       case DatabaseMeta.TYPE_ACCESS_ODBC:
-        fragment = getFragment(database, databaseName, "_odbc.xul", "common_odbc.xul"); //$NON-NLS-1$ //$NON-NLS-2$
+        fragment = getFragment(database, databaseName, "_odbc.xul", "common_odbc.xul");  
         break;
       case DatabaseMeta.TYPE_ACCESS_PLUGIN:
-        fragment = getFragment(database, databaseName, "_plugin.xul", "common_native.xul"); //$NON-NLS-1$ //$NON-NLS-2$
+        fragment = getFragment(database, databaseName, "_plugin.xul", "common_native.xul");  
         break;
     }
     
@@ -137,11 +137,11 @@ public class FragmentHandler extends AbstractXulEventHandler {
     } catch (XulException e) {
       // TODO should be reporting as an error dialog; need error dialog in XUL framework
       showMessage(
-        Messages.getString("FragmentHandler.USER.CANT_LOAD_OPTIONS", databaseName) //$NON-NLS-1$
+        Messages.getString("FragmentHandler.USER.CANT_LOAD_OPTIONS", databaseName) 
       ); 
     }
 
-    XulTextbox portBox = (XulTextbox)document.getElementById("port-number-text"); //$NON-NLS-1$
+    XulTextbox portBox = (XulTextbox)document.getElementById("port-number-text"); 
     if (portBox != null){
       int port = database.getDefaultDatabasePort();
       if (port > 0){
@@ -178,7 +178,7 @@ public class FragmentHandler extends AbstractXulEventHandler {
 
   private void showMessage(String message){
     try{
-      XulMessageBox box = (XulMessageBox) document.createElement("messagebox"); //$NON-NLS-1$
+      XulMessageBox box = (XulMessageBox) document.createElement("messagebox"); 
       box.setMessage(message);
       box.open();
     } catch(XulException e){

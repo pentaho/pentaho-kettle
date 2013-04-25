@@ -386,7 +386,7 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
     @Override
     public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore)
     {
-      andValidator().validate(this, "SQL", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+      andValidator().validate(this, "SQL", remarks, putValidators(notBlankValidator())); 
     }
 
 

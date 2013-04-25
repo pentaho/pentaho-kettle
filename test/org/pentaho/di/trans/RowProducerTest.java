@@ -46,7 +46,7 @@ public class RowProducerTest extends TestCase {
 
     rp.putRow(null, null);
 
-    assertEquals("Total attempts to putRow() exceeded expected amount", attempts, rs.getTotalAttempts()); //$NON-NLS-1$
+    assertEquals("Total attempts to putRow() exceeded expected amount", attempts, rs.getTotalAttempts()); 
   }
 
   /**
@@ -60,7 +60,7 @@ public class RowProducerTest extends TestCase {
 
     rp.putRow(null, null);
 
-    assertEquals("Total attempts to putRow() exceeded expected amount", attempts, rs.getTotalAttempts()); //$NON-NLS-1$
+    assertEquals("Total attempts to putRow() exceeded expected amount", attempts, rs.getTotalAttempts()); 
   }
 
   class MockBlockingRowSet implements RowSet {

@@ -61,7 +61,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable
 {
 	private static Class<?> PKG = Row.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-    public static final String XML_TAG = "row"; //$NON-NLS-1$
+    public static final String XML_TAG = "row"; 
     
     private final List<Value> list = new ArrayList<Value>();
     public static final long serialVersionUID = 0x8D8EA0264F7A1C30L;
@@ -342,7 +342,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable
 		int i;
 		for (i=0;i<size();i++)
 		{
-			System.out.println("Element["+i+"] = ["+getValue(i).getName()+"] = "+getValue(i).toString()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			System.out.println("Element["+i+"] = ["+getValue(i).getName()+"] = "+getValue(i).toString());   //$NON-NLS-3$
 		}
 	}
 
@@ -359,14 +359,14 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable
 		{
 			Value value = getValue(i);
 
-			if (i!=0) retval.append(", "); //$NON-NLS-1$
+			if (i!=0) retval.append(", "); 
 			if (value!=null)
 			{
 				retval.append(value.getName()).append('=').append(value.toString(false));
 			}
 			else
 			{
-				retval.append("NULL"); //$NON-NLS-1$
+				retval.append("NULL"); 
 			}
 		}
 		retval.append(']');
@@ -386,7 +386,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable
 		retval.append('[');
 		for (i=0;i<size();i++)
 		{
-			if (i!=0) retval.append(", "); //$NON-NLS-1$
+			if (i!=0) retval.append(", "); 
 			if (getValue(i)!=null)
 			{
 				Value v=getValue(i);
@@ -403,7 +403,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable
 			}
 			else
 			{
-				retval.append("NULL"); //$NON-NLS-1$
+				retval.append("NULL"); 
 			}
 		}
 		retval.append(']');
@@ -479,7 +479,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable
 		}
 		catch(Exception e)
 		{
-			throw new KettleFileException(BaseMessages.getString(PKG, "Row.ErrorWritingRow"), e); //$NON-NLS-1$
+			throw new KettleFileException(BaseMessages.getString(PKG, "Row.ErrorWritingRow"), e); 
 		}
 	}
 
@@ -510,11 +510,11 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable
 		}
 		catch(EOFException e)
 		{
-			throw new KettleEOFException(BaseMessages.getString(PKG, "Row.EndOfFileReached"), e); //$NON-NLS-1$
+			throw new KettleEOFException(BaseMessages.getString(PKG, "Row.EndOfFileReached"), e); 
 		}
 		catch(Exception e)
 		{
-			throw new KettleFileException(BaseMessages.getString(PKG, "Row.ErrorReadingRowData"), e); //$NON-NLS-1$
+			throw new KettleFileException(BaseMessages.getString(PKG, "Row.ErrorReadingRowData"), e); 
 		}
 	}
 
@@ -550,11 +550,11 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable
 		}
 		catch(KettleEOFException e)
         {
-            throw new KettleEOFException(BaseMessages.getString(PKG, "Row.EndOfFileReadingRow"), e); //$NON-NLS-1$
+            throw new KettleEOFException(BaseMessages.getString(PKG, "Row.EndOfFileReadingRow"), e); 
         }
 		catch(Exception e)
 		{
-			throw new KettleFileException(BaseMessages.getString(PKG, "Row.RowError"),e); //$NON-NLS-1$
+			throw new KettleFileException(BaseMessages.getString(PKG, "Row.RowError"),e); 
 		}
 	}
 
@@ -815,7 +815,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable
 		for (int i=0;i<size();i++)
 		{
 			Value v = getValue(i);
-			retval[i]= Const.rightPad(v.getName(), maxlen)+"   ("+v.getTypeDesc()+")"; //$NON-NLS-1$ //$NON-NLS-2$
+			retval[i]= Const.rightPad(v.getName(), maxlen)+"   ("+v.getTypeDesc()+")";  
 		}
 
 		return retval;
@@ -914,14 +914,14 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable
 	{
 		StringBuilder xml= new StringBuilder();
 		
-        xml.append("<").append(XML_TAG).append(">"); //$NON-NLS-1$ //$NON-NLS-2$
+        xml.append("<").append(XML_TAG).append(">");  
         
         for (int i=0;i<size();i++)
 		{
 			xml.append(getValue(i).getXML());
 		}
         
-		xml.append("</").append(XML_TAG).append(">"); //$NON-NLS-1$ //$NON-NLS-2$
+		xml.append("</").append(XML_TAG).append(">");  
 
 		return xml.toString();
 	}
@@ -965,7 +965,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable
         }
         catch(Exception e)
         {
-            throw new RuntimeException(BaseMessages.getString(PKG, "Row.ErrorSerializing")+row, e); //$NON-NLS-1$
+            throw new RuntimeException(BaseMessages.getString(PKG, "Row.ErrorSerializing")+row, e); 
         }
     }
     
@@ -979,7 +979,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable
         }
         catch(Exception e)
         {
-            throw new RuntimeException(BaseMessages.getString(PKG, "Row.ErrorDeserializing"), e); //$NON-NLS-1$
+            throw new RuntimeException(BaseMessages.getString(PKG, "Row.ErrorDeserializing"), e); 
         }
     }
 

@@ -995,7 +995,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 			 
 			
 		 }catch(KettleException ke){
-				new ErrorDialog(shell, BaseMessages.getString(PKG, "GetFilesRowsCountDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "GetFilesRowsCountDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "GetFilesRowsCountDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "GetFilesRowsCountDialog.FailedToGetFields.DialogMessage"), ke);  
 			}
 	 }
 

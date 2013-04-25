@@ -225,28 +225,28 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			Node fields = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
-			int count= XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
+			Node fields = XMLHandler.getSubNode(stepnode, "fields"); 
+			int count= XMLHandler.countNodes(fields, "field"); 
 			
 			allocate(count);
 					
 			for (int i=0;i<count;i++)
 			{
-				Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
+				Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); 
 				
-				fieldName[i]  = XMLHandler.getTagValue(fnode, "field_name"); //$NON-NLS-1$
-				variableName[i] = XMLHandler.getTagValue(fnode, "variable_name"); //$NON-NLS-1$
-                variableType[i] = getVariableType(XMLHandler.getTagValue(fnode, "variable_type")); //$NON-NLS-1$
-                defaultValue[i]  = XMLHandler.getTagValue(fnode, "default_value"); //$NON-NLS-1$
+				fieldName[i]  = XMLHandler.getTagValue(fnode, "field_name"); 
+				variableName[i] = XMLHandler.getTagValue(fnode, "variable_name"); 
+                variableType[i] = getVariableType(XMLHandler.getTagValue(fnode, "variable_type")); 
+                defaultValue[i]  = XMLHandler.getTagValue(fnode, "default_value"); 
 			}
 
 			// Default to "N" for backward compatibility
 			//
-			usingFormatting  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_formatting")); //$NON-NLS-1$
+			usingFormatting  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_formatting")); 
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "SetVariableMeta.RuntimeError.UnableToReadXML.SETVARIABLE0004"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "SetVariableMeta.RuntimeError.UnableToReadXML.SETVARIABLE0004"), e); 
 		}
 	}
 	
@@ -258,8 +258,8 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
 
 		for (int i=0;i<count;i++)
 		{
-			fieldName[i] = "field"+i; //$NON-NLS-1$
-			variableName[i] = ""; //$NON-NLS-1$
+			fieldName[i] = "field"+i; 
+			variableName[i] = ""; 
             variableType[i] = VARIABLE_TYPE_JVM;
             defaultValue[i]="";
 		}
@@ -271,18 +271,18 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
 	{
         StringBuffer retval = new StringBuffer(150);
 
-		retval.append("    <fields>").append(Const.CR); //$NON-NLS-1$
+		retval.append("    <fields>").append(Const.CR); 
 		
 		for (int i=0;i<fieldName.length;i++)
 		{
-			retval.append("      <field>").append(Const.CR); //$NON-NLS-1$
-			retval.append("        ").append(XMLHandler.addTagValue("field_name", fieldName[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        ").append(XMLHandler.addTagValue("variable_name", variableName[i])); //$NON-NLS-1$ //$NON-NLS-2$
-            retval.append("        ").append(XMLHandler.addTagValue("variable_type", getVariableTypeCode(variableType[i]))); //$NON-NLS-1$
+			retval.append("      <field>").append(Const.CR); 
+			retval.append("        ").append(XMLHandler.addTagValue("field_name", fieldName[i]));  
+			retval.append("        ").append(XMLHandler.addTagValue("variable_name", variableName[i]));  
+            retval.append("        ").append(XMLHandler.addTagValue("variable_type", getVariableTypeCode(variableType[i]))); 
             retval.append("        ").append(XMLHandler.addTagValue("default_value", defaultValue[i]));
-            retval.append("        </field>").append(Const.CR); //$NON-NLS-1$
+            retval.append("        </field>").append(Const.CR); 
 		}
-		retval.append("      </fields>").append(Const.CR); //$NON-NLS-1$
+		retval.append("      </fields>").append(Const.CR); 
 
 		retval.append("    ").append(XMLHandler.addTagValue("use_formatting", usingFormatting));
 
@@ -294,23 +294,23 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			int nrfields = rep.countNrStepAttributes(id_step, "field_name"); //$NON-NLS-1$
+			int nrfields = rep.countNrStepAttributes(id_step, "field_name"); 
 			
 			allocate(nrfields);
 	
 			for (int i=0;i<nrfields;i++)
 			{
-				fieldName[i] =          rep.getStepAttributeString(id_step, i, "field_name"); //$NON-NLS-1$
-				variableName[i] = 		rep.getStepAttributeString(id_step, i, "variable_name"); //$NON-NLS-1$
-                variableType[i] = getVariableType(rep.getStepAttributeString(id_step, i, "variable_type")); //$NON-NLS-1$
+				fieldName[i] =          rep.getStepAttributeString(id_step, i, "field_name"); 
+				variableName[i] = 		rep.getStepAttributeString(id_step, i, "variable_name"); 
+                variableType[i] = getVariableType(rep.getStepAttributeString(id_step, i, "variable_type")); 
                 defaultValue[i] = 		rep.getStepAttributeString(id_step, i, "default_value");
 			}
 			
-			usingFormatting = rep.getStepAttributeBoolean(id_step, 0, "use_formatting", false); //$NON-NLS-1$
+			usingFormatting = rep.getStepAttributeBoolean(id_step, 0, "use_formatting", false); 
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "SetVariableMeta.RuntimeError.UnableToReadRepository.SETVARIABLE0005"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "SetVariableMeta.RuntimeError.UnableToReadRepository.SETVARIABLE0005"), e); 
 		}
 	}
 
@@ -322,9 +322,9 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			for (int i=0;i<fieldName.length;i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_name", Const.isEmpty(fieldName[i])?"":fieldName[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "variable_name",     variableName[i]); //$NON-NLS-1$
-                rep.saveStepAttribute(id_transformation, id_step, i, "variable_type",   getVariableTypeCode(variableType[i])); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_name", Const.isEmpty(fieldName[i])?"":fieldName[i]); 
+				rep.saveStepAttribute(id_transformation, id_step, i, "variable_name",     variableName[i]); 
+                rep.saveStepAttribute(id_transformation, id_step, i, "variable_type",   getVariableTypeCode(variableType[i])); 
                 rep.saveStepAttribute(id_transformation, id_step, i, "default_value",     defaultValue[i]);
 			}
 			
@@ -332,7 +332,7 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "SetVariableMeta.RuntimeError.UnableToSaveRepository.SETVARIABLE0006", ""+id_step), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "SetVariableMeta.RuntimeError.UnableToSaveRepository.SETVARIABLE0006", ""+id_step), e); 
 		}
 
 	}
@@ -342,24 +342,24 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
 		CheckResult cr;
 		if (prev==null || prev.size()==0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "SetVariableMeta.CheckResult.NotReceivingFieldsFromPreviousSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "SetVariableMeta.CheckResult.NotReceivingFieldsFromPreviousSteps"), stepMeta); 
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SetVariableMeta.CheckResult.ReceivingFieldsFromPreviousSteps", ""+prev.size()), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SetVariableMeta.CheckResult.ReceivingFieldsFromPreviousSteps", ""+prev.size()), stepMeta);  
 			remarks.add(cr);
 		}
 		
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SetVariableMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SetVariableMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); 
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SetVariableMeta.CheckResult.NotReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SetVariableMeta.CheckResult.NotReceivingInfoFromOtherSteps"), stepMeta); 
 			remarks.add(cr);
 		}
 	}

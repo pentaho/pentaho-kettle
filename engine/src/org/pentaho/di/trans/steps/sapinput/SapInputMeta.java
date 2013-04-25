@@ -280,7 +280,7 @@ public class SapInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);  //$NON-NLS-1$
+			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);  
 			
 			String functionName = rep.getStepAttributeString(id_step, "function_name");
 			String functionDescription = rep.getStepAttributeString(id_step, "function_description");

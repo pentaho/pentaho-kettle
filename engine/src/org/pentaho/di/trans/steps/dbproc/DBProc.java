@@ -77,13 +77,13 @@ public class DBProc extends BaseStep implements StepInterface
 			data.argnrs=new int[meta.getArgument().length];
 			for (int i=0;i<meta.getArgument().length;i++)
 			{
-				if (!meta.getArgumentDirection()[i].equalsIgnoreCase("OUT")) // IN or INOUT //$NON-NLS-1$
+				if (!meta.getArgumentDirection()[i].equalsIgnoreCase("OUT")) // IN or INOUT 
 				{
 					data.argnrs[i]=rowMeta.indexOfValue(meta.getArgument()[i]);
 					if (data.argnrs[i]<0)
 					{
-						logError(BaseMessages.getString(PKG, "DBProc.Log.ErrorFindingField")+meta.getArgument()[i]+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-						throw new KettleStepException(BaseMessages.getString(PKG, "DBProc.Exception.CouldnotFindField",meta.getArgument()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+						logError(BaseMessages.getString(PKG, "DBProc.Log.ErrorFindingField")+meta.getArgument()[i]+"]");  
+						throw new KettleStepException(BaseMessages.getString(PKG, "DBProc.Exception.CouldnotFindField",meta.getArgument()[i]));  
 					}
 				}
 				else
@@ -165,7 +165,7 @@ public class DBProc extends BaseStep implements StepInterface
 				
             if (checkFeedback(getLinesRead())) 
             {
-            	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "DBProc.LineNumber")+getLinesRead()); //$NON-NLS-1$
+            	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "DBProc.LineNumber")+getLinesRead()); 
             }
 		}
 		catch(KettleException e)
@@ -189,7 +189,7 @@ public class DBProc extends BaseStep implements StepInterface
 				}
 	        } else {
 			
-				logError(BaseMessages.getString(PKG, "DBProc.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "DBProc.ErrorInStepRunning")+e.getMessage()); 
 				setErrors(1);
 				stopAll();
 				setOutputDone();  // signal end to receiver(s)
@@ -235,16 +235,16 @@ public class DBProc extends BaseStep implements StepInterface
 
                 if (!meta.isAutoCommit())
                 {
-                    if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "DBProc.Log.AutoCommit")); //$NON-NLS-1$
+                    if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "DBProc.Log.AutoCommit")); 
                     data.db.setCommit(9999);
                 }
-                if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "DBProc.Log.ConnectedToDB")); //$NON-NLS-1$
+                if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "DBProc.Log.ConnectedToDB")); 
 				
 				return true;
 			}
 			catch(KettleException e)
 			{
-				logError(BaseMessages.getString(PKG, "DBProc.Log.DBException")+e.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "DBProc.Log.DBException")+e.getMessage()); 
 				if (data.db!=null) {
                 	data.db.disconnect();
 				}

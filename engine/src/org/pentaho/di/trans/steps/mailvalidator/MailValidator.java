@@ -108,7 +108,7 @@ public class MailValidator extends BaseStep implements StepInterface
 				if (data.indexOfeMailField<0) 
 				{
 					// The field is unreachable !
-					throw new KettleException(BaseMessages.getString(PKG, "MailValidator.Exception.CouldnotFindField",meta.getEmailField())); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleException(BaseMessages.getString(PKG, "MailValidator.Exception.CouldnotFindField",meta.getEmailField()));  
 				}
 			}
 				
@@ -123,7 +123,7 @@ public class MailValidator extends BaseStep implements StepInterface
 						data.indexOfdefaultSMTPField =data.previousRowMeta.indexOfValue(meta.getDefaultSMTP());
 						if (data.indexOfdefaultSMTPField<0){
 							// The field is unreachable !
-							throw new KettleException(BaseMessages.getString(PKG, "MailValidator.Exception.CouldnotFindField",meta.getDefaultSMTP())); //$NON-NLS-1$ //$NON-NLS-2$
+							throw new KettleException(BaseMessages.getString(PKG, "MailValidator.Exception.CouldnotFindField",meta.getDefaultSMTP()));  
 						}
 					}
 				}
@@ -199,7 +199,7 @@ public class MailValidator extends BaseStep implements StepInterface
 	    	}
 	    	else
 	    	{
-	            logError(BaseMessages.getString(PKG, "MailValidator.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
+	            logError(BaseMessages.getString(PKG, "MailValidator.ErrorInStepRunning")+e.getMessage()); 
 	            setErrors(1);
 	            stopAll();
 	            setOutputDone();  // signal end to receiver(s)

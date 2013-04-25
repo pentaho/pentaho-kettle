@@ -55,7 +55,7 @@ public class UICluster extends XulEventSourceAdapter {
         for(SlaveServer slave : slaves) {
           // Append separator before slave
           if(sb.length() > 0) {
-            sb.append(", "); //$NON-NLS-1$
+            sb.append(", "); 
           }
           sb.append(slave.getName());
         }

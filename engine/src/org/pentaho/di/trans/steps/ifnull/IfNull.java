@@ -188,7 +188,7 @@ public class IfNull extends BaseStep implements StepInterface
         	}
         	else
         	{
-        		logError(BaseMessages.getString(PKG, "IfNull.Log.ErrorInStep",e.getMessage())); //$NON-NLS-1$
+        		logError(BaseMessages.getString(PKG, "IfNull.Log.ErrorInStep",e.getMessage())); 
         		e.printStackTrace();
 				setErrors(1);
 				stopAll();

@@ -398,9 +398,9 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
     {
         try
         {
-            script = XMLHandler.getTagValue(stepnode, "script"); //$NON-NLS-1$
-            matcher = XMLHandler.getTagValue(stepnode, "matcher"); //$NON-NLS-1$
-            resultfieldname = XMLHandler.getTagValue(stepnode, "resultfieldname"); //$NON-NLS-1$
+            script = XMLHandler.getTagValue(stepnode, "script"); 
+            matcher = XMLHandler.getTagValue(stepnode, "matcher"); 
+            resultfieldname = XMLHandler.getTagValue(stepnode, "resultfieldname"); 
             usevar = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "usevar"));
             allowcapturegroups = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "allowcapturegroups"));
             replacefields = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "replacefields"));
@@ -412,26 +412,26 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
             unicode = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "unicode"));
             unix = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "unix"));
 
-            Node fields = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
-            int nrfields = XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
+            Node fields = XMLHandler.getSubNode(stepnode, "fields"); 
+            int nrfields = XMLHandler.countNodes(fields, "field"); 
 
             allocate(nrfields);
 
             for (int i = 0; i < nrfields; i++)
             {
-                Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
+                Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); 
 
-                fieldName[i] = XMLHandler.getTagValue(fnode, "name"); //$NON-NLS-1$
-                final String stype = XMLHandler.getTagValue(fnode, "type"); //$NON-NLS-1$
-                fieldFormat[i] = XMLHandler.getTagValue(fnode, "format"); //$NON-NLS-1$
-                fieldGroup[i] = XMLHandler.getTagValue(fnode, "group"); //$NON-NLS-1$
-                fieldDecimal[i] = XMLHandler.getTagValue(fnode, "decimal"); //$NON-NLS-1$
-                fieldCurrency[i] = XMLHandler.getTagValue(fnode, "currency"); //$NON-NLS-1$
-                final String slen = XMLHandler.getTagValue(fnode, "length"); //$NON-NLS-1$
-                final String sprc = XMLHandler.getTagValue(fnode, "precision"); //$NON-NLS-1$
-                fieldNullIf[i] = XMLHandler.getTagValue(fnode, "nullif"); //$NON-NLS-1$
-                fieldIfNull[i] = XMLHandler.getTagValue(fnode, "ifnull"); //$NON-NLS-1$
-                final String trim = XMLHandler.getTagValue(fnode, "trimtype"); //$NON-NLS-1$
+                fieldName[i] = XMLHandler.getTagValue(fnode, "name"); 
+                final String stype = XMLHandler.getTagValue(fnode, "type"); 
+                fieldFormat[i] = XMLHandler.getTagValue(fnode, "format"); 
+                fieldGroup[i] = XMLHandler.getTagValue(fnode, "group"); 
+                fieldDecimal[i] = XMLHandler.getTagValue(fnode, "decimal"); 
+                fieldCurrency[i] = XMLHandler.getTagValue(fnode, "currency"); 
+                final String slen = XMLHandler.getTagValue(fnode, "length"); 
+                final String sprc = XMLHandler.getTagValue(fnode, "precision"); 
+                fieldNullIf[i] = XMLHandler.getTagValue(fnode, "nullif"); 
+                fieldIfNull[i] = XMLHandler.getTagValue(fnode, "ifnull"); 
+                final String trim = XMLHandler.getTagValue(fnode, "trimtype"); 
                 fieldType[i] = ValueMeta.getType(stype);
                 fieldLength[i] = Const.toInt(slen, -1);
                 fieldPrecision[i] = Const.toInt(sprc, -1);
@@ -441,13 +441,13 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
         catch (Exception e)
         {
             throw new KettleXMLException(
-                    BaseMessages.getString(PKG, "RegexEvalMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
+                    BaseMessages.getString(PKG, "RegexEvalMeta.Exception.UnableToLoadStepInfoFromXML"), e); 
         }
     }
 
     public void setDefault()
     {
-        script = ""; //$NON-NLS-1$
+        script = ""; 
         matcher = "";
         resultfieldname = "result";
         usevar = false;
@@ -541,9 +541,9 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
     {
         StringBuilder retval = new StringBuilder();
 
-        retval.append("    " + XMLHandler.openTag("script") + XMLHandler.buildCDATA(script) + XMLHandler.closeTag("script")); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("    " + XMLHandler.addTagValue("matcher", matcher)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("    " + XMLHandler.addTagValue("resultfieldname", resultfieldname)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    " + XMLHandler.openTag("script") + XMLHandler.buildCDATA(script) + XMLHandler.closeTag("script"));  
+        retval.append("    " + XMLHandler.addTagValue("matcher", matcher));  
+        retval.append("    " + XMLHandler.addTagValue("resultfieldname", resultfieldname));  
         retval.append("    " + XMLHandler.addTagValue("usevar", usevar));
         retval.append("    " + XMLHandler.addTagValue("allowcapturegroups", allowcapturegroups));
         retval.append("    " + XMLHandler.addTagValue("replacefields", replacefields));
@@ -562,16 +562,16 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
             {
                 retval.append("      <field>").append(Const.CR);
                 retval.append("        ").append(XMLHandler.addTagValue("name", fieldName[i]));
-                retval.append("        ").append(XMLHandler.addTagValue("type", ValueMeta.getTypeDesc(fieldType[i]))); //$NON-NLS-1$ //$NON-NLS-2$
+                retval.append("        ").append(XMLHandler.addTagValue("type", ValueMeta.getTypeDesc(fieldType[i])));  
                 retval.append("        ").append(XMLHandler.addTagValue("format", fieldFormat[i]));
-                retval.append("        ").append(XMLHandler.addTagValue("group", fieldGroup[i])); //$NON-NLS-1$ //$NON-NLS-2$
-                retval.append("        ").append(XMLHandler.addTagValue("decimal", fieldDecimal[i])); //$NON-NLS-1$ //$NON-NLS-2$
-                retval.append("        ").append(XMLHandler.addTagValue("length", fieldLength[i])); //$NON-NLS-1$ //$NON-NLS-2$
-                retval.append("        ").append(XMLHandler.addTagValue("precision", fieldPrecision[i])); //$NON-NLS-1$ //$NON-NLS-2$
-                retval.append("        ").append(XMLHandler.addTagValue("nullif", fieldNullIf[i])); //$NON-NLS-1$ //$NON-NLS-2$
-                retval.append("        ").append(XMLHandler.addTagValue("ifnull", fieldIfNull[i])); //$NON-NLS-1$ //$NON-NLS-2$
+                retval.append("        ").append(XMLHandler.addTagValue("group", fieldGroup[i]));  
+                retval.append("        ").append(XMLHandler.addTagValue("decimal", fieldDecimal[i]));  
+                retval.append("        ").append(XMLHandler.addTagValue("length", fieldLength[i]));  
+                retval.append("        ").append(XMLHandler.addTagValue("precision", fieldPrecision[i]));  
+                retval.append("        ").append(XMLHandler.addTagValue("nullif", fieldNullIf[i]));  
+                retval.append("        ").append(XMLHandler.addTagValue("ifnull", fieldIfNull[i]));  
                 retval
-                        .append("        ").append(XMLHandler.addTagValue("trimtype", ValueMeta.getTrimTypeCode(fieldTrimType[i]))); //$NON-NLS-1$ //$NON-NLS-2$
+                        .append("        ").append(XMLHandler.addTagValue("trimtype", ValueMeta.getTrimTypeCode(fieldTrimType[i])));  
                 retval.append("      </field>").append(Const.CR);
             }
         }
@@ -586,9 +586,9 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
     {
         try
         {
-            script = rep.getStepAttributeString(id_step, "script"); //$NON-NLS-1$
-            matcher = rep.getStepAttributeString(id_step, "matcher"); //$NON-NLS-1$
-            resultfieldname = rep.getStepAttributeString(id_step, "resultfieldname"); //$NON-NLS-1$
+            script = rep.getStepAttributeString(id_step, "script"); 
+            matcher = rep.getStepAttributeString(id_step, "matcher"); 
+            resultfieldname = rep.getStepAttributeString(id_step, "resultfieldname"); 
             usevar = rep.getStepAttributeBoolean(id_step, "usevar");
             allowcapturegroups = rep.getStepAttributeBoolean(id_step, "allowcapturegroups");
             replacefields = rep.getStepAttributeBoolean(id_step, "replacefields");
@@ -610,19 +610,19 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
                 fieldType[i] = ValueMeta.getType(rep.getStepAttributeString(id_step, i, "field_type"));
 
                 fieldFormat[i] = rep.getStepAttributeString(id_step, i, "field_format");
-                fieldGroup[i] = rep.getStepAttributeString(id_step, i, "field_group"); //$NON-NLS-1$
-                fieldDecimal[i] = rep.getStepAttributeString(id_step, i, "field_decimal"); //$NON-NLS-1$
-                fieldLength[i] = (int) rep.getStepAttributeInteger(id_step, i, "field_length"); //$NON-NLS-1$
-                fieldPrecision[i] = (int) rep.getStepAttributeInteger(id_step, i, "field_precision"); //$NON-NLS-1$
-                fieldNullIf[i] = rep.getStepAttributeString(id_step, i, "field_nullif"); //$NON-NLS-1$
-                fieldIfNull[i] = rep.getStepAttributeString(id_step, i, "field_ifnull"); //$NON-NLS-1$
-                fieldTrimType[i] = ValueMeta.getTrimTypeByCode(rep.getStepAttributeString(id_step, i, "field_trimtype"));  //$NON-NLS-1$
+                fieldGroup[i] = rep.getStepAttributeString(id_step, i, "field_group"); 
+                fieldDecimal[i] = rep.getStepAttributeString(id_step, i, "field_decimal"); 
+                fieldLength[i] = (int) rep.getStepAttributeInteger(id_step, i, "field_length"); 
+                fieldPrecision[i] = (int) rep.getStepAttributeInteger(id_step, i, "field_precision"); 
+                fieldNullIf[i] = rep.getStepAttributeString(id_step, i, "field_nullif"); 
+                fieldIfNull[i] = rep.getStepAttributeString(id_step, i, "field_ifnull"); 
+                fieldTrimType[i] = ValueMeta.getTrimTypeByCode(rep.getStepAttributeString(id_step, i, "field_trimtype"));  
             }
         }
         catch (Exception e)
         {
             throw new KettleException(
-                    BaseMessages.getString(PKG, "RegexEvalMeta.Exception.UnexpectedErrorInReadingStepInfo"), e); //$NON-NLS-1$
+                    BaseMessages.getString(PKG, "RegexEvalMeta.Exception.UnexpectedErrorInReadingStepInfo"), e); 
         }
     }
 
@@ -630,27 +630,27 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
     {
         try
         {
-            rep.saveStepAttribute(id_transformation, id_step, "script", script); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "script", script); 
             for (int i = 0; i < fieldName.length; i++)
             {
                 if (fieldName[i] != null && fieldName[i].length() != 0)
                 {
                     rep.saveStepAttribute(id_transformation, id_step, i, "field_name", fieldName[i]);
                     rep.saveStepAttribute(id_transformation, id_step, i,
-                            "field_type", ValueMeta.getTypeDesc(fieldType[i])); //$NON-NLS-1$
-                    rep.saveStepAttribute(id_transformation, id_step, i, "field_format", fieldFormat[i]); //$NON-NLS-1$
-                    rep.saveStepAttribute(id_transformation, id_step, i, "field_group", fieldGroup[i]); //$NON-NLS-1$
-                    rep.saveStepAttribute(id_transformation, id_step, i, "field_decimal", fieldDecimal[i]); //$NON-NLS-1$
-                    rep.saveStepAttribute(id_transformation, id_step, i, "field_length", fieldLength[i]); //$NON-NLS-1$
-                    rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", fieldPrecision[i]); //$NON-NLS-1$
-                    rep.saveStepAttribute(id_transformation, id_step, i, "field_nullif", fieldNullIf[i]); //$NON-NLS-1$
-                    rep.saveStepAttribute(id_transformation, id_step, i, "field_ifnull", fieldIfNull[i]); //$NON-NLS-1$
+                            "field_type", ValueMeta.getTypeDesc(fieldType[i])); 
+                    rep.saveStepAttribute(id_transformation, id_step, i, "field_format", fieldFormat[i]); 
+                    rep.saveStepAttribute(id_transformation, id_step, i, "field_group", fieldGroup[i]); 
+                    rep.saveStepAttribute(id_transformation, id_step, i, "field_decimal", fieldDecimal[i]); 
+                    rep.saveStepAttribute(id_transformation, id_step, i, "field_length", fieldLength[i]); 
+                    rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", fieldPrecision[i]); 
+                    rep.saveStepAttribute(id_transformation, id_step, i, "field_nullif", fieldNullIf[i]); 
+                    rep.saveStepAttribute(id_transformation, id_step, i, "field_ifnull", fieldIfNull[i]); 
                     rep.saveStepAttribute(id_transformation, id_step, i,
-                            "field_trimtype", ValueMeta.getTrimTypeCode(fieldTrimType[i])); //$NON-NLS-1$
+                            "field_trimtype", ValueMeta.getTrimTypeCode(fieldTrimType[i])); 
                 }
             }
 
-            rep.saveStepAttribute(id_transformation, id_step, "resultfieldname", resultfieldname); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "resultfieldname", resultfieldname); 
             rep.saveStepAttribute(id_transformation, id_step, "usevar", usevar);
             rep.saveStepAttribute(id_transformation, id_step, "allowcapturegroups", allowcapturegroups);
             rep.saveStepAttribute(id_transformation, id_step, "replacefields", replacefields);
@@ -666,7 +666,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
         catch (Exception e)
         {
             throw new KettleException(
-                    BaseMessages.getString(PKG, "RegexEvalMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
+                    BaseMessages.getString(PKG, "RegexEvalMeta.Exception.UnableToSaveStepInfo") + id_step, e); 
         }
     }
 
@@ -679,13 +679,13 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
 
         if (prev != null && prev.size() > 0)
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "RegexEvalMeta.CheckResult.ConnectedStepOK", String.valueOf(prev.size())), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "RegexEvalMeta.CheckResult.ConnectedStepOK", String.valueOf(prev.size())), stepMeta);  
             remarks.add(cr);
         }
         else
         {
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, 
-            		BaseMessages.getString(PKG, "RegexEvalMeta.CheckResult.NoInputReceived"), stepMeta); //$NON-NLS-1$
+            		BaseMessages.getString(PKG, "RegexEvalMeta.CheckResult.NoInputReceived"), stepMeta); 
             remarks.add(cr);
         }
 

@@ -240,10 +240,10 @@ private void addFilenameToResult(String targetFilename,Result result, Job parent
 		
 		// Add to the result files...
 		ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, targetFile, parentJob.getJobname(), toString());
-        resultFile.setComment(""); //$NON-NLS-1$
+        resultFile.setComment(""); 
 		result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 		
-        if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryCreateFile.FileAddedToResult",targetFilename)); //$NON-NLS-1$
+        if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryCreateFile.FileAddedToResult",targetFilename)); 
 	} catch(Exception e)
 	{
 		throw new KettleException(e);
@@ -293,7 +293,7 @@ private void addFilenameToResult(String targetFilename,Result result, Job parent
     ValidatorContext ctx = new ValidatorContext();
     putVariableSpace(ctx, getVariables());
     putValidators(ctx, notNullValidator(), fileDoesNotExistValidator());
-    andValidator().validate(this, "filename", remarks, ctx); //$NON-NLS-1$
+    andValidator().validate(this, "filename", remarks, ctx); 
   }
 
 }

@@ -64,8 +64,8 @@ public class CreateDatabaseWizardPageOCI extends WizardPage
 		this.props=props;
 		this.info = info;
 		
-		setTitle(BaseMessages.getString(PKG, "CreateDatabaseWizardPageOCI.DialogTitle")); //$NON-NLS-1$
-		setDescription(BaseMessages.getString(PKG, "CreateDatabaseWizardPageOCI.DialogMessage")); //$NON-NLS-1$
+		setTitle(BaseMessages.getString(PKG, "CreateDatabaseWizardPageOCI.DialogTitle")); 
+		setDescription(BaseMessages.getString(PKG, "CreateDatabaseWizardPageOCI.DialogMessage")); 
 		
 		setPageComplete(false);
 	}
@@ -85,7 +85,7 @@ public class CreateDatabaseWizardPageOCI extends WizardPage
 		composite.setLayout(compLayout);
 
 		wlTNS = new Label(composite, SWT.RIGHT);
-		wlTNS.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPageOCI.TNS.Label")); //$NON-NLS-1$
+		wlTNS.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPageOCI.TNS.Label")); 
  		props.setLook(wlTNS);
 		fdlTNS = new FormData();
 		fdlTNS.left   = new FormAttachment(0,0);
@@ -114,14 +114,14 @@ public class CreateDatabaseWizardPageOCI extends WizardPage
 		String name = wTNS.getText()!=null?wTNS.getText().length()>0?wTNS.getText():null:null;
 		if (name==null)
 		{
-			setErrorMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPageOCI.ErrorMessage.NoTNSName")); //$NON-NLS-1$
+			setErrorMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPageOCI.ErrorMessage.NoTNSName")); 
 			return false;
 		}
 		else
 		{
 			getDatabaseInfo();
 			setErrorMessage(null);
-			setMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPageOCI.Message.Next")); //$NON-NLS-1$
+			setMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPageOCI.Message.Next")); 
 			return true;
 		}
 	}	
@@ -133,7 +133,7 @@ public class CreateDatabaseWizardPageOCI extends WizardPage
 			info.setDBName(wTNS.getText());
 		}
 		
-		info.setDBPort(""); //$NON-NLS-1$
+		info.setDBPort(""); 
 		info.setServername(null);
 		
 		return info;
@@ -145,6 +145,6 @@ public class CreateDatabaseWizardPageOCI extends WizardPage
 	public IWizardPage getNextPage()
 	{
 		IWizard wiz = getWizard();
-		return wiz.getPage("2"); //$NON-NLS-1$
+		return wiz.getPage("2"); 
 	}
 }

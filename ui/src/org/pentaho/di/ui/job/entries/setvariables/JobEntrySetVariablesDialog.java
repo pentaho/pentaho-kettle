@@ -256,7 +256,7 @@ public class JobEntrySetVariablesDialog extends JobEntryDialog implements JobEnt
     // ///////////////////////////////////////////////////////////
     
     wlFields=new Label(shell, SWT.NONE);
-    wlFields.setText(BaseMessages.getString(PKG, "SetVariableDialog.Variables.Label")); //$NON-NLS-1$
+    wlFields.setText(BaseMessages.getString(PKG, "SetVariableDialog.Variables.Label")); 
     props.setLook(wlFields);
     fdlFields=new FormData();
     fdlFields.left = new FormAttachment(0, 0);
@@ -273,9 +273,9 @@ public class JobEntrySetVariablesDialog extends JobEntryDialog implements JobEnt
     
     ColumnInfo[] colinf=
             {
-            new ColumnInfo(BaseMessages.getString(PKG, "SetVariableDialog.Fields.Column.VariableName"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
-            new ColumnInfo(BaseMessages.getString(PKG, "SetVariableDialog.Fields.Column.Value"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
-                new ColumnInfo(BaseMessages.getString(PKG, "SetVariableDialog.Fields.Column.VariableType"), ColumnInfo.COLUMN_TYPE_CCOMBO, JobEntrySetVariables.getVariableTypeDescriptions(), false), //$NON-NLS-1$
+            new ColumnInfo(BaseMessages.getString(PKG, "SetVariableDialog.Fields.Column.VariableName"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
+            new ColumnInfo(BaseMessages.getString(PKG, "SetVariableDialog.Fields.Column.Value"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
+                new ColumnInfo(BaseMessages.getString(PKG, "SetVariableDialog.Fields.Column.VariableType"), ColumnInfo.COLUMN_TYPE_CCOMBO, JobEntrySetVariables.getVariableTypeDescriptions(), false), 
             };
     colinf[0].setUsingVariables(true);
     colinf[1].setUsingVariables(true);

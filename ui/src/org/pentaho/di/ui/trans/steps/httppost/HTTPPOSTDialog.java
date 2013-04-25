@@ -79,8 +79,8 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 	private static Class<?> PKG = HTTPPOSTMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 	
 	private static final String[] YES_NO_COMBO = new String[] { BaseMessages.getString(PKG, "System.Combo.No"), BaseMessages.getString(PKG, "System.Combo.Yes") };
-	private static final String YES = BaseMessages.getString(PKG, "System.Combo.Yes"); //$NON-NLS-1$
-	private static final String NO = BaseMessages.getString(PKG, "System.Combo.No"); //$NON-NLS-1$
+	private static final String YES = BaseMessages.getString(PKG, "System.Combo.Yes"); 
+	private static final String NO = BaseMessages.getString(PKG, "System.Combo.No"); 
 	
 	private Label        wlUrl;
 	private TextVar      wUrl;
@@ -202,14 +202,14 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.Shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin=Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -247,7 +247,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
         // START Settings GROUP
 
         Group gSettings = new Group(wGeneralComp, SWT.SHADOW_ETCHED_IN);
-        gSettings.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.SettingsGroup.Label")); //$NON-NLS-1$;
+        gSettings.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.SettingsGroup.Label")); ;
         FormLayout SettingsLayout = new FormLayout();
         SettingsLayout.marginWidth = 3;
         SettingsLayout.marginHeight = 3;
@@ -256,7 +256,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 
 		
 		wlUrl=new Label(gSettings, SWT.RIGHT);
-		wlUrl.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.URL.Label")); //$NON-NLS-1$
+		wlUrl.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.URL.Label")); 
  		props.setLook(wlUrl);
 		fdlUrl=new FormData();
 		fdlUrl.left = new FormAttachment(0, 0);
@@ -301,7 +301,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 
 		// UrlField Line
 		wlUrlField=new Label(gSettings, SWT.RIGHT);
-		wlUrlField.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.UrlField.Label")); //$NON-NLS-1$
+		wlUrlField.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.UrlField.Label")); 
  		props.setLook(wlUrlField);
 		fdlUrlField=new FormData();
 		fdlUrlField.left = new FormAttachment(0, 0);
@@ -372,7 +372,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
         
        // requestEntity Line
 		wlrequestEntity=new Label(gSettings, SWT.RIGHT);
-		wlrequestEntity.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.requestEntity.Label")); //$NON-NLS-1$
+		wlrequestEntity.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.requestEntity.Label")); 
  		props.setLook(wlrequestEntity);
 		fdlrequestEntity=new FormData();
 		fdlrequestEntity.left = new FormAttachment(0, 0);
@@ -408,7 +408,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
         
 		 // Post file?
         wlPostAFile=new Label(gSettings, SWT.RIGHT);
-        wlPostAFile.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.postAFile.Label")); //$NON-NLS-1$
+        wlPostAFile.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.postAFile.Label")); 
         props.setLook(wlPostAFile);
         FormData fdlPostAFile=new FormData();
         fdlPostAFile.left   = new FormAttachment(0, 0);
@@ -416,7 +416,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
         fdlPostAFile.top    = new FormAttachment(wrequestEntity, margin);
         wlPostAFile.setLayoutData(fdlPostAFile);
         wPostAFile=new Button(gSettings, SWT.CHECK);
-        wPostAFile.setToolTipText(BaseMessages.getString(PKG, "HTTPPOSTDialog.postAFile.Tooltip")); //$NON-NLS-1$
+        wPostAFile.setToolTipText(BaseMessages.getString(PKG, "HTTPPOSTDialog.postAFile.Tooltip")); 
         props.setLook(wPostAFile);
         FormData fdPostAFile=new FormData();
         fdPostAFile.left = new FormAttachment(middle, 0);
@@ -425,7 +425,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
         wPostAFile.setLayoutData(fdPostAFile);
         
         wlConnectionTimeOut = new Label(gSettings, SWT.RIGHT);
-        wlConnectionTimeOut.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.ConnectionTimeOut.Label")); //$NON-NLS-1$
+        wlConnectionTimeOut.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.ConnectionTimeOut.Label")); 
         props.setLook(wlConnectionTimeOut);
         FormData fdlConnectionTimeOut = new FormData();
         fdlConnectionTimeOut.top = new FormAttachment(wPostAFile, margin);
@@ -434,7 +434,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
         wlConnectionTimeOut.setLayoutData(fdlConnectionTimeOut);
         wConnectionTimeOut = new TextVar(transMeta, gSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wConnectionTimeOut.addModifyListener(lsMod);
-        wConnectionTimeOut.setToolTipText(BaseMessages.getString(PKG, "HTTPPOSTDialog.ConnectionTimeOut.Tooltip")); //$NON-NLS-1$
+        wConnectionTimeOut.setToolTipText(BaseMessages.getString(PKG, "HTTPPOSTDialog.ConnectionTimeOut.Tooltip")); 
         props.setLook(wConnectionTimeOut);
         FormData fdConnectionTimeOut = new FormData();
         fdConnectionTimeOut.top = new FormAttachment(wPostAFile, margin);
@@ -443,7 +443,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
         wConnectionTimeOut.setLayoutData(fdConnectionTimeOut);
         
         wlSocketTimeOut = new Label(gSettings, SWT.RIGHT);
-        wlSocketTimeOut.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.SocketTimeOut.Label")); //$NON-NLS-1$
+        wlSocketTimeOut.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.SocketTimeOut.Label")); 
         props.setLook(wlSocketTimeOut);
         FormData fdlSocketTimeOut = new FormData();
         fdlSocketTimeOut.top = new FormAttachment(wConnectionTimeOut, margin);
@@ -452,7 +452,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
         wlSocketTimeOut.setLayoutData(fdlSocketTimeOut);
         wSocketTimeOut = new TextVar(transMeta, gSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wSocketTimeOut.addModifyListener(lsMod);
-        wSocketTimeOut.setToolTipText(BaseMessages.getString(PKG, "HTTPPOSTDialog.SocketTimeOut.Tooltip")); //$NON-NLS-1$
+        wSocketTimeOut.setToolTipText(BaseMessages.getString(PKG, "HTTPPOSTDialog.SocketTimeOut.Tooltip")); 
         props.setLook(wSocketTimeOut);
         FormData fdSocketTimeOut = new FormData();
         fdSocketTimeOut.top = new FormAttachment(wConnectionTimeOut, margin);
@@ -461,7 +461,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
         wSocketTimeOut.setLayoutData(fdSocketTimeOut);
 
         wlCloseIdleConnectionsTime = new Label(gSettings, SWT.RIGHT);
-        wlCloseIdleConnectionsTime.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.CloseIdleConnectionsTime.Label")); //$NON-NLS-1$
+        wlCloseIdleConnectionsTime.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.CloseIdleConnectionsTime.Label")); 
         props.setLook(wlCloseIdleConnectionsTime);
         FormData fdlCloseIdleConnectionsTime = new FormData();
         fdlCloseIdleConnectionsTime.top = new FormAttachment(wSocketTimeOut, margin);
@@ -470,7 +470,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
         wlCloseIdleConnectionsTime.setLayoutData(fdlCloseIdleConnectionsTime);
         wCloseIdleConnectionsTime = new TextVar(transMeta, gSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wCloseIdleConnectionsTime.addModifyListener(lsMod);
-        wCloseIdleConnectionsTime.setToolTipText(BaseMessages.getString(PKG, "HTTPPOSTDialog.CloseIdleConnectionsTime.Tooltip")); //$NON-NLS-1$
+        wCloseIdleConnectionsTime.setToolTipText(BaseMessages.getString(PKG, "HTTPPOSTDialog.CloseIdleConnectionsTime.Tooltip")); 
         props.setLook(wCloseIdleConnectionsTime);
         FormData fdCloseIdleConnectionsTime = new FormData();
         fdCloseIdleConnectionsTime.top = new FormAttachment(wSocketTimeOut, margin);
@@ -491,7 +491,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
         // START Output Fields GROUP
 
         Group gOutputFields = new Group(wGeneralComp, SWT.SHADOW_ETCHED_IN);
-        gOutputFields.setText(BaseMessages.getString(PKG, "HTTPDialog.OutputFieldsGroup.Label")); //$NON-NLS-1$;
+        gOutputFields.setText(BaseMessages.getString(PKG, "HTTPDialog.OutputFieldsGroup.Label")); ;
         FormLayout OutputFieldsLayout = new FormLayout();
         OutputFieldsLayout.marginWidth = 3;
         OutputFieldsLayout.marginHeight = 3;
@@ -502,7 +502,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 
 		// Result line...
 		wlResult=new Label(gOutputFields, SWT.RIGHT);
-		wlResult.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.Result.Label")); //$NON-NLS-1$
+		wlResult.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.Result.Label")); 
  		props.setLook(wlResult);
 		fdlResult=new FormData();
 		fdlResult.left = new FormAttachment(0, 0);
@@ -520,7 +520,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 
 		// Resultcode line...
 		wlResultCode=new Label(gOutputFields, SWT.RIGHT);
-		wlResultCode.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.ResultCode.Label")); //$NON-NLS-1$
+		wlResultCode.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.ResultCode.Label")); 
  		props.setLook(wlResultCode);
 		fdlResultCode=new FormData();
 		fdlResultCode.left = new FormAttachment(0, 0);
@@ -538,7 +538,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 
       // Response time line...
       wlResponseTime = new Label(gOutputFields, SWT.RIGHT);
-      wlResponseTime.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.ResponseTime.Label")); //$NON-NLS-1$
+      wlResponseTime.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.ResponseTime.Label")); 
       props.setLook(wlResponseTime);
       fdlResponseTime=new FormData();
       fdlResponseTime.left = new FormAttachment(0, 0);
@@ -567,7 +567,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
         // START HTTP AUTH GROUP
 
         Group gHttpAuth = new Group(wGeneralComp, SWT.SHADOW_ETCHED_IN);
-        gHttpAuth.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.HttpAuthGroup.Label")); //$NON-NLS-1$;
+        gHttpAuth.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.HttpAuthGroup.Label")); ;
         FormLayout httpAuthLayout = new FormLayout();
         httpAuthLayout.marginWidth = 3;
         httpAuthLayout.marginHeight = 3;
@@ -576,7 +576,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 
         // HTTP Login
         wlHttpLogin = new Label(gHttpAuth, SWT.RIGHT);
-        wlHttpLogin.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.HttpLogin.Label")); //$NON-NLS-1$
+        wlHttpLogin.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.HttpLogin.Label")); 
         props.setLook(wlHttpLogin);
         FormData fdlHttpLogin = new FormData();
         fdlHttpLogin.top = new FormAttachment(0, margin);
@@ -585,7 +585,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
         wlHttpLogin.setLayoutData(fdlHttpLogin);
         wHttpLogin = new TextVar(transMeta, gHttpAuth, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wHttpLogin.addModifyListener(lsMod);
-        wHttpLogin.setToolTipText(BaseMessages.getString(PKG, "HTTPPOSTDialog.HttpLogin.Tooltip")); //$NON-NLS-1$
+        wHttpLogin.setToolTipText(BaseMessages.getString(PKG, "HTTPPOSTDialog.HttpLogin.Tooltip")); 
         props.setLook(wHttpLogin);
         FormData fdHttpLogin = new FormData();
         fdHttpLogin.top = new FormAttachment(0, margin);
@@ -595,7 +595,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 
         // HTTP Password
         wlHttpPassword = new Label(gHttpAuth, SWT.RIGHT);
-        wlHttpPassword.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.HttpPassword.Label")); //$NON-NLS-1$
+        wlHttpPassword.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.HttpPassword.Label")); 
         props.setLook(wlHttpPassword);
         FormData fdlHttpPassword = new FormData();
         fdlHttpPassword.top = new FormAttachment(wHttpLogin, margin);
@@ -604,7 +604,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
         wlHttpPassword.setLayoutData(fdlHttpPassword);
         wHttpPassword = new TextVar(transMeta, gHttpAuth, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wHttpPassword.addModifyListener(lsMod);
-        wHttpPassword.setToolTipText(BaseMessages.getString(PKG, "HTTPPOSTDialog.HttpPassword.Tooltip")); //$NON-NLS-1$
+        wHttpPassword.setToolTipText(BaseMessages.getString(PKG, "HTTPPOSTDialog.HttpPassword.Tooltip")); 
         wHttpPassword.setEchoChar('*');
         props.setLook(wHttpPassword);
         FormData fdHttpPassword = new FormData();
@@ -626,7 +626,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
         // START PROXY GROUP
 
         Group gProxy = new Group(wGeneralComp, SWT.SHADOW_ETCHED_IN);
-        gProxy.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.ProxyGroup.Label")); //$NON-NLS-1$;
+        gProxy.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.ProxyGroup.Label")); ;
         FormLayout proxyLayout = new FormLayout();
         proxyLayout.marginWidth = 3;
         proxyLayout.marginHeight = 3;
@@ -635,7 +635,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 
         // HTTP Login
         wlProxyHost = new Label(gProxy, SWT.RIGHT);
-        wlProxyHost.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.ProxyHost.Label")); //$NON-NLS-1$
+        wlProxyHost.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.ProxyHost.Label")); 
         props.setLook(wlProxyHost);
         FormData fdlProxyHost = new FormData();
         fdlProxyHost.top = new FormAttachment(0, margin);
@@ -644,7 +644,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
         wlProxyHost.setLayoutData(fdlProxyHost);
         wProxyHost = new TextVar(transMeta, gProxy, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wProxyHost.addModifyListener(lsMod);
-        wProxyHost.setToolTipText(BaseMessages.getString(PKG, "HTTPPOSTDialog.ProxyHost.Tooltip")); //$NON-NLS-1$
+        wProxyHost.setToolTipText(BaseMessages.getString(PKG, "HTTPPOSTDialog.ProxyHost.Tooltip")); 
         props.setLook(wProxyHost);
         FormData fdProxyHost = new FormData();
         fdProxyHost.top = new FormAttachment(0, margin);
@@ -654,7 +654,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 
         // HTTP Password
         wlProxyPort = new Label(gProxy, SWT.RIGHT);
-        wlProxyPort.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.ProxyPort.Label")); //$NON-NLS-1$
+        wlProxyPort.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.ProxyPort.Label")); 
         props.setLook(wlProxyPort);
         FormData fdlProxyPort = new FormData();
         fdlProxyPort.top = new FormAttachment(wProxyHost, margin);
@@ -663,7 +663,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
         wlProxyPort.setLayoutData(fdlProxyPort);
         wProxyPort = new TextVar(transMeta, gProxy, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wProxyPort.addModifyListener(lsMod);
-        wProxyPort.setToolTipText(BaseMessages.getString(PKG, "HTTPPOSTDialog.ProxyPort.Tooltip")); //$NON-NLS-1$
+        wProxyPort.setToolTipText(BaseMessages.getString(PKG, "HTTPPOSTDialog.ProxyPort.Tooltip")); 
         props.setLook(wProxyPort);
         FormData fdProxyPort = new FormData();
         fdProxyPort.top = new FormAttachment(wProxyHost, margin);
@@ -708,7 +708,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
  		props.setLook(wAdditionalComp);
 		
 		wlFields=new Label(wAdditionalComp, SWT.NONE);
-		wlFields.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.Parameters.Label")); //$NON-NLS-1$
+		wlFields.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.Parameters.Label")); 
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -718,9 +718,9 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 		final int FieldsRows=input.getArgumentField().length;
 		
 		  colinf=new ColumnInfo[] { 
-		  new ColumnInfo(BaseMessages.getString(PKG, "HTTPPOSTDialog.ColumnInfo.Name"),       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false), //$NON-NLS-1$
-		  new ColumnInfo(BaseMessages.getString(PKG, "HTTPPOSTDialog.ColumnInfo.Parameter"),  ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
-		  new ColumnInfo(BaseMessages.getString(PKG, "HTTPPOSTDialog.ColumnInfo.Header"),  ColumnInfo.COLUMN_TYPE_CCOMBO,   YES_NO_COMBO), //$NON-NLS-1$
+		  new ColumnInfo(BaseMessages.getString(PKG, "HTTPPOSTDialog.ColumnInfo.Name"),       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false), 
+		  new ColumnInfo(BaseMessages.getString(PKG, "HTTPPOSTDialog.ColumnInfo.Parameter"),  ColumnInfo.COLUMN_TYPE_TEXT,   false), 
+		  new ColumnInfo(BaseMessages.getString(PKG, "HTTPPOSTDialog.ColumnInfo.Header"),  ColumnInfo.COLUMN_TYPE_CCOMBO,   YES_NO_COMBO), 
 		 };
 		  colinf[1].setUsingVariables(true);
 		wFields=new TableView(transMeta, wAdditionalComp, 
@@ -732,7 +732,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 							  );
 		
 		wGetBodyParam = new Button(wAdditionalComp, SWT.PUSH);
-		wGetBodyParam.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.GetFields.Button")); //$NON-NLS-1$
+		wGetBodyParam.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.GetFields.Button")); 
 		fdGetBodyParam = new FormData();
 		fdGetBodyParam.top   = new FormAttachment(wlFields, margin);
 		fdGetBodyParam.right = new FormAttachment(100, 0);
@@ -746,7 +746,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 		wFields.setLayoutData(fdFields);
 		
 		wlQuery=new Label(wAdditionalComp, SWT.NONE);
-		wlQuery.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.QueryParameters.Label")); //$NON-NLS-1$
+		wlQuery.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.QueryParameters.Label")); 
  		props.setLook(wlQuery);
 		fdlQuery=new FormData();
 		fdlQuery.left = new FormAttachment(0, 0);
@@ -756,8 +756,8 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 		final int QueryRows=input.getQueryParameter().length;
 		
 		  colinfquery=new ColumnInfo[] { 
-		  new ColumnInfo(BaseMessages.getString(PKG, "HTTPPOSTDialog.ColumnInfo.QueryName"),       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false), //$NON-NLS-1$
-		  new ColumnInfo(BaseMessages.getString(PKG, "HTTPPOSTDialog.ColumnInfo.QueryParameter"),  ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
+		  new ColumnInfo(BaseMessages.getString(PKG, "HTTPPOSTDialog.ColumnInfo.QueryName"),       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false), 
+		  new ColumnInfo(BaseMessages.getString(PKG, "HTTPPOSTDialog.ColumnInfo.QueryParameter"),  ColumnInfo.COLUMN_TYPE_TEXT,   false), 
 		 };
 		 colinfquery[1].setUsingVariables(true);
 		wQuery=new TableView(transMeta, wAdditionalComp, 
@@ -769,7 +769,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 							  );
 
 		wGet = new Button(wAdditionalComp, SWT.PUSH);
-		wGet.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.GetFields.Button")); //$NON-NLS-1$
+		wGet.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.GetFields.Button")); 
 		fdGet = new FormData();
 		fdGet.top   = new FormAttachment(wlQuery, margin);
 		fdGet.right = new FormAttachment(100, 0);
@@ -838,9 +838,9 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 		
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wTabFolder);
 
@@ -962,7 +962,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
    */
   public void getData() {
     if (log.isDebug())
-      logDebug(BaseMessages.getString(PKG, "HTTPPOSTDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+      logDebug(BaseMessages.getString(PKG, "HTTPPOSTDialog.Log.GettingKeyInfo")); 
 
     if (input.getArgumentField() != null) {
       for (int i = 0; i < input.getArgumentField().length; i++) {
@@ -1034,7 +1034,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 		int nrargs = wFields.nrNonEmpty();
 		input.allocate(nrargs);
 
-		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "HTTPPOSTDialog.Log.FoundArguments",String.valueOf(nrargs))); //$NON-NLS-1$ //$NON-NLS-2$
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "HTTPPOSTDialog.Log.FoundArguments",String.valueOf(nrargs)));  
 		for (int i=0;i<nrargs;i++)
 		{
 			TableItem item = wFields.getNonEmpty(i);
@@ -1046,7 +1046,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 		int nrqueryparams = wQuery.nrNonEmpty();
 		input.allocateQuery(nrqueryparams);
 
-		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "HTTPPOSTDialog.Log.FoundQueryParameters",String.valueOf(nrqueryparams))); //$NON-NLS-1$ //$NON-NLS-2$
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "HTTPPOSTDialog.Log.FoundQueryParameters",String.valueOf(nrqueryparams)));  
 		for (int i=0;i<nrqueryparams;i++)
 		{
 			TableItem item = wQuery.getNonEmpty(i);
@@ -1096,7 +1096,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "HTTPPOSTDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "HTTPPOSTDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "HTTPPOSTDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "HTTPPOSTDialog.FailedToGetFields.DialogMessage"), ke);  
 		}
 
 	}
@@ -1112,7 +1112,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "HTTPPOSTDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "HTTPPOSTDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "HTTPPOSTDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "HTTPPOSTDialog.FailedToGetFields.DialogMessage"), ke);  
 		}
 
 	}

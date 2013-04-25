@@ -98,7 +98,7 @@ abstract class BaseLogTable {
 			attributeInterface.setAttribute(getLogTableCode()+PROP_LOG_TABLE_FIELD_ENABLED+i, field.isEnabled());
 			
       if (field.isSubjectAllowed()) {
-        attributeInterface.setAttribute(getLogTableCode()+PROP_LOG_TABLE_FIELD_SUBJECT+i, field.getSubject()==null?null:field.getSubject().toString()); //$NON-NLS-1$ 
+        attributeInterface.setAttribute(getLogTableCode()+PROP_LOG_TABLE_FIELD_SUBJECT+i, field.getSubject()==null?null:field.getSubject().toString());  
       }
 		}
 	}
@@ -359,16 +359,16 @@ abstract class BaseLogTable {
 		StringBuffer retval = new StringBuffer();
 		
         for (LogTableField field : fields) {
-            retval.append(XMLHandler.openTag(XML_TAG)); //$NON-NLS-1$
+            retval.append(XMLHandler.openTag(XML_TAG)); 
             
-            retval.append(XMLHandler.addTagValue("id", field.getId(), false)); //$NON-NLS-1$
-            retval.append(XMLHandler.addTagValue("enabled", field.isEnabled(), false)); //$NON-NLS-1$
-            retval.append(XMLHandler.addTagValue("name", field.getFieldName(), false)); //$NON-NLS-1$
+            retval.append(XMLHandler.addTagValue("id", field.getId(), false)); 
+            retval.append(XMLHandler.addTagValue("enabled", field.isEnabled(), false)); 
+            retval.append(XMLHandler.addTagValue("name", field.getFieldName(), false)); 
             if (field.isSubjectAllowed()) {
-            	retval.append(XMLHandler.addTagValue("subject", field.getSubject()==null?null:field.getSubject().toString(), false)); //$NON-NLS-1$ 
+            	retval.append(XMLHandler.addTagValue("subject", field.getSubject()==null?null:field.getSubject().toString(), false));  
             }
             
-            retval.append(XMLHandler.closeTag(XML_TAG)); //$NON-NLS-1$ 
+            retval.append(XMLHandler.closeTag(XML_TAG));  
         }
 
 		
@@ -425,7 +425,7 @@ abstract class BaseLogTable {
 
     protected String getLogBuffer(VariableSpace space, String logChannelId, LogStatus status, String limit) {
 
-      StringBuffer buffer = CentralLogStore.getAppender().getBuffer(logChannelId, true);
+      StringBuffer buffer = KettleLogStore.getAppender().getBuffer(logChannelId, true);
       
       if (Const.isEmpty(limit)) {
         String defaultLimit = space.getVariable(Const.KETTLE_LOG_SIZE_LIMIT, null);

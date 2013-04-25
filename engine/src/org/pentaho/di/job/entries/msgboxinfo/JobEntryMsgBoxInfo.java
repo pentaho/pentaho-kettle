@@ -240,8 +240,8 @@ public class JobEntryMsgBoxInfo extends JobEntryBase implements Cloneable, JobEn
   @Override
   public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore)
   {
-    addOkRemark(this, "bodyMessage", remarks); //$NON-NLS-1$
-    addOkRemark(this, "titleMessage", remarks); //$NON-NLS-1$
+    addOkRemark(this, "bodyMessage", remarks); 
+    addOkRemark(this, "titleMessage", remarks); 
   }
 
 }

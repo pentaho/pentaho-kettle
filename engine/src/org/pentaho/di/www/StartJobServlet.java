@@ -35,7 +35,7 @@ import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -146,7 +146,7 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
 
             // Discard old log lines from the old job
             //
-            CentralLogStore.discardLines(job.getLogChannelId(), true);
+            KettleLogStore.discardLines(job.getLogChannelId(), true);
             
             getJobMap().replaceJob(entry, newJob, jobConfiguration);
             job = newJob;

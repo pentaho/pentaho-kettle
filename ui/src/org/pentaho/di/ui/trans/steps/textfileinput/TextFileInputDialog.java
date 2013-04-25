@@ -894,7 +894,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         // 
         
         gAccepting = new Group(wFileComp, SWT.SHADOW_ETCHED_IN);
-        gAccepting.setText(BaseMessages.getString(PKG, "TextFileInputDialog.AcceptingGroup.Label")); //$NON-NLS-1$;
+        gAccepting.setText(BaseMessages.getString(PKG, "TextFileInputDialog.AcceptingGroup.Label")); ;
         FormLayout acceptingLayout = new FormLayout();
         acceptingLayout.marginWidth  = 3;
         acceptingLayout.marginHeight = 3;
@@ -2627,6 +2627,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         int              fileFormatType = meta.getFileFormatTypeNr();
 
 		String delimiter = transMeta.environmentSubstitute(meta.getSeparator());
+		String enclosure = transMeta.environmentSubstitute(meta.getEnclosure());
+    String escapeCharacter = transMeta.environmentSubstitute(meta.getEscapeCharacter());       
         
 		if (textFileList.nrOfFiles()>0)
 		{
@@ -2701,7 +2703,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                         { 
                         	// Estimate the number of input fields...
                         	// Chop up the line using the delimiter
-                        	String[] fields = TextFileInput.guessStringsFromLine(log, line, meta, delimiter);
+                        	String[] fields = TextFileInput.guessStringsFromLine(transMeta, log, line, meta, delimiter, enclosure, escapeCharacter);
 
                             for (int i = 0; i < fields.length; i++)
                             {

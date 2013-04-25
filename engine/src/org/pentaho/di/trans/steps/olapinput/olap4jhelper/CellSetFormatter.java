@@ -92,7 +92,7 @@ public class CellSetFormatter {
      * @return values
      */
     public static String getValueString(final String formattedValue) {
-        final String[] values = formattedValue.split("\\|"); //$NON-NLS-1$
+        final String[] values = formattedValue.split("\\|"); 
         if (values.length > 1) {
             return values[1];
         }
@@ -292,7 +292,7 @@ public class CellSetFormatter {
             if ( cellValue.length() < 1) {
                 final Object value =  cell.getValue();
                 if (value == null  || value.equals("null"))
-                    cellValue = ""; //$NON-NLS-1$
+                    cellValue = ""; 
                 else {
                     try {
                         DecimalFormat myFormatter = new DecimalFormat("#,###.###");

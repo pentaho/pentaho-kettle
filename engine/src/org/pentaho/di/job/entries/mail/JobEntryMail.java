@@ -224,16 +224,16 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       }
     retval.append("      </filetypes>");
    
-    retval.append("      <embeddedimages>").append(Const.CR); //$NON-NLS-1$
+    retval.append("      <embeddedimages>").append(Const.CR); 
     if (embeddedimages != null) {
       for (int i = 0; i < embeddedimages.length; i++) {
-        retval.append("        <embeddedimage>").append(Const.CR); //$NON-NLS-1$
-        retval.append("          ").append(XMLHandler.addTagValue("image_name", embeddedimages[i])); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("          ").append(XMLHandler.addTagValue("content_id", contentids[i])); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("        </embeddedimage>").append(Const.CR); //$NON-NLS-1$
+        retval.append("        <embeddedimage>").append(Const.CR); 
+        retval.append("          ").append(XMLHandler.addTagValue("image_name", embeddedimages[i]));  
+        retval.append("          ").append(XMLHandler.addTagValue("content_id", contentids[i]));  
+        retval.append("        </embeddedimage>").append(Const.CR); 
       }
     }
-    retval.append("      </embeddedimages>").append(Const.CR); //$NON-NLS-1$
+    retval.append("      </embeddedimages>").append(Const.CR); 
     
     return retval.toString();
   }
@@ -293,19 +293,19 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       setZipFilename(XMLHandler.getTagValue(entrynode, "zip_name"));
       setReplyToAddresses(XMLHandler.getTagValue(entrynode, "replyToAddresses"));
       
-      Node images = XMLHandler.getSubNode(entrynode, "embeddedimages"); //$NON-NLS-1$
+      Node images = XMLHandler.getSubNode(entrynode, "embeddedimages"); 
 
       // How many field embedded images ?
-      int nrImages = XMLHandler.countNodes(images, "embeddedimage"); //$NON-NLS-1$
+      int nrImages = XMLHandler.countNodes(images, "embeddedimage"); 
       embeddedimages = new String[nrImages];
       contentids = new String[nrImages];
 
       // Read them all...
       for (int i = 0; i < nrImages; i++) {
-        Node fnode = XMLHandler.getSubNodeByNr(images, "embeddedimage", i); //$NON-NLS-1$
+        Node fnode = XMLHandler.getSubNodeByNr(images, "embeddedimage", i); 
 
-        embeddedimages[i] = XMLHandler.getTagValue(fnode, "image_name"); //$NON-NLS-1$
-        contentids[i] = XMLHandler.getTagValue(fnode, "content_id"); //$NON-NLS-1$
+        embeddedimages[i] = XMLHandler.getTagValue(fnode, "image_name"); 
+        contentids[i] = XMLHandler.getTagValue(fnode, "content_id"); 
       }
 
 
@@ -363,14 +363,14 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       
       
       // How many arguments?
-      int imagesnr = rep.countNrJobEntryAttributes(id_jobentry, "embeddedimage"); //$NON-NLS-1$
+      int imagesnr = rep.countNrJobEntryAttributes(id_jobentry, "embeddedimage"); 
       embeddedimages = new String[imagesnr];
       contentids = new String[imagesnr];
 
       // Read them all...
       for (int a = 0; a < imagesnr; a++) {
-    	  embeddedimages[a] = rep.getJobEntryAttributeString(id_jobentry, a, "embeddedimage"); //$NON-NLS-1$
-    	  contentids[a] = rep.getJobEntryAttributeString(id_jobentry, a, "contentid"); //$NON-NLS-1$
+    	  embeddedimages[a] = rep.getJobEntryAttributeString(id_jobentry, a, "embeddedimage"); 
+    	  contentids[a] = rep.getJobEntryAttributeString(id_jobentry, a, "contentid"); 
       }
       
       
@@ -429,8 +429,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       // save the arguments...
       if (embeddedimages != null) {
         for (int i = 0; i < embeddedimages.length; i++) {
-          rep.saveJobEntryAttribute(id_job, getObjectId(), i, "embeddedimage", embeddedimages[i]); //$NON-NLS-1$
-          rep.saveJobEntryAttribute(id_job, getObjectId(), i, "contentid", contentids[i]); //$NON-NLS-1$
+          rep.saveJobEntryAttribute(id_job, getObjectId(), i, "embeddedimage", embeddedimages[i]); 
+          rep.saveJobEntryAttribute(id_job, getObjectId(), i, "contentid", contentids[i]); 
         }
       }
 
@@ -1425,18 +1425,18 @@ public void setSensitivity(String sensitivity) {
   public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore)
   {
 
-    andValidator().validate(this, "server", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
-    andValidator().validate(this, "replyAddress", remarks, putValidators(notBlankValidator(), emailValidator())); //$NON-NLS-1$
+    andValidator().validate(this, "server", remarks, putValidators(notBlankValidator())); 
+    andValidator().validate(this, "replyAddress", remarks, putValidators(notBlankValidator(), emailValidator())); 
 
-    andValidator().validate(this, "destination", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+    andValidator().validate(this, "destination", remarks, putValidators(notBlankValidator())); 
 
     if (usingAuthentication)
     {
-      andValidator().validate(this, "authenticationUser", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
-      andValidator().validate(this, "authenticationPassword", remarks, putValidators(notNullValidator())); //$NON-NLS-1$
+      andValidator().validate(this, "authenticationUser", remarks, putValidators(notBlankValidator())); 
+      andValidator().validate(this, "authenticationPassword", remarks, putValidators(notNullValidator())); 
     }
 
-    andValidator().validate(this, "port", remarks, putValidators(integerValidator())); //$NON-NLS-1$
+    andValidator().validate(this, "port", remarks, putValidators(integerValidator())); 
 
   }
 

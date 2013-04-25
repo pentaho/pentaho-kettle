@@ -81,8 +81,8 @@ public class HTTP extends BaseStep implements StepInterface
 				data.argnrs[i]=rowMeta.indexOfValue(meta.getArgumentField()[i]);
 				if (data.argnrs[i]<0)
 				{
-					logError(BaseMessages.getString(PKG, "HTTP.Log.ErrorFindingField")+meta.getArgumentField()[i]+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-					throw new KettleStepException(BaseMessages.getString(PKG, "HTTP.Exception.CouldnotFindField",meta.getArgumentField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "HTTP.Log.ErrorFindingField")+meta.getArgumentField()[i]+"]");  
+					throw new KettleStepException(BaseMessages.getString(PKG, "HTTP.Exception.CouldnotFindField",meta.getArgumentField()[i]));  
 				}
 			}
 		}
@@ -322,8 +322,8 @@ public class HTTP extends BaseStep implements StepInterface
 			   int fieldIndex = data.inputRowMeta.indexOfValue(meta.getHeaderField()[i]);
 			   if (fieldIndex < 0)
 			   {
-			      logError(BaseMessages.getString(PKG, "HTTP.Exception.ErrorFindingField") + meta.getHeaderField()[i]+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-			      throw new KettleStepException(BaseMessages.getString(PKG, "HTTP.Exception.ErrorFindingField",meta.getHeaderField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			      logError(BaseMessages.getString(PKG, "HTTP.Exception.ErrorFindingField") + meta.getHeaderField()[i]+"]");  
+			      throw new KettleStepException(BaseMessages.getString(PKG, "HTTP.Exception.ErrorFindingField",meta.getHeaderField()[i]));  
 			   }
 
 			   data.header_parameters_nrs[i] = fieldIndex;
@@ -340,7 +340,7 @@ public class HTTP extends BaseStep implements StepInterface
 				
             if (checkFeedback(getLinesRead())) 
             {
-            	if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "HTTP.LineNumber")+getLinesRead()); //$NON-NLS-1$
+            	if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "HTTP.LineNumber")+getLinesRead()); 
             }
 		}
 		catch(KettleException e)
@@ -355,7 +355,7 @@ public class HTTP extends BaseStep implements StepInterface
 	        }
 			else
 			{
-				logError(BaseMessages.getString(PKG, "HTTP.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "HTTP.ErrorInStepRunning")+e.getMessage()); 
 				setErrors(1);
 				stopAll();
 				setOutputDone();  // signal end to receiver(s)

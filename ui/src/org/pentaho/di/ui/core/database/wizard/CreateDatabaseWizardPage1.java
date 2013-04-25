@@ -85,8 +85,8 @@ public class CreateDatabaseWizardPage1 extends WizardPage
 		this.databaseMeta = databaseMeta;
 		this.databases = databases;
 		
-		setTitle(BaseMessages.getString(PKG, "CreateDatabaseWizardPage1.DialogTitle")); //$NON-NLS-1$
-		setDescription(BaseMessages.getString(PKG, "CreateDatabaseWizardPage1.DialogMessage")); //$NON-NLS-1$
+		setTitle(BaseMessages.getString(PKG, "CreateDatabaseWizardPage1.DialogTitle")); 
+		setDescription(BaseMessages.getString(PKG, "CreateDatabaseWizardPage1.DialogMessage")); 
 		
 		setPageComplete(false);
 	}
@@ -106,7 +106,7 @@ public class CreateDatabaseWizardPage1 extends WizardPage
 		composite.setLayout(compLayout);
 
 		wlName = new Label(composite, SWT.RIGHT);
-		wlName.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPage1.DBName.Label")); //$NON-NLS-1$
+		wlName.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPage1.DBName.Label")); 
  		props.setLook(wlName);
 		fdlName = new FormData();
 		fdlName.left   = new FormAttachment(0,0);
@@ -129,7 +129,7 @@ public class CreateDatabaseWizardPage1 extends WizardPage
 		);
 		
 		wlDBType = new Label(composite, SWT.RIGHT);
-		wlDBType.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPage1.DBType.Label")); //$NON-NLS-1$
+		wlDBType.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPage1.DBType.Label")); 
  		props.setLook(wlDBType);
 		fdlDBType = new FormData();
 		fdlDBType.left   = new FormAttachment(0, 0);
@@ -194,7 +194,7 @@ public class CreateDatabaseWizardPage1 extends WizardPage
 			);
 		
 		wlAccType = new Label(composite, SWT.RIGHT);
-		wlAccType.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPage1.DBAccessType.Label")); //$NON-NLS-1$
+		wlAccType.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPage1.DBAccessType.Label")); 
  		props.setLook(wlAccType);
 		fdlAccType = new FormData();
 		fdlAccType.left   = new FormAttachment(0, 0);
@@ -252,19 +252,19 @@ public class CreateDatabaseWizardPage1 extends WizardPage
 		
 		if (name==null || dbType==null || acType==null)
 		{
-			setErrorMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPage1.ErrorMessage.InvalidInput")); //$NON-NLS-1$
+			setErrorMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPage1.ErrorMessage.InvalidInput")); 
 			return false;
 		}
 		if (name!=null && DatabaseMeta.findDatabase(databases, name)!=null)
 		{
-			setErrorMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPage1.ErrorMessage.DBNameExists",name)); //$NON-NLS-1$ //$NON-NLS-2$
+			setErrorMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPage1.ErrorMessage.DBNameExists",name));  
 			return false;
 		}
 		else
 		{
 			getDatabaseInfo();
 			setErrorMessage(null);
-			setMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPage1.Message.Next")); //$NON-NLS-1$
+			setMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPage1.Message.Next")); 
 			return true;
 		}
 	}	
@@ -305,10 +305,10 @@ public class CreateDatabaseWizardPage1 extends WizardPage
 		switch(databaseMeta.getAccessType())
 		{
 		case DatabaseMeta.TYPE_ACCESS_OCI:
-			nextPage = wiz.getPage("oci"); // OCI //$NON-NLS-1$
+			nextPage = wiz.getPage("oci"); // OCI 
 			break;
 		case DatabaseMeta.TYPE_ACCESS_ODBC:
-			nextPage = wiz.getPage("odbc");; // ODBC //$NON-NLS-1$
+			nextPage = wiz.getPage("odbc");; // ODBC 
 			break;
 		case DatabaseMeta.TYPE_ACCESS_PLUGIN:
 			nextPage = wiz.getPage(databaseMeta.getPluginId());; // e.g. SAPR3
@@ -316,9 +316,9 @@ public class CreateDatabaseWizardPage1 extends WizardPage
 		default: // Generic or Native
 			if(databaseMeta.getDatabaseInterface() instanceof GenericDatabaseMeta)
 			{	// Generic
-				nextPage = wiz.getPage("generic");; // generic //$NON-NLS-1$
+				nextPage = wiz.getPage("generic");; // generic 
 			} else { // Native
-				nextPage = wiz.getPage("jdbc"); //$NON-NLS-1$
+				nextPage = wiz.getPage("jdbc"); 
 				if (nextPage!=null) 
 				{
 					// Set the port number...

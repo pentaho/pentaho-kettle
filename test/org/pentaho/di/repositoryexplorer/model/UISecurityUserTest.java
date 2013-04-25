@@ -106,8 +106,8 @@ public class UISecurityUserTest {
       user.assignRoles(rolesToAssign);
       user.unassignRoles(rolesToUnAssign);
       assertEquals(user.getMode(), Mode.EDIT); // Should have exactly 7 roles
-      assertEquals(user.getPassword(), "newpassword");//$NON-NLS-1$
-      assertEquals(user.getDescription(), "new description"); //$NON-NLS-1$
+      assertEquals(user.getPassword(), "newpassword");
+      assertEquals(user.getDescription(), "new description"); 
       Assert.assertFalse(contains(user.getAssignedRoles(),new UIRepositoryRole(adminRole)));
       Assert.assertFalse(contains(user.getAssignedRoles(),new UIRepositoryRole(authenticatedRole)));
       Assert.assertTrue(contains(user.getAssignedRoles(),new UIRepositoryRole(ctoRole)));
@@ -138,9 +138,9 @@ public class UISecurityUserTest {
       rolesToAssign.add(new UIRepositoryRole(authenticatedRole));
       user.assignRoles(rolesToAssign);
       assertEquals(user.getMode(), Mode.ADD); 
-      assertEquals(user.getName(), "newuser");//$NON-NLS-1$
-      assertEquals(user.getPassword(), "newpassword");//$NON-NLS-1$
-      assertEquals(user.getDescription(), "new description"); //$NON-NLS-1$
+      assertEquals(user.getName(), "newuser");
+      assertEquals(user.getPassword(), "newpassword");
+      assertEquals(user.getDescription(), "new description"); 
       Assert.assertTrue(contains(user.getAssignedRoles(),new UIRepositoryRole(adminRole)));
       Assert.assertTrue(contains(user.getAssignedRoles(),new UIRepositoryRole(authenticatedRole)));
       Assert.assertTrue(contains(user.getAssignedRoles(),new UIRepositoryRole(ctoRole)));

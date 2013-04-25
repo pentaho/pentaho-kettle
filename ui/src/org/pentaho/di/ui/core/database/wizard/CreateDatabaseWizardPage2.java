@@ -74,8 +74,8 @@ public class CreateDatabaseWizardPage2 extends WizardPage
 		this.props = props;
 		this.databaseMeta = info;
 
-		setTitle(BaseMessages.getString(PKG, "CreateDatabaseWizardPage2.DialogTitle")); //$NON-NLS-1$
-		setDescription(BaseMessages.getString(PKG, "CreateDatabaseWizardPage2.DialogMessage")); //$NON-NLS-1$
+		setTitle(BaseMessages.getString(PKG, "CreateDatabaseWizardPage2.DialogTitle")); 
+		setDescription(BaseMessages.getString(PKG, "CreateDatabaseWizardPage2.DialogMessage")); 
 
 		setPageComplete(false);
 	}
@@ -96,7 +96,7 @@ public class CreateDatabaseWizardPage2 extends WizardPage
 
 		// USERNAME
 		wlUsername = new Label(composite, SWT.RIGHT);
-		wlUsername.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPage2.Username.Label")); //$NON-NLS-1$
+		wlUsername.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPage2.Username.Label")); 
  		props.setLook(wlUsername);
 		fdlUsername = new FormData();
 		fdlUsername.top = new FormAttachment(0, 0);
@@ -120,7 +120,7 @@ public class CreateDatabaseWizardPage2 extends WizardPage
 
 		// PASSWORD
 		wlPassword = new Label(composite, SWT.RIGHT);
-		wlPassword.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPage2.Password.Label")); //$NON-NLS-1$
+		wlPassword.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPage2.Password.Label")); 
  		props.setLook(wlPassword);
 		fdlPassword = new FormData();
 		fdlPassword.top = new FormAttachment(wUsername, margin);
@@ -144,7 +144,7 @@ public class CreateDatabaseWizardPage2 extends WizardPage
 		});
 		
 		wTest = new Button(composite, SWT.PUSH);
-		wTest.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPage2.TestConnection.Button")); //$NON-NLS-1$
+		wTest.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPage2.TestConnection.Button")); 
 		fdTest = new FormData();
 		fdTest.top = new FormAttachment(wPassword, margin*4);
 		fdTest.left = new FormAttachment(50, 0);
@@ -197,12 +197,12 @@ public class CreateDatabaseWizardPage2 extends WizardPage
 		if (remarks.length == 0)
 		{
 			setErrorMessage(null);
-			setMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPage2.Message.Finish")); //$NON-NLS-1$
+			setMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPage2.Message.Finish")); 
 			return true;
 		}
 		else
 		{
-			setErrorMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPage2.ErrorMessage.InvalidInput")); //$NON-NLS-1$
+			setErrorMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPage2.ErrorMessage.InvalidInput")); 
 			// setMessage("Select 'Finish' to create the database connection");
 			return false;
 		}

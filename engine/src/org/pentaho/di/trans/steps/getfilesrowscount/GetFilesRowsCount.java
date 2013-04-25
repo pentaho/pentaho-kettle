@@ -119,7 +119,7 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 		}catch(KettleException e)
 		{
 			
-			logError(BaseMessages.getString(PKG, "GetFilesRowsCount.ErrorInStepRunning",e.getMessage())); //$NON-NLS-1$
+			logError(BaseMessages.getString(PKG, "GetFilesRowsCount.ErrorInStepRunning",e.getMessage())); 
 			setErrors(1);
 			stopAll();
 			setOutputDone();  // signal end to receiver(s)
@@ -241,8 +241,8 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 						if (data.indexOfFilenameField<0)
 						{
 							// The field is unreachable !
-							logError(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.ErrorFindingField", meta.setOutputFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
-							throw new KettleException(BaseMessages.getString(PKG, "GetFilesRowsCount.Exception.CouldnotFindField",meta.setOutputFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
+							logError(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.ErrorFindingField", meta.setOutputFilenameField()));  
+							throw new KettleException(BaseMessages.getString(PKG, "GetFilesRowsCount.Exception.CouldnotFindField",meta.setOutputFilenameField()));  
 						}
 					}
 	            	

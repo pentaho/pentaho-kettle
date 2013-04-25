@@ -70,8 +70,8 @@ public class ResourceEntry {
 	
 	public String toXml(int indentLevel) {
     StringBuffer buff = new StringBuffer(30);
-    buff.append(StringUtil.getIndent(indentLevel)).append("<Resource type='").append(this.getResourcetype()). //$NON-NLS-1$
-      append("'><![CDATA[").append(this.getResource()).append("]]>").append("</Resource>").append(StringUtil.CRLF);//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    buff.append(StringUtil.getIndent(indentLevel)).append("<Resource type='").append(this.getResourcetype()). 
+      append("'><![CDATA[").append(this.getResource()).append("]]>").append("</Resource>").append(StringUtil.CRLF);  //$NON-NLS-3$
     return buff.toString();
   }
   

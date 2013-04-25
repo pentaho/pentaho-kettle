@@ -92,14 +92,14 @@ public class RowsFromResultDialog extends BaseStepDialog implements StepDialogIn
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "RowsFromResultDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "RowsFromResultDialog.Shell.Title")); 
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname = new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "RowsFromResultDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "RowsFromResultDialog.Stepname.Label")); 
 		props.setLook(wlStepname);
 		fdlStepname = new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -117,7 +117,7 @@ public class RowsFromResultDialog extends BaseStepDialog implements StepDialogIn
 		wStepname.setLayoutData(fdStepname);
 
 		wlFields = new Label(shell, SWT.NONE);
-		wlFields.setText(BaseMessages.getString(PKG, "RowsFromResultDialog.Fields.Label")); //$NON-NLS-1$
+		wlFields.setText(BaseMessages.getString(PKG, "RowsFromResultDialog.Fields.Label")); 
 		props.setLook(wlFields);
 		fdlFields = new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -128,13 +128,13 @@ public class RowsFromResultDialog extends BaseStepDialog implements StepDialogIn
 
 		ColumnInfo[] colinf = new ColumnInfo[] {
 				new ColumnInfo(
-						BaseMessages.getString(PKG, "RowsFromResultDialog.ColumnInfo.Fieldname"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+						BaseMessages.getString(PKG, "RowsFromResultDialog.ColumnInfo.Fieldname"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
 				new ColumnInfo(
-						BaseMessages.getString(PKG, "RowsFromResultDialog.ColumnInfo.Type"), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getAllTypes()), //$NON-NLS-1$
+						BaseMessages.getString(PKG, "RowsFromResultDialog.ColumnInfo.Type"), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getAllTypes()), 
 				new ColumnInfo(
-						BaseMessages.getString(PKG, "RowsFromResultDialog.ColumnInfo.Length"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+						BaseMessages.getString(PKG, "RowsFromResultDialog.ColumnInfo.Length"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
 				new ColumnInfo(
-						BaseMessages.getString(PKG, "RowsFromResultDialog.ColumnInfo.Precision"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+						BaseMessages.getString(PKG, "RowsFromResultDialog.ColumnInfo.Precision"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
 		};
 
 		wFields = new TableView(transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows,
@@ -142,9 +142,9 @@ public class RowsFromResultDialog extends BaseStepDialog implements StepDialogIn
 
 		// Some buttons
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 
@@ -214,12 +214,12 @@ public class RowsFromResultDialog extends BaseStepDialog implements StepDialogIn
   public void getData() {
     for (int i = 0; i < input.getFieldname().length; i++) {
       TableItem item = wFields.table.getItem(i);
-      item.setText(1, input.getFieldname()[i] == null ? "" : input.getFieldname()[i]); //$NON-NLS-1$
+      item.setText(1, input.getFieldname()[i] == null ? "" : input.getFieldname()[i]); 
       item.setText(2, ValueMeta.getTypeDesc(input.getType()[i]));
       int len = input.getLength()[i];
       int prc = input.getPrecision()[i];
-      item.setText(3, len >= 0 ? "" + len : ""); //$NON-NLS-1$ //$NON-NLS-2$
-      item.setText(4, prc >= 0 ? "" + prc : ""); //$NON-NLS-1$ //$NON-NLS-2$
+      item.setText(3, len >= 0 ? "" + len : "");  
+      item.setText(4, prc >= 0 ? "" + prc : "");  
     }
 
     wStepname.selectAll();

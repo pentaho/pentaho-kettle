@@ -119,7 +119,7 @@ public class SapFunctionBrowser extends Dialog
 		// Function
 		//
 		wlFunction=new Label(shell, SWT.RIGHT);
-		wlFunction.setText(BaseMessages.getString(PKG, "SapInputDialog.Function.Label")); //$NON-NLS-1$
+		wlFunction.setText(BaseMessages.getString(PKG, "SapInputDialog.Function.Label")); 
  		props.setLook(wlFunction);
 		FormData fdlFunction = new FormData();
 		fdlFunction.left   = new FormAttachment(0, 0);
@@ -129,7 +129,7 @@ public class SapFunctionBrowser extends Dialog
 		wbFunction = new Button(shell, SWT.PUSH);
 		props.setLook(wbFunction);
 		
-		wbFunction.setText(BaseMessages.getString(PKG, "SapInputDialog.FindFunctionButton.Label")); //$NON-NLS-1$
+		wbFunction.setText(BaseMessages.getString(PKG, "SapInputDialog.FindFunctionButton.Label")); 
 		FormData fdbFunction = new FormData();
 		fdbFunction.right  = new FormAttachment(100, 0);
 		fdbFunction.top    = new FormAttachment(0, 0);

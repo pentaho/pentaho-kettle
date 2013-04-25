@@ -136,14 +136,14 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "PGPDecryptStreamDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "PGPDecryptStreamDialog.Shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin=Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "PGPDecryptStreamDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "PGPDecryptStreamDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -175,7 +175,7 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
 
 		// GPGLocation fieldname ...
 		wlGPGLocation=new Label(wGPGGroup, SWT.RIGHT);
-		wlGPGLocation.setText(BaseMessages.getString(PKG, "PGPDecryptStreamDialog.GPGLocationField.Label")); //$NON-NLS-1$
+		wlGPGLocation.setText(BaseMessages.getString(PKG, "PGPDecryptStreamDialog.GPGLocationField.Label")); 
  		props.setLook(wlGPGLocation);
 		fdlGPGLocation=new FormData();
 		fdlGPGLocation.left = new FormAttachment(0, 0);
@@ -229,7 +229,7 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
 		
 		// Passphrase fieldname ...
 		wlPassphrase=new Label(wGPGGroup, SWT.RIGHT);
-		wlPassphrase.setText(BaseMessages.getString(PKG, "PGPDecryptStreamDialog.PassphraseField.Label")); //$NON-NLS-1$
+		wlPassphrase.setText(BaseMessages.getString(PKG, "PGPDecryptStreamDialog.PassphraseField.Label")); 
  		props.setLook(wlPassphrase);
 		fdlPassphrase=new FormData();
 		fdlPassphrase.left = new FormAttachment(0, 0);
@@ -286,7 +286,7 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
 
 		// Passphrase field
 		wlPassphraseFieldName=new Label(wGPGGroup, SWT.RIGHT);
-		wlPassphraseFieldName.setText(BaseMessages.getString(PKG, "PGPDecryptStreamDialog.PassphraseFieldName.Label")); //$NON-NLS-1$
+		wlPassphraseFieldName.setText(BaseMessages.getString(PKG, "PGPDecryptStreamDialog.PassphraseFieldName.Label")); 
  		props.setLook(wlPassphraseFieldName);
 		fdlPassphraseFieldName=new FormData();
 		fdlPassphraseFieldName.left = new FormAttachment(0, 0);
@@ -333,7 +333,7 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
 		
 		// Stream field
 		wlStreamFieldName=new Label(shell, SWT.RIGHT);
-		wlStreamFieldName.setText(BaseMessages.getString(PKG, "PGPDecryptStreamDialog.StreamFieldName.Label")); //$NON-NLS-1$
+		wlStreamFieldName.setText(BaseMessages.getString(PKG, "PGPDecryptStreamDialog.StreamFieldName.Label")); 
  		props.setLook(wlStreamFieldName);
 		fdlStreamFieldName=new FormData();
 		fdlStreamFieldName.left = new FormAttachment(0, 0);
@@ -369,7 +369,7 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
 
 		// Result fieldname ...
 		wlResult=new Label(shell, SWT.RIGHT);
-		wlResult.setText(BaseMessages.getString(PKG, "PGPDecryptStreamDialog.ResultField.Label")); //$NON-NLS-1$
+		wlResult.setText(BaseMessages.getString(PKG, "PGPDecryptStreamDialog.ResultField.Label")); 
  		props.setLook(wlResult);
 		fdlResult=new FormData();
 		fdlResult.left = new FormAttachment(0, 0);
@@ -393,9 +393,9 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
 
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wResult);
 
@@ -495,7 +495,7 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
 				if(passphrasefieldvalue!=null) wPassphraseFieldName.setText(passphrasefieldvalue);
 				gotPreviousFields=true;
 		 }catch(KettleException ke){
-				new ErrorDialog(shell, BaseMessages.getString(PKG, "PGPDecryptStreamDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "PGPDecryptStreamDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "PGPDecryptStreamDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "PGPDecryptStreamDialog.FailedToGetFields.DialogMessage"), ke);  
 			}
 		 }
 	 }

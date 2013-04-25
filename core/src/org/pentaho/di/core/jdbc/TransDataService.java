@@ -127,7 +127,6 @@ public class TransDataService implements XMLInterface {
     xml.append(XMLHandler.closeTag(XML_TAG_VARIABLE_MAPS));
     return xml.toString();
   }
-  
 
   /**
    * @return the name

@@ -142,7 +142,7 @@ public class JobExecutionConfigurationDialog extends Dialog
         formLayout.marginHeight = Const.FORM_MARGIN;
 
         shell.setLayout(formLayout);
-        shell.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.Shell.Title")); //$NON-NLS-1$
+        shell.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.Shell.Title")); 
 
         int margin = Const.MARGIN;
         int tabsize = 5*margin;
@@ -159,7 +159,7 @@ public class JobExecutionConfigurationDialog extends Dialog
 
         
         gLocal = new Group(shell, SWT.SHADOW_ETCHED_IN);
-        gLocal.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.LocalGroup.Label")); //$NON-NLS-1$;
+        gLocal.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.LocalGroup.Label")); ;
         // The layout
         FormLayout localLayout = new FormLayout();
         localLayout.marginWidth  = Const.FORM_MARGIN;
@@ -177,8 +177,8 @@ public class JobExecutionConfigurationDialog extends Dialog
         // Local execution
         //
         wExecLocal=new Button(gLocal, SWT.RADIO);
-        wExecLocal.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.ExecLocal.Label")); //$NON-NLS-1$
-        wExecLocal.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.ExecLocal.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        wExecLocal.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.ExecLocal.Label")); 
+        wExecLocal.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.ExecLocal.Tooltip"));  
         props.setLook(wExecLocal);
         FormData fdExecLocal = new FormData();
         fdExecLocal.left  = new FormAttachment(0, 0);
@@ -190,8 +190,8 @@ public class JobExecutionConfigurationDialog extends Dialog
         // remote execution
         //
         wExecRemote=new Button(gLocal, SWT.RADIO);
-        wExecRemote.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.ExecRemote.Label")); //$NON-NLS-1$
-        wExecRemote.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.ExecRemote.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        wExecRemote.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.ExecRemote.Label")); 
+        wExecRemote.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.ExecRemote.Tooltip"));  
         props.setLook(wExecRemote);
         FormData fdExecRemote = new FormData();
         fdExecRemote.left  = new FormAttachment(33, margin);
@@ -201,15 +201,15 @@ public class JobExecutionConfigurationDialog extends Dialog
 
         wlRemoteHost = new Label(gLocal, SWT.LEFT);
         props.setLook(wlRemoteHost);
-        wlRemoteHost.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.RemoteHost.Label")); //$NON-NLS-1$
-        wlRemoteHost.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.RemoteHost.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        wlRemoteHost.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.RemoteHost.Label")); 
+        wlRemoteHost.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.RemoteHost.Tooltip"));  
         FormData fdlRemoteHost = new FormData();
         fdlRemoteHost.left  = new FormAttachment(33, tabsize);
         fdlRemoteHost.top   = new FormAttachment(wExecRemote, margin*2);
         wlRemoteHost.setLayoutData(fdlRemoteHost);
 
         wRemoteHost = new CCombo(gLocal, SWT.READ_ONLY | SWT.BORDER);
-        wRemoteHost.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.RemoteHost.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        wRemoteHost.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.RemoteHost.Tooltip"));  
         props.setLook(wRemoteHost);
         FormData fdRemoteHost = new FormData();
         fdRemoteHost.left  = new FormAttachment(wlRemoteHost, margin);
@@ -223,8 +223,8 @@ public class JobExecutionConfigurationDialog extends Dialog
         }
         
         wPassExport = new Button(gLocal, SWT.CHECK);
-        wPassExport.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.PassExport.Label")); //$NON-NLS-1$
-        wPassExport.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.PassExport.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        wPassExport.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.PassExport.Label")); 
+        wPassExport.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.PassExport.Tooltip"));  
         props.setLook(wPassExport);
         FormData fdPassExport = new FormData();
         fdPassExport.left  = new FormAttachment(33, margin);
@@ -232,8 +232,8 @@ public class JobExecutionConfigurationDialog extends Dialog
         wPassExport.setLayoutData(fdPassExport);
 
         wExpandRemote = new Button(gLocal, SWT.CHECK);
-        wExpandRemote.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.ExpandRemote.Label")); //$NON-NLS-1$
-        wExpandRemote.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.ExpandRemote.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        wExpandRemote.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.ExpandRemote.Label")); 
+        wExpandRemote.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.ExpandRemote.Tooltip"));  
         props.setLook(wExpandRemote);
         FormData fdExpandRemote = new FormData();
         fdExpandRemote.left  = new FormAttachment(33, margin);
@@ -245,7 +245,7 @@ public class JobExecutionConfigurationDialog extends Dialog
         //
 
         gDetails = new Group(shell, SWT.SHADOW_ETCHED_IN);
-        gDetails.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.DetailsGroup.Label")); //$NON-NLS-1$;
+        gDetails.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.DetailsGroup.Label")); ;
         // The layout
         FormLayout detailsLayout = new FormLayout();
         detailsLayout.marginWidth  = Const.FORM_MARGIN;
@@ -261,8 +261,8 @@ public class JobExecutionConfigurationDialog extends Dialog
 
         // Top left
         wIgnoreCheckpoint = new Button(gDetails, SWT.CHECK);
-        wIgnoreCheckpoint.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.IgnoreCheckpoint.Label")); //$NON-NLS-1$
-        wIgnoreCheckpoint.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.IgnoreCheckpoint.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        wIgnoreCheckpoint.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.IgnoreCheckpoint.Label")); 
+        wIgnoreCheckpoint.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.IgnoreCheckpoint.Tooltip"));  
         props.setLook(wIgnoreCheckpoint);
         FormData fdIgnoreCheckpoint = new FormData();
         fdIgnoreCheckpoint.top   = new FormAttachment(0, 0);
@@ -273,8 +273,8 @@ public class JobExecutionConfigurationDialog extends Dialog
 
         // Top right
         wSafeMode = new Button(gDetails, SWT.CHECK);
-        wSafeMode.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.SafeMode.Label")); //$NON-NLS-1$
-        wSafeMode.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.SafeMode.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        wSafeMode.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.SafeMode.Label")); 
+        wSafeMode.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.SafeMode.Tooltip"));  
         props.setLook(wSafeMode);
         FormData fdSafeMode = new FormData();
         fdSafeMode.top   = new FormAttachment(0, 0);
@@ -285,8 +285,8 @@ public class JobExecutionConfigurationDialog extends Dialog
 
         // Second on the left
         wGatherMetrics = new Button(gDetails, SWT.CHECK);
-        wGatherMetrics.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.GatherMetrics.Label")); //$NON-NLS-1$
-        wGatherMetrics.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.GatherMetrics.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        wGatherMetrics.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.GatherMetrics.Label")); 
+        wGatherMetrics.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.GatherMetrics.Tooltip"));  
         props.setLook(wGatherMetrics);
         FormData fdGatherMetrics = new FormData();
         fdGatherMetrics.left  = new FormAttachment(0, 0);
@@ -297,8 +297,8 @@ public class JobExecutionConfigurationDialog extends Dialog
 
         // Second on the right
         wClearLog = new Button(gDetails, SWT.CHECK);
-        wClearLog.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.ClearLog.Label")); //$NON-NLS-1$
-        wClearLog.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.ClearLog.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        wClearLog.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.ClearLog.Label")); 
+        wClearLog.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.ClearLog.Tooltip"));  
         props.setLook(wClearLog);
         FormData fdClearLog = new FormData();
         fdClearLog.left  = new FormAttachment( 50, margin);
@@ -310,8 +310,8 @@ public class JobExecutionConfigurationDialog extends Dialog
         // 3rd line : logging level
         wlLogLevel = new Label(gDetails, SWT.LEFT);
         props.setLook(wlLogLevel);
-        wlLogLevel.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.LogLevel.Label")); //$NON-NLS-1$
-        wlLogLevel.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.LogLevel.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        wlLogLevel.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.LogLevel.Label")); 
+        wlLogLevel.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.LogLevel.Tooltip"));  
         FormData fdlLogLevel = new FormData();
         fdlLogLevel.left  = new FormAttachment(0, 0);
         fdlLogLevel.right = new FormAttachment(50, 0);
@@ -319,7 +319,7 @@ public class JobExecutionConfigurationDialog extends Dialog
         wlLogLevel.setLayoutData(fdlLogLevel);
 
         wLogLevel = new CCombo(gDetails, SWT.READ_ONLY | SWT.BORDER);
-        wLogLevel.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.LogLevel.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        wLogLevel.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.LogLevel.Tooltip"));  
         props.setLook(wLogLevel);
         FormData fdLogLevel = new FormData();
         fdLogLevel.left  = new FormAttachment(50, margin);
@@ -331,8 +331,8 @@ public class JobExecutionConfigurationDialog extends Dialog
         // 4th line: ReplayDate
         wlReplayDate = new Label(gDetails, SWT.LEFT);
         props.setLook(wlReplayDate);
-        wlReplayDate.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.ReplayDate.Label")); //$NON-NLS-1$
-        wlReplayDate.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.ReplayDate.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        wlReplayDate.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.ReplayDate.Label")); 
+        wlReplayDate.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.ReplayDate.Tooltip"));  
         FormData fdlReplayDate = new FormData();
         fdlReplayDate.left   = new FormAttachment(0, 0);
         fdlReplayDate.right  = new FormAttachment(50, 0);
@@ -341,7 +341,7 @@ public class JobExecutionConfigurationDialog extends Dialog
 
         wReplayDate = new Text(gDetails, SWT.LEFT | SWT.BORDER | SWT.SINGLE);
         props.setLook(wReplayDate);
-        wReplayDate.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.ReplayDate.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        wReplayDate.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.ReplayDate.Tooltip"));  
         FormData fdReplayDate = new FormData();
         fdReplayDate.left   = new FormAttachment(50, margin);
         fdReplayDate.right  = new FormAttachment(100, 0);
@@ -351,8 +351,8 @@ public class JobExecutionConfigurationDialog extends Dialog
         // 5th line: Start copy
         Label wlStartCopy = new Label(gDetails, SWT.LEFT);
         props.setLook(wlStartCopy);
-        wlStartCopy.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.StartCopy.Label")); //$NON-NLS-1$
-        wlStartCopy.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.StartCopy.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        wlStartCopy.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.StartCopy.Label")); 
+        wlStartCopy.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.StartCopy.Tooltip"));  
         FormData fdlStartCopy = new FormData();
         fdlStartCopy.left  = new FormAttachment(0, 0);
         fdlStartCopy.right = new FormAttachment(50, 0);
@@ -360,7 +360,7 @@ public class JobExecutionConfigurationDialog extends Dialog
         wlStartCopy.setLayoutData(fdlStartCopy);
 
         wStartCopy = new CCombo(gDetails, SWT.READ_ONLY | SWT.BORDER);
-        wStartCopy.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.StartCopy.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        wStartCopy.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.StartCopy.Tooltip"));  
         props.setLook(wStartCopy);
         FormData fdStartCopy = new FormData();
         fdStartCopy.left  = new FormAttachment(50, margin);
@@ -379,8 +379,8 @@ public class JobExecutionConfigurationDialog extends Dialog
         // Variables
         wlVariables = new Label(shell, SWT.LEFT);
         props.setLook(wlVariables);
-        wlVariables.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.Variables.Label")); //$NON-NLS-1$
-        wlVariables.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.Variables.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        wlVariables.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.Variables.Label")); 
+        wlVariables.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.Variables.Tooltip"));  
         FormData fdlVariables = new FormData();
         fdlVariables.left   = new FormAttachment(50, margin);
         fdlVariables.right  = new FormAttachment(100, 0);
@@ -404,8 +404,8 @@ public class JobExecutionConfigurationDialog extends Dialog
         // Named parameters
         wlParams = new Label(shell, SWT.LEFT);
         props.setLook(wlParams);
-        wlParams.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.Params.Label")); //$NON-NLS-1$
-        wlParams.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.Params.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        wlParams.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.Params.Label")); 
+        wlParams.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.Params.Tooltip"));  
         FormData fdlParams = new FormData();
         fdlParams.left   = new FormAttachment(0, 0);
         fdlParams.right  = new FormAttachment(50, -margin);
@@ -431,8 +431,8 @@ public class JobExecutionConfigurationDialog extends Dialog
         // Arguments
         wlArguments = new Label(shell, SWT.LEFT);
         props.setLook(wlArguments);
-        wlArguments.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.Arguments.Label")); //$NON-NLS-1$
-        wlArguments.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.Arguments.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        wlArguments.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.Arguments.Label")); 
+        wlArguments.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.Arguments.Tooltip"));  
         FormData fdlArguments = new FormData();
         fdlArguments.left   = new FormAttachment(0, 0);
         fdlArguments.right  = new FormAttachment(50, -margin);

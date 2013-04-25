@@ -209,7 +209,7 @@ public class SyslogMessageMeta extends BaseStepMeta implements StepMetaInterface
     {
         StringBuffer retval = new StringBuffer();
 
-        retval.append("    " + XMLHandler.addTagValue("messagefieldname", messagefieldname)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    " + XMLHandler.addTagValue("messagefieldname", messagefieldname));  
 		retval.append("    " + XMLHandler.addTagValue("port",   port));
 		retval.append("    " + XMLHandler.addTagValue("servername",   serverName));
 		retval.append("    " + XMLHandler.addTagValue("facility",   facility));
@@ -239,7 +239,7 @@ public class SyslogMessageMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	    catch (Exception e)
 	    {
-	        throw new KettleXMLException(BaseMessages.getString(PKG, "SyslogMessageMeta.Exception.UnableToReadStepInfo"), e); //$NON-NLS-1$
+	        throw new KettleXMLException(BaseMessages.getString(PKG, "SyslogMessageMeta.Exception.UnableToReadStepInfo"), e); 
 	    }
     }
    
@@ -249,7 +249,7 @@ public class SyslogMessageMeta extends BaseStepMeta implements StepMetaInterface
 
 		try
 		{
-        	messagefieldname = rep.getStepAttributeString(id_step, "messagefieldname"); //$NON-NLS-1$
+        	messagefieldname = rep.getStepAttributeString(id_step, "messagefieldname"); 
 			serverName    = rep.getJobEntryAttributeString(id_step, "servername");
         	port          = rep.getJobEntryAttributeString(id_step, "port");
 			facility      = rep.getJobEntryAttributeString(id_step, "facility");
@@ -261,7 +261,7 @@ public class SyslogMessageMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleException(BaseMessages.getString(PKG, "SyslogMessageMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "SyslogMessageMeta.Exception.UnexpectedErrorReadingStepInfo"), e); 
         }
     }
 
@@ -270,7 +270,7 @@ public class SyslogMessageMeta extends BaseStepMeta implements StepMetaInterface
 	{
 	try
 	{
-            rep.saveStepAttribute(id_transformation, id_step, "messagefieldname", messagefieldname); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "messagefieldname", messagefieldname); 
 			rep.saveJobEntryAttribute(id_transformation, id_step, "port",      port);
 			rep.saveJobEntryAttribute(id_transformation, id_step, "servername",      serverName);
 			rep.saveJobEntryAttribute(id_transformation, id_step, "facility",      facility);
@@ -283,25 +283,25 @@ public class SyslogMessageMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleException(BaseMessages.getString(PKG, "SyslogMessageMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "SyslogMessageMeta.Exception.UnableToSaveStepInfo") + id_step, e); 
         }
     }
 
 	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
         CheckResult cr;
-        String error_message = ""; //$NON-NLS-1$
+        String error_message = ""; 
 
         // source filename
         if (Const.isEmpty(messagefieldname))
         {
-            error_message = BaseMessages.getString(PKG, "SyslogMessageMeta.CheckResult.MessageFieldMissing"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "SyslogMessageMeta.CheckResult.MessageFieldMissing"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
             remarks.add(cr);
         }
         else
         {
-            error_message = BaseMessages.getString(PKG, "SyslogMessageMeta.CheckResult.MessageFieldOK"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "SyslogMessageMeta.CheckResult.MessageFieldOK"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
             remarks.add(cr);
         }
@@ -310,12 +310,12 @@ public class SyslogMessageMeta extends BaseStepMeta implements StepMetaInterface
         // See if we have input streams leading to this step!
         if (input.length > 0)
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SyslogMessageMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SyslogMessageMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); 
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SyslogMessageMeta.CheckResult.NoInpuReceived"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SyslogMessageMeta.CheckResult.NoInpuReceived"), stepMeta); 
             remarks.add(cr);
         }
 

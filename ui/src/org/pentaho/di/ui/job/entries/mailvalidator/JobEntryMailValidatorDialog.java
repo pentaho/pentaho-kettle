@@ -214,7 +214,7 @@ public class JobEntryMailValidatorDialog extends JobEntryDialog implements JobEn
 
 		// TimeOut fieldname ...
 		wlTimeOut=new Label(wSettingsGroup, SWT.RIGHT);
-		wlTimeOut.setText(BaseMessages.getString(PKG, "JobEntryMailValidatorDialog.TimeOutField.Label")); //$NON-NLS-1$
+		wlTimeOut.setText(BaseMessages.getString(PKG, "JobEntryMailValidatorDialog.TimeOutField.Label")); 
  		props.setLook(wlTimeOut);
 		fdlTimeOut=new FormData();
 		fdlTimeOut.left = new FormAttachment(0, 0);
@@ -234,7 +234,7 @@ public class JobEntryMailValidatorDialog extends JobEntryDialog implements JobEn
 		
 		// eMailSender fieldname ...
 		wleMailSender=new Label(wSettingsGroup, SWT.RIGHT);
-		wleMailSender.setText(BaseMessages.getString(PKG, "JobEntryMailValidatorDialog.eMailSenderField.Label")); //$NON-NLS-1$
+		wleMailSender.setText(BaseMessages.getString(PKG, "JobEntryMailValidatorDialog.eMailSenderField.Label")); 
  		props.setLook(wleMailSender);
 		fdleMailSender=new FormData();
 		fdleMailSender.left = new FormAttachment(0, 0);
@@ -255,7 +255,7 @@ public class JobEntryMailValidatorDialog extends JobEntryDialog implements JobEn
 
 		// DefaultSMTP fieldname ...
 		wlDefaultSMTP=new Label(wSettingsGroup, SWT.RIGHT);
-		wlDefaultSMTP.setText(BaseMessages.getString(PKG, "JobEntryMailValidatorDialog.DefaultSMTPField.Label")); //$NON-NLS-1$
+		wlDefaultSMTP.setText(BaseMessages.getString(PKG, "JobEntryMailValidatorDialog.DefaultSMTPField.Label")); 
  		props.setLook(wlDefaultSMTP);
 		fdlDefaultSMTP=new FormData();
 		fdlDefaultSMTP.left = new FormAttachment(0, 0);

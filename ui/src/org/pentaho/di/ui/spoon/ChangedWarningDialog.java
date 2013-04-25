@@ -53,7 +53,7 @@ public class ChangedWarningDialog implements ChangedWarningInterface {
   }
   
   public String getName() {
-    return "changedWarningController"; //$NON-NLS-1$
+    return "changedWarningController"; 
   }
   
   public int show() throws Exception {
@@ -67,13 +67,13 @@ public class ChangedWarningDialog implements ChangedWarningInterface {
   protected XulMessageBox runXulChangedWarningDialog(String fileName) throws IllegalArgumentException, XulException {
     container = Spoon.getInstance().getMainSpoonContainer();
         
-    XulMessageBox messageBox = (XulMessageBox) container.getDocumentRoot().createElement("messagebox"); //$NON-NLS-1$
-    messageBox.setTitle(BaseMessages.getString(PKG, "Spoon.Dialog.PromptSave.Title")); //$NON-NLS-1$
+    XulMessageBox messageBox = (XulMessageBox) container.getDocumentRoot().createElement("messagebox"); 
+    messageBox.setTitle(BaseMessages.getString(PKG, "Spoon.Dialog.PromptSave.Title")); 
     
     if(fileName != null) {
-      messageBox.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.PromptToSave.Message", fileName)); //$NON-NLS-1$
+      messageBox.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.PromptToSave.Message", fileName)); 
     } else {
-      messageBox.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.PromptSave.Message")); //$NON-NLS-1$
+      messageBox.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.PromptSave.Message")); 
     }
     
     messageBox.setButtons(new Integer[] {SWT.YES, SWT.NO, SWT.CANCEL});

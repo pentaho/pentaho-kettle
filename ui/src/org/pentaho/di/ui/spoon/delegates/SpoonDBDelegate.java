@@ -278,8 +278,8 @@ public class SpoonDBDelegate extends SpoonDelegate
 			} else
 			{
 				MessageBox mb = new MessageBox(spoon.getShell(), SWT.OK | SWT.ICON_INFORMATION);
-				mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.JobNoSQLNeedEexecuted.Message")); //$NON-NLS-1$
-				mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.JobNoSQLNeedEexecuted.Title")); //$NON-NLS-1$
+				mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.JobNoSQLNeedEexecuted.Message")); 
+				mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.JobNoSQLNeedEexecuted.Title")); 
 				mb.open();
 			}
 		}

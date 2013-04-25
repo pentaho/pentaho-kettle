@@ -57,8 +57,8 @@ public class DatabaseMetaInformation
 	private String[] procedures;
 
 	private DatabaseMeta databaseMeta;
-	public static final String FILTER_CATALOG_LIST = "FILTER_CATALOG_LIST"; //$NON-NLS-1$
-  public static final String FILTER_SCHEMA_LIST = "FILTER_SCHEMA_LIST"; //$NON-NLS-1$
+	public static final String FILTER_CATALOG_LIST = "FILTER_CATALOG_LIST"; 
+  public static final String FILTER_SCHEMA_LIST = "FILTER_SCHEMA_LIST"; 
 	
 	/**
 	 * Create a new DatabaseMetaData object for the given database connection
@@ -216,10 +216,10 @@ public class DatabaseMetaInformation
 			{
 				ArrayList<Catalog> catalogList = new ArrayList<Catalog>();
 				
-        String catalogFilterKey = databaseMeta.getPluginId() + "." + FILTER_CATALOG_LIST; //$NON-NLS-1$
+        String catalogFilterKey = databaseMeta.getPluginId() + "." + FILTER_CATALOG_LIST; 
         if ( (connectionExtraOptions != null) && connectionExtraOptions.containsKey(catalogFilterKey) ) {
           String catsFilterCommaList =  (String)connectionExtraOptions.get(catalogFilterKey);
-          String[] catsFilterArray = catsFilterCommaList.split(","); //$NON-NLS-1$
+          String[] catsFilterArray = catsFilterCommaList.split(","); 
           for (int i=0; i<catsFilterArray.length; i++) {
             catalogList.add(new Catalog(catsFilterArray[i].trim()));
           }
@@ -291,10 +291,10 @@ public class DatabaseMetaInformation
 				ArrayList<Schema> schemaList = new ArrayList<Schema>();
 				try 
 				{
-				  String schemaFilterKey = databaseMeta.getPluginId() + "." +FILTER_SCHEMA_LIST; //$NON-NLS-1$
+				  String schemaFilterKey = databaseMeta.getPluginId() + "." +FILTER_SCHEMA_LIST; 
 	        if ( (connectionExtraOptions != null) && connectionExtraOptions.containsKey(schemaFilterKey) ) {
 	          String schemasFilterCommaList =  (String)connectionExtraOptions.get(schemaFilterKey);
-	          String[] schemasFilterArray = schemasFilterCommaList.split(","); //$NON-NLS-1$
+	          String[] schemasFilterArray = schemasFilterCommaList.split(","); 
 	          for (int i=0; i<schemasFilterArray.length; i++) {
 	            schemaList.add(new Schema(schemasFilterArray[i].trim()));
 	          }

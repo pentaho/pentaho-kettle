@@ -117,7 +117,7 @@ public class LogChannel implements LogChannelInterface {
     //
     if (channelLogLevel.getLevel() >= logLevel.getLevel()) {
       KettleLoggingEvent loggingEvent = new KettleLoggingEvent(logMessage, System.currentTimeMillis(), logLevel);
-      CentralLogStore.getAppender().addLogggingEvent(loggingEvent);
+      KettleLogStore.getAppender().addLogggingEvent(loggingEvent);
     }
   }
 
@@ -130,19 +130,19 @@ public class LogChannel implements LogChannelInterface {
   }
 
   public void logMinimal(String s) {
-    println(new LogMessage(s, logChannelId, LogLevel.MINIMAL), logLevel); //$NON-NLS-1$
+    println(new LogMessage(s, logChannelId, LogLevel.MINIMAL), logLevel); 
   }
 
   public void logBasic(String s) {
-    println(new LogMessage(s, logChannelId, LogLevel.BASIC), logLevel); //$NON-NLS-1$
+    println(new LogMessage(s, logChannelId, LogLevel.BASIC), logLevel); 
   }
 
   public void logError(String s) {
-    println(new LogMessage(s, logChannelId, LogLevel.ERROR), logLevel); //$NON-NLS-1$
+    println(new LogMessage(s, logChannelId, LogLevel.ERROR), logLevel); 
   }
 
   public void logError(String s, Throwable e) {
-    println(new LogMessage(s, logChannelId, LogLevel.ERROR), e, logLevel); //$NON-NLS-1$
+    println(new LogMessage(s, logChannelId, LogLevel.ERROR), e, logLevel); 
   }
 
   public void logBasic(String s, Object... arguments) {

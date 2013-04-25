@@ -503,7 +503,7 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
     	
 		wbSQLTable=new Button(wCustomGroup, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbSQLTable);
-		wbSQLTable.setText(BaseMessages.getString(PKG, "JobEntryEvalTableContent.GetSQLAndSelectStatement")); //$NON-NLS-1$
+		wbSQLTable.setText(BaseMessages.getString(PKG, "JobEntryEvalTableContent.GetSQLAndSelectStatement")); 
 		FormData fdbSQLTable=new FormData();
 		fdbSQLTable.right = new FormAttachment(100, 0);
 		fdbSQLTable.top   = new FormAttachment(wAddRowsToResult, margin);
@@ -627,12 +627,12 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
 			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, jobMeta.getDatabases());
 			if (std.open())
 			{
-				String sql = "SELECT *"+Const.CR+"FROM "+inf.getQuotedSchemaTableCombination(std.getSchemaName(), std.getTableName())+Const.CR; //$NON-NLS-1$ //$NON-NLS-2$
+				String sql = "SELECT *"+Const.CR+"FROM "+inf.getQuotedSchemaTableCombination(std.getSchemaName(), std.getTableName())+Const.CR;  
 				wSQL.setText(sql);
 
 				MessageBox yn = new MessageBox(shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_QUESTION);
-				yn.setMessage(BaseMessages.getString(PKG, "JobEntryEvalTableContent.IncludeFieldNamesInSQL")); //$NON-NLS-1$
-				yn.setText(BaseMessages.getString(PKG, "JobEntryEvalTableContent.DialogCaptionQuestion")); //$NON-NLS-1$
+				yn.setMessage(BaseMessages.getString(PKG, "JobEntryEvalTableContent.IncludeFieldNamesInSQL")); 
+				yn.setText(BaseMessages.getString(PKG, "JobEntryEvalTableContent.DialogCaptionQuestion")); 
 				int id = yn.open();
 				switch(id)
 				{
@@ -646,29 +646,29 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
 						RowMetaInterface fields = db.getQueryFields(sql, false);
 						if (fields!=null)
 						{
-							sql = "SELECT"+Const.CR; //$NON-NLS-1$
+							sql = "SELECT"+Const.CR; 
 							for (int i=0;i<fields.size();i++)
 							{
 								ValueMetaInterface field=fields.getValueMeta(i);
-								if (i==0) sql+="  "; else sql+=", "; //$NON-NLS-1$ //$NON-NLS-2$
+								if (i==0) sql+="  "; else sql+=", ";  
 								sql+=inf.quoteField(field.getName())+Const.CR;
 							}
-							sql+="FROM "+inf.getQuotedSchemaTableCombination(std.getSchemaName(), std.getTableName())+Const.CR; //$NON-NLS-1$
+							sql+="FROM "+inf.getQuotedSchemaTableCombination(std.getSchemaName(), std.getTableName())+Const.CR; 
 							wSQL.setText(sql);
 						}
 						else
 						{
 							MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-							mb.setMessage(BaseMessages.getString(PKG, "JobEntryEvalTableContent.ERROR_CouldNotRetrieveFields")+Const.CR+BaseMessages.getString(PKG, "JobEntryEvalTableContent.PerhapsNoPermissions")); //$NON-NLS-1$ //$NON-NLS-2$
-							mb.setText(BaseMessages.getString(PKG, "JobEntryEvalTableContent.DialogCaptionError2")); //$NON-NLS-1$
+							mb.setMessage(BaseMessages.getString(PKG, "JobEntryEvalTableContent.ERROR_CouldNotRetrieveFields")+Const.CR+BaseMessages.getString(PKG, "JobEntryEvalTableContent.PerhapsNoPermissions"));  
+							mb.setText(BaseMessages.getString(PKG, "JobEntryEvalTableContent.DialogCaptionError2")); 
 							mb.open();
 						}
 					}
 					catch(KettleException e)
 					{
 						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-						mb.setText(BaseMessages.getString(PKG, "JobEntryEvalTableContent.DialogCaptionError3")); //$NON-NLS-1$
-						mb.setMessage(BaseMessages.getString(PKG, "JobEntryEvalTableContent.AnErrorOccurred")+Const.CR+e.getMessage()); //$NON-NLS-1$
+						mb.setText(BaseMessages.getString(PKG, "JobEntryEvalTableContent.DialogCaptionError3")); 
+						mb.setMessage(BaseMessages.getString(PKG, "JobEntryEvalTableContent.AnErrorOccurred")+Const.CR+e.getMessage()); 
 						mb.open(); 
 					}
 					finally
@@ -682,8 +682,8 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
 		else
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(BaseMessages.getString(PKG, "JobEntryEvalTableContent.ConnectionNoLongerAvailable")); //$NON-NLS-1$
-			mb.setText(BaseMessages.getString(PKG, "JobEntryEvalTableContent.DialogCaptionError4")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "JobEntryEvalTableContent.ConnectionNoLongerAvailable")); 
+			mb.setText(BaseMessages.getString(PKG, "JobEntryEvalTableContent.DialogCaptionError4")); 
 			mb.open();
 		}
 					

@@ -45,7 +45,7 @@ import org.pentaho.xul.swt.tab.TabSet;
 
 public class MainSpoonPerspective implements SpoonPerspective {
 
-  public static final String ID = "001-spoon-jobs"; //$NON-NLS-1$
+  public static final String ID = "001-spoon-jobs"; 
   
   private Composite ui;
   private List<SpoonPerspectiveListener> listeners = new ArrayList<SpoonPerspectiveListener>();

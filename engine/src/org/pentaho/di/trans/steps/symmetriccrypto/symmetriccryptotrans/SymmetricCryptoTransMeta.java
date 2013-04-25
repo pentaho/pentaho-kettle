@@ -281,9 +281,9 @@ public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaIn
 			operationType = getOperationTypeByCode(Const.NVL(XMLHandler.getTagValue(stepnode,	"operation_type"), ""));
 			algorithm     = XMLHandler.getTagValue(stepnode, "algorithm");
 			schema   = XMLHandler.getTagValue(stepnode, "schema");
-			secretKeyField     = XMLHandler.getTagValue(stepnode, "secretKeyField"); //$NON-NLS-1$
-			messageField     = XMLHandler.getTagValue(stepnode, "messageField"); //$NON-NLS-1$
-			resultfieldname     = XMLHandler.getTagValue(stepnode, "resultfieldname"); //$NON-NLS-1$
+			secretKeyField     = XMLHandler.getTagValue(stepnode, "secretKeyField"); 
+			messageField     = XMLHandler.getTagValue(stepnode, "messageField"); 
+			resultfieldname     = XMLHandler.getTagValue(stepnode, "resultfieldname"); 
 			
 			setSecretKey(Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(stepnode, "secretKey")));
 			secretKeyInField = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "secretKeyInField"));	
@@ -293,13 +293,13 @@ public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaIn
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "SymmetricCryptoTransMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "SymmetricCryptoTransMeta.Exception.UnableToLoadStepInfoFromXML"), e); 
 		}
 	}
 
 	public void setDefault()
 	{
-		secretKeyField = null; //$NON-NLS-1$
+		secretKeyField = null; 
 		messageField = null;
 		resultfieldname="result";
 		secretKey=null;
@@ -330,9 +330,9 @@ public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaIn
         retval.append("    "+XMLHandler.addTagValue("operation_type",getOperationTypeCode(operationType)));
         retval.append("    "+XMLHandler.addTagValue("algorithm", algorithm));
         retval.append("    "+XMLHandler.addTagValue("schema", schema));
-		retval.append("    "+XMLHandler.addTagValue("secretKeyField", secretKeyField)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    "+XMLHandler.addTagValue("messageField", messageField)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    "+XMLHandler.addTagValue("resultfieldname", resultfieldname)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    "+XMLHandler.addTagValue("secretKeyField", secretKeyField));  
+		retval.append("    "+XMLHandler.addTagValue("messageField", messageField));  
+		retval.append("    "+XMLHandler.addTagValue("resultfieldname", resultfieldname));  
 
 		retval.append("    ").append(XMLHandler.addTagValue("secretKey", Encr.encryptPasswordIfNotUsingVariables(secretKey)));
 		
@@ -352,9 +352,9 @@ public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaIn
         	operationType = getOperationTypeByCode(Const.NVL(rep.getStepAttributeString(id_step, "operation_type"), ""));
         	algorithm     = rep.getStepAttributeString(id_step, "algorithm");
         	schema    = rep.getStepAttributeString(id_step, "schema");
-        	secretKeyField     = rep.getStepAttributeString(id_step, "secretKeyField"); //$NON-NLS-1$
-			messageField     = rep.getStepAttributeString(id_step, "messageField"); //$NON-NLS-1$
-			resultfieldname     = rep.getStepAttributeString(id_step, "resultfieldname"); //$NON-NLS-1$
+        	secretKeyField     = rep.getStepAttributeString(id_step, "secretKeyField"); 
+			messageField     = rep.getStepAttributeString(id_step, "messageField"); 
+			resultfieldname     = rep.getStepAttributeString(id_step, "resultfieldname"); 
 			
 			secretKey              = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString (id_step, "secretKey") );	
 			secretKeyInField    =      rep.getStepAttributeBoolean(id_step, "secretKeyInField"); 
@@ -365,7 +365,7 @@ public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaIn
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "SymmetricCryptoTransMeta.Exception.UnexpectedErrorInReadingStepInfo"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "SymmetricCryptoTransMeta.Exception.UnexpectedErrorInReadingStepInfo"), e); 
 		}
 	}
 	private static String getOperationTypeCode(int i) {
@@ -381,9 +381,9 @@ public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaIn
             rep.saveStepAttribute(id_transformation, id_step, "algorithm", algorithm);
             rep.saveStepAttribute(id_transformation, id_step, "schema", schema);
             
-            rep.saveStepAttribute(id_transformation, id_step, "secretKeyField", secretKeyField); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "messageField", messageField); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "resultfieldname", resultfieldname); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "secretKeyField", secretKeyField); 
+			rep.saveStepAttribute(id_transformation, id_step, "messageField", messageField); 
+			rep.saveStepAttribute(id_transformation, id_step, "resultfieldname", resultfieldname); 
 			
 			rep.saveStepAttribute(id_transformation, id_step, "secretKey", Encr.encryptPasswordIfNotUsingVariables(secretKey));
 			rep.saveStepAttribute(id_transformation, id_step, "secretKeyInField",  secretKeyInField);
@@ -395,7 +395,7 @@ public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaIn
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "SymmetricCryptoTransMeta.Exception.UnableToSaveStepInfo")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "SymmetricCryptoTransMeta.Exception.UnableToSaveStepInfo")+id_step, e); 
 		}
 	}
 
@@ -408,11 +408,11 @@ public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaIn
 		
 		if (prev!=null && prev.size()>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SymmetricCryptoTransMeta.CheckResult.ConnectedStepOK",String.valueOf(prev.size())), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SymmetricCryptoTransMeta.CheckResult.ConnectedStepOK",String.valueOf(prev.size())), stepinfo);  
 		}
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SymmetricCryptoTransMeta.CheckResult.NoInputReceived"), stepinfo); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SymmetricCryptoTransMeta.CheckResult.NoInputReceived"), stepinfo); 
 
         }
         remarks.add(cr);
@@ -421,7 +421,7 @@ public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaIn
 		if (getResultfieldname()==null)
 		{
 			 // Result Field is missing !
-			  cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SymmetricCryptoTransMeta.CheckResult.ErrorResultFieldNameMissing"), stepinfo); //$NON-NLS-1$
+			  cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SymmetricCryptoTransMeta.CheckResult.ErrorResultFieldNameMissing"), stepinfo); 
 	          remarks.add(cr);
 		
 		}		

@@ -89,14 +89,14 @@ public class SocketReaderDialog extends BaseStepDialog implements StepDialogInte
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "SocketReaderDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "SocketReaderDialog.Shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "SocketReaderDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "SocketReaderDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -115,7 +115,7 @@ public class SocketReaderDialog extends BaseStepDialog implements StepDialogInte
         
         // Hostname line
         Label wlHostname = new Label(shell, SWT.RIGHT);
-        wlHostname.setText(BaseMessages.getString(PKG, "SocketReaderDialog.Hostname.Label")); //$NON-NLS-1$
+        wlHostname.setText(BaseMessages.getString(PKG, "SocketReaderDialog.Hostname.Label")); 
         props.setLook(wlHostname);
         FormData fdlHostname = new FormData();
         fdlHostname.left = new FormAttachment(0, 0);
@@ -134,7 +134,7 @@ public class SocketReaderDialog extends BaseStepDialog implements StepDialogInte
         
         // Port line
         Label wlPort = new Label(shell, SWT.RIGHT);
-        wlPort.setText(BaseMessages.getString(PKG, "SocketReaderDialog.Port.Label")); //$NON-NLS-1$
+        wlPort.setText(BaseMessages.getString(PKG, "SocketReaderDialog.Port.Label")); 
         props.setLook(wlPort);
         FormData fdlPort = new FormData();
         fdlPort.left = new FormAttachment(0, 0);
@@ -153,7 +153,7 @@ public class SocketReaderDialog extends BaseStepDialog implements StepDialogInte
 
         // BufferSize line
         Label wlBufferSize = new Label(shell, SWT.RIGHT);
-        wlBufferSize.setText(BaseMessages.getString(PKG, "SocketReaderDialog.BufferSize.Label")); //$NON-NLS-1$
+        wlBufferSize.setText(BaseMessages.getString(PKG, "SocketReaderDialog.BufferSize.Label")); 
         props.setLook(wlBufferSize);
         FormData fdlBufferSize = new FormData();
         fdlBufferSize.left = new FormAttachment(0, 0);
@@ -190,9 +190,9 @@ public class SocketReaderDialog extends BaseStepDialog implements StepDialogInte
 
         // Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wCompressed);
 

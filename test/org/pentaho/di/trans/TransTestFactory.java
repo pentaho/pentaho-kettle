@@ -74,7 +74,7 @@ public class TransTestFactory
         // Then we add the dummy step to read the results from
         //
         DummyTransMeta twoMeta = new DummyTransMeta();
-        StepMeta two = new StepMeta(registry.getPluginId(StepPluginType.class, twoMeta), DUMMY_STEPNAME, twoMeta); //$NON-NLS-1$
+        StepMeta two = new StepMeta(registry.getPluginId(StepPluginType.class, twoMeta), DUMMY_STEPNAME, twoMeta); 
         two.setLocation(250,50);
         two.setDraw(true);
         previewMeta.addStep(two);

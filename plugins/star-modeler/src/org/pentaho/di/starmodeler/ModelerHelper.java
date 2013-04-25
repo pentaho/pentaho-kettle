@@ -36,11 +36,11 @@ public class ModelerHelper  extends AbstractXulEventHandler implements ISpoonMen
   
   protected String getUniqueUntitledTabName(Spoon spoon, String title) {
     int num = 1;
-    String tabName = title + " " + num; //$NON-NLS-1$
+    String tabName = title + " " + num; 
     // TODO: Add new plugin object type to spoon
     TabItem tabItem = spoon.delegates.tabs.findTabMapEntry(tabName, TabMapEntry.ObjectType.BROWSER).getTabItem();
     while (tabItem != null) {
-      tabName = title + " " + (++num); //$NON-NLS-1$
+      tabName = title + " " + (++num); 
       // TODO: Add new plugin object type to spoon
       tabItem = spoon.delegates.tabs.findTabMapEntry(tabName, TabMapEntry.ObjectType.BROWSER).getTabItem();
     }
@@ -48,7 +48,7 @@ public class ModelerHelper  extends AbstractXulEventHandler implements ISpoonMen
   }
 
   public String getName(){
-    return "starModeler"; //$NON-NLS-1$
+    return "starModeler"; 
   }
   
   public void createEmptyModel() {

@@ -33,7 +33,7 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogLevel;
@@ -63,7 +63,7 @@ public class CarteSingleton {
 
   private CarteSingleton(SlaveServerConfig config) throws KettleException {
     KettleEnvironment.init();
-    CentralLogStore.init(config.getMaxLogLines(), config.getMaxLogTimeoutMinutes());
+    KettleLogStore.init(config.getMaxLogLines(), config.getMaxLogTimeoutMinutes());
 
     this.log = new LogChannel("Carte");
     transformationMap = new TransformationMap();
@@ -164,7 +164,7 @@ public class CarteSingleton {
                     // Remove the logging information from the log registry & central log store
                     //
                     LoggingRegistry.getInstance().removeIncludingChildren(trans.getLogChannelId());
-                    CentralLogStore.discardLines(trans.getLogChannelId(), false);
+                    KettleLogStore.discardLines(trans.getLogChannelId(), false);
                     
                     // transformationMap.deallocateServerSocketPorts(entry);
                     

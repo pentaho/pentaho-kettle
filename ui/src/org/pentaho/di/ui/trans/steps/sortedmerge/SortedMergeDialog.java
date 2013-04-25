@@ -70,7 +70,7 @@ public class SortedMergeDialog extends BaseStepDialog implements StepDialogInter
 {
 	private static Class<?> PKG = SortedMergeMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-    public static final String STRING_SORT_WARNING_PARAMETER = "SortedMergeSortWarning"; //$NON-NLS-1$
+    public static final String STRING_SORT_WARNING_PARAMETER = "SortedMergeSortWarning"; 
 
     private Label        wlFields;
     private TableView    wFields;
@@ -112,14 +112,14 @@ public class SortedMergeDialog extends BaseStepDialog implements StepDialogInter
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "SortedMergeDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "SortedMergeDialog.Shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "SortedMergeDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "SortedMergeDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -138,11 +138,11 @@ public class SortedMergeDialog extends BaseStepDialog implements StepDialogInter
 		
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
         wGet=new Button(shell, SWT.PUSH);
-        wGet.setText(BaseMessages.getString(PKG, "System.Button.GetFields")); //$NON-NLS-1$
+        wGet.setText(BaseMessages.getString(PKG, "System.Button.GetFields")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel , wGet }, margin, null);
 
@@ -301,21 +301,21 @@ public class SortedMergeDialog extends BaseStepDialog implements StepDialogInter
         
         // Show a warning (optional)
         //
-        if ( "Y".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") )) //$NON-NLS-1$ //$NON-NLS-2$
+        if ( "Y".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") ))  
         {
             MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
-                 BaseMessages.getString(PKG, "SortedMergeDialog.InputNeedSort.DialogTitle"),  //$NON-NLS-1$
+                 BaseMessages.getString(PKG, "SortedMergeDialog.InputNeedSort.DialogTitle"),  
                  null,
-                 BaseMessages.getString(PKG, "SortedMergeDialog.InputNeedSort.DialogMessage", Const.CR )+Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
+                 BaseMessages.getString(PKG, "SortedMergeDialog.InputNeedSort.DialogMessage", Const.CR )+Const.CR,  
                  MessageDialog.WARNING,
-                 new String[] { BaseMessages.getString(PKG, "SortedMergeDialog.InputNeedSort.Option1") }, //$NON-NLS-1$
+                 new String[] { BaseMessages.getString(PKG, "SortedMergeDialog.InputNeedSort.Option1") }, 
                  0,
-                 BaseMessages.getString(PKG, "SortedMergeDialog.InputNeedSort.Option2"), //$NON-NLS-1$
-                 "N".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") ) //$NON-NLS-1$ //$NON-NLS-2$
+                 BaseMessages.getString(PKG, "SortedMergeDialog.InputNeedSort.Option2"), 
+                 "N".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") )  
             );
             MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
             md.open();
-            props.setCustomParameter(STRING_SORT_WARNING_PARAMETER, md.getToggleState()?"N":"Y"); //$NON-NLS-1$ //$NON-NLS-2$
+            props.setCustomParameter(STRING_SORT_WARNING_PARAMETER, md.getToggleState()?"N":"Y");  
             props.saveProps();
         }
 
@@ -333,7 +333,7 @@ public class SortedMergeDialog extends BaseStepDialog implements StepDialogInter
                     {
                         public boolean tableItemInserted(TableItem tableItem, ValueMetaInterface v)
                         {
-                            tableItem.setText(2, "Y"); //$NON-NLS-1$
+                            tableItem.setText(2, "Y"); 
                             return true;
                         }
                     }
@@ -342,7 +342,7 @@ public class SortedMergeDialog extends BaseStepDialog implements StepDialogInter
         }
         catch(KettleException ke)
         {
-            new ErrorDialog(shell, BaseMessages.getString(PKG, "SortedMergeDialog.UnableToGetFieldsError.DialogTitle"), BaseMessages.getString(PKG, "SortedMergeDialog.UnableToGetFieldsError.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "SortedMergeDialog.UnableToGetFieldsError.DialogTitle"), BaseMessages.getString(PKG, "SortedMergeDialog.UnableToGetFieldsError.DialogMessage"), ke);  
         }
     }
 }

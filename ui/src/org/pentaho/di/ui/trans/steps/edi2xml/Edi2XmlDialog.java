@@ -94,7 +94,7 @@ public class Edi2XmlDialog extends BaseStepDialog implements StepDialogInterface
 
 		// edifact field line
 		Label wlEdiField = new Label(shell, SWT.RIGHT);
-		wlEdiField.setText(BaseMessages.getString(PKG, "Edi2Xml.InputField.Label")); //$NON-NLS-1$
+		wlEdiField.setText(BaseMessages.getString(PKG, "Edi2Xml.InputField.Label")); 
 		props.setLook(wlEdiField);
 		FormData fdlEdiField = new FormData();
 		fdlEdiField.left = new FormAttachment(0, 0);

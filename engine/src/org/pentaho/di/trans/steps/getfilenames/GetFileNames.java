@@ -126,8 +126,8 @@ public class GetFileNames extends BaseStep implements StepInterface
 					if (data.indexOfFilenameField<0)
 					{
 						// The field is unreachable !
-						logError(BaseMessages.getString(PKG, "GetFileNames.Log.ErrorFindingField",meta.getDynamicFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
-						throw new KettleException(BaseMessages.getString(PKG, "GetFileNames.Exception.CouldnotFindField",meta.getDynamicFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
+						logError(BaseMessages.getString(PKG, "GetFileNames.Log.ErrorFindingField",meta.getDynamicFilenameField()));  
+						throw new KettleException(BaseMessages.getString(PKG, "GetFileNames.Exception.CouldnotFindField",meta.getDynamicFilenameField()));  
 					}
 				}  
 				
@@ -140,8 +140,8 @@ public class GetFileNames extends BaseStep implements StepInterface
 						if (data.indexOfWildcardField<0)
 						{
 							// The field is unreachable !
-							logError(BaseMessages.getString(PKG, "GetFileNames.Log.ErrorFindingField")+ "[" + meta.getDynamicWildcardField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-							throw new KettleException(BaseMessages.getString(PKG, "GetFileNames.Exception.CouldnotFindField",meta.getDynamicWildcardField())); //$NON-NLS-1$ //$NON-NLS-2$
+							logError(BaseMessages.getString(PKG, "GetFileNames.Log.ErrorFindingField")+ "[" + meta.getDynamicWildcardField()+"]");  
+							throw new KettleException(BaseMessages.getString(PKG, "GetFileNames.Exception.CouldnotFindField",meta.getDynamicWildcardField()));  
 						}
 					}
 				}
@@ -154,8 +154,8 @@ public class GetFileNames extends BaseStep implements StepInterface
 						if (data.indexOfExcludeWildcardField<0)
 						{
 							// The field is unreachable !
-							logError(BaseMessages.getString(PKG, "GetFileNames.Log.ErrorFindingField")+ "[" + meta.getDynamicExcludeWildcardField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-							throw new KettleException(BaseMessages.getString(PKG, "GetFileNames.Exception.CouldnotFindField",meta.getDynamicExcludeWildcardField())); //$NON-NLS-1$ //$NON-NLS-2$
+							logError(BaseMessages.getString(PKG, "GetFileNames.Log.ErrorFindingField")+ "[" + meta.getDynamicExcludeWildcardField()+"]");  
+							throw new KettleException(BaseMessages.getString(PKG, "GetFileNames.Exception.CouldnotFindField",meta.getDynamicExcludeWildcardField()));  
 						}
 					}
 				}

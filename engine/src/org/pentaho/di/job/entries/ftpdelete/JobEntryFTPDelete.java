@@ -204,11 +204,11 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
     retval.append("      ").append(XMLHandler.addTagValue("active", activeConnection));
 
     retval.append("      ").append(XMLHandler.addTagValue("useproxy", useproxy));
-    retval.append("      ").append(XMLHandler.addTagValue("proxy_host", proxyHost)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("      ").append(XMLHandler.addTagValue("proxy_port", proxyPort)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("      ").append(XMLHandler.addTagValue("proxy_username", proxyUsername)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      ").append(XMLHandler.addTagValue("proxy_host", proxyHost));  
+    retval.append("      ").append(XMLHandler.addTagValue("proxy_port", proxyPort));  
+    retval.append("      ").append(XMLHandler.addTagValue("proxy_username", proxyUsername));  
     retval
-        .append("      ").append(XMLHandler.addTagValue("proxy_password", Encr.encryptPasswordIfNotUsingVariables(proxyPassword))); //$NON-NLS-1$ //$NON-NLS-2$
+        .append("      ").append(XMLHandler.addTagValue("proxy_password", Encr.encryptPasswordIfNotUsingVariables(proxyPassword)));  
 
     retval.append("      ").append(XMLHandler.addTagValue("publicpublickey", publicpublickey));
     retval.append("      ").append(XMLHandler.addTagValue("keyfilename", keyFilename));
@@ -220,11 +220,11 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
     retval.append("      ").append(
         XMLHandler.addTagValue("ftps_connection_type", FTPSConnection.getConnectionTypeCode(FTPSConnectionType)));
 
-    retval.append("      ").append(XMLHandler.addTagValue("socksproxy_host", socksProxyHost)); //$NON-NLS-1$
-    retval.append("      ").append(XMLHandler.addTagValue("socksproxy_port", socksProxyPort)); //$NON-NLS-1$
-    retval.append("      ").append(XMLHandler.addTagValue("socksproxy_username", socksProxyUsername)); //$NON-NLS-1$
+    retval.append("      ").append(XMLHandler.addTagValue("socksproxy_host", socksProxyHost)); 
+    retval.append("      ").append(XMLHandler.addTagValue("socksproxy_port", socksProxyPort)); 
+    retval.append("      ").append(XMLHandler.addTagValue("socksproxy_username", socksProxyUsername)); 
     retval
-        .append("      ").append(XMLHandler.addTagValue("socksproxy_password", Encr.encryptPasswordIfNotUsingVariables(getSocksProxyPassword()))); //$NON-NLS-1$ 
+        .append("      ").append(XMLHandler.addTagValue("socksproxy_password", Encr.encryptPasswordIfNotUsingVariables(getSocksProxyPassword())));  
 
     return retval.toString();
   }
@@ -235,7 +235,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
       super.loadXML(entrynode, databases, slaveServers);
 
       protocol = XMLHandler.getTagValue(entrynode, "protocol");
-      port = XMLHandler.getTagValue(entrynode, "port"); //$NON-NLS-1$
+      port = XMLHandler.getTagValue(entrynode, "port"); 
       serverName = XMLHandler.getTagValue(entrynode, "servername");
       userName = XMLHandler.getTagValue(entrynode, "username");
       password = Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(entrynode, "password"));
@@ -245,10 +245,10 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
       activeConnection = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "active"));
 
       useproxy = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "useproxy"));
-      proxyHost = XMLHandler.getTagValue(entrynode, "proxy_host"); //$NON-NLS-1$
-      proxyPort = XMLHandler.getTagValue(entrynode, "proxy_port"); //$NON-NLS-1$
-      proxyUsername = XMLHandler.getTagValue(entrynode, "proxy_username"); //$NON-NLS-1$
-      proxyPassword = Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(entrynode, "proxy_password")); //$NON-NLS-1$
+      proxyHost = XMLHandler.getTagValue(entrynode, "proxy_host"); 
+      proxyPort = XMLHandler.getTagValue(entrynode, "proxy_port"); 
+      proxyUsername = XMLHandler.getTagValue(entrynode, "proxy_username"); 
+      proxyPassword = Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(entrynode, "proxy_password")); 
 
       publicpublickey = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "publicpublickey"));
       keyFilename = XMLHandler.getTagValue(entrynode, "keyfilename");
@@ -259,9 +259,9 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
       copyprevious = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "copyprevious"));
       FTPSConnectionType = FTPSConnection.getConnectionTypeByCode(Const.NVL(
           XMLHandler.getTagValue(entrynode, "ftps_connection_type"), ""));
-      socksProxyHost = XMLHandler.getTagValue(entrynode, "socksproxy_host"); //$NON-NLS-1$
-      socksProxyPort = XMLHandler.getTagValue(entrynode, "socksproxy_port"); //$NON-NLS-1$
-      socksProxyUsername = XMLHandler.getTagValue(entrynode, "socksproxy_username"); //$NON-NLS-1$
+      socksProxyHost = XMLHandler.getTagValue(entrynode, "socksproxy_host"); 
+      socksProxyPort = XMLHandler.getTagValue(entrynode, "socksproxy_port"); 
+      socksProxyUsername = XMLHandler.getTagValue(entrynode, "socksproxy_username"); 
       socksProxyPassword = Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(entrynode,
           "socksproxy_password"));
 
@@ -286,11 +286,11 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
       copyprevious = rep.getJobEntryAttributeBoolean(id_jobentry, "copyprevious");
 
       useproxy = rep.getJobEntryAttributeBoolean(id_jobentry, "useproxy");
-      proxyHost = rep.getJobEntryAttributeString(id_jobentry, "proxy_host"); //$NON-NLS-1$
-      proxyPort = rep.getJobEntryAttributeString(id_jobentry, "proxy_port"); //$NON-NLS-1$
-      proxyUsername = rep.getJobEntryAttributeString(id_jobentry, "proxy_username"); //$NON-NLS-1$
+      proxyHost = rep.getJobEntryAttributeString(id_jobentry, "proxy_host"); 
+      proxyPort = rep.getJobEntryAttributeString(id_jobentry, "proxy_port"); 
+      proxyUsername = rep.getJobEntryAttributeString(id_jobentry, "proxy_username"); 
       proxyPassword = Encr.decryptPasswordOptionallyEncrypted(rep.getJobEntryAttributeString(id_jobentry,
-          "proxy_password")); //$NON-NLS-1$
+          "proxy_password")); 
 
       publicpublickey = rep.getJobEntryAttributeBoolean(id_jobentry, "publicpublickey");
       keyFilename = rep.getJobEntryAttributeString(id_jobentry, "keyfilename");
@@ -301,9 +301,9 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
       FTPSConnectionType = FTPSConnection.getConnectionTypeByCode(Const.NVL(
           rep.getJobEntryAttributeString(id_jobentry, "ftps_connection_type"), ""));
 
-      socksProxyHost = rep.getJobEntryAttributeString(id_jobentry, "socksproxy_host"); //$NON-NLS-1$
-      socksProxyPort = rep.getJobEntryAttributeString(id_jobentry, "socksproxy_port"); //$NON-NLS-1$
-      socksProxyUsername = rep.getJobEntryAttributeString(id_jobentry, "socksproxy_username"); //$NON-NLS-1$
+      socksProxyHost = rep.getJobEntryAttributeString(id_jobentry, "socksproxy_host"); 
+      socksProxyPort = rep.getJobEntryAttributeString(id_jobentry, "socksproxy_port"); 
+      socksProxyUsername = rep.getJobEntryAttributeString(id_jobentry, "socksproxy_username"); 
       socksProxyPassword = Encr.decryptPasswordOptionallyEncrypted(rep.getJobEntryAttributeString(id_jobentry,
           "socksproxy_password"));
     } catch (KettleException dbe) {
@@ -331,22 +331,22 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
       rep.saveJobEntryAttribute(id_job, getObjectId(), "keyfilename", keyFilename);
       rep.saveJobEntryAttribute(id_job, getObjectId(), "keyfilepass", keyFilePass);
 
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_host", proxyHost); //$NON-NLS-1$
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_port", proxyPort); //$NON-NLS-1$
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_username", proxyUsername); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_host", proxyHost); 
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_port", proxyPort); 
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_username", proxyUsername); 
       rep.saveJobEntryAttribute(id_job, getObjectId(),
-          "proxy_password", Encr.encryptPasswordIfNotUsingVariables(proxyPassword)); //$NON-NLS-1$
+          "proxy_password", Encr.encryptPasswordIfNotUsingVariables(proxyPassword)); 
 
       rep.saveJobEntryAttribute(id_job, getObjectId(), "nr_limit_success", nr_limit_success);
       rep.saveJobEntryAttribute(id_job, getObjectId(), "success_condition", success_condition);
       rep.saveJobEntryAttribute(id_job, getObjectId(), "ftps_connection_type",
           FTPSConnection.getConnectionType(FTPSConnectionType));
 
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "socksproxy_host", socksProxyHost); //$NON-NLS-1$
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "socksproxy_port", socksProxyPort); //$NON-NLS-1$
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "socksproxy_username", socksProxyUsername); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "socksproxy_host", socksProxyHost); 
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "socksproxy_port", socksProxyPort); 
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "socksproxy_username", socksProxyUsername); 
       rep.saveJobEntryAttribute(id_job, getObjectId(),
-          "socksproxy_password", Encr.encryptPasswordIfNotUsingVariables(socksProxyPassword)); //$NON-NLS-1$
+          "socksproxy_password", Encr.encryptPasswordIfNotUsingVariables(socksProxyPassword)); 
 
     } catch (KettleDatabaseException dbe) {
       throw new KettleException("Unable to save job entry of type 'ftp' to the repository for id_job=" + id_job, dbe);
@@ -618,7 +618,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
   @SuppressWarnings("unchecked")
   // Needed for the Vector coming from sshclient.ls()
   public Result execute(Result previousResult, int nr) {
-    log.logBasic(BaseMessages.getString(PKG, "JobEntryFTPDelete.Started", serverName)); //$NON-NLS-1$
+    log.logBasic(BaseMessages.getString(PKG, "JobEntryFTPDelete.Started", serverName)); 
     RowMetaAndData resultRow = null;
     Result result = previousResult;
     List<RowMetaAndData> rows = result.getRows();
@@ -649,7 +649,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
     String sourceFolder = "";
 
     if (isDetailed())
-      logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.Start")); //$NON-NLS-1$
+      logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.Start")); 
 
     if (copyprevious && rows.size() == 0) {
       if (isDetailed())
@@ -836,7 +836,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
       } // end for			
     } catch (Exception e) {
       updateErrors();
-      logError(BaseMessages.getString(PKG, "JobEntryFTPDelete.ErrorGetting", e.getMessage())); //$NON-NLS-1$
+      logError(BaseMessages.getString(PKG, "JobEntryFTPDelete.ErrorGetting", e.getMessage())); 
       logError(Const.getStackTracker(e));
     } finally {
       if (ftpclient != null && ftpclient.connected()) {
@@ -844,14 +844,14 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
           ftpclient.quit();
           ftpclient = null;
         } catch (Exception e) {
-          logError(BaseMessages.getString(PKG, "JobEntryFTPDelete.ErrorQuitting", e.getMessage())); //$NON-NLS-1$
+          logError(BaseMessages.getString(PKG, "JobEntryFTPDelete.ErrorQuitting", e.getMessage())); 
         }
       }
       if (ftpsclient != null) {
         try {
           ftpsclient.disconnect();
         } catch (Exception e) {
-          logError(BaseMessages.getString(PKG, "JobEntryFTPDelete.ErrorQuitting", e.getMessage())); //$NON-NLS-1$
+          logError(BaseMessages.getString(PKG, "JobEntryFTPDelete.ErrorQuitting", e.getMessage())); 
         }
       }
       if (sftpclient != null) {
@@ -859,7 +859,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
           sftpclient.disconnect();
           sftpclient = null;
         } catch (Exception e) {
-          logError(BaseMessages.getString(PKG, "JobEntryFTPDelete.ErrorQuitting", e.getMessage())); //$NON-NLS-1$
+          logError(BaseMessages.getString(PKG, "JobEntryFTPDelete.ErrorQuitting", e.getMessage())); 
         }
       }
       if (sshclient != null) {
@@ -867,7 +867,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
           sshclient.close();
           sshclient = null;
         } catch (Exception e) {
-          logError(BaseMessages.getString(PKG, "JobEntryFTPDelete.ErrorQuitting", e.getMessage())); //$NON-NLS-1$
+          logError(BaseMessages.getString(PKG, "JobEntryFTPDelete.ErrorQuitting", e.getMessage())); 
         }
       }
 
@@ -991,17 +991,17 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
     if (activeConnection) {
       ftpsclient.setPassiveMode(false);
       if (isDetailed())
-        logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.SetActive")); //$NON-NLS-1$
+        logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.SetActive")); 
     } else {
       ftpsclient.setPassiveMode(true);
       if (isDetailed())
-        logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.SetPassive")); //$NON-NLS-1$
+        logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.SetPassive")); 
     }
 
     // Set the timeout
     ftpsclient.setTimeOut(realtimeout);
     if (isDetailed())
-      logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.SetTimeout", String.valueOf(realtimeout))); //$NON-NLS-1$
+      logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.SetTimeout", String.valueOf(realtimeout))); 
 
     // now connect
     ftpsclient.connect();
@@ -1044,17 +1044,17 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
     if (activeConnection) {
       ftpclient.setConnectMode(FTPConnectMode.ACTIVE);
       if (isDetailed())
-        logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.SetActive")); //$NON-NLS-1$
+        logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.SetActive")); 
     } else {
       ftpclient.setConnectMode(FTPConnectMode.PASV);
       if (isDetailed())
-        logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.SetPassive")); //$NON-NLS-1$
+        logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.SetPassive")); 
     }
 
     // Set the timeout
     ftpclient.setTimeout(realtimeout);
     if (isDetailed())
-      logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.SetTimeout", String.valueOf(realtimeout))); //$NON-NLS-1$
+      logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.SetTimeout", String.valueOf(realtimeout))); 
 
     // login to ftp host ...
     ftpclient.connect();
@@ -1067,13 +1067,13 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
     ftpclient.login(realUsername, realPassword);
     //  Remove password from logging, you don't know where it ends up.
     if (isDetailed())
-      logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.LoggedIn", realUsername)); //$NON-NLS-1$
+      logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.LoggedIn", realUsername)); 
 
     // move to spool dir ...
     if (!Const.isEmpty(realFtpDirectory)) {
       ftpclient.chdir(realFtpDirectory);
       if (isDetailed())
-        logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.ChangedDir", realFtpDirectory)); //$NON-NLS-1$
+        logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.ChangedDir", realFtpDirectory)); 
     }
 
   }
@@ -1109,11 +1109,11 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
   }
 
   public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore) {
-    andValidator().validate(this, "serverName", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+    andValidator().validate(this, "serverName", remarks, putValidators(notBlankValidator())); 
     andValidator()
-        .validate(this, "targetDirectory", remarks, putValidators(notBlankValidator(), fileExistsValidator())); //$NON-NLS-1$
-    andValidator().validate(this, "userName", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
-    andValidator().validate(this, "password", remarks, putValidators(notNullValidator())); //$NON-NLS-1$
+        .validate(this, "targetDirectory", remarks, putValidators(notBlankValidator(), fileExistsValidator())); 
+    andValidator().validate(this, "userName", remarks, putValidators(notBlankValidator())); 
+    andValidator().validate(this, "password", remarks, putValidators(notNullValidator())); 
   }
 
   public List<ResourceReference> getResourceDependencies(JobMeta jobMeta) {

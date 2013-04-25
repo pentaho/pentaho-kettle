@@ -857,7 +857,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * @see org.pentaho.di.resource.ResourceHolderInterface#getHolderType()
    */
   public String getHolderType() {
-    return "JOBENTRY"; //$NON-NLS-1$
+    return "JOBENTRY"; 
   }
 
   /**

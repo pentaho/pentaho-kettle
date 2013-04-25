@@ -43,9 +43,9 @@ import org.pentaho.di.trans.step.BaseStep;
 public abstract class AbstractFileErrorHandler implements FileErrorHandler {
 	private static Class<?> PKG = AbstractFileErrorHandler.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	private static final String DD_MMYYYY_HHMMSS = "ddMMyyyy-HHmmss"; //$NON-NLS-1$
+	private static final String DD_MMYYYY_HHMMSS = "ddMMyyyy-HHmmss"; 
 
-	public static final String NO_PARTS = "NO_PARTS"; //$NON-NLS-1$
+	public static final String NO_PARTS = "NO_PARTS"; 
 
 	private final String destinationDirectory;
 
@@ -83,14 +83,14 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
 			String processingFilename, String dateString, String extension, Object source) throws KettleFileException 
     {
 		String name = null;
-		String sourceAdding = ""; //$NON-NLS-1$
+		String sourceAdding = ""; 
 		if (! NO_PARTS.equals(source)) {
 			sourceAdding = "_" + source.toString();
 		}
 		if (extension == null || extension.length() == 0)
-			name = processingFilename + sourceAdding + "." + dateString; //$NON-NLS-1$
+			name = processingFilename + sourceAdding + "." + dateString; 
 		else
-			name = processingFilename + sourceAdding + "." + dateString + "." + extension; //$NON-NLS-1$ //$NON-NLS-2$
+			name = processingFilename + sourceAdding + "." + dateString + "." + extension;  
 		return KettleVFS.getFileObject(destinationDirectory+"/"+name);
 	}
 
@@ -128,7 +128,7 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
     		} 
             catch (Exception e) 
             {
-    			throw new KettleException(BaseMessages.getString(PKG, "AbstractFileErrorHandler.Exception.CouldNotCreateFileErrorHandlerForFile") //$NON-NLS-1$
+    			throw new KettleException(BaseMessages.getString(PKG, "AbstractFileErrorHandler.Exception.CouldNotCreateFileErrorHandlerForFile") 
     							+ file.getName().getURI(), e);
     		}
     		writers.put(source, outputStreamWriter);
@@ -153,12 +153,12 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
 			try {
 				outputStreamWriter.flush();
 			} catch (IOException exception) {
-				baseStep.logError(BaseMessages.getString(PKG, "AbstractFileErrorHandler.Log.CouldNotFlushContentToFile"), exception.getLocalizedMessage());  //$NON-NLS-1$
+				baseStep.logError(BaseMessages.getString(PKG, "AbstractFileErrorHandler.Log.CouldNotFlushContentToFile"), exception.getLocalizedMessage());  
 			}
 			try {
 				outputStreamWriter.close();
 			} catch (IOException exception) {
-				throw new KettleException(BaseMessages.getString(PKG, "AbstractFileErrorHandler.Exception.CouldNotCloseFile"), exception); //$NON-NLS-1$
+				throw new KettleException(BaseMessages.getString(PKG, "AbstractFileErrorHandler.Exception.CouldNotCloseFile"), exception); 
 			} finally {
 				outputStreamWriter = null;
 			}

@@ -46,7 +46,7 @@ public class UISecurityUser extends XulEventSourceAdapter{
     setDescription(user.getDescription());
     setName(user.getName());
     // Show empty password on the client site
-    setPassword("");//$NON-NLS-1$
+    setPassword("");
   }
 
 
@@ -58,7 +58,7 @@ public class UISecurityUser extends XulEventSourceAdapter{
   }
   public void setMode(Mode mode) {
     this.mode = mode;
-    this.firePropertyChange("mode", null, mode); //$NON-NLS-1$
+    this.firePropertyChange("mode", null, mode); 
   }
   public String getName() {
     return name;
@@ -66,7 +66,7 @@ public class UISecurityUser extends XulEventSourceAdapter{
   public void setName(String name) {
     String previousValue = this.name;
     this.name = name;
-    this.firePropertyChange("name", previousValue, name); //$NON-NLS-1$
+    this.firePropertyChange("name", previousValue, name); 
   }
   public String getDescription() {
     return description;
@@ -74,7 +74,7 @@ public class UISecurityUser extends XulEventSourceAdapter{
   public void setDescription(String description) {
     String previousValue = this.description;
     this.description = description;
-    this.firePropertyChange("description", previousValue, description); //$NON-NLS-1$
+    this.firePropertyChange("description", previousValue, description); 
   }
   public String getPassword() {
     return password;
@@ -82,13 +82,13 @@ public class UISecurityUser extends XulEventSourceAdapter{
   public void setPassword(String password) {
     String previousValue = this.password;
     this.password = password;
-    this.firePropertyChange("password", previousValue, password); //$NON-NLS-1$
+    this.firePropertyChange("password", previousValue, password); 
   }
   public void clear() {
     setMode(Mode.ADD);
-    setName("");//$NON-NLS-1$
-    setDescription("");//$NON-NLS-1$
-    setPassword("");//$NON-NLS-1$
+    setName("");
+    setDescription("");
+    setPassword("");
   }
   public IUser getUserInfo() throws KettleException {
     IUser userInfo = rsm.constructUser();

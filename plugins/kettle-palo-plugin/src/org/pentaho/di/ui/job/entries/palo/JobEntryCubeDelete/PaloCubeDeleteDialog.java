@@ -125,14 +125,14 @@ public class PaloCubeDeleteDialog extends JobEntryDialog implements JobEntryDial
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG,"PaloCubeDeleteDialog.PaloCubeDelete")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG,"PaloCubeDeleteDialog.PaloCubeDelete")); 
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		labelStepName=new Label(shell, SWT.RIGHT);
-		labelStepName.setText(BaseMessages.getString(PKG,"PaloCubeDeleteDialog.StepName")); //$NON-NLS-1$
+		labelStepName.setText(BaseMessages.getString(PKG,"PaloCubeDeleteDialog.StepName")); 
 		props.setLook( labelStepName );
 		FormData fd = new FormData();
 		fd.left = new FormAttachment(0, 0);
@@ -160,7 +160,7 @@ public class PaloCubeDeleteDialog extends JobEntryDialog implements JobEntryDial
 
 		// Get cube name to delete
 		labelCubeName = new Label(shell, SWT.RIGHT);
-		labelCubeName.setText(BaseMessages.getString(PKG,"PaloCubeDeleteDialog.CubeName")); //$NON-NLS-1$
+		labelCubeName.setText(BaseMessages.getString(PKG,"PaloCubeDeleteDialog.CubeName")); 
 		props.setLook(labelCubeName);
 
 		fd = new FormData();
@@ -191,9 +191,9 @@ public class PaloCubeDeleteDialog extends JobEntryDialog implements JobEntryDial
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG,"System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG,"System.Button.OK")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG,"System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG,"System.Button.Cancel")); 
 
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel}, margin, comboCubeName);
 

@@ -212,52 +212,52 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
         // Ignore object reference problems.  It simply means that the reference is no longer valid.
       }
     }
-    retval.append("    ").append(XMLHandler.addTagValue("trans_name", transName)); //$NON-NLS-1$
-    retval.append("    ").append(XMLHandler.addTagValue("filename", fileName)); //$NON-NLS-1$
-    retval.append("    ").append(XMLHandler.addTagValue("directory_path", directoryPath)); //$NON-NLS-1$
+    retval.append("    ").append(XMLHandler.addTagValue("trans_name", transName)); 
+    retval.append("    ").append(XMLHandler.addTagValue("filename", fileName)); 
+    retval.append("    ").append(XMLHandler.addTagValue("directory_path", directoryPath)); 
 
-    retval.append("    ").append(XMLHandler.addTagValue("group_size", groupSize)); //$NON-NLS-1$
-    retval.append("    ").append(XMLHandler.addTagValue("group_field", groupField)); //$NON-NLS-1$
-    retval.append("    ").append(XMLHandler.addTagValue("group_time", groupTime)); //$NON-NLS-1$
+    retval.append("    ").append(XMLHandler.addTagValue("group_size", groupSize)); 
+    retval.append("    ").append(XMLHandler.addTagValue("group_field", groupField)); 
+    retval.append("    ").append(XMLHandler.addTagValue("group_time", groupTime)); 
 
     // Add the mapping parameters too
     //
-    retval.append("      ").append(parameters.getXML()).append(Const.CR); //$NON-NLS-1$
+    retval.append("      ").append(parameters.getXML()).append(Const.CR); 
 
     // The output side...
     //
     retval
-        .append("    ").append(XMLHandler.addTagValue("execution_result_target_step", executionResultTargetStepMeta == null ? null : executionResultTargetStepMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("execution_time_field", executionTimeField)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("execution_result_field", executionResultField)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("execution_errors_field", executionNrErrorsField)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("execution_lines_read_field", executionLinesReadField)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("execution_lines_written_field", executionLinesWrittenField)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("execution_lines_input_field", executionLinesInputField)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("execution_lines_output_field", executionLinesOutputField)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("execution_lines_rejected_field", executionLinesRejectedField)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("execution_lines_updated_field", executionLinesUpdatedField)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("execution_lines_deleted_field", executionLinesDeletedField)); //$NON-NLS-1$ //$NON-NLS-2$
+        .append("    ").append(XMLHandler.addTagValue("execution_result_target_step", executionResultTargetStepMeta == null ? null : executionResultTargetStepMeta.getName()));  
+    retval.append("    ").append(XMLHandler.addTagValue("execution_time_field", executionTimeField));  
+    retval.append("    ").append(XMLHandler.addTagValue("execution_result_field", executionResultField));  
+    retval.append("    ").append(XMLHandler.addTagValue("execution_errors_field", executionNrErrorsField));  
+    retval.append("    ").append(XMLHandler.addTagValue("execution_lines_read_field", executionLinesReadField));  
+    retval.append("    ").append(XMLHandler.addTagValue("execution_lines_written_field", executionLinesWrittenField));  
+    retval.append("    ").append(XMLHandler.addTagValue("execution_lines_input_field", executionLinesInputField));  
+    retval.append("    ").append(XMLHandler.addTagValue("execution_lines_output_field", executionLinesOutputField));  
+    retval.append("    ").append(XMLHandler.addTagValue("execution_lines_rejected_field", executionLinesRejectedField));  
+    retval.append("    ").append(XMLHandler.addTagValue("execution_lines_updated_field", executionLinesUpdatedField));  
+    retval.append("    ").append(XMLHandler.addTagValue("execution_lines_deleted_field", executionLinesDeletedField));  
     retval
-        .append("    ").append(XMLHandler.addTagValue("execution_files_retrieved_field", executionFilesRetrievedField)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("execution_exit_status_field", executionExitStatusField)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("execution_log_text_field", executionLogTextField)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("execution_log_channelid_field", executionLogChannelIdField)); //$NON-NLS-1$ //$NON-NLS-2$
+        .append("    ").append(XMLHandler.addTagValue("execution_files_retrieved_field", executionFilesRetrievedField));  
+    retval.append("    ").append(XMLHandler.addTagValue("execution_exit_status_field", executionExitStatusField));  
+    retval.append("    ").append(XMLHandler.addTagValue("execution_log_text_field", executionLogTextField));  
+    retval.append("    ").append(XMLHandler.addTagValue("execution_log_channelid_field", executionLogChannelIdField));  
 
     retval
-        .append("    ").append(XMLHandler.addTagValue("result_rows_target_step", outputRowsSourceStepMeta == null ? null : outputRowsSourceStepMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$
+        .append("    ").append(XMLHandler.addTagValue("result_rows_target_step", outputRowsSourceStepMeta == null ? null : outputRowsSourceStepMeta.getName()));  
     for (int i = 0; i < outputRowsField.length; i++) {
       retval.append("      ").append(XMLHandler.openTag("result_rows_field"));
-      retval.append(XMLHandler.addTagValue("name", outputRowsField[i], false)); //$NON-NLS-1$
-      retval.append(XMLHandler.addTagValue("type", ValueMeta.getTypeDesc(outputRowsType[i]), false)); //$NON-NLS-1$
-      retval.append(XMLHandler.addTagValue("length", outputRowsLength[i], false)); //$NON-NLS-1$
-      retval.append(XMLHandler.addTagValue("precision", outputRowsPrecision[i], false)); //$NON-NLS-1$
+      retval.append(XMLHandler.addTagValue("name", outputRowsField[i], false)); 
+      retval.append(XMLHandler.addTagValue("type", ValueMeta.getTypeDesc(outputRowsType[i]), false)); 
+      retval.append(XMLHandler.addTagValue("length", outputRowsLength[i], false)); 
+      retval.append(XMLHandler.addTagValue("precision", outputRowsPrecision[i], false)); 
       retval.append(XMLHandler.closeTag("result_rows_field")).append(Const.CR);
     }
 
     retval
-        .append("    ").append(XMLHandler.addTagValue("result_files_target_step", resultFilesTargetStepMeta == null ? null : resultFilesTargetStepMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("result_files_file_name_field", resultFilesFileNameField)); //$NON-NLS-1$ //$NON-NLS-2$
+        .append("    ").append(XMLHandler.addTagValue("result_files_target_step", resultFilesTargetStepMeta == null ? null : resultFilesTargetStepMeta.getName()));  
+    retval.append("    ").append(XMLHandler.addTagValue("result_files_file_name_field", resultFilesFileNameField));  
 
     return retval.toString();
   }
@@ -269,13 +269,13 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
       String transId = XMLHandler.getTagValue(stepnode, "trans_object_id");
       transObjectId = Const.isEmpty(transId) ? null : new StringObjectId(transId);
 
-      transName = XMLHandler.getTagValue(stepnode, "trans_name"); //$NON-NLS-1$
-      fileName = XMLHandler.getTagValue(stepnode, "filename"); //$NON-NLS-1$
-      directoryPath = XMLHandler.getTagValue(stepnode, "directory_path"); //$NON-NLS-1$
+      transName = XMLHandler.getTagValue(stepnode, "trans_name"); 
+      fileName = XMLHandler.getTagValue(stepnode, "filename"); 
+      directoryPath = XMLHandler.getTagValue(stepnode, "directory_path"); 
 
-      groupSize = XMLHandler.getTagValue(stepnode, "group_size"); //$NON-NLS-1$
-      groupField = XMLHandler.getTagValue(stepnode, "group_field"); //$NON-NLS-1$
-      groupTime = XMLHandler.getTagValue(stepnode, "group_time"); //$NON-NLS-1$
+      groupSize = XMLHandler.getTagValue(stepnode, "group_size"); 
+      groupField = XMLHandler.getTagValue(stepnode, "group_field"); 
+      groupTime = XMLHandler.getTagValue(stepnode, "group_time"); 
 
       // Load the mapping parameters too..
       //
@@ -284,23 +284,23 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
 
       // The output side...
       //
-      executionResultTargetStep = XMLHandler.getTagValue(stepnode, "execution_result_target_step"); //$NON-NLS-1$
-      executionTimeField = XMLHandler.getTagValue(stepnode, "execution_time_field"); //$NON-NLS-1$
-      executionResultField = XMLHandler.getTagValue(stepnode, "execution_result_field"); //$NON-NLS-1$
-      executionNrErrorsField = XMLHandler.getTagValue(stepnode, "execution_errors_field"); //$NON-NLS-1$
-      executionLinesReadField = XMLHandler.getTagValue(stepnode, "execution_lines_read_field"); //$NON-NLS-1$
-      executionLinesWrittenField = XMLHandler.getTagValue(stepnode, "execution_lines_written_field"); //$NON-NLS-1$
-      executionLinesInputField = XMLHandler.getTagValue(stepnode, "execution_lines_input_field"); //$NON-NLS-1$
-      executionLinesOutputField = XMLHandler.getTagValue(stepnode, "execution_lines_output_field"); //$NON-NLS-1$
-      executionLinesRejectedField = XMLHandler.getTagValue(stepnode, "execution_lines_rejected_field"); //$NON-NLS-1$
-      executionLinesUpdatedField = XMLHandler.getTagValue(stepnode, "execution_lines_updated_field"); //$NON-NLS-1$
-      executionLinesDeletedField = XMLHandler.getTagValue(stepnode, "execution_lines_deleted_field"); //$NON-NLS-1$
-      executionFilesRetrievedField = XMLHandler.getTagValue(stepnode, "execution_files_retrieved_field"); //$NON-NLS-1$
-      executionExitStatusField = XMLHandler.getTagValue(stepnode, "execution_exit_status_field"); //$NON-NLS-1$
-      executionLogTextField = XMLHandler.getTagValue(stepnode, "execution_log_text_field"); //$NON-NLS-1$
-      executionLogChannelIdField = XMLHandler.getTagValue(stepnode, "execution_log_channelid_field"); //$NON-NLS-1$
+      executionResultTargetStep = XMLHandler.getTagValue(stepnode, "execution_result_target_step"); 
+      executionTimeField = XMLHandler.getTagValue(stepnode, "execution_time_field"); 
+      executionResultField = XMLHandler.getTagValue(stepnode, "execution_result_field"); 
+      executionNrErrorsField = XMLHandler.getTagValue(stepnode, "execution_errors_field"); 
+      executionLinesReadField = XMLHandler.getTagValue(stepnode, "execution_lines_read_field"); 
+      executionLinesWrittenField = XMLHandler.getTagValue(stepnode, "execution_lines_written_field"); 
+      executionLinesInputField = XMLHandler.getTagValue(stepnode, "execution_lines_input_field"); 
+      executionLinesOutputField = XMLHandler.getTagValue(stepnode, "execution_lines_output_field"); 
+      executionLinesRejectedField = XMLHandler.getTagValue(stepnode, "execution_lines_rejected_field"); 
+      executionLinesUpdatedField = XMLHandler.getTagValue(stepnode, "execution_lines_updated_field"); 
+      executionLinesDeletedField = XMLHandler.getTagValue(stepnode, "execution_lines_deleted_field"); 
+      executionFilesRetrievedField = XMLHandler.getTagValue(stepnode, "execution_files_retrieved_field"); 
+      executionExitStatusField = XMLHandler.getTagValue(stepnode, "execution_exit_status_field"); 
+      executionLogTextField = XMLHandler.getTagValue(stepnode, "execution_log_text_field"); 
+      executionLogChannelIdField = XMLHandler.getTagValue(stepnode, "execution_log_channelid_field"); 
 
-      outputRowsSourceStep = XMLHandler.getTagValue(stepnode, "result_rows_target_step"); //$NON-NLS-1$
+      outputRowsSourceStep = XMLHandler.getTagValue(stepnode, "result_rows_target_step"); 
 
       int nrFields = XMLHandler.countNodes(stepnode, "result_rows_field");
       outputRowsField = new String[nrFields];
@@ -312,17 +312,17 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
 
         Node fieldNode = XMLHandler.getSubNodeByNr(stepnode, "result_rows_field", i);
 
-        outputRowsField[i] = XMLHandler.getTagValue(fieldNode, "name"); //$NON-NLS-1$
-        outputRowsType[i] = ValueMeta.getType(XMLHandler.getTagValue(fieldNode, "type")); //$NON-NLS-1$
-        outputRowsLength[i] = Const.toInt(XMLHandler.getTagValue(fieldNode, "length"), -1); //$NON-NLS-1$
-        outputRowsPrecision[i] = Const.toInt(XMLHandler.getTagValue(fieldNode, "precision"), -1); //$NON-NLS-1$
+        outputRowsField[i] = XMLHandler.getTagValue(fieldNode, "name"); 
+        outputRowsType[i] = ValueMeta.getType(XMLHandler.getTagValue(fieldNode, "type")); 
+        outputRowsLength[i] = Const.toInt(XMLHandler.getTagValue(fieldNode, "length"), -1); 
+        outputRowsPrecision[i] = Const.toInt(XMLHandler.getTagValue(fieldNode, "precision"), -1); 
       }
 
-      resultFilesTargetStep = XMLHandler.getTagValue(stepnode, "result_files_target_step"); //$NON-NLS-1$
-      resultFilesFileNameField = XMLHandler.getTagValue(stepnode, "result_files_file_name_field"); //$NON-NLS-1$
+      resultFilesTargetStep = XMLHandler.getTagValue(stepnode, "result_files_target_step"); 
+      resultFilesFileNameField = XMLHandler.getTagValue(stepnode, "result_files_file_name_field"); 
     } catch (Exception e) {
       throw new KettleXMLException(BaseMessages.getString(PKG,
-          "TransExecutorMeta.Exception.ErrorLoadingTransExecutorDetailsFromXML"), e); //$NON-NLS-1$
+          "TransExecutorMeta.Exception.ErrorLoadingTransExecutorDetailsFromXML"), e); 
     }
   }
 
@@ -332,32 +332,32 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
     specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode(method);
     String transId = rep.getStepAttributeString(id_step, "trans_object_id");
     transObjectId = Const.isEmpty(transId) ? null : new StringObjectId(transId);
-    transName = rep.getStepAttributeString(id_step, "trans_name"); //$NON-NLS-1$
-    fileName = rep.getStepAttributeString(id_step, "filename"); //$NON-NLS-1$
-    directoryPath = rep.getStepAttributeString(id_step, "directory_path"); //$NON-NLS-1$
+    transName = rep.getStepAttributeString(id_step, "trans_name"); 
+    fileName = rep.getStepAttributeString(id_step, "filename"); 
+    directoryPath = rep.getStepAttributeString(id_step, "directory_path"); 
 
-    groupSize = rep.getStepAttributeString(id_step, "group_size"); //$NON-NLS-1$
-    groupField = rep.getStepAttributeString(id_step, "group_field"); //$NON-NLS-1$
-    groupTime = rep.getStepAttributeString(id_step, "group_time"); //$NON-NLS-1$
+    groupSize = rep.getStepAttributeString(id_step, "group_size"); 
+    groupField = rep.getStepAttributeString(id_step, "group_field"); 
+    groupTime = rep.getStepAttributeString(id_step, "group_time"); 
 
     parameters = new TransExecutorParameters(rep, id_step);
 
-    executionResultTargetStep = rep.getStepAttributeString(id_step, "execution_result_target_step"); //$NON-NLS-1$
-    executionTimeField = rep.getStepAttributeString(id_step, "execution_time_field"); //$NON-NLS-1$
-    executionNrErrorsField = rep.getStepAttributeString(id_step, "execution_result_field"); //$NON-NLS-1$
-    executionLinesReadField = rep.getStepAttributeString(id_step, "execution_errors_field"); //$NON-NLS-1$
-    executionLinesWrittenField = rep.getStepAttributeString(id_step, "execution_lines_written_field"); //$NON-NLS-1$
-    executionLinesInputField = rep.getStepAttributeString(id_step, "execution_lines_input_field"); //$NON-NLS-1$
-    executionLinesOutputField = rep.getStepAttributeString(id_step, "execution_lines_output_field"); //$NON-NLS-1$
-    executionLinesRejectedField = rep.getStepAttributeString(id_step, "execution_lines_rejected_field"); //$NON-NLS-1$
-    executionLinesUpdatedField = rep.getStepAttributeString(id_step, "execution_lines_updated_field"); //$NON-NLS-1$
-    executionLinesDeletedField = rep.getStepAttributeString(id_step, "execution_lines_deleted_field"); //$NON-NLS-1$
-    executionFilesRetrievedField = rep.getStepAttributeString(id_step, "execution_files_retrieved_field"); //$NON-NLS-1$
-    executionExitStatusField = rep.getStepAttributeString(id_step, "execution_exit_status_field"); //$NON-NLS-1$
-    executionLogTextField = rep.getStepAttributeString(id_step, "execution_log_text_field"); //$NON-NLS-1$
-    executionLogChannelIdField = rep.getStepAttributeString(id_step, "execution_log_channelid_field"); //$NON-NLS-1$
+    executionResultTargetStep = rep.getStepAttributeString(id_step, "execution_result_target_step"); 
+    executionTimeField = rep.getStepAttributeString(id_step, "execution_time_field"); 
+    executionNrErrorsField = rep.getStepAttributeString(id_step, "execution_result_field"); 
+    executionLinesReadField = rep.getStepAttributeString(id_step, "execution_errors_field"); 
+    executionLinesWrittenField = rep.getStepAttributeString(id_step, "execution_lines_written_field"); 
+    executionLinesInputField = rep.getStepAttributeString(id_step, "execution_lines_input_field"); 
+    executionLinesOutputField = rep.getStepAttributeString(id_step, "execution_lines_output_field"); 
+    executionLinesRejectedField = rep.getStepAttributeString(id_step, "execution_lines_rejected_field"); 
+    executionLinesUpdatedField = rep.getStepAttributeString(id_step, "execution_lines_updated_field"); 
+    executionLinesDeletedField = rep.getStepAttributeString(id_step, "execution_lines_deleted_field"); 
+    executionFilesRetrievedField = rep.getStepAttributeString(id_step, "execution_files_retrieved_field"); 
+    executionExitStatusField = rep.getStepAttributeString(id_step, "execution_exit_status_field"); 
+    executionLogTextField = rep.getStepAttributeString(id_step, "execution_log_text_field"); 
+    executionLogChannelIdField = rep.getStepAttributeString(id_step, "execution_log_channelid_field"); 
 
-    outputRowsSourceStep = rep.getStepAttributeString(id_step, "result_rows_target_step"); //$NON-NLS-1$
+    outputRowsSourceStep = rep.getStepAttributeString(id_step, "result_rows_target_step"); 
     int nrFields = rep.countNrStepAttributes(id_step, "result_rows_field");
     outputRowsField = new String[nrFields];
     outputRowsType = new int[nrFields];
@@ -371,8 +371,8 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
       outputRowsPrecision[i] = (int) rep.getStepAttributeInteger(id_step, i, "result_rows_precision");
     }
 
-    resultFilesTargetStep = rep.getStepAttributeString(id_step, "result_files_target_step"); //$NON-NLS-1$
-    resultFilesFileNameField = rep.getStepAttributeString(id_step, "result_files_file_name_field"); //$NON-NLS-1$
+    resultFilesTargetStep = rep.getStepAttributeString(id_step, "result_files_target_step"); 
+    resultFilesFileNameField = rep.getStepAttributeString(id_step, "result_files_file_name_field"); 
   }
 
   public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step)
@@ -381,13 +381,13 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
         : specificationMethod.getCode());
     rep.saveStepAttribute(id_transformation, id_step, "trans_object_id",
         transObjectId == null ? null : transObjectId.toString());
-    rep.saveStepAttribute(id_transformation, id_step, "filename", fileName); //$NON-NLS-1$
-    rep.saveStepAttribute(id_transformation, id_step, "trans_name", transName); //$NON-NLS-1$
-    rep.saveStepAttribute(id_transformation, id_step, "directory_path", directoryPath); //$NON-NLS-1$
+    rep.saveStepAttribute(id_transformation, id_step, "filename", fileName); 
+    rep.saveStepAttribute(id_transformation, id_step, "trans_name", transName); 
+    rep.saveStepAttribute(id_transformation, id_step, "directory_path", directoryPath); 
 
-    rep.saveStepAttribute(id_transformation, id_step, "group_size", groupSize); //$NON-NLS-1$
-    rep.saveStepAttribute(id_transformation, id_step, "group_field", groupField); //$NON-NLS-1$
-    rep.saveStepAttribute(id_transformation, id_step, "group_time", groupTime); //$NON-NLS-1$
+    rep.saveStepAttribute(id_transformation, id_step, "group_size", groupSize); 
+    rep.saveStepAttribute(id_transformation, id_step, "group_field", groupField); 
+    rep.saveStepAttribute(id_transformation, id_step, "group_time", groupTime); 
 
     // save the mapping parameters too
     //
@@ -398,24 +398,24 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
     rep.saveStepAttribute(
         id_transformation,
         id_step,
-        "execution_result_target_step", executionResultTargetStepMeta == null ? null : executionResultTargetStepMeta.getName()); //$NON-NLS-1$
-    rep.saveStepAttribute(id_transformation, id_step, "execution_time_field", executionTimeField); //$NON-NLS-1$
-    rep.saveStepAttribute(id_transformation, id_step, "execution_result_field", executionResultField); //$NON-NLS-1$
-    rep.saveStepAttribute(id_transformation, id_step, "execution_errors_field", executionNrErrorsField); //$NON-NLS-1$
-    rep.saveStepAttribute(id_transformation, id_step, "execution_lines_read_field", executionLinesReadField); //$NON-NLS-1$
-    rep.saveStepAttribute(id_transformation, id_step, "execution_lines_written_field", executionLinesWrittenField); //$NON-NLS-1$
-    rep.saveStepAttribute(id_transformation, id_step, "execution_lines_input_field", executionLinesInputField); //$NON-NLS-1$
-    rep.saveStepAttribute(id_transformation, id_step, "execution_lines_output_field", executionLinesOutputField); //$NON-NLS-1$
-    rep.saveStepAttribute(id_transformation, id_step, "execution_lines_rejected_field", executionLinesRejectedField); //$NON-NLS-1$
-    rep.saveStepAttribute(id_transformation, id_step, "execution_lines_updated_field", executionLinesUpdatedField); //$NON-NLS-1$
-    rep.saveStepAttribute(id_transformation, id_step, "execution_lines_deleted_field", executionLinesDeletedField); //$NON-NLS-1$
-    rep.saveStepAttribute(id_transformation, id_step, "execution_files_retrieved_field", executionFilesRetrievedField); //$NON-NLS-1$
-    rep.saveStepAttribute(id_transformation, id_step, "execution_exit_status_field", executionExitStatusField); //$NON-NLS-1$
-    rep.saveStepAttribute(id_transformation, id_step, "execution_log_text_field", executionLogTextField); //$NON-NLS-1$
-    rep.saveStepAttribute(id_transformation, id_step, "execution_log_channelid_field", executionLogChannelIdField); //$NON-NLS-1$
+        "execution_result_target_step", executionResultTargetStepMeta == null ? null : executionResultTargetStepMeta.getName()); 
+    rep.saveStepAttribute(id_transformation, id_step, "execution_time_field", executionTimeField); 
+    rep.saveStepAttribute(id_transformation, id_step, "execution_result_field", executionResultField); 
+    rep.saveStepAttribute(id_transformation, id_step, "execution_errors_field", executionNrErrorsField); 
+    rep.saveStepAttribute(id_transformation, id_step, "execution_lines_read_field", executionLinesReadField); 
+    rep.saveStepAttribute(id_transformation, id_step, "execution_lines_written_field", executionLinesWrittenField); 
+    rep.saveStepAttribute(id_transformation, id_step, "execution_lines_input_field", executionLinesInputField); 
+    rep.saveStepAttribute(id_transformation, id_step, "execution_lines_output_field", executionLinesOutputField); 
+    rep.saveStepAttribute(id_transformation, id_step, "execution_lines_rejected_field", executionLinesRejectedField); 
+    rep.saveStepAttribute(id_transformation, id_step, "execution_lines_updated_field", executionLinesUpdatedField); 
+    rep.saveStepAttribute(id_transformation, id_step, "execution_lines_deleted_field", executionLinesDeletedField); 
+    rep.saveStepAttribute(id_transformation, id_step, "execution_files_retrieved_field", executionFilesRetrievedField); 
+    rep.saveStepAttribute(id_transformation, id_step, "execution_exit_status_field", executionExitStatusField); 
+    rep.saveStepAttribute(id_transformation, id_step, "execution_log_text_field", executionLogTextField); 
+    rep.saveStepAttribute(id_transformation, id_step, "execution_log_channelid_field", executionLogChannelIdField); 
 
     rep.saveStepAttribute(id_transformation, id_step,
-        "result_rows_target_step", outputRowsSourceStepMeta == null ? null : outputRowsSourceStepMeta.getName()); //$NON-NLS-1$
+        "result_rows_target_step", outputRowsSourceStepMeta == null ? null : outputRowsSourceStepMeta.getName()); 
 
     for (int i = 0; i < outputRowsField.length; i++) {
       rep.saveStepAttribute(id_transformation, id_step, i, "result_rows_field_name", outputRowsField[i]);
@@ -426,8 +426,8 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
     }
 
     rep.saveStepAttribute(id_transformation, id_step,
-        "result_files_target_step", resultFilesTargetStepMeta == null ? null : resultFilesTargetStepMeta.getName()); //$NON-NLS-1$
-    rep.saveStepAttribute(id_transformation, id_step, "result_files_file_name_field", resultFilesFileNameField); //$NON-NLS-1$
+        "result_files_target_step", resultFilesTargetStepMeta == null ? null : resultFilesTargetStepMeta.getName()); 
+    rep.saveStepAttribute(id_transformation, id_step, "result_files_file_name_field", resultFilesFileNameField); 
   }
 
   public void setDefault() {
@@ -439,20 +439,20 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
     groupField = "";
     groupTime = "";
 
-    executionTimeField = "ExecutionTime"; //$NON-NLS-1$ 
-    executionResultField = "ExecutionResult"; //$NON-NLS-1$ 
-    executionNrErrorsField = "ExecutionNrErrors"; //$NON-NLS-1$ 
-    executionLinesReadField = "ExecutionLinesRead"; //$NON-NLS-1$
-    executionLinesWrittenField = "ExecutionLinesWritten"; //$NON-NLS-1$
-    executionLinesInputField = "ExecutionLinesInput"; //$NON-NLS-1$ 
-    executionLinesOutputField = "ExecutionLinesOutput"; //$NON-NLS-1$
-    executionLinesRejectedField = "ExecutionLinesRejected"; //$NON-NLS-1$
-    executionLinesUpdatedField = "ExecutionLinesUpdated"; //$NON-NLS-1$
-    executionLinesDeletedField = "ExecutionLinesDeleted"; //$NON-NLS-1$
-    executionFilesRetrievedField = "ExecutionFilesRetrieved"; //$NON-NLS-1$
-    executionExitStatusField = "ExecutionExitStatus"; //$NON-NLS-1$
-    executionLogTextField = "ExecutionLogText"; //$NON-NLS-1$
-    executionLogChannelIdField = "ExecutionLogChannelId"; //$NON-NLS-1$
+    executionTimeField = "ExecutionTime";  
+    executionResultField = "ExecutionResult";  
+    executionNrErrorsField = "ExecutionNrErrors";  
+    executionLinesReadField = "ExecutionLinesRead"; 
+    executionLinesWrittenField = "ExecutionLinesWritten"; 
+    executionLinesInputField = "ExecutionLinesInput";  
+    executionLinesOutputField = "ExecutionLinesOutput"; 
+    executionLinesRejectedField = "ExecutionLinesRejected"; 
+    executionLinesUpdatedField = "ExecutionLinesUpdated"; 
+    executionLinesDeletedField = "ExecutionLinesDeleted"; 
+    executionFilesRetrievedField = "ExecutionFilesRetrieved"; 
+    executionExitStatusField = "ExecutionExitStatus"; 
+    executionLogTextField = "ExecutionLogText"; 
+    executionLogChannelIdField = "ExecutionLogChannelId"; 
 
     resultFilesFileNameField = "FileName";
   }
@@ -604,7 +604,7 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
             }
           } else {
             throw new KettleException(BaseMessages.getString(PKG,
-                "TransExecutorMeta.Exception.UnableToLoadTrans", realTransname) + realDirectory); //$NON-NLS-1$ //$NON-NLS-2$
+                "TransExecutorMeta.Exception.UnableToLoadTrans", realTransname) + realDirectory);  
           }
         }
         break;
@@ -629,22 +629,22 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
     CheckResult cr;
     if (prev == null || prev.size() == 0) {
       cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(PKG,
-          "TransExecutorMeta.CheckResult.NotReceivingAnyFields"), stepinfo); //$NON-NLS-1$
+          "TransExecutorMeta.CheckResult.NotReceivingAnyFields"), stepinfo); 
       remarks.add(cr);
     } else {
       cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG,
-          "TransExecutorMeta.CheckResult.StepReceivingFields", prev.size() + ""), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
+          "TransExecutorMeta.CheckResult.StepReceivingFields", prev.size() + ""), stepinfo);  
       remarks.add(cr);
     }
 
     // See if we have input streams leading to this step!
     if (input.length > 0) {
       cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG,
-          "TransExecutorMeta.CheckResult.StepReceivingFieldsFromOtherSteps"), stepinfo); //$NON-NLS-1$
+          "TransExecutorMeta.CheckResult.StepReceivingFieldsFromOtherSteps"), stepinfo); 
       remarks.add(cr);
     } else {
       cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG,
-          "TransExecutorMeta.CheckResult.NoInputReceived"), stepinfo); //$NON-NLS-1$
+          "TransExecutorMeta.CheckResult.NoInputReceived"), stepinfo); 
       remarks.add(cr);
     }
   }
@@ -718,7 +718,7 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
 
       return proposedNewFilename;
     } catch (Exception e) {
-      throw new KettleException(BaseMessages.getString(PKG, "TransExecutorMeta.Exception.UnableToLoadTrans", fileName)); //$NON-NLS-1$
+      throw new KettleException(BaseMessages.getString(PKG, "TransExecutorMeta.Exception.UnableToLoadTrans", fileName)); 
     }
   }
 

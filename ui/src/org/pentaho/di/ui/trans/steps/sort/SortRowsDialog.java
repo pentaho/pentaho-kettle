@@ -105,7 +105,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 	private SortRowsMeta input;
     private Map<String, Integer> inputFields;
     private ColumnInfo[] colinf;
-	
+
 	public SortRowsDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
 		super(parent, (BaseStepMeta)in, transMeta, sname);
@@ -313,7 +313,6 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
         fdUniqueRows.right = new FormAttachment(100, 0);
         wUniqueRows.setLayoutData(fdUniqueRows);
 
-
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 		wGet=new Button(shell, SWT.PUSH);
@@ -338,6 +337,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 				new ColumnInfo(BaseMessages.getString(PKG, "SortRowsDialog.Fieldname.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
 				new ColumnInfo(BaseMessages.getString(PKG, "SortRowsDialog.Ascending.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString(PKG, "System.Combo.Yes"), BaseMessages.getString(PKG, "System.Combo.No") } ),
 				new ColumnInfo(BaseMessages.getString(PKG, "SortRowsDialog.CaseInsensitive.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString(PKG, "System.Combo.Yes"), BaseMessages.getString(PKG, "System.Combo.No") } ),
+				new ColumnInfo(BaseMessages.getString(PKG, "SortRowsDialog.PreSortedField.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString(PKG, "System.Combo.Yes"), BaseMessages.getString(PKG, "System.Combo.No") } )
 			};
 		
 		wFields=new TableView(transMeta, shell, 
@@ -471,8 +471,9 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 			ti.setText(1, input.getFieldName()[i]);
 			ti.setText(2, input.getAscending()[i]?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No"));
 			ti.setText(3, input.getCaseSensitive()[i]?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No"));
+			ti.setText(4, input.getPreSortedField()[i]?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No"));
 		}
-
+		
     wFields.setRowNums();
 		wFields.optWidth(true);
 		
@@ -514,8 +515,9 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 			input.getFieldName()[i] = ti.getText(1);
 			input.getAscending()[i] = Const.isEmpty(ti.getText(2)) || BaseMessages.getString(PKG, "System.Combo.Yes").equalsIgnoreCase(ti.getText(2));
 			input.getCaseSensitive()[i] = BaseMessages.getString(PKG, "System.Combo.Yes").equalsIgnoreCase(ti.getText(3));
+			input.getPreSortedField()[i] = BaseMessages.getString(PKG, "System.Combo.Yes").equalsIgnoreCase(ti.getText(4));
 		}
-		
+
 		dispose();
 	}
 	

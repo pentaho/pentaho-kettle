@@ -146,28 +146,28 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 	{
         StringBuffer retval = new StringBuffer();
 
-        retval.append("    <keys>"+Const.CR); //$NON-NLS-1$
+        retval.append("    <keys>"+Const.CR); 
         for (int i=0;i<keyFields.length;i++)
         {
-            retval.append("      "+XMLHandler.addTagValue("key", keyFields[i])); //$NON-NLS-1$ //$NON-NLS-2$
+            retval.append("      "+XMLHandler.addTagValue("key", keyFields[i]));  
         }
-        retval.append("    </keys>"+Const.CR); //$NON-NLS-1$
+        retval.append("    </keys>"+Const.CR); 
         
-        retval.append("    <values>"+Const.CR); //$NON-NLS-1$
+        retval.append("    <values>"+Const.CR); 
         for (int i=0;i<valueFields.length;i++)
         {
-            retval.append("      "+XMLHandler.addTagValue("value", valueFields[i])); //$NON-NLS-1$ //$NON-NLS-2$
+            retval.append("      "+XMLHandler.addTagValue("value", valueFields[i]));  
         }
-        retval.append("    </values>"+Const.CR); //$NON-NLS-1$
+        retval.append("    </values>"+Const.CR); 
 
-        retval.append(XMLHandler.addTagValue("flag_field", flagField));         //$NON-NLS-1$
+        retval.append(XMLHandler.addTagValue("flag_field", flagField));         
 
         List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
-		retval.append(XMLHandler.addTagValue("reference", infoStreams.get(0).getStepname()));		 //$NON-NLS-1$
-		retval.append(XMLHandler.addTagValue("compare", infoStreams.get(1).getStepname()));		 //$NON-NLS-1$
-		retval.append("    <compare>"+Const.CR); //$NON-NLS-1$
+		retval.append(XMLHandler.addTagValue("reference", infoStreams.get(0).getStepname()));		 
+		retval.append(XMLHandler.addTagValue("compare", infoStreams.get(1).getStepname()));		 
+		retval.append("    <compare>"+Const.CR); 
 				
-		retval.append("    </compare>"+Const.CR); //$NON-NLS-1$
+		retval.append("    </compare>"+Const.CR); 
 
 		return retval.toString();
 	}
@@ -178,38 +178,38 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{ 
             
-            Node keysnode   = XMLHandler.getSubNode(stepnode, "keys"); //$NON-NLS-1$
-            Node valuesnode = XMLHandler.getSubNode(stepnode, "values"); //$NON-NLS-1$
+            Node keysnode   = XMLHandler.getSubNode(stepnode, "keys"); 
+            Node valuesnode = XMLHandler.getSubNode(stepnode, "values"); 
             
-		    int nrKeys   = XMLHandler.countNodes(keysnode, "key"); //$NON-NLS-1$
-            int nrValues = XMLHandler.countNodes(valuesnode, "value"); //$NON-NLS-1$
+		    int nrKeys   = XMLHandler.countNodes(keysnode, "key"); 
+            int nrValues = XMLHandler.countNodes(valuesnode, "value"); 
             
             allocate(nrKeys, nrValues);
             
             for (int i=0;i<nrKeys;i++) 
             {
-                Node keynode = XMLHandler.getSubNodeByNr(keysnode, "key", i); //$NON-NLS-1$
+                Node keynode = XMLHandler.getSubNodeByNr(keysnode, "key", i); 
                 keyFields[i] = XMLHandler.getNodeValue(keynode);
             }
             
             for (int i=0;i<nrValues;i++) 
             {
-                Node valuenode = XMLHandler.getSubNodeByNr(valuesnode, "value", i); //$NON-NLS-1$
+                Node valuenode = XMLHandler.getSubNodeByNr(valuesnode, "value", i); 
                 valueFields[i] = XMLHandler.getNodeValue(valuenode);
             }
             
-            flagField = XMLHandler.getTagValue(stepnode, "flag_field"); //$NON-NLS-1$
+            flagField = XMLHandler.getTagValue(stepnode, "flag_field"); 
             
             List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
             StreamInterface referenceStream = infoStreams.get(0);
             StreamInterface compareStream = infoStreams.get(1);
 
-			compareStream.setSubject( XMLHandler.getTagValue(stepnode, "compare") ); //$NON-NLS-1$
-			referenceStream.setSubject( XMLHandler.getTagValue(stepnode, "reference") ); //$NON-NLS-1$
+			compareStream.setSubject( XMLHandler.getTagValue(stepnode, "compare") ); 
+			referenceStream.setSubject( XMLHandler.getTagValue(stepnode, "reference") ); 
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "MergeRowsMeta.Exception.UnableToLoadStepInfo"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "MergeRowsMeta.Exception.UnableToLoadStepInfo"), e); 
 		}
 	}
 	
@@ -223,32 +223,32 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-            int nrKeys = rep.countNrStepAttributes(id_step, "key_field"); //$NON-NLS-1$
-            int nrValues = rep.countNrStepAttributes(id_step, "value_field"); //$NON-NLS-1$
+            int nrKeys = rep.countNrStepAttributes(id_step, "key_field"); 
+            int nrValues = rep.countNrStepAttributes(id_step, "value_field"); 
             
 			allocate(nrKeys, nrValues);
             
             for (int i=0;i<nrKeys;i++)
             {
-                keyFields[i] = rep.getStepAttributeString(id_step, i, "key_field"); //$NON-NLS-1$
+                keyFields[i] = rep.getStepAttributeString(id_step, i, "key_field"); 
             }
             for (int i=0;i<nrValues;i++)
             {
-                valueFields[i] = rep.getStepAttributeString(id_step, i, "value_field"); //$NON-NLS-1$
+                valueFields[i] = rep.getStepAttributeString(id_step, i, "value_field"); 
             }
 
-            flagField  =   rep.getStepAttributeString (id_step, "flag_field");  //$NON-NLS-1$
+            flagField  =   rep.getStepAttributeString (id_step, "flag_field");  
 
             List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
             StreamInterface referenceStream = infoStreams.get(0);
             StreamInterface compareStream = infoStreams.get(1);
 
-			referenceStream.setSubject( rep.getStepAttributeString (id_step, "reference") );  //$NON-NLS-1$
-			compareStream.setSubject( rep.getStepAttributeString (id_step, "compare") );  //$NON-NLS-1$
+			referenceStream.setSubject( rep.getStepAttributeString (id_step, "reference") );  
+			compareStream.setSubject( rep.getStepAttributeString (id_step, "compare") );  
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "MergeRowsMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "MergeRowsMeta.Exception.UnexpectedErrorReadingStepInfo"), e); 
 		}
 	}
 
@@ -265,26 +265,26 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 		{
             for (int i=0;i<keyFields.length;i++)
             {
-                rep.saveStepAttribute(id_transformation, id_step, i, "key_field", keyFields[i]); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "key_field", keyFields[i]); 
             }
 
             for (int i=0;i<valueFields.length;i++)
             {
-                rep.saveStepAttribute(id_transformation, id_step, i, "value_field", valueFields[i]); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "value_field", valueFields[i]); 
             }
 
-            rep.saveStepAttribute(id_transformation, id_step, "flag_field", flagField); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "flag_field", flagField); 
 
             List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
             StreamInterface referenceStream = infoStreams.get(0);
             StreamInterface compareStream = infoStreams.get(1);
 
-			rep.saveStepAttribute(id_transformation, id_step, "reference", referenceStream.getStepname()); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "compare", compareStream.getStepname()); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "reference", referenceStream.getStepname()); 
+			rep.saveStepAttribute(id_transformation, id_step, "compare", compareStream.getStepname()); 
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "MergeRowsMeta.Exception.UnableToSaveStepInfo")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "MergeRowsMeta.Exception.UnableToSaveStepInfo")+id_step, e); 
 		}
 	}
 	

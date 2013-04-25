@@ -188,7 +188,7 @@ public class DimensionTableDialog extends Dialog
 	private void addTableTab()
 	{
 		wTableTab=new CTabItem(wTabFolder, SWT.NONE);
-		wTableTab.setText(BaseMessages.getString(PKG, "DimensionTableDialog.TableTab.Label")); //$NON-NLS-1$
+		wTableTab.setText(BaseMessages.getString(PKG, "DimensionTableDialog.TableTab.Label")); 
         
 		Composite wTableComp = new Composite(wTabFolder, SWT.NONE);
 		props.setLook(wTableComp);
@@ -291,7 +291,7 @@ public class DimensionTableDialog extends Dialog
     private void addAttributesTab()
     {
         wTablesTab=new CTabItem(wTabFolder, SWT.NONE);
-        wTablesTab.setText(BaseMessages.getString(PKG, "DimensionTableDialog.AttributesTab.Label")); //$NON-NLS-1$
+        wTablesTab.setText(BaseMessages.getString(PKG, "DimensionTableDialog.AttributesTab.Label")); 
 
         FormLayout paramLayout = new FormLayout ();
         paramLayout.marginWidth  = Const.MARGIN;
@@ -307,7 +307,7 @@ public class DimensionTableDialog extends Dialog
         wAddDefaultFields.addSelectionListener(new SelectionAdapter() {  public void widgetSelected(SelectionEvent e) { addDefaultAttributes(); }});
 
         Label wlAtrributes = new Label(wTablesComp, SWT.RIGHT);
-        wlAtrributes.setText(BaseMessages.getString(PKG, "DimensionTableDialog.Attributes.Label")); //$NON-NLS-1$
+        wlAtrributes.setText(BaseMessages.getString(PKG, "DimensionTableDialog.Attributes.Label")); 
         props.setLook(wlAtrributes);
         FormData fdlAttributes = new FormData();
         fdlAttributes.left = new FormAttachment(0, 0);
@@ -337,17 +337,17 @@ public class DimensionTableDialog extends Dialog
         //  name, description, field type, physical column name, data type, length, precision, source db, source table, source column, conversion remarks 
         //
         ColumnInfo[] colinf=new ColumnInfo[] {
-            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.Name.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
-            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.Description.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
-            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.FieldType.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO, attributeTypes), //$NON-NLS-1$
-            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.PhysicalName.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
-            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.DataType.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO, dataTypes), //$NON-NLS-1$
-            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.DataLength.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   true), //$NON-NLS-1$
-            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.DataPrecision.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   true), //$NON-NLS-1$
-            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.SourceDatabase.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO, databaseNames), //$NON-NLS-1$
-            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.SourceTable.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
-            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.SourceColumn.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
-            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.ConversionLogicRemarks.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
+            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.Name.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false), 
+            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.Description.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false), 
+            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.FieldType.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO, attributeTypes), 
+            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.PhysicalName.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false), 
+            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.DataType.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO, dataTypes), 
+            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.DataLength.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   true), 
+            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.DataPrecision.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   true), 
+            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.SourceDatabase.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO, databaseNames), 
+            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.SourceTable.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false), 
+            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.SourceColumn.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false), 
+            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.ConversionLogicRemarks.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false), 
         };
         
         wAttributes=new TableView(new Variables(), wTablesComp, 

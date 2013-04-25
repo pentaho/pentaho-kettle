@@ -23,12 +23,20 @@
 package org.pentaho.di.trans.step;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.Encoder;
-import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -54,7 +62,11 @@ public class StepStatus
     private boolean stopped;
     private boolean paused;
     
+    private RowMetaInterface sampleRowMeta;
+    private List<Object[]> sampleRows;
+    
     public StepStatus() {
+      sampleRows = Collections.synchronizedList(new LinkedList<Object[]>());
     }
     
     public StepStatus(StepInterface baseStep)
@@ -87,8 +99,8 @@ public class StepStatus
         this.errors = baseStep.getErrors();
         this.statusDescription = baseStep.getStatus().getDescription();
         this.seconds = Math.floor((lapsed * 10) + 0.5) / 10;
-        this.speed = lapsed == 0 ? "-" : " " + speedDf.format(speedNumber); //$NON-NLS-1$ //$NON-NLS-2$
-        this.priority = baseStep.isRunning() ? "   " + baseStep.rowsetInputSize() + "/" + baseStep.rowsetOutputSize() : "-"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        this.speed = lapsed == 0 ? "-" : " " + speedDf.format(speedNumber);  
+        this.priority = baseStep.isRunning() ? "   " + baseStep.rowsetInputSize() + "/" + baseStep.rowsetOutputSize() : "-";   //$NON-NLS-3$ //$NON-NLS-4$
         this.stopped = baseStep.isStopped();
         this.paused = baseStep.isPaused();
     }
@@ -109,28 +121,53 @@ public class StepStatus
           "<th>" + encoder.encodeForHTML(speed) + "</th> " + "<th>" + encoder.encodeForHTML(priority) + "</th> " + "</tr>";
     }
 
-    public String getXML()
+    public String getXML() throws KettleException
     {
-        return  "<"+XML_TAG+">" +
-                    XMLHandler.addTagValue("stepname", stepname, false) +
-                    XMLHandler.addTagValue("copy", copy, false) +
-                    XMLHandler.addTagValue("linesRead", linesRead, false) +
-                    XMLHandler.addTagValue("linesWritten", linesWritten, false) +
-                    XMLHandler.addTagValue("linesInput", linesInput, false) +
-                    XMLHandler.addTagValue("linesOutput", linesOutput, false) +
-                    XMLHandler.addTagValue("linesUpdated", linesUpdated, false) +
-                    XMLHandler.addTagValue("linesRejected", linesRejected, false) +
-                    XMLHandler.addTagValue("errors", errors, false) +
-                    XMLHandler.addTagValue("statusDescription", statusDescription, false) +
-                    XMLHandler.addTagValue("seconds", seconds, false) +
-                    XMLHandler.addTagValue("speed", speed, false) +
-                    XMLHandler.addTagValue("priority", priority, false) +
-                    XMLHandler.addTagValue("stopped", stopped, false) +
-                    XMLHandler.addTagValue("paused", paused, false) +
-                "</"+XML_TAG+">";
+      try {
+        StringBuilder xml = new StringBuilder();
+        xml.append(XMLHandler.openTag(XML_TAG));
+        
+        xml.append(XMLHandler.addTagValue("stepname", stepname, false));
+        xml.append(XMLHandler.addTagValue("copy", copy, false));
+        xml.append(        XMLHandler.addTagValue("linesRead", linesRead, false));
+        xml.append(XMLHandler.addTagValue("linesWritten", linesWritten, false));
+        xml.append(XMLHandler.addTagValue("linesInput", linesInput, false));
+        xml.append(XMLHandler.addTagValue("linesOutput", linesOutput, false));
+        xml.append(XMLHandler.addTagValue("linesUpdated", linesUpdated, false));
+        xml.append(XMLHandler.addTagValue("linesRejected", linesRejected, false));
+        xml.append(XMLHandler.addTagValue("errors", errors, false));
+        xml.append(XMLHandler.addTagValue("statusDescription", statusDescription, false));
+        xml.append(XMLHandler.addTagValue("seconds", seconds, false));
+        xml.append(XMLHandler.addTagValue("speed", speed, false));
+        xml.append(XMLHandler.addTagValue("priority", priority, false));
+        xml.append(XMLHandler.addTagValue("stopped", stopped, false));
+        xml.append(XMLHandler.addTagValue("paused", paused, false));
+        
+        if (sampleRowMeta!=null) {
+          xml.append(XMLHandler.openTag("samples"));
+          xml.append(sampleRowMeta.getMetaXML());
+          xml.append(Const.CR);
+          if (sampleRows!=null) {
+            synchronized(sampleRows) {
+              Iterator<Object[]> iterator = sampleRows.iterator();
+              while (iterator.hasNext()) {
+                Object[] sampleRow = iterator.next();
+                xml.append(sampleRowMeta.getDataXML(sampleRow));
+                xml.append(Const.CR);
+              }
+            }
+          }
+          xml.append(XMLHandler.closeTag("samples"));
+        }
+        
+        xml.append(XMLHandler.closeTag(XML_TAG));
+        return xml.toString();
+      } catch(Exception e) {
+        throw new KettleException("Unable to serialize step '"+stepname+"' status data to XML", e);
+      }
     }
     
-    public StepStatus(Node node)
+    public StepStatus(Node node) throws KettleException
     {
         stepname = XMLHandler.getTagValue(node, "stepname");
         copy = Integer.parseInt( XMLHandler.getTagValue(node, "copy") );
@@ -147,9 +184,23 @@ public class StepStatus
         priority = XMLHandler.getTagValue(node, "priority");
         stopped = "Y".equalsIgnoreCase(XMLHandler.getTagValue(node, "stopped"));
         paused = "Y".equalsIgnoreCase(XMLHandler.getTagValue(node, "paused"));
+        
+        Node samplesNode = XMLHandler.getSubNode(node, "samples");
+        if (samplesNode!=null) {
+          Node rowMetaNode = XMLHandler.getSubNode(samplesNode, RowMeta.XML_META_TAG);
+          if (rowMetaNode!=null) {
+            sampleRowMeta = new RowMeta(rowMetaNode);
+            sampleRows = new ArrayList<Object[]>();
+            List<Node> dataNodes = XMLHandler.getNodes(samplesNode, RowMeta.XML_DATA_TAG);
+            for (Node dataNode : dataNodes) {
+              Object[] sampleRow = sampleRowMeta.getRow(dataNode);
+              sampleRows.add(sampleRow);
+            }
+          }
+        }
     }
     
-    public StepStatus fromXML(String xml) throws KettleXMLException
+    public StepStatus fromXML(String xml) throws KettleException
     {
         Document document = XMLHandler.loadXMLString(xml);
         return new StepStatus(XMLHandler.getSubNode(document, XML_TAG));
@@ -466,5 +517,21 @@ public class StepStatus
 	public void setPaused(boolean paused) {
 		this.paused = paused;
 	}
+
+  public RowMetaInterface getSampleRowMeta() {
+    return sampleRowMeta;
+  }
+
+  public void setSampleRowMeta(RowMetaInterface sampleRowMeta) {
+    this.sampleRowMeta = sampleRowMeta;
+  }
+
+  public List<Object[]> getSampleRows() {
+    return sampleRows;
+  }
+
+  public void setSampleRows(List<Object[]> sampleRows) {
+    this.sampleRows = sampleRows;
+  }
 
 }

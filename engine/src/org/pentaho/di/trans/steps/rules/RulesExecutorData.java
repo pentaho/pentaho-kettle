@@ -109,7 +109,7 @@ public class RulesExecutorData extends BaseStepData implements StepDataInterface
 
     if (kbuilder.hasErrors()) {
       System.out.println(kbuilder.getErrors().toString());
-      throw new RuntimeException(BaseMessages.getString(PKG, "RulesData.Error.CompileDRL")); //$NON-NLS-1$
+      throw new RuntimeException(BaseMessages.getString(PKG, "RulesData.Error.CompileDRL")); 
     }
 
     Collection<KnowledgePackage> pkgs = kbuilder.getKnowledgePackages();
@@ -121,7 +121,7 @@ public class RulesExecutorData extends BaseStepData implements StepDataInterface
 
   public void initializeColumns(RowMetaInterface inputRowMeta) {
     if (inputRowMeta == null) {
-      BaseMessages.getString(PKG, "RulesData.InitializeColumns.InputRowMetaIsNull"); //$NON-NLS-1$
+      BaseMessages.getString(PKG, "RulesData.InitializeColumns.InputRowMetaIsNull"); 
       return;
     }
 

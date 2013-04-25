@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
@@ -141,7 +141,7 @@ public class RunJobServlet extends BaseHttpServlet implements CartePluginInterfa
         out.flush();
 
       } catch (Exception executionException) {
-        String logging = CentralLogStore.getAppender().getBuffer(job.getLogChannelId(), false).toString();
+        String logging = KettleLogStore.getAppender().getBuffer(job.getLogChannelId(), false).toString();
         throw new KettleException("Error executing Job: " + logging, executionException);
       }
     } catch (Exception ex) {

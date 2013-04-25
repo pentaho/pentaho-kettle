@@ -84,7 +84,7 @@ public class UniqueRowsByHashSet extends BaseStep implements StepInterface
 				data.fieldnrs[i] = getInputRowMeta().indexOfValue(meta.getCompareFields()[i]);
 				if (data.fieldnrs[i]<0)
 				{
-					logError(BaseMessages.getString(PKG, "UniqueRowsByHashSet.Log.CouldNotFindFieldInRow",meta.getCompareFields()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "UniqueRowsByHashSet.Log.CouldNotFindFieldInRow",meta.getCompareFields()[i]));  
 					setErrors(1);
 					stopAll();
 					return false;
@@ -112,7 +112,7 @@ public class UniqueRowsByHashSet extends BaseStep implements StepInterface
 		
         if (checkFeedback(getLinesRead())) 
         {
-        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "UniqueRowsByHashSet.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "UniqueRowsByHashSet.Log.LineNumber")+getLinesRead()); 
         }
 			
 		return true;

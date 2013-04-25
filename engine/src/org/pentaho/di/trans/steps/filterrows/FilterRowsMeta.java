@@ -126,16 +126,16 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
         StringBuffer retval = new StringBuffer(200);
         
         List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
-		retval.append(XMLHandler.addTagValue("send_true_to", targetStreams.get(0).getStepname()));		 //$NON-NLS-1$
-		retval.append(XMLHandler.addTagValue("send_false_to", targetStreams.get(1).getStepname()));		 //$NON-NLS-1$
-		retval.append("    <compare>").append(Const.CR); //$NON-NLS-1$
+		retval.append(XMLHandler.addTagValue("send_true_to", targetStreams.get(0).getStepname()));		 
+		retval.append(XMLHandler.addTagValue("send_false_to", targetStreams.get(1).getStepname()));		 
+		retval.append("    <compare>").append(Const.CR); 
 		
 		if (condition!=null)
 		{
 			retval.append(condition.getXML());
 		}
 		
-		retval.append("    </compare>").append(Const.CR); //$NON-NLS-1$
+		retval.append("    </compare>").append(Const.CR); 
 
 		return retval.toString();
 	}
@@ -146,11 +146,11 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
 
-			targetStreams.get(0).setSubject( XMLHandler.getTagValue(stepnode, "send_true_to") ); //$NON-NLS-1$
-			targetStreams.get(1).setSubject( XMLHandler.getTagValue(stepnode, "send_false_to") ); //$NON-NLS-1$
+			targetStreams.get(0).setSubject( XMLHandler.getTagValue(stepnode, "send_true_to") ); 
+			targetStreams.get(1).setSubject( XMLHandler.getTagValue(stepnode, "send_false_to") ); 
 
-			Node compare = XMLHandler.getSubNode(stepnode, "compare"); //$NON-NLS-1$
-			Node condnode = XMLHandler.getSubNode(compare, "condition"); //$NON-NLS-1$
+			Node compare = XMLHandler.getSubNode(stepnode, "compare"); 
+			Node condnode = XMLHandler.getSubNode(compare, "condition"); 
 	
 			// The new situation...
 			if (condnode!=null)
@@ -161,32 +161,32 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				condition = new Condition();
 				
-				int nrkeys   = XMLHandler.countNodes(compare, "key"); //$NON-NLS-1$
+				int nrkeys   = XMLHandler.countNodes(compare, "key"); 
 				if (nrkeys==1)
 				{
-					Node knode = XMLHandler.getSubNodeByNr(compare, "key", 0); //$NON-NLS-1$
+					Node knode = XMLHandler.getSubNodeByNr(compare, "key", 0); 
 					
-					String key         = XMLHandler.getTagValue(knode, "name"); //$NON-NLS-1$
-					String value       = XMLHandler.getTagValue(knode, "value"); //$NON-NLS-1$
-					String field       = XMLHandler.getTagValue(knode, "field"); //$NON-NLS-1$
-					String comparator  = XMLHandler.getTagValue(knode, "condition"); //$NON-NLS-1$
+					String key         = XMLHandler.getTagValue(knode, "name"); 
+					String value       = XMLHandler.getTagValue(knode, "value"); 
+					String field       = XMLHandler.getTagValue(knode, "field"); 
+					String comparator  = XMLHandler.getTagValue(knode, "condition"); 
 	
 					condition.setOperator( Condition.OPERATOR_NONE );
 					condition.setLeftValuename(key);
 					condition.setFunction( Condition.getFunction(comparator) );
 					condition.setRightValuename(field);
-					condition.setRightExact( new ValueMetaAndData("value", value ) ); //$NON-NLS-1$
+					condition.setRightExact( new ValueMetaAndData("value", value ) ); 
 				}
 				else
 				{
 					for (int i=0;i<nrkeys;i++)
 					{
-						Node knode = XMLHandler.getSubNodeByNr(compare, "key", i); //$NON-NLS-1$
+						Node knode = XMLHandler.getSubNodeByNr(compare, "key", i); 
 						
-						String key         = XMLHandler.getTagValue(knode, "name"); //$NON-NLS-1$
-						String value       = XMLHandler.getTagValue(knode, "value"); //$NON-NLS-1$
-						String field       = XMLHandler.getTagValue(knode, "field"); //$NON-NLS-1$
-						String comparator  = XMLHandler.getTagValue(knode, "condition"); //$NON-NLS-1$
+						String key         = XMLHandler.getTagValue(knode, "name"); 
+						String value       = XMLHandler.getTagValue(knode, "value"); 
+						String field       = XMLHandler.getTagValue(knode, "field"); 
+						String comparator  = XMLHandler.getTagValue(knode, "condition"); 
 						
 						Condition subc = new Condition();
 						if (i>0) subc.setOperator( Condition.OPERATOR_OR   );
@@ -194,7 +194,7 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 						subc.setLeftValuename(key);
 						subc.setFunction( Condition.getFunction(comparator) );
 						subc.setRightValuename(field);
-						subc.setRightExact( new ValueMetaAndData("value", value ) ); //$NON-NLS-1$
+						subc.setRightExact( new ValueMetaAndData("value", value ) ); 
 						
 						condition.addCondition(subc);
 					}
@@ -203,7 +203,7 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "FilterRowsMeta.Exception..UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "FilterRowsMeta.Exception..UnableToLoadStepInfoFromXML"), e); 
 		}
 	}
 	
@@ -220,15 +220,15 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 
 			List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
 
-			targetStreams.get(0).setSubject( rep.getStepAttributeString (id_step, "send_true_to") );  //$NON-NLS-1$
-			targetStreams.get(1).setSubject( rep.getStepAttributeString (id_step, "send_false_to") );  //$NON-NLS-1$
+			targetStreams.get(0).setSubject( rep.getStepAttributeString (id_step, "send_true_to") );  
+			targetStreams.get(1).setSubject( rep.getStepAttributeString (id_step, "send_false_to") );  
 
 			condition = rep.loadConditionFromStepAttribute(id_step, "id_condition");
 
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "FilterRowsMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "FilterRowsMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository"), e); 
 		}
 	}
 	
@@ -248,13 +248,13 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 				List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
 
 				rep.saveConditionStepAttribute(id_transformation, id_step, "id_condition", condition);
-				rep.saveStepAttribute(id_transformation, id_step, "send_true_to", targetStreams.get(0).getStepname()); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, "send_false_to", targetStreams.get(1).getStepname()); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, "send_true_to", targetStreams.get(0).getStepname()); 
+				rep.saveStepAttribute(id_transformation, id_step, "send_false_to", targetStreams.get(1).getStepname()); 
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "FilterRowsMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "FilterRowsMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); 
 		}
 	}
         
@@ -276,7 +276,7 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
     public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		CheckResult cr;
-		String error_message = ""; //$NON-NLS-1$
+		String error_message = ""; 
 		
 		List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
 				
@@ -310,18 +310,18 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FilterRowsMeta.CheckResult.ConditionSpecified"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FilterRowsMeta.CheckResult.ConditionSpecified"), stepMeta); 
 		}
 		remarks.add(cr);		
 		
 		// Look up fields in the input stream <prev>
 		if (prev!=null && prev.size()>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FilterRowsMeta.CheckResult.StepReceivingFields",prev.size()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FilterRowsMeta.CheckResult.StepReceivingFields",prev.size()+""), stepMeta);  
 			remarks.add(cr);
 			
 			boolean first=true;
-			error_message = ""; //$NON-NLS-1$
+			error_message = ""; 
 			boolean error_found = false;
 			
 			// What fields are used in the condition?
@@ -334,10 +334,10 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 					if (first)
 					{
 						first=false;
-						error_message+=BaseMessages.getString(PKG, "FilterRowsMeta.CheckResult.FieldsNotFoundFromPreviousStep")+Const.CR; //$NON-NLS-1$
+						error_message+=BaseMessages.getString(PKG, "FilterRowsMeta.CheckResult.FieldsNotFoundFromPreviousStep")+Const.CR; 
 					}
 					error_found=true;
-					error_message+="\t\t"+key[i]+Const.CR;  //$NON-NLS-1$
+					error_message+="\t\t"+key[i]+Const.CR;  
 				}
 			}
 			if (error_found)
@@ -346,13 +346,13 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 			}
 			else
 			{
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FilterRowsMeta.CheckResult.AllFieldsFoundInInputStream"), stepMeta); //$NON-NLS-1$
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FilterRowsMeta.CheckResult.AllFieldsFoundInInputStream"), stepMeta); 
 			}
 			remarks.add(cr);
 		}
 		else
 		{
-			error_message=BaseMessages.getString(PKG, "FilterRowsMeta.CheckResult.CouldNotReadFieldsFromPreviousStep")+Const.CR; //$NON-NLS-1$
+			error_message=BaseMessages.getString(PKG, "FilterRowsMeta.CheckResult.CouldNotReadFieldsFromPreviousStep")+Const.CR; 
 			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 			remarks.add(cr);
 		}
@@ -360,12 +360,12 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FilterRowsMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FilterRowsMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepMeta); 
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "FilterRowsMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "FilterRowsMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepMeta); 
 			remarks.add(cr);
 		}
 	}

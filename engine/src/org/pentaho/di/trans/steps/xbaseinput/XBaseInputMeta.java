@@ -272,23 +272,23 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			dbfFileName        = XMLHandler.getTagValue(stepnode, "file_dbf"); //$NON-NLS-1$
-			rowLimit           = Const.toInt(XMLHandler.getTagValue(stepnode, "limit"), 0); //$NON-NLS-1$
-			rowNrAdded         = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "add_rownr")); //$NON-NLS-1$ //$NON-NLS-2$
-			rowNrField         = XMLHandler.getTagValue(stepnode, "field_rownr"); //$NON-NLS-1$
+			dbfFileName        = XMLHandler.getTagValue(stepnode, "file_dbf"); 
+			rowLimit           = Const.toInt(XMLHandler.getTagValue(stepnode, "limit"), 0); 
+			rowNrAdded         = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "add_rownr"));  
+			rowNrField         = XMLHandler.getTagValue(stepnode, "field_rownr"); 
             
             includeFilename    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "include"));
             filenameField      = XMLHandler.getTagValue(stepnode, "include_field");
             charactersetName   = XMLHandler.getTagValue(stepnode, "charset_name");
             
-            acceptingFilenames = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "accept_filenames")); //$NON-NLS-1$
-            acceptingField     = XMLHandler.getTagValue(stepnode, "accept_field"); //$NON-NLS-1$
-            acceptingStepName  = XMLHandler.getTagValue(stepnode, "accept_stepname"); //$NON-NLS-1$
+            acceptingFilenames = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "accept_filenames")); 
+            acceptingField     = XMLHandler.getTagValue(stepnode, "accept_field"); 
+            acceptingStepName  = XMLHandler.getTagValue(stepnode, "accept_stepname"); 
 
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "XBaseInputMeta.Exception.UnableToReadStepInformationFromXML"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "XBaseInputMeta.Exception.UnableToReadStepInformationFromXML"), e); 
 		}
 	}
 
@@ -344,7 +344,7 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception ke)
 	    {
-			throw new KettleStepException(BaseMessages.getString(PKG, "XBaseInputMeta.Exception.UnableToReadMetaDataFromXBaseFile"), ke); //$NON-NLS-1$
+			throw new KettleStepException(BaseMessages.getString(PKG, "XBaseInputMeta.Exception.UnableToReadMetaDataFromXBaseFile"), ke); 
 	    }
         finally
         {
@@ -374,7 +374,7 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
     	FileInputList fileList = getTextFileList(space);
         if (fileList.nrOfFiles()==0)
         {
-            throw new KettleStepException(BaseMessages.getString(PKG, "XBaseInputMeta.Exception.NoFilesFoundToProcess")); //$NON-NLS-1$
+            throw new KettleStepException(BaseMessages.getString(PKG, "XBaseInputMeta.Exception.NoFilesFoundToProcess")); 
         }
 
         row.addRowMeta( getOutputFields(fileList, name) );
@@ -384,10 +384,10 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		StringBuffer retval=new StringBuffer();
 		
-		retval.append("    " + XMLHandler.addTagValue("file_dbf",    dbfFileName)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    " + XMLHandler.addTagValue("limit",       rowLimit)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    " + XMLHandler.addTagValue("add_rownr",   rowNrAdded)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    " + XMLHandler.addTagValue("field_rownr", rowNrField)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    " + XMLHandler.addTagValue("file_dbf",    dbfFileName));  
+		retval.append("    " + XMLHandler.addTagValue("limit",       rowLimit));  
+		retval.append("    " + XMLHandler.addTagValue("add_rownr",   rowNrAdded));  
+		retval.append("    " + XMLHandler.addTagValue("field_rownr", rowNrField));  
 
         retval.append("    " + XMLHandler.addTagValue("include", includeFilename));
         retval.append("    " + XMLHandler.addTagValue("include_field", filenameField));
@@ -404,10 +404,10 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
 			throws KettleException {
 		try
 		{
-			dbfFileName              =      rep.getStepAttributeString (id_step, "file_dbf"); //$NON-NLS-1$
-			rowLimit              = (int)rep.getStepAttributeInteger(id_step, "limit"); //$NON-NLS-1$
-			rowNrAdded             =      rep.getStepAttributeBoolean(id_step, "add_rownr"); //$NON-NLS-1$
-			rowNrField           =      rep.getStepAttributeString (id_step, "field_rownr"); //$NON-NLS-1$
+			dbfFileName              =      rep.getStepAttributeString (id_step, "file_dbf"); 
+			rowLimit              = (int)rep.getStepAttributeInteger(id_step, "limit"); 
+			rowNrAdded             =      rep.getStepAttributeBoolean(id_step, "add_rownr"); 
+			rowNrField           =      rep.getStepAttributeString (id_step, "field_rownr"); 
             
             includeFilename = rep.getStepAttributeBoolean(id_step, "include");
             filenameField = rep.getStepAttributeString(id_step, "include_field");
@@ -420,7 +420,7 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "XBaseInputMeta.Exception.UnexpectedErrorReadingMetaDataFromRepository"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "XBaseInputMeta.Exception.UnexpectedErrorReadingMetaDataFromRepository"), e); 
 		}
 	}
 
@@ -429,22 +429,22 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			rep.saveStepAttribute(id_transformation, id_step, "file_dbf",        dbfFileName); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "limit",           rowLimit); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "add_rownr",       rowNrAdded); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "field_rownr",     rowNrField); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "file_dbf",        dbfFileName); 
+			rep.saveStepAttribute(id_transformation, id_step, "limit",           rowLimit); 
+			rep.saveStepAttribute(id_transformation, id_step, "add_rownr",       rowNrAdded); 
+			rep.saveStepAttribute(id_transformation, id_step, "field_rownr",     rowNrField); 
             
             rep.saveStepAttribute(id_transformation, id_step, "include", includeFilename);
             rep.saveStepAttribute(id_transformation, id_step, "include_field", filenameField);
             rep.saveStepAttribute(id_transformation, id_step, "charset_name", charactersetName);
 
-            rep.saveStepAttribute(id_transformation, id_step, "accept_filenames", acceptingFilenames); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "accept_field", acceptingField); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "accept_stepname", (acceptingStep!=null?acceptingStep.getName():"") ); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "accept_filenames", acceptingFilenames); 
+            rep.saveStepAttribute(id_transformation, id_step, "accept_field", acceptingField); 
+            rep.saveStepAttribute(id_transformation, id_step, "accept_stepname", (acceptingStep!=null?acceptingStep.getName():"") ); 
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "XBaseInputMeta.Exception.UnableToSaveMetaDataToRepository")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "XBaseInputMeta.Exception.UnableToSaveMetaDataToRepository")+id_step, e); 
 		}
 	}
 
@@ -459,42 +459,42 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
             {
         	     if ( Const.isEmpty(getAcceptingStepName()) ) 
            	     {
-        	    	 cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XBaseInput.Log.Error.InvalidAcceptingStepName"), stepMeta); //$NON-NLS-1$
+        	    	 cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XBaseInput.Log.Error.InvalidAcceptingStepName"), stepMeta); 
         	    	 remarks.add(cr);
                  }
            	
            	     if ( Const.isEmpty(getAcceptingField()) )
            	     {
-           	    	cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XBaseInput.Log.Error.InvalidAcceptingFieldName"), stepMeta); //$NON-NLS-1$
+           	    	cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XBaseInput.Log.Error.InvalidAcceptingFieldName"), stepMeta); 
            	    	remarks.add(cr);
                  }
             }
             else
             {		
-			    cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XBaseInputMeta.Remark.PleaseSelectFileToUse"), stepMeta); //$NON-NLS-1$
+			    cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XBaseInputMeta.Remark.PleaseSelectFileToUse"), stepMeta); 
 			    remarks.add(cr);
             }
 		}
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XBaseInputMeta.Remark.FileToUseIsSpecified"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XBaseInputMeta.Remark.FileToUseIsSpecified"), stepMeta); 
             remarks.add(cr);
 
             XBase xbi = new XBase(getLog(), transMeta.environmentSubstitute(dbfFileName));
             try
             {
                 xbi.open();
-                cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XBaseInputMeta.Remark.FileExistsAndCanBeOpened"), stepMeta); //$NON-NLS-1$
+                cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XBaseInputMeta.Remark.FileExistsAndCanBeOpened"), stepMeta); 
                 remarks.add(cr);
                 
                 RowMetaInterface r = xbi.getFields();
             
-                cr = new CheckResult(CheckResult.TYPE_RESULT_OK, r.size()+BaseMessages.getString(PKG, "XBaseInputMeta.Remark.OutputFieldsCouldBeDetermined"), stepMeta); //$NON-NLS-1$
+                cr = new CheckResult(CheckResult.TYPE_RESULT_OK, r.size()+BaseMessages.getString(PKG, "XBaseInputMeta.Remark.OutputFieldsCouldBeDetermined"), stepMeta); 
                 remarks.add(cr);
             }
             catch(KettleException ke)
             {
-                cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XBaseInputMeta.Remark.NoFieldsCouldBeFoundInFileBecauseOfError")+Const.CR+ke.getMessage(), stepMeta); //$NON-NLS-1$
+                cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XBaseInputMeta.Remark.NoFieldsCouldBeFoundInFileBecauseOfError")+Const.CR+ke.getMessage(), stepMeta); 
                 remarks.add(cr);
             }
             finally
@@ -581,7 +581,7 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
 			}
 			return null;
 		} catch (Exception e) {
-			throw new KettleException(e); //$NON-NLS-1$
+			throw new KettleException(e); 
 		}
 	}
 

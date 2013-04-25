@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointPluginType;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.ConsoleLoggingEventListener;
 import org.pentaho.di.core.logging.LoggingPluginType;
 import org.pentaho.di.core.plugins.DatabasePluginType;
@@ -51,13 +51,13 @@ public class KettleClientEnvironment {
 		
     // Initialize the logging back-end.
     //
-    CentralLogStore.init();
+    KettleLogStore.init();
     
     // Add console output so that folks see what's going on...
     // TODO: make this configurable...
     //
     if (!"Y".equalsIgnoreCase(System.getProperty(Const.KETTLE_DISABLE_CONSOLE_LOGGING, "N"))) {
-      CentralLogStore.getAppender().addLoggingEventListener(new ConsoleLoggingEventListener());
+      KettleLogStore.getAppender().addLoggingEventListener(new ConsoleLoggingEventListener());
     }
     		
 		// Load value meta data plugins

@@ -40,7 +40,7 @@ public class DeleteMessageBox extends MessageBox {
   private static Class<?> PKG = DeleteMessageBox.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   // The title for the message box
-  private static final String title = BaseMessages.getString(PKG, "DeleteMessageBox.Title"); //$NON-NLS-1$ 
+  private static final String title = BaseMessages.getString(PKG, "DeleteMessageBox.Title");  
 
   // The text to display in the dialog
   private String text = null;
@@ -84,7 +84,7 @@ public class DeleteMessageBox extends MessageBox {
     sb.append(text).append(Const.CR);
     if (stepList != null) {
       for (Iterator<String> it = stepList.iterator(); it.hasNext(); ) {
-        sb.append("  - ").append(it.next()).append(Const.CR); //$NON-NLS-1$
+        sb.append("  - ").append(it.next()).append(Const.CR); 
       }
     }
     return sb.toString();

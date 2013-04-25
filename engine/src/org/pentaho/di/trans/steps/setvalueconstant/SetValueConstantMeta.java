@@ -271,12 +271,12 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
 	 {	CheckResult cr;
 		if (prev==null || prev.size()==0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "SetValueConstantMeta.CheckResult.NotReceivingFields"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "SetValueConstantMeta.CheckResult.NotReceivingFields"), stepMeta); 
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SetValueConstantMeta.CheckResult.StepRecevingData",prev.size()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SetValueConstantMeta.CheckResult.StepRecevingData",prev.size()+""), stepMeta);  
 			remarks.add(cr);
 			
 			String error_message = "";
@@ -312,9 +312,9 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
 		
 		// See if we have input streams leading to this step!
 		if (input.length>0)
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SetValueConstantMeta.CheckResult.StepRecevingData2"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SetValueConstantMeta.CheckResult.StepRecevingData2"), stepMeta); 
 		else
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SetValueConstantMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SetValueConstantMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepMeta); 
 		remarks.add(cr);
 	}
 

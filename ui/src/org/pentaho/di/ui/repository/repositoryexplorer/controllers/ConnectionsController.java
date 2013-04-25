@@ -76,7 +76,7 @@ public class ConnectionsController extends LazilyInitializedController implement
 
   @Override
   public String getName() {
-    return "connectionsController"; //$NON-NLS-1$
+    return "connectionsController"; 
   }
 
   public void init(Repository repository) throws ControllerInitializationException {
@@ -93,19 +93,19 @@ public class ConnectionsController extends LazilyInitializedController implement
 
   private void createBindings() {
     refreshConnectionList();
-    connectionsTable = (XulTree) document.getElementById("connections-table"); //$NON-NLS-1$
+    connectionsTable = (XulTree) document.getElementById("connections-table"); 
 
     // Bind the connection table to a list of connections
     bf.setBindingType(Binding.Type.ONE_WAY);
 
     try {
-      bf.createBinding(dbConnectionList, "children", connectionsTable, "elements").fireSourceChanged(); //$NON-NLS-1$ //$NON-NLS-2$
-      (bindButtonNew = bf.createBinding(this, "repReadOnly", "connections-new", "disabled")).fireSourceChanged(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-      (bindButtonEdit = bf.createBinding(this, "repReadOnly", "connections-edit", "disabled")).fireSourceChanged(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-      (bindButtonRemove = bf.createBinding(this, "repReadOnly", "connections-remove", "disabled")).fireSourceChanged(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+      bf.createBinding(dbConnectionList, "children", connectionsTable, "elements").fireSourceChanged();  
+      (bindButtonNew = bf.createBinding(this, "repReadOnly", "connections-new", "disabled")).fireSourceChanged();   //$NON-NLS-3$
+      (bindButtonEdit = bf.createBinding(this, "repReadOnly", "connections-edit", "disabled")).fireSourceChanged();   //$NON-NLS-3$
+      (bindButtonRemove = bf.createBinding(this, "repReadOnly", "connections-remove", "disabled")).fireSourceChanged();   //$NON-NLS-3$
 
       if (repository != null) {
-        bf.createBinding(connectionsTable, "selectedItems", this, "enableButtons"); //$NON-NLS-1$ //$NON-NLS-2$
+        bf.createBinding(connectionsTable, "selectedItems", this, "enableButtons");  
       }
     } catch (Exception ex) {
       // convert to runtime exception so it bubbles up through the UI
@@ -118,7 +118,7 @@ public class ConnectionsController extends LazilyInitializedController implement
     setRepReadOnly(this.repository.getRepositoryMeta().getRepositoryCapabilities().isReadOnly());
 
     // Load the SWT Shell from the explorer dialog
-    shell = ((SwtDialog) document.getElementById("repository-explorer-dialog")).getShell(); //$NON-NLS-1$
+    shell = ((SwtDialog) document.getElementById("repository-explorer-dialog")).getShell(); 
     bf = new DefaultBindingFactory();
     bf.setDocument(this.getXulDomContainer().getDocumentRoot());
 
@@ -181,20 +181,20 @@ public class ConnectionsController extends LazilyInitializedController implement
       getDatabaseDialog().setDatabaseMeta(databaseMeta);
 
       String dbName = getDatabaseDialog().open();
-      if (dbName != null && !dbName.equals(""))//$NON-NLS-1$
+      if (dbName != null && !dbName.equals(""))
       {
         // See if this user connection exists...
         ObjectId idDatabase = repository.getDatabaseID(dbName);
         if (idDatabase == null) {
           repository.insertLogEntry(BaseMessages.getString(PKG,
-              "ConnectionsController.Message.CreatingDatabase", getDatabaseDialog().getDatabaseMeta().getName()));//$NON-NLS-1$
+              "ConnectionsController.Message.CreatingDatabase", getDatabaseDialog().getDatabaseMeta().getName()));
           repository.save(getDatabaseDialog().getDatabaseMeta(), Const.VERSION_COMMENT_INITIAL_VERSION, null);
         } else {
           MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
           mb
               .setMessage(BaseMessages.getString(PKG,
-                  "RepositoryExplorerDialog.Connection.Create.AlreadyExists.Message")); //$NON-NLS-1$
-          mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.AlreadyExists.Title")); //$NON-NLS-1$
+                  "RepositoryExplorerDialog.Connection.Create.AlreadyExists.Message")); 
+          mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.AlreadyExists.Title")); 
           mb.open();
         }
       }
@@ -202,14 +202,14 @@ public class ConnectionsController extends LazilyInitializedController implement
       //
       //      else {
       //        MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-      //        mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.MissingName.Message")); //$NON-NLS-1$
-      //        mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.MissingName.Title")); //$NON-NLS-1$
+      //        mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.MissingName.Message")); 
+      //        mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.MissingName.Title")); 
       //        mb.open();
       //      }
     } catch (KettleException e) {
       new ErrorDialog(shell, BaseMessages.getString(PKG,
-          "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title"), //$NON-NLS-1$
-          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Message"), e); //$NON-NLS-1$
+          "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title"), 
+          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Message"), e); 
     } finally {
       refreshConnectionList();
     }
@@ -227,37 +227,37 @@ public class ConnectionsController extends LazilyInitializedController implement
         ObjectId idDatabase = repository.getDatabaseID(databaseMeta.getName());
         if (idDatabase == null) {
           MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-          mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.DoesNotExists.Message")); //$NON-NLS-1$
-          mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.DoesNotExists.Title")); //$NON-NLS-1$
+          mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.DoesNotExists.Message")); 
+          mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.DoesNotExists.Title")); 
           mb.open();
         } else {
           getDatabaseDialog().setDatabaseMeta(databaseMeta);
           String dbName = getDatabaseDialog().open();
-          if (dbName != null && !dbName.equals("")) //$NON-NLS-1$
+          if (dbName != null && !dbName.equals("")) 
           {
             repository.insertLogEntry(BaseMessages.getString(PKG,
-                "ConnectionsController.Message.UpdatingDatabase", databaseMeta.getName()));//$NON-NLS-1$
+                "ConnectionsController.Message.UpdatingDatabase", databaseMeta.getName()));
             repository.save(databaseMeta, Const.VERSION_COMMENT_EDIT_VERSION, null);
           }
           //          We should be able to tell the difference between a cancel and an empty database name 
           //          
           //          else {
           //            MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-          //            mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.MissingName.Message")); //$NON-NLS-1$
-          //            mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.MissingName.Title")); //$NON-NLS-1$
+          //            mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.MissingName.Message")); 
+          //            mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.MissingName.Title")); 
           //            mb.open();            
           //          }
         }
       } else {
         MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-        mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.NoItemSelected.Message")); //$NON-NLS-1$
-        mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.NoItemSelected.Title")); //$NON-NLS-1$
+        mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.NoItemSelected.Message")); 
+        mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.NoItemSelected.Title")); 
         mb.open();
       }
     } catch (KettleException e) {
       new ErrorDialog(shell, BaseMessages.getString(PKG,
-          "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title"), //$NON-NLS-1$
-          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.UnexpectedError.Message"), e); //$NON-NLS-1$
+          "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title"), 
+          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.UnexpectedError.Message"), e); 
     } finally {
       refreshConnectionList();
     }
@@ -279,8 +279,8 @@ public class ConnectionsController extends LazilyInitializedController implement
             if (idDatabase == null) {
               MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
               mb.setMessage(BaseMessages.getString(PKG,
-                  "RepositoryExplorerDialog.Connection.Delete.DoesNotExists.Message", databaseMeta.getName())); //$NON-NLS-1$
-              mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Delete.Title")); //$NON-NLS-1$
+                  "RepositoryExplorerDialog.Connection.Delete.DoesNotExists.Message", databaseMeta.getName())); 
+              mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Delete.Title")); 
               mb.open();
             } else {
               repository.deleteDatabaseMeta(databaseMeta.getName());
@@ -289,14 +289,14 @@ public class ConnectionsController extends LazilyInitializedController implement
         }
       } else {
         MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-        mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.NoItemSelected.Message")); //$NON-NLS-1$
-        mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Delete.Title")); //$NON-NLS-1$
+        mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.NoItemSelected.Message")); 
+        mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Delete.Title")); 
         mb.open();
       }
     } catch (KettleException e) {
       new ErrorDialog(shell, BaseMessages.getString(PKG,
-          "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title"), //$NON-NLS-1$
-          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Remove.UnexpectedError.Message"), e); //$NON-NLS-1$
+          "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title"), 
+          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Remove.UnexpectedError.Message"), e); 
     } finally {
       refreshConnectionList();
     }
@@ -315,9 +315,9 @@ public class ConnectionsController extends LazilyInitializedController implement
     enableButtons(true, enableEdit, enableRemove);
   }
   public void enableButtons(boolean enableNew, boolean enableEdit, boolean enableRemove) {
-    XulButton bNew = (XulButton) document.getElementById("connections-new"); //$NON-NLS-1$
-    XulButton bEdit = (XulButton) document.getElementById("connections-edit"); //$NON-NLS-1$
-    XulButton bRemove = (XulButton) document.getElementById("connections-remove"); //$NON-NLS-1$
+    XulButton bNew = (XulButton) document.getElementById("connections-new"); 
+    XulButton bEdit = (XulButton) document.getElementById("connections-edit"); 
+    XulButton bRemove = (XulButton) document.getElementById("connections-remove"); 
 
     bNew.setDisabled(!enableNew);
     bEdit.setDisabled(!enableEdit);

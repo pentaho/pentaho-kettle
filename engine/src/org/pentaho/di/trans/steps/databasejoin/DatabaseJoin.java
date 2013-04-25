@@ -69,7 +69,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 			
 			data.lookupRowMeta = new RowMeta();
 			
-			if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "DatabaseJoin.Log.CheckingRow")+rowMeta.getString(rowData)); //$NON-NLS-1$
+			if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "DatabaseJoin.Log.CheckingRow")+rowMeta.getString(rowData)); 
 			
 			data.keynrs = new int[meta.getParameterField().length];
 			
@@ -78,7 +78,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 				data.keynrs[i]=rowMeta.indexOfValue(meta.getParameterField()[i]);
 				if (data.keynrs[i]<0)
 				{
-					throw new KettleStepException(BaseMessages.getString(PKG, "DatabaseJoin.Exception.FieldNotFound",meta.getParameterField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleStepException(BaseMessages.getString(PKG, "DatabaseJoin.Exception.FieldNotFound",meta.getParameterField()[i]));  
 				}
 				
 				data.lookupRowMeta.addValueMeta( rowMeta.getValueMeta(data.keynrs[i]).clone() );
@@ -115,7 +115,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 			// we have to clone, otherwise we only get the last new value
 			putRow(data.outputRowMeta, data.outputRowMeta.cloneRow(newRow));
 			
-			if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DatabaseJoin.Log.PutoutRow")+data.outputRowMeta.getString(newRow)); //$NON-NLS-1$
+			if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DatabaseJoin.Log.PutoutRow")+data.outputRowMeta.getString(newRow)); 
 			
 			// Get a new row
 			if (meta.getRowLimit()==0 || counter<meta.getRowLimit()) 
@@ -166,7 +166,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 			
             if (checkFeedback(getLinesRead())) 
             {
-            	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "DatabaseJoin.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+            	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "DatabaseJoin.Log.LineNumber")+getLinesRead()); 
             }
 		}
 		catch(KettleException e)
@@ -180,7 +180,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 			else
 			{
 
-				logError(BaseMessages.getString(PKG, "DatabaseJoin.Log.ErrorInStepRunning")+e.getMessage(), e); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "DatabaseJoin.Log.ErrorInStepRunning")+e.getMessage(), e); 
 				setErrors(1);
 				stopAll();
 				setOutputDone();  // signal end to receiver(s)
@@ -238,7 +238,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface
                     data.db.connect(getPartitionID());
                 }
 				
-                if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "DatabaseJoin.Log.ConnectedToDB")); //$NON-NLS-1$
+                if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "DatabaseJoin.Log.ConnectedToDB")); 
 	
                 String sql=meta.getSql();
                 if(meta.isVariableReplace()) sql=environmentSubstitute(sql);
@@ -251,7 +251,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 			}
 			catch(KettleException e)
 			{
-				logError(BaseMessages.getString(PKG, "DatabaseJoin.Log.DatabaseError")+e.getMessage(), e); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "DatabaseJoin.Log.DatabaseError")+e.getMessage(), e); 
 				if (data.db!=null) {
                 	data.db.disconnect();
 				}

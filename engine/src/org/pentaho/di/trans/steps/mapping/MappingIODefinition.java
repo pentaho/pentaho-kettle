@@ -102,19 +102,19 @@ public class MappingIODefinition implements Cloneable {
 		
 		this();
 		
-		inputStepname = XMLHandler.getTagValue(mappingNode, "input_step");  //$NON-NLS-1$
-		outputStepname = XMLHandler.getTagValue(mappingNode, "output_step");  //$NON-NLS-1$
-		mainDataPath =  "Y".equalsIgnoreCase(XMLHandler.getTagValue(mappingNode, "main_path"));  //$NON-NLS-1$ $NON-NLS-2$
-		renamingOnOutput = "Y".equalsIgnoreCase(XMLHandler.getTagValue(mappingNode, "rename_on_output"));  //$NON-NLS-1$ $NON-NLS-2$
-		description = XMLHandler.getTagValue(mappingNode, "description");  //$NON-NLS-1$
+		inputStepname = XMLHandler.getTagValue(mappingNode, "input_step");  
+		outputStepname = XMLHandler.getTagValue(mappingNode, "output_step");  
+		mainDataPath =  "Y".equalsIgnoreCase(XMLHandler.getTagValue(mappingNode, "main_path"));   
+		renamingOnOutput = "Y".equalsIgnoreCase(XMLHandler.getTagValue(mappingNode, "rename_on_output"));   
+		description = XMLHandler.getTagValue(mappingNode, "description");  
 		
-		int nrConnectors  = XMLHandler.countNodes(mappingNode, "connector"); //$NON-NLS-1$
+		int nrConnectors  = XMLHandler.countNodes(mappingNode, "connector"); 
 		
         for (int i=0;i<nrConnectors;i++)
         {
-            Node inputConnector = XMLHandler.getSubNodeByNr(mappingNode, "connector", i); //$NON-NLS-1$
-            String parentField = XMLHandler.getTagValue(inputConnector, "parent"); //$NON-NLS-1$
-            String childField = XMLHandler.getTagValue(inputConnector, "child"); //$NON-NLS-1$
+            Node inputConnector = XMLHandler.getSubNodeByNr(mappingNode, "connector", i); 
+            String parentField = XMLHandler.getTagValue(inputConnector, "parent"); 
+            String childField = XMLHandler.getTagValue(inputConnector, "child"); 
             valueRenames.add( new MappingValueRename(parentField, childField) );
         }
 	}
@@ -123,7 +123,7 @@ public class MappingIODefinition implements Cloneable {
 	{
 		StringBuffer xml = new StringBuffer(200);
 		
-		xml.append("    ").append(XMLHandler.openTag(XML_TAG));  //$NON-NLS-1$
+		xml.append("    ").append(XMLHandler.openTag(XML_TAG));  
 		
 		xml.append("    ").append(XMLHandler.addTagValue("input_step", inputStepname));
 		xml.append("    ").append(XMLHandler.addTagValue("output_step", outputStepname));
@@ -133,13 +133,13 @@ public class MappingIODefinition implements Cloneable {
 		
 		for (MappingValueRename valueRename : valueRenames)
 		{
-			xml.append("       ").append(XMLHandler.openTag("connector"));  //$NON-NLS-1$ $NON-NLS-2$
-			xml.append(XMLHandler.addTagValue("parent", valueRename.getSourceValueName(), false));  //$NON-NLS-1$
-			xml.append(XMLHandler.addTagValue("child", valueRename.getTargetValueName(), false));  //$NON-NLS-1$
-			xml.append(XMLHandler.closeTag("connector")).append(Const.CR);  //$NON-NLS-1$
+			xml.append("       ").append(XMLHandler.openTag("connector"));   
+			xml.append(XMLHandler.addTagValue("parent", valueRename.getSourceValueName(), false));  
+			xml.append(XMLHandler.addTagValue("child", valueRename.getTargetValueName(), false));  
+			xml.append(XMLHandler.closeTag("connector")).append(Const.CR);  
 		}
 		
-		xml.append("    ").append(XMLHandler.closeTag(XML_TAG));  //$NON-NLS-1$
+		xml.append("    ").append(XMLHandler.closeTag(XML_TAG));  
 		
 		return xml.toString();
 	}

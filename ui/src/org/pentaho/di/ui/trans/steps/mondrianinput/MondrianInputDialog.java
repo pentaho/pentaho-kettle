@@ -120,7 +120,7 @@ public class MondrianInputDialog extends BaseStepDialog implements StepDialogInt
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "MondrianInputDialog.MondrianInput")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "MondrianInputDialog.MondrianInput")); 
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
@@ -128,7 +128,7 @@ public class MondrianInputDialog extends BaseStepDialog implements StepDialogInt
         // Stepname line
 		//
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "MondrianInputDialog.StepName")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "MondrianInputDialog.StepName")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -154,17 +154,17 @@ public class MondrianInputDialog extends BaseStepDialog implements StepDialogInt
 		// Some buttons
 		//
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
         wPreview=new Button(shell, SWT.PUSH);
-        wPreview.setText(BaseMessages.getString(PKG, "System.Button.Preview")); //$NON-NLS-1$
+        wPreview.setText(BaseMessages.getString(PKG, "System.Button.Preview")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, null);
 		
 		// Mondrian Role
 		Label wlRole = new Label(shell, SWT.RIGHT);
-		wlRole.setText(BaseMessages.getString(PKG, "MondrianInputDialog.Role")); //$NON-NLS-1$
+		wlRole.setText(BaseMessages.getString(PKG, "MondrianInputDialog.Role")); 
  		props.setLook(wlRole);
 		FormData fdlRole = new FormData();
 		fdlRole.left = new FormAttachment(0, 0);
@@ -193,7 +193,7 @@ public class MondrianInputDialog extends BaseStepDialog implements StepDialogInt
 		wbbFilename.setLayoutData(fdbFilename);
 		
 		wlCatalog=new Label(shell, SWT.RIGHT);
-		wlCatalog.setText(BaseMessages.getString(PKG, "MondrianInputDialog.Catalog")); //$NON-NLS-1$
+		wlCatalog.setText(BaseMessages.getString(PKG, "MondrianInputDialog.Catalog")); 
  		props.setLook(wlCatalog);
 		fdlCatalog=new FormData();
 		fdlCatalog.left = new FormAttachment(0, 0);
@@ -212,7 +212,7 @@ public class MondrianInputDialog extends BaseStepDialog implements StepDialogInt
         // Replace variables in MDX?
 		//
         wlVariables = new Label(shell, SWT.RIGHT);
-        wlVariables.setText(BaseMessages.getString(PKG, "MondrianInputDialog.ReplaceVariables")); //$NON-NLS-1$
+        wlVariables.setText(BaseMessages.getString(PKG, "MondrianInputDialog.ReplaceVariables")); 
         props.setLook(wlVariables);
         fdlVariables = new FormData();
         fdlVariables.left = new FormAttachment(0, 0);
@@ -221,7 +221,7 @@ public class MondrianInputDialog extends BaseStepDialog implements StepDialogInt
         wlVariables.setLayoutData(fdlVariables);
         wVariables = new Button(shell, SWT.CHECK);
         props.setLook(wVariables);
-        wVariables.setToolTipText(BaseMessages.getString(PKG, "MondrianInputDialog.ReplaceVariables.Tooltip")); //$NON-NLS-1$
+        wVariables.setToolTipText(BaseMessages.getString(PKG, "MondrianInputDialog.ReplaceVariables.Tooltip")); 
         fdVariables = new FormData();
         fdVariables.left = new FormAttachment(middle, 0);
         fdVariables.right = new FormAttachment(100, 0);
@@ -241,7 +241,7 @@ public class MondrianInputDialog extends BaseStepDialog implements StepDialogInt
 		// Table line...
 		//
 		wlSQL=new Label(shell, SWT.NONE);
-		wlSQL.setText(BaseMessages.getString(PKG, "MondrianInputDialog.SQL")); //$NON-NLS-1$
+		wlSQL.setText(BaseMessages.getString(PKG, "MondrianInputDialog.SQL")); 
  		props.setLook(wlSQL);
 		fdlSQL=new FormData();
 		fdlSQL.left = new FormAttachment(0, 0);
@@ -416,8 +416,8 @@ public class MondrianInputDialog extends BaseStepDialog implements StepDialogInt
 		if (input.getDatabaseMeta()==null)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(BaseMessages.getString(PKG, "MondrianInputDialog.SelectValidConnection")); //$NON-NLS-1$
-			mb.setText(BaseMessages.getString(PKG, "MondrianInputDialog.DialogCaptionError")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "MondrianInputDialog.SelectValidConnection")); 
+			mb.setText(BaseMessages.getString(PKG, "MondrianInputDialog.DialogCaptionError")); 
 			mb.open();
 			return;
 		}
@@ -438,7 +438,7 @@ public class MondrianInputDialog extends BaseStepDialog implements StepDialogInt
         
         TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
         
-        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), BaseMessages.getString(PKG, "MondrianInputDialog.EnterPreviewSize"), BaseMessages.getString(PKG, "MondrianInputDialog.NumberOfRowsToPreview")); //$NON-NLS-1$ //$NON-NLS-2$
+        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), BaseMessages.getString(PKG, "MondrianInputDialog.EnterPreviewSize"), BaseMessages.getString(PKG, "MondrianInputDialog.NumberOfRowsToPreview"));  
         int previewSize = numberDialog.open();
         if (previewSize>0)
         {

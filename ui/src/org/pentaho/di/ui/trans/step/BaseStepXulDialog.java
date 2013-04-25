@@ -187,10 +187,10 @@ public abstract class BaseStepXulDialog extends BaseStepGenericXulDialog {
    */
   protected static int getButtonAlignment() {
     String buttonAlign = BasePropertyHandler.getProperty("Button_Position",
-        "center").toLowerCase(); //$NON-NLS-1$ //$NON-NLS-2$
-    if ("center".equals(buttonAlign)) { //$NON-NLS-1$
+        "center").toLowerCase();  
+    if ("center".equals(buttonAlign)) { 
       return BUTTON_ALIGNMENT_CENTER;
-    } else if ("left".equals(buttonAlign)) { //$NON-NLS-1$
+    } else if ("left".equals(buttonAlign)) { 
       return BUTTON_ALIGNMENT_LEFT;
     } else {
       return BUTTON_ALIGNMENT_RIGHT;
@@ -283,11 +283,11 @@ public abstract class BaseStepXulDialog extends BaseStepGenericXulDialog {
         // Ask what we should do with the existing data in the step.
         //
         Shell shell = ((TableViewer) tableView.getManagedObject()).getTable().getShell();
-        MessageDialog md = new MessageDialog(shell, BaseMessages.getString(PKG, "BaseStepDialog.GetFieldsChoice.Title"),//"Warning!"  //$NON-NLS-1$
-            null, BaseMessages.getString(PKG, "BaseStepDialog.GetFieldsChoice.Message", "" + keys.size(), "" + row.size()), //$NON-NLS-1$  //$NON-NLS-2$  //$NON-NLS-3$
-            MessageDialog.WARNING, new String[] { BaseMessages.getString(PKG, "BaseStepDialog.AddNew"), //$NON-NLS-1$
-                BaseMessages.getString(PKG, "BaseStepDialog.Add"), BaseMessages.getString(PKG, "BaseStepDialog.ClearAndAdd"), //$NON-NLS-1$  //$NON-NLS-2$
-                BaseMessages.getString(PKG, "BaseStepDialog.Cancel"), }, 0); //$NON-NLS-1$
+        MessageDialog md = new MessageDialog(shell, BaseMessages.getString(PKG, "BaseStepDialog.GetFieldsChoice.Title"),//"Warning!"  
+            null, BaseMessages.getString(PKG, "BaseStepDialog.GetFieldsChoice.Message", "" + keys.size(), "" + row.size()),     //$NON-NLS-3$
+            MessageDialog.WARNING, new String[] { BaseMessages.getString(PKG, "BaseStepDialog.AddNew"), 
+                BaseMessages.getString(PKG, "BaseStepDialog.Add"), BaseMessages.getString(PKG, "BaseStepDialog.ClearAndAdd"),   
+                BaseMessages.getString(PKG, "BaseStepDialog.Cancel"), }, 0); 
         MessageDialog.setDefaultImage(GUIResource.getInstance().getImageSpoon());
         int idx = md.open();
         choice = idx & 0xFF;
@@ -428,11 +428,11 @@ public abstract class BaseStepXulDialog extends BaseStepGenericXulDialog {
         // Ask what we should do with the existing data in the step.
         //
         Shell shell = ((TableViewer) tableView.getManagedObject()).getTable().getShell();
-        MessageDialog md = new MessageDialog(shell, BaseMessages.getString(PKG, "BaseStepDialog.GetFieldsChoice.Title"),//"Warning!"  //$NON-NLS-1$
-            null, BaseMessages.getString(PKG, "BaseStepDialog.GetFieldsChoice.Message", "" + keys.size(), "" + row.size()), //$NON-NLS-1$  //$NON-NLS-2$  //$NON-NLS-3$
-            MessageDialog.WARNING, new String[] { BaseMessages.getString(PKG, "BaseStepDialog.AddNew"), //$NON-NLS-1$
-                BaseMessages.getString(PKG, "BaseStepDialog.Add"), BaseMessages.getString(PKG, "BaseStepDialog.ClearAndAdd"), //$NON-NLS-1$  //$NON-NLS-2$
-                BaseMessages.getString(PKG, "BaseStepDialog.Cancel"), }, 0); //$NON-NLS-1$
+        MessageDialog md = new MessageDialog(shell, BaseMessages.getString(PKG, "BaseStepDialog.GetFieldsChoice.Title"),//"Warning!"  
+            null, BaseMessages.getString(PKG, "BaseStepDialog.GetFieldsChoice.Message", "" + keys.size(), "" + row.size()),     //$NON-NLS-3$
+            MessageDialog.WARNING, new String[] { BaseMessages.getString(PKG, "BaseStepDialog.AddNew"), 
+                BaseMessages.getString(PKG, "BaseStepDialog.Add"), BaseMessages.getString(PKG, "BaseStepDialog.ClearAndAdd"),   
+                BaseMessages.getString(PKG, "BaseStepDialog.Cancel"), }, 0); 
         MessageDialog.setDefaultImage(GUIResource.getInstance().getImageSpoon());
         int idx = md.open();
         choice = idx & 0xFF;

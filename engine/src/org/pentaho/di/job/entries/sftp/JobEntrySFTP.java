@@ -254,7 +254,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "servername",      serverName);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "serverport",      serverPort);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "username",        userName);
-			rep.saveJobEntryAttribute(id_job, getObjectId(), "password",        Encr.encryptPasswordIfNotUsingVariables(password)); //$NON-NLS-1$
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "password",        Encr.encryptPasswordIfNotUsingVariables(password)); 
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "sftpdirectory",    sftpDirectory);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "targetdirectory", targetDirectory);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "wildcard",        wildcard);
@@ -760,16 +760,16 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
   @Override
   public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore)
   {
-    andValidator().validate(this, "serverName", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+    andValidator().validate(this, "serverName", remarks, putValidators(notBlankValidator())); 
 
     ValidatorContext ctx = new ValidatorContext();
     putVariableSpace(ctx, getVariables());
     putValidators(ctx, notBlankValidator(), fileExistsValidator());
-    andValidator().validate(this, "targetDirectory", remarks, ctx);//$NON-NLS-1$
+    andValidator().validate(this, "targetDirectory", remarks, ctx);
 
-    andValidator().validate(this, "userName", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
-    andValidator().validate(this, "password", remarks, putValidators(notNullValidator())); //$NON-NLS-1$
-    andValidator().validate(this, "serverPort", remarks, putValidators(integerValidator())); //$NON-NLS-1$
+    andValidator().validate(this, "userName", remarks, putValidators(notBlankValidator())); 
+    andValidator().validate(this, "password", remarks, putValidators(notNullValidator())); 
+    andValidator().validate(this, "serverPort", remarks, putValidators(integerValidator())); 
   }
 
   public static void main(String[] args) {

@@ -146,14 +146,14 @@ public class ZipFileDialog extends BaseStepDialog implements StepDialogInterface
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "ZipFileDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "ZipFileDialog.Shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin=Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "ZipFileDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "ZipFileDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -250,7 +250,7 @@ public class ZipFileDialog extends BaseStepDialog implements StepDialogInterface
 
 		// SourceFileNameField field
 		wlSourceFileNameField=new Label(shell, SWT.RIGHT);
-		wlSourceFileNameField.setText(BaseMessages.getString(PKG, "ZipFileDialog.SourceFileNameField.Label")); //$NON-NLS-1$
+		wlSourceFileNameField.setText(BaseMessages.getString(PKG, "ZipFileDialog.SourceFileNameField.Label")); 
  		props.setLook(wlSourceFileNameField);
 		fdlSourceFileNameField=new FormData();
 		fdlSourceFileNameField.left = new FormAttachment(0, 0);
@@ -282,7 +282,7 @@ public class ZipFileDialog extends BaseStepDialog implements StepDialogInterface
     );
 		// TargetFileNameField field
 		wlTargetFileNameField=new Label(shell, SWT.RIGHT);
-		wlTargetFileNameField.setText(BaseMessages.getString(PKG, "ZipFileDialog.TargetFileNameField.Label")); //$NON-NLS-1$
+		wlTargetFileNameField.setText(BaseMessages.getString(PKG, "ZipFileDialog.TargetFileNameField.Label")); 
  		props.setLook(wlTargetFileNameField);
 		fdlTargetFileNameField=new FormData();
 		fdlTargetFileNameField.left = new FormAttachment(0, 0);
@@ -343,7 +343,7 @@ public class ZipFileDialog extends BaseStepDialog implements StepDialogInterface
 
 		// BaseFolderField field
 		wlBaseFolderField=new Label(shell, SWT.RIGHT);
-		wlBaseFolderField.setText(BaseMessages.getString(PKG, "ZipFileDialog.BaseFolderField.Label")); //$NON-NLS-1$
+		wlBaseFolderField.setText(BaseMessages.getString(PKG, "ZipFileDialog.BaseFolderField.Label")); 
  		props.setLook(wlBaseFolderField);
 		fdlBaseFolderField=new FormData();
 		fdlBaseFolderField.left = new FormAttachment(0, 0);
@@ -376,7 +376,7 @@ public class ZipFileDialog extends BaseStepDialog implements StepDialogInterface
 		
 		// Operation
 		wlOperation=new Label(shell, SWT.RIGHT);
-		wlOperation.setText(BaseMessages.getString(PKG, "ZipFileDialog.Operation.Label")); //$NON-NLS-1$
+		wlOperation.setText(BaseMessages.getString(PKG, "ZipFileDialog.Operation.Label")); 
  		props.setLook(wlOperation);
 		fdlOperation=new FormData();
 		fdlOperation.left = new FormAttachment(0, 0);
@@ -404,7 +404,7 @@ public class ZipFileDialog extends BaseStepDialog implements StepDialogInterface
 		
 		// MoveToFolderField field
 		wlMoveToFolderField=new Label(shell, SWT.RIGHT);
-		wlMoveToFolderField.setText(BaseMessages.getString(PKG, "ZipFileDialog.MoveToFolderField.Label")); //$NON-NLS-1$
+		wlMoveToFolderField.setText(BaseMessages.getString(PKG, "ZipFileDialog.MoveToFolderField.Label")); 
  		props.setLook(wlMoveToFolderField);
 		fdlMoveToFolderField=new FormData();
 		fdlMoveToFolderField.left = new FormAttachment(0, 0);
@@ -438,9 +438,9 @@ public class ZipFileDialog extends BaseStepDialog implements StepDialogInterface
 
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wMoveToFolderField);
 
@@ -479,7 +479,7 @@ public class ZipFileDialog extends BaseStepDialog implements StepDialogInterface
    */
   public void getData() {
     if (log.isDebug())
-      log.logDebug(toString(), BaseMessages.getString(PKG, "ZipFileDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+      log.logDebug(toString(), BaseMessages.getString(PKG, "ZipFileDialog.Log.GettingKeyInfo")); 
     if (input.getBaseFolderField() != null)
       wBaseFolderField.setText(input.getBaseFolderField());
     if (input.getDynamicSourceFileNameField() != null)
@@ -559,7 +559,7 @@ public class ZipFileDialog extends BaseStepDialog implements StepDialogInterface
 			}
 			catch(KettleException ke)
 			{
-				new ErrorDialog(shell, BaseMessages.getString(PKG, "ZipFileDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "ZipFileDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "ZipFileDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "ZipFileDialog.FailedToGetFields.DialogMessage"), ke);  
 			}finally {
 				if(source!=null) wSourceFileNameField.setText(source);
 				if(target!=null) wTargetFileNameField.setText(target);

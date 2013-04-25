@@ -42,9 +42,9 @@ public class FileExistsValidator extends AbstractFileValidator
 
   public static final FileExistsValidator INSTANCE = new FileExistsValidator();
 
-  static final String VALIDATOR_NAME = "fileExists"; //$NON-NLS-1$
+  static final String VALIDATOR_NAME = "fileExists"; 
 
-  private static final String KEY_FAIL_IF_DOES_NOT_EXIST = "org.pentaho.di.job.entries.createfile.failIfDoesNotExist"; //$NON-NLS-1$
+  private static final String KEY_FAIL_IF_DOES_NOT_EXIST = "org.pentaho.di.job.entries.createfile.failIfDoesNotExist"; 
 
   public boolean validate(CheckResultSourceInterface source, String propertyName, List<CheckResultInterface> remarks,
       ValidatorContext context)

@@ -589,7 +589,7 @@ public class Mapping extends BaseStep implements StepInterface
             // See if there was an error in the sub-transformation, in that case, flag error etc.
             if (data.mappingTrans.getErrors()>0)
             {
-                logError(BaseMessages.getString(PKG, "Mapping.Log.ErrorOccurredInSubTransformation")); //$NON-NLS-1$
+                logError(BaseMessages.getString(PKG, "Mapping.Log.ErrorOccurredInSubTransformation")); 
                 setErrors(1);
             }
         }

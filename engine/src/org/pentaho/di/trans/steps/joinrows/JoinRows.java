@@ -117,7 +117,7 @@ public class JoinRows extends BaseStep implements StepInterface
 				for (int i=1;i<getInputRowSets().size();i++)
 				{
           String directoryName = environmentSubstitute(meta.getDirectory());
-					data.file[i]=File.createTempFile(meta.getPrefix(), ".tmp", new File(directoryName)); //$NON-NLS-1$
+					data.file[i]=File.createTempFile(meta.getPrefix(), ".tmp", new File(directoryName)); 
 					
 					data.size[i]     = 0;
 					data.rs[i]       = getInputRowSets().get(i);
@@ -134,7 +134,7 @@ public class JoinRows extends BaseStep implements StepInterface
 			}
 			catch(Exception e)
 			{
-				throw new KettleException(BaseMessages.getString(PKG, "JoinRows.Log.ErrorCreatingTemporaryFiles"), e); //$NON-NLS-1$
+				throw new KettleException(BaseMessages.getString(PKG, "JoinRows.Log.ErrorCreatingTemporaryFiles"), e); 
 			}
 		}
     
@@ -161,7 +161,7 @@ public class JoinRows extends BaseStep implements StepInterface
                 data.fileRowMeta[0] = rowSet.getRowMeta();
             }
 			
-			if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "JoinRows.Log.ReadRowFromStream")+(rowData==null?"<null>":rowData.toString())); //$NON-NLS-1$ //$NON-NLS-2$
+			if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "JoinRows.Log.ReadRowFromStream")+(rowData==null?"<null>":rowData.toString()));  
 		}
 		else
 		{
@@ -177,7 +177,7 @@ public class JoinRows extends BaseStep implements StepInterface
 					}
 					catch(FileNotFoundException fnfe)
 					{
-						logError(BaseMessages.getString(PKG, "JoinRows.Log.UnableToFindOrOpenTemporaryFile")+data.file[filenr]+"] : "+fnfe.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+						logError(BaseMessages.getString(PKG, "JoinRows.Log.UnableToFindOrOpenTemporaryFile")+data.file[filenr]+"] : "+fnfe.toString());  
 						setErrors(1);
 						stopAll();
 						return null;
@@ -188,7 +188,7 @@ public class JoinRows extends BaseStep implements StepInterface
 				
 				if (data.size[filenr]==0)
 				{
-					if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "JoinRows.Log.NoRowsComingFromStep")+data.rs[filenr].getOriginStepName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+					if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "JoinRows.Log.NoRowsComingFromStep")+data.rs[filenr].getOriginStepName()+"]");  
 					return null;
 				}
 				
@@ -198,19 +198,19 @@ public class JoinRows extends BaseStep implements StepInterface
 				}
 				catch(KettleFileException e)
 				{
-					logError(BaseMessages.getString(PKG, "JoinRows.Log.UnableToReadDataFromTempFile")+filenr+" ["+data.file[filenr]+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					logError(BaseMessages.getString(PKG, "JoinRows.Log.UnableToReadDataFromTempFile")+filenr+" ["+data.file[filenr]+"]");   //$NON-NLS-3$
 					setErrors(1);
 					stopAll();
 					return null;
 				} 
 				catch (SocketTimeoutException e) 
 				{
-					logError(BaseMessages.getString(PKG, "JoinRows.Log.UnableToReadDataFromTempFile")+filenr+" ["+data.file[filenr]+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					logError(BaseMessages.getString(PKG, "JoinRows.Log.UnableToReadDataFromTempFile")+filenr+" ["+data.file[filenr]+"]");   //$NON-NLS-3$
 					setErrors(1);
 					stopAll();
 					return null;
 				}
-				if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "JoinRows.Log.ReadRowFromFile")+filenr+" : "+getInputRowMeta().getString(rowData)); //$NON-NLS-1$ //$NON-NLS-2$
+				if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "JoinRows.Log.ReadRowFromFile")+filenr+" : "+getInputRowMeta().getString(rowData));  
 
 				data.position[filenr]++;
 				
@@ -231,7 +231,7 @@ public class JoinRows extends BaseStep implements StepInterface
 					}
 					catch(IOException ioe)
 					{
-						logError(BaseMessages.getString(PKG, "JoinRows.Log.UnableToCloseInputStream")+data.file[filenr]+"] : "+ioe.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+						logError(BaseMessages.getString(PKG, "JoinRows.Log.UnableToCloseInputStream")+data.file[filenr]+"] : "+ioe.toString());  
 						setErrors(1);
 						stopAll();
 						return null;
@@ -242,7 +242,7 @@ public class JoinRows extends BaseStep implements StepInterface
 			{
 				if (data.size[filenr]==0)
 				{
-					if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "JoinRows.Log.NoRowsComingFromStep")+data.rs[filenr].getOriginStepName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+					if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "JoinRows.Log.NoRowsComingFromStep")+data.rs[filenr].getOriginStepName()+"]");  
 					return null;
 				}
 				rowData = (Object[]) data.cache[filenr].get(data.position[data.filenr]);
@@ -396,7 +396,7 @@ public class JoinRows extends BaseStep implements StepInterface
          }
          catch(FileNotFoundException fnfe)
          {
-             logError(BaseMessages.getString(PKG, "JoinRows.Log.UnableToOpenOutputstream")+data.file[data.filenr].toString()+"] : "+fnfe.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+             logError(BaseMessages.getString(PKG, "JoinRows.Log.UnableToOpenOutputstream")+data.file[data.filenr].toString()+"] : "+fnfe.toString());  
              stopAll();
              setErrors(1);
              return false;
@@ -432,7 +432,7 @@ public class JoinRows extends BaseStep implements StepInterface
          else
          {
              // we can't cope with this many rows: reset the cache...
-             if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JoinRows.Log.RowsFound",meta.getCacheSize()+"",data.rs[data.filenr].getOriginStepName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+             if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JoinRows.Log.RowsFound",meta.getCacheSize()+"",data.rs[data.filenr].getOriginStepName()));   //$NON-NLS-3$
              data.cache[data.filenr]=null;
          }
 
@@ -449,7 +449,7 @@ public class JoinRows extends BaseStep implements StepInterface
          }
          catch(IOException ioe)
          {
-             logError(BaseMessages.getString(PKG, "JoinRows.Log.ErrorInClosingOutputStream")+data.filenr+" : ["+data.file[data.filenr].toString()+"] : "+ioe.toString()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+             logError(BaseMessages.getString(PKG, "JoinRows.Log.ErrorInClosingOutputStream")+data.filenr+" : ["+data.file[data.filenr].toString()+"] : "+ioe.toString());   //$NON-NLS-3$
          }
          
          // Advance to the next file/input-stream...

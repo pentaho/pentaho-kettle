@@ -295,35 +295,35 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
 
   private void readData(Node stepnode) throws KettleXMLException {
     try {
-      passAllRows = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "all_rows")); //$NON-NLS-1$ //$NON-NLS-2$
-      aggregateIgnored = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "ignore_aggregate")); //$NON-NLS-1$ //$NON-NLS-2$
-      aggregateIgnoredField = XMLHandler.getTagValue(stepnode, "field_ignore"); //$NON-NLS-1$
+      passAllRows = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "all_rows"));  
+      aggregateIgnored = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "ignore_aggregate"));  
+      aggregateIgnoredField = XMLHandler.getTagValue(stepnode, "field_ignore"); 
 
-      directory = XMLHandler.getTagValue(stepnode, "directory"); //$NON-NLS-1$
-      prefix = XMLHandler.getTagValue(stepnode, "prefix"); //$NON-NLS-1$
+      directory = XMLHandler.getTagValue(stepnode, "directory"); 
+      prefix = XMLHandler.getTagValue(stepnode, "prefix"); 
 
       addingLineNrInGroup = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "add_linenr")); // $NON-NLS-1$
       lineNrInGroupField = XMLHandler.getTagValue(stepnode, "linenr_fieldname");
 
-      Node groupn = XMLHandler.getSubNode(stepnode, "group"); //$NON-NLS-1$
-      Node fields = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
+      Node groupn = XMLHandler.getSubNode(stepnode, "group"); 
+      Node fields = XMLHandler.getSubNode(stepnode, "fields"); 
 
-      int sizegroup = XMLHandler.countNodes(groupn, "field"); //$NON-NLS-1$
-      int nrfields = XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
+      int sizegroup = XMLHandler.countNodes(groupn, "field"); 
+      int nrfields = XMLHandler.countNodes(fields, "field"); 
 
       allocate(sizegroup, nrfields);
 
       for (int i = 0; i < sizegroup; i++) {
-        Node fnode = XMLHandler.getSubNodeByNr(groupn, "field", i); //$NON-NLS-1$
-        groupField[i] = XMLHandler.getTagValue(fnode, "name"); //$NON-NLS-1$
+        Node fnode = XMLHandler.getSubNodeByNr(groupn, "field", i); 
+        groupField[i] = XMLHandler.getTagValue(fnode, "name"); 
       }
 
       boolean hasNumberOfValues = false;
       for (int i = 0; i < nrfields; i++) {
-        Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
-        aggregateField[i] = XMLHandler.getTagValue(fnode, "aggregate"); //$NON-NLS-1$
-        subjectField[i] = XMLHandler.getTagValue(fnode, "subject"); //$NON-NLS-1$
-        aggregateType[i] = getType(XMLHandler.getTagValue(fnode, "type")); //$NON-NLS-1$
+        Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); 
+        aggregateField[i] = XMLHandler.getTagValue(fnode, "aggregate"); 
+        subjectField[i] = XMLHandler.getTagValue(fnode, "subject"); 
+        aggregateType[i] = getType(XMLHandler.getTagValue(fnode, "type")); 
 
         if (aggregateType[i] == TYPE_GROUP_COUNT_ALL || aggregateType[i] == TYPE_GROUP_COUNT_DISTINCT
             || aggregateType[i] == TYPE_GROUP_COUNT_ANY) {
@@ -340,7 +340,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
         alwaysGivingBackOneRow = "Y".equalsIgnoreCase(giveBackRow); // $NON-NLS-1$
       }
     } catch (Exception e) {
-      throw new KettleXMLException(BaseMessages.getString(PKG, "GroupByMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
+      throw new KettleXMLException(BaseMessages.getString(PKG, "GroupByMeta.Exception.UnableToLoadStepInfoFromXML"), e); 
     }
   }
 
@@ -369,8 +369,8 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void setDefault() {
-    directory = "%%java.io.tmpdir%%"; //$NON-NLS-1$
-    prefix = "grp"; //$NON-NLS-1$
+    directory = "%%java.io.tmpdir%%"; 
+    prefix = "grp"; 
 
     passAllRows = false;
     aggregateIgnored = false;
@@ -494,33 +494,33 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
   public String getXML() {
     StringBuffer retval = new StringBuffer(500);
 
-    retval.append("      ").append(XMLHandler.addTagValue("all_rows", passAllRows)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("      ").append(XMLHandler.addTagValue("ignore_aggregate", aggregateIgnored)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("      ").append(XMLHandler.addTagValue("field_ignore", aggregateIgnoredField)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("      ").append(XMLHandler.addTagValue("directory", directory)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("      ").append(XMLHandler.addTagValue("prefix", prefix)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("      ").append(XMLHandler.addTagValue("add_linenr", addingLineNrInGroup)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("      ").append(XMLHandler.addTagValue("linenr_fieldname", lineNrInGroupField)); //$NON-NLS-1$
-    retval.append("      ").append(XMLHandler.addTagValue("give_back_row", alwaysGivingBackOneRow)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      ").append(XMLHandler.addTagValue("all_rows", passAllRows));  
+    retval.append("      ").append(XMLHandler.addTagValue("ignore_aggregate", aggregateIgnored));  
+    retval.append("      ").append(XMLHandler.addTagValue("field_ignore", aggregateIgnoredField));  
+    retval.append("      ").append(XMLHandler.addTagValue("directory", directory));  
+    retval.append("      ").append(XMLHandler.addTagValue("prefix", prefix));  
+    retval.append("      ").append(XMLHandler.addTagValue("add_linenr", addingLineNrInGroup));  
+    retval.append("      ").append(XMLHandler.addTagValue("linenr_fieldname", lineNrInGroupField)); 
+    retval.append("      ").append(XMLHandler.addTagValue("give_back_row", alwaysGivingBackOneRow));  
 
-    retval.append("      <group>").append(Const.CR); //$NON-NLS-1$
+    retval.append("      <group>").append(Const.CR); 
     for (int i = 0; i < groupField.length; i++) {
-      retval.append("        <field>").append(Const.CR); //$NON-NLS-1$
-      retval.append("          ").append(XMLHandler.addTagValue("name", groupField[i])); //$NON-NLS-1$ //$NON-NLS-2$
-      retval.append("        </field>").append(Const.CR); //$NON-NLS-1$
+      retval.append("        <field>").append(Const.CR); 
+      retval.append("          ").append(XMLHandler.addTagValue("name", groupField[i]));  
+      retval.append("        </field>").append(Const.CR); 
     }
-    retval.append("      </group>").append(Const.CR); //$NON-NLS-1$
+    retval.append("      </group>").append(Const.CR); 
 
-    retval.append("      <fields>").append(Const.CR); //$NON-NLS-1$
+    retval.append("      <fields>").append(Const.CR); 
     for (int i = 0; i < subjectField.length; i++) {
-      retval.append("        <field>").append(Const.CR); //$NON-NLS-1$
-      retval.append("          ").append(XMLHandler.addTagValue("aggregate", aggregateField[i])); //$NON-NLS-1$ //$NON-NLS-2$
-      retval.append("          ").append(XMLHandler.addTagValue("subject", subjectField[i])); //$NON-NLS-1$ //$NON-NLS-2$
-      retval.append("          ").append(XMLHandler.addTagValue("type", getTypeDesc(aggregateType[i]))); //$NON-NLS-1$ //$NON-NLS-2$
+      retval.append("        <field>").append(Const.CR); 
+      retval.append("          ").append(XMLHandler.addTagValue("aggregate", aggregateField[i]));  
+      retval.append("          ").append(XMLHandler.addTagValue("subject", subjectField[i]));  
+      retval.append("          ").append(XMLHandler.addTagValue("type", getTypeDesc(aggregateType[i])));  
       retval.append("          ").append(XMLHandler.addTagValue("valuefield", valueField[i]));
-      retval.append("        </field>").append(Const.CR); //$NON-NLS-1$
+      retval.append("        </field>").append(Const.CR); 
     }
-    retval.append("      </fields>").append(Const.CR); //$NON-NLS-1$
+    retval.append("      </fields>").append(Const.CR); 
 
     return retval.toString();
   }
@@ -528,67 +528,67 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
   public void readRep(Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases)
       throws KettleException {
     try {
-      passAllRows = rep.getStepAttributeBoolean(id_step, "all_rows"); //$NON-NLS-1$
-      aggregateIgnored = rep.getStepAttributeBoolean(id_step, "ignore_aggregate"); //$NON-NLS-1$
-      aggregateIgnoredField = rep.getStepAttributeString(id_step, "field_ignore"); //$NON-NLS-1$
-      directory = rep.getStepAttributeString(id_step, "directory"); //$NON-NLS-1$
-      prefix = rep.getStepAttributeString(id_step, "prefix"); //$NON-NLS-1$
+      passAllRows = rep.getStepAttributeBoolean(id_step, "all_rows"); 
+      aggregateIgnored = rep.getStepAttributeBoolean(id_step, "ignore_aggregate"); 
+      aggregateIgnoredField = rep.getStepAttributeString(id_step, "field_ignore"); 
+      directory = rep.getStepAttributeString(id_step, "directory"); 
+      prefix = rep.getStepAttributeString(id_step, "prefix"); 
       addingLineNrInGroup = rep.getStepAttributeBoolean(id_step, "add_linenr"); // $NON-NLS-1$
       lineNrInGroupField = rep.getStepAttributeString(id_step, "linenr_fieldname"); // $NON-NLS-1$
 
-      int groupsize = rep.countNrStepAttributes(id_step, "group_name"); //$NON-NLS-1$
-      int nrvalues = rep.countNrStepAttributes(id_step, "aggregate_name"); //$NON-NLS-1$
+      int groupsize = rep.countNrStepAttributes(id_step, "group_name"); 
+      int nrvalues = rep.countNrStepAttributes(id_step, "aggregate_name"); 
 
       allocate(groupsize, nrvalues);
 
       for (int i = 0; i < groupsize; i++) {
-        groupField[i] = rep.getStepAttributeString(id_step, i, "group_name"); //$NON-NLS-1$
+        groupField[i] = rep.getStepAttributeString(id_step, i, "group_name"); 
       }
 
       boolean hasNumberOfValues = false;
       for (int i = 0; i < nrvalues; i++) {
-        aggregateField[i] = rep.getStepAttributeString(id_step, i, "aggregate_name"); //$NON-NLS-1$
-        subjectField[i] = rep.getStepAttributeString(id_step, i, "aggregate_subject"); //$NON-NLS-1$
-        aggregateType[i] = getType(rep.getStepAttributeString(id_step, i, "aggregate_type")); //$NON-NLS-1$
+        aggregateField[i] = rep.getStepAttributeString(id_step, i, "aggregate_name"); 
+        subjectField[i] = rep.getStepAttributeString(id_step, i, "aggregate_subject"); 
+        aggregateType[i] = getType(rep.getStepAttributeString(id_step, i, "aggregate_type")); 
 
         if (aggregateType[i] == TYPE_GROUP_COUNT_ALL || aggregateType[i] == TYPE_GROUP_COUNT_DISTINCT
             || aggregateType[i] == TYPE_GROUP_COUNT_ANY) {
           hasNumberOfValues = true;
         }
-        valueField[i] = rep.getStepAttributeString(id_step, i, "aggregate_value_field"); //$NON-NLS-1$
+        valueField[i] = rep.getStepAttributeString(id_step, i, "aggregate_value_field"); 
       }
 
       alwaysGivingBackOneRow = rep.getStepAttributeBoolean(id_step, 0, "give_back_row", hasNumberOfValues); // $NON-NLS-1$
     } catch (Exception e) {
       throw new KettleException(BaseMessages.getString(PKG,
-          "GroupByMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository"), e); //$NON-NLS-1$
+          "GroupByMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository"), e); 
     }
   }
 
   public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step) throws KettleException {
     try {
-      rep.saveStepAttribute(id_transformation, id_step, "all_rows", passAllRows); //$NON-NLS-1$
-      rep.saveStepAttribute(id_transformation, id_step, "ignore_aggregate", aggregateIgnored); //$NON-NLS-1$
-      rep.saveStepAttribute(id_transformation, id_step, "field_ignore", aggregateIgnoredField); //$NON-NLS-1$
-      rep.saveStepAttribute(id_transformation, id_step, "directory", directory); //$NON-NLS-1$
-      rep.saveStepAttribute(id_transformation, id_step, "prefix", prefix); //$NON-NLS-1$
+      rep.saveStepAttribute(id_transformation, id_step, "all_rows", passAllRows); 
+      rep.saveStepAttribute(id_transformation, id_step, "ignore_aggregate", aggregateIgnored); 
+      rep.saveStepAttribute(id_transformation, id_step, "field_ignore", aggregateIgnoredField); 
+      rep.saveStepAttribute(id_transformation, id_step, "directory", directory); 
+      rep.saveStepAttribute(id_transformation, id_step, "prefix", prefix); 
       rep.saveStepAttribute(id_transformation, id_step, "add_linenr", addingLineNrInGroup); // $NON-NLS-1$
       rep.saveStepAttribute(id_transformation, id_step, "linenr_fieldname", lineNrInGroupField); // $NON-NLS-1$
       rep.saveStepAttribute(id_transformation, id_step, "give_back_row", alwaysGivingBackOneRow); // $NON-NLS-1$
 
       for (int i = 0; i < groupField.length; i++) {
-        rep.saveStepAttribute(id_transformation, id_step, i, "group_name", groupField[i]); //$NON-NLS-1$
+        rep.saveStepAttribute(id_transformation, id_step, i, "group_name", groupField[i]); 
       }
 
       for (int i = 0; i < subjectField.length; i++) {
-        rep.saveStepAttribute(id_transformation, id_step, i, "aggregate_name", aggregateField[i]); //$NON-NLS-1$
-        rep.saveStepAttribute(id_transformation, id_step, i, "aggregate_subject", subjectField[i]); //$NON-NLS-1$
-        rep.saveStepAttribute(id_transformation, id_step, i, "aggregate_type", getTypeDesc(aggregateType[i])); //$NON-NLS-1$
+        rep.saveStepAttribute(id_transformation, id_step, i, "aggregate_name", aggregateField[i]); 
+        rep.saveStepAttribute(id_transformation, id_step, i, "aggregate_subject", subjectField[i]); 
+        rep.saveStepAttribute(id_transformation, id_step, i, "aggregate_type", getTypeDesc(aggregateType[i])); 
         rep.saveStepAttribute(id_transformation, id_step, i, "aggregate_value_field", valueField[i]);
       }
     } catch (Exception e) {
       throw new KettleException(
-          BaseMessages.getString(PKG, "GroupByMeta.Exception.UnableToSaveStepInfoToRepository") + id_step, e); //$NON-NLS-1$
+          BaseMessages.getString(PKG, "GroupByMeta.Exception.UnableToSaveStepInfoToRepository") + id_step, e); 
     }
   }
 
@@ -598,11 +598,11 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
 
     if (input.length > 0) {
       cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG,
-          "GroupByMeta.CheckResult.ReceivingInfoOK"), stepMeta); //$NON-NLS-1$
+          "GroupByMeta.CheckResult.ReceivingInfoOK"), stepMeta); 
       remarks.add(cr);
     } else {
       cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG,
-          "GroupByMeta.CheckResult.NoInputError"), stepMeta); //$NON-NLS-1$
+          "GroupByMeta.CheckResult.NoInputError"), stepMeta); 
       remarks.add(cr);
     }
   }

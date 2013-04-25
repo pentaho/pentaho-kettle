@@ -236,11 +236,11 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         {
             wsdl = null;
             new ErrorDialog(shell,
-                            BaseMessages.getString(PKG, "WebServiceDialog.ERROR0009.UnreachableURI"),//$NON-NLS-1$
-                            BaseMessages.getString(PKG, "WebServiceDialog.ErrorDialog.Title") + anURI, //$NON-NLS-1$ 
+                            BaseMessages.getString(PKG, "WebServiceDialog.ERROR0009.UnreachableURI"),
+                            BaseMessages.getString(PKG, "WebServiceDialog.ErrorDialog.Title") + anURI,  
                             e); 
 
-            log.logError(BaseMessages.getString(PKG, "WebServiceDialog.ErrorDialog.Title") + anURI, e.getMessage()); //$NON-NLS-1$
+            log.logError(BaseMessages.getString(PKG, "WebServiceDialog.ErrorDialog.Title") + anURI, e.getMessage()); 
             return;
         }
         String text = wOperation.getText();
@@ -313,7 +313,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                                 QName attributeType = type.getElementType(attributeName);
                                 if (!WebServiceMeta.XSD_NS_URI.equals(attributeType.getNamespaceURI()))
                                 {
-                                    throw new KettleStepException(BaseMessages.getString(PKG, "WebServiceDialog.ERROR0007.UnsupporteOperation.ComplexType")); //$NON-NLS-1$
+                                    throw new KettleStepException(BaseMessages.getString(PKG, "WebServiceDialog.ERROR0007.UnsupporteOperation.ComplexType")); 
                                 }
                             }
                         }
@@ -321,7 +321,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                         {
                             if (inWsdlParamContainer != null)
                             {
-                                throw new KettleStepException(BaseMessages.getString(PKG, "WebServiceDialog.ERROR0006.UnsupportedOperation.MultipleArrays")); //$NON-NLS-1$
+                                throw new KettleStepException(BaseMessages.getString(PKG, "WebServiceDialog.ERROR0006.UnsupportedOperation.MultipleArrays")); 
                             }
                             else
                             {
@@ -332,7 +332,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                         {
                             if (outWsdlParamContainer != null)
                             {
-                                throw new KettleStepException(BaseMessages.getString(PKG, "WebServiceDialog.ERROR0006.UnsupportedOperation.MultipleArrays")); //$NON-NLS-1$
+                                throw new KettleStepException(BaseMessages.getString(PKG, "WebServiceDialog.ERROR0006.UnsupportedOperation.MultipleArrays")); 
                             }
                             else
                             {
@@ -347,7 +347,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                     {
                         if (inWsdlParamContainer != null && !(inWsdlParamContainer instanceof WsdlOperationContainer))
                         {
-                            throw new KettleStepException(BaseMessages.getString(PKG, "WebServiceDialog.ERROR0008.UnsupportedOperation.IncorrectParams")); //$NON-NLS-1$
+                            throw new KettleStepException(BaseMessages.getString(PKG, "WebServiceDialog.ERROR0008.UnsupportedOperation.IncorrectParams")); 
                         }
                         else
                         {
@@ -358,7 +358,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                     {
                         if (outWsdlParamContainer != null && !(outWsdlParamContainer instanceof WsdlOperationContainer))
                         {
-                            throw new KettleStepException(BaseMessages.getString(PKG, "WebServiceDialog.ERROR0008.UnsupportedOperation.IncorrectParams")); //$NON-NLS-1$
+                            throw new KettleStepException(BaseMessages.getString(PKG, "WebServiceDialog.ERROR0008.UnsupportedOperation.IncorrectParams")); 
                         }
                         else
                         {
@@ -386,7 +386,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                                 QName attributeType = type.getElementType(attributeName);
                                 if (!WebServiceMeta.XSD_NS_URI.equals(attributeType.getNamespaceURI()))
                                 {
-                                    throw new KettleStepException(BaseMessages.getString(PKG, "WebServiceDialog.ERROR0007.UnsupportedOperation.ComplexType")); //$NON-NLS-1$
+                                    throw new KettleStepException(BaseMessages.getString(PKG, "WebServiceDialog.ERROR0007.UnsupportedOperation.ComplexType")); 
                                 }
                             }
                         }
@@ -433,17 +433,17 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         {
             tabItemFieldIn = new CTabItem(wTabFolder, SWT.NONE);
         }
-        final ColumnInfo fieldColumn = new ColumnInfo(BaseMessages.getString(PKG, "WebServiceDialog.NameColumn.Column"), //$NON-NLS-1$
+        final ColumnInfo fieldColumn = new ColumnInfo(BaseMessages.getString(PKG, "WebServiceDialog.NameColumn.Column"), 
                                                    ColumnInfo.COLUMN_TYPE_CCOMBO,
                                                    new String[] {},
                                                    false);
         fieldColumns.add(fieldColumn);
         ColumnInfo[] colinf = new ColumnInfo[] {
                 fieldColumn,
-            new ColumnInfo(BaseMessages.getString(PKG, "WebServiceDialog.WsNameColumn.Column"), //$NON-NLS-1$
+            new ColumnInfo(BaseMessages.getString(PKG, "WebServiceDialog.WsNameColumn.Column"), 
                            ColumnInfo.COLUMN_TYPE_TEXT,
                            false),
-            new ColumnInfo(BaseMessages.getString(PKG, "WebServiceDialog.TypeColumn.Column"), //$NON-NLS-1$
+            new ColumnInfo(BaseMessages.getString(PKG, "WebServiceDialog.TypeColumn.Column"), 
                            ColumnInfo.COLUMN_TYPE_TEXT,
                            false),
            };
@@ -455,7 +455,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         
 
         Button vButton = new Button(vCompositeTabField, SWT.NONE);
-        vButton.setText(BaseMessages.getString(PKG, "System.Button.GetFields")); //$NON-NLS-1$
+        vButton.setText(BaseMessages.getString(PKG, "System.Button.GetFields")); 
         vButton.addSelectionListener(new SelectionAdapter()
         {
         	@Override
@@ -585,13 +585,13 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
             tabItemFieldOut = new CTabItem(wTabFolder, SWT.NONE);
         }
         ColumnInfo[] colinf = new ColumnInfo[] {
-        		new ColumnInfo(BaseMessages.getString(PKG, "WebServiceDialog.NameColumn.Column"), //$NON-NLS-1$
+        		new ColumnInfo(BaseMessages.getString(PKG, "WebServiceDialog.NameColumn.Column"), 
                                ColumnInfo.COLUMN_TYPE_TEXT,
                                false),
-                new ColumnInfo(BaseMessages.getString(PKG, "WebServiceDialog.WsNameColumn.Column"), //$NON-NLS-1$
+                new ColumnInfo(BaseMessages.getString(PKG, "WebServiceDialog.WsNameColumn.Column"), 
                                ColumnInfo.COLUMN_TYPE_TEXT,
                                false),
-                new ColumnInfo(BaseMessages.getString(PKG, "WebServiceDialog.TypeColumn.Column"), //$NON-NLS-1$
+                new ColumnInfo(BaseMessages.getString(PKG, "WebServiceDialog.TypeColumn.Column"), 
                                ColumnInfo.COLUMN_TYPE_TEXT,
                                false)
         	};
@@ -601,7 +601,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         fieldOutTableView.setReadonly(false);
         
         Button vButton = new Button(vCompositeTabFieldOut, SWT.NONE);
-        vButton.setText(BaseMessages.getString(PKG, "System.Button.GetFields")); //$NON-NLS-1$
+        vButton.setText(BaseMessages.getString(PKG, "System.Button.GetFields")); 
         vButton.addSelectionListener(new SelectionAdapter()
 	        {
 	        	public void widgetSelected(SelectionEvent event) {
@@ -739,11 +739,11 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
     {
         wStepname.setText(stepname);
 
-        wURL.setText(meta.getUrl() == null ? "" : meta.getUrl()); //$NON-NLS-1$
-        wProxyHost.setText(meta.getProxyHost() == null ? "" : meta.getProxyHost()); //$NON-NLS-1$
-        wProxyPort.setText(meta.getProxyPort() == null ? "" : meta.getProxyPort()); //$NON-NLS-1$
-        wHttpLogin.setText(meta.getHttpLogin() == null ? "" : meta.getHttpLogin()); //$NON-NLS-1$
-        wHttpPassword.setText(meta.getHttpPassword() == null ? "" : meta.getHttpPassword()); //$NON-NLS-1$
+        wURL.setText(meta.getUrl() == null ? "" : meta.getUrl()); 
+        wProxyHost.setText(meta.getProxyHost() == null ? "" : meta.getProxyHost()); 
+        wProxyPort.setText(meta.getProxyPort() == null ? "" : meta.getProxyPort()); 
+        wHttpLogin.setText(meta.getHttpLogin() == null ? "" : meta.getHttpLogin()); 
+        wHttpPassword.setText(meta.getHttpPassword() == null ? "" : meta.getHttpPassword()); 
         DatabaseDialog.checkPasswordVisible(wHttpPassword.getTextWidget());
         wStep.setText(Integer.toString(meta.getCallStep()));
         wPassInputData.setSelection(meta.isPassingInputData());
@@ -751,7 +751,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         wRepeatingElement.setText(Const.NVL(meta.getRepeatingElementName(), ""));
         wReplyAsString.setSelection(meta.isReturningReplyAsString());
         
-        if (wURL.getText() != null && !"".equals(wURL.getText())) //$NON-NLS-1$
+        if (wURL.getText() != null && !"".equals(wURL.getText())) 
         {
             wOperation.setText(meta.getOperationName() == null ? "" : meta.getOperationName());
         }
@@ -910,14 +910,14 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         formLayout.marginHeight = Const.FORM_MARGIN;
 
         shell.setLayout(formLayout);
-        shell.setText(BaseMessages.getString(PKG, "WebServiceDialog.DialogTitle")); //$NON-NLS-1$
+        shell.setText(BaseMessages.getString(PKG, "WebServiceDialog.DialogTitle")); 
 
         int middle = props.getMiddlePct();
         int margin = Const.MARGIN;
 
         // Stepname line
         wlStepname = new Label(shell, SWT.RIGHT);
-        wlStepname.setText(BaseMessages.getString(PKG, "System.Label.StepName")); //$NON-NLS-1$
+        wlStepname.setText(BaseMessages.getString(PKG, "System.Label.StepName")); 
         props.setLook(wlStepname);
         fdlStepname = new FormData();
         fdlStepname.left = new FormAttachment(0, 0);
@@ -940,7 +940,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         // Add a tab which contains information on the web service(s)
         //
         tabItemWebService = new CTabItem(wTabFolder, SWT.NONE);
-        tabItemWebService.setText(BaseMessages.getString(PKG, "WebServiceDialog.MainTab.TabTitle")); //$NON-NLS-1$
+        tabItemWebService.setText(BaseMessages.getString(PKG, "WebServiceDialog.MainTab.TabTitle")); 
         Composite compositeTabWebService = new Composite(wTabFolder, SWT.NONE);
         props.setLook(compositeTabWebService);
 
@@ -951,7 +951,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
 
         // URL
         wlURL = new Label(compositeTabWebService, SWT.RIGHT);
-        wlURL.setText(BaseMessages.getString(PKG, "WebServiceDialog.URL.Label")); //$NON-NLS-1$
+        wlURL.setText(BaseMessages.getString(PKG, "WebServiceDialog.URL.Label")); 
         props.setLook(wlURL);
         FormData fdlURL = new FormData();
         fdlURL.left = new FormAttachment(0, 0);
@@ -961,7 +961,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
 
         wbURL = new Button(compositeTabWebService, SWT.PUSH | SWT.CENTER);
         props.setLook(wbURL);
-        wbURL.setText(BaseMessages.getString(PKG, "WebServiceDialog.URL.Load")); //$NON-NLS-1$
+        wbURL.setText(BaseMessages.getString(PKG, "WebServiceDialog.URL.Load")); 
         FormData fdbURL = new FormData();
         fdbURL.right = new FormAttachment(100, 0);
         fdbURL.top = new FormAttachment(0, 0);
@@ -992,7 +992,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
 
         wbFile = new Button(compositeTabWebService, SWT.PUSH | SWT.CENTER);
         props.setLook(wbFile);
-        wbFile.setText(BaseMessages.getString(PKG, "WebServiceDialog.File.Load")); //$NON-NLS-1$
+        wbFile.setText(BaseMessages.getString(PKG, "WebServiceDialog.File.Load")); 
         FormData fdbFile = new FormData();
         fdbFile.right = new FormAttachment(wbURL, 0);
         fdbFile.top = new FormAttachment(0, 0);
@@ -1037,7 +1037,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
 
         // Operation
         wlOperation = new Label(compositeTabWebService, SWT.RIGHT);
-        wlOperation.setText(BaseMessages.getString(PKG, "WebServiceDialog.Operation.Label")); //$NON-NLS-1$
+        wlOperation.setText(BaseMessages.getString(PKG, "WebServiceDialog.Operation.Label")); 
         props.setLook(wlOperation);
         FormData fdlOperation = new FormData();
         fdlOperation.left = new FormAttachment(0, 0);
@@ -1046,7 +1046,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         wlOperation.setLayoutData(fdlOperation);
         wOperation = new CCombo(compositeTabWebService, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wOperation.addModifyListener(lsMod);
-        wOperation.setToolTipText(BaseMessages.getString(PKG, "WebServiceDialog.Operation.Tooltip")); //$NON-NLS-1$
+        wOperation.setToolTipText(BaseMessages.getString(PKG, "WebServiceDialog.Operation.Tooltip")); 
         props.setLook(wOperation);
         FormData fdOperation = new FormData();
         fdOperation.top = new FormAttachment(wURL, margin);
@@ -1079,7 +1079,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
 
         // Operation request name (optional)
         wlOperationRequest = new Label(compositeTabWebService, SWT.RIGHT);
-        wlOperationRequest.setText(BaseMessages.getString(PKG, "WebServiceDialog.OperationRequest.Label")); //$NON-NLS-1$
+        wlOperationRequest.setText(BaseMessages.getString(PKG, "WebServiceDialog.OperationRequest.Label")); 
         props.setLook(wlOperationRequest);
         FormData fdlOperationRequest = new FormData();
         fdlOperationRequest.left = new FormAttachment(0, 0);
@@ -1088,7 +1088,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         wlOperationRequest.setLayoutData(fdlOperationRequest);
         wOperationRequest = new Text(compositeTabWebService, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wOperationRequest.addModifyListener(lsMod);
-        wOperationRequest.setToolTipText(BaseMessages.getString(PKG, "WebServiceDialog.OperationRequest.Tooltip")); //$NON-NLS-1$
+        wOperationRequest.setToolTipText(BaseMessages.getString(PKG, "WebServiceDialog.OperationRequest.Tooltip")); 
         props.setLook(wOperationRequest);
         FormData fdOperationRequest = new FormData();
         fdOperationRequest.top = new FormAttachment(wOperation, margin);
@@ -1098,7 +1098,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
 
         // Pas d'appel
         wlStep = new Label(compositeTabWebService, SWT.RIGHT);
-        wlStep.setText(BaseMessages.getString(PKG, "WebServiceDialog.Step.Label")); //$NON-NLS-1$
+        wlStep.setText(BaseMessages.getString(PKG, "WebServiceDialog.Step.Label")); 
         props.setLook(wlStep);
         FormData fdlStep = new FormData();
         fdlStep.left = new FormAttachment(0, 0);
@@ -1107,7 +1107,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         wlStep.setLayoutData(fdlStep);
         wStep = new Text(compositeTabWebService, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wStep.addModifyListener(lsMod);
-        wStep.setToolTipText(BaseMessages.getString(PKG, "WebServiceDialog.Step.Tooltip")); //$NON-NLS-1$
+        wStep.setToolTipText(BaseMessages.getString(PKG, "WebServiceDialog.Step.Tooltip")); 
         props.setLook(wStep);
         FormData fdStep = new FormData();
         fdStep.top = new FormAttachment(wOperationRequest, margin);
@@ -1118,7 +1118,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         // Option to pass all input data to output
         //
         wlPassInputData = new Label(compositeTabWebService, SWT.RIGHT);
-        wlPassInputData.setText(BaseMessages.getString(PKG, "WebServiceDialog.PassInputData.Label")); //$NON-NLS-1$
+        wlPassInputData.setText(BaseMessages.getString(PKG, "WebServiceDialog.PassInputData.Label")); 
         props.setLook(wlPassInputData);
         FormData fdlPassInputData = new FormData();
         fdlPassInputData.left = new FormAttachment(0, 0);
@@ -1126,7 +1126,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         fdlPassInputData.right = new FormAttachment(middle, -margin);
         wlPassInputData.setLayoutData(fdlPassInputData);
         wPassInputData = new Button(compositeTabWebService, SWT.CHECK);
-        wPassInputData.setToolTipText(BaseMessages.getString(PKG, "WebServiceDialog.PassInputData.Tooltip")); //$NON-NLS-1$
+        wPassInputData.setToolTipText(BaseMessages.getString(PKG, "WebServiceDialog.PassInputData.Tooltip")); 
         props.setLook(wPassInputData);
         FormData fdPassInputData = new FormData();
         fdPassInputData.top = new FormAttachment(wStep, margin);
@@ -1137,7 +1137,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         // Option to use 2.5/3.0 compatible parsing logic
         //
         wlCompatible = new Label(compositeTabWebService, SWT.RIGHT);
-        wlCompatible.setText(BaseMessages.getString(PKG, "WebServiceDialog.Compatible.Label")); //$NON-NLS-1$
+        wlCompatible.setText(BaseMessages.getString(PKG, "WebServiceDialog.Compatible.Label")); 
         props.setLook(wlCompatible);
         FormData fdlCompatible = new FormData();
         fdlCompatible.left = new FormAttachment(0, 0);
@@ -1145,7 +1145,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         fdlCompatible.right = new FormAttachment(middle, -margin);
         wlCompatible.setLayoutData(fdlCompatible);
         wCompatible = new Button(compositeTabWebService, SWT.CHECK);
-        wCompatible.setToolTipText(BaseMessages.getString(PKG, "WebServiceDialog.Compatible.Tooltip")); //$NON-NLS-1$
+        wCompatible.setToolTipText(BaseMessages.getString(PKG, "WebServiceDialog.Compatible.Tooltip")); 
         props.setLook(wCompatible);
         FormData fdCompatible = new FormData();
         fdCompatible.top = new FormAttachment(wPassInputData, margin);
@@ -1155,7 +1155,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         
         // HTTP Login
         wlRepeatingElement = new Label(compositeTabWebService, SWT.RIGHT);
-        wlRepeatingElement.setText(BaseMessages.getString(PKG, "WebServiceDialog.RepeatingElement.Label")); //$NON-NLS-1$
+        wlRepeatingElement.setText(BaseMessages.getString(PKG, "WebServiceDialog.RepeatingElement.Label")); 
         props.setLook(wlRepeatingElement);
         FormData fdlRepeatingElement = new FormData();
         fdlRepeatingElement.top = new FormAttachment(wCompatible, margin);
@@ -1164,7 +1164,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         wlRepeatingElement.setLayoutData(fdlRepeatingElement);
         wRepeatingElement = new TextVar(transMeta, compositeTabWebService, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wRepeatingElement.addModifyListener(lsMod);
-        wRepeatingElement.setToolTipText(BaseMessages.getString(PKG, "WebServiceDialog.RepeatingElement.Tooltip")); //$NON-NLS-1$
+        wRepeatingElement.setToolTipText(BaseMessages.getString(PKG, "WebServiceDialog.RepeatingElement.Tooltip")); 
         props.setLook(wRepeatingElement);
         FormData fdRepeatingElement = new FormData();
         fdRepeatingElement.top = new FormAttachment(wCompatible, margin);
@@ -1175,7 +1175,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         // Return the SOAP body as a String or not?
         //
         wlReplyAsString = new Label(compositeTabWebService, SWT.RIGHT);
-        wlReplyAsString.setText(BaseMessages.getString(PKG, "WebServiceDialog.ReplyAsString.Label")); //$NON-NLS-1$
+        wlReplyAsString.setText(BaseMessages.getString(PKG, "WebServiceDialog.ReplyAsString.Label")); 
         props.setLook(wlReplyAsString);
         FormData fdlBodyAsString = new FormData();
         fdlBodyAsString.left = new FormAttachment(0, 0);
@@ -1183,7 +1183,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         fdlBodyAsString.right = new FormAttachment(middle, -margin);
         wlReplyAsString.setLayoutData(fdlBodyAsString);
         wReplyAsString = new Button(compositeTabWebService, SWT.CHECK);
-        wReplyAsString.setToolTipText(BaseMessages.getString(PKG, "WebServiceDialog.ReplyAsString.Tooltip")); //$NON-NLS-1$
+        wReplyAsString.setToolTipText(BaseMessages.getString(PKG, "WebServiceDialog.ReplyAsString.Tooltip")); 
         props.setLook(wReplyAsString);
         FormData fdBodyAsString = new FormData();
         fdBodyAsString.top = new FormAttachment(wRepeatingElement, margin);
@@ -1196,7 +1196,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         // START HTTP AUTH GROUP
 
         Group gHttpAuth = new Group(compositeTabWebService, SWT.SHADOW_ETCHED_IN);
-        gHttpAuth.setText(BaseMessages.getString(PKG, "WebServicesDialog.HttpAuthGroup.Label")); //$NON-NLS-1$;
+        gHttpAuth.setText(BaseMessages.getString(PKG, "WebServicesDialog.HttpAuthGroup.Label")); ;
         FormLayout httpAuthLayout = new FormLayout();
         httpAuthLayout.marginWidth = 3;
         httpAuthLayout.marginHeight = 3;
@@ -1205,7 +1205,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
 
         // HTTP Login
         wlHttpLogin = new Label(gHttpAuth, SWT.RIGHT);
-        wlHttpLogin.setText(BaseMessages.getString(PKG, "WebServiceDialog.HttpLogin.Label")); //$NON-NLS-1$
+        wlHttpLogin.setText(BaseMessages.getString(PKG, "WebServiceDialog.HttpLogin.Label")); 
         props.setLook(wlHttpLogin);
         FormData fdlHttpLogin = new FormData();
         fdlHttpLogin.top = new FormAttachment(0, margin);
@@ -1214,7 +1214,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         wlHttpLogin.setLayoutData(fdlHttpLogin);
         wHttpLogin = new TextVar(transMeta, gHttpAuth, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wHttpLogin.addModifyListener(lsMod);
-        wHttpLogin.setToolTipText(BaseMessages.getString(PKG, "WebServiceDialog.HttpLogin.Tooltip")); //$NON-NLS-1$
+        wHttpLogin.setToolTipText(BaseMessages.getString(PKG, "WebServiceDialog.HttpLogin.Tooltip")); 
         props.setLook(wHttpLogin);
         FormData fdHttpLogin = new FormData();
         fdHttpLogin.top = new FormAttachment(0, margin);
@@ -1224,7 +1224,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
 
         // HTTP Password
         wlHttpPassword = new Label(gHttpAuth, SWT.RIGHT);
-        wlHttpPassword.setText(BaseMessages.getString(PKG, "WebServiceDialog.HttpPassword.Label")); //$NON-NLS-1$
+        wlHttpPassword.setText(BaseMessages.getString(PKG, "WebServiceDialog.HttpPassword.Label")); 
         props.setLook(wlHttpPassword);
         FormData fdlHttpPassword = new FormData();
         fdlHttpPassword.top = new FormAttachment(wHttpLogin, margin);
@@ -1233,7 +1233,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         wlHttpPassword.setLayoutData(fdlHttpPassword);
         wHttpPassword = new TextVar(transMeta, gHttpAuth, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wHttpPassword.addModifyListener(lsMod);
-        wHttpPassword.setToolTipText(BaseMessages.getString(PKG, "WebServiceDialog.HttpPassword.Tooltip")); //$NON-NLS-1$
+        wHttpPassword.setToolTipText(BaseMessages.getString(PKG, "WebServiceDialog.HttpPassword.Tooltip")); 
         wHttpPassword.setEchoChar('*');
         props.setLook(wHttpPassword);
         FormData fdHttpPassword = new FormData();
@@ -1255,7 +1255,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         // START PROXY GROUP
 
         Group gProxy = new Group(compositeTabWebService, SWT.SHADOW_ETCHED_IN);
-        gProxy.setText(BaseMessages.getString(PKG, "WebServicesDialog.ProxyGroup.Label")); //$NON-NLS-1$;
+        gProxy.setText(BaseMessages.getString(PKG, "WebServicesDialog.ProxyGroup.Label")); ;
         FormLayout proxyLayout = new FormLayout();
         proxyLayout.marginWidth = 3;
         proxyLayout.marginHeight = 3;
@@ -1264,7 +1264,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
 
         // HTTP Login
         wlProxyHost = new Label(gProxy, SWT.RIGHT);
-        wlProxyHost.setText(BaseMessages.getString(PKG, "WebServiceDialog.ProxyHost.Label")); //$NON-NLS-1$
+        wlProxyHost.setText(BaseMessages.getString(PKG, "WebServiceDialog.ProxyHost.Label")); 
         props.setLook(wlProxyHost);
         FormData fdlProxyHost = new FormData();
         fdlProxyHost.top = new FormAttachment(0, margin);
@@ -1273,7 +1273,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         wlProxyHost.setLayoutData(fdlProxyHost);
         wProxyHost = new TextVar(transMeta, gProxy, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wProxyHost.addModifyListener(lsMod);
-        wProxyHost.setToolTipText(BaseMessages.getString(PKG, "WebServiceDialog.ProxyHost.Tooltip")); //$NON-NLS-1$
+        wProxyHost.setToolTipText(BaseMessages.getString(PKG, "WebServiceDialog.ProxyHost.Tooltip")); 
         props.setLook(wProxyHost);
         FormData fdProxyHost = new FormData();
         fdProxyHost.top = new FormAttachment(0, margin);
@@ -1283,7 +1283,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
 
         // HTTP Password
         wlProxyPort = new Label(gProxy, SWT.RIGHT);
-        wlProxyPort.setText(BaseMessages.getString(PKG, "WebServiceDialog.ProxyPort.Label")); //$NON-NLS-1$
+        wlProxyPort.setText(BaseMessages.getString(PKG, "WebServiceDialog.ProxyPort.Label")); 
         props.setLook(wlProxyPort);
         FormData fdlProxyPort = new FormData();
         fdlProxyPort.top = new FormAttachment(wProxyHost, margin);
@@ -1292,7 +1292,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         wlProxyPort.setLayoutData(fdlProxyPort);
         wProxyPort = new TextVar(transMeta, gProxy, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wProxyPort.addModifyListener(lsMod);
-        wProxyPort.setToolTipText(BaseMessages.getString(PKG, "WebServiceDialog.ProxyPort.Tooltip")); //$NON-NLS-1$
+        wProxyPort.setToolTipText(BaseMessages.getString(PKG, "WebServiceDialog.ProxyPort.Tooltip")); 
         props.setLook(wProxyPort);
         FormData fdProxyPort = new FormData();
         fdProxyPort.top = new FormAttachment(wProxyHost, margin);
@@ -1361,16 +1361,16 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         // Boutons OK / Cancel
 
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 
         wAddInput = new Button(shell, SWT.PUSH);
-        wAddInput.setText(BaseMessages.getString(PKG, "WebServiceDialog.Label.AddInputButton")); //$NON-NLS-1$
+        wAddInput.setText(BaseMessages.getString(PKG, "WebServiceDialog.Label.AddInputButton")); 
 
         wAddOutput = new Button(shell, SWT.PUSH);
-        wAddOutput.setText(BaseMessages.getString(PKG, "WebServiceDialog.Label.AddOutputButton")); //$NON-NLS-1$
+        wAddOutput.setText(BaseMessages.getString(PKG, "WebServiceDialog.Label.AddOutputButton")); 
 
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
         setButtonPositions(new Button[] {wOK, wAddInput, wAddOutput, wCancel}, margin, wTabFolder);
 

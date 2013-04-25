@@ -736,7 +736,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
                                  
                new ColumnInfo(BaseMessages.getString(PKG, "JobHTTP.ColumnInfo.Value"),
                                 ColumnInfo.COLUMN_TYPE_TEXT,   
-                                false), //$NON-NLS-1$
+                                false), 
         };
         colinf[0].setUsingVariables(true);
         colinf[1].setUsingVariables(true);

@@ -352,7 +352,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 
         // Protocol Line
 		wlProtocol=new Label(wHostGroup, SWT.RIGHT);
-		wlProtocol.setText(BaseMessages.getString(PKG, "LDAPInputDialog.Protocol.Label")); //$NON-NLS-1$
+		wlProtocol.setText(BaseMessages.getString(PKG, "LDAPInputDialog.Protocol.Label")); 
  		props.setLook(wlProtocol);
 		fdlProtocol=new FormData();
 		fdlProtocol.left = new FormAttachment(0, 0);
@@ -1066,7 +1066,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		// searchScope
 		wlsearchScope=new Label(wContentComp, SWT.RIGHT);
-		wlsearchScope.setText(BaseMessages.getString(PKG, "LDAPInputDialog.SearchScope.Label")); //$NON-NLS-1$
+		wlsearchScope.setText(BaseMessages.getString(PKG, "LDAPInputDialog.SearchScope.Label")); 
  		props.setLook(wlsearchScope);
 		fdlsearchScope=new FormData();
 		fdlsearchScope.left = new FormAttachment(0, 0);
@@ -1311,8 +1311,8 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 			// We are successfully connected
 				
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
-			mb.setMessage(BaseMessages.getString(PKG, "LDAPInputDialog.Connected.OK") +Const.CR); //$NON-NLS-1$
-			mb.setText(BaseMessages.getString(PKG, "LDAPInputDialog.Connected.Title.Ok")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "LDAPInputDialog.Connected.OK") +Const.CR); 
+			mb.setText(BaseMessages.getString(PKG, "LDAPInputDialog.Connected.Title.Ok")); 
 			mb.open();
 			
 		} catch(Exception e){
@@ -1697,7 +1697,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 
 			 }catch(KettleException ke){
 					new ErrorDialog(shell, BaseMessages.getString(PKG, "LDAPInputDialog.FailedToGetFields.DialogTitle"), 
-							BaseMessages.getString(PKG, "LDAPInputDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+							BaseMessages.getString(PKG, "LDAPInputDialog.FailedToGetFields.DialogMessage"), ke);  
 			 }
 			 gotPreviousFields=true;
 		 }

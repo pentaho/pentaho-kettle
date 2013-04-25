@@ -123,15 +123,15 @@ public class SasInputField implements XMLInterface, Cloneable {
   }
   
   public SasInputField(Node node) throws KettleXMLException {
-    name = XMLHandler.getTagValue(node, "name"); //$NON-NLS-1$
-    rename = XMLHandler.getTagValue(node, "rename"); //$NON-NLS-1$
-    type = ValueMeta.getType(XMLHandler.getTagValue(node, "type")); //$NON-NLS-1$
-    length = Const.toInt(XMLHandler.getTagValue(node, "length") , -1);  //$NON-NLS-1$
-    precision = Const.toInt(XMLHandler.getTagValue(node, "precision") , -1);  //$NON-NLS-1$
-    conversionMask = XMLHandler.getTagValue(node, "conversion_mask"); //$NON-NLS-1$
-    decimalSymbol= XMLHandler.getTagValue(node, "decimal"); //$NON-NLS-1$
-    groupingSymbol = XMLHandler.getTagValue(node, "grouping"); //$NON-NLS-1$
-    trimType = ValueMeta.getTrimTypeByCode(XMLHandler.getTagValue(node, "trim_type")); //$NON-NLS-1$
+    name = XMLHandler.getTagValue(node, "name"); 
+    rename = XMLHandler.getTagValue(node, "rename"); 
+    type = ValueMeta.getType(XMLHandler.getTagValue(node, "type")); 
+    length = Const.toInt(XMLHandler.getTagValue(node, "length") , -1);  
+    precision = Const.toInt(XMLHandler.getTagValue(node, "precision") , -1);  
+    conversionMask = XMLHandler.getTagValue(node, "conversion_mask"); 
+    decimalSymbol= XMLHandler.getTagValue(node, "decimal"); 
+    groupingSymbol = XMLHandler.getTagValue(node, "grouping"); 
+    trimType = ValueMeta.getTrimTypeByCode(XMLHandler.getTagValue(node, "trim_type")); 
   }
   
   /**

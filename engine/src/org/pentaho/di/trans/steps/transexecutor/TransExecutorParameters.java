@@ -42,9 +42,9 @@ import org.w3c.dom.Node;
  */
 public class TransExecutorParameters implements Cloneable {
 	
-	public static final String XML_TAG = "parameters";   //$NON-NLS-1$
+	public static final String XML_TAG = "parameters";   
 	
-	private static final String XML_VARIABLES_TAG = "variablemapping";  //$NON-NLS-1$
+	private static final String XML_VARIABLES_TAG = "variablemapping";  
 	
 	/** The name of the variable to set in the job */
 	private String variable[];
@@ -98,18 +98,18 @@ public class TransExecutorParameters implements Cloneable {
 	public String getXML() {
 		StringBuffer xml = new StringBuffer(200);
 		
-		xml.append("    ").append(XMLHandler.openTag(XML_TAG));  //$NON-NLS-1$
+		xml.append("    ").append(XMLHandler.openTag(XML_TAG));  
 		
 		for (int i=0;i<variable.length;i++)
 		{
-			xml.append("       ").append(XMLHandler.openTag(XML_VARIABLES_TAG));  //$NON-NLS-1$
-			xml.append(XMLHandler.addTagValue("variable", variable[i], false));  //$NON-NLS-1$
-      xml.append(XMLHandler.addTagValue("field", field[i], false));  //$NON-NLS-1$
-			xml.append(XMLHandler.addTagValue("input", input[i], false));  //$NON-NLS-1$
+			xml.append("       ").append(XMLHandler.openTag(XML_VARIABLES_TAG));  
+			xml.append(XMLHandler.addTagValue("variable", variable[i], false));  
+      xml.append(XMLHandler.addTagValue("field", field[i], false));  
+			xml.append(XMLHandler.addTagValue("input", input[i], false));  
 			xml.append(XMLHandler.closeTag(XML_VARIABLES_TAG)).append(Const.CR);
 		}
 		xml.append("    ").append(XMLHandler.addTagValue("inherit_all_vars", inheritingAllVariables));
-		xml.append("    ").append(XMLHandler.closeTag(XML_TAG));  //$NON-NLS-1$
+		xml.append("    ").append(XMLHandler.closeTag(XML_TAG));  
 		
 		return xml.toString();
 	}
@@ -117,9 +117,9 @@ public class TransExecutorParameters implements Cloneable {
 	public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step) throws KettleException {
 		for (int i=0;i<variable.length;i++)
 		{
-			rep.saveStepAttribute(id_transformation, id_step, i, "parameter_variable", variable[i]);  //$NON-NLS-1$
-      rep.saveStepAttribute(id_transformation, id_step, i, "parameter_field", field[i]);  //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, i, "parameter_input", input[i]);  //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, i, "parameter_variable", variable[i]);  
+      rep.saveStepAttribute(id_transformation, id_step, i, "parameter_field", field[i]);  
+			rep.saveStepAttribute(id_transformation, id_step, i, "parameter_input", input[i]);  
 		}
 		rep.saveStepAttribute(id_transformation, id_step, "parameter_inherit_all_vars", inheritingAllVariables);
 	}
@@ -133,9 +133,9 @@ public class TransExecutorParameters implements Cloneable {
 		
 		for (int i=0;i<nrVariables;i++)
 		{
-			variable[i] = rep.getStepAttributeString(id_step, i, "parameter_variable");  //$NON-NLS-1$
-      field[i]    = rep.getStepAttributeString(id_step, i, "parameter_field");  //$NON-NLS-1$
-			input[i]    = rep.getStepAttributeString(id_step, i, "parameter_input");  //$NON-NLS-1$
+			variable[i] = rep.getStepAttributeString(id_step, i, "parameter_variable");  
+      field[i]    = rep.getStepAttributeString(id_step, i, "parameter_field");  
+			input[i]    = rep.getStepAttributeString(id_step, i, "parameter_input");  
 		}
 		inheritingAllVariables = rep.getStepAttributeBoolean(id_step, "parameter_inherit_all_vars");
 	}

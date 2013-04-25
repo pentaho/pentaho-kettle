@@ -98,7 +98,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface
     
     StreamLogger(InputStream is, String type) {
       this.input = is;
-      this.type = type + ">"; //$NON-NLS-1$
+      this.type = type + ">"; 
     }
 
     public void run() {
@@ -538,7 +538,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface
                 // any error???
             	int exitVal = sqlldrProcess.waitFor();            
             	sqlldrProcess = null;            	
-				logBasic(BaseMessages.getString(PKG, "OraBulkLoader.Log.ExitValueSqlldr", "" + exitVal)); //$NON-NLS-1$
+				logBasic(BaseMessages.getString(PKG, "OraBulkLoader.Log.ExitValueSqlldr", "" + exitVal)); 
 				checkExitVal(exitVal);
             }
         }
@@ -597,7 +597,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 							{
 								int exitVal = sqlldrProcess.waitFor();								
 								sqlldrProcess = null;																
-								logBasic(BaseMessages.getString(PKG, "OraBulkLoader.Log.ExitValueSqlldr", "" + exitVal)); //$NON-NLS-1$
+								logBasic(BaseMessages.getString(PKG, "OraBulkLoader.Log.ExitValueSqlldr", "" + exitVal)); 
 								checkExitVal(exitVal);
 							}
 							else if ( ! first )
@@ -642,7 +642,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 		}
 		catch(KettleException e)
 		{
-			logError(BaseMessages.getString(PKG, "OraBulkLoader.Log.ErrorInStep")+e.getMessage()); //$NON-NLS-1$
+			logError(BaseMessages.getString(PKG, "OraBulkLoader.Log.ErrorInStep")+e.getMessage()); 
 			setErrors(1);
 			stopAll();
 			setOutputDone();  // signal end to receiver(s)
@@ -693,7 +693,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 	    	try {
 	    		int exitVal = sqlldrProcess.waitFor();								
 	    		sqlldrProcess = null;																
-	    		logBasic(BaseMessages.getString(PKG, "OraBulkLoader.Log.ExitValueSqlldr", "" + exitVal)); //$NON-NLS-1$
+	    		logBasic(BaseMessages.getString(PKG, "OraBulkLoader.Log.ExitValueSqlldr", "" + exitVal)); 
 	    	} catch(InterruptedException e) {
 	    		/* process should be destroyed */
 	    		e.printStackTrace();

@@ -95,7 +95,7 @@ public class FieldsChangeSequenceDialog extends BaseStepDialog implements StepDi
     
     private ColumnInfo[] colinf;
     
-    public static final String STRING_CHANGE_SEQUENCE_WARNING_PARAMETER = "ChangeSequenceSortWarning"; //$NON-NLS-1$
+    public static final String STRING_CHANGE_SEQUENCE_WARNING_PARAMETER = "ChangeSequenceSortWarning"; 
 
 	public FieldsChangeSequenceDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
@@ -127,14 +127,14 @@ public class FieldsChangeSequenceDialog extends BaseStepDialog implements StepDi
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "FieldsChangeSequenceDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "FieldsChangeSequenceDialog.Shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "FieldsChangeSequenceDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "FieldsChangeSequenceDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -154,7 +154,7 @@ public class FieldsChangeSequenceDialog extends BaseStepDialog implements StepDi
         
         // Result line...
 		wlResult=new Label(shell, SWT.RIGHT);
-		wlResult.setText(BaseMessages.getString(PKG, "FieldsChangeSequenceDialog.Result.Label")); //$NON-NLS-1$
+		wlResult.setText(BaseMessages.getString(PKG, "FieldsChangeSequenceDialog.Result.Label")); 
  		props.setLook(wlResult);
 		fdlResult=new FormData();
 		fdlResult.left = new FormAttachment(0, 0);
@@ -419,21 +419,21 @@ public class FieldsChangeSequenceDialog extends BaseStepDialog implements StepDi
 		}
 		
 		
-        if ( "Y".equalsIgnoreCase( props.getCustomParameter(STRING_CHANGE_SEQUENCE_WARNING_PARAMETER, "Y") )) //$NON-NLS-1$ //$NON-NLS-2$
+        if ( "Y".equalsIgnoreCase( props.getCustomParameter(STRING_CHANGE_SEQUENCE_WARNING_PARAMETER, "Y") ))  
         {
             MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
-                 BaseMessages.getString(PKG, "FieldsChangeSequenceDialog.InputNeedSort.DialogTitle"),  //$NON-NLS-1$
+                 BaseMessages.getString(PKG, "FieldsChangeSequenceDialog.InputNeedSort.DialogTitle"),  
                  null,
-                 BaseMessages.getString(PKG, "FieldsChangeSequenceDialog.InputNeedSort.DialogMessage", Const.CR )+Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
+                 BaseMessages.getString(PKG, "FieldsChangeSequenceDialog.InputNeedSort.DialogMessage", Const.CR )+Const.CR,  
                  MessageDialog.WARNING,
-                 new String[] { BaseMessages.getString(PKG, "FieldsChangeSequenceDialog.InputNeedSort.Option1") }, //$NON-NLS-1$
+                 new String[] { BaseMessages.getString(PKG, "FieldsChangeSequenceDialog.InputNeedSort.Option1") }, 
                  0,
-                 BaseMessages.getString(PKG, "FieldsChangeSequenceDialog.InputNeedSort.Option2"), //$NON-NLS-1$
-                 "N".equalsIgnoreCase( props.getCustomParameter(STRING_CHANGE_SEQUENCE_WARNING_PARAMETER, "Y") ) //$NON-NLS-1$ //$NON-NLS-2$
+                 BaseMessages.getString(PKG, "FieldsChangeSequenceDialog.InputNeedSort.Option2"), 
+                 "N".equalsIgnoreCase( props.getCustomParameter(STRING_CHANGE_SEQUENCE_WARNING_PARAMETER, "Y") )  
             );
             MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
             md.open();
-            props.setCustomParameter(STRING_CHANGE_SEQUENCE_WARNING_PARAMETER, md.getToggleState()?"N":"Y"); //$NON-NLS-1$ //$NON-NLS-2$
+            props.setCustomParameter(STRING_CHANGE_SEQUENCE_WARNING_PARAMETER, md.getToggleState()?"N":"Y");  
             props.saveProps();
         }
 

@@ -287,7 +287,7 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError(BaseMessages.getString(PKG, "MySQLBulkLoader.Log.ErrorInStep"), e); //$NON-NLS-1$
+			logError(BaseMessages.getString(PKG, "MySQLBulkLoader.Log.ErrorInStep"), e); 
 			setErrors(1);
 			stopAll();
 			setOutputDone();  // signal end to receiver(s)

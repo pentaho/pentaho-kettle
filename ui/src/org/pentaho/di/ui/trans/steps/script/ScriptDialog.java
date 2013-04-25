@@ -284,14 +284,14 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "ScriptDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "ScriptDialog.Shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 		
 		// Filename line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "ScriptDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "ScriptDialog.Stepname.Label")); 
 		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -322,7 +322,7 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 		
 		// Script line
 		wlScriptFunctions=new Label(wTop, SWT.NONE);
-		wlScriptFunctions.setText(BaseMessages.getString(PKG, "ScriptDialog.JavascriptFunctions.Label")); //$NON-NLS-1$
+		wlScriptFunctions.setText(BaseMessages.getString(PKG, "ScriptDialog.JavascriptFunctions.Label")); 
 		props.setLook(wlScriptFunctions);
 		fdlScriptFunctions=new FormData();
 		fdlScriptFunctions.left = new FormAttachment(0, 0);
@@ -341,7 +341,7 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 		
 		// Script line
 		wlScript=new Label(wTop, SWT.NONE);
-		wlScript.setText(BaseMessages.getString(PKG, "ScriptDialog.Javascript.Label")); //$NON-NLS-1$
+		wlScript.setText(BaseMessages.getString(PKG, "ScriptDialog.Javascript.Label")); 
 		props.setLook(wlScript);
 		fdlScript=new FormData();
 		fdlScript.left = new FormAttachment(wTree, margin);
@@ -360,7 +360,7 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 		folder.setLayoutData(fdScript);
 		
 		wlPosition=new Label(wTop, SWT.NONE);
-		wlPosition.setText(BaseMessages.getString(PKG, "ScriptDialog.Position.Label")); //$NON-NLS-1$
+		wlPosition.setText(BaseMessages.getString(PKG, "ScriptDialog.Position.Label")); 
 		props.setLook(wlPosition);
 		fdlPosition=new FormData();
 		fdlPosition.left  = new FormAttachment(wTree, margin);
@@ -403,7 +403,7 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 		wSeparator.setLayoutData(fdSeparator);
 		
 		wlFields=new Label(wBottom, SWT.NONE);
-		wlFields.setText(BaseMessages.getString(PKG, "ScriptDialog.Fields.Label")); //$NON-NLS-1$
+		wlFields.setText(BaseMessages.getString(PKG, "ScriptDialog.Fields.Label")); 
 		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -414,12 +414,12 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 		
 		ColumnInfo[] colinf=new ColumnInfo[]
            {
-    		 new ColumnInfo(BaseMessages.getString(PKG, "ScriptDialog.ColumnInfo.Filename"),  ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
-    		 new ColumnInfo(BaseMessages.getString(PKG, "ScriptDialog.ColumnInfo.RenameTo"),  ColumnInfo.COLUMN_TYPE_TEXT,   false ), //$NON-NLS-1$
-    		 new ColumnInfo(BaseMessages.getString(PKG, "ScriptDialog.ColumnInfo.Type"),       ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ), //$NON-NLS-1$
-    		 new ColumnInfo(BaseMessages.getString(PKG, "ScriptDialog.ColumnInfo.Length"),     ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
-    		 new ColumnInfo(BaseMessages.getString(PKG, "ScriptDialog.ColumnInfo.Precision"),  ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
-    		 new ColumnInfo(BaseMessages.getString(PKG, "ScriptDialog.ColumnInfo.Replace"),  ColumnInfo.COLUMN_TYPE_CCOMBO,   YES_NO_COMBO ), //$NON-NLS-1$
+    		 new ColumnInfo(BaseMessages.getString(PKG, "ScriptDialog.ColumnInfo.Filename"),  ColumnInfo.COLUMN_TYPE_TEXT,   false), 
+    		 new ColumnInfo(BaseMessages.getString(PKG, "ScriptDialog.ColumnInfo.RenameTo"),  ColumnInfo.COLUMN_TYPE_TEXT,   false ), 
+    		 new ColumnInfo(BaseMessages.getString(PKG, "ScriptDialog.ColumnInfo.Type"),       ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ), 
+    		 new ColumnInfo(BaseMessages.getString(PKG, "ScriptDialog.ColumnInfo.Length"),     ColumnInfo.COLUMN_TYPE_TEXT,   false), 
+    		 new ColumnInfo(BaseMessages.getString(PKG, "ScriptDialog.ColumnInfo.Precision"),  ColumnInfo.COLUMN_TYPE_TEXT,   false), 
+    		 new ColumnInfo(BaseMessages.getString(PKG, "ScriptDialog.ColumnInfo.Replace"),  ColumnInfo.COLUMN_TYPE_CCOMBO,   YES_NO_COMBO ), 
            };
 		
 		wFields=new TableView(transMeta, wBottom, 
@@ -454,13 +454,13 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 		wSash.setWeights(new int[] {75,25});
 
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wVars=new Button(shell, SWT.PUSH);
-		wVars.setText(BaseMessages.getString(PKG, "ScriptDialog.GetVariables.Button")); //$NON-NLS-1$
+		wVars.setText(BaseMessages.getString(PKG, "ScriptDialog.GetVariables.Button")); 
 		wTest=new Button(shell, SWT.PUSH);
-		wTest.setText(BaseMessages.getString(PKG, "ScriptDialog.TestScript.Button")); //$NON-NLS-1$
+		wTest.setText(BaseMessages.getString(PKG, "ScriptDialog.TestScript.Button")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 		
 		setButtonPositions(new Button[] { wOK, wCancel ,  wVars, wTest }, margin, null);
 
@@ -814,7 +814,7 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 			posnr--;
 			colnr++;
 		}
-		wlPosition.setText(BaseMessages.getString(PKG, "ScriptDialog.Position.Label2")+linenr+", "+colnr); //$NON-NLS-1$ //$NON-NLS-2$
+		wlPosition.setText(BaseMessages.getString(PKG, "ScriptDialog.Position.Label2")+linenr+", "+colnr);  
 	}
 	
   /**
@@ -829,10 +829,10 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
           item.setText(2, input.getRename()[i]);
         item.setText(3, ValueMeta.getTypeDesc(input.getType()[i]));
         if (input.getLength()[i] >= 0)
-          item.setText(4, "" + input.getLength()[i]); //$NON-NLS-1$
+          item.setText(4, "" + input.getLength()[i]); 
         if (input.getPrecision()[i] >= 0)
-          item.setText(5, "" + input.getPrecision()[i]); //$NON-NLS-1$
-        item.setText(6, input.getReplace()[i] ? YES_NO_COMBO[1] : YES_NO_COMBO[0]); //$NON-NLS-1$
+          item.setText(5, "" + input.getPrecision()[i]); 
+        item.setText(6, input.getReplace()[i] ? YES_NO_COMBO[1] : YES_NO_COMBO[0]); 
       }
     }
 
@@ -952,7 +952,7 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 		if(getCTabItemByName(strActiveScript)==null){
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.CANCEL | SWT.ICON_ERROR );
 			mb.setMessage(BaseMessages.getString(PKG, "ScriptDialog.NoActiveScriptSet"));
-			mb.setText(BaseMessages.getString(PKG, "ScriptDialog.ERROR.Label")); //$NON-NLS-1$
+			mb.setText(BaseMessages.getString(PKG, "ScriptDialog.ERROR.Label")); 
 			switch(mb.open()){
 				case SWT.OK:
 					strActiveScript = folder.getItem(0).getText();
@@ -1017,7 +1017,7 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 				    		string = valueMeta.getString(new Date()); 
 				    		break;
 				    	case ValueMetaInterface.TYPE_STRING : 
-				    		string = "test value test value";  //$NON-NLS-1$
+				    		string = "test value test value";  
 				    		break;
 				    	case ValueMetaInterface.TYPE_INTEGER :
 				    		genMeta.getFieldFormat()[i] = "#";
@@ -1112,11 +1112,11 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 
 			    return true;
 			} else {
-				throw new KettleException(BaseMessages.getString(PKG, "ScriptDialog.Exception.CouldNotGetFields")); //$NON-NLS-1$
+				throw new KettleException(BaseMessages.getString(PKG, "ScriptDialog.Exception.CouldNotGetFields")); 
 			}
 		}
 		catch(Exception e) {
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "ScriptDialog.TestFailed.DialogTitle"), BaseMessages.getString(PKG, "ScriptDialog.TestFailed.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "ScriptDialog.TestFailed.DialogTitle"), BaseMessages.getString(PKG, "ScriptDialog.TestFailed.DialogMessage"), e);  
 			return false;
 		}
 		
@@ -1144,7 +1144,7 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 		for(int i=0;i<folder.getItemCount();i++){
 			StyledTextComp sItem = getStyledTextComp(folder.getItem(i));
 			Scriptable jsR = Context.toObject(sItem.getText(), jsscope);
-			jsscope.put(folder.getItem(i).getText(), jsscope, jsR); //$NON-NLS-1$
+			jsscope.put(folder.getItem(i).getText(), jsscope, jsR); 
 		}
 		
 		// Adding the Name of the Transformation to the Context
@@ -1157,7 +1157,7 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 				
 				ScriptDummy dummyStep = new ScriptDummy(rowMeta, transMeta.getStepFields(stepname));
 				Scriptable jsvalue = Context.toObject(dummyStep, jsscope);
-				jsscope.put("_step_", jsscope, jsvalue); //$NON-NLS-1$
+				jsscope.put("_step_", jsscope, jsvalue); 
 
 				// Modification for Additional Script parsing
 				try{
@@ -1169,7 +1169,7 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
     					}
                     }
 				}catch(Exception e){
-					testException = new KettleException(BaseMessages.getString(PKG, "ScriptDialog.CouldNotAddToContext",e.toString())); //$NON-NLS-1$
+					testException = new KettleException(BaseMessages.getString(PKG, "ScriptDialog.CouldNotAddToContext",e.toString())); 
 					retval = false;
 				}
 				
@@ -1178,7 +1178,7 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 					Context.javaToJS(ScriptAddedFunctions.class, jsscope);
 					((ScriptableObject)jsscope).defineFunctionProperties(jsFunctionList, ScriptAddedFunctions.class, ScriptableObject.DONTENUM);
 				} catch (Exception ex) {
-					testException = new KettleException(BaseMessages.getString(PKG, "ScriptDialog.CouldNotAddDefaultFunctions", ex.toString())); //$NON-NLS-1$
+					testException = new KettleException(BaseMessages.getString(PKG, "ScriptDialog.CouldNotAddDefaultFunctions", ex.toString())); 
 					retval = false;
 				};
 
@@ -1189,14 +1189,14 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 					jsscope.put("ERROR_TRANSFORMATION", jsscope, Integer.valueOf(ERROR_TRANSFORMATION));
 					jsscope.put("CONTINUE_TRANSFORMATION", jsscope, Integer.valueOf(CONTINUE_TRANSFORMATION));
 				} catch (Exception ex) {
-					testException = new KettleException(BaseMessages.getString(PKG, "ScriptDialog.CouldNotAddTransformationConstants",ex.toString())); //$NON-NLS-1$
+					testException = new KettleException(BaseMessages.getString(PKG, "ScriptDialog.CouldNotAddTransformationConstants",ex.toString())); 
 					retval = false;
 				};
 				
 				try{
 					Object[] row=new Object[rowMeta.size()];
 	   			    Scriptable jsRowMeta = Context.toObject(rowMeta, jsscope);
-				    jsscope.put("rowMeta", jsscope, jsRowMeta); //$NON-NLS-1$
+				    jsscope.put("rowMeta", jsscope, jsRowMeta); 
 				    for (int i=0;i<rowMeta.size();i++)
 				    {
                         ValueMetaInterface valueMeta = rowMeta.getValueMeta(i);
@@ -1205,7 +1205,7 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 					    // Set date and string values to something to simulate real thing
                         //
 					    if (valueMeta.isDate()) valueData = new Date();
-					    if (valueMeta.isString()) valueData = "test value test value test value test value test value test value test value test value test value test value"; //$NON-NLS-1$ 
+					    if (valueMeta.isString()) valueData = "test value test value test value test value test value test value test value test value test value test value";  
                         if (valueMeta.isInteger()) valueData = Long.valueOf(0L);
                         if (valueMeta.isNumber()) valueData = new Double(0.0);
                         if (valueMeta.isBigNumber()) valueData = BigDecimal.ZERO;
@@ -1229,15 +1229,15 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 				    
 				    // Add support for Value class (new Value())
 				    Scriptable jsval = Context.toObject(Value.class, jsscope);
-				    jsscope.put("Value", jsscope, jsval); //$NON-NLS-1$
+				    jsscope.put("Value", jsscope, jsval); 
 
 	                // Add the old style row object for compatibility reasons...
 	                //
 	                Scriptable jsRow = Context.toObject(row, jsscope);
-	                jsscope.put("row", jsscope, jsRow); //$NON-NLS-1$
+	                jsscope.put("row", jsscope, jsRow); 
 
 				}catch(Exception ev){
-					testException = new KettleException(BaseMessages.getString(PKG, "ScriptDialog.CouldNotAddInputFields", ev.toString())); //$NON-NLS-1$
+					testException = new KettleException(BaseMessages.getString(PKG, "ScriptDialog.CouldNotAddInputFields", ev.toString())); 
 					retval = false;
 				}
 				
@@ -1248,7 +1248,7 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 						/* Object startScript = */ jscx.evaluateString(jsscope, strStartScript, "trans_Start", 1, null);
 					}
 				}catch(Exception e){
-					testException = new KettleException(BaseMessages.getString(PKG, "ScriptDialog.CouldProcessStartScript",e.toString())); //$NON-NLS-1$
+					testException = new KettleException(BaseMessages.getString(PKG, "ScriptDialog.CouldProcessStartScript",e.toString())); 
 					retval = false;					
 				};
 				
@@ -1298,8 +1298,8 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 								ti.setText(1, varname);
 								ti.setText(2, "");
 								ti.setText(3, ValueMeta.getTypeDesc(type));
-								ti.setText(4, length>=0 ? ( ""+length) : "" ); //$NON-NLS-1$
-								ti.setText(5, precision>=0 ? (""+precision ) : ""); //$NON-NLS-1$
+								ti.setText(4, length>=0 ? ( ""+length) : "" ); 
+								ti.setText(5, precision>=0 ? (""+precision ) : ""); 
 								
 								// If the variable name exists in the input, suggest to replace the value
 								//
@@ -1314,23 +1314,23 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 					// End Script!
 				}
 				catch(EvaluatorException e){
-					String position = "("+e.lineNumber()+":"+e.columnNumber()+")"; // $NON-NLS-1$ $NON-NLS-2$ $NON-NLS-3$   
-					String message = BaseMessages.getString(PKG, "ScriptDialog.Exception.CouldNotExecuteScript", position); //$NON-NLS-1$
+					String position = "("+e.lineNumber()+":"+e.columnNumber()+")"; // $NON-NLS-1$  $NON-NLS-3$   
+					String message = BaseMessages.getString(PKG, "ScriptDialog.Exception.CouldNotExecuteScript", position); 
 					testException = new KettleException(message, e);
 					retval=false;
 				}
 				catch(JavaScriptException e){
-					String position = "("+e.lineNumber()+":"+e.columnNumber()+")"; // $NON-NLS-1$ $NON-NLS-2$ $NON-NLS-3$   
-					String message = BaseMessages.getString(PKG, "ScriptDialog.Exception.CouldNotExecuteScript", position); //$NON-NLS-1$
+					String position = "("+e.lineNumber()+":"+e.columnNumber()+")"; // $NON-NLS-1$  $NON-NLS-3$   
+					String message = BaseMessages.getString(PKG, "ScriptDialog.Exception.CouldNotExecuteScript", position); 
 					testException = new KettleException(message, e);
 					retval=false;
 				}
 				catch(Exception e){
-					testException = new KettleException(BaseMessages.getString(PKG, "ScriptDialog.Exception.CouldNotExecuteScript2"), e); //$NON-NLS-1$
+					testException = new KettleException(BaseMessages.getString(PKG, "ScriptDialog.Exception.CouldNotExecuteScript2"), e); 
 					retval=false;
 				}
 			}else{
-				testException = new KettleException(BaseMessages.getString(PKG, "ScriptDialog.Exception.CouldNotGetFields")); //$NON-NLS-1$
+				testException = new KettleException(BaseMessages.getString(PKG, "ScriptDialog.Exception.CouldNotGetFields")); 
 				retval=false;
 			}
 	
@@ -1338,17 +1338,17 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 				if (retval){
 					if (!getvars){
 						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
-						mb.setMessage(BaseMessages.getString(PKG, "ScriptDialog.ScriptCompilationOK")+Const.CR); //$NON-NLS-1$
-						mb.setText("OK"); //$NON-NLS-1$
+						mb.setMessage(BaseMessages.getString(PKG, "ScriptDialog.ScriptCompilationOK")+Const.CR); 
+						mb.setText("OK"); 
 						mb.open();
 					}
 				}else{
-					new ErrorDialog(shell, BaseMessages.getString(PKG, "ScriptDialog.TestFailed.DialogTitle"), BaseMessages.getString(PKG, "ScriptDialog.TestFailed.DialogMessage"), testException); //$NON-NLS-1$ //$NON-NLS-2$
+					new ErrorDialog(shell, BaseMessages.getString(PKG, "ScriptDialog.TestFailed.DialogTitle"), BaseMessages.getString(PKG, "ScriptDialog.TestFailed.DialogMessage"), testException);  
 				}
 			}
 		}catch(KettleException ke){
 			retval=false;
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "ScriptDialog.TestFailed.DialogTitle"), BaseMessages.getString(PKG, "ScriptDialog.TestFailed.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "ScriptDialog.TestFailed.DialogTitle"), BaseMessages.getString(PKG, "ScriptDialog.TestFailed.DialogMessage"), ke);  
 		}finally{
 			if (jscx!=null) Context.exit();
 		}
@@ -1487,7 +1487,7 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 									case ValueMetaInterface.TYPE_INTEGER: 
 									case ValueMetaInterface.TYPE_DATE   : 
 									case ValueMetaInterface.TYPE_BOOLEAN: 
-										strItemToAdd=v.getName()+".setValue(var)"; break; //$NON-NLS-1$
+										strItemToAdd=v.getName()+".setValue(var)"; break; 
 									default: strItemToAdd=v.getName(); break;
 								}*/
 								itemFields = new TreeItem(itemoutput, SWT.NULL);
@@ -1497,7 +1497,7 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 							}
 					}
 				/*}catch(KettleException ke){
-					new ErrorDialog(shell, BaseMessages.getString(PKG, "ScriptDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "ScriptDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+					new ErrorDialog(shell, BaseMessages.getString(PKG, "ScriptDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "ScriptDialog.FailedToGetFields.DialogMessage"), ke);  
 				}*/
          }
        }
@@ -1527,14 +1527,14 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 						ValueMetaInterface v = r.getValueMeta(i);
 						if (wCompatible.getSelection()) {
 							switch(v.getType()){
-								case ValueMetaInterface.TYPE_STRING : strItemToAdd=v.getName()+".getString()"; break; //$NON-NLS-1$
-								case ValueMetaInterface.TYPE_NUMBER : strItemToAdd=v.getName()+".getNumber()"; break; //$NON-NLS-1$
-								case ValueMetaInterface.TYPE_INTEGER: strItemToAdd=v.getName()+".getInteger()"; break; //$NON-NLS-1$
-								case ValueMetaInterface.TYPE_DATE   : strItemToAdd=v.getName()+".getDate()"; break; //$NON-NLS-1$
-								case ValueMetaInterface.TYPE_BOOLEAN: strItemToAdd=v.getName()+".getBoolean()"; break; //$NON-NLS-1$
-								case ValueMetaInterface.TYPE_BIGNUMBER: strItemToAdd=v.getName()+".getBigNumber()"; break; //$NON-NLS-1$
-								case ValueMetaInterface.TYPE_BINARY: strItemToAdd=v.getName()+".getBytes()"; break; //$NON-NLS-1$
-								case ValueMetaInterface.TYPE_SERIALIZABLE: strItemToAdd=v.getName()+".getSerializable()"; break; //$NON-NLS-1$
+								case ValueMetaInterface.TYPE_STRING : strItemToAdd=v.getName()+".getString()"; break; 
+								case ValueMetaInterface.TYPE_NUMBER : strItemToAdd=v.getName()+".getNumber()"; break; 
+								case ValueMetaInterface.TYPE_INTEGER: strItemToAdd=v.getName()+".getInteger()"; break; 
+								case ValueMetaInterface.TYPE_DATE   : strItemToAdd=v.getName()+".getDate()"; break; 
+								case ValueMetaInterface.TYPE_BOOLEAN: strItemToAdd=v.getName()+".getBoolean()"; break; 
+								case ValueMetaInterface.TYPE_BIGNUMBER: strItemToAdd=v.getName()+".getBigNumber()"; break; 
+								case ValueMetaInterface.TYPE_BINARY: strItemToAdd=v.getName()+".getBytes()"; break; 
+								case ValueMetaInterface.TYPE_SERIALIZABLE: strItemToAdd=v.getName()+".getSerializable()"; break; 
 								default: strItemToAdd=v.getName(); break;
 							}
 						}
@@ -1547,7 +1547,7 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 					}
 			}
 		}catch(KettleException ke){
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "ScriptDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "ScriptDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "ScriptDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "ScriptDialog.FailedToGetFields.DialogMessage"), ke);  
 		}
 	}*/
 

@@ -90,7 +90,7 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
 	public JobEntryFoldersCompare(String n)
 	{
 		
-		super(n, ""); //$NON-NLS-1$
+		super(n, ""); 
 		includesubfolders=false;
 		comparefilesize=false;
 		comparefilecontent=false;
@@ -674,7 +674,7 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
 		    ValidatorContext ctx = new ValidatorContext();
 		    putVariableSpace(ctx, getVariables());
 		    putValidators(ctx, notNullValidator(), fileExistsValidator());
-		    andValidator().validate(this, "filename1", remarks, ctx); //$NON-NLS-1$
-		    andValidator().validate(this, "filename2", remarks, ctx); //$NON-NLS-1$
+		    andValidator().validate(this, "filename1", remarks, ctx); 
+		    andValidator().validate(this, "filename2", remarks, ctx); 
 		  }
 }

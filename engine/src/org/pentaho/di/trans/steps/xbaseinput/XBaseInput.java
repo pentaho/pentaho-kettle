@@ -158,7 +158,7 @@ public class XBaseInput extends BaseStep implements StepInterface
 
 		putRow(data.outputRowMeta, row);        // fill the rowset(s). (wait for empty)
 
-        if (checkFeedback(getLinesInput())) logBasic(BaseMessages.getString(PKG, "XBaseInput.Log.LineNr")+getLinesInput()); //$NON-NLS-1$
+        if (checkFeedback(getLinesInput())) logBasic(BaseMessages.getString(PKG, "XBaseInput.Log.LineNr")+getLinesInput()); 
 
         if (meta.getRowLimit()>0 && getLinesInput()>=meta.getRowLimit())  // limit has been reached: stop now.
         {
@@ -215,7 +215,7 @@ public class XBaseInput extends BaseStep implements StepInterface
         // Close the last file before opening the next...
         if (data.xbi!=null)
         {
-            logBasic(BaseMessages.getString(PKG, "XBaseInput.Log.FinishedReadingRecords")); //$NON-NLS-1$
+            logBasic(BaseMessages.getString(PKG, "XBaseInput.Log.FinishedReadingRecords")); 
             data.xbi.close();
         }
         
@@ -232,7 +232,7 @@ public class XBaseInput extends BaseStep implements StepInterface
             	data.xbi.getReader().setCharactersetName(meta.getCharactersetName());
             }
             
-            logBasic(BaseMessages.getString(PKG, "XBaseInput.Log.OpenedXBaseFile")+" : ["+data.xbi+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            logBasic(BaseMessages.getString(PKG, "XBaseInput.Log.OpenedXBaseFile")+" : ["+data.xbi+"]");   //$NON-NLS-3$
             data.fields = data.xbi.getFields();
             
             // Add this to the result file names...
@@ -242,7 +242,7 @@ public class XBaseInput extends BaseStep implements StepInterface
         }
         catch(Exception e)
         {
-            logError(BaseMessages.getString(PKG, "XBaseInput.Log.Error.CouldNotOpenXBaseFile1")+data.file_dbf+BaseMessages.getString(PKG, "XBaseInput.Log.Error.CouldNotOpenXBaseFile2")+e.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
+            logError(BaseMessages.getString(PKG, "XBaseInput.Log.Error.CouldNotOpenXBaseFile1")+data.file_dbf+BaseMessages.getString(PKG, "XBaseInput.Log.Error.CouldNotOpenXBaseFile2")+e.getMessage());  
             throw new KettleException(e);
         }
     }
@@ -256,7 +256,7 @@ public class XBaseInput extends BaseStep implements StepInterface
 
 	private void closeLastFile()
     {
-        logBasic(BaseMessages.getString(PKG, "XBaseInput.Log.FinishedReadingRecords")); //$NON-NLS-1$
+        logBasic(BaseMessages.getString(PKG, "XBaseInput.Log.FinishedReadingRecords")); 
         if ( data.xbi != null )
         {
             data.xbi.close();

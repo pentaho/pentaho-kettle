@@ -194,7 +194,7 @@ public class ShowMessageDialog extends Dialog
         if ( (flags & SWT.OK) !=0)
         {
             Button button = new Button(shell, SWT.PUSH);
-            final String ok = BaseMessages.getString(PKG, "System.Button.OK");  //$NON-NLS-1$
+            final String ok = BaseMessages.getString(PKG, "System.Button.OK");  
             button.setText(ok);
             SelectionAdapter selectionAdapter = new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { quit(SWT.OK); } }; 
             button.addSelectionListener(selectionAdapter);
@@ -204,7 +204,7 @@ public class ShowMessageDialog extends Dialog
         if ( (flags & SWT.CANCEL) !=0) 
         {
             Button button = new Button(shell, SWT.PUSH);
-            button.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+            button.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
             SelectionAdapter selectionAdapter = new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { quit(SWT.CANCEL); } };
             button.addSelectionListener(selectionAdapter);
             adapters.add(selectionAdapter);
@@ -213,7 +213,7 @@ public class ShowMessageDialog extends Dialog
         if ( (flags & SWT.YES) !=0)
         {
             Button button = new Button(shell, SWT.PUSH);
-            button.setText(BaseMessages.getString(PKG, "System.Button.Yes")); //$NON-NLS-1$
+            button.setText(BaseMessages.getString(PKG, "System.Button.Yes")); 
             SelectionAdapter selectionAdapter = new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { quit(SWT.YES); } };
             button.addSelectionListener(selectionAdapter);
             adapters.add(selectionAdapter);
@@ -222,7 +222,7 @@ public class ShowMessageDialog extends Dialog
         if ( (flags & SWT.NO) !=0) 
         {
             Button button = new Button(shell, SWT.PUSH);
-            button.setText(BaseMessages.getString(PKG, "System.Button.No")); //$NON-NLS-1$
+            button.setText(BaseMessages.getString(PKG, "System.Button.No")); 
             SelectionAdapter selectionAdapter = new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { quit(SWT.NO); } };
             button.addSelectionListener(selectionAdapter);
             adapters.add(selectionAdapter);
@@ -255,7 +255,7 @@ public class ShowMessageDialog extends Dialog
                 {
                     long time = new Date().getTime();
                     long diff = (time-startTime)/1000;
-                    button.setText(ok+" ("+(timeOut-diff)+")"); //$NON-NLS-1$ //$NON-NLS-2$
+                    button.setText(ok+" ("+(timeOut-diff)+")");  
                     
                     if (diff>=timeOut)
                     {

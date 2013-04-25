@@ -112,7 +112,7 @@ public class CubeOutput extends BaseStep implements StepInterface
 				}
 				catch(KettleFileException ioe)
 				{
-					logError(BaseMessages.getString(PKG, "CubeOutput.Log.ErrorOpeningCubeOutputFile")+ioe.toString()); //$NON-NLS-1$
+					logError(BaseMessages.getString(PKG, "CubeOutput.Log.ErrorOpeningCubeOutputFile")+ioe.toString()); 
 					setErrors(1);
 					return false;
 				}
@@ -140,7 +140,7 @@ public class CubeOutput extends BaseStep implements StepInterface
 		
         if (checkFeedback(getLinesOutput())) 
         {
-        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "CubeOutput.Log.LineNumber")+getLinesOutput()); //$NON-NLS-1$
+        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "CubeOutput.Log.LineNumber")+getLinesOutput()); 
         }
 		
 		return result;
@@ -154,7 +154,7 @@ public class CubeOutput extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError(BaseMessages.getString(PKG, "CubeOutput.Log.ErrorWritingLine")+e.toString()); //$NON-NLS-1$
+			logError(BaseMessages.getString(PKG, "CubeOutput.Log.ErrorWritingLine")+e.toString()); 
 			return false;
 		}
 		
@@ -170,7 +170,7 @@ public class CubeOutput extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError(BaseMessages.getString(PKG, "CubeOutput.Log.ErrorWritingLine")+e.toString()); //$NON-NLS-1$
+			logError(BaseMessages.getString(PKG, "CubeOutput.Log.ErrorWritingLine")+e.toString()); 
 			return false;
 		}
 
@@ -196,7 +196,7 @@ public class CubeOutput extends BaseStep implements StepInterface
 				}
 				catch(KettleFileException ioe)
 				{
-					logError(BaseMessages.getString(PKG, "CubeOutput.Log.ErrorOpeningCubeOutputFile")+ioe.toString()); //$NON-NLS-1$
+					logError(BaseMessages.getString(PKG, "CubeOutput.Log.ErrorOpeningCubeOutputFile")+ioe.toString()); 
 				}
 			}else return true;
 				
@@ -249,7 +249,7 @@ public class CubeOutput extends BaseStep implements StepInterface
 	        }
 	        catch(IOException e)
 	        {
-	            logError(BaseMessages.getString(PKG, "CubeOutput.Log.ErrorClosingFile")+meta.getFilename()); //$NON-NLS-1$
+	            logError(BaseMessages.getString(PKG, "CubeOutput.Log.ErrorClosingFile")+meta.getFilename()); 
 	            setErrors(1);
 	            stopAll();
 	        }

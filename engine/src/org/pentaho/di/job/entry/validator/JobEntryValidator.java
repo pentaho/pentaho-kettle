@@ -43,7 +43,7 @@ import org.pentaho.di.core.CheckResultSourceInterface;
  */
 public interface JobEntryValidator {
 
-  String KEY_LEVEL_ON_FAIL = "levelOnFail"; //$NON-NLS-1$
+  String KEY_LEVEL_ON_FAIL = "levelOnFail"; 
 
   /**
    * Using reflection, the validator fetches the field named <code>propertyName</code> from the bean

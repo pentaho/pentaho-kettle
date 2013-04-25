@@ -88,7 +88,7 @@ public class UniqueRows extends BaseStep implements StepInterface
       for (int i = 0; i < meta.getCompareFields().length; i++) {
 				data.fieldnrs[i] = getInputRowMeta().indexOfValue(meta.getCompareFields()[i]);
         if (data.fieldnrs[i] < 0) {
-					logError(BaseMessages.getString(PKG, "UniqueRows.Log.CouldNotFindFieldInRow",meta.getCompareFields()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "UniqueRows.Log.CouldNotFindFieldInRow",meta.getCompareFields()[i]));  
 					setErrors(1);
 					stopAll();
 					return false;
@@ -134,7 +134,7 @@ public class UniqueRows extends BaseStep implements StepInterface
 
     if (checkFeedback(getLinesRead())) {
       if (log.isBasic())
-        logBasic(BaseMessages.getString(PKG, "UniqueRows.Log.LineNumber") + getLinesRead()); //$NON-NLS-1$
+        logBasic(BaseMessages.getString(PKG, "UniqueRows.Log.LineNumber") + getLinesRead()); 
         }
     first = false;
 		return true;

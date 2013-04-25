@@ -1626,7 +1626,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
   }
   
   public String generateColumnAlias(int columnIndex, String suggestedName) {
-    return "COL" + Integer.toString(columnIndex); //$NON-NLS-1$
+    return "COL" + Integer.toString(columnIndex); 
   }
   
   /**

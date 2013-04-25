@@ -362,12 +362,78 @@ public class SortRows extends BaseStep implements StepInterface {
     }
     return retval;
   }
+  
+	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
+	{
+    
+		//if Group Sort is not enabled then do the normal sort.
+		if(!meta.isGroupSortEnabled()){
+			boolean retval = this.processSortRow(smi, sdi, getRow(), first);
+			return retval;
+		}
+    
+    	Object[] r=getRow();    // get row!
+    
+		if (first){
+			if(r == null){
+				this.setOutputDone();
+				return true;
+			}
+			
+			data.groupnrs = new int[meta.getGroupFields().size()];
+			for (int i=0;i<meta.getGroupFields().size();i++)
+			{
+				data.groupnrs[i] = getInputRowMeta().indexOfValue(meta.getGroupFields().get(i));
+				if (data.groupnrs[i]<0)
+				{
+					logError(String.format("Presorted Field %s cound not be found",meta.getGroupFields().get(i)));
+					setErrors(1);
+					stopAll();
+					return false;
+				}				
+			}
+		}
+		
+		boolean retval = true;
+		if(first || data.newBatch){
+			first = false;
+			data.newBatch = false;			
+			
+			setPrevious(r);
+			
+			//If there is no more input let processSortRow to finish the sorting.  
+			boolean moreInput = (r != null) ? true: false;
 
-  public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException {
+			//this enables Sort stuff to initialize it's state.			
+			retval = this.processSortRow(smi, sdi, r, moreInput);
+		}else{
+			if(this.sameGroup(data.previous, r)){
+				setPrevious(r);
+				
+				//this performs SortRows normal row collection functionality.
+				retval =  this.processSortRow(smi, sdi, r, false);
+			}else{
+				//this performs SortRows sort action.
+				this.processSortRow(smi, sdi, null, false);
+								
+				setPrevious(r);
+				data.newBatch = true;
+				
+				//this performs SortRows to initialize all it's state
+				this.init(smi, sdi);				
+				retval =  this.processSortRow(smi, sdi, r, true);
+			}
+		}
+		
+		if(r == null){
+			this.setOutputDone();
+		}
+		return retval;
+	}
+
+  public boolean processSortRow(StepMetaInterface smi, StepDataInterface sdi, Object[] r, boolean first) throws KettleException {
     boolean err = true;
 
-    Object[] r = getRow(); // get row from prev steps
-    
     // initialize
     if (first && r != null) {
       first = false;
@@ -394,7 +460,7 @@ public class SortRows extends BaseStep implements StepInterface {
 
     if (r == null) // no more input to be expected...
     {
-      passBuffer();
+      passBuffer(!meta.isGroupSortEnabled());
       return false;
     }
 
@@ -410,7 +476,7 @@ public class SortRows extends BaseStep implements StepInterface {
    * This method passes all rows in the buffer to the next steps.
    * 
    */
-  private void passBuffer() throws KettleException {
+  private void passBuffer(boolean signal) throws KettleException {
     // Now we can start the output!
     //
     Object[] r = getBuffer();
@@ -447,7 +513,9 @@ public class SortRows extends BaseStep implements StepInterface {
     //
     clearBuffers();
 
-    setOutputDone(); // signal receiver we're finished.
+    //signal receiver that we are finished only if we are asked to do so. haric
+    if(signal)
+    	setOutputDone(); // signal receiver we're finished.
   }
 
   public boolean init(StepMetaInterface smi, StepDataInterface sdi) {
@@ -577,6 +645,25 @@ public class SortRows extends BaseStep implements StepInterface {
     } else {
       quickSort(data.buffer);
     }
-    passBuffer();
+    passBuffer(!meta.isGroupSortEnabled());
   }
+  
+ 
+  /*
+   * Group Fields Implemenation
+   * haric
+   */
+	// Is the row r of the same group as previous?
+	private boolean sameGroup(Object[] previous, Object[] r) throws KettleValueException
+	{
+		if(r == null)
+			return false;
+		return getInputRowMeta().compare(previous, r, data.groupnrs) == 0;
+	}
+ 
+	private void setPrevious(Object[] r) throws KettleException{
+		if(r != null)
+			this.data.previous = getInputRowMeta().cloneRow(r);
+	}
+	
 }

@@ -386,7 +386,7 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface
     	try
     	{			
 			
-			String lookupFromStepname = XMLHandler.getTagValue(stepnode, "from"); //$NON-NLS-1$
+			String lookupFromStepname = XMLHandler.getTagValue(stepnode, "from"); 
 			StreamInterface infoStream = getStepIOMeta().getInfoStreams().get(0);
 			infoStream.setSubject(lookupFromStepname);
             
@@ -405,24 +405,24 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface
 			algorithm = getAlgorithmTypeByCode(Const.NVL(XMLHandler.getTagValue(stepnode,	"algorithm"), ""));
 			
 			
-			Node lookup = XMLHandler.getSubNode(stepnode, "lookup"); //$NON-NLS-1$
-			int nrvalues = XMLHandler.countNodes(lookup, "value"); //$NON-NLS-1$
+			Node lookup = XMLHandler.getSubNode(stepnode, "lookup"); 
+			int nrvalues = XMLHandler.countNodes(lookup, "value"); 
 	
 			allocate(nrvalues);
 			
 			for (int i=0;i<nrvalues;i++)
 			{
-				Node vnode = XMLHandler.getSubNodeByNr(lookup, "value", i); //$NON-NLS-1$
+				Node vnode = XMLHandler.getSubNodeByNr(lookup, "value", i); 
 				
-				value[i]        = XMLHandler.getTagValue(vnode, "name"); //$NON-NLS-1$
-				valueName[i]    = XMLHandler.getTagValue(vnode, "rename"); //$NON-NLS-1$
+				value[i]        = XMLHandler.getTagValue(vnode, "name"); 
+				valueName[i]    = XMLHandler.getTagValue(vnode, "rename"); 
 				if (valueName[i]==null) valueName[i]=value[i]; // default: same name to return!
 			}
 			
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "FuzzyMatchMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "FuzzyMatchMeta.Exception.UnableToLoadStepInfoFromXML"), e); 
 		}
 	}
 	private static String getAlgorithmTypeCode(int i) {
@@ -450,8 +450,8 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface
 
 		for (int i=0;i<nrvalues;i++)
 		{
-			value[i]        = "value"+i; //$NON-NLS-1$
-			valueName[i]    = "valuename"+i; //$NON-NLS-1$
+			value[i]        = "value"+i; 
+			valueName[i]    = "valuename"+i; 
 		}
         
         
@@ -508,7 +508,7 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface
 					}
 					else
 					{
-						throw new KettleStepException(BaseMessages.getString(PKG, "FuzzyMatchMeta.Exception.ReturnValueCanNotBeFound",value[i])); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new KettleStepException(BaseMessages.getString(PKG, "FuzzyMatchMeta.Exception.ReturnValueCanNotBeFound",value[i]));  
 					}
 				}
 			}
@@ -530,10 +530,10 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface
 		
         StreamInterface infoStream = getStepIOMeta().getInfoStreams().get(0);
 		retval.append("    "+XMLHandler.addTagValue("from", infoStream.getStepname())); 
-        retval.append("    "+XMLHandler.addTagValue("lookupfield", lookupfield)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("    "+XMLHandler.addTagValue("mainstreamfield", mainstreamfield)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("    "+XMLHandler.addTagValue("outputmatchfield", outputmatchfield)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("    "+XMLHandler.addTagValue("outputvaluefield", outputvaluefield)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    "+XMLHandler.addTagValue("lookupfield", lookupfield));  
+        retval.append("    "+XMLHandler.addTagValue("mainstreamfield", mainstreamfield));  
+        retval.append("    "+XMLHandler.addTagValue("outputmatchfield", outputmatchfield));  
+        retval.append("    "+XMLHandler.addTagValue("outputvaluefield", outputvaluefield));  
         
         retval.append("    "+XMLHandler.addTagValue("caseSensitive", caseSensitive));
         retval.append("    "+XMLHandler.addTagValue("closervalue", closervalue));
@@ -543,15 +543,15 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface
         
         retval.append("    ").append(XMLHandler.addTagValue("algorithm",getAlgorithmTypeCode(algorithm)));
         
-		retval.append("    <lookup>"+Const.CR); //$NON-NLS-1$
+		retval.append("    <lookup>"+Const.CR); 
 		for (int i=0;i<value.length;i++)
 		{
-			retval.append("      <value>"+Const.CR); //$NON-NLS-1$
-			retval.append("        "+XMLHandler.addTagValue("name",    value[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("rename",  valueName[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("      </value>"+Const.CR); //$NON-NLS-1$
+			retval.append("      <value>"+Const.CR); 
+			retval.append("        "+XMLHandler.addTagValue("name",    value[i]));  
+			retval.append("        "+XMLHandler.addTagValue("rename",  valueName[i]));  
+			retval.append("      </value>"+Const.CR); 
 		}
-		retval.append("    </lookup>"+Const.CR); //$NON-NLS-1$
+		retval.append("    </lookup>"+Const.CR); 
 		
         
 		return retval.toString();
@@ -562,10 +562,10 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface
 	{
     	try
 		{
-			String lookupFromStepname =  rep.getStepAttributeString (id_step, "lookup_from_step"); //$NON-NLS-1$
+			String lookupFromStepname =  rep.getStepAttributeString (id_step, "lookup_from_step"); 
 			StreamInterface infoStream = getStepIOMeta().getInfoStreams().get(0);
 			infoStream.setSubject(lookupFromStepname);
-            lookupfield = rep.getStepAttributeString(id_step, "lookupfield"); //$NON-NLS-1$
+            lookupfield = rep.getStepAttributeString(id_step, "lookupfield"); 
 			mainstreamfield = rep.getStepAttributeString(id_step, "mainstreamfield"); // $NON-NLS-1$
 			outputmatchfield = rep.getStepAttributeString(id_step, "outputmatchfield");
 			outputvaluefield = rep.getStepAttributeString(id_step, "outputvaluefield");
@@ -578,18 +578,18 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface
 			
         	algorithm = getAlgorithmTypeByCode(Const.NVL(rep.getStepAttributeString(id_step, "algorithm"), ""));
         	
-            int nrvalues = rep.countNrStepAttributes(id_step, "return_value_name"); //$NON-NLS-1$
+            int nrvalues = rep.countNrStepAttributes(id_step, "return_value_name"); 
 			allocate(nrvalues);
 	
 			for (int i=0;i<nrvalues;i++)
 			{
-				value[i]        = rep.getStepAttributeString(id_step, i, "return_value_name"); //$NON-NLS-1$
-				valueName[i]    = rep.getStepAttributeString(id_step, i, "return_value_rename"); //$NON-NLS-1$
+				value[i]        = rep.getStepAttributeString(id_step, i, "return_value_name"); 
+				valueName[i]    = rep.getStepAttributeString(id_step, i, "return_value_rename"); 
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "FuzzyMatchMeta.Exception.UnexpecteErrorReadingStepInfoFromRepository"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "FuzzyMatchMeta.Exception.UnexpecteErrorReadingStepInfoFromRepository"), e); 
 		}
 	}
 
@@ -599,7 +599,7 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface
         {
 	        StreamInterface infoStream = getStepIOMeta().getInfoStreams().get(0);
 			rep.saveStepAttribute(id_transformation, id_step, "lookup_from_step",  infoStream.getStepname()); 
-            rep.saveStepAttribute(id_transformation, id_step, "lookupfield", lookupfield); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "lookupfield", lookupfield); 
             rep.saveStepAttribute(id_transformation, id_step, "mainstreamfield", mainstreamfield); // $NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "outputmatchfield", outputmatchfield);
             rep.saveStepAttribute(id_transformation, id_step, "outputvaluefield", outputvaluefield);
@@ -613,13 +613,13 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface
             
     		for (int i=0;i<value.length;i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "return_value_name",      value[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "return_value_rename",    valueName[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "return_value_name",      value[i]); 
+				rep.saveStepAttribute(id_transformation, id_step, i, "return_value_rename",    valueName[i]); 
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "FuzzyMatchMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "FuzzyMatchMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); 
 		}
 	}
 
@@ -630,7 +630,7 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface
 		
 		if (prev!=null && prev.size()>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FuzzyMatchMeta.CheckResult.StepReceivingFields",prev.size()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FuzzyMatchMeta.CheckResult.StepReceivingFields",prev.size()+""), stepMeta);  
 			remarks.add(cr);
 			
 			
@@ -649,13 +649,13 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "FuzzyMatchMeta.CheckResult.CouldNotFindFieldsFromPreviousSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "FuzzyMatchMeta.CheckResult.CouldNotFindFieldsFromPreviousSteps"), stepMeta); 
 			remarks.add(cr);
 		}
 
 		if (info!=null && info.size()>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FuzzyMatchMeta.CheckResult.StepReceivingLookupData",info.size()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FuzzyMatchMeta.CheckResult.StepReceivingLookupData",info.size()+""), stepMeta);  
 			remarks.add(cr);
 
 			// Check the fields from the lookup stream! 
@@ -668,11 +668,11 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface
 			}
 			else
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FuzzyMatchMeta.CheckResult.FieldFoundInTheLookupStream", lookupField), stepMeta); //$NON-NLS-1$
+				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FuzzyMatchMeta.CheckResult.FieldFoundInTheLookupStream", lookupField), stepMeta); 
 			}
 			remarks.add(cr);
 			
-			String  error_message=""; //$NON-NLS-1$
+			String  error_message=""; 
 			boolean error_found=false;
 			
 			// Check the values to retrieve from the lookup stream! 
@@ -681,24 +681,24 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface
 				idx = info.indexOfValue(value[i]);
 				if (idx<0)
 				{
-					error_message+="\t\t"+value[i]+Const.CR; //$NON-NLS-1$
+					error_message+="\t\t"+value[i]+Const.CR; 
 					error_found=true;
 				} 
 			}
 			if (error_found) 
 			{
-				error_message=BaseMessages.getString(PKG, "FuzzyMatchMeta.CheckResult.FieldsNotFoundInLookupStream2")+Const.CR+Const.CR+error_message; //$NON-NLS-1$
+				error_message=BaseMessages.getString(PKG, "FuzzyMatchMeta.CheckResult.FieldsNotFoundInLookupStream2")+Const.CR+Const.CR+error_message; 
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FuzzyMatchMeta.CheckResult.AllFieldsFoundInTheLookupStream2"), stepMeta); //$NON-NLS-1$
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FuzzyMatchMeta.CheckResult.AllFieldsFoundInTheLookupStream2"), stepMeta); 
 			}
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "FuzzyMatchMeta.CheckResult.FieldsNotFoundFromInLookupSep"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "FuzzyMatchMeta.CheckResult.FieldsNotFoundFromInLookupSep"), stepMeta); 
 			remarks.add(cr);
 		}
 		
@@ -706,24 +706,24 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface
         StreamInterface infoStream = getStepIOMeta().getInfoStreams().get(0);
 		if (infoStream.getStepMeta()==null)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "FuzzyMatchMeta.CheckResult.SourceStepNotSelected"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "FuzzyMatchMeta.CheckResult.SourceStepNotSelected"), stepMeta); 
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FuzzyMatchMeta.CheckResult.SourceStepIsSelected"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FuzzyMatchMeta.CheckResult.SourceStepIsSelected"), stepMeta); 
 			remarks.add(cr);
 			
 			// See if the step exists!
 			//
 			if (info!=null)
 			{	
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FuzzyMatchMeta.CheckResult.SourceStepExist",infoStream.getStepname()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FuzzyMatchMeta.CheckResult.SourceStepExist",infoStream.getStepname()+""), stepMeta);  
 				remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "FuzzyMatchMeta.CheckResult.SourceStepDoesNotExist",infoStream.getStepname()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "FuzzyMatchMeta.CheckResult.SourceStepDoesNotExist",infoStream.getStepname()+""), stepMeta);  
 				remarks.add(cr);
 			}
 		}
@@ -731,12 +731,12 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface
 		// See if we have input streams leading to this step!
 		if (input.length>=2)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FuzzyMatchMeta.CheckResult.StepReceivingInfoFromInputSteps",input.length+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FuzzyMatchMeta.CheckResult.StepReceivingInfoFromInputSteps",input.length+""), stepMeta);  
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "FuzzyMatchMeta.CheckResult.NeedAtLeast2InputStreams",Const.CR,Const.CR), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "FuzzyMatchMeta.CheckResult.NeedAtLeast2InputStreams",Const.CR,Const.CR), stepMeta);   //$NON-NLS-3$
 			remarks.add(cr);
 		}
 	}

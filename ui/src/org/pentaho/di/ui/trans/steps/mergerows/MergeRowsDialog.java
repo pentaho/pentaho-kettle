@@ -115,14 +115,14 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "MergeRowsDialog.Shell.Label")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "MergeRowsDialog.Shell.Label")); 
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "MergeRowsDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "MergeRowsDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -144,7 +144,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
         
 		// Send 'True' data to...
 		wlReference=new Label(shell, SWT.RIGHT);
-		wlReference.setText(BaseMessages.getString(PKG, "MergeRowsDialog.Reference.Label")); //$NON-NLS-1$
+		wlReference.setText(BaseMessages.getString(PKG, "MergeRowsDialog.Reference.Label")); 
  		props.setLook(wlReference);
 		fdlReference=new FormData();
 		fdlReference.left = new FormAttachment(0, 0);
@@ -168,7 +168,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
 
 		// Send 'False' data to...
 		wlCompare=new Label(shell, SWT.RIGHT);
-		wlCompare.setText(BaseMessages.getString(PKG, "MergeRowsDialog.Compare.Label")); //$NON-NLS-1$
+		wlCompare.setText(BaseMessages.getString(PKG, "MergeRowsDialog.Compare.Label")); 
  		props.setLook(wlCompare);
 		fdlCompare=new FormData();
 		fdlCompare.left = new FormAttachment(0, 0);
@@ -193,7 +193,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
         
         // Stepname line
         wlFlagfield=new Label(shell, SWT.RIGHT);
-        wlFlagfield.setText(BaseMessages.getString(PKG, "MergeRowsDialog.FlagField.Label")); //$NON-NLS-1$
+        wlFlagfield.setText(BaseMessages.getString(PKG, "MergeRowsDialog.FlagField.Label")); 
         props.setLook(wlFlagfield);
         fdlFlagfield=new FormData();
         fdlFlagfield.left = new FormAttachment(0, 0);
@@ -212,7 +212,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
         
         // THE KEYS TO MATCH...
         wlKeys=new Label(shell, SWT.NONE);
-        wlKeys.setText(BaseMessages.getString(PKG, "MergeRowsDialog.Keys.Label")); //$NON-NLS-1$
+        wlKeys.setText(BaseMessages.getString(PKG, "MergeRowsDialog.Keys.Label")); 
         props.setLook(wlKeys);
         fdlKeys=new FormData();
         fdlKeys.left  = new FormAttachment(0, 0);
@@ -222,7 +222,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
         int nrKeyRows= (input.getKeyFields()!=null?input.getKeyFields().length:1);
         
         ColumnInfo[] ciKeys=new ColumnInfo[] {
-            new ColumnInfo(BaseMessages.getString(PKG, "MergeRowsDialog.ColumnInfo.KeyField"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+            new ColumnInfo(BaseMessages.getString(PKG, "MergeRowsDialog.ColumnInfo.KeyField"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
         };
             
         wKeys=new TableView(transMeta, shell, 
@@ -241,7 +241,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
         wKeys.setLayoutData(fdKeys);
 
         wbKeys=new Button(shell, SWT.PUSH);
-        wbKeys.setText(BaseMessages.getString(PKG, "MergeRowsDialog.KeyFields.Button")); //$NON-NLS-1$
+        wbKeys.setText(BaseMessages.getString(PKG, "MergeRowsDialog.KeyFields.Button")); 
         fdbKeys = new FormData();
         fdbKeys.top   = new FormAttachment(wKeys, margin);
         fdbKeys.left  = new FormAttachment(0, 0);
@@ -260,7 +260,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
 
         // VALUES TO COMPARE
         wlValues=new Label(shell, SWT.NONE);
-        wlValues.setText(BaseMessages.getString(PKG, "MergeRowsDialog.Values.Label")); //$NON-NLS-1$
+        wlValues.setText(BaseMessages.getString(PKG, "MergeRowsDialog.Values.Label")); 
         props.setLook(wlValues);
         fdlValues=new FormData();
         fdlValues.left  = new FormAttachment(50, 0);
@@ -270,7 +270,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
         int nrValueRows= (input.getValueFields()!=null?input.getValueFields().length:1);
         
         ColumnInfo[] ciValues=new ColumnInfo[] {
-            new ColumnInfo(BaseMessages.getString(PKG, "MergeRowsDialog.ColumnInfo.ValueField"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+            new ColumnInfo(BaseMessages.getString(PKG, "MergeRowsDialog.ColumnInfo.ValueField"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
         };
             
         wValues=new TableView(transMeta, shell, 
@@ -290,7 +290,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
 
         
         wbValues=new Button(shell, SWT.PUSH);
-        wbValues.setText(BaseMessages.getString(PKG, "MergeRowsDialog.ValueFields.Button")); //$NON-NLS-1$
+        wbValues.setText(BaseMessages.getString(PKG, "MergeRowsDialog.ValueFields.Button")); 
         fdbValues = new FormData();
         fdbValues.top   = new FormAttachment(wValues, margin);
         fdbValues.left  = new FormAttachment(50,  0);
@@ -308,9 +308,9 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
         
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wbKeys);
 
@@ -423,7 +423,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, BaseMessages.getString(PKG, "MergeRowsDialog.ErrorGettingFields.DialogTitle"), BaseMessages.getString(PKG, "MergeRowsDialog.ErrorGettingFields.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "MergeRowsDialog.ErrorGettingFields.DialogTitle"), BaseMessages.getString(PKG, "MergeRowsDialog.ErrorGettingFields.DialogMessage"), e);  
         }
     }
     
@@ -443,7 +443,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, BaseMessages.getString(PKG, "MergeRowsDialog.ErrorGettingFields.DialogTitle"), BaseMessages.getString(PKG, "MergeRowsDialog.ErrorGettingFields.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "MergeRowsDialog.ErrorGettingFields.DialogTitle"), BaseMessages.getString(PKG, "MergeRowsDialog.ErrorGettingFields.DialogMessage"), e);  
         }
     }
 }

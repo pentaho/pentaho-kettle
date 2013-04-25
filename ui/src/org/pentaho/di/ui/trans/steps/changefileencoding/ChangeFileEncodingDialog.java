@@ -132,14 +132,14 @@ public class ChangeFileEncodingDialog extends BaseStepDialog implements StepDial
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "ChangeFileEncodingDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "ChangeFileEncodingDialog.Shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin=Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "ChangeFileEncodingDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "ChangeFileEncodingDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -172,7 +172,7 @@ public class ChangeFileEncodingDialog extends BaseStepDialog implements StepDial
 
 		// filename field
 		wlFileName=new Label(wSourceFileGroup, SWT.RIGHT);
-		wlFileName.setText(BaseMessages.getString(PKG, "ChangeFileEncodingDialog.FileName.Label")); //$NON-NLS-1$
+		wlFileName.setText(BaseMessages.getString(PKG, "ChangeFileEncodingDialog.FileName.Label")); 
  		props.setLook(wlFileName);
 		fdlFileName=new FormData();
 		fdlFileName.left = new FormAttachment(0, 0);
@@ -276,7 +276,7 @@ public class ChangeFileEncodingDialog extends BaseStepDialog implements StepDial
 		
 		// TargetFileName field
 		wlTargetFileName=new Label(wTargetFileGroup, SWT.RIGHT);
-		wlTargetFileName.setText(BaseMessages.getString(PKG, "ChangeFileEncodingDialog.TargetFileName.Label")); //$NON-NLS-1$
+		wlTargetFileName.setText(BaseMessages.getString(PKG, "ChangeFileEncodingDialog.TargetFileName.Label")); 
  		props.setLook(wlTargetFileName);
 		fdlTargetFileName=new FormData();
 		fdlTargetFileName.left = new FormAttachment(0, 0);
@@ -385,9 +385,9 @@ public class ChangeFileEncodingDialog extends BaseStepDialog implements StepDial
 
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wTargetFileGroup);
 
@@ -427,7 +427,7 @@ public class ChangeFileEncodingDialog extends BaseStepDialog implements StepDial
    */
   public void getData() {
     if (isDebug())
-      logDebug(BaseMessages.getString(PKG, "ChangeFileEncodingDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+      logDebug(BaseMessages.getString(PKG, "ChangeFileEncodingDialog.Log.GettingKeyInfo")); 
 
     if (input.getDynamicFilenameField() != null)
       wFileName.setText(input.getDynamicFilenameField());
@@ -485,7 +485,7 @@ public class ChangeFileEncodingDialog extends BaseStepDialog implements StepDial
 				if(filefield!=null) wFileName.setText(filefield);
 				if(targetfilefield!=null) wTargetFileName.setText(targetfilefield);
 			} catch(KettleException ke){
-				new ErrorDialog(shell, BaseMessages.getString(PKG, "ChangeFileEncodingDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "ChangeFileEncodingDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "ChangeFileEncodingDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "ChangeFileEncodingDialog.FailedToGetFields.DialogMessage"), ke);  
 			}
 			gotPreviousFields=true;
 		 }

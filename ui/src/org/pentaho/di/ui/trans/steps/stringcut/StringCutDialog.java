@@ -107,14 +107,14 @@ public class StringCutDialog extends BaseStepDialog implements StepDialogInterfa
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "StringCutDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "StringCutDialog.Shell.Title")); 
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname = new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "StringCutDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "StringCutDialog.Stepname.Label")); 
 		props.setLook(wlStepname);
 		fdlStepname = new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -133,7 +133,7 @@ public class StringCutDialog extends BaseStepDialog implements StepDialogInterfa
 		
 
 		wlKey = new Label(shell, SWT.NONE);
-		wlKey.setText(BaseMessages.getString(PKG, "StringCutDialog.Fields.Label")); //$NON-NLS-1$
+		wlKey.setText(BaseMessages.getString(PKG, "StringCutDialog.Fields.Label")); 
 		props.setLook(wlKey);
 		fdlKey = new FormData();
 		fdlKey.left = new FormAttachment(0, 0);
@@ -146,13 +146,13 @@ public class StringCutDialog extends BaseStepDialog implements StepDialogInterfa
 
 		ciKey = new ColumnInfo[nrFieldCols];
 		ciKey[0] = new ColumnInfo(
-				BaseMessages.getString(PKG, "StringCutDialog.ColumnInfo.InStreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+				BaseMessages.getString(PKG, "StringCutDialog.ColumnInfo.InStreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); 
 		ciKey[1] = new ColumnInfo(
-				BaseMessages.getString(PKG, "StringCutDialog.ColumnInfo.OutStreamField"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
+				BaseMessages.getString(PKG, "StringCutDialog.ColumnInfo.OutStreamField"), ColumnInfo.COLUMN_TYPE_TEXT, false); 
 		ciKey[2] = new ColumnInfo(
-				BaseMessages.getString(PKG, "StringCutDialog.ColumnInfo.CutFrom"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
+				BaseMessages.getString(PKG, "StringCutDialog.ColumnInfo.CutFrom"), ColumnInfo.COLUMN_TYPE_TEXT, false); 
 		ciKey[3] = new ColumnInfo(
-				BaseMessages.getString(PKG, "StringCutDialog.ColumnInfo.CutTo"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
+				BaseMessages.getString(PKG, "StringCutDialog.ColumnInfo.CutTo"), ColumnInfo.COLUMN_TYPE_TEXT, false); 
 
 		
 		
@@ -206,12 +206,12 @@ public class StringCutDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		// THE BUTTONS
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		wGet = new Button(shell, SWT.PUSH);
-		wGet.setText(BaseMessages.getString(PKG, "StringCutDialog.GetFields.Button")); //$NON-NLS-1$
+		wGet.setText(BaseMessages.getString(PKG, "StringCutDialog.GetFields.Button")); 
 		fdGet = new FormData();
 		fdGet.right = new FormAttachment(100, 0);
 		fdGet.top = new FormAttachment(wStepname, 3*middle);
@@ -319,7 +319,7 @@ public class StringCutDialog extends BaseStepDialog implements StepDialogInterfa
 
 		inf.allocate(nrkeys);
 		if(log.isDebug())
-			logDebug(BaseMessages.getString(PKG, "StringCutDialog.Log.FoundFields", String.valueOf(nrkeys))); //$NON-NLS-1$ //$NON-NLS-2$
+			logDebug(BaseMessages.getString(PKG, "StringCutDialog.Log.FoundFields", String.valueOf(nrkeys)));  
 		for (int i = 0; i < nrkeys; i++) {
 			TableItem item = wFields.getNonEmpty(i);
 			inf.getFieldInStream()[i] = item.getText(1);
@@ -362,7 +362,7 @@ public class StringCutDialog extends BaseStepDialog implements StepDialogInterfa
 			}
 		} catch (KettleException ke) {
 			new ErrorDialog(
-					shell,BaseMessages.getString(PKG, "StringCutDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "StringCutDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+					shell,BaseMessages.getString(PKG, "StringCutDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "StringCutDialog.FailedToGetFields.DialogMessage"), ke);  
 		}
 	}
 }

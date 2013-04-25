@@ -98,7 +98,7 @@ public class FixedInput extends BaseStep implements StepInterface
 		
 		putRow(data.outputRowMeta, outputRowData);     // copy row to possible alternate rowset(s).
 
-        if (checkFeedback(getLinesInput())) logBasic(BaseMessages.getString(PKG, "FixedInput.Log.LineNumber", Long.toString(getLinesInput()))); //$NON-NLS-1$
+        if (checkFeedback(getLinesInput())) logBasic(BaseMessages.getString(PKG, "FixedInput.Log.LineNumber", Long.toString(getLinesInput()))); 
         
 		return true;
 	}

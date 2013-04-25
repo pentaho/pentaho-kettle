@@ -82,7 +82,7 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
   private boolean oneFileLocked;
 
   public JobEntryCheckFilesLocked(String n) {
-    super(n, ""); //$NON-NLS-1$
+    super(n, ""); 
     argFromPrevious = false;
     arguments = null;
 
@@ -92,7 +92,7 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
   }
 
   public JobEntryCheckFilesLocked() {
-    this(""); //$NON-NLS-1$
+    this(""); 
   }
 
   public Object clone() {
@@ -104,19 +104,19 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
     StringBuffer retval = new StringBuffer(300);
 
     retval.append(super.getXML());
-    retval.append("      ").append(XMLHandler.addTagValue("arg_from_previous", argFromPrevious)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("      ").append(XMLHandler.addTagValue("include_subfolders", includeSubfolders)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      ").append(XMLHandler.addTagValue("arg_from_previous", argFromPrevious));  
+    retval.append("      ").append(XMLHandler.addTagValue("include_subfolders", includeSubfolders));  
 
-    retval.append("      <fields>").append(Const.CR); //$NON-NLS-1$
+    retval.append("      <fields>").append(Const.CR); 
     if (arguments != null) {
       for (int i = 0; i < arguments.length; i++) {
-        retval.append("        <field>").append(Const.CR); //$NON-NLS-1$
-        retval.append("          ").append(XMLHandler.addTagValue("name", arguments[i])); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("          ").append(XMLHandler.addTagValue("filemask", filemasks[i])); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("        </field>").append(Const.CR); //$NON-NLS-1$
+        retval.append("        <field>").append(Const.CR); 
+        retval.append("          ").append(XMLHandler.addTagValue("name", arguments[i]));  
+        retval.append("          ").append(XMLHandler.addTagValue("filemask", filemasks[i]));  
+        retval.append("        </field>").append(Const.CR); 
       }
     }
-    retval.append("      </fields>").append(Const.CR); //$NON-NLS-1$
+    retval.append("      </fields>").append(Const.CR); 
 
     return retval.toString();
   }
@@ -126,25 +126,25 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
 	  try
 	  {
 	  super.loadXML(entrynode, databases, slaveServers);
-      argFromPrevious = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "arg_from_previous")); //$NON-NLS-1$ //$NON-NLS-2$
-      includeSubfolders = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "include_subfolders")); //$NON-NLS-1$ //$NON-NLS-2$
+      argFromPrevious = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "arg_from_previous"));  
+      includeSubfolders = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "include_subfolders"));  
 
-      Node fields = XMLHandler.getSubNode(entrynode, "fields"); //$NON-NLS-1$
+      Node fields = XMLHandler.getSubNode(entrynode, "fields"); 
 
       // How many field arguments?
-      int nrFields = XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
+      int nrFields = XMLHandler.countNodes(fields, "field"); 
       arguments = new String[nrFields];
       filemasks = new String[nrFields];
 
       // Read them all...
       for (int i = 0; i < nrFields; i++) {
-        Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
+        Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); 
 
-        arguments[i] = XMLHandler.getTagValue(fnode, "name"); //$NON-NLS-1$
-        filemasks[i] = XMLHandler.getTagValue(fnode, "filemask"); //$NON-NLS-1$
+        arguments[i] = XMLHandler.getTagValue(fnode, "name"); 
+        filemasks[i] = XMLHandler.getTagValue(fnode, "filemask"); 
       }
     } catch (KettleXMLException xe) {
-      throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.UnableToLoadFromXml"), xe); //$NON-NLS-1$
+      throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.UnableToLoadFromXml"), xe); 
     }
   }
 
@@ -152,40 +152,40 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
 	{
 	try
 	{
-      argFromPrevious = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous"); //$NON-NLS-1$
-      includeSubfolders = rep.getJobEntryAttributeBoolean(id_jobentry, "include_subfolders"); //$NON-NLS-1$
+      argFromPrevious = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous"); 
+      includeSubfolders = rep.getJobEntryAttributeBoolean(id_jobentry, "include_subfolders"); 
 
       // How many arguments?
-      int argnr = rep.countNrJobEntryAttributes(id_jobentry, "name"); //$NON-NLS-1$
+      int argnr = rep.countNrJobEntryAttributes(id_jobentry, "name"); 
       arguments = new String[argnr];
       filemasks = new String[argnr];
 
       // Read them all...
       for (int a = 0; a < argnr; a++) {
-        arguments[a] = rep.getJobEntryAttributeString(id_jobentry, a, "name"); //$NON-NLS-1$
-        filemasks[a] = rep.getJobEntryAttributeString(id_jobentry, a, "filemask"); //$NON-NLS-1$
+        arguments[a] = rep.getJobEntryAttributeString(id_jobentry, a, "name"); 
+        filemasks[a] = rep.getJobEntryAttributeString(id_jobentry, a, "filemask"); 
       }
     } catch (KettleException dbe) {
-      throw new KettleException(BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.UnableToLoadFromRepo", String.valueOf(id_jobentry)), dbe); //$NON-NLS-1$
+      throw new KettleException(BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.UnableToLoadFromRepo", String.valueOf(id_jobentry)), dbe); 
     }
   }
 
 	public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_job) throws KettleException {
     try {
 
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "arg_from_previous", argFromPrevious); //$NON-NLS-1$
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "include_subfolders", includeSubfolders); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "arg_from_previous", argFromPrevious); 
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "include_subfolders", includeSubfolders); 
 
       // save the arguments...
       if (arguments != null) {
         for (int i = 0; i < arguments.length; i++) {
-          rep.saveJobEntryAttribute(id_job, getObjectId(), i, "name", arguments[i]); //$NON-NLS-1$
-          rep.saveJobEntryAttribute(id_job, getObjectId(), i, "filemask", filemasks[i]); //$NON-NLS-1$
+          rep.saveJobEntryAttribute(id_job, getObjectId(), i, "name", arguments[i]); 
+          rep.saveJobEntryAttribute(id_job, getObjectId(), i, "filemask", filemasks[i]); 
         }
       }
     } catch (KettleDatabaseException dbe) {
       throw new KettleException(
-          BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.UnableToSaveToRepo", String.valueOf(id_job)), dbe); //$NON-NLS-1$
+          BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.UnableToSaveToRepo", String.valueOf(id_job)), dbe); 
     }
   }
 
@@ -201,7 +201,7 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
     try {
 	    if (argFromPrevious) {
 	      if(isDetailed()) 
-	    	  logDetailed( BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.FoundPreviousRows", String.valueOf((rows != null ? rows.size() : 0)))); //$NON-NLS-1$
+	    	  logDetailed( BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.FoundPreviousRows", String.valueOf((rows != null ? rows.size() : 0)))); 
 	    }
 	
 	    if (argFromPrevious && rows != null)  {
@@ -215,7 +215,7 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
 	
 	          // ok we can process this file/folder
 	          if(isDetailed()) 
-	        	  logDetailed( BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.ProcessingRow", filefolder_previous, fmasks_previous)); //$NON-NLS-1$
+	        	  logDetailed( BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.ProcessingRow", filefolder_previous, fmasks_previous)); 
 	
 	          ProcessFile(filefolder_previous, fmasks_previous);
 	      }
@@ -224,7 +224,7 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
 	      for (int i = 0; i < arguments.length && !parentJob.isStopped(); i++) {
 	          // ok we can process this file/folder
 	    	  if(isDetailed()) 
-	    		  logDetailed( BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.ProcessingArg", arguments[i], filemasks[i])); //$NON-NLS-1$
+	    		  logDetailed( BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.ProcessingArg", arguments[i], filemasks[i])); 
 	         
 	    	  ProcessFile(arguments[i], filemasks[i]);
 	      }
@@ -255,25 +255,25 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
         if (filefolder.getType() == FileType.FOLDER) {
           // It's a folder
           if (isDetailed())
-            logDetailed( BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.ProcessingFolder", realFilefoldername)); //$NON-NLS-1$
+            logDetailed( BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.ProcessingFolder", realFilefoldername)); 
           // Retrieve all files
           files = filefolder.findFiles(new TextFileSelector(filefolder.toString(),realwilcard));
 
           if (isDetailed())
-            logDetailed( BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.TotalFilesToCheck", String.valueOf(files.length))); //$NON-NLS-1$;
+            logDetailed( BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.TotalFilesToCheck", String.valueOf(files.length))); ;
         } else {
           // It's a file
           if(isDetailed()) 
-        	  logDetailed( BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.ProcessingFile", realFilefoldername)); //$NON-NLS-1$
+        	  logDetailed( BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.ProcessingFile", realFilefoldername)); 
         }
         // Check files locked
         checkFilesLocked(files);
       } else {
         // We can not find thsi file
-        logBasic( BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.FileNotExist", realFilefoldername)); //$NON-NLS-1$
+        logBasic( BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.FileNotExist", realFilefoldername)); 
       }
     } catch (Exception e) {
-      logError( BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.CouldNotProcess", realFilefoldername, e.getMessage())); //$NON-NLS-1$
+      logError( BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.CouldNotProcess", realFilefoldername, e.getMessage())); 
     } finally {
       if (filefolder != null) {
         try {
@@ -336,7 +336,7 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
 						 if (includeSubfolders && (info.getFile().getType() == FileType.FILE) && GetFileWildcard(short_filename,file_wildcard))
 						 {
 							if (isDetailed())
-								logDetailed( BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.CheckingFile",info.getFile().toString())); //$NON-NLS-1$
+								logDetailed( BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.CheckingFile",info.getFile().toString())); 
 							
 							returncode= true; 				
 							 
@@ -349,7 +349,7 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
 						 if ((info.getFile().getType() == FileType.FILE) && GetFileWildcard(short_filename,file_wildcard))
 						 {
 							if (isDetailed())
-								logDetailed( BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.CheckingFile",info.getFile().toString())); //$NON-NLS-1$
+								logDetailed( BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.CheckingFile",info.getFile().toString())); 
 							
 							returncode= true; 				
 							 

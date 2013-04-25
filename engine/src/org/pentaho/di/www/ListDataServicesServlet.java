@@ -38,6 +38,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.DataServiceMeta;
 import org.pentaho.di.trans.DataServiceMetaStoreUtil;
 import org.pentaho.di.trans.TransMeta;
@@ -100,7 +101,19 @@ public class ListDataServicesServlet extends BaseHttpServlet implements CartePlu
         List<DataServiceMeta> dataServices = DataServiceMetaStoreUtil.getDataServices(metaStore);
         for (DataServiceMeta dataService : dataServices) {
           if (!Const.isEmpty(dataService.getName()) && !Const.isEmpty(dataService.getStepname())) {
-            services.add(new TransDataService(dataService.getName(), null, dataService.getObjectId(), dataService.getStepname()));
+
+            dataService.lookupTransObjectId(repository);
+            if (!Const.isEmpty(dataService.getTransFilename()) || dataService.getTransObjectId()!=null) {
+              if (Const.isEmpty(dataService.getStepname())) {
+                log.logError("A data service without a stepname specification was found : '"+dataService.getName()+"'"); 
+              } else if (Const.isEmpty(dataService.getName())) {
+                log.logError("A data service without a name was found'"); 
+              } else {
+                services.add(new TransDataService(dataService.getName(), dataService.getTransFilename(), dataService.getTransObjectId(), dataService.getStepname()));
+              }
+            } else {
+              log.logError("The transformation specification for data service '"+dataService.getName()+"' could not be found");
+            }
           }
         }
       } catch(Exception e) {
@@ -116,8 +129,20 @@ public class ListDataServicesServlet extends BaseHttpServlet implements CartePlu
       //
       try {
         TransMeta transMeta = null;
-        if (service.getObjectId()!=null) {
+        if (repository!=null && service.getObjectId()!=null) {
           transMeta = repository.loadTransformation(service.getObjectId(), null);
+        } else if (repository!=null && service.getName()!=null) {
+          String path = "/";
+          String name = service.getName(); 
+          int lastSlashIndex = service.getName().lastIndexOf('/');
+          if (lastSlashIndex>=0) {
+            path = service.getName().substring(0, lastSlashIndex+1);
+            name = service.getName().substring(lastSlashIndex+1);
+          }
+          RepositoryDirectoryInterface tree = repository.loadRepositoryDirectoryTree();
+          RepositoryDirectoryInterface rd = tree.findDirectory(path);
+          if (rd==null) rd=tree; // root
+          transMeta = repository.loadTransformation(name, rd, null, true, null);          
         } else {
           transMeta = new TransMeta(service.getFileName());
         }

@@ -104,14 +104,14 @@ public class FileLockedDialog extends BaseStepDialog implements StepDialogInterf
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "FileLockedDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "FileLockedDialog.Shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin=Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "FileLockedDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "FileLockedDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -130,7 +130,7 @@ public class FileLockedDialog extends BaseStepDialog implements StepDialogInterf
 
 		// filename field
 		wlFileName=new Label(shell, SWT.RIGHT);
-		wlFileName.setText(BaseMessages.getString(PKG, "FileLockedDialog.FileName.Label")); //$NON-NLS-1$
+		wlFileName.setText(BaseMessages.getString(PKG, "FileLockedDialog.FileName.Label")); 
  		props.setLook(wlFileName);
 		fdlFileName=new FormData();
 		fdlFileName.left = new FormAttachment(0, 0);
@@ -163,7 +163,7 @@ public class FileLockedDialog extends BaseStepDialog implements StepDialogInterf
 		
 		// Result fieldname ...
 		wlResult=new Label(shell, SWT.RIGHT);
-		wlResult.setText(BaseMessages.getString(PKG, "FileLockedDialog.ResultField.Label")); //$NON-NLS-1$
+		wlResult.setText(BaseMessages.getString(PKG, "FileLockedDialog.ResultField.Label")); 
  		props.setLook(wlResult);
 		fdlResult=new FormData();
 		fdlResult.left = new FormAttachment(0, 0);
@@ -202,9 +202,9 @@ public class FileLockedDialog extends BaseStepDialog implements StepDialogInterf
 
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 
@@ -242,7 +242,7 @@ public class FileLockedDialog extends BaseStepDialog implements StepDialogInterf
    */
   public void getData() {
     if (isDebug())
-      logDebug(BaseMessages.getString(PKG, "FileLockedDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+      logDebug(BaseMessages.getString(PKG, "FileLockedDialog.Log.GettingKeyInfo")); 
 
     if (input.getDynamicFilenameField() != null)
       wFileName.setText(input.getDynamicFilenameField());
@@ -283,7 +283,7 @@ public class FileLockedDialog extends BaseStepDialog implements StepDialogInterf
 				}
 				if(filefield!=null) wFileName.setText(filefield);
 			} catch(KettleException ke){
-				new ErrorDialog(shell, BaseMessages.getString(PKG, "FileLockedDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "FileLockedDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "FileLockedDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "FileLockedDialog.FailedToGetFields.DialogMessage"), ke);  
 			}
 			gotPreviousFields=true;
 		}

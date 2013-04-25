@@ -81,17 +81,17 @@ public class TransHopMeta implements Cloneable, XMLInterface, Comparable<TransHo
 	{
 		try
 		{
-			from_step = searchStep(steps, XMLHandler.getTagValue(hopnode, "from")); //$NON-NLS-1$
-			to_step = searchStep(steps, XMLHandler.getTagValue(hopnode, "to")); //$NON-NLS-1$
-			String en = XMLHandler.getTagValue(hopnode, "enabled"); //$NON-NLS-1$
+			from_step = searchStep(steps, XMLHandler.getTagValue(hopnode, "from")); 
+			to_step = searchStep(steps, XMLHandler.getTagValue(hopnode, "to")); 
+			String en = XMLHandler.getTagValue(hopnode, "enabled"); 
 
 			if (en == null)
 				enabled = true;
 			else
-				enabled = en.equalsIgnoreCase("Y"); //$NON-NLS-1$
+				enabled = en.equalsIgnoreCase("Y"); 
 		} catch (Exception e)
 		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "TransHopMeta.Exception.UnableToLoadHopInfo"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "TransHopMeta.Exception.UnableToLoadHopInfo"), e); 
 		}
 	}
 
@@ -202,9 +202,9 @@ public class TransHopMeta implements Cloneable, XMLInterface, Comparable<TransHo
 
 	public String toString()
 	{
-		String str_fr = (from_step == null) ? "(empty)" : from_step.getName(); //$NON-NLS-1$
-		String str_to = (to_step == null) ? "(empty)" : to_step.getName(); //$NON-NLS-1$
-		return str_fr + " --> " + str_to + " (" + (enabled ? "enabled" : "disabled") + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+		String str_fr = (from_step == null) ? "(empty)" : from_step.getName(); 
+		String str_to = (to_step == null) ? "(empty)" : to_step.getName(); 
+		return str_fr + " --> " + str_to + " (" + (enabled ? "enabled" : "disabled") + ")";   //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 	}
 
 	public String getXML()
@@ -213,11 +213,11 @@ public class TransHopMeta implements Cloneable, XMLInterface, Comparable<TransHo
 
 		if (from_step != null && to_step != null)
 		{
-			retval.append("  <hop> "); //$NON-NLS-1$
-			retval.append(XMLHandler.addTagValue("from", from_step.getName(), false)); //$NON-NLS-1$
-			retval.append(XMLHandler.addTagValue("to", to_step.getName(), false)); //$NON-NLS-1$
-			retval.append(XMLHandler.addTagValue("enabled", enabled, false)); //$NON-NLS-1$
-			retval.append(" </hop>"); //$NON-NLS-1$
+			retval.append("  <hop> "); 
+			retval.append(XMLHandler.addTagValue("from", from_step.getName(), false)); 
+			retval.append(XMLHandler.addTagValue("to", to_step.getName(), false)); 
+			retval.append(XMLHandler.addTagValue("enabled", enabled, false)); 
+			retval.append(" </hop>"); 
 		}
 
 		return retval.toString();

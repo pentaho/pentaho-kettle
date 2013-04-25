@@ -80,8 +80,8 @@ public class CopyTableWizardPage3 extends WizardPage {
     this.props = PropsUI.getInstance();
     this.rep = rep;
 
-    setTitle(BaseMessages.getString(PKG, "CopyTableWizardPage3.Dialog.Title")); //$NON-NLS-1$
-    setDescription(BaseMessages.getString(PKG, "CopyTableWizardPage3.Dialog.Description")); //$NON-NLS-1$
+    setTitle(BaseMessages.getString(PKG, "CopyTableWizardPage3.Dialog.Title")); 
+    setDescription(BaseMessages.getString(PKG, "CopyTableWizardPage3.Dialog.Description")); 
 
     setPageComplete(false);
   }
@@ -109,7 +109,7 @@ public class CopyTableWizardPage3 extends WizardPage {
 
     // Job name:
     wlTransname = new Label(composite, SWT.RIGHT);
-    wlTransname.setText(BaseMessages.getString(PKG, "CopyTableWizardPage3.Dialog.JobName.Label")); //$NON-NLS-1$
+    wlTransname.setText(BaseMessages.getString(PKG, "CopyTableWizardPage3.Dialog.JobName.Label")); 
     props.setLook(wlTransname);
     fdlTransname = new FormData();
     fdlTransname.left = new FormAttachment(0, 0);
@@ -127,7 +127,7 @@ public class CopyTableWizardPage3 extends WizardPage {
 
     // Directory:
     wlDirectory = new Label(composite, SWT.RIGHT);
-    wlDirectory.setText(BaseMessages.getString(PKG, "CopyTableWizardPage3.Dialog.Directory.Label")); //$NON-NLS-1$
+    wlDirectory.setText(BaseMessages.getString(PKG, "CopyTableWizardPage3.Dialog.Directory.Label")); 
     props.setLook(wlDirectory);
     fdlDirectory = new FormData();
     fdlDirectory.left = new FormAttachment(0, 0);
@@ -136,7 +136,7 @@ public class CopyTableWizardPage3 extends WizardPage {
     wlDirectory.setLayoutData(fdlDirectory);
 
     wbDirectory = new Button(composite, SWT.PUSH);
-    wbDirectory.setText(BaseMessages.getString(PKG, "CopyTableWizardPage3.Dialog.DirectoryButton.Label")); //$NON-NLS-1$
+    wbDirectory.setText(BaseMessages.getString(PKG, "CopyTableWizardPage3.Dialog.DirectoryButton.Label")); 
     props.setLook(wbDirectory);
     fdbDirectory = new FormData();
     fdbDirectory.right = new FormAttachment(100, 0);

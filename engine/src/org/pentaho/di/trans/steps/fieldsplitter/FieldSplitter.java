@@ -69,13 +69,13 @@ public class FieldSplitter extends BaseStep implements StepInterface
 			data.fieldnr=data.previousMeta.indexOfValue(meta.getSplitField());
 			if (data.fieldnr<0)
 			{
-				throw new KettleValueException(BaseMessages.getString(PKG, "FieldSplitter.Log.CouldNotFindFieldToSplit",meta.getSplitField())); //$NON-NLS-1$ //$NON-NLS-2$
+				throw new KettleValueException(BaseMessages.getString(PKG, "FieldSplitter.Log.CouldNotFindFieldToSplit",meta.getSplitField()));  
 			}
 
 			// only String type allowed
 			if (!data.previousMeta.getValueMeta(data.fieldnr).isString())
 			{
-				throw new KettleValueException((BaseMessages.getString(PKG, "FieldSplitter.Log.SplitFieldNotValid",meta.getSplitField()))); //$NON-NLS-1$ //$NON-NLS-2$
+				throw new KettleValueException((BaseMessages.getString(PKG, "FieldSplitter.Log.SplitFieldNotValid",meta.getSplitField())));  
 			}
 
 			// prepare the outputMeta
@@ -111,7 +111,7 @@ public class FieldSplitter extends BaseStep implements StepInterface
 		String[] splits = Const.splitString(v, data.delimiter, data.enclosure);
 		if (use_ids)
 		{
-			if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "FieldSplitter.Log.UsingIds")); //$NON-NLS-1$
+			if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "FieldSplitter.Log.UsingIds")); 
 			
 			// We have to add info.field.length variables!
 			for(int i=0; i < meta.getFieldName().length; i++)
@@ -127,8 +127,8 @@ public class FieldSplitter extends BaseStep implements StepInterface
 					split=sb.toString();
 				}
 
-				if (split==null) split=""; //$NON-NLS-1$
-				if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "FieldSplitter.Log.SplitInfo")+split); //$NON-NLS-1$
+				if (split==null) split=""; 
+				if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "FieldSplitter.Log.SplitInfo")+split); 
 
 				try
 				{
@@ -145,19 +145,19 @@ public class FieldSplitter extends BaseStep implements StepInterface
 				}
 				catch(Exception e)
 				{
-					throw new KettleValueException(BaseMessages.getString(PKG, "FieldSplitter.Log.ErrorConvertingSplitValue",split,meta.getSplitField()+"]!"), e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					throw new KettleValueException(BaseMessages.getString(PKG, "FieldSplitter.Log.ErrorConvertingSplitValue",split,meta.getSplitField()+"]!"), e);   //$NON-NLS-3$
 				}
 				outputRow[data.fieldnr+i]=value;
 			}
 		}
 		else
 		{
-			if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "FieldSplitter.Log.UsingPositionOfValue")); //$NON-NLS-1$
+			if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "FieldSplitter.Log.UsingPositionOfValue")); 
 			int prev=0;
 			for (int i=0;i<meta.getFieldName().length;i++)
 			{
 				String pol = (i>= splits.length) ? null : splits[i];
-				if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "FieldSplitter.Log.SplitFieldsInfo",pol,String.valueOf(prev))); //$NON-NLS-1$ //$NON-NLS-2$
+				if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "FieldSplitter.Log.SplitFieldsInfo",pol,String.valueOf(prev)));  
 				prev+=(pol==null?0:pol.length()) + data.delimiter.length();
 				
 				try
@@ -175,7 +175,7 @@ public class FieldSplitter extends BaseStep implements StepInterface
 				}
 				catch(Exception e)
 				{
-					throw new KettleValueException(BaseMessages.getString(PKG, "FieldSplitter.Log.ErrorConvertingSplitValue",pol,meta.getSplitField()+"]!"), e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					throw new KettleValueException(BaseMessages.getString(PKG, "FieldSplitter.Log.ErrorConvertingSplitValue",pol,meta.getSplitField()+"]!"), e);   //$NON-NLS-3$
 				}
 				outputRow[data.fieldnr+i]=value;
 			}
@@ -201,7 +201,7 @@ public class FieldSplitter extends BaseStep implements StepInterface
 
         if (checkFeedback(getLinesRead())) 
         {
-        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "FieldSplitter.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "FieldSplitter.Log.LineNumber")+getLinesRead()); 
         }
 			
 		return true;

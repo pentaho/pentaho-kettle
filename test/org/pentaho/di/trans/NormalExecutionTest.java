@@ -28,7 +28,7 @@ import junit.framework.TestCase;
 
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -45,7 +45,7 @@ public class NormalExecutionTest extends TestCase {
     if (initCalled) { return; }
     KettleEnvironment.init();
     initCalled = true;
-    CentralLogStore.getAppender().setMaxNrLines(100);
+    KettleLogStore.getAppender().setMaxNrLines(100);
   }
   
   /**
@@ -161,7 +161,7 @@ public class NormalExecutionTest extends TestCase {
     final int ITERATIONS = 100;
     
     // Load transformation
-    TransMeta transMeta = new TransMeta("testfiles/NormalExecutionTest - WaitUntilFinished.ktr"); //$NON-NLS-1$
+    TransMeta transMeta = new TransMeta("testfiles/NormalExecutionTest - WaitUntilFinished.ktr"); 
     transMeta.setSizeRowset(5);
 
     for (int t=0;t<ITERATIONS;t++) {
@@ -170,8 +170,8 @@ public class NormalExecutionTest extends TestCase {
   
       trans.prepareExecution(null);
   
-      StepInterface injector = trans.findRunThread("Injector"); //$NON-NLS-1$
-      StepInterface output = trans.findRunThread("Output"); //$NON-NLS-1$
+      StepInterface injector = trans.findRunThread("Injector"); 
+      StepInterface output = trans.findRunThread("Output"); 
   
       // Get the RowMeta for the injector step (it will be an Integer named 'a' of length 1)
       RowMeta injectorRowMeta = new RowMeta();
@@ -206,25 +206,25 @@ public class NormalExecutionTest extends TestCase {
       }
       long end = System.currentTimeMillis();
       
-      System.out.println("Run report for RowListener on last step in transformation, iteration #"+(t+1)+" :\n"); //$NON-NLS-1$
-      System.out.println("Rows read             : " + countingListener.getRead()); //$NON-NLS-1$
-      System.out.println("Rows written          : " + countingListener.getWritten()); //$NON-NLS-1$
-      System.out.println("Rows error            : " + countingListener.getError()); //$NON-NLS-1$
-      System.out.println("Rows ignored (read)   : " + countingListener.getIgnoredRead()); //$NON-NLS-1$
-      System.out.println("Rows ignored (written): " + countingListener.getIgnoredWritten()); //$NON-NLS-1$
-      System.out.println("Rows ignored (error)  : " + countingListener.getIgnoredError()); //$NON-NLS-1$
-      System.out.println("Had to wait " + (end - start) + "ms for all data to be received by the row listener."); //$NON-NLS-1$ //$NON-NLS-2$
+      System.out.println("Run report for RowListener on last step in transformation, iteration #"+(t+1)+" :\n"); 
+      System.out.println("Rows read             : " + countingListener.getRead()); 
+      System.out.println("Rows written          : " + countingListener.getWritten()); 
+      System.out.println("Rows error            : " + countingListener.getError()); 
+      System.out.println("Rows ignored (read)   : " + countingListener.getIgnoredRead()); 
+      System.out.println("Rows ignored (written): " + countingListener.getIgnoredWritten()); 
+      System.out.println("Rows ignored (error)  : " + countingListener.getIgnoredError()); 
+      System.out.println("Had to wait " + (end - start) + "ms for all data to be received by the row listener.");  
       */
       
-      assertEquals("Incorrect number of read rows received", ROWS, countingListener.getRead()); //$NON-NLS-1$
-      assertEquals("Incorrect number of written rows received", ROWS, countingListener.getWritten()); //$NON-NLS-1$
-      assertEquals("Incorrect number of error rows received", new Long(0), countingListener.getError()); //$NON-NLS-1$
+      assertEquals("Incorrect number of read rows received", ROWS, countingListener.getRead()); 
+      assertEquals("Incorrect number of written rows received", ROWS, countingListener.getWritten()); 
+      assertEquals("Incorrect number of error rows received", new Long(0), countingListener.getError()); 
     }
   }
   
   /*
   public void testStartThreads_only_one_TransListener() throws Exception {
-    TransMeta transMeta = new TransMeta("testfiles/NormalExecutionTest - WaitUntilFinished.ktr"); //$NON-NLS-1$
+    TransMeta transMeta = new TransMeta("testfiles/NormalExecutionTest - WaitUntilFinished.ktr"); 
 
     Trans trans = new Trans(transMeta);
     trans.setLogLevel(LogLevel.NOTHING);
@@ -240,7 +240,7 @@ public class NormalExecutionTest extends TestCase {
     trans.startThreads();
     trans.waitUntilFinished();
     
-    assertEquals("TransListeners on Trans are growing", numTransListeners, trans.getTransListeners().size()); //$NON-NLS-1$
+    assertEquals("TransListeners on Trans are growing", numTransListeners, trans.getTransListeners().size()); 
   }
   */
 }

@@ -35,25 +35,25 @@ public class Launch {
   public static Status openURL(String url) {
 
     Status r = Status.Success;
-    String osName = System.getProperty("os.name"); //$NON-NLS-1$
+    String osName = System.getProperty("os.name"); 
 
     try {
-      if (osName.startsWith("Mac OS")) { //$NON-NLS-1$
-        Class <?> fileMgr = Class.forName("com.apple.eio.FileManager"); //$NON-NLS-1$
-        Method openURL = fileMgr.getDeclaredMethod("openURL", new Class[] { String.class }); //$NON-NLS-1$
+      if (osName.startsWith("Mac OS")) { 
+        Class <?> fileMgr = Class.forName("com.apple.eio.FileManager"); 
+        Method openURL = fileMgr.getDeclaredMethod("openURL", new Class[] { String.class }); 
         openURL.invoke(null, new Object[] { url });
-      } else if (osName.startsWith("Windows")){ //$NON-NLS-1$
-        Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url); //$NON-NLS-1$
+      } else if (osName.startsWith("Windows")){ 
+        Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url); 
       } else { //assume Unix or Linux
-        String[] browsers = { "firefox", "opera", "konqueror", "epiphany", "mozilla", "netscape" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+        String[] browsers = { "firefox", "opera", "konqueror", "epiphany", "mozilla", "netscape" };   //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
         String browser = null;
         for (int count = 0; count < browsers.length && browser == null; count++){
-          if (Runtime.getRuntime().exec(new String[] { "which", browsers[count] }).waitFor() == 0){ //$NON-NLS-1$
+          if (Runtime.getRuntime().exec(new String[] { "which", browsers[count] }).waitFor() == 0){ 
             browser = browsers[count];
           }
         }
         if (browser == null){
-          throw new Exception(Messages.getString("Launch.ERROR_0001_BROWSER_NOT_FOUND")); //$NON-NLS-1$
+          throw new Exception(Messages.getString("Launch.ERROR_0001_BROWSER_NOT_FOUND")); 
         }else{
           Runtime.getRuntime().exec(new String[] { browser, url });
         }

@@ -94,7 +94,7 @@ public class ProcessFiles extends BaseStep implements StepInterface
 				if (data.indexOfSourceFilename<0)
 				{
 					// The field is unreachable !
-					throw new KettleException(BaseMessages.getString(PKG, "ProcessFiles.Exception.CouldnotFindField",meta.getDynamicSourceFileNameField())); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleException(BaseMessages.getString(PKG, "ProcessFiles.Exception.CouldnotFindField",meta.getDynamicSourceFileNameField()));  
 				}
 			}
 			// cache the position of the source filename field			
@@ -105,7 +105,7 @@ public class ProcessFiles extends BaseStep implements StepInterface
 				if (data.indexOfTargetFilename<0)
 				{
 					// The field is unreachable !
-					throw new KettleException(BaseMessages.getString(PKG, "ProcessFiles.Exception.CouldnotFindField",meta.getDynamicTargetFileNameField())); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleException(BaseMessages.getString(PKG, "ProcessFiles.Exception.CouldnotFindField",meta.getDynamicTargetFileNameField()));  
 				}
 			}
 			
@@ -232,7 +232,7 @@ public class ProcessFiles extends BaseStep implements StepInterface
 
             if (checkFeedback(getLinesRead())) 
             {
-            	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "ProcessFiles.LineNumber")+getLinesRead()); //$NON-NLS-1$
+            	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "ProcessFiles.LineNumber")+getLinesRead()); 
             }
         }
         catch(Exception e)
@@ -247,7 +247,7 @@ public class ProcessFiles extends BaseStep implements StepInterface
         	}
         	else
         	{
-	            logError(BaseMessages.getString(PKG, "ProcessFiles.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
+	            logError(BaseMessages.getString(PKG, "ProcessFiles.ErrorInStepRunning")+e.getMessage()); 
 	            setErrors(1);
 	            stopAll();
 	            setOutputDone();  // signal end to receiver(s)

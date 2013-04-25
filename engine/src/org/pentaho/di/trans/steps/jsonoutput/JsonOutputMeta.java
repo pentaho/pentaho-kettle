@@ -338,9 +338,9 @@ public class JsonOutputMeta extends BaseStepMeta  implements StepMetaInterface
     {
         try
         {
-            outputValue      = XMLHandler.getTagValue(stepnode, "outputValue"); //$NON-NLS-1$
-            jsonBloc    = XMLHandler.getTagValue(stepnode, "jsonBloc"); //$NON-NLS-1$
-            nrRowsInBloc= XMLHandler.getTagValue(stepnode, "nrRowsInBloc"); //$NON-NLS-1$
+            outputValue      = XMLHandler.getTagValue(stepnode, "outputValue"); 
+            jsonBloc    = XMLHandler.getTagValue(stepnode, "jsonBloc"); 
+            nrRowsInBloc= XMLHandler.getTagValue(stepnode, "nrRowsInBloc"); 
             operationType = getOperationTypeByCode(Const.NVL(XMLHandler.getTagValue(stepnode,	"operation_type"), ""));
             compatibilityMode = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "compatibility_mode"));
             
@@ -357,31 +357,31 @@ public class JsonOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			DoNotOpenNewFileInit    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "DoNotOpenNewFileInit"));
       servletOutput         = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "servlet_output"));
 			
-			Node fields = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
-            int nrfields= XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
+			Node fields = XMLHandler.getSubNode(stepnode, "fields"); 
+            int nrfields= XMLHandler.countNodes(fields, "field"); 
     
             allocate(nrfields);
             
             for (int i=0;i<nrfields;i++)
             {
-                Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
+                Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); 
             
                 outputFields[i] = new JsonOutputField();
-                outputFields[i].setFieldName( XMLHandler.getTagValue(fnode, "name") ); //$NON-NLS-1$
-                outputFields[i].setElementName( XMLHandler.getTagValue(fnode, "element") ); //$NON-NLS-1$
+                outputFields[i].setFieldName( XMLHandler.getTagValue(fnode, "name") ); 
+                outputFields[i].setElementName( XMLHandler.getTagValue(fnode, "element") ); 
             }
         }
         catch(Exception e)
         {
-            throw new KettleXMLException("Unable to load step info from XML", e); //$NON-NLS-1$
+            throw new KettleXMLException("Unable to load step info from XML", e); 
         }
     }
 
     public void setDefault()
     {
         encoding         = Const.XML_ENCODING;
-        outputValue        = "outputValue"; //$NON-NLS-1$
-        jsonBloc         = "data"; //$NON-NLS-1$
+        outputValue        = "outputValue"; 
+        jsonBloc         = "data"; 
         nrRowsInBloc= "1";
         operationType=OPERATION_TYPE_WRITE_TO_FILE;
         extension = "js";
@@ -392,8 +392,8 @@ public class JsonOutputMeta extends BaseStepMeta  implements StepMetaInterface
         for (int i=0;i<nrfields;i++)
         {
             outputFields[i] = new JsonOutputField();
-            outputFields[i].setFieldName( "field"+i ); //$NON-NLS-1$
-            outputFields[i].setElementName( "field"+i ); //$NON-NLS-1$
+            outputFields[i].setFieldName( "field"+i ); 
+            outputFields[i].setElementName( "field"+i ); 
         }
     }
     
@@ -410,9 +410,9 @@ public class JsonOutputMeta extends BaseStepMeta  implements StepMetaInterface
     {
         StringBuffer retval=new StringBuffer(500);
         
-        retval.append("    ").append(XMLHandler.addTagValue("outputValue",  outputValue)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("    ").append(XMLHandler.addTagValue("jsonBloc",  jsonBloc)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("    ").append(XMLHandler.addTagValue("nrRowsInBloc",  nrRowsInBloc)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    ").append(XMLHandler.addTagValue("outputValue",  outputValue));  
+        retval.append("    ").append(XMLHandler.addTagValue("jsonBloc",  jsonBloc));  
+        retval.append("    ").append(XMLHandler.addTagValue("nrRowsInBloc",  nrRowsInBloc));  
         retval.append("    ").append(XMLHandler.addTagValue("operation_type",getOperationTypeCode(operationType)));
         retval.append("    ").append(XMLHandler.addTagValue("compatibility_mode", compatibilityMode));
 		retval.append("    ").append(XMLHandler.addTagValue("encoding",  encoding));
@@ -430,29 +430,29 @@ public class JsonOutputMeta extends BaseStepMeta  implements StepMetaInterface
     retval.append("      ").append(XMLHandler.addTagValue("servlet_output", servletOutput));
 		retval.append("      </file>"+Const.CR);
         
-        retval.append("    <fields>").append(Const.CR); //$NON-NLS-1$
+        retval.append("    <fields>").append(Const.CR); 
         for (int i=0;i<outputFields.length;i++)
         {
             JsonOutputField field = outputFields[i];
             
             if (field.getFieldName()!=null && field.getFieldName().length()!=0)
             {
-                retval.append("      <field>").append(Const.CR); //$NON-NLS-1$
-                retval.append("        ").append(XMLHandler.addTagValue("name",      field.getFieldName())); //$NON-NLS-1$ //$NON-NLS-2$
-                retval.append("        ").append(XMLHandler.addTagValue("element",   field.getElementName())); //$NON-NLS-1$ //$NON-NLS-2$retval.append("        </field>").append(Const.CR); //$NON-NLS-1$
-                retval.append("    </field>"+Const.CR); //$NON-NLS-1$
+                retval.append("      <field>").append(Const.CR); 
+                retval.append("        ").append(XMLHandler.addTagValue("name",      field.getFieldName()));  
+                retval.append("        ").append(XMLHandler.addTagValue("element",   field.getElementName()));  retval.append("        </field>").append(Const.CR); 
+                retval.append("    </field>"+Const.CR); 
             }
         }
-        retval.append("    </fields>").append(Const.CR); //$NON-NLS-1$
+        retval.append("    </fields>").append(Const.CR); 
         return retval.toString();
     }
     
     public void readRep(Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases) throws KettleException {
         try
         {
-            outputValue     =      rep.getStepAttributeString (id_step, "outputValue"); //$NON-NLS-1$
-            jsonBloc   =      rep.getStepAttributeString (id_step, "jsonBloc"); //$NON-NLS-1$
-            nrRowsInBloc   =      rep.getStepAttributeString (id_step, "nrRowsInBloc"); //$NON-NLS-1$
+            outputValue     =      rep.getStepAttributeString (id_step, "outputValue"); 
+            jsonBloc   =      rep.getStepAttributeString (id_step, "jsonBloc"); 
+            nrRowsInBloc   =      rep.getStepAttributeString (id_step, "nrRowsInBloc"); 
             
             operationType = getOperationTypeByCode(Const.NVL(rep.getStepAttributeString(id_step, "operation_type"), ""));
             compatibilityMode = rep.getStepAttributeBoolean(id_step, "compatibility_mode");
@@ -472,7 +472,7 @@ public class JsonOutputMeta extends BaseStepMeta  implements StepMetaInterface
 
 			
 			
-            int nrfields = rep.countNrStepAttributes(id_step, "field_name"); //$NON-NLS-1$
+            int nrfields = rep.countNrStepAttributes(id_step, "field_name"); 
             
             allocate(nrfields);
             
@@ -480,13 +480,13 @@ public class JsonOutputMeta extends BaseStepMeta  implements StepMetaInterface
             {
                 outputFields[i] = new JsonOutputField();
 
-                outputFields[i].setFieldName(       rep.getStepAttributeString (id_step, i, "field_name") ); //$NON-NLS-1$
-                outputFields[i].setElementName(     rep.getStepAttributeString (id_step, i, "field_element") ); //$NON-NLS-1$ 
+                outputFields[i].setFieldName(       rep.getStepAttributeString (id_step, i, "field_name") ); 
+                outputFields[i].setElementName(     rep.getStepAttributeString (id_step, i, "field_element") );  
             }       
         }
         catch(Exception e)
         {
-            throw new KettleException("Unexpected error reading step information from the repository", e); //$NON-NLS-1$
+            throw new KettleException("Unexpected error reading step information from the repository", e); 
         }
     }
 	private static String getOperationTypeCode(int i) {
@@ -498,9 +498,9 @@ public class JsonOutputMeta extends BaseStepMeta  implements StepMetaInterface
     {
         try
         {
-            rep.saveStepAttribute(id_transformation, id_step, "outputValue",          outputValue); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "jsonBloc", jsonBloc); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "nrRowsInBloc", nrRowsInBloc); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "outputValue",          outputValue); 
+            rep.saveStepAttribute(id_transformation, id_step, "jsonBloc", jsonBloc); 
+            rep.saveStepAttribute(id_transformation, id_step, "nrRowsInBloc", nrRowsInBloc); 
             
             rep.saveStepAttribute(id_transformation, id_step, "operation_type", getOperationTypeCode(operationType));		
             rep.saveStepAttribute(id_transformation, id_step, "compatibility_mode",  compatibilityMode);
@@ -522,13 +522,13 @@ public class JsonOutputMeta extends BaseStepMeta  implements StepMetaInterface
             {
                 JsonOutputField field = outputFields[i];
                 
-                rep.saveStepAttribute(id_transformation, id_step, i, "field_name",      field.getFieldName()); //$NON-NLS-1$
-                rep.saveStepAttribute(id_transformation, id_step, i, "field_element",   field.getElementName()); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_name",      field.getFieldName()); 
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_element",   field.getElementName()); 
             }
         }
         catch(Exception e)
         {
-            throw new KettleException("Unable to save step information to the repository for id_step="+id_step, e); //$NON-NLS-1$
+            throw new KettleException("Unable to save step information to the repository for id_step="+id_step, e); 
         }
     }
     public String[] getFiles(String fileName)
@@ -623,7 +623,7 @@ public class JsonOutputMeta extends BaseStepMeta  implements StepMetaInterface
         // Check output fields
         if (prev!=null && prev.size()>0)
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "JsonOutputMeta.CheckResult.FieldsReceived", ""+prev.size()), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "JsonOutputMeta.CheckResult.FieldsReceived", ""+prev.size()), stepMeta); 
             remarks.add(cr);
             
             String  error_message="";
@@ -635,19 +635,19 @@ public class JsonOutputMeta extends BaseStepMeta  implements StepMetaInterface
                 int idx = prev.indexOfValue(outputFields[i].getFieldName());
                 if (idx<0)
                 {
-                    error_message+="\t\t"+outputFields[i].getFieldName()+Const.CR; //$NON-NLS-1$
+                    error_message+="\t\t"+outputFields[i].getFieldName()+Const.CR; 
                     error_found=true;
                 } 
             }
             if (error_found) 
             {
-                error_message=BaseMessages.getString(PKG, "JsonOutputMeta.CheckResult.FieldsNotFound", error_message); //$NON-NLS-1$
+                error_message=BaseMessages.getString(PKG, "JsonOutputMeta.CheckResult.FieldsNotFound", error_message); 
                 cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
                 remarks.add(cr);
             }
             else
             {
-                cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "JsonOutputMeta.CheckResult.AllFieldsFound"), stepMeta); //$NON-NLS-1$
+                cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "JsonOutputMeta.CheckResult.AllFieldsFound"), stepMeta); 
                 remarks.add(cr);
             }
         }
@@ -655,16 +655,16 @@ public class JsonOutputMeta extends BaseStepMeta  implements StepMetaInterface
         // See if we have input streams leading to this step!
         if (input.length>0)
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "JsonOutputMeta.CheckResult.ExpectedInputOk"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "JsonOutputMeta.CheckResult.ExpectedInputOk"), stepMeta); 
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "JsonOutputMeta.CheckResult.ExpectedInputError"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "JsonOutputMeta.CheckResult.ExpectedInputError"), stepMeta); 
             remarks.add(cr);
         }
         
-        cr = new CheckResult(CheckResult.TYPE_RESULT_COMMENT, BaseMessages.getString(PKG, "JsonOutputMeta.CheckResult.FilesNotChecked"), stepMeta); //$NON-NLS-1$
+        cr = new CheckResult(CheckResult.TYPE_RESULT_COMMENT, BaseMessages.getString(PKG, "JsonOutputMeta.CheckResult.FilesNotChecked"), stepMeta); 
         remarks.add(cr);
     }
 

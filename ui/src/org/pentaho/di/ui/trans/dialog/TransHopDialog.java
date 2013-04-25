@@ -115,7 +115,7 @@ public class TransHopDialog extends Dialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "TransHopDialog.Shell.Label")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "TransHopDialog.Shell.Label")); 
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
@@ -123,7 +123,7 @@ public class TransHopDialog extends Dialog
 
 		// From step line
 		wlFrom=new Label(shell, SWT.RIGHT);
-		wlFrom.setText(BaseMessages.getString(PKG, "TransHopDialog.FromStep.Label")); //$NON-NLS-1$
+		wlFrom.setText(BaseMessages.getString(PKG, "TransHopDialog.FromStep.Label")); 
  		props.setLook(wlFrom);
 		fdlFrom=new FormData();
 		fdlFrom.left = new FormAttachment(0, 0);
@@ -131,7 +131,7 @@ public class TransHopDialog extends Dialog
 		fdlFrom.top  = new FormAttachment(0, margin);
 		wlFrom.setLayoutData(fdlFrom);
 		wFrom=new CCombo(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wFrom.setText(BaseMessages.getString(PKG, "TransHopDialog.FromStepDropdownList.Label")); //$NON-NLS-1$
+		wFrom.setText(BaseMessages.getString(PKG, "TransHopDialog.FromStepDropdownList.Label")); 
  		props.setLook(wFrom);
 
 		for (int i=0;i<transMeta.nrSteps();i++)
@@ -149,7 +149,7 @@ public class TransHopDialog extends Dialog
 
 		// To line
 		wlTo=new Label(shell, SWT.RIGHT);
-		wlTo.setText(BaseMessages.getString(PKG, "TransHopDialog.TargetStep.Label")); //$NON-NLS-1$
+		wlTo.setText(BaseMessages.getString(PKG, "TransHopDialog.TargetStep.Label")); 
  		props.setLook(wlTo);
 		fdlTo=new FormData();
 		fdlTo.left = new FormAttachment(0, 0);
@@ -157,7 +157,7 @@ public class TransHopDialog extends Dialog
 		fdlTo.top  = new FormAttachment(wFrom, margin);
 		wlTo.setLayoutData(fdlTo);
 		wTo=new CCombo(shell, SWT.BORDER | SWT.READ_ONLY);
-		wTo.setText(BaseMessages.getString(PKG, "TransHopDialog.TargetStepDropdownList.Label")); //$NON-NLS-1$
+		wTo.setText(BaseMessages.getString(PKG, "TransHopDialog.TargetStepDropdownList.Label")); 
  		props.setLook(wTo);
 
 		for (int i=0;i<transMeta.nrSteps();i++)
@@ -175,7 +175,7 @@ public class TransHopDialog extends Dialog
 
 		// Enabled?
 		wlEnabled=new Label(shell, SWT.RIGHT);
-		wlEnabled.setText(BaseMessages.getString(PKG, "TransHopDialog.EnableHop.Label")); //$NON-NLS-1$
+		wlEnabled.setText(BaseMessages.getString(PKG, "TransHopDialog.EnableHop.Label")); 
  		props.setLook(wlEnabled);
 		fdlEnabled=new FormData();
 		fdlEnabled.left = new FormAttachment(0, 0);
@@ -199,7 +199,7 @@ public class TransHopDialog extends Dialog
 		);
 
 		wFlip = new Button(shell, SWT.PUSH);
-		wFlip.setText(BaseMessages.getString(PKG, "TransHopDialog.FromTo.Button")); //$NON-NLS-1$
+		wFlip.setText(BaseMessages.getString(PKG, "TransHopDialog.FromTo.Button")); 
 		fdFlip = new FormData();
 		fdFlip.right = new FormAttachment(100, 0);
 		fdFlip.top  = new FormAttachment(wlTo, 20);
@@ -207,12 +207,12 @@ public class TransHopDialog extends Dialog
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wOK.pack(true);
 		Rectangle rOK = wOK.getBounds();
 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 		wCancel.pack(true);
 		Rectangle rCancel = wCancel.getBounds();
 
@@ -294,8 +294,8 @@ public class TransHopDialog extends Dialog
 			input.setFromStep(fromBackup);
 			input.setToStep(toBackup);
 			MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING );
-			mb.setMessage(BaseMessages.getString(PKG, "TransHopDialog.LoopsNotAllowed.DialogMessage")); //$NON-NLS-1$
-			mb.setText(BaseMessages.getString(PKG, "TransHopDialog.LoopsNotAllowed.DialogTitle")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "TransHopDialog.LoopsNotAllowed.DialogMessage")); 
+			mb.setText(BaseMessages.getString(PKG, "TransHopDialog.LoopsNotAllowed.DialogTitle")); 
 			mb.open();
 		}
 		else
@@ -303,8 +303,8 @@ public class TransHopDialog extends Dialog
 			if (input.getFromStep()==null)
 			{
 				MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING );
-				mb.setMessage(BaseMessages.getString(PKG, "TransHopDialog.StepDoesNotExist.DialogMessage",wFrom.getText())); //$NON-NLS-1$ //$NON-NLS-2$
-				mb.setText(BaseMessages.getString(PKG, "TransHopDialog.StepDoesNotExist.DialogTitle")); //$NON-NLS-1$
+				mb.setMessage(BaseMessages.getString(PKG, "TransHopDialog.StepDoesNotExist.DialogMessage",wFrom.getText()));  
+				mb.setText(BaseMessages.getString(PKG, "TransHopDialog.StepDoesNotExist.DialogTitle")); 
 				mb.open();
 			}
 			else
@@ -312,8 +312,8 @@ public class TransHopDialog extends Dialog
 				if (input.getToStep()==null)
 				{
 					MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING );
-					mb.setMessage(BaseMessages.getString(PKG, "TransHopDialog.StepDoesNotExist.DialogMessage",wTo.getText())); //$NON-NLS-1$ //$NON-NLS-2$
-					mb.setText(BaseMessages.getString(PKG, "TransHopDialog.StepDoesNotExist.DialogTitle")); //$NON-NLS-1$
+					mb.setMessage(BaseMessages.getString(PKG, "TransHopDialog.StepDoesNotExist.DialogMessage",wTo.getText()));  
+					mb.setText(BaseMessages.getString(PKG, "TransHopDialog.StepDoesNotExist.DialogTitle")); 
 					mb.open();
 				}
 				else
@@ -321,8 +321,8 @@ public class TransHopDialog extends Dialog
 					if (input.getFromStep().equals(input.getToStep()))
 					{
 						MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING );
-						mb.setMessage(BaseMessages.getString(PKG, "TransHopDialog.CannotGoToSameStep.DialogMessage")); //$NON-NLS-1$
-						mb.setText(BaseMessages.getString(PKG, "TransHopDialog.CannotGoToSameStep.DialogTitle")); //$NON-NLS-1$
+						mb.setMessage(BaseMessages.getString(PKG, "TransHopDialog.CannotGoToSameStep.DialogMessage")); 
+						mb.setText(BaseMessages.getString(PKG, "TransHopDialog.CannotGoToSameStep.DialogTitle")); 
 						mb.open();
 					}
 					else

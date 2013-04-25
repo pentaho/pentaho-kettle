@@ -185,7 +185,7 @@ public class PropertyOutput extends BaseStep implements StepInterface
             }
 			else
 			{
-				logError(BaseMessages.getString(PKG, "PropertyOutputMeta.Log.ErrorInStep")+e.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "PropertyOutputMeta.Log.ErrorInStep")+e.getMessage()); 
 				setErrors(1);
 				stopAll();
 				setOutputDone();  // signal end to receiver(s)

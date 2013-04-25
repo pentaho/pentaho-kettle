@@ -142,7 +142,7 @@ public class SocketWriter extends BaseStep implements StepInterface
             return false;
         }
 
-        if (checkFeedback(getLinesRead())) logBasic(BaseMessages.getString(PKG, "SocketWriter.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+        if (checkFeedback(getLinesRead())) logBasic(BaseMessages.getString(PKG, "SocketWriter.Log.LineNumber")+getLinesRead()); 
 			
 		return true;
 	}

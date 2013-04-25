@@ -77,11 +77,11 @@ public class FuzzyMatch extends BaseStep implements StepInterface
 		data.infoStream = meta.getStepIOMeta().getInfoStreams().get(0);
 		if (data.infoStream.getStepMeta()==null)
 		{
-			logError(BaseMessages.getString(PKG, "FuzzyMatch.Log.NoLookupStepSpecified")); //$NON-NLS-1$
+			logError(BaseMessages.getString(PKG, "FuzzyMatch.Log.NoLookupStepSpecified")); 
 			return false;
 		}
 
-		if (isDetailed()) logDetailed(BaseMessages.getString(PKG, "FuzzyMatch.Log.ReadingFromStream")+data.infoStream.getStepname()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+		if (isDetailed()) logDetailed(BaseMessages.getString(PKG, "FuzzyMatch.Log.ReadingFromStream")+data.infoStream.getStepname()+"]");  
 		
 		boolean firstRun=true;
         // Which row set do we read from?
@@ -96,7 +96,7 @@ public class FuzzyMatch extends BaseStep implements StepInterface
 				int indexOfLookupField = data.infoMeta.indexOfValue(environmentSubstitute(meta.getLookupField()));
 				if (indexOfLookupField<0) {
 					// The field is unreachable !
-					throw new KettleException(BaseMessages.getString(PKG, "FuzzyMatch.Exception.CouldnotFindLookField",meta.getLookupField())); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleException(BaseMessages.getString(PKG, "FuzzyMatch.Exception.CouldnotFindLookField",meta.getLookupField()));  
 				}
 				data.infoCache= new RowMeta();
 				data.infoCache.addValueMeta(data.infoMeta.getValueMeta(indexOfLookupField));
@@ -110,14 +110,14 @@ public class FuzzyMatch extends BaseStep implements StepInterface
 						data.indexOfCachedFields[fi]= data.infoMeta.indexOfValue(meta.getValue()[i]);
 						if (data.indexOfCachedFields[fi]<0) {
 							// The field is unreachable !
-							throw new KettleException(BaseMessages.getString(PKG, "FuzzyMatch.Exception.CouldnotFindLookField",meta.getValue()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+							throw new KettleException(BaseMessages.getString(PKG, "FuzzyMatch.Exception.CouldnotFindLookField",meta.getValue()[i]));  
 						}
 						data.infoCache.addValueMeta(data.infoMeta.getValueMeta(data.indexOfCachedFields[fi]));
 					}
 					data.nrCachedFields+=meta.getValue().length;
 				}
 			}
-			if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "FuzzyMatch.Log.ReadLookupRow")+rowSet.getRowMeta().getString(rowData)); //$NON-NLS-1$
+			if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "FuzzyMatch.Log.ReadLookupRow")+rowSet.getRowMeta().getString(rowData)); 
 			
             // Look up the keys in the source rows
 		    // and store values in cache
@@ -154,7 +154,7 @@ public class FuzzyMatch extends BaseStep implements StepInterface
 			data.indexOfMainField = getInputRowMeta().indexOfValue(environmentSubstitute(meta.getMainStreamField()));
 			if (data.indexOfMainField<0) {
 				// The field is unreachable !
-				throw new KettleException(BaseMessages.getString(PKG, "FuzzyMatch.Exception.CouldnotFindMainField",meta.getMainStreamField())); //$NON-NLS-1$ //$NON-NLS-2$
+				throw new KettleException(BaseMessages.getString(PKG, "FuzzyMatch.Exception.CouldnotFindMainField",meta.getMainStreamField()));  
 			}
 		}
         Object[] add = null;
@@ -173,7 +173,7 @@ public class FuzzyMatch extends BaseStep implements StepInterface
     		data.look.add(value);
     	} catch(java.lang.OutOfMemoryError o){
 			// exception out of memory
-			throw new KettleException(BaseMessages.getString(PKG, "FuzzyMatch.Error.JavaHeap",o.toString())); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "FuzzyMatch.Error.JavaHeap",o.toString())); 
 		}
     }
     
@@ -428,18 +428,18 @@ public class FuzzyMatch extends BaseStep implements StepInterface
 
 			// Read values from lookup step (look)
 			if (!readLookupValues()) {
-				logError(BaseMessages.getString(PKG, "FuzzyMatch.Log.UnableToReadDataFromLookupStream")); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "FuzzyMatch.Log.UnableToReadDataFromLookupStream")); 
 				setErrors(1);
 				stopAll();
 				return false;
 			}
-			if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "FuzzyMatch.Log.ReadValuesInMemory",data.look.size())); //$NON-NLS-1$ //$NON-NLS-2$
+			if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "FuzzyMatch.Log.ReadValuesInMemory",data.look.size()));  
 	    }
 	    
 	    Object[] r=getRow();      // Get row from input rowset & set row busy!
 		if (r==null)         {
 			// no more input to be expected...
-			if (isDetailed()) logDetailed(BaseMessages.getString(PKG, "FuzzyMatch.Log.StoppedProcessingWithEmpty",getLinesRead())); //$NON-NLS-1$ //$NON-NLS-2$
+			if (isDetailed()) logDetailed(BaseMessages.getString(PKG, "FuzzyMatch.Log.StoppedProcessingWithEmpty",getLinesRead()));  
 			setOutputDone();
 			return false;
 		}
@@ -457,7 +457,7 @@ public class FuzzyMatch extends BaseStep implements StepInterface
 				
 	        if (checkFeedback(getLinesRead())) 
 	        {
-	        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "FuzzyMatch.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+	        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "FuzzyMatch.Log.LineNumber")+getLinesRead()); 
 	        }
 		} catch(KettleException e) {
 			boolean sendToErrorRow=false;
@@ -467,7 +467,7 @@ public class FuzzyMatch extends BaseStep implements StepInterface
 		          sendToErrorRow = true;
 		          errorMessage = e.toString();
 			} else {
-				logError(BaseMessages.getString(PKG, "FuzzyMatch.Log.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "FuzzyMatch.Log.ErrorInStepRunning")+e.getMessage()); 
 				setErrors(1);
 				stopAll();
 				setOutputDone();  // signal end to receiver(s)

@@ -337,7 +337,7 @@ public class JobEntrySyslog extends JobEntryBase implements Cloneable, JobEntryI
 			result.setNrErrors(0);
 			result.setResult(true);
 		} catch(Exception e){
-			logError(BaseMessages.getString(PKG, "JobEntrySyslog.ErrorSendingMessage", e.toString())); //$NON-NLS-1$
+			logError(BaseMessages.getString(PKG, "JobEntrySyslog.ErrorSendingMessage", e.toString())); 
 		} finally{
         	if(syslog!=null) syslog.shutdown();
         }

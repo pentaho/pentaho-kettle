@@ -135,10 +135,10 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
         retval.append("      ").append(XMLHandler.addTagValue("only_new",     onlyPuttingNewFiles));
         retval.append("      ").append(XMLHandler.addTagValue("active",       activeConnection));
         
-	    retval.append("      ").append(XMLHandler.addTagValue("proxy_host", proxyHost)); //$NON-NLS-1$ //$NON-NLS-2$
-	    retval.append("      ").append(XMLHandler.addTagValue("proxy_port", proxyPort)); //$NON-NLS-1$ //$NON-NLS-2$
-	    retval.append("      ").append(XMLHandler.addTagValue("proxy_username", proxyUsername)); //$NON-NLS-1$ //$NON-NLS-2$
-	    retval.append("      ").append(XMLHandler.addTagValue("proxy_password", proxyPassword)); //$NON-NLS-1$ //$NON-NLS-2$
+	    retval.append("      ").append(XMLHandler.addTagValue("proxy_host", proxyHost));  
+	    retval.append("      ").append(XMLHandler.addTagValue("proxy_port", proxyPort));  
+	    retval.append("      ").append(XMLHandler.addTagValue("proxy_username", proxyUsername));  
+	    retval.append("      ").append(XMLHandler.addTagValue("proxy_password", proxyPassword));  
 		retval.append("      ").append(XMLHandler.addTagValue("connection_type",FTPSConnection.getConnectionTypeCode(connectionType)));
 		
 		return retval.toString();
@@ -162,10 +162,10 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
 			onlyPuttingNewFiles = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "only_new") );
             activeConnection    = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "active") );
  
-		    proxyHost = XMLHandler.getTagValue(entrynode, "proxy_host"); //$NON-NLS-1$
-		    proxyPort = XMLHandler.getTagValue(entrynode, "proxy_port"); //$NON-NLS-1$
-		    proxyUsername = XMLHandler.getTagValue(entrynode, "proxy_username"); //$NON-NLS-1$
-		    proxyPassword = XMLHandler.getTagValue(entrynode, "proxy_password"); //$NON-NLS-1$
+		    proxyHost = XMLHandler.getTagValue(entrynode, "proxy_host"); 
+		    proxyPort = XMLHandler.getTagValue(entrynode, "proxy_port"); 
+		    proxyUsername = XMLHandler.getTagValue(entrynode, "proxy_username"); 
+		    proxyPassword = XMLHandler.getTagValue(entrynode, "proxy_password"); 
 		    connectionType = FTPSConnection.getConnectionTypeByCode(Const.NVL(XMLHandler.getTagValue(entrynode,	"connection_type"), ""));   
 		}
 		catch(KettleXMLException xe)
@@ -195,10 +195,10 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
             activeConnection    = rep.getJobEntryAttributeBoolean(id_jobentry, "active");
 
             
-		    proxyHost	= rep.getJobEntryAttributeString(id_jobentry, "proxy_host"); //$NON-NLS-1$
-		    proxyPort	= rep.getJobEntryAttributeString(id_jobentry, "proxy_port"); //$NON-NLS-1$
-		    proxyUsername	= rep.getJobEntryAttributeString(id_jobentry, "proxy_username"); //$NON-NLS-1$
-		    proxyPassword = rep.getJobEntryAttributeString(id_jobentry, "proxy_password"); //$NON-NLS-1$
+		    proxyHost	= rep.getJobEntryAttributeString(id_jobentry, "proxy_host"); 
+		    proxyPort	= rep.getJobEntryAttributeString(id_jobentry, "proxy_port"); 
+		    proxyUsername	= rep.getJobEntryAttributeString(id_jobentry, "proxy_username"); 
+		    proxyPassword = rep.getJobEntryAttributeString(id_jobentry, "proxy_password"); 
 		    connectionType = FTPSConnection.getConnectionTypeByCode(Const.NVL(rep.getJobEntryAttributeString(id_jobentry,"connection_type"), ""));
 		}
 		catch(KettleException dbe)
@@ -224,16 +224,16 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "only_new",        onlyPuttingNewFiles);
             rep.saveJobEntryAttribute(id_job, getObjectId(), "active",          activeConnection);
             
-		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_host", proxyHost); //$NON-NLS-1$
-		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_port", proxyPort); //$NON-NLS-1$
-		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_username", proxyUsername); //$NON-NLS-1$
-		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_password", proxyPassword); //$NON-NLS-1$
+		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_host", proxyHost); 
+		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_port", proxyPort); 
+		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_username", proxyUsername); 
+		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_password", proxyPassword); 
 		    rep.saveJobEntryAttribute(id_job, getObjectId(),"connection_type", FTPSConnection.getConnectionType(connectionType));
 			
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "JobFTPSPUT.UnableToSaveToRepo", String.valueOf(id_job)), dbe); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "JobFTPSPUT.UnableToSaveToRepo", String.valueOf(id_job)), dbe); 
 		}
 	}
 	
@@ -553,10 +553,10 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
 			// set activeConnection connectmode ...            
             if (activeConnection){
                 connection.setPassiveMode(false);
-                if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobFTPSPUT.Log.SetActiveConnection")); //$NON-NLS-1$
+                if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobFTPSPUT.Log.SetActiveConnection")); 
             } else{
             	connection.setPassiveMode(true);
-                if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobFTPSPUT.Log.SetPassiveConnection")); //$NON-NLS-1$
+                if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobFTPSPUT.Log.SetPassiveConnection")); 
             }
             
             // Set binary mode
@@ -567,7 +567,7 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
             
 			// Set the timeout
             connection.setTimeOut(timeout);
-		    if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobFTPSPUT.Log.SetTimeout", timeout)); //$NON-NLS-1$
+		    if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobFTPSPUT.Log.SetTimeout", timeout)); 
 
 			// login to FTPS host ...
             connection.connect();
@@ -580,7 +580,7 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
 			// move to spool dir ...
 			if (!Const.isEmpty(realRemoteDirectory)) {
                 connection.changeDirectory(realRemoteDirectory);
-                if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobFTPSPUT.Log.ChangedDirectory", realRemoteDirectory)); //$NON-NLS-1$
+                if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobFTPSPUT.Log.ChangedDirectory", realRemoteDirectory)); 
 			}
 			realRemoteDirectory=Const.NVL(realRemoteDirectory, FTPSConnection.HOME_FOLDER);
 
@@ -685,12 +685,12 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
 		  @Override
 		  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore)
 		  {
-		    andValidator().validate(this, "serverName", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+		    andValidator().validate(this, "serverName", remarks, putValidators(notBlankValidator())); 
 		    andValidator()
-		        .validate(this, "localDirectory", remarks, putValidators(notBlankValidator(), fileExistsValidator())); //$NON-NLS-1$
-		    andValidator().validate(this, "userName", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
-		    andValidator().validate(this, "password", remarks, putValidators(notNullValidator())); //$NON-NLS-1$
-		    andValidator().validate(this, "serverPort", remarks, putValidators(integerValidator())); //$NON-NLS-1$
+		        .validate(this, "localDirectory", remarks, putValidators(notBlankValidator(), fileExistsValidator())); 
+		    andValidator().validate(this, "userName", remarks, putValidators(notBlankValidator())); 
+		    andValidator().validate(this, "password", remarks, putValidators(notNullValidator())); 
+		    andValidator().validate(this, "serverPort", remarks, putValidators(integerValidator())); 
 		  }
  
 }

@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.SingleThreadedTransExecutor;
@@ -134,8 +134,8 @@ public class SingleThreader extends BaseStep implements StepInterface
 	
 	private boolean handleError() throws KettleStepException {
 	  if (getStepMeta().isDoingErrorHandling()) {
-	    int lastLogLine = CentralLogStore.getLastBufferLineNr(); 
-	    StringBuffer logText = CentralLogStore.getAppender().getBuffer(data.mappingTrans.getLogChannelId(), false, data.lastLogLine);
+	    int lastLogLine = KettleLogStore.getLastBufferLineNr(); 
+	    StringBuffer logText = KettleLogStore.getAppender().getBuffer(data.mappingTrans.getLogChannelId(), false, data.lastLogLine);
 	    data.lastLogLine = lastLogLine;
 	    
 	    for (Object[] row : data.errorBuffer) {

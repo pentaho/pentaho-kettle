@@ -278,7 +278,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
     // Specification
     //
     CTabItem wSpecTab = new CTabItem(wTabFolder, SWT.NONE);
-    wSpecTab.setText(BaseMessages.getString(PKG, "JobJob.Specification.Group.Label")); //$NON-NLS-1$
+    wSpecTab.setText(BaseMessages.getString(PKG, "JobJob.Specification.Group.Label")); 
 
     ScrolledComposite wSSpec = new ScrolledComposite(wTabFolder, SWT.V_SCROLL | SWT.H_SCROLL);
     wSSpec.setLayout(new FillLayout());
@@ -485,7 +485,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
     // Advanced
     //
     CTabItem wAdvancedTab = new CTabItem(wTabFolder, SWT.NONE);
-    wAdvancedTab.setText(BaseMessages.getString(PKG, "JobJob.Advanced.Group.Label")); //$NON-NLS-1$
+    wAdvancedTab.setText(BaseMessages.getString(PKG, "JobJob.Advanced.Group.Label")); 
 
     ScrolledComposite wSAdvanced = new ScrolledComposite(wTabFolder, SWT.V_SCROLL | SWT.H_SCROLL);
     wSAdvanced.setLayout(new FillLayout());
@@ -684,7 +684,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
     // Logging
     //
     CTabItem wLoggingTab = new CTabItem(wTabFolder, SWT.NONE);
-    wLoggingTab.setText(BaseMessages.getString(PKG, "JobJob.LogSettings.Group.Label")); //$NON-NLS-1$
+    wLoggingTab.setText(BaseMessages.getString(PKG, "JobJob.LogSettings.Group.Label")); 
 
     ScrolledComposite wSLogging = new ScrolledComposite(wTabFolder, SWT.V_SCROLL | SWT.H_SCROLL);
     wSLogging.setLayout(new FillLayout());
@@ -900,7 +900,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
     // Arguments
     //
     CTabItem wFieldTab = new CTabItem(wTabFolder, SWT.NONE);
-    wFieldTab.setText(BaseMessages.getString(PKG, "JobJob.Fields.Argument.Label")); //$NON-NLS-1$
+    wFieldTab.setText(BaseMessages.getString(PKG, "JobJob.Fields.Argument.Label")); 
 
     FormLayout fieldLayout = new FormLayout();
     fieldLayout.marginWidth = Const.MARGIN;
@@ -939,7 +939,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 
     // The parameters tab
     CTabItem wParametersTab = new CTabItem(wTabFolder, SWT.NONE);
-    wParametersTab.setText(BaseMessages.getString(PKG, "JobJob.Fields.Parameters.Label")); //$NON-NLS-1$
+    wParametersTab.setText(BaseMessages.getString(PKG, "JobJob.Fields.Parameters.Label")); 
 
     fieldLayout = new FormLayout();
     fieldLayout.marginWidth = Const.MARGIN;

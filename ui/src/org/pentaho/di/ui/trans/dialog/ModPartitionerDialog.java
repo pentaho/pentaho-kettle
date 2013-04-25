@@ -98,14 +98,14 @@ public class ModPartitionerDialog extends BaseStepDialog implements StepDialogIn
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(partitioner.getDescription()); //$NON-NLS-1$
+		shell.setText(partitioner.getDescription()); 
 		
 		int margin = Const.MARGIN;
 		
 		int middle = props.getMiddlePct();
 
 		wlFieldname=new Label(shell, SWT.RIGHT);
-		wlFieldname.setText("Fieldname"); //$NON-NLS-1$
+		wlFieldname.setText("Fieldname"); 
         props.setLook( wlFieldname );
 		fdlFieldname=new FormData();
 		fdlFieldname.left = new FormAttachment(0, 0);
@@ -135,9 +135,9 @@ public class ModPartitionerDialog extends BaseStepDialog implements StepDialogIn
         
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 		fdOK=new FormData();
 		
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);

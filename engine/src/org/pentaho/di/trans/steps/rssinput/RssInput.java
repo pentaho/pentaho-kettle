@@ -108,7 +108,7 @@ public class RssInput extends BaseStep implements StepInterface
 			 data.readrow= getRow();  // Grab another row ...
 			 if(data.readrow==null)
 			 {
-	            if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "RssInput.Log.FinishedProcessing")); //$NON-NLS-1$
+	            if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "RssInput.Log.FinishedProcessing")); 
 	            return false; 
 			 }
 			 if(first)
@@ -127,8 +127,8 @@ public class RssInput extends BaseStep implements StepInterface
 				// Check is URL field is provided
 				if (Const.isEmpty(meta.getUrlFieldname()))
 				{
-					logError(BaseMessages.getString(PKG, "RssInput.Log.UrlFieldNameMissing")); //$NON-NLS-1$
-					throw new KettleException(BaseMessages.getString(PKG, "RssInput.Log.UrlFieldNameMissing")); //$NON-NLS-1$
+					logError(BaseMessages.getString(PKG, "RssInput.Log.UrlFieldNameMissing")); 
+					throw new KettleException(BaseMessages.getString(PKG, "RssInput.Log.UrlFieldNameMissing")); 
 				}
 				
 				// cache the position of the field			
@@ -138,8 +138,8 @@ public class RssInput extends BaseStep implements StepInterface
 					if (data.indexOfUrlField<0)
 					{
 						// The field is unreachable !
-						logError(BaseMessages.getString(PKG, "RssInput.Log.ErrorFindingField")+ "[" + meta.getUrlFieldname()+"]"); //$NON-NLS-1$ //$NON-NLS-2$  //$NON-NLS-3$
-						throw new KettleException(BaseMessages.getString(PKG, "RssInput.Exception.ErrorFindingField",meta.getUrlFieldname())); //$NON-NLS-1$
+						logError(BaseMessages.getString(PKG, "RssInput.Log.ErrorFindingField")+ "[" + meta.getUrlFieldname()+"]");    //$NON-NLS-3$
+						throw new KettleException(BaseMessages.getString(PKG, "RssInput.Exception.ErrorFindingField",meta.getUrlFieldname())); 
 					}
 				}		
 					
@@ -151,7 +151,7 @@ public class RssInput extends BaseStep implements StepInterface
 			if(data.last_url) return false;
             if (data.urlnr>=data.urlsize) // finished processing!
             {
-            	if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "RssInput.Log.FinishedProcessing")); //$NON-NLS-1$
+            	if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "RssInput.Log.FinishedProcessing")); 
                 return false;
             }
 			// Is this the last url?
@@ -160,7 +160,7 @@ public class RssInput extends BaseStep implements StepInterface
 		}
           
 
-		if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "RssInput.Log.ReadingUrl", data.currenturl)); //$NON-NLS-1$
+		if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "RssInput.Log.ReadingUrl", data.currenturl)); 
 		
 		try {
 		
@@ -173,10 +173,10 @@ public class RssInput extends BaseStep implements StepInterface
   		data.urlnr++;
   		data.itemsnr=0;
   		
-  		if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "RssInput.Log.UrlReadFailed", data.currenturl)); //$NON-NLS-1$
+  		if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "RssInput.Log.UrlReadFailed", data.currenturl)); 
 		}
 		
-		if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "RssInput.Log.UrlReaded", data.currenturl,data.itemssize)); //$NON-NLS-1$
+		if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "RssInput.Log.UrlReaded", data.currenturl,data.itemssize)); 
 
 		return true;
 	}
@@ -229,7 +229,7 @@ public class RssInput extends BaseStep implements StepInterface
 						valueString=item.getTitle();
 						break;
 					case RssInputField.COLUMN_LINK:
-						valueString=item.getLink()== null ? "" :item.getLink().toString(); //$NON-NLS-1$
+						valueString=item.getLink()== null ? "" :item.getLink().toString(); 
 						break;
 					case RssInputField.COLUMN_DESCRIPTION_AS_TEXT:
 						valueString=item.getDescriptionAsText();
@@ -238,13 +238,13 @@ public class RssInput extends BaseStep implements StepInterface
 						valueString=item.getDescriptionAsHTML();
 						break;
 					case RssInputField.COLUMN_COMMENTS:
-						valueString=item.getComments()== null ? "": item.getComments().toString(); //$NON-NLS-1$
+						valueString=item.getComments()== null ? "": item.getComments().toString(); 
 						break;
 					case RssInputField.COLUMN_GUID:
 						valueString=item.getGUID();
 						break;
 					case RssInputField.COLUMN_PUB_DATE:
-						valueString=item.getPubDate()== null ? "":DateFormat.getInstance().format(item.getPubDate()); //$NON-NLS-1$
+						valueString=item.getPubDate()== null ? "":DateFormat.getInstance().format(item.getPubDate()); 
 						break;
 					default:
 						break;
@@ -340,31 +340,31 @@ public class RssInput extends BaseStep implements StepInterface
            errorData = this.data.readrow;
          }
 
-         String errorCode = "UnknownError"; //$NON-NLS-1$
+         String errorCode = "UnknownError"; 
          
          // Determine error code
          if(e instanceof FeedXMLParseException) {
            if(e.getCause() instanceof DocumentException) {
              if(((DocumentException)e.getCause()).getNestedException() instanceof SAXParseException) {
-               errorCode = "XMLError"; //$NON-NLS-1$
+               errorCode = "XMLError"; 
              } else if(((DocumentException)e.getCause()).getNestedException() instanceof FileNotFoundException) {
-               errorCode = "FileNotFound"; //$NON-NLS-1$
+               errorCode = "FileNotFound"; 
              } else if(((DocumentException)e.getCause()).getNestedException() instanceof IOException) {
                if(((DocumentException)e.getCause()).getNestedException() instanceof UnknownHostException) {
-                 errorCode = "UnknownHost"; //$NON-NLS-1$
+                 errorCode = "UnknownHost"; 
                } else {
-                 errorCode = "TransferError"; //$NON-NLS-1$
+                 errorCode = "TransferError"; 
                }
              }             
            }
          } else if(e instanceof MalformedURLException) {
-           errorCode = "BadURL"; //$NON-NLS-1$
+           errorCode = "BadURL"; 
          } else if (e instanceof UnsupportedFeedException) {
-           errorCode = "BadRSSFormat"; //$NON-NLS-1$
+           errorCode = "BadRSSFormat"; 
          }
 
          putError(errorMeta, errorData, 1, e.toString(), this.data.currenturl, errorCode);
-         logError(BaseMessages.getString(PKG, "RssInput.ErrorProcessing.Run",e.toString())); //$NON-NLS-1$
+         logError(BaseMessages.getString(PKG, "RssInput.ErrorProcessing.Run",e.toString())); 
          
          ByteArrayOutputStream byteOS = new ByteArrayOutputStream();
          e.printStackTrace(new PrintStream(byteOS));
@@ -372,7 +372,7 @@ public class RssInput extends BaseStep implements StepInterface
 			}
 			else
 			{
-				logError(BaseMessages.getString(PKG, "RssInput.Exception.Run",e.toString())); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "RssInput.Exception.Run",e.toString())); 
 				logError(Const.getStackTracker(e));
 				setErrors(1);
 				throw new KettleException(e);
@@ -404,12 +404,12 @@ public class RssInput extends BaseStep implements StepInterface
 		{
 			if (meta.includeRowNumber() && Const.isEmpty(meta.getRowNumberField()))
 		    {
-				logError(BaseMessages.getString(PKG, "RssInput.Error.RowNumberFieldMissing")); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "RssInput.Error.RowNumberFieldMissing")); 
 				return false;
 		    }
 			if (meta.includeUrl() && Const.isEmpty(meta.geturlField()))
 		    {
-				logError(BaseMessages.getString(PKG, "RssInput.Error.UrlFieldMissing")); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "RssInput.Error.UrlFieldMissing")); 
 				return false;
 		    }
 			
@@ -418,7 +418,7 @@ public class RssInput extends BaseStep implements StepInterface
 				// Let's check validity of the read from date
 				try
 				{
-					SimpleDateFormat fdrss = new SimpleDateFormat("yyyy-MM-dd"); //$NON-NLS-1$
+					SimpleDateFormat fdrss = new SimpleDateFormat("yyyy-MM-dd"); 
 					fdrss.setLenient(false);
 					data.readfromdatevalide = fdrss.parse(meta.getRealReadFrom());	
 				}
@@ -432,7 +432,7 @@ public class RssInput extends BaseStep implements StepInterface
 			{
 				if (meta.getUrl()==null && meta.getUrl().length==0)
 			    {
-					logError(BaseMessages.getString(PKG, "RssInput.Log.UrlMissing")); //$NON-NLS-1$
+					logError(BaseMessages.getString(PKG, "RssInput.Log.UrlMissing")); 
 					return false;
 				}
 				

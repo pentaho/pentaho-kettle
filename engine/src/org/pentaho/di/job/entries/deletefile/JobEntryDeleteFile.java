@@ -77,7 +77,7 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
 
 	public JobEntryDeleteFile(String n)
 	{
-		super(n, ""); //$NON-NLS-1$
+		super(n, ""); 
     filename=null;
     failIfFileNotExists=false;
 		setID(-1L);
@@ -85,7 +85,7 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
 
 	public JobEntryDeleteFile()
 	{
-		this(""); //$NON-NLS-1$
+		this(""); 
 	}
 
     public Object clone()
@@ -99,8 +99,8 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
         StringBuffer retval = new StringBuffer(50);
 
 		retval.append(super.getXML());
-		retval.append("      ").append(XMLHandler.addTagValue("filename",   filename)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      ").append(XMLHandler.addTagValue("fail_if_file_not_exists", failIfFileNotExists)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("filename",   filename));  
+		retval.append("      ").append(XMLHandler.addTagValue("fail_if_file_not_exists", failIfFileNotExists));  
 
 		return retval.toString();
 	}
@@ -110,12 +110,12 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
 		try
 		{
 			super.loadXML(entrynode, databases, slaveServers);
-			filename = XMLHandler.getTagValue(entrynode, "filename"); //$NON-NLS-1$
-			failIfFileNotExists = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "fail_if_file_not_exists")); //$NON-NLS-1$ //$NON-NLS-2$
+			filename = XMLHandler.getTagValue(entrynode, "filename"); 
+			failIfFileNotExists = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "fail_if_file_not_exists"));  
 		}
 		catch(KettleXMLException xe)
 		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryDeleteFile.Error_0001_Unable_To_Load_Job_From_Xml_Node"), xe); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryDeleteFile.Error_0001_Unable_To_Load_Job_From_Xml_Node"), xe); 
 		}
 	}
 
@@ -123,12 +123,12 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
 	{
 		try
 		{
-			filename = rep.getJobEntryAttributeString(id_jobentry, "filename"); //$NON-NLS-1$
-			failIfFileNotExists = rep.getJobEntryAttributeBoolean(id_jobentry, "fail_if_file_not_exists"); //$NON-NLS-1$
+			filename = rep.getJobEntryAttributeString(id_jobentry, "filename"); 
+			failIfFileNotExists = rep.getJobEntryAttributeBoolean(id_jobentry, "fail_if_file_not_exists"); 
 		}
 		catch(KettleException dbe)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "JobEntryDeleteFile.ERROR_0002_Unable_To_Load_From_Repository", id_jobentry ), dbe); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "JobEntryDeleteFile.ERROR_0002_Unable_To_Load_From_Repository", id_jobentry ), dbe); 
 		}
 	}
 
@@ -136,12 +136,12 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_job, getObjectId(), "filename", filename); //$NON-NLS-1$
-            rep.saveJobEntryAttribute(id_job, getObjectId(), "fail_if_file_not_exists", failIfFileNotExists); //$NON-NLS-1$
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "filename", filename); 
+            rep.saveJobEntryAttribute(id_job, getObjectId(), "fail_if_file_not_exists", failIfFileNotExists); 
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "JobEntryDeleteFile.ERROR_0003_Unable_To_Save_Job_To_Repository", id_job), dbe); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "JobEntryDeleteFile.ERROR_0003_Unable_To_Save_Job_To_Repository", id_job), dbe); 
 		}
 	}
 
@@ -179,13 +179,13 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
 					{
 						// File doesn't exist and fail flag is on.
 					    result.setResult( false );
-					    logError(BaseMessages.getString(PKG, "JobEntryDeleteFile.ERROR_0004_File_Does_Not_Exist", realFilename)); //$NON-NLS-1$
+					    logError(BaseMessages.getString(PKG, "JobEntryDeleteFile.ERROR_0004_File_Does_Not_Exist", realFilename)); 
 					}
 					else
 					{
 						// File already deleted, no reason to try to delete it
 					    result.setResult( true );
-					    if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "JobEntryDeleteFile.File_Already_Deleted", realFilename)); //$NON-NLS-1$
+					    if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "JobEntryDeleteFile.File_Already_Deleted", realFilename)); 
 					}
 				}
 				else
@@ -193,16 +193,16 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
 				    boolean deleted = fileObject.delete();
 				    if ( ! deleted )
 				    {
-						logError(BaseMessages.getString(PKG, "JobEntryDeleteFile.ERROR_0005_Could_Not_Delete_File", realFilename)); //$NON-NLS-1$
+						logError(BaseMessages.getString(PKG, "JobEntryDeleteFile.ERROR_0005_Could_Not_Delete_File", realFilename)); 
 						result.setResult( false );
 						result.setNrErrors(1);
 				    }
-				    if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "JobEntryDeleteFile.File_Deleted", realFilename)); //$NON-NLS-1$
+				    if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "JobEntryDeleteFile.File_Deleted", realFilename)); 
 					result.setResult( true );
 				}
 			}
             catch (Exception e) {
-				logError(BaseMessages.getString(PKG, "JobEntryDeleteFile.ERROR_0006_Exception_Deleting_File", realFilename, e.getMessage()), e); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "JobEntryDeleteFile.ERROR_0006_Exception_Deleting_File", realFilename, e.getMessage()), e); 
 				result.setResult( false );
 				result.setNrErrors(1);
 			}
@@ -219,7 +219,7 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
 		}
 		else
 		{
-			logError(BaseMessages.getString(PKG, "JobEntryDeleteFile.ERROR_0007_No_Filename_Is_Defined")); //$NON-NLS-1$
+			logError(BaseMessages.getString(PKG, "JobEntryDeleteFile.ERROR_0007_No_Filename_Is_Defined")); 
 		}
 
 		return result;
@@ -256,7 +256,7 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
     if (isFailIfFileNotExists()) {
       putFailIfDoesNotExist(ctx, true);
     }
-    andValidator().validate(this, "filename", remarks, ctx); //$NON-NLS-1$
+    andValidator().validate(this, "filename", remarks, ctx); 
   }
 
   public static void main(String[] args)

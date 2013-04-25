@@ -141,17 +141,17 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
 	{
         StringBuffer retval = new StringBuffer();
 		retval.append(super.getXML());				
-		 retval.append("      <connections>").append(Const.CR); //$NON-NLS-1$
+		 retval.append("      <connections>").append(Const.CR); 
 		    if (connections != null) {
 		      for (int i = 0; i < connections.length; i++) {
-		        retval.append("        <connection>").append(Const.CR); //$NON-NLS-1$
+		        retval.append("        <connection>").append(Const.CR); 
 				retval.append("          ").append(XMLHandler.addTagValue("name", connections[i]==null?null:connections[i].getName()));
 				retval.append("          ").append(XMLHandler.addTagValue("waitfor",waitfors[i]));
 				retval.append("          ").append(XMLHandler.addTagValue("waittime",getWaitTimeCode(waittimes[i])));
-		        retval.append("        </connection>").append(Const.CR); //$NON-NLS-1$
+		        retval.append("        </connection>").append(Const.CR); 
 		      }
 		    }
-		    retval.append("      </connections>").append(Const.CR); //$NON-NLS-1$
+		    retval.append("      </connections>").append(Const.CR); 
 		
 		return retval.toString();
 	}
@@ -170,19 +170,19 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
 		try
 		{
 			super.loadXML(entrynode, databases, slaveServers);
-		    Node fields = XMLHandler.getSubNode(entrynode, "connections"); //$NON-NLS-1$
+		    Node fields = XMLHandler.getSubNode(entrynode, "connections"); 
 
 	        // How many hosts?
-	        int nrFields = XMLHandler.countNodes(fields, "connection"); //$NON-NLS-1$
+	        int nrFields = XMLHandler.countNodes(fields, "connection"); 
 	        connections = new DatabaseMeta[nrFields];
 	        waitfors = new String[nrFields];
 	        waittimes = new int[nrFields];
 	        // Read them all...
 	        for (int i = 0; i < nrFields; i++) {
-				Node fnode = XMLHandler.getSubNodeByNr(fields, "connection", i); //$NON-NLS-1$
-				String dbname = XMLHandler.getTagValue(fnode, "name"); //$NON-NLS-1$
+				Node fnode = XMLHandler.getSubNodeByNr(fields, "connection", i); 
+				String dbname = XMLHandler.getTagValue(fnode, "name"); 
 				connections[i]    = DatabaseMeta.findDatabase(databases, dbname);
-				waitfors[i] = XMLHandler.getTagValue(fnode, "waitfor"); //$NON-NLS-1$
+				waitfors[i] = XMLHandler.getTagValue(fnode, "waitfor"); 
 				waittimes[i] = getWaitByCode(Const.NVL(XMLHandler.getTagValue(fnode,	"waittime"), ""));
 	      }
 		}
@@ -197,7 +197,7 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
 		try
 		{
 			 // How many connections?
-	        int argnr = rep.countNrJobEntryAttributes(id_jobentry, "id_database"); //$NON-NLS-1$
+	        int argnr = rep.countNrJobEntryAttributes(id_jobentry, "id_database"); 
 	        connections = new DatabaseMeta[argnr];
 	        waitfors = new String[argnr];
 	        waittimes = new int[argnr];
@@ -293,7 +293,7 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
 	    	          if ((now >= (timeStart + iMaximumTimeout)))
 	    	          {
 	    	            // We have reached the time limit
-	    	            if (isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobEntryCheckDbConnections.WaitTimeIsElapsed.Label", connections[i].getDatabaseName(),connections[i].getName())); //$NON-NLS-1$
+	    	            if (isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobEntryCheckDbConnections.WaitTimeIsElapsed.Label", connections[i].getDatabaseName(),connections[i].getName())); 
 	    	            
 	    	            continueLoop = false;
 	    	          }
@@ -310,7 +310,7 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
     	  	catch (KettleDatabaseException e)
             {
     	  		nrerrors++;
-                logError( BaseMessages.getString(PKG, "JobEntryCheckDbConnections.Exception", connections[i].getDatabaseName(), connections[i].getName(),e.toString())); //$NON-NLS-1$
+                logError( BaseMessages.getString(PKG, "JobEntryCheckDbConnections.Exception", connections[i].getDatabaseName(), connections[i].getName(),e.toString())); 
             }
     	  	finally
     	  	{
@@ -366,8 +366,8 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
       @Override
       public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore)
       {
-        andValidator().validate(this, "tablename", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
-        andValidator().validate(this, "columnname", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+        andValidator().validate(this, "tablename", remarks, putValidators(notBlankValidator())); 
+        andValidator().validate(this, "columnname", remarks, putValidators(notBlankValidator())); 
       }
 
 }

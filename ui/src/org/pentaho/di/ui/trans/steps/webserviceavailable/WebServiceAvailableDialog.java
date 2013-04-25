@@ -108,14 +108,14 @@ public class WebServiceAvailableDialog extends BaseStepDialog implements StepDia
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "WebServiceAvailableDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "WebServiceAvailableDialog.Shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin=Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "WebServiceAvailableDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "WebServiceAvailableDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -134,7 +134,7 @@ public class WebServiceAvailableDialog extends BaseStepDialog implements StepDia
 
 		// filename field
 		wlURL=new Label(shell, SWT.RIGHT);
-		wlURL.setText(BaseMessages.getString(PKG, "WebServiceAvailableDialog.URL.Label")); //$NON-NLS-1$
+		wlURL.setText(BaseMessages.getString(PKG, "WebServiceAvailableDialog.URL.Label")); 
  		props.setLook(wlURL);
 		fdlURL=new FormData();
 		fdlURL.left = new FormAttachment(0, 0);
@@ -225,7 +225,7 @@ public class WebServiceAvailableDialog extends BaseStepDialog implements StepDia
 		
 		// Result fieldname ...
 		wlResult=new Label(shell, SWT.RIGHT);
-		wlResult.setText(BaseMessages.getString(PKG, "WebServiceAvailableDialog.ResultField.Label")); //$NON-NLS-1$
+		wlResult.setText(BaseMessages.getString(PKG, "WebServiceAvailableDialog.ResultField.Label")); 
  		props.setLook(wlResult);
 		fdlResult=new FormData();
 		fdlResult.left = new FormAttachment(0, 0);
@@ -247,9 +247,9 @@ public class WebServiceAvailableDialog extends BaseStepDialog implements StepDia
 
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wResult);
 
@@ -287,7 +287,7 @@ public class WebServiceAvailableDialog extends BaseStepDialog implements StepDia
    */
   public void getData() {
     if (isDebug())
-      logDebug(BaseMessages.getString(PKG, "WebServiceAvailableDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+      logDebug(BaseMessages.getString(PKG, "WebServiceAvailableDialog.Log.GettingKeyInfo")); 
 
     if (input.getURLField() != null)
       wURL.setText(input.getURLField());
@@ -332,7 +332,7 @@ public class WebServiceAvailableDialog extends BaseStepDialog implements StepDia
 				}
 				if(filefield!=null) wURL.setText(filefield);
 			} catch(KettleException ke){
-				new ErrorDialog(shell, BaseMessages.getString(PKG, "WebServiceAvailableDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "WebServiceAvailableDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "WebServiceAvailableDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "WebServiceAvailableDialog.FailedToGetFields.DialogMessage"), ke);  
 			}
 			gotPreviousFields=true;
 		}

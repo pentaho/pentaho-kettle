@@ -602,7 +602,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 	
   public void openNewFile(String baseFilename) throws KettleException {
     if (baseFilename == null) {
-      throw new KettleFileException(BaseMessages.getString(PKG, "TextFileOutput.Exception.FileNameNotSet")); //$NON-NLS-1$
+      throw new KettleFileException(BaseMessages.getString(PKG, "TextFileOutput.Exception.FileNameNotSet")); 
     }
 
     data.writer = null;

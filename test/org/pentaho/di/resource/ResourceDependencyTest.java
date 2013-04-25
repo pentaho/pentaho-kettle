@@ -58,7 +58,7 @@ public class ResourceDependencyTest extends TestCase {
     KettleEnvironment.init();
     
     // Load the first job metadata
-    JobMeta jobMeta = new JobMeta("test/org/pentaho/di/resource/processchangelog.kjb", null, null); //$NON-NLS-1$
+    JobMeta jobMeta = new JobMeta("test/org/pentaho/di/resource/processchangelog.kjb", null, null); 
     List<ResourceReference> resourceReferences = jobMeta.getResourceDependencies();
     // printResourceReferences(resourceReferences);
     assertEquals(5, resourceReferences.size());
@@ -68,13 +68,13 @@ public class ResourceDependencyTest extends TestCase {
       ResourceHolderInterface refHolder = genRef.getReferenceHolder();
       boolean checkDatabaseStuff = false;
       if (i == 0) {
-        assertEquals("TABLE_EXISTS", refHolder.getTypeId()); //$NON-NLS-1$
+        assertEquals("TABLE_EXISTS", refHolder.getTypeId()); 
         checkDatabaseStuff = true;
       } else if ( (i == 1) || (i == 4)){
-        assertEquals("SQL", refHolder.getTypeId()); //$NON-NLS-1$
+        assertEquals("SQL", refHolder.getTypeId()); 
         checkDatabaseStuff = true; 
       } else if ( (i == 2) || (i == 3) ){
-        assertEquals("TRANS", refHolder.getTypeId()); //$NON-NLS-1$
+        assertEquals("TRANS", refHolder.getTypeId()); 
         checkDatabaseStuff = false;
       } 
       if (checkDatabaseStuff) {
@@ -83,17 +83,17 @@ public class ResourceDependencyTest extends TestCase {
           ResourceEntry entry = genRef.getEntries().get(j);
           if (j == 0) {
             assertEquals(ResourceType.SERVER, entry.getResourcetype());
-            assertEquals("localhost", entry.getResource() ); //$NON-NLS-1$
+            assertEquals("localhost", entry.getResource() ); 
           } else {
             assertEquals(ResourceType.DATABASENAME, entry.getResourcetype());
-            assertEquals("test", entry.getResource()); //$NON-NLS-1$
+            assertEquals("test", entry.getResource()); 
           }
         }
       } else { // Check Transform Stuff
         assertEquals(1, genRef.getEntries().size()); // Only one entry per ref in this case.
         ResourceEntry entry = genRef.getEntries().get(0);
         assertEquals(ResourceType.ACTIONFILE, entry.getResourcetype());
-        assertTrue(entry.getResource().endsWith(".ktr")); //$NON-NLS-1$
+        assertTrue(entry.getResource().endsWith(".ktr")); 
       }
     }
     
@@ -102,7 +102,7 @@ public class ResourceDependencyTest extends TestCase {
   public void testTransformationDependencyList() throws Exception {
     KettleEnvironment.init();
         
-    TransMeta transMeta = new TransMeta("test/org/pentaho/di/resource/trans/General - Change log processing.ktr"); //$NON-NLS-1$
+    TransMeta transMeta = new TransMeta("test/org/pentaho/di/resource/trans/General - Change log processing.ktr"); 
     List<ResourceReference> resourceReferences = transMeta.getResourceDependencies();
     // printResourceReferences(resourceReferences);    
     assertEquals(2, resourceReferences.size());
@@ -116,13 +116,13 @@ public class ResourceDependencyTest extends TestCase {
     // System.out.println(genRef.toXml());
     
     ResourceHolderInterface refHolder = genRef.getReferenceHolder();
-    assertEquals("TextFileInput", refHolder.getTypeId()); //$NON-NLS-1$
+    assertEquals("TextFileInput", refHolder.getTypeId()); 
     
     List<ResourceEntry> entries = genRef.getEntries();
     assertEquals(1, entries.size());
     ResourceEntry theEntry = entries.get(0);
     assertEquals(ResourceType.FILE, theEntry.getResourcetype());
-    assertTrue(theEntry.getResource().endsWith("changelog.txt")); //$NON-NLS-1$
+    assertTrue(theEntry.getResource().endsWith("changelog.txt")); 
     
   }
 
@@ -134,16 +134,16 @@ public class ResourceDependencyTest extends TestCase {
     for (int i=0; i<resourceReferences.size(); i++) {
       ResourceReference genRef = resourceReferences.get(i);
       ResourceHolderInterface refHolder = genRef.getReferenceHolder();
-      System.out.println("Reference Holder Information"); //$NON-NLS-1$
-        System.out.println("  Name: " + refHolder.getName()); //$NON-NLS-1$
-        System.out.println("  Type Id: " + refHolder.getTypeId()); //$NON-NLS-1$
-        System.out.println("  Resource Entries"); //$NON-NLS-1$
+      System.out.println("Reference Holder Information"); 
+        System.out.println("  Name: " + refHolder.getName()); 
+        System.out.println("  Type Id: " + refHolder.getTypeId()); 
+        System.out.println("  Resource Entries"); 
         List<ResourceEntry> entries = genRef.getEntries();
         for ( int j=0; j<entries.size(); j++) {
           ResourceEntry resEntry = entries.get(j);
-          System.out.println("    Resource Entry"); //$NON-NLS-1$
-          System.out.println("      Resource Type: " + resEntry.getResourcetype()); //$NON-NLS-1$
-          System.out.println("      Resource: " + resEntry.getResource()); //$NON-NLS-1$
+          System.out.println("    Resource Entry"); 
+          System.out.println("      Resource Type: " + resEntry.getResourcetype()); 
+          System.out.println("      Resource: " + resEntry.getResource()); 
         }
     }
   }

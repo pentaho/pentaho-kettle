@@ -82,7 +82,7 @@ public class SymmetricCryptoTrans extends BaseStep implements StepInterface
 			// Let's check that Result Field is given
 			if (Const.isEmpty(meta.getResultfieldname())) {
 				//	Result field is missing !
-				throw new KettleStepException(BaseMessages.getString(PKG, "SymmetricCryptoTrans.Exception.ErrorResultFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
+				throw new KettleStepException(BaseMessages.getString(PKG, "SymmetricCryptoTrans.Exception.ErrorResultFieldMissing"));  
 			}
 			
 			// Check if The message field is given
@@ -96,7 +96,7 @@ public class SymmetricCryptoTrans extends BaseStep implements StepInterface
 			// Let's check the Field
 			if (data.indexOfMessage <0){
 				// The field is unreachable !
-				throw new KettleStepException(BaseMessages.getString(PKG, "SymmetricCryptoTrans.Exception.CouldnotFindField",meta.getMessageFied())); //$NON-NLS-1$ //$NON-NLS-2$
+				throw new KettleStepException(BaseMessages.getString(PKG, "SymmetricCryptoTrans.Exception.CouldnotFindField",meta.getMessageFied()));  
 			}
 
 			
@@ -121,7 +121,7 @@ public class SymmetricCryptoTrans extends BaseStep implements StepInterface
 				// Let's check the Field
 				if (data.indexOfSecretkeyField <0){
 					// The field is unreachable !
-					throw new KettleStepException(BaseMessages.getString(PKG, "SymmetricCryptoTrans.Exception.CouldnotFindField",meta.getSecretKeyField())); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleStepException(BaseMessages.getString(PKG, "SymmetricCryptoTrans.Exception.CouldnotFindField",meta.getSecretKeyField()));  
 				}
 			}
 	
@@ -190,7 +190,7 @@ public class SymmetricCryptoTrans extends BaseStep implements StepInterface
 		          sendToErrorRow = true;
 		          errorMessage = e.toString();
 			} else {
-				logError(BaseMessages.getString(PKG, "SymmetricCryptoTrans.Log.ErrorInStepRunning"), e); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "SymmetricCryptoTrans.Log.ErrorInStepRunning"), e); 
 				logError(Const.getStackTracker(e));
 				setErrors(1);
 				stopAll();

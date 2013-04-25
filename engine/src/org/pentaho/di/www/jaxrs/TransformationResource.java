@@ -12,7 +12,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
@@ -45,9 +45,9 @@ public class TransformationResource {
   @Path("/log/{id : .+}/{logStart : .+}")
   @Produces({ MediaType.TEXT_PLAIN })
   public String getTransformationLog(@PathParam("id") String id, @PathParam("logStart") int startLineNr) {
-    int lastLineNr = CentralLogStore.getLastBufferLineNr();
+    int lastLineNr = KettleLogStore.getLastBufferLineNr();
     Trans trans = CarteResource.getTransformation(id);
-    String logText = CentralLogStore.getAppender().getBuffer(trans.getLogChannel().getLogChannelId(), false, startLineNr, lastLineNr).toString();
+    String logText = KettleLogStore.getAppender().getBuffer(trans.getLogChannel().getLogChannelId(), false, startLineNr, lastLineNr).toString();
     return logText;
   }
 
@@ -82,7 +82,7 @@ public class TransformationResource {
     try {
       // Discard old log lines from old transformation runs
       //
-      CentralLogStore.discardLines(trans.getLogChannelId(), true);
+      KettleLogStore.discardLines(trans.getLogChannelId(), true);
 
       String carteObjectId = UUID.randomUUID().toString();
       SimpleLoggingObject servletLoggingObject = new SimpleLoggingObject(getClass().getName(), LoggingObjectType.CARTE, null);
@@ -155,7 +155,7 @@ public class TransformationResource {
   public Response removeTransformation(@PathParam("id") String id) {
     Trans trans = CarteResource.getTransformation(id);
     CarteObjectEntry entry = CarteResource.getCarteObjectEntry(id);
-    CentralLogStore.discardLines(trans.getLogChannelId(), true);
+    KettleLogStore.discardLines(trans.getLogChannelId(), true);
     CarteSingleton.getInstance().getTransformationMap().removeTransformation(entry);
     return Response.ok().build();
   }

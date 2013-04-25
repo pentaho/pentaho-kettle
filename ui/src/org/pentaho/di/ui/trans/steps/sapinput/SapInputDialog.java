@@ -183,14 +183,14 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "SapInputDialog.shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "SapInputDialog.shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "SapInputDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "SapInputDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -225,7 +225,7 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 		// Function
 		//
 		wlFunction=new Label(shell, SWT.RIGHT);
-		wlFunction.setText(BaseMessages.getString(PKG, "SapInputDialog.Function.Label")); //$NON-NLS-1$
+		wlFunction.setText(BaseMessages.getString(PKG, "SapInputDialog.Function.Label")); 
  		props.setLook(wlFunction);
 		FormData fdlFunction = new FormData();
 		fdlFunction.left   = new FormAttachment(0, 0);
@@ -235,7 +235,7 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wbFunction = new Button(shell, SWT.PUSH);
 		props.setLook(wbFunction);
 		
-		wbFunction.setText(BaseMessages.getString(PKG, "SapInputDialog.FindFunctionButton.Label")); //$NON-NLS-1$
+		wbFunction.setText(BaseMessages.getString(PKG, "SapInputDialog.FindFunctionButton.Label")); 
 		FormData fdbFunction = new FormData();
 		fdbFunction.right  = new FormAttachment(100, 0);
 		fdbFunction.top    = new FormAttachment(lastControl, margin);
@@ -255,7 +255,7 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 		// The parameter input fields...
 		//
 		wlInput=new Label(shell, SWT.NONE);
-		wlInput.setText(BaseMessages.getString(PKG, "SapInputDialog.Input.Label")); //$NON-NLS-1$
+		wlInput.setText(BaseMessages.getString(PKG, "SapInputDialog.Input.Label")); 
  		props.setLook(wlInput);
 		FormData fdlInput = new FormData();
 		fdlInput.left  = new FormAttachment(0, 0);
@@ -263,11 +263,11 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wlInput.setLayoutData(fdlInput);
 
 		ColumnInfo[] ciKey=new ColumnInfo[] {
-			new ColumnInfo(BaseMessages.getString(PKG, "SapInputDialog.ColumnInfo.Field"),            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[]{""},  false), //$NON-NLS-1$
+			new ColumnInfo(BaseMessages.getString(PKG, "SapInputDialog.ColumnInfo.Field"),            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[]{""},  false), 
 			new ColumnInfo(BaseMessages.getString(PKG, "SapInputDialog.ColumnInfo.SAPType"),          ColumnInfo.COLUMN_TYPE_CCOMBO, SapType.getDescriptions()),
-			new ColumnInfo(BaseMessages.getString(PKG, "SapInputDialog.ColumnInfo.TableOrStruct"),    ColumnInfo.COLUMN_TYPE_TEXT, false,   false), //$NON-NLS-1$
-			new ColumnInfo(BaseMessages.getString(PKG, "SapInputDialog.ColumnInfo.SAPParameterName"), ColumnInfo.COLUMN_TYPE_TEXT, false,   false), //$NON-NLS-1$
-	        new ColumnInfo(BaseMessages.getString(PKG, "SapInputDialog.ColumnInfo.TargetType"), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes()), //$NON-NLS-1$
+			new ColumnInfo(BaseMessages.getString(PKG, "SapInputDialog.ColumnInfo.TableOrStruct"),    ColumnInfo.COLUMN_TYPE_TEXT, false,   false), 
+			new ColumnInfo(BaseMessages.getString(PKG, "SapInputDialog.ColumnInfo.SAPParameterName"), ColumnInfo.COLUMN_TYPE_TEXT, false,   false), 
+	        new ColumnInfo(BaseMessages.getString(PKG, "SapInputDialog.ColumnInfo.TargetType"), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes()), 
 		};
 		inputFieldColumns.add(ciKey[0]);
 		
@@ -289,13 +289,13 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		// wPreview = new Button(shell, SWT.PUSH);
-		// wPreview.setText(BaseMessages.getString(PKG, "System.Button.Preview")); //$NON-NLS-1$
+		// wPreview.setText(BaseMessages.getString(PKG, "System.Button.Preview")); 
 		wGet=new Button(shell, SWT.PUSH);
-		wGet.setText(BaseMessages.getString(PKG, "SapInputDialog.GetFields.Button")); //$NON-NLS-1$
+		wGet.setText(BaseMessages.getString(PKG, "SapInputDialog.GetFields.Button")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 		wAbout=new Button(shell, SWT.PUSH);
 		wAbout.setText(BaseMessages.getString(PKG, "SapInputDialog.About.Button"));
 		// Preview not possible without inputRowSets in BaseStep.getRow()
@@ -306,7 +306,7 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 		// The output fields...
 		//
         wlOutput=new Label(shell, SWT.NONE);
-        wlOutput.setText(BaseMessages.getString(PKG, "SapInputDialog.Output.Label")); //$NON-NLS-1$
+        wlOutput.setText(BaseMessages.getString(PKG, "SapInputDialog.Output.Label")); 
         props.setLook(wlOutput);
         FormData fdlOutput = new FormData();
         fdlOutput.left  = new FormAttachment(0, 0);
@@ -314,11 +314,11 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
         wlOutput.setLayoutData(fdlOutput);
         
         ColumnInfo[] ciReturn=new ColumnInfo[] {
-	        new ColumnInfo(BaseMessages.getString(PKG, "SapInputDialog.ColumnInfo.SAPField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[]{},  false), //$NON-NLS-1$
-	        new ColumnInfo(BaseMessages.getString(PKG, "SapInputDialog.ColumnInfo.SAPType"),  ColumnInfo.COLUMN_TYPE_CCOMBO, SapType.getDescriptions(),  false), //$NON-NLS-1$
-	        new ColumnInfo(BaseMessages.getString(PKG, "SapInputDialog.ColumnInfo.TableOrStruct"),  ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
-	        new ColumnInfo(BaseMessages.getString(PKG, "SapInputDialog.ColumnInfo.NewName"),  ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
-	        new ColumnInfo(BaseMessages.getString(PKG, "SapInputDialog.ColumnInfo.TargetType"), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes()), //$NON-NLS-1$
+	        new ColumnInfo(BaseMessages.getString(PKG, "SapInputDialog.ColumnInfo.SAPField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[]{},  false), 
+	        new ColumnInfo(BaseMessages.getString(PKG, "SapInputDialog.ColumnInfo.SAPType"),  ColumnInfo.COLUMN_TYPE_CCOMBO, SapType.getDescriptions(),  false), 
+	        new ColumnInfo(BaseMessages.getString(PKG, "SapInputDialog.ColumnInfo.TableOrStruct"),  ColumnInfo.COLUMN_TYPE_TEXT,   false), 
+	        new ColumnInfo(BaseMessages.getString(PKG, "SapInputDialog.ColumnInfo.NewName"),  ColumnInfo.COLUMN_TYPE_TEXT, false), 
+	        new ColumnInfo(BaseMessages.getString(PKG, "SapInputDialog.ColumnInfo.TargetType"), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes()), 
         };
 		outputFieldColumns.add(ciReturn[0]);
                 
@@ -433,7 +433,7 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 	 */ 
 	public void getData()
 	{
-		logDebug(BaseMessages.getString(PKG, "SapInputDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		logDebug(BaseMessages.getString(PKG, "SapInputDialog.Log.GettingKeyInfo")); 
 		
 		// The database connection name...
 		//
@@ -447,7 +447,7 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 		//
 		function = input.getFunction();
 		if (input.getFunction()!=null) {
-			wFunction.setText(Const.NVL(input.getFunction().getName(), "")); //$NON-NLS-1$
+			wFunction.setText(Const.NVL(input.getFunction().getName(), "")); 
 		}
 		
 		// The parameters...
@@ -568,15 +568,15 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 
 	private int showDatabaseWarning(boolean includeCancel) {
 		MessageBox mb = new MessageBox(shell, SWT.OK | ( includeCancel ? SWT.CANCEL : SWT.NONE ) | SWT.ICON_ERROR );
-		mb.setMessage(BaseMessages.getString(PKG, "SapInputDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
-		mb.setText(BaseMessages.getString(PKG, "SapInputDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
+		mb.setMessage(BaseMessages.getString(PKG, "SapInputDialog.InvalidConnection.DialogMessage")); 
+		mb.setText(BaseMessages.getString(PKG, "SapInputDialog.InvalidConnection.DialogTitle")); 
 		return mb.open();
 	}
 
 	private int showMultipleOutputTablesWarning(boolean includeCancel) {
 		MessageBox mb = new MessageBox(shell, SWT.OK | ( includeCancel ? SWT.CANCEL : SWT.NONE ) | SWT.ICON_ERROR );
-		mb.setMessage(BaseMessages.getString(PKG, "SapInputDialog.MultipleOutputTables.DialogMessage")); //$NON-NLS-1$
-		mb.setText(BaseMessages.getString(PKG, "SapInputDialog.MultipleOutputTables.DialogTitle")); //$NON-NLS-1$
+		mb.setMessage(BaseMessages.getString(PKG, "SapInputDialog.MultipleOutputTables.DialogMessage")); 
+		mb.setText(BaseMessages.getString(PKG, "SapInputDialog.MultipleOutputTables.DialogTitle")); 
 		return mb.open();
 	}
 
@@ -647,8 +647,8 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 				
 				if (wInput.nrNonEmpty()!=0 || wOutput.nrNonEmpty()!=0) {
 					MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION);
-					mb.setMessage(BaseMessages.getString(PKG, "SapInputDialog.ClearInputOutput.DialogMessage")); //$NON-NLS-1$
-					mb.setText(BaseMessages.getString(PKG, "SapInputDialog.ClearInputOutput.DialogTitle")); //$NON-NLS-1$
+					mb.setMessage(BaseMessages.getString(PKG, "SapInputDialog.ClearInputOutput.DialogMessage")); 
+					mb.setText(BaseMessages.getString(PKG, "SapInputDialog.ClearInputOutput.DialogTitle")); 
 					int answer = mb.open();
 					if (answer==SWT.NO) {
 						return;
@@ -724,7 +724,7 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "SapInputDialog.GetFieldsFailed.DialogTitle"), BaseMessages.getString(PKG, "SapInputDialog.GetFieldsFailed.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "SapInputDialog.GetFieldsFailed.DialogTitle"), BaseMessages.getString(PKG, "SapInputDialog.GetFieldsFailed.DialogMessage"), ke);  
 		}
 
 	}

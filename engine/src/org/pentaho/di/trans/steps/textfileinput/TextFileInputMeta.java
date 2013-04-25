@@ -41,7 +41,6 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -439,7 +438,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 	 */
 	public String getEnclosure()
 	{
-		return StringUtil.substituteHex(enclosure);
+		return enclosure;
 	}
 
 	/**
@@ -743,7 +742,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 	 */
 	public String getSeparator()
 	{
-		return StringUtil.substituteHex(separator);
+		return separator;
 	}
 
 	/**
@@ -1036,6 +1035,13 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 	
 	}
 
+  @Override
+  @Deprecated
+  public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
+      VariableSpace space) throws KettleStepException {
+    getFields(inputRowMeta, name, info, nextStep, space, null, null);
+  }
+	
 	public String getXML()
 	{
 		StringBuffer retval = new StringBuffer(1500);
@@ -1680,7 +1686,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 	 */
 	public String getEscapeCharacter()
 	{
-		return StringUtil.substituteHex(escapeCharacter);
+		return escapeCharacter;
 	}
 
 	/**
@@ -2106,7 +2112,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 			}
 			return null;
 		} catch (Exception e) {
-			throw new KettleException(e); //$NON-NLS-1$
+			throw new KettleException(e); 
 		}
 	}
 	

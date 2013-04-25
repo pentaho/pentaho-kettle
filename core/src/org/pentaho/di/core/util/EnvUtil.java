@@ -271,7 +271,7 @@ public class EnvUtil
     public static Locale createLocale(String localeCode) {
       Locale resultLocale = null;
       if (localeCode != null) {
-        StringTokenizer parser = new StringTokenizer(localeCode, "_"); //$NON-NLS-1$
+        StringTokenizer parser = new StringTokenizer(localeCode, "_"); 
         if (parser.countTokens() == 2) {
           resultLocale = new Locale(parser.nextToken(), parser.nextToken());
         } else {

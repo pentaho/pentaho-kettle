@@ -142,7 +142,7 @@ public class TransProfileFactory
         	//
         	if (valueMeta.isNumeric()) {
 	        	for (int c=0;c<numericCalculations.length;c++) {
-		        	statsMeta.getAggregateField()[calcIndex] = valueMeta.getName()+"("+GroupByMeta.getTypeDesc(numericCalculations[c])+")"; // $NON-NLS-1$ $NON-NLS-2$
+		        	statsMeta.getAggregateField()[calcIndex] = valueMeta.getName()+"("+GroupByMeta.getTypeDesc(numericCalculations[c])+")"; // $NON-NLS-1$ 
 		        	statsMeta.getSubjectField()[calcIndex]   = valueMeta.getName();
 		        	statsMeta.getAggregateType()[calcIndex]  = numericCalculations[c];
 		        	calcIndex++;
@@ -153,7 +153,7 @@ public class TransProfileFactory
 	        //
         	if (valueMeta.isString()) {
 	        	for (int c=0;c<stringCalculations.length;c++) {
-		        	statsMeta.getAggregateField()[calcIndex] = valueMeta.getName()+"("+GroupByMeta.getTypeDesc(stringCalculations[c])+")"; // $NON-NLS-1$ $NON-NLS-2$
+		        	statsMeta.getAggregateField()[calcIndex] = valueMeta.getName()+"("+GroupByMeta.getTypeDesc(stringCalculations[c])+")"; // $NON-NLS-1$ 
 		        	statsMeta.getSubjectField()[calcIndex]   = valueMeta.getName();
 		        	statsMeta.getAggregateType()[calcIndex]  = stringCalculations[c];
 		        	calcIndex++;
@@ -164,7 +164,7 @@ public class TransProfileFactory
 	        //
         	if (valueMeta.isDate()) {
 	        	for (int c=0;c<dateCalculations.length;c++) {
-		        	statsMeta.getAggregateField()[calcIndex] = valueMeta.getName()+"("+GroupByMeta.getTypeDesc(dateCalculations[c])+")"; // $NON-NLS-1$ $NON-NLS-2$
+		        	statsMeta.getAggregateField()[calcIndex] = valueMeta.getName()+"("+GroupByMeta.getTypeDesc(dateCalculations[c])+")"; // $NON-NLS-1$ 
 		        	statsMeta.getSubjectField()[calcIndex]   = valueMeta.getName();
 		        	statsMeta.getAggregateType()[calcIndex]  = dateCalculations[c];
 		        	calcIndex++;
@@ -175,14 +175,14 @@ public class TransProfileFactory
 	        //
         	if (valueMeta.isBoolean()) {
 	        	for (int c=0;c<booleanCalculations.length;c++) {
-		        	statsMeta.getAggregateField()[calcIndex] = valueMeta.getName()+"("+GroupByMeta.getTypeDesc(booleanCalculations[c])+")"; // $NON-NLS-1$ $NON-NLS-2$
+		        	statsMeta.getAggregateField()[calcIndex] = valueMeta.getName()+"("+GroupByMeta.getTypeDesc(booleanCalculations[c])+")"; // $NON-NLS-1$ 
 		        	statsMeta.getSubjectField()[calcIndex]   = valueMeta.getName();
 		        	statsMeta.getAggregateType()[calcIndex]  = booleanCalculations[c];
 		        	calcIndex++;	        
 	        	}
         	}
         }
-        StepMeta calc = new StepMeta(registry.getPluginId(StepPluginType.class, statsMeta), "Calc", statsMeta); //$NON-NLS-1$
+        StepMeta calc = new StepMeta(registry.getPluginId(StepPluginType.class, statsMeta), "Calc", statsMeta); 
         calc.setLocation(250,50);
         calc.setDraw(true);
         transMeta.addStep(calc);
@@ -191,7 +191,7 @@ public class TransProfileFactory
         transMeta.addTransHop(hop);
         
         DummyTransMeta dummyMeta = new DummyTransMeta();
-        StepMeta result = new StepMeta(registry.getPluginId(StepPluginType.class, dummyMeta), RESULT_STEP_NAME, dummyMeta); //$NON-NLS-1$
+        StepMeta result = new StepMeta(registry.getPluginId(StepPluginType.class, dummyMeta), RESULT_STEP_NAME, dummyMeta); 
         result.setLocation(450,50);
         result.setDraw(true);
         transMeta.addStep(result);

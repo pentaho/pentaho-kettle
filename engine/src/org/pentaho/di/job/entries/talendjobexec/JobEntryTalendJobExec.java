@@ -79,14 +79,14 @@ public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, Jo
   private String          className;
 
   public JobEntryTalendJobExec(String n) {
-    super(n, ""); //$NON-NLS-1$
+    super(n, ""); 
     setID(-1L);
 
     filename = null;
   }
 
   public JobEntryTalendJobExec() {
-    this(""); //$NON-NLS-1$
+    this(""); 
   }
 
   public Object clone() {
@@ -98,8 +98,8 @@ public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, Jo
     StringBuffer retval = new StringBuffer();
 
     retval.append(super.getXML());
-    retval.append("      ").append(XMLHandler.addTagValue("filename", filename)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("      ").append(XMLHandler.addTagValue("class_name", className)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      ").append(XMLHandler.addTagValue("filename", filename));  
+    retval.append("      ").append(XMLHandler.addTagValue("class_name", className));  
 
     return retval.toString();
   }
@@ -107,28 +107,28 @@ public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, Jo
   public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep, IMetaStore metaStore) throws KettleXMLException {
     try {
       super.loadXML(entrynode, databases, slaveServers);
-      filename = XMLHandler.getTagValue(entrynode, "filename"); //$NON-NLS-1$
-      className = XMLHandler.getTagValue(entrynode, "class_name"); //$NON-NLS-1$
+      filename = XMLHandler.getTagValue(entrynode, "filename"); 
+      className = XMLHandler.getTagValue(entrynode, "class_name"); 
     } catch (KettleXMLException xe) {
-      throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryTalendJobExec.ERROR_0001_Cannot_Load_Job_Entry_From_Xml_Node"), xe); //$NON-NLS-1$
+      throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryTalendJobExec.ERROR_0001_Cannot_Load_Job_Entry_From_Xml_Node"), xe); 
     }
   }
 
   public void loadRep(Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
     try {
-      filename = rep.getJobEntryAttributeString(id_jobentry, "filename"); //$NON-NLS-1$
-      className = rep.getJobEntryAttributeString(id_jobentry, "class_name"); //$NON-NLS-1$
+      filename = rep.getJobEntryAttributeString(id_jobentry, "filename"); 
+      className = rep.getJobEntryAttributeString(id_jobentry, "class_name"); 
     } catch (KettleException dbe) {
-      throw new KettleException(BaseMessages.getString(PKG, "JobEntryTalendJobExec.ERROR_0002_Cannot_Load_Job_From_Repository", id_jobentry), dbe); //$NON-NLS-1$
+      throw new KettleException(BaseMessages.getString(PKG, "JobEntryTalendJobExec.ERROR_0002_Cannot_Load_Job_From_Repository", id_jobentry), dbe); 
     }
   }
 
   public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_job) throws KettleException {
     try {
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "filename", filename); //$NON-NLS-1$
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "class_name", className); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "filename", filename); 
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "class_name", className); 
     } catch (KettleDatabaseException dbe) {
-      throw new KettleException(BaseMessages.getString(PKG, "JobEntryTalendJobExec.ERROR_0003_Cannot_Save_Job_Entry", id_job), dbe); //$NON-NLS-1$
+      throw new KettleException(BaseMessages.getString(PKG, "JobEntryTalendJobExec.ERROR_0003_Cannot_Save_Job_Entry", id_job), dbe); 
     }
   }
 
@@ -155,15 +155,15 @@ public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, Jo
         if (file.exists() && file.isReadable()) {
           result = executeTalenJob(file, result, nr);
         } else {
-          logDetailed(BaseMessages.getString(PKG, "JobEntryTalendJobExec.File_Does_Not_Exist", realFilename)); //$NON-NLS-1$
+          logDetailed(BaseMessages.getString(PKG, "JobEntryTalendJobExec.File_Does_Not_Exist", realFilename)); 
         }
       } catch (Exception e) {
         result.setNrErrors(1);
-        logError(BaseMessages.getString(PKG, "JobEntryTalendJobExec.ERROR_0004_IO_Exception", e.getMessage()), e); //$NON-NLS-1$
+        logError(BaseMessages.getString(PKG, "JobEntryTalendJobExec.ERROR_0004_IO_Exception", e.getMessage()), e); 
       }
     } else {
       result.setNrErrors(1);
-      logError(BaseMessages.getString(PKG, "JobEntryTalendJobExec.ERROR_0005_No_Filename_Defined")); //$NON-NLS-1$
+      logError(BaseMessages.getString(PKG, "JobEntryTalendJobExec.ERROR_0005_No_Filename_Defined")); 
     }
 
     return result;
@@ -268,7 +268,7 @@ public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, Jo
 
   @Override
   public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore) {
-    andValidator().validate(this, "filename", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+    andValidator().validate(this, "filename", remarks, putValidators(notBlankValidator())); 
   }
 
   /**
@@ -317,7 +317,7 @@ public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, Jo
       }
       return null;
     } catch (Exception e) {
-      throw new KettleException(e); //$NON-NLS-1$
+      throw new KettleException(e); 
     }
   }
 

@@ -74,8 +74,8 @@ public class CreateDatabaseWizardPageSAPR3 extends WizardPage
 		this.props=props;
 		this.info = info;
 		
-		setTitle(BaseMessages.getString(PKG, "CreateDatabaseWizardPageSAPR3.DialogTitle")); //$NON-NLS-1$
-		setDescription(BaseMessages.getString(PKG, "CreateDatabaseWizardPageSAPR3.DialogMessage")); //$NON-NLS-1$
+		setTitle(BaseMessages.getString(PKG, "CreateDatabaseWizardPageSAPR3.DialogTitle")); 
+		setDescription(BaseMessages.getString(PKG, "CreateDatabaseWizardPageSAPR3.DialogMessage")); 
 		
 		setPageComplete(false);
 	}
@@ -96,7 +96,7 @@ public class CreateDatabaseWizardPageSAPR3 extends WizardPage
 
 		// HOSTNAME
 		wlHostname = new Label(composite, SWT.RIGHT);
-		wlHostname.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPageSAPR3.Hostname.Label")); //$NON-NLS-1$
+		wlHostname.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPageSAPR3.Hostname.Label")); 
  		props.setLook(wlHostname);
 		fdlHostname = new FormData();
 		fdlHostname.top    = new FormAttachment(0, 0);
@@ -119,7 +119,7 @@ public class CreateDatabaseWizardPageSAPR3 extends WizardPage
 		});
 		
 		wlSAPLanguage = new Label(composite, SWT.RIGHT);
-		wlSAPLanguage.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPageSAPR3.Language.Label")); //$NON-NLS-1$
+		wlSAPLanguage.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPageSAPR3.Language.Label")); 
  		props.setLook(wlSAPLanguage);
 		fdlSAPLanguage = new FormData();
 		fdlSAPLanguage.top    = new FormAttachment(wHostname, margin);
@@ -142,7 +142,7 @@ public class CreateDatabaseWizardPageSAPR3 extends WizardPage
 		});
 		
 		wlSAPSystemNumber = new Label(composite, SWT.RIGHT);
-		wlSAPSystemNumber.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPageSAPR3.SystemNumber.Label")); //$NON-NLS-1$
+		wlSAPSystemNumber.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPageSAPR3.SystemNumber.Label")); 
  		props.setLook(wlSAPSystemNumber);
 		fdlSAPSystemNumber = new FormData();
 		fdlSAPSystemNumber.top    = new FormAttachment(wSAPLanguage, margin);
@@ -165,7 +165,7 @@ public class CreateDatabaseWizardPageSAPR3 extends WizardPage
 		});
 
 		wlSAPClient = new Label(composite, SWT.RIGHT);
-		wlSAPClient.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPageSAPR3.SAPClient.Label")); //$NON-NLS-1$
+		wlSAPClient.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPageSAPR3.SAPClient.Label")); 
  		props.setLook(wlSAPClient);
 		fdlSAPClient = new FormData();
 		fdlSAPClient.top    = new FormAttachment(wSAPSystemNumber, margin);
@@ -194,11 +194,11 @@ public class CreateDatabaseWizardPageSAPR3 extends WizardPage
 
 	public void setData()
 	{
-		wHostname.setText(Const.NVL(info.getHostname(), "")); //$NON-NLS-1$
+		wHostname.setText(Const.NVL(info.getHostname(), "")); 
 
-		wSAPLanguage.setText(Const.NVL(info.getAttributes().getProperty(SAPR3DatabaseMeta.ATTRIBUTE_SAP_LANGUAGE, ""), "")); //$NON-NLS-1$ //$NON-NLS-2$
-		wSAPSystemNumber.setText(Const.NVL(info.getAttributes().getProperty(SAPR3DatabaseMeta.ATTRIBUTE_SAP_SYSTEM_NUMBER, ""), "")); //$NON-NLS-1$ //$NON-NLS-2$
-		wSAPClient.setText(Const.NVL(info.getAttributes().getProperty(SAPR3DatabaseMeta.ATTRIBUTE_SAP_CLIENT, ""), "")); //$NON-NLS-1$ //$NON-NLS-2$
+		wSAPLanguage.setText(Const.NVL(info.getAttributes().getProperty(SAPR3DatabaseMeta.ATTRIBUTE_SAP_LANGUAGE, ""), ""));  
+		wSAPSystemNumber.setText(Const.NVL(info.getAttributes().getProperty(SAPR3DatabaseMeta.ATTRIBUTE_SAP_SYSTEM_NUMBER, ""), ""));  
+		wSAPClient.setText(Const.NVL(info.getAttributes().getProperty(SAPR3DatabaseMeta.ATTRIBUTE_SAP_CLIENT, ""), ""));  
 	}
 	
 	public boolean canFlipToNextPage()
@@ -210,14 +210,14 @@ public class CreateDatabaseWizardPageSAPR3 extends WizardPage
 		
 		if (server==null || language==null || systemNumber==null || client==null)
 		{
-			setErrorMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPageSAPR3.ErrorMessage.InvalidInput")); //$NON-NLS-1$
+			setErrorMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPageSAPR3.ErrorMessage.InvalidInput")); 
 			return false;
 		}
 		else
 		{
 			getDatabaseInfo();
 			setErrorMessage(null);
-			setMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPageSAPR3.Message.Next")); //$NON-NLS-1$
+			setMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPageSAPR3.Message.Next")); 
 			return true;
 		}
 
@@ -254,7 +254,7 @@ public class CreateDatabaseWizardPageSAPR3 extends WizardPage
 	public IWizardPage getNextPage()
 	{
 		IWizard wiz = getWizard();
-		return wiz.getPage("2"); //$NON-NLS-1$
+		return wiz.getPage("2"); 
 	}
 	
 }

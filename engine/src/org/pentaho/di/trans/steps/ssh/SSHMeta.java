@@ -386,7 +386,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface
         
         retval.append("    " + XMLHandler.addTagValue("dynamicCommandField",   dynamicCommandField));
 		retval.append("    " + XMLHandler.addTagValue("command",   command));
-        retval.append("    " + XMLHandler.addTagValue("commandfieldname", commandfieldname)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    " + XMLHandler.addTagValue("commandfieldname", commandfieldname));  
 		retval.append("    " + XMLHandler.addTagValue("port",   port));
 		retval.append("    " + XMLHandler.addTagValue("servername",   serverName));
 		retval.append("    " + XMLHandler.addTagValue("userName",   userName));
@@ -431,7 +431,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	    catch (Exception e)
 	    {
-	        throw new KettleXMLException(BaseMessages.getString(PKG, "SSHMeta.Exception.UnableToReadStepInfo"), e); //$NON-NLS-1$
+	        throw new KettleXMLException(BaseMessages.getString(PKG, "SSHMeta.Exception.UnableToReadStepInfo"), e); 
 	    }
     }
    
@@ -441,7 +441,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface
         {
         	dynamicCommandField=rep.getStepAttributeBoolean(id_step, "dynamicCommandField");
 			command       = rep.getStepAttributeString(id_step, "command");
-        	commandfieldname = rep.getStepAttributeString(id_step, "commandfieldname"); //$NON-NLS-1$
+        	commandfieldname = rep.getStepAttributeString(id_step, "commandfieldname"); 
 			serverName    = rep.getStepAttributeString(id_step, "servername");
         	port          = rep.getStepAttributeString(id_step, "port");
 			userName      = rep.getStepAttributeString(id_step, "userName");
@@ -461,7 +461,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleException(BaseMessages.getString(PKG, "SSHMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "SSHMeta.Exception.UnexpectedErrorReadingStepInfo"), e); 
         }
     }
 
@@ -471,7 +471,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface
         {
         	rep.saveStepAttribute(id_transformation, id_step, "dynamicCommandField", dynamicCommandField);
 			rep.saveStepAttribute(id_transformation, id_step, "command",      command);
-            rep.saveStepAttribute(id_transformation, id_step, "commandfieldname", commandfieldname); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "commandfieldname", commandfieldname); 
 			rep.saveStepAttribute(id_transformation, id_step, "port",      port);
 			rep.saveStepAttribute(id_transformation, id_step, "servername",      serverName);
 			rep.saveStepAttribute(id_transformation, id_step, "userName",      userName);
@@ -491,25 +491,25 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleException(BaseMessages.getString(PKG, "SSHMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "SSHMeta.Exception.UnableToSaveStepInfo") + id_step, e); 
         }
     }
 
     public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore) {
     	
         CheckResult cr;
-        String error_message = ""; //$NON-NLS-1$
+        String error_message = ""; 
 
         // Target hostname
         if (Const.isEmpty(getServerName()))
         {
-            error_message = BaseMessages.getString(PKG, "SSHMeta.CheckResult.TargetHostMissing"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "SSHMeta.CheckResult.TargetHostMissing"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
             remarks.add(cr);
         }
         else
         {
-            error_message = BaseMessages.getString(PKG, "SSHMeta.CheckResult.TargetHostOK"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "SSHMeta.CheckResult.TargetHostOK"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
             remarks.add(cr);
         }
@@ -518,13 +518,13 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface
         	String keyfilename = transMeta.environmentSubstitute(getKeyFileName());
         	if(Const.isEmpty(keyfilename))
         	{
-                error_message = BaseMessages.getString(PKG, "SSHMeta.CheckResult.PrivateKeyFileNameMissing"); //$NON-NLS-1$
+                error_message = BaseMessages.getString(PKG, "SSHMeta.CheckResult.PrivateKeyFileNameMissing"); 
                 cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
                 remarks.add(cr);
         	}
         	else
         	{
-                error_message = BaseMessages.getString(PKG, "SSHMeta.CheckResult.PrivateKeyFileNameOK"); //$NON-NLS-1$
+                error_message = BaseMessages.getString(PKG, "SSHMeta.CheckResult.PrivateKeyFileNameOK"); 
                 cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
                 remarks.add(cr);
                 boolean keyFileExists=false;
@@ -533,13 +533,13 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface
                 }catch(Exception e){};
                 if(!keyFileExists)
                 {
-                    error_message = BaseMessages.getString(PKG, "SSHMeta.CheckResult.PrivateKeyFileNotExist", keyfilename); //$NON-NLS-1$
+                    error_message = BaseMessages.getString(PKG, "SSHMeta.CheckResult.PrivateKeyFileNotExist", keyfilename); 
                     cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
                     remarks.add(cr);
                 }
                 else
                 {
-                	 error_message = BaseMessages.getString(PKG, "SSHMeta.CheckResult.PrivateKeyFileExists", keyfilename); //$NON-NLS-1$
+                	 error_message = BaseMessages.getString(PKG, "SSHMeta.CheckResult.PrivateKeyFileExists", keyfilename); 
                      cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
                      remarks.add(cr);
                 }
@@ -550,12 +550,12 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface
         // See if we have input streams leading to this step!
         if (input.length > 0)
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SSHMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SSHMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); 
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SSHMeta.CheckResult.NoInpuReceived"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SSHMeta.CheckResult.NoInpuReceived"), stepMeta); 
             remarks.add(cr);
         }
 

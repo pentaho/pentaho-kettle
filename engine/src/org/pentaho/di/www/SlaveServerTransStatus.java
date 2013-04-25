@@ -30,7 +30,6 @@ import org.pentaho.di.cluster.HttpUtil;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -108,7 +107,7 @@ public class SlaveServerTransStatus {
     return xml.toString();
   }
 
-  public SlaveServerTransStatus(Node transStatusNode) {
+  public SlaveServerTransStatus(Node transStatusNode) throws KettleException {
     this();
     id = XMLHandler.getTagValue(transStatusNode, "id");
     transName = XMLHandler.getTagValue(transStatusNode, "transname");
@@ -156,7 +155,7 @@ public class SlaveServerTransStatus {
     }
   }
 
-  public static SlaveServerTransStatus fromXML(String xml) throws KettleXMLException {
+  public static SlaveServerTransStatus fromXML(String xml) throws KettleException {
     Document document = XMLHandler.loadXMLString(xml);
     SlaveServerTransStatus status = new SlaveServerTransStatus(XMLHandler.getSubNode(document, XML_TAG));
     return status;

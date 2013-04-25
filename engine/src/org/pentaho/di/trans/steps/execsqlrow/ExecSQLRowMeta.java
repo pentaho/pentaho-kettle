@@ -241,23 +241,23 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			String csize;
-			String con            = XMLHandler.getTagValue(stepnode, "connection"); //$NON-NLS-1$
+			String con            = XMLHandler.getTagValue(stepnode, "connection"); 
 			databaseMeta          = DatabaseMeta.findDatabase(databases, con);
-			csize      = XMLHandler.getTagValue(stepnode, "commit"); //$NON-NLS-1$
+			csize      = XMLHandler.getTagValue(stepnode, "commit"); 
 			commitSize=Const.toInt(csize, 0);
-            sqlField                   = XMLHandler.getTagValue(stepnode, "sql_field"); //$NON-NLS-1$
+            sqlField                   = XMLHandler.getTagValue(stepnode, "sql_field"); 
 
-			insertField           = XMLHandler.getTagValue(stepnode, "insert_field"); //$NON-NLS-1$
-			updateField           = XMLHandler.getTagValue(stepnode, "update_field"); //$NON-NLS-1$			
-			deleteField           = XMLHandler.getTagValue(stepnode, "delete_field"); //$NON-NLS-1$
-			readField             = XMLHandler.getTagValue(stepnode, "read_field"); //$NON-NLS-1$
+			insertField           = XMLHandler.getTagValue(stepnode, "insert_field"); 
+			updateField           = XMLHandler.getTagValue(stepnode, "update_field"); 			
+			deleteField           = XMLHandler.getTagValue(stepnode, "delete_field"); 
+			readField             = XMLHandler.getTagValue(stepnode, "read_field"); 
             sqlFromfile        = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "sqlFromfile"));
             
             sendOneStatement = "Y".equalsIgnoreCase(Const.NVL(XMLHandler.getTagValue(stepnode, "sendOneStatement"), "Y"));
         }
 		catch(Exception e)
 		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "ExecSQLRowMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "ExecSQLRowMeta.Exception.UnableToLoadStepInfoFromXML"), e); 
 		}
 	}
 
@@ -266,7 +266,7 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 		sqlFromfile=false;
 		commitSize   = 1;
 		databaseMeta = null;
-		sqlField     = null; //$NON-NLS-1$
+		sqlField     = null; 
 		sendOneStatement= true;
 	}
 
@@ -282,13 +282,13 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 	{
         StringBuffer retval = new StringBuffer(300);
         retval.append("    ").append(XMLHandler.addTagValue("commit", commitSize));
-		retval.append("    ").append(XMLHandler.addTagValue("connection", databaseMeta==null?"":databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		retval.append("    ").append(XMLHandler.addTagValue("sql_field",        sqlField)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("connection", databaseMeta==null?"":databaseMeta.getName()));   //$NON-NLS-3$
+		retval.append("    ").append(XMLHandler.addTagValue("sql_field",        sqlField));  
         
-        retval.append("    ").append(XMLHandler.addTagValue("insert_field",  insertField)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("    ").append(XMLHandler.addTagValue("update_field",  updateField)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("    ").append(XMLHandler.addTagValue("delete_field",  deleteField)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("    ").append(XMLHandler.addTagValue("read_field",    readField)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    ").append(XMLHandler.addTagValue("insert_field",  insertField));  
+        retval.append("    ").append(XMLHandler.addTagValue("update_field",  updateField));  
+        retval.append("    ").append(XMLHandler.addTagValue("delete_field",  deleteField));  
+        retval.append("    ").append(XMLHandler.addTagValue("read_field",    readField));  
 		retval.append("    ").append(XMLHandler.addTagValue("sqlFromfile",        sqlFromfile));
 		retval.append("    ").append(XMLHandler.addTagValue("sendOneStatement",        sendOneStatement));
 		return retval.toString();
@@ -298,12 +298,12 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface
     try {
       databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);
       commitSize = (int) rep.getStepAttributeInteger(id_step, "commit");
-      sqlField = rep.getStepAttributeString(id_step, "sql_field"); //$NON-NLS-1$
+      sqlField = rep.getStepAttributeString(id_step, "sql_field"); 
 
-      insertField = rep.getStepAttributeString(id_step, "insert_field"); //$NON-NLS-1$
-      updateField = rep.getStepAttributeString(id_step, "update_field"); //$NON-NLS-1$
-      deleteField = rep.getStepAttributeString(id_step, "delete_field"); //$NON-NLS-1$
-      readField = rep.getStepAttributeString(id_step, "read_field"); //$NON-NLS-1$
+      insertField = rep.getStepAttributeString(id_step, "insert_field"); 
+      updateField = rep.getStepAttributeString(id_step, "update_field"); 
+      deleteField = rep.getStepAttributeString(id_step, "delete_field"); 
+      readField = rep.getStepAttributeString(id_step, "read_field"); 
       sqlFromfile = rep.getStepAttributeBoolean(id_step, "sqlFromfile");
 
       String sendOneStatementString = rep.getStepAttributeString(id_step, "sendOneStatement");
@@ -314,7 +314,7 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 
     } catch (Exception e) {
       throw new KettleException(
-          BaseMessages.getString(PKG, "ExecSQLRowMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
+          BaseMessages.getString(PKG, "ExecSQLRowMeta.Exception.UnexpectedErrorReadingStepInfo"), e); 
     }
   }
 	
@@ -325,12 +325,12 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			rep.saveDatabaseMetaStepAttribute(id_transformation, id_step, "id_connection", databaseMeta);
 			rep.saveStepAttribute(id_transformation, id_step, "commit",        commitSize);
-			rep.saveStepAttribute(id_transformation, id_step, "sql_field",             sqlField); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "sql_field",             sqlField); 
  
-            rep.saveStepAttribute(id_transformation, id_step, "insert_field", insertField); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "update_field", updateField); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "delete_field", deleteField); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "read_field",   readField); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "insert_field", insertField); 
+            rep.saveStepAttribute(id_transformation, id_step, "update_field", updateField); 
+            rep.saveStepAttribute(id_transformation, id_step, "delete_field", deleteField); 
+            rep.saveStepAttribute(id_transformation, id_step, "read_field",   readField); 
             
 			// Also, save the step-database relationship!
 			if (databaseMeta!=null) rep.insertStepDatabase(id_transformation, id_step, databaseMeta.getObjectId());
@@ -340,7 +340,7 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "ExecSQLRowMeta.Exception.UnableToSaveStepInfo")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "ExecSQLRowMeta.Exception.UnableToSaveStepInfo")+id_step, e); 
 		}
 	}
 
@@ -350,7 +350,7 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 		
 		if (databaseMeta!=null)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ExecSQLRowMeta.CheckResult.ConnectionExists"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ExecSQLRowMeta.CheckResult.ConnectionExists"), stepMeta); 
 			remarks.add(cr);
 
 			Database db = new Database(loggingObject, databaseMeta);
@@ -359,18 +359,18 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 			try
 			{
 				db.connect();
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ExecSQLRowMeta.CheckResult.DBConnectionOK"), stepMeta); //$NON-NLS-1$
+				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ExecSQLRowMeta.CheckResult.DBConnectionOK"), stepMeta); 
 				remarks.add(cr);
 
 				if (sqlField!=null && sqlField.length()!=0)
-					cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ExecSQLRowMeta.CheckResult.SQLFieldNameEntered"), stepMeta); //$NON-NLS-1$
+					cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ExecSQLRowMeta.CheckResult.SQLFieldNameEntered"), stepMeta); 
 				else
-					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "ExecSQLRowMeta.CheckResult.SQLFieldNameMissing"), stepMeta); //$NON-NLS-1$
+					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "ExecSQLRowMeta.CheckResult.SQLFieldNameMissing"), stepMeta); 
 					remarks.add(cr);
 			}
 			catch(KettleException e)
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "ExecSQLRowMeta.CheckResult.ErrorOccurred")+e.getMessage(), stepMeta); //$NON-NLS-1$
+				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "ExecSQLRowMeta.CheckResult.ErrorOccurred")+e.getMessage(), stepMeta); 
 				remarks.add(cr);
 			}
 			finally
@@ -380,18 +380,18 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "ExecSQLRowMeta.CheckResult.ConnectionNeeded"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "ExecSQLRowMeta.CheckResult.ConnectionNeeded"), stepMeta); 
 			remarks.add(cr);
 		}
 
             if (input.length>0)
             {
-                cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ExecSQLRowMeta.CheckResult.StepReceivingInfoOK"), stepMeta); //$NON-NLS-1$
+                cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ExecSQLRowMeta.CheckResult.StepReceivingInfoOK"), stepMeta); 
                 remarks.add(cr);
             }
             else
             {
-                cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "ExecSQLRowMeta.CheckResult.NoInputReceivedError"), stepMeta); //$NON-NLS-1$
+                cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "ExecSQLRowMeta.CheckResult.NoInputReceivedError"), stepMeta); 
                 remarks.add(cr);
             }
       

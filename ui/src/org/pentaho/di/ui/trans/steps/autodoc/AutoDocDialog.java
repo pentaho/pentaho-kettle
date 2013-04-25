@@ -106,7 +106,7 @@ public class AutoDocDialog extends BaseStepDialog implements StepDialogInterface
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "AutoDoc.Step.Name")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "AutoDoc.Step.Name")); 
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
@@ -114,7 +114,7 @@ public class AutoDocDialog extends BaseStepDialog implements StepDialogInterface
 		// Step name line
 		//
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "AutoDocDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "AutoDocDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -203,7 +203,7 @@ public class AutoDocDialog extends BaseStepDialog implements StepDialogInterface
 		// Include name check-box
 		//
 		Label wlInclName = new Label(shell, SWT.RIGHT);
-		wlInclName.setText(BaseMessages.getString(PKG, "AutoDocDialog.InclName.Label")); //$NON-NLS-1$
+		wlInclName.setText(BaseMessages.getString(PKG, "AutoDocDialog.InclName.Label")); 
  		props.setLook(wlInclName);
 		FormData fdlInclName = new FormData();
 		fdlInclName.left = new FormAttachment(0, 0);
@@ -222,7 +222,7 @@ public class AutoDocDialog extends BaseStepDialog implements StepDialogInterface
 		// Include description check-box
 		//
 		Label wlInclDesc = new Label(shell, SWT.RIGHT);
-		wlInclDesc.setText(BaseMessages.getString(PKG, "AutoDocDialog.InclDesc.Label")); //$NON-NLS-1$
+		wlInclDesc.setText(BaseMessages.getString(PKG, "AutoDocDialog.InclDesc.Label")); 
  		props.setLook(wlInclDesc);
 		FormData fdlInclDesc = new FormData();
 		fdlInclDesc.left = new FormAttachment(0, 0);
@@ -241,7 +241,7 @@ public class AutoDocDialog extends BaseStepDialog implements StepDialogInterface
 		// Include extended description check-box
 		//
 		Label wlInclExtDesc = new Label(shell, SWT.RIGHT);
-		wlInclExtDesc.setText(BaseMessages.getString(PKG, "AutoDocDialog.InclExtDesc.Label")); //$NON-NLS-1$
+		wlInclExtDesc.setText(BaseMessages.getString(PKG, "AutoDocDialog.InclExtDesc.Label")); 
  		props.setLook(wlInclExtDesc);
 		FormData fdlInclExtDesc = new FormData();
 		fdlInclExtDesc.left = new FormAttachment(0, 0);
@@ -260,7 +260,7 @@ public class AutoDocDialog extends BaseStepDialog implements StepDialogInterface
 		// Include creation information (user/date) check-box
 		//
 		Label wlInclCreated = new Label(shell, SWT.RIGHT);
-		wlInclCreated.setText(BaseMessages.getString(PKG, "AutoDocDialog.InclCreated.Label")); //$NON-NLS-1$
+		wlInclCreated.setText(BaseMessages.getString(PKG, "AutoDocDialog.InclCreated.Label")); 
  		props.setLook(wlInclCreated);
 		FormData fdlInclCreated = new FormData();
 		fdlInclCreated.left = new FormAttachment(0, 0);
@@ -279,7 +279,7 @@ public class AutoDocDialog extends BaseStepDialog implements StepDialogInterface
 		// Include modified information (user/date) check-box
 		//
 		Label wlInclModified = new Label(shell, SWT.RIGHT);
-		wlInclModified.setText(BaseMessages.getString(PKG, "AutoDocDialog.InclModified.Label")); //$NON-NLS-1$
+		wlInclModified.setText(BaseMessages.getString(PKG, "AutoDocDialog.InclModified.Label")); 
  		props.setLook(wlInclModified);
 		FormData fdlInclModified = new FormData();
 		fdlInclModified.left = new FormAttachment(0, 0);
@@ -298,7 +298,7 @@ public class AutoDocDialog extends BaseStepDialog implements StepDialogInterface
 		// Include image check-box
 		//
 		Label wlInclImage = new Label(shell, SWT.RIGHT);
-		wlInclImage.setText(BaseMessages.getString(PKG, "AutoDocDialog.InclImage.Label")); //$NON-NLS-1$
+		wlInclImage.setText(BaseMessages.getString(PKG, "AutoDocDialog.InclImage.Label")); 
  		props.setLook(wlInclImage);
 		FormData fdlInclImage = new FormData();
 		fdlInclImage.left = new FormAttachment(0, 0);
@@ -317,7 +317,7 @@ public class AutoDocDialog extends BaseStepDialog implements StepDialogInterface
 		// Include logging check-box
 		//
 		Label wlInclLogging = new Label(shell, SWT.RIGHT);
-		wlInclLogging.setText(BaseMessages.getString(PKG, "AutoDocDialog.InclLogging.Label")); //$NON-NLS-1$
+		wlInclLogging.setText(BaseMessages.getString(PKG, "AutoDocDialog.InclLogging.Label")); 
  		props.setLook(wlInclLogging);
 		FormData fdlInclLogging = new FormData();
 		fdlInclLogging.left = new FormAttachment(0, 0);
@@ -336,7 +336,7 @@ public class AutoDocDialog extends BaseStepDialog implements StepDialogInterface
 		// Include last execution date check-box
 		//
 		Label wlInclLastExecResult = new Label(shell, SWT.RIGHT);
-		wlInclLastExecResult.setText(BaseMessages.getString(PKG, "AutoDocDialog.InclLastExecResult.Label")); //$NON-NLS-1$
+		wlInclLastExecResult.setText(BaseMessages.getString(PKG, "AutoDocDialog.InclLastExecResult.Label")); 
  		props.setLook(wlInclLastExecResult);
 		FormData fdlInclLastExecResult = new FormData();
 		fdlInclLastExecResult.left = new FormAttachment(0, 0);
@@ -355,9 +355,9 @@ public class AutoDocDialog extends BaseStepDialog implements StepDialogInterface
 		// Some buttons first, so that the dialog scales nicely...
 		//
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel, }, margin, lastControl);
 

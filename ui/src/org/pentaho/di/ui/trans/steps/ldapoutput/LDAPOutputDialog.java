@@ -365,7 +365,7 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 		
 		// Referral
 		wlReferral=new Label(wConnectionGroup, SWT.RIGHT);
-		wlReferral.setText(BaseMessages.getString(PKG, "LDAPOutputDialog.Referral.Label")); //$NON-NLS-1$
+		wlReferral.setText(BaseMessages.getString(PKG, "LDAPOutputDialog.Referral.Label")); 
  		props.setLook(wlReferral);
 		fdlReferral=new FormData();
 		fdlReferral.left = new FormAttachment(0, 0);
@@ -394,7 +394,7 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 
 		// DerefAliases
 		wlDerefAliases=new Label(wConnectionGroup, SWT.RIGHT);
-		wlDerefAliases.setText(BaseMessages.getString(PKG, "LDAPOutputDialog.DerefAliases.Label")); //$NON-NLS-1$
+		wlDerefAliases.setText(BaseMessages.getString(PKG, "LDAPOutputDialog.DerefAliases.Label")); 
  		props.setLook(wlDerefAliases);
 		fdlDerefAliases=new FormData();
 		fdlDerefAliases.left = new FormAttachment(0, 0);
@@ -421,7 +421,7 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 		
 		 // Protocol Line
 		wlProtocol=new Label(wConnectionGroup, SWT.RIGHT);
-		wlProtocol.setText(BaseMessages.getString(PKG, "LDAPOutputDialog.Protocol.Label")); //$NON-NLS-1$
+		wlProtocol.setText(BaseMessages.getString(PKG, "LDAPOutputDialog.Protocol.Label")); 
  		props.setLook(wlProtocol);
 		fdlProtocol=new FormData();
 		fdlProtocol.left = new FormAttachment(0, 0);
@@ -768,7 +768,7 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 		
 		// Operation
 		wlOperation=new Label(wSettings, SWT.RIGHT);
-		wlOperation.setText(BaseMessages.getString(PKG, "LDAPOutputDialog.Operation.Label")); //$NON-NLS-1$
+		wlOperation.setText(BaseMessages.getString(PKG, "LDAPOutputDialog.Operation.Label")); 
  		props.setLook(wlOperation);
 		fdlOperation=new FormData();
 		fdlOperation.left = new FormAttachment(0, 0);
@@ -1081,7 +1081,7 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 		});
 		// THE UPDATE/INSERT TABLE
 		wlReturn = new Label(wFields, SWT.NONE);
-		wlReturn.setText(BaseMessages.getString(PKG, "LDAPOutputUpdateDialog.UpdateFields.Label")); //$NON-NLS-1$
+		wlReturn.setText(BaseMessages.getString(PKG, "LDAPOutputUpdateDialog.UpdateFields.Label")); 
  		props.setLook(wlReturn);
 		fdlReturn = new FormData();
 		fdlReturn.left = new FormAttachment(0, 0);
@@ -1093,16 +1093,16 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 		int UpInsRows = (input.getUpdateLookup() != null ? input.getUpdateLookup().length : 1);
 
 		ciReturn = new ColumnInfo[UpInsCols];
-		ciReturn[0] = new ColumnInfo(BaseMessages.getString(PKG, "LDAPOutputUpdateDialog.ColumnInfo.TableField"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
-		ciReturn[1] = new ColumnInfo(BaseMessages.getString(PKG, "LDAPOutputUpdateDialog.ColumnInfo.StreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
-		ciReturn[2] = new ColumnInfo(BaseMessages.getString(PKG, "LDAPOutputUpdateDialog.ColumnInfo.Update"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {"Y","N"}); //$NON-NLS-1$
+		ciReturn[0] = new ColumnInfo(BaseMessages.getString(PKG, "LDAPOutputUpdateDialog.ColumnInfo.TableField"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); 
+		ciReturn[1] = new ColumnInfo(BaseMessages.getString(PKG, "LDAPOutputUpdateDialog.ColumnInfo.StreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); 
+		ciReturn[2] = new ColumnInfo(BaseMessages.getString(PKG, "LDAPOutputUpdateDialog.ColumnInfo.Update"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {"Y","N"}); 
 		
 		tableFieldColumns.add(ciReturn[0]);
 		wReturn = new TableView(transMeta, wFields, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
 				ciReturn, UpInsRows, lsMod, props);
 		
 		wGetLU = new Button(wFields, SWT.PUSH);
-		wGetLU.setText(BaseMessages.getString(PKG, "LDAPOutputUpdateDialog.GetAndUpdateFields.Label")); //$NON-NLS-1$
+		wGetLU.setText(BaseMessages.getString(PKG, "LDAPOutputUpdateDialog.GetAndUpdateFields.Label")); 
 		fdGetLU = new FormData();
 		fdGetLU.top   = new FormAttachment(wlReturn, margin);
 		fdGetLU.right = new FormAttachment(100, 0);
@@ -1110,7 +1110,7 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 		
 		
 		wDoMapping = new Button(wFields, SWT.PUSH);
-		wDoMapping.setText(BaseMessages.getString(PKG, "LDAPOutputUpdateDialog.EditMapping.Label")); //$NON-NLS-1$
+		wDoMapping.setText(BaseMessages.getString(PKG, "LDAPOutputUpdateDialog.EditMapping.Label")); 
 		fdDoMapping = new FormData();
 		fdDoMapping.top   = new FormAttachment(wGetLU, margin);
 		fdDoMapping.right = new FormAttachment(100, 0);
@@ -1271,14 +1271,14 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 			// We are successfully connected
 				
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
-			mb.setMessage(BaseMessages.getString(PKG, "LDAPOutputDialog.Connected.OK") +Const.CR); //$NON-NLS-1$
-			mb.setText(BaseMessages.getString(PKG, "LDAPOutputDialog.Connected.Title.Ok")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "LDAPOutputDialog.Connected.OK") +Const.CR); 
+			mb.setText(BaseMessages.getString(PKG, "LDAPOutputDialog.Connected.Title.Ok")); 
 			mb.open();
 			
 		} catch(Exception e){
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
 			mb.setMessage(BaseMessages.getString(PKG, "LDAPOutputDialog.Connected.NOK",e.getMessage()));
-			mb.setText(BaseMessages.getString(PKG, "LDAPOutputDialog.Connected.Title.Error")); //$NON-NLS-1$
+			mb.setText(BaseMessages.getString(PKG, "LDAPOutputDialog.Connected.Title.Error")); 
 			mb.open(); 
 		} finally {
 			if(connection!=null) {
@@ -1451,8 +1451,8 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 			}
 			catch (KettleException ke)
 			{
-				new ErrorDialog(shell, BaseMessages.getString(PKG, "LDAPOutputDialog.FailedToGetFields.DialogTitle"), //$NON-NLS-1$
-						BaseMessages.getString(PKG, "LDAPOutputDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "LDAPOutputDialog.FailedToGetFields.DialogTitle"), 
+						BaseMessages.getString(PKG, "LDAPOutputDialog.FailedToGetFields.DialogMessage"), ke); 
 			}
 			gotPrevious=true;
 		}
@@ -1494,8 +1494,8 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 		}
 		catch (KettleException ke)
 		{
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "LDAPOutputUpdateDialog.FailedToGetFields.DialogTitle"), //$NON-NLS-1$
-					BaseMessages.getString(PKG, "LDAPOutputUpdateDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "LDAPOutputUpdateDialog.FailedToGetFields.DialogTitle"), 
+					BaseMessages.getString(PKG, "LDAPOutputUpdateDialog.FailedToGetFields.DialogMessage"), ke); 
 		}
 	}
 	private void updateOperation()

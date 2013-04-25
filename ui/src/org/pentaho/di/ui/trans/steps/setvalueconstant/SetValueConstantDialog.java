@@ -123,11 +123,11 @@ public class SetValueConstantDialog extends BaseStepDialog implements StepDialog
 		margin = Const.MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "SetValueConstantDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "SetValueConstantDialog.Shell.Title")); 
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "SetValueConstantDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "SetValueConstantDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -146,7 +146,7 @@ public class SetValueConstantDialog extends BaseStepDialog implements StepDialog
 		
 		 // Use variable?
         wluseVars=new Label(shell, SWT.RIGHT);
-        wluseVars.setText(BaseMessages.getString(PKG, "SetValueConstantDialog.useVars.Label")); //$NON-NLS-1$
+        wluseVars.setText(BaseMessages.getString(PKG, "SetValueConstantDialog.useVars.Label")); 
         props.setLook(wluseVars);
         FormData fdlUpdate=new FormData();
         fdlUpdate.left   = new FormAttachment(0, 0);
@@ -154,7 +154,7 @@ public class SetValueConstantDialog extends BaseStepDialog implements StepDialog
         fdlUpdate.top    = new FormAttachment(wStepname, 2*margin);
         wluseVars.setLayoutData(fdlUpdate);
         wuseVars=new Button(shell, SWT.CHECK);
-        wuseVars.setToolTipText(BaseMessages.getString(PKG, "SetValueConstantDialog.useVars.Tooltip")); //$NON-NLS-1$
+        wuseVars.setToolTipText(BaseMessages.getString(PKG, "SetValueConstantDialog.useVars.Tooltip")); 
         props.setLook(wuseVars);
         FormData fdUpdate=new FormData();
         fdUpdate.left = new FormAttachment(middle, 0);

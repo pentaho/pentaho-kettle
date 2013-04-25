@@ -54,22 +54,22 @@ public class CheckSumTest extends TestCase {
     transMeta.setName(getClass().getName());
 
     // Create a CheckSum Step
-    String checkSumStepname = "CheckSum"; //$NON-NLS-1$
+    String checkSumStepname = "CheckSum"; 
     CheckSumMeta meta = new CheckSumMeta();
 
     // Set the compatibility mode and other required fields
     meta.setCompatibilityMode(compatibilityMode);
-    meta.setResultFieldName("hex"); //$NON-NLS-1$
+    meta.setResultFieldName("hex"); 
     meta.setCheckSumType(checkSumType);
     meta.setResultType(CheckSumMeta.result_TYPE_HEXADECIMAL);
-    meta.setFieldName(new String[] { "test" }); //$NON-NLS-1$
+    meta.setFieldName(new String[] { "test" }); 
 
     String checkSumPluginPid = PluginRegistry.getInstance().getPluginId(StepPluginType.class, meta);
     StepMeta checkSumStep = new StepMeta(checkSumPluginPid, checkSumStepname, meta);
     transMeta.addStep(checkSumStep);
 
     // Create a Dummy step
-    String dummyStepname = "Output"; //$NON-NLS-1$
+    String dummyStepname = "Output"; 
     DummyTransMeta dummyMeta = new DummyTransMeta();
     String dummyStepPid = PluginRegistry.getInstance().getPluginId(StepPluginType.class, dummyMeta);
     StepMeta dummyStep = new StepMeta(dummyStepPid, dummyStepname, dummyMeta);
@@ -136,13 +136,13 @@ public class CheckSumTest extends TestCase {
 
     trans.prepareExecution(null);
 
-    StepInterface output = trans.getRunThread("Output", 0); //$NON-NLS-1$
+    StepInterface output = trans.getRunThread("Output", 0); 
     MockRowListener listener = new MockRowListener();
     output.addRowListener(listener);
 
-    RowProducer rp = trans.addRowProducer("CheckSum", 0); //$NON-NLS-1$
+    RowProducer rp = trans.addRowProducer("CheckSum", 0); 
     RowMeta inputRowMeta = createStringRowMeta();
-    ((BaseStep) trans.getRunThread("CheckSum", 0)).setInputRowMeta(inputRowMeta); //$NON-NLS-1$
+    ((BaseStep) trans.getRunThread("CheckSum", 0)).setInputRowMeta(inputRowMeta); 
 
     trans.startThreads();
 
@@ -156,26 +156,26 @@ public class CheckSumTest extends TestCase {
   }
 
   public void testHexOutput_md5() throws Exception {
-    MockRowListener results = executeHexTest(2, false, "xyz"); //$NON-NLS-1$
+    MockRowListener results = executeHexTest(2, false, "xyz"); 
     assertEquals(1, results.getWritten().size());
-    assertEquals("d16fb36f0911f878998c136191af705e", results.getWritten().get(0)[1]); //$NON-NLS-1$
+    assertEquals("d16fb36f0911f878998c136191af705e", results.getWritten().get(0)[1]); 
   }
   
   public void testHexOutput_md5_compatibilityMode() throws Exception {
-    MockRowListener results = executeHexTest(2, true, "xyz"); //$NON-NLS-1$
+    MockRowListener results = executeHexTest(2, true, "xyz"); 
     assertEquals(1, results.getWritten().size());
-    assertEquals("FD6FFD6F0911FD78FDFD1361FDFD705E", results.getWritten().get(0)[1]); //$NON-NLS-1$
+    assertEquals("FD6FFD6F0911FD78FDFD1361FDFD705E", results.getWritten().get(0)[1]); 
   }
 
   public void testHexOutput_sha1()  throws Exception {
-    MockRowListener results = executeHexTest(3, false, "xyz"); //$NON-NLS-1$
+    MockRowListener results = executeHexTest(3, false, "xyz"); 
     assertEquals(1, results.getWritten().size());
-    assertEquals("66b27417d37e024c46526c2f6d358a754fc552f3", results.getWritten().get(0)[1]); //$NON-NLS-1$
+    assertEquals("66b27417d37e024c46526c2f6d358a754fc552f3", results.getWritten().get(0)[1]); 
   }
   
   public void testHexOutput_sha1_compatibilityMode()  throws Exception {
-    MockRowListener results = executeHexTest(3, true, "xyz"); //$NON-NLS-1$
+    MockRowListener results = executeHexTest(3, true, "xyz"); 
     assertEquals(1, results.getWritten().size());
-    assertEquals("66FD7417FD7E024C46526C2F6D35FD754FFD52FD", results.getWritten().get(0)[1]); //$NON-NLS-1$
+    assertEquals("66FD7417FD7E024C46526C2F6D35FD754FFD52FD", results.getWritten().get(0)[1]); 
   }
 }

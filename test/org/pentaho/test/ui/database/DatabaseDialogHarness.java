@@ -65,7 +65,7 @@ public class DatabaseDialogHarness {
       DatabaseConnectionDialog dcDialog = new DatabaseConnectionDialog();
       container = dcDialog.getSwtInstance(new Shell(SWT.NONE));
       if (database != null){
-        container.getEventHandler("dataHandler").setData(database); //$NON-NLS-1$
+        container.getEventHandler("dataHandler").setData(database); 
       }
     } catch (XulException e) {
        e.printStackTrace();
@@ -80,7 +80,7 @@ public class DatabaseDialogHarness {
     }
 
     try {
-      database = (DatabaseMeta) container.getEventHandler("dataHandler").getData(); //$NON-NLS-1$
+      database = (DatabaseMeta) container.getEventHandler("dataHandler").getData(); 
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -91,7 +91,7 @@ public class DatabaseDialogHarness {
     Label label = new Label(shell, SWT.NONE);
     label.setText(message);
     Button button = new Button(shell, SWT.NONE);
-    button.setText("Edit Database ..."); //$NON-NLS-1$
+    button.setText("Edit Database ..."); 
 
     button.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent event) {
@@ -113,35 +113,35 @@ public class DatabaseDialogHarness {
   }
 
   private static String setMessage(DatabaseMeta database) {
-    String message = ""; //$NON-NLS-1$
+    String message = ""; 
     if (database != null) {
-      String carriageReturn = System.getProperty("line.separator"); //$NON-NLS-1$
+      String carriageReturn = System.getProperty("line.separator"); 
       try {
-        message = "Name: ".concat(database.getName()).concat(carriageReturn) //$NON-NLS-1$
-        .concat("Database Name: ").concat(database.getDatabaseName()).concat(carriageReturn) //$NON-NLS-1$
-        .concat("Host Name: ").concat(database.getHostname()).concat(carriageReturn) //$NON-NLS-1$
-        .concat("Port Number: ").concat(database.getDatabasePortNumberString()).concat(carriageReturn) //$NON-NLS-1$
-                .concat("User Name: ").concat(database.getUsername()).concat(carriageReturn) //$NON-NLS-1$
-                .concat("Password: ").concat(database.getPassword()).concat(carriageReturn) //$NON-NLS-1$
-                .concat("Driver Class: ").concat(database.getDriverClass()).concat(carriageReturn) //$NON-NLS-1$
-                .concat("URL: ").concat(database.getURL()).concat(carriageReturn); //$NON-NLS-1$
+        message = "Name: ".concat(database.getName()).concat(carriageReturn) 
+        .concat("Database Name: ").concat(database.getDatabaseName()).concat(carriageReturn) 
+        .concat("Host Name: ").concat(database.getHostname()).concat(carriageReturn) 
+        .concat("Port Number: ").concat(database.getDatabasePortNumberString()).concat(carriageReturn) 
+                .concat("User Name: ").concat(database.getUsername()).concat(carriageReturn) 
+                .concat("Password: ").concat(database.getPassword()).concat(carriageReturn) 
+                .concat("Driver Class: ").concat(database.getDriverClass()).concat(carriageReturn) 
+                .concat("URL: ").concat(database.getURL()).concat(carriageReturn); 
         
         
         Iterator<String> keys = database.getExtraOptions().keySet().iterator();
-        message = message.concat(carriageReturn).concat("Option Parameters:").concat(carriageReturn); //$NON-NLS-1$
+        message = message.concat(carriageReturn).concat("Option Parameters:").concat(carriageReturn); 
         while (keys.hasNext()){
             String parameter = keys.next();
             String value = database.getExtraOptions().get(parameter);
-            message = message.concat(carriageReturn).concat(parameter).concat(": ").concat(value).concat(carriageReturn); //$NON-NLS-1$
+            message = message.concat(carriageReturn).concat(parameter).concat(": ").concat(value).concat(carriageReturn); 
         }
         
-        message = message.concat(carriageReturn).concat("SQL: ") //$NON-NLS-1$
-        .concat(database.getConnectSQL()!=null ? database.getConnectSQL() : "").concat(carriageReturn) //$NON-NLS-1$
-        .concat("Quote Identifiers: ").concat(Boolean.toString(database.isQuoteAllFields())).concat(carriageReturn) //$NON-NLS-1$
-        .concat("Upper Case Identifiers: ").concat(Boolean.toString(database.isForcingIdentifiersToUpperCase())).concat(carriageReturn) //$NON-NLS-1$
-        .concat("Lower Case Identifiers: ").concat(Boolean.toString(database.isForcingIdentifiersToLowerCase())).concat(carriageReturn); //$NON-NLS-1$
+        message = message.concat(carriageReturn).concat("SQL: ") 
+        .concat(database.getConnectSQL()!=null ? database.getConnectSQL() : "").concat(carriageReturn) 
+        .concat("Quote Identifiers: ").concat(Boolean.toString(database.isQuoteAllFields())).concat(carriageReturn) 
+        .concat("Upper Case Identifiers: ").concat(Boolean.toString(database.isForcingIdentifiersToUpperCase())).concat(carriageReturn) 
+        .concat("Lower Case Identifiers: ").concat(Boolean.toString(database.isForcingIdentifiersToLowerCase())).concat(carriageReturn); 
         
-        message = message.concat(carriageReturn).concat("Is Partitioned: ") //$NON-NLS-1$
+        message = message.concat(carriageReturn).concat("Is Partitioned: ") 
         .concat(Boolean.toString(database.isPartitioned())).concat(carriageReturn);
         
         if (database.isPartitioned()){
@@ -149,22 +149,22 @@ public class DatabaseDialogHarness {
           if (partitions != null){
             for (int i = 0; i < partitions.length; i++) {
               PartitionDatabaseMeta pdm = partitions[i];
-              message = message.concat(carriageReturn).concat(Integer.toString(i)).concat(". ID: ") //$NON-NLS-1$
-              .concat(pdm.getPartitionId()).concat(", Host: ") //$NON-NLS-1$
-              .concat(pdm.getHostname()).concat(", Db: ") //$NON-NLS-1$
-              .concat(pdm.getDatabaseName()).concat(", Port: ") //$NON-NLS-1$
-              .concat(pdm.getPort()).concat(", User: ") //$NON-NLS-1$
-              .concat(pdm.getUsername()).concat(", Pass: ") //$NON-NLS-1$
+              message = message.concat(carriageReturn).concat(Integer.toString(i)).concat(". ID: ") 
+              .concat(pdm.getPartitionId()).concat(", Host: ") 
+              .concat(pdm.getHostname()).concat(", Db: ") 
+              .concat(pdm.getDatabaseName()).concat(", Port: ") 
+              .concat(pdm.getPort()).concat(", User: ") 
+              .concat(pdm.getUsername()).concat(", Pass: ") 
               .concat(pdm.getPassword()).concat(carriageReturn);
             }
           }
         }
         Iterator <Object> poolKeys  = database.getConnectionPoolingProperties().keySet().iterator();
-        message = message.concat(carriageReturn).concat("Pooling Parameters:").concat(carriageReturn); //$NON-NLS-1$
+        message = message.concat(carriageReturn).concat("Pooling Parameters:").concat(carriageReturn); 
         while (poolKeys.hasNext()){
             String parameter = (String)poolKeys.next();
             String value = database.getConnectionPoolingProperties().getProperty(parameter);
-            message = message.concat(carriageReturn).concat(parameter).concat(": ").concat(value).concat(carriageReturn); //$NON-NLS-1$
+            message = message.concat(carriageReturn).concat(parameter).concat(": ").concat(value).concat(carriageReturn); 
         }
 
       } catch (Exception e) {

@@ -26,16 +26,16 @@ import org.pentaho.di.core.Const;
 
 
 public class MSSQLServerNativeDatabaseMeta extends MSSQLServerDatabaseMeta{
-  public static final String ATTRIBUTE_USE_INTEGRATED_SECURITY = "MSSQLUseIntegratedSecurity"; //$NON-NLS-1$
+  public static final String ATTRIBUTE_USE_INTEGRATED_SECURITY = "MSSQLUseIntegratedSecurity"; 
   @Override
   public String getDriverClass() {
     if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
     {
-      return "sun.jdbc.odbc.JdbcOdbcDriver"; //$NON-NLS-1$
+      return "sun.jdbc.odbc.JdbcOdbcDriver"; 
     }
     else
     {
-      return "com.microsoft.sqlserver.jdbc.SQLServerDriver";//$NON-NLS-1$
+      return "com.microsoft.sqlserver.jdbc.SQLServerDriver";
     }
   }
 
@@ -43,7 +43,7 @@ public class MSSQLServerNativeDatabaseMeta extends MSSQLServerDatabaseMeta{
   public String getURL(String hostname, String port, String databaseName) {
     if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
     {
-      return "jdbc:odbc:"+databaseName;//$NON-NLS-1$
+      return "jdbc:odbc:"+databaseName;
     }
     else
     {
@@ -55,7 +55,7 @@ public class MSSQLServerNativeDatabaseMeta extends MSSQLServerDatabaseMeta{
         try {
             Boolean.parseBoolean(useIntegratedSecurity);
         } catch (IllegalArgumentException e) {
-          useIntegratedSecurity = "false";//$NON-NLS-1$
+          useIntegratedSecurity = "false";
         }
       }
       

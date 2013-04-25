@@ -306,7 +306,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
 
             for (int i = 0; i < nrfields; i++)
             {
-                Node fnode = XMLHandler.getSubNodeByNr(fieldsNode, ElementNames.field.name(), i); //$NON-NLS-1$
+                Node fnode = XMLHandler.getSubNodeByNr(fieldsNode, ElementNames.field.name(), i); 
                 fields.add(new FieldInfo(
                         XMLHandler.getTagValue(fnode, ElementNames.field_name.name()),
                         ValueMeta.getType(XMLHandler.getTagValue(fnode, ElementNames.field_type.name())),
@@ -354,7 +354,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
         }
         catch (Exception e)
         {
-            throw new KettleXMLException(BaseMessages.getString(PKG, "UserDefinedJavaClassMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
+            throw new KettleXMLException(BaseMessages.getString(PKG, "UserDefinedJavaClassMeta.Exception.UnableToLoadStepInfoFromXML"), e); 
         }
     }
 
@@ -452,24 +452,24 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
         retval.append(String.format("\n    <%s>", ElementNames.definitions.name()));
         for (UserDefinedJavaClassDef def : definitions)
         {
-            retval.append(String.format("\n        <%s>", ElementNames.definition.name())); //$NON-NLS-1$
+            retval.append(String.format("\n        <%s>", ElementNames.definition.name())); 
             retval.append("\n        ").append(XMLHandler.addTagValue(ElementNames.class_type.name(), def.getClassType().name()));
             retval.append("\n        ").append(XMLHandler.addTagValue(ElementNames.class_name.name(), def.getClassName()));
             retval.append("\n        ").append(XMLHandler.openTag(ElementNames.class_source.name()));
             retval.append(XMLHandler.buildCDATA(def.getSource())).append(XMLHandler.closeTag(ElementNames.class_source.name()));
-            retval.append(String.format("\n        </%s>", ElementNames.definition.name())); //$NON-NLS-1$
+            retval.append(String.format("\n        </%s>", ElementNames.definition.name())); 
         }
         retval.append(String.format("\n    </%s>", ElementNames.definitions.name()));
 
         retval.append(String.format("\n    <%s>", ElementNames.fields.name()));
         for (FieldInfo fi : fields)
         {
-            retval.append(String.format("\n        <%s>", ElementNames.field.name())); //$NON-NLS-1$
-            retval.append("\n        ").append(XMLHandler.addTagValue(ElementNames.field_name.name(), fi.name)); //$NON-NLS-1$
-            retval.append("\n        ").append(XMLHandler.addTagValue(ElementNames.field_type.name(), ValueMeta.getTypeDesc(fi.type))); //$NON-NLS-1$
-            retval.append("\n        ").append(XMLHandler.addTagValue(ElementNames.field_length.name(), fi.length)); //$NON-NLS-1$
-            retval.append("\n        ").append(XMLHandler.addTagValue(ElementNames.field_precision.name(), fi.precision)); //$NON-NLS-1$
-            retval.append(String.format("\n        </%s>", ElementNames.field.name())); //$NON-NLS-1$
+            retval.append(String.format("\n        <%s>", ElementNames.field.name())); 
+            retval.append("\n        ").append(XMLHandler.addTagValue(ElementNames.field_name.name(), fi.name)); 
+            retval.append("\n        ").append(XMLHandler.addTagValue(ElementNames.field_type.name(), ValueMeta.getTypeDesc(fi.type))); 
+            retval.append("\n        ").append(XMLHandler.addTagValue(ElementNames.field_length.name(), fi.length)); 
+            retval.append("\n        ").append(XMLHandler.addTagValue(ElementNames.field_precision.name(), fi.precision)); 
+            retval.append(String.format("\n        </%s>", ElementNames.field.name())); 
         }
         retval.append(String.format("\n    </%s>", ElementNames.fields.name()));
         retval.append(XMLHandler.addTagValue(ElementNames.clear_result_fields.name(), clearingResultFields));
@@ -515,7 +515,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
     {
         try
         {
-            int nrScripts = rep.countNrStepAttributes(id_step, ElementNames.class_name.name()); //$NON-NLS-1$
+            int nrScripts = rep.countNrStepAttributes(id_step, ElementNames.class_name.name()); 
             for (int i = 0; i < nrScripts; i++)
             {
                 definitions.add(new UserDefinedJavaClassDef(UserDefinedJavaClassDef.ClassType.valueOf(rep
@@ -524,19 +524,19 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
 
             }
 
-            int nrfields = rep.countNrStepAttributes(id_step, ElementNames.field_name.name()); //$NON-NLS-1$
+            int nrfields = rep.countNrStepAttributes(id_step, ElementNames.field_name.name()); 
             for (int i = 0; i < nrfields; i++)
             {
                 fields.add(new FieldInfo(
-                rep.getStepAttributeString(id_step, i, ElementNames.field_name.name()), //$NON-NLS-1$
-                ValueMeta.getType(rep.getStepAttributeString(id_step, i, ElementNames.field_type.name())), //$NON-NLS-1$
-                (int) rep.getStepAttributeInteger(id_step, i, ElementNames.field_length.name()), //$NON-NLS-1$
-                (int) rep.getStepAttributeInteger(id_step, i, ElementNames.field_precision.name()))); //$NON-NLS-1$
+                rep.getStepAttributeString(id_step, i, ElementNames.field_name.name()), 
+                ValueMeta.getType(rep.getStepAttributeString(id_step, i, ElementNames.field_type.name())), 
+                (int) rep.getStepAttributeInteger(id_step, i, ElementNames.field_length.name()), 
+                (int) rep.getStepAttributeInteger(id_step, i, ElementNames.field_precision.name()))); 
             }
             
             clearingResultFields = rep.getStepAttributeBoolean(id_step, ElementNames.clear_result_fields.name());
             
-            int nrInfos = rep.countNrStepAttributes(id_step, ElementNames.info_.name()+ElementNames.step_name.name()); //$NON-NLS-1$
+            int nrInfos = rep.countNrStepAttributes(id_step, ElementNames.info_.name()+ElementNames.step_name.name()); 
             for (int i=0;i<nrInfos;i++) {
             	StepDefinition stepDefinition = new StepDefinition();
             	stepDefinition.tag = rep.getStepAttributeString(id_step, i, ElementNames.info_.name()+ElementNames.step_tag.name());
@@ -544,7 +544,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
             	stepDefinition.description = rep.getStepAttributeString(id_step, i, ElementNames.info_.name()+ElementNames.step_description.name());
             	infoStepDefinitions.add(stepDefinition);
             }
-            int nrTargets = rep.countNrStepAttributes(id_step, ElementNames.target_.name()+ElementNames.step_name.name()); //$NON-NLS-1$
+            int nrTargets = rep.countNrStepAttributes(id_step, ElementNames.target_.name()+ElementNames.step_name.name()); 
             for (int i=0;i<nrTargets;i++) {
             	StepDefinition stepDefinition = new StepDefinition();
             	stepDefinition.tag = rep.getStepAttributeString(id_step, i, ElementNames.target_.name()+ElementNames.step_tag.name());
@@ -553,7 +553,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
             	targetStepDefinitions.add(stepDefinition);
             }
             
-            int nrParameters = rep.countNrStepAttributes(id_step, ElementNames.parameter_tag.name()); //$NON-NLS-1$
+            int nrParameters = rep.countNrStepAttributes(id_step, ElementNames.parameter_tag.name()); 
             for (int i=0;i<nrParameters;i++) {
             	UsageParameter usageParameter = new UsageParameter();
             	usageParameter.tag = rep.getStepAttributeString(id_step, i, ElementNames.parameter_tag.name());
@@ -564,7 +564,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
         }
         catch (Exception e)
         {
-            throw new KettleException(BaseMessages.getString(PKG, "UserDefinedJavaClassMeta.Exception.UnexpectedErrorInReadingStepInfo"), e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "UserDefinedJavaClassMeta.Exception.UnexpectedErrorInReadingStepInfo"), e); 
         }
     }
 
@@ -584,13 +584,13 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
             for (int i = 0; i < fields.size(); i++)
             {
                 FieldInfo fi = fields.get(i);
-                rep.saveStepAttribute(id_transformation, id_step, i, ElementNames.field_name.name(), fi.name); //$NON-NLS-1$
-                rep.saveStepAttribute(id_transformation, id_step, i, ElementNames.field_type.name(), ValueMeta.getTypeDesc(fi.type)); //$NON-NLS-1$
-                rep.saveStepAttribute(id_transformation, id_step, i, ElementNames.field_length.name(), fi.length); //$NON-NLS-1$
-                rep.saveStepAttribute(id_transformation, id_step, i, ElementNames.field_precision.name(), fi.precision); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, ElementNames.field_name.name(), fi.name); 
+                rep.saveStepAttribute(id_transformation, id_step, i, ElementNames.field_type.name(), ValueMeta.getTypeDesc(fi.type)); 
+                rep.saveStepAttribute(id_transformation, id_step, i, ElementNames.field_length.name(), fi.length); 
+                rep.saveStepAttribute(id_transformation, id_step, i, ElementNames.field_precision.name(), fi.precision); 
             }
 
-            rep.saveStepAttribute(id_transformation, id_step, ElementNames.clear_result_fields.name(), clearingResultFields); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, ElementNames.clear_result_fields.name(), clearingResultFields); 
             
             for (int i=0;i<infoStepDefinitions.size();i++) {
             	StepDefinition stepDefinition = infoStepDefinitions.get(i);
@@ -614,7 +614,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
         }
         catch (Exception e)
         {
-            throw new KettleException(BaseMessages.getString(PKG, "UserDefinedJavaClassMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "UserDefinedJavaClassMeta.Exception.UnableToSaveStepInfo") + id_step, e); 
         }
     }
 
@@ -626,12 +626,12 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
         // See if we have input streams leading to this step!
         if (input.length > 0)
         {
-            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UserDefinedJavaClassMeta.CheckResult.ConnectedStepOK2"), stepinfo); //$NON-NLS-1$
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UserDefinedJavaClassMeta.CheckResult.ConnectedStepOK2"), stepinfo); 
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "UserDefinedJavaClassMeta.CheckResult.NoInputReceived"), stepinfo); //$NON-NLS-1$
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "UserDefinedJavaClassMeta.CheckResult.NoInputReceived"), stepinfo); 
             remarks.add(cr);
         }
     }

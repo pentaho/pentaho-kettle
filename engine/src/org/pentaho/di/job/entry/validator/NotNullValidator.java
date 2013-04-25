@@ -38,7 +38,7 @@ public class NotNullValidator implements JobEntryValidator {
 
   public static final NotNullValidator INSTANCE = new NotNullValidator();
 
-  private static final String VALIDATOR_NAME = "notNull"; //$NON-NLS-1$
+  private static final String VALIDATOR_NAME = "notNull"; 
 
   public boolean validate(CheckResultSourceInterface source, String propertyName, List<CheckResultInterface> remarks,
       ValidatorContext context) {

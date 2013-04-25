@@ -32,17 +32,17 @@ import junit.framework.TestCase;
  */
 public class MailValidationTest extends TestCase {
   public void testEmailValidation_simple_valid() {
-    String email = "me@you.com"; //$NON-NLS-1$
+    String email = "me@you.com"; 
     assertTrue(MailValidation.isRegExValid(email));
   }
 
   public void testEmailValidation_simple_caps_valid() {
-    String email = "me@You.com"; //$NON-NLS-1$
+    String email = "me@You.com"; 
     assertTrue(MailValidation.isRegExValid(email));
   }
 
   public void testEmailValidation_simple_invalid() {
-    String email = "me@you"; //$NON-NLS-1$
+    String email = "me@you"; 
     assertFalse(MailValidation.isRegExValid(email));
   }
   
@@ -52,7 +52,7 @@ public class MailValidationTest extends TestCase {
   }
   
   public void testEmailValidation_empty() {
-    String email = "   "; //$NON-NLS-1$
+    String email = "   "; 
     assertFalse(MailValidation.isRegExValid(email));
   }
 }

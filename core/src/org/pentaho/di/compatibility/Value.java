@@ -107,7 +107,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	private static final String valueTypeCode[]=
 		{
 			"-",                                                          // $NON-NLS-1$
-			"Number", "String", "Date", "Boolean", "Integer", "BigNumber", "Serializable", "Binary" // $NON-NLS-1$ $NON-NLS-2$ $NON-NLS-3$ $NON-NLS-4$ $NON-NLS-5$ $NON-NLS-6$ $NON-NLS-7$
+			"Number", "String", "Date", "Boolean", "Integer", "BigNumber", "Serializable", "Binary" // $NON-NLS-1$  $NON-NLS-3$ $NON-NLS-4$ $NON-NLS-5$ $NON-NLS-6$ $NON-NLS-7$
 		};
 
 

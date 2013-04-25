@@ -457,7 +457,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     DatabaseInterface di = findDatabaseInterface(databaseType);
     if (di == null) {
       throw new KettleDatabaseException(BaseMessages.getString(PKG,
-          "DatabaseMeta.Error.DatabaseInterfaceNotFound", databaseType)); //$NON-NLS-1$
+          "DatabaseMeta.Error.DatabaseInterfaceNotFound", databaseType)); 
     }
     return (DatabaseInterface) di.clone();
   }
@@ -1181,10 +1181,10 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
             + cnfe.getCause().getClass().getName());
         log.logError("Could not create connection entry for " + plugin.getName() + ".  " + cnfe.getCause().getClass().getName());
         if (log.isDebug()) {
-          log.logDebug("Debug-Error loading plugin: " + plugin, cnfe); //$NON-NLS-1$
+          log.logDebug("Debug-Error loading plugin: " + plugin, cnfe); 
         }
       } catch (Exception e) {
-        log.logError("Error loading plugin: " + plugin, e); //$NON-NLS-1$
+        log.logError("Error loading plugin: " + plugin, e); 
       }
     }
     allDatabaseInterfaces = tmpAllDatabaseInterfaces;
@@ -2384,11 +2384,11 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
       report.append(BaseMessages.getString(PKG, "BaseDatabaseMeta.TestConnectionReportNotImplemented.Message")).append(
           Const.CR); // $NON-NLS-1
       report
-          .append(BaseMessages.getString(PKG, "DatabaseMeta.report.ConnectionError", getName()) + e.toString() + Const.CR); //$NON-NLS-1$
+          .append(BaseMessages.getString(PKG, "DatabaseMeta.report.ConnectionError", getName()) + e.toString() + Const.CR); 
       report.append(Const.getStackTracker(e) + Const.CR);
     } catch (Exception e) {
       report
-          .append(BaseMessages.getString(PKG, "DatabaseMeta.report.ConnectionError", getName()) + e.toString() + Const.CR); //$NON-NLS-1$
+          .append(BaseMessages.getString(PKG, "DatabaseMeta.report.ConnectionError", getName()) + e.toString() + Const.CR); 
       report.append(Const.getStackTracker(e) + Const.CR);
     }
     return report.toString();

@@ -193,14 +193,14 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.Shell.Title")); 
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname = new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname = new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -224,7 +224,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 
         // Schema line...
         wlSchema=new Label(shell, SWT.RIGHT);
-        wlSchema.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.TargetSchema.Label")); //$NON-NLS-1$
+        wlSchema.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.TargetSchema.Label")); 
         props.setLook(wlSchema);
         fdlSchema=new FormData();
         fdlSchema.left = new FormAttachment(0, 0);
@@ -244,7 +244,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 
 		// Table line...
 		wlTable = new Label(shell, SWT.RIGHT);
-		wlTable.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.TargetTable.Label")); //$NON-NLS-1$
+		wlTable.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.TargetTable.Label")); 
  		props.setLook(wlTable);
 		fdlTable = new FormData();
 		fdlTable.left = new FormAttachment(0, 0);
@@ -254,7 +254,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 		
 		wbTable = new Button(shell, SWT.PUSH | SWT.CENTER);
  		props.setLook(wbTable);
-		wbTable.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
+		wbTable.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.Browse.Button")); 
 		fdbTable = new FormData();
 		fdbTable.right = new FormAttachment(100, 0);
 		fdbTable.top = new FormAttachment(wSchema, margin);
@@ -271,7 +271,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 
         // FifoFile line...
         wlFifoFile=new Label(shell, SWT.RIGHT);
-        wlFifoFile.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.FifoFile.Label")); //$NON-NLS-1$
+        wlFifoFile.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.FifoFile.Label")); 
         props.setLook(wlFifoFile);
         fdlFifoFile=new FormData();
         fdlFifoFile.left = new FormAttachment(0, 0);
@@ -289,7 +289,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 
         // Delimiter line...
         wlDelimiter=new Label(shell, SWT.RIGHT);
-        wlDelimiter.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.Delimiter.Label")); //$NON-NLS-1$
+        wlDelimiter.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.Delimiter.Label")); 
         props.setLook(wlDelimiter);
         fdlDelimiter=new FormData();
         fdlDelimiter.left = new FormAttachment(0, 0);
@@ -325,7 +325,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 
         // Enclosure line...
         wlEnclosure=new Label(shell, SWT.RIGHT);
-        wlEnclosure.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.Enclosure.Label")); //$NON-NLS-1$
+        wlEnclosure.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.Enclosure.Label")); 
         props.setLook(wlEnclosure);
         fdlEnclosure=new FormData();
         fdlEnclosure.left = new FormAttachment(0, 0);
@@ -343,7 +343,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 
         // EscapeChar line...
         wlEscapeChar=new Label(shell, SWT.RIGHT);
-        wlEscapeChar.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.EscapeChar.Label")); //$NON-NLS-1$
+        wlEscapeChar.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.EscapeChar.Label")); 
         props.setLook(wlEscapeChar);
         fdlEscapeChar=new FormData();
         fdlEscapeChar.left = new FormAttachment(0, 0);
@@ -361,7 +361,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 
         // CharSet line...
         wlCharSet=new Label(shell, SWT.RIGHT);
-        wlCharSet.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.CharSet.Label")); //$NON-NLS-1$
+        wlCharSet.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.CharSet.Label")); 
         props.setLook(wlCharSet);
         fdlCharSet=new FormData();
         fdlCharSet.left = new FormAttachment(0, 0);
@@ -379,7 +379,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 
         // BulkSize line...
         wlBulkSize=new Label(shell, SWT.RIGHT);
-        wlBulkSize.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.BulkSize.Label")); //$NON-NLS-1$
+        wlBulkSize.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.BulkSize.Label")); 
         props.setLook(wlBulkSize);
         fdlBulkSize=new FormData();
         fdlBulkSize.left = new FormAttachment(0, 0);
@@ -398,7 +398,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
         
         // Replace line...
 		wlReplace = new Label(shell, SWT.RIGHT);
-		wlReplace.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.Replace.Label")); //$NON-NLS-1$
+		wlReplace.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.Replace.Label")); 
 		props.setLook(wlReplace);
 		fdlReplace = new FormData();
 		fdlReplace.left = new FormAttachment(0, 0);
@@ -422,7 +422,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 		
     // Ignore line...
 		wlIgnore = new Label(shell, SWT.RIGHT);
-		wlIgnore.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.Ignore.Label")); //$NON-NLS-1$
+		wlIgnore.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.Ignore.Label")); 
 		props.setLook(wlIgnore);
 		fdlIgnore = new FormData();
 		fdlIgnore.left = new FormAttachment(0, 0);
@@ -446,7 +446,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 
     // Local line...
     wlLocal = new Label(shell, SWT.RIGHT);
-    wlLocal.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.Local.Label")); //$NON-NLS-1$
+    wlLocal.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.Local.Label")); 
     props.setLook(wlLocal);
     fdlLocal = new FormData();
     fdlLocal.left = new FormAttachment(0, 0);
@@ -466,17 +466,17 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
         
 		// THE BUTTONS
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wSQL = new Button(shell, SWT.PUSH);
-		wSQL.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.SQL.Button")); //$NON-NLS-1$
+		wSQL.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.SQL.Button")); 
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel , wSQL }, margin, null);
 
 		// The field Table
 		wlReturn = new Label(shell, SWT.NONE);
-		wlReturn.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.Fields.Label")); //$NON-NLS-1$
+		wlReturn.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.Fields.Label")); 
  		props.setLook(wlReturn);
 		fdlReturn = new FormData();
 		fdlReturn.left = new FormAttachment(0, 0);
@@ -487,23 +487,23 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 		int UpInsRows = (input.getFieldTable() != null ? input.getFieldTable().length : 1);
 
 		ciReturn = new ColumnInfo[UpInsCols];
-		ciReturn[0] = new ColumnInfo(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.ColumnInfo.TableField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
-		ciReturn[1] = new ColumnInfo(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.ColumnInfo.StreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
-		ciReturn[2] = new ColumnInfo(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.ColumnInfo.FormatOK"), ColumnInfo.COLUMN_TYPE_CCOMBO, MySQLBulkLoaderMeta.getFieldFormatTypeDescriptions(), true); // $NON-NLS-1$ $NON-NLS-2$ $NON-NLS-3$
+		ciReturn[0] = new ColumnInfo(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.ColumnInfo.TableField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); 
+		ciReturn[1] = new ColumnInfo(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.ColumnInfo.StreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); 
+		ciReturn[2] = new ColumnInfo(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.ColumnInfo.FormatOK"), ColumnInfo.COLUMN_TYPE_CCOMBO, MySQLBulkLoaderMeta.getFieldFormatTypeDescriptions(), true); // $NON-NLS-1$  $NON-NLS-3$
 
 		tableFieldColumns.add(ciReturn[0]);
 		wReturn = new TableView(transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
 				ciReturn, UpInsRows, lsMod, props);
 
 		wGetLU = new Button(shell, SWT.PUSH);
-		wGetLU.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.GetFields.Label")); //$NON-NLS-1$
+		wGetLU.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.GetFields.Label")); 
 		fdGetLU = new FormData();
 		fdGetLU.top   = new FormAttachment(wlReturn, margin);
 		fdGetLU.right = new FormAttachment(100, 0);
 		wGetLU.setLayoutData(fdGetLU);
 		
 		wDoMapping = new Button(shell, SWT.PUSH);
-		wDoMapping.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.EditMapping.Label")); //$NON-NLS-1$
+		wDoMapping.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.EditMapping.Label")); 
 		fdDoMapping = new FormData();
 		fdDoMapping.top   = new FormAttachment(wGetLU, margin);
 		fdDoMapping.right = new FormAttachment(100, 0);
@@ -744,12 +744,12 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
    */
   public void getData() {
     if (log.isDebug())
-      logDebug(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+      logDebug(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.Log.GettingKeyInfo")); 
 
-    wEnclosure.setText(Const.NVL(input.getEnclosure(), "")); //$NON-NLS-1$
-    wDelimiter.setText(Const.NVL(input.getDelimiter(), "")); //$NON-NLS-1$
-    wEscapeChar.setText(Const.NVL(input.getEscapeChar(), "")); //$NON-NLS-1$
-    wCharSet.setText(Const.NVL(input.getEncoding(), "")); //$NON-NLS-1$
+    wEnclosure.setText(Const.NVL(input.getEnclosure(), "")); 
+    wDelimiter.setText(Const.NVL(input.getDelimiter(), "")); 
+    wEscapeChar.setText(Const.NVL(input.getEscapeChar(), "")); 
+    wCharSet.setText(Const.NVL(input.getEncoding(), "")); 
     wReplace.setSelection(input.isReplacingData());
     wIgnore.setSelection(input.isIgnoringErrors());
     wLocal.setSelection(input.isLocalFile());
@@ -826,7 +826,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 		inf.setLocalFile( wLocal.getSelection() );
 		inf.setBulkSize( wBulkSize.getText() );
 
-		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.Log.FoundFields", "" + nrfields)); //$NON-NLS-1$ //$NON-NLS-2$
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.Log.FoundFields", "" + nrfields));  
 		for (int i = 0; i < nrfields; i++)
 		{
 			TableItem item = wReturn.getNonEmpty(i);
@@ -853,8 +853,8 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 		if (input.getDatabaseMeta() == null)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-			mb.setMessage(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
-			mb.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.InvalidConnection.DialogMessage")); 
+			mb.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.InvalidConnection.DialogTitle")); 
 			mb.open();
 		}
 
@@ -871,7 +871,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 
 		if (inf != null)
 		{
-			if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.Log.LookingAtConnection") + inf.toString()); //$NON-NLS-1$
+			if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.Log.LookingAtConnection") + inf.toString()); 
 
 			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, transMeta.getDatabases());
       std.setSelectedSchemaAndTable(wSchema.getText(), wTable.getText());
@@ -884,8 +884,8 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 		else
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-			mb.setMessage(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
-			mb.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.InvalidConnection.DialogMessage")); 
+			mb.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.InvalidConnection.DialogTitle")); 
 			mb.open();
 		}
 	}
@@ -919,8 +919,8 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 		}
 		catch (KettleException ke)
 		{
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.FailedToGetFields.DialogTitle"), //$NON-NLS-1$
-					BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.FailedToGetFields.DialogTitle"), 
+					BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.FailedToGetFields.DialogMessage"), ke); 
 		}
 	}
 
@@ -934,7 +934,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 			getInfo(info);
 
 			String name = stepname; // new name might not yet be linked to other steps!
-			StepMeta stepMeta = new StepMeta(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.StepMeta.Title"), name, info); //$NON-NLS-1$
+			StepMeta stepMeta = new StepMeta(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.StepMeta.Title"), name, info); 
 			RowMetaInterface prev = transMeta.getPrevStepFields(stepname);
 
 			SQLStatement sql = info.getSQLStatements(transMeta, stepMeta, prev, repository, metaStore);
@@ -949,8 +949,8 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 				else
 				{
 					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
-					mb.setMessage(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.NoSQLNeeds.DialogMessage")); //$NON-NLS-1$
-					mb.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.NoSQLNeeds.DialogTitle")); //$NON-NLS-1$
+					mb.setMessage(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.NoSQLNeeds.DialogMessage")); 
+					mb.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.NoSQLNeeds.DialogTitle")); 
 					mb.open();
 				}
 			}
@@ -958,14 +958,14 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 			{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
 				mb.setMessage(sql.getError());
-				mb.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.SQLError.DialogTitle")); //$NON-NLS-1$
+				mb.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.SQLError.DialogTitle")); 
 				mb.open();
 			}
 		}
 		catch (KettleException ke)
 		{
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.CouldNotBuildSQL.DialogTitle"), //$NON-NLS-1$
-					BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.CouldNotBuildSQL.DialogMessage"), ke); //$NON-NLS-1$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.CouldNotBuildSQL.DialogTitle"), 
+					BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.CouldNotBuildSQL.DialogMessage"), ke); 
 		}
 
 	}

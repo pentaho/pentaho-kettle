@@ -65,8 +65,8 @@ public class CreateDatabaseWizardPageODBC extends WizardPage
 		this.props=props;
 		this.info = info;
 		
-		setTitle(BaseMessages.getString(PKG, "CreateDatabaseWizardPageODBC.DialogTitle")); //$NON-NLS-1$
-		setDescription(BaseMessages.getString(PKG, "CreateDatabaseWizardPageODBC.DialogMessage")); //$NON-NLS-1$
+		setTitle(BaseMessages.getString(PKG, "CreateDatabaseWizardPageODBC.DialogTitle")); 
+		setDescription(BaseMessages.getString(PKG, "CreateDatabaseWizardPageODBC.DialogMessage")); 
 		
 		setPageComplete(false);
 	}
@@ -86,7 +86,7 @@ public class CreateDatabaseWizardPageODBC extends WizardPage
 		composite.setLayout(compLayout);
 
 		wlDSN = new Label(composite, SWT.RIGHT);
-		wlDSN.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPageODBC.DSN.Label")); //$NON-NLS-1$
+		wlDSN.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPageODBC.DSN.Label")); 
  		props.setLook(wlDSN);
 		fdlDSN = new FormData();
 		fdlDSN.left   = new FormAttachment(0,0);
@@ -115,14 +115,14 @@ public class CreateDatabaseWizardPageODBC extends WizardPage
 		String name = wDSN.getText()!=null?wDSN.getText().length()>0?wDSN.getText():null:null;
 		if (name==null)
 		{
-			setErrorMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPageODBC.ErrorMessage.DSNRequired")); //$NON-NLS-1$
+			setErrorMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPageODBC.ErrorMessage.DSNRequired")); 
 			return false;
 		}
 		else
 		{
 			getDatabaseInfo();
 			setErrorMessage(null);
-			setMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPageODBC.Message.Finish")); //$NON-NLS-1$
+			setMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPageODBC.Message.Finish")); 
 			return true;
 		}
 	}	
@@ -134,7 +134,7 @@ public class CreateDatabaseWizardPageODBC extends WizardPage
 			info.setDBName(wDSN.getText());
 		}
 		
-		info.setDBPort(""); //$NON-NLS-1$
+		info.setDBPort(""); 
 		info.setServername(null);
 		
 		return info;
@@ -146,7 +146,7 @@ public class CreateDatabaseWizardPageODBC extends WizardPage
 	public IWizardPage getNextPage()
 	{
 		IWizard wiz = getWizard();
-		return wiz.getPage("2"); //$NON-NLS-1$
+		return wiz.getPage("2"); 
 	}
 	
 }

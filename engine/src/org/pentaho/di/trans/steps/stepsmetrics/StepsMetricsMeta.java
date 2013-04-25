@@ -467,7 +467,7 @@ public class StepsMetricsMeta extends BaseStepMeta implements StepMetaInterface
 		
 		if (prev==null || prev.size()==0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "StepsMetricsMeta.CheckResult.NotReceivingFields"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "StepsMetricsMeta.CheckResult.NotReceivingFields"), stepMeta); 
 			remarks.add(cr);
 			if (stepName.length > 0)
                 cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "StepsMetricsMeta.CheckResult.AllStepsFound"), stepMeta);
@@ -484,9 +484,9 @@ public class StepsMetricsMeta extends BaseStepMeta implements StepMetaInterface
 		
 		// See if we have input streams leading to this step!
 		if (input.length>0)
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "StepsMetricsMeta.CheckResult.StepRecevingData2"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "StepsMetricsMeta.CheckResult.StepRecevingData2"), stepMeta); 
 		else
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "StepsMetricsMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "StepsMetricsMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepMeta); 
 		remarks.add(cr);
 		
 	}

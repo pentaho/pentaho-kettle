@@ -29,7 +29,7 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -111,7 +111,7 @@ public class TimedTransRunner
         	trans.prepareExecution(null);
         }
         catch (Exception e) {
-        	System.err.println(CentralLogStore.getAppender().getBuffer(trans.getLogChannelId(), true));
+        	System.err.println(KettleLogStore.getAppender().getBuffer(trans.getLogChannelId(), true));
         	
         	trans.getLogChannel().logError("Error preparing / initializing transformation", e);
         	

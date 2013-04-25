@@ -38,7 +38,7 @@ public class LongValidator implements JobEntryValidator
 
   public static final LongValidator INSTANCE = new LongValidator();
 
-  private String VALIDATOR_NAME = "long"; //$NON-NLS-1$
+  private String VALIDATOR_NAME = "long"; 
 
   public String getName()
   {

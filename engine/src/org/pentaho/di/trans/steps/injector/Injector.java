@@ -61,7 +61,7 @@ public class Injector extends BaseStep implements StepInterface
 		
 		putRow(getInputRowMeta(), row);  // copy row to possible alternate rowset(s).
 
-		if (checkFeedback(getLinesRead())) logBasic(BaseMessages.getString(PKG, "Injector.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+		if (checkFeedback(getLinesRead())) logBasic(BaseMessages.getString(PKG, "Injector.Log.LineNumber")+getLinesRead()); 
 			
 		return true;
 	}	

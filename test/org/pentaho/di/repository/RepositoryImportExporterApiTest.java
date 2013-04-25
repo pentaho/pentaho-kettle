@@ -49,7 +49,7 @@ public class RepositoryImportExporterApiTest extends TestCase {
     Class<?> param2 = String.class;
     Class<?> param3 = RepositoryDirectoryInterface.class;
     Class<?> param4 = String.class;
-    Method m = exporter.getMethod("exportAllObjects", param1, param2, param3, param4); //$NON-NLS-1$
+    Method m = exporter.getMethod("exportAllObjects", param1, param2, param3, param4); 
     assertNotNull(m);
   }
 
@@ -75,6 +75,6 @@ public class RepositoryImportExporterApiTest extends TestCase {
     Class<?> param5 = boolean.class;
     Class<?> param6 = boolean.class;
     Class<?> param7 = String.class;
-    importer.getMethod("importAll", param1, param2, param3, param4, param5, param6, param7); //$NON-NLS-1$
+    importer.getMethod("importAll", param1, param2, param3, param4, param5, param6, param7); 
   }
 }

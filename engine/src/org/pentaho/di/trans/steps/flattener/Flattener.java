@@ -82,7 +82,7 @@ public class Flattener extends BaseStep implements StepInterface
             data.fieldNr = data.inputRowMeta.indexOfValue( meta.getFieldName() );
             if (data.fieldNr<0)
             {
-                logError(BaseMessages.getString(PKG, "Flattener.Log.FieldCouldNotFound",meta.getFieldName())); //$NON-NLS-1$ //$NON-NLS-2$
+                logError(BaseMessages.getString(PKG, "Flattener.Log.FieldCouldNotFound",meta.getFieldName()));  
                 setErrors(1);
                 stopAll();
                 return false;
@@ -115,7 +115,7 @@ public class Flattener extends BaseStep implements StepInterface
         // Keep track in case we want to send out the last couple of flattened values.
         data.previousRow = r;
 
-        if (checkFeedback(getLinesRead())) logBasic(BaseMessages.getString(PKG, "Flattener.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+        if (checkFeedback(getLinesRead())) logBasic(BaseMessages.getString(PKG, "Flattener.Log.LineNumber")+getLinesRead()); 
 			
 		return true;
 	}

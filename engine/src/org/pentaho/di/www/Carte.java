@@ -31,7 +31,7 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.KettleEnvironment;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -111,7 +111,7 @@ public class Carte
         //CarteSingleton.installPurgeTimer(config, log, transformationMap, jobMap);
 
         if (allOK) {
-        	this.webServer = new WebServer(log, transformationMap, jobMap, socketRepository, detections, hostname, port, config.isJoining());
+        	this.webServer = new WebServer(log, transformationMap, jobMap, socketRepository, detections, hostname, port, config.isJoining(), config.getPasswordFile());
         }
 	}
 	
@@ -164,7 +164,7 @@ public class Carte
 
     public static void runCarte(SlaveServerConfig config) throws Exception {
     	       
-    	CentralLogStore.init(config.getMaxLogLines(), config.getMaxLogTimeoutMinutes());
+    	KettleLogStore.init(config.getMaxLogLines(), config.getMaxLogTimeoutMinutes());
 
         // Join with the process: block
         //

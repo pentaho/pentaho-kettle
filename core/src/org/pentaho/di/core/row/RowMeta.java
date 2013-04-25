@@ -49,8 +49,8 @@ import org.w3c.dom.Node;
 
 public class RowMeta implements RowMetaInterface
 {
-	public static final String XML_META_TAG = "row-meta"; //$NON-NLS-1$
-	public static final String XML_DATA_TAG = "row-data"; //$NON-NLS-1$
+	public static final String XML_META_TAG = "row-meta"; 
+	public static final String XML_DATA_TAG = "row-data"; 
     
     private List<ValueMetaInterface> valueMetaList;
 	private List<Integer>	valuesThatNeedRealClone;
@@ -917,14 +917,14 @@ public class RowMeta implements RowMetaInterface
 	{
 		StringBuffer xml= new StringBuffer();
 		
-        xml.append("<").append(XML_META_TAG).append(">"); //$NON-NLS-1$ //$NON-NLS-2$
+        xml.append("<").append(XML_META_TAG).append(">");  
         
         for (int i=0;i<size();i++)
 		{
 			xml.append(getValueMeta(i).getMetaXML());
 		}
         
-		xml.append("</").append(XML_META_TAG).append(">"); //$NON-NLS-1$ //$NON-NLS-2$
+		xml.append("</").append(XML_META_TAG).append(">");  
 
 		return xml.toString();
 	}
@@ -953,14 +953,14 @@ public class RowMeta implements RowMetaInterface
 	{
 		StringBuffer xml= new StringBuffer();
 		
-        xml.append("<").append(XML_DATA_TAG).append(">"); //$NON-NLS-1$ //$NON-NLS-2$
+        xml.append("<").append(XML_DATA_TAG).append(">");  
         
         for (int i=0;i<size();i++)
 		{
 			xml.append(getValueMeta(i).getDataXML(rowData[i]));
 		}
         
-		xml.append("</").append(XML_DATA_TAG).append(">"); //$NON-NLS-1$ //$NON-NLS-2$
+		xml.append("</").append(XML_DATA_TAG).append(">");  
 
 		return xml.toString();
 	}

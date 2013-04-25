@@ -97,7 +97,7 @@ public class GPLoadDataOutput
 				   throw new KettleException(BaseMessages.getString(PKG, "GPload.Exception.DataFileMissing"));
 				}
 				
-            log.logDetailed("Creating temporary load file "+dataFile);  //$NON-NLS-1$
+            log.logDetailed("Creating temporary load file "+dataFile);  
 	         os = new FileOutputStream(dataFile, false);
 		//	}	
 			

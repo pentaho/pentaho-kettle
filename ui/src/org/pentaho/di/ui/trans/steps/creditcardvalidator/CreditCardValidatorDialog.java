@@ -113,14 +113,14 @@ public class CreditCardValidatorDialog extends BaseStepDialog implements StepDia
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "CreditCardValidatorDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "CreditCardValidatorDialog.Shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin=Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "CreditCardValidatorDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "CreditCardValidatorDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -139,7 +139,7 @@ public class CreditCardValidatorDialog extends BaseStepDialog implements StepDia
 
 		// filename field
 		wlFieldName=new Label(shell, SWT.RIGHT);
-		wlFieldName.setText(BaseMessages.getString(PKG, "CreditCardValidatorDialog.FieldName.Label")); //$NON-NLS-1$
+		wlFieldName.setText(BaseMessages.getString(PKG, "CreditCardValidatorDialog.FieldName.Label")); 
  		props.setLook(wlFieldName);
 		fdlFieldName=new FormData();
 		fdlFieldName.left = new FormAttachment(0, 0);
@@ -206,7 +206,7 @@ public class CreditCardValidatorDialog extends BaseStepDialog implements StepDia
 		
 		// Result fieldname ...
 		wlResult=new Label(wOutputFields, SWT.RIGHT);
-		wlResult.setText(BaseMessages.getString(PKG, "CreditCardValidatorDialog.ResultField.Label")); //$NON-NLS-1$
+		wlResult.setText(BaseMessages.getString(PKG, "CreditCardValidatorDialog.ResultField.Label")); 
  		props.setLook(wlResult);
 		fdlResult=new FormData();
 		fdlResult.left = new FormAttachment(0, -margin);
@@ -227,7 +227,7 @@ public class CreditCardValidatorDialog extends BaseStepDialog implements StepDia
 		
 		// FileType fieldname ...
 		wlCardType=new Label(wOutputFields, SWT.RIGHT);
-		wlCardType.setText(BaseMessages.getString(PKG, "CreditCardValidatorDialog.CardType.Label")); //$NON-NLS-1$
+		wlCardType.setText(BaseMessages.getString(PKG, "CreditCardValidatorDialog.CardType.Label")); 
  		props.setLook(wlCardType);
  		fdlCardType=new FormData();
  		fdlCardType.left = new FormAttachment(0, -margin);
@@ -247,7 +247,7 @@ public class CreditCardValidatorDialog extends BaseStepDialog implements StepDia
 		
 		// UnvalidMsg fieldname ...
 		wlNotValidMsg=new Label(wOutputFields, SWT.RIGHT);
-		wlNotValidMsg.setText(BaseMessages.getString(PKG, "CreditCardValidatorDialog.NotValidMsg.Label")); //$NON-NLS-1$
+		wlNotValidMsg.setText(BaseMessages.getString(PKG, "CreditCardValidatorDialog.NotValidMsg.Label")); 
  		props.setLook(wlNotValidMsg);
 		fdlNotValidMsg=new FormData();
 		fdlNotValidMsg.left = new FormAttachment(0, -margin);
@@ -277,9 +277,9 @@ public class CreditCardValidatorDialog extends BaseStepDialog implements StepDia
 
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wOutputFields);
 
@@ -367,7 +367,7 @@ public class CreditCardValidatorDialog extends BaseStepDialog implements StepDia
 				wFieldName.setText(columnName);
 				gotPreviousFields=true;
 			} catch (KettleException ke) {
-				new ErrorDialog(shell, BaseMessages.getString(PKG, "CreditCardValidatorDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "CreditCardValidatorDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "CreditCardValidatorDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "CreditCardValidatorDialog.FailedToGetFields.DialogMessage"), ke);  
 			}
 		}
 	}

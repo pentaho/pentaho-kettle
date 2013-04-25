@@ -253,7 +253,7 @@ public class PropsUI extends Props
 			setSashWeights(getSashWeights());
 			
 			// Set Default Look for all dialogs and sizes.
-			String prop = BasePropertyHandler.getProperty("Default_UI_Properties_Resource", "org.pentaho.di.ui.core.default"); //$NON-NLS-1$ //$NON-NLS-2$
+			String prop = BasePropertyHandler.getProperty("Default_UI_Properties_Resource", "org.pentaho.di.ui.core.default");  
 			try {
 				ResourceBundle bundle = ResourceBundle.getBundle(prop);
 				// ResourceBundle bundle = ResourceBundle.getBundle(prop);
@@ -474,7 +474,7 @@ public class PropsUI extends Props
   public String getFilename() 
   {
     if (this.filename == null) {
-      String s = System.getProperty("org.pentaho.di.ui.PropsUIFile"); //$NON-NLS-1$
+      String s = System.getProperty("org.pentaho.di.ui.PropsUIFile"); 
       if (s != null) {
         return s;
       } else {

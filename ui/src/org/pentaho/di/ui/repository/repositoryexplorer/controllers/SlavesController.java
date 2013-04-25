@@ -70,16 +70,16 @@ public class SlavesController extends LazilyInitializedController implements IUI
   
   @Override
   public String getName() {
-    return "slavesController"; //$NON-NLS-1$
+    return "slavesController"; 
   }
 
   public void createBindings() {
     refreshSlaves();
     try {
-      slavesTable = (XulTree) document.getElementById("slaves-table"); //$NON-NLS-1$
+      slavesTable = (XulTree) document.getElementById("slaves-table"); 
       bf.setBindingType(Binding.Type.ONE_WAY);
-      bf.createBinding(slaveList, "children", slavesTable, "elements").fireSourceChanged(); //$NON-NLS-1$ //$NON-NLS-2$
-      bf.createBinding(slavesTable, "selectedItems", this, "enableButtons"); //$NON-NLS-1$ //$NON-NLS-2$
+      bf.createBinding(slaveList, "children", slavesTable, "elements").fireSourceChanged();  
+      bf.createBinding(slavesTable, "selectedItems", this, "enableButtons");  
     } catch (Exception e) {
       // convert to runtime exception so it bubbles up through the UI
       throw new RuntimeException(e);
@@ -89,7 +89,7 @@ public class SlavesController extends LazilyInitializedController implements IUI
   @Override
   protected boolean doLazyInit() {
     // Load the SWT Shell from the explorer dialog
-    shell = ((SwtDialog)document.getElementById("repository-explorer-dialog")).getShell(); //$NON-NLS-1$
+    shell = ((SwtDialog)document.getElementById("repository-explorer-dialog")).getShell(); 
     
     enableButtons(true, false, false);
     bf = new SwtBindingFactory();
@@ -139,19 +139,19 @@ public class SlavesController extends LazilyInitializedController implements IUI
         // Make sure the slave does not already exist
         if(slaveId != null) {
           MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-          mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.AlreadyExists.Message", slaveServer.getName())); //$NON-NLS-1$
-          mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Create.Title")); //$NON-NLS-1$
+          mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.AlreadyExists.Message", slaveServer.getName())); 
+          mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Create.Title")); 
           mb.open();
         } else {
-          if(slaveServer.getName() != null && !slaveServer.getName().equals("")) {//$NON-NLS-1$
-            repository.insertLogEntry(BaseMessages.getString(PKG, "SlavesController.Message.CreatingSlave",slaveServer.getName()));//$NON-NLS-1$
+          if(slaveServer.getName() != null && !slaveServer.getName().equals("")) {
+            repository.insertLogEntry(BaseMessages.getString(PKG, "SlavesController.Message.CreatingSlave",slaveServer.getName()));
             
             
             repository.save(slaveServer, Const.VERSION_COMMENT_INITIAL_VERSION, null);
           } else {
             MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-            mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Edit.InvalidName.Message")); //$NON-NLS-1$
-            mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Create.Title")); //$NON-NLS-1$
+            mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Edit.InvalidName.Message")); 
+            mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Create.Title")); 
             mb.open();
           }
         }
@@ -159,15 +159,15 @@ public class SlavesController extends LazilyInitializedController implements IUI
     }
     catch(KettleException e)
     {
-      new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Create.Title"), //$NON-NLS-1$
-          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Create.UnexpectedError.Message"), e); //$NON-NLS-1$
+      new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Create.Title"), 
+          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Create.UnexpectedError.Message"), e); 
     } finally {
       refreshSlaves();
     }
   }
   
   public void editSlave() {
-    String slaveServerName = ""; //$NON-NLS-1$
+    String slaveServerName = ""; 
     try
     {
       Collection<UISlave> slaves = slavesTable.getSelectedItems();
@@ -180,41 +180,41 @@ public class SlavesController extends LazilyInitializedController implements IUI
         ObjectId slaveId = repository.getSlaveID(slaveServer.getName());
         if(slaveId == null) {
           MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-          mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.DoesNotExists.Message", slaveServerName)); //$NON-NLS-1$
-          mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Edit.Title")); //$NON-NLS-1$
+          mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.DoesNotExists.Message", slaveServerName)); 
+          mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Edit.Title")); 
           mb.open();
         } else {
           SlaveServerDialog ssd = new SlaveServerDialog(shell, slaveServer);
           if(ssd.open()) {
-            if(slaveServer.getName() != null && !slaveServer.getName().equals("")) {//$NON-NLS-1$
-              repository.insertLogEntry(BaseMessages.getString(PKG, "SlavesController.Message.UpdatingSlave",slaveServer.getName()));//$NON-NLS-1$
+            if(slaveServer.getName() != null && !slaveServer.getName().equals("")) {
+              repository.insertLogEntry(BaseMessages.getString(PKG, "SlavesController.Message.UpdatingSlave",slaveServer.getName()));
               repository.save(slaveServer, Const.VERSION_COMMENT_EDIT_VERSION, null);
             } else {
               MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-              mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Edit.InvalidName.Message")); //$NON-NLS-1$
-              mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Edit.Title")); //$NON-NLS-1$
+              mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Edit.InvalidName.Message")); 
+              mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Edit.Title")); 
               mb.open();
             }
           }
         }
       } else {
         MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-        mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.NoItemSelected.Message")); //$NON-NLS-1$
-        mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Edit.Title")); //$NON-NLS-1$
+        mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.NoItemSelected.Message")); 
+        mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Edit.Title")); 
         mb.open();
       }
     }
     catch(KettleException e)
     {
-        new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Edit.Title"),  //$NON-NLS-1$
-            BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Edit.UnexpectedError.Message")+slaveServerName+"]", e); //$NON-NLS-1$ //$NON-NLS-2$
+        new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Edit.Title"),  
+            BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Edit.UnexpectedError.Message")+slaveServerName+"]", e);  
     } finally {
       refreshSlaves();
     }
   }
   
   public void removeSlave() {
-    String slaveServerName = ""; //$NON-NLS-1$
+    String slaveServerName = ""; 
     try
     {
       Collection<UISlave> slaves = slavesTable.getSelectedItems();
@@ -228,8 +228,8 @@ public class SlavesController extends LazilyInitializedController implements IUI
             ObjectId slaveId = repository.getSlaveID(slaveServer.getName());
             if(slaveId == null) {
               MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-              mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.DoesNotExists.Message", slaveServerName)); //$NON-NLS-1$
-              mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Delete.Title")); //$NON-NLS-1$
+              mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.DoesNotExists.Message", slaveServerName)); 
+              mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Delete.Title")); 
               mb.open();
             } else {
               repository.deleteSlave(slaveId);
@@ -238,15 +238,15 @@ public class SlavesController extends LazilyInitializedController implements IUI
         }
       } else {
         MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-        mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.NoItemSelected.Message")); //$NON-NLS-1$
-        mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Delete.Title")); //$NON-NLS-1$
+        mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.NoItemSelected.Message")); 
+        mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Delete.Title")); 
         mb.open();
       }
     }
     catch(KettleException e)
     {
-      new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Delete.Title"),  //$NON-NLS-1$
-          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Delete.UnexpectedError.Message")+slaveServerName+"]", e); //$NON-NLS-1$ //$NON-NLS-2$
+      new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Delete.Title"),  
+          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Delete.UnexpectedError.Message")+slaveServerName+"]", e);  
     } finally {
       refreshSlaves();
     }
@@ -266,9 +266,9 @@ public class SlavesController extends LazilyInitializedController implements IUI
   }
   
   public void enableButtons(boolean enableNew, boolean enableEdit, boolean enableRemove) {
-    XulButton bNew = (XulButton) document.getElementById("slaves-new"); //$NON-NLS-1$
-    XulButton bEdit = (XulButton) document.getElementById("slaves-edit"); //$NON-NLS-1$
-    XulButton bRemove = (XulButton) document.getElementById("slaves-remove"); //$NON-NLS-1$
+    XulButton bNew = (XulButton) document.getElementById("slaves-new"); 
+    XulButton bEdit = (XulButton) document.getElementById("slaves-edit"); 
+    XulButton bRemove = (XulButton) document.getElementById("slaves-remove"); 
     
     bNew.setDisabled(!enableNew);
     bEdit.setDisabled(!enableEdit);

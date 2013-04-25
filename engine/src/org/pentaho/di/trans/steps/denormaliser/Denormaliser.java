@@ -88,7 +88,7 @@ public class Denormaliser extends BaseStep implements StepInterface
             data.keyFieldNr = data.inputRowMeta.indexOfValue( meta.getKeyField() );
             if (data.keyFieldNr<0)
             {
-                logError(BaseMessages.getString(PKG, "Denormaliser.Log.KeyFieldNotFound",meta.getKeyField())); //$NON-NLS-1$ //$NON-NLS-2$
+                logError(BaseMessages.getString(PKG, "Denormaliser.Log.KeyFieldNotFound",meta.getKeyField()));  
                 setErrors(1);
                 stopAll();
                 return false;
@@ -102,7 +102,7 @@ public class Denormaliser extends BaseStep implements StepInterface
 				int idx = data.inputRowMeta.indexOfValue( field.getFieldName() );
 				if (idx<0)
 				{
-					logError(BaseMessages.getString(PKG, "Denormaliser.Log.UnpivotFieldNotFound",field.getFieldName())); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "Denormaliser.Log.UnpivotFieldNotFound",field.getFieldName()));  
 					setErrors(1);
 					stopAll();
 					return false;
@@ -114,7 +114,7 @@ public class Denormaliser extends BaseStep implements StepInterface
                 // This is not supported of-course and given the complexity of the step, you can miss:
                 if (data.fieldNameIndex[i]==data.keyFieldNr)
                 {
-                    logError(BaseMessages.getString(PKG, "Denormaliser.Log.ValueFieldSameAsKeyField", field.getFieldName())); //$NON-NLS-1$ //$NON-NLS-2$
+                    logError(BaseMessages.getString(PKG, "Denormaliser.Log.ValueFieldSameAsKeyField", field.getFieldName()));  
                     setErrors(1);
                     stopAll();
                     return false;
@@ -142,7 +142,7 @@ public class Denormaliser extends BaseStep implements StepInterface
 				data.groupnrs[i] = data.inputRowMeta.indexOfValue( meta.getGroupField()[i] );
 				if (data.groupnrs[i]<0)
 				{
-					logError(BaseMessages.getString(PKG, "Denormaliser.Log.GroupingFieldNotFound",meta.getGroupField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(BaseMessages.getString(PKG, "Denormaliser.Log.GroupingFieldNotFound",meta.getGroupField()[i]));  
 					setErrors(1);
 					stopAll();
 					return false;
@@ -188,7 +188,7 @@ public class Denormaliser extends BaseStep implements StepInterface
         
         if (checkFeedback(getLinesRead())) 
         {
-        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "Denormaliser.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "Denormaliser.Log.LineNumber")+getLinesRead()); 
         }
 			
 		return true;

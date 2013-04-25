@@ -213,7 +213,7 @@ public class BlockingStep extends BaseStep implements StepInterface {
 				}
 				catch(SocketTimeoutException e)
 				{
-		            logError(BaseMessages.getString(PKG, "System.Log.UnexpectedError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+		            logError(BaseMessages.getString(PKG, "System.Log.UnexpectedError")+" : "+e.toString());  
 		            logError(Const.getStackTracker(e));
 		            setErrors(1);
 		            stopAll();

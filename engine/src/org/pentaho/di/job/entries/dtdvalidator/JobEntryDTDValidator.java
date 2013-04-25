@@ -250,7 +250,7 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
 	    ValidatorContext ctx = new ValidatorContext();
 	    putVariableSpace(ctx, getVariables());
 	    putValidators(ctx, notBlankValidator(), fileExistsValidator());
-	    andValidator().validate(this, "dtdfilename", remarks, ctx);//$NON-NLS-1$
-	    andValidator().validate(this, "xmlFilename", remarks, ctx);//$NON-NLS-1$
+	    andValidator().validate(this, "dtdfilename", remarks, ctx);
+	    andValidator().validate(this, "xmlFilename", remarks, ctx);
 	  }
 }

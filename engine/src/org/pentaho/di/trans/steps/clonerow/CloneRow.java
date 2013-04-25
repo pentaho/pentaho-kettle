@@ -107,8 +107,8 @@ public class CloneRow extends BaseStep implements StepInterface
 					if (data.indexOfNrCloneField<0)
 					{
 						// The field is unreachable !
-						logError(BaseMessages.getString(PKG, "CloneRow.Log.ErrorFindingField")+ "[" + cloneinfieldname+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-						throw new KettleException(BaseMessages.getString(PKG, "CloneRow.Exception.CouldnotFindField",cloneinfieldname)); //$NON-NLS-1$ //$NON-NLS-2$
+						logError(BaseMessages.getString(PKG, "CloneRow.Log.ErrorFindingField")+ "[" + cloneinfieldname+"]");  
+						throw new KettleException(BaseMessages.getString(PKG, "CloneRow.Exception.CouldnotFindField",cloneinfieldname));  
 					}
 				}
 			}else
@@ -175,7 +175,7 @@ public class CloneRow extends BaseStep implements StepInterface
 
         if (log.isDetailed() && checkFeedback(getLinesRead())) 
         {
-        	logDetailed(BaseMessages.getString(PKG, "CloneRow.Log.LineNumber",""+getLinesRead())); //$NON-NLS-1$
+        	logDetailed(BaseMessages.getString(PKG, "CloneRow.Log.LineNumber",""+getLinesRead())); 
         }
 			
 		return true;

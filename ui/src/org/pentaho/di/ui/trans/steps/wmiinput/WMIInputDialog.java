@@ -143,14 +143,14 @@ public class WMIInputDialog extends BaseStepDialog implements StepDialogInterfac
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "WMIInputDialog.WMIInput")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "WMIInputDialog.WMIInput")); 
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
         // Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "WMIInputDialog.StepName")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "WMIInputDialog.StepName")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -170,18 +170,18 @@ public class WMIInputDialog extends BaseStepDialog implements StepDialogInterfac
 	
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
         wPreview=new Button(shell, SWT.PUSH);
-        wPreview.setText(BaseMessages.getString(PKG, "System.Button.Preview")); //$NON-NLS-1$
+        wPreview.setText(BaseMessages.getString(PKG, "System.Button.Preview")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, null);
 
 		
 		// Password ...
 		wlPassword=new Label(shell, SWT.RIGHT);
-		wlPassword.setText(BaseMessages.getString(PKG, "WMIInputDialog.Password")); //$NON-NLS-1$
+		wlPassword.setText(BaseMessages.getString(PKG, "WMIInputDialog.Password")); 
  		props.setLook(wlPassword);
 		fdlPassword=new FormData();
 		fdlPassword.left = new FormAttachment(0, 0);
@@ -208,7 +208,7 @@ public class WMIInputDialog extends BaseStepDialog implements StepDialogInterfac
 	    
 		// UserName ...
 		wlUserName=new Label(shell, SWT.RIGHT);
-		wlUserName.setText(BaseMessages.getString(PKG, "WMIInputDialog.UserName")); //$NON-NLS-1$
+		wlUserName.setText(BaseMessages.getString(PKG, "WMIInputDialog.UserName")); 
  		props.setLook(wlUserName);
 		fdlUserName=new FormData();
 		fdlUserName.left = new FormAttachment(0, 0);
@@ -226,7 +226,7 @@ public class WMIInputDialog extends BaseStepDialog implements StepDialogInterfac
 
 		// Host ...
 		wlHost=new Label(shell, SWT.RIGHT);
-		wlHost.setText(BaseMessages.getString(PKG, "WMIInputDialog.Host")); //$NON-NLS-1$
+		wlHost.setText(BaseMessages.getString(PKG, "WMIInputDialog.Host")); 
  		props.setLook(wlHost);
 		fdlHost=new FormData();
 		fdlHost.left = new FormAttachment(0, 0);
@@ -245,7 +245,7 @@ public class WMIInputDialog extends BaseStepDialog implements StepDialogInterfac
 		
 		// Domain input ...
 		wlDomain=new Label(shell, SWT.RIGHT);
-		wlDomain.setText(BaseMessages.getString(PKG, "WMIInputDialog.Domain")); //$NON-NLS-1$
+		wlDomain.setText(BaseMessages.getString(PKG, "WMIInputDialog.Domain")); 
  		props.setLook(wlDomain);
 		fdlDomain=new FormData();
 		fdlDomain.left = new FormAttachment(0, 0);
@@ -265,7 +265,7 @@ public class WMIInputDialog extends BaseStepDialog implements StepDialogInterfac
 	
 		// Limit input ...
 		wlLimit=new Label(shell, SWT.RIGHT);
-		wlLimit.setText(BaseMessages.getString(PKG, "WMIInputDialog.LimitSize")); //$NON-NLS-1$
+		wlLimit.setText(BaseMessages.getString(PKG, "WMIInputDialog.LimitSize")); 
  		props.setLook(wlLimit);
 		fdlLimit=new FormData();
 		fdlLimit.left = new FormAttachment(0, 0);
@@ -285,7 +285,7 @@ public class WMIInputDialog extends BaseStepDialog implements StepDialogInterfac
 
         // Variable?
         wlVariables = new Label(shell, SWT.RIGHT);
-        wlVariables.setText(BaseMessages.getString(PKG, "WMIInputDialog.ReplaceVariables")); //$NON-NLS-1$
+        wlVariables.setText(BaseMessages.getString(PKG, "WMIInputDialog.ReplaceVariables")); 
         props.setLook(wlVariables);
         fdlVariables = new FormData();
         fdlVariables.left = new FormAttachment(0, 0);
@@ -319,7 +319,7 @@ public class WMIInputDialog extends BaseStepDialog implements StepDialogInterfac
         
 		// Table line...
 		wlWMI=new Label(shell, SWT.NONE);
-		wlWMI.setText(BaseMessages.getString(PKG, "WMIInputDialog.WMI")); //$NON-NLS-1$
+		wlWMI.setText(BaseMessages.getString(PKG, "WMIInputDialog.WMI")); 
  		props.setLook(wlWMI);
 		fdlWMI=new FormData();
 		fdlWMI.left = new FormAttachment(0, 0);
@@ -444,7 +444,7 @@ public class WMIInputDialog extends BaseStepDialog implements StepDialogInterfac
     if (input.getPassword() != null)
       wPassword.setText(input.getPassword());
 
-    wLimit.setText(Const.NVL(input.getRowLimit(), "0")); //$NON-NLS-1$
+    wLimit.setText(Const.NVL(input.getRowLimit(), "0")); 
 
     wVariables.setSelection(input.isVariableReplacementActive());
 
@@ -511,7 +511,7 @@ public class WMIInputDialog extends BaseStepDialog implements StepDialogInterfac
         
         TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
         
-        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), BaseMessages.getString(PKG, "WMIInputDialog.EnterPreviewSize"), BaseMessages.getString(PKG, "WMIInputDialog.NumberOfRowsToPreview")); //$NON-NLS-1$ //$NON-NLS-2$
+        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), BaseMessages.getString(PKG, "WMIInputDialog.EnterPreviewSize"), BaseMessages.getString(PKG, "WMIInputDialog.NumberOfRowsToPreview"));  
         int previewSize = numberDialog.open();
         if (previewSize>0)
         {

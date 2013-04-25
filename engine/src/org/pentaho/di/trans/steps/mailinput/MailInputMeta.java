@@ -298,7 +298,7 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface
 			}
 		} catch(Exception e)
 		{
-			throw new KettleException("Erreur inattendue", e); //$NON-NLS-1$
+			throw new KettleException("Erreur inattendue", e); 
 		}
 	}
 	

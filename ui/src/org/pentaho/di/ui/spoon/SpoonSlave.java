@@ -211,20 +211,20 @@ public class SpoonSlave extends Composite implements TabItemInterface {
 
     sash.setLayout(new FillLayout());
 
-    colinf = new ColumnInfo[] { new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Stepname"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-        new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Copynr"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-        new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Read"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-        new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Written"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-        new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Input"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-        new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Output"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-        new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Updated"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-        new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Rejected"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-        new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Errors"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-        new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Active"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-        new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Time"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-        new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Speed"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-        new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.PriorityBufferSizes"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-        new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.CarteObjectId"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+    colinf = new ColumnInfo[] { new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Stepname"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
+        new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Copynr"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
+        new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Read"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
+        new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Written"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
+        new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Input"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
+        new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Output"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
+        new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Updated"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
+        new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Rejected"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
+        new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Errors"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
+        new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Active"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
+        new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Time"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
+        new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Speed"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
+        new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.PriorityBufferSizes"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
+        new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.CarteObjectId"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
     };
 
     colinf[1].setAllignement(SWT.RIGHT);
@@ -293,7 +293,7 @@ public class SpoonSlave extends Composite implements TabItemInterface {
     });
 
     wError = new Button(this, SWT.PUSH);
-    wError.setText(BaseMessages.getString(PKG, "SpoonSlave.Button.ShowErrorLines")); //$NON-NLS-1$
+    wError.setText(BaseMessages.getString(PKG, "SpoonSlave.Button.ShowErrorLines")); 
     wError.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
         showErrors();
@@ -418,7 +418,7 @@ public class SpoonSlave extends Composite implements TabItemInterface {
           logging = new StringBuffer(logging).append(ts.getLoggingString()).toString();
         }
 
-        String[] lines = logging.split("\r\n|\r|\n"); //$NON-NLS-1$
+        String[] lines = logging.split("\r\n|\r|\n"); 
         if(lines.length > PropsUI.getInstance().getMaxNrLinesInLog()) {
           // Trim to view the last x lines
           int offset = lines.length - PropsUI.getInstance().getMaxNrLinesInLog();
@@ -461,7 +461,7 @@ public class SpoonSlave extends Composite implements TabItemInterface {
           logging = new StringBuffer(logging).append(ts.getLoggingString()).toString();
         }
         
-        String[] lines = logging.split("\r\n|\r|\n"); //$NON-NLS-1$
+        String[] lines = logging.split("\r\n|\r|\n"); 
         if(lines.length > PropsUI.getInstance().getMaxNrLinesInLog()) {
           // Trim to view the last x lines
           int offset = lines.length - PropsUI.getInstance().getMaxNrLinesInLog();
@@ -811,10 +811,10 @@ public class SpoonSlave extends Composite implements TabItemInterface {
       if (all.substring(i, i + crlen).equalsIgnoreCase(Const.CR)) {
         String line = all.substring(startpos, i);
         String uLine = line.toUpperCase();
-        if (uLine.indexOf(BaseMessages.getString(PKG, "TransLog.System.ERROR")) >= 0 || //$NON-NLS-1$
-            uLine.indexOf(BaseMessages.getString(PKG, "TransLog.System.EXCEPTION")) >= 0 || //$NON-NLS-1$
-            uLine.indexOf("ERROR") >= 0 || // i18n for compatibilty to non translated steps a.s.o. //$NON-NLS-1$ 
-            uLine.indexOf("EXCEPTION") >= 0 // i18n for compatibilty to non translated steps a.s.o. //$NON-NLS-1$
+        if (uLine.indexOf(BaseMessages.getString(PKG, "TransLog.System.ERROR")) >= 0 || 
+            uLine.indexOf(BaseMessages.getString(PKG, "TransLog.System.EXCEPTION")) >= 0 || 
+            uLine.indexOf("ERROR") >= 0 || // i18n for compatibilty to non translated steps a.s.o.  
+            uLine.indexOf("EXCEPTION") >= 0 // i18n for compatibilty to non translated steps a.s.o. 
         ) {
           err.add(line);
         }
@@ -826,10 +826,10 @@ public class SpoonSlave extends Composite implements TabItemInterface {
     }
     String line = all.substring(startpos);
     String uLine = line.toUpperCase();
-    if (uLine.indexOf(BaseMessages.getString(PKG, "TransLog.System.ERROR2")) >= 0 || //$NON-NLS-1$
-        uLine.indexOf(BaseMessages.getString(PKG, "TransLog.System.EXCEPTION2")) >= 0 || //$NON-NLS-1$
-        uLine.indexOf("ERROR") >= 0 || // i18n for compatibilty to non translated steps a.s.o. //$NON-NLS-1$ 
-        uLine.indexOf("EXCEPTION") >= 0 // i18n for compatibilty to non translated steps a.s.o. //$NON-NLS-1$
+    if (uLine.indexOf(BaseMessages.getString(PKG, "TransLog.System.ERROR2")) >= 0 || 
+        uLine.indexOf(BaseMessages.getString(PKG, "TransLog.System.EXCEPTION2")) >= 0 || 
+        uLine.indexOf("ERROR") >= 0 || // i18n for compatibilty to non translated steps a.s.o.  
+        uLine.indexOf("EXCEPTION") >= 0 // i18n for compatibilty to non translated steps a.s.o. 
     ) {
       err.add(line);
     }
@@ -840,7 +840,7 @@ public class SpoonSlave extends Composite implements TabItemInterface {
         err_lines[i] = err.get(i);
 
       EnterSelectionDialog esd = new EnterSelectionDialog(shell, err_lines,
-          BaseMessages.getString(PKG, "TransLog.Dialog.ErrorLines.Title"), BaseMessages.getString(PKG, "TransLog.Dialog.ErrorLines.Message")); //$NON-NLS-1$ //$NON-NLS-2$
+          BaseMessages.getString(PKG, "TransLog.Dialog.ErrorLines.Title"), BaseMessages.getString(PKG, "TransLog.Dialog.ErrorLines.Message"));  
       line = esd.open();
       /*
        * TODO: we have multiple transformation we can go to: which one should we pick? if (line != null) { for (i = 0; i < spoon.getTransMeta().nrSteps(); i++)

@@ -125,14 +125,14 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "CheckSumDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "CheckSumDialog.Shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "CheckSumDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "CheckSumDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -211,7 +211,7 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
         
         // Result line...
 		wlResult=new Label(shell, SWT.RIGHT);
-		wlResult.setText(BaseMessages.getString(PKG, "CheckSumDialog.Result.Label")); //$NON-NLS-1$
+		wlResult.setText(BaseMessages.getString(PKG, "CheckSumDialog.Result.Label")); 
  		props.setLook(wlResult);
 		fdlResult=new FormData();
 		fdlResult.left = new FormAttachment(0, 0);
@@ -238,7 +238,7 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
         
 	   // Are we operating in compatibility mode?
     wlCompatibility=new Label(shell, SWT.RIGHT);
-    wlCompatibility.setText(BaseMessages.getString(PKG, "CheckSumDialog.CompatibilityMode.Label")); //$NON-NLS-1$
+    wlCompatibility.setText(BaseMessages.getString(PKG, "CheckSumDialog.CompatibilityMode.Label")); 
     props.setLook(wlCompatibility);
     fdlCompatibility=new FormData();
     fdlCompatibility.left  = new FormAttachment(0, 0);
@@ -246,7 +246,7 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
     fdlCompatibility.right = new FormAttachment(middle, -margin);
     wlCompatibility.setLayoutData(fdlCompatibility);
     wCompatibility=new Button(shell, SWT.CHECK);
-    wCompatibility.setToolTipText(BaseMessages.getString(PKG, "CheckSumDialog.CompatibilityMode.Tooltip")); //$NON-NLS-1$
+    wCompatibility.setToolTipText(BaseMessages.getString(PKG, "CheckSumDialog.CompatibilityMode.Tooltip")); 
     props.setLook(wCompatibility);
     fdCompatibility=new FormData();
     fdCompatibility.left  = new FormAttachment(middle, 0);

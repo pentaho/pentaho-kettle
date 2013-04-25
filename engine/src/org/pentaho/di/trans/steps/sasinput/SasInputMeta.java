@@ -76,7 +76,7 @@ public class SasInputMeta extends BaseStepMeta implements StepMetaInterface {
 
   public void loadXML(Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore) throws KettleXMLException {
     try {
-      acceptingField = XMLHandler.getTagValue(stepnode, "accept_field"); //$NON-NLS-1$
+      acceptingField = XMLHandler.getTagValue(stepnode, "accept_field"); 
       int nrFields = XMLHandler.countNodes(stepnode, XML_TAG_FIELD);
       outputFields=new ArrayList<SasInputField>();
       for (int i=0;i<nrFields;i++) {
@@ -84,7 +84,7 @@ public class SasInputMeta extends BaseStepMeta implements StepMetaInterface {
         outputFields.add(new SasInputField(fieldNode));
       }
     } catch (Exception e) {
-      throw new KettleXMLException(BaseMessages.getString(PKG, "SASInputMeta.Exception.UnableToReadStepInformationFromXML"), e); //$NON-NLS-1$
+      throw new KettleXMLException(BaseMessages.getString(PKG, "SASInputMeta.Exception.UnableToReadStepInformationFromXML"), e); 
     }
   }
 
@@ -135,18 +135,18 @@ public class SasInputMeta extends BaseStepMeta implements StepMetaInterface {
         outputFields.add(new SasInputField(rep, stepId, i));
       }
     } catch (Exception e) {
-      throw new KettleException(BaseMessages.getString(PKG, "SASInputMeta.Exception.UnexpectedErrorReadingMetaDataFromRepository"), e); //$NON-NLS-1$
+      throw new KettleException(BaseMessages.getString(PKG, "SASInputMeta.Exception.UnexpectedErrorReadingMetaDataFromRepository"), e); 
     }
   }
 
   public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step) throws KettleException {
     try {
-      rep.saveStepAttribute(id_transformation, id_step, "accept_field", acceptingField); //$NON-NLS-1$
+      rep.saveStepAttribute(id_transformation, id_step, "accept_field", acceptingField); 
       for (int i=0;i<outputFields.size();i++) {
         outputFields.get(i).saveRep(rep, metaStore, id_transformation, id_step, i);
       }
     } catch (Exception e) {
-      throw new KettleException(BaseMessages.getString(PKG, "SASInputMeta.Exception.UnableToSaveMetaDataToRepository") + id_step, e); //$NON-NLS-1$
+      throw new KettleException(BaseMessages.getString(PKG, "SASInputMeta.Exception.UnableToSaveMetaDataToRepository") + id_step, e); 
     }
   }
 
@@ -155,7 +155,7 @@ public class SasInputMeta extends BaseStepMeta implements StepMetaInterface {
     CheckResult cr;
 
     if (Const.isEmpty(getAcceptingField())) {
-      cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SASInput.Log.Error.InvalidAcceptingFieldName"), stepMeta); //$NON-NLS-1$
+      cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SASInput.Log.Error.InvalidAcceptingFieldName"), stepMeta); 
       remarks.add(cr);
     }
   }

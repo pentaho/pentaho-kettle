@@ -1147,7 +1147,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 			 if(field!=null) wFilenameField.setText(field);
 			
 		 }catch(KettleException ke){
-				new ErrorDialog(shell, BaseMessages.getString(PKG, "AccessInputDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "AccessInputDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "AccessInputDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "AccessInputDialog.FailedToGetFields.DialogMessage"), ke);  
 			}
 	 }
 	private void get()

@@ -640,7 +640,7 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 		
 		 // Output properties
 		 wlOutputProperties=new Label(wAdvancedComp, SWT.NONE);
-	     wlOutputProperties.setText(BaseMessages.getString(PKG, "XsltDialog.OutputProperties.Label")); //$NON-NLS-1$
+	     wlOutputProperties.setText(BaseMessages.getString(PKG, "XsltDialog.OutputProperties.Label")); 
 	     props.setLook(wlOutputProperties);
 	     fdlOutputProperties=new FormData();
 	     fdlOutputProperties.left = new FormAttachment(0, 0);
@@ -651,7 +651,7 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 		
 		 colinf=new ColumnInfo[] { 
 		  new ColumnInfo(BaseMessages.getString(PKG, "XsltDialog.ColumnInfo.OutputProperties.Name"),      ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
-		  new ColumnInfo(BaseMessages.getString(PKG, "XsltDialog.ColumnInfo.OutputProperties.Value"),  ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
+		  new ColumnInfo(BaseMessages.getString(PKG, "XsltDialog.ColumnInfo.OutputProperties.Value"),  ColumnInfo.COLUMN_TYPE_TEXT,   false), 
 	       };
 		 colinf[0].setComboValues(XsltMeta.outputProperties);
 		 colinf[1].setUsingVariables(true);
@@ -673,7 +673,7 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 		// Parameters
 		
 		 wlFields=new Label(wAdvancedComp, SWT.NONE);
-	     wlFields.setText(BaseMessages.getString(PKG, "XsltDialog.Parameters.Label")); //$NON-NLS-1$
+	     wlFields.setText(BaseMessages.getString(PKG, "XsltDialog.Parameters.Label")); 
 	     props.setLook(wlFields);
 	     fdlFields=new FormData();
 	     fdlFields.left = new FormAttachment(0, 0);
@@ -686,7 +686,7 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 		
 		 colinf=new ColumnInfo[] { 
 		  new ColumnInfo(BaseMessages.getString(PKG, "XsltDialog.ColumnInfo.Name"),   ColumnInfo.COLUMN_TYPE_TEXT,   false),
-		  new ColumnInfo(BaseMessages.getString(PKG, "XsltDialog.ColumnInfo.Parameter"),  ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
+		  new ColumnInfo(BaseMessages.getString(PKG, "XsltDialog.ColumnInfo.Parameter"),  ColumnInfo.COLUMN_TYPE_TEXT,   false), 
 	       };
 		colinf[1].setUsingVariables(true);
 		colinf[0].setUsingVariables(true);

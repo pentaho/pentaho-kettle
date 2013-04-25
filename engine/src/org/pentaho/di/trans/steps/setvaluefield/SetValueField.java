@@ -93,7 +93,7 @@ public class SetValueField extends BaseStep implements StepInterface
 		        data.indexOfField [i] = data.outputRowMeta.indexOfValue(environmentSubstitute(meta.getFieldName()[i]));
 				if (data.indexOfField [i]<0)
 				{
-					throw new KettleStepException(BaseMessages.getString(PKG, "SetValueField.Log.CouldNotFindFieldInRow",meta.getFieldName()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleStepException(BaseMessages.getString(PKG, "SetValueField.Log.CouldNotFindFieldInRow",meta.getFieldName()[i]));  
 				}
 				String sourceField=environmentSubstitute(meta.getReplaceByFieldValue()[i]);
 				if(Const.isEmpty(sourceField))
@@ -137,7 +137,7 @@ public class SetValueField extends BaseStep implements StepInterface
         	}
         	else
         	{
-        		logError(BaseMessages.getString(PKG, "SetValueField.Log.ErrorInStep",e.getMessage())); //$NON-NLS-1$
+        		logError(BaseMessages.getString(PKG, "SetValueField.Log.ErrorInStep",e.getMessage())); 
 				setErrors(1);
 				stopAll();
 				setOutputDone();  // signal end to receiver(s)

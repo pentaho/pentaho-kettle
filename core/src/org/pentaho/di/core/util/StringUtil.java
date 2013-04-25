@@ -63,9 +63,9 @@ public class StringUtil {
 
   public static final String FIELD_CLOSE = "}";
 
-  public static final String CRLF = "\r\n"; //$NON-NLS-1$
+  public static final String CRLF = "\r\n"; 
 
-  public static final String INDENTCHARS = "                    "; //$NON-NLS-1$
+  public static final String INDENTCHARS = "                    "; 
 
   public static final String EMPTY_STRING = "";
 

@@ -292,14 +292,14 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "MappingDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "MappingDialog.Shell.Title")); 
 
 		middle = props.getMiddlePct();
 		margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname = new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "MappingDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "MappingDialog.Stepname.Label")); 
 		props.setLook(wlStepname);
 		fdlStepname = new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -325,7 +325,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		// //////////////////////////////////////////////////
 		//
 		gTransGroup = new Group(shell, SWT.SHADOW_ETCHED_IN);
-		gTransGroup.setText(BaseMessages.getString(PKG, "MappingDialog.TransGroup.Label")); //$NON-NLS-1$;
+		gTransGroup.setText(BaseMessages.getString(PKG, "MappingDialog.TransGroup.Label")); ;
 		gTransGroup.setBackground(shell.getBackground()); // the default looks
 		// ugly
 		FormLayout transGroupLayout = new FormLayout();
@@ -340,8 +340,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		radioFilename = new Button(gTransGroup, SWT.RADIO);
 		props.setLook(radioFilename);
 		radioFilename.setSelection(false);
-		radioFilename.setText(BaseMessages.getString(PKG, "MappingDialog.RadioFile.Label")); //$NON-NLS-1$
-		radioFilename.setToolTipText(BaseMessages.getString(PKG, "MappingDialog.RadioFile.Tooltip", Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
+		radioFilename.setText(BaseMessages.getString(PKG, "MappingDialog.RadioFile.Label")); 
+		radioFilename.setToolTipText(BaseMessages.getString(PKG, "MappingDialog.RadioFile.Tooltip", Const.CR));  
 		FormData fdFileRadio = new FormData();
 		fdFileRadio.left = new FormAttachment(0, 0);
 		fdFileRadio.right = new FormAttachment(100, 0);
@@ -388,8 +388,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		radioByName = new Button(gTransGroup, SWT.RADIO);
 		props.setLook(radioByName);
 		radioByName.setSelection(false);
-		radioByName.setText(BaseMessages.getString(PKG, "MappingDialog.RadioRep.Label")); //$NON-NLS-1$
-		radioByName.setToolTipText(BaseMessages.getString(PKG, "MappingDialog.RadioRep.Tooltip", Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
+		radioByName.setText(BaseMessages.getString(PKG, "MappingDialog.RadioRep.Label")); 
+		radioByName.setToolTipText(BaseMessages.getString(PKG, "MappingDialog.RadioRep.Tooltip", Const.CR));  
 		FormData fdRepRadio = new FormData();
 		fdRepRadio.left = new FormAttachment(0, 0);
 		fdRepRadio.right = new FormAttachment(100, 0);
@@ -448,8 +448,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
     radioByReference = new Button(gTransGroup, SWT.RADIO);
     props.setLook(radioByReference);
     radioByReference.setSelection(false);
-    radioByReference.setText(BaseMessages.getString(PKG, "MappingDialog.RadioRepByReference.Label")); //$NON-NLS-1$
-    radioByReference.setToolTipText(BaseMessages.getString(PKG, "MappingDialog.RadioRepByReference.Tooltip", Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
+    radioByReference.setText(BaseMessages.getString(PKG, "MappingDialog.RadioRepByReference.Label")); 
+    radioByReference.setToolTipText(BaseMessages.getString(PKG, "MappingDialog.RadioRepByReference.Tooltip", Const.CR));  
     FormData fdRadioByReference = new FormData();
     fdRadioByReference.left = new FormAttachment(0, 0);
     fdRadioByReference.right = new FormAttachment(100, 0);
@@ -623,9 +623,9 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
 		// Some buttons
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 
@@ -721,7 +721,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		{
 			new ErrorDialog(
 					shell,
-					BaseMessages.getString(PKG, "MappingDialog.ErrorSelectingObject.DialogTitle"), BaseMessages.getString(PKG, "MappingDialog.ErrorSelectingObject.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+					BaseMessages.getString(PKG, "MappingDialog.ErrorSelectingObject.DialogTitle"), BaseMessages.getString(PKG, "MappingDialog.ErrorSelectingObject.DialogMessage"), ke);  
 		}
 	}
 
@@ -761,11 +761,11 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
     } catch (IOException e) {
       new ErrorDialog(shell, 
           BaseMessages.getString(PKG, "MappingDialog.ErrorLoadingTransformation.DialogTitle"), 
-          BaseMessages.getString(PKG, "MappingDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+          BaseMessages.getString(PKG, "MappingDialog.ErrorLoadingTransformation.DialogMessage"), e);  
     } catch (KettleException e) {
       new ErrorDialog(shell, 
           BaseMessages.getString(PKG, "MappingDialog.ErrorLoadingTransformation.DialogTitle"), 
-          BaseMessages.getString(PKG, "MappingDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+          BaseMessages.getString(PKG, "MappingDialog.ErrorLoadingTransformation.DialogMessage"), e);  
     }
   }
 
@@ -1043,8 +1043,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 	{
 
 		CTabItem wParametersTab = new CTabItem(wTabFolder, SWT.NONE);
-		wParametersTab.setText(BaseMessages.getString(PKG, "MappingDialog.Parameters.Title")); //$NON-NLS-1$
-		wParametersTab.setToolTipText(BaseMessages.getString(PKG, "MappingDialog.Parameters.Tooltip")); //$NON-NLS-1$
+		wParametersTab.setText(BaseMessages.getString(PKG, "MappingDialog.Parameters.Title")); 
+		wParametersTab.setToolTipText(BaseMessages.getString(PKG, "MappingDialog.Parameters.Tooltip")); 
 
 		Composite wParametersComposite = new Composite(wTabFolder, SWT.NONE);
 		props.setLook(wParametersComposite);
@@ -1071,9 +1071,9 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		//
 		ColumnInfo[] colinfo = new ColumnInfo[] {
 				new ColumnInfo(
-						BaseMessages.getString(PKG, "MappingDialog.Parameters.column.Variable"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //$NON-NLS-1$
+						BaseMessages.getString(PKG, "MappingDialog.Parameters.column.Variable"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), 
 				new ColumnInfo(
-						BaseMessages.getString(PKG, "MappingDialog.Parameters.column.ValueOrField"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //$NON-NLS-1$
+						BaseMessages.getString(PKG, "MappingDialog.Parameters.column.ValueOrField"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), 
 		};
 		colinfo[1].setUsingVariables(true);
 
@@ -1259,7 +1259,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
 		final Label wlInputStep = new Label(wInputComposite, SWT.RIGHT);
 		props.setLook(wlInputStep);
-		wlInputStep.setText(inputStepLabel); //$NON-NLS-1$
+		wlInputStep.setText(inputStepLabel); 
 		FormData fdlInputStep = new FormData();
 		fdlInputStep.top = new FormAttachment(wbInputStep, 0, SWT.CENTER);
 		fdlInputStep.left = new FormAttachment(0, 0); // First one in the left
@@ -1313,7 +1313,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
 		final Label wlOutputStep = new Label(wInputComposite, SWT.RIGHT);
 		props.setLook(wlOutputStep);
-		wlOutputStep.setText(outputStepLabel); //$NON-NLS-1$
+		wlOutputStep.setText(outputStepLabel); 
 		FormData fdlOutputStep = new FormData();
 		fdlOutputStep.top = new FormAttachment(wbOutputStep, 0, SWT.CENTER);
 		fdlOutputStep.left = new FormAttachment(0, 0);
@@ -1336,7 +1336,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		//
 		final Label wlMainPath = new Label(wInputComposite, SWT.RIGHT);
 		props.setLook(wlMainPath);
-		wlMainPath.setText(BaseMessages.getString(PKG, "MappingDialog.input.MainDataPath")); //$NON-NLS-1$
+		wlMainPath.setText(BaseMessages.getString(PKG, "MappingDialog.input.MainDataPath")); 
 		FormData fdlMainPath = new FormData();
 		fdlMainPath.top = new FormAttachment(wbOutputStep, margin);
 		fdlMainPath.left = new FormAttachment(0, 0);
@@ -1371,7 +1371,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		//
 		Label wlDescription = new Label(wInputComposite, SWT.RIGHT);
 		props.setLook(wlDescription);
-		wlDescription.setText(descriptionLabel); //$NON-NLS-1$
+		wlDescription.setText(descriptionLabel); 
 		FormData fdlDescription = new FormData();
 		fdlDescription.top = new FormAttachment(lastControl, margin);
 		fdlDescription.left = new FormAttachment(0, 0); // First one in the left
@@ -1416,8 +1416,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		wbEnterMapping.setEnabled(input);
 
 		ColumnInfo[] colinfo = new ColumnInfo[] {
-				new ColumnInfo(sourceColumnLabel, ColumnInfo.COLUMN_TYPE_TEXT, false, false), //$NON-NLS-1$
-				new ColumnInfo(targetColumnLabel, ColumnInfo.COLUMN_TYPE_TEXT, false, false), //$NON-NLS-1$
+				new ColumnInfo(sourceColumnLabel, ColumnInfo.COLUMN_TYPE_TEXT, false, false), 
+				new ColumnInfo(targetColumnLabel, ColumnInfo.COLUMN_TYPE_TEXT, false, false), 
 		};
 		final TableView wFieldMappings = new TableView(transMeta, wInputComposite, SWT.FULL_SELECTION
 				| SWT.SINGLE | SWT.BORDER, colinfo, 1, lsMod, props);
@@ -1533,7 +1533,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
       //
       Label wlRenameOutput = new Label(wInputComposite, SWT.RIGHT);
       props.setLook(wlRenameOutput);
-      wlRenameOutput.setText(BaseMessages.getString(PKG, "MappingDialog.input.RenamingOnOutput")); //$NON-NLS-1$
+      wlRenameOutput.setText(BaseMessages.getString(PKG, "MappingDialog.input.RenamingOnOutput")); 
       FormData fdlRenameOutput = new FormData();
       fdlRenameOutput.top = new FormAttachment(lastControl, margin);
       fdlRenameOutput.left = new FormAttachment(0, 0);
@@ -1735,12 +1735,12 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
 		if (Const.isEmpty(stepname))
 		{
-			wTab.setText(tabTitle); //$NON-NLS-1$
+			wTab.setText(tabTitle); 
 		} else
 		{
-			wTab.setText(tabTitle + " : " + stepname); //$NON-NLS-1$ $NON-NLS-2$
+			wTab.setText(tabTitle + " : " + stepname);  
 		}
-		String tooltip = tabTooltip; //$NON-NLS-1$
+		String tooltip = tabTooltip; 
 		if (!Const.isEmpty(stepname))
 		{
 			tooltip += Const.CR + Const.CR + stepname;
@@ -1749,7 +1749,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		{
 			tooltip += Const.CR + Const.CR + description;
 		}
-		wTab.setToolTipText(tooltip); //$NON-NLS-1$
+		wTab.setToolTipText(tooltip); 
 	}
 
 

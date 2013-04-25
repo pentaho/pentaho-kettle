@@ -156,14 +156,14 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "XsltDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "XsltDialog.Shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Filename line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "XsltDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "XsltDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -476,7 +476,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
  		
  		 // Output properties
 		 wlOutputProperties=new Label(wAdditionalComp, SWT.NONE);
-	     wlOutputProperties.setText(BaseMessages.getString(PKG, "XsltDialog.OutputProperties.Label")); //$NON-NLS-1$
+	     wlOutputProperties.setText(BaseMessages.getString(PKG, "XsltDialog.OutputProperties.Label")); 
 	     props.setLook(wlOutputProperties);
 	     fdlOutputProperties=new FormData();
 	     fdlOutputProperties.left = new FormAttachment(0, 0);
@@ -487,7 +487,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 		
 		 colinf=new ColumnInfo[] { 
 		  new ColumnInfo(BaseMessages.getString(PKG, "XsltDialog.ColumnInfo.OutputProperties.Name"),      ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
-		  new ColumnInfo(BaseMessages.getString(PKG, "XsltDialog.ColumnInfo.OutputProperties.Value"),  ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
+		  new ColumnInfo(BaseMessages.getString(PKG, "XsltDialog.ColumnInfo.OutputProperties.Value"),  ColumnInfo.COLUMN_TYPE_TEXT,   false), 
 	       };
 		 colinf[0].setComboValues(XsltMeta.outputProperties);
 		 colinf[1].setUsingVariables(true);
@@ -509,7 +509,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 		// Parameters
  		
 		 wlFields=new Label(wAdditionalComp, SWT.NONE);
-	     wlFields.setText(BaseMessages.getString(PKG, "XsltDialog.Parameters.Label")); //$NON-NLS-1$
+	     wlFields.setText(BaseMessages.getString(PKG, "XsltDialog.Parameters.Label")); 
 	     props.setLook(wlFields);
 	     fdlFields=new FormData();
 	     fdlFields.left = new FormAttachment(0, 0);
@@ -517,7 +517,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 	     wlFields.setLayoutData(fdlFields);
 	       
 		wGet=new Button(wAdditionalComp, SWT.PUSH);
-		wGet.setText(BaseMessages.getString(PKG, "XsltDialog.GetFields.Button")); //$NON-NLS-1$
+		wGet.setText(BaseMessages.getString(PKG, "XsltDialog.GetFields.Button")); 
 		FormData fdGet = new FormData();
 		fdGet.top = new FormAttachment(wlFields, margin);
 		fdGet.right = new FormAttachment(100, 0);
@@ -527,7 +527,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 		
 		 colinf=new ColumnInfo[] { 
 		  new ColumnInfo(BaseMessages.getString(PKG, "XsltDialog.ColumnInfo.Name"),      ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
-		  new ColumnInfo(BaseMessages.getString(PKG, "XsltDialog.ColumnInfo.Parameter"),  ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
+		  new ColumnInfo(BaseMessages.getString(PKG, "XsltDialog.ColumnInfo.Parameter"),  ColumnInfo.COLUMN_TYPE_TEXT,   false), 
 	       };
 		colinf[1].setUsingVariables(true);
 		
@@ -598,10 +598,10 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 		wTabFolder.setLayoutData(fdTabFolder);
 
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wTabFolder);
 
@@ -708,7 +708,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 			}
 			if(!Const.isEmpty(initValue)) cc.setText(initValue);
 		 }catch(KettleException ke){
-				new ErrorDialog(shell, BaseMessages.getString(PKG, "XsltDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "XsltDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "XsltDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "XsltDialog.FailedToGetFields.DialogMessage"), ke);  
 			}
 		 
 	 }
@@ -779,7 +779,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 		int nroutputprops = wOutputProperties.nrNonEmpty();
 		input.allocate(nrparams, nroutputprops);
 
-		if(isDebug()) logDebug(BaseMessages.getString(PKG, "HTTPDialog.Log.FoundArguments",String.valueOf(nrparams))); //$NON-NLS-1$ //$NON-NLS-2$
+		if(isDebug()) logDebug(BaseMessages.getString(PKG, "HTTPDialog.Log.FoundArguments",String.valueOf(nrparams)));  
 		for (int i=0;i<nrparams;i++)
 		{
 			TableItem item = wFields.getNonEmpty(i);
@@ -825,7 +825,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 		catch(KettleException ke)
 		{
 			new ErrorDialog(shell, BaseMessages.getString(PKG, "XsltDialog.FailedToGetFields.DialogTitle"), 
-					BaseMessages.getString(PKG, "XsltDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+					BaseMessages.getString(PKG, "XsltDialog.FailedToGetFields.DialogMessage"), ke);  
 		}
 	}
 }

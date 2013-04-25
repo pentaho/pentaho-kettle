@@ -135,7 +135,7 @@ public class SampleRowsMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		 catch (Exception e)
 	     {
-	        throw new KettleException(BaseMessages.getString(PKG, "SampleRowsMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
+	        throw new KettleException(BaseMessages.getString(PKG, "SampleRowsMeta.Exception.UnexpectedErrorReadingStepInfo"), e); 
 	     }
 	}
 	
@@ -150,7 +150,7 @@ public class SampleRowsMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch (Exception e)
         {
-            throw new KettleException(BaseMessages.getString(PKG, "SampleRowsMeta.Exception.UnexpectedErrorSavingStepInfo"), e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "SampleRowsMeta.Exception.UnexpectedErrorSavingStepInfo"), e); 
         }
 	}
 	 public String getXML()
@@ -174,17 +174,17 @@ public class SampleRowsMeta extends BaseStepMeta implements StepMetaInterface
 		remarks.add(cr);
 		
 		if (prev==null || prev.size()==0)
-			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "SampleRowsMeta.CheckResult.NotReceivingFields"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "SampleRowsMeta.CheckResult.NotReceivingFields"), stepMeta); 
 		else
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SampleRowsMeta.CheckResult.StepRecevingData",prev.size()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SampleRowsMeta.CheckResult.StepRecevingData",prev.size()+""), stepMeta);  
 		remarks.add(cr);
 		
 		
 		// See if we have input streams leading to this step!
 		if (input.length>0)
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SampleRowsMeta.CheckResult.StepRecevingData2"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SampleRowsMeta.CheckResult.StepRecevingData2"), stepMeta); 
 		else
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SampleRowsMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SampleRowsMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepMeta); 
 		remarks.add(cr);
 	}
 	

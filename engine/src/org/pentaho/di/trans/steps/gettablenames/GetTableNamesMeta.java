@@ -281,7 +281,7 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
         includeView=true;
         includeSynonym=true;
         addSchemaInOutput=false;
-        tablenamefieldname = "tablename"; //$NON-NLS-1$
+        tablenamefieldname = "tablename"; 
         sqlcreationfieldname=null;
         objecttypefieldname="type";
         issystemobjectfieldname="is system";
@@ -333,9 +333,9 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
     {
         StringBuffer retval = new StringBuffer();
 
-        retval.append("    " + XMLHandler.addTagValue("connection", database == null ? "" : database.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        retval.append("    " + XMLHandler.addTagValue("connection", database == null ? "" : database.getName()));   //$NON-NLS-3$
         retval.append("    " + XMLHandler.addTagValue("schemaname", schemaname));
-        retval.append("    " + XMLHandler.addTagValue("tablenamefieldname", tablenamefieldname)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    " + XMLHandler.addTagValue("tablenamefieldname", tablenamefieldname));  
         retval.append("    " + XMLHandler.addTagValue("objecttypefieldname", objecttypefieldname)); 
         retval.append("    " + XMLHandler.addTagValue("issystemobjectfieldname", issystemobjectfieldname)); 
         retval.append("    " + XMLHandler.addTagValue("sqlcreationfieldname", sqlcreationfieldname)); 
@@ -359,10 +359,10 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
         try
         {
 
-            String con = XMLHandler.getTagValue(stepnode, "connection"); //$NON-NLS-1$
+            String con = XMLHandler.getTagValue(stepnode, "connection"); 
             database = DatabaseMeta.findDatabase(databases, con);
             schemaname = XMLHandler.getTagValue(stepnode, "schemaname"); 
-            tablenamefieldname = XMLHandler.getTagValue(stepnode, "tablenamefieldname"); //$NON-NLS-1$
+            tablenamefieldname = XMLHandler.getTagValue(stepnode, "tablenamefieldname"); 
             objecttypefieldname = XMLHandler.getTagValue(stepnode, "objecttypefieldname"); 
             sqlcreationfieldname = XMLHandler.getTagValue(stepnode, "sqlcreationfieldname"); 
             
@@ -379,7 +379,7 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleXMLException(BaseMessages.getString(PKG, "GetTableNamesMeta.Exception.UnableToReadStepInfo"), e); //$NON-NLS-1$
+            throw new KettleXMLException(BaseMessages.getString(PKG, "GetTableNamesMeta.Exception.UnableToReadStepInfo"), e); 
         }
     }
 
@@ -389,7 +389,7 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			database = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);
 			schemaname = rep.getStepAttributeString(id_step, "schemaname");
-			tablenamefieldname = rep.getStepAttributeString(id_step, "tablenamefieldname"); //$NON-NLS-1$
+			tablenamefieldname = rep.getStepAttributeString(id_step, "tablenamefieldname"); 
             objecttypefieldname = rep.getStepAttributeString(id_step, "objecttypefieldname");
             sqlcreationfieldname = rep.getStepAttributeString(id_step, "sqlcreationfieldname");
             
@@ -406,7 +406,7 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleException(BaseMessages.getString(PKG, "GetTableNamesMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "GetTableNamesMeta.Exception.UnexpectedErrorReadingStepInfo"), e); 
         }
     }
 
@@ -417,7 +417,7 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
         {
     		rep.saveDatabaseMetaStepAttribute(id_transformation, id_step, "id_connection", database);
     		rep.saveStepAttribute(id_transformation, id_step, "schemaname", schemaname);
-    		rep.saveStepAttribute(id_transformation, id_step, "tablenamefieldname", tablenamefieldname); //$NON-NLS-1$
+    		rep.saveStepAttribute(id_transformation, id_step, "tablenamefieldname", tablenamefieldname); 
             rep.saveStepAttribute(id_transformation, id_step, "objecttypefieldname", objecttypefieldname);
             rep.saveStepAttribute(id_transformation, id_step, "sqlcreationfieldname", sqlcreationfieldname);
             
@@ -436,39 +436,39 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch (Exception e)
         {
-            throw new KettleException(BaseMessages.getString(PKG, "GetTableNamesMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "GetTableNamesMeta.Exception.UnableToSaveStepInfo") + id_step, e); 
         }
     }
 
 	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
         CheckResult cr;
-        String error_message = ""; //$NON-NLS-1$
+        String error_message = ""; 
 
         if (database == null)
         {
-            error_message = BaseMessages.getString(PKG, "GetTableNamesMeta.CheckResult.InvalidConnection"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "GetTableNamesMeta.CheckResult.InvalidConnection"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
             remarks.add(cr);
         }
         if (Const.isEmpty(tablenamefieldname))
         {
-            error_message = BaseMessages.getString(PKG, "GetTableNamesMeta.CheckResult.TablenameFieldNameMissing"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "GetTableNamesMeta.CheckResult.TablenameFieldNameMissing"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
             remarks.add(cr);
         }
         else
         {
-            error_message = BaseMessages.getString(PKG, "GetTableNamesMeta.CheckResult.TablenameFieldNameOK"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "GetTableNamesMeta.CheckResult.TablenameFieldNameOK"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
             remarks.add(cr);
         }
        
         // See if we have input streams leading to this step!
         if (input.length > 0 && !isDynamicSchema())
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "GetTableNamesMeta.CheckResult.NoInpuReceived"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "GetTableNamesMeta.CheckResult.NoInpuReceived"), stepMeta); 
         else
-        	cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "GetTableNamesMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+        	cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "GetTableNamesMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); 
         remarks.add(cr);   
         
 

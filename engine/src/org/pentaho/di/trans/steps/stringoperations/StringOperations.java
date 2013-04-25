@@ -239,7 +239,7 @@ public class StringOperations extends BaseStep implements StepInterface {
 				data.inStreamNrs[i] = getInputRowMeta().indexOfValue(meta.getFieldInStream()[i]);
 				if (data.inStreamNrs[i] < 0) // couldn't find field!
 				{
-					throw new KettleStepException(BaseMessages.getString(PKG, "StringOperations.Exception.FieldRequired", meta.getFieldInStream()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleStepException(BaseMessages.getString(PKG, "StringOperations.Exception.FieldRequired", meta.getFieldInStream()[i]));  
 				}
 				// check field type
 				if(!getInputRowMeta().getValueMeta(data.inStreamNrs[i]).isString())
@@ -311,7 +311,7 @@ public class StringOperations extends BaseStep implements StepInterface {
 
 			if (checkFeedback(getLinesRead())){
 				if(log.isDetailed())
-					logDetailed(BaseMessages.getString(PKG, "StringOperations.Log.LineNumber") + getLinesRead()); //$NON-NLS-1$
+					logDetailed(BaseMessages.getString(PKG, "StringOperations.Log.LineNumber") + getLinesRead()); 
 			}
 		} catch (KettleException e) {
 			
@@ -322,7 +322,7 @@ public class StringOperations extends BaseStep implements StepInterface {
                   sendToErrorRow = true;
                   errorMessage = e.toString();
         	} else {
-        		logError(BaseMessages.getString(PKG, "StringOperations.Log.ErrorInStep",e.getMessage())); //$NON-NLS-1$
+        		logError(BaseMessages.getString(PKG, "StringOperations.Log.ErrorInStep",e.getMessage())); 
 				setErrors(1);
 				stopAll();
 				setOutputDone();  // signal end to receiver(s)

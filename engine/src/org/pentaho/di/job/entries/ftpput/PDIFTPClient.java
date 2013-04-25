@@ -74,7 +74,7 @@ public class PDIFTPClient extends FTPClient {
   public PDIFTPClient(LogChannelInterface log) {
 	  super();
 	  this.log = log;
-	  log.logBasic(BaseMessages.getString(PKG, "PDIFTPClient.DEBUG.Using.Overridden.FTPClient")); //$NON-NLS-1$
+	  log.logBasic(BaseMessages.getString(PKG, "PDIFTPClient.DEBUG.Using.Overridden.FTPClient")); 
   }
 
 /*
@@ -86,7 +86,7 @@ public class PDIFTPClient extends FTPClient {
 
     // first try the SIZE command
     if (sizeSupported) {
-      lastReply = control.sendCommand("SIZE " + remoteFile); //$NON-NLS-1$
+      lastReply = control.sendCommand("SIZE " + remoteFile); 
       char ch = lastReply.getReplyCode().charAt(0);
       if (ch == '2')
         return true;
@@ -94,12 +94,12 @@ public class PDIFTPClient extends FTPClient {
         return false;
 
       sizeSupported = false;
-      log.logDebug("SIZE not supported - trying MDTM"); //$NON-NLS-1$
+      log.logDebug("SIZE not supported - trying MDTM"); 
     }
 
     // then try the MDTM command
     if (mdtmSupported) {
-      lastReply = control.sendCommand("MDTM " + remoteFile); //$NON-NLS-1$
+      lastReply = control.sendCommand("MDTM " + remoteFile); 
       char ch = lastReply.getReplyCode().charAt(0);
       if (ch == '2')
         return true;
@@ -107,7 +107,7 @@ public class PDIFTPClient extends FTPClient {
         return false;
 
       mdtmSupported = false;
-      log.logDebug("MDTM not supported - trying LIST"); //$NON-NLS-1$
+      log.logDebug("MDTM not supported - trying LIST"); 
     }
 
     try {

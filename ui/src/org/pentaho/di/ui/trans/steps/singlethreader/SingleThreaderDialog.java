@@ -172,14 +172,14 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "SingleThreaderDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "SingleThreaderDialog.Shell.Title")); 
 
 		middle = props.getMiddlePct();
 		margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname = new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "SingleThreaderDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "SingleThreaderDialog.Stepname.Label")); 
 		props.setLook(wlStepname);
 		fdlStepname = new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -205,7 +205,7 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
 		// //////////////////////////////////////////////////
 		//
 		gTransGroup = new Group(shell, SWT.SHADOW_ETCHED_IN);
-		gTransGroup.setText(BaseMessages.getString(PKG, "SingleThreaderDialog.TransGroup.Label")); //$NON-NLS-1$;
+		gTransGroup.setText(BaseMessages.getString(PKG, "SingleThreaderDialog.TransGroup.Label")); ;
 		gTransGroup.setBackground(shell.getBackground()); // the default looks
 		// ugly
 		FormLayout transGroupLayout = new FormLayout();
@@ -220,8 +220,8 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
 		radioFilename = new Button(gTransGroup, SWT.RADIO);
 		props.setLook(radioFilename);
 		radioFilename.setSelection(false);
-		radioFilename.setText(BaseMessages.getString(PKG, "SingleThreaderDialog.RadioFile.Label")); //$NON-NLS-1$
-		radioFilename.setToolTipText(BaseMessages.getString(PKG, "SingleThreaderDialog.RadioFile.Tooltip", Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
+		radioFilename.setText(BaseMessages.getString(PKG, "SingleThreaderDialog.RadioFile.Label")); 
+		radioFilename.setToolTipText(BaseMessages.getString(PKG, "SingleThreaderDialog.RadioFile.Tooltip", Const.CR));  
 		FormData fdFileRadio = new FormData();
 		fdFileRadio.left = new FormAttachment(0, 0);
 		fdFileRadio.right = new FormAttachment(100, 0);
@@ -268,8 +268,8 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
 		radioByName = new Button(gTransGroup, SWT.RADIO);
 		props.setLook(radioByName);
 		radioByName.setSelection(false);
-		radioByName.setText(BaseMessages.getString(PKG, "SingleThreaderDialog.RadioRep.Label")); //$NON-NLS-1$
-		radioByName.setToolTipText(BaseMessages.getString(PKG, "SingleThreaderDialog.RadioRep.Tooltip", Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
+		radioByName.setText(BaseMessages.getString(PKG, "SingleThreaderDialog.RadioRep.Label")); 
+		radioByName.setToolTipText(BaseMessages.getString(PKG, "SingleThreaderDialog.RadioRep.Tooltip", Const.CR));  
 		FormData fdRepRadio = new FormData();
 		fdRepRadio.left = new FormAttachment(0, 0);
 		fdRepRadio.right = new FormAttachment(100, 0);
@@ -328,8 +328,8 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
     radioByReference = new Button(gTransGroup, SWT.RADIO);
     props.setLook(radioByReference);
     radioByReference.setSelection(false);
-    radioByReference.setText(BaseMessages.getString(PKG, "SingleThreaderDialog.RadioRepByReference.Label")); //$NON-NLS-1$
-    radioByReference.setToolTipText(BaseMessages.getString(PKG, "SingleThreaderDialog.RadioRepByReference.Tooltip", Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
+    radioByReference.setText(BaseMessages.getString(PKG, "SingleThreaderDialog.RadioRepByReference.Label")); 
+    radioByReference.setToolTipText(BaseMessages.getString(PKG, "SingleThreaderDialog.RadioRepByReference.Tooltip", Const.CR));  
     FormData fdRadioByReference = new FormData();
     fdRadioByReference.left = new FormAttachment(0, 0);
     fdRadioByReference.right = new FormAttachment(100, 0);
@@ -423,7 +423,7 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
         } catch(Exception e) {
           new ErrorDialog(shell,
               BaseMessages.getString(PKG, "SingleThreaderDialog.ErrorLoadingTransformation.DialogTitle"), 
-              BaseMessages.getString(PKG, "SingleThreaderDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+              BaseMessages.getString(PKG, "SingleThreaderDialog.ErrorLoadingTransformation.DialogMessage"), e);  
         }
       }
     });
@@ -465,7 +465,7 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
         } catch(Exception e) {
           new ErrorDialog(shell,
               BaseMessages.getString(PKG, "SingleThreaderDialog.ErrorLoadingTransformation.DialogTitle"), 
-              BaseMessages.getString(PKG, "SingleThreaderDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+              BaseMessages.getString(PKG, "SingleThreaderDialog.ErrorLoadingTransformation.DialogMessage"), e);  
         }
       }
     });
@@ -505,7 +505,7 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
     wBatchTime.setLayoutData(fdBatchTime);
     
     gParametersGroup = new Group(shell, SWT.SHADOW_ETCHED_IN);
-    gParametersGroup.setText(BaseMessages.getString(PKG, "SingleThreaderDialog.ParamGroup.Label")); //$NON-NLS-1$;
+    gParametersGroup.setText(BaseMessages.getString(PKG, "SingleThreaderDialog.ParamGroup.Label")); ;
     gParametersGroup.setBackground(shell.getBackground()); // the default looks ugly
     FormLayout paramGroupLayout = new FormLayout();
     paramGroupLayout.marginLeft = margin * 2;
@@ -575,9 +575,9 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
     
 		// Some buttons
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, gParametersGroup);
 
@@ -675,7 +675,7 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
 		{
 			new ErrorDialog(
 					shell,
-					BaseMessages.getString(PKG, "SingleThreaderDialog.ErrorSelectingObject.DialogTitle"), BaseMessages.getString(PKG, "SingleThreaderDialog.ErrorSelectingObject.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+					BaseMessages.getString(PKG, "SingleThreaderDialog.ErrorSelectingObject.DialogTitle"), BaseMessages.getString(PKG, "SingleThreaderDialog.ErrorSelectingObject.DialogMessage"), ke);  
 		}
 	}
 
@@ -715,11 +715,11 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
     } catch (IOException e) {
       new ErrorDialog(shell, 
           BaseMessages.getString(PKG, "SingleThreaderDialog.ErrorLoadingTransformation.DialogTitle"), 
-          BaseMessages.getString(PKG, "SingleThreaderDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+          BaseMessages.getString(PKG, "SingleThreaderDialog.ErrorLoadingTransformation.DialogMessage"), e);  
     } catch (KettleException e) {
       new ErrorDialog(shell, 
           BaseMessages.getString(PKG, "SingleThreaderDialog.ErrorLoadingTransformation.DialogTitle"), 
-          BaseMessages.getString(PKG, "SingleThreaderDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+          BaseMessages.getString(PKG, "SingleThreaderDialog.ErrorLoadingTransformation.DialogMessage"), e);  
     }
   }
 

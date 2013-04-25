@@ -1064,7 +1064,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		
 		wlChannelCustom = new Label(wCustomComp, SWT.NONE);
-		wlChannelCustom.setText(BaseMessages.getString(PKG, "RssOutputDialog.Keys.Label")); //$NON-NLS-1$
+		wlChannelCustom.setText(BaseMessages.getString(PKG, "RssOutputDialog.Keys.Label")); 
  		props.setLook(wlChannelCustom);
 		fdlChannelCustom = new FormData();
 		fdlChannelCustom.left = new FormAttachment(0, 0);
@@ -1075,7 +1075,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		int nrChannelRows = (input.getChannelCustomFields() != null ? input.getChannelCustomFields().length : 1);
 
 		ColumnInfo[] ciChannel = new ColumnInfo[nrChannelCols];
-		ciChannel[0] = new ColumnInfo(BaseMessages.getString(PKG, "RssOutputDialog.ColumnInfo.Tag"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
+		ciChannel[0] = new ColumnInfo(BaseMessages.getString(PKG, "RssOutputDialog.ColumnInfo.Tag"), ColumnInfo.COLUMN_TYPE_TEXT, false); 
 		ciChannel[1] = new ColumnInfo(BaseMessages.getString(PKG, "RssOutputDialog.ColumnInfo.Field"), ColumnInfo.COLUMN_TYPE_CCOMBO);
 		ciChannel[0].setUsingVariables(true);
 		ciChannel[1].setComboValues(fieldNames);
@@ -1088,7 +1088,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 			      );
 		
 		wGet = new Button(wCustomComp, SWT.PUSH);
-		wGet.setText(BaseMessages.getString(PKG, "RssOutputDialog.GetFields.Button")); //$NON-NLS-1$
+		wGet.setText(BaseMessages.getString(PKG, "RssOutputDialog.GetFields.Button")); 
 		fdGet = new FormData();
 		fdGet.right = new FormAttachment(100, 0);
 		fdGet.top = new FormAttachment(wlChannelCustom, margin);
@@ -1103,16 +1103,16 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 
 		// THE BUTTONS
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 
 		
 		// THE Item Custom
 		wlItemCustom = new Label(wCustomComp, SWT.NONE);
-		wlItemCustom.setText(BaseMessages.getString(PKG, "RssOutputDialog.ItemCustom.Label")); //$NON-NLS-1$
+		wlItemCustom.setText(BaseMessages.getString(PKG, "RssOutputDialog.ItemCustom.Label")); 
  		props.setLook(wlItemCustom);
 		fdlItemCustom = new FormData();
 		fdlItemCustom.left = new FormAttachment(0, 0);
@@ -1123,14 +1123,14 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		int UpInsRows = (input.getItemCustomFields()!= null ? input.getItemCustomFields().length : 1);
 
 		ColumnInfo[] ciItem = new ColumnInfo[UpInsCols];
-		ciItem[0] = new ColumnInfo(BaseMessages.getString(PKG, "RssOutputDialog.ColumnInfo.Tag"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
-		ciItem[1] = new ColumnInfo(BaseMessages.getString(PKG, "RssOutputDialog.ColumnInfo.Field"), ColumnInfo.COLUMN_TYPE_CCOMBO);//$NON-NLS-1$
+		ciItem[0] = new ColumnInfo(BaseMessages.getString(PKG, "RssOutputDialog.ColumnInfo.Tag"), ColumnInfo.COLUMN_TYPE_TEXT, false); 
+		ciItem[1] = new ColumnInfo(BaseMessages.getString(PKG, "RssOutputDialog.ColumnInfo.Field"), ColumnInfo.COLUMN_TYPE_CCOMBO);
 		ciItem[1].setComboValues(fieldNames);
 		wItemCustom = new TableView(transMeta,wCustomComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
 				ciItem, UpInsRows, lsMod, props);
 
 		wGetCustomItem = new Button(wCustomComp, SWT.PUSH);
-		wGetCustomItem.setText(BaseMessages.getString(PKG, "RssOutputDialog.GetItemFields.Label")); //$NON-NLS-1$
+		wGetCustomItem.setText(BaseMessages.getString(PKG, "RssOutputDialog.GetItemFields.Label")); 
 		fdGetCustomItem = new FormData();
 		fdGetCustomItem.top   = new FormAttachment(wlItemCustom, margin);
 		fdGetCustomItem.right = new FormAttachment(100, 0);
@@ -1176,7 +1176,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 
 		// Namespaces
 		wlNameSpace = new Label(wCustomNameSpaceComp, SWT.NONE);
-		wlNameSpace.setText(BaseMessages.getString(PKG, "RssOutputDialog.NameSpace.Label")); //$NON-NLS-1$
+		wlNameSpace.setText(BaseMessages.getString(PKG, "RssOutputDialog.NameSpace.Label")); 
  		props.setLook(wlNameSpace);
 		fdlNameSpace = new FormData();
 		fdlNameSpace.left = new FormAttachment(0, 0);
@@ -1187,8 +1187,8 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		int nrRows = (input.getNameSpaces()!= null ? input.getNameSpaces().length : 1);
 
 		ColumnInfo[] ciNameSpace = new ColumnInfo[2];
-		ciNameSpace[0] = new ColumnInfo(BaseMessages.getString(PKG, "RssOutputDialog.ColumnInfo.NameSpace.Title"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
-		ciNameSpace[1] = new ColumnInfo(BaseMessages.getString(PKG, "RssOutputDialog.ColumnInfo.NameSpace"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
+		ciNameSpace[0] = new ColumnInfo(BaseMessages.getString(PKG, "RssOutputDialog.ColumnInfo.NameSpace.Title"), ColumnInfo.COLUMN_TYPE_TEXT, false); 
+		ciNameSpace[1] = new ColumnInfo(BaseMessages.getString(PKG, "RssOutputDialog.ColumnInfo.NameSpace"), ColumnInfo.COLUMN_TYPE_TEXT, false); 
 		ciNameSpace[0].setUsingVariables(true);
 		ciNameSpace[1].setUsingVariables(true);
 		wNameSpaceCustom = new TableView(transMeta,wCustomNameSpaceComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
@@ -1828,8 +1828,8 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 			}
 			catch (KettleException ke)
 			{
-				new ErrorDialog(shell, BaseMessages.getString(PKG, "RssOutputDialog.UnableToGetFieldsError.DialogTitle"), //$NON-NLS-1$
-						BaseMessages.getString(PKG, "RssOutputDialog.UnableToGetFieldsError.DialogMessage"), ke); //$NON-NLS-1$
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "RssOutputDialog.UnableToGetFieldsError.DialogTitle"), 
+						BaseMessages.getString(PKG, "RssOutputDialog.UnableToGetFieldsError.DialogMessage"), ke); 
 			}
 		}
 

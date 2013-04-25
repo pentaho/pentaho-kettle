@@ -76,7 +76,7 @@ public class MainController extends AbstractXulEventHandler implements DialogCon
     createBindings();
     
     if(dialog != null && repository != null) {
-      dialog.setTitle(BaseMessages.getString(PKG, "RepositoryExplorerDialog.DevTitle", repository.getName())); //$NON-NLS-1$
+      dialog.setTitle(BaseMessages.getString(PKG, "RepositoryExplorerDialog.DevTitle", repository.getName())); 
     }
   }
   
@@ -86,7 +86,7 @@ public class MainController extends AbstractXulEventHandler implements DialogCon
   
   private void createBindings(){
 
-    dialog = (XulDialog) document.getElementById("repository-explorer-dialog");//$NON-NLS-1$
+    dialog = (XulDialog) document.getElementById("repository-explorer-dialog");
     // acceptButton = (XulButton) document.getElementById("repository-explorer-dialog_accept");
   }
 
@@ -103,7 +103,7 @@ public class MainController extends AbstractXulEventHandler implements DialogCon
   }
   
   public String getName() {
-    return "mainController";//$NON-NLS-1$
+    return "mainController";
   }
   
   @Bindable

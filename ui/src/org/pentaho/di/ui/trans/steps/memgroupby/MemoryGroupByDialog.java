@@ -117,14 +117,14 @@ public class MemoryGroupByDialog extends BaseStepDialog implements StepDialogInt
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "MemoryGroupByDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "MemoryGroupByDialog.Shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 		
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "MemoryGroupByDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "MemoryGroupByDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -144,8 +144,8 @@ public class MemoryGroupByDialog extends BaseStepDialog implements StepDialogInt
         // Always pass a result rows as output
         //
         wlAlwaysAddResult=new Label(shell, SWT.RIGHT);
-        wlAlwaysAddResult.setText(BaseMessages.getString(PKG, "MemoryGroupByDialog.AlwaysAddResult.Label")); //$NON-NLS-1$
-        wlAlwaysAddResult.setToolTipText(BaseMessages.getString(PKG, "MemoryGroupByDialog.AlwaysAddResult.ToolTip")); //$NON-NLS-1$
+        wlAlwaysAddResult.setText(BaseMessages.getString(PKG, "MemoryGroupByDialog.AlwaysAddResult.Label")); 
+        wlAlwaysAddResult.setToolTipText(BaseMessages.getString(PKG, "MemoryGroupByDialog.AlwaysAddResult.ToolTip")); 
         props.setLook(wlAlwaysAddResult);
         fdlAlwaysAddResult=new FormData();
         fdlAlwaysAddResult.left = new FormAttachment(0, 0);
@@ -153,7 +153,7 @@ public class MemoryGroupByDialog extends BaseStepDialog implements StepDialogInt
         fdlAlwaysAddResult.right= new FormAttachment(middle, -margin);
         wlAlwaysAddResult.setLayoutData(fdlAlwaysAddResult);
         wAlwaysAddResult=new Button(shell, SWT.CHECK );
-        wAlwaysAddResult.setToolTipText(BaseMessages.getString(PKG, "MemoryGroupByDialog.AlwaysAddResult.ToolTip")); //$NON-NLS-1$
+        wAlwaysAddResult.setToolTipText(BaseMessages.getString(PKG, "MemoryGroupByDialog.AlwaysAddResult.ToolTip")); 
         props.setLook(wAlwaysAddResult);
         fdAlwaysAddResult=new FormData();
         fdAlwaysAddResult.left = new FormAttachment(middle, 0);
@@ -163,7 +163,7 @@ public class MemoryGroupByDialog extends BaseStepDialog implements StepDialogInt
 
         
 		wlGroup=new Label(shell, SWT.NONE);
-		wlGroup.setText(BaseMessages.getString(PKG, "MemoryGroupByDialog.Group.Label")); //$NON-NLS-1$
+		wlGroup.setText(BaseMessages.getString(PKG, "MemoryGroupByDialog.Group.Label")); 
  		props.setLook(wlGroup);
 		fdlGroup=new FormData();
 		fdlGroup.left  = new FormAttachment(0, 0);
@@ -186,7 +186,7 @@ public class MemoryGroupByDialog extends BaseStepDialog implements StepDialogInt
 						      );
 
 		wGet=new Button(shell, SWT.PUSH);
-		wGet.setText(BaseMessages.getString(PKG, "MemoryGroupByDialog.GetFields.Button")); //$NON-NLS-1$
+		wGet.setText(BaseMessages.getString(PKG, "MemoryGroupByDialog.GetFields.Button")); 
 		fdGet = new FormData();
 		fdGet.top   = new FormAttachment(wlGroup, margin);
 		fdGet.right = new FormAttachment(100, 0);
@@ -201,7 +201,7 @@ public class MemoryGroupByDialog extends BaseStepDialog implements StepDialogInt
 
 		// THE Aggregate fields
 		wlAgg=new Label(shell, SWT.NONE);
-		wlAgg.setText(BaseMessages.getString(PKG, "MemoryGroupByDialog.Aggregates.Label")); //$NON-NLS-1$
+		wlAgg.setText(BaseMessages.getString(PKG, "MemoryGroupByDialog.Aggregates.Label")); 
  		props.setLook(wlAgg);
 		fdlAgg=new FormData();
 		fdlAgg.left  = new FormAttachment(0, 0);
@@ -212,10 +212,10 @@ public class MemoryGroupByDialog extends BaseStepDialog implements StepDialogInt
 		int UpInsRows= (input.getAggregateField()!=null?input.getAggregateField().length:1);
 		
 		ciReturn=new ColumnInfo[UpInsCols];
-		ciReturn[0]=new ColumnInfo(BaseMessages.getString(PKG, "MemoryGroupByDialog.ColumnInfo.Name"),     ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+		ciReturn[0]=new ColumnInfo(BaseMessages.getString(PKG, "MemoryGroupByDialog.ColumnInfo.Name"),     ColumnInfo.COLUMN_TYPE_TEXT,   false); 
 		ciReturn[1]=new ColumnInfo(BaseMessages.getString(PKG, "MemoryGroupByDialog.ColumnInfo.Subject"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false);
-		ciReturn[2]=new ColumnInfo(BaseMessages.getString(PKG, "MemoryGroupByDialog.ColumnInfo.Type"),     ColumnInfo.COLUMN_TYPE_CCOMBO, MemoryGroupByMeta.typeGroupLongDesc); //$NON-NLS-1$
-		ciReturn[3]=new ColumnInfo(BaseMessages.getString(PKG, "MemoryGroupByDialog.ColumnInfo.Value"), ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+		ciReturn[2]=new ColumnInfo(BaseMessages.getString(PKG, "MemoryGroupByDialog.ColumnInfo.Type"),     ColumnInfo.COLUMN_TYPE_CCOMBO, MemoryGroupByMeta.typeGroupLongDesc); 
+		ciReturn[3]=new ColumnInfo(BaseMessages.getString(PKG, "MemoryGroupByDialog.ColumnInfo.Value"), ColumnInfo.COLUMN_TYPE_TEXT,   false); 
 		ciReturn[3].setToolTip(BaseMessages.getString(PKG, "MemoryGroupByDialog.ColumnInfo.Value.Tooltip"));
 		ciReturn[3].setUsingVariables(true);
 		
@@ -228,7 +228,7 @@ public class MemoryGroupByDialog extends BaseStepDialog implements StepDialogInt
 							  );
 
 		wGetAgg=new Button(shell, SWT.PUSH);
-		wGetAgg.setText(BaseMessages.getString(PKG, "MemoryGroupByDialog.GetLookupFields.Button")); //$NON-NLS-1$
+		wGetAgg.setText(BaseMessages.getString(PKG, "MemoryGroupByDialog.GetLookupFields.Button")); 
 		fdGetAgg = new FormData();
 		fdGetAgg.top   = new FormAttachment(wlAgg, margin);
 		fdGetAgg.right = new FormAttachment(100, 0);
@@ -266,9 +266,9 @@ public class MemoryGroupByDialog extends BaseStepDialog implements StepDialogInt
 
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 
@@ -335,7 +335,7 @@ public class MemoryGroupByDialog extends BaseStepDialog implements StepDialogInt
    * Copy information from the meta-data input to the dialog fields.
    */
   public void getData() {
-    logDebug(BaseMessages.getString(PKG, "MemoryGroupByDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+    logDebug(BaseMessages.getString(PKG, "MemoryGroupByDialog.Log.GettingKeyInfo")); 
 
     wAlwaysAddResult.setSelection(input.isAlwaysGivingBackOneRow());
 
@@ -417,7 +417,7 @@ public class MemoryGroupByDialog extends BaseStepDialog implements StepDialogInt
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "MemoryGroupByDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "MemoryGroupByDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "MemoryGroupByDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "MemoryGroupByDialog.FailedToGetFields.DialogMessage"), ke);  
 		}
 	}
 
@@ -433,7 +433,7 @@ public class MemoryGroupByDialog extends BaseStepDialog implements StepDialogInt
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "MemoryGroupByDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "MemoryGroupByDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "MemoryGroupByDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "MemoryGroupByDialog.FailedToGetFields.DialogMessage"), ke);  
 		}
 	}
 }

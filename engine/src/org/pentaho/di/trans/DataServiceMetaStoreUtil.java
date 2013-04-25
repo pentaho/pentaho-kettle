@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.sql.ServiceCacheMethod;
+import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.IMetaStoreElement;
 import org.pentaho.metastore.api.IMetaStoreElementType;
@@ -88,7 +89,8 @@ public class DataServiceMetaStoreUtil extends MetaStoreUtil {
     meta.setStepname(getChildString(element, DataServiceMeta.DATA_SERVICE_STEPNAME));
     meta.setTransFilename(getChildString(element, DataServiceMeta.DATA_SERVICE_TRANSFORMATION_FILENAME));
     meta.setTransRepositoryPath(getChildString(element, DataServiceMeta.DATA_SERVICE_TRANSFORMATION_REP_PATH));
-    meta.setTransObjectId(getChildString(element, DataServiceMeta.DATA_SERVICE_TRANSFORMATION_REP_OBJECT_ID));
+    String transObjectIdString = getChildString(element, DataServiceMeta.DATA_SERVICE_TRANSFORMATION_REP_OBJECT_ID);
+    meta.setTransObjectId(Const.isEmpty(transObjectIdString) ? null : new StringObjectId(transObjectIdString));
     meta.setCacheMaxAgeMinutes(Const.toInt(getChildString(element, DataServiceMeta.DATA_SERVICE_CACHE_MAX_AGE_MINUTES), 0));
     meta.setCacheMethod(ServiceCacheMethod.getMethodByName(getChildString(element, DataServiceMeta.DATA_SERVICE_CACHE_METHOD)));
     return meta;

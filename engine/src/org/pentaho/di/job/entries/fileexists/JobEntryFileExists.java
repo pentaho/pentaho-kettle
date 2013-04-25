@@ -74,14 +74,14 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
 
 	public JobEntryFileExists(String n)
 	{
-		super(n, ""); //$NON-NLS-1$
+		super(n, ""); 
 		filename=null;
 		setID(-1L);
 	}
 
 	public JobEntryFileExists()
 	{
-		this(""); //$NON-NLS-1$
+		this(""); 
 	}
 
     public Object clone()
@@ -95,7 +95,7 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
         StringBuffer retval = new StringBuffer();
 
 		retval.append(super.getXML());
-		retval.append("      ").append(XMLHandler.addTagValue("filename",   filename)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("filename",   filename));  
 
 		return retval.toString();
 	}
@@ -105,11 +105,11 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
 		try
 		{
 			super.loadXML(entrynode, databases, slaveServers);
-			filename      = XMLHandler.getTagValue(entrynode, "filename"); //$NON-NLS-1$
+			filename      = XMLHandler.getTagValue(entrynode, "filename"); 
 		}
 		catch(KettleXMLException xe)
 		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryFileExists.ERROR_0001_Cannot_Load_Job_Entry_From_Xml_Node"), xe); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryFileExists.ERROR_0001_Cannot_Load_Job_Entry_From_Xml_Node"), xe); 
 		}
 	}
 
@@ -117,11 +117,11 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
 	{
 		try
 		{
-			filename = rep.getJobEntryAttributeString(id_jobentry, "filename"); //$NON-NLS-1$
+			filename = rep.getJobEntryAttributeString(id_jobentry, "filename"); 
 		}
 		catch(KettleException dbe)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "JobEntryFileExists.ERROR_0002_Cannot_Load_Job_From_Repository", id_jobentry), dbe); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "JobEntryFileExists.ERROR_0002_Cannot_Load_Job_From_Repository", id_jobentry), dbe); 
 		}
 	}
 
@@ -129,11 +129,11 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_job, getObjectId(), "filename", filename); //$NON-NLS-1$
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "filename", filename); 
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "JobEntryFileExists.ERROR_0003_Cannot_Save_Job_Entry", id_job), dbe); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "JobEntryFileExists.ERROR_0003_Cannot_Save_Job_Entry", id_job), dbe); 
 		}
 	}
 
@@ -165,24 +165,24 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
                 FileObject file = KettleVFS.getFileObject(realFilename, this);
                 if (file.exists() && file.isReadable())
                 {
-                    logDetailed(BaseMessages.getString(PKG, "JobEntryFileExists.File_Exists", realFilename)); //$NON-NLS-1$
+                    logDetailed(BaseMessages.getString(PKG, "JobEntryFileExists.File_Exists", realFilename)); 
                     result.setResult( true );
                 }
                 else
                 {
-                    logDetailed(BaseMessages.getString(PKG, "JobEntryFileExists.File_Does_Not_Exist", realFilename)); //$NON-NLS-1$
+                    logDetailed(BaseMessages.getString(PKG, "JobEntryFileExists.File_Does_Not_Exist", realFilename)); 
                 }
             }
             catch (Exception e)
             {
                 result.setNrErrors(1);
-                logError(BaseMessages.getString(PKG, "JobEntryFileExists.ERROR_0004_IO_Exception", e.getMessage()), e); //$NON-NLS-1$
+                logError(BaseMessages.getString(PKG, "JobEntryFileExists.ERROR_0004_IO_Exception", e.getMessage()), e); 
             }
 		}
 		else
 		{
 			result.setNrErrors(1);
-			logError(BaseMessages.getString(PKG, "JobEntryFileExists.ERROR_0005_No_Filename_Defined")); //$NON-NLS-1$
+			logError(BaseMessages.getString(PKG, "JobEntryFileExists.ERROR_0005_No_Filename_Defined")); 
 		}
 
 		return result;
@@ -206,7 +206,7 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
 
   @Override
   public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore) {
-    andValidator().validate(this, "filename", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+    andValidator().validate(this, "filename", remarks, putValidators(notBlankValidator())); 
   }
 
   /**
@@ -246,7 +246,7 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
 			}
 			return null;
 		} catch (Exception e) {
-			throw new KettleException(e); //$NON-NLS-1$
+			throw new KettleException(e); 
 		}
 	}
 }

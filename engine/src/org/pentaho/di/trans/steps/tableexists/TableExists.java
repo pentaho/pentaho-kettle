@@ -95,8 +95,8 @@ public class TableExists extends BaseStep implements StepInterface
 					if (data.indexOfTablename<0)
 					{
 						// The field is unreachable !
-						logError(BaseMessages.getString(PKG, "TableExists.Exception.CouldnotFindField")+ "[" + meta.getDynamicTablenameField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-						throw new KettleException(BaseMessages.getString(PKG, "TableExists.Exception.CouldnotFindField",meta.getDynamicTablenameField())); //$NON-NLS-1$ //$NON-NLS-2$
+						logError(BaseMessages.getString(PKG, "TableExists.Exception.CouldnotFindField")+ "[" + meta.getDynamicTablenameField()+"]");  
+						throw new KettleException(BaseMessages.getString(PKG, "TableExists.Exception.CouldnotFindField",meta.getDynamicTablenameField()));  
 					}
 				}
         	}// End If first 
@@ -170,13 +170,13 @@ public class TableExists extends BaseStep implements StepInterface
                     data.db.connect(getPartitionID());
                 }
 
-                if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "TableExists.Log.ConnectedToDB")); //$NON-NLS-1$
+                if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "TableExists.Log.ConnectedToDB")); 
                 
                 return true;
             }
             catch(KettleException e)
             {
-                logError(BaseMessages.getString(PKG, "TableExists.Log.DBException")+e.getMessage()); //$NON-NLS-1$
+                logError(BaseMessages.getString(PKG, "TableExists.Log.DBException")+e.getMessage()); 
                 if (data.db!=null) {
                 	data.db.disconnect();
                 }

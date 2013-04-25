@@ -95,14 +95,14 @@ public class AggregateRowsDialog extends BaseStepDialog implements StepDialogInt
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "AggregateRowsDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "AggregateRowsDialog.Shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "AggregateRowsDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "AggregateRowsDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -121,16 +121,16 @@ public class AggregateRowsDialog extends BaseStepDialog implements StepDialogInt
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wGet=new Button(shell, SWT.PUSH);
-		wGet.setText(BaseMessages.getString(PKG, "AggregateRowsDialog.GetButton.Label")); //$NON-NLS-1$
+		wGet.setText(BaseMessages.getString(PKG, "AggregateRowsDialog.GetButton.Label")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wGet, wCancel }, margin, null);
 
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText(BaseMessages.getString(PKG, "AggregateRowsDialog.Fields.Label")); //$NON-NLS-1$
+		wlFields.setText(BaseMessages.getString(PKG, "AggregateRowsDialog.Fields.Label")); 
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -141,9 +141,9 @@ public class AggregateRowsDialog extends BaseStepDialog implements StepDialogInt
 		final int FieldsRows=input.getFieldName().length;
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo(BaseMessages.getString(PKG, "AggregateRowsDialog.ColumnInfo.Name"),       ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-		colinf[1]=new ColumnInfo(BaseMessages.getString(PKG, "AggregateRowsDialog.ColumnInfo.NewName"),   ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-		colinf[2]=new ColumnInfo(BaseMessages.getString(PKG, "AggregateRowsDialog.ColumnInfo.AgrregateType"),  ColumnInfo.COLUMN_TYPE_CCOMBO, AggregateRowsMeta.aggregateTypeDesc); //$NON-NLS-1$
+		colinf[0]=new ColumnInfo(BaseMessages.getString(PKG, "AggregateRowsDialog.ColumnInfo.Name"),       ColumnInfo.COLUMN_TYPE_TEXT,   false); 
+		colinf[1]=new ColumnInfo(BaseMessages.getString(PKG, "AggregateRowsDialog.ColumnInfo.NewName"),   ColumnInfo.COLUMN_TYPE_TEXT,   false); 
+		colinf[2]=new ColumnInfo(BaseMessages.getString(PKG, "AggregateRowsDialog.ColumnInfo.AgrregateType"),  ColumnInfo.COLUMN_TYPE_CCOMBO, AggregateRowsMeta.aggregateTypeDesc); 
 		
 		wFields=new TableView(transMeta, shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -211,7 +211,7 @@ public class AggregateRowsDialog extends BaseStepDialog implements StepDialogInt
     table.removeAll();
     for (int i = 0; i < input.getFieldName().length; i++) {
       TableItem ti = new TableItem(table, SWT.NONE);
-      ti.setText(0, "" + (i + 1)); //$NON-NLS-1$
+      ti.setText(0, "" + (i + 1)); 
       if (input.getFieldName()[i] != null)
         ti.setText(1, input.getFieldName()[i]);
       if (input.getFieldNewName()[i] != null && !input.getFieldNewName()[i].equals(input.getFieldName()[i]))
@@ -220,7 +220,7 @@ public class AggregateRowsDialog extends BaseStepDialog implements StepDialogInt
     }
     if (table.getItemCount() == 0) {
       TableItem ti = new TableItem(table, SWT.NONE);
-      ti.setText(0, "001"); //$NON-NLS-1$
+      ti.setText(0, "001"); 
     }
 
     wStepname.selectAll();
@@ -271,14 +271,14 @@ public class AggregateRowsDialog extends BaseStepDialog implements StepDialogInt
 			{
 				MessageBox mb;
 				mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
-				mb.setMessage(BaseMessages.getString(PKG, "AggregateRowsDialog.CouldNotRetrieveFields.DialogMessage",Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
-				mb.setText(BaseMessages.getString(PKG, "AggregateRowsDialog.CouldNotRetrieveFields.DialogTitle")); //$NON-NLS-1$
+				mb.setMessage(BaseMessages.getString(PKG, "AggregateRowsDialog.CouldNotRetrieveFields.DialogMessage",Const.CR));  
+				mb.setText(BaseMessages.getString(PKG, "AggregateRowsDialog.CouldNotRetrieveFields.DialogTitle")); 
 				mb.open();
 			}
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "AggregateRowsDialog.GetFieldsFailed.DialogTitle"), BaseMessages.getString(PKG, "AggregateRowsDialog.GetFieldsFailed.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "AggregateRowsDialog.GetFieldsFailed.DialogTitle"), BaseMessages.getString(PKG, "AggregateRowsDialog.GetFieldsFailed.DialogMessage"), ke);  
 		}
 	}
 }

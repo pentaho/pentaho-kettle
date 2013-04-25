@@ -347,7 +347,7 @@ public class MetaInject extends BaseStep implements StepInterface {
         
         return true;
       } catch (Exception e) {
-        logError(BaseMessages.getString(PKG, "MetaInject.BadEncoding.Message"), e); //$NON-NLS-1$
+        logError(BaseMessages.getString(PKG, "MetaInject.BadEncoding.Message"), e); 
         return false;
       }
     }

@@ -31,7 +31,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 public abstract class AbstractFileValidator implements JobEntryValidator
 {
 
-  private static final String KEY_VARIABLE_SPACE = "org.pentaho.di.job.entries.file.variableSpace"; //$NON-NLS-1$
+  private static final String KEY_VARIABLE_SPACE = "org.pentaho.di.job.entries.file.variableSpace"; 
 
   public static ValidatorContext putVariableSpace(VariableSpace variableSpace)
   {
@@ -49,7 +49,7 @@ public abstract class AbstractFileValidator implements JobEntryValidator
     } else
     {
       JobEntryValidatorUtils.addGeneralRemark(source, propertyName, getName(), remarks,
-          "messages.failed.missingKey", CheckResultInterface.TYPE_RESULT_ERROR); //$NON-NLS-1$
+          "messages.failed.missingKey", CheckResultInterface.TYPE_RESULT_ERROR); 
       return null;
     }
   }

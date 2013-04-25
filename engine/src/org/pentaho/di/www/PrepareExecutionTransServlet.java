@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -132,7 +132,7 @@ public class PrepareExecutionTransServlet extends BaseHttpServlet implements Car
           }
         } catch (Exception e) {
 
-          String logText = CentralLogStore.getAppender().getBuffer(trans.getLogChannel().getLogChannelId(), true).toString();
+          String logText = KettleLogStore.getAppender().getBuffer(trans.getLogChannel().getLogChannelId(), true).toString();
           if (useXML) {
             out.println(new WebResult(WebResult.STRING_ERROR, BaseMessages.getString(PKG, "PrepareExecutionTransServlet.Error.TransInitFailed", Const.CR + logText + Const.CR + Const.getStackTracker(e))));
           } else {

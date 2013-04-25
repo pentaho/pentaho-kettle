@@ -57,12 +57,12 @@ public class KettleFileSystemConfigBuilderFactory {
     IKettleFileSystemConfigBuilder result = null;
     
     // Attempt to load the Config Builder from a variable: vfs.config.parser = class
-    String parserClass = varSpace.getVariable("vfs." + scheme + ".config.parser"); //$NON-NLS-1$ //$NON-NLS-2$
+    String parserClass = varSpace.getVariable("vfs." + scheme + ".config.parser");  
     
     if(parserClass != null) {
       try {
         Class<?> configBuilderClass = KettleFileSystemConfigBuilderFactory.class.getClassLoader().loadClass(parserClass);
-        Method mGetInstance = configBuilderClass.getMethod("getInstance"); //$NON-NLS-1$
+        Method mGetInstance = configBuilderClass.getMethod("getInstance"); 
         if((mGetInstance != null) && (IKettleFileSystemConfigBuilder.class.isAssignableFrom(mGetInstance.getReturnType()))) {
           result = (IKettleFileSystemConfigBuilder)mGetInstance.invoke(null);
         } else {
@@ -70,11 +70,11 @@ public class KettleFileSystemConfigBuilderFactory {
         }
       } catch (Exception e) {
         // Failed to load custom parser. Throw exception.
-        throw new IOException(BaseMessages.getString(PKG, "CustomVfsSettingsParser.Log.FailedToLoad")); //$NON-NLS-1$
+        throw new IOException(BaseMessages.getString(PKG, "CustomVfsSettingsParser.Log.FailedToLoad")); 
       }
     } else {
       // No custom parser requested, load default
-      if(scheme.equalsIgnoreCase("sftp")) { //$NON-NLS-1$
+      if(scheme.equalsIgnoreCase("sftp")) { 
         result = KettleSftpFileSystemConfigBuilder.getInstance();
       } else {
         result = KettleGenericFileSystemConfigBuilder.getInstance();

@@ -225,25 +225,25 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
 
   private void readData(Node stepnode) throws KettleXMLException {
     try {
-      Node groupn = XMLHandler.getSubNode(stepnode, "group"); //$NON-NLS-1$
-      Node fields = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
+      Node groupn = XMLHandler.getSubNode(stepnode, "group"); 
+      Node fields = XMLHandler.getSubNode(stepnode, "fields"); 
 
-      int sizegroup = XMLHandler.countNodes(groupn, "field"); //$NON-NLS-1$
-      int nrfields = XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
+      int sizegroup = XMLHandler.countNodes(groupn, "field"); 
+      int nrfields = XMLHandler.countNodes(fields, "field"); 
 
       allocate(sizegroup, nrfields);
 
       for (int i = 0; i < sizegroup; i++) {
-        Node fnode = XMLHandler.getSubNodeByNr(groupn, "field", i); //$NON-NLS-1$
-        groupField[i] = XMLHandler.getTagValue(fnode, "name"); //$NON-NLS-1$
+        Node fnode = XMLHandler.getSubNodeByNr(groupn, "field", i); 
+        groupField[i] = XMLHandler.getTagValue(fnode, "name"); 
       }
 
       boolean hasNumberOfValues = false;
       for (int i = 0; i < nrfields; i++) {
-        Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
-        aggregateField[i] = XMLHandler.getTagValue(fnode, "aggregate"); //$NON-NLS-1$
-        subjectField[i] = XMLHandler.getTagValue(fnode, "subject"); //$NON-NLS-1$
-        aggregateType[i] = getType(XMLHandler.getTagValue(fnode, "type")); //$NON-NLS-1$
+        Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); 
+        aggregateField[i] = XMLHandler.getTagValue(fnode, "aggregate"); 
+        subjectField[i] = XMLHandler.getTagValue(fnode, "subject"); 
+        aggregateType[i] = getType(XMLHandler.getTagValue(fnode, "type")); 
 
         if (aggregateType[i] == TYPE_GROUP_COUNT_ALL || aggregateType[i] == TYPE_GROUP_COUNT_DISTINCT
             || aggregateType[i] == TYPE_GROUP_COUNT_ANY) {
@@ -261,7 +261,7 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
       }
     } catch (Exception e) {
       throw new KettleXMLException(BaseMessages.getString(PKG,
-          "MemoryGroupByMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
+          "MemoryGroupByMeta.Exception.UnableToLoadStepInfoFromXML"), e); 
     }
   }
 
@@ -385,26 +385,26 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
   public String getXML() {
     StringBuffer retval = new StringBuffer(500);
 
-    retval.append("      ").append(XMLHandler.addTagValue("give_back_row", alwaysGivingBackOneRow)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      ").append(XMLHandler.addTagValue("give_back_row", alwaysGivingBackOneRow));  
 
-    retval.append("      <group>").append(Const.CR); //$NON-NLS-1$
+    retval.append("      <group>").append(Const.CR); 
     for (int i = 0; i < groupField.length; i++) {
-      retval.append("        <field>").append(Const.CR); //$NON-NLS-1$
-      retval.append("          ").append(XMLHandler.addTagValue("name", groupField[i])); //$NON-NLS-1$ //$NON-NLS-2$
-      retval.append("        </field>").append(Const.CR); //$NON-NLS-1$
+      retval.append("        <field>").append(Const.CR); 
+      retval.append("          ").append(XMLHandler.addTagValue("name", groupField[i]));  
+      retval.append("        </field>").append(Const.CR); 
     }
-    retval.append("      </group>").append(Const.CR); //$NON-NLS-1$
+    retval.append("      </group>").append(Const.CR); 
 
-    retval.append("      <fields>").append(Const.CR); //$NON-NLS-1$
+    retval.append("      <fields>").append(Const.CR); 
     for (int i = 0; i < subjectField.length; i++) {
-      retval.append("        <field>").append(Const.CR); //$NON-NLS-1$
-      retval.append("          ").append(XMLHandler.addTagValue("aggregate", aggregateField[i])); //$NON-NLS-1$ //$NON-NLS-2$
-      retval.append("          ").append(XMLHandler.addTagValue("subject", subjectField[i])); //$NON-NLS-1$ //$NON-NLS-2$
-      retval.append("          ").append(XMLHandler.addTagValue("type", getTypeDesc(aggregateType[i]))); //$NON-NLS-1$ //$NON-NLS-2$
+      retval.append("        <field>").append(Const.CR); 
+      retval.append("          ").append(XMLHandler.addTagValue("aggregate", aggregateField[i]));  
+      retval.append("          ").append(XMLHandler.addTagValue("subject", subjectField[i]));  
+      retval.append("          ").append(XMLHandler.addTagValue("type", getTypeDesc(aggregateType[i])));  
       retval.append("          ").append(XMLHandler.addTagValue("valuefield", valueField[i]));
-      retval.append("        </field>").append(Const.CR); //$NON-NLS-1$
+      retval.append("        </field>").append(Const.CR); 
     }
-    retval.append("      </fields>").append(Const.CR); //$NON-NLS-1$
+    retval.append("      </fields>").append(Const.CR); 
 
     return retval.toString();
   }
@@ -412,32 +412,32 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
   public void readRep(Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases)
       throws KettleException {
     try {
-      int groupsize = rep.countNrStepAttributes(id_step, "group_name"); //$NON-NLS-1$
-      int nrvalues = rep.countNrStepAttributes(id_step, "aggregate_name"); //$NON-NLS-1$
+      int groupsize = rep.countNrStepAttributes(id_step, "group_name"); 
+      int nrvalues = rep.countNrStepAttributes(id_step, "aggregate_name"); 
 
       allocate(groupsize, nrvalues);
 
       for (int i = 0; i < groupsize; i++) {
-        groupField[i] = rep.getStepAttributeString(id_step, i, "group_name"); //$NON-NLS-1$
+        groupField[i] = rep.getStepAttributeString(id_step, i, "group_name"); 
       }
 
       boolean hasNumberOfValues = false;
       for (int i = 0; i < nrvalues; i++) {
-        aggregateField[i] = rep.getStepAttributeString(id_step, i, "aggregate_name"); //$NON-NLS-1$
-        subjectField[i] = rep.getStepAttributeString(id_step, i, "aggregate_subject"); //$NON-NLS-1$
-        aggregateType[i] = getType(rep.getStepAttributeString(id_step, i, "aggregate_type")); //$NON-NLS-1$
+        aggregateField[i] = rep.getStepAttributeString(id_step, i, "aggregate_name"); 
+        subjectField[i] = rep.getStepAttributeString(id_step, i, "aggregate_subject"); 
+        aggregateType[i] = getType(rep.getStepAttributeString(id_step, i, "aggregate_type")); 
 
         if (aggregateType[i] == TYPE_GROUP_COUNT_ALL || aggregateType[i] == TYPE_GROUP_COUNT_DISTINCT
             || aggregateType[i] == TYPE_GROUP_COUNT_ANY) {
           hasNumberOfValues = true;
         }
-        valueField[i] = rep.getStepAttributeString(id_step, i, "aggregate_value_field"); //$NON-NLS-1$
+        valueField[i] = rep.getStepAttributeString(id_step, i, "aggregate_value_field"); 
       }
 
       alwaysGivingBackOneRow = rep.getStepAttributeBoolean(id_step, 0, "give_back_row", hasNumberOfValues); // $NON-NLS-1$
     } catch (Exception e) {
       throw new KettleException(BaseMessages.getString(PKG,
-          "MemoryGroupByMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository"), e); //$NON-NLS-1$
+          "MemoryGroupByMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository"), e); 
     }
   }
 
@@ -446,18 +446,18 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
       rep.saveStepAttribute(id_transformation, id_step, "give_back_row", alwaysGivingBackOneRow); // $NON-NLS-1$
 
       for (int i = 0; i < groupField.length; i++) {
-        rep.saveStepAttribute(id_transformation, id_step, i, "group_name", groupField[i]); //$NON-NLS-1$
+        rep.saveStepAttribute(id_transformation, id_step, i, "group_name", groupField[i]); 
       }
 
       for (int i = 0; i < subjectField.length; i++) {
-        rep.saveStepAttribute(id_transformation, id_step, i, "aggregate_name", aggregateField[i]); //$NON-NLS-1$
-        rep.saveStepAttribute(id_transformation, id_step, i, "aggregate_subject", subjectField[i]); //$NON-NLS-1$
-        rep.saveStepAttribute(id_transformation, id_step, i, "aggregate_type", getTypeDesc(aggregateType[i])); //$NON-NLS-1$
+        rep.saveStepAttribute(id_transformation, id_step, i, "aggregate_name", aggregateField[i]); 
+        rep.saveStepAttribute(id_transformation, id_step, i, "aggregate_subject", subjectField[i]); 
+        rep.saveStepAttribute(id_transformation, id_step, i, "aggregate_type", getTypeDesc(aggregateType[i])); 
         rep.saveStepAttribute(id_transformation, id_step, i, "aggregate_value_field", valueField[i]);
       }
     } catch (Exception e) {
       throw new KettleException(BaseMessages.getString(PKG,
-          "MemoryGroupByMeta.Exception.UnableToSaveStepInfoToRepository") + id_step, e); //$NON-NLS-1$
+          "MemoryGroupByMeta.Exception.UnableToSaveStepInfoToRepository") + id_step, e); 
     }
   }
 
@@ -467,11 +467,11 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
 
     if (input.length > 0) {
       cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG,
-          "MemoryGroupByMeta.CheckResult.ReceivingInfoOK"), stepMeta); //$NON-NLS-1$
+          "MemoryGroupByMeta.CheckResult.ReceivingInfoOK"), stepMeta); 
       remarks.add(cr);
     } else {
       cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG,
-          "MemoryGroupByMeta.CheckResult.NoInputError"), stepMeta); //$NON-NLS-1$
+          "MemoryGroupByMeta.CheckResult.NoInputError"), stepMeta); 
       remarks.add(cr);
     }
   }

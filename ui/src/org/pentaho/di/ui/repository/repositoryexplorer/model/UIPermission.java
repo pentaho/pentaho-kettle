@@ -23,11 +23,11 @@
 package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
 public enum UIPermission {
-  READ("UIPermission.READ_DESC"), //$NON-NLS-1$ 
-  CREATE("UIPermission.CREATE_DESC"), //$NON-NLS-1$
-  UPDATE("UIPermission.UPDATE_DESC"), //$NON-NLS-1$
-  MODIFY_PERMISSION("UIPermission.MODIFY_PERMISSION_DESC"), //$NON-NLS-1$
-  DELETE("UIPermission.DELETE_DESC"); //$NON-NLS-1$
+  READ("UIPermission.READ_DESC"),  
+  CREATE("UIPermission.CREATE_DESC"), 
+  UPDATE("UIPermission.UPDATE_DESC"), 
+  MODIFY_PERMISSION("UIPermission.MODIFY_PERMISSION_DESC"), 
+  DELETE("UIPermission.DELETE_DESC"); 
 
   private String description;
 

@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
@@ -149,7 +149,7 @@ public class RunTransServlet extends BaseHttpServlet implements CartePluginInter
         out.flush();
 
       } catch (Exception executionException) {
-        String logging = CentralLogStore.getAppender().getBuffer(trans.getLogChannelId(), false).toString();
+        String logging = KettleLogStore.getAppender().getBuffer(trans.getLogChannelId(), false).toString();
         throw new KettleException("Error executing Transformation: " + logging, executionException);
       }
     } catch (Exception ex) {

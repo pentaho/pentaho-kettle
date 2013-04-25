@@ -91,9 +91,9 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 			//
 			int nrWorks = 2 + jobMeta.nrDatabases() + jobMeta.nrNotes() + jobMeta.nrJobEntries() + jobMeta.nrJobHops();
 			if (monitor != null)
-				monitor.beginTask(BaseMessages.getString(PKG, "JobMeta.Monitor.SavingTransformation") + jobMeta.getRepositoryDirectory() + Const.FILE_SEPARATOR + jobMeta.getName(), nrWorks); //$NON-NLS-1$
+				monitor.beginTask(BaseMessages.getString(PKG, "JobMeta.Monitor.SavingTransformation") + jobMeta.getRepositoryDirectory() + Const.FILE_SEPARATOR + jobMeta.getName(), nrWorks); 
 
-			repository.insertLogEntry("save job '" + jobMeta.getName() + "'"); //$NON-NLS-1$ //$NON-NLS-2$
+			repository.insertLogEntry("save job '" + jobMeta.getName() + "'");  
 
 			// Before we start, make sure we have a valid job ID!
 			// Two possibilities:
@@ -102,7 +102,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 			// If we find a transformation with the same name: ask!
 			//
 			if (monitor != null)
-				monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.HandlingPreviousVersionOfJob")); //$NON-NLS-1$
+				monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.HandlingPreviousVersionOfJob")); 
 			jobMeta.setObjectId(getJobID(jobMeta.getName(), jobMeta.getRepositoryDirectory().getObjectId()));
 
 			// If no valid id is available in the database, assign one...
@@ -120,10 +120,10 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 			// First of all we need to verify that all database connections are
 			// saved.
 			//
-			if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "JobMeta.Log.SavingDatabaseConnections")); //$NON-NLS-1$
+			if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "JobMeta.Log.SavingDatabaseConnections")); 
 			for (int i = 0; i < jobMeta.nrDatabases(); i++) {
 				if (monitor != null)
-					monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.SavingDatabaseTask.Title") + (i + 1) + "/" + jobMeta.nrDatabases()); //$NON-NLS-1$ //$NON-NLS-2$
+					monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.SavingDatabaseTask.Title") + (i + 1) + "/" + jobMeta.nrDatabases());  
 				DatabaseMeta databaseMeta = jobMeta.getDatabase(i);
 				// Save the database connection if we're overwriting objects or (it has changed and
 				// nothing was saved in the repository)
@@ -139,8 +139,8 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 			// Everything else depends on this ID, including recursive job
 			// entries to the save job. (retry)
 			if (monitor != null)
-				monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.SavingJobDetails")); //$NON-NLS-1$
-			if(log.isDetailed()) log.logDetailed("Saving job info to repository..."); //$NON-NLS-1$
+				monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.SavingJobDetails")); 
+			if(log.isDetailed()) log.logDetailed("Saving job info to repository..."); 
 			
 			insertJob(jobMeta);
 			
@@ -157,10 +157,10 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 			//
 			// Save the notes
 			//
-			if(log.isDetailed()) log.logDetailed("Saving notes to repository..."); //$NON-NLS-1$
+			if(log.isDetailed()) log.logDetailed("Saving notes to repository..."); 
 			for (int i = 0; i < jobMeta.nrNotes(); i++) {
 				if (monitor != null)
-					monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.SavingNoteNr") + (i + 1) + "/" + jobMeta.nrNotes()); //$NON-NLS-1$ //$NON-NLS-2$
+					monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.SavingNoteNr") + (i + 1) + "/" + jobMeta.nrNotes());  
 				NotePadMeta ni = jobMeta.getNote(i);
 				repository.saveNotePadMeta(ni, jobMeta.getObjectId());
 				if (ni.getObjectId() != null) {
@@ -173,21 +173,21 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 			//
 			// Save the job entries
 			//
-			if(log.isDetailed()) log.logDetailed("Saving " + jobMeta.nrJobEntries() + " Job enty copies to repository..."); //$NON-NLS-1$ //$NON-NLS-2$
+			if(log.isDetailed()) log.logDetailed("Saving " + jobMeta.nrJobEntries() + " Job enty copies to repository...");  
 			repository.updateJobEntryTypes();
 			for (int i = 0; i < jobMeta.nrJobEntries(); i++) {
 				if (monitor != null)
-					monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.SavingJobEntryNr") + (i + 1) + "/" + jobMeta.nrJobEntries()); //$NON-NLS-1$ //$NON-NLS-2$
+					monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.SavingJobEntryNr") + (i + 1) + "/" + jobMeta.nrJobEntries());  
 				JobEntryCopy cge = jobMeta.getJobEntry(i);
 				repository.jobEntryDelegate.saveJobEntryCopy(cge, jobMeta.getObjectId(), repository.metaStore);
 				if (monitor != null)
 					monitor.worked(1);
 			}
 
-			if(log.isDetailed()) log.logDetailed("Saving job hops to repository..."); //$NON-NLS-1$
+			if(log.isDetailed()) log.logDetailed("Saving job hops to repository..."); 
 			for (int i = 0; i < jobMeta.nrJobHops(); i++) {
 				if (monitor != null)
-					monitor.subTask("Saving job hop #" + (i + 1) + "/" + jobMeta.nrJobHops()); //$NON-NLS-1$ //$NON-NLS-2$
+					monitor.subTask("Saving job hop #" + (i + 1) + "/" + jobMeta.nrJobHops());  
 				JobHopMeta hi = jobMeta.getJobHop(i);
 				saveJobHopMeta(hi, jobMeta.getObjectId());
 				if (monitor != null)
@@ -204,7 +204,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 				monitor.done();
 		} catch (KettleDatabaseException dbe) {
 			repository.rollback();
-			throw new KettleException(BaseMessages.getString(PKG, "JobMeta.Exception.UnableToSaveJobInRepositoryRollbackPerformed"), dbe); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "JobMeta.Exception.UnableToSaveJobInRepositoryRollbackPerformed"), dbe); 
 		}
 	}
 
@@ -277,30 +277,30 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 	
 					int nrWork = 2 + noteids.length + jecids.length + hopid.length;
 					if (monitor != null)
-						monitor.beginTask(BaseMessages.getString(PKG, "JobMeta.Monitor.LoadingJob") + repdir + Const.FILE_SEPARATOR + jobname, nrWork); //$NON-NLS-1$
+						monitor.beginTask(BaseMessages.getString(PKG, "JobMeta.Monitor.LoadingJob") + repdir + Const.FILE_SEPARATOR + jobname, nrWork); 
 	
 					//
 					// get job info:
 					//
 					if (monitor != null)
-						monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.ReadingJobInformation")); //$NON-NLS-1$
+						monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.ReadingJobInformation")); 
 					RowMetaAndData jobRow = getJob(jobMeta.getObjectId());
 	
-					jobMeta.setName( jobRow.getString(KettleDatabaseRepository.FIELD_JOB_NAME, null) ); //$NON-NLS-1$
-					jobMeta.setDescription( jobRow.getString(KettleDatabaseRepository.FIELD_JOB_DESCRIPTION, null) ); //$NON-NLS-1$
-					jobMeta.setExtendedDescription(jobRow.getString(KettleDatabaseRepository.FIELD_JOB_EXTENDED_DESCRIPTION, null) ); //$NON-NLS-1$
-					jobMeta.setJobversion( jobRow.getString(KettleDatabaseRepository.FIELD_JOB_JOB_VERSION, null) ); //$NON-NLS-1$
-					jobMeta.setJobstatus( Const.toInt(jobRow.getString(KettleDatabaseRepository.FIELD_JOB_JOB_STATUS, null), -1) ); //$NON-NLS-1$
+					jobMeta.setName( jobRow.getString(KettleDatabaseRepository.FIELD_JOB_NAME, null) ); 
+					jobMeta.setDescription( jobRow.getString(KettleDatabaseRepository.FIELD_JOB_DESCRIPTION, null) ); 
+					jobMeta.setExtendedDescription(jobRow.getString(KettleDatabaseRepository.FIELD_JOB_EXTENDED_DESCRIPTION, null) ); 
+					jobMeta.setJobversion( jobRow.getString(KettleDatabaseRepository.FIELD_JOB_JOB_VERSION, null) ); 
+					jobMeta.setJobstatus( Const.toInt(jobRow.getString(KettleDatabaseRepository.FIELD_JOB_JOB_STATUS, null), -1) ); 
 	
-					jobMeta.setCreatedUser( jobRow.getString(KettleDatabaseRepository.FIELD_JOB_CREATED_USER, null) ); //$NON-NLS-1$
-					jobMeta.setCreatedDate( jobRow.getDate(KettleDatabaseRepository.FIELD_JOB_CREATED_DATE, new Date()) ); //$NON-NLS-1$
+					jobMeta.setCreatedUser( jobRow.getString(KettleDatabaseRepository.FIELD_JOB_CREATED_USER, null) ); 
+					jobMeta.setCreatedDate( jobRow.getDate(KettleDatabaseRepository.FIELD_JOB_CREATED_DATE, new Date()) ); 
 	
-					jobMeta.setModifiedUser( jobRow.getString(KettleDatabaseRepository.FIELD_JOB_MODIFIED_USER, null) ); //$NON-NLS-1$
-					jobMeta.setModifiedDate( jobRow.getDate(KettleDatabaseRepository.FIELD_JOB_MODIFIED_DATE, new Date()) ); //$NON-NLS-1$
+					jobMeta.setModifiedUser( jobRow.getString(KettleDatabaseRepository.FIELD_JOB_MODIFIED_USER, null) ); 
+					jobMeta.setModifiedDate( jobRow.getDate(KettleDatabaseRepository.FIELD_JOB_MODIFIED_DATE, new Date()) ); 
 
-	        jobMeta.setUsingUniqueConnections( jobRow.getBoolean(KettleDatabaseRepository.FIELD_JOB_UNIQUE_CONNECTIONS, false) ); //$NON-NLS-1$
+	        jobMeta.setUsingUniqueConnections( jobRow.getBoolean(KettleDatabaseRepository.FIELD_JOB_UNIQUE_CONNECTIONS, false) ); 
 					
-					long id_logdb = jobRow.getInteger(KettleDatabaseRepository.FIELD_JOB_ID_DATABASE_LOG, 0); //$NON-NLS-1$
+					long id_logdb = jobRow.getInteger(KettleDatabaseRepository.FIELD_JOB_ID_DATABASE_LOG, 0); 
 					if (id_logdb > 0) {
 						// Get the logconnection
 						//
@@ -311,12 +311,12 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 						// TODO: save the name as a string attribute
 					}
 					
-					jobMeta.getJobLogTable().setTableName( jobRow.getString(KettleDatabaseRepository.FIELD_JOB_TABLE_NAME_LOG, null) ); //$NON-NLS-1$
-					jobMeta.getJobLogTable().setBatchIdUsed( jobRow.getBoolean(KettleDatabaseRepository.FIELD_JOB_USE_BATCH_ID, false) ); //$NON-NLS-1$
-					jobMeta.getJobLogTable().setLogFieldUsed( jobRow.getBoolean(KettleDatabaseRepository.FIELD_JOB_USE_LOGFIELD, false) ); //$NON-NLS-1$
+					jobMeta.getJobLogTable().setTableName( jobRow.getString(KettleDatabaseRepository.FIELD_JOB_TABLE_NAME_LOG, null) ); 
+					jobMeta.getJobLogTable().setBatchIdUsed( jobRow.getBoolean(KettleDatabaseRepository.FIELD_JOB_USE_BATCH_ID, false) ); 
+					jobMeta.getJobLogTable().setLogFieldUsed( jobRow.getBoolean(KettleDatabaseRepository.FIELD_JOB_USE_LOGFIELD, false) ); 
 					jobMeta.getJobLogTable().setLogSizeLimit( getJobAttributeString(jobMeta.getObjectId(), 0, KettleDatabaseRepository.JOB_ATTRIBUTE_LOG_SIZE_LIMIT) );
 					
-					jobMeta.setBatchIdPassed(  jobRow.getBoolean(KettleDatabaseRepository.FIELD_JOB_PASS_BATCH_ID, false) ); //$NON-NLS-1$
+					jobMeta.setBatchIdPassed(  jobRow.getBoolean(KettleDatabaseRepository.FIELD_JOB_PASS_BATCH_ID, false) ); 
 
 					// Load all the log tables for the job...
 					//
@@ -331,23 +331,23 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 					// Load the common database connections
 					//
 					if (monitor != null)
-						monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.ReadingAvailableDatabasesFromRepository")); //$NON-NLS-1$
+						monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.ReadingAvailableDatabasesFromRepository")); 
 					// Read objects from the shared XML file & the repository
 					try {
 						jobMeta.setSharedObjectsFile( jobRow.getString(KettleDatabaseRepository.FIELD_JOB_SHARED_FILE, null) );
 						jobMeta.setSharedObjects( repository!=null ? repository.readJobMetaSharedObjects(jobMeta) : jobMeta.readSharedObjects() );
 					} catch (Exception e) {
 						log.logError(BaseMessages.getString(PKG, "JobMeta.ErrorReadingSharedObjects.Message", e.toString())); // $NON-NLS-1$
-																												// //$NON-NLS-1$
+																												// 
 						log.logError(Const.getStackTracker(e));
 					}
 					if (monitor != null)
 						monitor.worked(1);
 	
-					if(log.isDetailed()) log.logDetailed("Loading " + noteids.length + " notes"); //$NON-NLS-1$ //$NON-NLS-2$
+					if(log.isDetailed()) log.logDetailed("Loading " + noteids.length + " notes");  
 					for (int i = 0; i < noteids.length; i++) {
 						if (monitor != null)
-							monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.ReadingNoteNr") + (i + 1) + "/" + noteids.length); //$NON-NLS-1$ //$NON-NLS-2$
+							monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.ReadingNoteNr") + (i + 1) + "/" + noteids.length);  
 						NotePadMeta ni = repository.notePadDelegate.loadNotePadMeta(noteids[i]);
 						if (jobMeta.indexOfNote(ni) < 0)
 							jobMeta.addNote(ni);
@@ -362,10 +362,10 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 					//
 					List<JobEntryInterface> jobentries = new ArrayList<JobEntryInterface>();
 					
-					if(log.isDetailed()) log.logDetailed("Loading " + jecids.length + " job entries"); //$NON-NLS-1$ //$NON-NLS-2$
+					if(log.isDetailed()) log.logDetailed("Loading " + jecids.length + " job entries");  
 					for (int i = 0; i < jecids.length; i++) {
 						if (monitor != null)
-							monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.ReadingJobEntryNr") + (i + 1) + "/" + (jecids.length)); //$NON-NLS-1$ //$NON-NLS-2$
+							monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.ReadingJobEntryNr") + (i + 1) + "/" + (jecids.length));  
 	
 						JobEntryCopy jec = repository.jobEntryDelegate.loadJobEntryCopy(jobMeta.getObjectId(), jecids[i], jobentries, jobMeta.getDatabases(), jobMeta.getSlaveServers());
 
@@ -393,10 +393,10 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 					}
 	
 					// Load the hops...
-					if(log.isDetailed()) log.logDetailed("Loading " + hopid.length + " job hops"); //$NON-NLS-1$ //$NON-NLS-2$
+					if(log.isDetailed()) log.logDetailed("Loading " + hopid.length + " job hops");  
 					for (int i = 0; i < hopid.length; i++) {
 						if (monitor != null)
-							monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.ReadingJobHopNr") + (i + 1) + "/" + (jecids.length)); //$NON-NLS-1$ //$NON-NLS-2$
+							monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.ReadingJobHopNr") + (i + 1) + "/" + (jecids.length));  
 						JobHopMeta hi = loadJobHopMeta(hopid[i], jobMeta.getJobCopies());
 						jobMeta.getJobhops().add(hi);
 						if (monitor != null)
@@ -408,7 +408,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 					// Finally, clear the changed flags...
 					jobMeta.clearChanged();
 					if (monitor != null)
-						monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.FinishedLoadOfJob")); //$NON-NLS-1$
+						monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.FinishedLoadOfJob")); 
 					if (monitor != null)
 						monitor.done();
 				
@@ -418,7 +418,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 
 					return jobMeta;
 				} else {
-					throw new KettleException(BaseMessages.getString(PKG, "JobMeta.Exception.CanNotFindJob") + jobname); //$NON-NLS-1$
+					throw new KettleException(BaseMessages.getString(PKG, "JobMeta.Exception.CanNotFindJob") + jobname); 
 				}
 			} catch (KettleException dbe) {
 				throw new KettleException(BaseMessages.getString(PKG, "JobMeta.Exception.AnErrorOccuredReadingJob", jobname), dbe);
@@ -622,9 +622,9 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 			}
 			jobMeta.setChanged(false);
 		} catch (KettleDatabaseException dbe) {
-			throw new KettleException(BaseMessages.getString(PKG, "JobMeta.Log.UnableToReadDatabaseIDSFromRepository"), dbe); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "JobMeta.Log.UnableToReadDatabaseIDSFromRepository"), dbe); 
 		} catch (KettleException ke) {
-			throw new KettleException(BaseMessages.getString(PKG, "JobMeta.Log.UnableToReadDatabasesFromRepository"), ke); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "JobMeta.Log.UnableToReadDatabasesFromRepository"), ke); 
 		}
 	}
 	
@@ -657,7 +657,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
         }
         catch (KettleDatabaseException dbe)
         {
-            throw new KettleException(BaseMessages.getString(PKG, "JobMeta.Log.UnableToReadSlaveServersFromRepository"), dbe); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "JobMeta.Log.UnableToReadSlaveServersFromRepository"), dbe); 
         }
     }
 

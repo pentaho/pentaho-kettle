@@ -100,7 +100,7 @@ public class HL7Input extends BaseStep implements StepInterface
 		
         if (checkFeedback(getLinesWritten())) 
         {
-        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "HL7Input.Log.LineNumber")+getLinesWritten()); //$NON-NLS-1$
+        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "HL7Input.Log.LineNumber")+getLinesWritten()); 
         }
 			
 		return true;

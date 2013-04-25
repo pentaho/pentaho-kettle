@@ -224,7 +224,7 @@ public class StarModelDialog extends Dialog {
 
   private void addModelTab() {
     wModelTab = new CTabItem(wTabFolder, SWT.NONE);
-    wModelTab.setText(BaseMessages.getString(PKG, "StarModelDialog.ModelTab.Label")); //$NON-NLS-1$
+    wModelTab.setText(BaseMessages.getString(PKG, "StarModelDialog.ModelTab.Label")); 
 
     Composite wModelComp = new Composite(wTabFolder, SWT.NONE);
     props.setLook(wModelComp);
@@ -299,7 +299,7 @@ public class StarModelDialog extends Dialog {
 
   private void addDimensionsTab() {
     wDimensionsTab = new CTabItem(wTabFolder, SWT.NONE);
-    wDimensionsTab.setText(BaseMessages.getString(PKG, "StarModelDialog.DimensionsTab.Label")); //$NON-NLS-1$
+    wDimensionsTab.setText(BaseMessages.getString(PKG, "StarModelDialog.DimensionsTab.Label")); 
 
     FormLayout dimensionsLayout = new FormLayout();
     dimensionsLayout.marginWidth = Const.MARGIN;
@@ -310,7 +310,7 @@ public class StarModelDialog extends Dialog {
     wDimensionsComp.setLayout(dimensionsLayout);
 
     Label wlTables = new Label(wDimensionsComp, SWT.RIGHT);
-    wlTables.setText(BaseMessages.getString(PKG, "StarModelDialog.Tables.Label")); //$NON-NLS-1$
+    wlTables.setText(BaseMessages.getString(PKG, "StarModelDialog.Tables.Label")); 
     props.setLook(wlTables);
     FormData fdlAttributes = new FormData();
     fdlAttributes.left = new FormAttachment(0, 0);
@@ -387,9 +387,9 @@ public class StarModelDialog extends Dialog {
     // The dimensions and fact of the model
     //
     ColumnInfo[] colinf = new ColumnInfo[] { 
-        new ColumnInfo(BaseMessages.getString(PKG, "StarModelDialog.ColumnInfo.Name.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-        new ColumnInfo(BaseMessages.getString(PKG, "StarModelDialog.ColumnInfo.Description.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-        new ColumnInfo(BaseMessages.getString(PKG, "StarModelDialog.ColumnInfo.TableType.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+        new ColumnInfo(BaseMessages.getString(PKG, "StarModelDialog.ColumnInfo.Name.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
+        new ColumnInfo(BaseMessages.getString(PKG, "StarModelDialog.ColumnInfo.Description.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
+        new ColumnInfo(BaseMessages.getString(PKG, "StarModelDialog.ColumnInfo.TableType.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
     };
 
     wTablesList = new TableView(new Variables(), wDimensionsComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, null, props);
@@ -426,7 +426,7 @@ public class StarModelDialog extends Dialog {
   private void addFactTab()
   {
       wFactTab=new CTabItem(wTabFolder, SWT.NONE);
-      wFactTab.setText(BaseMessages.getString(PKG, "StarModelDialog.FactTab.Label")); //$NON-NLS-1$
+      wFactTab.setText(BaseMessages.getString(PKG, "StarModelDialog.FactTab.Label")); 
 
       FormLayout factLayout = new FormLayout ();
       factLayout.marginWidth  = Const.MARGIN;
@@ -499,7 +499,7 @@ public class StarModelDialog extends Dialog {
       lastControl = wPhysicalFactName;
       
       Label wlAtrributes = new Label(wFactComp, SWT.RIGHT);
-      wlAtrributes.setText(BaseMessages.getString(PKG, "DimensionTableDialog.Attributes.Label")); //$NON-NLS-1$
+      wlAtrributes.setText(BaseMessages.getString(PKG, "DimensionTableDialog.Attributes.Label")); 
       props.setLook(wlAtrributes);
       FormData fdlAttributes = new FormData();
       fdlAttributes.left = new FormAttachment(0, 0);
@@ -530,18 +530,18 @@ public class StarModelDialog extends Dialog {
       //  name, description, field type, physical column name, data type, length, precision, source db, source table, source column, conversion remarks 
       //
       factColumns=new ColumnInfo[] {
-          new ColumnInfo(BaseMessages.getString(PKG, "StarModelDialog.ColumnInfo.Name.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
-          new ColumnInfo(BaseMessages.getString(PKG, "StarModelDialog.ColumnInfo.Description.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
-          new ColumnInfo(BaseMessages.getString(PKG, "StarModelDialog.ColumnInfo.FieldType.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO, attributeTypes), //$NON-NLS-1$
-          new ColumnInfo(BaseMessages.getString(PKG, "StarModelDialog.ColumnInfo.PhysicalName.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
-          new ColumnInfo(BaseMessages.getString(PKG, "StarModelDialog.ColumnInfo.DataType.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO, dataTypes), //$NON-NLS-1$
-          new ColumnInfo(BaseMessages.getString(PKG, "StarModelDialog.ColumnInfo.Dimension.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO, dimensionNames), //$NON-NLS-1$
-          new ColumnInfo(BaseMessages.getString(PKG, "StarModelDialog.ColumnInfo.DataLength.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   true), //$NON-NLS-1$
-          new ColumnInfo(BaseMessages.getString(PKG, "StarModelDialog.ColumnInfo.DataPrecision.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   true), //$NON-NLS-1$
-          new ColumnInfo(BaseMessages.getString(PKG, "StarModelDialog.ColumnInfo.SourceDatabase.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO, databaseNames), //$NON-NLS-1$
-          new ColumnInfo(BaseMessages.getString(PKG, "StarModelDialog.ColumnInfo.SourceTable.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
-          new ColumnInfo(BaseMessages.getString(PKG, "StarModelDialog.ColumnInfo.SourceColumn.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
-          new ColumnInfo(BaseMessages.getString(PKG, "StarModelDialog.ColumnInfo.ConversionLogicRemarks.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
+          new ColumnInfo(BaseMessages.getString(PKG, "StarModelDialog.ColumnInfo.Name.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false), 
+          new ColumnInfo(BaseMessages.getString(PKG, "StarModelDialog.ColumnInfo.Description.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false), 
+          new ColumnInfo(BaseMessages.getString(PKG, "StarModelDialog.ColumnInfo.FieldType.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO, attributeTypes), 
+          new ColumnInfo(BaseMessages.getString(PKG, "StarModelDialog.ColumnInfo.PhysicalName.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false), 
+          new ColumnInfo(BaseMessages.getString(PKG, "StarModelDialog.ColumnInfo.DataType.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO, dataTypes), 
+          new ColumnInfo(BaseMessages.getString(PKG, "StarModelDialog.ColumnInfo.Dimension.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO, dimensionNames), 
+          new ColumnInfo(BaseMessages.getString(PKG, "StarModelDialog.ColumnInfo.DataLength.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   true), 
+          new ColumnInfo(BaseMessages.getString(PKG, "StarModelDialog.ColumnInfo.DataPrecision.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   true), 
+          new ColumnInfo(BaseMessages.getString(PKG, "StarModelDialog.ColumnInfo.SourceDatabase.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO, databaseNames), 
+          new ColumnInfo(BaseMessages.getString(PKG, "StarModelDialog.ColumnInfo.SourceTable.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false), 
+          new ColumnInfo(BaseMessages.getString(PKG, "StarModelDialog.ColumnInfo.SourceColumn.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false), 
+          new ColumnInfo(BaseMessages.getString(PKG, "StarModelDialog.ColumnInfo.ConversionLogicRemarks.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false), 
       };
       
       wFactAttributes=new TableView(new Variables(), wFactComp, 

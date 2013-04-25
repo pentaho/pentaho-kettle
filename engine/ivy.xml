@@ -24,7 +24,7 @@
     <dependency org="pentaho"                              name="mondrian"                              rev="${dependency.mondrian.revision}" changing="true"/>
     <dependency org="pentaho"                              name="pentaho-hadoop-hive-jdbc-shim"         rev="${dependency.pentaho-hadoop-hive-jdbc-shim.revision}"/>
     <dependency org="pentaho"                              name="salesforce-partner"                    rev="24.0"/>
-    <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-core" rev="${dependency.pentaho-reporting.revision}" changing="true" transitive="false"/>
+    <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-core" rev="${dependency.pentaho-reporting.revision}" changing="true" transitive="true"/>
     <dependency org="pentaho-library"                      name="libfonts"                              rev="${dependency.pentaho-reporting.revision}" changing="true" transitive="true"/>
     <dependency org="pentaho"                              name="pentaho-metadata"                      rev="${dependency.pentaho-metadata.revision}" changing="true" />
     <dependency org="pentaho"                              name="metastore"                             rev="${dependency.pentaho-metastore.revision}" changing="true" transitive="false"/>

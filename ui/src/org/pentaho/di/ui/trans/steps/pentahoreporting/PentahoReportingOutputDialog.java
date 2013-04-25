@@ -94,7 +94,7 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
 		input=(PentahoReportingOutputMeta)in;
 		this.transMeta=transMeta;
 		if (sname != null) stepname=sname;
-		else stepname=BaseMessages.getString(PKG, "PentahoReportingOutputDialog.DefaultStepName"); //$NON-NLS-1$
+		else stepname=BaseMessages.getString(PKG, "PentahoReportingOutputDialog.DefaultStepName"); 
 	}
 
 	public String open()
@@ -120,14 +120,14 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "PentahoReportingOutputDialog.Shell.Text")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "PentahoReportingOutputDialog.Shell.Text")); 
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "PentahoReportingOutputDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "PentahoReportingOutputDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left  = new FormAttachment(0, 0);
@@ -146,7 +146,7 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
 
 		// input file line (report definition)
 		wlInput=new Label(shell, SWT.RIGHT);
-		wlInput.setText(BaseMessages.getString(PKG, "PentahoReportingOutputDialog.InputFilename.Label")); //$NON-NLS-1$
+		wlInput.setText(BaseMessages.getString(PKG, "PentahoReportingOutputDialog.InputFilename.Label")); 
  		props.setLook(wlInput);
 		FormData fdlInput = new FormData();
 		fdlInput.left = new FormAttachment(0, 0);
@@ -173,7 +173,7 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
 
         // input file line (report definition)
         wlOutput=new Label(shell, SWT.RIGHT);
-        wlOutput.setText(BaseMessages.getString(PKG, "PentahoReportingOutputDialog.OutputFilename.Label")); //$NON-NLS-1$
+        wlOutput.setText(BaseMessages.getString(PKG, "PentahoReportingOutputDialog.OutputFilename.Label")); 
         props.setLook(wlOutput);
         FormData fdlOutput = new FormData();
         fdlOutput.left = new FormAttachment(0, 0);
@@ -215,7 +215,7 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
         // output types
         //
         wlProcessor=new Label(shell, SWT.RIGHT);
-        wlProcessor.setText(BaseMessages.getString(PKG, "PentahoReportingOutputDialog.Processor.Label")); //$NON-NLS-1$
+        wlProcessor.setText(BaseMessages.getString(PKG, "PentahoReportingOutputDialog.Processor.Label")); 
         props.setLook(wlProcessor);
         FormData fdlProcessor = new FormData();
         fdlProcessor.left = new FormAttachment(0, 0);
@@ -233,11 +233,11 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
         wProcessor.addListener(SWT.Selection, new Listener(){public void handleEvent(Event e){ input.setChanged();}});
         
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString("System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString("System.Button.OK")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString("System.Button.Cancel")); 
         wGet=new Button(shell, SWT.PUSH);
-        wGet.setText(BaseMessages.getString(PKG, "PentahoReportingOutputDialog.Button.GetParameters")); //$NON-NLS-1$
+        wGet.setText(BaseMessages.getString(PKG, "PentahoReportingOutputDialog.Button.GetParameters")); 
 
 		setButtonPositions(new Button[] { wOK, wGet, wCancel }, margin, wProcessor);
 

@@ -69,7 +69,7 @@ public class RepositoriesDialog {
       KettleXulLoader xulLoader = new KettleXulLoader();
       xulLoader.setOuterContext(shell);
       xulLoader.setSettingsManager(XulSpoonSettingsManager.getInstance());
-      container = xulLoader.loadXul("org/pentaho/di/ui/repository/xul/repositories.xul", resourceBundle); //$NON-NLS-1$
+      container = xulLoader.loadXul("org/pentaho/di/ui/repository/xul/repositories.xul", resourceBundle); 
       final XulRunner runner = new SwtXulRunner();
       runner.addContainer(container);
 
@@ -86,15 +86,15 @@ public class RepositoriesDialog {
         runner.initialize();
       } catch (XulException e) {
         SpoonFactory.getInstance().messageBox(e.getLocalizedMessage(), "Service Initialization Failed", false, Const.ERROR);          
-        log.error(resourceBundle.getString("RepositoryLoginDialog.ErrorStartingXulApplication"), e);//$NON-NLS-1$
+        log.error(resourceBundle.getString("RepositoryLoginDialog.ErrorStartingXulApplication"), e);
       }
     } catch (XulException e) {
-     log.error(resourceBundle.getString("RepositoryLoginDialog.ErrorLoadingXulApplication"), e);//$NON-NLS-1$
+     log.error(resourceBundle.getString("RepositoryLoginDialog.ErrorLoadingXulApplication"), e);
     }
   }
 
   public Composite getDialogArea() {
-    XulDialog dialog = (XulDialog) container.getDocumentRoot().getElementById("repository-login-dialog"); //$NON-NLS-1$
+    XulDialog dialog = (XulDialog) container.getDocumentRoot().getElementById("repository-login-dialog"); 
     return (Composite) dialog.getManagedObject();
   }
   
@@ -107,7 +107,7 @@ public class RepositoriesDialog {
   }
   
   public Shell getShell() {
-    XulDialog dialog = (XulDialog) container.getDocumentRoot().getElementById("repository-login-dialog"); //$NON-NLS-1$
+    XulDialog dialog = (XulDialog) container.getDocumentRoot().getElementById("repository-login-dialog"); 
     return (Shell) dialog.getRootObject();
   }
 }

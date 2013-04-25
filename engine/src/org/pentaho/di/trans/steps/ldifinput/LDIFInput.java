@@ -283,7 +283,7 @@ public class LDIFInput extends BaseStep implements StepInterface
 	        }
 			else
 			{
-				logError(BaseMessages.getString(PKG, "LDIFInput.ErrorInStepRunning",e.getMessage())); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "LDIFInput.ErrorInStepRunning",e.getMessage())); 
 				setErrors(1);
 				stopAll();
 				setOutputDone();  // signal end to receiver(s)
@@ -353,8 +353,8 @@ public class LDIFInput extends BaseStep implements StepInterface
 						if (data.indexOfFilenameField<0)
 						{
 							// The field is unreachable !
-							logError(BaseMessages.getString(PKG, "LDIFInput.Log.ErrorFindingField")+ "[" + meta.getDynamicFilenameField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-							throw new KettleException(BaseMessages.getString(PKG, "LDIFInput.Exception.CouldnotFindField",meta.getDynamicFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
+							logError(BaseMessages.getString(PKG, "LDIFInput.Log.ErrorFindingField")+ "[" + meta.getDynamicFilenameField()+"]");  
+							throw new KettleException(BaseMessages.getString(PKG, "LDIFInput.Exception.CouldnotFindField",meta.getDynamicFilenameField()));  
 						}
 					}
 	            	

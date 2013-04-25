@@ -79,7 +79,7 @@ import org.pentaho.ui.xul.impl.XulEventHandler;
 public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler {
   private static Class<?> PKG = JobGraph.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-  private static final String XUL_FILE_TRANS_GRID_TOOLBAR = "ui/job-history-toolbar.xul"; //$NON-NLS-1$
+  private static final String XUL_FILE_TRANS_GRID_TOOLBAR = "ui/job-history-toolbar.xul"; 
 
   private JobGraph jobGraph;
 
@@ -136,7 +136,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
     //
     jobHistoryTab = new CTabItem(jobGraph.extraViewTabFolder, SWT.NONE);
     jobHistoryTab.setImage(GUIResource.getInstance().getImageShowHistory());
-    jobHistoryTab.setText(BaseMessages.getString(PKG, "Spoon.TransGraph.HistoryTab.Name")); //$NON-NLS-1$
+    jobHistoryTab.setText(BaseMessages.getString(PKG, "Spoon.TransGraph.HistoryTab.Name")); 
 
     // Create a composite, slam everything on there like it was in the history tab.
     //
@@ -232,15 +232,15 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
             
             switch (field.getDataType()) {
               case ValueMetaInterface.TYPE_INTEGER:
-                conversionMask = "###,###,##0"; //$NON-NLS-1$
+                conversionMask = "###,###,##0"; 
                 column.setAllignement(SWT.RIGHT);
                 break;
               case ValueMetaInterface.TYPE_DATE:
-                conversionMask = "yyyy/MM/dd HH:mm:ss"; //$NON-NLS-1$
+                conversionMask = "yyyy/MM/dd HH:mm:ss"; 
                 column.setAllignement(SWT.CENTER);
                 break;
               case ValueMetaInterface.TYPE_NUMBER:
-                conversionMask = " ###,###,##0.00;-###,###,##0.00"; //$NON-NLS-1$
+                conversionMask = " ###,###,##0.00;-###,###,##0.00"; 
                 column.setAllignement(SWT.RIGHT);
                 break;
               case ValueMetaInterface.TYPE_STRING:
@@ -320,17 +320,17 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
       ResourceBundle bundle = new XulSpoonResourceBundle(Spoon.class);
       XulDomContainer xulDomContainer = loader.loadXul(XUL_FILE_TRANS_GRID_TOOLBAR, bundle);
       xulDomContainer.addEventHandler(this);
-      toolbar = (XulToolbar) xulDomContainer.getDocumentRoot().getElementById("nav-toolbar"); //$NON-NLS-1$
+      toolbar = (XulToolbar) xulDomContainer.getDocumentRoot().getElementById("nav-toolbar"); 
 
-      refreshButton = (XulToolbarbutton) xulDomContainer.getDocumentRoot().getElementById("refresh-history"); //$NON-NLS-1$
-      fetchNextBatchButton = (XulToolbarbutton) xulDomContainer.getDocumentRoot().getElementById("fetch-next-batch-history"); //$NON-NLS-1$
-      fetchAllButton = (XulToolbarbutton) xulDomContainer.getDocumentRoot().getElementById("fetch-all-history"); //$NON-NLS-1$
+      refreshButton = (XulToolbarbutton) xulDomContainer.getDocumentRoot().getElementById("refresh-history"); 
+      fetchNextBatchButton = (XulToolbarbutton) xulDomContainer.getDocumentRoot().getElementById("fetch-next-batch-history"); 
+      fetchAllButton = (XulToolbarbutton) xulDomContainer.getDocumentRoot().getElementById("fetch-all-history"); 
       
       ToolBar swtToolBar = (ToolBar) toolbar.getManagedObject();
       swtToolBar.layout(true, true);
     } catch (Throwable t) {
       log.logError(Const.getStackTracker(t));
-      new ErrorDialog(jobHistoryComposite.getShell(), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR), new Exception(t)); //$NON-NLS-1$//$NON-NLS-2$
+      new ErrorDialog(jobHistoryComposite.getShell(), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR), new Exception(t)); 
     }
   }
 
@@ -354,15 +354,15 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
       DatabaseMeta databaseMeta = logTable.getDatabaseMeta();
 
       MessageBox mb = new MessageBox(jobGraph.getShell(), SWT.YES | SWT.NO | SWT.ICON_QUESTION);
-      mb.setMessage(BaseMessages.getString(PKG, "JobGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Message", schemaTable)); // Nothing found that matches your criteria //$NON-NLS-1$
-      mb.setText(BaseMessages.getString(PKG, "JobGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Title")); // Sorry! //$NON-NLS-1$
+      mb.setMessage(BaseMessages.getString(PKG, "JobGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Message", schemaTable)); // Nothing found that matches your criteria 
+      mb.setText(BaseMessages.getString(PKG, "JobGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Title")); // Sorry! 
       if (mb.open() == SWT.YES) {
         Database database = new Database(loggingObject, databaseMeta);
         try {
           database.connect();
           database.truncateTable(schemaTable);
         } catch (Exception e) {
-          new ErrorDialog(jobGraph.getShell(), BaseMessages.getString(PKG, "JobGraph.Dialog.ErrorClearningLoggingTable.Title"), BaseMessages.getString(PKG, "JobGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Message"), e); //$NON-NLS-1$//$NON-NLS-2$
+          new ErrorDialog(jobGraph.getShell(), BaseMessages.getString(PKG, "JobGraph.Dialog.ErrorClearningLoggingTable.Title"), BaseMessages.getString(PKG, "JobGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Message"), e); 
         } finally {
           if (database != null) {
             database.disconnect();
@@ -370,7 +370,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
 
           refreshHistory();
           if (wText.get(index) != null) {
-            wText.get(index).setText(""); //$NON-NLS-1$
+            wText.get(index).setText(""); 
           }
         }
       }
@@ -584,17 +584,17 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
         //
         String schemaTable = logTable.getQuotedSchemaTableCombination();
 
-        String sql = "SELECT "; //$NON-NLS-1$
+        String sql = "SELECT "; 
         boolean first = true;
         for (LogTableField field : logTable.getFields()) {
           if (field.isEnabled() && field.isVisible()) {
             if (!first)
-              sql += ", "; //$NON-NLS-1$
+              sql += ", "; 
             first = false;
             sql += logConnection.quoteField(field.getFieldName());
           }
         }
-        sql += " FROM " + schemaTable; //$NON-NLS-1$
+        sql += " FROM " + schemaTable; 
 
         RowMetaAndData params = new RowMetaAndData();
 
@@ -604,12 +604,12 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
         LogTableField keyField = logTable.getKeyField();
         
         if (nameField != null) {
-            sql += " WHERE " + logConnection.quoteField(nameField.getFieldName()) + " LIKE ?"; //$NON-NLS-1$ //$NON-NLS-2$
-            params.addValue(new ValueMeta("transname_literal", ValueMetaInterface.TYPE_STRING), jobMeta.getName()); //$NON-NLS-1$
+            sql += " WHERE " + logConnection.quoteField(nameField.getFieldName()) + " LIKE ?";  
+            params.addValue(new ValueMeta("transname_literal", ValueMetaInterface.TYPE_STRING), jobMeta.getName()); 
         }
         
         if (keyField != null && keyField.isEnabled()) {
-          sql += " ORDER BY " + logConnection.quoteField(keyField.getFieldName()) + " DESC"; //$NON-NLS-1$//$NON-NLS-2$
+          sql += " ORDER BY " + logConnection.quoteField(keyField.getFieldName()) + " DESC"; 
         }
 
         ResultSet resultSet = database.openQuery(sql, params.getRowMeta(), params.getData());
@@ -631,7 +631,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
 
         models[index].rows = rows;
       } catch (Exception e) {
-        LogChannel.GENERAL.logError("Unable to get rows of data from logging table "+models[index].logTable, e); //$NON-NLS-1$
+        LogChannel.GENERAL.logError("Unable to get rows of data from logging table "+models[index].logTable, e); 
         models[index].rows = new ArrayList<Object[]>();
       } finally {
         if (database != null)
@@ -676,9 +676,9 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
           try {
             string = valueMeta.getString(rowData[c]);
           } catch (KettleValueException e) {
-            log.logError("history data conversion issue", e); //$NON-NLS-1$
+            log.logError("history data conversion issue", e); 
           }
-          item.setText(c + 1, Const.NVL(string, "")); //$NON-NLS-1$
+          item.setText(c + 1, Const.NVL(string, "")); 
         }
 
         // Add some color
@@ -692,7 +692,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
           try {
             errors = colinf[index1].getValueMeta().getInteger(rowData[index1]);
           } catch (KettleValueException e) {
-            log.logError("history data conversion issue", e); //$NON-NLS-1$
+            log.logError("history data conversion issue", e); 
           }
         }
         LogTableField statusField = logTable.getStatusField();
@@ -702,7 +702,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
           try {
             statusString = colinf[index1].getValueMeta().getString(rowData[index1]);
           } catch (KettleValueException e) {
-            log.logError("history data conversion issue", e); //$NON-NLS-1$
+            log.logError("history data conversion issue", e); 
           }
           if (statusString != null) {
             status = LogStatus.findStatus(statusString);
@@ -745,9 +745,9 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
     if (list == null || list.size() == 0) {
       String message;
       if (logTable.isDefined()) {
-        message = BaseMessages.getString(PKG, "JobHistory.PleaseRefresh.Message"); //$NON-NLS-1$
+        message = BaseMessages.getString(PKG, "JobHistory.PleaseRefresh.Message"); 
       } else {
-        message = BaseMessages.getString(PKG, "JobHistory.HistoryConfiguration.Message"); //$NON-NLS-1$
+        message = BaseMessages.getString(PKG, "JobHistory.HistoryConfiguration.Message"); 
       }
       text.setText(message);
       return;
@@ -767,12 +767,12 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
         if (index>=0) {
           String logText = row[index].toString();
   
-          text.setText(Const.NVL(logText, "")); //$NON-NLS-1$
+          text.setText(Const.NVL(logText, "")); 
   
           text.setSelection(text.getText().length());
           text.showSelection();
         } else {
-          text.setText(BaseMessages.getString(PKG, "JobHistory.HistoryConfiguration.NoLoggingFieldDefined")); //$NON-NLS-1$
+          text.setText(BaseMessages.getString(PKG, "JobHistory.HistoryConfiguration.NoLoggingFieldDefined")); 
         }
       }
     }
@@ -796,7 +796,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getName()
    */
   public String getName() {
-    return "history"; //$NON-NLS-1$
+    return "history"; 
   }
 
   /* (non-Javadoc)

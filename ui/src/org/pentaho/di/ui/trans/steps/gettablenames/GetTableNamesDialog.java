@@ -169,14 +169,14 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "GetTableNamesDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "GetTableNamesDialog.Shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin=Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "GetTableNamesDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "GetTableNamesDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -200,7 +200,7 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
 		
 		// schemaname fieldname ...
 		wlschemaname=new Label(shell, SWT.RIGHT);
-		wlschemaname.setText(BaseMessages.getString(PKG, "GetTableNamesDialog.schemanameName.Label")); //$NON-NLS-1$
+		wlschemaname.setText(BaseMessages.getString(PKG, "GetTableNamesDialog.schemanameName.Label")); 
  		props.setLook(wlschemaname);
 		fdlschemaname=new FormData();
 		fdlschemaname.left = new FormAttachment(0, 0);
@@ -513,7 +513,7 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
 		
 		// TablenameField fieldname ...
 		wlTablenameField=new Label(wOutputFields, SWT.RIGHT);
-		wlTablenameField.setText(BaseMessages.getString(PKG, "GetTableNamesDialog.TablenameFieldName.Label")); //$NON-NLS-1$
+		wlTablenameField.setText(BaseMessages.getString(PKG, "GetTableNamesDialog.TablenameFieldName.Label")); 
  		props.setLook(wlTablenameField);
 		fdlTablenameField=new FormData();
 		fdlTablenameField.left = new FormAttachment(0, 0);
@@ -532,7 +532,7 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
 		
 		// ObjectTypeField fieldname ...
 		wlObjectTypeField=new Label(wOutputFields, SWT.RIGHT);
-		wlObjectTypeField.setText(BaseMessages.getString(PKG, "GetTableNamesDialog.ObjectTypeFieldName.Label")); //$NON-NLS-1$
+		wlObjectTypeField.setText(BaseMessages.getString(PKG, "GetTableNamesDialog.ObjectTypeFieldName.Label")); 
  		props.setLook(wlObjectTypeField);
 		fdlObjectTypeField=new FormData();
 		fdlObjectTypeField.left = new FormAttachment(0, 0);
@@ -551,7 +551,7 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
 		
 		// isSystemObjectField fieldname ...
 		wlisSystemObjectField=new Label(wOutputFields, SWT.RIGHT);
-		wlisSystemObjectField.setText(BaseMessages.getString(PKG, "GetTableNamesDialog.isSystemObjectFieldName.Label")); //$NON-NLS-1$
+		wlisSystemObjectField.setText(BaseMessages.getString(PKG, "GetTableNamesDialog.isSystemObjectFieldName.Label")); 
  		props.setLook(wlisSystemObjectField);
 		fdlisSystemObjectField=new FormData();
 		fdlisSystemObjectField.left = new FormAttachment(0, 0);
@@ -570,7 +570,7 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
 
 		// CreationSQL fieldname ...
 		wlSQLCreationField=new Label(wOutputFields, SWT.RIGHT);
-		wlSQLCreationField.setText(BaseMessages.getString(PKG, "GetTableNamesDialog.CreationSQLName.Label")); //$NON-NLS-1$
+		wlSQLCreationField.setText(BaseMessages.getString(PKG, "GetTableNamesDialog.CreationSQLName.Label")); 
  		props.setLook(wlSQLCreationField);
  		fdlSQLCreationField=new FormData();
  		fdlSQLCreationField.left = new FormAttachment(0, 0);
@@ -602,13 +602,13 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
 
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 
 		wPreview = new Button(shell, SWT.PUSH);
 		wPreview.setText(BaseMessages.getString(PKG, "GetTableNamesDialog.Preview.Button"));
 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, wOutputFields);
 
@@ -671,7 +671,7 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
    */
   public void getData() {
     if (isDebug())
-      logDebug(toString(), BaseMessages.getString(PKG, "GetTableNamesDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+      logDebug(toString(), BaseMessages.getString(PKG, "GetTableNamesDialog.Log.GettingKeyInfo")); 
 
     if (input.getDatabase() != null)
       wConnection.setText(input.getDatabase().getName());
@@ -724,7 +724,7 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
 				 if(value!=null) wSchemaField.setText(value);
 			 }catch(KettleException ke){
 					new ErrorDialog(shell, BaseMessages.getString(PKG, "GetTableNamesDialog.FailedToGetFields.DialogTitle"), 
-							BaseMessages.getString(PKG, "GetTableNamesDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+							BaseMessages.getString(PKG, "GetTableNamesDialog.FailedToGetFields.DialogMessage"), ke);  
 				}
 			 gotpreviousfields=true;
 		 }
@@ -737,8 +737,8 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
 		if (input.getDatabase()==null)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(BaseMessages.getString(PKG, "GetTableNamesDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
-			mb.setText(BaseMessages.getString(PKG, "GetTableNamesDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "GetTableNamesDialog.InvalidConnection.DialogMessage")); 
+			mb.setText(BaseMessages.getString(PKG, "GetTableNamesDialog.InvalidConnection.DialogTitle")); 
 			mb.open();
 			return;
 		}
@@ -770,8 +770,8 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
 		if(Const.isEmpty(meta.getTablenameFieldName()))
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(BaseMessages.getString(PKG, "GetTableNamesDialog.Error.TablenameFieldNameMissingMessage")); //$NON-NLS-1$
-			mb.setText(BaseMessages.getString(PKG, "GetTableNamesDialog.Error.TablenameFieldNameMissingTitle")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "GetTableNamesDialog.Error.TablenameFieldNameMissingMessage")); 
+			mb.setText(BaseMessages.getString(PKG, "GetTableNamesDialog.Error.TablenameFieldNameMissingTitle")); 
 			mb.open();
 			
 			return false;
@@ -787,8 +787,8 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
 		if (oneMeta.getDatabase()==null)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(BaseMessages.getString(PKG, "GetTableNamesDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
-			mb.setText(BaseMessages.getString(PKG, "GetTableNamesDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
+			mb.setMessage(BaseMessages.getString(PKG, "GetTableNamesDialog.InvalidConnection.DialogMessage")); 
+			mb.setText(BaseMessages.getString(PKG, "GetTableNamesDialog.InvalidConnection.DialogTitle")); 
 			mb.open();
 			return;
 		}

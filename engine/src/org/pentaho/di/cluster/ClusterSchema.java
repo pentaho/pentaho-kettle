@@ -62,7 +62,7 @@ public class ClusterSchema
 {
 	private static Class<?> PKG = ClusterSchema.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-    public static final String XML_TAG = "clusterschema"; //$NON-NLS-1$
+    public static final String XML_TAG = "clusterschema"; 
     
     public static final RepositoryObjectType REPOSITORY_ELEMENT_TYPE = RepositoryObjectType.CLUSTER_SCHEMA;
 
@@ -103,10 +103,10 @@ public class ClusterSchema
     {
         id=null;
         slaveServers = new ArrayList<SlaveServer>();
-        socketsBufferSize = "2000"; //$NON-NLS-1$
-        socketsFlushInterval = "5000"; //$NON-NLS-1$
+        socketsBufferSize = "2000"; 
+        socketsFlushInterval = "5000"; 
         socketsCompressed = true;
-        basePort = "40000"; //$NON-NLS-1$
+        basePort = "40000"; 
         dynamic = false;
         this.changedDate=new Date();
     }
@@ -168,23 +168,23 @@ public class ClusterSchema
     {
         StringBuffer xml = new StringBuffer(500);
         
-        xml.append("        <").append(XML_TAG).append(">").append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
+        xml.append("        <").append(XML_TAG).append(">").append(Const.CR);  
         
-        xml.append("          ").append(XMLHandler.addTagValue("name", name)); //$NON-NLS-1$ //$NON-NLS-2$
-        xml.append("          ").append(XMLHandler.addTagValue("base_port", basePort)); //$NON-NLS-1$ //$NON-NLS-2$
-        xml.append("          ").append(XMLHandler.addTagValue("sockets_buffer_size", socketsBufferSize)); //$NON-NLS-1$ //$NON-NLS-2$
-        xml.append("          ").append(XMLHandler.addTagValue("sockets_flush_interval", socketsFlushInterval)); //$NON-NLS-1$ //$NON-NLS-2$
-        xml.append("          ").append(XMLHandler.addTagValue("sockets_compressed", socketsCompressed)); //$NON-NLS-1$ //$NON-NLS-2$
-        xml.append("          ").append(XMLHandler.addTagValue("dynamic", dynamic)); //$NON-NLS-1$ //$NON-NLS-2$
+        xml.append("          ").append(XMLHandler.addTagValue("name", name));  
+        xml.append("          ").append(XMLHandler.addTagValue("base_port", basePort));  
+        xml.append("          ").append(XMLHandler.addTagValue("sockets_buffer_size", socketsBufferSize));  
+        xml.append("          ").append(XMLHandler.addTagValue("sockets_flush_interval", socketsFlushInterval));  
+        xml.append("          ").append(XMLHandler.addTagValue("sockets_compressed", socketsCompressed));  
+        xml.append("          ").append(XMLHandler.addTagValue("dynamic", dynamic));  
         
-        xml.append("          <slaveservers>").append(Const.CR); //$NON-NLS-1$
+        xml.append("          <slaveservers>").append(Const.CR); 
         for (int i=0;i<slaveServers.size();i++)
         {
             SlaveServer slaveServer = slaveServers.get(i);
-            xml.append("            ").append(XMLHandler.addTagValue("name", slaveServer.getName())); //$NON-NLS-1$ //$NON-NLS-2$
+            xml.append("            ").append(XMLHandler.addTagValue("name", slaveServer.getName()));  
         }
-        xml.append("          </slaveservers>").append(Const.CR); //$NON-NLS-1$
-        xml.append("        </").append(XML_TAG).append(">").append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
+        xml.append("          </slaveservers>").append(Const.CR); 
+        xml.append("        </").append(XML_TAG).append(">").append(Const.CR);  
         return xml.toString();
     }
     
@@ -192,18 +192,18 @@ public class ClusterSchema
     {
         this();
         
-        name = XMLHandler.getTagValue(clusterSchemaNode, "name"); //$NON-NLS-1$
-        basePort = XMLHandler.getTagValue(clusterSchemaNode, "base_port"); //$NON-NLS-1$
-        socketsBufferSize = XMLHandler.getTagValue(clusterSchemaNode, "sockets_buffer_size"); //$NON-NLS-1$
-        socketsFlushInterval = XMLHandler.getTagValue(clusterSchemaNode, "sockets_flush_interval"); //$NON-NLS-1$
-        socketsCompressed = "Y".equalsIgnoreCase(  XMLHandler.getTagValue(clusterSchemaNode, "sockets_compressed") ); //$NON-NLS-1$ //$NON-NLS-2$
-        dynamic = "Y".equalsIgnoreCase(  XMLHandler.getTagValue(clusterSchemaNode, "dynamic") ); //$NON-NLS-1$ //$NON-NLS-2$
+        name = XMLHandler.getTagValue(clusterSchemaNode, "name"); 
+        basePort = XMLHandler.getTagValue(clusterSchemaNode, "base_port"); 
+        socketsBufferSize = XMLHandler.getTagValue(clusterSchemaNode, "sockets_buffer_size"); 
+        socketsFlushInterval = XMLHandler.getTagValue(clusterSchemaNode, "sockets_flush_interval"); 
+        socketsCompressed = "Y".equalsIgnoreCase(  XMLHandler.getTagValue(clusterSchemaNode, "sockets_compressed") );  
+        dynamic = "Y".equalsIgnoreCase(  XMLHandler.getTagValue(clusterSchemaNode, "dynamic") );  
         
-        Node slavesNode = XMLHandler.getSubNode(clusterSchemaNode, "slaveservers"); //$NON-NLS-1$
-        int nrSlaves = XMLHandler.countNodes(slavesNode, "name"); //$NON-NLS-1$
+        Node slavesNode = XMLHandler.getSubNode(clusterSchemaNode, "slaveservers"); 
+        int nrSlaves = XMLHandler.countNodes(slavesNode, "name"); 
         for (int i=0;i<nrSlaves;i++)
         {
-            Node serverNode = XMLHandler.getSubNodeByNr(slavesNode, "name", i); //$NON-NLS-1$
+            Node serverNode = XMLHandler.getSubNodeByNr(slavesNode, "name", i); 
             String serverName = XMLHandler.getNodeValue(serverNode);
             SlaveServer slaveServer = SlaveServer.findSlaveServer(referenceSlaveServers, serverName);
             if (slaveServer!=null) 
@@ -299,9 +299,9 @@ public class ClusterSchema
         }
         if (slaveServers.size()>0)
         {
-            throw new KettleException(BaseMessages.getString(PKG, "ClusterSchema.NoMasterServerDefined", name)); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "ClusterSchema.NoMasterServerDefined", name)); 
         }
-        throw new KettleException(BaseMessages.getString(PKG, "ClusterSchema.NoSlaveServerDefined", name)); //$NON-NLS-1$
+        throw new KettleException(BaseMessages.getString(PKG, "ClusterSchema.NoSlaveServerDefined", name)); 
     }
     
     /**

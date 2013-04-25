@@ -100,7 +100,7 @@ public class DatabaseUtil implements DataSourceProviderInterface
     try
     {
       // Needed this for Jboss
-      lkup = ctx.lookup("java:" + dsName); //$NON-NLS-1$
+      lkup = ctx.lookup("java:" + dsName); 
       if (lkup != null)
       {
         rtn = (DataSource) lkup;
@@ -113,7 +113,7 @@ public class DatabaseUtil implements DataSourceProviderInterface
     try
     {
       // Tomcat
-      lkup = ctx.lookup("java:comp/env/jdbc/" + dsName); //$NON-NLS-1$
+      lkup = ctx.lookup("java:comp/env/jdbc/" + dsName); 
       if (lkup != null)
       {
         rtn = (DataSource) lkup;
@@ -126,7 +126,7 @@ public class DatabaseUtil implements DataSourceProviderInterface
     try
     {
       // Others?
-      lkup = ctx.lookup("jdbc/" + dsName); //$NON-NLS-1$
+      lkup = ctx.lookup("jdbc/" + dsName); 
       if (lkup != null)
       {
         rtn = (DataSource) lkup;
@@ -140,6 +140,6 @@ public class DatabaseUtil implements DataSourceProviderInterface
     {
       throw firstNe;
     }
-    throw new NamingException(BaseMessages.getString(PKG, "DatabaseUtil.DSNotFound", dsName)); //$NON-NLS-1$
+    throw new NamingException(BaseMessages.getString(PKG, "DatabaseUtil.DSNotFound", dsName)); 
   }
 }

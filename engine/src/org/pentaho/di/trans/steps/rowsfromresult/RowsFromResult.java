@@ -77,7 +77,7 @@ public class RowsFromResult extends BaseStep implements StepInterface
 
 		if (checkFeedback(getLinesRead())) 
 		{
-			if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "RowsFromResult.Log.LineNumber") + getLinesRead()); //$NON-NLS-1$
+			if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "RowsFromResult.Log.LineNumber") + getLinesRead()); 
 		}
 
 		return true;

@@ -453,21 +453,21 @@ public class PaloCellInputDialog extends BaseStepDialog implements StepDialogInt
   public static void showPaloLibWarningDialog(Shell shell) {
     PropsUI props = PropsUI.getInstance();
 
-    if ("Y".equalsIgnoreCase(props.getCustomParameter(STRING_PALO_LIB_WARNING_PARAMETER, "Y"))) //$NON-NLS-1$ //$NON-NLS-2$
+    if ("Y".equalsIgnoreCase(props.getCustomParameter(STRING_PALO_LIB_WARNING_PARAMETER, "Y")))  
     {
       MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
-          BaseMessages.getString(PKG, "PaloCellInputDialog.PaloLibWarningDialog.DialogTitle"), //$NON-NLS-1$
+          BaseMessages.getString(PKG, "PaloCellInputDialog.PaloLibWarningDialog.DialogTitle"), 
           null, 
-          BaseMessages.getString(PKG, "PaloCellInputDialog.PaloLibWarningDialog.DialogMessage", Const.CR) + Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
+          BaseMessages.getString(PKG, "PaloCellInputDialog.PaloLibWarningDialog.DialogMessage", Const.CR) + Const.CR,  
           MessageDialog.WARNING, new String[] { 
-            BaseMessages.getString(PKG, "PaloCellInputDialog.PaloLibWarningDialog.Option1") }, //$NON-NLS-1$
+            BaseMessages.getString(PKG, "PaloCellInputDialog.PaloLibWarningDialog.Option1") }, 
             0, 
-            BaseMessages.getString(PKG, "PaloCellInputDialog.PaloLibWarningDialog.Option2"), //$NON-NLS-1$
-          "N".equalsIgnoreCase(props.getCustomParameter(STRING_PALO_LIB_WARNING_PARAMETER, "Y")) //$NON-NLS-1$ //$NON-NLS-2$
+            BaseMessages.getString(PKG, "PaloCellInputDialog.PaloLibWarningDialog.Option2"), 
+          "N".equalsIgnoreCase(props.getCustomParameter(STRING_PALO_LIB_WARNING_PARAMETER, "Y"))  
       );
       MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
       md.open();
-      props.setCustomParameter(STRING_PALO_LIB_WARNING_PARAMETER, md.getToggleState() ? "N" : "Y"); //$NON-NLS-1$ //$NON-NLS-2$
+      props.setCustomParameter(STRING_PALO_LIB_WARNING_PARAMETER, md.getToggleState() ? "N" : "Y");  
       props.saveProps();
     }
   }

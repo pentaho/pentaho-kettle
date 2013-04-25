@@ -84,7 +84,7 @@ public class Delete extends BaseStep implements StepInterface
         
         data.db.setValues(data.deleteParameterRowMeta, deleteRow, data.prepStatementDelete);
         		
-		if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "Delete.Log.SetValuesForDelete",data.deleteParameterRowMeta.getString(deleteRow),rowMeta.getString(row))); //$NON-NLS-1$
+		if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "Delete.Log.SetValuesForDelete",data.deleteParameterRowMeta.getString(deleteRow),rowMeta.getString(row))); 
 
 		data.db.insertRow(data.prepStatementDelete);
 		incrementLinesUpdated();
@@ -116,7 +116,7 @@ public class Delete extends BaseStep implements StepInterface
             data.schemaTable = meta.getDatabaseMeta().getQuotedSchemaTableCombination(environmentSubstitute(meta.getSchemaName()), environmentSubstitute(meta.getTableName()));
                                     
             // lookup the values!
-            if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "Delete.Log.CheckingRow")+getInputRowMeta().getString(r)); //$NON-NLS-1$
+            if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "Delete.Log.CheckingRow")+getInputRowMeta().getString(r)); 
             
             data.keynrs  = new int[meta.getKeyStream().length];
             data.keynrs2 = new int[meta.getKeyStream().length];
@@ -124,21 +124,21 @@ public class Delete extends BaseStep implements StepInterface
             {
                 data.keynrs[i]=getInputRowMeta().indexOfValue(meta.getKeyStream()[i]);
                 if (data.keynrs[i]<0 &&  // couldn't find field!
-                    !"IS NULL".equalsIgnoreCase(meta.getKeyCondition()[i]) &&   // No field needed! //$NON-NLS-1$
-                    !"IS NOT NULL".equalsIgnoreCase(meta.getKeyCondition()[i])  // No field needed! //$NON-NLS-1$
+                    !"IS NULL".equalsIgnoreCase(meta.getKeyCondition()[i]) &&   // No field needed! 
+                    !"IS NOT NULL".equalsIgnoreCase(meta.getKeyCondition()[i])  // No field needed! 
                    )
                 {
-                    throw new KettleStepException(BaseMessages.getString(PKG, "Delete.Exception.FieldRequired",meta.getKeyStream()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+                    throw new KettleStepException(BaseMessages.getString(PKG, "Delete.Exception.FieldRequired",meta.getKeyStream()[i]));  
                 }
                 data.keynrs2[i]=getInputRowMeta().indexOfValue(meta.getKeyStream2()[i]);
                 if (data.keynrs2[i]<0 &&  // couldn't find field!
-                    "BETWEEN".equalsIgnoreCase(meta.getKeyCondition()[i])   // 2 fields needed! //$NON-NLS-1$
+                    "BETWEEN".equalsIgnoreCase(meta.getKeyCondition()[i])   // 2 fields needed! 
                    )
                 {
-                    throw new KettleStepException(BaseMessages.getString(PKG, "Delete.Exception.FieldRequired",meta.getKeyStream2()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+                    throw new KettleStepException(BaseMessages.getString(PKG, "Delete.Exception.FieldRequired",meta.getKeyStream2()[i]));  
                 }
                 
-                if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "Delete.Log.FieldInfo",meta.getKeyStream()[i])+data.keynrs[i]); //$NON-NLS-1$ //$NON-NLS-2$
+                if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "Delete.Log.FieldInfo",meta.getKeyStream()[i])+data.keynrs[i]);  
             }
             
             prepareDelete(getInputRowMeta());
@@ -152,7 +152,7 @@ public class Delete extends BaseStep implements StepInterface
 			
             if (checkFeedback(getLinesRead())) 
             {
-            	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "Delete.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+            	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "Delete.Log.LineNumber")+getLinesRead()); 
             }
 		}
 		catch(KettleException e)
@@ -166,7 +166,7 @@ public class Delete extends BaseStep implements StepInterface
 	        else
 	        {
 			
-				logError(BaseMessages.getString(PKG, "Delete.Log.ErrorInStep")+e.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "Delete.Log.ErrorInStep")+e.getMessage()); 
 				setErrors(1);
 				stopAll();
 				setOutputDone();  // signal end to receiver(s)
@@ -251,7 +251,7 @@ public class Delete extends BaseStep implements StepInterface
                     data.db.connect(getPartitionID());
                 }
 				
-                if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "Delete.Log.ConnectedToDB")); //$NON-NLS-1$
+                if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "Delete.Log.ConnectedToDB")); 
 				
 				data.db.setCommit(meta.getCommitSize());
 
@@ -259,7 +259,7 @@ public class Delete extends BaseStep implements StepInterface
 			}
 			catch(KettleException ke)
 			{
-				logError(BaseMessages.getString(PKG, "Delete.Log.ErrorOccurred")+ke.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "Delete.Log.ErrorOccurred")+ke.getMessage()); 
 				setErrors(1);
 				stopAll();
 			}
@@ -290,7 +290,7 @@ public class Delete extends BaseStep implements StepInterface
 	        }
 	        catch(KettleDatabaseException e)
 	        {
-	            logError(BaseMessages.getString(PKG, "Delete.Log.UnableToCommitUpdateConnection")+data.db+"] :"+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+	            logError(BaseMessages.getString(PKG, "Delete.Log.UnableToCommitUpdateConnection")+data.db+"] :"+e.toString());  
 	            setErrors(1);
 	        }
 	        finally 

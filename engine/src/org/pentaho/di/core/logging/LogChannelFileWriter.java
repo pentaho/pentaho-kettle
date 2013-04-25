@@ -64,7 +64,7 @@ public class LogChannelFileWriter {
     this.pollingInterval = pollingInterval;
     
     active = new AtomicBoolean(false);
-    lastBufferLineNr = CentralLogStore.getLastBufferLineNr();
+    lastBufferLineNr = KettleLogStore.getLastBufferLineNr();
     
     try {
       logFileOutputStream = KettleVFS.getOutputStream(logFile, appending);
@@ -85,7 +85,7 @@ public class LogChannelFileWriter {
     this(logChannelId, logFile, appending, 1000);
     
     active = new AtomicBoolean(false);
-    lastBufferLineNr = CentralLogStore.getLastBufferLineNr();
+    lastBufferLineNr = KettleLogStore.getLastBufferLineNr();
   }
   
   /**
@@ -103,8 +103,8 @@ public class LogChannelFileWriter {
           
           while (active.get() && exception==null) {
             
-            int last = CentralLogStore.getLastBufferLineNr();
-            StringBuffer buffer = CentralLogStore.getAppender().getBuffer(logChannelId, false, lastBufferLineNr, last);
+            int last = KettleLogStore.getLastBufferLineNr();
+            StringBuffer buffer = KettleLogStore.getAppender().getBuffer(logChannelId, false, lastBufferLineNr, last);
             logFileOutputStream.write(buffer.toString().getBytes());
             lastBufferLineNr=last+1;
             
@@ -113,7 +113,7 @@ public class LogChannelFileWriter {
           
           // When done, save the last bit as well...
           //
-          StringBuffer buffer = CentralLogStore.getAppender().getBuffer(logChannelId, false, lastBufferLineNr);
+          StringBuffer buffer = KettleLogStore.getAppender().getBuffer(logChannelId, false, lastBufferLineNr);
           logFileOutputStream.write(buffer.toString().getBytes());
           
         } catch(Exception e) {

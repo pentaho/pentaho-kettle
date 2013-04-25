@@ -103,7 +103,7 @@ public class TableOutput extends BaseStep implements StepInterface
             		data.valuenrs[i]=getInputRowMeta().indexOfValue(meta.getFieldStream()[i]);
             		if (data.valuenrs[i]<0)
             		{
-            			throw new KettleStepException(BaseMessages.getString(PKG, "TableOutput.Exception.FieldRequired",meta.getFieldStream()[i])); //$NON-NLS-1$
+            			throw new KettleStepException(BaseMessages.getString(PKG, "TableOutput.Exception.FieldRequired",meta.getFieldStream()[i])); 
             		}
             	}
 
@@ -117,7 +117,7 @@ public class TableOutput extends BaseStep implements StepInterface
         			    data.insertRowMeta.addValueMeta( insertValue );
         		    }
         		    else  {
-        			    throw new KettleStepException(BaseMessages.getString(PKG, "TableOutput.Exception.FailedToFindField", meta.getFieldStream()[i])); //$NON-NLS-1$ 
+        			    throw new KettleStepException(BaseMessages.getString(PKG, "TableOutput.Exception.FailedToFindField", meta.getFieldStream()[i]));  
         			}
         	    }            	
             }
@@ -134,7 +134,7 @@ public class TableOutput extends BaseStep implements StepInterface
             
             if (checkFeedback(getLinesRead())) 
             {
-            	if(log.isBasic()) logBasic("linenr "+getLinesRead()); //$NON-NLS-1$
+            	if(log.isBasic()) logBasic("linenr "+getLinesRead()); 
             }
 		}
 		catch(KettleException e)

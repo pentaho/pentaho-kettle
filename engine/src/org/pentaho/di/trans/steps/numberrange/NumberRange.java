@@ -91,7 +91,7 @@ public class NumberRange extends BaseStep implements StepInterface
 				putRow(data.outputRowMeta, row);
 		        if (checkFeedback(getLinesRead())) 
 	            {
-	            	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "NumberRange.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+	            	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "NumberRange.Log.LineNumber")+getLinesRead()); 
 	            }
 	 		}
 			catch(KettleException e)
@@ -106,7 +106,7 @@ public class NumberRange extends BaseStep implements StepInterface
 				}
 				else
 				{
-					logError(BaseMessages.getString(PKG, "NumberRange.Log.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
+					logError(BaseMessages.getString(PKG, "NumberRange.Log.ErrorInStepRunning")+e.getMessage()); 
 					setErrors(1);
 					stopAll();
 					setOutputDone();  // signal end to receiver(s)

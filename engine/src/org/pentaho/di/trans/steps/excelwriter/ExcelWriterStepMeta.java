@@ -1032,7 +1032,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
 
 			return null;
 		} catch (Exception e) {
-			throw new KettleException(e); //$NON-NLS-1$
+			throw new KettleException(e); 
 		}
 	}
 

@@ -62,11 +62,11 @@ public class DatabaseFactory implements DatabaseFactoryInterface {
                     try
                     {
                         db.connect(partitioningInformation[i].getPartitionId());
-                        report.append(BaseMessages.getString(PKG, "DatabaseMeta.report.ConnectionWithPartOk", databaseMeta.getName(), partitioningInformation[i].getPartitionId()) + Const.CR); //$NON-NLS-1$
+                        report.append(BaseMessages.getString(PKG, "DatabaseMeta.report.ConnectionWithPartOk", databaseMeta.getName(), partitioningInformation[i].getPartitionId()) + Const.CR); 
                     }
                     catch (KettleException e)
                     {
-                        report.append(BaseMessages.getString(PKG, "DatabaseMeta.report.ConnectionWithPartError", databaseMeta.getName(), partitioningInformation[i].getPartitionId(), e.toString()) + Const.CR); //$NON-NLS-1$
+                        report.append(BaseMessages.getString(PKG, "DatabaseMeta.report.ConnectionWithPartError", databaseMeta.getName(), partitioningInformation[i].getPartitionId(), e.toString()) + Const.CR); 
                         report.append(Const.getStackTracker(e) + Const.CR);
                     }
                     finally
@@ -84,11 +84,11 @@ public class DatabaseFactory implements DatabaseFactoryInterface {
                 try
                 {
                     db.connect();
-                    report.append(BaseMessages.getString(PKG, "DatabaseMeta.report.ConnectionOk", databaseMeta.getName()) + Const.CR); //$NON-NLS-1$
+                    report.append(BaseMessages.getString(PKG, "DatabaseMeta.report.ConnectionOk", databaseMeta.getName()) + Const.CR); 
                 }
                 catch (KettleException e)
                 {
-                    report.append(BaseMessages.getString(PKG, "DatabaseMeta.report.ConnectionError", databaseMeta.getName()) + e.toString() + Const.CR); //$NON-NLS-1$
+                    report.append(BaseMessages.getString(PKG, "DatabaseMeta.report.ConnectionError", databaseMeta.getName()) + e.toString() + Const.CR); 
                     report.append(Const.getStackTracker(e) + Const.CR);
                 }
                 finally
@@ -114,14 +114,14 @@ public class DatabaseFactory implements DatabaseFactoryInterface {
 	}
 	
 	private StringBuffer appendJndiConnectionInfo(StringBuffer report, String jndiName) {
-    report.append(BaseMessages.getString(PKG, "DatabaseMeta.report.JndiName")).append(jndiName).append(Const.CR); //$NON-NLS-1$
+    report.append(BaseMessages.getString(PKG, "DatabaseMeta.report.JndiName")).append(jndiName).append(Const.CR); 
     return report;
 	}
 	
 	private StringBuffer appendConnectionInfo(StringBuffer report, String hostName, String portNumber, String dbName) {
-        report.append(BaseMessages.getString(PKG, "DatabaseMeta.report.Hostname")).append(hostName).append(Const.CR); //$NON-NLS-1$
-        report.append(BaseMessages.getString(PKG, "DatabaseMeta.report.Port")).append(portNumber).append(Const.CR); //$NON-NLS-1$
-        report.append(BaseMessages.getString(PKG, "DatabaseMeta.report.DatabaseName")).append(dbName).append(Const.CR); //$NON-NLS-1$
+        report.append(BaseMessages.getString(PKG, "DatabaseMeta.report.Hostname")).append(hostName).append(Const.CR); 
+        report.append(BaseMessages.getString(PKG, "DatabaseMeta.report.Port")).append(portNumber).append(Const.CR); 
+        report.append(BaseMessages.getString(PKG, "DatabaseMeta.report.DatabaseName")).append(dbName).append(Const.CR); 
         return report;
     }
 }

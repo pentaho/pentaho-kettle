@@ -31,7 +31,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -115,12 +115,12 @@ public class TransPreviewProgressDialog
         }
         catch (InvocationTargetException e)
         {
-            new ErrorDialog(shell, BaseMessages.getString(PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogTitle"), BaseMessages.getString(PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogTitle"), BaseMessages.getString(PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogMessage"), e);  
             transMeta = null;
         }
         catch (InterruptedException e)
         {
-            new ErrorDialog(shell, BaseMessages.getString(PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogTitle"), BaseMessages.getString(PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogTitle"), BaseMessages.getString(PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogMessage"), e);  
             transMeta = null;
         }
 
@@ -129,7 +129,7 @@ public class TransPreviewProgressDialog
     
     private void doPreview(final IProgressMonitor progressMonitor)
     {
-        progressMonitor.beginTask(BaseMessages.getString(PKG, "TransPreviewProgressDialog.Monitor.BeginTask.Title"), 100); //$NON-NLS-1$
+        progressMonitor.beginTask(BaseMessages.getString(PKG, "TransPreviewProgressDialog.Monitor.BeginTask.Title"), 100); 
                 
         // This transformation is ready to run in preview!
         trans = new Trans(transMeta);
@@ -229,7 +229,7 @@ public class TransPreviewProgressDialog
         trans.stopAll();
         
         // Capture preview activity to a String:
-        loggingText = CentralLogStore.getAppender().getBuffer(trans.getLogChannel().getLogChannelId(), true).toString();
+        loggingText = KettleLogStore.getAppender().getBuffer(trans.getLogChannel().getLogChannelId(), true).toString();
         
         progressMonitor.done();
     }

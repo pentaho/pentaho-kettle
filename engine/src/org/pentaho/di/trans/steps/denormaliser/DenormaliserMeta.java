@@ -178,12 +178,12 @@ public class DenormaliserMeta extends BaseStepMeta implements StepMetaInterface
         if (keyField != null && keyField.length() > 0)
         {
             int idx = row.indexOfValue(keyField);
-            if (idx < 0) { throw new KettleStepException(BaseMessages.getString(PKG, "DenormaliserMeta.Exception.UnableToLocateKeyField",keyField )); } //$NON-NLS-1$ //$NON-NLS-2$
+            if (idx < 0) { throw new KettleStepException(BaseMessages.getString(PKG, "DenormaliserMeta.Exception.UnableToLocateKeyField",keyField )); }  
             row.removeValueMeta(idx);
         }
         else
         {
-            throw new KettleStepException(BaseMessages.getString(PKG, "DenormaliserMeta.Exception.RequiredKeyField")); //$NON-NLS-1$
+            throw new KettleStepException(BaseMessages.getString(PKG, "DenormaliserMeta.Exception.RequiredKeyField")); 
         }
 
         // Remove all field value(s) (there will be different entries for each output row)
@@ -201,7 +201,7 @@ public class DenormaliserMeta extends BaseStepMeta implements StepMetaInterface
             }
             else
             {
-                throw new KettleStepException(BaseMessages.getString(PKG, "DenormaliserMeta.Exception.RequiredTargetFieldName", (i + 1) + "")); //$NON-NLS-1$ //$NON-NLS-2$
+                throw new KettleStepException(BaseMessages.getString(PKG, "DenormaliserMeta.Exception.RequiredTargetFieldName", (i + 1) + ""));  
             }
         }
 
@@ -220,43 +220,43 @@ public class DenormaliserMeta extends BaseStepMeta implements StepMetaInterface
     {
         try
         {
-            keyField = XMLHandler.getTagValue(stepnode, "key_field"); //$NON-NLS-1$
+            keyField = XMLHandler.getTagValue(stepnode, "key_field"); 
 
-            Node groupn = XMLHandler.getSubNode(stepnode, "group"); //$NON-NLS-1$
-            Node fields = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
+            Node groupn = XMLHandler.getSubNode(stepnode, "group"); 
+            Node fields = XMLHandler.getSubNode(stepnode, "fields"); 
 
-            int sizegroup = XMLHandler.countNodes(groupn, "field"); //$NON-NLS-1$
-            int nrfields = XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
+            int sizegroup = XMLHandler.countNodes(groupn, "field"); 
+            int nrfields = XMLHandler.countNodes(fields, "field"); 
 
             allocate(sizegroup, nrfields);
 
             for (int i = 0; i < sizegroup; i++)
             {
-                Node fnode = XMLHandler.getSubNodeByNr(groupn, "field", i); //$NON-NLS-1$
-                groupField[i] = XMLHandler.getTagValue(fnode, "name"); //$NON-NLS-1$
+                Node fnode = XMLHandler.getSubNodeByNr(groupn, "field", i); 
+                groupField[i] = XMLHandler.getTagValue(fnode, "name"); 
             }
 
             for (int i = 0; i < nrfields; i++)
             {
-                Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
+                Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); 
                 denormaliserTargetField[i] = new DenormaliserTargetField();
-                denormaliserTargetField[i].setFieldName(XMLHandler.getTagValue(fnode, "field_name")); //$NON-NLS-1$
-                denormaliserTargetField[i].setKeyValue(XMLHandler.getTagValue(fnode, "key_value")); //$NON-NLS-1$
-                denormaliserTargetField[i].setTargetName(XMLHandler.getTagValue(fnode, "target_name")); //$NON-NLS-1$
-                denormaliserTargetField[i].setTargetType(XMLHandler.getTagValue(fnode, "target_type")); //$NON-NLS-1$
-                denormaliserTargetField[i].setTargetFormat(XMLHandler.getTagValue(fnode, "target_format")); //$NON-NLS-1$
-                denormaliserTargetField[i].setTargetLength(Const.toInt(XMLHandler.getTagValue(fnode, "target_length"), -1)); //$NON-NLS-1$
-                denormaliserTargetField[i].setTargetPrecision(Const.toInt(XMLHandler.getTagValue(fnode, "target_precision"), -1)); //$NON-NLS-1$
-                denormaliserTargetField[i].setTargetDecimalSymbol(XMLHandler.getTagValue(fnode, "target_decimal_symbol")); //$NON-NLS-1$
-                denormaliserTargetField[i].setTargetGroupingSymbol(XMLHandler.getTagValue(fnode, "target_grouping_symbol")); //$NON-NLS-1$
-                denormaliserTargetField[i].setTargetCurrencySymbol(XMLHandler.getTagValue(fnode, "target_currency_symbol")); //$NON-NLS-1$
-                denormaliserTargetField[i].setTargetNullString(XMLHandler.getTagValue(fnode, "target_null_string")); //$NON-NLS-1$
-                denormaliserTargetField[i].setTargetAggregationType(XMLHandler.getTagValue(fnode, "target_aggregation_type")); //$NON-NLS-1$
+                denormaliserTargetField[i].setFieldName(XMLHandler.getTagValue(fnode, "field_name")); 
+                denormaliserTargetField[i].setKeyValue(XMLHandler.getTagValue(fnode, "key_value")); 
+                denormaliserTargetField[i].setTargetName(XMLHandler.getTagValue(fnode, "target_name")); 
+                denormaliserTargetField[i].setTargetType(XMLHandler.getTagValue(fnode, "target_type")); 
+                denormaliserTargetField[i].setTargetFormat(XMLHandler.getTagValue(fnode, "target_format")); 
+                denormaliserTargetField[i].setTargetLength(Const.toInt(XMLHandler.getTagValue(fnode, "target_length"), -1)); 
+                denormaliserTargetField[i].setTargetPrecision(Const.toInt(XMLHandler.getTagValue(fnode, "target_precision"), -1)); 
+                denormaliserTargetField[i].setTargetDecimalSymbol(XMLHandler.getTagValue(fnode, "target_decimal_symbol")); 
+                denormaliserTargetField[i].setTargetGroupingSymbol(XMLHandler.getTagValue(fnode, "target_grouping_symbol")); 
+                denormaliserTargetField[i].setTargetCurrencySymbol(XMLHandler.getTagValue(fnode, "target_currency_symbol")); 
+                denormaliserTargetField[i].setTargetNullString(XMLHandler.getTagValue(fnode, "target_null_string")); 
+                denormaliserTargetField[i].setTargetAggregationType(XMLHandler.getTagValue(fnode, "target_aggregation_type")); 
             }
         }
         catch (Exception e)
         {
-            throw new KettleXMLException(BaseMessages.getString(PKG, "DenormaliserMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
+            throw new KettleXMLException(BaseMessages.getString(PKG, "DenormaliserMeta.Exception.UnableToLoadStepInfoFromXML"), e); 
         }
     }
 
@@ -264,38 +264,38 @@ public class DenormaliserMeta extends BaseStepMeta implements StepMetaInterface
     {
         StringBuffer retval = new StringBuffer();
 
-        retval.append("      " + XMLHandler.addTagValue("key_field", keyField)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      " + XMLHandler.addTagValue("key_field", keyField));  
 
-        retval.append("      <group>" + Const.CR); //$NON-NLS-1$
+        retval.append("      <group>" + Const.CR); 
         for (int i = 0; i < groupField.length; i++)
         {
-            retval.append("        <field>" + Const.CR); //$NON-NLS-1$
-            retval.append("          " + XMLHandler.addTagValue("name", groupField[i])); //$NON-NLS-1$ //$NON-NLS-2$
-            retval.append("          </field>" + Const.CR); //$NON-NLS-1$
+            retval.append("        <field>" + Const.CR); 
+            retval.append("          " + XMLHandler.addTagValue("name", groupField[i]));  
+            retval.append("          </field>" + Const.CR); 
         }
-        retval.append("        </group>" + Const.CR); //$NON-NLS-1$
+        retval.append("        </group>" + Const.CR); 
 
-        retval.append("      <fields>" + Const.CR); //$NON-NLS-1$
+        retval.append("      <fields>" + Const.CR); 
         for (int i = 0; i < denormaliserTargetField.length; i++)
         {
             DenormaliserTargetField field = denormaliserTargetField[i];
 
-            retval.append("        <field>" + Const.CR); //$NON-NLS-1$
-            retval.append("          " + XMLHandler.addTagValue("field_name", field.getFieldName())); //$NON-NLS-1$ //$NON-NLS-2$
-            retval.append("          " + XMLHandler.addTagValue("key_value", field.getKeyValue())); //$NON-NLS-1$ //$NON-NLS-2$
-            retval.append("          " + XMLHandler.addTagValue("target_name", field.getTargetName())); //$NON-NLS-1$ //$NON-NLS-2$
-            retval.append("          " + XMLHandler.addTagValue("target_type", field.getTargetTypeDesc())); //$NON-NLS-1$ //$NON-NLS-2$
-            retval.append("          " + XMLHandler.addTagValue("target_format", field.getTargetFormat())); //$NON-NLS-1$ //$NON-NLS-2$
-            retval.append("          " + XMLHandler.addTagValue("target_length", field.getTargetLength())); //$NON-NLS-1$ //$NON-NLS-2$
-            retval.append("          " + XMLHandler.addTagValue("target_precision", field.getTargetPrecision())); //$NON-NLS-1$ //$NON-NLS-2$
-            retval.append("          " + XMLHandler.addTagValue("target_decimal_symbol", field.getTargetDecimalSymbol())); //$NON-NLS-1$ //$NON-NLS-2$
-            retval.append("          " + XMLHandler.addTagValue("target_grouping_symbol", field.getTargetGroupingSymbol())); //$NON-NLS-1$ //$NON-NLS-2$
-            retval.append("          " + XMLHandler.addTagValue("target_currency_symbol", field.getTargetCurrencySymbol())); //$NON-NLS-1$ //$NON-NLS-2$
-            retval.append("          " + XMLHandler.addTagValue("target_null_string", field.getTargetNullString())); //$NON-NLS-1$ //$NON-NLS-2$
-            retval.append("          " + XMLHandler.addTagValue("target_aggregation_type", field.getTargetAggregationTypeDesc())); //$NON-NLS-1$ //$NON-NLS-2$
-            retval.append("          </field>" + Const.CR); //$NON-NLS-1$
+            retval.append("        <field>" + Const.CR); 
+            retval.append("          " + XMLHandler.addTagValue("field_name", field.getFieldName()));  
+            retval.append("          " + XMLHandler.addTagValue("key_value", field.getKeyValue()));  
+            retval.append("          " + XMLHandler.addTagValue("target_name", field.getTargetName()));  
+            retval.append("          " + XMLHandler.addTagValue("target_type", field.getTargetTypeDesc()));  
+            retval.append("          " + XMLHandler.addTagValue("target_format", field.getTargetFormat()));  
+            retval.append("          " + XMLHandler.addTagValue("target_length", field.getTargetLength()));  
+            retval.append("          " + XMLHandler.addTagValue("target_precision", field.getTargetPrecision()));  
+            retval.append("          " + XMLHandler.addTagValue("target_decimal_symbol", field.getTargetDecimalSymbol()));  
+            retval.append("          " + XMLHandler.addTagValue("target_grouping_symbol", field.getTargetGroupingSymbol()));  
+            retval.append("          " + XMLHandler.addTagValue("target_currency_symbol", field.getTargetCurrencySymbol()));  
+            retval.append("          " + XMLHandler.addTagValue("target_null_string", field.getTargetNullString()));  
+            retval.append("          " + XMLHandler.addTagValue("target_aggregation_type", field.getTargetAggregationTypeDesc()));  
+            retval.append("          </field>" + Const.CR); 
         }
-        retval.append("        </fields>" + Const.CR); //$NON-NLS-1$
+        retval.append("        </fields>" + Const.CR); 
 
         return retval.toString();
     }
@@ -303,38 +303,38 @@ public class DenormaliserMeta extends BaseStepMeta implements StepMetaInterface
     public void readRep(Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases) throws KettleException {
         try
         {
-            keyField = rep.getStepAttributeString(id_step, "key_field"); //$NON-NLS-1$
+            keyField = rep.getStepAttributeString(id_step, "key_field"); 
 
-            int groupsize = rep.countNrStepAttributes(id_step, "group_name"); //$NON-NLS-1$
-            int nrvalues = rep.countNrStepAttributes(id_step, "field_name"); //$NON-NLS-1$
+            int groupsize = rep.countNrStepAttributes(id_step, "group_name"); 
+            int nrvalues = rep.countNrStepAttributes(id_step, "field_name"); 
 
             allocate(groupsize, nrvalues);
 
             for (int i = 0; i < groupsize; i++)
             {
-                groupField[i] = rep.getStepAttributeString(id_step, i, "group_name"); //$NON-NLS-1$
+                groupField[i] = rep.getStepAttributeString(id_step, i, "group_name"); 
             }
 
             for (int i = 0; i < nrvalues; i++)
             {
                 denormaliserTargetField[i] = new DenormaliserTargetField();
-                denormaliserTargetField[i].setFieldName(rep.getStepAttributeString(id_step, i, "field_name")); //$NON-NLS-1$
-                denormaliserTargetField[i].setKeyValue(rep.getStepAttributeString(id_step, i, "key_value")); //$NON-NLS-1$
-                denormaliserTargetField[i].setTargetName(rep.getStepAttributeString(id_step, i, "target_name")); //$NON-NLS-1$
-                denormaliserTargetField[i].setTargetType(rep.getStepAttributeString(id_step, i, "target_type")); //$NON-NLS-1$
-                denormaliserTargetField[i].setTargetFormat(rep.getStepAttributeString(id_step, i, "target_format")); //$NON-NLS-1$
-                denormaliserTargetField[i].setTargetLength((int) rep.getStepAttributeInteger(id_step, i, "target_length")); //$NON-NLS-1$
-                denormaliserTargetField[i].setTargetPrecision((int) rep.getStepAttributeInteger(id_step, i, "target_precision")); //$NON-NLS-1$
-                denormaliserTargetField[i].setTargetDecimalSymbol(rep.getStepAttributeString(id_step, i, "target_decimal_symbol")); //$NON-NLS-1$
-                denormaliserTargetField[i].setTargetGroupingSymbol(rep.getStepAttributeString(id_step, i, "target_grouping_symbol")); //$NON-NLS-1$
-                denormaliserTargetField[i].setTargetCurrencySymbol(rep.getStepAttributeString(id_step, i, "target_currency_symbol")); //$NON-NLS-1$
-                denormaliserTargetField[i].setTargetNullString(rep.getStepAttributeString(id_step, i, "target_null_string")); //$NON-NLS-1$
-                denormaliserTargetField[i].setTargetAggregationType(rep.getStepAttributeString(id_step, i, "target_aggregation_type")); //$NON-NLS-1$
+                denormaliserTargetField[i].setFieldName(rep.getStepAttributeString(id_step, i, "field_name")); 
+                denormaliserTargetField[i].setKeyValue(rep.getStepAttributeString(id_step, i, "key_value")); 
+                denormaliserTargetField[i].setTargetName(rep.getStepAttributeString(id_step, i, "target_name")); 
+                denormaliserTargetField[i].setTargetType(rep.getStepAttributeString(id_step, i, "target_type")); 
+                denormaliserTargetField[i].setTargetFormat(rep.getStepAttributeString(id_step, i, "target_format")); 
+                denormaliserTargetField[i].setTargetLength((int) rep.getStepAttributeInteger(id_step, i, "target_length")); 
+                denormaliserTargetField[i].setTargetPrecision((int) rep.getStepAttributeInteger(id_step, i, "target_precision")); 
+                denormaliserTargetField[i].setTargetDecimalSymbol(rep.getStepAttributeString(id_step, i, "target_decimal_symbol")); 
+                denormaliserTargetField[i].setTargetGroupingSymbol(rep.getStepAttributeString(id_step, i, "target_grouping_symbol")); 
+                denormaliserTargetField[i].setTargetCurrencySymbol(rep.getStepAttributeString(id_step, i, "target_currency_symbol")); 
+                denormaliserTargetField[i].setTargetNullString(rep.getStepAttributeString(id_step, i, "target_null_string")); 
+                denormaliserTargetField[i].setTargetAggregationType(rep.getStepAttributeString(id_step, i, "target_aggregation_type")); 
             }
         }
         catch (Exception e)
         {
-            throw new KettleException("Unexpected error reading step information from the repository", e); //$NON-NLS-1$
+            throw new KettleException("Unexpected error reading step information from the repository", e); 
         }
     }
 
@@ -342,34 +342,34 @@ public class DenormaliserMeta extends BaseStepMeta implements StepMetaInterface
     {
         try
         {
-            rep.saveStepAttribute(id_transformation, id_step, "key_field", keyField); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "key_field", keyField); 
 
             for (int i = 0; i < groupField.length; i++)
             {
-                rep.saveStepAttribute(id_transformation, id_step, i, "group_name", groupField[i]); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "group_name", groupField[i]); 
             }
 
             for (int i = 0; i < denormaliserTargetField.length; i++)
             {
                 DenormaliserTargetField field = denormaliserTargetField[i];
 
-                rep.saveStepAttribute(id_transformation, id_step, i, "field_name", field.getFieldName()); //$NON-NLS-1$
-                rep.saveStepAttribute(id_transformation, id_step, i, "key_value", field.getKeyValue()); //$NON-NLS-1$
-                rep.saveStepAttribute(id_transformation, id_step, i, "target_name", field.getTargetName()); //$NON-NLS-1$
-                rep.saveStepAttribute(id_transformation, id_step, i, "target_type", field.getTargetTypeDesc()); //$NON-NLS-1$
-                rep.saveStepAttribute(id_transformation, id_step, i, "target_format", field.getTargetFormat()); //$NON-NLS-1$
-                rep.saveStepAttribute(id_transformation, id_step, i, "target_length", field.getTargetLength()); //$NON-NLS-1$
-                rep.saveStepAttribute(id_transformation, id_step, i, "target_precision", field.getTargetPrecision()); //$NON-NLS-1$
-                rep.saveStepAttribute(id_transformation, id_step, i, "target_decimal_symbol", field.getTargetDecimalSymbol()); //$NON-NLS-1$
-                rep.saveStepAttribute(id_transformation, id_step, i, "target_grouping_symbol", field.getTargetGroupingSymbol()); //$NON-NLS-1$
-                rep.saveStepAttribute(id_transformation, id_step, i, "target_currency_symbol", field.getTargetCurrencySymbol()); //$NON-NLS-1$
-                rep.saveStepAttribute(id_transformation, id_step, i, "target_null_string", field.getTargetNullString()); //$NON-NLS-1$
-                rep.saveStepAttribute(id_transformation, id_step, i, "target_aggregation_type", field.getTargetAggregationTypeDesc()); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_name", field.getFieldName()); 
+                rep.saveStepAttribute(id_transformation, id_step, i, "key_value", field.getKeyValue()); 
+                rep.saveStepAttribute(id_transformation, id_step, i, "target_name", field.getTargetName()); 
+                rep.saveStepAttribute(id_transformation, id_step, i, "target_type", field.getTargetTypeDesc()); 
+                rep.saveStepAttribute(id_transformation, id_step, i, "target_format", field.getTargetFormat()); 
+                rep.saveStepAttribute(id_transformation, id_step, i, "target_length", field.getTargetLength()); 
+                rep.saveStepAttribute(id_transformation, id_step, i, "target_precision", field.getTargetPrecision()); 
+                rep.saveStepAttribute(id_transformation, id_step, i, "target_decimal_symbol", field.getTargetDecimalSymbol()); 
+                rep.saveStepAttribute(id_transformation, id_step, i, "target_grouping_symbol", field.getTargetGroupingSymbol()); 
+                rep.saveStepAttribute(id_transformation, id_step, i, "target_currency_symbol", field.getTargetCurrencySymbol()); 
+                rep.saveStepAttribute(id_transformation, id_step, i, "target_null_string", field.getTargetNullString()); 
+                rep.saveStepAttribute(id_transformation, id_step, i, "target_aggregation_type", field.getTargetAggregationTypeDesc()); 
             }
         }
         catch (Exception e)
         {
-            throw new KettleException(BaseMessages.getString(PKG, "DenormaliserMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "DenormaliserMeta.Exception.UnableToSaveStepInfo") + id_step, e); 
         }
     }
     
@@ -378,12 +378,12 @@ public class DenormaliserMeta extends BaseStepMeta implements StepMetaInterface
 
         if (input.length > 0)
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "DenormaliserMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "DenormaliserMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); 
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "DenormaliserMeta.CheckResult.NoInputReceived"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "DenormaliserMeta.CheckResult.NoInputReceived"), stepMeta); 
             remarks.add(cr);
         }
     }

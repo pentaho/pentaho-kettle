@@ -135,7 +135,7 @@ public class CopyTableWizard implements IWizard
 	// Returns the window title string for this wizard. 
 	public String getWindowTitle() 
 	{
-		return BaseMessages.getString(PKG, "CopyTableWizard.DialogTitle"); //$NON-NLS-1$
+		return BaseMessages.getString(PKG, "CopyTableWizard.DialogTitle"); 
 	}
 	
 	// Returns whether help is available for this wizard. 

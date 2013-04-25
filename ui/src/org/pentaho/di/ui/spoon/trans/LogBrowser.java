@@ -43,7 +43,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogLevel;
@@ -110,9 +110,9 @@ public class LogBrowser {
 							
 							// See if we need to log any lines...
 							//
-							int lastNr = CentralLogStore.getLastBufferLineNr();
+							int lastNr = KettleLogStore.getLastBufferLineNr();
 							if (lastNr>lastLogId.get()) {
-								List<KettleLoggingEvent> logLines = CentralLogStore.getLogBufferFromTo(childIds, true, lastLogId.get(), lastNr);
+								List<KettleLoggingEvent> logLines = KettleLogStore.getLogBufferFromTo(childIds, true, lastLogId.get(), lastNr);
 
 								// The maximum size of the log buffer
 								//

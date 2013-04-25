@@ -33,7 +33,7 @@ import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.FileLoggingEventListener;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -85,9 +85,9 @@ public class Kitchen {
     NamedParams optionParams = new NamedParamsDefault();
 
     CommandLineOption maxLogLinesOption = new CommandLineOption(
-        "maxloglines", BaseMessages.getString(PKG, "Kitchen.CmdLine.MaxLogLines"), new StringBuffer()); //$NON-NLS-1$ //$NON-NLS-2$
+        "maxloglines", BaseMessages.getString(PKG, "Kitchen.CmdLine.MaxLogLines"), new StringBuffer());  
     CommandLineOption maxLogTimeoutOption = new CommandLineOption(
-        "maxlogtimeout", BaseMessages.getString(PKG, "Kitchen.CmdLine.MaxLogTimeout"), new StringBuffer()); //$NON-NLS-1$ //$NON-NLS-2$
+        "maxlogtimeout", BaseMessages.getString(PKG, "Kitchen.CmdLine.MaxLogTimeout"), new StringBuffer());  
 
     CommandLineOption options[] = new CommandLineOption[] {
         new CommandLineOption("rep", BaseMessages.getString(PKG, "Kitchen.CmdLine.RepName"),
@@ -156,7 +156,7 @@ public class Kitchen {
 
     if (!Const.isEmpty(optionLogfile)) {
       fileAppender = new FileLoggingEventListener(optionLogfile.toString(), true);
-      CentralLogStore.getAppender().addLoggingEventListener(fileAppender);
+      KettleLogStore.getAppender().addLoggingEventListener(fileAppender);
     } else {
       fileAppender = null;
     }
@@ -406,7 +406,7 @@ public class Kitchen {
         repository.disconnect();
       if (fileAppender != null) {
         fileAppender.close();
-        CentralLogStore.getAppender().removeLoggingEventListener(fileAppender);
+        KettleLogStore.getAppender().removeLoggingEventListener(fileAppender);
       }
     }
 
@@ -472,7 +472,7 @@ public class Kitchen {
     if (Const.isEmpty(maxLogTimeoutOption.getArgument())) {
       maxLogTimeout = Const.toInt(EnvUtil.getSystemProperty(Const.KETTLE_MAX_LOG_TIMEOUT_IN_MINUTES), 1440);
     }
-    CentralLogStore.init(maxLogLines, maxLogTimeout);
+    KettleLogStore.init(maxLogLines, maxLogTimeout);
   }
 
   /**
@@ -489,7 +489,7 @@ public class Kitchen {
         return Integer.parseInt(option.getArgument().toString());
       } catch (NumberFormatException ex) {
         throw new KettleException(BaseMessages.getString(PKG,
-            "Kitchen.Error.InvalidNumberArgument", option.getOption(), option.getArgument())); //$NON-NLS-1$
+            "Kitchen.Error.InvalidNumberArgument", option.getOption(), option.getArgument())); 
       }
     }
     return def;

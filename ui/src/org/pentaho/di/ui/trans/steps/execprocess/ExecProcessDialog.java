@@ -124,14 +124,14 @@ public class ExecProcessDialog extends BaseStepDialog implements StepDialogInter
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "ExecProcessDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "ExecProcessDialog.Shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin=Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "ExecProcessDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "ExecProcessDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -150,7 +150,7 @@ public class ExecProcessDialog extends BaseStepDialog implements StepDialogInter
 
 		// filename field
 		wlProcess=new Label(shell, SWT.RIGHT);
-		wlProcess.setText(BaseMessages.getString(PKG, "ExecProcessDialog.Process.Label")); //$NON-NLS-1$
+		wlProcess.setText(BaseMessages.getString(PKG, "ExecProcessDialog.Process.Label")); 
  		props.setLook(wlProcess);
 		fdlProcess=new FormData();
 		fdlProcess.left = new FormAttachment(0, 0);
@@ -213,7 +213,7 @@ public class ExecProcessDialog extends BaseStepDialog implements StepDialogInter
 
     // Output Line Delimiter
     wlOutputDelim=new Label(shell, SWT.RIGHT);
-    wlOutputDelim.setText(BaseMessages.getString(PKG, "ExecProcessDialog.OutputDelimiterField.Label")); //$NON-NLS-1$
+    wlOutputDelim.setText(BaseMessages.getString(PKG, "ExecProcessDialog.OutputDelimiterField.Label")); 
     props.setLook(wlOutputDelim);
     fdlOutputDelim=new FormData();
     fdlOutputDelim.left = new FormAttachment(0, 0);
@@ -247,7 +247,7 @@ public class ExecProcessDialog extends BaseStepDialog implements StepDialogInter
 
 		// Result fieldname ...
 		wlResult=new Label(wOutputFields, SWT.RIGHT);
-		wlResult.setText(BaseMessages.getString(PKG, "ExecProcessDialog.ResultField.Label")); //$NON-NLS-1$
+		wlResult.setText(BaseMessages.getString(PKG, "ExecProcessDialog.ResultField.Label")); 
  		props.setLook(wlResult);
 		fdlResult=new FormData();
 		fdlResult.left = new FormAttachment(0, 0);
@@ -267,7 +267,7 @@ public class ExecProcessDialog extends BaseStepDialog implements StepDialogInter
 		
 		// Error fieldname ...
 		wlError=new Label(wOutputFields, SWT.RIGHT);
-		wlError.setText(BaseMessages.getString(PKG, "ExecProcessDialog.ErrorField.Label")); //$NON-NLS-1$
+		wlError.setText(BaseMessages.getString(PKG, "ExecProcessDialog.ErrorField.Label")); 
  		props.setLook(wlError);
 		fdlError=new FormData();
 		fdlError.left = new FormAttachment(0, 0);
@@ -287,7 +287,7 @@ public class ExecProcessDialog extends BaseStepDialog implements StepDialogInter
 		
 		// ExitValue fieldname ...
 		wlExitValue=new Label(wOutputFields, SWT.RIGHT);
-		wlExitValue.setText(BaseMessages.getString(PKG, "ExecProcessDialog.ExitValueField.Label")); //$NON-NLS-1$
+		wlExitValue.setText(BaseMessages.getString(PKG, "ExecProcessDialog.ExitValueField.Label")); 
  		props.setLook(wlExitValue);
 		fdlExitValue=new FormData();
 		fdlExitValue.left = new FormAttachment(0, 0);
@@ -319,9 +319,9 @@ public class ExecProcessDialog extends BaseStepDialog implements StepDialogInter
 		
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wOutputFields);
 
@@ -359,7 +359,7 @@ public class ExecProcessDialog extends BaseStepDialog implements StepDialogInter
    */
   public void getData() {
     if (log.isDebug())
-      logDebug(BaseMessages.getString(PKG, "ExecProcessDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+      logDebug(BaseMessages.getString(PKG, "ExecProcessDialog.Log.GettingKeyInfo")); 
 
     if (input.getProcessField() != null)
       wProcess.setText(input.getProcessField());
@@ -416,7 +416,7 @@ public class ExecProcessDialog extends BaseStepDialog implements StepDialogInter
 			}
 			catch(KettleException ke)
 			{
-				new ErrorDialog(shell, BaseMessages.getString(PKG, "ExecProcessDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "ExecProcessDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "ExecProcessDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "ExecProcessDialog.FailedToGetFields.DialogMessage"), ke);  
 			}
 		 }
 	}

@@ -152,26 +152,26 @@ public class UniqueRowsByHashSetMeta extends BaseStepMeta implements StepMetaInt
 	{
 		try
 		{
-		    storeValues = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "store_values")); //$NON-NLS-1$ //$NON-NLS-2$
+		    storeValues = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "store_values"));  
 			rejectDuplicateRow = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "reject_duplicate_row"));
-			errorDescription = XMLHandler.getTagValue(stepnode, "error_description"); //$NON-NLS-1$
+			errorDescription = XMLHandler.getTagValue(stepnode, "error_description"); 
 			
-		    Node fields = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
-		    int nrfields   = XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
+		    Node fields = XMLHandler.getSubNode(stepnode, "fields"); 
+		    int nrfields   = XMLHandler.countNodes(fields, "field"); 
 			
 			allocate(nrfields);
 			
 			for (int i=0;i<nrfields;i++)
 			{
-				Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
+				Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); 
 				
-				compareFields[i] = XMLHandler.getTagValue(fnode, "name"); //$NON-NLS-1$
+				compareFields[i] = XMLHandler.getTagValue(fnode, "name"); 
 			}
 
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "UniqueRowsByHashSetMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "UniqueRowsByHashSetMeta.Exception.UnableToLoadStepInfoFromXML"), e); 
 		}
 	}
 
@@ -185,7 +185,7 @@ public class UniqueRowsByHashSetMeta extends BaseStepMeta implements StepMetaInt
 		
 		for (int i=0;i<nrfields;i++)
 		{
-			compareFields[i] = "field"+i; //$NON-NLS-1$
+			compareFields[i] = "field"+i; 
 		}
 	}
 
@@ -197,17 +197,17 @@ public class UniqueRowsByHashSetMeta extends BaseStepMeta implements StepMetaInt
 	{
 		StringBuffer retval=new StringBuffer();
 
-        retval.append("      "+XMLHandler.addTagValue("store_values",  storeValues)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      "+XMLHandler.addTagValue("store_values",  storeValues));  
 		retval.append("      "+XMLHandler.addTagValue("reject_duplicate_row",  rejectDuplicateRow));
 		retval.append("      "+XMLHandler.addTagValue("error_description", errorDescription));
-		retval.append("    <fields>"); //$NON-NLS-1$
+		retval.append("    <fields>"); 
 		for (int i=0;i<compareFields.length;i++)
 		{
-			retval.append("      <field>"); //$NON-NLS-1$
-			retval.append("        "+XMLHandler.addTagValue("name",  compareFields[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        </field>"); //$NON-NLS-1$
+			retval.append("      <field>"); 
+			retval.append("        "+XMLHandler.addTagValue("name",  compareFields[i]));  
+			retval.append("        </field>"); 
 		}
-		retval.append("      </fields>"); //$NON-NLS-1$
+		retval.append("      </fields>"); 
 
 		return retval.toString();
 	}
@@ -217,21 +217,21 @@ public class UniqueRowsByHashSetMeta extends BaseStepMeta implements StepMetaInt
 	{
 		try
 		{
-            storeValues  = rep.getStepAttributeBoolean(id_step, "store_values"); //$NON-NLS-1$
+            storeValues  = rep.getStepAttributeBoolean(id_step, "store_values"); 
 			rejectDuplicateRow  = rep.getStepAttributeBoolean(id_step, "reject_duplicate_row");
-			errorDescription = rep.getStepAttributeString (id_step, "error_description"); //$NON-NLS-1$
-			int nrfields = rep.countNrStepAttributes(id_step, "field_name"); //$NON-NLS-1$
+			errorDescription = rep.getStepAttributeString (id_step, "error_description"); 
+			int nrfields = rep.countNrStepAttributes(id_step, "field_name"); 
 			
 			allocate(nrfields);
 	
 			for (int i=0;i<nrfields;i++)
 			{
-				compareFields[i] = rep.getStepAttributeString (id_step, i, "field_name"); //$NON-NLS-1$
+				compareFields[i] = rep.getStepAttributeString (id_step, i, "field_name"); 
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "UniqueRowsByHashSetMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "UniqueRowsByHashSetMeta.Exception.UnexpectedErrorReadingStepInfo"), e); 
 		}
 	}
 	
@@ -244,12 +244,12 @@ public class UniqueRowsByHashSetMeta extends BaseStepMeta implements StepMetaInt
 			rep.saveStepAttribute(id_transformation, id_step, "error_description",  errorDescription);
 			for (int i=0;i<compareFields.length;i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_name", compareFields[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_name", compareFields[i]); 
 			}
 		}
 		catch(KettleException e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "UniqueRowsByHashSetMeta.Exception.UnableToSaveStepInfo"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "UniqueRowsByHashSetMeta.Exception.UnableToSaveStepInfo"), e); 
 		}
 	}
 
@@ -260,12 +260,12 @@ public class UniqueRowsByHashSetMeta extends BaseStepMeta implements StepMetaInt
 
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UniqueRowsByHashSetMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UniqueRowsByHashSetMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepMeta); 
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "UniqueRowsByHashSetMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "UniqueRowsByHashSetMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepMeta); 
 			remarks.add(cr);
 		}
 	}

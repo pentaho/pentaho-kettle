@@ -142,7 +142,7 @@ public class WebServiceAvailableMeta extends BaseStepMeta implements StepMetaInt
 
     public void setDefault()
     {
-        resultfieldname = "result"; //$NON-NLS-1$
+        resultfieldname = "result"; 
         connectTimeOut="0";
         readTimeOut="0";
     }
@@ -163,10 +163,10 @@ public class WebServiceAvailableMeta extends BaseStepMeta implements StepMetaInt
     {
         StringBuffer retval = new StringBuffer();
 
-        retval.append("    " + XMLHandler.addTagValue("urlField", urlField)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    " + XMLHandler.addTagValue("urlField", urlField));  
         retval.append("    " + XMLHandler.addTagValue("readTimeOut", readTimeOut));
         retval.append("    " + XMLHandler.addTagValue("connectTimeOut", connectTimeOut));
-        retval.append("    " + XMLHandler.addTagValue("resultfieldname", resultfieldname)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    " + XMLHandler.addTagValue("resultfieldname", resultfieldname));  
         return retval.toString();
     }
 
@@ -175,14 +175,14 @@ public class WebServiceAvailableMeta extends BaseStepMeta implements StepMetaInt
 	{
 	try
 	{
-			urlField = XMLHandler.getTagValue(stepnode, "urlField"); //$NON-NLS-1$
+			urlField = XMLHandler.getTagValue(stepnode, "urlField"); 
 			connectTimeOut = XMLHandler.getTagValue(stepnode, "connectTimeOut"); 
 			readTimeOut = XMLHandler.getTagValue(stepnode, "readTimeOut"); 
             resultfieldname = XMLHandler.getTagValue(stepnode, "resultfieldname");   
         }
         catch (Exception e)
         {
-            throw new KettleXMLException(BaseMessages.getString(PKG, "WebServiceAvailableMeta.Exception.UnableToReadStepInfo"), e); //$NON-NLS-1$
+            throw new KettleXMLException(BaseMessages.getString(PKG, "WebServiceAvailableMeta.Exception.UnableToReadStepInfo"), e); 
         }
     }
 
@@ -191,14 +191,14 @@ public class WebServiceAvailableMeta extends BaseStepMeta implements StepMetaInt
 	{
     	try
 		{
-        	urlField = rep.getStepAttributeString(id_step, "urlField"); //$NON-NLS-1$
+        	urlField = rep.getStepAttributeString(id_step, "urlField"); 
         	connectTimeOut = rep.getStepAttributeString(id_step, "connectTimeOut");
         	readTimeOut = rep.getStepAttributeString(id_step, "readTimeOut");
-            resultfieldname = rep.getStepAttributeString(id_step, "resultfieldname"); //$NON-NLS-1$
+            resultfieldname = rep.getStepAttributeString(id_step, "resultfieldname"); 
         }
         catch (Exception e)
         {
-            throw new KettleException(BaseMessages.getString(PKG, "WebServiceAvailableMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "WebServiceAvailableMeta.Exception.UnexpectedErrorReadingStepInfo"), e); 
         }
     }
 
@@ -206,56 +206,56 @@ public class WebServiceAvailableMeta extends BaseStepMeta implements StepMetaInt
     {
         try
         {
-            rep.saveStepAttribute(id_transformation, id_step, "urlField", urlField); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "urlField", urlField); 
             rep.saveStepAttribute(id_transformation, id_step, "connectTimeOut", connectTimeOut);
             rep.saveStepAttribute(id_transformation, id_step, "readTimeOut", readTimeOut);
-            rep.saveStepAttribute(id_transformation, id_step, "resultfieldname", resultfieldname); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "resultfieldname", resultfieldname); 
         }
         catch (Exception e)
         {
-            throw new KettleException(BaseMessages.getString(PKG, "WebServiceAvailableMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "WebServiceAvailableMeta.Exception.UnableToSaveStepInfo") + id_step, e); 
         }
     }
 
 	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
         CheckResult cr;
-        String error_message = ""; //$NON-NLS-1$
+        String error_message = ""; 
 
       
         if (Const.isEmpty(resultfieldname))
         {
-            error_message = BaseMessages.getString(PKG, "WebServiceAvailableMeta.CheckResult.ResultFieldMissing"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "WebServiceAvailableMeta.CheckResult.ResultFieldMissing"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
             remarks.add(cr);
         }
         else
         {
-            error_message = BaseMessages.getString(PKG, "WebServiceAvailableMeta.CheckResult.ResultFieldOK"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "WebServiceAvailableMeta.CheckResult.ResultFieldOK"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
             remarks.add(cr);
         }
         if (Const.isEmpty(urlField))
         {
-            error_message = BaseMessages.getString(PKG, "WebServiceAvailableMeta.CheckResult.URLFieldMissing"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "WebServiceAvailableMeta.CheckResult.URLFieldMissing"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
             remarks.add(cr);
         }
         else
         {
-            error_message = BaseMessages.getString(PKG, "WebServiceAvailableMeta.CheckResult.URLFieldOK"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "WebServiceAvailableMeta.CheckResult.URLFieldOK"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
             remarks.add(cr);
         }
         // See if we have input streams leading to this step!
         if (input.length > 0)
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "WebServiceAvailableMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "WebServiceAvailableMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); 
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "WebServiceAvailableMeta.CheckResult.NoInpuReceived"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "WebServiceAvailableMeta.CheckResult.NoInpuReceived"), stepMeta); 
             remarks.add(cr);
         }
 

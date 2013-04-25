@@ -156,7 +156,7 @@ public class JavaFilterDialog extends BaseStepDialog implements StepDialogInterf
 		
 		// Send 'True' data to...
 		Label wlTrueTo = new Label(wSettingsGroup, SWT.RIGHT);
-		wlTrueTo.setText(BaseMessages.getString(PKG, "JavaFilterDialog.SendTrueTo.Label")); //$NON-NLS-1$
+		wlTrueTo.setText(BaseMessages.getString(PKG, "JavaFilterDialog.SendTrueTo.Label")); 
  		props.setLook(wlTrueTo);
 		FormData fdlTrueTo = new FormData();
 		fdlTrueTo.left = new FormAttachment(0, 0);
@@ -186,7 +186,7 @@ public class JavaFilterDialog extends BaseStepDialog implements StepDialogInterf
 
 		// Send 'False' data to...
 		Label wlFalseTo = new Label(wSettingsGroup, SWT.RIGHT);
-		wlFalseTo.setText(BaseMessages.getString(PKG, "JavaFilterDialog.SendFalseTo.Label")); //$NON-NLS-1$
+		wlFalseTo.setText(BaseMessages.getString(PKG, "JavaFilterDialog.SendFalseTo.Label")); 
  		props.setLook(wlFalseTo);
 		FormData fdlFalseTo = new FormData();
 		fdlFalseTo.left = new FormAttachment(0, 0);
@@ -217,7 +217,7 @@ public class JavaFilterDialog extends BaseStepDialog implements StepDialogInterf
 		// bufferSize
 		//
 		Label wlCondition = new Label(wSettingsGroup, SWT.RIGHT);
-		wlCondition.setText(BaseMessages.getString(PKG, "JavaFIlterDialog.Condition.Label")); //$NON-NLS-1$
+		wlCondition.setText(BaseMessages.getString(PKG, "JavaFIlterDialog.Condition.Label")); 
  		props.setLook(wlCondition);
 		FormData fdlCondition = new FormData();
 		fdlCondition.top  = new FormAttachment(wFalseTo, margin);

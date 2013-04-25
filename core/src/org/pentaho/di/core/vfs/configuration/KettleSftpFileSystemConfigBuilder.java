@@ -73,7 +73,7 @@ public class KettleSftpFileSystemConfigBuilder extends KettleGenericFileSystemCo
    */
   @Override
   public void setParameter(FileSystemOptions opts, String name, String value, String fullParameterName, String vfsUrl) throws IOException {
-    if(!fullParameterName.startsWith("vfs.sftp")) { //$NON-NLS-1$
+    if(!fullParameterName.startsWith("vfs.sftp")) { 
       // This is not an SFTP parameter. Delegate to the generic handler
       super.setParameter(opts, name, value, fullParameterName, vfsUrl);
     } else {
@@ -85,10 +85,10 @@ public class KettleSftpFileSystemConfigBuilder extends KettleGenericFileSystemCo
   
         if(!parameterContainsHost(fullParameterName) || fullParameterName.endsWith(file.getHostName())) {
           // Match special cases for parameter names
-          if(name.equalsIgnoreCase("AuthKeyPassphrase")) { //$NON-NLS-1$
+          if(name.equalsIgnoreCase("AuthKeyPassphrase")) { 
             setParam(opts, UserInfo.class.getName(), new PentahoUserInfo((String)value));
-          } else if (name.equals("identity")) { //$NON-NLS-1$
-            File[] identities = (File[])this.getParam(opts, "identities"); //$NON-NLS-1$
+          } else if (name.equals("identity")) { 
+            File[] identities = (File[])this.getParam(opts, "identities"); 
             
             if(identities == null) {
               identities = new File[] {new File((String)value)};
@@ -100,23 +100,23 @@ public class KettleSftpFileSystemConfigBuilder extends KettleGenericFileSystemCo
               
               identities[identities.length - 1] = new File((String)value);
             }
-            setParam(opts, "identities", identities); //$NON-NLS-1$
+            setParam(opts, "identities", identities); 
           } else {
             setParam(opts, name, value);
           }
         } else {
           // No host match found
-          log.logDebug("No host match found for: " + fullParameterName); //$NON-NLS-1$
+          log.logDebug("No host match found for: " + fullParameterName); 
         }
       } catch (IOException e) {
-        log.logError("Failed to set VFS parameter: [" + fullParameterName + "] " + value, e); //$NON-NLS-1$ //$NON-NLS-2$
+        log.logError("Failed to set VFS parameter: [" + fullParameterName + "] " + value, e);  
       }
     }
   }
   
   private static boolean parameterContainsHost(String parameter) {
     // Test the number of '.' in the file. If there are more then two, then there is a host associated
-    return parameter.matches("^(.*\\..*){3,}") ? true : false; //$NON-NLS-1$
+    return parameter.matches("^(.*\\..*){3,}") ? true : false; 
   }
   
   private static class PentahoUserInfo implements UserInfo{

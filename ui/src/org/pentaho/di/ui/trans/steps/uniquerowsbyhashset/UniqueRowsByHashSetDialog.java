@@ -123,14 +123,14 @@ public class UniqueRowsByHashSetDialog extends BaseStepDialog implements StepDia
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "UniqueRowsByHashSetDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "UniqueRowsByHashSetDialog.Shell.Title")); 
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "UniqueRowsByHashSetDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(BaseMessages.getString(PKG, "UniqueRowsByHashSetDialog.Stepname.Label")); 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -161,7 +161,7 @@ public class UniqueRowsByHashSetDialog extends BaseStepDialog implements StepDia
 		wSettings.setLayout(SettingsgroupLayout);
 		
         wlStoreValues=new Label(wSettings, SWT.RIGHT);
-        wlStoreValues.setText(BaseMessages.getString(PKG, "UniqueRowsByHashSetDialog.StoreValues.Label")); //$NON-NLS-1$
+        wlStoreValues.setText(BaseMessages.getString(PKG, "UniqueRowsByHashSetDialog.StoreValues.Label")); 
         props.setLook(wlStoreValues);
         fdlStoreValues=new FormData();
         fdlStoreValues.left = new FormAttachment(0, 0);
@@ -171,7 +171,7 @@ public class UniqueRowsByHashSetDialog extends BaseStepDialog implements StepDia
         
         wStoreValues=new Button(wSettings, SWT.CHECK );
         props.setLook(wStoreValues);
-        wStoreValues.setToolTipText(BaseMessages.getString(PKG, "UniqueRowsByHashSetDialog.StoreValues.ToolTip",Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
+        wStoreValues.setToolTipText(BaseMessages.getString(PKG, "UniqueRowsByHashSetDialog.StoreValues.ToolTip",Const.CR));  
         fdStoreValues=new FormData();
         fdStoreValues.left = new FormAttachment(middle, 0);
         fdStoreValues.top  = new FormAttachment(wStepname, margin);
@@ -187,7 +187,7 @@ public class UniqueRowsByHashSetDialog extends BaseStepDialog implements StepDia
 
 
 		wlRejectDuplicateRow=new Label(wSettings, SWT.RIGHT);
-		wlRejectDuplicateRow.setText(BaseMessages.getString(PKG, "UniqueRowsByHashSetDialog.RejectDuplicateRow.Label")); //$NON-NLS-1$
+		wlRejectDuplicateRow.setText(BaseMessages.getString(PKG, "UniqueRowsByHashSetDialog.RejectDuplicateRow.Label")); 
  		props.setLook(wlRejectDuplicateRow);
 		fdlRejectDuplicateRow=new FormData();
 		fdlRejectDuplicateRow.left = new FormAttachment(0, 0);
@@ -197,7 +197,7 @@ public class UniqueRowsByHashSetDialog extends BaseStepDialog implements StepDia
 		
 		wRejectDuplicateRow=new Button(wSettings, SWT.CHECK );
  		props.setLook(wRejectDuplicateRow);
-		wRejectDuplicateRow.setToolTipText(BaseMessages.getString(PKG, "UniqueRowsByHashSetDialog.RejectDuplicateRow.ToolTip",Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
+		wRejectDuplicateRow.setToolTipText(BaseMessages.getString(PKG, "UniqueRowsByHashSetDialog.RejectDuplicateRow.ToolTip",Const.CR));  
 		fdRejectDuplicateRow=new FormData();
 		fdRejectDuplicateRow.left = new FormAttachment(middle, 0);
 		fdRejectDuplicateRow.top  = new FormAttachment(wStoreValues, margin);
@@ -213,7 +213,7 @@ public class UniqueRowsByHashSetDialog extends BaseStepDialog implements StepDia
 		);
 
 		wlErrorDesc=new Label(wSettings, SWT.LEFT);
-		wlErrorDesc.setText(BaseMessages.getString(PKG, "UniqueRowsByHashSetDialog.ErrorDescription.Label")); //$NON-NLS-1$
+		wlErrorDesc.setText(BaseMessages.getString(PKG, "UniqueRowsByHashSetDialog.ErrorDescription.Label")); 
  		props.setLook(wlErrorDesc);
 		fdlErrorDesc=new FormData();
 		fdlErrorDesc.left = new FormAttachment(wRejectDuplicateRow, margin);
@@ -242,17 +242,17 @@ public class UniqueRowsByHashSetDialog extends BaseStepDialog implements StepDia
 		
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wGet=new Button(shell, SWT.PUSH);
-		wGet.setText(BaseMessages.getString(PKG, "UniqueRowsByHashSetDialog.Get.Button")); //$NON-NLS-1$
+		wGet.setText(BaseMessages.getString(PKG, "UniqueRowsByHashSetDialog.Get.Button")); 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 		fdOK=new FormData();
 		
 		setButtonPositions(new Button[] { wOK, wCancel , wGet} , margin, null);
 
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText(BaseMessages.getString(PKG, "UniqueRowsByHashSetDialog.Fields.Label")); //$NON-NLS-1$
+		wlFields.setText(BaseMessages.getString(PKG, "UniqueRowsByHashSetDialog.Fields.Label")); 
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -263,7 +263,7 @@ public class UniqueRowsByHashSetDialog extends BaseStepDialog implements StepDia
 		
 		colinf=new ColumnInfo[]
         {
-		  new ColumnInfo(BaseMessages.getString(PKG, "UniqueRowsByHashSetDialog.ColumnInfo.Fieldname"),ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false), //$NON-NLS-1$
+		  new ColumnInfo(BaseMessages.getString(PKG, "UniqueRowsByHashSetDialog.ColumnInfo.Fieldname"),ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false), 
         };
 		
 		wFields=new TableView(transMeta, shell, 
@@ -426,7 +426,7 @@ public class UniqueRowsByHashSetDialog extends BaseStepDialog implements StepDia
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "UniqueRowsByHashSetDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "UniqueRowsByHashSetDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "UniqueRowsByHashSetDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "UniqueRowsByHashSetDialog.FailedToGetFields.DialogMessage"), ke);  
 		}
 	}
 

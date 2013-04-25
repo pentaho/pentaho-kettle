@@ -237,44 +237,44 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
 			String dtype;
 			int nrkeys, nrvalues;
 			
-			String lookupFromStepname = XMLHandler.getTagValue(stepnode, "from"); //$NON-NLS-1$
+			String lookupFromStepname = XMLHandler.getTagValue(stepnode, "from"); 
 			StreamInterface infoStream = getStepIOMeta().getInfoStreams().get(0);
 			infoStream.setSubject(lookupFromStepname);
             
-            inputSorted = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "input_sorted")); //$NON-NLS-1$ //$NON-NLS-2$
-            memoryPreservationActive = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "preserve_memory")); //$NON-NLS-1$ //$NON-NLS-2$
-            usingSortedList = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "sorted_list")); //$NON-NLS-1$ //$NON-NLS-2$
-            usingIntegerPair = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "integer_pair")); //$NON-NLS-1$ //$NON-NLS-2$
+            inputSorted = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "input_sorted"));  
+            memoryPreservationActive = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "preserve_memory"));  
+            usingSortedList = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "sorted_list"));  
+            usingIntegerPair = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "integer_pair"));  
 			
-			Node lookup = XMLHandler.getSubNode(stepnode, "lookup"); //$NON-NLS-1$
-			nrkeys   = XMLHandler.countNodes(lookup, "key"); //$NON-NLS-1$
-			nrvalues = XMLHandler.countNodes(lookup, "value"); //$NON-NLS-1$
+			Node lookup = XMLHandler.getSubNode(stepnode, "lookup"); 
+			nrkeys   = XMLHandler.countNodes(lookup, "key"); 
+			nrvalues = XMLHandler.countNodes(lookup, "value"); 
 	
 			allocate(nrkeys, nrvalues);
 			
 			for (int i=0;i<nrkeys;i++)
 			{
-				Node knode = XMLHandler.getSubNodeByNr(lookup, "key", i); //$NON-NLS-1$
+				Node knode = XMLHandler.getSubNodeByNr(lookup, "key", i); 
 				
-				keystream[i] = XMLHandler.getTagValue(knode, "name"); //$NON-NLS-1$
-				keylookup[i] = XMLHandler.getTagValue(knode, "field"); //$NON-NLS-1$
+				keystream[i] = XMLHandler.getTagValue(knode, "name"); 
+				keylookup[i] = XMLHandler.getTagValue(knode, "field"); 
 			}
 	
 			for (int i=0;i<nrvalues;i++)
 			{
-				Node vnode = XMLHandler.getSubNodeByNr(lookup, "value", i); //$NON-NLS-1$
+				Node vnode = XMLHandler.getSubNodeByNr(lookup, "value", i); 
 				
-				value[i]        = XMLHandler.getTagValue(vnode, "name"); //$NON-NLS-1$
-				valueName[i]    = XMLHandler.getTagValue(vnode, "rename"); //$NON-NLS-1$
+				value[i]        = XMLHandler.getTagValue(vnode, "name"); 
+				valueName[i]    = XMLHandler.getTagValue(vnode, "rename"); 
 				if (valueName[i]==null) valueName[i]=value[i]; // default: same name to return!
-				valueDefault[i]     = XMLHandler.getTagValue(vnode, "default"); //$NON-NLS-1$
-				dtype           = XMLHandler.getTagValue(vnode, "type"); //$NON-NLS-1$
+				valueDefault[i]     = XMLHandler.getTagValue(vnode, "default"); 
+				dtype           = XMLHandler.getTagValue(vnode, "type"); 
 				valueDefaultType[i] = ValueMeta.getType(dtype);
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "StreamLookupMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "StreamLookupMeta.Exception.UnableToLoadStepInfoFromXML"), e); 
 		}
 	}
 	
@@ -304,15 +304,15 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
 
 		for (int i=0;i<nrkeys;i++)
 		{
-			keystream[i] = "key"+i; //$NON-NLS-1$
-			keylookup[i] = "keyfield"+i; //$NON-NLS-1$
+			keystream[i] = "key"+i; 
+			keylookup[i] = "keyfield"+i; 
 		}
 
 		for (int i=0;i<nrvalues;i++)
 		{
-			value[i]        = "value"+i; //$NON-NLS-1$
-			valueName[i]    = "valuename"+i; //$NON-NLS-1$
-			valueDefault[i]     = "default"+i; //$NON-NLS-1$
+			value[i]        = "value"+i; 
+			valueName[i]    = "valuename"+i; 
+			valueDefault[i]     = "default"+i; 
 			valueDefaultType[i] = ValueMetaInterface.TYPE_NUMBER;
 		}
 	}
@@ -333,7 +333,7 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
 				}
 				else
 				{
-					throw new KettleStepException(BaseMessages.getString(PKG, "StreamLookupMeta.Exception.ReturnValueCanNotBeFound",value[i])); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleStepException(BaseMessages.getString(PKG, "StreamLookupMeta.Exception.ReturnValueCanNotBeFound",value[i]));  
 				}
 			}
 		}
@@ -353,31 +353,31 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
         StringBuffer retval = new StringBuffer();
 		
         StreamInterface infoStream = getStepIOMeta().getInfoStreams().get(0);
-		retval.append("    "+XMLHandler.addTagValue("from", infoStream.getStepname())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        retval.append("    "+XMLHandler.addTagValue("input_sorted", inputSorted)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("    "+XMLHandler.addTagValue("preserve_memory", memoryPreservationActive)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("    "+XMLHandler.addTagValue("sorted_list", usingSortedList)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("    "+XMLHandler.addTagValue("integer_pair", usingIntegerPair)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    "+XMLHandler.addTagValue("from", infoStream.getStepname()));   //$NON-NLS-3$
+        retval.append("    "+XMLHandler.addTagValue("input_sorted", inputSorted));  
+        retval.append("    "+XMLHandler.addTagValue("preserve_memory", memoryPreservationActive));  
+        retval.append("    "+XMLHandler.addTagValue("sorted_list", usingSortedList));  
+        retval.append("    "+XMLHandler.addTagValue("integer_pair", usingIntegerPair));  
 
-		retval.append("    <lookup>"+Const.CR); //$NON-NLS-1$
+		retval.append("    <lookup>"+Const.CR); 
 		for (int i=0;i<keystream.length;i++)
 		{
-			retval.append("      <key>"+Const.CR); //$NON-NLS-1$
-			retval.append("        "+XMLHandler.addTagValue("name",  keystream[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("field", keylookup[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("      </key>"+Const.CR); //$NON-NLS-1$
+			retval.append("      <key>"+Const.CR); 
+			retval.append("        "+XMLHandler.addTagValue("name",  keystream[i]));  
+			retval.append("        "+XMLHandler.addTagValue("field", keylookup[i]));  
+			retval.append("      </key>"+Const.CR); 
 		}
 		
 		for (int i=0;i<value.length;i++)
 		{
-			retval.append("      <value>"+Const.CR); //$NON-NLS-1$
-			retval.append("        "+XMLHandler.addTagValue("name",    value[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("rename",  valueName[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("default", valueDefault[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("type",    ValueMeta.getTypeDesc(valueDefaultType[i]))); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("      </value>"+Const.CR); //$NON-NLS-1$
+			retval.append("      <value>"+Const.CR); 
+			retval.append("        "+XMLHandler.addTagValue("name",    value[i]));  
+			retval.append("        "+XMLHandler.addTagValue("rename",  valueName[i]));  
+			retval.append("        "+XMLHandler.addTagValue("default", valueDefault[i]));  
+			retval.append("        "+XMLHandler.addTagValue("type",    ValueMeta.getTypeDesc(valueDefaultType[i])));  
+			retval.append("      </value>"+Const.CR); 
 		}
-		retval.append("    </lookup>"+Const.CR); //$NON-NLS-1$
+		retval.append("    </lookup>"+Const.CR); 
 		
 		return retval.toString();
 	}
@@ -386,37 +386,37 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			String lookupFromStepname =  rep.getStepAttributeString (id_step, "lookup_from_step"); //$NON-NLS-1$
+			String lookupFromStepname =  rep.getStepAttributeString (id_step, "lookup_from_step"); 
 			StreamInterface infoStream = getStepIOMeta().getInfoStreams().get(0);
 			infoStream.setSubject(lookupFromStepname);
 
-            inputSorted = rep.getStepAttributeBoolean(id_step, "input_sorted"); //$NON-NLS-1$
+            inputSorted = rep.getStepAttributeBoolean(id_step, "input_sorted"); 
 			memoryPreservationActive = rep.getStepAttributeBoolean(id_step, "preserve_memory"); // $NON-NLS-1$
             usingSortedList = rep.getStepAttributeBoolean(id_step, "sorted_list"); // $NON-NLS-1$
             usingIntegerPair = rep.getStepAttributeBoolean(id_step, "integer_pair"); // $NON-NLS-1$
             
-			int nrkeys   = rep.countNrStepAttributes(id_step, "lookup_key_name"); //$NON-NLS-1$
-			int nrvalues = rep.countNrStepAttributes(id_step, "return_value_name"); //$NON-NLS-1$
+			int nrkeys   = rep.countNrStepAttributes(id_step, "lookup_key_name"); 
+			int nrvalues = rep.countNrStepAttributes(id_step, "return_value_name"); 
 			
 			allocate(nrkeys, nrvalues);
 			
 			for (int i=0;i<nrkeys;i++)
 			{
-				keystream[i] = rep.getStepAttributeString(id_step, i, "lookup_key_name"); //$NON-NLS-1$
-				keylookup[i] = rep.getStepAttributeString(id_step, i, "lookup_key_field"); //$NON-NLS-1$
+				keystream[i] = rep.getStepAttributeString(id_step, i, "lookup_key_name"); 
+				keylookup[i] = rep.getStepAttributeString(id_step, i, "lookup_key_field"); 
 			}
 	
 			for (int i=0;i<nrvalues;i++)
 			{
-				value[i]        =                rep.getStepAttributeString(id_step, i, "return_value_name"); //$NON-NLS-1$
-				valueName[i]    =                rep.getStepAttributeString(id_step, i, "return_value_rename"); //$NON-NLS-1$
-				valueDefault[i]     =                rep.getStepAttributeString(id_step, i, "return_value_default"); //$NON-NLS-1$
-				valueDefaultType[i] = ValueMeta.getType( rep.getStepAttributeString(id_step, i, "return_value_type")); //$NON-NLS-1$
+				value[i]        =                rep.getStepAttributeString(id_step, i, "return_value_name"); 
+				valueName[i]    =                rep.getStepAttributeString(id_step, i, "return_value_rename"); 
+				valueDefault[i]     =                rep.getStepAttributeString(id_step, i, "return_value_default"); 
+				valueDefaultType[i] = ValueMeta.getType( rep.getStepAttributeString(id_step, i, "return_value_type")); 
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "StreamLookupMeta.Exception.UnexpecteErrorReadingStepInfoFromRepository"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "StreamLookupMeta.Exception.UnexpecteErrorReadingStepInfoFromRepository"), e); 
 		}
 	}
 
@@ -425,29 +425,29 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 	        StreamInterface infoStream = getStepIOMeta().getInfoStreams().get(0);
-			rep.saveStepAttribute(id_transformation, id_step, "lookup_from_step",  infoStream.getStepname()); //$NON-NLS-1$ //$NON-NLS-2$
-            rep.saveStepAttribute(id_transformation, id_step, "input_sorted", inputSorted); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "lookup_from_step",  infoStream.getStepname());  
+            rep.saveStepAttribute(id_transformation, id_step, "input_sorted", inputSorted); 
             rep.saveStepAttribute(id_transformation, id_step, "preserve_memory", memoryPreservationActive); // $NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "sorted_list", usingSortedList); // $NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "integer_pair", usingIntegerPair); // $NON-NLS-1$
             
             for (int i=0;i<keystream.length;i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "lookup_key_name",      keystream[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "lookup_key_field",     keylookup[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "lookup_key_name",      keystream[i]); 
+				rep.saveStepAttribute(id_transformation, id_step, i, "lookup_key_field",     keylookup[i]); 
 			}
 	
 			for (int i=0;i<value.length;i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "return_value_name",      value[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "return_value_rename",    valueName[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "return_value_default",   valueDefault[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "return_value_type",      ValueMeta.getTypeDesc(valueDefaultType[i])); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "return_value_name",      value[i]); 
+				rep.saveStepAttribute(id_transformation, id_step, i, "return_value_rename",    valueName[i]); 
+				rep.saveStepAttribute(id_transformation, id_step, i, "return_value_default",   valueDefault[i]); 
+				rep.saveStepAttribute(id_transformation, id_step, i, "return_value_type",      ValueMeta.getTypeDesc(valueDefaultType[i])); 
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "StreamLookupMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "StreamLookupMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); 
 		}
 	}
 
@@ -458,10 +458,10 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
 		
 		if (prev!=null && prev.size()>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "StreamLookupMeta.CheckResult.StepReceivingFields",prev.size()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "StreamLookupMeta.CheckResult.StepReceivingFields",prev.size()+""), stepMeta);  
 			remarks.add(cr);
 			
-			String  error_message=""; //$NON-NLS-1$
+			String  error_message=""; 
 			boolean error_found=false;
 			
 			// Starting from selected fields in ...
@@ -471,35 +471,35 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
 				int idx = prev.indexOfValue(keystream[i]);
 				if (idx<0)
 				{
-					error_message+="\t\t"+keystream[i]+Const.CR; //$NON-NLS-1$
+					error_message+="\t\t"+keystream[i]+Const.CR; 
 					error_found=true;
 				} 
 			}
 			if (error_found) 
 			{
-				error_message=BaseMessages.getString(PKG, "StreamLookupMeta.CheckResult.FieldsNotFound")+Const.CR+Const.CR+error_message; //$NON-NLS-1$
+				error_message=BaseMessages.getString(PKG, "StreamLookupMeta.CheckResult.FieldsNotFound")+Const.CR+Const.CR+error_message; 
 
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "StreamLookupMeta.CheckResult.AllFieldsFound"), stepMeta); //$NON-NLS-1$
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "StreamLookupMeta.CheckResult.AllFieldsFound"), stepMeta); 
 				remarks.add(cr);
 			}
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "StreamLookupMeta.CheckResult.CouldNotFindFieldsFromPreviousSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "StreamLookupMeta.CheckResult.CouldNotFindFieldsFromPreviousSteps"), stepMeta); 
 			remarks.add(cr);
 		}
 
 		if (info!=null && info.size()>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "StreamLookupMeta.CheckResult.StepReceivingLookupData",info.size()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "StreamLookupMeta.CheckResult.StepReceivingLookupData",info.size()+""), stepMeta);  
 			remarks.add(cr);
 			
-			String  error_message=""; //$NON-NLS-1$
+			String  error_message=""; 
 			boolean error_found=false;
 
 			// Check the fields from the lookup stream! 
@@ -508,20 +508,20 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
 				int idx = info.indexOfValue(keylookup[i]);
 				if (idx<0)
 				{
-					error_message+="\t\t"+keylookup[i]+Const.CR; //$NON-NLS-1$
+					error_message+="\t\t"+keylookup[i]+Const.CR; 
 					error_found=true;
 				} 
 			}
 			if (error_found) 
 			{
-				error_message=BaseMessages.getString(PKG, "StreamLookupMeta.CheckResult.FieldsNotFoundInLookupStream")+Const.CR+Const.CR+error_message; //$NON-NLS-1$
+				error_message=BaseMessages.getString(PKG, "StreamLookupMeta.CheckResult.FieldsNotFoundInLookupStream")+Const.CR+Const.CR+error_message; 
 
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "StreamLookupMeta.CheckResult.AllFieldsFoundInTheLookupStream"), stepMeta); //$NON-NLS-1$
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "StreamLookupMeta.CheckResult.AllFieldsFoundInTheLookupStream"), stepMeta); 
 				remarks.add(cr);
 			}
 
@@ -531,26 +531,26 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
 				int idx = info.indexOfValue(value[i]);
 				if (idx<0)
 				{
-					error_message+="\t\t"+value[i]+Const.CR; //$NON-NLS-1$
+					error_message+="\t\t"+value[i]+Const.CR; 
 					error_found=true;
 				} 
 			}
 			if (error_found) 
 			{
-				error_message=BaseMessages.getString(PKG, "StreamLookupMeta.CheckResult.FieldsNotFoundInLookupStream2")+Const.CR+Const.CR+error_message; //$NON-NLS-1$
+				error_message=BaseMessages.getString(PKG, "StreamLookupMeta.CheckResult.FieldsNotFoundInLookupStream2")+Const.CR+Const.CR+error_message; 
 
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "StreamLookupMeta.CheckResult.AllFieldsFoundInTheLookupStream2"), stepMeta); //$NON-NLS-1$
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "StreamLookupMeta.CheckResult.AllFieldsFoundInTheLookupStream2"), stepMeta); 
 				remarks.add(cr);
 			}
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "StreamLookupMeta.CheckResult.FieldsNotFoundFromInLookupSep"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "StreamLookupMeta.CheckResult.FieldsNotFoundFromInLookupSep"), stepMeta); 
 			remarks.add(cr);
 		}
 		
@@ -558,24 +558,24 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
         StreamInterface infoStream = getStepIOMeta().getInfoStreams().get(0);
 		if (infoStream.getStepMeta()==null)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "StreamLookupMeta.CheckResult.SourceStepNotSelected"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "StreamLookupMeta.CheckResult.SourceStepNotSelected"), stepMeta); 
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "StreamLookupMeta.CheckResult.SourceStepIsSelected"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "StreamLookupMeta.CheckResult.SourceStepIsSelected"), stepMeta); 
 			remarks.add(cr);
 			
 			// See if the step exists!
 			//
 			if (info!=null)
 			{	
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "StreamLookupMeta.CheckResult.SourceStepExist",infoStream.getStepname()), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "StreamLookupMeta.CheckResult.SourceStepExist",infoStream.getStepname()), stepMeta);  
 				remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "StreamLookupMeta.CheckResult.SourceStepDoesNotExist",infoStream.getStepname()), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "StreamLookupMeta.CheckResult.SourceStepDoesNotExist",infoStream.getStepname()), stepMeta);  
 				remarks.add(cr);
 			}
 		}
@@ -583,12 +583,12 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
 		// See if we have input streams leading to this step!
 		if (input.length>=2)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "StreamLookupMeta.CheckResult.StepReceivingInfoFromInputSteps",input.length+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "StreamLookupMeta.CheckResult.StepReceivingInfoFromInputSteps",input.length+""), stepMeta);  
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "StreamLookupMeta.CheckResult.NeedAtLeast2InputStreams",Const.CR,Const.CR), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "StreamLookupMeta.CheckResult.NeedAtLeast2InputStreams",Const.CR,Const.CR), stepMeta);   //$NON-NLS-3$
 			remarks.add(cr);
 		}
 	}

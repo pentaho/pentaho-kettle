@@ -63,18 +63,18 @@ public abstract class LazilyInitializedController extends AbstractXulEventHandle
   private void showErrorDialog(final Exception e) {
     XulMessageBox messageBox = null;
     try {
-      messageBox = (XulMessageBox) document.createElement("messagebox"); //$NON-NLS-1$
+      messageBox = (XulMessageBox) document.createElement("messagebox"); 
     } catch (XulException xe) {
       throw new RuntimeException(xe);
     }
-    messageBox.setTitle(BaseMessages.getString(PKG, "Dialog.Error"));//$NON-NLS-1$
-    messageBox.setAcceptLabel(BaseMessages.getString(PKG, "Dialog.Ok"));//$NON-NLS-1$
+    messageBox.setTitle(BaseMessages.getString(PKG, "Dialog.Error"));
+    messageBox.setAcceptLabel(BaseMessages.getString(PKG, "Dialog.Ok"));
     if (e != null) {
       messageBox.setMessage(BaseMessages.getString(PKG,
-          "LazilyInitializedController.Message.UnableToInitWithParam", e.getLocalizedMessage()));//$NON-NLS-1$
+          "LazilyInitializedController.Message.UnableToInitWithParam", e.getLocalizedMessage()));
     } else {
       messageBox.setMessage(BaseMessages.getString(PKG,
-          "LazilyInitializedController.Message.UnableToInit"));//$NON-NLS-1$
+          "LazilyInitializedController.Message.UnableToInit"));
     }
     messageBox.open();
   }

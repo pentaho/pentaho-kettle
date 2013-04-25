@@ -2870,7 +2870,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   public String getDataXML(Object object) throws IOException {
     StringBuffer xml = new StringBuffer();
 
-    xml.append(XMLHandler.openTag(XML_DATA_TAG));
+    String string ;
 
     if (object != null) // otherwise there is no point
     {
@@ -2881,29 +2881,30 @@ public class ValueMetaBase implements ValueMetaInterface {
           //
           switch (getType()) {
           case TYPE_STRING:
-            xml.append((String) object);
+            string = (String) object;
             break;
           case TYPE_NUMBER:
-            xml.append((Double) object);
+            string = Double.toString((Double) object);
             break;
           case TYPE_INTEGER:
-            xml.append((Long) object);
+            string = Long.toString((Long) object);
             break;
           case TYPE_DATE:
-            xml.append(XMLHandler.date2string((Date) object));
+            string = XMLHandler.date2string((Date) object);
             break;
           case TYPE_BIGNUMBER:
-            xml.append((BigDecimal) object);
+            string = ((BigDecimal) object).toString();
             break;
           case TYPE_BOOLEAN:
-            xml.append((Boolean) object);
+            string = Boolean.toString((Boolean) object);
             break;
           case TYPE_BINARY:
-            xml.append(XMLHandler.addTagValue("binary-value", (byte[]) object));
+            string = XMLHandler.encodeBinaryData((byte[]) object);
             break;
           default:
             throw new IOException(toString() + " : Unable to serialize data type to XML " + getType());
           }
+          
           break;
 
         case STORAGE_TYPE_BINARY_STRING:
@@ -2913,13 +2914,12 @@ public class ValueMetaBase implements ValueMetaInterface {
           // Since the streams can be compressed, volume shouldn't be an issue
           // at all.
           //
-          xml.append(XMLHandler.addTagValue("binary-string", (byte[]) object));
+          string = XMLHandler.addTagValue("binary-string", (byte[]) object);
           break;
 
         case STORAGE_TYPE_INDEXED:
-          xml.append(XMLHandler.addTagValue("index-value", (Integer) object)); // just
-                                                                               // an
-                                                                               // index
+          // Just an index
+          string = XMLHandler.addTagValue("index-value", (Integer) object); 
           break;
 
         default:
@@ -2928,10 +2928,16 @@ public class ValueMetaBase implements ValueMetaInterface {
       } catch (ClassCastException e) {
         throw new RuntimeException(toString() + " : There was a data type error: the data type of "
             + object.getClass().getName() + " object [" + object + "] does not correspond to value meta ["
-            + toStringMeta() + "]");
+            + toStringMeta() + "]", e);
+      } catch(Exception e) {
+        throw new RuntimeException(toString()+" : there was a value XML encoding error", e );
       }
+    } else {
+      // If the object is null: give an empty string
+      //
+      string = "";
     }
-    xml.append(XMLHandler.closeTag(XML_DATA_TAG));
+    xml.append(XMLHandler.addTagValue(XML_DATA_TAG, string));
 
     return xml.toString();
   }

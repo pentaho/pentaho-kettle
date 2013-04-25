@@ -997,6 +997,13 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			}
 		}
 	}
+	
+  @Override
+  @Deprecated
+  public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
+      VariableSpace space) throws KettleStepException {
+    getFields(inputRowMeta, name, info, nextStep, space, null, null);
+  }
 
 	public String getXML()
 	{
@@ -1294,7 +1301,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			
 			return null;
 		} catch (Exception e) {
-			throw new KettleException(e); //$NON-NLS-1$
+			throw new KettleException(e); 
 		}
 	}
 	

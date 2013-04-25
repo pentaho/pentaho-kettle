@@ -120,12 +120,12 @@ public class BlockingStepMeta  extends BaseStepMeta implements StepMetaInterface
         // See if we have input streams leading to this step!
         if (input.length>0) 
         {
-            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "BlockingStepMeta.CheckResult.StepExpectingRowsFromOtherSteps"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "BlockingStepMeta.CheckResult.StepExpectingRowsFromOtherSteps"), stepMeta); 
             remarks.add(cr);
         } 
         else 
         {
-            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "BlockingStepMeta.CheckResult.NoInputReceivedError"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "BlockingStepMeta.CheckResult.NoInputReceivedError"), stepMeta); 
             remarks.add(cr);
         }
     }

@@ -236,7 +236,7 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface
 			int nrscripts = XMLHandler.countNodes(scripts, "jsScript");
 			jsScripts = new ScriptValuesScript[nrscripts];
 			for (int i=0;i<nrscripts;i++){
-				Node fnode = XMLHandler.getSubNodeByNr(scripts, "jsScript", i); //$NON-NLS-1$
+				Node fnode = XMLHandler.getSubNodeByNr(scripts, "jsScript", i); 
 				
 				jsScripts[i] = new ScriptValuesScript(
 						Integer.parseInt(XMLHandler.getTagValue(fnode, JSSCRIPT_TAG_TYPE)),
@@ -245,29 +245,29 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface
 				);
 			}
 			
-			Node fields = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
-			int nrfields = XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
+			Node fields = XMLHandler.getSubNode(stepnode, "fields"); 
+			int nrfields = XMLHandler.countNodes(fields, "field"); 
 				
 			allocate(nrfields);
 			
 			for (int i=0;i<nrfields;i++)
 			{
-				Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
+				Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); 
 				
-				fieldname     [i] = XMLHandler.getTagValue(fnode, "name"); //$NON-NLS-1$
-				rename   [i] = XMLHandler.getTagValue(fnode, "rename"); //$NON-NLS-1$
-				type     [i] = ValueMeta.getType(XMLHandler.getTagValue(fnode, "type")); //$NON-NLS-1$
+				fieldname     [i] = XMLHandler.getTagValue(fnode, "name"); 
+				rename   [i] = XMLHandler.getTagValue(fnode, "rename"); 
+				type     [i] = ValueMeta.getType(XMLHandler.getTagValue(fnode, "type")); 
 	
-				String slen = XMLHandler.getTagValue(fnode, "length"); //$NON-NLS-1$
-				String sprc = XMLHandler.getTagValue(fnode, "precision"); //$NON-NLS-1$
+				String slen = XMLHandler.getTagValue(fnode, "length"); 
+				String sprc = XMLHandler.getTagValue(fnode, "precision"); 
 				length   [i]=Const.toInt(slen, -1);
 				precision[i]=Const.toInt(sprc, -1);
-				replace  [i] = "Y".equalsIgnoreCase(XMLHandler.getTagValue(fnode, "replace")); //$NON-NLS-1$
+				replace  [i] = "Y".equalsIgnoreCase(XMLHandler.getTagValue(fnode, "replace")); 
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "ScriptMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
+			throw new KettleXMLException(BaseMessages.getString(PKG, "ScriptMeta.Exception.UnableToLoadStepInfoFromXML"), e); 
 		}
 	}
 
@@ -283,8 +283,8 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface
 		allocate(nrfields);
 
 		for (int i=0;i<nrfields;i++){
-			fieldname     [i] = "newvalue"; //$NON-NLS-1$
-			rename   [i] = "newvalue"; //$NON-NLS-1$
+			fieldname     [i] = "newvalue"; 
+			rename   [i] = "newvalue"; 
 			type     [i] = ValueMetaInterface.TYPE_NUMBER;
 			length   [i] = -1;
 			precision[i] = -1;
@@ -344,27 +344,27 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface
 		
 		retval.append("    <jsScripts>"); 
 		for (int i=0;i<jsScripts.length;i++){
-			retval.append("      <jsScript>"); //$NON-NLS-1$
+			retval.append("      <jsScript>"); 
 			retval.append("        ").append(XMLHandler.addTagValue(JSSCRIPT_TAG_TYPE,  jsScripts[i].getScriptType()));
 			retval.append("        ").append(XMLHandler.addTagValue(JSSCRIPT_TAG_NAME,  jsScripts[i].getScriptName()));
 			retval.append("        ").append(XMLHandler.addTagValue(JSSCRIPT_TAG_SCRIPT, jsScripts[i].getScript()));
-			retval.append("      </jsScript>"); //$NON-NLS-1$
+			retval.append("      </jsScript>"); 
 		}
 		retval.append("    </jsScripts>"); 
 		
-		retval.append("    <fields>"); //$NON-NLS-1$
+		retval.append("    <fields>"); 
 		for (int i=0;i<fieldname.length;i++)
 		{
-			retval.append("      <field>"); //$NON-NLS-1$
-			retval.append("        ").append(XMLHandler.addTagValue("name",      fieldname[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        ").append(XMLHandler.addTagValue("rename",    rename[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        ").append(XMLHandler.addTagValue("type",      ValueMeta.getTypeDesc(type[i]))); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        ").append(XMLHandler.addTagValue("length",    length[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        ").append(XMLHandler.addTagValue("precision", precision[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        ").append(XMLHandler.addTagValue("replace",   replace[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("      </field>"); //$NON-NLS-1$
+			retval.append("      <field>"); 
+			retval.append("        ").append(XMLHandler.addTagValue("name",      fieldname[i]));  
+			retval.append("        ").append(XMLHandler.addTagValue("rename",    rename[i]));  
+			retval.append("        ").append(XMLHandler.addTagValue("type",      ValueMeta.getTypeDesc(type[i])));  
+			retval.append("        ").append(XMLHandler.addTagValue("length",    length[i]));  
+			retval.append("        ").append(XMLHandler.addTagValue("precision", precision[i]));  
+			retval.append("        ").append(XMLHandler.addTagValue("replace",   replace[i]));  
+			retval.append("      </field>"); 
 		}
-		retval.append("    </fields>"); //$NON-NLS-1$
+		retval.append("    </fields>"); 
 		
 		return retval.toString();
 	}
@@ -373,7 +373,7 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface
     {
 		try
 		{
-			String script = rep.getStepAttributeString(id_step, "script"); //$NON-NLS-1$
+			String script = rep.getStepAttributeString(id_step, "script"); 
 
 			// When in compatibility mode, we load the script, not the other tabs...
 			//
@@ -386,7 +386,7 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface
 						);
 			}
 			else {
-	            int nrScripts = rep.countNrStepAttributes(id_step, JSSCRIPT_TAG_NAME); //$NON-NLS-1$
+	            int nrScripts = rep.countNrStepAttributes(id_step, JSSCRIPT_TAG_NAME); 
 	            jsScripts = new ScriptValuesScript[nrScripts];
 	            for (int i = 0; i < nrScripts; i++)
 	            {
@@ -396,22 +396,22 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface
 	            }
 			}
 			
-			int nrfields = rep.countNrStepAttributes(id_step, "field_name"); //$NON-NLS-1$
+			int nrfields = rep.countNrStepAttributes(id_step, "field_name"); 
 			allocate(nrfields);
 	
 			for (int i=0;i<nrfields;i++)
 			{
-				fieldname[i]        =       rep.getStepAttributeString (id_step, i, "field_name"); //$NON-NLS-1$
-				rename[i]      =       rep.getStepAttributeString (id_step, i, "field_rename"); //$NON-NLS-1$
-				type[i]        =  ValueMeta.getType( rep.getStepAttributeString (id_step, i, "field_type") ); //$NON-NLS-1$
-				length[i]      =  (int)rep.getStepAttributeInteger(id_step, i, "field_length"); //$NON-NLS-1$
-				precision[i]   =  (int)rep.getStepAttributeInteger(id_step, i, "field_precision"); //$NON-NLS-1$
-				replace[i]     =       rep.getStepAttributeBoolean(id_step, i, "field_replace"); //$NON-NLS-1$
+				fieldname[i]        =       rep.getStepAttributeString (id_step, i, "field_name"); 
+				rename[i]      =       rep.getStepAttributeString (id_step, i, "field_rename"); 
+				type[i]        =  ValueMeta.getType( rep.getStepAttributeString (id_step, i, "field_type") ); 
+				length[i]      =  (int)rep.getStepAttributeInteger(id_step, i, "field_length"); 
+				precision[i]   =  (int)rep.getStepAttributeInteger(id_step, i, "field_precision"); 
+				replace[i]     =       rep.getStepAttributeBoolean(id_step, i, "field_replace"); 
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "ScriptMeta.Exception.UnexpectedErrorInReadingStepInfo"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "ScriptMeta.Exception.UnexpectedErrorInReadingStepInfo"), e); 
 		}
 	}
 
@@ -428,17 +428,17 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface
 
             for (int i = 0; i < fieldname.length; i++)
             {
-                rep.saveStepAttribute(id_transformation, id_step, i, "field_name", fieldname[i]); //$NON-NLS-1$
-                rep.saveStepAttribute(id_transformation, id_step, i, "field_rename", rename[i]); //$NON-NLS-1$
-                rep.saveStepAttribute(id_transformation, id_step, i, "field_type", ValueMeta.getTypeDesc(type[i])); //$NON-NLS-1$
-                rep.saveStepAttribute(id_transformation, id_step, i, "field_length", length[i]); //$NON-NLS-1$
-                rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", precision[i]); //$NON-NLS-1$
-                rep.saveStepAttribute(id_transformation, id_step, i, "field_replace", replace[i]); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_name", fieldname[i]); 
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_rename", rename[i]); 
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_type", ValueMeta.getTypeDesc(type[i])); 
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_length", length[i]); 
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", precision[i]); 
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_replace", replace[i]); 
             }
         }
         catch (Exception e)
         {
-            throw new KettleException(BaseMessages.getString(PKG, "ScriptMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "ScriptMeta.Exception.UnableToSaveStepInfo") + id_step, e); 
         }
     }
 
@@ -446,7 +446,7 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface
 	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
 		boolean error_found=false;
-		String error_message = ""; //$NON-NLS-1$
+		String error_message = ""; 
 		CheckResult cr;
 		
 		ScriptEngine jscx;
@@ -482,7 +482,7 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		
 		if (prev!=null && strActiveScript.length()>0)		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ScriptMeta.CheckResult.ConnectedStepOK",String.valueOf(prev.size())), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ScriptMeta.CheckResult.ConnectedStepOK",String.valueOf(prev.size())), stepMeta);  
 			remarks.add(cr);
 			
 			// Adding the existing Scripts to the Context
@@ -526,17 +526,17 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface
 				jsscope.put("ERROR_TRANSFORMATION", Integer.valueOf(Script.ERROR_TRANSFORMATION));
 				jsscope.put("CONTINUE_TRANSFORMATION", Integer.valueOf(Script.CONTINUE_TRANSFORMATION));
 			} catch (Exception ex) {
-				error_message="Couldn't add Transformation Constants! Error:"+Const.CR+ex.toString(); //$NON-NLS-1$
+				error_message="Couldn't add Transformation Constants! Error:"+Const.CR+ex.toString(); 
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			};
 
 			try{
 				ScriptDummy dummyStep = new ScriptDummy(prev, transMeta.getStepFields(stepMeta));
-				jsscope.put("_step_", dummyStep); //$NON-NLS-1$
+				jsscope.put("_step_", dummyStep); 
 
 				Object[] row=new Object[prev.size()];
-   			    jsscope.put("rowMeta", prev); //$NON-NLS-1$
+   			    jsscope.put("rowMeta", prev); 
 			    for (int i=0;i<prev.size();i++)
 			    {
                     ValueMetaInterface valueMeta = prev.getValueMeta(i);
@@ -545,7 +545,7 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface
 				    // Set date and string values to something to simulate real thing
                     //
 				    if (valueMeta.isDate()) valueData = new Date();
-				    if (valueMeta.isString()) valueData = "test value test value test value test value test value test value test value test value test value test value"; //$NON-NLS-1$
+				    if (valueMeta.isString()) valueData = "test value test value test value test value test value test value test value test value test value test value"; 
                     if (valueMeta.isInteger()) valueData = Long.valueOf(0L);
                     if (valueMeta.isNumber()) valueData = new Double(0.0);
                     if (valueMeta.isBigNumber()) valueData = BigDecimal.ZERO;
@@ -557,13 +557,13 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface
 				    jsscope.put(valueMeta.getName(), valueData);
 			    }
 			    // Add support for Value class (new Value())
-			    jsscope.put("Value", Value.class); //$NON-NLS-1$
+			    jsscope.put("Value", Value.class); 
 
                 // Add the old style row object for compatibility reasons...
                 //
-                jsscope.put("row", row); //$NON-NLS-1$
+                jsscope.put("row", row); 
             } catch(Exception ev){
-				error_message="Couldn't add Input fields to Script! Error:"+Const.CR+ev.toString(); //$NON-NLS-1$
+				error_message="Couldn't add Input fields to Script! Error:"+Const.CR+ev.toString(); 
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
@@ -573,11 +573,11 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface
 				if(strActiveStartScript != null && strActiveStartScript.length()>0){
 					jscx.eval(strActiveStartScript, jsscope);
 					error_message = "Found Start Script. "+ strActiveStartScriptName+" Processing OK";
-					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, error_message, stepMeta); //$NON-NLS-1$
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, error_message, stepMeta); 
 					remarks.add(cr);
 				}
 			}catch(Exception e){
-				error_message="Couldn't process Start Script! Error:"+Const.CR+e.toString(); //$NON-NLS-1$
+				error_message="Couldn't process Start Script! Error:"+Const.CR+e.toString(); 
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);				
 			};
@@ -585,18 +585,18 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface
 			try{
 				jsscript = ((Compilable) jscx).compile(strActiveScript);
 				
-				//cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ScriptMeta.CheckResult.ScriptCompiledOK"), stepinfo); //$NON-NLS-1$
+				//cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ScriptMeta.CheckResult.ScriptCompiledOK"), stepinfo); 
 				//remarks.add(cr);
 
 				try{
 					
 					jsscript.eval(jsscope);
 
-					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ScriptMeta.CheckResult.ScriptCompiledOK2"), stepMeta); //$NON-NLS-1$
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ScriptMeta.CheckResult.ScriptCompiledOK2"), stepMeta); 
 					remarks.add(cr);
 					
 					if (fieldname.length>0){
-						StringBuffer message = new StringBuffer(BaseMessages.getString(PKG, "ScriptMeta.CheckResult.FailedToGetValues",String.valueOf(fieldname.length))+Const.CR+Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
+						StringBuffer message = new StringBuffer(BaseMessages.getString(PKG, "ScriptMeta.CheckResult.FailedToGetValues",String.valueOf(fieldname.length))+Const.CR+Const.CR);  
 												
 						if (error_found)
 						{
@@ -610,12 +610,12 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface
 					}
 				}catch(ScriptException jse){
 					//Context.exit(); TODO AKRETION NOT SURE
-					error_message=BaseMessages.getString(PKG, "ScriptMeta.CheckResult.CouldNotExecuteScript")+Const.CR+jse.toString(); //$NON-NLS-1$
+					error_message=BaseMessages.getString(PKG, "ScriptMeta.CheckResult.CouldNotExecuteScript")+Const.CR+jse.toString(); 
 					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 					remarks.add(cr);
 				}catch(Exception e){
 					//Context.exit(); TODO AKRETION NOT SURE
-					error_message=BaseMessages.getString(PKG, "ScriptMeta.CheckResult.CouldNotExecuteScript2")+Const.CR+e.toString(); //$NON-NLS-1$
+					error_message=BaseMessages.getString(PKG, "ScriptMeta.CheckResult.CouldNotExecuteScript2")+Const.CR+e.toString(); 
 					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 					remarks.add(cr);
 				}
@@ -625,33 +625,33 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface
 					if(strActiveEndScript != null && strActiveEndScript.length()>0){
 						/* Object endScript = */ jscx.eval(strActiveEndScript, jsscope);
 						error_message = "Found End Script. "+ strActiveEndScriptName+" Processing OK";
-						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, error_message, stepMeta); //$NON-NLS-1$
+						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, error_message, stepMeta); 
 						remarks.add(cr);
 					}
 				}catch(Exception e){
-					error_message="Couldn't process End Script! Error:"+Const.CR+e.toString(); //$NON-NLS-1$
+					error_message="Couldn't process End Script! Error:"+Const.CR+e.toString(); 
 					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 					remarks.add(cr);				
 				};
 			}catch(Exception e){
 				//Context.exit(); TODO AKRETION NOT SURE
-				error_message = BaseMessages.getString(PKG, "ScriptMeta.CheckResult.CouldNotCompileScript")+Const.CR+e.toString(); //$NON-NLS-1$
+				error_message = BaseMessages.getString(PKG, "ScriptMeta.CheckResult.CouldNotCompileScript")+Const.CR+e.toString(); 
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
 		}else{
 			//Context.exit(); TODO AKRETION NOT SURE
-			error_message = BaseMessages.getString(PKG, "ScriptMeta.CheckResult.CouldNotGetFieldsFromPreviousStep"); //$NON-NLS-1$
+			error_message = BaseMessages.getString(PKG, "ScriptMeta.CheckResult.CouldNotGetFieldsFromPreviousStep"); 
 			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 			remarks.add(cr);
 		}
 
 		// See if we have input streams leading to this step!
 		if (input.length>0){
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ScriptMeta.CheckResult.ConnectedStepOK2"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ScriptMeta.CheckResult.ConnectedStepOK2"), stepMeta); 
 			remarks.add(cr);
 		}else{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "ScriptMeta.CheckResult.NoInputReceived"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "ScriptMeta.CheckResult.NoInputReceived"), stepMeta); 
 			remarks.add(cr);
 		}
 	}
@@ -720,8 +720,8 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface
 							}
 							break;
 					case ValueMetaInterface.TYPE_STRING:  
-						if (classname.equalsIgnoreCase("org.mozilla.javascript.NativeJavaObject") ||  //$NON-NLS-1$
-							classname.equalsIgnoreCase("org.mozilla.javascript.Undefined")) //$NON-NLS-1$
+						if (classname.equalsIgnoreCase("org.mozilla.javascript.NativeJavaObject") ||  
+							classname.equalsIgnoreCase("org.mozilla.javascript.Undefined")) 
 						{
 							// Is it a java Value class ?
 							try
@@ -743,18 +743,18 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface
 						break;
 					case ValueMetaInterface.TYPE_DATE:
 						double dbl=0;
-						if (classname.equalsIgnoreCase("org.mozilla.javascript.Undefined")) //$NON-NLS-1$
+						if (classname.equalsIgnoreCase("org.mozilla.javascript.Undefined")) 
 						{
 							res.setNull();
 						}
 						else
 						{
-							if (classname.equalsIgnoreCase("org.mozilla.javascript.NativeDate")) //$NON-NLS-1$
+							if (classname.equalsIgnoreCase("org.mozilla.javascript.NativeDate")) 
 							{
 								dbl = (Double) result;//TODO AKRETION not sure!
 							}
 							else
-							if (classname.equalsIgnoreCase("org.mozilla.javascript.NativeJavaObject")) //$NON-NLS-1$
+							if (classname.equalsIgnoreCase("org.mozilla.javascript.NativeJavaObject")) 
 							{
 								// Is it a java Date() class ?
 								try
@@ -792,16 +792,16 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface
 			}
 			catch(Exception e)
 			{
-				message.append(BaseMessages.getString(PKG, "ScriptMeta.CheckResult.ErrorRetrievingValue",fieldname[i])+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+				message.append(BaseMessages.getString(PKG, "ScriptMeta.CheckResult.ErrorRetrievingValue",fieldname[i])+" : "+e.toString());  
 				error_found=true;
 			}
 			res.setLength(length[i], precision[i]);
 				
-			message.append(BaseMessages.getString(PKG, "ScriptMeta.CheckResult.RetrievedValue",fieldname[i],res.toStringMeta())); //$NON-NLS-1$ //$NON-NLS-2$
+			message.append(BaseMessages.getString(PKG, "ScriptMeta.CheckResult.RetrievedValue",fieldname[i],res.toStringMeta()));  
 		}
 		else
 		{
-			message.append(BaseMessages.getString(PKG, "ScriptMeta.CheckResult.ValueIsEmpty",String.valueOf(i))); //$NON-NLS-1$ //$NON-NLS-2$
+			message.append(BaseMessages.getString(PKG, "ScriptMeta.CheckResult.ValueIsEmpty",String.valueOf(i)));  
 			error_found=true;
 		}
 		
@@ -854,7 +854,7 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface
 			Class<?> toRun = kl.loadClass(strClassName);
 			return toRun;
 		}catch(Exception e){
-			throw new KettleException(BaseMessages.getString(PKG, "ScriptMeta.Exception.UnableToLoadAdditionalClass"), e); //$NON-NLS-1$
+			throw new KettleException(BaseMessages.getString(PKG, "ScriptMeta.Exception.UnableToLoadAdditionalClass"), e); 
 		}
 	}
 	

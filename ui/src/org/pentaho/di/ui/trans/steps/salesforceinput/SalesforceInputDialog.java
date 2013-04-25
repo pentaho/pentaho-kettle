@@ -273,7 +273,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
         // START CONNECTION GROUP
 
         wConnectionGroup = new Group(wFileComp, SWT.SHADOW_ETCHED_IN);
-        wConnectionGroup.setText(BaseMessages.getString(PKG, "SalesforceInputDialog.ConnectionGroup.Label")); //$NON-NLS-1$;
+        wConnectionGroup.setText(BaseMessages.getString(PKG, "SalesforceInputDialog.ConnectionGroup.Label")); ;
         FormLayout fconnLayout = new FormLayout();
         fconnLayout .marginWidth = 3;
         fconnLayout .marginHeight = 3;
@@ -348,7 +348,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
         // START SETTINGS GROUP
 
         wSettingsGroup = new Group(wFileComp, SWT.SHADOW_ETCHED_IN);
-        wSettingsGroup.setText(BaseMessages.getString(PKG, "SalesforceInputDialog.HttpAuthGroup.Label")); //$NON-NLS-1$;
+        wSettingsGroup.setText(BaseMessages.getString(PKG, "SalesforceInputDialog.HttpAuthGroup.Label")); ;
         FormLayout fsettingsLayout = new FormLayout();
         fsettingsLayout .marginWidth = 3;
         fsettingsLayout .marginHeight = 3;
@@ -585,7 +585,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 
 		// RecordsFilter
 		wlRecordsFilter=new Label(wAdvancedGroup, SWT.RIGHT);
-		wlRecordsFilter.setText(BaseMessages.getString(PKG, "SalesforceInputDialog.RecordsFilter.Label")); //$NON-NLS-1$
+		wlRecordsFilter.setText(BaseMessages.getString(PKG, "SalesforceInputDialog.RecordsFilter.Label")); 
  		props.setLook(wlRecordsFilter);
 		fdlRecordsFilter=new FormData();
 		fdlRecordsFilter.left = new FormAttachment(0, 0);

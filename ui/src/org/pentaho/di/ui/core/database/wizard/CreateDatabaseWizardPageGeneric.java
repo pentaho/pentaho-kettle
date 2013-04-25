@@ -71,8 +71,8 @@ public class CreateDatabaseWizardPageGeneric extends WizardPage
 		this.props=props;
 		this.info = info;
 		
-		setTitle(BaseMessages.getString(PKG, "CreateDatabaseWizardPageGeneric.DialogTitle")); //$NON-NLS-1$
-		setDescription(BaseMessages.getString(PKG, "CreateDatabaseWizardPageGeneric.DialogMessage")); //$NON-NLS-1$
+		setTitle(BaseMessages.getString(PKG, "CreateDatabaseWizardPageGeneric.DialogTitle")); 
+		setDescription(BaseMessages.getString(PKG, "CreateDatabaseWizardPageGeneric.DialogMessage")); 
 		
 		setPageComplete(false);
 	}
@@ -93,7 +93,7 @@ public class CreateDatabaseWizardPageGeneric extends WizardPage
 
 		// URL
 		wlURL = new Label(composite, SWT.RIGHT);
-		wlURL.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPageGeneric.URL.Label")); //$NON-NLS-1$
+		wlURL.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPageGeneric.URL.Label")); 
  		props.setLook(wlURL);
 		fdlURL = new FormData();
 		fdlURL.top    = new FormAttachment(0, 0);
@@ -117,7 +117,7 @@ public class CreateDatabaseWizardPageGeneric extends WizardPage
 		
 		// DRIVER CLASS
 		wlDriverClass = new Label(composite, SWT.RIGHT);
-		wlDriverClass.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPageGeneric.DriverClass.Label")); //$NON-NLS-1$
+		wlDriverClass.setText(BaseMessages.getString(PKG, "CreateDatabaseWizardPageGeneric.DriverClass.Label")); 
  		props.setLook(wlDriverClass);
 		fdlDriverClass = new FormData();
 		fdlDriverClass.top    = new FormAttachment(wURL, margin);
@@ -151,14 +151,14 @@ public class CreateDatabaseWizardPageGeneric extends WizardPage
 		
 		if (url==null || driverClass==null)
 		{
-			setErrorMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPageGeneric.ErrorMessage.URLAndDriverClassRequired")); //$NON-NLS-1$
+			setErrorMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPageGeneric.ErrorMessage.URLAndDriverClassRequired")); 
 			return false;
 		}
 		else
 		{
 			getDatabaseInfo();
 			setErrorMessage(null);
-			setMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPageGeneric.Message.Next")); //$NON-NLS-1$
+			setMessage(BaseMessages.getString(PKG, "CreateDatabaseWizardPageGeneric.Message.Next")); 
 			return true;
 		}
 
@@ -186,7 +186,7 @@ public class CreateDatabaseWizardPageGeneric extends WizardPage
 	public IWizardPage getNextPage()
 	{
 		IWizard wiz = getWizard();
-		return wiz.getPage("2"); //$NON-NLS-1$
+		return wiz.getPage("2"); 
 	}
 	
 }

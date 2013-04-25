@@ -98,7 +98,6 @@ public class ExtensionPointPluginType extends BasePluginType implements PluginTy
 	@Override
 	public void handlePluginAnnotation(Class<?> clazz, Annotation annotation, List<String> libraries,
 	    boolean nativePluginType, URL pluginFolder) throws KettlePluginException {
-	  // TODO Auto-generated method stub
 	  super.handlePluginAnnotation(clazz, annotation, libraries, nativePluginType, pluginFolder);
 	}
 	

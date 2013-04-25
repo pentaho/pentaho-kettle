@@ -399,7 +399,7 @@ public class Rest extends BaseStep implements StepInterface
 	    	putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
 			
             if (checkFeedback(getLinesRead()))   {
-            	if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "Rest.LineNumber")+getLinesRead()); //$NON-NLS-1$
+            	if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "Rest.LineNumber")+getLinesRead()); 
             }
 		} catch(KettleException e) {
 			 boolean sendToErrorRow=false;
@@ -409,7 +409,7 @@ public class Rest extends BaseStep implements StepInterface
 		         sendToErrorRow = true;
 		         errorMessage = e.toString();
 			} else {
-				logError(BaseMessages.getString(PKG, "Rest.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "Rest.ErrorInStepRunning")+e.getMessage()); 
 				setErrors(1);
                 logError(Const.getStackTracker(e));
 				stopAll();

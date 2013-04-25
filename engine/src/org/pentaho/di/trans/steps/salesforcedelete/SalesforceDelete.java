@@ -248,7 +248,7 @@ public class SalesforceDelete extends BaseStep implements StepInterface
 			}
 			catch(KettleException ke)
 			{
-				logError(BaseMessages.getString(PKG, "SalesforceDelete.Log.ErrorOccurredDuringStepInitialize")+ke.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "SalesforceDelete.Log.ErrorOccurredDuringStepInitialize")+ke.getMessage()); 
 			}
 			return true;
 		}

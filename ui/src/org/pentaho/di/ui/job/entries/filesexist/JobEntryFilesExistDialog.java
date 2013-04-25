@@ -118,7 +118,7 @@ public class JobEntryFilesExistDialog extends JobEntryDialog implements JobEntry
 		super(parent, jobEntryInt, rep, jobMeta);
 		jobEntry = (JobEntryFilesExist) jobEntryInt;
 		if (this.jobEntry.getName() == null)
-			this.jobEntry.setName(BaseMessages.getString(PKG, "JobFilesExist.Name.Default")); //$NON-NLS-1$
+			this.jobEntry.setName(BaseMessages.getString(PKG, "JobFilesExist.Name.Default")); 
 		
     }
 

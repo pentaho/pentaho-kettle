@@ -198,31 +198,31 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
 
     retval.append("    ").append(XMLHandler.addTagValue("connection", databaseMeta == null ? "" : databaseMeta.getName()));
     retval.append("    ").append(XMLHandler.addTagValue("table", tablename));
-    retval.append("    ").append(XMLHandler.addTagValue("fifo_file_name", fifoFileName)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("sql_path", sqlPath)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("encoding", encoding)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("delimiter", delimiter)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("continue_on_error", continueOnError)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("error_file_name", errorFileName)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("use_standard_conversion", useStandardConversion)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("use_authentication", useAuthentication)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("use_dynamic_vnode", useDynamicVNode)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("use_SSV_delimiter", useSSV)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("escape_special_characters", escapingSpecialCharacters)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("use_vwload", usingVwload)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("truncate_table", truncatingTable)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("max_errors", maxNrErrors)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("buffer_size", bufferSize)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("    ").append(XMLHandler.addTagValue("fifo_file_name", fifoFileName));  
+    retval.append("    ").append(XMLHandler.addTagValue("sql_path", sqlPath));  
+    retval.append("    ").append(XMLHandler.addTagValue("encoding", encoding));  
+    retval.append("    ").append(XMLHandler.addTagValue("delimiter", delimiter));  
+    retval.append("    ").append(XMLHandler.addTagValue("continue_on_error", continueOnError));  
+    retval.append("    ").append(XMLHandler.addTagValue("error_file_name", errorFileName));  
+    retval.append("    ").append(XMLHandler.addTagValue("use_standard_conversion", useStandardConversion));  
+    retval.append("    ").append(XMLHandler.addTagValue("use_authentication", useAuthentication));  
+    retval.append("    ").append(XMLHandler.addTagValue("use_dynamic_vnode", useDynamicVNode));  
+    retval.append("    ").append(XMLHandler.addTagValue("use_SSV_delimiter", useSSV));  
+    retval.append("    ").append(XMLHandler.addTagValue("escape_special_characters", escapingSpecialCharacters));  
+    retval.append("    ").append(XMLHandler.addTagValue("use_vwload", usingVwload));  
+    retval.append("    ").append(XMLHandler.addTagValue("truncate_table", truncatingTable));  
+    retval.append("    ").append(XMLHandler.addTagValue("max_errors", maxNrErrors));  
+    retval.append("    ").append(XMLHandler.addTagValue("buffer_size", bufferSize));  
 
-    retval.append("    <fields>").append(Const.CR); //$NON-NLS-1$
+    retval.append("    <fields>").append(Const.CR); 
 
     for (int i = 0; i < fieldDatabase.length; i++) {
-      retval.append("        <field>").append(Const.CR); //$NON-NLS-1$
-      retval.append("          ").append(XMLHandler.addTagValue("column_name", fieldDatabase[i])); //$NON-NLS-1$ //$NON-NLS-2$
-      retval.append("          ").append(XMLHandler.addTagValue("stream_name", fieldStream[i])); //$NON-NLS-1$ //$NON-NLS-2$
-      retval.append("        </field>").append(Const.CR); //$NON-NLS-1$
+      retval.append("        <field>").append(Const.CR); 
+      retval.append("          ").append(XMLHandler.addTagValue("column_name", fieldDatabase[i]));  
+      retval.append("          ").append(XMLHandler.addTagValue("stream_name", fieldStream[i]));  
+      retval.append("        </field>").append(Const.CR); 
     }
-    retval.append("    </fields>").append(Const.CR); //$NON-NLS-1$
+    retval.append("    </fields>").append(Const.CR); 
 
     return retval.toString();
   }
@@ -233,33 +233,33 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
       String con = XMLHandler.getTagValue(stepnode, "connection");
       databaseMeta = DatabaseMeta.findDatabase(databases, con);
       tablename = XMLHandler.getTagValue(stepnode, "table");
-      fifoFileName = XMLHandler.getTagValue(stepnode, "fifo_file_name"); //$NON-NLS-1$
-      sqlPath = XMLHandler.getTagValue(stepnode, "sql_path"); //$NON-NLS-1$
-      encoding = XMLHandler.getTagValue(stepnode, "encoding"); //$NON-NLS-1$
-      delimiter = XMLHandler.getTagValue(stepnode, "delimiter"); //$NON-NLS-1$
-      continueOnError = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "continue_on_error")); //$NON-NLS-1$
-      errorFileName = XMLHandler.getTagValue(stepnode, "error_file_name"); //$NON-NLS-1$
-      useStandardConversion = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_standard_conversion")); //$NON-NLS-1$
-      useAuthentication = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_authentication")); //$NON-NLS-1$
-      useDynamicVNode = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_dynamic_vnode")); //$NON-NLS-1$
-      useSSV = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_SSV_delimiter")); //$NON-NLS-1$
+      fifoFileName = XMLHandler.getTagValue(stepnode, "fifo_file_name"); 
+      sqlPath = XMLHandler.getTagValue(stepnode, "sql_path"); 
+      encoding = XMLHandler.getTagValue(stepnode, "encoding"); 
+      delimiter = XMLHandler.getTagValue(stepnode, "delimiter"); 
+      continueOnError = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "continue_on_error")); 
+      errorFileName = XMLHandler.getTagValue(stepnode, "error_file_name"); 
+      useStandardConversion = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_standard_conversion")); 
+      useAuthentication = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_authentication")); 
+      useDynamicVNode = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_dynamic_vnode")); 
+      useSSV = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_SSV_delimiter")); 
       String escape = XMLHandler.getTagValue(stepnode, "escape_special_characters");
-      escapingSpecialCharacters = Const.isEmpty(escape) ? true : "Y".equalsIgnoreCase(escape); //$NON-NLS-1$
-      usingVwload = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_vwload")); //$NON-NLS-1$
-      maxNrErrors = XMLHandler.getTagValue(stepnode, "max_errors"); //$NON-NLS-1$
-      truncatingTable = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "truncate_table")); //$NON-NLS-1$
-      bufferSize = XMLHandler.getTagValue(stepnode, "buffer_size"); //$NON-NLS-1$
+      escapingSpecialCharacters = Const.isEmpty(escape) ? true : "Y".equalsIgnoreCase(escape); 
+      usingVwload = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_vwload")); 
+      maxNrErrors = XMLHandler.getTagValue(stepnode, "max_errors"); 
+      truncatingTable = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "truncate_table")); 
+      bufferSize = XMLHandler.getTagValue(stepnode, "buffer_size"); 
       
-      Node fields = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
-      int nrRows = XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
+      Node fields = XMLHandler.getSubNode(stepnode, "fields"); 
+      int nrRows = XMLHandler.countNodes(fields, "field"); 
 
       allocate(nrRows);
 
       for (int i = 0; i < nrRows; i++) {
-        Node knode = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
+        Node knode = XMLHandler.getSubNodeByNr(fields, "field", i); 
 
-        fieldDatabase[i] = XMLHandler.getTagValue(knode, "column_name"); //$NON-NLS-1$
-        fieldStream[i] = XMLHandler.getTagValue(knode, "stream_name"); //$NON-NLS-1$
+        fieldDatabase[i] = XMLHandler.getTagValue(knode, "column_name"); 
+        fieldStream[i] = XMLHandler.getTagValue(knode, "stream_name"); 
       }
     } catch (Exception e) {
       throw new KettleXMLException("Unable to load step info from XML", e);
@@ -268,33 +268,33 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
 
   public void readRep(Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases) throws KettleException {
     try {
-      databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases); //$NON-NLS-1$
+      databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases); 
       tablename = rep.getStepAttributeString(id_step, "table");
-      fifoFileName = rep.getStepAttributeString(id_step, "fifo_file_name"); //$NON-NLS-1$
-      sqlPath = rep.getStepAttributeString(id_step, "sql_path"); //$NON-NLS-1$
-      encoding = rep.getStepAttributeString(id_step, "encoding"); //$NON-NLS-1$
-      delimiter = rep.getStepAttributeString(id_step, "delimiter"); //$NON-NLS-1$
-      continueOnError = rep.getStepAttributeBoolean(id_step, "continue_on_error"); //$NON-NLS-1$
-      errorFileName = rep.getStepAttributeString(id_step, "error_file_name"); //$NON-NLS-1$
-      useStandardConversion = rep.getStepAttributeBoolean(id_step, "use_standard_conversion"); //$NON-NLS-1$
-      useAuthentication = rep.getStepAttributeBoolean(id_step, "use_authentication"); //$NON-NLS-1$
-      useDynamicVNode = rep.getStepAttributeBoolean(id_step, "use_dynamic_vnode"); //$NON-NLS-1$
-      useSSV = rep.getStepAttributeBoolean(id_step, "use_SSV_delimiter"); //$NON-NLS-1$
-      escapingSpecialCharacters = rep.getStepAttributeBoolean(id_step, 0, "escape_special_characters", true); //$NON-NLS-1$
-      usingVwload = rep.getStepAttributeBoolean(id_step, "use_vwload"); //$NON-NLS-1$
-      maxNrErrors = rep.getStepAttributeString(id_step, "max_errors"); //$NON-NLS-1$
-      truncatingTable = rep.getStepAttributeBoolean(id_step, "truncate_table"); //$NON-NLS-1$
-      bufferSize = rep.getStepAttributeString(id_step, "buffer_size"); //$NON-NLS-1$
+      fifoFileName = rep.getStepAttributeString(id_step, "fifo_file_name"); 
+      sqlPath = rep.getStepAttributeString(id_step, "sql_path"); 
+      encoding = rep.getStepAttributeString(id_step, "encoding"); 
+      delimiter = rep.getStepAttributeString(id_step, "delimiter"); 
+      continueOnError = rep.getStepAttributeBoolean(id_step, "continue_on_error"); 
+      errorFileName = rep.getStepAttributeString(id_step, "error_file_name"); 
+      useStandardConversion = rep.getStepAttributeBoolean(id_step, "use_standard_conversion"); 
+      useAuthentication = rep.getStepAttributeBoolean(id_step, "use_authentication"); 
+      useDynamicVNode = rep.getStepAttributeBoolean(id_step, "use_dynamic_vnode"); 
+      useSSV = rep.getStepAttributeBoolean(id_step, "use_SSV_delimiter"); 
+      escapingSpecialCharacters = rep.getStepAttributeBoolean(id_step, 0, "escape_special_characters", true); 
+      usingVwload = rep.getStepAttributeBoolean(id_step, "use_vwload"); 
+      maxNrErrors = rep.getStepAttributeString(id_step, "max_errors"); 
+      truncatingTable = rep.getStepAttributeBoolean(id_step, "truncate_table"); 
+      bufferSize = rep.getStepAttributeString(id_step, "buffer_size"); 
       
-      int nrCols = rep.countNrStepAttributes(id_step, "column_name"); //$NON-NLS-1$
-      int nrStreams = rep.countNrStepAttributes(id_step, "stream_name"); //$NON-NLS-1$
+      int nrCols = rep.countNrStepAttributes(id_step, "column_name"); 
+      int nrStreams = rep.countNrStepAttributes(id_step, "stream_name"); 
 
       int nrRows = (nrCols < nrStreams ? nrStreams : nrCols);
       allocate(nrRows);
 
       for (int idx = 0; idx < nrRows; idx++) {
-        fieldDatabase[idx] = Const.NVL(rep.getStepAttributeString(id_step, idx, "column_name"), ""); //$NON-NLS-1$ //$NON-NLS-2$
-        fieldStream[idx] = Const.NVL(rep.getStepAttributeString(id_step, idx, "stream_name"), ""); //$NON-NLS-1$ //$NON-NLS-2$
+        fieldDatabase[idx] = Const.NVL(rep.getStepAttributeString(id_step, idx, "column_name"), "");  
+        fieldStream[idx] = Const.NVL(rep.getStepAttributeString(id_step, idx, "stream_name"), "");  
       }
     } catch (Exception e) {
       throw new KettleException("Unexpected error reading step information from the repository", e);
@@ -305,28 +305,28 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
     try {
       rep.saveDatabaseMetaStepAttribute(id_transformation, id_step, "id_connection", databaseMeta);
       rep.saveStepAttribute(id_transformation, id_step, "table", tablename);
-      rep.saveStepAttribute(id_transformation, id_step, "fifo_file_name", fifoFileName); //$NON-NLS-1$
-      rep.saveStepAttribute(id_transformation, id_step, "sql_path", sqlPath); //$NON-NLS-1$
-      rep.saveStepAttribute(id_transformation, id_step, "encoding", encoding); //$NON-NLS-1$
-      rep.saveStepAttribute(id_transformation, id_step, "delimiter", delimiter); //$NON-NLS-1$
-      rep.saveStepAttribute(id_transformation, id_step, "continue_on_error", continueOnError); //$NON-NLS-1$
-      rep.saveStepAttribute(id_transformation, id_step, "error_file_name", errorFileName); //$NON-NLS-1$
-      rep.saveStepAttribute(id_transformation, id_step, "use_standard_conversion", useStandardConversion); //$NON-NLS-1$
-      rep.saveStepAttribute(id_transformation, id_step, "use_authentication", useAuthentication); //$NON-NLS-1$
-      rep.saveStepAttribute(id_transformation, id_step, "use_dynamic_vnode", useDynamicVNode); //$NON-NLS-1$
-      rep.saveStepAttribute(id_transformation, id_step, "use_SSV_delimiter", useSSV); //$NON-NLS-1$
-      rep.saveStepAttribute(id_transformation, id_step, "escape_special_characters", escapingSpecialCharacters); //$NON-NLS-1$
-      rep.saveStepAttribute(id_transformation, id_step, "use_vwload", usingVwload); //$NON-NLS-1$
-      rep.saveStepAttribute(id_transformation, id_step, "max_errors", maxNrErrors); //$NON-NLS-1$
-      rep.saveStepAttribute(id_transformation, id_step, "truncate_table", truncatingTable); //$NON-NLS-1$
-      rep.saveStepAttribute(id_transformation, id_step, "buffer_size", bufferSize); //$NON-NLS-1$
+      rep.saveStepAttribute(id_transformation, id_step, "fifo_file_name", fifoFileName); 
+      rep.saveStepAttribute(id_transformation, id_step, "sql_path", sqlPath); 
+      rep.saveStepAttribute(id_transformation, id_step, "encoding", encoding); 
+      rep.saveStepAttribute(id_transformation, id_step, "delimiter", delimiter); 
+      rep.saveStepAttribute(id_transformation, id_step, "continue_on_error", continueOnError); 
+      rep.saveStepAttribute(id_transformation, id_step, "error_file_name", errorFileName); 
+      rep.saveStepAttribute(id_transformation, id_step, "use_standard_conversion", useStandardConversion); 
+      rep.saveStepAttribute(id_transformation, id_step, "use_authentication", useAuthentication); 
+      rep.saveStepAttribute(id_transformation, id_step, "use_dynamic_vnode", useDynamicVNode); 
+      rep.saveStepAttribute(id_transformation, id_step, "use_SSV_delimiter", useSSV); 
+      rep.saveStepAttribute(id_transformation, id_step, "escape_special_characters", escapingSpecialCharacters); 
+      rep.saveStepAttribute(id_transformation, id_step, "use_vwload", usingVwload); 
+      rep.saveStepAttribute(id_transformation, id_step, "max_errors", maxNrErrors); 
+      rep.saveStepAttribute(id_transformation, id_step, "truncate_table", truncatingTable); 
+      rep.saveStepAttribute(id_transformation, id_step, "buffer_size", bufferSize); 
       
       int nrRows = (fieldDatabase.length < fieldStream.length ? fieldStream.length : fieldDatabase.length);
       for (int idx = 0; idx < nrRows; idx++) {
         String columnName = (idx < fieldDatabase.length ? fieldDatabase[idx] : "");
         String streamName = (idx < fieldStream.length ? fieldStream[idx] : "");
-        rep.saveStepAttribute(id_transformation, id_step, idx, "column_name", columnName); //$NON-NLS-1$
-        rep.saveStepAttribute(id_transformation, id_step, idx, "stream_name", streamName); //$NON-NLS-1$
+        rep.saveStepAttribute(id_transformation, id_step, idx, "column_name", columnName); 
+        rep.saveStepAttribute(id_transformation, id_step, idx, "stream_name", streamName); 
       }
 
       // Also, save the step-database relationship!

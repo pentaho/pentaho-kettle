@@ -110,7 +110,7 @@ public class NumberRangeDialog extends BaseStepDialog implements
 					formLayout.marginHeight = Const.FORM_MARGIN;
 			
 					shell.setLayout(formLayout);
-					shell.setText(BaseMessages.getString(PKG, "NumberRange.TypeLongDesc")); //$NON-NLS-1$
+					shell.setText(BaseMessages.getString(PKG, "NumberRange.TypeLongDesc")); 
 			
 						// Create controls
 						wStepname = createLine(lsMod, BaseMessages.getString(PKG, "NumberRange.StepName"), null);
@@ -139,9 +139,9 @@ public class NumberRangeDialog extends BaseStepDialog implements
 			
 						// Some buttons
 						wOK = new Button(shell, SWT.PUSH);
-					wOK.setText("OK"); //$NON-NLS-1$
+					wOK.setText("OK"); 
 					wCancel = new Button(shell, SWT.PUSH);
-					wCancel.setText("Cancel"); //$NON-NLS-1$
+					wCancel.setText("Cancel"); 
 			
 						BaseStepDialog.positionBottomButtons(shell,
 								new Button[] { wOK, wCancel }, Const.MARGIN, rulesControl);
@@ -206,7 +206,7 @@ public class NumberRangeDialog extends BaseStepDialog implements
 	 	private void createRulesTable(ModifyListener lsMod) 
 		{
 					Label rulesLable = new Label(shell, SWT.NONE);
-					rulesLable.setText(BaseMessages.getString(PKG, "NumberRange.Ranges")); //$NON-NLS-1$
+					rulesLable.setText(BaseMessages.getString(PKG, "NumberRange.Ranges")); 
 					props.setLook(rulesLable);
 					FormData lableFormData = new FormData();
 					lableFormData.left = new FormAttachment(0, 0);
@@ -241,7 +241,7 @@ public class NumberRangeDialog extends BaseStepDialog implements
 	 {
 		 		// Value line
 			 		Label lable = new Label(shell, SWT.RIGHT);
-		 		lable.setText(lableText); //$NON-NLS-1$
+		 		lable.setText(lableText); 
 		 		props.setLook(lable);
 		 		FormData lableFormData = new FormData();
 		 		lableFormData.left = new FormAttachment(0, 0);
@@ -275,7 +275,7 @@ public class NumberRangeDialog extends BaseStepDialog implements
 	 {
 		 		// Value line
 			 	Label lable = new Label(shell, SWT.RIGHT);
-		 		lable.setText(lableText); //$NON-NLS-1$
+		 		lable.setText(lableText); 
 		 		props.setLook(lable);
 		 		FormData lableFormData = new FormData();
 		 		lableFormData.left = new FormAttachment(0, 0);

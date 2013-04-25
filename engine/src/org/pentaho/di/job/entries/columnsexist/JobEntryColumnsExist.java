@@ -98,15 +98,15 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
 		retval.append("      ").append(XMLHandler.addTagValue("schemaname",  schemaname));
 		retval.append("      ").append(XMLHandler.addTagValue("connection", connection==null?null:connection.getName()));
 		
-		 retval.append("      <fields>").append(Const.CR); //$NON-NLS-1$
+		 retval.append("      <fields>").append(Const.CR); 
 		    if (arguments != null) {
 		      for (int i = 0; i < arguments.length; i++) {
-		        retval.append("        <field>").append(Const.CR); //$NON-NLS-1$
+		        retval.append("        <field>").append(Const.CR); 
 		        retval.append("          ").append(XMLHandler.addTagValue("name", arguments[i]));
-		        retval.append("        </field>").append(Const.CR); //$NON-NLS-1$
+		        retval.append("        </field>").append(Const.CR); 
 		      }
 		    }
-		    retval.append("      </fields>").append(Const.CR); //$NON-NLS-1$
+		    retval.append("      </fields>").append(Const.CR); 
 		
 		return retval.toString();
 	}
@@ -123,16 +123,16 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
 			connection    = DatabaseMeta.findDatabase(databases, dbname);
 			
 			
-		    Node fields = XMLHandler.getSubNode(entrynode, "fields"); //$NON-NLS-1$
+		    Node fields = XMLHandler.getSubNode(entrynode, "fields"); 
 
 	        // How many field arguments?
-	        int nrFields = XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
+	        int nrFields = XMLHandler.countNodes(fields, "field"); 
 	        arguments = new String[nrFields];
 
 	        // Read them all...
 	        for (int i = 0; i < nrFields; i++) {
-	        	Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
-	        	arguments[i] = XMLHandler.getTagValue(fnode, "name"); //$NON-NLS-1$
+	        	Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); 
+	        	arguments[i] = XMLHandler.getTagValue(fnode, "name"); 
 	        }
 			
 		}
@@ -152,7 +152,7 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
 			connection = rep.loadDatabaseMetaFromJobEntryAttribute(id_jobentry, "connection", "id_database", databases);
 
 			 // How many arguments?
-	        int argnr = rep.countNrJobEntryAttributes(id_jobentry, "name"); //$NON-NLS-1$
+	        int argnr = rep.countNrJobEntryAttributes(id_jobentry, "name"); 
 	        arguments = new String[argnr];
 
 	        // Read them all...
@@ -329,8 +329,8 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
       @Override
       public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore)
       {
-        andValidator().validate(this, "tablename", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
-        andValidator().validate(this, "columnname", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+        andValidator().validate(this, "tablename", remarks, putValidators(notBlankValidator())); 
+        andValidator().validate(this, "columnname", remarks, putValidators(notBlankValidator())); 
       }
 
 }

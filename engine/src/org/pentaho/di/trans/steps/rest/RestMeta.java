@@ -378,18 +378,18 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface
         allocate(nrheaders, nrparameters);
         for (i = 0; i < nrheaders; i++)
         {
-        	this.headerField[i] = "header" + i;; //$NON-NLS-1$
-        	this.headerName[i] = "header"; //$NON-NLS-1$
+        	this.headerField[i] = "header" + i;; 
+        	this.headerName[i] = "header"; 
         }
         for (i = 0; i < nrparameters; i++)
         {
-        	this.parameterField[i] = "param" + i; //$NON-NLS-1$
-        	this.parameterName[i] = "param"; //$NON-NLS-1$
+        	this.parameterField[i] = "param" + i; 
+        	this.parameterName[i] = "param"; 
         }
 
-        this.fieldName = "result"; //$NON-NLS-1$
-        this.resultCodeFieldName = ""; //$NON-NLS-1$
-        this.responseTimeFieldName = ""; //$NON-NLS-1$
+        this.fieldName = "result"; 
+        this.resultCodeFieldName = ""; 
+        this.responseTimeFieldName = ""; 
         this.method = HTTP_METHOD_GET;
         this.dynamicMethod=false;
         this.methodFieldName=null;
@@ -428,7 +428,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface
         StringBuffer retval = new StringBuffer();
         retval.append("    " + XMLHandler.addTagValue("applicationType", applicationType)); 
         retval.append("    " + XMLHandler.addTagValue("method", method)); 
-        retval.append("    " + XMLHandler.addTagValue("url", url)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    " + XMLHandler.addTagValue("url", url));  
         retval.append("    " + XMLHandler.addTagValue("urlInField",  urlInField));
         retval.append("    " + XMLHandler.addTagValue("dynamicMethod",  dynamicMethod));
         retval.append("    " + XMLHandler.addTagValue("methodFieldName",  methodFieldName));
@@ -446,31 +446,31 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    " + XMLHandler.addTagValue("trustStoreFile", trustStoreFile));
         retval.append("    " + XMLHandler.addTagValue("trustStorePassword", trustStorePassword));
         
-        retval.append("    <headers>" + Const.CR); //$NON-NLS-1$
+        retval.append("    <headers>" + Const.CR); 
         for (int i = 0; i < headerName.length; i++)
         {
-            retval.append("      <header>" + Const.CR); //$NON-NLS-1$
-            retval.append("        " + XMLHandler.addTagValue("field", headerField[i])); //$NON-NLS-1$ //$NON-NLS-2$
-            retval.append("        " + XMLHandler.addTagValue("name", headerName[i])); //$NON-NLS-1$ //$NON-NLS-2$
-            retval.append("        </header>" + Const.CR); //$NON-NLS-1$
+            retval.append("      <header>" + Const.CR); 
+            retval.append("        " + XMLHandler.addTagValue("field", headerField[i]));  
+            retval.append("        " + XMLHandler.addTagValue("name", headerName[i]));  
+            retval.append("        </header>" + Const.CR); 
         }
-        retval.append("      </headers>" + Const.CR); //$NON-NLS-1$
+        retval.append("      </headers>" + Const.CR); 
 
-        retval.append("    <parameters>" + Const.CR); //$NON-NLS-1$
+        retval.append("    <parameters>" + Const.CR); 
         for (int i = 0; i < parameterName.length; i++)
         {
-            retval.append("      <parameter>" + Const.CR); //$NON-NLS-1$
-            retval.append("        " + XMLHandler.addTagValue("field", parameterField[i])); //$NON-NLS-1$ //$NON-NLS-2$
-            retval.append("        " + XMLHandler.addTagValue("name", parameterName[i])); //$NON-NLS-1$ //$NON-NLS-2$
-            retval.append("        </parameter>" + Const.CR); //$NON-NLS-1$
+            retval.append("      <parameter>" + Const.CR); 
+            retval.append("        " + XMLHandler.addTagValue("field", parameterField[i]));  
+            retval.append("        " + XMLHandler.addTagValue("name", parameterName[i]));  
+            retval.append("        </parameter>" + Const.CR); 
         }
-        retval.append("      </parameters>" + Const.CR); //$NON-NLS-1$
+        retval.append("      </parameters>" + Const.CR); 
         
-        retval.append("    <result>" + Const.CR); //$NON-NLS-1$
-        retval.append("      " + XMLHandler.addTagValue("name", fieldName)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("      " + XMLHandler.addTagValue("code", resultCodeFieldName)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("      " + XMLHandler.addTagValue("response_time", responseTimeFieldName)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("      </result>" + Const.CR); //$NON-NLS-1$
+        retval.append("    <result>" + Const.CR); 
+        retval.append("      " + XMLHandler.addTagValue("name", fieldName));  
+        retval.append("      " + XMLHandler.addTagValue("code", resultCodeFieldName));  
+        retval.append("      " + XMLHandler.addTagValue("response_time", responseTimeFieldName));  
+        retval.append("      </result>" + Const.CR); 
 
         return retval.toString();
     }
@@ -480,10 +480,10 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface
         try
         { 	
         	applicationType = XMLHandler.getTagValue(stepnode, "applicationType");
-        	method = XMLHandler.getTagValue(stepnode, "method"); //$NON-NLS-1$
-            url = XMLHandler.getTagValue(stepnode, "url"); //$NON-NLS-1$
+        	method = XMLHandler.getTagValue(stepnode, "method"); 
+            url = XMLHandler.getTagValue(stepnode, "url"); 
             urlInField="Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "urlInField"));
-            methodFieldName = XMLHandler.getTagValue(stepnode, "methodFieldName"); //$NON-NLS-1$
+            methodFieldName = XMLHandler.getTagValue(stepnode, "methodFieldName"); 
             
             dynamicMethod="Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "dynamicMethod"));
             urlField       = XMLHandler.getTagValue(stepnode, "urlField");
@@ -498,33 +498,33 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface
             trustStoreFile = XMLHandler.getTagValue(stepnode, "trustStoreFile");
             trustStorePassword = XMLHandler.getTagValue(stepnode, "trustStorePassword");
             
-            Node headernode = XMLHandler.getSubNode(stepnode, "headers"); //$NON-NLS-1$
-            int nrheaders = XMLHandler.countNodes(headernode, "header"); //$NON-NLS-1$
-            Node paramnode = XMLHandler.getSubNode(stepnode, "parameters"); //$NON-NLS-1$
-            int nrparameters = XMLHandler.countNodes(paramnode, "parameter"); //$NON-NLS-1$
+            Node headernode = XMLHandler.getSubNode(stepnode, "headers"); 
+            int nrheaders = XMLHandler.countNodes(headernode, "header"); 
+            Node paramnode = XMLHandler.getSubNode(stepnode, "parameters"); 
+            int nrparameters = XMLHandler.countNodes(paramnode, "parameter"); 
             
             allocate(nrheaders, nrparameters);
             for (int i = 0; i < nrheaders; i++)
             {
-                Node anode = XMLHandler.getSubNodeByNr(headernode, "header", i); //$NON-NLS-1$
-                headerField[i] = XMLHandler.getTagValue(anode, "field"); //$NON-NLS-1$     
-                headerName[i] = XMLHandler.getTagValue(anode, "name"); //$NON-NLS-1$         
+                Node anode = XMLHandler.getSubNodeByNr(headernode, "header", i); 
+                headerField[i] = XMLHandler.getTagValue(anode, "field");      
+                headerName[i] = XMLHandler.getTagValue(anode, "name");          
             }
             for (int i = 0; i < nrparameters; i++)
             {
-                Node anode = XMLHandler.getSubNodeByNr(paramnode, "parameter", i); //$NON-NLS-1$
-                parameterField[i] = XMLHandler.getTagValue(anode, "field"); //$NON-NLS-1$
-                parameterName[i] = XMLHandler.getTagValue(anode, "name"); //$NON-NLS-1$              
+                Node anode = XMLHandler.getSubNodeByNr(paramnode, "parameter", i); 
+                parameterField[i] = XMLHandler.getTagValue(anode, "field"); 
+                parameterName[i] = XMLHandler.getTagValue(anode, "name");               
             }
 
             
-            fieldName = XMLHandler.getTagValue(stepnode, "result", "name"); // Optional, can be null //$NON-NLS-1$
-            resultCodeFieldName = XMLHandler.getTagValue(stepnode, "result", "code"); // Optional, can be null //$NON-NLS-1$
-            responseTimeFieldName = XMLHandler.getTagValue(stepnode, "result", "response_time"); // Optional, can be null //$NON-NLS-1$
+            fieldName = XMLHandler.getTagValue(stepnode, "result", "name"); // Optional, can be null 
+            resultCodeFieldName = XMLHandler.getTagValue(stepnode, "result", "code"); // Optional, can be null 
+            responseTimeFieldName = XMLHandler.getTagValue(stepnode, "result", "response_time"); // Optional, can be null 
         }
         catch (Exception e)
         {
-            throw new KettleXMLException(BaseMessages.getString(PKG, "RestMeta.Exception.UnableToReadStepInfo"), e); //$NON-NLS-1$
+            throw new KettleXMLException(BaseMessages.getString(PKG, "RestMeta.Exception.UnableToReadStepInfo"), e); 
         }
     }
 
@@ -533,8 +533,8 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface
         try
         {
         	applicationType = rep.getStepAttributeString(id_step, "applicationType");
-            method = rep.getStepAttributeString(id_step, "method"); //$NON-NLS-1$
-            url = rep.getStepAttributeString(id_step, "url"); //$NON-NLS-1$
+            method = rep.getStepAttributeString(id_step, "method"); 
+            url = rep.getStepAttributeString(id_step, "url"); 
             urlInField =      rep.getStepAttributeBoolean (id_step, "urlInField");
             
             methodFieldName = rep.getStepAttributeString(id_step, "methodFieldName");
@@ -551,28 +551,28 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface
             trustStorePassword = rep.getStepAttributeString(id_step, "trustStorePassword");
             
             preemptive =      rep.getStepAttributeBoolean (id_step, "preemptive");
-            int nrheaders = rep.countNrStepAttributes(id_step, "header_field"); //$NON-NLS-1$
-            int nrparams = rep.countNrStepAttributes(id_step, "parameter_field"); //$NON-NLS-1$
+            int nrheaders = rep.countNrStepAttributes(id_step, "header_field"); 
+            int nrparams = rep.countNrStepAttributes(id_step, "parameter_field"); 
             allocate(nrheaders, nrparams);
 
             for (int i = 0; i < nrheaders; i++)
             {
-            	headerField[i] = rep.getStepAttributeString(id_step, i, "header_field"); //$NON-NLS-1$      
-            	headerName[i] = rep.getStepAttributeString(id_step, i, "header_name"); //$NON-NLS-1$    
+            	headerField[i] = rep.getStepAttributeString(id_step, i, "header_field");       
+            	headerName[i] = rep.getStepAttributeString(id_step, i, "header_name");     
             }
             for (int i = 0; i < nrparams; i++)
             {
-            	parameterField[i] = rep.getStepAttributeString(id_step, i, "parameter_field"); //$NON-NLS-1$
-            	parameterName[i] = rep.getStepAttributeString(id_step, i, "parameter_name"); //$NON-NLS-1$          
+            	parameterField[i] = rep.getStepAttributeString(id_step, i, "parameter_field"); 
+            	parameterName[i] = rep.getStepAttributeString(id_step, i, "parameter_name");           
             }
             
-            fieldName = rep.getStepAttributeString(id_step, "result_name"); //$NON-NLS-1$
-            resultCodeFieldName = rep.getStepAttributeString(id_step, "result_code"); //$NON-NLS-1$            
-            responseTimeFieldName = rep.getStepAttributeString(id_step, "response_time"); //$NON-NLS-1$            
+            fieldName = rep.getStepAttributeString(id_step, "result_name"); 
+            resultCodeFieldName = rep.getStepAttributeString(id_step, "result_code");             
+            responseTimeFieldName = rep.getStepAttributeString(id_step, "response_time");             
         }
         catch (Exception e)
         {
-            throw new KettleException(BaseMessages.getString(PKG, "RestMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "RestMeta.Exception.UnexpectedErrorReadingStepInfo"), e); 
         }
     }
 
@@ -582,7 +582,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface
         {
         	rep.saveStepAttribute(id_transformation, id_step, "applicationType", applicationType); 
         	rep.saveStepAttribute(id_transformation, id_step, "method", method); 
-            rep.saveStepAttribute(id_transformation, id_step, "url", url); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "url", url); 
         	rep.saveStepAttribute(id_transformation, id_step, "methodFieldName", methodFieldName); 
             
             rep.saveStepAttribute(id_transformation, id_step, "dynamicMethod",   dynamicMethod);
@@ -601,21 +601,21 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "preemptive",   preemptive);
             for (int i = 0; i < headerName.length; i++)
             {
-                rep.saveStepAttribute(id_transformation, id_step, i, "header_field", headerField[i]); //$NON-NLS-1$   
-                rep.saveStepAttribute(id_transformation, id_step, i, "header_name", headerName[i]); //$NON-NLS-1$      
+                rep.saveStepAttribute(id_transformation, id_step, i, "header_field", headerField[i]);    
+                rep.saveStepAttribute(id_transformation, id_step, i, "header_name", headerName[i]);       
             }
             for (int i = 0; i < parameterField.length; i++)
             {
-                rep.saveStepAttribute(id_transformation, id_step, i, "parameter_field", parameterField[i]); //$NON-NLS-1$
-                rep.saveStepAttribute(id_transformation, id_step, i, "parameter_name", parameterName[i]); //$NON-NLS-1$         
+                rep.saveStepAttribute(id_transformation, id_step, i, "parameter_field", parameterField[i]); 
+                rep.saveStepAttribute(id_transformation, id_step, i, "parameter_name", parameterName[i]);          
             }
-            rep.saveStepAttribute(id_transformation, id_step, "result_name", fieldName); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "result_code", resultCodeFieldName); //$NON-NLS-1$            
-            rep.saveStepAttribute(id_transformation, id_step, "response_time", responseTimeFieldName); //$NON-NLS-1$            
+            rep.saveStepAttribute(id_transformation, id_step, "result_name", fieldName); 
+            rep.saveStepAttribute(id_transformation, id_step, "result_code", resultCodeFieldName);             
+            rep.saveStepAttribute(id_transformation, id_step, "response_time", responseTimeFieldName);             
         }
         catch (Exception e)
         {
-            throw new KettleException(BaseMessages.getString(PKG, "RestMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "RestMeta.Exception.UnableToSaveStepInfo") + id_step, e); 
         }
     }
 
@@ -625,9 +625,9 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface
 
         // See if we have input streams leading to this step!
         if (input.length > 0) {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "RestMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "RestMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); 
         } else {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "RestMeta.CheckResult.NoInpuReceived"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "RestMeta.CheckResult.NoInpuReceived"), stepMeta); 
         }
         remarks.add(cr);
         

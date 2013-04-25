@@ -187,7 +187,7 @@ public class PGPEncryptStreamMeta extends BaseStepMeta implements StepMetaInterf
 
     public void setDefault()
     {
-        resultfieldname = "result"; //$NON-NLS-1$
+        resultfieldname = "result"; 
         streamfield=null;
         keyname=null;
         gpglocation=null;
@@ -214,8 +214,8 @@ public class PGPEncryptStreamMeta extends BaseStepMeta implements StepMetaInterf
         retval.append("    " + XMLHandler.addTagValue("keyname", keyname));
         retval.append("    " + XMLHandler.addTagValue("keynameInField", keynameInField));
         retval.append("    " + XMLHandler.addTagValue("keynameFieldName", keynameFieldName));
-        retval.append("    " + XMLHandler.addTagValue("streamfield", streamfield)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("    " + XMLHandler.addTagValue("resultfieldname", resultfieldname)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    " + XMLHandler.addTagValue("streamfield", streamfield));  
+        retval.append("    " + XMLHandler.addTagValue("resultfieldname", resultfieldname));  
         return retval.toString();
     }
 
@@ -229,12 +229,12 @@ public class PGPEncryptStreamMeta extends BaseStepMeta implements StepMetaInterf
     		
     	    keynameInField  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "keynameInField"));
     	    keynameFieldName = XMLHandler.getTagValue(stepnode, "keynameFieldName");
-			streamfield = XMLHandler.getTagValue(stepnode, "streamfield"); //$NON-NLS-1$
+			streamfield = XMLHandler.getTagValue(stepnode, "streamfield"); 
             resultfieldname = XMLHandler.getTagValue(stepnode, "resultfieldname"); 
         }
         catch (Exception e)
         {
-            throw new KettleXMLException(BaseMessages.getString(PKG, "PGPEncryptStreamMeta.Exception.UnableToReadStepInfo"), e); //$NON-NLS-1$
+            throw new KettleXMLException(BaseMessages.getString(PKG, "PGPEncryptStreamMeta.Exception.UnableToReadStepInfo"), e); 
         }
     }
 
@@ -247,12 +247,12 @@ public class PGPEncryptStreamMeta extends BaseStepMeta implements StepMetaInterf
     		keyname = rep.getStepAttributeString(id_step, "keyname");
     		keynameInField  = rep.getStepAttributeBoolean(id_step, "keynameInField");   
     		keynameFieldName = rep.getStepAttributeString(id_step, "keynameFieldName");
-    		streamfield = rep.getStepAttributeString(id_step, "streamfield"); //$NON-NLS-1$
-            resultfieldname = rep.getStepAttributeString(id_step, "resultfieldname"); //$NON-NLS-1$ 
+    		streamfield = rep.getStepAttributeString(id_step, "streamfield"); 
+            resultfieldname = rep.getStepAttributeString(id_step, "resultfieldname");  
         }
         catch (Exception e)
         {
-            throw new KettleException(BaseMessages.getString(PKG, "PGPEncryptStreamMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "PGPEncryptStreamMeta.Exception.UnexpectedErrorReadingStepInfo"), e); 
         }
     }
 
@@ -264,31 +264,31 @@ public class PGPEncryptStreamMeta extends BaseStepMeta implements StepMetaInterf
         	rep.saveStepAttribute(id_transformation, id_step, "keyname", keyname);
         	rep.saveStepAttribute(id_transformation, id_step, "keynameInField", keynameInField);
         	rep.saveStepAttribute(id_transformation, id_step, "keynameFieldName", keynameFieldName);
-            rep.saveStepAttribute(id_transformation, id_step, "streamfield", streamfield); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "resultfieldname", resultfieldname); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "streamfield", streamfield); 
+            rep.saveStepAttribute(id_transformation, id_step, "resultfieldname", resultfieldname); 
         }
         catch (Exception e)
         {
-            throw new KettleException(BaseMessages.getString(PKG, "PGPEncryptStreamMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "PGPEncryptStreamMeta.Exception.UnableToSaveStepInfo") + id_step, e); 
         }
     }
 
 	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
 	{
         CheckResult cr;
-        String error_message = ""; //$NON-NLS-1$
+        String error_message = ""; 
 
       
 
         if (Const.isEmpty(gpglocation))
         {
-            error_message = BaseMessages.getString(PKG, "PGPEncryptStreamMeta.CheckResult.GPGLocationMissing"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "PGPEncryptStreamMeta.CheckResult.GPGLocationMissing"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
             remarks.add(cr);
         }
         else
         {
-            error_message = BaseMessages.getString(PKG, "PGPEncryptStreamMeta.CheckResult.GPGLocationOK"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "PGPEncryptStreamMeta.CheckResult.GPGLocationOK"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
         }
         if(isKeynameInField())
@@ -299,49 +299,49 @@ public class PGPEncryptStreamMeta extends BaseStepMeta implements StepMetaInterf
         {
 	        if (Const.isEmpty(keyname))
 	        {
-	            error_message = BaseMessages.getString(PKG, "PGPEncryptStreamMeta.CheckResult.KeyNameMissing"); //$NON-NLS-1$
+	            error_message = BaseMessages.getString(PKG, "PGPEncryptStreamMeta.CheckResult.KeyNameMissing"); 
 	            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
 	            remarks.add(cr);
 	        }
 	        else
 	        {
-	            error_message = BaseMessages.getString(PKG, "PGPEncryptStreamMeta.CheckResult.KeyNameOK"); //$NON-NLS-1$
+	            error_message = BaseMessages.getString(PKG, "PGPEncryptStreamMeta.CheckResult.KeyNameOK"); 
 	            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
 	        }
         } 
         if (Const.isEmpty(resultfieldname))
         {
-            error_message = BaseMessages.getString(PKG, "PGPEncryptStreamMeta.CheckResult.ResultFieldMissing"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "PGPEncryptStreamMeta.CheckResult.ResultFieldMissing"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
             remarks.add(cr);
         }
         else
         {
-            error_message = BaseMessages.getString(PKG, "PGPEncryptStreamMeta.CheckResult.ResultFieldOK"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "PGPEncryptStreamMeta.CheckResult.ResultFieldOK"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
             remarks.add(cr);
         }
         if (Const.isEmpty(streamfield))
         {
-            error_message = BaseMessages.getString(PKG, "PGPEncryptStreamMeta.CheckResult.StreamFieldMissing"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "PGPEncryptStreamMeta.CheckResult.StreamFieldMissing"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
             remarks.add(cr);
         }
         else
         {
-            error_message = BaseMessages.getString(PKG, "PGPEncryptStreamMeta.CheckResult.StreamFieldOK"); //$NON-NLS-1$
+            error_message = BaseMessages.getString(PKG, "PGPEncryptStreamMeta.CheckResult.StreamFieldOK"); 
             cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
             remarks.add(cr);
         }
         // See if we have input streams leading to this step!
         if (input.length > 0)
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "PGPEncryptStreamMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "PGPEncryptStreamMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); 
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "PGPEncryptStreamMeta.CheckResult.NoInpuReceived"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "PGPEncryptStreamMeta.CheckResult.NoInpuReceived"), stepMeta); 
             remarks.add(cr);
         }
 

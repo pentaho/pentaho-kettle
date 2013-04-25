@@ -470,7 +470,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 
 		// FileNameField Line
 		wlFileNameField=new Label(wFileComp, SWT.RIGHT);
-		wlFileNameField.setText(BaseMessages.getString(PKG, "TextFileOutputDialog.FileNameField.Label")); //$NON-NLS-1$
+		wlFileNameField.setText(BaseMessages.getString(PKG, "TextFileOutputDialog.FileNameField.Label")); 
  		props.setLook(wlFileNameField);
 		fdlFileNameField=new FormData();
 		fdlFileNameField.left = new FormAttachment(0, 0);
@@ -950,7 +950,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 
 		for (int i=0;i<TextFileOutputMeta.formatMapperLineTerminator.length;i++) {
 			// add e.g. TextFileOutputDialog.Format.DOS, .UNIX, .CR, .None
-			wFormat.add(BaseMessages.getString(PKG, "TextFileOutputDialog.Format."+TextFileOutputMeta.formatMapperLineTerminator[i])); //$NON-NLS-1$
+			wFormat.add(BaseMessages.getString(PKG, "TextFileOutputDialog.Format."+TextFileOutputMeta.formatMapperLineTerminator[i])); 
 		}
 		wFormat.select(0);
 		wFormat.addModifyListener(lsMod);

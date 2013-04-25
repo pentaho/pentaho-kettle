@@ -73,7 +73,7 @@ import org.pentaho.di.core.exception.KettleTransException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.ChannelLogTable;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.LogChannel;
@@ -117,6 +117,7 @@ import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
 import org.pentaho.di.trans.cluster.TransSplitter;
 import org.pentaho.di.trans.performance.StepPerformanceSnapShot;
+import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 import org.pentaho.di.trans.step.RunThread;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -153,7 +154,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   private static Class<?> PKG = Trans.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   /** The replay date format. */
-  public static final String REPLAY_DATE_FORMAT = "yyyy/MM/dd HH:mm:ss"; //$NON-NLS-1$
+  public static final String REPLAY_DATE_FORMAT = "yyyy/MM/dd HH:mm:ss"; 
 
   /** The log channel interface. */
   protected LogChannelInterface log;
@@ -460,10 +461,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     this.containerObjectId = log.getContainerObjectId();
 
     if (log.isDetailed())
-      log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.TransformationIsPreloaded")); //$NON-NLS-1$
+      log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.TransformationIsPreloaded")); 
     if (log.isDebug())
       log.logDebug(BaseMessages.getString(PKG,
-          "Trans.Log.NumberOfStepsToRun", String.valueOf(transMeta.nrSteps()), String.valueOf(transMeta.nrTransHops()))); //$NON-NLS-1$ //$NON-NLS-2$
+          "Trans.Log.NumberOfStepsToRun", String.valueOf(transMeta.nrSteps()), String.valueOf(transMeta.nrTransHops())));  
 
   }
 
@@ -538,7 +539,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           this.transMeta = rep.loadTransformation(name, repdir, null, false, null); // reads last version
         } else {
           throw new KettleException(BaseMessages.getString(PKG,
-              "Trans.Exception.UnableToLoadTransformation", name, dirname)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+              "Trans.Exception.UnableToLoadTransformation", name, dirname));   //$NON-NLS-3$
         }
       } else {
         transMeta = new TransMeta(filename, false);
@@ -556,7 +557,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       transactionId = calculateTransactionId();
       threadName = transactionId; /// backward compatibility but deprecated!
     } catch (KettleException e) {
-      throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.UnableToOpenTransformation", name), e); //$NON-NLS-1$ //$NON-NLS-2$
+      throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.UnableToOpenTransformation", name), e);  
     }
   }
 
@@ -605,30 +606,30 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     if (transMeta.getName() == null) {
       if (transMeta.getFilename() != null) {
-        log.logBasic(BaseMessages.getString(PKG, "Trans.Log.DispacthingStartedForFilename", transMeta.getFilename())); //$NON-NLS-1$ //$NON-NLS-2$
+        log.logBasic(BaseMessages.getString(PKG, "Trans.Log.DispacthingStartedForFilename", transMeta.getFilename()));  
       }
     } else {
-      log.logBasic(BaseMessages.getString(PKG, "Trans.Log.DispacthingStartedForTransformation", transMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$
+      log.logBasic(BaseMessages.getString(PKG, "Trans.Log.DispacthingStartedForTransformation", transMeta.getName()));  
     }
 
     if (getArguments() != null) {
       if (log.isDetailed())
         log.logDetailed(BaseMessages.getString(PKG,
-            "Trans.Log.NumberOfArgumentsDetected", String.valueOf(getArguments().length))); //$NON-NLS-1$
+            "Trans.Log.NumberOfArgumentsDetected", String.valueOf(getArguments().length))); 
     }
 
     if (isSafeModeEnabled()) {
       if (log.isDetailed())
-        log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.SafeModeIsEnabled", transMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$
+        log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.SafeModeIsEnabled", transMeta.getName()));  
     }
 
     if (getReplayDate() != null) {
       SimpleDateFormat df = new SimpleDateFormat(REPLAY_DATE_FORMAT);
-      log.logBasic(BaseMessages.getString(PKG, "Trans.Log.ThisIsAReplayTransformation") //$NON-NLS-1$
+      log.logBasic(BaseMessages.getString(PKG, "Trans.Log.ThisIsAReplayTransformation") 
           + df.format(getReplayDate()));
     } else {
       if (log.isDetailed())
-        log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.ThisIsNotAReplayTransformation")); //$NON-NLS-1$
+        log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.ThisIsNotAReplayTransformation")); 
     }
 
     // setInternalKettleVariables(this); --> Let's not do this, when running
@@ -649,8 +650,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     List<StepMeta> hopsteps = transMeta.getTransHopSteps(false);
 
     if (log.isDetailed()) {
-      log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.FoundDefferentSteps", String.valueOf(hopsteps.size()))); //$NON-NLS-1$ //$NON-NLS-2$
-      log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.AllocatingRowsets")); //$NON-NLS-1$
+      log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.FoundDefferentSteps", String.valueOf(hopsteps.size())));  
+      log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.AllocatingRowsets")); 
     }
     // First allocate all the rowsets required!
     // Note that a mapping doesn't receive ANY input or output rowsets...
@@ -662,7 +663,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
       if (log.isDetailed())
         log.logDetailed(BaseMessages.getString(PKG,
-            "Trans.Log.AllocateingRowsetsForStep", String.valueOf(i), thisStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$
+            "Trans.Log.AllocateingRowsetsForStep", String.valueOf(i), thisStep.getName()));  
 
       List<StepMeta> nextSteps = transMeta.findNextSteps(thisStep);
       int nrTargets = nextSteps.size();
@@ -692,7 +693,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         int nrCopies;
         if (log.isDetailed())
           log.logDetailed(BaseMessages.getString(PKG,
-              "Trans.Log.copiesInfo", String.valueOf(thisCopies), String.valueOf(nextCopies))); //$NON-NLS-1$ //$NON-NLS-2$
+              "Trans.Log.copiesInfo", String.valueOf(thisCopies), String.valueOf(nextCopies)));  
         int dispatchType;
         if (thisCopies == 1 && nextCopies == 1) {
           dispatchType = TYPE_DISP_1_1;
@@ -761,7 +762,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             }
             rowsets.add(rowSet);
             if (log.isDetailed())
-              log.logDetailed(BaseMessages.getString(PKG, "Trans.TransformationAllocatedNewRowset", rowSet.toString())); //$NON-NLS-1$ //$NON-NLS-2$
+              log.logDetailed(BaseMessages.getString(PKG, "Trans.TransformationAllocatedNewRowset", rowSet.toString()));  
           }
         } else {
           // For each N source steps we have M target steps
@@ -776,17 +777,17 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
               rowsets.add(rowSet);
               if (log.isDetailed())
                 log.logDetailed(BaseMessages
-                    .getString(PKG, "Trans.TransformationAllocatedNewRowset", rowSet.toString())); //$NON-NLS-1$ //$NON-NLS-2$
+                    .getString(PKG, "Trans.TransformationAllocatedNewRowset", rowSet.toString()));  
             }
           }
         }
       }
       log.logDetailed(BaseMessages.getString(PKG,
-          "Trans.Log.AllocatedRowsets", String.valueOf(rowsets.size()), String.valueOf(i), thisStep.getName()) + " "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+          "Trans.Log.AllocatedRowsets", String.valueOf(rowsets.size()), String.valueOf(i), thisStep.getName()) + " ");   //$NON-NLS-3$ //$NON-NLS-4$
     }
 
     if (log.isDetailed())
-      log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.AllocatingStepsAndStepData")); //$NON-NLS-1$
+      log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.AllocatingStepsAndStepData")); 
 
     // Allocate the steps & the data...
     //
@@ -796,13 +797,13 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
       if (log.isDetailed())
         log.logDetailed(BaseMessages.getString(PKG,
-            "Trans.Log.TransformationIsToAllocateStep", stepMeta.getName(), stepid)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            "Trans.Log.TransformationIsToAllocateStep", stepMeta.getName(), stepid));   //$NON-NLS-3$
 
       // How many copies are launched of this step?
       int nrCopies = stepMeta.getCopies();
 
       if (log.isDebug())
-        log.logDebug(BaseMessages.getString(PKG, "Trans.Log.StepHasNumberRowCopies", String.valueOf(nrCopies))); //$NON-NLS-1$
+        log.logDebug(BaseMessages.getString(PKG, "Trans.Log.StepHasNumberRowCopies", String.valueOf(nrCopies))); 
 
       // At least run once...
       for (int c = 0; c < nrCopies; c++) {
@@ -861,7 +862,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
           if (log.isDetailed())
             log.logDetailed(BaseMessages.getString(PKG,
-                "Trans.Log.TransformationHasAllocatedANewStep", stepMeta.getName(), String.valueOf(c))); //$NON-NLS-1$ //$NON-NLS-2$
+                "Trans.Log.TransformationHasAllocatedANewStep", stepMeta.getName(), String.valueOf(c)));  
         }
       }
     }
@@ -965,7 +966,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     }
 
     if (log.isDetailed())
-      log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.InitialisingSteps", String.valueOf(steps.size()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+      log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.InitialisingSteps", String.valueOf(steps.size())));   //$NON-NLS-3$
 
     StepInitThread initThreads[] = new StepInitThread[steps.size()];
     Thread[] threads = new Thread[steps.size()];
@@ -1048,7 +1049,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       // what went wrong.
       //
       if (preview) {
-        String logText = CentralLogStore.getAppender().getBuffer(getLogChannelId(), true).toString();
+        String logText = KettleLogStore.getAppender().getBuffer(getLogChannelId(), true).toString();
         throw new KettleException(
             BaseMessages.getString(PKG, "Trans.Log.FailToInitializeAtLeastOneStep") + Const.CR + logText); //$NON-NLS-1
       } else {
@@ -1131,7 +1132,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
               } catch (Exception e) {
                 step.setErrors(step.getErrors() + 1L);
                 log.logError(
-                    getName() + " : " + BaseMessages.getString(PKG, "Trans.Log.UnexpectedErrorAtTransformationEnd"), e); //$NON-NLS-1$ //$NON-NLS-2$
+                    getName() + " : " + BaseMessages.getString(PKG, "Trans.Log.UnexpectedErrorAtTransformationEnd"), e);  
               }
             }
 
@@ -1140,15 +1141,21 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             //
             if (step.getErrors() > 0) {
 
-              log.logMinimal(getName(), BaseMessages.getString(PKG, "Trans.Log.TransformationDetectedErrors")); //$NON-NLS-1$ //$NON-NLS-2$
-              log.logMinimal(getName(), BaseMessages.getString(PKG, "Trans.Log.TransformationIsKillingTheOtherSteps")); //$NON-NLS-1$
+              log.logMinimal(getName(), BaseMessages.getString(PKG, "Trans.Log.TransformationDetectedErrors"));  
+              log.logMinimal(getName(), BaseMessages.getString(PKG, "Trans.Log.TransformationIsKillingTheOtherSteps")); 
 
               killAllNoWait();
             }
           }
         }
       };
-      sid.step.addStepListener(stepListener);
+      // Make sure this is called first!
+      //
+      if (sid.step instanceof BaseStep) {
+        ((BaseStep)sid.step).getStepListeners().add(0, stepListener);
+      } else {
+        sid.step.addStepListener(stepListener);
+      }
     }
 
     if (transMeta.isCapturingStepPerformanceSnapShots()) {
@@ -1229,7 +1236,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         transFinishedBlockingQueue.add(new Object());
       }
     };
-    addTransListener(transListener);
+    // This should always be done first so that the other listeners ahve a clean slate to start from (finished set and so on)
+    //
+    transListeners.add(0, transListener);
 
     running = true;
 
@@ -1319,7 +1328,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     if (log.isDetailed())
       log.logDetailed(BaseMessages.getString(PKG,
-          "Trans.Log.TransformationHasAllocated", String.valueOf(steps.size()), String.valueOf(rowsets.size()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+          "Trans.Log.TransformationHasAllocated", String.valueOf(steps.size()), String.valueOf(rowsets.size())));   //$NON-NLS-3$
   }
 
   /**
@@ -1421,7 +1430,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         BaseMessages
             .getString(
                 PKG,
-                "Trans.Log.FinishedProcessing", String.valueOf(si.getLinesInput()), String.valueOf(si.getLinesOutput()), String.valueOf(si.getLinesRead())) + BaseMessages.getString(PKG, "Trans.Log.FinishedProcessing2", String.valueOf(si.getLinesWritten()), String.valueOf(si.getLinesUpdated()), String.valueOf(si.getErrors()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+                "Trans.Log.FinishedProcessing", String.valueOf(si.getLinesInput()), String.valueOf(si.getLinesOutput()), String.valueOf(si.getLinesRead())) + BaseMessages.getString(PKG, "Trans.Log.FinishedProcessing2", String.valueOf(si.getLinesWritten()), String.valueOf(si.getLinesUpdated()), String.valueOf(si.getErrors())));   //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
   }
 
   /**
@@ -1453,7 +1462,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         nrErrors += sid.step.getErrors();
     }
     if (nrErrors > 0)
-      log.logError(BaseMessages.getString(PKG, "Trans.Log.TransformationErrorsDetected")); //$NON-NLS-1$
+      log.logError(BaseMessages.getString(PKG, "Trans.Log.TransformationErrorsDetected")); 
 
     return nrErrors;
   }
@@ -1508,7 +1517,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       StepMetaDataCombi sid = steps.get(i);
 
       if (log.isDebug())
-        log.logDebug(BaseMessages.getString(PKG, "Trans.Log.LookingAtStep") + sid.step.getStepname()); //$NON-NLS-1$
+        log.logDebug(BaseMessages.getString(PKG, "Trans.Log.LookingAtStep") + sid.step.getStepname()); 
 
       // If thr is a mapping, this is cause for an endless loop
       //
@@ -1517,7 +1526,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         try {
           Thread.sleep(20);
         } catch (Exception e) {
-          log.logError(BaseMessages.getString(PKG, "Trans.Log.TransformationErrors") + e.toString()); //$NON-NLS-1$
+          log.logError(BaseMessages.getString(PKG, "Trans.Log.TransformationErrors") + e.toString()); 
           return;
         }
       }
@@ -1542,13 +1551,13 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       StepInterface step = sid.step;
 
       if (log.isDebug())
-        log.logDebug(BaseMessages.getString(PKG, "Trans.Log.LookingAtStep") + step.getStepname()); //$NON-NLS-1$
+        log.logDebug(BaseMessages.getString(PKG, "Trans.Log.LookingAtStep") + step.getStepname()); 
 
       step.stopAll();
       try {
         Thread.sleep(20);
       } catch (Exception e) {
-        log.logError(BaseMessages.getString(PKG, "Trans.Log.TransformationErrors") + e.toString()); //$NON-NLS-1$
+        log.logError(BaseMessages.getString(PKG, "Trans.Log.TransformationErrors") + e.toString()); 
         return;
       }
     }
@@ -1562,7 +1571,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * @param seconds the time interval (in seconds) 
    */
   public void printStats(int seconds) {
-    log.logBasic(" "); //$NON-NLS-1$
+    log.logBasic(" "); 
     if (steps == null)
       return;
 
@@ -1575,24 +1584,24 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           log.logBasic(BaseMessages
               .getString(
                   PKG,
-                  "Trans.Log.ProcessSuccessfullyInfo", step.getStepname(), "." + step.getCopy(), String.valueOf(proc), String.valueOf((proc / seconds)))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+                  "Trans.Log.ProcessSuccessfullyInfo", step.getStepname(), "." + step.getCopy(), String.valueOf(proc), String.valueOf((proc / seconds))));   //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
         } else {
           log.logError(BaseMessages
               .getString(
                   PKG,
-                  "Trans.Log.ProcessErrorInfo", step.getStepname(), "." + step.getCopy(), String.valueOf(step.getErrors()), String.valueOf(proc), String.valueOf(proc / seconds))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+                  "Trans.Log.ProcessErrorInfo", step.getStepname(), "." + step.getCopy(), String.valueOf(step.getErrors()), String.valueOf(proc), String.valueOf(proc / seconds)));   //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
         }
       } else {
         if (step.getErrors() == 0) {
           log.logBasic(BaseMessages
               .getString(
                   PKG,
-                  "Trans.Log.ProcessSuccessfullyInfo", step.getStepname(), "." + step.getCopy(), String.valueOf(proc), seconds != 0 ? String.valueOf((proc / seconds)) : "-")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+                  "Trans.Log.ProcessSuccessfullyInfo", step.getStepname(), "." + step.getCopy(), String.valueOf(proc), seconds != 0 ? String.valueOf((proc / seconds)) : "-"));   //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
         } else {
           log.logError(BaseMessages
               .getString(
                   PKG,
-                  "Trans.Log.ProcessErrorInfo2", step.getStepname(), "." + step.getCopy(), String.valueOf(step.getErrors()), String.valueOf(proc), String.valueOf(seconds))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+                  "Trans.Log.ProcessErrorInfo2", step.getStepname(), "." + step.getCopy(), String.valueOf(step.getErrors()), String.valueOf(proc), String.valueOf(seconds)));   //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
         }
       }
     }
@@ -1837,7 +1846,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         if (Const.isEmpty(logTable)) {
           // It doesn't make sense to start database logging without a table
           // to log to.
-          throw new KettleTransException(BaseMessages.getString(PKG, "Trans.Exception.NoLogTableDefined")); //$NON-NLS-1$ //$NON-NLS-2$
+          throw new KettleTransException(BaseMessages.getString(PKG, "Trans.Exception.NoLogTableDefined"));  
         }
         if (Const.isEmpty(transMeta.getName()) && logConnection != null && logTable != null) {
           throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.NoTransnameAvailableForLogging"));
@@ -1845,7 +1854,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         transLogTableDatabaseConnection = new Database(this, logConnection);
         transLogTableDatabaseConnection.shareVariablesWith(this);
         if (log.isDetailed())
-          log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.OpeningLogConnection", "" + logConnection)); //$NON-NLS-1$ //$NON-NLS-2$
+          log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.OpeningLogConnection", "" + logConnection));  
         transLogTableDatabaseConnection.connect();
         transLogTableDatabaseConnection.setCommit(logCommitSize);
 
@@ -1862,11 +1871,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         // Get the date range from the logging table: from the last end_date to now. (currentDate)
         //
         Object[] lastr = transLogTableDatabaseConnection.getLastLogDate(logSchemaAndTable, transMeta.getName(), false,
-            LogStatus.END); //$NON-NLS-1$
+            LogStatus.END); 
         if (lastr != null && lastr.length > 0) {
           startDate = (Date) lastr[0];
           if (log.isDetailed())
-            log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.StartDateFound") + startDate); //$NON-NLS-1$
+            log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.StartDateFound") + startDate); 
         }
 
         //
@@ -1878,43 +1887,43 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             && transMeta.getMaxDateField().length() > 0) {
           if (log.isDetailed())
             log.logDetailed(BaseMessages.getString(PKG,
-                "Trans.Log.LookingForMaxdateConnection", "" + transMeta.getMaxDateConnection())); //$NON-NLS-1$ //$NON-NLS-2$
+                "Trans.Log.LookingForMaxdateConnection", "" + transMeta.getMaxDateConnection()));  
           DatabaseMeta maxcon = transMeta.getMaxDateConnection();
           if (maxcon != null) {
             Database maxdb = new Database(this, maxcon);
             maxdb.shareVariablesWith(this);
             try {
               if (log.isDetailed())
-                log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.OpeningMaximumDateConnection")); //$NON-NLS-1$
+                log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.OpeningMaximumDateConnection")); 
               maxdb.connect();
               maxdb.setCommit(logCommitSize);
 
               //
               // Determine the endDate by looking at a field in a table...
               //
-              String sql = "SELECT MAX(" + transMeta.getMaxDateField() + ") FROM " + transMeta.getMaxDateTable(); //$NON-NLS-1$ //$NON-NLS-2$
+              String sql = "SELECT MAX(" + transMeta.getMaxDateField() + ") FROM " + transMeta.getMaxDateTable();  
               RowMetaAndData r1 = maxdb.getOneRow(sql);
               if (r1 != null) {
                 // OK, we have a value, what's the offset?
                 Date maxvalue = r1.getRowMeta().getDate(r1.getData(), 0);
                 if (maxvalue != null) {
                   if (log.isDetailed())
-                    log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.LastDateFoundOnTheMaxdateConnection") + r1); //$NON-NLS-1$
+                    log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.LastDateFoundOnTheMaxdateConnection") + r1); 
                   endDate.setTime((long) (maxvalue.getTime() + (transMeta.getMaxDateOffset() * 1000)));
                 }
               } else {
                 if (log.isDetailed())
-                  log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.NoLastDateFoundOnTheMaxdateConnection")); //$NON-NLS-1$
+                  log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.NoLastDateFoundOnTheMaxdateConnection")); 
               }
             } catch (KettleException e) {
               throw new KettleTransException(BaseMessages.getString(PKG,
-                  "Trans.Exception.ErrorConnectingToDatabase", "" + transMeta.getMaxDateConnection()), e); //$NON-NLS-1$ //$NON-NLS-2$
+                  "Trans.Exception.ErrorConnectingToDatabase", "" + transMeta.getMaxDateConnection()), e);  
             } finally {
               maxdb.disconnect();
             }
           } else {
             throw new KettleTransException(BaseMessages.getString(PKG,
-                "Trans.Exception.MaximumDateConnectionCouldNotBeFound", "" + transMeta.getMaxDateConnection())); //$NON-NLS-1$ //$NON-NLS-2$
+                "Trans.Exception.MaximumDateConnectionCouldNotBeFound", "" + transMeta.getMaxDateConnection()));  
           }
         }
 
@@ -1922,7 +1931,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         // Get the maximum in depdate...
         if (transMeta.nrDependencies() > 0) {
           if (log.isDetailed())
-            log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.CheckingForMaxDependencyDate")); //$NON-NLS-1$
+            log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.CheckingForMaxDependencyDate")); 
           //
           // Maybe one of the tables where this transformation is dependent on has changed?
           // If so we need to change the start-date!
@@ -1946,7 +1955,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                 depdb.connect();
                 depdb.setCommit(logCommitSize);
 
-                String sql = "SELECT MAX(" + td.getFieldname() + ") FROM " + td.getTablename(); //$NON-NLS-1$ //$NON-NLS-2$
+                String sql = "SELECT MAX(" + td.getFieldname() + ") FROM " + td.getTablename();  
                 RowMetaAndData r1 = depdb.getOneRow(sql);
                 if (r1 != null) {
                   // OK, we have a row, get the result!
@@ -1956,7 +1965,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                       log.logDetailed(BaseMessages
                           .getString(
                               PKG,
-                              "Trans.Log.FoundDateFromTable", td.getTablename(), "." + td.getFieldname(), " = " + maxvalue.toString())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                              "Trans.Log.FoundDateFromTable", td.getTablename(), "." + td.getFieldname(), " = " + maxvalue.toString()));   //$NON-NLS-3$
                     if (maxvalue.getTime() > maxdepdate.getTime()) {
                       maxdepdate = maxvalue;
                     }
@@ -1965,27 +1974,27 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                         BaseMessages
                             .getString(
                                 PKG,
-                                "Trans.Exception.UnableToGetDependencyInfoFromDB", td.getDatabase().getName() + ".", td.getTablename() + ".", td.getFieldname())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                                "Trans.Exception.UnableToGetDependencyInfoFromDB", td.getDatabase().getName() + ".", td.getTablename() + ".", td.getFieldname()));   //$NON-NLS-3$ //$NON-NLS-4$
                   }
                 } else {
                   throw new KettleTransException(
                       BaseMessages
                           .getString(
                               PKG,
-                              "Trans.Exception.UnableToGetDependencyInfoFromDB", td.getDatabase().getName() + ".", td.getTablename() + ".", td.getFieldname())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                              "Trans.Exception.UnableToGetDependencyInfoFromDB", td.getDatabase().getName() + ".", td.getTablename() + ".", td.getFieldname()));   //$NON-NLS-3$ //$NON-NLS-4$
                 }
               } catch (KettleException e) {
                 throw new KettleTransException(BaseMessages.getString(PKG,
-                    "Trans.Exception.ErrorInDatabase", "" + td.getDatabase()), e); //$NON-NLS-1$ //$NON-NLS-2$
+                    "Trans.Exception.ErrorInDatabase", "" + td.getDatabase()), e);  
               } finally {
                 depdb.disconnect();
               }
             } else {
               throw new KettleTransException(BaseMessages.getString(PKG,
-                  "Trans.Exception.ConnectionCouldNotBeFound", "" + td.getDatabase())); //$NON-NLS-1$ //$NON-NLS-2$
+                  "Trans.Exception.ConnectionCouldNotBeFound", "" + td.getDatabase()));  
             }
             if (log.isDetailed())
-              log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.Maxdepdate") + (XMLHandler.date2string(maxdepdate))); //$NON-NLS-1$ //$NON-NLS-2$
+              log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.Maxdepdate") + (XMLHandler.date2string(maxdepdate)));  
           }
 
           // OK, so we now have the maximum depdate;
@@ -2017,7 +2026,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     } catch (KettleException e) {
       throw new KettleTransException(
-          BaseMessages.getString(PKG, "Trans.Exception.ErrorCalculatingDateRange", logTable), e); //$NON-NLS-1$ //$NON-NLS-2$
+          BaseMessages.getString(PKG, "Trans.Exception.ErrorCalculatingDateRange", logTable), e);  
     } finally {
       // Be careful, We DO NOT close the trans log table database connection!!!
       // It's closed later in beginProcessing() to prevent excessive connect/disconnect repetitions.
@@ -2038,7 +2047,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       String logTable = transLogTable.getActualTableName();
 
       SimpleDateFormat df = new SimpleDateFormat(REPLAY_DATE_FORMAT);
-      log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.TransformationCanBeReplayed") + df.format(currentDate)); //$NON-NLS-1$
+      log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.TransformationCanBeReplayed") + df.format(currentDate)); 
 
       try {
         if (transLogTableDatabaseConnection != null && !Const.isEmpty(logTable) && !Const.isEmpty(transMeta.getName())) {
@@ -2157,7 +2166,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         }
       } catch (KettleException e) {
         throw new KettleTransException(BaseMessages.getString(PKG,
-            "Trans.Exception.ErrorWritingLogRecordToTable", logTable), e); //$NON-NLS-1$ //$NON-NLS-2$
+            "Trans.Exception.ErrorWritingLogRecordToTable", logTable), e);  
       } finally {
         // If we use interval logging, we keep the connection open for performance reasons...
         //
@@ -2168,7 +2177,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       }
     } catch (KettleException e) {
       throw new KettleTransException(BaseMessages.getString(PKG,
-          "Trans.Exception.UnableToBeginProcessingTransformation"), e); //$NON-NLS-1$
+          "Trans.Exception.UnableToBeginProcessingTransformation"), e); 
     }
   }
 
@@ -2432,7 +2441,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           ldb.commit(true);
       } catch (Exception e) {
         throw new KettleException(BaseMessages.getString(PKG,
-            "Trans.Exception.ErrorWritingLogRecordToTable", transMeta.getTransLogTable().getActualTableName()), e); //$NON-NLS-1$ //$NON-NLS-2$
+            "Trans.Exception.ErrorWritingLogRecordToTable", transMeta.getTransLogTable().getActualTableName()), e);  
       } finally {
         if (intervalInSeconds <= 0 || (status.equals(LogStatus.END) || status.equals(LogStatus.STOP))) {
           ldb.disconnect();
@@ -2523,14 +2532,16 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     // Don't close any connections if the parent job is using the same transaction
     // 
-    if (parentJob != null && transactionId != null && parentJob.getTransactionId() != null
+    if (parentJob.getJobMeta().isUsingUniqueConnections() && 
+        parentJob != null && transactionId != null && parentJob.getTransactionId() != null
         && transactionId.equals(parentJob.getTransactionId())) {
       return;
     }
 
     // Don't close any connections if the parent transformation is using the same transaction
     // 
-    if (parentTrans != null && transactionId != null && parentTrans.getTransactionId() != null
+    if (parentTrans.getTransMeta().isUsingUniqueConnections() && 
+        parentTrans != null && transactionId != null && parentTrans.getTransactionId() != null
         && transactionId.equals(parentTrans.getTransactionId())) {
       return;
     }
@@ -2820,7 +2831,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     for (int i = 0; i < steps.size(); i++) {
       StepMetaDataCombi smdc = steps.get(i);
       StepInterface step = smdc.step;
-      if (step.getStepID().equalsIgnoreCase("MappingInput")) //$NON-NLS-1$
+      if (step.getStepID().equalsIgnoreCase("MappingInput")) 
       {
         list.add((MappingInput) step);
       }
@@ -2841,7 +2852,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       for (int i = 0; i < steps.size(); i++) {
         StepMetaDataCombi smdc = steps.get(i);
         StepInterface step = smdc.step;
-        if (step.getStepID().equalsIgnoreCase("MappingOutput")) //$NON-NLS-1$
+        if (step.getStepID().equalsIgnoreCase("MappingOutput")) 
         {
           list.add((MappingOutput) step);
         }

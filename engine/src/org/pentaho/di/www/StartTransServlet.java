@@ -36,7 +36,7 @@ import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -119,7 +119,7 @@ public class StartTransServlet extends BaseHttpServlet implements CartePluginInt
 				
 	            // Discard old log lines from old transformation runs
 	            //
-	            CentralLogStore.discardLines(trans.getLogChannelId(), true);
+	            KettleLogStore.discardLines(trans.getLogChannelId(), true);
 				
 				String carteObjectId = UUID.randomUUID().toString();
 				SimpleLoggingObject servletLoggingObject = new SimpleLoggingObject(CONTEXT_PATH, LoggingObjectType.CARTE, null);

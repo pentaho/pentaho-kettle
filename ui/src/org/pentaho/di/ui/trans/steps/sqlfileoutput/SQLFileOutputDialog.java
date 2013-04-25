@@ -266,7 +266,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 		
         // Schema line...
         wlSchema=new Label(wGConnection, SWT.RIGHT);
-        wlSchema.setText(BaseMessages.getString(PKG, "SQLFileOutputDialog.TargetSchema.Label")); //$NON-NLS-1$
+        wlSchema.setText(BaseMessages.getString(PKG, "SQLFileOutputDialog.TargetSchema.Label")); 
         props.setLook(wlSchema);
         fdlSchema=new FormData();
         fdlSchema.left = new FormAttachment(0, 0);

@@ -129,15 +129,15 @@ public abstract class UIRepositoryObject extends AbstractModelNode<UIRepositoryO
       }
       String t1 = o1.getName();
       String t2 = o2.getName();
-      if (t1 == null) t1 = ""; //$NON-NLS-1$
-      if (t2 == null) t2 = ""; //$NON-NLS-1$
+      if (t1 == null) t1 = ""; 
+      if (t2 == null) t2 = ""; 
       return t1.compareToIgnoreCase(t2);
     }
     
   }
   
   public String getPath() {
-    return getParentPath() + "/" + getName(); //$NON-NLS-1$
+    return getParentPath() + "/" + getName(); 
   }
 
   public RepositoryObjectComparator getComparator() {

@@ -78,7 +78,7 @@ public class FilesFromResult extends BaseStep implements StepInterface
 										// rowset(s).
 
 		if (checkFeedback(getLinesRead()))
-			logBasic(BaseMessages.getString(PKG, "FilesFromResult.Log.LineNumber") + getLinesRead()); //$NON-NLS-1$
+			logBasic(BaseMessages.getString(PKG, "FilesFromResult.Log.LineNumber") + getLinesRead()); 
 
 		return true;
 	}

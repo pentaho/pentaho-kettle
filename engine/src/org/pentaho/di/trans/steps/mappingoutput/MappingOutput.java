@@ -106,7 +106,7 @@ public class MappingOutput extends BaseStep implements StepInterface
         // 
 		putRow(data.outputRowMeta, r);     
 
-        if (checkFeedback(getLinesRead())) logBasic(BaseMessages.getString(PKG, "MappingOutput.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+        if (checkFeedback(getLinesRead())) logBasic(BaseMessages.getString(PKG, "MappingOutput.Log.LineNumber")+getLinesRead()); 
 			
 		return true;
 	}

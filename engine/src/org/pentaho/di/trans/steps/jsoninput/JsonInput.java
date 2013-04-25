@@ -136,8 +136,8 @@ public class JsonInput extends BaseStep implements StepInterface
 					if (data.indexSourceField<0)
 					{
 						// The field is unreachable !
-						logError(BaseMessages.getString(PKG, "JsonInput.Log.ErrorFindingField", meta.getFieldValue())); //$NON-NLS-1$ //$NON-NLS-2$
-						throw new KettleException(BaseMessages.getString(PKG, "JsonInput.Exception.CouldnotFindField",meta.getFieldValue())); //$NON-NLS-1$ //$NON-NLS-2$
+						logError(BaseMessages.getString(PKG, "JsonInput.Log.ErrorFindingField", meta.getFieldValue()));  
+						throw new KettleException(BaseMessages.getString(PKG, "JsonInput.Exception.CouldnotFindField",meta.getFieldValue()));  
 					}
 				}
 			
@@ -355,7 +355,7 @@ public class JsonInput extends BaseStep implements StepInterface
                 sendToErrorRow = true;
                 errorMessage = e.toString();
 	        } else {
-				logError(BaseMessages.getString(PKG, "JsonInput.ErrorInStepRunning",e.getMessage())); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "JsonInput.ErrorInStepRunning",e.getMessage())); 
 				setErrors(1);
 				stopAll();
 				setOutputDone();  // signal end to receiver(s)

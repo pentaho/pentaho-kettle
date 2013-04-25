@@ -142,7 +142,7 @@ public class JobEntryValidatorUtils
 
   public static String getKeyLevelOnFail(String validatorName)
   {
-    return validatorName + "-" + JobEntryValidator.KEY_LEVEL_ON_FAIL; //$NON-NLS-1$
+    return validatorName + "-" + JobEntryValidator.KEY_LEVEL_ON_FAIL; 
   }
 
   /**
@@ -160,7 +160,7 @@ public class JobEntryValidatorUtils
   public static boolean validateMask(CheckResultSourceInterface source, String propertyName, int levelOnFail,
       List<CheckResultInterface> remarks, String mask)
   {
-    final String VALIDATOR_NAME = "matches"; //$NON-NLS-1$
+    final String VALIDATOR_NAME = "matches"; 
     String value = null;
 
     value = ValidatorUtils.getValueAsString(source, propertyName);
@@ -170,7 +170,7 @@ public class JobEntryValidatorUtils
       if (null == mask)
       {
         addGeneralRemark(source, propertyName, VALIDATOR_NAME, remarks,
-            "errors.missingVar", CheckResultInterface.TYPE_RESULT_ERROR); //$NON-NLS-1$
+            "errors.missingVar", CheckResultInterface.TYPE_RESULT_ERROR); 
         return false;
       }
 
@@ -192,16 +192,16 @@ public class JobEntryValidatorUtils
   public static void addFailureRemark(CheckResultSourceInterface source, String propertyName, String validatorName,
       List<CheckResultInterface> remarks, int level)
   {
-    String key = "messages.failed." + validatorName; //$NON-NLS-1$
+    String key = "messages.failed." + validatorName; 
     remarks.add(new CheckResult(level, ValidatorMessages.getString(key, propertyName), source));
   }
 
   public static void addExceptionRemark(CheckResultSourceInterface source, String propertyName, String validatorName,
       List<CheckResultInterface> remarks, Exception e)
   {
-    String key = "messages.failed.unableToValidate"; //$NON-NLS-1$
+    String key = "messages.failed.unableToValidate"; 
     remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, ValidatorMessages.getString(key, propertyName,
-        e.getClass().getSimpleName() + ": " + e.getLocalizedMessage()), source)); //$NON-NLS-1$
+        e.getClass().getSimpleName() + ": " + e.getLocalizedMessage()), source)); 
   }
 
   public static void addGeneralRemark(CheckResultSourceInterface source, String propertyName, String validatorName,
@@ -220,10 +220,10 @@ public class JobEntryValidatorUtils
       substr = value.substring(0, Math.min(SUBSTRING_LENGTH, value.length()));
       if (value.length() > SUBSTRING_LENGTH)
       {
-        substr += "..."; //$NON-NLS-1$
+        substr += "..."; 
       }
     }
-    remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, ValidatorMessages.getString("messages.passed", //$NON-NLS-1$
+    remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, ValidatorMessages.getString("messages.passed", 
         propertyName, substr), source));
   }
 

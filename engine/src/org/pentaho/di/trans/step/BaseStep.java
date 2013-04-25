@@ -396,7 +396,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
       terminator_rows = null;
     }
 
-    // debug="-"; //$NON-NLS-1$
+    // debug="-"; 
 
     start_time = null;
     stop_time = null;
@@ -407,14 +407,14 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     if (distributed) {
       if (loadBalancing) {
         if (log.isDetailed())
-          logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.LoadBalancingActivated")); //$NON-NLS-1$
+          logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.LoadBalancingActivated")); 
       } else {
         if (log.isDetailed())
-          logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.DistributionActivated")); //$NON-NLS-1$
+          logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.DistributionActivated")); 
       }
     } else {
       if (log.isDetailed())
-        logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.DistributionDeactivated")); //$NON-NLS-1$
+        logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.DistributionDeactivated")); 
     }
 
     rowListeners = new ArrayList<RowListener>();
@@ -1074,7 +1074,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     //
     if (stopped.get()) {
       if (log.isDebug())
-        logDebug(BaseMessages.getString(PKG, "BaseStep.Log.StopPuttingARow")); //$NON-NLS-1$
+        logDebug(BaseMessages.getString(PKG, "BaseStep.Log.StopPuttingARow")); 
       stopAll();
       return;
     }
@@ -1395,7 +1395,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
     if (stopped.get()) {
       if (log.isDebug())
-        logDebug(BaseMessages.getString(PKG, "BaseStep.Log.StopPuttingARow")); //$NON-NLS-1$
+        logDebug(BaseMessages.getString(PKG, "BaseStep.Log.StopPuttingARow")); 
       stopAll();
       return;
     }
@@ -1560,7 +1560,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
     if (stopped.get()) {
       if (log.isDebug())
-        logDebug(BaseMessages.getString(PKG, "BaseStep.Log.StopLookingForMoreRows")); //$NON-NLS-1$
+        logDebug(BaseMessages.getString(PKG, "BaseStep.Log.StopLookingForMoreRows")); 
       stopAll();
       return null;
     }
@@ -1939,7 +1939,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
     if (stopped.get()) {
       if (log.isDebug())
-        logDebug(BaseMessages.getString(PKG, "BaseStep.Log.StopLookingForMoreRows")); //$NON-NLS-1$
+        logDebug(BaseMessages.getString(PKG, "BaseStep.Log.StopLookingForMoreRows")); 
       stopAll();
       return null;
     }
@@ -2193,7 +2193,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    */
   public void setOutputDone() {
     if (log.isDebug())
-      logDebug(BaseMessages.getString(PKG, "BaseStep.Log.OutputDone", String.valueOf(outputRowSets.size()))); //$NON-NLS-1$ //$NON-NLS-2$
+      logDebug(BaseMessages.getString(PKG, "BaseStep.Log.OutputDone", String.valueOf(outputRowSets.size())));  
     synchronized (outputRowSets) {
       for (int i = 0; i < outputRowSets.size(); i++) {
         RowSet rs = outputRowSets.get(i);
@@ -2216,7 +2216,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     StepMeta stepMeta = transMeta.findStep(stepname);
 
     if (log.isDetailed())
-      logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.StartingBuffersAllocation")); //$NON-NLS-1$
+      logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.StartingBuffersAllocation")); 
 
     // How many next steps are there? 0, 1 or more??
     // How many steps do we send output to?
@@ -2236,20 +2236,20 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
     if (log.isDetailed())
       logDetailed(BaseMessages.getString(PKG,
-          "BaseStep.Log.StepInfo", String.valueOf(nrInput), String.valueOf(nrOutput))); //$NON-NLS-1$ //$NON-NLS-2$
+          "BaseStep.Log.StepInfo", String.valueOf(nrInput), String.valueOf(nrOutput)));  
 
     for (int i = 0; i < previousSteps.size(); i++) {
       prevSteps[i] = previousSteps.get(i);
       if (log.isDetailed())
         logDetailed(BaseMessages.getString(PKG,
-            "BaseStep.Log.GotPreviousStep", stepname, String.valueOf(i), prevSteps[i].getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            "BaseStep.Log.GotPreviousStep", stepname, String.valueOf(i), prevSteps[i].getName()));   //$NON-NLS-3$
 
       // Looking at the previous step, you can have either 1 rowset to look at or more then one.
       int prevCopies = prevSteps[i].getCopies();
       int nextCopies = stepMeta.getCopies();
       if (log.isDetailed())
         logDetailed(BaseMessages.getString(PKG,
-            "BaseStep.Log.InputRowInfo", String.valueOf(prevCopies), String.valueOf(nextCopies))); //$NON-NLS-1$ //$NON-NLS-2$
+            "BaseStep.Log.InputRowInfo", String.valueOf(prevCopies), String.valueOf(nextCopies)));  
 
       int nrCopies;
       int dispatchType;
@@ -2305,10 +2305,10 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
         if (rowSet != null) {
           inputRowSets.add(rowSet);
           if (log.isDetailed())
-            logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.FoundInputRowset", rowSet.getName())); //$NON-NLS-1$ //$NON-NLS-2$
+            logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.FoundInputRowset", rowSet.getName()));  
         } else {
           if (!prevSteps[i].isMapping() && !stepMeta.isMapping()) {
-            logError(BaseMessages.getString(PKG, "BaseStep.Log.UnableToFindInputRowset")); //$NON-NLS-1$
+            logError(BaseMessages.getString(PKG, "BaseStep.Log.UnableToFindInputRowset")); 
             setErrors(1);
             stopAll();
             return;
@@ -2325,7 +2325,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
       if (log.isDetailed())
         logDetailed(BaseMessages.getString(PKG,
-            "BaseStep.Log.OutputRowInfo", String.valueOf(prevCopies), String.valueOf(nextCopies))); //$NON-NLS-1$ //$NON-NLS-2$
+            "BaseStep.Log.OutputRowInfo", String.valueOf(prevCopies), String.valueOf(nextCopies)));  
 
       int nrCopies;
       int dispatchType;
@@ -2381,10 +2381,10 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
         if (rowSet != null) {
           outputRowSets.add(rowSet);
           if (log.isDetailed())
-            logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.FoundOutputRowset", rowSet.getName())); //$NON-NLS-1$ //$NON-NLS-2$
+            logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.FoundOutputRowset", rowSet.getName()));  
         } else {
           if (!stepMeta.isMapping() && !nextSteps[i].isMapping()) {
-            logError(BaseMessages.getString(PKG, "BaseStep.Log.UnableToFindOutputRowset")); //$NON-NLS-1$
+            logError(BaseMessages.getString(PKG, "BaseStep.Log.UnableToFindOutputRowset")); 
             setErrors(1);
             stopAll();
             return;
@@ -2398,7 +2398,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     }
 
     if (log.isDetailed())
-      logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.FinishedDispatching")); //$NON-NLS-1$
+      logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.FinishedDispatching")); 
   }
 
   /**
@@ -2749,45 +2749,45 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     int nr = 0;
 
     r.addValueMeta(new ValueMeta(
-        BaseMessages.getString(PKG, "BaseStep.ColumnName.Stepname"), ValueMetaInterface.TYPE_STRING)); //$NON-NLS-1$
+        BaseMessages.getString(PKG, "BaseStep.ColumnName.Stepname"), ValueMetaInterface.TYPE_STRING)); 
     data[nr] = sname;
     nr++;
 
     r.addValueMeta(new ValueMeta(
-        BaseMessages.getString(PKG, "BaseStep.ColumnName.Copy"), ValueMetaInterface.TYPE_NUMBER)); //$NON-NLS-1$
+        BaseMessages.getString(PKG, "BaseStep.ColumnName.Copy"), ValueMetaInterface.TYPE_NUMBER)); 
     data[nr] = new Double(copynr);
     nr++;
 
     r.addValueMeta(new ValueMeta(
-        BaseMessages.getString(PKG, "BaseStep.ColumnName.LinesReaded"), ValueMetaInterface.TYPE_NUMBER)); //$NON-NLS-1$
+        BaseMessages.getString(PKG, "BaseStep.ColumnName.LinesReaded"), ValueMetaInterface.TYPE_NUMBER)); 
     data[nr] = new Double(lines_read);
     nr++;
 
     r.addValueMeta(new ValueMeta(
-        BaseMessages.getString(PKG, "BaseStep.ColumnName.LinesWritten"), ValueMetaInterface.TYPE_NUMBER)); //$NON-NLS-1$
+        BaseMessages.getString(PKG, "BaseStep.ColumnName.LinesWritten"), ValueMetaInterface.TYPE_NUMBER)); 
     data[nr] = new Double(lines_written);
     nr++;
 
     r.addValueMeta(new ValueMeta(
-        BaseMessages.getString(PKG, "BaseStep.ColumnName.LinesUpdated"), ValueMetaInterface.TYPE_NUMBER)); //$NON-NLS-1$
+        BaseMessages.getString(PKG, "BaseStep.ColumnName.LinesUpdated"), ValueMetaInterface.TYPE_NUMBER)); 
     data[nr] = new Double(lines_updated);
     nr++;
 
     r.addValueMeta(new ValueMeta(
-        BaseMessages.getString(PKG, "BaseStep.ColumnName.LinesSkipped"), ValueMetaInterface.TYPE_NUMBER)); //$NON-NLS-1$
+        BaseMessages.getString(PKG, "BaseStep.ColumnName.LinesSkipped"), ValueMetaInterface.TYPE_NUMBER)); 
     data[nr] = new Double(lines_skipped);
     nr++;
 
     r.addValueMeta(new ValueMeta(
-        BaseMessages.getString(PKG, "BaseStep.ColumnName.Errors"), ValueMetaInterface.TYPE_NUMBER)); //$NON-NLS-1$
+        BaseMessages.getString(PKG, "BaseStep.ColumnName.Errors"), ValueMetaInterface.TYPE_NUMBER)); 
     data[nr] = new Double(errors);
     nr++;
 
-    r.addValueMeta(new ValueMeta("start_date", ValueMetaInterface.TYPE_DATE)); //$NON-NLS-1$
+    r.addValueMeta(new ValueMeta("start_date", ValueMetaInterface.TYPE_DATE)); 
     data[nr] = start_date;
     nr++;
 
-    r.addValueMeta(new ValueMeta("end_date", ValueMetaInterface.TYPE_DATE)); //$NON-NLS-1$
+    r.addValueMeta(new ValueMeta("end_date", ValueMetaInterface.TYPE_DATE)); 
     data[nr] = end_date;
     nr++;
 
@@ -2803,26 +2803,26 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   public static final RowMetaInterface getLogFields(String comm) {
     RowMetaInterface r = new RowMeta();
     ValueMetaInterface sname = new ValueMeta(
-        BaseMessages.getString(PKG, "BaseStep.ColumnName.Stepname"), ValueMetaInterface.TYPE_STRING); //$NON-NLS-1$ //$NON-NLS-2$
+        BaseMessages.getString(PKG, "BaseStep.ColumnName.Stepname"), ValueMetaInterface.TYPE_STRING);  
     sname.setLength(256);
     r.addValueMeta(sname);
 
     r.addValueMeta(new ValueMeta(
-        BaseMessages.getString(PKG, "BaseStep.ColumnName.Copy"), ValueMetaInterface.TYPE_NUMBER)); //$NON-NLS-1$
+        BaseMessages.getString(PKG, "BaseStep.ColumnName.Copy"), ValueMetaInterface.TYPE_NUMBER)); 
     r.addValueMeta(new ValueMeta(
-        BaseMessages.getString(PKG, "BaseStep.ColumnName.LinesReaded"), ValueMetaInterface.TYPE_NUMBER)); //$NON-NLS-1$
+        BaseMessages.getString(PKG, "BaseStep.ColumnName.LinesReaded"), ValueMetaInterface.TYPE_NUMBER)); 
     r.addValueMeta(new ValueMeta(
-        BaseMessages.getString(PKG, "BaseStep.ColumnName.LinesWritten"), ValueMetaInterface.TYPE_NUMBER)); //$NON-NLS-1$
+        BaseMessages.getString(PKG, "BaseStep.ColumnName.LinesWritten"), ValueMetaInterface.TYPE_NUMBER)); 
     r.addValueMeta(new ValueMeta(
-        BaseMessages.getString(PKG, "BaseStep.ColumnName.LinesUpdated"), ValueMetaInterface.TYPE_NUMBER)); //$NON-NLS-1$
+        BaseMessages.getString(PKG, "BaseStep.ColumnName.LinesUpdated"), ValueMetaInterface.TYPE_NUMBER)); 
     r.addValueMeta(new ValueMeta(
-        BaseMessages.getString(PKG, "BaseStep.ColumnName.LinesSkipped"), ValueMetaInterface.TYPE_NUMBER)); //$NON-NLS-1$
+        BaseMessages.getString(PKG, "BaseStep.ColumnName.LinesSkipped"), ValueMetaInterface.TYPE_NUMBER)); 
     r.addValueMeta(new ValueMeta(
-        BaseMessages.getString(PKG, "BaseStep.ColumnName.Errors"), ValueMetaInterface.TYPE_NUMBER)); //$NON-NLS-1$
+        BaseMessages.getString(PKG, "BaseStep.ColumnName.Errors"), ValueMetaInterface.TYPE_NUMBER)); 
     r.addValueMeta(new ValueMeta(
-        BaseMessages.getString(PKG, "BaseStep.ColumnName.StartDate"), ValueMetaInterface.TYPE_DATE)); //$NON-NLS-1$
+        BaseMessages.getString(PKG, "BaseStep.ColumnName.StartDate"), ValueMetaInterface.TYPE_DATE)); 
     r.addValueMeta(new ValueMeta(
-        BaseMessages.getString(PKG, "BaseStep.ColumnName.EndDate"), ValueMetaInterface.TYPE_DATE)); //$NON-NLS-1$
+        BaseMessages.getString(PKG, "BaseStep.ColumnName.EndDate"), ValueMetaInterface.TYPE_DATE)); 
 
     for (int i = 0; i < r.size(); i++) {
       r.getValueMeta(i).setOrigin(comm);
@@ -2845,11 +2845,11 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     }
 
     if (!Const.isEmpty(partitionID)) {
-      string.append(stepname).append('.').append(partitionID); //$NON-NLS-1$
+      string.append(stepname).append('.').append(partitionID); 
     } else if (clusterSize > 1) {
-      string.append(stepname).append('.').append(slaveNr).append('.').append(Integer.toString(getCopy())); //$NON-NLS-1$ //$NON-NLS-2$
+      string.append(stepname).append('.').append(slaveNr).append('.').append(Integer.toString(getCopy()));  
     } else {
-      string.append(stepname).append('.').append(Integer.toString(getCopy())); //$NON-NLS-1$
+      string.append(stepname).append('.').append(Integer.toString(getCopy())); 
     }
 
     return string.toString();

@@ -64,7 +64,7 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
 	
 	public JobEntryFilesExist(String n)
 	{
-		super(n, ""); //$NON-NLS-1$
+		super(n, ""); 
 		filename=null;
 		setID(-1L);	
 	}
@@ -87,15 +87,15 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
 		retval.append(super.getXML());		
 		retval.append("      ").append(XMLHandler.addTagValue("filename",   filename));
 		
-		 retval.append("      <fields>").append(Const.CR); //$NON-NLS-1$
+		 retval.append("      <fields>").append(Const.CR); 
 		    if (arguments != null) {
 		      for (int i = 0; i < arguments.length; i++) {
-		        retval.append("        <field>").append(Const.CR); //$NON-NLS-1$
+		        retval.append("        <field>").append(Const.CR); 
 		        retval.append("          ").append(XMLHandler.addTagValue("name", arguments[i]));
-		        retval.append("        </field>").append(Const.CR); //$NON-NLS-1$
+		        retval.append("        </field>").append(Const.CR); 
 		      }
 		    }
-		    retval.append("      </fields>").append(Const.CR); //$NON-NLS-1$
+		    retval.append("      </fields>").append(Const.CR); 
 		
 		return retval.toString();
 	}
@@ -107,17 +107,17 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
 			super.loadXML(entrynode, databases, slaveServers);
 			filename      = XMLHandler.getTagValue(entrynode, "filename");
 			
-		    Node fields = XMLHandler.getSubNode(entrynode, "fields"); //$NON-NLS-1$
+		    Node fields = XMLHandler.getSubNode(entrynode, "fields"); 
 
 	        // How many field arguments?
-	        int nrFields = XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
+	        int nrFields = XMLHandler.countNodes(fields, "field"); 
 	        arguments = new String[nrFields];
 
 	        // Read them all...
 	        for (int i = 0; i < nrFields; i++) {
-	        Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
+	        Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); 
 
-	        arguments[i] = XMLHandler.getTagValue(fnode, "name"); //$NON-NLS-1$
+	        arguments[i] = XMLHandler.getTagValue(fnode, "name"); 
 
 	      }
 		}
@@ -134,7 +134,7 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
 			filename = rep.getJobEntryAttributeString(id_jobentry, "filename");
 			
 			 // How many arguments?
-	        int argnr = rep.countNrJobEntryAttributes(id_jobentry, "name"); //$NON-NLS-1$
+	        int argnr = rep.countNrJobEntryAttributes(id_jobentry, "name"); 
 	        arguments = new String[argnr];
 
 	        // Read them all...
@@ -200,14 +200,14 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
 		    		    if (file.exists() && file.isReadable())
 		    		    {
 		    		    	if(log.isDetailed())
-		    		    		logDetailed(BaseMessages.getString(PKG, "JobEntryFilesExist.File_Exists", realFilefoldername)); //$NON-NLS-1$
+		    		    		logDetailed(BaseMessages.getString(PKG, "JobEntryFilesExist.File_Exists", realFilefoldername)); 
 		    		    }
 		                else
 		                {
 		                	missingfiles ++;
 		                	result.setNrErrors(missingfiles);
 		                	if(log.isDetailed())
-		                		logDetailed(BaseMessages.getString(PKG, "JobEntryFilesExist.File_Does_Not_Exist", realFilefoldername)); //$NON-NLS-1$
+		                		logDetailed(BaseMessages.getString(PKG, "JobEntryFilesExist.File_Does_Not_Exist", realFilefoldername)); 
 		                }
 		    		  
 		            }
@@ -215,7 +215,7 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
 		            {
 		    	  		missingfiles ++;
 		                result.setNrErrors(missingfiles);
-		                logError(BaseMessages.getString(PKG, "JobEntryFilesExist.ERROR_0004_IO_Exception", e.toString()), e); //$NON-NLS-1$
+		                logError(BaseMessages.getString(PKG, "JobEntryFilesExist.ERROR_0004_IO_Exception", e.toString()), e); 
 		            }
 		    	  	finally
 		    	  	{

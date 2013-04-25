@@ -47,7 +47,7 @@ public class RepositoriesModel  extends XulEventSourceAdapter{
   public void setUsername(String username) {
     String previousValue = this.username;
     this.username = username;
-    this.firePropertyChange("username", previousValue, username); //$NON-NLS-1$
+    this.firePropertyChange("username", previousValue, username); 
     checkIfModelValid();
   }
   public String getPassword() {
@@ -56,7 +56,7 @@ public class RepositoriesModel  extends XulEventSourceAdapter{
   public void setPassword(String password) {
     String previousValue = this.password;
     this.password = password;
-    this.firePropertyChange("password", previousValue, password); //$NON-NLS-1$
+    this.firePropertyChange("password", previousValue, password); 
   }
   public boolean isShowDialogAtStartup() {
     return showDialogAtStartup;
@@ -64,7 +64,7 @@ public class RepositoriesModel  extends XulEventSourceAdapter{
   public void setShowDialogAtStartup(boolean showDialogAtStartup) {
     boolean previousValue = this.showDialogAtStartup;
     this.showDialogAtStartup = showDialogAtStartup;
-    this.firePropertyChange("showDialogAtStartup", previousValue, showDialogAtStartup); //$NON-NLS-1$    
+    this.firePropertyChange("showDialogAtStartup", previousValue, showDialogAtStartup);     
   }
   public List<RepositoryMeta> getAvailableRepositories() {
     return availableRepositories;
@@ -73,19 +73,19 @@ public class RepositoriesModel  extends XulEventSourceAdapter{
     List<RepositoryMeta> previousValue = new ArrayList<RepositoryMeta>();
     previousValue.addAll(this.availableRepositories);
     this.availableRepositories = repositoryList;
-    this.firePropertyChange("availableRepositories", previousValue, repositoryList); //$NON-NLS-1$
+    this.firePropertyChange("availableRepositories", previousValue, repositoryList); 
   }
   public void addToAvailableRepositories(RepositoryMeta meta) {
     List<RepositoryMeta> previousValue = new ArrayList<RepositoryMeta>();
     previousValue.addAll(this.availableRepositories);
     this.availableRepositories.add(meta);
-    this.firePropertyChange("availableRepositories", previousValue, this.availableRepositories); //$NON-NLS-1$    
+    this.firePropertyChange("availableRepositories", previousValue, this.availableRepositories);     
   }
   public void removeFromAvailableRepositories(RepositoryMeta meta) {
     List<RepositoryMeta> previousValue = new ArrayList<RepositoryMeta>();
     previousValue.addAll(this.availableRepositories);
     this.availableRepositories.remove(meta);
-    this.firePropertyChange("availableRepositories", previousValue, this.availableRepositories); //$NON-NLS-1$
+    this.firePropertyChange("availableRepositories", previousValue, this.availableRepositories); 
   }  
   public void clear() {
     setUsername(null);
@@ -100,7 +100,7 @@ public class RepositoriesModel  extends XulEventSourceAdapter{
   public void setSelectedRepository(RepositoryMeta selectedRepository) {
     RepositoryMeta previousValue = this.selectedRepository;
     this.selectedRepository = selectedRepository;
-    this.firePropertyChange("selectedRepository", previousValue, selectedRepository); //$NON-NLS-1$
+    this.firePropertyChange("selectedRepository", previousValue, selectedRepository); 
     checkIfModelValid();
   }
 
@@ -138,7 +138,7 @@ public class RepositoriesModel  extends XulEventSourceAdapter{
   }
   
   public void checkIfModelValid() {
-    this.firePropertyChange("valid", null, isValid());//$NON-NLS-1$
+    this.firePropertyChange("valid", null, isValid());
   }
   
   public boolean isValid() {
