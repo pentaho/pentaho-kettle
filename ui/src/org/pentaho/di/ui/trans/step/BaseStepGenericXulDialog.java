@@ -50,6 +50,7 @@ import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.components.XulMenuList;
+import org.pentaho.ui.xul.components.XulMessageBox;
 import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
@@ -175,6 +176,37 @@ public abstract class BaseStepGenericXulDialog extends AbstractXulEventHandler i
 
   public void close(){
     xulDialog.hide();
+  }
+  
+  public void showMessage(final String message, final String title){
+    
+    try {
+      
+      final XulMessageBox msg = (XulMessageBox) document.createElement("messagebox");
+      msg.setTitle(title);
+      msg.setMessage(message);
+      msg.open();
+    
+    } catch (XulException e) {
+      log.logError("Error displaying message: {0}", message);
+    }
+    
+  }
+
+  public int showPromptMessage(final String message, final String title){
+    
+    try {
+      
+      final XulMessageBox msg = (XulMessageBox) document.createElement("messagebox");
+      msg.setTitle(title);
+      msg.setMessage(message);
+      msg.setButtons(new Object[]{ "OK", "CANCEL" });
+      return msg.open();
+    
+    } catch (XulException e) {
+      log.logError("Error displaying message: {0}", message);
+    }
+    return -1;
   }
 
   public abstract void onAccept();
