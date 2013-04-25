@@ -17,6 +17,9 @@ public enum KettleExtensionPoint {
   JobMetaLoaded("JobMetaLoaded", "Job metadata was loaded"),
   SpoonJobMetaExecutionStart("SpoonJobMetaExecutionStart", "Spoon initiates the execution of a job (JobMeta)"),
   SpoonJobExecutionConfiguration("SpoonJobExecutionConfiguration", "Right before Spoon configuration of job to be executed takes place"),
+  
+  DatabaseConnected("DatabaseConnected", "A connection to a database was made"),
+  DatabaseDisconnected("DatabaseDisconnected", "A connection to a database was terminated"),
   ;
 
   public String id;

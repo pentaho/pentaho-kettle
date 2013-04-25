@@ -68,6 +68,8 @@ import org.pentaho.di.core.exception.KettleDatabaseBatchException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.extension.ExtensionPointHandler;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -347,8 +349,16 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         // Proceed with a normal connect
         normalConnect(partitionId);
       }
+      
+      try {
+        ExtensionPointHandler.callExtensionPoint(log, KettleExtensionPoint.DatabaseConnected.id, this);
+      } catch (KettleException e) {
+        throw new KettleDatabaseException(e);
+      }
+      
     } finally {
       log.snap(Metrics.METRIC_DATABASE_CONNECT_START, databaseMeta.getName());
+      
     }
   }
 
@@ -577,6 +587,12 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       }
 
       closeConnectionOnly();
+      
+      try {
+        ExtensionPointHandler.callExtensionPoint(log, KettleExtensionPoint.DatabaseDisconnected.id, this);
+      } catch (KettleException e) {
+        throw new KettleDatabaseException(e);
+      }
     } catch (SQLException ex) {
       log.logError("Error disconnecting from database:" + Const.CR + ex.getMessage());
       log.logError(Const.getStackTracker(ex));
