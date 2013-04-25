@@ -35,8 +35,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
@@ -62,6 +60,7 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -699,12 +698,13 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
   }
 
   private File getFile(final String filename) {
-    try {
-      URI uri = new URI(filename);
-      return new File(uri);
-    } catch (URISyntaxException ex) {
-    }
-    return new File(filename);
+	  try {
+		  String uri = KettleVFS.getFileObject(environmentSubstitute(filename)).getName().getPath();
+		  return new File(uri);
+	  } catch (KettleFileException ex) {
+		  logError("Error in Fetching URI for File: " + filename, ex);
+	  }
+	  return new File(filename);
   }
 
   private boolean checkContainsFile(String realSourceDirectoryOrFile, FileObject[]  filelist, boolean isDirectory) throws FileSystemException
