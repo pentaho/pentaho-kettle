@@ -200,7 +200,7 @@ public abstract class BaseStepGenericXulDialog extends AbstractXulEventHandler i
       final XulMessageBox msg = (XulMessageBox) document.createElement("messagebox");
       msg.setTitle(title);
       msg.setMessage(message);
-      msg.setButtons(new Object[]{ "OK", "CANCEL" });
+      msg.setButtons(new Object[]{ "OK", "Cancel" });
       return msg.open();
     
     } catch (XulException e) {
