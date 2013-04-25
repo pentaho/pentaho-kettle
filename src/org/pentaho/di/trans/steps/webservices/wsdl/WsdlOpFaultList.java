@@ -24,10 +24,12 @@ package org.pentaho.di.trans.steps.webservices.wsdl;
 
 import java.util.ArrayList;
 import java.util.Map;
+
 import javax.wsdl.Fault;
 import javax.wsdl.Message;
 import javax.wsdl.Part;
 import javax.xml.namespace.QName;
+
 import org.pentaho.di.core.exception.KettleStepException;
 import org.w3c.dom.Element;
 

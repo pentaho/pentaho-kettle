@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.ldapinput.store;
 
 import java.security.cert.X509Certificate;
+
 import javax.net.ssl.X509TrustManager;
 
 public class TrustAlwaysManager implements X509TrustManager {

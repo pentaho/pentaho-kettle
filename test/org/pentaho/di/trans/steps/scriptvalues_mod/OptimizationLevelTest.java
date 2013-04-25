@@ -24,9 +24,11 @@ package org.pentaho.di.trans.steps.scriptvalues_mod;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 import org.junit.Test;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.KettleEnvironment;

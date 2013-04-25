@@ -2479,28 +2479,27 @@ public class Const
 	   if (d == null)  throw new Exception("Invalid time value " + DateFormat +": \"" + s + "\".");
 	   return (int)d.getTime(); 
 	 }
-	/**
-	 * 	Get the number of occurances of searchFor in string.
-	 * 	@param string String to be searched
-	 * 	@param searchFor to be counted string
-	 * 	@return number of occurances
-	 */
-	public static int getOccurenceString (String string, String searchFor)
-	{
-	  if (string == null || string.length() == 0)
-		  return 0;
-	  int counter=0;
-	  int len = searchFor.length();
-	  int result = 0;
-	  if (len > 0) {  
-	  int start = string.indexOf(searchFor);
-	  while (start != -1) {
-	            result++;
-	            start = string.indexOf(searchFor, start+len);
-	        }
-	    }
-		return counter;
-	}
+
+  /**
+   * 	Get the number of occurances of searchFor in string.
+   * 	@param string String to be searched
+   * 	@param searchFor to be counted string
+   * 	@return number of occurances
+   */
+  public static int getOccurenceString(String string, String searchFor) {
+    if (string == null || string.length() == 0)
+      return 0;
+    int counter = 0;
+    int len = searchFor.length();
+    if (len > 0) {
+      int start = string.indexOf(searchFor);
+      while (start != -1) {
+        start = string.indexOf(searchFor, start + len);
+      }
+    }
+    return counter;
+  }
+
 	public static String[] GetAvailableFontNames() {
 	    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 	    Font[] fonts = ge.getAllFonts();

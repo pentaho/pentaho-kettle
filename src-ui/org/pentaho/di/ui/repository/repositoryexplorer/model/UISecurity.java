@@ -26,8 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.repository.IUser;
-import org.pentaho.di.repository.RepositorySecurityManager;
 import org.pentaho.di.repository.ObjectRecipient.Type;
+import org.pentaho.di.repository.RepositorySecurityManager;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 
 public class UISecurity extends XulEventSourceAdapter {

@@ -22,10 +22,9 @@
 
 package org.pentaho.di.trans.steps.processfiles;
 
+import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
-
-import org.apache.commons.vfs.FileObject;
 
 
 

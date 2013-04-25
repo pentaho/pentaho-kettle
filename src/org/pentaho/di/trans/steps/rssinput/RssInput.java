@@ -91,8 +91,6 @@ public class RssInput extends BaseStep implements StepInterface
 
 	private RssInputMeta meta;
 	private RssInputData data;
-
-	private int errors = 0;
 	
 	public RssInput(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
@@ -373,9 +371,9 @@ public class RssInput extends BaseStep implements StepInterface
            errorCode = "BadRSSFormat"; //$NON-NLS-1$
          }
 
-         putError(errorMeta, errorData, 1, e.toString(), this.data.currenturl, errorCode);
-         errors++;
+         putError(errorMeta, errorData, 1, e.toString(), this.data.currenturl, errorCode);;
          logError(BaseMessages.getString(PKG, "RssInput.ErrorProcessing.Run",e.toString())); //$NON-NLS-1$
+         setErrors(getErrors()+1);
          
          ByteArrayOutputStream byteOS = new ByteArrayOutputStream();
          e.printStackTrace(new PrintStream(byteOS));

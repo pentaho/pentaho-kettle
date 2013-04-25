@@ -29,7 +29,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.ui.core.ConstUI;
-import org.pentaho.di.ui.core.widget.DoubleClickInterface;
 
 /**
  * This class can be used to define accelerators (actions) to a tree item that just got created.

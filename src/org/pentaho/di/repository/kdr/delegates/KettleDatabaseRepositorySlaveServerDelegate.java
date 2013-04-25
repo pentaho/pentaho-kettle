@@ -24,6 +24,7 @@ package org.pentaho.di.repository.kdr.delegates;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleObjectExistsException;
@@ -32,7 +33,6 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
-import org.pentaho.di.core.encryption.Encr;
 
 public class KettleDatabaseRepositorySlaveServerDelegate extends KettleDatabaseRepositoryBaseDelegate {
 

@@ -23,6 +23,7 @@
 package org.pentaho.di.ui.spoon;
 
 import java.util.List;
+
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Combo;

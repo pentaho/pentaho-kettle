@@ -22,13 +22,12 @@
 
 package org.pentaho.di.job.entries.copyfiles;
 
+import junit.framework.TestCase;
+
 import org.pentaho.di.TestUtilities;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.job.Job;
-
-
-import junit.framework.TestCase;
 
 public class CopyFilesTest 
 extends TestCase {

@@ -25,6 +25,7 @@ package org.pentaho.di.version;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -32,8 +33,6 @@ import java.util.jar.Manifest;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.xml.XMLHandler;
-
-import java.text.SimpleDateFormat;
 
 
 /**

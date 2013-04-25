@@ -22,7 +22,8 @@
 
 package org.pentaho.hadoop;
 
-import java.io.*;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Method;
 
 /**

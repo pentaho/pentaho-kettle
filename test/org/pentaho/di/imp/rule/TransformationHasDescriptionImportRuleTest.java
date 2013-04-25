@@ -24,14 +24,14 @@ package org.pentaho.di.imp.rule;
 
 import java.util.List;
 
+import junit.framework.TestCase;
+
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.plugins.ImportRulePluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.imp.rules.TransformationHasDescriptionImportRule;
 import org.pentaho.di.trans.TransMeta;
-
-import junit.framework.TestCase;
 
 public class TransformationHasDescriptionImportRuleTest extends TestCase {
 

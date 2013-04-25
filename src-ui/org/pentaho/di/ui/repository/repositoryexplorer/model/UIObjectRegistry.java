@@ -24,9 +24,9 @@ package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
 import java.lang.reflect.Constructor;
 
-import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
 
 public class UIObjectRegistry {

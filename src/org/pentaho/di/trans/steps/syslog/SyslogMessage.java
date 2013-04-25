@@ -23,9 +23,6 @@
 package org.pentaho.di.trans.steps.syslog;
 
 
-import org.productivity.java.syslog4j.Syslog;
-
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
@@ -37,6 +34,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.productivity.java.syslog4j.Syslog;
 
 /**
  * Write message to SyslogMessage

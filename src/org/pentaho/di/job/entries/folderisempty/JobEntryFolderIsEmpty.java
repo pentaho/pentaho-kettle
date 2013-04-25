@@ -68,7 +68,6 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 
 	private String foldername;
 	private int filescount;
-	private int folderscount;
 	private boolean includeSubfolders;
 	private boolean specifywildcard;
 	private String wildcard;
@@ -207,7 +206,6 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 		result.setNrErrors(1);
 		
 		filescount=0;
-		folderscount=0;
 		pattern = null;
 		
 		if (!Const.isEmpty(getWildcard()))  pattern = Pattern.compile(getRealWildcard());
@@ -314,10 +312,6 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 								}
 							}
 						}
-					}
-					else
-					{
-						folderscount++;
 					}
 				}
 				return true;

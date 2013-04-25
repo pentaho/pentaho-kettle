@@ -402,7 +402,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * This method is called by PDI whenever a job entry needs to read its settings from XML. The XML node containing
-   * the job entry’s settings is passed in as an argument. Again, the helper class org.pentaho.di.core.xml.XMLHandler
+   * the job entry's settings is passed in as an argument. Again, the helper class org.pentaho.di.core.xml.XMLHandler
    * is typically used to conveniently read the settings from the XML node.
    *
    * @param entrynode the top-level XML node

@@ -23,9 +23,6 @@
 package org.pentaho.di.trans.steps.webservices.wsdl;
 
 
-import org.xml.sax.InputSource;
-
-import javax.wsdl.xml.WSDLLocator;
 import java.beans.beancontext.BeanContext;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,6 +32,10 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.wsdl.xml.WSDLLocator;
+
+import org.xml.sax.InputSource;
 
 /**
  * Implementation of WSDLLocator for Beehive controls. This WSDLLocator implementation

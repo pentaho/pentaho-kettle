@@ -2596,6 +2596,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         int              fileFormatType = meta.getFileFormatTypeNr();
 
 		String delimiter = transMeta.environmentSubstitute(meta.getSeparator());
+		String enclosure = transMeta.environmentSubstitute(meta.getEnclosure());
+		String escapeCharacter = transMeta.environmentSubstitute(meta.getEscapeCharacter());
         
 		if (textFileList.nrOfFiles()>0)
 		{
@@ -2670,7 +2672,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                         { 
                         	// Estimate the number of input fields...
                         	// Chop up the line using the delimiter
-                        	String[] fields = TextFileInput.guessStringsFromLine(log, line, meta, delimiter);
+                        	String[] fields = TextFileInput.guessStringsFromLine(log, line, meta, delimiter, enclosure, escapeCharacter);
 
                             for (int i = 0; i < fields.length; i++)
                             {
@@ -2930,127 +2932,97 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 	}
 	
 
-	// Get the first x lines
-	private List<String> getFirst(int nrlines, boolean skipHeaders) throws KettleException
-	{
-		TextFileInputMeta meta = new TextFileInputMeta();
-		getInfo(meta);
-		FileInputList textFileList = meta.getTextFileList(transMeta);
-		
-        InputStream     fi = null;
-		ZipInputStream  zi = null ;
-		GZIPInputStream gzi = null ;
-		InputStream     f  = null;
-        StringBuilder    lineStringBuilder = new StringBuilder(256);
-        int             fileFormatType = meta.getFileFormatTypeNr();
-		
-		List<String> retval = new ArrayList<String>();
-		
-		if (textFileList.nrOfFiles()>0)
-		{
-			FileObject file = textFileList.getFile(0);
-			try
-			{
-				fi = KettleVFS.getInputStream(file);
-				
-				if (meta.getFileCompression().equals("Zip"))
-				{
-					zi = new ZipInputStream(fi);
-					zi.getNextEntry();
-					f=zi;
-				}
-				else if (meta.getFileCompression().equals("GZip"))
-				{
-					gzi = new GZIPInputStream(fi);
-					f=gzi;
-				} 
-				else if (meta.getFileCompression().equals("Hadoop-snappy") &&
-				    HadoopCompression.isHadoopSnappyAvailable()) {
-				  f = HadoopCompression.getSnappyInputStream(fi);
-				}
-				else
-				{
-					f=fi;
-				}
-                
-                InputStreamReader reader;
-                if (meta.getEncoding()!=null && meta.getEncoding().length()>0)
-                {
-                    reader = new InputStreamReader(f, meta.getEncoding());
-                }
-                else
-                {
-                    reader = new InputStreamReader(f);
-                }
-                EncodingType encodingType = EncodingType.guessEncodingType(reader.getEncoding());
+  // Get the first x lines
+  private List<String> getFirst(int nrlines, boolean skipHeaders) throws KettleException {
+    TextFileInputMeta meta = new TextFileInputMeta();
+    getInfo(meta);
+    FileInputList textFileList = meta.getTextFileList(transMeta);
 
-				String firstlines="";
-				int    linenr=0;
-				int    maxnr = nrlines+(meta.hasHeader()?meta.getNrHeaderLines():0);
-				
-                if (skipHeaders)
-                {
-                    // Skip the header lines first if more then one, it helps us position
-                    if (meta.isLayoutPaged() && meta.getNrLinesDocHeader()>0)
-                    {
-                        int skipped = 0;
-                        String line = TextFileInput.getLine(log, reader, encodingType, fileFormatType, lineStringBuilder);
-                        while (line!=null && skipped<meta.getNrLinesDocHeader()-1)
-                        {
-                            skipped++;
-                            line = TextFileInput.getLine(log, reader, encodingType, fileFormatType, lineStringBuilder);
-                        }
-                    }
-                    
-                    // Skip the header lines first if more then one, it helps us position
-                    if (meta.hasHeader() && meta.getNrHeaderLines()>0)
-                    {
-                        int skipped = 0;
-                        String line = TextFileInput.getLine(log, reader, encodingType, fileFormatType, lineStringBuilder);
-                        while (line!=null && skipped<meta.getNrHeaderLines()-1)
-                        {
-                            skipped++;
-                            line = TextFileInput.getLine(log, reader, encodingType, fileFormatType, lineStringBuilder);
-                        }
-                    }
-                }
-                
-				String line = TextFileInput.getLine(log, reader, encodingType, fileFormatType, lineStringBuilder);
-				while(line!=null && (linenr<maxnr || nrlines==0))
-				{
-					retval.add(line);
-					firstlines+=line+Const.CR;
-					linenr++;
-					line = TextFileInput.getLine(log, reader, encodingType, fileFormatType, lineStringBuilder);
-				}
-			}
-			catch(Exception e)
-			{
-                throw new KettleException(BaseMessages.getString(PKG, "TextFileInputDialog.Exception.ErrorGettingFirstLines", ""+nrlines, file.getName().getURI()), e);
-			}
-			finally
-			{
-				try
-				{
-					if (meta.getFileCompression().equals("Zip") && zi!=null)
-					{
-						zi.closeEntry();
-						zi.close();
-					}
-					else if (meta.getFileCompression().equals("GZip") && gzi!=null)
-					{
-						gzi.close();
-					}
-					f.close();
-				}
-				catch(Exception e)
-				{					
-				}
-			}
-		}
-		
-		return retval;
-	}
+    InputStream fi = null;
+    ZipInputStream zi = null;
+    GZIPInputStream gzi = null;
+    InputStream f = null;
+    StringBuilder lineStringBuilder = new StringBuilder(256);
+    int fileFormatType = meta.getFileFormatTypeNr();
+
+    List<String> retval = new ArrayList<String>();
+
+    if (textFileList.nrOfFiles() > 0) {
+      FileObject file = textFileList.getFile(0);
+      try {
+        fi = KettleVFS.getInputStream(file);
+
+        if (meta.getFileCompression().equals("Zip")) {
+          zi = new ZipInputStream(fi);
+          zi.getNextEntry();
+          f = zi;
+        } else if (meta.getFileCompression().equals("GZip")) {
+          gzi = new GZIPInputStream(fi);
+          f = gzi;
+        } else if (meta.getFileCompression().equals("Hadoop-snappy") && HadoopCompression.isHadoopSnappyAvailable()) {
+          f = HadoopCompression.getSnappyInputStream(fi);
+        } else {
+          f = fi;
+        }
+
+        InputStreamReader reader;
+        if (meta.getEncoding() != null && meta.getEncoding().length() > 0) {
+          reader = new InputStreamReader(f, meta.getEncoding());
+        } else {
+          reader = new InputStreamReader(f);
+        }
+        EncodingType encodingType = EncodingType.guessEncodingType(reader.getEncoding());
+
+        int linenr = 0;
+        int maxnr = nrlines + (meta.hasHeader() ? meta.getNrHeaderLines() : 0);
+
+        if (skipHeaders) {
+          // Skip the header lines first if more then one, it helps us position
+          if (meta.isLayoutPaged() && meta.getNrLinesDocHeader() > 0) {
+            int skipped = 0;
+            String line = TextFileInput.getLine(log, reader, encodingType, fileFormatType, lineStringBuilder);
+            while (line != null && skipped < meta.getNrLinesDocHeader() - 1) {
+              skipped++;
+              line = TextFileInput.getLine(log, reader, encodingType, fileFormatType, lineStringBuilder);
+            }
+          }
+
+          // Skip the header lines first if more then one, it helps us position
+          if (meta.hasHeader() && meta.getNrHeaderLines() > 0) {
+            int skipped = 0;
+            String line = TextFileInput.getLine(log, reader, encodingType, fileFormatType, lineStringBuilder);
+            while (line != null && skipped < meta.getNrHeaderLines() - 1) {
+              skipped++;
+              line = TextFileInput.getLine(log, reader, encodingType, fileFormatType, lineStringBuilder);
+            }
+          }
+        }
+
+        String line = TextFileInput.getLine(log, reader, encodingType, fileFormatType, lineStringBuilder);
+        while (line != null && (linenr < maxnr || nrlines == 0)) {
+          retval.add(line);
+          linenr++;
+          line = TextFileInput.getLine(log, reader, encodingType, fileFormatType, lineStringBuilder);
+        }
+      } catch (Exception e) {
+        throw new KettleException(BaseMessages.getString(PKG, "TextFileInputDialog.Exception.ErrorGettingFirstLines",
+            "" + nrlines, file.getName().getURI()), e);
+      } finally {
+        try {
+          if (meta.getFileCompression().equals("Zip") && zi != null) {
+            zi.closeEntry();
+            zi.close();
+          } else if (meta.getFileCompression().equals("GZip") && gzi != null) {
+            gzi.close();
+          }
+          f.close();
+        } catch (Exception e) {
+        }
+      }
+    }
+
+    return retval;
+  }
 	
 
 	

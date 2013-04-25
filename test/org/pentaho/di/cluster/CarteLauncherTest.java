@@ -22,9 +22,9 @@
 
 package org.pentaho.di.cluster;
 
-import org.pentaho.di.core.KettleEnvironment;
-
 import junit.framework.TestCase;
+
+import org.pentaho.di.core.KettleEnvironment;
 
 public class CarteLauncherTest extends TestCase {
   public void testLaunchStopSlaveServer() throws Exception {

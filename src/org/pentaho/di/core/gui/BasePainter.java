@@ -26,9 +26,6 @@ import java.util.List;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.NotePadMeta;
-import org.pentaho.di.core.gui.Point;
-import org.pentaho.di.core.gui.Rectangle;
-import org.pentaho.di.core.gui.ScrollBarInterface;
 import org.pentaho.di.core.gui.AreaOwner.AreaType;
 import org.pentaho.di.core.gui.GCInterface.EColor;
 import org.pentaho.di.core.gui.GCInterface.EImage;

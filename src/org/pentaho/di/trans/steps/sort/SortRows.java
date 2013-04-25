@@ -340,8 +340,17 @@ public class SortRows extends BaseStep implements StepInterface {
           }
 
         } catch (SocketTimeoutException e) {
-          throw new KettleValueException(e); // should never happen on local
-                                             // files
+          // should never happen on local files
+          //
+          throw new KettleValueException(e); 
+        } finally {
+          if (gzfi!=null) {
+            try {
+             gzfi.close();
+            } catch(Exception e) {
+              throw new KettleValueException(e);
+            }
+          }
         }
       }
     }

@@ -315,9 +315,11 @@ public class BlackBoxTests {
 	}
 	
 	public void fileCompare( File expected, File actual, LogChannelInterface log ) throws IOException {
-		
-		InputStream expectedStream = new FileInputStream( expected );
-		InputStream actualStream = new FileInputStream( actual );
+	  InputStream expectedStream = null;
+	  InputStream actualStream = null;
+	  try {
+	    expectedStream = new FileInputStream( expected );
+	    actualStream = new FileInputStream( actual );
 		
         // compare the two files
         
@@ -405,6 +407,13 @@ public class BlackBoxTests {
         	e.printStackTrace();
         	fail( "Error trying to compare output files: " + getPath(actual) );
         }
+	  } finally {
+	    if (expectedStream != null) {
+	      expectedStream.close();
+	    } if (actualStream!=null) {
+	      actualStream.close();
+	    }
+	  }
 	}
 
 	public Result runTrans(String fileName, LogChannelInterface log) throws KettleException

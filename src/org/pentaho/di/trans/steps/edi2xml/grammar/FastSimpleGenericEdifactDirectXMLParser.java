@@ -1,16 +1,24 @@
 package org.pentaho.di.trans.steps.edi2xml.grammar;
-import org.apache.commons.lang.StringEscapeUtils;
-import java.util.LinkedList;
-
-
-import org.antlr.runtime.*;
-import java.util.Stack;
-import java.util.List;
 import java.util.ArrayList;
-
-import org.antlr.stringtemplate.*;
-import org.antlr.stringtemplate.language.*;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.antlr.runtime.BitSet;
+import org.antlr.runtime.IntStream;
+import org.antlr.runtime.MismatchedSetException;
+import org.antlr.runtime.MismatchedTokenException;
+import org.antlr.runtime.NoViableAltException;
+import org.antlr.runtime.Parser;
+import org.antlr.runtime.ParserRuleReturnScope;
+import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.RecognizerSharedState;
+import org.antlr.runtime.RuleReturnScope;
+import org.antlr.runtime.TokenStream;
+import org.antlr.stringtemplate.StringTemplate;
+import org.antlr.stringtemplate.StringTemplateGroup;
+import org.antlr.stringtemplate.language.AngleBracketTemplateLexer;
+import org.apache.commons.lang.StringEscapeUtils;
 @SuppressWarnings({"all", "warnings", "unchecked"})
 public class FastSimpleGenericEdifactDirectXMLParser extends Parser {
     public static final String[] tokenNames = new String[] {

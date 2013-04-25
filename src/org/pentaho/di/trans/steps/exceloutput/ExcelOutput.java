@@ -38,8 +38,8 @@ import jxl.write.Label;
 import jxl.write.NumberFormat;
 import jxl.write.WritableCellFormat;
 import jxl.write.WritableFont;
-import jxl.write.WritableImage;
 import jxl.write.WritableFont.FontName;
+import jxl.write.WritableImage;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;

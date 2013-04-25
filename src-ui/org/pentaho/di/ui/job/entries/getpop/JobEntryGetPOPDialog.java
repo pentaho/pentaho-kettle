@@ -2099,8 +2099,8 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 	        if(Const.isEmpty(wName.getText())) 
 	        {
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage("Veuillez svp donner un nom � cette entr�e t�che!");
-				mb.setText("Entr�e t�che non nomm�e");
+				mb.setMessage("Please give this job entry a name!");
+				mb.setText("Nameless job entry");
 				mb.open(); 
 				return;
 	        }

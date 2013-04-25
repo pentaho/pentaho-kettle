@@ -22,13 +22,14 @@
 
 package org.pentaho.di.trans.steps.webservices.wsdl;
 
-import org.w3c.dom.Element;
-
-import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.xml.namespace.QName;
+
+import org.w3c.dom.Element;
 
 /*
  This looks a little scary, but isn't so bad.  Pretty much all that needs to be done here is to

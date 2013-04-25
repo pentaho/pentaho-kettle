@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.mail;
 
 import java.util.HashSet;
 import java.util.Properties;
+
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 

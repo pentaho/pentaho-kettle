@@ -22,21 +22,25 @@
 
 package org.pentaho.di.core.logging;
 
-import org.apache.log4j.*;
-import org.apache.log4j.spi.LoggingEvent;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.apache.log4j.Appender;
+import org.apache.log4j.Layout;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
+import org.apache.log4j.spi.LoggingEvent;
+import org.junit.Test;
 
 public class KettleLogChannelAppenderTest {
   /**
    * Test class to encapsulate log message information we might want to retrieve for comparison.
    */
-  private class MessageObject {
+  protected class MessageObject {
     private String message;
     private Object[] args;
     private Throwable throwable;

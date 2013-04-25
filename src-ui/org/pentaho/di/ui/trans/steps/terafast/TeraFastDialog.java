@@ -468,6 +468,7 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
 
         // show a confirm dialog if some missing field was found
         //
+        /*
         if (missingSourceFields.length() > 0 || missingTargetFields.length() > 0) {
 
             String message = "";
@@ -490,6 +491,8 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
             // return;
             // }
         }
+        */
+        
         EnterMappingDialog d = new EnterMappingDialog(TeraFastDialog.this.shell, sourceFields.getFieldNames(),
                 targetFields.getFieldNames(), mappings);
         mappings = d.open();

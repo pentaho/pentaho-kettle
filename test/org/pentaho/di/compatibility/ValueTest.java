@@ -27,10 +27,10 @@ import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import junit.framework.TestCase;
+
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
-
-import junit.framework.TestCase;
 
 /**
  * Test class for the basic functionality of Value.

@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.symmetriccrypto.symmetricalgorithm;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.i18n.BaseMessages;
 
 

@@ -121,10 +121,11 @@ public class GPLoadTests {
    private String getYamlFileContents(String filename) {
 
       StringBuilder sbFileContents = new StringBuilder();
+      BufferedReader bufferedReader = null;
       try {
          // create a buffered reader
-         BufferedReader bufferedReader = new BufferedReader(new FileReader(
-               new File(testDirectory.getAbsolutePath() + "/" + filename)));
+         bufferedReader = new BufferedReader(new FileReader(
+         new File(testDirectory.getAbsolutePath() + "/" + filename)));
          String lineFromFile = null;
 
          // read each line and append it with a 
@@ -136,6 +137,14 @@ public class GPLoadTests {
          fail(fnfe.getMessage());
       } catch (IOException ioe) {
          fail(ioe.getMessage());
+      } finally {
+        if (bufferedReader!=null) {
+          try {
+            bufferedReader.close();
+          } catch(Exception e) {
+            fail(e.getMessage());
+          }
+        }
       }
 
       // convert to string and return

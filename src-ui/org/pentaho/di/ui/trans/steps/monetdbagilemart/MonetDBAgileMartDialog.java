@@ -23,7 +23,6 @@
 package org.pentaho.di.ui.trans.steps.monetdbagilemart;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
@@ -70,10 +69,6 @@ public class MonetDBAgileMartDialog extends MonetDBBulkLoaderDialog implements S
 	
 	private ComboVar			wConnection;
 	
-	private Label               wlConnection;
-    private Button              wbnConnection;
-    private Button              wbeConnection;
-
     private Label               wlSchema;
     private TextVar             wSchema;
     private FormData            fdlSchema, fdSchema;

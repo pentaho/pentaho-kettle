@@ -5836,14 +5836,21 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       if (stepPlugin != null && !Const.isEmpty(filename)) {
         // OK, in stead of a normal error message, we give back the
         // content of the error help file... (HTML)
+        FileInputStream fis = null;
         try {
           StringBuffer content = new StringBuffer();
-
-          FileInputStream fis = new FileInputStream(new File(filename));
-          int ch = fis.read();
-          while (ch >= 0) {
-            content.append((char) ch);
-            ch = fis.read();
+          
+          try {
+            fis = new FileInputStream(new File(filename));
+            int ch = fis.read();
+            while (ch >= 0) {
+              content.append((char) ch);
+              ch = fis.read();
+            }
+          } finally {
+            if (fis!=null) {
+              fis.close();
+            }
           }
 
           ShowBrowserDialog sbd = new ShowBrowserDialog(shell, BaseMessages.getString(PKG,

@@ -102,11 +102,9 @@ public class AddExportServlet extends BaseHttpServlet implements CarteServletInt
 
       // Pass the input directly to a temporary file
       //
-      int size = 0;
       int c;
       while ((c = in.read()) != -1) {
         outputStream.write(c);
-        size++;
       }
 
       outputStream.flush();

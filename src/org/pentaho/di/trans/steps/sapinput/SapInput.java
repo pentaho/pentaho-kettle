@@ -39,8 +39,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPConnectionFactory;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPException;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPField;
-import org.pentaho.di.trans.steps.sapinput.sap.impl.SAPRowIterator;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPRow;
+import org.pentaho.di.trans.steps.sapinput.sap.impl.SAPRowIterator;
 
 /**
  * Reads information from a database table by using freehand SQL

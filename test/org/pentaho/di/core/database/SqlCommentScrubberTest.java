@@ -1,6 +1,6 @@
 package org.pentaho.di.core.database;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 

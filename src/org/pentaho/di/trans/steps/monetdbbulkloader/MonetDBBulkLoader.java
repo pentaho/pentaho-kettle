@@ -498,31 +498,31 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
     	}		
 	}
 
-	protected ProcessHolder startMClient( Runtime rt, String command ) {
-		ProcessHolder holder = new ProcessHolder();
-		holder.isRunning = true;
-    	try {
-    		
-		   holder.process = rt.exec(command);
-		   holder.stdIn = holder.process.getOutputStream();
-		   holder.stdOut = holder.process.getInputStream();
-		   holder.stdErr = holder.process.getErrorStream();
+  protected ProcessHolder startMClient(Runtime rt, String command) {
+    ProcessHolder holder = new ProcessHolder();
+    holder.isRunning = true;
+    try {
 
-		  	try {
-				int exitValue = holder.process.exitValue();
-				// if we get here, mclient has terminated
-				byte buffer[] = new byte[4096];
-				holder.stdErr.read(buffer);
-				holder.message = new String(buffer);
-				holder.isRunning = false;
-		  	} catch (Exception e) {
-		  		// mclient is still running, this is a good thing
-		  	}
-    	} catch (Exception e) {
-    		log.logError("Could not execute MonetDB mclient command: "+command);
-    	}
-	  	return holder;
-	}
+      holder.process = rt.exec(command);
+      holder.stdIn = holder.process.getOutputStream();
+      holder.stdOut = holder.process.getInputStream();
+      holder.stdErr = holder.process.getErrorStream();
+
+      try {
+        holder.process.exitValue();
+        // if we get here, mclient has terminated
+        byte buffer[] = new byte[4096];
+        holder.stdErr.read(buffer);
+        holder.message = new String(buffer);
+        holder.isRunning = false;
+      } catch (Exception e) {
+        // mclient is still running, this is a good thing
+      }
+    } catch (Exception e) {
+      log.logError("Could not execute MonetDB mclient command: " + command);
+    }
+    return holder;
+  }
 	
 	public void dropTable( Runtime rt, String mClientCmd ) throws KettleException {
 		

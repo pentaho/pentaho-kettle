@@ -6,16 +6,16 @@ package org.pentaho.di.core.lifecycle;
  */
 public interface KettleLifecycleListener {
   /**
-   * Called during {@link KettleEnvironment} initialization.
+   * Called during KettleEnvironment initialization.
    * 
    * @throws LifecycleException to indicate the listener did not complete 
-   * successfully. Severe {@link LifecycleException}s will stop the 
-   * initialization of the {@link KettleEnvironment}.
+   * successfully. Severe LifecycleException will stop the 
+   * initialization of the KettleEnvironment.
    */
   void onEnvironmentInit() throws LifecycleException;
 
   /**
-   * Called when the VM that initialized {@link KettleEnvironment} terminates.
+   * Called when the VM that initialized KettleEnvironment terminates.
    */
   void onEnvironmentShutdown();
 }

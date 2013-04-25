@@ -239,8 +239,8 @@
 	<classpathentry kind="lib" path="libext/mondrian/mondrian-3.5.0.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-metadata-3.4.6.jar"/>
 	<classpathentry kind="lib" path="libext/esapi-2.0.1.jar"/>
-	<classpathentry kind="lib" path="libext/poi/poi-3.9.jar"/>
-	<classpathentry kind="lib" path="libext/poi/poi-ooxml-3.9.jar"/>
-	<classpathentry kind="lib" path="libext/poi/poi-ooxml-schemas-3.9.jar"/>
+	<classpathentry kind="lib" path="libext/poi/poi-3.8.jar"/>
+	<classpathentry kind="lib" path="libext/poi/poi-ooxml-3.8.jar"/>
+	<classpathentry kind="lib" path="libext/poi/poi-ooxml-schemas-3.8.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

@@ -1,5 +1,6 @@
 package org.pentaho.di.www;
 
+import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -16,7 +17,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleXMLException;
-import static junit.framework.Assert.*;
 
 public class AddExportServletTest {
   private AddExportServlet addExportServlet;

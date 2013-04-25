@@ -64,7 +64,6 @@ public class RepositoryDirectoryUI {
 		ti.setText(dir.getName());
 		ti.setData(dir);
 		ti.setForeground(dircolor);
-		int nrAdded=0;
 		
 		// First, we draw the directories
 		for (int i=0;i<dir.getNrSubdirectories();i++)
@@ -167,8 +166,7 @@ public class RepositoryDirectoryUI {
             	
                 if(add)
                 {
-                	nrAdded++;
-	                TreeItem tiObject = new TreeItem(ti, SWT.NONE);
+                	TreeItem tiObject = new TreeItem(ti, SWT.NONE);
 	                tiObject.setData(repositoryObject);
 	                if(repositoryObject.getObjectType()==RepositoryObjectType.TRANSFORMATION) {
 	                	tiObject.setImage(GUIResource.getInstance().getImageTransGraph());

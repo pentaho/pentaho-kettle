@@ -43,7 +43,7 @@ import org.pentaho.di.trans.steps.calculator.CalculatorMetaFunction;
 public class ValueDataUtilTest extends TestCase
 {
 	private static String yyyy_MM_dd = "yyyy-MM-dd";
-	private enum DateCalc {WORKING_DAYS, DATE_DIFF}; 
+	protected enum DateCalc {WORKING_DAYS, DATE_DIFF}; 
 	
     /**
      * @deprecated Use {@link Const#ltrim(String)} instead

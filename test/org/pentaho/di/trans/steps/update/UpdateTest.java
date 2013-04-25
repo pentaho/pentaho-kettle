@@ -22,13 +22,14 @@
 
 package org.pentaho.di.trans.steps.update;
 
+import static org.junit.Assert.assertArrayEquals;
+
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import junit.framework.TestCase;
-import static org.junit.Assert.*;
 
 import org.junit.After;
 import org.junit.Before;

@@ -331,7 +331,6 @@ public class PreviewRowsDialog {
   private void getData() {
     shell.getDisplay().asyncExec(new Runnable() {
       public void run() {
-        int nrErrors = 0;
         lineNr = 0;
         for (int i = 0; i < buffer.size(); i++) {
           TableItem item;
@@ -342,7 +341,7 @@ public class PreviewRowsDialog {
 
           Object[] row = (Object[]) buffer.get(i);
 
-          nrErrors += getDataForRow(item, row);
+          getDataForRow(item, row);
         }
         if (!wFields.isDisposed())
           wFields.optWidth(true, 200);

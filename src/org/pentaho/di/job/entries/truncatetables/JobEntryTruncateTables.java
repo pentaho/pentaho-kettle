@@ -49,8 +49,8 @@ import org.pentaho.di.job.entry.validator.ValidatorContext;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
-import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
+import org.pentaho.di.resource.ResourceReference;
 import org.w3c.dom.Node;
 
 /**
@@ -73,7 +73,6 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 	public String schemaname[];
 	
 	private int NrErrors=0;
-	private int NrSuccess=0;
 	boolean continueProcess=true;
 
 	public JobEntryTruncateTables(String n)
@@ -252,7 +251,6 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 		result.setResult(true);
 		NrErrors=0;
 		continueProcess=true;
-		NrSuccess=0;
 		
 	    if (argFromPrevious) {
 		      if(log.isDetailed()) 
@@ -281,10 +279,9 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 					          	  logDetailed(BaseMessages.getString(PKG, "JobEntryTruncateTables.ProcessingRow", tablename_previous, schemaname_previous)); //$NON-NLS-1$
 					        
 					            // let's truncate table
-					            if(truncateTables(tablename_previous, schemaname_previous, db)) 
-					            	updateSuccess();
-					            else
+					            if(!truncateTables(tablename_previous, schemaname_previous, db)) { 
 					            	updateErrors();
+					            }
 					        }else{
 					      	  logError(BaseMessages.getString(PKG, "JobEntryTruncateTables.RowEmpty")); //$NON-NLS-1$ 
 					        }
@@ -299,10 +296,9 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 		        	    		  logDetailed(BaseMessages.getString(PKG, "JobEntryTruncateTables.ProcessingArg", arguments[i], schemaname[i])); //$NON-NLS-1$
 		        			
 		        	    	  // let's truncate table
-		        	    	  if(truncateTables(realTablename, realSchemaname, db)) 
-		        	    		  updateSuccess();
-		        	    	  else
+		        	    	  if(!truncateTables(realTablename, realSchemaname, db)) { 
 		        	    		  updateErrors();
+		        	    	  }
 	        			 }else{
 	        				  logError(BaseMessages.getString(PKG, "JobEntryTruncateTables.ArgEmpty", arguments[i], schemaname[i])); //$NON-NLS-1$ 
 	        			 }
@@ -330,10 +326,7 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 		NrErrors++;
 		continueProcess=false;
 	}
-	private void updateSuccess()
-	{
-		NrSuccess++;
-	}
+
     
     public DatabaseMeta[] getUsedDatabaseConnections()
     {

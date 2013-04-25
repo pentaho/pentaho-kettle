@@ -30,10 +30,6 @@ import org.apache.commons.codec.language.Metaphone;
 import org.apache.commons.codec.language.RefinedSoundex;
 import org.apache.commons.codec.language.Soundex;
 import org.apache.commons.lang.StringUtils;
-
-import com.wcohen.ss.Jaro;
-import com.wcohen.ss.JaroWinkler;
-import com.wcohen.ss.NeedlemanWunsch;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
@@ -51,6 +47,10 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+
+import com.wcohen.ss.Jaro;
+import com.wcohen.ss.JaroWinkler;
+import com.wcohen.ss.NeedlemanWunsch;
 
 
 /**

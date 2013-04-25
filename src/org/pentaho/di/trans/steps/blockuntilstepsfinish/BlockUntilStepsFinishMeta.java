@@ -25,7 +25,6 @@ package org.pentaho.di.trans.steps.blockuntilstepsfinish;
 import java.util.List;
 import java.util.Map;
 
-import org.w3c.dom.Node;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -48,6 +47,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.w3c.dom.Node;
 
 /*
  * Created on 30-06-2008

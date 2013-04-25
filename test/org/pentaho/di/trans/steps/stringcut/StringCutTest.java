@@ -26,7 +26,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Test;
-
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;

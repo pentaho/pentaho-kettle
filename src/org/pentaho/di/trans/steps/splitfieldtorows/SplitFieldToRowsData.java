@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.splitfieldtorows;
 
 
 import java.util.regex.Pattern;
+
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;

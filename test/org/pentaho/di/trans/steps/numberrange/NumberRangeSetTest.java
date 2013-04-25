@@ -24,9 +24,9 @@ package org.pentaho.di.trans.steps.numberrange;
 
 import java.util.Arrays;
 
-import org.pentaho.di.core.exception.KettleException;
-
 import junit.framework.TestCase;
+
+import org.pentaho.di.core.exception.KettleException;
 
 public class NumberRangeSetTest extends TestCase {
 

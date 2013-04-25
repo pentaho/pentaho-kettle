@@ -31,13 +31,12 @@ package org.pentaho.di.trans.steps.palo.cellinput;
  */
 
 
-import org.pentaho.di.palo.core.PaloHelper;
-import org.pentaho.di.trans.step.BaseStepData;
-import org.pentaho.di.trans.step.StepDataInterface;
-
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.PALODatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.palo.core.PaloHelper;
+import org.pentaho.di.trans.step.BaseStepData;
+import org.pentaho.di.trans.step.StepDataInterface;
 
 public class PaloCellInputData extends BaseStepData 
 implements StepDataInterface {

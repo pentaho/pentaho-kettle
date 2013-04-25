@@ -23,7 +23,6 @@
 package org.pentaho.di.trans.steps.mailinput;
 
 import java.text.SimpleDateFormat;
-import java.lang.StringBuffer;
 import java.util.Date;
 
 import org.pentaho.di.core.Const;

@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.randomvalue;
 
 import java.util.Random;
+
 import javax.crypto.KeyGenerator;
 
 import org.pentaho.di.core.row.RowMetaInterface;

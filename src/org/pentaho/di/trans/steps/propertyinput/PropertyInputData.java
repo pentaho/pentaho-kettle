@@ -22,7 +22,6 @@
 
 package org.pentaho.di.trans.steps.propertyinput;
 
-import java.util.Iterator;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.text.DateFormatSymbols;
@@ -31,12 +30,13 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.vfs.FileObject;
-import org.ini4j.Wini;
 import org.ini4j.Profile.Section;
+import org.ini4j.Wini;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;

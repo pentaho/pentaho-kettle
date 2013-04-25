@@ -23,7 +23,6 @@
 package org.pentaho.di.trans.steps.excelinput.poi;
 
 import java.io.File;
-import java.net.URI;
 
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.provider.local.LocalFile;

@@ -22,13 +22,14 @@
 
 package org.pentaho.di.trans.steps.exceloutput;
 
+import java.awt.Dimension;
+
 import jxl.format.Colour;
 import jxl.format.UnderlineStyle;
 import jxl.write.WritableCellFormat;
 import jxl.write.WritableFont;
-import jxl.write.WriteException;
 import jxl.write.WritableFont.FontName;
-import java.awt.Dimension;
+import jxl.write.WriteException;
 
 public class ExcelFontMap
 {

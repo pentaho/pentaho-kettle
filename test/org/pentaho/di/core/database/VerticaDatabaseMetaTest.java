@@ -1,6 +1,7 @@
 package org.pentaho.di.core.database;
 
 import static org.junit.Assert.assertFalse;
+
 import org.junit.Test;
 
 /**

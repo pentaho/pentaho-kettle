@@ -27,7 +27,9 @@ import java.util.List;
 import org.pentaho.ui.xul.util.AbstractModelList;
 
 public class UISlaves extends AbstractModelList<UISlave> {
-  
+
+  private static final long serialVersionUID = -3574729154198033092L;
+
   public UISlaves(){
   }
   
