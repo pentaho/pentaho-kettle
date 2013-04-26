@@ -3,6 +3,8 @@ package org.pentaho.di.trans;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.pentaho.di.core.sql.ServiceCacheMethod;
 import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.metastore.api.IMetaStore;
@@ -12,7 +14,6 @@ import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.api.exceptions.MetaStoreNamespaceExistsException;
 import org.pentaho.metastore.util.MetaStoreUtil;
 import org.pentaho.metastore.util.PentahoDefaults;
-import org.pentaho.pms.util.Const;
 
 public class DataServiceMetaStoreUtil extends MetaStoreUtil {
   
@@ -90,8 +91,8 @@ public class DataServiceMetaStoreUtil extends MetaStoreUtil {
     meta.setTransFilename(getChildString(element, DataServiceMeta.DATA_SERVICE_TRANSFORMATION_FILENAME));
     meta.setTransRepositoryPath(getChildString(element, DataServiceMeta.DATA_SERVICE_TRANSFORMATION_REP_PATH));
     String transObjectIdString = getChildString(element, DataServiceMeta.DATA_SERVICE_TRANSFORMATION_REP_OBJECT_ID);
-    meta.setTransObjectId(Const.isEmpty(transObjectIdString) ? null : new StringObjectId(transObjectIdString));
-    meta.setCacheMaxAgeMinutes(Const.toInt(getChildString(element, DataServiceMeta.DATA_SERVICE_CACHE_MAX_AGE_MINUTES), 0));
+    meta.setTransObjectId(StringUtils.isEmpty(transObjectIdString) ? null : new StringObjectId(transObjectIdString));
+    meta.setCacheMaxAgeMinutes(NumberUtils.toInt(getChildString(element, DataServiceMeta.DATA_SERVICE_CACHE_MAX_AGE_MINUTES), 0));
     meta.setCacheMethod(ServiceCacheMethod.getMethodByName(getChildString(element, DataServiceMeta.DATA_SERVICE_CACHE_METHOD)));
     return meta;
   }
