@@ -4948,7 +4948,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         for (int y = stepsMinSize; y < stepsSize - 1; y++) {
           one = steps.get(y);
           two = steps.get(y + 1);
-          isBefore = transMeta.findPrevious(one.stepMeta, two.stepMeta);
+          
+          if (one.stepMeta.equals(two.stepMeta)) {
+            isBefore = one.copy>two.copy;
+          } else {
+            isBefore = transMeta.findPrevious(one.stepMeta, two.stepMeta);
+          }
           if (isBefore) {
             // two was found to be positioned BEFORE one so we need to
             // switch them...
@@ -4967,7 +4972,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         one = steps.get(z);
         two = steps.get(z - 1);
 
-        isBefore = transMeta.findPrevious(one.stepMeta, two.stepMeta);
+        if (one.stepMeta.equals(two.stepMeta)) {
+          isBefore = one.copy>two.copy;
+        } else {
+          isBefore = transMeta.findPrevious(one.stepMeta, two.stepMeta);
+        }
         if (!isBefore) {
           // two was found NOT to be positioned BEFORE one so we need to
           // switch them...
