@@ -3576,7 +3576,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 
 			}
 		} catch(Exception e) {
-			throw new KettleDatabaseException("Unable to write log record to log table " + logTable.getActualTableName(), e);
+			throw new KettleDatabaseException("Unable to write log record to log table " + environmentSubstitute(logTable.getActualTableName()), e);
 		}
 	}
 	
@@ -3607,11 +3607,11 @@ public class Database implements VariableSpace, LoggingObjectInterface
 					execStatement(sql, row.getRowMeta(), row.getData());
 					
 				} else {
-					throw new KettleException(BaseMessages.getString(PKG, "Database.Exception.LogTimeoutDefinedOnTableWithoutLogField", logTable.getActualTableName()));
+					throw new KettleException(BaseMessages.getString(PKG, "Database.Exception.LogTimeoutDefinedOnTableWithoutLogField", environmentSubstitute(logTable.getActualTableName())));
 				}
 			}
 		} catch(Exception e) {
-			throw new KettleDatabaseException(BaseMessages.getString(PKG, "Database.Exception.UnableToCleanUpOlderRecordsFromLogTable", logTable.getActualTableName()), e);
+			throw new KettleDatabaseException(BaseMessages.getString(PKG, "Database.Exception.UnableToCleanUpOlderRecordsFromLogTable", environmentSubstitute(logTable.getActualTableName())), e);
 		}
 	}
 	
