@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.excelinput.ods;
 
+import java.io.InputStream;
 import java.util.List;
 
 import org.odftoolkit.odfdom.doc.OdfDocument;
@@ -44,6 +45,16 @@ public class OdfWorkbook implements KWorkbook {
     
     try {
       document = OdfSpreadsheetDocument.loadDocument(KettleVFS.getInputStream(filename));
+    } catch(Exception e) {
+      throw new KettleException(e);
+    }
+  }
+  
+  public OdfWorkbook(InputStream inputStream, String encoding) throws KettleException {
+    this.encoding = encoding;
+    
+    try {
+      document = OdfSpreadsheetDocument.loadDocument(inputStream);
     } catch(Exception e) {
       throw new KettleException(e);
     }
@@ -86,5 +97,11 @@ public class OdfWorkbook implements KWorkbook {
     OdfTable table = document.getTableList().get(sheetNr);
     if (table==null) return null;
     return new OdfSheet(table);
+  }
+  
+  public String getSheetName(int sheetNr) {
+    OdfTable table = document.getTableList().get(sheetNr);
+    if (table==null) return null;
+    return table.getTableName();
   }
 }

@@ -22,6 +22,8 @@
 
 package org.pentaho.di.trans.steps.excelinput;
 
+import java.io.InputStream;
+
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.spreadsheet.KWorkbook;
 import org.pentaho.di.trans.steps.excelinput.jxl.XLSWorkbook;
@@ -36,6 +38,17 @@ public class WorkbookFactory {
     case POI: return new PoiWorkbook(filename, encoding); // encoding is not used, perhaps detected automatically?
     // case SAX_POI: return new SaxPoiWorkbook(filename, encoding); // encoding is not used, perhaps detected automatically?
     case ODS: return new OdfWorkbook(filename, encoding); // encoding is not used, perhaps detected automatically?
+    default: throw new KettleException("Sorry, spreadsheet type "+type.getDescription()+" is not yet supported");
+    }
+    
+  }
+  
+  public static KWorkbook getWorkbook(SpreadSheetType type, InputStream inputStream, String encoding) throws KettleException {
+    switch(type) {
+    case JXL: return new XLSWorkbook(inputStream, encoding);
+    case POI: return new PoiWorkbook(inputStream, encoding); // encoding is not used, perhaps detected automatically?
+    // case SAX_POI: return new SaxPoiWorkbook(filename, encoding); // encoding is not used, perhaps detected automatically?
+    case ODS: return new OdfWorkbook(inputStream, encoding); // encoding is not used, perhaps detected automatically?
     default: throw new KettleException("Sorry, spreadsheet type "+type.getDescription()+" is not yet supported");
     }
     

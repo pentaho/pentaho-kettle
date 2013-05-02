@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.excelinput.poi;
 
 import java.io.File;
+import java.io.InputStream;
 
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.provider.local.LocalFile;
@@ -53,6 +54,16 @@ public class PoiWorkbook implements KWorkbook {
       } else {
         workbook = org.apache.poi.ss.usermodel.WorkbookFactory.create(KettleVFS.getInputStream(filename));
       }
+    } catch(Exception e) {
+      throw new KettleException(e);
+    }
+  }
+  
+  public PoiWorkbook(InputStream inputStream, String encoding) throws KettleException {
+    this.encoding = encoding;
+    
+    try {
+      workbook = org.apache.poi.ss.usermodel.WorkbookFactory.create(inputStream);
     } catch(Exception e) {
       throw new KettleException(e);
     }
@@ -94,5 +105,11 @@ public class PoiWorkbook implements KWorkbook {
     Sheet sheet = workbook.getSheetAt(sheetNr);
     if (sheet==null) return null;
     return new PoiSheet(sheet);
+  }
+  
+  public String getSheetName(int sheetNr) {
+    Sheet sheet = (Sheet) getSheet(sheetNr);
+    if (sheet==null) return null;
+    return sheet.getSheetName();
   }
 }

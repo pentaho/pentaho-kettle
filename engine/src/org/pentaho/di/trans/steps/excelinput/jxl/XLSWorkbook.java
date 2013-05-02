@@ -22,6 +22,8 @@
 
 package org.pentaho.di.trans.steps.excelinput.jxl;
 
+import java.io.InputStream;
+
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.WorkbookSettings;
@@ -49,6 +51,21 @@ public class XLSWorkbook implements KWorkbook {
     }
     try {
       workbook = Workbook.getWorkbook(KettleVFS.getInputStream(filename), ws);
+    } catch(Exception e) {
+      throw new KettleException(e);
+    }
+  }
+  
+  public XLSWorkbook(InputStream inputStream, String encoding) throws KettleException {
+    this.encoding = encoding;
+    
+    WorkbookSettings ws = new WorkbookSettings();
+    if (!Const.isEmpty(encoding))
+    {
+        ws.setEncoding(encoding);
+    }
+    try {
+      workbook = Workbook.getWorkbook(inputStream, ws);
     } catch(Exception e) {
       throw new KettleException(e);
     }
@@ -85,5 +102,11 @@ public class XLSWorkbook implements KWorkbook {
     Sheet sheet = workbook.getSheet(sheetNr);
     if (sheet==null) return null;
     return new XLSSheet(sheet);
+  }
+
+  public String getSheetName(int sheetNr) {
+    Sheet sheet = workbook.getSheet(sheetNr);
+    if (sheet==null) return null;
+    return sheet.getName();
   }
 }

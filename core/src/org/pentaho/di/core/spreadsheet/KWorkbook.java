@@ -52,4 +52,11 @@ public interface KWorkbook {
    * @return The selected sheet
    */
   public KSheet getSheet(int sheetNr);
+  
+  /**
+   * Get a sheet name in the workbook by index
+   * @param sheetNr The sheet number to get
+   * @return The selected sheet's name
+   */
+  public String getSheetName(int sheetNr);
 }
