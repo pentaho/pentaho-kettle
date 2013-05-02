@@ -1186,9 +1186,9 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 
 			}
 			
-            rep.saveStepAttribute(id_transformation, id_step, "strict_types", strictTypes);
-			rep.saveStepAttribute(id_transformation, id_step, "error_ignored", errorIgnored);
-            rep.saveStepAttribute(id_transformation, id_step, "error_line_skipped", errorLineSkipped);
+            rep.saveStepAttribute(id_transformation, id_step, 0, "strict_types", strictTypes);
+			rep.saveStepAttribute(id_transformation, id_step, 0, "error_ignored", errorIgnored);
+            rep.saveStepAttribute(id_transformation, id_step, 0, "error_line_skipped", errorLineSkipped);
             
             rep.saveStepAttribute(id_transformation, id_step, "bad_line_files_dest_dir", warningFilesDestinationDirectory);
             rep.saveStepAttribute(id_transformation, id_step, "bad_line_files_ext", warningFilesExtension);

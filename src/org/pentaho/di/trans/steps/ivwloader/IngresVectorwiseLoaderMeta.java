@@ -323,7 +323,7 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
       rep.saveStepAttribute(id_transformation, id_step, "use_authentication", useAuthentication); //$NON-NLS-1$
       rep.saveStepAttribute(id_transformation, id_step, "use_dynamic_vnode", useDynamicVNode); //$NON-NLS-1$
       rep.saveStepAttribute(id_transformation, id_step, "use_SSV_delimiter", useSSV); //$NON-NLS-1$
-      rep.saveStepAttribute(id_transformation, id_step, "escape_special_characters", escapingSpecialCharacters); //$NON-NLS-1$
+      rep.saveStepAttribute(id_transformation, id_step, 0, "escape_special_characters", escapingSpecialCharacters); //$NON-NLS-1$
       rep.saveStepAttribute(id_transformation, id_step, "use_vwload", usingVwload); //$NON-NLS-1$
       rep.saveStepAttribute(id_transformation, id_step, "max_errors", maxNrErrors); //$NON-NLS-1$
       rep.saveStepAttribute(id_transformation, id_step, "truncate_table", truncatingTable); //$NON-NLS-1$

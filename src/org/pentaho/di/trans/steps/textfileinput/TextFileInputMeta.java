@@ -1583,7 +1583,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "line_number_files_dest_dir", lineNumberFilesDestinationDirectory);
 			rep.saveStepAttribute(id_transformation, id_step, "line_number_files_ext", lineNumberFilesExtension);
 
-			rep.saveStepAttribute(id_transformation, id_step, "date_format_lenient", dateFormatLenient);
+			rep.saveStepAttribute(id_transformation, id_step, 0, "date_format_lenient", dateFormatLenient);
 			rep.saveStepAttribute(id_transformation, id_step, "date_format_locale", dateFormatLocale.toString());
 			
 			rep.saveStepAttribute(id_transformation, id_step, "shortFileFieldName", shortFileFieldName);

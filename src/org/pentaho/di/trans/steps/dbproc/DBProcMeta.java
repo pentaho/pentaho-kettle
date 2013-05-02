@@ -401,7 +401,7 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface
 
             rep.saveStepAttribute(id_transformation, id_step, "result_name", resultName); //$NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "result_type", ValueMeta.getTypeDesc(resultType)); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "auto_commit", autoCommit); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, 0, "auto_commit", autoCommit); //$NON-NLS-1$
 
             // Also, save the step-database relationship!
             if (database != null) rep.insertStepDatabase(id_transformation, id_step, database.getObjectId());

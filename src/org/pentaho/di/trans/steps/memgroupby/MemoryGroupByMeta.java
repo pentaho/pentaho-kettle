@@ -454,7 +454,7 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-            rep.saveStepAttribute(id_transformation, id_step, "give_back_row",    alwaysGivingBackOneRow); // $NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, 0, "give_back_row",    alwaysGivingBackOneRow); // $NON-NLS-1$
 
 			for (int i=0;i<groupField.length;i++)
 			{
