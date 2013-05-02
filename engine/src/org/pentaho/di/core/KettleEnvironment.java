@@ -38,6 +38,7 @@ import org.pentaho.di.core.plugins.UDJCStepPluginType;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.trans.step.RowDistributionPluginType;
 
 /**
  * The KettleEnvironment class contains settings and properties for all of Kettle. Initialization of the 
@@ -96,6 +97,7 @@ public class KettleEnvironment {
 			
 			// Register the native types and the plugins for the various plugin types...
 			//
+      PluginRegistry.addPluginType(RowDistributionPluginType.getInstance());
 			PluginRegistry.addPluginType(StepPluginType.getInstance());
 			PluginRegistry.addPluginType(UDJCStepPluginType.getInstance());
 			PluginRegistry.addPluginType(PartitionerPluginType.getInstance());

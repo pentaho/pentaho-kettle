@@ -383,4 +383,24 @@ import org.pentaho.metastore.api.IMetaStore;
           // TODO Auto-generated method stub
           return null;
         }
+        @Override
+        public int getCurrentInputRowSetNr() {
+          // TODO Auto-generated method stub
+          return 0;
+        }
+        @Override
+        public void setCurrentOutputRowSetNr(int index) {
+          // TODO Auto-generated method stub
+          
+        }
+        @Override
+        public int getCurrentOutputRowSetNr() {
+          // TODO Auto-generated method stub
+          return 0;
+        }
+        @Override
+        public void setCurrentInputRowSetNr(int index) {
+          // TODO Auto-generated method stub
+          
+        }
 	}

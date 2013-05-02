@@ -221,6 +221,7 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.RowDistributionInterface;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -3370,14 +3371,14 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     // message
     if (nrNextSteps == 2) {
       boolean distributes = fr.getStepMetaInterface().excludeFromCopyDistributeVerification();
-      boolean loadBalance = false;
+      boolean customDistribution = false;
 
       if (props.showCopyOrDistributeWarning() && !fr.getStepMetaInterface().excludeFromCopyDistributeVerification()) {
         MessageDialogWithToggle md = new MessageDialogWithToggle(shell, BaseMessages.getString(PKG, "System.Warning"),
             null, BaseMessages.getString(PKG, "Spoon.Dialog.CopyOrDistribute.Message", fr.getName(),
                 Integer.toString(nrNextSteps)), MessageDialog.WARNING, new String[] {
                 BaseMessages.getString(PKG, "Spoon.Dialog.CopyOrDistribute.Distribute"),
-                BaseMessages.getString(PKG, "Spoon.Dialog.CopyOrDistribute.LoadBalance"),
+                BaseMessages.getString(PKG, "Spoon.Dialog.CopyOrDistribute.CustomRowDistribution"),
                 BaseMessages.getString(PKG, "Spoon.Dialog.CopyOrDistribute.Copy"), }, 0, BaseMessages.getString(PKG,
                 "Spoon.Message.Warning.NotShowWarning"), !props.showCopyOrDistributeWarning());
         MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
@@ -3386,15 +3387,20 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         props.saveProps();
 
         distributes = (idx & 0xFF) == 0;
-        loadBalance = (idx & 0xFF) == 1;
+        customDistribution = (idx & 0xFF) == 1;
       }
 
       if (distributes) {
         fr.setDistributes(true);
-        fr.setLoadBalancing(false);
-      } else if (loadBalance) {
+        fr.setRowDistribution(null);
+      } else if (customDistribution) {
+        
+        // TODO: ask the user for the row distribution method!
+        //
+        RowDistributionInterface rowDistribution = null; 
+        
         fr.setDistributes(true);
-        fr.setLoadBalancing(true);
+        fr.setRowDistribution(rowDistribution);
       } else {
         fr.setDistributes(false);
         fr.setDistributes(false);

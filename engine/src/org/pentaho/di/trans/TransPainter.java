@@ -61,7 +61,7 @@ public class TransPainter extends BasePainter
 	public static final String STRING_REMOTE_OUTPUT_STEPS       = "RemoteOutputSteps";       // $NON-NLS-1$
 	public static final String STRING_STEP_ERROR_LOG            = "StepErrorLog";            // $NON-NLS-1$
 	public static final String STRING_HOP_TYPE_COPY             = "HopTypeCopy";             // $NON-NLS-1$
-  public static final String STRING_HOP_TYPE_BALANCE          = "HopTypeLoadBalance";      // $NON-NLS-1$
+  public static final String STRING_ROW_DISTRIBUTION          = "RowDistribution";         // $NON-NLS-1$
 	
 	public static final String[] magnificationDescriptions = 
 		new String[] { "  200% ", "  150% ", "  100% ", "  75% ", "  50% ", "  25% "};
@@ -1056,15 +1056,16 @@ public class TransPainter extends BasePainter
             areaOwners.add(new AreaOwner(AreaType.STEP_TARGET_HOP_ICON, mx, my, bounds.x, bounds.y, offset, fs, targetStream));
           }
         }
-      } else if (fs.isDistributes() && fs.isLoadBalancing() && !ts.getStepPartitioningMeta().isMethodMirror() && !errorHop) {
+      } else if (fs.isDistributes() && fs.getRowDistribution()!=null && !ts.getStepPartitioningMeta().isMethodMirror() && !errorHop) {
 
-        // Draw the load balancing icon on the hop
+        // Draw the custom row distribution plugin icon
         //
-        Point bounds = gc.getImageBounds(EImage.LOAD_BALANCE);
-        gc.drawImage(EImage.LOAD_BALANCE, mx, my);
+        EImage eImage = fs.getRowDistribution().getDistributionImage(); 
+        Point bounds = gc.getImageBounds(eImage);
+        gc.drawImage(eImage, mx, my);
 
         if (!shadow) {
-          areaOwners.add(new AreaOwner(AreaType.HOP_LOAD_BALANCE, mx, my, bounds.x, bounds.y, offset, fs, STRING_HOP_TYPE_BALANCE));
+          areaOwners.add(new AreaOwner(AreaType.ROW_DISTRIBUTION_ICON, mx, my, bounds.x, bounds.y, offset, fs, STRING_ROW_DISTRIBUTION));
         }
         mx += 16;
         

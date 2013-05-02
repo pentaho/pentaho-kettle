@@ -170,7 +170,9 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
   private boolean distributed;
 
-  private boolean loadBalancing;
+  private String rowDistributionCode;
+  
+  private RowDistributionInterface rowDistribution;
 
   private long errors;
 
@@ -402,12 +404,12 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     stop_time = null;
 
     distributed = stepMeta.isDistributes();
-    loadBalancing = stepMeta.isLoadBalancing();
-
+    rowDistribution = stepMeta.getRowDistribution();
+    
     if (distributed) {
-      if (loadBalancing) {
+      if (rowDistribution!=null) {
         if (log.isDetailed())
-          logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.LoadBalancingActivated")); 
+          logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.CustomRowDistributionActivated", rowDistributionCode)); 
       } else {
         if (log.isDetailed())
           logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.DistributionActivated")); 
@@ -1128,28 +1130,11 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     switch (repartitioning) {
       case StepPartitioningMeta.PARTITIONING_METHOD_NONE: {
         if (distributed) {
-          if (loadBalancing) {
-            // LOAD BALANCE:
-            // ----------------
+          if (rowDistribution!=null) {
+            // Plugin defined row distribution!
             //
-            // To balance the output, look for the most empty output buffer and take that one to write to.
-            //
-            int smallestSize = Integer.MAX_VALUE;
-            for (int i = 0; i < outputRowSets.size(); i++) {
-              RowSet candidate = outputRowSets.get(i);
-              if (candidate.size() < smallestSize) {
-                currentOutputRowSetNr = i;
-                smallestSize = candidate.size();
-              }
-            }
-            RowSet rs = outputRowSets.get(currentOutputRowSetNr);
-
-            // Loop until we find room in the target rowset, could very well all be full so keep trying.
-            //
-            while (!rs.putRow(rowMeta, row) && !isStopped())
-              ;
+            rowDistribution.distributeRow(rowMeta, row, (StepInterface)this);
             incrementLinesWritten();
-
           } else {
             // ROUND ROBIN DISTRIBUTION:
             // --------------------------
@@ -3624,5 +3609,24 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
   public void setMetaStore(IMetaStore metaStore) {
     this.metaStore = metaStore;
+  }
+
+  @Override
+  public int getCurrentOutputRowSetNr() {
+    return currentOutputRowSetNr;
+  }
+  
+  @Override
+  public void setCurrentOutputRowSetNr(int index) {
+    currentOutputRowSetNr=index;
+  }
+  
+  public int getCurrentInputRowSetNr() {
+    return currentInputRowSetNr;
+  }
+  
+  @Override
+  public void setCurrentInputRowSetNr(int index) {
+    currentInputRowSetNr=index;
   }
 }

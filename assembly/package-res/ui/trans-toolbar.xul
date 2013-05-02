@@ -52,16 +52,24 @@
     <menuitem id="trans-graph-entry-edit-description" label="${TransGraph.PopupMenu.EditStepDescription}"
       command="transgraph.editDescription()" />
     <menuseparator />
+    
+    
     <menu id="trans-graph-entry-data-movement" label="${TransGraph.PopupMenu.DataMovement}">
       <menupopup id="trans-graph-entry-data-movement-popup">
-        <menuitem id="trans-graph-entry-data-movement-distribute" type="checkbox" label="${TransGraph.PopupMenu.DistributeData}"
-          command="transgraph.setDistributes()" />
-        <menuitem id="trans-graph-entry-data-movement-loadbalance" type="checkbox" label="${TransGraph.PopupMenu.LoadBalanceData}"
-          command="transgraph.setLoadbalancing()" />
-        <menuitem id="trans-graph-entry-data-movement-copy" type="checkbox" label="${TransGraph.PopupMenu.CopyData}"
-          command="transgraph.setCopies()" />
+        <menu id="trans-graph-entry-data-movement-distribute" label="${TransGraph.PopupMenu.DistributeData}">
+          <menupopup id="trans-graph-entry-data-movement-distribute-popup" >
+	        <menuitem id="trans-graph-entry-data-movement-distribute-round-robin" type="checkbox" 
+	              label="${TransGraph.PopupMenu.DistributeRoundRobin}" command="transgraph.setDistributes()" />
+            <menuitem id="trans-graph-entry-data-movement-custom-dummy" 
+                      label="dummy" command="transgraph.setCustomRowDistribution()" /> 
+          </menupopup>
+        </menu>
+        <menuitem id="trans-graph-entry-data-movement-copy" type="checkbox" 
+	          label="${TransGraph.PopupMenu.CopyData}" command="transgraph.setCopies()" />
       </menupopup>
     </menu>
+    
+    
     <menuitem id="trans-graph-entry-copies" label="${TransGraph.PopupMenu.NumberOfCopies}" command="transgraph.copies()" />
     <menuseparator />
     <menuitem id="trans-graph-entry-copy" acceltext="CTRL-C" accesskey="ctrl-c" label="${TransGraph.PopupMenu.CopyToClipboard}" command="transgraph.copyStep()" />

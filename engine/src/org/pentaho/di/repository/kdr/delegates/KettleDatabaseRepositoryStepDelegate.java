@@ -42,6 +42,8 @@ import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
+import org.pentaho.di.trans.step.RowDistributionInterface;
+import org.pentaho.di.trans.step.RowDistributionPluginType;
 import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
@@ -147,9 +149,11 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
         //
         stepMeta.setClusterSchemaName(repository.getStepAttributeString(id_step, "cluster_schema"));
 
-        // Are we load balancing (defaults to false)?
+        // Are we using a custom row distribution plugin?
         //
-        stepMeta.setLoadBalancing(repository.getStepAttributeBoolean(id_step, 0, "loadbalance", false));
+        String rowDistributionCode = repository.getStepAttributeString(id_step, 0, "row_distribution_code");
+        RowDistributionInterface rowDistribution = PluginRegistry.getInstance().loadClass(RowDistributionPluginType.class, rowDistributionCode, RowDistributionInterface.class);
+        stepMeta.setRowDistribution( rowDistribution );
 
         // Done!
         //
@@ -210,9 +214,10 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
 			//
       repository.saveStepAttribute(id_transformation, stepMeta.getObjectId(), "cluster_schema", stepMeta.getClusterSchema()==null?"":stepMeta.getClusterSchema().getName());
       
-      // Save the load balancing boolean
+      // Save the row distribution code (plugin ID)
       //
-      repository.saveStepAttribute(id_transformation, stepMeta.getObjectId(), "loadbalance", stepMeta.isLoadBalancing());
+      repository.saveStepAttribute(id_transformation, stepMeta.getObjectId(), "row_distribution_code", 
+          stepMeta.getRowDistribution()==null ? null : stepMeta.getRowDistribution().getCode());
 		}
 		catch(KettleException e)
 		{

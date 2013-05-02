@@ -387,4 +387,25 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
    * @return The repository used by the step to load and reference Kettle objects with at runtime
    */
   public Repository getRepository();
+
+  /**
+   * @return the index of the active (current) output row set
+   */
+  public int getCurrentOutputRowSetNr();
+  
+  /**
+   * @param index Sets the index of the active (current) output row set to use.
+   */
+  public void setCurrentOutputRowSetNr(int index);
+  
+  /**
+   * @return the index of the active (current) input row set
+   */
+  public int getCurrentInputRowSetNr();
+  
+  /**
+   * @param index Sets the index of the active (current) input row set to use.
+   */
+  public void setCurrentInputRowSetNr(int index);
+
 }

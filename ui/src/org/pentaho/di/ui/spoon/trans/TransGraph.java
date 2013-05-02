@@ -102,10 +102,11 @@ import org.pentaho.di.core.gui.GCInterface;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.Redrawable;
 import org.pentaho.di.core.gui.SnapAllignDistribute;
-import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.KettleLoggingEvent;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogMessage;
 import org.pentaho.di.core.logging.LogParentProvidedInterface;
@@ -135,6 +136,8 @@ import org.pentaho.di.trans.debug.BreakPointListener;
 import org.pentaho.di.trans.debug.StepDebugMeta;
 import org.pentaho.di.trans.debug.TransDebugMeta;
 import org.pentaho.di.trans.step.RemoteStep;
+import org.pentaho.di.trans.step.RowDistributionInterface;
+import org.pentaho.di.trans.step.RowDistributionPluginType;
 import org.pentaho.di.trans.step.RowListener;
 import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepIOMetaInterface;
@@ -151,6 +154,7 @@ import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.DialogClosedListener;
+import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.EnterStringDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -2041,16 +2045,42 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
   public void setDistributes() {
     getCurrentStep().setDistributes(true);
-    getCurrentStep().setLoadBalancing(false);
+    getCurrentStep().setRowDistribution(null);
     spoon.refreshGraph();
     spoon.refreshTree();
   }
   
-  public void setLoadbalancing() {
+  public void setCustomRowDistribution() {
+    // TODO: ask user which row distribution is needed...
+    //
+    RowDistributionInterface rowDistribution = askUserForCustomDistributionMethod();
     getCurrentStep().setDistributes(true);
-    getCurrentStep().setLoadBalancing(true);
+    getCurrentStep().setRowDistribution(rowDistribution);
     spoon.refreshGraph();
     spoon.refreshTree();
+  }
+  
+  public RowDistributionInterface askUserForCustomDistributionMethod() {
+    List<PluginInterface> plugins = PluginRegistry.getInstance().getPlugins(RowDistributionPluginType.class);
+    if (Const.isEmpty(plugins)) {
+      return null;
+    }
+    List<String> choices = new ArrayList<String>();
+    for (PluginInterface plugin : plugins) {
+      choices.add(plugin.getName()+" : "+plugin.getDescription());
+    }
+    EnterSelectionDialog dialog = new EnterSelectionDialog(shell, choices.toArray(new String[choices.size()]), "Select distribution method", "Please select the row distribution method:");
+    if (dialog.open()!=null) {
+      PluginInterface plugin = plugins.get(dialog.getSelectionNr());
+      try {
+        return (RowDistributionInterface) PluginRegistry.getInstance().loadClass(plugin);
+      } catch(Exception e) {
+        new ErrorDialog(shell, "Error", "Error loading row distribution plugin class", e);
+        return null;
+      }
+    } else {
+      return null;
+    }
   }
 
   public void setCopies() {
@@ -2348,6 +2378,66 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             XulMenuitem item = (XulMenuitem) doc.getElementById("trans-graph-entry-newhop"); 
             item.setDisabled(sels != 2);
 
+            List<PluginInterface> rowDistributionPlugins = PluginRegistry.getInstance().getPlugins(RowDistributionPluginType.class);
+            
+            JfaceMenupopup customRowDistMenu = (JfaceMenupopup) doc.getElementById("trans-graph-entry-data-movement-popup");
+            customRowDistMenu.setDisabled(rowDistributionPlugins.isEmpty());
+            customRowDistMenu.removeChildren();
+            
+            // Add the default round robin plugin...
+            //
+            {
+              Action action = new Action("RoundRobinRowDistribution", Action.AS_CHECK_BOX) {
+                public void run() {
+                  stepMeta.setDistributes(true);
+                  stepMeta.setRowDistribution(null); // default
+                };
+              };       
+              boolean selected = stepMeta.isDistributes() && stepMeta.getRowDistribution()==null; 
+              action.setChecked(selected);
+              JfaceMenuitem child = new JfaceMenuitem(null, customRowDistMenu, xulDomContainer, "Round Robin row distribution", 0, action);
+              child.setLabel(BaseMessages.getString(PKG, "TransGraph.PopupMenu.RoundRobin"));
+              child.setDisabled(false);
+              child.setSelected(selected);
+            }
+            
+            for (int p=0;p<rowDistributionPlugins.size();p++) {
+              final PluginInterface rowDistributionPlugin = rowDistributionPlugins.get(p);
+              boolean selected = stepMeta.isDistributes() && stepMeta.getRowDistribution()!=null && stepMeta.getRowDistribution().getCode().equals(rowDistributionPlugin.getIds()[0]);
+              
+              Action action = new Action(rowDistributionPlugin.getIds()[0], Action.AS_CHECK_BOX) {
+                public void run() {
+                  try {
+                    stepMeta.setRowDistribution((RowDistributionInterface) PluginRegistry.getInstance().loadClass(rowDistributionPlugin));
+                  } catch(Exception e) {
+                    LogChannel.GENERAL.logError("Error loading row distribution plugin class: ", e);
+                  }
+                };
+              };            
+              action.setChecked(selected);
+              JfaceMenuitem child = new JfaceMenuitem(null, customRowDistMenu, xulDomContainer, rowDistributionPlugin.getName(), p+1, action);
+              child.setLabel(rowDistributionPlugin.getName());
+              child.setDisabled(false);
+              child.setSelected(selected);
+            }
+            
+            // Add the default round robin plugin...
+            //
+            {
+              Action action = new Action("CopyRowsDistribution", Action.AS_CHECK_BOX) {
+                public void run() {
+                  stepMeta.setDistributes(false);
+                };
+              };       
+              boolean selected = !stepMeta.isDistributes(); 
+              action.setChecked(selected);
+              JfaceMenuitem child = new JfaceMenuitem(null, customRowDistMenu, xulDomContainer, "Copy rows distribution", 0, action);
+              child.setLabel(BaseMessages.getString(PKG, "TransGraph.PopupMenu.CopyData"));
+              child.setDisabled(false);
+              child.setSelected(selected);
+            }
+            
+            
             JfaceMenupopup launchMenu = (JfaceMenupopup) doc.getElementById("trans-graph-entry-launch-popup");
             String[] referencedObjects = stepMeta.getStepMetaInterface().getReferencedObjectDescriptions();
             boolean[] enabledObjects = stepMeta.getStepMetaInterface().isReferencedObjectEnabled();
@@ -2393,10 +2483,9 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
               aMenu.setDisabled(sels < 2);
             }
 
-            item = (XulMenuitem) doc.getElementById("trans-graph-entry-data-movement-distribute"); 
-            item.setSelected(stepMeta.isDistributes() && !stepMeta.isLoadBalancing());
-            item = (XulMenuitem) doc.getElementById("trans-graph-entry-data-movement-loadbalance"); 
-            item.setSelected(stepMeta.isDistributes() && stepMeta.isLoadBalancing());
+            // item = (XulMenuitem) doc.getElementById("trans-graph-entry-data-movement-distribute"); 
+            // item.setSelected(stepMeta.isDistributes());
+                        
             item = (XulMenuitem) doc.getElementById("trans-graph-entry-data-movement-copy"); 
             item.setSelected(!stepMeta.isDistributes());
 
@@ -2536,9 +2625,10 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 				tip.append(BaseMessages.getString(PKG, "TransGraph.Hop.Tooltip.HopTypeCopy", step.getName(), Const.CR)); 
 				tipImage = GUIResource.getInstance().getImageCopyHop();
 				break;
-			case HOP_LOAD_BALANCE:
+			case ROW_DISTRIBUTION_ICON:
 				step = (StepMeta) areaOwner.getParent();
-				tip.append(BaseMessages.getString(PKG, "TransGraph.Hop.Tooltip.HopTypeBalance", step.getName(), Const.CR)); 
+				tip.append(BaseMessages.getString(PKG, "TransGraph.Hop.Tooltip.RowDistribution", step.getName(), step.getRowDistribution()==null ? "" : step.getRowDistribution().getDescription()));
+				tip.append(Const.CR);
 				tipImage = GUIResource.getInstance().getImageBalance();
 				break;
 			case HOP_INFO_ICON:

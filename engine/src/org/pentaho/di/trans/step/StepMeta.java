@@ -96,7 +96,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 
   private boolean distributes;
 
-  private boolean loadBalancing;
+  private RowDistributionInterface rowDistribution;
 
   private String copiesString;
 
@@ -191,7 +191,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     retval.append("    ").append(XMLHandler.addTagValue("type", getStepID()));  
     retval.append("    ").append(XMLHandler.addTagValue("description", description));  
     retval.append("    ").append(XMLHandler.addTagValue("distribute", distributes));  
-    retval.append("    ").append(XMLHandler.addTagValue("loadbalance", loadBalancing));  
+    retval.append("    ").append(XMLHandler.addTagValue("custom_distribution", rowDistribution==null?null:rowDistribution.getCode()));  
     retval.append("    ").append(XMLHandler.addTagValue("copies", copiesString));  
 
     retval.append(stepPartitioningMeta.getXML());
@@ -288,13 +288,15 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
       copiesString = XMLHandler.getTagValue(stepnode, "copies");
       String sdistri = XMLHandler.getTagValue(stepnode, "distribute");
       distributes = "Y".equalsIgnoreCase(sdistri);
-      if (sdistri == null)
+      if (sdistri == null) {
         distributes = true; // default=distribute
-      String sloadb = XMLHandler.getTagValue(stepnode, "loadbalance");
-      loadBalancing = "Y".equalsIgnoreCase(sloadb);
-      if (sloadb == null)
-        loadBalancing = false; // defaults to round robin distribution
-
+      }
+      
+      // Determine the row distribution
+      //
+      String rowDistributionCode = XMLHandler.getTagValue(stepnode, "custom_distribution");
+      rowDistribution = PluginRegistry.getInstance().loadClass(RowDistributionPluginType.class, rowDistributionCode, RowDistributionInterface.class);
+      
       // Handle GUI information: location & drawstep?
       String xloc, yloc;
       int x, y;
@@ -938,21 +940,13 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     return parentTransMeta;
   }
 
-  /**
-   * @return the loadBalancing
-   */
-  public boolean isLoadBalancing() {
-    return loadBalancing;
+  public RowDistributionInterface getRowDistribution() {
+    return rowDistribution;
   }
-
-  /**
-   * @param loadBalancing the loadBalancing to set
-   */
-  public void setLoadBalancing(boolean loadBalancing) {
-    if (this.loadBalancing != loadBalancing) {
-      this.loadBalancing = loadBalancing;
-      setChanged();
-    }
+  
+  public void setRowDistribution(RowDistributionInterface rowDistribution) {
+    this.rowDistribution = rowDistribution;
+    setChanged(true);
   }
 
   /**

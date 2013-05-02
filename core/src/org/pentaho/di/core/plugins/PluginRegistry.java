@@ -244,6 +244,9 @@ public class PluginRegistry {
 	 * @return the plugin or null if nothing was found.
 	 */
 	public PluginInterface getPlugin(Class<? extends PluginTypeInterface> pluginType, String id) {
+	  if (Const.isEmpty(id)) {
+	    return null;
+	  }
 		List<PluginInterface> plugins = getPlugins(pluginType);
 		if (plugins==null) {
 			return null;
@@ -533,14 +536,15 @@ public class PluginRegistry {
                   // Register this one!
                   //
                   pluginType.handlePluginAnnotation(clazz, annotation, new ArrayList<String>(), true, null);
+                  LogChannel.GENERAL.logBasic("Plugin class "+className+" registered for plugin type '"+pluginType.getName()+"'");
                 } else {
                   if (KettleLogStore.isInitialized()) {
-                    LogChannel.GENERAL.logDebug("Plugin class "+className+" doesn't contain annotation for plugin type "+pluginType.getName());
+                    LogChannel.GENERAL.logDebug("Plugin class "+className+" doesn't contain annotation for plugin type '"+pluginType.getName()+"'");
                   }
                 }
               } else {
                 if (KettleLogStore.isInitialized()) {
-                  LogChannel.GENERAL.logDebug("Plugin class "+className+" doesn't contain valid class for plugin type "+pluginType.getName());
+                  LogChannel.GENERAL.logDebug("Plugin class "+className+" doesn't contain valid class for plugin type '"+pluginType.getName()+"'");
                 }
               }
             } catch(Exception e) {
