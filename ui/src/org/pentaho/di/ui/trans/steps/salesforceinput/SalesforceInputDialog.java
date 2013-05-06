@@ -1484,14 +1484,9 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
     String fieldType = field.getType().getValue();
 
     String fieldLength = null;
-    // Get length
+    String fieldPrecision = null;
     if (!fieldType.equals("boolean") && !fieldType.equals("datetime") && !fieldType.equals("date")) {
       fieldLength = Integer.toString(field.getLength());
-    }
-
-    String fieldPrecision = null;
-    // Get precision
-    if (!fieldType.equals("boolean") && !fieldType.equals("datetime") && !fieldType.equals("date")) {
       fieldPrecision = Integer.toString(field.getPrecision());
     }
 
