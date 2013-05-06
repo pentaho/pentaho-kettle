@@ -439,7 +439,7 @@ public class JsonOutputMeta extends BaseStepMeta  implements StepMetaInterface
             {
                 retval.append("      <field>").append(Const.CR); 
                 retval.append("        ").append(XMLHandler.addTagValue("name",      field.getFieldName()));  
-                retval.append("        ").append(XMLHandler.addTagValue("element",   field.getElementName()));  retval.append("        </field>").append(Const.CR); 
+                retval.append("        ").append(XMLHandler.addTagValue("element",   field.getElementName())); 
                 retval.append("    </field>"+Const.CR); 
             }
         }

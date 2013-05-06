@@ -561,6 +561,7 @@ public class SalesforceConnection {
 			if(!getQueryResult().isDone()) {
 				this.qr=getBinding().queryMore(getQueryResult().getQueryLocator());
 				this.sObjects=getQueryResult().getRecords();
+				if(this.sObjects!=null) this.recordsCount=this.sObjects.length;
 				this.queryResultSize= getQueryResult().getSize();
 				return true;
 			}else{
