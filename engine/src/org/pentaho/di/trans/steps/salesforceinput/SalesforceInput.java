@@ -186,7 +186,7 @@ public class SalesforceInput extends BaseStep implements StepInterface
 				}
 			}
 			for (int i=0;i<data.nrfields;i++) {
-				String value=data.connection.getRecordValue(srvalue.getRecordValue(), i);
+			  String value=data.connection.getRecordValue(srvalue.getRecordValue(), meta.getInputFields()[i].getField());
 				
 				// DO Trimming!
 				switch (meta.getInputFields()[i].getTrimType()) {

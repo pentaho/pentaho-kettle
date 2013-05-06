@@ -91,6 +91,7 @@ import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 import com.sforce.soap.partner.Field;
+import com.sforce.soap.partner.sobject.SObject;
 
 
 public class SalesforceInputDialog extends BaseStepDialog implements StepDialogInterface {
@@ -1428,62 +1429,31 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		    // We are connected, so let's query
 			MessageElement[] fields =  connection.getElements();
 			int nrFields=fields.length;
-			fieldsName = new String[nrFields];
+			List<String> fieldNames = new ArrayList<String>();
 			for(int i=0; i<nrFields;i++) {
-				// get fieldname
-				String fieldname=fields[i].getName();
-				fieldsName[i]=fieldname;
-				// return first value
-				String firstValue=fields[i].getValue();
-				
-	            TableItem item = new TableItem(wFields.table,SWT.NONE);
-				item.setText(1, fieldname);
-				item.setText(2, fieldname);
-				item.setText(3,	BaseMessages.getString(PKG, "System.Combo.No"));
-	            // Try to guess field type
-				// I know it's not clean (see up)
-				if(Const.NVL(firstValue, "null").equals("null")) {
-					item.setText(4, ValueMeta.getTypeDesc(ValueMeta.TYPE_STRING)); 
-				}else {
-		           if(StringUtil.IsDate(firstValue,DEFAULT_DATE_TIME_FORMAT)){
-			            item.setText(4, ValueMeta.getTypeDesc(ValueMeta.TYPE_DATE));
-			            item.setText(5, DEFAULT_DATE_TIME_FORMAT);
-		            } else if(StringUtil.IsDate(firstValue,DEFAULT_DATE_FORMAT)){
-		            	item.setText(4, ValueMeta.getTypeDesc(ValueMeta.TYPE_DATE));
-		            	item.setText(5, DEFAULT_DATE_FORMAT);
-		            } else if(StringUtil.IsInteger(firstValue)) {
-		            	item.setText(4, ValueMeta.getTypeDesc(ValueMeta.TYPE_INTEGER));
-		            	item.setText(5, String.valueOf(ValueMeta.DEFAULT_INTEGER_LENGTH));
-		            } else if(StringUtil.IsNumber(firstValue)){
-		            	item.setText(4, ValueMeta.getTypeDesc(ValueMeta.TYPE_NUMBER)); 
-		            } else if(firstValue.equals("true")||firstValue.equals("false")){
-		            	item.setText(4, ValueMeta.getTypeDesc(ValueMeta.TYPE_BOOLEAN));     
-		            }else {
-		            	item.setText(4, ValueMeta.getTypeDesc(ValueMeta.TYPE_STRING)); 
-		            }
-				} 
-
+				addFields("", fieldNames, fields[i]);
 			}
+      fieldsName = new String[nrFields];
 		}else{
 			connection.connect();
 
-            Field[] fields = connection.getObjectFields(realModule);
-            fieldsName= new String[fields.length];
-            for (int i = 0; i < fields.length; i++)  {
-            	Field field = fields[i];
-            	String FieldLabel= field.getLabel();	
-            	String FieldName= field.getName();	
-            	fieldsName[i]=FieldName;
-            	String FieldType=field.getType().getValue();
-            	String FieldLengh =  String.valueOf(field.getLength());
-            	String FieldPrecision =  String.valueOf(field.getPrecision());
+      Field[] fields = connection.getObjectFields(realModule);
+      fieldsName= new String[fields.length];
+      for (int i = 0; i < fields.length; i++)  {
+      	Field field = fields[i];
+      	String FieldLabel= field.getLabel();	
+      	String FieldName= field.getName();	
+      	fieldsName[i]=FieldName;
+      	String FieldType=field.getType().getValue();
+      	String FieldLengh =  String.valueOf(field.getLength());
+      	String FieldPrecision =  String.valueOf(field.getPrecision());
 
-            	TableItem item = new TableItem(wFields.table,SWT.NONE);
+      	TableItem item = new TableItem(wFields.table,SWT.NONE);
 				item.setText(1, FieldLabel);
 				item.setText(2, FieldName);
 				item.setText(3, field.isIdLookup() ? 
-						BaseMessages.getString(PKG, "System.Combo.Yes") : 
-							BaseMessages.getString(PKG, "System.Combo.No"));
+				BaseMessages.getString(PKG, "System.Combo.Yes") : 
+				BaseMessages.getString(PKG, "System.Combo.No"));
 				
 				// Try to get the Type
 				if (FieldType.equals("boolean")) {
@@ -1510,9 +1480,9 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 				if (!FieldType.equals("boolean") && !FieldType.equals("datetime") && !FieldType.equals("date")){
 					item.setText(7, FieldPrecision);
 				}
-	       }
-        }
-        if(fieldsName!=null) colinf[1].setComboValues(fieldsName);
+      }
+    }
+    if(fieldsName!=null) colinf[1].setComboValues(fieldsName);
 		wFields.removeEmptyRows();
 		wFields.setRowNums();
 		wFields.optWidth(true);
@@ -1528,6 +1498,52 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		}
 	}
  }
+ 
+ private void addFields(String prefix, List<String> fieldNames, MessageElement field) {
+   String fieldname = prefix + field.getName();
+   
+   Object value = field.getObjectValue();
+   if (value != null && value instanceof SObject) {
+     SObject sobject = (SObject)value;
+     for (MessageElement element : sobject.get_any()) {
+       addFields(fieldname + ".", fieldNames, (MessageElement) element);
+     }
+   } else {
+     addFields(fieldname, fieldNames, field.getValue());
+   }
+ }
+ 
+ private void addFields(String fieldname, List<String> fieldNames, String firstValue) {
+   fieldNames.add(fieldname);
+   
+   TableItem item = new TableItem(wFields.table,SWT.NONE);
+   item.setText(1, fieldname);
+   item.setText(2, fieldname);
+   item.setText(3, BaseMessages.getString(PKG, "System.Combo.No"));
+         // Try to guess field type
+   // I know it's not clean (see up)
+   if(Const.NVL(firstValue, "null").equals("null")) {
+     item.setText(4, ValueMeta.getTypeDesc(ValueMeta.TYPE_STRING)); 
+   }else {
+    if(StringUtil.IsDate(firstValue,DEFAULT_DATE_TIME_FORMAT)){
+       item.setText(4, ValueMeta.getTypeDesc(ValueMeta.TYPE_DATE));
+       item.setText(5, DEFAULT_DATE_TIME_FORMAT);
+     } else if(StringUtil.IsDate(firstValue,DEFAULT_DATE_FORMAT)){
+       item.setText(4, ValueMeta.getTypeDesc(ValueMeta.TYPE_DATE));
+       item.setText(5, DEFAULT_DATE_FORMAT);
+     } else if(StringUtil.IsInteger(firstValue)) {
+       item.setText(4, ValueMeta.getTypeDesc(ValueMeta.TYPE_INTEGER));
+       item.setText(5, String.valueOf(ValueMeta.DEFAULT_INTEGER_LENGTH));
+     } else if(StringUtil.IsNumber(firstValue)){
+       item.setText(4, ValueMeta.getTypeDesc(ValueMeta.TYPE_NUMBER)); 
+     } else if(firstValue.equals("true")||firstValue.equals("false")){
+       item.setText(4, ValueMeta.getTypeDesc(ValueMeta.TYPE_BOOLEAN));     
+     }else {
+       item.setText(4, ValueMeta.getTypeDesc(ValueMeta.TYPE_STRING)); 
+     }
+   }
+ }
+ 
   private void updateRecordsFilter()
   {
 	  boolean activeFilter=(!wspecifyQuery.getSelection() && SalesforceConnectionUtils.getRecordsFilterByDesc(wRecordsFilter.getText())!=SalesforceConnectionUtils.RECORDS_FILTER_ALL);

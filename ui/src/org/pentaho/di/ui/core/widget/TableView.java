@@ -2297,7 +2297,7 @@ public class TableView extends Composite {
       }
       
       for (String str:columnStrings) {
-        int len = TableView.dummy_gc.textExtent(str, SWT.DRAW_TAB | SWT.DRAW_DELIMITER).x;
+        int len = TableView.dummy_gc.textExtent(str == null ? "" : str, SWT.DRAW_TAB | SWT.DRAW_DELIMITER).x;
         if (len > max)
           max = len;
       }
