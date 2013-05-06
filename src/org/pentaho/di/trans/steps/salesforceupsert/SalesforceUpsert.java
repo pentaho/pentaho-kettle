@@ -166,6 +166,8 @@ public class SalesforceUpsert extends BaseStep implements StepInterface
 				if (log.isDetailed()) logDetailed("Calling flush buffer from writeToSalesForce");
 				flushBuffers();
 			}
+		} catch (KettleException ke) {
+		  throw ke;
 		} catch (Exception e) {
 			throw new KettleException(BaseMessages.getString(PKG, "SalesforceUpsert.FailedInWrite", e.toString()));	
 		}
@@ -241,7 +243,12 @@ public class SalesforceUpsert extends BaseStep implements StepInterface
 			
 		} catch (Exception e) {
 			if (!getStepMeta().isDoingErrorHandling()) {
-				throw new KettleException(BaseMessages.getString(PKG, "SalesforceUpsert.FailedUpsert", e.getMessage()));
+			  if (e instanceof KettleException) {
+          // I know, bad form usually. But I didn't want to duplicate the logic with a catch(KettleException ke). MB
+			    throw (KettleException)e;
+			  } else {
+			    throw new KettleException(BaseMessages.getString(PKG, "SalesforceUpsert.FailedUpsert", e.getMessage()), e);
+			  }
 			}
 			// Simply add this row to the error row
 			if(log.isDebug()) logDebug("Passing row to error step");
