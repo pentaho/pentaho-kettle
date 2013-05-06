@@ -91,6 +91,7 @@ import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 import com.sforce.soap.partner.Field;
+import com.sforce.soap.partner.sobject.SObject;
 
 
 public class SalesforceInputDialog extends BaseStepDialog implements StepDialogInterface {
@@ -1399,135 +1400,165 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 	}
 
 
- private void get() 
- { 
-	 SalesforceConnection connection=null;
-	try {
-		
-		SalesforceInputMeta meta = new SalesforceInputMeta();
-		getInfo(meta);
-		
-		// Clear Fields Grid
-		wFields.removeAll();
-		
-	    // get real values
-	    String realModule=transMeta.environmentSubstitute(meta.getModule());
-		String realURL=transMeta.environmentSubstitute(meta.getTargetURL());
-		String realUsername=transMeta.environmentSubstitute(meta.getUserName());
-		String realPassword=transMeta.environmentSubstitute(meta.getPassword());
-		int realTimeOut=Const.toInt(transMeta.environmentSubstitute(meta.getTimeOut()),0);
+  private void get() {
+    SalesforceConnection connection = null;
+    try {
 
-		connection=new SalesforceConnection(log, realURL,realUsername,realPassword);
-		connection.setTimeOut(realTimeOut);
-		String[] fieldsName= null;
-		if(meta.isSpecifyQuery())   {
-			// Free hand SOQL
-			String realQuery=transMeta.environmentSubstitute(meta.getQuery());
-			connection.setSQL(realQuery);
-			connection.connect();
-		    // We are connected, so let's query
-			MessageElement[] fields =  connection.getElements();
-			int nrFields=fields.length;
-			fieldsName = new String[nrFields];
-			for(int i=0; i<nrFields;i++) {
-				// get fieldname
-				String fieldname=fields[i].getName();
-				fieldsName[i]=fieldname;
-				// return first value
-				String firstValue=fields[i].getValue();
-				
-	            TableItem item = new TableItem(wFields.table,SWT.NONE);
-				item.setText(1, fieldname);
-				item.setText(2, fieldname);
-				item.setText(3,	BaseMessages.getString(PKG, "System.Combo.No"));
-	            // Try to guess field type
-				// I know it's not clean (see up)
-				if(Const.NVL(firstValue, "null").equals("null")) {
-					item.setText(4, ValueMeta.getTypeDesc(ValueMeta.TYPE_STRING)); 
-				}else {
-		           if(StringUtil.IsDate(firstValue,DEFAULT_DATE_TIME_FORMAT)){
-			            item.setText(4, ValueMeta.getTypeDesc(ValueMeta.TYPE_DATE));
-			            item.setText(5, DEFAULT_DATE_TIME_FORMAT);
-		            } else if(StringUtil.IsDate(firstValue,DEFAULT_DATE_FORMAT)){
-		            	item.setText(4, ValueMeta.getTypeDesc(ValueMeta.TYPE_DATE));
-		            	item.setText(5, DEFAULT_DATE_FORMAT);
-		            } else if(StringUtil.IsInteger(firstValue)) {
-		            	item.setText(4, ValueMeta.getTypeDesc(ValueMeta.TYPE_INTEGER));
-		            	item.setText(5, String.valueOf(ValueMeta.DEFAULT_INTEGER_LENGTH));
-		            } else if(StringUtil.IsNumber(firstValue)){
-		            	item.setText(4, ValueMeta.getTypeDesc(ValueMeta.TYPE_NUMBER)); 
-		            } else if(firstValue.equals("true")||firstValue.equals("false")){
-		            	item.setText(4, ValueMeta.getTypeDesc(ValueMeta.TYPE_BOOLEAN));     
-		            }else {
-		            	item.setText(4, ValueMeta.getTypeDesc(ValueMeta.TYPE_STRING)); 
-		            }
-				} 
+      SalesforceInputMeta meta = new SalesforceInputMeta();
+      getInfo(meta);
 
-			}
-		}else{
-			connection.connect();
+      // Clear Fields Grid
+      wFields.removeAll();
 
-            Field[] fields = connection.getObjectFields(realModule);
-            fieldsName= new String[fields.length];
-            for (int i = 0; i < fields.length; i++)  {
-            	Field field = fields[i];
-            	String FieldLabel= field.getLabel();	
-            	String FieldName= field.getName();	
-            	fieldsName[i]=FieldName;
-            	String FieldType=field.getType().getValue();
-            	String FieldLengh =  String.valueOf(field.getLength());
-            	String FieldPrecision =  String.valueOf(field.getPrecision());
+      // get real values
+      String realModule = transMeta.environmentSubstitute(meta.getModule());
+      String realURL = transMeta.environmentSubstitute(meta.getTargetURL());
+      String realUsername = transMeta.environmentSubstitute(meta.getUserName());
+      String realPassword = transMeta.environmentSubstitute(meta.getPassword());
+      int realTimeOut = Const.toInt(transMeta.environmentSubstitute(meta.getTimeOut()), 0);
 
-            	TableItem item = new TableItem(wFields.table,SWT.NONE);
-				item.setText(1, FieldLabel);
-				item.setText(2, FieldName);
-				item.setText(3, field.isIdLookup() ? 
-						BaseMessages.getString(PKG, "System.Combo.Yes") : 
-							BaseMessages.getString(PKG, "System.Combo.No"));
-				
-				// Try to get the Type
-				if (FieldType.equals("boolean")) {
-					item.setText(4, "Boolean");
-				} else if (FieldType.equals("date")) {
-					item.setText(4, "Date");
-					item.setText(5, DEFAULT_DATE_FORMAT);
-				} else if (FieldType.equals("datetime")) {
-					item.setText(4, "Date");
-					item.setText(5, DEFAULT_DATE_TIME_FORMAT);
-				} else if (FieldType.equals("double")) {
-					item.setText(4, "Number");
-                } else if (FieldType.equals("int")) {
-					item.setText(4, "Integer");
-				} else {
-					item.setText(4, "String");
-		        }
-				
-				// Get length
-				if (!FieldType.equals("boolean") && !FieldType.equals("datetime") && !FieldType.equals("date")) {
-					item.setText(6, FieldLengh);
-				}	
-				// Get precision
-				if (!FieldType.equals("boolean") && !FieldType.equals("datetime") && !FieldType.equals("date")){
-					item.setText(7, FieldPrecision);
-				}
-	       }
+      connection = new SalesforceConnection(log, realURL, realUsername, realPassword);
+      connection.setTimeOut(realTimeOut);
+      String[] fieldsName = null;
+      if (meta.isSpecifyQuery()) {
+        // Free hand SOQL
+        String realQuery = transMeta.environmentSubstitute(meta.getQuery());
+        connection.setSQL(realQuery);
+        connection.connect();
+        // We are connected, so let's query
+        MessageElement[] fields = connection.getElements();
+        int nrFields = fields.length;
+        List<String> fieldNames = new ArrayList<String>();
+        for (int i = 0; i < nrFields; i++) {
+          addFields("", fieldNames, fields[i]);
         }
-        if(fieldsName!=null) colinf[1].setComboValues(fieldsName);
-		wFields.removeEmptyRows();
-		wFields.setRowNums();
-		wFields.optWidth(true);
-	} catch (KettleException e) {
-		new ErrorDialog(shell,BaseMessages.getString(PKG, "SalesforceInputMeta.ErrorRetrieveData.DialogTitle"),
-				BaseMessages.getString(PKG, "SalesforceInputMeta.ErrorRetrieveData.DialogMessage"),	e);
-	} catch (Exception e) {
-		new ErrorDialog(shell,BaseMessages.getString(PKG, "SalesforceInputMeta.ErrorRetrieveData.DialogTitle"),
-				BaseMessages.getString(PKG, "SalesforceInputMeta.ErrorRetrieveData.DialogMessage"),e);
-	}finally{
-		if(connection!=null) {
-			try {connection.close();}catch(Exception e){};
-		}
-	}
- }
+        fieldsName = fieldNames.toArray(new String[fieldNames.size()]);
+      } else {
+        connection.connect();
+
+        Field[] fields = connection.getObjectFields(realModule);
+        fieldsName = new String[fields.length];
+        for (int i = 0; i < fields.length; i++) {
+          Field field = fields[i];
+          fieldsName[i] = field.getName();
+          addField(field);
+        }
+      }
+      if (fieldsName != null)
+        colinf[1].setComboValues(fieldsName);
+      wFields.removeEmptyRows();
+      wFields.setRowNums();
+      wFields.optWidth(true);
+    } catch (KettleException e) {
+      new ErrorDialog(shell, BaseMessages.getString(PKG, "SalesforceInputMeta.ErrorRetrieveData.DialogTitle"),
+          BaseMessages.getString(PKG, "SalesforceInputMeta.ErrorRetrieveData.DialogMessage"), e);
+    } catch (Exception e) {
+      new ErrorDialog(shell, BaseMessages.getString(PKG, "SalesforceInputMeta.ErrorRetrieveData.DialogTitle"),
+          BaseMessages.getString(PKG, "SalesforceInputMeta.ErrorRetrieveData.DialogMessage"), e);
+    } finally {
+      if (connection != null) {
+        try {
+          connection.close();
+        } catch (Exception e) {
+        }
+        ;
+      }
+    }
+  }
+
+  private void addFields(String prefix, List<String> fieldNames, MessageElement field) {
+    String fieldname = prefix + field.getName();
+
+    Object value = field.getObjectValue();
+    if (value != null && value instanceof SObject) {
+      SObject sobject = (SObject) value;
+      for (MessageElement element : sobject.get_any()) {
+        addFields(fieldname + ".", fieldNames, (MessageElement) element);
+      }
+    } else {
+      addField(fieldname, fieldNames, field.getValue());
+    }
+  }
+
+  private void addField(Field field) {
+    String fieldType = field.getType().getValue();
+
+    String fieldLength = null;
+    String fieldPrecision = null;
+    if (!fieldType.equals("boolean") && !fieldType.equals("datetime") && !fieldType.equals("date")) {
+      fieldLength = Integer.toString(field.getLength());
+      fieldPrecision = Integer.toString(field.getPrecision());
+    }
+
+    addField(field.getLabel(), field.getName(), field.isIdLookup(), field.getType().getValue(), fieldLength,
+        fieldPrecision);
+  }
+
+  private void addField(String fieldName, List<String> fieldNames, String firstValue) {
+    fieldNames.add(fieldName);
+
+    // Try to guess field type
+    // I know it's not clean (see up)
+    final String fieldType;
+    String fieldLength = null;
+    String fieldPrecision = null;
+    if (Const.NVL(firstValue, "null").equals("null")) {
+      fieldType = "string";
+    } else {
+      if (StringUtil.IsDate(firstValue, DEFAULT_DATE_TIME_FORMAT)) {
+        fieldType = "datetime";
+      } else if (StringUtil.IsDate(firstValue, DEFAULT_DATE_FORMAT)) {
+        fieldType = "date";
+      } else if (StringUtil.IsInteger(firstValue)) {
+        fieldType = "int";
+        fieldLength = Integer.toString(ValueMeta.DEFAULT_INTEGER_LENGTH);
+      } else if (StringUtil.IsNumber(firstValue)) {
+        fieldType = "double";
+      } else if (firstValue.equals("true") || firstValue.equals("false")) {
+        fieldType = "boolean";
+      } else {
+        fieldType = "string";
+      }
+    }
+    addField(fieldName, fieldName, false, fieldType, fieldLength, fieldPrecision);
+  }
+
+  private void addField(String fieldLabel, String fieldName, boolean fieldIdIsLookup, String fieldType,
+      String fieldLength, String fieldPrecision) {
+    TableItem item = new TableItem(wFields.table, SWT.NONE);
+    item.setText(1, fieldLabel);
+    item.setText(2, fieldName);
+    item.setText(
+        3,
+        fieldIdIsLookup ? BaseMessages.getString(PKG, "System.Combo.Yes") : BaseMessages.getString(PKG,
+            "System.Combo.No"));
+
+    // Try to get the Type
+    if (fieldType.equals("boolean")) {
+      item.setText(4, "Boolean");
+    } else if (fieldType.equals("date")) {
+      item.setText(4, "Date");
+      item.setText(5, DEFAULT_DATE_FORMAT);
+    } else if (fieldType.equals("datetime")) {
+      item.setText(4, "Date");
+      item.setText(5, DEFAULT_DATE_TIME_FORMAT);
+    } else if (fieldType.equals("double")) {
+      item.setText(4, "Number");
+    } else if (fieldType.equals("int")) {
+      item.setText(4, "Integer");
+    } else {
+      item.setText(4, "String");
+    }
+
+    if (fieldLength != null) {
+      item.setText(6, fieldLength);
+    }
+    // Get precision
+    if (fieldPrecision != null) {
+      item.setText(7, fieldPrecision);
+    }
+  }
+
   private void updateRecordsFilter()
   {
 	  boolean activeFilter=(!wspecifyQuery.getSelection() && SalesforceConnectionUtils.getRecordsFilterByDesc(wRecordsFilter.getText())!=SalesforceConnectionUtils.RECORDS_FILTER_ALL);
