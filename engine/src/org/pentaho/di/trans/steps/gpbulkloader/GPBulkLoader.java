@@ -454,10 +454,15 @@ public class GPBulkLoader extends BaseStep implements StepInterface
 				logBasic(BaseMessages.getString(PKG, "GPBulkLoader.Log.ExitValuePsqlPath", "" + exitVal)); 
             }
         }
+        catch (KettleException ke)
+        {
+          // Re-throw the exception to the caller.
+          throw ke;
+        }
         catch ( Exception ex )
         {
-        	// Don't throw the message upwards, the message contains the password.
-        	throw new KettleException("Error while executing psql \'" + createCommandLine(meta, false) + "\'");
+        	// The message below doesn't include the password since passwords aren't supported.
+        	throw new KettleException("Error while executing psql \'" + createCommandLine(meta, false) + "\'", ex);
         }
         
         return true;
