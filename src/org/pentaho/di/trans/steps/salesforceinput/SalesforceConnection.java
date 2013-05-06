@@ -22,6 +22,8 @@
 
 package org.pentaho.di.trans.steps.salesforceinput;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -33,6 +35,8 @@ import javax.xml.soap.SOAPException;
 
 import org.apache.axis.message.MessageElement;
 import org.apache.axis.transport.http.HTTPConstants;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -461,14 +465,84 @@ public class SalesforceConnection {
 	 	
 	 	return retval;
 	 }
-	 public String getRecordValue(SObject con, int valueIndex) {
+	 
+  public String getRecordValue(SObject con, String fieldname) throws KettleException {
+    String[] fieldHierarchy = fieldname.split("\\.");
+    if (con == null) {
+      return null;
+    } else {
+      MessageElement element = getMessageElementForHierarchy(con, fieldHierarchy);
+      if (element != null) {
+        Object object = element.getObjectValue();
+        if (object != null) {
+          if (object instanceof QueryResult) {
+            return buildJsonQueryResult((QueryResult) object);
+          }
+        } else {
+          return element.getValue();
+        }
+      }
+    }
+    return null;
+  }
 
-	 	if(con==null) return null;
-	 	if(con.get_any()[valueIndex]==null) return null;
+  /**
+   * Drill down the SObject hierarchy based on the given field hierarchy until
+   * either null or the correct MessageElement is found
+   */
+  private MessageElement getMessageElementForHierarchy(SObject con, String[] fieldHierarchy) {
+    final int lastIndex = fieldHierarchy.length - 1;
+    SObject currentSObject = con;
+    for (int index = 0; index <= lastIndex; index++) {
+      for (MessageElement element : currentSObject.get_any()) {
+        if (element.getName().equals(fieldHierarchy[index])) {
+          if (index == lastIndex) {
+            return element;
+          } else {
+            Object object = element.getObjectValue();
+            if (object != null) {
+              currentSObject = (SObject) object;
+              //Found the next level, keep going
+              break;
+            } else {
+              return null;
+            }
+          }
+        }
+      }
+    }
+    return null;
+  }
 
-	 	// return value
-	 	return con.get_any()[valueIndex].getValue();
-	 }
+  @SuppressWarnings("unchecked")
+  private String buildJsonQueryResult(QueryResult queryResult) throws KettleException {
+    JSONArray list = new JSONArray();
+    for (SObject sobject : queryResult.getRecords()) {
+      list.add(buildJSONSObject(sobject));
+    }
+    StringWriter sw = new StringWriter();
+    try {
+      list.writeJSONString(sw);
+    } catch (IOException e) {
+      throw new KettleException(e);
+    }
+    return sw.toString();
+  }
+
+  @SuppressWarnings("unchecked")
+  private JSONObject buildJSONSObject(SObject sobject) {
+    JSONObject jsonObject = new JSONObject();
+    for (MessageElement element : sobject.get_any()) {
+      Object object = element.getObjectValue();
+      if (object != null && object instanceof SObject) {
+        jsonObject.put(element.getName(), buildJSONSObject((SObject) object));
+      } else {
+        jsonObject.put(element.getName(), element.getValue());
+      }
+    }
+    return jsonObject;
+  }
+	  
 	 // Get SOQL meta data (not a Good way but i don't see any other way !)
 	 // TODO : Go back to this one
 	 // I am sure there is an easy way to return meta for a SOQL result
@@ -487,6 +561,7 @@ public class SalesforceConnection {
 			if(!getQueryResult().isDone()) {
 				this.qr=getBinding().queryMore(getQueryResult().getQueryLocator());
 				this.sObjects=getQueryResult().getRecords();
+				if(this.sObjects!=null) this.recordsCount=this.sObjects.length;
 				this.queryResultSize= getQueryResult().getSize();
 				return true;
 			}else{
