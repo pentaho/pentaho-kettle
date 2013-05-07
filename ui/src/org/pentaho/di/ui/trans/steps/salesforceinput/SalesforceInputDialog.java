@@ -1461,7 +1461,6 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
           connection.close();
         } catch (Exception e) {
         }
-        ;
       }
     }
   }
