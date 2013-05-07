@@ -603,6 +603,21 @@ public class Const
 	public static final String	KETTLE_CHANNEL_LOG_TABLE	= "KETTLE_CHANNEL_LOG_TABLE";
 	
   /**
+   * The name of the variable that defines the metrics log database by default for all transformations and jobs
+   */
+  public static final String  KETTLE_METRICS_LOG_DB = "KETTLE_METRICS_LOG_DB";
+
+  /**
+   * The name of the variable that defines the metrics log schema by default for all transformations and jobs
+   */
+  public static final String  KETTLE_METRICS_LOG_SCHEMA = "KETTLE_METRICS_LOG_SCHEMA";
+
+  /**
+   * The name of the variable that defines the metrics log table by default for all transformations and jobs
+   */
+  public static final String  KETTLE_METRICS_LOG_TABLE  = "KETTLE_METRICS_LOG_TABLE";
+  
+  /**
    * The name of the variable that defines the checkpoint log database by default for all jobs
    */
   public static final String  KETTLE_CHECKPOINT_LOG_DB = "KETTLE_CHECKPOINT_LOG_DB";

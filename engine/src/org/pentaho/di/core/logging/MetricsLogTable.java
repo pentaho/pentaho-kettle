@@ -186,15 +186,15 @@ public class MetricsLogTable extends BaseLogTable implements Cloneable, LogTable
 	}
 
 	public String getConnectionNameVariable() {
-		return Const.KETTLE_CHANNEL_LOG_DB; // $NON-NLS-1$
+		return Const.KETTLE_METRICS_LOG_DB; // $NON-NLS-1$
 	}
 
 	public String getSchemaNameVariable() {
-		return Const.KETTLE_CHANNEL_LOG_SCHEMA; // $NON-NLS-1$
+		return Const.KETTLE_METRICS_LOG_SCHEMA; // $NON-NLS-1$
 	}
 
 	public String getTableNameVariable() {
-		return Const.KETTLE_CHANNEL_LOG_TABLE; // $NON-NLS-1$
+		return Const.KETTLE_METRICS_LOG_TABLE; // $NON-NLS-1$
 	}
 
 	public List<RowMetaInterface> getRecommendedIndexes() {
