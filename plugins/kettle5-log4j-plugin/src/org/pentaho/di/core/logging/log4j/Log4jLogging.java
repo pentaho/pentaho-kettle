@@ -4,8 +4,12 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.KettleLoggingEvent;
+import org.pentaho.di.core.logging.LoggingPlugin;
 import org.pentaho.di.core.logging.LoggingPluginInterface;
 
+@LoggingPlugin(
+     id="Log4jLogging"     
+    )
 public class Log4jLogging implements LoggingPluginInterface {
   
   public static final String STRING_PENTAHO_DI_LOGGER_NAME = "org.pentaho.di";
