@@ -178,11 +178,21 @@ public abstract class BaseStepGenericXulDialog extends AbstractXulEventHandler i
     xulDialog.hide();
   }
   
+  // This is the only way to get the proper component parented to 
+  // message boxes for proper display/disposal. The creator of this dialog 
+  // should set this modal parent before attempting to call any messages.
+  
+  Object modalParent = null;
+  public void setModalParent(Object p){
+    modalParent = p;
+  }
+  
   public void showMessage(final String message, final String title){
     
     try {
       
       final XulMessageBox msg = (XulMessageBox) document.createElement("messagebox");
+      msg.setModalParent(modalParent);
       msg.setTitle(title);
       msg.setMessage(message);
       msg.open();
@@ -198,6 +208,7 @@ public abstract class BaseStepGenericXulDialog extends AbstractXulEventHandler i
     try {
       
       final XulMessageBox msg = (XulMessageBox) document.createElement("messagebox");
+      msg.setModalParent(modalParent);
       msg.setTitle(title);
       msg.setMessage(message);
       msg.setButtons(new Object[]{ "OK", "Cancel" });
