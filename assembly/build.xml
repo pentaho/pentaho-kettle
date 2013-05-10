@@ -41,7 +41,17 @@
         <include name="**/*.zip"/>
       </fileset>
     </unzip>
-  	
+    
+    <!-- Unzip the big-data package into the big-data folder of the distribution -->
+    <antcall target="unzip-big-data-plugin">
+        <param name="big.data.plugin.location" value="${lib.dir}"/>
+    </antcall>  
+    
+    <!-- Unzip the mongodb package into the mongodb folder of the distribution -->
+    <antcall target="unzip-mongodb-plugin">
+        <param name="mongodb.plugin.location" value="${lib.dir}"/>
+    </antcall>  
+        	    
   	<!-- Insert launcher revision number into batch files -->
     <replace dir="${stage.dir}/${package.root.dir}">
       <include name="**/*.bat"/>
@@ -75,6 +85,26 @@
 	         depends="assemble-full, package-zip, publish-nojar"
 	         description="Builds and publishes the jar file to the local repository">
 	 </target>
+  
+  
+	    <!-- Unzip the big data package into the big-data folder of the distribution -->
+	      <target name="unzip-big-data-plugin" depends="init">
+	      <unzip dest="${stage.dir}/${package.root.dir}/plugins" overwrite="true">
+	        <fileset dir="${big.data.plugin.location}">
+	          <include name="pentaho-big-data-plugin*.zip"/>
+	        </fileset>
+	      </unzip>
+	      </target>
+	          
+	    <!-- Unzip the mongodb into the mongodb folder of the distribution -->
+	      <target name="unzip-mongodb-plugin" depends="init">
+	      <unzip dest="${stage.dir}/${package.root.dir}/plugins" overwrite="true">
+	        <fileset dir="${mongodb.plugin.location}">
+	          <include name="pentaho-mongodb-plugin*.zip"/>
+	        </fileset>
+	      </unzip>
+	      </target>
+  
 	
 	
 	<!--=======================================================================
