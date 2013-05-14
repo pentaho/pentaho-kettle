@@ -263,8 +263,9 @@ public abstract class TransformClassBase
         Object[] row = parent.getRowImpl();
         
         // Update data.inputRowMeta and data.outputRowMeta
-        data.inputRowMeta = parent.getInputRowMeta();
-        data.outputRowMeta = getTransMeta().getThisStepFields(getStepMeta(), null, data.inputRowMeta.clone());
+        RowMetaInterface inputRowMeta = parent.getInputRowMeta();
+        data.inputRowMeta = inputRowMeta;
+        data.outputRowMeta = inputRowMeta == null ? null : getTransMeta().getThisStepFields(getStepMeta(), null, inputRowMeta.clone());
         
         return row;
     }
