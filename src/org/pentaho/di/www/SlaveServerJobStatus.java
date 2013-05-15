@@ -108,30 +108,33 @@ public class SlaveServerJobStatus
 
         String loggingString64 = XMLHandler.getTagValue(jobStatusNode, "logging_string");
         
-        // This is a Base64 encoded GZIP compressed stream of data.
-        //
-        try
-        {
+        if (!Const.isEmpty(loggingString64)) {
+          // This is a CDATA block with a Base64 encoded GZIP compressed stream of data.
+          //
+          String dataString64 = loggingString64.substring("<![CDATA[".length(), loggingString64.length() - "]]>".length());
+    
+          try {
             byte[] bytes = new byte[] {};
-            if (loggingString64!=null) bytes = Base64.decodeBase64(loggingString64.getBytes());
-            if (bytes.length>0)
-            {
-                ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-                GZIPInputStream gzip = new GZIPInputStream(bais);
-                int c;
-                StringBuffer buffer = new StringBuffer();
-                while ( (c=gzip.read())!=-1) buffer.append((char)c);
-                gzip.close();
-                loggingString = buffer.toString();
+            if (!Const.isEmpty(dataString64))
+              bytes = Base64.decodeBase64(dataString64.getBytes());
+            if (bytes.length > 0) {
+              ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+              GZIPInputStream gzip = new GZIPInputStream(bais);
+              int c;
+              StringBuffer buffer = new StringBuffer();
+              while ((c = gzip.read()) != -1)
+                buffer.append((char) c);
+              gzip.close();
+              loggingString = buffer.toString();
+            } else {
+              loggingString = "";
             }
-            else
-            {
-                loggingString="";
-            }
-        }
-        catch(IOException e)
-        {
-            loggingString = "Unable to decode logging from remote server : "+e.toString()+Const.CR+Const.getStackTracker(e)+Const.CR;
+          } catch (IOException e) {
+            loggingString = "Unable to decode logging from remote server : " + e.toString() + Const.CR
+                + Const.getStackTracker(e);
+          }
+        } else {
+          loggingString = "";
         }
         
         // get the result object, if there is any...
