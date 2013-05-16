@@ -80,7 +80,8 @@
     <dependency org="trilead-ssh2"                     name="trilead-ssh2"         rev="build213"        transitive="false"/>
     <dependency org="javax.servlet"                    name="servlet-api"          rev="2.5"             transitive="false"/>
     <dependency org="javax.xml"                        name="jaxrpc-api"           rev="1.1"             transitive="false"/>
-    <dependency org="org.olap4j"                       name="olap4j"               rev="1.0.1.539"       transitive="false"/>
+    <dependency org="org.olap4j"                       name="olap4j"               rev="1.1.0"           transitive="false"/>
+    <dependency org="org.olap4j"                       name="olap4j-xmla"          rev="1.1.0"           transitive="false"/>
     <dependency org="org.apache.poi"                   name="poi-ooxml"            rev="3.8"             transitive="false"/>
     <dependency org="wsdl4j"                           name="wsdl4j"               rev="1.6.2"           transitive="false"/>
     <dependency org="wsdl4j"                           name="wsdl4j-qname"         rev="1.6.1"           transitive="false"/>
