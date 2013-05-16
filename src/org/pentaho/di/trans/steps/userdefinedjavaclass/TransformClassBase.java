@@ -59,7 +59,8 @@ public abstract class TransformClassBase
 {
 	private static Class<?> PKG = UserDefinedJavaClassMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	protected boolean first = true;
+	  protected boolean first = true;
+	  protected boolean updateRowMeta = true;
     protected UserDefinedJavaClass parent;
     protected UserDefinedJavaClassMeta meta;
     protected UserDefinedJavaClassData data;
@@ -262,10 +263,13 @@ public abstract class TransformClassBase
     {
         Object[] row = parent.getRowImpl();
         
-        // Update data.inputRowMeta and data.outputRowMeta
-        RowMetaInterface inputRowMeta = parent.getInputRowMeta();
-        data.inputRowMeta = inputRowMeta;
-        data.outputRowMeta = inputRowMeta == null ? null : getTransMeta().getThisStepFields(getStepMeta(), null, inputRowMeta.clone());
+        if(updateRowMeta) {
+          // Update data.inputRowMeta and data.outputRowMeta
+          RowMetaInterface inputRowMeta = parent.getInputRowMeta();
+          data.inputRowMeta = inputRowMeta;
+          data.outputRowMeta = inputRowMeta == null ? null : getTransMeta().getThisStepFields(getStepMeta(), null, inputRowMeta.clone());
+          updateRowMeta = false;
+        }
         
         return row;
     }
