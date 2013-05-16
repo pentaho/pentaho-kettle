@@ -17,6 +17,12 @@
   <property name="impl.title" value="Kettle" />
   <property name="impl.version" value="${project.revision}" />
   <property name="impl.vendor" value="Pentaho Corporation" />
+  
+  <!-- override the default package-ivy.xml defined in common subfloor.pkg -->
+    <property name="package.artifact.ivyfile"
+              value="ivy.xml"
+              description="The ivy file defining dependencies of the package" />
+  
 
   <import file="build-res/subfloor-pkg.xml" />
 
@@ -86,7 +92,36 @@
 	         description="Builds and publishes the jar file to the local repository">
 	 </target>
   
-  
+  <!-- Differs from subfloor by publishing the zip instead of jar --> 
+  <target name="publish-nojar.internal" depends="install-antcontrib,create-pom,ivy.deliver">
+    <antcall target="maven-publish-dependencies">
+      <param name="publish.groupId" value="${ivy.artifact.group}" />
+      <param name="publish.artifactId" value="${ivy.artifact.id}" />
+      <param name="publish.version" value="${project.revision}" />
+      <param name="publish.file" value="${ivy.artifact.ivypathname}" />
+    </antcall>
+
+    <if>
+      <equals arg1="${source.publish}" arg2="true" />
+        <then>
+          <antcall target="maven-publish-sources">
+            <param name="publish.groupId" value="${ivy.artifact.group}" />
+            <param name="publish.artifactId" value="${ivy.artifact.id}" />
+            <param name="publish.version" value="${project.revision}" />
+            <param name="publish.file" value="${dist.dir}/${ivy.artifact.id}-${project.revision}-sources.jar" />
+          </antcall>
+        </then>
+    </if>
+
+    <antcall target="maven-publish-artifact">
+      <param name="publish.pomFile" value="${ivy.artifact.pomfile}" />
+      <param name="publish.file" value="${dist.dir}/${ivy.artifact.id}-${project.revision}.zip" />
+    </antcall>
+
+    <antcall target="maven-publish.post"/>
+    
+  </target>
+    
 	    <!-- Unzip the big data package into the big-data folder of the distribution -->
 	      <target name="unzip-big-data-plugin" depends="init">
 	      <unzip dest="${stage.dir}/${package.root.dir}/plugins" overwrite="true">
