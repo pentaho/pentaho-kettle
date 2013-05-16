@@ -780,25 +780,50 @@ public class CsvInput extends BaseStep implements StepInterface
 
 	}
 
-	private int calculateFieldLength(boolean newLineFound, int newLines, boolean enclosureFound, boolean endOfBuffer) {
-	  
-	  int length = data.endBuffer-data.startBuffer;
-      if (newLineFound) {
-          length-=newLines;
-          if (length<=0) length=0;
-          if (endOfBuffer) data.startBuffer++; // offset for the enclosure in last field before EOF
-      }
-      if (enclosureFound) {
-          data.startBuffer++;
-          length-=2;
-          if (length<=0) length=0;
-      }
-      if (newLines<=0 && data.delimiter.length>1) {
-        length-=data.delimiter.length-1;
-      }
-      if (length<=0) length=0;
-      return length;
-  }
+	private int calculateFieldLength(boolean newLineFound, int newLines,
+			boolean enclosureFound, boolean endOfBuffer) {
+
+		int length = data.endBuffer - data.startBuffer;
+
+		if (newLineFound) {
+			length -= newLines;
+			if (length <= 0)
+				length = 0;
+			if (endOfBuffer)
+				data.startBuffer++; // offset for the enclosure in last field
+									// before EOF
+		}
+
+		if (enclosureFound) {
+
+			if (length > 1) {
+				length -= data.delimiter.length;
+			}
+
+			data.startBuffer = data.startBuffer + data.enclosure.length;
+			length -= data.enclosure.length;
+
+			// Lets get rid of the delimiter, if it is still in the range and
+			// spaces
+			// between it and the enclosure.
+			while ((data.byteBuffer[data.startBuffer + length] == 32)
+					|| (data.byteBuffer[data.startBuffer + length] == data.delimiter[0])) {
+
+				length -= 1;
+			}
+
+			length -= data.enclosure.length - 1;
+		}
+
+		if (newLines <= 0 && data.delimiter.length > 1) {
+			length -= data.delimiter.length - 1;
+		}
+
+		if (length <= 0)
+			length = 0;
+
+		return length;
+	}
 
   public boolean init(StepMetaInterface smi, StepDataInterface sdi)
 	{
