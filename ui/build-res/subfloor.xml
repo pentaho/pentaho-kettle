@@ -1173,8 +1173,13 @@ TYPICAL TARGET SEQUENCE
         </copy>
       </then>
     </if>
+  	
+  	<!-- embedd the UI definition files in the jar so that webstart will work -->
+    <copy todir="${classes.dir}/ui">
+        <fileset dir="${ui}" includes="**/*.png **/*.xml **/*.xul **/*.properties"/>
+    </copy>
 
-    <if>
+  	<if>
       <not>
         <isset property="jar.include.source" />
       </not>
