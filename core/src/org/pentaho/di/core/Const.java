@@ -664,13 +664,13 @@ public class Const
 	
 	/**
 	 * System wide flag to determine whether standard error will be redirected to Kettle logging facilities.
-	 * Will redirect if the value is unset or equal ignoring case to the string "Y"
+	 * Will redirect if the value is equal ignoring case to the string "Y"
 	 */
 	public static final String KETTLE_REDIRECT_STDERR = "KETTLE_REDIRECT_STDERR";
 	
 	/**
    * System wide flag to determine whether standard out will be redirected to Kettle logging facilities.
-   * Will redirect if the value is unset or equal ignoring case to the string "Y"
+   * Will redirect if the value is equal ignoring case to the string "Y"
    */
 	public static final String KETTLE_REDIRECT_STDOUT = "KETTLE_REDIRECT_STDOUT";
 
