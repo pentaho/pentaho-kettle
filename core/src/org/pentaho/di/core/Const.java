@@ -853,12 +853,10 @@ public class Const
      * 
      */
     public static final String PENTAHO_METASTORE_NAME = "Pentaho Local Client Metastore";
-    
 
     /** 
      *  rounds double f to any number of places after decimal point
 	 *  Does arithmetic using BigDecimal class to avoid integer overflow while rounding
-	 *  TODO: make the rounding itself optional in the Props for performance reasons.
 	 *  
 	 * @param f The value to round
 	 * @param places The number of decimal places
@@ -866,6 +864,21 @@ public class Const
 	 */
 
 	public static final double round(double f, int places)
+	{
+		return round(f, places, java.math.BigDecimal.ROUND_HALF_EVEN);
+	}
+
+    /** 
+     *  rounds double f to any number of places after decimal point
+	 *  Does arithmetic using BigDecimal class to avoid integer overflow while rounding
+	 *  
+	 * @param f The value to round
+	 * @param places The number of decimal places
+	 * @param roundingMode The mode for rounding, e.g. java.math.BigDecimal.ROUND_HALF_EVEN
+	 * @return The rounded floating point value
+	 */
+
+	public static final double round(double f, int places, int roundingMode)
 	{
 	  // We can't round non-numbers or infinite values
 	  //
@@ -876,7 +889,7 @@ public class Const
 	  // Do the rounding...
 	  //
 		java.math.BigDecimal bdtemp = java.math.BigDecimal.valueOf(f);
-		bdtemp = bdtemp.setScale(places, java.math.BigDecimal.ROUND_HALF_EVEN);
+		bdtemp = bdtemp.setScale(places, roundingMode);
 		return bdtemp.doubleValue();
 	}
 

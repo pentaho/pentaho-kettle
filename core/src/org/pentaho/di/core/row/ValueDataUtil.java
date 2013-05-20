@@ -654,6 +654,14 @@ public class ValueDataUtil
         }
     }
     
+    /**
+     * Rounding with no decimal places (using default rounding method ROUND_HALF_EVEN)
+     * 
+     * @param metaA Metadata of value to round
+     * @param dataA Value to round
+     * @return The rounded value
+     * @throws KettleValueException
+     */
     public static Object round(ValueMetaInterface metaA, Object dataA) throws KettleValueException
     {
         if (dataA==null) return null;
@@ -671,6 +679,79 @@ public class ValueDataUtil
         }
     }
 
+    /**
+     * Rounding with no decimal places with a given rounding method
+     * 
+     * @param metaA Metadata of value to round
+     * @param dataA Value to round
+     * @param roundingMode The mode for rounding, e.g. java.math.BigDecimal.ROUND_HALF_EVEN
+     * @return The rounded value
+     * @throws KettleValueException
+     */
+    public static Object round(ValueMetaInterface metaA, Object dataA, int roundingMode) throws KettleValueException
+    {
+        if (dataA==null) return null;
+
+        switch(metaA.getType())
+        {
+        case ValueMetaInterface.TYPE_NUMBER    : 
+            return new Double( Const.round( metaA.getNumber(dataA).doubleValue(), 0, roundingMode) );            
+        case ValueMetaInterface.TYPE_INTEGER   : 
+            return metaA.getInteger(dataA);
+        case ValueMetaInterface.TYPE_BIGNUMBER : 
+            // Round it to 0 digits.
+            BigDecimal number = metaA.getBigNumber(dataA);
+            return number.setScale(0, roundingMode);         	
+        default: throw new KettleValueException("The 'round' function only works on numeric data" );
+        }
+    }
+    
+    /**
+     * Rounding with decimal places (using default rounding method ROUND_HALF_EVEN)
+     * 
+     * @param metaA Metadata of value to round
+     * @param dataA Value to round
+     * @param metaB Metadata of decimal places
+     * @param dataB decimal places
+     * @return The rounded value
+     * @throws KettleValueException
+     */
+    public static Object round(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB) throws KettleValueException
+    {
+    	return round(metaA, dataA, metaB, dataB, BigDecimal.ROUND_HALF_EVEN);
+    }
+
+    /**
+     * Rounding with decimal places with a given rounding method
+     *  
+     * @param metaA Metadata of value to round
+     * @param dataA Value to round
+     * @param metaB Metadata of decimal places
+     * @param dataB decimal places
+     * @param roundingMode roundingMode The mode for rounding, e.g. java.math.BigDecimal.ROUND_HALF_EVEN
+     * @return The rounded value
+     * @throws KettleValueException
+     */
+    public static Object round(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB, int roundingMode) throws KettleValueException
+    {
+        if (dataA==null || dataB==null) return null;
+
+        switch(metaA.getType())
+        {
+        case ValueMetaInterface.TYPE_NUMBER    : 
+            return new Double( Const.round( metaA.getNumber(dataA).doubleValue(), metaB.getInteger(dataB).intValue(), roundingMode) );
+        case ValueMetaInterface.TYPE_INTEGER   : 
+            return metaA.getInteger(dataA);
+        case ValueMetaInterface.TYPE_BIGNUMBER : 
+            
+            // Round it to the desired number of digits.
+            BigDecimal number = metaA.getBigNumber(dataA);
+            return number.setScale( metaB.getInteger(dataB).intValue(), roundingMode); 
+            
+        default: throw new KettleValueException("The 'round' function only works on numeric data" );
+        }
+    }    
+    
     public static Object ceil(ValueMetaInterface metaA, Object dataA) throws KettleValueException
     {
 	if (dataA==null) return null;
@@ -717,26 +798,6 @@ public class ValueDataUtil
             return new BigDecimal( Math.abs( metaA.getNumber(dataA).doubleValue()) );
             
         default: throw new KettleValueException("The 'abs' function only works on numeric data" );
-        }
-    }
-    
-    public static Object round(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB) throws KettleValueException
-    {
-        if (dataA==null || dataB==null) return null;
-
-        switch(metaA.getType())
-        {
-        case ValueMetaInterface.TYPE_NUMBER    : 
-            return new Double( Const.round( metaA.getNumber(dataA).doubleValue(), metaB.getInteger(dataB).intValue()) );
-        case ValueMetaInterface.TYPE_INTEGER   : 
-            return metaA.getInteger(dataA);
-        case ValueMetaInterface.TYPE_BIGNUMBER : 
-            
-            // Round it to the desired number of digits.
-            BigDecimal number = metaA.getBigNumber(dataA);
-            return number.setScale( metaB.getInteger(dataB).intValue(), BigDecimal.ROUND_HALF_EVEN); 
-            
-        default: throw new KettleValueException("The 'round' function only works on numeric data" );
         }
     }
     
@@ -931,7 +992,7 @@ public class ValueDataUtil
              else if(resultType.equals("mn"))
              	return new Long (diff / 60000) ; // minute
              else if(resultType.equals("h"))
-             	return new Long(diff / 360000) ; // hour
+             	return new Long(diff / 3600000) ; // hour
              else if(resultType.equals("d"))
             	return new Long(diff / 86400000);
           } else {

@@ -225,6 +225,12 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
             case CalculatorMetaFunction.CALC_ROUND_2            :  //  ROUND( A , B )
                 defaultResultType = ValueMetaInterface.TYPE_NUMBER;
                 break;
+            case CalculatorMetaFunction.CALC_ROUND_STD_1            :  // STDROUND( A )
+                defaultResultType = ValueMetaInterface.TYPE_INTEGER;
+                break;
+            case CalculatorMetaFunction.CALC_ROUND_STD_2            :  //  STDROUND( A , B )
+                defaultResultType = ValueMetaInterface.TYPE_NUMBER;
+                break;
             case CalculatorMetaFunction.CALC_CONSTANT           : // Set field to constant value...
                 defaultResultType = ValueMetaInterface.TYPE_STRING;
                 break;
@@ -395,10 +401,10 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
             case CalculatorMetaFunction.CALC_REFINED_SOUNDEX     : 
             	defaultResultType=ValueMetaInterface.TYPE_STRING;
                 break;
-            case CalculatorMetaFunction.CALC_CEIL               :  // ROUND( A )
+            case CalculatorMetaFunction.CALC_CEIL               :  // CEIL( A )
                 defaultResultType = ValueMetaInterface.TYPE_INTEGER;
                 break;
-            case CalculatorMetaFunction.CALC_FLOOR              :  // ROUND( A )
+            case CalculatorMetaFunction.CALC_FLOOR              :  // FLOOR( A )
                 defaultResultType = ValueMetaInterface.TYPE_INTEGER;
                 break;
             case CalculatorMetaFunction.CALC_HOUR_OF_DAY		:

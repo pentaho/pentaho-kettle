@@ -351,16 +351,26 @@ public class Calculator extends BaseStep implements StepInterface
                         calcData[index] = ValueDataUtil.round(metaA, dataA, metaB, dataB);
                     }
                     break;
-            		case CalculatorMetaFunction.CALC_CEIL                    : // CEIL( A )
-            		    {
-            		        calcData[index] = ValueDataUtil.ceil(metaA, dataA);
-            		    }
-            		    break;
-            		case CalculatorMetaFunction.CALC_FLOOR                    : // FLOOR( A )
-            		    {
-            		        calcData[index] = ValueDataUtil.floor(metaA, dataA);
-            		    }
-            		    break;
+				case CalculatorMetaFunction.CALC_ROUND_STD_1: // ROUND( A )
+					{
+						calcData[index] = ValueDataUtil.round(metaA, dataA, java.math.BigDecimal.ROUND_HALF_UP);
+					}
+					break;
+				case CalculatorMetaFunction.CALC_ROUND_STD_2: // ROUND( A , B )
+					{
+						calcData[index] = ValueDataUtil.round(metaA, dataA, metaB, dataB, java.math.BigDecimal.ROUND_HALF_UP);
+					}
+					break;
+            	case CalculatorMetaFunction.CALC_CEIL                    : // CEIL( A )
+            	    {
+            	        calcData[index] = ValueDataUtil.ceil(metaA, dataA);
+            	    }
+            	    break;
+            	case CalculatorMetaFunction.CALC_FLOOR                    : // FLOOR( A )
+            	    {
+            	        calcData[index] = ValueDataUtil.floor(metaA, dataA);
+            	    }
+            	    break;
                 case CalculatorMetaFunction.CALC_CONSTANT           : // Set field to constant value...
                     {
                         calcData[index] = fn.getFieldA(); // A string
