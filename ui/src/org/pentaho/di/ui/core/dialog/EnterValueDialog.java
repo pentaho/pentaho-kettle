@@ -422,6 +422,7 @@ public class EnterValueDialog extends Dialog {
       valueMeta.setConversionMask(formatIndex >= 0 ? wFormat.getItem(formatIndex) : wFormat.getText());
       valueMeta.setLength(Const.toInt(wLength.getText(), -1));
       valueMeta.setPrecision(Const.toInt(wPrecision.getText(), -1));
+      val.setValueMeta(valueMeta);
   
       ValueMetaInterface stringValueMeta = new ValueMeta(valuename, ValueMetaInterface.TYPE_STRING);
       stringValueMeta.setConversionMetadata(valueMeta);
