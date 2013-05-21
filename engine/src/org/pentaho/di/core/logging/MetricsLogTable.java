@@ -36,6 +36,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.HasDatabasesInterface;
+import org.pentaho.di.trans.step.StepMeta;
 import org.w3c.dom.Node;
 
 /**
@@ -106,7 +107,7 @@ public class MetricsLogTable extends BaseLogTable implements Cloneable, LogTable
 		return retval.toString();
 	}
 	
-	public void loadXML(Node node, List<DatabaseMeta> databases) {
+	public void loadXML(Node node, List<DatabaseMeta> databases, List<StepMeta> steps) {
 		connectionName = XMLHandler.getTagValue(node, "connection");
 		schemaName = XMLHandler.getTagValue(node, "schema");
 		tableName = XMLHandler.getTagValue(node, "table");
@@ -114,6 +115,15 @@ public class MetricsLogTable extends BaseLogTable implements Cloneable, LogTable
 		
 		super.loadFieldsXML(node);
 	}
+	
+  @Override
+  public void replaceMeta(LogTableCoreInterface logTableInterface) {
+    if (!(logTableInterface instanceof MetricsLogTable)) return;
+    
+    MetricsLogTable logTable = (MetricsLogTable) logTableInterface; 
+    super.replaceMeta(logTable);
+  }
+
 
 	public static MetricsLogTable getDefault(VariableSpace space, HasDatabasesInterface databasesInterface) {
 		MetricsLogTable table = new MetricsLogTable(space, databasesInterface);

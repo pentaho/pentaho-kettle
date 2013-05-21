@@ -457,6 +457,7 @@ public class Market implements SpoonPluginInterface {
       
       Thread t = new Thread() {
         public void run() {
+          KettleURLClassLoader classloader = null;
           try {
             File tmpJar = File.createTempFile("kettle_marketplace_tmp", ".jar");
             FileInputStream fis = new FileInputStream(finalJar);
@@ -464,13 +465,17 @@ public class Market implements SpoonPluginInterface {
             IOUtils.copy(fis, fos);
             fis.close();
             fos.close();
-            KettleURLClassLoader classloader = new KettleURLClassLoader(new URL[] {tmpJar.toURI().toURL()}, Spoon.getInstance().getClass().getClassLoader());
+            classloader = new KettleURLClassLoader(new URL[] {tmpJar.toURI().toURL()}, Spoon.getInstance().getClass().getClassLoader());
             Class<?> clazz = classloader.loadClass("org.pentaho.di.core.market.Market");
             // remove the plugin, unload when done.
             Method m = clazz.getMethod("upgradeMarketInSeparateClassLoader", File.class, String.class);
             m.invoke(null, tmpJar, entry.getPackageUrl());
           } catch (Throwable t) {
             t.printStackTrace();
+          } finally {
+            if (classloader!=null) {
+              classloader.closeClassLoader();
+            }
           }
         }
       };

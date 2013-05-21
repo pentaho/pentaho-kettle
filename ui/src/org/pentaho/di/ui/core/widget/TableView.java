@@ -2305,7 +2305,9 @@ public class TableView extends Composite {
       try {
         int extra = 15;
         if (Const.isWindows()) {
-          extra+=10;
+          extra+=15;
+        } else if (Const.isLinux()) {
+          extra+=15;
         }
         // Platform specific code not needed any more with current version SWT
         // if (Const.isOSX() || Const.isLinux()) max*=1.25;

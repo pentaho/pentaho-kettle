@@ -29,10 +29,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.pentaho.di.cluster.ClusterSchema;
+import org.pentaho.di.core.AttributesInterface;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.CheckResultSourceInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
+import org.pentaho.di.core.attributes.AttributesUtil;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginLoaderException;
@@ -69,7 +71,7 @@ import org.w3c.dom.Node;
  *
  */
 public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<StepMeta>, GUIPositionInterface,
-    SharedObjectInterface, CheckResultSourceInterface, ResourceExportInterface, ResourceHolderInterface {
+    SharedObjectInterface, CheckResultSourceInterface, ResourceExportInterface, ResourceHolderInterface, AttributesInterface {
   private static Class<?> PKG = StepMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   public static final String XML_TAG = "step";
@@ -136,6 +138,8 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
   private TransMeta parentTransMeta;
 
   private Integer copiesCache = null;
+  
+  protected Map<String, Map<String, String>> attributesMap;
 
   /**
    * @param stepid The ID of the step: this is derived information, you can also use the constructor without stepid.
@@ -173,6 +177,8 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 
     remoteInputSteps = new ArrayList<RemoteStep>();
     remoteOutputSteps = new ArrayList<RemoteStep>();
+    
+    attributesMap = new HashMap<String, Map<String,String>>();
   }
 
   public StepMeta() {
@@ -203,6 +209,8 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     if (includeInterface) {
       retval.append(stepMetaInterface.getXML());
     }
+    
+    retval.append(AttributesUtil.getAttributesXml(attributesMap));
 
     retval.append("     ").append(
         XMLHandler.addTagValue("cluster_schema", clusterSchema == null ? "" : clusterSchema.getName()));
@@ -291,6 +299,10 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
       if (sdistri == null) {
         distributes = true; // default=distribute
       }
+      
+      // Load the attribute groups map
+      //
+      attributesMap = AttributesUtil.loadAttributes(XMLHandler.getSubNode(stepnode, AttributesUtil.XML_TAG_ATTRIBUTE));
       
       // Determine the row distribution
       //
@@ -962,5 +974,42 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
   public void setCopiesString(String copiesString) {
     this.copiesString = copiesString;
     copiesCache = null;
+  }
+  
+  @Override
+  public void setAttributesMap(Map<String, Map<String, String>> attributesMap) {
+    this.attributesMap = attributesMap;
+  }
+  
+  @Override
+  public Map<String, Map<String, String>> getAttributesMap() {
+    return attributesMap;
+  }
+  
+  @Override
+  public void setAttribute(String groupName, String key, String value) {
+    Map<String, String> attributes = getAttributes(groupName);
+    if (attributes==null) {
+      attributes=new HashMap<String, String>();
+      attributesMap.put(groupName, attributes);
+    }
+    attributes.put(key, value);
+  }
+  
+  @Override
+  public void setAttributes(String groupName, Map<String, String> attributes) {
+    attributesMap.put(groupName, attributes);
+  }
+  
+  @Override
+  public Map<String, String> getAttributes(String groupName) {
+    return attributesMap.get(groupName);
+  }
+  
+  @Override
+  public String getAttribute(String groupName, String key) {
+    Map<String, String> attributes = attributesMap.get(groupName);
+    if (attributes==null) return null;
+    return attributes.get(key);
   }
 }

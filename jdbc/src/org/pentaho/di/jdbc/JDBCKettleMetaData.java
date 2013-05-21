@@ -1235,4 +1235,13 @@ public class JDBCKettleMetaData implements java.sql.DatabaseMetaData {
     return false;
   }
 
+  public ResultSet getPseudoColumns(String catalog, String schemaPattern, String tableNamePattern,
+      String columnNamePattern) throws SQLException {
+    throw new SQLException("Pseudo Columns are not supported");
+  }
+
+  public boolean generatedKeyAlwaysReturned() throws SQLException {
+    return false;
+  }
+
 }

@@ -192,8 +192,16 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
         }
       }
 		}
-  
 	}
+	
+  @Override
+  public void replaceMeta(LogTableCoreInterface logTableInterface) {
+    if (!(logTableInterface instanceof TransLogTable)) return;
+    
+    TransLogTable logTable = (TransLogTable) logTableInterface; 
+    super.replaceMeta(logTable);
+  }
+
 	
 	public static TransLogTable getDefault(VariableSpace space, HasDatabasesInterface databasesInterface, List<StepMeta> steps) {
 		TransLogTable table = new TransLogTable(space, databasesInterface, steps);

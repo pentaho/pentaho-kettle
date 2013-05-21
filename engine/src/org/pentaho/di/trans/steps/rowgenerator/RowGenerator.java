@@ -92,7 +92,7 @@ public class RowGenerator extends BaseStep implements StepInterface {
     for (int i = 0; i < meta.getFieldName().length; i++) {
       int valtype = ValueMeta.getType(meta.getFieldType()[i]);
       if (meta.getFieldName()[i] != null) {
-        ValueMetaInterface valueMeta = new ValueMeta(meta.getFieldName()[i], valtype); // build a value!
+        ValueMetaInterface valueMeta = ValueMetaFactory.createValueMeta(meta.getFieldName()[i], valtype); // build a value!
         valueMeta.setLength(meta.getFieldLength()[i]);
         valueMeta.setPrecision(meta.getFieldPrecision()[i]);
         valueMeta.setConversionMask(meta.getFieldFormat()[i]);

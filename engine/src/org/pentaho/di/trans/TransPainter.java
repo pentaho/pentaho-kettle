@@ -1061,13 +1061,15 @@ public class TransPainter extends BasePainter
         // Draw the custom row distribution plugin icon
         //
         EImage eImage = fs.getRowDistribution().getDistributionImage(); 
-        Point bounds = gc.getImageBounds(eImage);
-        gc.drawImage(eImage, mx, my);
-
-        if (!shadow) {
-          areaOwners.add(new AreaOwner(AreaType.ROW_DISTRIBUTION_ICON, mx, my, bounds.x, bounds.y, offset, fs, STRING_ROW_DISTRIBUTION));
+        if (eImage!=null) {
+          Point bounds = gc.getImageBounds(eImage);
+          gc.drawImage(eImage, mx, my);
+  
+          if (!shadow) {
+            areaOwners.add(new AreaOwner(AreaType.ROW_DISTRIBUTION_ICON, mx, my, bounds.x, bounds.y, offset, fs, STRING_ROW_DISTRIBUTION));
+          }
+          mx += 16;
         }
-        mx += 16;
         
       } else if (!fs.isDistributes() && !ts.getStepPartitioningMeta().isMethodMirror() && !errorHop) {
         

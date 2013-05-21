@@ -36,6 +36,7 @@ import java.sql.Struct;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Executor;
 
 import org.pentaho.di.core.Const;
 
@@ -293,5 +294,25 @@ public class ConnectionJDBC3 implements java.sql.Connection {
   }
 
   public void setClientInfo(String arg0, String arg1) throws SQLClientInfoException {
+  }
+
+  public void setSchema(String schema) throws SQLException {
+    throw new SQLException("Unsupported method");
+  }
+
+  public String getSchema() throws SQLException {
+    throw new SQLException("Unsupported method");
+  }
+
+  public void abort(Executor executor) throws SQLException {
+    throw new SQLException("Unsupported method");
+  }
+
+  public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
+    throw new SQLException("Unsupported method");
+  }
+
+  public int getNetworkTimeout() throws SQLException {
+    throw new SQLException("Unsupported method");
   }
 }

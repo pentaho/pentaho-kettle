@@ -119,7 +119,6 @@ public class AddJobServlet extends BaseHttpServlet implements CartePluginInterfa
       job.initializeVariablesFrom(null);
       job.getJobMeta().setInternalKettleVariables(job);
       job.injectVariables(jobConfiguration.getJobExecutionConfiguration().getVariables());
-      job.setIgnoringCheckpoints(jobExecutionConfiguration.isIgnoringCheckpoint());
       job.setArguments(jobExecutionConfiguration.getArgumentStrings());
 
       // Also copy the parameters over...

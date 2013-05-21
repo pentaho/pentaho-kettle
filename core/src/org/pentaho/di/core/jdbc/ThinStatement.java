@@ -235,4 +235,11 @@ public class ThinStatement implements Statement {
     this.maxRows = maxRows;
   }
 
+  public void closeOnCompletion() throws SQLException {
+  }
+
+  public boolean isCloseOnCompletion() throws SQLException {
+    return false;
+  }
+
 }

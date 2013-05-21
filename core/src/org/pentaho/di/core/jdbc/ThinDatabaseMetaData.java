@@ -1178,4 +1178,13 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
     this.connection = connection;
   }
 
+  public ResultSet getPseudoColumns(String catalog, String schemaPattern, String tableNamePattern,
+      String columnNamePattern) throws SQLException {
+    throw new SQLException("Method not supported");
+  }
+
+  public boolean generatedKeyAlwaysReturned() throws SQLException {
+    return false;
+  }
+
 }

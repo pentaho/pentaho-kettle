@@ -22,7 +22,9 @@
 
 package org.pentaho.di.repository.kdr.delegates;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.RowMetaAndData;
@@ -32,6 +34,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.job.JobMeta;
@@ -46,6 +49,8 @@ import org.pentaho.di.repository.kdr.delegates.metastore.KettleDatabaseRepositor
 
 public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepositoryBaseDelegate {
 //	private static Class<?> PKG = JobEntryCopy.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
+  public static final String JOBENTRY_ATTRIBUTE_PREFIX = "_ATTR_"+'\t';
 
 	public KettleDatabaseRepositoryJobEntryDelegate(KettleDatabaseRepository repository) {
 		super(repository);
@@ -86,48 +91,47 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
 	 *            the logging channel
 	 * @param rep
 	 *            the Repository
-	 * @param id_job
+	 * @param jobId
 	 *            The job ID
-	 * @param id_jobentry_copy
+	 * @param jobEntryCopyId
 	 *            The jobentry copy ID
 	 * @param jobentries
 	 *            A list with all jobentries
 	 * @param databases
 	 *            A list with all defined databases
 	 */
-	public JobEntryCopy loadJobEntryCopy(ObjectId id_job, ObjectId id_jobentry_copy, 
+	public JobEntryCopy loadJobEntryCopy(ObjectId jobId, ObjectId jobEntryCopyId, 
 			List<JobEntryInterface> jobentries, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	{
 		JobEntryCopy jobEntryCopy = new JobEntryCopy();
 		
 		try
 		{
-			jobEntryCopy.setObjectId(id_jobentry_copy);
+			jobEntryCopy.setObjectId(jobEntryCopyId);
 
 			// Handle GUI information: nr, location, ...
-			RowMetaAndData r = getJobEntryCopy(id_jobentry_copy);
+			RowMetaAndData r = getJobEntryCopy(jobEntryCopyId);
 			if (r != null)
 			{
 				// These are the jobentry_copy fields...
 				//
-				ObjectId id_jobentry = new LongObjectId( r.getInteger(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOBENTRY, 0) );
-				ObjectId id_jobentry_type = new LongObjectId( r.getInteger(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOBENTRY_TYPE, 0) );
+				ObjectId jobEntryId = new LongObjectId( r.getInteger(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOBENTRY, 0) );
+				ObjectId jobEntryTypeId = new LongObjectId( r.getInteger(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOBENTRY_TYPE, 0) );
 				jobEntryCopy.setNr((int) r.getInteger(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_NR, 0));
 				int locx = (int) r.getInteger(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_GUI_LOCATION_X, 0);
 				int locy = (int) r.getInteger(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_GUI_LOCATION_Y, 0);
 				boolean isdrawn = r.getBoolean(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_GUI_DRAW, false);
 				boolean isparallel = r.getBoolean(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_PARALLEL, false);
-        boolean checkpoint = r.getBoolean(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_CHECKPOINT, false);
 
 				// Do we have the jobentry already?
 				//
-				jobEntryCopy.setEntry( JobMeta.findJobEntry(jobentries, id_jobentry) );
+				jobEntryCopy.setEntry( JobMeta.findJobEntry(jobentries, jobEntryId) );
 				if (jobEntryCopy.getEntry() == null)
 				{
 					// What type of jobentry do we load now?
 					// Get the jobentry type code
 					//
-					RowMetaAndData rt = getJobEntryType( new LongObjectId(id_jobentry_type) );
+					RowMetaAndData rt = getJobEntryType( new LongObjectId(jobEntryTypeId) );
 					if (rt != null)
 					{
 						String jet_code = rt.getString(KettleDatabaseRepository.FIELD_JOBENTRY_TYPE_CODE, null);
@@ -148,13 +152,14 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
 							// Otherwise you're on your own.
 							//
 							if (jobEntry instanceof JobEntryBase) {
-								loadJobEntryBase((JobEntryBase)jobEntry, id_jobentry, databases, slaveServers);
+								loadJobEntryBase((JobEntryBase)jobEntry, jobEntryId, databases, slaveServers);
+	              ((JobEntryBase)jobEntry).setAttributesMap(loadJobEntryAttributesMap(jobId, jobEntryId));
 							}
 							
-							compatibleJobEntryLoadRep(jobEntry, repository, id_jobentry_type, databases, slaveServers);
-							jobEntry.loadRep(repository, repository.metaStore, id_jobentry, databases, slaveServers);
+							compatibleJobEntryLoadRep(jobEntry, repository, jobEntryTypeId, databases, slaveServers);
+							jobEntry.loadRep(repository, repository.metaStore, jobEntryId, databases, slaveServers);
 							
-							jobEntryCopy.getEntry().setObjectId(id_jobentry);
+							jobEntryCopy.getEntry().setObjectId(jobEntryId);
 							
 							jobentries.add(jobEntryCopy.getEntry());
 						} else
@@ -163,22 +168,21 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
 						}
 					} else
 					{
-						throw new KettleException("Unable to find Job Entry Type with id=" + id_jobentry_type + " in the repository");
+						throw new KettleException("Unable to find Job Entry Type with id=" + jobEntryTypeId + " in the repository");
 					}
 				}
 
 				jobEntryCopy.setLocation(locx, locy);
 				jobEntryCopy.setDrawn(isdrawn);
 				jobEntryCopy.setLaunchingInParallel(isparallel);
-				jobEntryCopy.setCheckpoint(checkpoint);
-				
+								
 				return jobEntryCopy;
 			} else {
-				throw new KettleException("Unable to find job entry copy in repository with id_jobentry_copy="+ id_jobentry_copy);
+				throw new KettleException("Unable to find job entry copy in repository with id_jobentry_copy="+ jobEntryCopyId);
 			}
 		} catch (KettleDatabaseException dbe)
 		{
-			throw new KettleException("Unable to load job entry copy from repository with id_jobentry_copy="+ id_jobentry_copy, dbe);
+			throw new KettleException("Unable to load job entry copy from repository with id_jobentry_copy="+ jobEntryCopyId, dbe);
 		}
 	}
 
@@ -211,6 +215,12 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
 				entry.saveRep(repository, metaStore, id_job);  
 				compatibleEntrySaveRep(entry, repository, id_job);
 				
+	      // Save the attribute groups map
+	      //
+				if (entry instanceof JobEntryBase) {
+				  saveAttributesMap(id_job, copy.getObjectId(), ((JobEntryBase)entry).getAttributesMap());
+				}
+
 				id_jobentry = entry.getObjectId();
 			}
 
@@ -231,8 +241,8 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
 			// Save the entry copy..
 			//
 			copy.setObjectId(insertJobEntryCopy(id_job, id_jobentry, id_jobentry_type, copy.getNr(), copy.getLocation().x,
-					copy.getLocation().y, copy.isDrawn(), copy.isLaunchingInParallel(), copy.isCheckpoint()));
-			
+					copy.getLocation().y, copy.isDrawn(), copy.isLaunchingInParallel()));
+						
 		} catch (KettleDatabaseException dbe) {
 			throw new KettleException("Unable to save job entry copy to the repository, id_job=" + id_job, dbe);
 		}
@@ -269,7 +279,7 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
 	}
 
 	public synchronized ObjectId insertJobEntryCopy(ObjectId id_job, ObjectId id_jobentry, ObjectId id_jobentry_type, int nr, 
-	    long gui_location_x, long gui_location_y, boolean gui_draw, boolean parallel, boolean checkpoint) throws KettleException {
+	    long gui_location_x, long gui_location_y, boolean gui_draw, boolean parallel) throws KettleException {
 		ObjectId id = repository.connectionDelegate.getNextJobEntryCopyID();
 
 		RowMetaAndData table = new RowMetaAndData();
@@ -283,7 +293,6 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
 		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_GUI_LOCATION_Y, ValueMetaInterface.TYPE_INTEGER), new Long(gui_location_y));
 		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_GUI_DRAW, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(gui_draw));
 		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_PARALLEL, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(parallel));
-    table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_CHECKPOINT, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(checkpoint));
 
 		repository.connectionDelegate.getDatabase().prepareInsert(table.getRowMeta(), KettleDatabaseRepository.TABLE_R_JOBENTRY_COPY);
 		repository.connectionDelegate.getDatabase().setValuesInsert(table);
@@ -326,4 +335,44 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
 			throw new KettleException("Unable to load base job entry information from the repository for id_jobentry=" + id_jobentry, dbe);
 		}
 	}
+	
+  private void saveAttributesMap(ObjectId jobId, ObjectId entryId, Map<String, Map<String, String>> attributesMap) throws KettleException {
+    for (final String groupName : attributesMap.keySet()) {
+      Map<String, String> attributes = attributesMap.get(groupName);
+      for (final String key : attributes.keySet()) {
+        final String value = attributes.get(key);
+        if (key!=null && value!=null) {
+          repository.connectionDelegate.insertJobEntryAttribute(jobId, entryId, 0, 
+              JOBENTRY_ATTRIBUTE_PREFIX+groupName+'\t'+value, 0, value);
+        }
+      }
+    }
+  }
+  
+  private Map<String, Map<String, String>> loadJobEntryAttributesMap(ObjectId jobId, Object jobEntryId) throws KettleException {
+    Map<String, Map<String, String>> attributesMap = new HashMap<String, Map<String,String>>();
+    
+    List<Object[]> attributeRows = repository.connectionDelegate.getJobEntryAttributesWithPrefix(jobId, jobId, JOBENTRY_ATTRIBUTE_PREFIX);
+    RowMetaInterface rowMeta = repository.connectionDelegate.getReturnRowMeta();
+    for (Object[] attributeRow : attributeRows) {
+      String code = rowMeta.getString(attributeRow, KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_CODE, null);
+      String value = rowMeta.getString(attributeRow, KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_VALUE_STR, null);
+      if (code!=null && value!=null) {
+        code = code.substring(JOBENTRY_ATTRIBUTE_PREFIX.length());
+        int tabIndex = code.indexOf('\t');
+        if (tabIndex>0) {
+          String groupName = code.substring(0, tabIndex);
+          String key = code.substring(tabIndex+1);
+          Map<String, String> attributes = attributesMap.get(groupName);
+          if (attributes==null) {
+            attributes = new HashMap<String, String>();
+            attributesMap.put(groupName, attributes);
+          }
+          attributes.put(key, value);
+        }          
+      }
+    }
+    
+    return attributesMap;
+  }
 }

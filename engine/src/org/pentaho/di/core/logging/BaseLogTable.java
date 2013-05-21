@@ -34,7 +34,7 @@ import org.pentaho.di.repository.RepositoryAttributeInterface;
 import org.pentaho.di.trans.HasDatabasesInterface;
 import org.w3c.dom.Node;
 
-abstract class BaseLogTable {
+public abstract class BaseLogTable {
 	public static final String	XML_TAG	= "field";
 
 	public static String	PROP_LOG_TABLE_CONNECTION_NAME	= "_LOG_TABLE_CONNECTION_NAME";
@@ -69,6 +69,25 @@ abstract class BaseLogTable {
 		this.tableName = tableName;
 		this.fields = new ArrayList<LogTableField>();
 	}
+	
+	public void replaceMeta(BaseLogTable baseLogTable) {
+	  this.space = baseLogTable.space;
+	  this.databasesInterface = baseLogTable.databasesInterface;
+	  this.connectionName = baseLogTable.connectionName;
+	  this.schemaName = baseLogTable.schemaName;
+	  this.tableName = baseLogTable.tableName;
+	  this.timeoutInDays = baseLogTable.timeoutInDays;
+	  
+	  fields.clear();
+	  for (LogTableField field : baseLogTable.fields) {
+	    try {
+	      fields.add((LogTableField) field.clone());
+	    } catch(CloneNotSupportedException e) {
+	      throw new RuntimeException("Clone problem with the base log table", e);
+	    }
+    }
+	}
+
 
 	public String toString() {
 		if (isDefined()) {
@@ -76,7 +95,12 @@ abstract class BaseLogTable {
 		}
 		return super.toString();
 	}
-
+	
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+	  return super.clone();
+	}
+	
 	/**
 	 * Save this core information of the log table to the repository using the specified attribute interface.
 	 * 
@@ -136,13 +160,13 @@ abstract class BaseLogTable {
 	}
 
 	
-	abstract String getLogTableCode();
+	public abstract String getLogTableCode();
 	
-	abstract String getConnectionNameVariable();
+	public abstract String getConnectionNameVariable();
 	
-	abstract String getSchemaNameVariable();
+	public abstract String getSchemaNameVariable();
 	
-	abstract String getTableNameVariable();
+	public abstract String getTableNameVariable();
 	
 	/**
 	 * @return the databaseMeta
@@ -151,6 +175,9 @@ abstract class BaseLogTable {
 		
 		String name = getActualConnectionName();
 		if (name == null) return null;
+		if (databasesInterface==null) {
+		  return null;
+		}
 		
 		return databasesInterface.findDatabase(name);
 	}
@@ -469,5 +496,5 @@ abstract class BaseLogTable {
 				(tName == null ? blt.getActualTableName() == null : 
 					tName.equals(blt.getActualTableName())));				
 	}   
-    
+
 }

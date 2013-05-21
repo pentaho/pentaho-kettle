@@ -23,7 +23,9 @@
 package org.pentaho.di.repository.kdr.delegates;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
@@ -64,6 +66,8 @@ import org.pentaho.metastore.api.exceptions.MetaStoreException;
 public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseRepositoryBaseDelegate {
 	
 	private static Class<?> PKG = TransMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	
+	public static final String TRANS_ATTRIBUTE_PREFIX = "_ATTR_"+'\t';
 
 	public KettleDatabaseRepositoryTransDelegate(KettleDatabaseRepository repository) {
 		super(repository);
@@ -281,7 +285,9 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
 
                 TransDependency td = transMeta.getDependency(i);
                 saveTransDependency(td, transMeta.getObjectId());
-            }           
+            }
+            
+            saveTransAttributesMap(transMeta.getObjectId(), transMeta.getAttributesMap());
             
             // Save the step error handling information as well!
             for (int i=0;i<transMeta.nrSteps();i++)
@@ -316,7 +322,6 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
             throw new KettleException(BaseMessages.getString(PKG, "TransMeta.Log.ErrorSavingTransformationToRepository"), dbe); 
         }
     }
-    
     
     /**
      * Save the parameters of this transformation to the repository.
@@ -471,6 +476,10 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
 	                }
 	                if (monitor != null) monitor.worked(1);
 	
+	                // Load the group attributes map
+	                //
+	                transMeta.setAttributesMap(loadTransAttributesMap(transMeta.getObjectId()));
+	                
 	                // Also load the step error handling metadata
 	                //
 	                for (int i=0;i<transMeta.nrSteps();i++)
@@ -1299,4 +1308,47 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
       repository.connectionDelegate.getDatabase().commit();
 	  }
 	}
+	
+	
+	
+  private void saveTransAttributesMap(ObjectId transformationId, Map<String, Map<String, String>> attributesMap) throws KettleException {
+    
+    for (final String groupName : attributesMap.keySet()) {
+      Map<String, String> attributes = attributesMap.get(groupName);
+      for (final String key : attributes.keySet()) {
+        final String value = attributes.get(key);
+        if (key!=null && value!=null) {
+          repository.connectionDelegate.insertTransAttribute(transformationId, 0, 
+              TRANS_ATTRIBUTE_PREFIX+groupName+'\t'+value, 0, value);
+        }
+      }
+    }
+  }
+  
+  private Map<String, Map<String, String>> loadTransAttributesMap(ObjectId transformationId) throws KettleException {
+    Map<String, Map<String, String>> attributesMap = new HashMap<String, Map<String,String>>();
+    
+    List<Object[]> attributeRows = repository.connectionDelegate.getTransAttributesWithPrefix(transformationId, TRANS_ATTRIBUTE_PREFIX);
+    RowMetaInterface rowMeta = repository.connectionDelegate.getReturnRowMeta();
+    for (Object[] attributeRow : attributeRows) {
+      String code = rowMeta.getString(attributeRow, KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_CODE, null);
+      String value = rowMeta.getString(attributeRow, KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_VALUE_STR, null);
+      if (code!=null && value!=null) {
+        code = code.substring(TRANS_ATTRIBUTE_PREFIX.length());
+        int tabIndex = code.indexOf('\t');
+        if (tabIndex>0) {
+          String groupName = code.substring(0, tabIndex);
+          String key = code.substring(tabIndex+1);
+          Map<String, String> attributes = attributesMap.get(groupName);
+          if (attributes==null) {
+            attributes = new HashMap<String, String>();
+            attributesMap.put(groupName, attributes);
+          }
+          attributes.put(key, value);
+        }          
+      }
+    }
+    
+    return attributesMap;
+  }
 }

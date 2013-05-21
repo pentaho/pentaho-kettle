@@ -64,6 +64,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.spreadsheet.KCell;
 import org.pentaho.di.core.spreadsheet.KCellType;
 import org.pentaho.di.core.spreadsheet.KSheet;
@@ -1971,7 +1972,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
   	
 									if (fieldname!=null && fieldtype!=ValueMetaInterface.TYPE_NONE)
 									{
-										ValueMetaInterface field = new ValueMeta(fieldname, fieldtype);
+										ValueMetaInterface field = ValueMetaFactory.createValueMeta(fieldname, fieldtype);
 										fields.addValueMeta(field);
 									}
 									else

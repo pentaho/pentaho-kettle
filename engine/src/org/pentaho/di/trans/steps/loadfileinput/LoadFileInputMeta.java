@@ -37,6 +37,7 @@ import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -702,16 +703,20 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
 					break;
 			}
 		    
-			ValueMetaInterface v=new ValueMeta(space.environmentSubstitute(field.getName()), type);
-			v.setLength(field.getLength());
-			v.setPrecision(field.getPrecision());
-			v.setConversionMask(field.getFormat());
-			v.setCurrencySymbol(field.getCurrencySymbol());
-			v.setDecimalSymbol(field.getDecimalSymbol());
-			v.setGroupingSymbol(field.getGroupSymbol());
-			v.setTrimType(field.getTrimType());
-			v.setOrigin(name);
-			r.addValueMeta(v);	
+			try {
+  			ValueMetaInterface v=ValueMetaFactory.createValueMeta(space.environmentSubstitute(field.getName()), type);
+  			v.setLength(field.getLength());
+  			v.setPrecision(field.getPrecision());
+  			v.setConversionMask(field.getFormat());
+  			v.setCurrencySymbol(field.getCurrencySymbol());
+  			v.setDecimalSymbol(field.getDecimalSymbol());
+  			v.setGroupingSymbol(field.getGroupSymbol());
+  			v.setTrimType(field.getTrimType());
+  			v.setOrigin(name);
+  			r.addValueMeta(v);
+			} catch(Exception e) {
+			  throw new KettleStepException(e);
+			}
 		}
 		if (includeFilename)
 		{

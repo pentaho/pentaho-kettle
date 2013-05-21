@@ -32,8 +32,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -209,10 +209,14 @@ public class DenormaliserMeta extends BaseStepMeta implements StepMetaInterface
         for (int i = 0; i < denormaliserTargetField.length; i++)
         {
             DenormaliserTargetField field = denormaliserTargetField[i];
-            ValueMetaInterface target = new ValueMeta(field.getTargetName(), field.getTargetType());
-            target.setLength(field.getTargetLength(), field.getTargetPrecision());
-            target.setOrigin(name);
-            row.addValueMeta(target);
+            try {
+              ValueMetaInterface target = ValueMetaFactory.createValueMeta(field.getTargetName(), field.getTargetType());
+              target.setLength(field.getTargetLength(), field.getTargetPrecision());
+              target.setOrigin(name);
+              row.addValueMeta(target);
+            } catch(Exception e) {
+              throw new KettleStepException(e);
+            }
         }
     }
 

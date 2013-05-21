@@ -14,6 +14,13 @@ public enum KettleExtensionPoint {
 
   JobStart("JobStart", "A job starts"),
   JobFinish("JobFinish", "A job finishes"),
+  JobBeforeJobEntryExecution("JobBeforeJobEntryExecution", "Before a job entry executes"),
+  JobAfterJobEntryExecution("JobAfterJobEntryExecution", "After a job entry executes"),
+  JobBeginProcessing("JobBeginProcessing", "Start of a job at the end of the log table handling"),
+  JobPainterArrow("JobPainterArrow", "Draw additional information on top of a job hop (arrow)"),
+  JobGraphJobEntrySetMenu("JobGraphJobEntrySetMenu", "Manipulate the menu on right click on a job entry"),
+  JobDialogShowRetrieveLogTableFields("JobDialogShowRetrieveLogTableFields", "Show or retrieve the contents of the fields of a log channel on the log channel composite"),
+          
   JobMetaLoaded("JobMetaLoaded", "Job metadata was loaded"),
   SpoonJobMetaExecutionStart("SpoonJobMetaExecutionStart", "Spoon initiates the execution of a job (JobMeta)"),
   SpoonJobExecutionConfiguration("SpoonJobExecutionConfiguration", "Right before Spoon configuration of job to be executed takes place"),

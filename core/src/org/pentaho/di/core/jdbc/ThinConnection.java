@@ -18,6 +18,7 @@ import java.sql.Struct;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Executor;
 
 import org.pentaho.di.cluster.HttpUtil;
 import org.pentaho.di.core.variables.Variables;
@@ -486,6 +487,25 @@ public class ThinConnection implements Connection {
    */
   public boolean isDebuggingRemoteLog() {
     return debuggingRemoteLog;
+  }
+
+  public void setSchema(String schema) throws SQLException {
+    throw new SQLException("Method not supported");
+  }
+
+  public String getSchema() throws SQLException {
+    throw new SQLException("Method not supported");
+  }
+
+  public void abort(Executor executor) throws SQLException {
+    throw new SQLException("Method not supported");
+  }
+
+  public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
+  }
+
+  public int getNetworkTimeout() throws SQLException {
+    return 0;
   }
 
 }

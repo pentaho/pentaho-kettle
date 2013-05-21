@@ -253,6 +253,7 @@ import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.OsHelper;
 import org.pentaho.di.ui.core.widget.TreeMemory;
 import org.pentaho.di.ui.imp.ImportRulesDialog;
+import org.pentaho.di.ui.job.dialog.JobDialogPluginType;
 import org.pentaho.di.ui.job.dialog.JobLoadProgressDialog;
 import org.pentaho.di.ui.partition.dialog.PartitionSchemaDialog;
 import org.pentaho.di.ui.repository.ILoginCallback;
@@ -706,6 +707,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     LifecyclePluginType.getInstance().getPluginFolders().add(new PluginFolder("plugins/spoon", false, true));
     LifecyclePluginType.getInstance().getPluginFolders().add(new PluginFolder("plugins/repositories", false, true));
+
+    PluginRegistry.addPluginType(JobDialogPluginType.getInstance());
 
   }
 

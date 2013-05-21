@@ -25,6 +25,7 @@ package org.pentaho.di.core;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.lifecycle.KettleLifecycleSupport;
+import org.pentaho.di.core.logging.LogTablePluginType;
 import org.pentaho.di.core.plugins.CartePluginType;
 import org.pentaho.di.core.plugins.ImportRulePluginType;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
@@ -102,6 +103,7 @@ public class KettleEnvironment {
 			PluginRegistry.addPluginType(UDJCStepPluginType.getInstance());
 			PluginRegistry.addPluginType(PartitionerPluginType.getInstance());
 			PluginRegistry.addPluginType(JobEntryPluginType.getInstance());
+      PluginRegistry.addPluginType(LogTablePluginType.getInstance());
 			PluginRegistry.addPluginType(RepositoryPluginType.getInstance());
 			PluginRegistry.addPluginType(LifecyclePluginType.getInstance());
 			PluginRegistry.addPluginType(KettleLifecyclePluginType.getInstance());

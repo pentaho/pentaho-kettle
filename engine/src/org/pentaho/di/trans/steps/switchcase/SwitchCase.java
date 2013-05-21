@@ -185,12 +185,11 @@ public class SwitchCase extends BaseStep implements StepInterface
         		return false;
         	}
         	
-        	data.valueMeta = new ValueMeta(meta.getFieldname(), meta.getCaseValueType());
-        	data.valueMeta.setConversionMask(meta.getCaseValueFormat());
-        	data.valueMeta.setGroupingSymbol(meta.getCaseValueGroup());
-        	data.valueMeta.setDecimalSymbol(meta.getCaseValueDecimal());
-        	
         	try {
+        	  data.valueMeta = ValueMetaFactory.createValueMeta(meta.getFieldname(), meta.getCaseValueType());
+        	  data.valueMeta.setConversionMask(meta.getCaseValueFormat());
+        	  data.valueMeta.setGroupingSymbol(meta.getCaseValueGroup());
+        	  data.valueMeta.setDecimalSymbol(meta.getCaseValueDecimal());
         	  data.stringValueMeta = ValueMetaFactory.cloneValueMeta(data.valueMeta, ValueMetaInterface.TYPE_STRING);
         	} catch(Exception e) {
         	  logError(BaseMessages.getString(PKG, "SwitchCase.Log.UnexpectedError", e));

@@ -35,6 +35,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.HasDatabasesInterface;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.w3c.dom.Node;
 
@@ -111,7 +112,7 @@ public class StepLogTable extends BaseLogTable implements Cloneable, LogTableInt
 		return retval.toString();
 	}
 	
-	public void loadXML(Node node, List<DatabaseMeta> databases) {
+	public void loadXML(Node node, List<DatabaseMeta> databases, List<StepMeta> steps) {
 		connectionName = XMLHandler.getTagValue(node, "connection");
 		schemaName = XMLHandler.getTagValue(node, "schema");
 		tableName = XMLHandler.getTagValue(node, "table");
@@ -119,6 +120,15 @@ public class StepLogTable extends BaseLogTable implements Cloneable, LogTableInt
 		
 		super.loadFieldsXML(node);
 	}
+	
+  @Override
+  public void replaceMeta(LogTableCoreInterface logTableInterface) {
+    if (!(logTableInterface instanceof StepLogTable)) return;
+    
+    StepLogTable logTable = (StepLogTable) logTableInterface; 
+    super.replaceMeta(logTable);
+  }
+
 
 	public static StepLogTable getDefault(VariableSpace space, HasDatabasesInterface databasesInterface) {
 		StepLogTable table = new StepLogTable(space, databasesInterface);

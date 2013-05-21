@@ -29,6 +29,8 @@ import java.util.Map;
 
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.extension.ExtensionPointHandler;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.gui.AreaOwner;
 import org.pentaho.di.core.gui.AreaOwner.AreaType;
 import org.pentaho.di.core.gui.BasePainter;
@@ -40,6 +42,7 @@ import org.pentaho.di.core.gui.PrimitiveGCInterface.EImage;
 import org.pentaho.di.core.gui.PrimitiveGCInterface.ELineStyle;
 import org.pentaho.di.core.gui.Rectangle;
 import org.pentaho.di.core.gui.ScrollBarInterface;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.job.entry.JobEntryCopy;
 
 public class JobPainter extends BasePainter {
@@ -527,18 +530,11 @@ public class JobPainter extends BasePainter {
         }
       }
       
-      if (jobMeta.getCheckpointLogTable().isDefined() && jobHop.getFromEntry().isCheckpoint()) {
-        factor = 0.5;
-
-        // in between 2 points
-        mx = (int) (x1 + factor * (x2 - x1) / 2) - 8;
-        my = (int) (y1 + factor * (y2 - y1) / 2) - 8;
-
-        hopsIcon = EImage.CHECKPOINT;
-        gc.drawImage(hopsIcon, mx, my);
-        if (!shadow) {
-          areaOwners.add(new AreaOwner(AreaType.JOB_ENTRY_CHECKPOINT, mx, my, bounds.x, bounds.y, offset, subject, jobHop.getFromEntry()));
-        }
+      JobPainterExtension extension = new JobPainterExtension(gc, shadow, areaOwners, jobMeta, jobHop, x1, y1, x2, y2, mx, my, offset);
+      try {
+        ExtensionPointHandler.callExtensionPoint(LogChannel.GENERAL, KettleExtensionPoint.JobPainterArrow.id, extension);
+      } catch(Exception e) {
+        LogChannel.GENERAL.logError("Error calling extension point(s) for the job painter arrow", e);
       }
     }
   }

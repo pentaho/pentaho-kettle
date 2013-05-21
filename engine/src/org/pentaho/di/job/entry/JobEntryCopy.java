@@ -22,10 +22,14 @@
 
 package org.pentaho.di.job.entry;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.AttributesInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.attributes.AttributesUtil;
 import org.pentaho.di.core.changed.ChangedFlagInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettlePluginLoaderException;
@@ -53,7 +57,7 @@ import org.w3c.dom.Node;
  * 
  */
 
-public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterface, ChangedFlagInterface
+public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterface, ChangedFlagInterface, AttributesInterface
 {
 	private static final String	XML_TAG	= "entry";
 
@@ -65,9 +69,9 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 
 	private Point location;
 
-    /**
-     * Flag to indicate that the job entries following this one are launched in parallel
-     */
+  /**
+   * Flag to indicate that the job entries following this one are launched in parallel
+   */
 	private boolean launchingInParallel;
 
 	private boolean draw;
@@ -76,8 +80,8 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 
 	private JobMeta	parentJobMeta;
 	
-	private boolean checkpoint;
-
+	private Map<String, Map<String, String>> attributesMap;
+	
 	public JobEntryCopy()
 	{
 		clear();
@@ -85,6 +89,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 
 	public JobEntryCopy(JobEntryInterface entry)
 	{
+	  this();
 		setEntry(entry);
 	}
 
@@ -100,8 +105,9 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 		retval.append("      ").append(XMLHandler.addTagValue("nr", nr));
 		retval.append("      ").append(XMLHandler.addTagValue("xloc", location.x));
 		retval.append("      ").append(XMLHandler.addTagValue("yloc", location.y));
-    retval.append("      ").append(XMLHandler.addTagValue("checkpoint", checkpoint));
-
+		
+		retval.append(AttributesUtil.getAttributesXml(attributesMap));
+    
 		retval.append("      ").append(XMLHandler.closeTag(XML_TAG)).append(Const.CR);
 		return retval.toString();
 	}
@@ -146,7 +152,8 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 				int x = Const.toInt(XMLHandler.getTagValue(entrynode, "xloc"), 0);
 				int y = Const.toInt(XMLHandler.getTagValue(entrynode, "yloc"), 0);
 				setLocation(x, y);
-        setCheckpoint("Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "checkpoint")));
+				
+				attributesMap = AttributesUtil.loadAttributes(XMLHandler.getSubNode(entrynode, AttributesUtil.XML_TAG));             
 			}
 		} catch (Throwable e)
 		{
@@ -175,6 +182,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 		entry = null;
 		nr = 0;
 		launchingInParallel = false;
+		attributesMap = new HashMap<String, Map<String,String>>();
 		setObjectId(null);
 	}
 
@@ -195,7 +203,6 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 		if (jobEntryCopy.location != null)
 			location = new Point(jobEntryCopy.location.x, jobEntryCopy.location.y);
 		launchingInParallel = jobEntryCopy.launchingInParallel;
-		checkpoint = jobEntryCopy.checkpoint;
 		draw = jobEntryCopy.draw;
 
 		id = jobEntryCopy.id;
@@ -449,18 +456,43 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 	public void setParentJobMeta(JobMeta parentJobMeta) {
 		this.parentJobMeta = parentJobMeta;
 	}
-
-  /**
-   * @return the checkpoint
-   */
-  public boolean isCheckpoint() {
-    return checkpoint;
+	
+  @Override
+  public void setAttributesMap(Map<String, Map<String, String>> attributesMap) {
+    this.attributesMap = attributesMap;
   }
 
-  /**
-   * @param checkpoint the checkpoint to set
-   */
-  public void setCheckpoint(boolean checkpoint) {
-    this.checkpoint = checkpoint;
+  @Override
+  public Map<String, Map<String, String>> getAttributesMap() {
+    return attributesMap;
   }
+
+  @Override
+  public void setAttribute(String groupName, String key, String value) {
+    Map<String, String> attributes = getAttributes(groupName);
+    if (attributes == null) {
+      attributes = new HashMap<String, String>();
+      attributesMap.put(groupName, attributes);
+    }
+    attributes.put(key, value);
+  }
+
+  @Override
+  public void setAttributes(String groupName, Map<String, String> attributes) {
+    attributesMap.put(groupName, attributes);
+  }
+
+  @Override
+  public Map<String, String> getAttributes(String groupName) {
+    return attributesMap.get(groupName);
+  }
+
+  @Override
+  public String getAttribute(String groupName, String key) {
+    Map<String, String> attributes = attributesMap.get(groupName);
+    if (attributes == null)
+      return null;
+    return attributes.get(key);
+  }
+
 }

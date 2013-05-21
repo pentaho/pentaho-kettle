@@ -35,8 +35,8 @@ import org.pentaho.di.core.exception.KettleRowException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -646,12 +646,15 @@ public abstract class TransformClassBase
     	}
         for (FieldInfo fi : (List<FieldInfo>)fields)
         {
-            ValueMetaInterface v;
-            v = new ValueMeta(fi.name, fi.type);
+          try {
+            ValueMetaInterface v = ValueMetaFactory.createValueMeta(fi.name, fi.type);
             v.setLength(fi.length);
             v.setPrecision(fi.precision);
             v.setOrigin(originStepname);
             row.addValueMeta(v);
+          } catch(Exception e) {
+            throw new KettleStepException(e);
+          }
         }
     }
     

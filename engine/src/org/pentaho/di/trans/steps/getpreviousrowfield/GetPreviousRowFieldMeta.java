@@ -32,8 +32,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -223,13 +223,17 @@ public class GetPreviousRowFieldMeta extends BaseStepMeta implements StepMetaInt
 				if(index>=0)
 				{
 					ValueMetaInterface in=inputRowMeta.getValueMeta(index);
-					ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(fieldOutStream[i]), in.getType());
-					v.setName(space.environmentSubstitute(fieldOutStream[i]));
-					v.setLength(in.getLength());
-		            v.setPrecision(in.getPrecision());
-		            v.setConversionMask(in.getConversionMask());
-					v.setOrigin(name);
-					inputRowMeta.addValueMeta(v);
+					try {
+            ValueMetaInterface v = ValueMetaFactory.createValueMeta(space.environmentSubstitute(fieldOutStream[i]), in.getType());
+            v.setName(space.environmentSubstitute(fieldOutStream[i]));
+            v.setLength(in.getLength());
+            v.setPrecision(in.getPrecision());
+            v.setConversionMask(in.getConversionMask());
+            v.setOrigin(name);
+            inputRowMeta.addValueMeta(v);
+          } catch (Exception e) {
+            throw new KettleStepException(e);
+          }
 				}
 			}
 		}

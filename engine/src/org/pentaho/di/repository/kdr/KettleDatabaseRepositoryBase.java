@@ -231,8 +231,7 @@ public abstract class KettleDatabaseRepositoryBase extends AbstractRepository {
 	public static final String FIELD_JOB_PASS_BATCH_ID = "PASS_BATCH_ID";
 	public static final String FIELD_JOB_USE_LOGFIELD = "USE_LOGFIELD";
 	public static final String FIELD_JOB_SHARED_FILE = "SHARED_FILE";
-  public static final String FIELD_JOB_UNIQUE_CONNECTIONS = "UNIQUE_CONNECTIONS";
-
+ 
 	public static final String TABLE_R_LOGLEVEL               = "R_LOGLEVEL";
 	public static final String FIELD_LOGLEVEL_ID_LOGLEVEL = "ID_LOGLEVEL";
 	public static final String FIELD_LOGLEVEL_CODE = "CODE";
@@ -267,7 +266,6 @@ public abstract class KettleDatabaseRepositoryBase extends AbstractRepository {
 	public static final String FIELD_JOBENTRY_COPY_GUI_LOCATION_Y = "GUI_LOCATION_Y";
 	public static final String FIELD_JOBENTRY_COPY_GUI_DRAW = "GUI_DRAW";
 	public static final String FIELD_JOBENTRY_COPY_PARALLEL = "PARALLEL";
-  public static final String FIELD_JOBENTRY_COPY_CHECKPOINT = "CHECKPOINT";
 
 	public static final String TABLE_R_JOBENTRY_TYPE          = "R_JOBENTRY_TYPE";
 	public static final String FIELD_JOBENTRY_TYPE_ID_JOBENTRY_TYPE = "ID_JOBENTRY_TYPE";

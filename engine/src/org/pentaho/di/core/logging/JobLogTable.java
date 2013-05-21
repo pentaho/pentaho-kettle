@@ -41,6 +41,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.repository.RepositoryAttributeInterface;
 import org.pentaho.di.trans.HasDatabasesInterface;
+import org.pentaho.di.trans.step.StepMeta;
 import org.w3c.dom.Node;
 
 /**
@@ -113,6 +114,8 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
 		}
 	}
 	
+	
+	
 	public String getXML() {
 		StringBuffer retval = new StringBuffer();
 
@@ -129,7 +132,7 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
 		return retval.toString();
 	}
 
-	public void loadXML(Node node, List<DatabaseMeta> databases) {
+	public void loadXML(Node node, List<DatabaseMeta> databases, List<StepMeta> steps) {
 		connectionName = XMLHandler.getTagValue(node, "connection");
 		schemaName = XMLHandler.getTagValue(node, "schema");
 		tableName = XMLHandler.getTagValue(node, "table");
@@ -155,6 +158,17 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
 		logInterval = attributeInterface.getAttributeString(getLogTableCode()+PROP_LOG_TABLE_INTERVAL);
 		logSizeLimit = attributeInterface.getAttributeString(getLogTableCode()+PROP_LOG_TABLE_SIZE_LIMIT);
 	}
+	
+  @Override
+  public void replaceMeta(LogTableCoreInterface logTableInterface) {
+    if (!(logTableInterface instanceof JobLogTable)) return;
+    
+    JobLogTable logTable = (JobLogTable) logTableInterface; 
+    super.replaceMeta(logTable);
+    logInterval = logTable.logInterval;
+    logSizeLimit = logTable.logSizeLimit;
+  }
+
 
 	public static JobLogTable getDefault(VariableSpace space, HasDatabasesInterface databasesInterface) {
 		JobLogTable table = new JobLogTable(space, databasesInterface);
@@ -320,7 +334,7 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
               break;
             case EXECUTING_SERVER: value = job.getExecutingServer(); break;
             case EXECUTING_USER: value = job.getExecutingUser(); break;
-            case START_JOB_ENTRY: value = job.getCheckpointJobEntry()!=null ? job.getCheckpointJobEntry().getName() : null; break;
+            case START_JOB_ENTRY: value = job.getStartJobEntryCopy()!=null ? job.getStartJobEntryCopy().getName() : null; break;
             case CLIENT: value = KettleClientEnvironment.getInstance().getClient()!= null ? KettleClientEnvironment.getInstance().getClient().toString() : "unknown"; break;
 						}
 					}

@@ -33,8 +33,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -101,15 +101,19 @@ public class SasInputMeta extends BaseStepMeta implements StepMetaInterface {
   public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException {
 
     for (SasInputField field : outputFields) {
-      ValueMetaInterface valueMeta = new ValueMeta(field.getRename(), field.getType());
-      valueMeta.setLength(field.getLength(), field.getPrecision());
-      valueMeta.setDecimalSymbol(field.getDecimalSymbol());
-      valueMeta.setGroupingSymbol(field.getGroupingSymbol());
-      valueMeta.setConversionMask(field.getConversionMask());
-      valueMeta.setTrimType(field.getTrimType());
-      valueMeta.setOrigin(name);
-      
-      row.addValueMeta(valueMeta);
+      try {
+        ValueMetaInterface valueMeta = ValueMetaFactory.createValueMeta(field.getRename(), field.getType());
+        valueMeta.setLength(field.getLength(), field.getPrecision());
+        valueMeta.setDecimalSymbol(field.getDecimalSymbol());
+        valueMeta.setGroupingSymbol(field.getGroupingSymbol());
+        valueMeta.setConversionMask(field.getConversionMask());
+        valueMeta.setTrimType(field.getTrimType());
+        valueMeta.setOrigin(name);
+        
+        row.addValueMeta(valueMeta);
+      } catch(Exception e) {
+        throw new KettleStepException(e);
+      }
     }
   }
 

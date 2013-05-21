@@ -33,8 +33,8 @@ import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.FileLoggingEventListener;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogLevel;
@@ -80,9 +80,13 @@ public class Kitchen {
     RepositoryMeta repositoryMeta = null;
     Job job = null;
 
-    StringBuffer optionRepname, optionUsername, optionPassword, optionJobname, optionDirname, optionFilename, optionLoglevel;
-    StringBuffer optionLogfile, optionLogfileOld, optionListdir, optionListjobs, optionListrep, optionNorep, optionVersion, optionListParam, optionExport, optionIgnoreCheckpoint;
+    StringBuffer optionRepname, optionUsername, optionPassword, optionJobname, 
+      optionDirname, optionFilename, optionLoglevel,optionLogfile, optionLogfileOld, 
+      optionListdir, optionListjobs, optionListrep, optionNorep, optionVersion, 
+      optionListParam, optionExport
+      ;
     NamedParams optionParams = new NamedParamsDefault();
+    NamedParams customOptions = new NamedParamsDefault();
 
     CommandLineOption maxLogLinesOption = new CommandLineOption(
         "maxloglines", BaseMessages.getString(PKG, "Kitchen.CmdLine.MaxLogLines"), new StringBuffer());  
@@ -118,13 +122,17 @@ public class Kitchen {
             optionNorep = new StringBuffer(), true, false),
         new CommandLineOption("version", BaseMessages.getString(PKG, "Kitchen.CmdLine.Version"),
             optionVersion = new StringBuffer(), true, false),
-        new CommandLineOption("param", BaseMessages.getString(PKG, "Kitchen.ComdLine.Param"), optionParams, false),
+        new CommandLineOption("param", BaseMessages.getString(PKG, "Kitchen.ComdLine.Param"), 
+            optionParams, false),
         new CommandLineOption("listparam", BaseMessages.getString(PKG, "Kitchen.ComdLine.ListParam"),
             optionListParam = new StringBuffer(), true, false),
         new CommandLineOption("export", BaseMessages.getString(PKG, "Kitchen.ComdLine.Export"),
             optionExport = new StringBuffer(), true, false),
-        new CommandLineOption("ignorecp", BaseMessages.getString(PKG, "Kitchen.ComdLine.IgnoreCheckpoint"),
-            optionIgnoreCheckpoint = new StringBuffer(), true, false), maxLogLinesOption, maxLogTimeoutOption, };
+        new CommandLineOption("custom", BaseMessages.getString(PKG, "Kitchen.ComdLine.Custom"),
+            customOptions, false), 
+        maxLogLinesOption, 
+        maxLogTimeoutOption, 
+         };
 
     if (args.size() == 0) {
       CommandLineOption.printUsage(options);
@@ -368,6 +376,15 @@ public class Kitchen {
       // Put the parameters over the already defined variable space. Parameters get priority.
       //
       job.activateParameters();
+      
+      // Set custom options in the job extension map as Strings
+      //
+      for (String optionName : customOptions.listParameters()) {
+        String optionValue = customOptions.getParameterValue(optionName);
+        if (optionName!=null && optionValue!=null) {
+          job.getExtensionDataMap().put(optionName, optionValue);
+        }
+      }
 
       // List the parameters defined in this job
       // Then simply exit...
@@ -390,12 +407,6 @@ public class Kitchen {
         // stop right here...
         //
         exitJVM(7); // same as the other list options
-      }
-
-      // Make sure to ignore a reached checkpoint in case the user asks about it.
-      //
-      if ("Y".equalsIgnoreCase(optionIgnoreCheckpoint.toString())) {
-        job.setIgnoringCheckpoints(true);
       }
 
       job.start();

@@ -39,6 +39,7 @@ import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.AttributesInterface;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -53,6 +54,7 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.SQLStatement;
+import org.pentaho.di.core.attributes.AttributesUtil;
 import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -150,7 +152,7 @@ import org.w3c.dom.Node;
  */
 public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<TransMeta>, Comparable<TransMeta>,
     Cloneable, UndoInterface, HasDatabasesInterface, VariableSpace, EngineMetaInterface, ResourceExportInterface,
-    HasSlaveServersInterface, NamedParams, RepositoryElementInterface, LoggingObjectInterface {
+    HasSlaveServersInterface, NamedParams, RepositoryElementInterface, LoggingObjectInterface, AttributesInterface {
 
   /** The package name, used for internationalization of messages. */
   private static Class<?> PKG = Trans.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
@@ -368,6 +370,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   protected DataServiceMeta dataService;
   
   protected IMetaStore metaStore;
+  
+  protected Map<String, Map<String,String>> attributesMap; 
 
   /**
    * The TransformationType enum describes the various types of transformations in terms of execution,
@@ -763,6 +767,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     channelLogTable = ChannelLogTable.getDefault(this, this);
     stepLogTable = StepLogTable.getDefault(this, this);
     metricsLogTable = MetricsLogTable.getDefault(this, this);
+    
+    attributesMap = new HashMap<String, Map<String,String>>();
 
     sizeRowset = Const.ROWS_IN_ROWSET;
     sleepTimeEmpty = Const.TIMEOUT_GET_MILLIS;
@@ -2662,6 +2668,10 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
     // Is this a slave transformation or not?
     retval.append("   ").append(XMLHandler.addTagValue("slave_transformation", slaveTransformation));
+    
+    // Also store the attribute groups
+    //
+    retval.append(AttributesUtil.getAttributesXml(attributesMap)).append(Const.CR);
 
     retval.append("</").append(XML_TAG + ">").append(Const.CR); 
 
@@ -3173,19 +3183,19 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
           }
           Node perfLogNode = XMLHandler.getSubNode(logNode, PerformanceLogTable.XML_TAG);
           if (perfLogNode != null) {
-            performanceLogTable.loadXML(perfLogNode, databases);
+            performanceLogTable.loadXML(perfLogNode, databases, steps);
           }
           Node channelLogNode = XMLHandler.getSubNode(logNode, ChannelLogTable.XML_TAG);
           if (channelLogNode != null) {
-            channelLogTable.loadXML(channelLogNode, databases);
+            channelLogTable.loadXML(channelLogNode, databases, steps);
           }
           Node stepLogNode = XMLHandler.getSubNode(logNode, StepLogTable.XML_TAG);
           if (stepLogNode != null) {
-            stepLogTable.loadXML(stepLogNode, databases);
+            stepLogTable.loadXML(stepLogNode, databases, steps);
           }
           Node metricsLogNode = XMLHandler.getSubNode(logNode, MetricsLogTable.XML_TAG);
           if (metricsLogNode != null) {
-            metricsLogTable.loadXML(metricsLogNode, databases);
+            metricsLogTable.loadXML(metricsLogNode, databases, steps);
           }
         }
 
@@ -3365,6 +3375,11 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
           log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.NumberOfHopsReaded") + nrTransHops()); 
         }
         sortSteps();
+        
+        // Load the attribute groups map
+        //
+        attributesMap = AttributesUtil.loadAttributes(XMLHandler.getSubNode(transnode, AttributesUtil.XML_TAG_ATTRIBUTE));
+        
       } catch (KettleXMLException xe) {
         throw new KettleXMLException(BaseMessages.getString(PKG, "TransMeta.Exception.ErrorReadingTransformation"), xe); 
       } catch (KettleException e) {
@@ -7103,5 +7118,42 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
       //
       DataServiceMetaStoreUtil.createOrUpdateDataServiceElement(metaStore, dataService);
     }
+  }
+ 
+  @Override
+  public void setAttributesMap(Map<String, Map<String, String>> attributesMap) {
+    this.attributesMap = attributesMap;
+  }
+  
+  @Override
+  public Map<String, Map<String, String>> getAttributesMap() {
+    return attributesMap;
+  }
+  
+  @Override
+  public void setAttribute(String groupName, String key, String value) {
+    Map<String, String> attributes = getAttributes(groupName);
+    if (attributes==null) {
+      attributes=new HashMap<String, String>();
+      attributesMap.put(groupName, attributes);
+    }
+    attributes.put(key, value);
+  }
+  
+  @Override
+  public void setAttributes(String groupName, Map<String, String> attributes) {
+    attributesMap.put(groupName, attributes);
+  }
+  
+  @Override
+  public Map<String, String> getAttributes(String groupName) {
+    return attributesMap.get(groupName);
+  }
+  
+  @Override
+  public String getAttribute(String groupName, String key) {
+    Map<String, String> attributes = attributesMap.get(groupName);
+    if (attributes==null) return null;
+    return attributes.get(key);
   }
 }

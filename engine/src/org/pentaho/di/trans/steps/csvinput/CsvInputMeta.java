@@ -323,54 +323,54 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 	public void getFields(RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
 	{
 	  try {
-		rowMeta.clear(); // Start with a clean slate, eats the input
-		
-		for (int i=0;i<inputFields.length;i++) {
-			TextFileInputField field = inputFields[i];
-			
-			ValueMetaInterface valueMeta = new ValueMeta(field.getName(), field.getType());
-			valueMeta.setConversionMask( field.getFormat() );
-			valueMeta.setLength( field.getLength() );
-			valueMeta.setPrecision( field.getPrecision() );
-			valueMeta.setConversionMask( field.getFormat() );
-			valueMeta.setDecimalSymbol( field.getDecimalSymbol() );
-			valueMeta.setGroupingSymbol( field.getGroupSymbol() );
-			valueMeta.setCurrencySymbol( field.getCurrencySymbol() );
-			valueMeta.setTrimType( field.getTrimType() );
-			if (lazyConversionActive) valueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_BINARY_STRING);
-			valueMeta.setStringEncoding(space.environmentSubstitute(encoding));
-			
-			// In case we want to convert Strings...
-			// Using a copy of the valueMeta object means that the inner and outer representation format is the same.
-			// Preview will show the data the same way as we read it.
-			// This layout is then taken further down the road by the metadata through the transformation.
-			//
-			ValueMetaInterface storageMetadata = ValueMetaFactory.cloneValueMeta(valueMeta, ValueMetaInterface.TYPE_STRING);
-			storageMetadata.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
-			storageMetadata.setLength(-1,-1); // we don't really know the lengths of the strings read in advance.
-			valueMeta.setStorageMetadata(storageMetadata);
-			
-			valueMeta.setOrigin(origin);
-			
-			rowMeta.addValueMeta(valueMeta);
-		}
-		
-		if (!Const.isEmpty(filenameField) && includingFilename) {
-			ValueMetaInterface filenameMeta = new ValueMeta(filenameField, ValueMetaInterface.TYPE_STRING);
-			filenameMeta.setOrigin(origin);
-			if (lazyConversionActive) {
-				filenameMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_BINARY_STRING);
-				filenameMeta.setStorageMetadata(new ValueMeta(filenameField, ValueMetaInterface.TYPE_STRING));
-			}
-			rowMeta.addValueMeta(filenameMeta);
-		}
-		
-		if (!Const.isEmpty(rowNumField)) {
-			ValueMetaInterface rowNumMeta = new ValueMeta(rowNumField, ValueMetaInterface.TYPE_INTEGER);
-			rowNumMeta.setLength(10);
-			rowNumMeta.setOrigin(origin);
-			rowMeta.addValueMeta(rowNumMeta);
-		}
+  		rowMeta.clear(); // Start with a clean slate, eats the input
+  		
+  		for (int i=0;i<inputFields.length;i++) {
+  			TextFileInputField field = inputFields[i];
+  			
+  			ValueMetaInterface valueMeta = ValueMetaFactory.createValueMeta(field.getName(), field.getType());
+  			valueMeta.setConversionMask( field.getFormat() );
+  			valueMeta.setLength( field.getLength() );
+  			valueMeta.setPrecision( field.getPrecision() );
+  			valueMeta.setConversionMask( field.getFormat() );
+  			valueMeta.setDecimalSymbol( field.getDecimalSymbol() );
+  			valueMeta.setGroupingSymbol( field.getGroupSymbol() );
+  			valueMeta.setCurrencySymbol( field.getCurrencySymbol() );
+  			valueMeta.setTrimType( field.getTrimType() );
+  			if (lazyConversionActive) valueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_BINARY_STRING);
+  			valueMeta.setStringEncoding(space.environmentSubstitute(encoding));
+  			
+  			// In case we want to convert Strings...
+  			// Using a copy of the valueMeta object means that the inner and outer representation format is the same.
+  			// Preview will show the data the same way as we read it.
+  			// This layout is then taken further down the road by the metadata through the transformation.
+  			//
+  			ValueMetaInterface storageMetadata = ValueMetaFactory.cloneValueMeta(valueMeta, ValueMetaInterface.TYPE_STRING);
+  			storageMetadata.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
+  			storageMetadata.setLength(-1,-1); // we don't really know the lengths of the strings read in advance.
+  			valueMeta.setStorageMetadata(storageMetadata);
+  			
+  			valueMeta.setOrigin(origin);
+  			
+  			rowMeta.addValueMeta(valueMeta);
+  		}
+  		
+  		if (!Const.isEmpty(filenameField) && includingFilename) {
+  			ValueMetaInterface filenameMeta = new ValueMeta(filenameField, ValueMetaInterface.TYPE_STRING);
+  			filenameMeta.setOrigin(origin);
+  			if (lazyConversionActive) {
+  				filenameMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_BINARY_STRING);
+  				filenameMeta.setStorageMetadata(new ValueMeta(filenameField, ValueMetaInterface.TYPE_STRING));
+  			}
+  			rowMeta.addValueMeta(filenameMeta);
+  		}
+  		
+  		if (!Const.isEmpty(rowNumField)) {
+  			ValueMetaInterface rowNumMeta = new ValueMeta(rowNumField, ValueMetaInterface.TYPE_INTEGER);
+  			rowNumMeta.setLength(10);
+  			rowNumMeta.setOrigin(origin);
+  			rowMeta.addValueMeta(rowNumMeta);
+  		}
 	  } catch(Exception e) {
 	    throw new KettleStepException(e);
 	  }

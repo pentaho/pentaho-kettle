@@ -24,11 +24,12 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.openerp.core.FieldMapping;
@@ -78,10 +79,12 @@ public class OpenERPObjectInputMeta extends BaseStepMeta implements StepMetaInte
 		}
 	}
 	
-	public RowMetaInterface getRowMeta(){
+	public RowMetaInterface getRowMeta() throws KettlePluginException{
 		RowMetaInterface rowMeta = new RowMeta();
 		for (FieldMapping map : this.getMappings()){
-			rowMeta.addValueMeta(new ValueMeta(map.target_field, map.target_field_type));
+			rowMeta.addValueMeta(
+			    ValueMetaFactory.createValueMeta(map.target_field, map.target_field_type)
+			);
 		}
 		return rowMeta;
 	}

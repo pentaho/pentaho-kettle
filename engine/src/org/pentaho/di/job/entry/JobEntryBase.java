@@ -24,14 +24,18 @@ package org.pentaho.di.job.entry;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.AttributesInterface;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.CheckResultSourceInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.ExtensionDataInterface;
 import org.pentaho.di.core.SQLStatement;
+import org.pentaho.di.core.attributes.AttributesUtil;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleNotUsedException;
@@ -76,7 +80,7 @@ import org.w3c.dom.Node;
  *
  */
 public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSourceInterface, ResourceHolderInterface,
-    LoggingObjectInterface {
+    LoggingObjectInterface, AttributesInterface, ExtensionDataInterface {
 
   /** The name of the job entry */
   private String name;
@@ -115,6 +119,10 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   protected IMetaStore metaStore;
   
+  protected Map<String, Map<String, String>> attributesMap;
+  
+  protected Map<String, Object> extensionDataMap;
+  
   /**
    * Instantiates a new job entry base object.
    */
@@ -122,6 +130,8 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
     name = null;
     description = null;
     log = new LogChannel(this);
+    attributesMap = new HashMap<String, Map<String,String>>();
+    extensionDataMap = new HashMap<String, Object>();
   }
 
   /**
@@ -134,8 +144,9 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
     setName(name);
     setDescription(description);
     setObjectId(null);
-
     log = new LogChannel(this);
+    attributesMap = new HashMap<String, Map<String,String>>();
+    extensionDataMap = new HashMap<String, Object>();
   }
 
   /**
@@ -379,7 +390,9 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
     retval.append("      ").append(XMLHandler.addTagValue("name", getName()));
     retval.append("      ").append(XMLHandler.addTagValue("description", getDescription()));
     retval.append("      ").append(XMLHandler.addTagValue("type", configId));
-
+    
+    retval.append(AttributesUtil.getAttributesXml(attributesMap));
+    
     return retval.toString();
   }
 
@@ -396,7 +409,12 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleXMLException {
     try {
       setName(XMLHandler.getTagValue(entrynode, "name"));
-      setDescription(XMLHandler.getTagValue(entrynode, "description"));
+      setDescription(XMLHandler.getTagValue(entrynode, "description"));     
+            
+      // Load the attribute groups map
+      //
+      attributesMap = AttributesUtil.loadAttributes(XMLHandler.getSubNode(entrynode, AttributesUtil.XML_TAG_ATTRIBUTE));        
+
     } catch (Exception e) {
       throw new KettleXMLException("Unable to load base info for job entry", e);
     }
@@ -1281,5 +1299,47 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   public void setMetaStore(IMetaStore metaStore) {
     this.metaStore = metaStore;
+  }
+  
+  @Override
+  public void setAttributesMap(Map<String, Map<String, String>> attributesMap) {
+    this.attributesMap = attributesMap;
+  }
+  
+  @Override
+  public Map<String, Map<String, String>> getAttributesMap() {
+    return attributesMap;
+  }
+  
+  @Override
+  public void setAttribute(String groupName, String key, String value) {
+    Map<String, String> attributes = getAttributes(groupName);
+    if (attributes==null) {
+      attributes=new HashMap<String, String>();
+      attributesMap.put(groupName, attributes);
+    }
+    attributes.put(key, value);
+  }
+  
+  @Override
+  public void setAttributes(String groupName, Map<String, String> attributes) {
+    attributesMap.put(groupName, attributes);
+  }
+  
+  @Override
+  public Map<String, String> getAttributes(String groupName) {
+    return attributesMap.get(groupName);
+  }
+  
+  @Override
+  public String getAttribute(String groupName, String key) {
+    Map<String, String> attributes = attributesMap.get(groupName);
+    if (attributes==null) return null;
+    return attributes.get(key);
+  }
+  
+  @Override
+  public Map<String, Object> getExtensionDataMap() {
+    return extensionDataMap;
   }
 }

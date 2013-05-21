@@ -440,124 +440,137 @@ public class PluginRegistry {
   }
 	
 	
-	/**
-	 * Add a PluginType to be managed by the registry
-	 * @param type
-	 */
-	public static void addPluginType(PluginTypeInterface type){
-	  pluginTypes.add(type);
-	}
-	
-	public synchronized static void init() throws KettlePluginException {
-		init(false);
-	}
-	
-	/**
-	 * This method registers plugin types and loads their respective plugins 
-	 * 
-	 * @throws KettlePluginException
-	 */
+  /**
+   * Add a PluginType to be managed by the registry
+   * @param type
+   */
+  public static void addPluginType(PluginTypeInterface type) {
+    pluginTypes.add(type);
+  }
+
+  public synchronized static void init() throws KettlePluginException {
+    init(false);
+  }
+
+  /**
+   * This method registers plugin types and loads their respective plugins 
+   * 
+   * @throws KettlePluginException
+   */
   public synchronized static void init(boolean keepCache) throws KettlePluginException {
 
-      final PluginRegistry registry = getInstance();
+    final PluginRegistry registry = getInstance();
 
-      log.snap(Metrics.METRIC_PLUGIN_REGISTRY_REGISTER_EXTENSIONS_START);
-      
-      // Find pluginRegistry extensions
-      try {
-        registry.registerType(PluginRegistryPluginType.getInstance());
-        List<PluginInterface> plugins = registry.getPlugins(PluginRegistryPluginType.class);
-        for(PluginInterface extensionPlugin : plugins){
-          log.snap(Metrics.METRIC_PLUGIN_REGISTRY_REGISTER_EXTENSION_START, extensionPlugin.getName());
-          PluginRegistryExtension extension = (PluginRegistryExtension) registry.loadClass(extensionPlugin);
-          extensions.add(extension);
-          log.snap(Metrics.METRIC_PLUGIN_REGISTRY_REGISTER_EXTENSIONS_STOP, extensionPlugin.getName()     );
+    log.snap(Metrics.METRIC_PLUGIN_REGISTRY_REGISTER_EXTENSIONS_START);
+
+    // Find pluginRegistry extensions
+    try {
+      registry.registerType(PluginRegistryPluginType.getInstance());
+      List<PluginInterface> plugins = registry.getPlugins(PluginRegistryPluginType.class);
+      for (PluginInterface extensionPlugin : plugins) {
+        log.snap(Metrics.METRIC_PLUGIN_REGISTRY_REGISTER_EXTENSION_START, extensionPlugin.getName());
+        PluginRegistryExtension extension = (PluginRegistryExtension) registry.loadClass(extensionPlugin);
+        extensions.add(extension);
+        log.snap(Metrics.METRIC_PLUGIN_REGISTRY_REGISTER_EXTENSIONS_STOP, extensionPlugin.getName());
+      }
+    } catch (KettlePluginException e) {
+      e.printStackTrace();
+    }
+    log.snap(Metrics.METRIC_PLUGIN_REGISTRY_REGISTER_EXTENSIONS_STOP);
+
+    log.snap(Metrics.METRIC_PLUGIN_REGISTRY_PLUGIN_REGISTRATION_START);
+    for (final PluginTypeInterface pluginType : pluginTypes) {
+      log.snap(Metrics.METRIC_PLUGIN_REGISTRY_PLUGIN_TYPE_REGISTRATION_START, pluginType.getName());
+      registry.registerType(pluginType);
+      log.snap(Metrics.METRIC_PLUGIN_REGISTRY_PLUGIN_TYPE_REGISTRATION_STOP, pluginType.getName());
+    }
+    log.snap(Metrics.METRIC_PLUGIN_REGISTRY_PLUGIN_REGISTRATION_STOP);
+
+    /*
+    System.out.println(MetricsUtil.getDuration(log.getLogChannelId(), Metrics.METRIC_PLUGIN_REGISTRY_REGISTER_EXTENSIONS_START.getDescription()).get(0));
+    System.out.println(MetricsUtil.getDuration(log.getLogChannelId(), Metrics.METRIC_PLUGIN_REGISTRY_PLUGIN_REGISTRATION_START.getDescription()).get(0));
+    long total=0;
+    for (MetricsDuration duration : MetricsUtil.getDuration(log.getLogChannelId(), Metrics.METRIC_PLUGIN_REGISTRY_PLUGIN_TYPE_REGISTRATION_START.getDescription())) {
+      total+=duration.getDuration();
+      System.out.println("   - "+duration.toString()+"          Total="+total);
+    }
+    */
+
+    // Clear the jar file cache so that we don't waste memory...
+    //
+    if (!keepCache) {
+      JarFileCache.getInstance().clear();
+    }
+  }
+
+  private void registerType(PluginTypeInterface pluginType) throws KettlePluginException {
+    registerPluginType(pluginType.getClass());
+
+    // Search plugins for this type...
+    //
+    long startScan = System.currentTimeMillis();
+    pluginType.searchPlugins();
+
+    for (PluginRegistryExtension ext : extensions) {
+      ext.searchForType(pluginType);
+    }
+
+    List<String> pluginClassNames = new ArrayList<String>();
+
+    // Scan for plugin classes to facilitate debugging etc.
+    //
+    String pluginClasses = EnvUtil.getSystemProperty(Const.KETTLE_PLUGIN_CLASSES);
+    if (!Const.isEmpty(pluginClasses)) {
+      String[] classNames = pluginClasses.split(",");
+
+      for (String className : classNames) {
+        if (!pluginClassNames.contains(className)) {
+          pluginClassNames.add(className);
         }
-      } catch (KettlePluginException e) {
-        e.printStackTrace();
-      }
-      log.snap(Metrics.METRIC_PLUGIN_REGISTRY_REGISTER_EXTENSIONS_STOP);
-      
-      
-      log.snap(Metrics.METRIC_PLUGIN_REGISTRY_PLUGIN_REGISTRATION_START);
-      for (final PluginTypeInterface pluginType : pluginTypes) {
-        log.snap(Metrics.METRIC_PLUGIN_REGISTRY_PLUGIN_TYPE_REGISTRATION_START, pluginType.getName());
-        registry.registerType(pluginType);
-        log.snap(Metrics.METRIC_PLUGIN_REGISTRY_PLUGIN_TYPE_REGISTRATION_STOP, pluginType.getName());
-      }
-      log.snap(Metrics.METRIC_PLUGIN_REGISTRY_PLUGIN_REGISTRATION_STOP);
-      
-      /*
-      System.out.println(MetricsUtil.getDuration(log.getLogChannelId(), Metrics.METRIC_PLUGIN_REGISTRY_REGISTER_EXTENSIONS_START.getDescription()).get(0));
-      System.out.println(MetricsUtil.getDuration(log.getLogChannelId(), Metrics.METRIC_PLUGIN_REGISTRY_PLUGIN_REGISTRATION_START.getDescription()).get(0));
-      long total=0;
-      for (MetricsDuration duration : MetricsUtil.getDuration(log.getLogChannelId(), Metrics.METRIC_PLUGIN_REGISTRY_PLUGIN_TYPE_REGISTRATION_START.getDescription())) {
-        total+=duration.getDuration();
-        System.out.println("   - "+duration.toString()+"          Total="+total);
-      }
-      */
-      
-      // Clear the jar file cache so that we don't waste memory...
-      //
-      if (!keepCache) {
-        JarFileCache.getInstance().clear();
       }
     }
 
-    private void registerType(PluginTypeInterface pluginType) throws KettlePluginException {
-      registerPluginType(pluginType.getClass());
-
-        // Search plugins for this type...
+    for (String className : pluginClassNames) {
+      try {
+        // What annotation does the plugin type have?
         //
-        long startScan = System.currentTimeMillis();
-        pluginType.searchPlugins();
+        PluginAnnotationType annotationType = pluginType.getClass().getAnnotation(PluginAnnotationType.class);
+        if (annotationType != null) {
+          Class<? extends Annotation> annotationClass = annotationType.value();
 
-        for(PluginRegistryExtension ext : extensions){
-          ext.searchForType(pluginType);
-        }
+          Class<?> clazz = Class.forName(className);
+          Annotation annotation = clazz.getAnnotation(annotationClass);
 
-        // Also scan for plugin classes to facilitate debugging etc.
-        //
-        String pluginClasses = EnvUtil.getSystemProperty(Const.KETTLE_PLUGIN_CLASSES);
-        if (!Const.isEmpty(pluginClasses)) {
-          String[] classNames = pluginClasses.split(",");
-          for (String className : classNames) {
-            try {
-              // What annotation does the plugin type have?
-              //
-              PluginAnnotationType annotationType = pluginType.getClass().getAnnotation(PluginAnnotationType.class);
-              if (annotationType!=null) {
-                Class<? extends Annotation> annotationClass = annotationType.value();
-  
-                Class<?> clazz = Class.forName(className);
-                Annotation annotation = clazz.getAnnotation(annotationClass);
-  
-                if (annotation!=null) {
-                  // Register this one!
-                  //
-                  pluginType.handlePluginAnnotation(clazz, annotation, new ArrayList<String>(), true, null);
-                  LogChannel.GENERAL.logBasic("Plugin class "+className+" registered for plugin type '"+pluginType.getName()+"'");
-                } else {
-                  if (KettleLogStore.isInitialized()) {
-                    LogChannel.GENERAL.logDebug("Plugin class "+className+" doesn't contain annotation for plugin type '"+pluginType.getName()+"'");
-                  }
-                }
-              } else {
-                if (KettleLogStore.isInitialized()) {
-                  LogChannel.GENERAL.logDebug("Plugin class "+className+" doesn't contain valid class for plugin type '"+pluginType.getName()+"'");
-                }
-              }
-            } catch(Exception e) {
-              if (KettleLogStore.isInitialized()) {
-                LogChannel.GENERAL.logError("Error registring plugin class from KETTLE_PLUGIN_CLASSES: "+className+Const.CR+Const.getStackTracker(e));
-              }
+          if (annotation != null) {
+            // Register this one!
+            //
+            pluginType.handlePluginAnnotation(clazz, annotation, new ArrayList<String>(), true, null);
+            LogChannel.GENERAL.logBasic("Plugin class " + className + " registered for plugin type '"
+                + pluginType.getName() + "'");
+          } else {
+            if (KettleLogStore.isInitialized()) {
+              LogChannel.GENERAL.logDebug("Plugin class " + className + " doesn't contain annotation for plugin type '"
+                  + pluginType.getName() + "'");
             }
           }
+        } else {
+          if (KettleLogStore.isInitialized()) {
+            LogChannel.GENERAL.logDebug("Plugin class " + className + " doesn't contain valid class for plugin type '"
+                + pluginType.getName() + "'");
+          }
         }
-
-        LogChannel.GENERAL.logDetailed("Registered "+getPlugins(pluginType.getClass()).size()+" plugins of type '"+pluginType.getName()+"' in "+(System.currentTimeMillis()-startScan)+"ms.");
+      } catch (Exception e) {
+        if (KettleLogStore.isInitialized()) {
+          LogChannel.GENERAL.logError("Error registring plugin class from KETTLE_PLUGIN_CLASSES: " + className
+              + Const.CR + Const.getStackTracker(e));
+        }
+      }
     }
 
+    LogChannel.GENERAL.logDetailed("Registered " + getPlugins(pluginType.getClass()).size() + " plugins of type '"
+        + pluginType.getName() + "' in " + (System.currentTimeMillis() - startScan) + "ms.");
+
+  }
 
 	/**
 	 * Find the plugin ID based on the class

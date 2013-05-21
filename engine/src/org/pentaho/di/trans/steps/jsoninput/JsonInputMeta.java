@@ -38,6 +38,7 @@ import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -777,15 +778,19 @@ public class JsonInputMeta extends BaseStepMeta implements StepMetaInterface
 	        
 			int type=field.getType();
 			if (type==ValueMeta.TYPE_NONE) type=ValueMeta.TYPE_STRING;
-			ValueMetaInterface v=new ValueMeta(space.environmentSubstitute(field.getName()), type);
-			v.setLength(field.getLength());
-			v.setPrecision(field.getPrecision());
-			v.setOrigin(name);
-			v.setConversionMask(field.getFormat());
-	        v.setDecimalSymbol(field.getDecimalSymbol());
-	        v.setGroupingSymbol(field.getGroupSymbol());
-	        v.setCurrencySymbol(field.getCurrencySymbol());
-			r.addValueMeta(v);    
+			try {
+        ValueMetaInterface v = ValueMetaFactory.createValueMeta(space.environmentSubstitute(field.getName()), type);
+        v.setLength(field.getLength());
+        v.setPrecision(field.getPrecision());
+        v.setOrigin(name);
+        v.setConversionMask(field.getFormat());
+        v.setDecimalSymbol(field.getDecimalSymbol());
+        v.setGroupingSymbol(field.getGroupSymbol());
+        v.setCurrencySymbol(field.getCurrencySymbol());
+        r.addValueMeta(v);
+			} catch(Exception e) {
+			  throw new KettleStepException(e);
+			}
 		}
 		
 		if (includeFilename)

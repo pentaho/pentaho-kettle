@@ -1333,5 +1333,13 @@ public class ThinResultSet implements ResultSet {
    */
   public String getSqlObjectId() {
     return sqlObjectId;
+  }
+
+  public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
+    throw new SQLException("Method not supported");
+  }
+
+  public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
+    throw new SQLException("Method not supported");
   }  
 }

@@ -717,6 +717,11 @@ public class Const
 	 */
 	public static final String KETTLE_PLUGIN_CLASSES = "KETTLE_PLUGIN_CLASSES";
 
+	 /**
+   * Name of the environment variable to specify additional packaged to scan for plugin annotations (warning: slow!)
+   */
+  public static final String KETTLE_PLUGIN_PACKAGES = "KETTLE_PLUGIN_PACKAGES";
+
   /**
    * Name of the environment variable that contains the size of the
    * transformation rowset size. This overwrites values that you set

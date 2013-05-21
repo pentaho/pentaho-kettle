@@ -303,7 +303,7 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
 		for (int i=0;i<inputFields.length;i++) {
 			TextFileInputField field = inputFields[i];
 			
-			ValueMetaInterface valueMeta = new ValueMeta(field.getName(), field.getType());
+			ValueMetaInterface valueMeta = ValueMetaFactory.createValueMeta(field.getName(), field.getType());
 			valueMeta.setConversionMask( field.getFormat() );
 			valueMeta.setLength( field.getLength() );
 			valueMeta.setPrecision( field.getPrecision() );

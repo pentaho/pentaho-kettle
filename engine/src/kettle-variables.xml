@@ -171,6 +171,12 @@
 	</kettle-variable>
 
 	<kettle-variable>
+		<description>A comma delimited list of packages to scan for plugin annotations (warning: slow!!)</description>
+		<variable>KETTLE_PLUGIN_PACKAGES</variable>
+		<default-value/>
+	</kettle-variable>
+
+	<kettle-variable>
 		<description>The maximum number of step performance snapshots to keep in memory. Set to 0 to keep all snapshots indefinitely (default)</description>
 		<variable>KETTLE_STEP_PERFORMANCE_SNAPSHOT_LIMIT</variable>
 		<default-value>0</default-value>

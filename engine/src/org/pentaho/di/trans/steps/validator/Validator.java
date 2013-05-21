@@ -33,7 +33,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
@@ -447,28 +446,28 @@ public class Validator extends BaseStep implements StepInterface
         for (int i = 0; i < meta.getValidations().size(); i++) {
   
           Validation field = meta.getValidations().get(i);
-          data.constantsMeta[i] = new ValueMeta(field.getFieldName(), field.getDataType());
-          data.constantsMeta[i].setConversionMask(field.getConversionMask());
-          data.constantsMeta[i].setDecimalSymbol(field.getDecimalSymbol());
-          data.constantsMeta[i].setGroupingSymbol(field.getGroupingSymbol());
-          data.errorCode[i] = environmentSubstitute(Const.NVL(field.getErrorCode(), ""));
-          data.errorDescription[i] = environmentSubstitute(Const.NVL(field.getErrorDescription(), ""));
-          data.conversionMask[i] = environmentSubstitute(Const.NVL(field.getConversionMask(), ""));
-          data.decimalSymbol[i] = environmentSubstitute(Const.NVL(field.getDecimalSymbol(), ""));
-          data.groupingSymbol[i] = environmentSubstitute(Const.NVL(field.getGroupingSymbol(), ""));
-          data.maximumLength[i] = environmentSubstitute(Const.NVL(field.getMaximumLength(), ""));
-          data.minimumLength[i] = environmentSubstitute(Const.NVL(field.getMinimumLength(), ""));
-          data.maximumValueAsString[i] = environmentSubstitute(Const.NVL(field.getMaximumValue(), ""));
-          data.minimumValueAsString[i] = environmentSubstitute(Const.NVL(field.getMinimumValue(), ""));
-          data.startString[i] = environmentSubstitute(Const.NVL(field.getStartString(), ""));
-          data.endString[i] = environmentSubstitute(Const.NVL(field.getEndString(), ""));
-          data.startStringNotAllowed[i] = environmentSubstitute(Const.NVL(field.getStartStringNotAllowed(), ""));
-          data.endStringNotAllowed[i] = environmentSubstitute(Const.NVL(field.getEndStringNotAllowed(), ""));
-          data.regularExpression[i] = environmentSubstitute(Const.NVL(field.getRegularExpression(), ""));
-          data.regularExpressionNotAllowed[i] = environmentSubstitute(Const.NVL(field.getRegularExpressionNotAllowed(),
-              ""));
-  
           try {
+            data.constantsMeta[i] = ValueMetaFactory.createValueMeta(field.getFieldName(), field.getDataType());
+            data.constantsMeta[i].setConversionMask(field.getConversionMask());
+            data.constantsMeta[i].setDecimalSymbol(field.getDecimalSymbol());
+            data.constantsMeta[i].setGroupingSymbol(field.getGroupingSymbol());
+            data.errorCode[i] = environmentSubstitute(Const.NVL(field.getErrorCode(), ""));
+            data.errorDescription[i] = environmentSubstitute(Const.NVL(field.getErrorDescription(), ""));
+            data.conversionMask[i] = environmentSubstitute(Const.NVL(field.getConversionMask(), ""));
+            data.decimalSymbol[i] = environmentSubstitute(Const.NVL(field.getDecimalSymbol(), ""));
+            data.groupingSymbol[i] = environmentSubstitute(Const.NVL(field.getGroupingSymbol(), ""));
+            data.maximumLength[i] = environmentSubstitute(Const.NVL(field.getMaximumLength(), ""));
+            data.minimumLength[i] = environmentSubstitute(Const.NVL(field.getMinimumLength(), ""));
+            data.maximumValueAsString[i] = environmentSubstitute(Const.NVL(field.getMaximumValue(), ""));
+            data.minimumValueAsString[i] = environmentSubstitute(Const.NVL(field.getMinimumValue(), ""));
+            data.startString[i] = environmentSubstitute(Const.NVL(field.getStartString(), ""));
+            data.endString[i] = environmentSubstitute(Const.NVL(field.getEndString(), ""));
+            data.startStringNotAllowed[i] = environmentSubstitute(Const.NVL(field.getStartStringNotAllowed(), ""));
+            data.endStringNotAllowed[i] = environmentSubstitute(Const.NVL(field.getEndStringNotAllowed(), ""));
+            data.regularExpression[i] = environmentSubstitute(Const.NVL(field.getRegularExpression(), ""));
+            data.regularExpressionNotAllowed[i] = environmentSubstitute(Const.NVL(field.getRegularExpressionNotAllowed(),
+                ""));
+  
             ValueMetaInterface stringMeta = ValueMetaFactory.cloneValueMeta(data.constantsMeta[i],
                 ValueMetaInterface.TYPE_STRING);
             data.minimumValue[i] = Const.isEmpty(data.minimumValueAsString[i]) ? null : data.constantsMeta[i]

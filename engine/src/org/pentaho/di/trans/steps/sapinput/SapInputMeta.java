@@ -35,6 +35,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.ObjectId;
@@ -145,9 +146,13 @@ public class SapInputMeta extends BaseStepMeta implements StepMetaInterface
     	
     	for (SapOutputField field : outputFields) {
     		
-    		ValueMetaInterface valueMeta = new ValueMeta(field.getNewName(), field.getTargetType());
-    		valueMeta.setOrigin(origin);
-    		row.addValueMeta(valueMeta);
+    	  try {
+      		ValueMetaInterface valueMeta = ValueMetaFactory.createValueMeta(field.getNewName(), field.getTargetType());
+      		valueMeta.setOrigin(origin);
+      		row.addValueMeta(valueMeta);
+    	  } catch(Exception e) {
+    	    throw new KettleStepException(e);
+    	  }
     	}
 	}
 

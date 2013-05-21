@@ -34,8 +34,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.ObjectId;
@@ -148,9 +148,13 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
           valueType = ValueMetaInterface.TYPE_STRING;
         }
   
-        ValueMetaInterface vValue = new ValueMeta(field.getName(), valueType);
-        vValue.setOrigin(name);
-        r.addValueMeta(vValue);
+        try {
+          ValueMetaInterface vValue = ValueMetaFactory.createValueMeta(field.getName(), valueType);
+          vValue.setOrigin(name);
+          r.addValueMeta(vValue);
+        } catch(Exception e) {
+          throw new KettleStepException(e);
+        }
       }
     }
 

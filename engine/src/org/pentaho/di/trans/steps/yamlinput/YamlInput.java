@@ -33,6 +33,7 @@ import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -381,9 +382,14 @@ public class YamlInput extends BaseStep implements StepInterface {
         YamlInputField field = meta.getInputFields()[i];
         String path = environmentSubstitute(field.getPath());
 
-        ValueMetaInterface valueMeta = new ValueMeta(path, field.getType());
-        valueMeta.setTrimType(field.getTrimType());
-        data.rowMeta.addValueMeta(valueMeta);
+        try {
+          ValueMetaInterface valueMeta = ValueMetaFactory.createValueMeta(path, field.getType());
+          valueMeta.setTrimType(field.getTrimType());
+          data.rowMeta.addValueMeta(valueMeta);
+        } catch(Exception e) {
+          log.logError("Unable to create value meta", e);
+          return false;
+        }
       }
 
       return true;

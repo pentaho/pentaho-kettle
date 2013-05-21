@@ -32,8 +32,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -168,10 +168,14 @@ public class FormulaMeta extends BaseStepMeta implements StepMetaInterface
             if (Const.isEmpty(fn.getReplaceField())) { // Not replacing a field.
 		        if (!Const.isEmpty(fn.getFieldName())) // It's a new field!
 		        {
-		            ValueMetaInterface v = new ValueMeta(fn.getFieldName(), fn.getValueType());
+		          try {
+		            ValueMetaInterface v = ValueMetaFactory.createValueMeta(fn.getFieldName(), fn.getValueType());
 		            v.setLength(fn.getValueLength(), fn.getValuePrecision());
 		            v.setOrigin(name);
 		            row.addValueMeta(v);
+		          } catch(Exception e) {
+		            throw new KettleStepException(e);
+		          }
 		        }
             } else { // Replacing a field
             	int index = row.indexOfValue(fn.getReplaceField());

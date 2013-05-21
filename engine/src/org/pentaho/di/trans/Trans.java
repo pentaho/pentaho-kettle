@@ -55,6 +55,7 @@ import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.ExecutorInterface;
+import org.pentaho.di.core.ExtensionDataInterface;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.QueueRowSet;
 import org.pentaho.di.core.Result;
@@ -148,7 +149,7 @@ import org.pentaho.metastore.api.IMetaStore;
  *
  */
 public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface, LoggingObjectInterface,
-    ExecutorInterface {
+    ExecutorInterface, ExtensionDataInterface {
 
   /** The package name, used for internationalization of messages. */
   private static Class<?> PKG = Trans.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
@@ -389,6 +390,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
   private HttpServletRequest servletRequest;
 
+  private Map<String, Object> extensionDataMap;
+
   /**
    * Instantiates a new transformation.
    */
@@ -416,6 +419,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     resultRows = new ArrayList<RowMetaAndData>();
     resultFiles = new ArrayList<ResultFile>();
     counters = new Hashtable<String, Counter>();
+    
+    extensionDataMap = new HashMap<String, Object>();
   }
 
   /**
@@ -2532,8 +2537,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     // Don't close any connections if the parent job is using the same transaction
     // 
-    if (parentJob.getJobMeta().isUsingUniqueConnections() && 
-        parentJob != null && transactionId != null && parentJob.getTransactionId() != null
+    if (parentJob != null && transactionId != null && parentJob.getTransactionId() != null
         && transactionId.equals(parentJob.getTransactionId())) {
       return;
     }
@@ -4841,7 +4845,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    */
   public String calculateTransactionId() {
     if (getTransMeta() != null && getTransMeta().isUsingUniqueConnections()) {
-      if (parentJob != null && parentJob.getJobMeta().isUsingUniqueConnections()) {
+      if (parentJob != null && parentJob.getTransactionId()!=null) {
         return parentJob.getTransactionId();
       } else if (parentTrans != null && parentTrans.getTransMeta().isUsingUniqueConnections()) {
         return parentTrans.getTransactionId();
@@ -5030,5 +5034,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       backwardChange = false;
 
     }// finished sorting
+  }
+
+  @Override
+  public Map<String, Object> getExtensionDataMap() {
+    return extensionDataMap;
   }
 }

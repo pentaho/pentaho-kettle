@@ -29,10 +29,12 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -421,7 +423,7 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
         allocate(0);
     }
 
-    public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore)
+    public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
     {
         // Remove the field to split
         int idx = r.indexOfValue(splitField);
@@ -433,7 +435,8 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
         // Add the new fields at the place of the index --> replace!
         for (int i = 0; i < fieldName.length; i++)
         {
-            final ValueMetaInterface v = new ValueMeta(fieldName[i], fieldType[i]);
+          try {
+            final ValueMetaInterface v = ValueMetaFactory.createValueMeta(fieldName[i], fieldType[i]);
             v.setLength(fieldLength[i], fieldPrecision[i]);
             v.setOrigin(name);
             v.setConversionMask(fieldFormat[i]);
@@ -456,6 +459,9 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
                 if (idx>=r.size()) r.addValueMeta(v);
                 r.addValueMeta(idx+i, v);
             }
+          } catch(Exception e) {
+            throw new KettleStepException(e);
+          }
         }
     }
 

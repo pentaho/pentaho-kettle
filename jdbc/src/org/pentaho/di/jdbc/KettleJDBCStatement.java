@@ -482,27 +482,28 @@ public class KettleJDBCStatement implements Statement {
 	}
 
   public boolean isWrapperFor(Class<?> iface) throws SQLException {
-    // TODO Auto-generated method stub
-    return false;
+    throw new SQLException("Method not supported");
   }
 
   public <T> T unwrap(Class<T> iface) throws SQLException {
-    // TODO Auto-generated method stub
-    return null;
+    throw new SQLException("Method not supported");
   }
 
   public boolean isClosed() throws SQLException {
-    // TODO Auto-generated method stub
     return false;
   }
 
   public boolean isPoolable() throws SQLException {
-    // TODO Auto-generated method stub
     return false;
   }
 
   public void setPoolable(boolean poolable) throws SQLException {
-    // TODO Auto-generated method stub
   }
 
+  public void closeOnCompletion() throws SQLException {
+  }
+
+  public boolean isCloseOnCompletion() throws SQLException {
+    return false;
+  }
 }

@@ -286,7 +286,7 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 		for (int i=0;i<fieldDefinition.length;i++) {
 			FixedFileInputField field = fieldDefinition[i];
 			
-			ValueMetaInterface valueMeta = new ValueMeta(field.getName(), field.getType());
+			ValueMetaInterface valueMeta = ValueMetaFactory.createValueMeta(field.getName(), field.getType());
 			valueMeta.setConversionMask(field.getFormat());
 			valueMeta.setTrimType(field.getTrimType());
 			valueMeta.setLength(field.getLength());

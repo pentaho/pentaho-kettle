@@ -35,6 +35,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -349,11 +350,15 @@ public class ConstantMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				int type=ValueMeta.getType(fieldType[i]);
 				if (type==ValueMetaInterface.TYPE_NONE) type=ValueMetaInterface.TYPE_STRING;
-				ValueMetaInterface v=new ValueMeta(fieldName[i], type);
-				v.setLength(fieldLength[i]);
-                v.setPrecision(fieldPrecision[i]);
-				v.setOrigin(name);
-				rowMeta.addValueMeta(v);
+				try {
+				  ValueMetaInterface v=ValueMetaFactory.createValueMeta(fieldName[i], type);
+				  v.setLength(fieldLength[i]);
+				  v.setPrecision(fieldPrecision[i]);
+				  v.setOrigin(name);
+				  rowMeta.addValueMeta(v);
+				} catch(Exception e) {
+				  throw new KettleStepException(e);
+				}
 			}
 		}
 	}

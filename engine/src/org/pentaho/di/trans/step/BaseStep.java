@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -39,6 +40,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.ExtensionDataInterface;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.RowSet;
@@ -112,7 +114,7 @@ import org.pentaho.metastore.api.IMetaStore;
  * Steps are required to deallocate resources allocated during init() or subsequent row processing. This typically means to clear all fields of the StepDataInterface object, and to ensure that all open files or connections are properly closed. For any steps derived from BaseStep it is mandatory that super.dispose() is called to ensure correct deallocation.
  * </ul>
  */
-public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInterface {
+public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInterface, ExtensionDataInterface {
   private static Class<?> PKG = BaseStep.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   private VariableSpace variables = new Variables();
@@ -338,6 +340,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    * The metastore that the step uses to load external elements from
    */
   protected IMetaStore metaStore;
+  
+  protected Map<String, Object> extensionDataMap;
 
   /**
      * This is the base step that forms that basis for all steps. You can derive from this class to implement your own
@@ -426,6 +430,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     partitionTargets = new Hashtable<String, BlockingRowSet>();
 
     serverSockets = new ArrayList<ServerSocket>();
+    
+    extensionDataMap = new HashMap<String, Object>();
 
     // tuning parameters
     // putTimeOut = 10; //s
@@ -3628,5 +3634,9 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   @Override
   public void setCurrentInputRowSetNr(int index) {
     currentInputRowSetNr=index;
+  }
+
+  public Map<String, Object> getExtensionDataMap() {
+    return extensionDataMap;
   }
 }

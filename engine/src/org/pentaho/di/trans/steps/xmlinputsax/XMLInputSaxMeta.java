@@ -32,11 +32,14 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -423,7 +426,7 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface
 		rowLimit=0L;
 	}
 
-	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore)
+	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
 	{		
 		for (int i=0;i<inputFields.length;i++)
 		{
@@ -432,16 +435,20 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface
 			int type=field.getType();
 			if (type==ValueMeta.TYPE_NONE) type=ValueMeta.TYPE_STRING;
 			
-			ValueMeta v=new ValueMeta(field.getName(), type);
-			v.setLength(field.getLength());
-			v.setPrecision(field.getPrecision());
-			v.setConversionMask(field.getFormat());
-			v.setGroupingSymbol(field.getGroupSymbol());
-			v.setDecimalSymbol(field.getDecimalSymbol());
-			v.setCurrencySymbol(field.getCurrencySymbol());
-			
-			v.setOrigin(name);
-			row.addValueMeta(v);
+			try {
+  			ValueMetaInterface v = ValueMetaFactory.createValueMeta(field.getName(), type);
+  			v.setLength(field.getLength());
+  			v.setPrecision(field.getPrecision());
+  			v.setConversionMask(field.getFormat());
+  			v.setGroupingSymbol(field.getGroupSymbol());
+  			v.setDecimalSymbol(field.getDecimalSymbol());
+  			v.setCurrencySymbol(field.getCurrencySymbol());
+  			
+  			v.setOrigin(name);
+  			row.addValueMeta(v);
+			} catch(Exception e) {
+			  throw new KettleStepException(e);
+			}
 		}
 		if (includeFilename)
 		{

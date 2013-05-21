@@ -71,7 +71,7 @@ public class SelectFolderDialog extends Dialog
     private Button wCancel;
     private String selection;
     private Folder folder;
-    private final static GUIResource guiresource =GUIResource.getInstance();
+    private GUIResource guiresource = GUIResource.getInstance();
     
     
     public SelectFolderDialog(Shell parent, int style, Folder folder)

@@ -33,6 +33,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -131,7 +132,7 @@ public class RulesAccumulatorMeta extends BaseStepMeta implements StepMetaInterf
 
         String name = XMLHandler.getTagValue(fnode, StorageKeys.COLUMN_NAME.toString());
         int type = ValueMeta.getType(XMLHandler.getTagValue(fnode, StorageKeys.COLUMN_TYPE.toString()));
-        vm = new ValueMeta(name, type);
+        vm = ValueMetaFactory.createValueMeta(name, type);
 
         getRuleResultColumns().add(vm);
       }
@@ -174,7 +175,7 @@ public class RulesAccumulatorMeta extends BaseStepMeta implements StepMetaInterf
       String name = rep.getStepAttributeString(idStep, i, StorageKeys.COLUMN_NAME.toString());
       int type = ValueMeta.getType(rep.getStepAttributeString(idStep, i, StorageKeys.COLUMN_TYPE.toString()));
 
-      vm = new ValueMeta(name, type);
+      vm = ValueMetaFactory.createValueMeta(name, type);
       getRuleResultColumns().add(vm);
     }
 

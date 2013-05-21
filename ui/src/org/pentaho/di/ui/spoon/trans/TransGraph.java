@@ -735,15 +735,21 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           } else {
             // See if the double click was in one of the area's...
             //
+            boolean hit = false;
             for (AreaOwner areaOwner : areaOwners) {
               if (areaOwner.contains(real.x, real.y)) {
                 if (areaOwner.getParent() instanceof StepMeta
                     && areaOwner.getOwner().equals(TransPainter.STRING_PARTITIONING_CURRENT_STEP)) {
                   StepMeta step = (StepMeta) areaOwner.getParent();
                   spoon.editPartitioning(transMeta, step);
+                  hit=true;
                   break;
                 }
               }
+            }
+            
+            if (!hit) {
+              settings();
             }
 
           }

@@ -22,7 +22,9 @@
 
 package org.pentaho.di.repository.kdr.delegates;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
@@ -34,6 +36,7 @@ import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -52,6 +55,8 @@ import org.pentaho.di.trans.step.StepPartitioningMeta;
 public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseRepositoryBaseDelegate {
 	private static Class<?> PKG = StepMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 	
+	public static final String STEP_ATTRIBUTE_PREFIX = "_ATTR_"+'\t';
+
 	public KettleDatabaseRepositoryStepDelegate(KettleDatabaseRepository repository) {
 		super(repository);
 	}
@@ -90,20 +95,20 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
    * Create a new step by loading the metadata from the specified repository.
    * 
    * @param rep
-   * @param id_step
+   * @param stepId
    * @param databases
    * @param counters
    * @param partitionSchemas
    * @throws KettleException
    */
-  public StepMeta loadStepMeta(ObjectId id_step, List<DatabaseMeta> databases, List<PartitionSchema> partitionSchemas) throws KettleException {
+  public StepMeta loadStepMeta(ObjectId stepId, List<DatabaseMeta> databases, List<PartitionSchema> partitionSchemas) throws KettleException {
     StepMeta stepMeta = new StepMeta();
     PluginRegistry registry = PluginRegistry.getInstance();
 
     try {
-      RowMetaAndData r = getStep(id_step);
+      RowMetaAndData r = getStep(stepId);
       if (r != null) {
-        stepMeta.setObjectId(id_step);
+        stepMeta.setObjectId(stepId);
 
         stepMeta.setName(r.getString(KettleDatabaseRepository.FIELD_STEP_NAME, null)); 
         stepMeta.setDescription(r.getString(KettleDatabaseRepository.FIELD_STEP_DESCRIPTION, null)); 
@@ -147,19 +152,23 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
 
         // Get the cluster schema name
         //
-        stepMeta.setClusterSchemaName(repository.getStepAttributeString(id_step, "cluster_schema"));
+        stepMeta.setClusterSchemaName(repository.getStepAttributeString(stepId, "cluster_schema"));
 
         // Are we using a custom row distribution plugin?
         //
-        String rowDistributionCode = repository.getStepAttributeString(id_step, 0, "row_distribution_code");
+        String rowDistributionCode = repository.getStepAttributeString(stepId, 0, "row_distribution_code");
         RowDistributionInterface rowDistribution = PluginRegistry.getInstance().loadClass(RowDistributionPluginType.class, rowDistributionCode, RowDistributionInterface.class);
         stepMeta.setRowDistribution( rowDistribution );
 
+        // Load the attribute groups map
+        //
+        stepMeta.setAttributesMap(loadStepAttributesMap(stepId));
+        
         // Done!
         //
         return stepMeta;
       } else {
-        throw new KettleException(BaseMessages.getString(PKG, "StepMeta.Exception.StepInfoCouldNotBeFound", String.valueOf(id_step)));  
+        throw new KettleException(BaseMessages.getString(PKG, "StepMeta.Exception.StepInfoCouldNotBeFound", String.valueOf(stepId)));  
       }
     } catch (KettleDatabaseException dbe) {
       throw new KettleException(BaseMessages.getString(PKG, "StepMeta.Exception.StepCouldNotBeLoaded", String.valueOf(stepMeta.getObjectId())), dbe);  
@@ -180,13 +189,13 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
     stepMetaInterface.readRep(repository, objectId, databases, null);
   }
 
-  public void saveStepMeta(StepMeta stepMeta, ObjectId id_transformation) throws KettleException
+  public void saveStepMeta(StepMeta stepMeta, ObjectId transformationId) throws KettleException
 	{
         try
 		{
 			log.logDebug(BaseMessages.getString(PKG, "StepMeta.Log.SaveNewStep")); 
 			// Insert new Step in repository
-			stepMeta.setObjectId(insertStep(	id_transformation,
+			stepMeta.setObjectId(insertStep(	transformationId,
 									stepMeta.getName(), 
 									stepMeta.getDescription(),
 									stepMeta.getStepID(),
@@ -201,27 +210,31 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
             
             // Save partitioning selection for the step
 			//
-			repository.stepDelegate.saveStepPartitioningMeta(stepMeta.getStepPartitioningMeta(), id_transformation, stepMeta.getObjectId());
+			repository.stepDelegate.saveStepPartitioningMeta(stepMeta.getStepPartitioningMeta(), transformationId, stepMeta.getObjectId());
 	
 			// The id_step is known, as well as the id_transformation
 			// This means we can now save the attributes of the step...
 			//
 			log.logDebug(BaseMessages.getString(PKG, "StepMeta.Log.SaveStepDetails")); 
-			compatibleSaveRep(stepMeta.getStepMetaInterface(), repository, id_transformation, stepMeta.getObjectId());
-			stepMeta.getStepMetaInterface().saveRep(repository, repository.metaStore, id_transformation, stepMeta.getObjectId());
+			compatibleSaveRep(stepMeta.getStepMetaInterface(), repository, transformationId, stepMeta.getObjectId());
+			stepMeta.getStepMetaInterface().saveRep(repository, repository.metaStore, transformationId, stepMeta.getObjectId());
             
       // Save the name of the clustering schema that was chosen.
 			//
-      repository.saveStepAttribute(id_transformation, stepMeta.getObjectId(), "cluster_schema", stepMeta.getClusterSchema()==null?"":stepMeta.getClusterSchema().getName());
+      repository.saveStepAttribute(transformationId, stepMeta.getObjectId(), "cluster_schema", stepMeta.getClusterSchema()==null?"":stepMeta.getClusterSchema().getName());
       
       // Save the row distribution code (plugin ID)
       //
-      repository.saveStepAttribute(id_transformation, stepMeta.getObjectId(), "row_distribution_code", 
+      repository.saveStepAttribute(transformationId, stepMeta.getObjectId(), "row_distribution_code", 
           stepMeta.getRowDistribution()==null ? null : stepMeta.getRowDistribution().getCode());
+      
+      // Save the attribute groups map
+      //
+      saveAttributesMap(transformationId, stepMeta.getObjectId(), stepMeta.getAttributesMap());
 		}
 		catch(KettleException e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "StepMeta.Exception.UnableToSaveStepInfo",String.valueOf(id_transformation)), e); 
+			throw new KettleException(BaseMessages.getString(PKG, "StepMeta.Exception.UnableToSaveStepInfo",String.valueOf(transformationId)), e); 
 		}
 	}
 
@@ -360,4 +373,46 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
 
 		return retval;
 	}
+	
+	 private void saveAttributesMap(ObjectId transformationId, ObjectId stepId, Map<String, Map<String, String>> attributesMap) throws KettleException {
+	    for (final String groupName : attributesMap.keySet()) {
+	      Map<String, String> attributes = attributesMap.get(groupName);
+	      for (final String key : attributes.keySet()) {
+	        final String value = attributes.get(key);
+	        if (key!=null && value!=null) {
+	          repository.connectionDelegate.insertStepAttribute(transformationId, stepId, 0, 
+	              STEP_ATTRIBUTE_PREFIX+groupName+'\t'+value, 0, value);
+	        }
+	      }
+	    }
+	  }
+	  
+	  private Map<String, Map<String, String>> loadStepAttributesMap(ObjectId stepId) throws KettleException {
+	    Map<String, Map<String, String>> attributesMap = new HashMap<String, Map<String,String>>();
+	    
+	    List<Object[]> attributeRows = repository.connectionDelegate.getStepAttributesBuffer();
+	    RowMetaInterface rowMeta = repository.connectionDelegate.getStepAttributesRowMeta();
+	    for (Object[] attributeRow : attributeRows) {
+	      String code = rowMeta.getString(attributeRow, KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_CODE, null);
+	      if (code!=null && code.startsWith(STEP_ATTRIBUTE_PREFIX)) { 
+  	      String value = rowMeta.getString(attributeRow, KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_VALUE_STR, null);
+  	      if (value!=null) {
+  	        code = code.substring(STEP_ATTRIBUTE_PREFIX.length());
+  	        int tabIndex = code.indexOf('\t');
+  	        if (tabIndex>0) {
+  	          String groupName = code.substring(0, tabIndex);
+  	          String key = code.substring(tabIndex+1);
+  	          Map<String, String> attributes = attributesMap.get(groupName);
+  	          if (attributes==null) {
+  	            attributes = new HashMap<String, String>();
+  	            attributesMap.put(groupName, attributes);
+  	          }
+  	          attributes.put(key, value);
+  	        }          
+  	      }
+  	    }
+	    }
+	    
+	    return attributesMap;
+	  }
 }

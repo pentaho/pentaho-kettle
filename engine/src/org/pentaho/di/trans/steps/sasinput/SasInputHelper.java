@@ -27,11 +27,12 @@ import java.io.File;
 import org.eobjects.sassy.SasColumnType;
 import org.eobjects.sassy.SasReader;
 import org.eobjects.sassy.SasReaderCallback;
+import org.eobjects.sassy.SasReaderException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 
 /**
  * This file helps us to read a SAS7BAT file
@@ -76,10 +77,14 @@ public class SasInputHelper {
           default:
             throw new RuntimeException("Unhandled SAS data type encountered: " + type);
           }
-          ValueMetaInterface valueMeta = new ValueMeta(name, kettleType);
-          valueMeta.setLength(kettleLength);
-          valueMeta.setComments(label);
-          rowMeta.addValueMeta(valueMeta);
+          try {
+            ValueMetaInterface valueMeta = ValueMetaFactory.createValueMeta(name, kettleType);
+            valueMeta.setLength(kettleLength);
+            valueMeta.setComments(label);
+            rowMeta.addValueMeta(valueMeta);
+          } catch(Exception e) {
+            throw new SasReaderException("Unable to create new value meta type", e);
+          }
         }
 
         public boolean readData() {

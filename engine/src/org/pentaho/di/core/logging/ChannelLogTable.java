@@ -35,6 +35,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.HasDatabasesInterface;
+import org.pentaho.di.trans.step.StepMeta;
 import org.w3c.dom.Node;
 
 /**
@@ -108,7 +109,11 @@ public class ChannelLogTable extends BaseLogTable implements Cloneable, LogTable
 		return retval.toString();
 	}
 	
-	public void loadXML(Node node, List<DatabaseMeta> databases) {
+	public void loadXML(Node jobnode, List<DatabaseMeta> databases, List<StepMeta> steps) {
+	  
+	  Node node = XMLHandler.getSubNode(jobnode, XML_TAG);
+	  if (node==null) return;
+	  
 		connectionName = XMLHandler.getTagValue(node, "connection");
 		schemaName = XMLHandler.getTagValue(node, "schema");
 		tableName = XMLHandler.getTagValue(node, "table");
@@ -116,6 +121,14 @@ public class ChannelLogTable extends BaseLogTable implements Cloneable, LogTable
 		
 		super.loadFieldsXML(node);
 	}
+	
+  @Override
+  public void replaceMeta(LogTableCoreInterface logTableInterface) {
+    if (!(logTableInterface instanceof ChannelLogTable)) return;
+    
+    ChannelLogTable logTable = (ChannelLogTable) logTableInterface; 
+    super.replaceMeta(logTable);
+  }
 
 	public static ChannelLogTable getDefault(VariableSpace space, HasDatabasesInterface databasesInterface) {
 		ChannelLogTable table = new ChannelLogTable(space, databasesInterface);

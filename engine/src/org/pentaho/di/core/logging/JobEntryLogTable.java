@@ -43,6 +43,7 @@ import org.pentaho.di.job.JobEntryResult;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.trans.HasDatabasesInterface;
+import org.pentaho.di.trans.step.StepMeta;
 import org.w3c.dom.Node;
 
 /**
@@ -121,7 +122,19 @@ public class JobEntryLogTable extends BaseLogTable implements Cloneable, LogTabl
 		return retval.toString();
 	}
 	
-	public void loadXML(Node node, List<DatabaseMeta> databases) {
+  @Override
+  public void replaceMeta(LogTableCoreInterface logTableInterface) {
+    if (!(logTableInterface instanceof JobEntryLogTable)) return;
+    
+    JobEntryLogTable logTable = (JobEntryLogTable) logTableInterface; 
+    super.replaceMeta(logTable);
+  }
+
+	
+	public void loadXML(Node jobnode, List<DatabaseMeta> databases, List<StepMeta> steps) {
+	  Node node = XMLHandler.getSubNode(jobnode, XML_TAG);
+	  if (node==null) return;
+
 		connectionName = XMLHandler.getTagValue(node, "connection");
 		schemaName = XMLHandler.getTagValue(node, "schema");
 		tableName = XMLHandler.getTagValue(node, "table");

@@ -24,7 +24,9 @@ package org.pentaho.di.repository.kdr.delegates;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
@@ -54,6 +56,8 @@ import org.pentaho.di.shared.SharedObjects;
 public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositoryBaseDelegate {
 
 	private static Class<?> PKG = JobMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
+	public static final String JOB_ATTRIBUTE_PREFIX = "_ATTR_"+'\t';
 
 	public KettleDatabaseRepositoryJobDelegate(KettleDatabaseRepository repository) {
 		super(repository);
@@ -146,6 +150,10 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 			
 			if (monitor != null)
 				monitor.worked(1);
+			
+			// Save the group attributes map
+			//
+			saveJobAttributesMap(jobMeta.getObjectId(), jobMeta.getAttributesMap());
 
 			// Save the slaves
 			//
@@ -298,8 +306,6 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 					jobMeta.setModifiedUser( jobRow.getString(KettleDatabaseRepository.FIELD_JOB_MODIFIED_USER, null) ); 
 					jobMeta.setModifiedDate( jobRow.getDate(KettleDatabaseRepository.FIELD_JOB_MODIFIED_DATE, new Date()) ); 
 
-	        jobMeta.setUsingUniqueConnections( jobRow.getBoolean(KettleDatabaseRepository.FIELD_JOB_UNIQUE_CONNECTIONS, false) ); 
-					
 					long id_logdb = jobRow.getInteger(KettleDatabaseRepository.FIELD_JOB_ID_DATABASE_LOG, 0); 
 					if (id_logdb > 0) {
 						// Get the logconnection
@@ -354,6 +360,10 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 						if (monitor != null)
 							monitor.worked(1);
 					}
+					
+					// Load the group attributes map
+					//
+					jobMeta.setAttributesMap(loadJobAttributesMap(jobMeta.getObjectId()));
 	
 					// Load the job entries...
 					//
@@ -791,7 +801,6 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_MODIFIED_DATE, ValueMetaInterface.TYPE_DATE), jobMeta.getModifiedDate());
     table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_PASS_BATCH_ID, ValueMetaInterface.TYPE_BOOLEAN), jobMeta.isBatchIdPassed());
     table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_SHARED_FILE, ValueMetaInterface.TYPE_STRING), jobMeta.getSharedObjectsFile());
-    table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_UNIQUE_CONNECTIONS, ValueMetaInterface.TYPE_BOOLEAN), jobMeta.isUsingUniqueConnections());
         
     repository.connectionDelegate.getDatabase().prepareInsert(table.getRowMeta(), KettleDatabaseRepository.TABLE_R_JOB);
 		repository.connectionDelegate.getDatabase().setValuesInsert(table);
@@ -888,4 +897,44 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
   		repository.connectionDelegate.getDatabase().execStatement(sql, table.getRowMeta(), table.getData());
 	  }
 	}
+	
+	private void saveJobAttributesMap(ObjectId jobId, Map<String, Map<String, String>> attributesMap) throws KettleException {
+    for (final String groupName : attributesMap.keySet()) {
+      Map<String, String> attributes = attributesMap.get(groupName);
+      for (final String key : attributes.keySet()) {
+        final String value = attributes.get(key);
+        if (key!=null && value!=null) {
+          repository.connectionDelegate.insertJobAttribute(jobId, 0, 
+              JOB_ATTRIBUTE_PREFIX+groupName+'\t'+value, 0, value);
+        }
+      }
+    }
+  }
+  
+  private Map<String, Map<String, String>> loadJobAttributesMap(ObjectId jobId) throws KettleException {
+    Map<String, Map<String, String>> attributesMap = new HashMap<String, Map<String,String>>();
+    
+    List<Object[]> attributeRows = repository.connectionDelegate.getJobAttributesWithPrefix(jobId, JOB_ATTRIBUTE_PREFIX);
+    RowMetaInterface rowMeta = repository.connectionDelegate.getReturnRowMeta();
+    for (Object[] attributeRow : attributeRows) {
+      String code = rowMeta.getString(attributeRow, KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_CODE, null);
+      String value = rowMeta.getString(attributeRow, KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_VALUE_STR, null);
+      if (code!=null && value!=null) {
+        code = code.substring(JOB_ATTRIBUTE_PREFIX.length());
+        int tabIndex = code.indexOf('\t');
+        if (tabIndex>0) {
+          String groupName = code.substring(0, tabIndex);
+          String key = code.substring(tabIndex+1);
+          Map<String, String> attributes = attributesMap.get(groupName);
+          if (attributes==null) {
+            attributes = new HashMap<String, String>();
+            attributesMap.put(groupName, attributes);
+          }
+          attributes.put(key, value);
+        }          
+      }
+    }
+    
+    return attributesMap;
+  }
 }

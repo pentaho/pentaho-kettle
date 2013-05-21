@@ -136,7 +136,7 @@ public class RowMetaAndData implements Cloneable
         }
     }
 
-    public void addValue(ValueMeta valueMeta, Object valueData)
+    public void addValue(ValueMetaInterface valueMeta, Object valueData)
     {
     	if (valueMeta.isInteger() && (valueData instanceof ObjectId)) {
     		valueData = new LongObjectId((ObjectId)valueData).longValue();

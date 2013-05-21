@@ -58,6 +58,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
@@ -385,19 +386,20 @@ public class ConditionEditor extends Composite
 					case AREA_RIGHT_EXACT:
 						if (active_condition.isAtomic())
 						{
-							ValueMetaAndData v = active_condition.getRightExact();
-							if (v==null) 
-							{
-								ValueMetaInterface leftval = fields!=null?fields.searchValueMeta( active_condition.getLeftValuename() ):null;
-								if (leftval!=null)
-								{
-									v=new ValueMetaAndData(new ValueMeta("constant", leftval.getType()), null);
-								}
-								else
-								{
-                                    v=new ValueMetaAndData(new ValueMeta("constant", ValueMetaInterface.TYPE_STRING), null);
-								}
-							}
+              ValueMetaAndData v = active_condition.getRightExact();
+              if (v == null) {
+                ValueMetaInterface leftval = fields != null ? fields.searchValueMeta(active_condition
+                    .getLeftValuename()) : null;
+                if (leftval != null) {
+                  try {
+                    v = new ValueMetaAndData(ValueMetaFactory.createValueMeta("constant", leftval.getType()), null);
+                  } catch(Exception exception) {
+                    new ErrorDialog(shell, "Error", "Error creating value meta object", exception);
+                  }
+                } else {
+                  v = new ValueMetaAndData(new ValueMeta("constant", ValueMetaInterface.TYPE_STRING), null);
+                }
+              }
 							EnterValueDialog evd = new EnterValueDialog(shell, SWT.NONE, v.getValueMeta(), v.getValueData());
 							evd.setModalDialog(true); // To keep the condition editor from being closed with a value dialog still open. (PDI-140)
 							ValueMetaAndData newval = evd.open();

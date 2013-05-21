@@ -38,6 +38,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -832,15 +833,19 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			int type=field[i].getType();
 			if (type==ValueMetaInterface.TYPE_NONE) type=ValueMetaInterface.TYPE_STRING;
-            ValueMetaInterface v=new ValueMeta(field[i].getName(), type);
-			v.setLength(field[i].getLength());
-            v.setPrecision(field[i].getPrecision());
-			v.setOrigin(name);
-            v.setConversionMask(field[i].getFormat());
-            v.setDecimalSymbol(field[i].getDecimalSymbol());
-            v.setGroupingSymbol(field[i].getGroupSymbol());
-            v.setCurrencySymbol(field[i].getCurrencySymbol());
-			row.addValueMeta(v);
+			try {
+        ValueMetaInterface v = ValueMetaFactory.createValueMeta(field[i].getName(), type);
+        v.setLength(field[i].getLength());
+        v.setPrecision(field[i].getPrecision());
+        v.setOrigin(name);
+        v.setConversionMask(field[i].getFormat());
+        v.setDecimalSymbol(field[i].getDecimalSymbol());
+        v.setGroupingSymbol(field[i].getGroupSymbol());
+        v.setCurrencySymbol(field[i].getCurrencySymbol());
+        row.addValueMeta(v);
+			} catch(Exception e) {
+			  throw new KettleStepException(e);
+			}
 		}
 		if (fileField!=null && fileField.length()>0)
 		{

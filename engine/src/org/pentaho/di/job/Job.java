@@ -23,8 +23,6 @@
 package org.pentaho.di.job;
 
 import java.net.URLEncoder;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -41,13 +39,12 @@ import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ExecutorInterface;
+import org.pentaho.di.core.ExtensionDataInterface;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.database.DatabaseTransactionListener;
-import org.pentaho.di.core.database.map.DatabaseConnectionMap;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleJobException;
@@ -55,18 +52,16 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.gui.JobTracker;
-import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.ChannelLogTable;
-import org.pentaho.di.core.logging.CheckpointLogTable;
 import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.JobEntryLogTable;
 import org.pentaho.di.core.logging.JobLogTable;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LogStatus;
-import org.pentaho.di.core.logging.LogTableField;
 import org.pentaho.di.core.logging.LoggingBuffer;
 import org.pentaho.di.core.logging.LoggingHierarchy;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
@@ -79,12 +74,10 @@ import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
-import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entries.job.JobEntryJob;
 import org.pentaho.di.job.entries.special.JobEntrySpecial;
@@ -104,7 +97,6 @@ import org.pentaho.di.www.SocketRepository;
 import org.pentaho.di.www.StartJobServlet;
 import org.pentaho.di.www.WebResult;
 import org.pentaho.metastore.api.IMetaStore;
-import org.w3c.dom.Node;
 
 /**
  * This class executes a job as defined by a JobMeta object.
@@ -116,7 +108,7 @@ import org.w3c.dom.Node;
  * 
  */
 public class Job extends Thread implements VariableSpace, NamedParams, HasLogChannelInterface, LoggingObjectInterface,
-    ExecutorInterface {
+    ExecutorInterface, ExtensionDataInterface {
   private static Class<?> PKG = Job.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   public static final String CONFIGURATION_IN_EXPORT_FILENAME = "__job_execution_configuration__.xml";
@@ -222,20 +214,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   private String transactionId;
 
-  private long runId;
-
-  private int runAttemptNr;
-
-  private Date runStartDate;
-
-  private JobEntryCopy checkpointJobEntry;
-
-  private Result checkpointResult;
-
-  private Map<String, String> checkpointParameters;
-
-  private boolean ignoringCheckpoints;
-
+  private Map<String, Object> extensionDataMap;
+  
   /** The command line arguments for the job. */
   protected String arguments[];
 
@@ -271,6 +251,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     activeJobEntryTransformations = new HashMap<JobEntryCopy, JobEntryTrans>();
     activeJobEntryJobs = new HashMap<JobEntryCopy, JobEntryJob>();
 
+    extensionDataMap = new HashMap<String, Object>();
+    
     active = new AtomicBoolean(false);
     stopped = new AtomicBoolean(false);
     jobTracker = new JobTracker(jobMeta);
@@ -463,10 +445,6 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       stopped.set(false);
       KettleEnvironment.setExecutionInformation(this, rep);
 
-      // Calculate the transaction ID prior to execution
-      //
-      transactionId = calculateTransactionId();
-
       log.logMinimal(BaseMessages.getString(PKG, "Job.Comment.JobStarted"));
 
       ExtensionPointHandler.callExtensionPoint(log, KettleExtensionPoint.JobStart.id, this);
@@ -562,10 +540,6 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     initialized.set(true);
     KettleEnvironment.setExecutionInformation(this, rep);
 
-    // Calculate the transaction ID prior to execution
-    //
-    transactionId = calculateTransactionId();
-
     // Where do we start?
     JobEntryCopy startpoint;
 
@@ -646,50 +620,11 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       prevResult = new Result();
     }
 
-    // See if we found a checkpoint from a previous execution...
-    //
-    if (checkpointJobEntry != null && checkpointJobEntry == jobEntryCopy) {
-      CheckpointLogTable checkpointLogTable = jobMeta.getCheckpointLogTable();
-
-      // Yes, we need to restore the previous checkpoint results at this point...
-      //
-      checkpointResult.setResult(true);
-      checkpointResult.setNrErrors(0);
-      result = prevResult = checkpointResult;
-
-      // Do we need to restore the parameter values?
-      //
-      if ("Y".equalsIgnoreCase(environmentSubstitute(checkpointLogTable.getSaveParameters()))) {
-        for (String name : checkpointParameters.keySet()) {
-          setParameterValue(name, checkpointParameters.get(name));
-        }
-      }
-
-      // Do we need to keep the result rows from the checkpoint?
-      //
-      if (!"Y".equalsIgnoreCase(environmentSubstitute(checkpointLogTable.getSaveResultRows()))) {
-        prevResult.getRows().clear();
-      }
-
-      // Do we need to keep the result files from the checkpoint?
-      //
-      if (!"Y".equalsIgnoreCase(environmentSubstitute(checkpointLogTable.getSaveResultFiles()))) {
-        prevResult.getResultFiles().clear();
-      }
-
-      // Add some basic results logging
-      //
-      JobEntryResult jerCheckpoint = new JobEntryResult(result, getLogChannel().getLogChannelId(),
-          BaseMessages.getString(PKG, "Job.Comment.JobRestartAtCheckpoint"), null, jobEntryCopy.getName(),
-          jobEntryCopy.getNr(), environmentSubstitute(jobEntryCopy.getEntry().getFilename()));
-      jerCheckpoint.setCheckpoint(true);
-      jobTracker.addJobTracker(new JobTracker(jobMeta, jerCheckpoint));
-      synchronized (jobEntryResults) {
-        jobEntryResults.add(jerCheckpoint);
-      }
-
-      log.logBasic("Restarting from checkpoint job entry: " + checkpointJobEntry.toString());
-
+    JobExecutionExtension extension = new JobExecutionExtension(this, prevResult, jobEntryCopy, true);
+    ExtensionPointHandler.callExtensionPoint(log, KettleExtensionPoint.JobBeforeJobEntryExecution.id, extension);
+    
+    if (!extension.executeEntry) {
+      result = prevResult = extension.result;
     } else {
       if (log.isDetailed())
         log.logDetailed("exec(" + nr + ", " + (prev_result != null ? prev_result.getNrErrors() : 0) + ", "
@@ -780,13 +715,11 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
           }
         }
       }
-
-      // If this is a checkpoint, write to the checkpoint log table
-      //
-      if (jobEntryCopy.isCheckpoint() && jobMeta.getCheckpointLogTable().isDefined()) {
-        writeCheckpointInformation(jobEntryCopy, result);
-      }
     }
+    
+    extension = new JobExecutionExtension(this, prevResult, jobEntryCopy, extension.executeEntry);
+    ExtensionPointHandler.callExtensionPoint(log, KettleExtensionPoint.JobAfterJobEntryExecution.id, extension);
+    
 
     // Try all next job entries.
     //
@@ -940,54 +873,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     return res;
   }
 
-  /**
-   * Writes a checkpoint to the checkpoint log table.
-   * @param jobEntryCopy
-   * @param result
-   * @throws KettleException
-   */
-  private void writeCheckpointInformation(JobEntryCopy jobEntryCopy, Result result) throws KettleException {
-    Database db = null;
-    CheckpointLogTable checkpointLogTable = jobMeta.getCheckpointLogTable();
 
-    // Keep track in the job itself so everyone knows about this
-    //
-    setCheckpointJobEntry(jobEntryCopy);
-
-    try {
-      db = new Database(this, checkpointLogTable.getDatabaseMeta());
-      db.shareVariablesWith(this);
-      db.connect();
-      db.setCommit(logCommitSize);
-
-      LogStatus logStatus = LogStatus.RUNNING;
-
-      // First run ever, look up a new value for the run ID.
-      //
-      if (runId < 0) {
-        runId = checkpointLogTable.getDatabaseMeta().getNextBatchId(db, checkpointLogTable.getSchemaName(),
-            checkpointLogTable.getTableName(), checkpointLogTable.getKeyField().getFieldName());
-
-        // This is the first attempt to run this job
-        // 
-        logStatus = LogStatus.START;
-      }
-
-      db.writeLogRecord(checkpointLogTable, logStatus, result, this);
-
-      // Also time-out the log records in here...
-      //
-      db.cleanupLogRecords(checkpointLogTable);
-
-    } catch (Exception e) {
-      throw new KettleException(BaseMessages.getString(PKG,
-          "Job.Exception.UnableToWriteCheckpointInformationToLogTable"), e);
-    } finally {
-      if (!db.isAutoCommit())
-        db.commit(true);
-      db.disconnect();
-    }
-  }
 
   /**
    Wait until this job has finished.
@@ -1179,243 +1065,17 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
           try {
             writeLogChannelInformation();
           } catch (KettleException e) {
-            throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.UnableToPerformLoggingAtTransEnd"),
+            throw new KettleException(BaseMessages.getString(PKG, "Job.Exception.UnableToPerformLoggingAtTransEnd"),
                 e);
           }
         }
       });
     }
-
-    // If the job is running database transactional with unique connections, close them at the end...
-    //
-    if (jobMeta.isUsingUniqueConnections()) {
-      addJobListener(new JobAdapter() {
-        @Override
-        public void jobFinished(Job job) throws KettleException {
-
-          job.closeUniqueDatabaseConnections();
-        }
-      });
-    }
-
-    // See if we need to start at an alternate location in the job based on the information from the run ID
-    //
-    if (jobMeta.getCheckpointLogTable().isDefined()) {
-      // Look up information from the previous attempt
-      //
-      lookupCheckpoint();
-
-      // Make sure to write the attempt information
-      //
-      if (runAttemptNr > 1) {
-        writeCheckpointInformation(checkpointJobEntry, checkpointResult);
-      }
-
-      // At the end of the job, if everything ran without error, clear the job entry name from the checkpoint table.
-      // That way we know next time around we can grab a new run ID for this job.
-      //
-      addJobListener(new JobAdapter() {
-        @Override
-        public void jobFinished(Job job) throws KettleException {
-          // Clear the checkpoint information in the checkpoint table
-          // But only in case everything ran without error in the job.
-          //
-          if (result != null && result.getResult() && result.getNrErrors() == 0) {
-            checkpointJobEntry = null;
-            writeCheckpointInformation(null, result);
-          }
-
-        }
-      });
-    }
+    
+    JobExecutionExtension extension = new JobExecutionExtension(this, result, null, false);
+    ExtensionPointHandler.callExtensionPoint(log, KettleExtensionPoint.JobBeginProcessing.id, extension);
 
     return true;
-  }
-
-  /**
-   * Looks up checkpoint information and updates the Job if appropriate.
-   * @throws KettleException
-   */
-  protected void lookupCheckpoint() throws KettleException {
-
-    try {
-      // Set some defaults regardless of lookup...
-      //
-      runId = -1;
-
-      // Take start of this transformation if we have nothing else.
-      // This will be logged by the checkpoints later on.
-      //
-      runStartDate = getLogDate();
-
-      // No job entry to restart from by default: use the Start job entry
-      //
-      checkpointJobEntry = null;
-
-      // This is the first attempt by default
-      //
-      runAttemptNr = 1;
-
-      // If we don't want to use a previous checkpoint, pretend we didn't find it.
-      //
-      if (isIgnoringCheckpoints()) {
-        return;
-      }
-
-      // Now look up some data in the check point log table...
-      //
-      CheckpointLogTable logTable = jobMeta.getCheckpointLogTable();
-      String namespace = Const.NVL(getParameterValue(logTable.getNamespaceParameter()), "-");
-      DatabaseMeta dbMeta = logTable.getDatabaseMeta();
-      String schemaTable = dbMeta.getQuotedSchemaTableCombination(logTable.getActualSchemaName(),
-          logTable.getActualTableName());
-      Database db = null;
-      try {
-        db = new Database(this, dbMeta);
-        db.shareVariablesWith(this);
-        db.connect();
-        db.setCommit(logCommitSize);
-
-        // The fields to retrieve
-        //
-        LogTableField idJobRunField = logTable.getKeyField();
-        String idJobRunFieldName = dbMeta.quoteField(idJobRunField.getFieldName());
-        LogTableField jobRunStartDateField = logTable.getJobRunStartDateField();
-        String jobRunStartDateFieldName = dbMeta.quoteField(jobRunStartDateField.getFieldName());
-        LogTableField checkpointNameField = logTable.getCheckpointNameField();
-        String checkpointNameFieldName = dbMeta.quoteField(checkpointNameField.getFieldName());
-        LogTableField checkpointNrField = logTable.getCheckpointCopyNrField();
-        String checkpointNrFieldName = dbMeta.quoteField(checkpointNrField.getFieldName());
-        LogTableField attemptNrField = logTable.getAttemptNrField();
-        String attemptNrFieldName = dbMeta.quoteField(attemptNrField.getFieldName());
-        LogTableField resultXmlField = logTable.getResultXmlField();
-        String resultXmlFieldName = dbMeta.quoteField(resultXmlField.getFieldName());
-        LogTableField parameterXmlField = logTable.getParameterXmlField();
-        String parameterXmlFieldName = dbMeta.quoteField(parameterXmlField.getFieldName());
-
-        // The parameters values to pass
-        //
-        RowMetaAndData pars = new RowMetaAndData();
-
-        LogTableField jobNameField = logTable.getNameField();
-        String jobNameFieldName = dbMeta.quoteField(jobNameField.getFieldName());
-        pars.addValue(idJobRunFieldName, ValueMetaInterface.TYPE_STRING, jobMeta.getName());
-        LogTableField namespaceField = logTable.getNamespaceField();
-        String namespaceFieldName = dbMeta.quoteField(namespaceField.getFieldName());
-        pars.addValue(namespaceFieldName, ValueMetaInterface.TYPE_STRING, namespace);
-
-        String sql = "SELECT " + idJobRunFieldName + ", " + jobRunStartDateFieldName + ", " + checkpointNameFieldName
-            + ", " + checkpointNrFieldName + ", " + attemptNrFieldName + ", " + resultXmlFieldName + ", "
-            + parameterXmlFieldName;
-        sql += " FROM " + schemaTable;
-        sql += " WHERE " + jobNameFieldName + " = ? AND " + namespaceFieldName + " = ? ";
-        sql += " AND " + checkpointNrFieldName + " IS NOT NULL"; // nulled at the successful end of the job so we don't need these rows.
-
-        // Grab the matching rows, if more than one matches just grab the first...
-        //
-        PreparedStatement statement = db.prepareSQL(sql);
-        ResultSet resultSet = db.openQuery(statement, pars.getRowMeta(), pars.getData());
-        Object[] rowData = db.getRow(resultSet);
-
-        // If there is no checkpoint found, call it a day
-        //
-        if (rowData == null) {
-          return;
-        }
-        RowMetaInterface rowMeta = db.getReturnRowMeta();
-
-        // Get the data from the row
-        //
-        int index = 0;
-        Long lookupRunId = rowMeta.getInteger(rowData, index++);
-        Date jobRunStartDate = rowMeta.getDate(rowData, index++);
-        String checkpointName = rowMeta.getString(rowData, index++);
-        Long checkpointNr = rowMeta.getInteger(rowData, index++);
-        Long attemptNr = rowMeta.getInteger(rowData, index++);
-        String resultXml = rowMeta.getString(rowData, index++);
-        String parameterXml = rowMeta.getString(rowData, index++);
-
-        // Do some basic checks on the table data...
-        //
-        if (lookupRunId == null || jobRunStartDate == null || checkpointName == null || checkpointNr == null
-            || attemptNr == null || resultXml == null || parameterXml == null) {
-          // Nothing to checkpoint to, call it quits.
-          //
-          return;
-        }
-
-        // See if the retry period hasn't expired...
-        //
-        int retryPeriodInMinutes = Const.toInt(environmentSubstitute(logTable.getRunRetryPeriod()), -1);
-        if (retryPeriodInMinutes > 0) {
-          long maxTime = runStartDate.getTime() + retryPeriodInMinutes * 60 * 1000;
-          if (getStartDate().getTime() > maxTime) {
-            // retry period expired
-            throw new KettleException("Retry period exceeded, please reset job [" + jobMeta.getName()
-                + "] for namespace [" + namespace + "]");
-          }
-        }
-
-        // Verify the max number of retries / attempts...
-        //
-        int maxAttempts = Const.toInt(environmentSubstitute(logTable.getMaxNrRetries()), -1);
-        if (maxAttempts > 0) {
-          if (attemptNr + 1 > maxAttempts) {
-            throw new KettleException("The job checkpoint system has reached the maximum number or retries after "
-                + attemptNr + " attempts");
-          }
-        }
-
-        // All OK, now pass the looked up data to the job
-        //
-        runStartDate = jobRunStartDate;
-        runId = lookupRunId;
-        runAttemptNr = attemptNr.intValue() + 1;
-        checkpointJobEntry = jobMeta.findJobEntry(checkpointName, checkpointNr.intValue(), false);
-        if (checkpointJobEntry == null) {
-          throw new KettleException("Unable to find checkpoint job entry with name [" + checkpointName
-              + "] and copy number [" + checkpointNr + "]");
-        }
-
-        // We start at the checkpoint job entry (this is skipped though)
-        //
-        startJobEntryCopy = checkpointJobEntry;
-
-        // The result
-        //
-        checkpointResult = new Result(XMLHandler.loadXMLString(resultXml, Result.XML_TAG));
-        checkpointParameters = extractParameters(parameterXml);
-
-      } catch (Exception e) {
-        throw new KettleException("Unable to look up checkpoint information in the check point log table", e);
-      } finally {
-        if (db != null) {
-          db.disconnect();
-        }
-      }
-    } finally {
-      // Set variables
-      //
-      setVariable(Const.INTERNAL_VARIABLE_JOB_RUN_ID, Long.toString(runId));
-      setVariable(Const.INTERNAL_VARIABLE_JOB_RUN_ATTEMPTNR, Long.toString(runAttemptNr));
-    }
-  }
-
-  /**
-   * Extracts the parameters from the passed XML.
-   * @param parameterXml
-   * @return Map<String, String> 
-   * @throws KettleException
-   */
-  private Map<String, String> extractParameters(String parameterXml) throws KettleException {
-    Map<String, String> map = new HashMap<String, String>();
-    List<Node> parameterNodes = XMLHandler.getNodes(XMLHandler.loadXMLString(parameterXml, "pars"), "par");
-    for (Node parameterNode : parameterNodes) {
-      String name = XMLHandler.getTagValue(parameterNode, "name");
-      String value = XMLHandler.getTagValue(parameterNode, "value");
-      map.put(name, value);
-    }
-    return map;
   }
 
   //
@@ -2452,111 +2112,6 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
   }
 
   /**
-   * Closes database connections.  Database connections that have transactions in use by the parent job are not closed.
-   */
-  private void closeUniqueDatabaseConnections() {
-
-    // Don't close any connections if the parent job is using the same transaction
-    // 
-    if (parentJob.getJobMeta().isUsingUniqueConnections() && 
-        parentJob != null && transactionId != null && parentJob.getTransactionId() != null
-        && transactionId.equals(parentJob.getTransactionId())) {
-      return;
-    }
-
-    // Don't close any connections if the parent transformation is using the same transaction
-    // 
-    if (parentTrans.getTransMeta().isUsingUniqueConnections() && 
-        parentTrans != null && transactionId != null && parentTrans.getTransactionId() != null
-        && transactionId.equals(parentTrans.getTransactionId())) {
-      return;
-    }
-
-    // First we get all the database connections ...
-    //
-    DatabaseConnectionMap map = DatabaseConnectionMap.getInstance();
-    synchronized (map) {
-      List<Database> databaseList = new ArrayList<Database>(map.getMap().values());
-      for (Database database : databaseList) {
-        if (database.getConnectionGroup().equals(getTransactionId())) {
-          try {
-
-            // This database connection belongs to this transformation.
-            // Let's roll it back if there is an error...
-            //
-            if (result.getNrErrors() > 0) {
-              try {
-                database.rollback(true);
-
-                log.logBasic(BaseMessages.getString(PKG, "Job.Exception.TransactionsRolledBackOnConnection",
-                    database.toString()));
-              } catch (Exception e) {
-                throw new KettleDatabaseException(BaseMessages.getString(PKG,
-                    "Job.Exception.ErrorRollingBackUniqueConnection", database.toString()), e);
-              }
-            } else {
-              try {
-                database.commit(true);
-
-                log.logBasic(BaseMessages.getString(PKG, "Job.Exception.TransactionsCommittedOnConnection",
-                    database.toString()));
-              } catch (Exception e) {
-                throw new KettleDatabaseException(BaseMessages.getString(PKG,
-                    "Job.Exception.ErrorCommittingUniqueConnection", database.toString()), e);
-              }
-            }
-          } catch (Exception e) {
-            log.logError(BaseMessages.getString(PKG, "Job.Exception.ErrorHandlingJobTransaction", database.toString()),
-                e);
-            result.setNrErrors(result.getNrErrors() + 1);
-          } finally {
-            try {
-              // This database connection belongs to this transformation.
-              database.closeConnectionOnly();
-            } catch (Exception e) {
-              log.logError(
-                  BaseMessages.getString(PKG, "Job.Exception.ErrorHandlingJobTransaction", database.toString()), e);
-              result.setNrErrors(result.getNrErrors() + 1);
-            } finally {
-              // Remove the database from the list...
-              //
-              map.removeConnection(database.getConnectionGroup(), database.getPartitionId(), database);
-
-              // Remove the listeners
-              //
-              map.removeTransactionListeners(transactionId);
-            }
-          }
-        }
-      }
-
-      // Who else needs to be informed of the rollback or commit?
-      //
-      List<DatabaseTransactionListener> transactionListeners = map.getTransactionListeners(getTransactionId());
-      if (result.getNrErrors() > 0) {
-        for (DatabaseTransactionListener listener : transactionListeners) {
-          try {
-            listener.rollback();
-          } catch (Exception e) {
-            log.logError(BaseMessages.getString(PKG, "Job.Exception.ErrorHandlingTransactionListenerRollback"), e);
-            result.setNrErrors(result.getNrErrors() + 1);
-          }
-        }
-      } else {
-        for (DatabaseTransactionListener listener : transactionListeners) {
-          try {
-            listener.commit();
-          } catch (Exception e) {
-            log.logError(BaseMessages.getString(PKG, "Job.Exception.ErrorHandlingTransactionListenerCommit"), e);
-            result.setNrErrors(result.getNrErrors() + 1);
-          }
-        }
-      }
-
-    }
-  }
-
-  /**
    * Gets the transaction id.
    * @return the transactionId
    */
@@ -2570,143 +2125,6 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    */
   public void setTransactionId(String transactionId) {
     this.transactionId = transactionId;
-  }
-
-  /**
-   * Calculates and returns the transaction id.  What is returned is:<br/>
-   * <ul>
-   *    <li>If there is a parent job using unique connections, return parent job's transaction id.  Otherwise....</li>
-   *    <li>If the parent logging object is a transformation using unique connections return the transformation's transactio id.  Otherwise...</li>
-   *    <li>The next available transaction id from the Database Connection Map.</li>
-   * </ul>
-   *   
-   * @return String transaction id
-   */
-  public String calculateTransactionId() {
-    if (getJobMeta() != null && getJobMeta().isUsingUniqueConnections()) {
-      if (parentJob != null && parentJob.getJobMeta().isUsingUniqueConnections()) {
-        return parentJob.getTransactionId();
-      } else if (parentLoggingObject != null && (parentLoggingObject instanceof Trans)
-          && ((Trans) parentLoggingObject).getTransMeta().isUsingUniqueConnections()) {
-        return ((Trans) parentLoggingObject).getTransactionId();
-      } else {
-        return DatabaseConnectionMap.getInstance().getNextTransactionId();
-      }
-    } else {
-      return null;
-    }
-  }
-
-  /**
-   * Gets the run id.
-   * @return the runId
-   */
-  public long getRunId() {
-    return runId;
-  }
-
-  /**
-   * Sets the run id.
-   * @param runId the runId to set
-   */
-  public void setRunId(long runId) {
-    this.runId = runId;
-  }
-
-  /**
-   * Gets the run attempt number.
-   * @return the runAttemptNr
-   */
-  public int getRunAttemptNr() {
-    return runAttemptNr;
-  }
-
-  /**
-   * Sets the run attemt number.
-   * @param runAttemptNr the runAttemptNr to set
-   */
-  public void setRunAttemptNr(int runAttemptNr) {
-    this.runAttemptNr = runAttemptNr;
-  }
-
-  /**
-   * Gets the run start date.
-   * @return the runStartDate
-   */
-  public Date getRunStartDate() {
-    return runStartDate;
-  }
-
-  /**
-   * Sets the run start date.
-   * @param runStartDate the runStartDate to set
-   */
-  public void setRunStartDate(Date runStartDate) {
-    this.runStartDate = runStartDate;
-  }
-
-  /**
-   * Gets the checkpoint job entry.
-   * @return the checkpointJobEntry
-   */
-  public JobEntryCopy getCheckpointJobEntry() {
-    return checkpointJobEntry;
-  }
-
-  /**
-   * Sets the checkpoint job entry.
-   * @param checkpointJobEntry the checkpointJobEntry to set
-   */
-  public void setCheckpointJobEntry(JobEntryCopy checkpointJobEntry) {
-    this.checkpointJobEntry = checkpointJobEntry;
-  }
-
-  /**
-   * Gets the checkpoint result.
-   * @return the checkpointResult
-   */
-  public Result getCheckpointResult() {
-    return checkpointResult;
-  }
-
-  /**
-   * Sets the checkpoint result
-   * @param checkpointResult the checkpointResult to set
-   */
-  public void setCheckpointResult(Result checkpointResult) {
-    this.checkpointResult = checkpointResult;
-  }
-
-  /**
-   * Gets the checkpoint parameters.
-   * @return the checkpointParameters
-   */
-  public Map<String, String> getCheckpointParameters() {
-    return checkpointParameters;
-  }
-
-  /**
-   * Sets the checkpoint parameters.
-   * @param checkpointParameters the checkpointParameters to set
-   */
-  public void setCheckpointParameters(Map<String, String> checkpointParameters) {
-    this.checkpointParameters = checkpointParameters;
-  }
-
-  /**
-   * Returns a boolean indicating whether or not the job is ignoring checkpoints.
-   * @return the ignoringCheckpoints
-   */
-  public boolean isIgnoringCheckpoints() {
-    return ignoringCheckpoints;
-  }
-
-  /**
-   * Sets whether or the not the job should be ignoring checkpoints.
-   * @param ignoringCheckpoints the ignoringCheckpoints to set
-   */
-  public void setIgnoringCheckpoints(boolean ignoringCheckpoints) {
-    this.ignoringCheckpoints = ignoringCheckpoints;
   }
 
   public List<DelegationListener> getDelegationListeners() {
@@ -2735,5 +2153,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   public void setParentTrans(Trans parentTrans) {
     this.parentTrans = parentTrans;
+  }
+
+  public Map<String, Object> getExtensionDataMap() {
+    return extensionDataMap;
   }
 }

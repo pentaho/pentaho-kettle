@@ -75,8 +75,8 @@ import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LogStatus;
+import org.pentaho.di.core.logging.LogTableCoreInterface;
 import org.pentaho.di.core.logging.LogTableField;
-import org.pentaho.di.core.logging.LogTableInterface;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.Metrics;
@@ -3076,7 +3076,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     return par;
   }
 
-  public void writeLogRecord(LogTableInterface logTable, LogStatus status, Object subject, Object parent)
+  public void writeLogRecord(LogTableCoreInterface logTable, LogStatus status, Object subject, Object parent)
       throws KettleException {
     try {
       RowMetaAndData logRecord = logTable.getLogRecord(status, subject, parent);
@@ -3126,7 +3126,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     }
   }
 
-  public void cleanupLogRecords(LogTableInterface logTable) throws KettleException {
+  public void cleanupLogRecords(LogTableCoreInterface logTable) throws KettleException {
     try {
       double timeout = Const.toDouble(Const.trim(environmentSubstitute(logTable.getTimeoutInDays())), 0.0);
       if (timeout > 0.000001) {
@@ -4026,7 +4026,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       }
       for (int i = 0; i < arg.length; i++) {
         if (argdir[i].equalsIgnoreCase("OUT") || argdir[i].equalsIgnoreCase("INOUT")) {
-          ValueMeta vMeta = new ValueMeta(arg[i], argtype[i]);
+          ValueMetaInterface vMeta = ValueMetaFactory.createValueMeta(arg[i], argtype[i]);
           Object v = null;
           switch (argtype[i]) {
           case ValueMetaInterface.TYPE_BOOLEAN:
@@ -4101,7 +4101,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       } while (moreResults || (updateCount > -1));
 
       return ret;
-    } catch (SQLException ex) {
+    } catch (Exception ex) {
       throw new KettleDatabaseException("Unable to call procedure", ex);
     }
 

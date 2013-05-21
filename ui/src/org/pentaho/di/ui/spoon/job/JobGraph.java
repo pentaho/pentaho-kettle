@@ -93,6 +93,8 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.dnd.DragAndDropContainer;
 import org.pentaho.di.core.dnd.XMLTransfer;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.extension.ExtensionPointHandler;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.gui.AreaOwner;
 import org.pentaho.di.core.gui.GCInterface;
 import org.pentaho.di.core.gui.Point;
@@ -178,9 +180,6 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
   private static final String XUL_FILE_JOB_GRAPH = "ui/job-graph.xul";
 
   public final static String START_TEXT = BaseMessages.getString(PKG, "JobLog.Button.Start"); 
-
-  // public final static String PAUSE_TEXT = BaseMessages.getString(PKG, "JobLog.Button.PauseJob");     TODO 
-  // public final static String RESUME_TEXT = BaseMessages.getString(PKG, "JobLog.Button.ResumeJob");   TODO
   public final static String STOP_TEXT = BaseMessages.getString(PKG, "JobLog.Button.Stop"); 
 
   private final static String STRING_PARALLEL_WARNING_PARAMETER = "ParallelJobEntriesWarning";
@@ -619,6 +618,10 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
           NotePadMeta ni = jobMeta.getNote(real.x, real.y);
           if (ni != null) {
             editNote(ni);
+          } else {
+            // Clicked on the background...
+            //
+            editJobProperties();
           }
         }
 
@@ -1696,20 +1699,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
     spoon.refreshGraph();
     
   }
-
-  public void editEntryCheckpoint() {
-
-    JobEntryCopy je = getJobEntry();
-    JobEntryCopy jeOld = (JobEntryCopy) je.clone_deep();
-
-    je.setCheckpoint(!je.isCheckpoint());
-    JobEntryCopy jeNew = (JobEntryCopy) je.clone_deep();
-
-    spoon.addUndoChange(jobMeta, new JobEntryCopy[] { jeOld }, new JobEntryCopy[] { jeNew }, new int[] { jobMeta.indexOfJobEntry(jeNew) });
-    jobMeta.setChanged();
-
-    spoon.refreshGraph();
-  }  
+  
   
   public void duplicateEntry() throws KettleException {
     if (!canDup(jobEntry)) {
@@ -1775,10 +1765,6 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
         XulMenuitem item = (XulMenuitem) doc.getElementById("job-graph-entry-newhop");
         item.setDisabled(sels < 2);
         
-        item = (XulMenuitem) doc.getElementById("job-graph-entry-checkpoint");
-        item.setDisabled(!jobMeta.getCheckpointLogTable().isDefined());
-        item.setSelected(jobEntry.isCheckpoint());
-        
         JfaceMenupopup launchMenu = (JfaceMenupopup) doc.getElementById("job-graph-entry-launch-popup");
         String[] referencedObjects = jobEntry.getEntry().getReferencedObjectDescriptions();
         boolean[] enabledObjects = jobEntry.getEntry().isReferencedObjectEnabled();
@@ -1831,7 +1817,14 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
         if (item != null) {
           item.setSelected(jobEntry.isLaunchingInParallel());
         }
-
+        
+        try {
+          JobGraphJobEntryMenuExtension extension = new JobGraphJobEntryMenuExtension(xulDomContainer, doc, jobMeta, jobEntry, this);
+          ExtensionPointHandler.callExtensionPoint(log, KettleExtensionPoint.JobGraphJobEntrySetMenu.id, extension);
+        } catch(Exception e) {
+          log.logError("Error handling menu right click on job entry through extension point", e);
+        }
+        
         ConstUI.displayMenu(menu, canvas);
       }
 
@@ -2141,7 +2134,8 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
 	StringBuffer tip = new StringBuffer();
 	AreaOwner areaOwner = getVisibleAreaOwner(x, y);
 	if (areaOwner!=null) {
-		switch (areaOwner.getAreaType()) {
+		JobEntryCopy jobEntryCopy;
+    switch (areaOwner.getAreaType()) {
 		case JOB_HOP_ICON:
 			hi = (JobHopMeta) areaOwner.getOwner();
 			if (hi.isUnconditional()) {
@@ -2164,10 +2158,10 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
 			tipImage = GUIResource.getInstance().getImageParallelHop();
 			break;
 
-    case JOB_ENTRY_CHECKPOINT:
-      JobEntryCopy jobEntryCopy = (JobEntryCopy) areaOwner.getOwner();
-      tip.append(BaseMessages.getString(PKG, "JobGraph.JobEntry.Tooltip.Checkpoint", hi.getFromEntry().toString(), Const.CR));
-      tipImage = GUIResource.getInstance().getImageCheckpoint();
+    case CUSTOM:
+      String message = (String) areaOwner.getOwner();
+      tip.append(message);
+      tipImage = null; GUIResource.getInstance().getImageTransGraph();
       break;
 	      
 		case JOB_ENTRY_MINI_ICON_INPUT:
@@ -3306,9 +3300,9 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
             job.setGatheringMetrics(executionConfiguration.isGatheringMetrics());
             job.setArguments(executionConfiguration.getArgumentStrings());
 
-            // Ignore checkpoints if this is asked...
+            // Pass specific extension points...
             //
-            job.setIgnoringCheckpoints(executionConfiguration.isIgnoringCheckpoint());
+            job.getExtensionDataMap().putAll(executionConfiguration.getExtensionOptions());
             
             // Add job entry listeners
             //

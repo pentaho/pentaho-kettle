@@ -54,6 +54,7 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.steps.ldapinput.store.CustomSocketFactory;
 
@@ -860,7 +861,7 @@ public class LDAPConnection {
               valueType=ValueMeta.TYPE_STRING;
             }
             
-            ValueMetaInterface value = new ValueMeta(fieldName, valueType);
+            ValueMetaInterface value = ValueMetaFactory.createValueMeta(fieldName, valueType);
             fields.addValueMeta(value);
           }
         }

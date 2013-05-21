@@ -384,16 +384,9 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 
     // must use java-based sort to ensure compatibility with binary search
     // database ordering may or may not be case-insensitive
+    // in case db sort does not match our sort
     //
-    Collections.sort(stepAttributesBuffer, new StepAttributeComparator()); // in
-                                                                           // case
-                                                                           // db
-                                                                           // sort
-                                                                           // does
-                                                                           // not
-                                                                           // match
-                                                                           // our
-                                                                           // sort
+    Collections.sort(stepAttributesBuffer, new StepAttributeComparator()); // 
   }
 
   /**
@@ -746,6 +739,17 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 
     return database.getRows(sql, 0);
   }
+  
+  public synchronized List<Object[]> getTransAttributesWithPrefix(ObjectId id_transformation, String codePrefix) throws KettleException {
+    String sql = "SELECT *" + " FROM " + databaseMeta.getQuotedSchemaTableCombination(null, KettleDatabaseRepository.TABLE_R_TRANS_ATTRIBUTE) 
+        + " WHERE " + quote(KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION) + " = ?"
+        + " AND " + quote(KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_CODE) + " LIKE '"+codePrefix+"%'";
+
+    RowMetaAndData table = new RowMetaAndData();
+    table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER), new LongObjectId(id_transformation));
+
+    return database.getRows(sql, 0);
+  }
 
   // JOB ATTRIBUTES: get
 
@@ -802,6 +806,17 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
     table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_ID_JOB, ValueMetaInterface.TYPE_INTEGER), id_job);
     table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING), code);
     table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER), new Long(nr));
+
+    return database.getRows(sql, 0);
+  }
+  
+  public synchronized List<Object[]> getJobAttributesWithPrefix(ObjectId jobId, String codePrefix) throws KettleException {
+    String sql = "SELECT *" + " FROM " + databaseMeta.getQuotedSchemaTableCombination(null, KettleDatabaseRepository.TABLE_R_JOB_ATTRIBUTE) 
+        + " WHERE " + quote(KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_ID_JOB) + " = ?"
+        + " AND " + quote(KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_CODE) + " LIKE '"+codePrefix+"%'";
+
+    RowMetaAndData table = new RowMetaAndData();
+    table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_ID_JOB, ValueMetaInterface.TYPE_INTEGER), new LongObjectId(jobId));
 
     return database.getRows(sql, 0);
   }
@@ -956,6 +971,19 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
     if (r == null || r.getData() == null)
       return 0;
     return (int) r.getInteger(0, 0L);
+  }
+  
+  public synchronized List<Object[]> getJobEntryAttributesWithPrefix(ObjectId jobId, ObjectId jobEntryId, String codePrefix) throws KettleException {
+    String sql = "SELECT *" + " FROM " + databaseMeta.getQuotedSchemaTableCombination(null, KettleDatabaseRepository.TABLE_R_JOBENTRY_ATTRIBUTE) 
+        + " WHERE " + quote(KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOB) + " = ?"
+        + " AND " + quote(KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY) + " = ?"
+        + " AND " + quote(KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_CODE) + " LIKE '"+codePrefix+"%'";
+
+    RowMetaAndData table = new RowMetaAndData();
+    table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOB, ValueMetaInterface.TYPE_INTEGER), new LongObjectId(jobId));
+    table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER), new LongObjectId(jobEntryId));
+
+    return database.getRows(sql, 0);
   }
 
   // ///////////////////////////////////////////////////////////////////////////////////
