@@ -42,6 +42,7 @@ import org.pentaho.di.job.JobAdapter;
 import org.pentaho.di.job.JobConfiguration;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.repository.Repository;
 
 public class AddJobServlet extends BaseHttpServlet implements CartePluginInterface {
@@ -137,7 +138,14 @@ public class AddJobServlet extends BaseHttpServlet implements CartePluginInterfa
         }      
       }
       jobMeta.activateParameters();
-
+      // Check if there is a starting point specified.
+      String startCopyName = jobExecutionConfiguration.getStartCopyName();
+      if (startCopyName != null && !startCopyName.isEmpty()) {
+    	int startCopyNr = jobExecutionConfiguration.getStartCopyNr();
+        JobEntryCopy startJobEntryCopy = jobMeta.findJobEntry(startCopyName, startCopyNr, false);
+        job.setStartJobEntryCopy(startJobEntryCopy);
+      }
+      
       job.setSocketRepository(getSocketRepository());
       
       // Do we need to expand the job when it's running?
