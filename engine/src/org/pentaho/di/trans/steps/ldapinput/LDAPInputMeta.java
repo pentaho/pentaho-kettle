@@ -47,12 +47,11 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 
-public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
+public class LDAPInputMeta extends BaseStepMeta implements LdapMeta
 {	
 	private static Class<?> PKG = LDAPInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -757,7 +756,7 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 		this.trustStorePath=null;
 		this.trustStorePassword=null;
 		this.trustAllCertificates=false;
-		this.protocol= LDAPConnection.PROTOCOLS[0];
+		this.protocol= LdapProtocolFactory.getConnectionTypes(log).get(0);
 		this.useCertificate=false;
 	}
 	public void getFields(RowMetaInterface r, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
@@ -1007,13 +1006,22 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		return new LDAPInputData();
 	}
-    public boolean supportsErrorHandling()
-    {
-        return true;
-    } 
 
-    public String toString()
-    {
-    	return "LDAPConnection " + getName();
-    }
+  public boolean supportsErrorHandling() {
+    return true;
+  }
+
+  public String toString() {
+    return "LDAPConnection " + getName();
+  }
+
+  @Override
+  public String getDerefAliases() {
+    return "always";
+  }
+
+  @Override
+  public String getReferrals() {
+    return "follow";
+  }
 }

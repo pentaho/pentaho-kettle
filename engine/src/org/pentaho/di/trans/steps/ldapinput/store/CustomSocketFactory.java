@@ -30,7 +30,6 @@ import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 
-import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
@@ -66,7 +65,7 @@ public class CustomSocketFactory extends SSLSocketFactory {
     this.factory = factory;
   }
   
-  public static synchronized SocketFactory getDefault() {
+  public static synchronized CustomSocketFactory getDefault() {
     if (!configured) {
       throw new IllegalStateException();
     }

@@ -24,11 +24,10 @@ package org.pentaho.di.trans.steps.ldapinput;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import javax.naming.Context;
 import javax.naming.NameClassPair;
 import javax.naming.NameNotFoundException;
 import javax.naming.NamingEnumeration;
@@ -44,9 +43,6 @@ import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.PagedResultsControl;
 import javax.naming.ldap.PagedResultsResponseControl;
 import javax.naming.ldap.SortControl;
-import javax.naming.ldap.StartTlsRequest;
-import javax.naming.ldap.StartTlsResponse;
-import javax.net.ssl.SSLSocketFactory;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -55,19 +51,11 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.trans.steps.ldapinput.store.CustomSocketFactory;
 
 public class LDAPConnection {
   private static Class<?> PKG = LDAPInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
-
-  public final static String[] PROTOCOLS = new String[] { "LDAP", "LDAP SSL", "LDAP TLS" };
-
-  public final static int PROTOCOL_LDAP = 0;
-
-  public final static int PROTOCOL_LDAP_SSL = 1;
-
-  public final static int PROTOCOL_LDAP_TLS = 2;
 
   public final static int SEARCH_SCOPE_OBJECT_SCOPE = 0;
 
@@ -89,23 +77,11 @@ public class LDAPConnection {
 
   public static final int STATUS_ADDED = 4;
 
-  private LogChannelInterface log;
-
-  private int protocol;
-
-  private String hostName;
-
-  private int port;
-
-  private String username;
+  private final LogChannelInterface log;
 
   private String searchBase;
 
   private String filter;
-
-  private Hashtable<String, String> env;
-
-  private InitialLdapContext ctx;
 
   private SearchControls controls;
 
@@ -115,70 +91,19 @@ public class LDAPConnection {
 
   private NamingEnumeration<SearchResult> results;
 
-  private String referral;
-
-  private String derefAliases;
-
   private List<String> sortingAttributes;
 
   private String[] sortingAttributesKeys;
-
-  private StartTlsResponse tls;
-
-  private String trustStorePath;
-
-  private String trustStorePassword;
-
-  private boolean trustAllCertificates;
+  
+  private LdapProtocol protocol;
 
   /**
    * Construct a new LDAP Connection
    */
-  public LDAPConnection(LogChannelInterface logInterface, String hostName, int port) throws KettleException {
+  public LDAPConnection(LogChannelInterface logInterface, VariableSpace variableSpace, LdapMeta meta, Collection<String> binaryAttributes) throws KettleException {
     this.log = logInterface;
-    this.port = port;
-    this.hostName = hostName;
-    this.env = new Hashtable<String, String>();
-    this.referral = "follow";
-    this.derefAliases = "always";
+    protocol = new LdapProtocolFactory(logInterface).createLdapProtocol(variableSpace, meta, binaryAttributes);
     this.sortingAttributes = new ArrayList<String>();
-    this.protocol = PROTOCOL_LDAP;
-  }
-
-  public void setTrustStorePath(String trustStorePath) {
-    this.trustStorePath = trustStorePath;
-  }
-
-  public String getTrustStorePath() {
-    return this.trustStorePath;
-  }
-
-  public void setTrustStorePassword(String password) {
-    this.trustStorePassword = password;
-  }
-
-  public String getTrustStorePassword() {
-    return this.trustStorePassword;
-  }
-
-  public void trustAllCertificates(boolean value) {
-    this.trustAllCertificates = value;
-  }
-
-  public boolean isTrustAllCertificates() {
-    return this.trustAllCertificates;
-  }
-
-  public int getProtocol() {
-    return this.protocol;
-  }
-
-  public void setProtocol(int protocol) {
-    this.protocol = protocol;
-  }
-
-  public void useTLS() {
-    this.protocol = PROTOCOL_LDAP_TLS;
   }
 
   /**
@@ -189,10 +114,6 @@ public class LDAPConnection {
     connect(null, null);
   }
 
-  private Hashtable<String, String> getEnv() {
-    return this.env;
-  }
-
   /**
    *  Connect to LDAP server
    *  @param username : username
@@ -200,66 +121,7 @@ public class LDAPConnection {
    *  @throws KettleException
    */
   public void connect(String username, String password) throws KettleException {
-
-    getEnv().put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-    getEnv().put("java.naming.ldap.derefAliases", getDerefAliases());
-    getEnv().put(Context.REFERRAL, getReferral());
-
-    if (getHostName().indexOf("ldap://") >= 0)
-      getEnv().put(Context.PROVIDER_URL, getHostName() + ":" + getPort());
-    else
-      getEnv().put(Context.PROVIDER_URL, "ldap://" + getHostName() + ":" + getPort());
-
-    if (getProtocol() == PROTOCOL_LDAP_SSL) {
-      getEnv().put(javax.naming.Context.SECURITY_PROTOCOL, "ssl");
-      
-      // setup factory for SSL; for TLS, we specify this factory in the StartTlsResponse.negotiate(factory) call
-      getEnv().put("java.naming.ldap.factory.socket",
-          "org.pentaho.di.trans.steps.ldapinput.store.CustomdSocketFactory");
-    }
-
-    if (getProtocol() != PROTOCOL_LDAP) { // if SSL or TLS
-        if (isTrustAllCertificates()) {
-          CustomSocketFactory.configure();
-        } else {
-          CustomSocketFactory.configure(getTrustStorePath(), getTrustStorePassword());
-        }
-    }
-
-    if (!Const.isEmpty(username)) {
-      this.username = username;
-      getEnv().put(Context.SECURITY_PRINCIPAL, username);
-      getEnv().put(Context.SECURITY_CREDENTIALS, password);
-      getEnv().put(Context.SECURITY_AUTHENTICATION, "simple");
-    } else {
-      getEnv().put(Context.SECURITY_AUTHENTICATION, "none");
-    }
-
-    try {
-      /* Establish LDAP association */
-      this.ctx = new InitialLdapContext(getEnv(), null);
-      if (getInitialContext() == null) {
-        throw new KettleException(BaseMessages.getString(PKG, "LDAPInput.Error.UnableToConnectToServer"));
-      }
-
-      if (getProtocol() == PROTOCOL_LDAP_TLS) {
-        /* Requesting to start TLS on an LDAP association */
-        StartTlsRequest tlsRequest = new StartTlsRequest();
-        this.tls = (StartTlsResponse) getInitialContext().extendedOperation(tlsRequest);
-        /* Starting TLS */
-        this.tls.negotiate((SSLSocketFactory) CustomSocketFactory.getDefault());
-      }
-
-      if (log.isBasic())
-        log.logBasic(BaseMessages.getString(PKG, "LDAPInput.Log.ConnectedToServer", getHostName(),
-            Const.NVL(getUserName(), "")));
-      if (log.isDetailed())
-        log.logDetailed(BaseMessages.getString(PKG, "LDAPInput.ClassUsed.Message", getInitialContext().getClass()
-            .getName()));
-
-    } catch (Exception e) {
-      throw new KettleException(BaseMessages.getString(PKG, "LDAPinput.Exception.ErrorConnecting", e.getMessage()), e);
-    }
+    protocol.connect(username, password);
   }
 
   public void setSortingAttributesKeys(String[] value) {
@@ -316,22 +178,6 @@ public class LDAPConnection {
 
   private boolean isPagingUsed() {
     return (GetPagingSize() > 0);
-  }
-
-  public void setReferral(String value) {
-    this.referral = value;
-  }
-
-  public String getReferral() {
-    return this.referral;
-  }
-
-  public void setDerefAliases(String value) {
-    this.derefAliases = value;
-  }
-
-  public String getDerefAliases() {
-    return this.derefAliases;
   }
 
   public void search(String searchBase, String filter, int limitRows, String[] attributeReturned, int searchScope)
@@ -417,10 +263,6 @@ public class LDAPConnection {
     } catch (Exception e) {
       throw new KettleException(BaseMessages.getString("LDAPConnection.Error.Search"), e);
     }
-  }
-
-  public void addBinaryAttribute(String name) {
-    this.env.put("java.naming.ldap.attributes.binary", name);
   }
 
   public int delete(String dn, boolean checkEntry) throws KettleException {
@@ -657,19 +499,16 @@ public class LDAPConnection {
    * @throws KettleException
    */
   public void close() throws KettleException {
-    if (getInitialContext() != null) {
+    if (protocol != null) {
       try {
-        if (this.tls != null) {
-          tls.close();
+        protocol.close();
+      } catch (KettleException e) {
+        throw e;
+      } finally {
+        protocol = null;
+        if (results != null) {
+          results = null;
         }
-        this.ctx.close();
-        if (getSearchResult() != null)
-          this.results = null;
-        if (log.isBasic())
-          log.logBasic(BaseMessages.getString(PKG, "LDAPInput.log.Disconnection.Done"));
-      } catch (Exception e) {
-        log.logError(BaseMessages.getString(PKG, "LDAPInput.Exception.ErrorDisconecting", e.toString()));
-        log.logError(Const.getStackTracker(e));
       }
     }
   }
@@ -725,26 +564,16 @@ public class LDAPConnection {
 
     try {
       SearchResult searchResult = (SearchResult) getSearchResult().next();
-      return searchResult.getAttributes();
+      Attributes results = searchResult.getAttributes();
+      results.put("dn", searchResult.getNameInNamespace());
+      return results;
     } catch (Exception e) {
       throw new KettleException(BaseMessages.getString(PKG, "LDAPConnection.Exception.GettingAttributes"), e);
     }
   }
 
-  private String getHostName() {
-    return this.hostName;
-  }
-
-  private int getPort() {
-    return this.port;
-  }
-
-  private String getUserName() {
-    return this.username;
-  }
-
   private InitialLdapContext getInitialContext() {
-    return this.ctx;
+    return protocol.getCtx();
   }
 
   private SearchControls getSearchControls() {
@@ -901,31 +730,5 @@ public class LDAPConnection {
       return false;
     }
     return true;
-  }
-
-  public static int getProtocolFromCode(String protocol) {
-    if (Const.isEmpty(protocol))
-      return PROTOCOL_LDAP;
-    if (protocol.equals("LDAP SSL"))
-      return PROTOCOL_LDAP_SSL;
-    if (protocol.equals("LDAP TLS"))
-      return PROTOCOL_LDAP_TLS;
-    return PROTOCOL_LDAP;
-  }
-
-  public static String getProtocolCode(int protocol) {
-    String retval = PROTOCOLS[0];
-    switch (protocol) {
-      case PROTOCOL_LDAP_SSL:
-        retval = PROTOCOLS[1];
-        break;
-      case PROTOCOL_LDAP_TLS:
-        retval = PROTOCOLS[2];
-        break;
-      default:
-        retval = PROTOCOLS[0];
-        break;
-    }
-    return retval;
   }
 }

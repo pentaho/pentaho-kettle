@@ -288,46 +288,34 @@ public class LDAPOutput extends BaseStep implements StepInterface
 	}		
 	
 
-	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
-	{
-		meta=(LDAPOutputMeta)smi;
-		data=(LDAPOutputData)sdi;
-		
-		if (super.init(smi, sdi)) {
-			try {
-					// Define new LDAP connection
-					data.connection = new LDAPConnection(log, environmentSubstitute(meta.getHost()), 
-							Const.toInt(environmentSubstitute(meta.getPort()), LDAPConnection.DEFAULT_PORT));
-					 
-					data.connection.setReferral(LDAPOutputMeta.getReferralTypeCode(meta.getReferralType()));
-					data.connection.setDerefAliases(LDAPOutputMeta.getDerefAliasesCode(meta.getDerefAliasesType()));
-					
-					data.connection.setProtocol(LDAPConnection.getProtocolFromCode(meta.getProtocol()));
-				    if(meta.isUseCertificate()) {
-				    	data.connection.setTrustStorePath(meta.getTrustStorePath());
-				    	data.connection.setTrustStorePassword(meta.getTrustStorePassword());
-				    	data.connection.trustAllCertificates(meta.isTrustAllCertificates());
-				    }
-					
-					// connect
-			       if (meta.UseAuthentication()) {
-			   			String username=environmentSubstitute(meta.getUserName());
-			   			String password=Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute(meta.getPassword()));
-						data.connection.connect(username, password);
-			       }else {
-						data.connection.connect();
-			       }
-			       data.separator= environmentSubstitute(meta.getMultiValuedSeparator());
-			}catch(Exception e) {
-    			logError(BaseMessages.getString(PKG, "LDAPOutput.Error.Init", e));
-				stopAll();
-				setErrors(1);
-    			return false;
-			}
-			return true;
-		}
-		return false;
-	}
+  public boolean init(StepMetaInterface smi, StepDataInterface sdi) {
+    meta = (LDAPOutputMeta) smi;
+    data = (LDAPOutputData) sdi;
+
+    if (super.init(smi, sdi)) {
+      try {
+        // Define new LDAP connection
+        data.connection = new LDAPConnection(log, this, meta, null);
+
+        // connect
+        if (meta.UseAuthentication()) {
+          String username = environmentSubstitute(meta.getUserName());
+          String password = Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute(meta.getPassword()));
+          data.connection.connect(username, password);
+        } else {
+          data.connection.connect();
+        }
+        data.separator = environmentSubstitute(meta.getMultiValuedSeparator());
+      } catch (Exception e) {
+        logError(BaseMessages.getString(PKG, "LDAPOutput.Error.Init", e));
+        stopAll();
+        setErrors(1);
+        return false;
+      }
+      return true;
+    }
+    return false;
+  }
 	
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
 	{

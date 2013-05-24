@@ -69,6 +69,8 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.ldapinput.LDAPConnection;
+import org.pentaho.di.trans.steps.ldapinput.LdapProtocol;
+import org.pentaho.di.trans.steps.ldapinput.LdapProtocolFactory;
 import org.pentaho.di.trans.steps.ldapoutput.LDAPOutputMeta;
 import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -438,7 +440,7 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
         fdProtocol.top  = new FormAttachment(wDerefAliases, margin);
         fdProtocol.right= new FormAttachment(100, -margin);
         wProtocol.setLayoutData(fdProtocol);
-        wProtocol.setItems(LDAPConnection.PROTOCOLS);
+        wProtocol.setItems(LdapProtocolFactory.getConnectionTypes(log).toArray(new String[]{}));
         wProtocol.addSelectionListener(new SelectionAdapter()
         {
         
@@ -1257,10 +1259,7 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 			getInfo(meta);
 			
 			// Defined a LDAP connection
-			connection= new LDAPConnection(log, transMeta.environmentSubstitute(meta.getHost()), 
-					Const.toInt(transMeta.environmentSubstitute(meta.getPort()), LDAPConnection.DEFAULT_PORT));
-			connection.setReferral(LDAPOutputMeta.getReferralTypeCode(meta.getReferralType()));
-			connection.setDerefAliases(LDAPOutputMeta.getDerefAliasesCode(meta.getDerefAliasesType()));
+			connection= new LDAPConnection(log, transMeta, meta, null);
 			// connect...
 			if(wusingAuthentication.getSelection()) {
 				connection.connect(transMeta.environmentSubstitute(meta.getUserName()), 
@@ -1295,7 +1294,7 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
    * @param in The LDAPOutputMeta object to obtain the data from.
    */
   public void getData(LDAPOutputMeta in) {
-    wProtocol.setText(Const.NVL(in.getProtocol(), LDAPConnection.getProtocolCode(LDAPConnection.PROTOCOL_LDAP)));
+    wProtocol.setText(Const.NVL(in.getProtocol(), LdapProtocolFactory.getConnectionTypes(log).get(0)));
     wsetTrustStore.setSelection(in.isUseCertificate());
     if (in.getTrustStorePath() != null)
       wTrustStorePath.setText(in.getTrustStorePath());
@@ -1536,11 +1535,10 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 	public RowMetaInterface getLDAPFields() throws KettleException {
 		LDAPConnection connection=null;
 		try {
+		  LDAPOutputMeta meta = new LDAPOutputMeta();
+      getInfo(meta);
 			 // Defined a LDAP connection
-			connection = new LDAPConnection(log, transMeta.environmentSubstitute(wHost.getText()), 
-					Const.toInt(transMeta.environmentSubstitute(wPort.getText()), LDAPConnection.DEFAULT_PORT));
-			connection.setReferral(LDAPOutputMeta.getReferralTypeCode(LDAPOutputMeta.getReferralTypeByDesc(wReferral.getText())));
-			connection.setDerefAliases(LDAPOutputMeta.getDerefAliasesCode(LDAPOutputMeta.getDerefAliasesTypeByDesc(wDerefAliases.getText())));
+			connection = new LDAPConnection(log, transMeta, meta, null); 
 			// connect ...
 			if(wusingAuthentication.getSelection()) {
 	    		String username=transMeta.environmentSubstitute(wUserName.getText());
@@ -1713,7 +1711,7 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 	}
 	 private void setProtocol()
 	 {
-		 boolean enable = LDAPConnection.getProtocolFromCode(wProtocol.getText())!=LDAPConnection.PROTOCOL_LDAP;
+		 boolean enable = !LdapProtocol.getName().equals(wProtocol.getText());
 		 wlsetTrustStore.setEnabled(enable);
 		 wsetTrustStore.setEnabled(enable);
 		 setTrustStore();
@@ -1721,14 +1719,14 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 	 
 	 private void setTrustStore() {
 		 boolean enable = wsetTrustStore.getSelection() 
-		 && LDAPConnection.getProtocolFromCode(wProtocol.getText())!=LDAPConnection.PROTOCOL_LDAP;
+		 && !LdapProtocol.getName().equals(wProtocol.getText());
 		 wlTrustAll.setEnabled(enable);
 		 wTrustAll.setEnabled(enable);
 		 trustAll();
 	 }
 	 private void trustAll() {
 		 boolean enable = wsetTrustStore.getSelection() 
-		 && LDAPConnection.getProtocolFromCode(wProtocol.getText())!=LDAPConnection.PROTOCOL_LDAP
+		 && !LdapProtocol.getName().equals(wProtocol.getText())
 		 && !wTrustAll.getSelection();
 		 wlTrustStorePath.setEnabled(enable);
 		 wTrustStorePath.setEnabled(enable);

@@ -65,6 +65,8 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.ldapinput.LDAPConnection;
 import org.pentaho.di.trans.steps.ldapinput.LDAPInputField;
 import org.pentaho.di.trans.steps.ldapinput.LDAPInputMeta;
+import org.pentaho.di.trans.steps.ldapinput.LdapProtocol;
+import org.pentaho.di.trans.steps.ldapinput.LdapProtocolFactory;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -369,7 +371,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
         fdProtocol.top  = new FormAttachment(wPort, margin);
         fdProtocol.right= new FormAttachment(100, -margin);
         wProtocol.setLayoutData(fdProtocol);
-        wProtocol.setItems(LDAPConnection.PROTOCOLS);
+        wProtocol.setItems(LdapProtocolFactory.getConnectionTypes(log).toArray(new String[]{}));
         wProtocol.addSelectionListener(new SelectionAdapter()
         {
         
@@ -1290,16 +1292,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 			getInfo(meta);
 			
 			// Defined a LDAP connection
-			connection= new LDAPConnection(log, transMeta.environmentSubstitute(meta.getHost()), 
-					Const.toInt(transMeta.environmentSubstitute(meta.getPort()), LDAPConnection.DEFAULT_PORT));
-			
-			
-	    connection.setProtocol(LDAPConnection.getProtocolFromCode(meta.getProtocol()));
-	    if(meta.isUseCertificate()) {
-	      connection.setTrustStorePath(meta.getTrustStorePath());
-	      connection.setTrustStorePassword(meta.getTrustStorePassword());
-	      connection.trustAllCertificates(meta.isTrustAllCertificates());
-	    }
+			connection= new LDAPConnection(log, transMeta, meta, null);
 			
 			// connect...
 			if(wusingAuthentication.getSelection()) {
@@ -1338,8 +1331,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
             wFields.removeAll();
 
             // Defined a LDAP connection
-    		connection = new LDAPConnection(log, transMeta.environmentSubstitute(meta.getHost()), 
-    				Const.toInt(transMeta.environmentSubstitute(meta.getPort()), LDAPConnection.DEFAULT_PORT));
+    		connection = new LDAPConnection(log, transMeta, meta, null);
     		
     		// connect ...
     		if(meta.UseAuthentication()) {
@@ -1411,7 +1403,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
    * @param in The LDAPInputMeta object to obtain the data from.
    */
   public void getData(LDAPInputMeta in) {
-    wProtocol.setText(Const.NVL(in.getProtocol(), LDAPConnection.getProtocolCode(LDAPConnection.PROTOCOL_LDAP)));
+    wProtocol.setText(Const.NVL(in.getProtocol(), LdapProtocolFactory.getConnectionTypes(log).get(0)));
     wsetTrustStore.setSelection(in.isUseCertificate());
     if (in.getTrustStorePath() != null)
       wTrustStorePath.setText(in.getTrustStorePath());
@@ -1705,7 +1697,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 	 
 	 private void setProtocol()
 	 {
-		 boolean enable = LDAPConnection.getProtocolFromCode(wProtocol.getText())!=LDAPConnection.PROTOCOL_LDAP;
+		 boolean enable = !LdapProtocol.getName().equals(wProtocol.getText());
 		 wlsetTrustStore.setEnabled(enable);
 		 wsetTrustStore.setEnabled(enable);
 		 setTrustStore();
@@ -1713,14 +1705,14 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 	 
 	 private void setTrustStore() {
 		 boolean enable = wsetTrustStore.getSelection() 
-		 && LDAPConnection.getProtocolFromCode(wProtocol.getText())!=LDAPConnection.PROTOCOL_LDAP;
+		 && !LdapProtocol.getName().equals(wProtocol.getText());
 		 wlTrustAll.setEnabled(enable);
 		 wTrustAll.setEnabled(enable);
 		 trustAll();
 	 }
 	 private void trustAll() {
 		 boolean enable = wsetTrustStore.getSelection() 
-		 && LDAPConnection.getProtocolFromCode(wProtocol.getText())!=LDAPConnection.PROTOCOL_LDAP
+		 && !LdapProtocol.getName().equals(wProtocol.getText())
 		 && !wTrustAll.getSelection();
 		 wlTrustStorePath.setEnabled(enable);
 		 wTrustStorePath.setEnabled(enable);

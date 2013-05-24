@@ -324,62 +324,50 @@ public class LDAPInput extends BaseStep implements StepInterface
 	}
 
 	
-	 private void connectServerLdap() throws KettleException {
-		
-		// Define new LDAP connection
-		data.connection = new LDAPConnection(log, environmentSubstitute(meta.getHost()), 
-				Const.toInt(environmentSubstitute(meta.getPort()), LDAPConnection.DEFAULT_PORT));
-		 
-		// Limit returned attributes to user selection
-		data.attrReturned = new String [meta.getInputFields().length];
-		
-		data.attributesBinary= new HashSet<String>();
-		// Get user selection attributes
-		for (int i=0;i<meta.getInputFields().length;i++) {
-			LDAPInputField field = meta.getInputFields()[i];
-			// get real attribute name
-			String name =environmentSubstitute(field.getAttribute());
-			field.setRealAttribute(name);
-			
-			//specify attributes to be returned in binary format
-        	if(field.getReturnType() == LDAPInputField.FETCH_ATTRIBUTE_AS_BINARY) {
-    	        if(!data.attributesBinary.contains(name)) {
-    	        	data.connection.addBinaryAttribute(name);
-    	        	data.attributesBinary.add(name);
-    	        }
-        	}
-        	
-        	data.attrReturned[i]=name;
-            // Do we need to sort based on some attributes?
-        	if(field.isSortedKey()) {
-        		data.connection.addSortingAttributes(name);
-        	}
-		}
-	    data.connection.setProtocol(LDAPConnection.getProtocolFromCode(meta.getProtocol()));
-	    if(meta.isUseCertificate()) {
-	    	data.connection.setTrustStorePath(meta.getTrustStorePath());
-	    	data.connection.setTrustStorePassword(meta.getTrustStorePassword());
-	    	data.connection.trustAllCertificates(meta.isTrustAllCertificates());
-	    }
-		
-       if (meta.UseAuthentication()) {
-   			String username=environmentSubstitute(meta.getUserName());
-   			String password=Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute(meta.getPassword()));
-			data.connection.connect(username, password);
-       }else {
-			data.connection.connect();
-       }
+  private void connectServerLdap() throws KettleException {
+ // Limit returned attributes to user selection
+    data.attrReturned = new String[meta.getInputFields().length];
 
-	   // Time Limit
-	   if(meta.getTimeLimit()>0)  {
-		   data.connection.setTimeLimit(meta.getTimeLimit() * 1000);
-	   }
-	   //Set the page size?
-       if(meta.isPaging()) {
-        	data.connection.SetPagingSize(Const.toInt(environmentSubstitute(meta.getPageSize()),-1));
-       }
-       
-	 }
+    data.attributesBinary = new HashSet<String>();
+    // Get user selection attributes
+    for (int i = 0; i < meta.getInputFields().length; i++) {
+      LDAPInputField field = meta.getInputFields()[i];
+      // get real attribute name
+      String name = environmentSubstitute(field.getAttribute());
+      field.setRealAttribute(name);
+
+      //specify attributes to be returned in binary format
+      if (field.getReturnType() == LDAPInputField.FETCH_ATTRIBUTE_AS_BINARY) {
+        data.attributesBinary.add(name);
+      }
+
+      data.attrReturned[i] = name;
+      // Do we need to sort based on some attributes?
+      if (field.isSortedKey()) {
+        data.connection.addSortingAttributes(name);
+      }
+    }
+
+    // Define new LDAP connection
+    data.connection = new LDAPConnection(log, this, meta, data.attributesBinary);
+
+    if (meta.UseAuthentication()) {
+      String username = environmentSubstitute(meta.getUserName());
+      String password = Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute(meta.getPassword()));
+      data.connection.connect(username, password);
+    } else {
+      data.connection.connect();
+    }
+
+    // Time Limit
+    if (meta.getTimeLimit() > 0) {
+      data.connection.setTimeLimit(meta.getTimeLimit() * 1000);
+    }
+    //Set the page size?
+    if (meta.isPaging()) {
+      data.connection.SetPagingSize(Const.toInt(environmentSubstitute(meta.getPageSize()), -1));
+    }
+  }
 	 
 	 private void search(String searchBase, String filter) throws KettleException {
 

@@ -43,12 +43,12 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.ldapinput.LDAPConnection;
+import org.pentaho.di.trans.steps.ldapinput.LdapMeta;
+import org.pentaho.di.trans.steps.ldapinput.LdapProtocolFactory;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-public class LDAPOutputMeta extends BaseStepMeta implements StepMetaInterface
+public class LDAPOutputMeta extends BaseStepMeta implements LdapMeta
 {	
 	private static Class<?> PKG = LDAPOutputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -776,7 +776,7 @@ public class LDAPOutputMeta extends BaseStepMeta implements StepMetaInterface
 		this.trustStorePath=null;
 		this.trustStorePassword=null;
 		this.trustAllCertificates=false;
-		this.protocol= LDAPConnection.PROTOCOLS[0];
+		this.protocol= LdapProtocolFactory.getConnectionTypes(log).get(0);
 		this.useCertificate=false;
 	}
 
@@ -910,13 +910,22 @@ public class LDAPOutputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		return new LDAPOutputData();
 	}
-    public boolean supportsErrorHandling()
-    {
-        return true;
-    } 
 
-    public String toString()
-    {
-    	return "LDAPConnection " + getName();
-    }
+  public boolean supportsErrorHandling() {
+    return true;
+  }
+
+  public String toString() {
+    return "LDAPConnection " + getName();
+  }
+
+  @Override
+  public String getDerefAliases() {
+    return LDAPOutputMeta.getDerefAliasesCode(getDerefAliasesType());
+  }
+
+  @Override
+  public String getReferrals() {
+    return getReferralTypeCode(getReferralType());
+  }
 }
