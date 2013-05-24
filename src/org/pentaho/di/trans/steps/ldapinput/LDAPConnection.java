@@ -204,17 +204,19 @@ public class LDAPConnection {
     getEnv().put("java.naming.ldap.derefAliases", getDerefAliases());
     getEnv().put(Context.REFERRAL, getReferral());
 
-    if (getHostName().indexOf("ldap://") >= 0)
+    if (getHostName().matches("^ldaps?://.+")) {
       getEnv().put(Context.PROVIDER_URL, getHostName() + ":" + getPort());
-    else
-      getEnv().put(Context.PROVIDER_URL, "ldap://" + getHostName() + ":" + getPort());
+    } else {
+      String prefix = getProtocol() == PROTOCOL_LDAP_SSL ? "ldaps://" : "ldap://";
+      getEnv().put(Context.PROVIDER_URL, prefix + getHostName() + ":" + getPort());
+    }
 
     if (getProtocol() == PROTOCOL_LDAP_SSL) {
       getEnv().put(javax.naming.Context.SECURITY_PROTOCOL, "ssl");
       
       // setup factory for SSL; for TLS, we specify this factory in the StartTlsResponse.negotiate(factory) call
       getEnv().put("java.naming.ldap.factory.socket",
-          "org.pentaho.di.trans.steps.ldapinput.store.CustomdSocketFactory");
+          CustomSocketFactory.class.getCanonicalName());
     }
 
     if (getProtocol() != PROTOCOL_LDAP) { // if SSL or TLS
