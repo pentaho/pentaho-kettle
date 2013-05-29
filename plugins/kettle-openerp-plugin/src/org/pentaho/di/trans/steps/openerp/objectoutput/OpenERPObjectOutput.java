@@ -228,10 +228,12 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
 
 		// If the ID field is the only filter, include it in the field
 		if (meta.getKeyLookups().size() == 1
+		    && meta.getKeyLookups().get(0)[0] != null
+		    && meta.getKeyLookups().get(0)[1] != null
+		    && meta.getKeyLookups().get(0)[2] != null
 				&& meta.getKeyLookups().get(0)[0].equals("id")
 				&& meta.getKeyLookups().get(0)[1].equals("="))
 			idIndex = getInputRowMeta().indexOfValue(meta.getKeyLookups().get(0)[2]);
-		
 		
 		index = new int[meta.getModelFields().length];
 		for (int i = 0; i < meta.getModelFields().length; i++){

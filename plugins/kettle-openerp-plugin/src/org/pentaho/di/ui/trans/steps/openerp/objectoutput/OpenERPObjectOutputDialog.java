@@ -759,11 +759,17 @@ public class OpenERPObjectOutputDialog extends BaseStepDialog implements StepDia
 		}
 		
 		ArrayList<String[]> keyFields = new ArrayList<String[]>();
+		tableViewKeyFields.removeEmptyRows();
 		for (int i = 0; i < tableViewKeyFields.table.getItemCount(); i++) {
 			String [] keyMap = new String[3]; 
 			keyMap[0] = tableViewKeyFields.table.getItem(i).getText(1);
 			keyMap[1] = tableViewKeyFields.table.getItem(i).getText(2);
 			keyMap[2] = tableViewKeyFields.table.getItem(i).getText(3);
+			
+			// Skip blank line returned by the table.  If the first line is blank it is still returned.
+			if (keyMap[0] == "" && keyMap[1] == "" && keyMap[2] == "")
+			  continue;
+			
 			keyFields.add(keyMap);
 		}
 
