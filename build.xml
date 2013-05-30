@@ -1015,7 +1015,7 @@
 			<test todir="${junit}" name="org.pentaho.di.repository.RepositoryUnitTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.trans.steps.splitfieldtorows.SplitFieldToRowsTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.core.database.SequenceMetaTests" haltonerror="false" />
-
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.terafast.FastloadControlBuilderTest" haltonerror="false" />
 		</junit>
 	</target>
 	
