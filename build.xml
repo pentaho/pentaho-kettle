@@ -22,6 +22,10 @@
 	              value="true"
 	              description="Whether to publish modules locally during the build process. CI should override this"/>
 	
+	  <property name="pdi.plugins.dir" 
+	  	        value="${assembly.stage.pdi-client.dir}/plugins"
+	  	        description="The staging area for plugins"/>
+	
     <!-- Look for user-override properties file first -->        
 		<property file="override.properties"/>
         <!-- set global properties for this build -->
@@ -30,6 +34,21 @@
 	  <!--Import Open Assembly ant file -->
 	  <import file="build-res/subfloor.xml" />
 
+	
+	   <!-- - - - - - - - - - - - - - - - - - 
+	              Macro for making resolving ivy a 1 liner.  Tasks using this must depend on install-ivy.                      
+	   - - - - - - - - - - - - - - - - - -->
+	  <macrodef name="ivy-resolve">
+	    <attribute name="ivyfile" default="${ivyfile}" />
+	    <attribute name="conf" default="default" />
+	    <attribute name="directory"/>
+	    <sequential>
+	        <mkdir dir="@{directory}" />
+	        <ivy:resolve file="@{ivyfile}" conf="@{conf}" />
+	        <ivy:retrieve conf="@{conf}" pattern="@{directory}/[module]-[revision](-[classifier]).[ext]" />
+	    </sequential>
+	  </macrodef>
+	
 		<!--
 		       ==========================
 		          Compile the test code
@@ -189,7 +208,7 @@
 	  -->
 	<target name="tests-trans" depends="compileTests" description="Execute the transformation tests">
 		
-		<junit printsummary="no" fork="yes" forkmode="perTest" jvm="java" maxmemory="512M" showoutput="yes">
+		<junit printsummary="yes" fork="yes" forkmode="perTest" jvm="java" maxmemory="512M" showoutput="yes">
 	    	<classpath>
 				<fileset dir="${lib}" includes="kettle-core.jar"/>
 				<fileset dir="${lib}" includes="kettle-engine.jar"/>
@@ -255,7 +274,7 @@
 			<test todir="${junit}" name="org.pentaho.di.trans.steps.splitfieldtorows.SplitFieldToRowsTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.trans.steps.xslt.XsltTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.core.database.SequenceMetaTests" haltonerror="false" />
-
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.terafast.FastloadControlBuilderTest" haltonerror="false" />
 		</junit>
 	</target>
 	
@@ -1139,5 +1158,23 @@
         </fileset>
     </jar>     
   </target>
+	
+  <target name="resolve-plugins" description="Resolves plugins that have been published"
+	      depends="install-ivy">
+	 <ivy-resolve conf="pdi-kettle-plugins-steps" directory="${pdi.plugins.dir}/steps"/>
+  </target>
+
+  <target name="unzip-plugins" description="Unzips the plugins to the staging area"
+	      depends="resolve-plugins">
+
+  	<!-- Unzips step plugins  --> 
+	 <unzip dest="${pdi.plugins.dir}/steps">
+	     <fileset dir="${pdi.plugins.dir}/steps">
+	        <include name="**/*.zip"/>
+	     </fileset>
+	 </unzip> 
+  	
+   </target>
+
 
 </project>
