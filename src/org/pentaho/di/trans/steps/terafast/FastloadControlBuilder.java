@@ -24,9 +24,12 @@ package org.pentaho.di.trans.steps.terafast;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.Assert;
+import org.pentaho.di.core.util.StringListPluginProperty;
 
 /**
  * @author <a href="mailto:thomas.hoedl@aschauer-edv.at">Thomas Hoedl(asc042)</a>
@@ -45,7 +48,7 @@ public class FastloadControlBuilder {
 
     public static final String DEFAULT_ERROR_TABLE2 = "error2";
     
-    public static final String DEFAULT_DATE_FORMAT = "YYYYMMDD";
+	public static final String DEFAULT_DATE_FORMAT = "yyyy/MM/dd";
     
     public static final String DEFAULT_NULL_VALUE = "?";
 
@@ -142,31 +145,36 @@ public class FastloadControlBuilder {
         Assert.assertGreaterZero(errorLimit);
         return line("ERRLIMIT " + errorLimit);
     }
-
+    
     /**
      * @param targetTableFields
+     *            ...
+     * @param tableFieldList 
      *            ...
      * @param dataFile
      *            ...
      * @return this
      */
-    public FastloadControlBuilder define(final RowMetaInterface targetTableFields, final String dataFile) {
+    public FastloadControlBuilder define(final RowMetaInterface targetTableFields, StringListPluginProperty tableFieldList, final String dataFile) {
         Assert.assertNotNull(targetTableFields, "fields cannot be null");
         Assert.assertNotNull(dataFile, "dataFile cannot be null");
 
         this.builder.append("DEFINE ");
         for (int i = 0; i < targetTableFields.size(); i++) {
-            ValueMetaInterface value = targetTableFields.getValueMeta(i);
-            this.builder.append(value.getName());
-            // all fields of type VARCHAR. converted by fastload if necessary
-            int length = 0;
-            if (value.getType() == ValueMetaInterface.TYPE_DATE) {
-                length = DEFAULT_DATE_FORMAT.length();
-            } else {
-                length = value.getLength();
+        	ValueMetaInterface value = targetTableFields.getValueMeta(i);
+        	int tableIndex = tableFieldList.getValue().indexOf(value.getName());
+            if (tableIndex >= 0) {
+	            this.builder.append(value.getName());
+	            // all fields of type VARCHAR. converted by fastload if necessary
+	            int length = 0;
+	            if (value.getType() == ValueMetaInterface.TYPE_DATE) {
+	                length = DEFAULT_DATE_FORMAT.length();
+	            } else {
+	                length = value.getLength();
+	            }
+	            this.builder.append("(" + "VARCHAR(" + length + "), nullif = '" + String.format("%1$#" + length + "s", DEFAULT_NULL_VALUE) + "'), ");
+	            this.builder.append(SystemUtils.LINE_SEPARATOR);
             }
-            this.builder.append("(" + "VARCHAR(" + length + "), nullif = '" + String.format("%1$#" + length + "s", DEFAULT_NULL_VALUE) + "'), ");
-            this.builder.append(SystemUtils.LINE_SEPARATOR);
         }
         this.builder.append(" NEWLINECHAR(VARCHAR(" + SystemUtils.LINE_SEPARATOR.length() + "))");
         this.builder.append(" FILE=" + dataFile);
@@ -176,25 +184,35 @@ public class FastloadControlBuilder {
     /**
      * @param targetTableFields
      *            ...
+     * @param tableFieldList 
      * @param tableName
      *            ...
      * @return ...
      */
-    public FastloadControlBuilder insert(final RowMetaInterface targetTableFields, final String tableName) {
+    public FastloadControlBuilder insert(final RowMetaInterface targetTableFields, StringListPluginProperty tableFieldList, final String tableName) {
         Assert.assertNotNull(targetTableFields, "targetTableFields cannot be null.");
         Assert.assertNotNull(tableName, "TableName cannot be null.");
 
         this.builder.append("INSERT INTO " + tableName + "(");
         for (int i = 0; i < targetTableFields.size(); i++) {
-            this.builder.append(":" + targetTableFields.getValueMeta(i).getName());
-            if (i < targetTableFields.size() - 1) {
-                this.builder.append(",");
+        	int tableIndex = tableFieldList.getValue().indexOf(targetTableFields.getValueMeta(i).getName());
+            if (tableIndex >= 0) {
+	            this.builder.append(":" + targetTableFields.getValueMeta(i).getName());
+	            if (targetTableFields.getValueMeta(i).getType()==ValueMeta.TYPE_DATE) {
+	            	this.builder.append("(DATE, FORMAT '");
+	            	this.builder.append(DEFAULT_DATE_FORMAT);
+	            	this.builder.append("')");
+	            }
+	            if (i < tableFieldList.size() - 1) {
+	                this.builder.append(",");
+	            }
             }
         }
         this.builder.append(")");
         return this.newline();
     }
-
+    
+    
     /**
      * show field definition.
      * 
@@ -221,14 +239,25 @@ public class FastloadControlBuilder {
      * @throws IllegalArgumentException
      *             if table is invalid.
      */
-    public FastloadControlBuilder beginLoading(final String table) throws IllegalArgumentException {
+    public FastloadControlBuilder beginLoading(final String schemaName, final String table) throws IllegalArgumentException {
         Assert.assertNotBlank(table);
         this.builder.append("BEGIN LOADING ");
         this.builder.append(table);
         this.builder.append(" ERRORFILES ");
-        this.builder.append(DEFAULT_ERROR_TABLE1);
-        this.builder.append(",");
-        this.builder.append(DEFAULT_ERROR_TABLE2);
+        if (!Const.isEmpty(schemaName)) {
+        	this.builder.append(schemaName);
+        	this.builder.append(".");
+        	this.builder.append(DEFAULT_ERROR_TABLE1);
+        	this.builder.append(",");
+        	this.builder.append(schemaName);
+        	this.builder.append(".");
+        	this.builder.append(DEFAULT_ERROR_TABLE2);
+        }
+        else {
+        	this.builder.append(DEFAULT_ERROR_TABLE1);
+            this.builder.append(",");
+            this.builder.append(DEFAULT_ERROR_TABLE2);
+        }
         return this.newline();
     }
 

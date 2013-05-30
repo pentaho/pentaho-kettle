@@ -26,15 +26,18 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintStream;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.vfs.FileObject;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogLevel;
@@ -67,10 +70,14 @@ public class TeraFast extends AbstractStep implements StepInterface {
 
     private OutputStream dataFile;
 
+    private PrintStream dataFilePrintStream;
+    
     private List<Integer> columnSortOrder;
 
     private RowMetaInterface tableRowMeta;
-
+    
+    private SimpleDateFormat simpleDateFormat;
+    
     /**
      * Constructor.
      * 
@@ -133,6 +140,7 @@ public class TeraFast extends AbstractStep implements StepInterface {
     public boolean init(final StepMetaInterface smi, final StepDataInterface sdi) {
         this.meta = (TeraFastMeta) smi;
         // this.data = (GenericStepData) sdi;
+        simpleDateFormat = new SimpleDateFormat(FastloadControlBuilder.DEFAULT_DATE_FORMAT);
         return super.init(smi, sdi);
     }
 
@@ -150,6 +158,8 @@ public class TeraFast extends AbstractStep implements StepInterface {
         Object[] row = getRow();
         if (row == null) {
 
+        	this.dataFilePrintStream.close();
+        	
             IOUtils.closeQuietly(this.dataFile);
 
             this.execute();
@@ -158,11 +168,13 @@ public class TeraFast extends AbstractStep implements StepInterface {
 
             try {
                 logBasic("TeraFast.Log.WatingForFastload");
-                final int exitVal = this.process.waitFor();
-                if (exitVal != 0) {
-                    setErrors(DEFAULT_ERROR_CODE);
+                if (this.process != null) {
+                	final int exitVal = this.process.waitFor();
+                	if (exitVal != 0) {
+                		setErrors(DEFAULT_ERROR_CODE);
+                	}
+                	logBasic(BaseMessages.getString(PKG, "TeraFast.Log.ExitValueFastloadPath", "" + exitVal));
                 }
-                logBasic(BaseMessages.getString(PKG, "TeraFast.Log.ExitValueFastloadPath", "" + exitVal));
             } catch (Exception e) {
                 logError(BaseMessages.getString(PKG, "TeraFast.Log.ErrorInStep"), e);
                 this.setDefaultError();
@@ -177,6 +189,7 @@ public class TeraFast extends AbstractStep implements StepInterface {
             try {
                 final File tempDataFile = new File(resolveFileName(this.meta.getDataFile().getValue()));
                 this.dataFile = FileUtils.openOutputStream(tempDataFile);
+                this.dataFilePrintStream = new PrintStream(dataFile);
             } catch (IOException e) {
                 throw new KettleException("Cannot open data file [path=" + this.dataFile + "]", e);
             }
@@ -190,54 +203,96 @@ public class TeraFast extends AbstractStep implements StepInterface {
             for (int i = 0; i < this.tableRowMeta.size(); i++) {
                 ValueMetaInterface column = this.tableRowMeta.getValueMeta(i);
                 int tableIndex = this.meta.getTableFieldList().getValue().indexOf(column.getName());
-                String streamField = this.meta.getStreamFieldList().getValue().get(tableIndex);
-                this.columnSortOrder.add(streamRowMeta.indexOfValue(streamField));
+                if (tableIndex >= 0) {
+                	String streamField = this.meta.getStreamFieldList().getValue().get(tableIndex);
+                	this.columnSortOrder.add(streamRowMeta.indexOfValue(streamField));
+                }
             }
         }
 
-        writeToDataFile(row);
-
+        writeToDataFile(getInputRowMeta(), row);
         return true;
     }
 
+
+   
     /**
      * Write a single row to the temporary data file.
+     * 
+     * @param rowMetaInterface
+     *            describe the row of data
      * 
      * @param row
      *            row entries
      * @throws KettleException
      *             ...
      */
-    private void writeToDataFile(final Object[] row) throws KettleException {
-        try {
-            int tableCol = 0;
-            for (Integer index : this.columnSortOrder) {
-                int length = 0;
-                if (this.tableRowMeta.getValueMeta(tableCol).getType() == ValueMetaInterface.TYPE_DATE) {
-                    length = FastloadControlBuilder.DEFAULT_DATE_FORMAT.length();
-                } else {
-                    length = this.tableRowMeta.getValueMeta(tableCol)
-                    .getLength();
-                }
-                byte[] rowData = new byte[length];
-                System.arraycopy(row[index], 0, rowData, 0, length);
-                if (((byte[]) row[index]).length < rowData.length) { // fillup padding with ' ' instead of 0
-                    Arrays.fill(rowData, ((byte[]) row[index]).length, rowData.length, (byte) ' ');
-                }
-                String nullString = new String(rowData).trim();
-                if (FastloadControlBuilder.DEFAULT_NULL_VALUE.equals(nullString)) {
-                    rowData = String.format("%1$#" + rowData.length + "s", FastloadControlBuilder.DEFAULT_NULL_VALUE).getBytes();
-                }
-                this.dataFile.write(rowData);
-                this.dataFile.write(FastloadControlBuilder.DATAFILE_COLUMN_SEPERATOR.getBytes());
-                tableCol++;
-            }
-            this.dataFile.write(SystemUtils.LINE_SEPARATOR.getBytes());
-        } catch (IOException e) {
-            throw new KettleException("Cannot write data file [path=" + this.dataFile + "]", e);
-        }
+	public void writeToDataFile(RowMetaInterface rowMetaInterface, Object row[]) throws KettleException
+	{   
+        // Write the data to the output
+        ValueMetaInterface valueMeta = null;
+        
+		for (int i=0;i<row.length;i++) 
+		{
+			if (row[i] == null) {
+				break;  //   no more rows
+			}
+			valueMeta = rowMetaInterface.getValueMeta(i);
+			if ( row[i] != null)
+				switch ( valueMeta.getType() )
+				{
+				case ValueMetaInterface.TYPE_STRING:
+					String s = rowMetaInterface.getString(row, i);
+					dataFilePrintStream.print(pad(valueMeta, s.toString()));
+					break;
+				case ValueMetaInterface.TYPE_INTEGER:
+					Long l = rowMetaInterface.getInteger(row, i);
+				    dataFilePrintStream.print(pad(valueMeta, l.toString()));
+					break;
+				case ValueMetaInterface.TYPE_NUMBER:
+					Double d = rowMetaInterface.getNumber(row, i);
+					dataFilePrintStream.print(pad(valueMeta, d.toString()));
+					break;
+				case ValueMetaInterface.TYPE_BIGNUMBER:
+					BigDecimal bd = rowMetaInterface.getBigNumber(row, i);
+					dataFilePrintStream.print(pad(valueMeta, bd.toString()));
+					break;
+				case ValueMetaInterface.TYPE_DATE:
+					Date dt = rowMetaInterface.getDate(row, i);	
+					dataFilePrintStream.print(simpleDateFormat.format(dt));
+					break;
+				case ValueMetaInterface.TYPE_BOOLEAN:
+					Boolean b = rowMetaInterface.getBoolean(row, i);
+					if ( b.booleanValue() )
+						dataFilePrintStream.print("Y");
+					else
+						dataFilePrintStream.print("N");
+					break;			    	
+				case ValueMetaInterface.TYPE_BINARY:
+					byte byt[] = rowMetaInterface.getBinary(row, i);
+					dataFilePrintStream.print(byt);
+					break;			    
+				default:
+					throw new KettleException(BaseMessages.getString(PKG, "GPLoadDataOutput.Exception.TypeNotSupported", valueMeta.getType()));
+			}
+			dataFilePrintStream.print(FastloadControlBuilder.DATAFILE_COLUMN_SEPERATOR);
+		}
+        dataFilePrintStream.print(Const.CR);
+	}
+    
+    private String pad(ValueMetaInterface valueMetaInterface, String data) {
+    	StringBuffer padding = new StringBuffer(data);
+    	int padLength = valueMetaInterface.getLength() - data.length();
+    	int currentPadLength = 0;
+    	while(currentPadLength < padLength) {
+    		padding.append(" ");
+    		currentPadLength++;
+    
+    	}
+    	return padding.toString();
     }
-
+	
+	
     /**
      * Execute fastload.
      * 
@@ -321,20 +376,21 @@ public class TeraFast extends AbstractStep implements StepInterface {
         builder.logon(this.meta.getDbMeta().getHostname(), this.meta.getDbMeta().getUsername(), this.meta.getDbMeta().getPassword());
         builder.setRecordFormat(FastloadControlBuilder.RECORD_VARTEXT);
         try {
-            builder.define(this.meta.getRequiredFields(this.getTransMeta()), resolveFileName(this.meta.getDataFile().getValue()));
+            builder.define(this.meta.getRequiredFields(this.getTransMeta()), meta.getTableFieldList(), resolveFileName(this.meta.getDataFile().getValue()));
         } catch (Exception ex) {
             throw new KettleException("Error defining data file!", ex);
         }
         builder.show();
-        builder.beginLoading(this.meta.getTargetTable().getValue());
+        builder.beginLoading(this.meta.getDbMeta().getPreferredSchemaName(), this.meta.getTargetTable().getValue());
 
-        builder.insert(this.meta.getRequiredFields(this.getTransMeta()), this.meta.getTargetTable().getValue());
+        builder.insert(this.meta.getRequiredFields(this.getTransMeta()), meta.getTableFieldList(), this.meta.getTargetTable().getValue());
         builder.endLoading();
         builder.logoff();
         final String control = builder.toString();
         try {
+        	logDetailed("Control file: "+control);
             IOUtils.write(control, this.fastload);
-            this.fastload.flush();
+            //this.fastload.flush();
         } catch (IOException e) {
             throw new KettleException("Error while execution control command [controlCommand=" + control + "]", e);
         } finally {
@@ -354,18 +410,23 @@ public class TeraFast extends AbstractStep implements StepInterface {
         // this.data = (GenericStepData) sdi;
 
         try {
-            IOUtils.write(new FastloadControlBuilder().endLoading().toString(), this.fastload);
+        	if (this.fastload != null) {
+        		IOUtils.write(new FastloadControlBuilder().endLoading().toString(), this.fastload);
+        	}
         } catch (IOException e) {
             logError("Unexpected error encountered while issuing END LOADING", e);
         }
         IOUtils.closeQuietly(this.dataFile);
         IOUtils.closeQuietly(this.fastload);
         try {
-            int exitValue = this.process.waitFor();
-            logDetailed("Exit value for the fastload process was : " + exitValue);
-            if (exitValue != 0) {
-                setErrors(DEFAULT_ERROR_CODE);
-            }
+        	if (this.process != null) {
+        		int exitValue = this.process.waitFor();
+        		logDetailed("Exit value for the fastload process was : " + exitValue);
+        		if (exitValue != 0) {
+        			logError("Exit value for the fastload process was : " + exitValue);
+        			setErrors(DEFAULT_ERROR_CODE);
+        		}
+        	}
         } catch (InterruptedException e) {
             setErrors(DEFAULT_ERROR_CODE);
             logError("Unexpected error encountered while finishing the fastload process", e);
