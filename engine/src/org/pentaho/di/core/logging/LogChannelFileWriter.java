@@ -102,20 +102,12 @@ public class LogChannelFileWriter {
         try {
           
           while (active.get() && exception==null) {
-            
-            int last = KettleLogStore.getLastBufferLineNr();
-            StringBuffer buffer = KettleLogStore.getAppender().getBuffer(logChannelId, false, lastBufferLineNr, last);
-            logFileOutputStream.write(buffer.toString().getBytes());
-            lastBufferLineNr=last+1;
-            
+        	flush();
             Thread.sleep(pollingInterval);
           }
-          
           // When done, save the last bit as well...
-          //
-          StringBuffer buffer = KettleLogStore.getAppender().getBuffer(logChannelId, false, lastBufferLineNr);
-          logFileOutputStream.write(buffer.toString().getBytes());
-          
+          flush();
+
         } catch(Exception e) {
           exception = new KettleException("There was an error logging to file '"+logFile+"'", e);
         } finally {
@@ -132,7 +124,20 @@ public class LogChannelFileWriter {
     thread.start();
   }
   
+  public synchronized void flush(){
+	try {
+		int last = KettleLogStore.getLastBufferLineNr();
+		StringBuffer buffer = KettleLogStore.getAppender().getBuffer(logChannelId, false, lastBufferLineNr, last);
+		logFileOutputStream.write(buffer.toString().getBytes());
+		lastBufferLineNr = last + 1;
+		logFileOutputStream.flush();
+	} catch (Exception e) {
+		exception = new KettleException("There was an error logging to file '" + logFile + "'", e);
+	}
+  }
+  
   public void stopLogging() {
+    flush();
     active.set(false);
   }
   
