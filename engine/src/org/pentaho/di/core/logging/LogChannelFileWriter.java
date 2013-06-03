@@ -83,9 +83,6 @@ public class LogChannelFileWriter {
    */
   public LogChannelFileWriter(String logChannelId, FileObject logFile, boolean appending) throws KettleException {
     this(logChannelId, logFile, appending, 1000);
-    
-    active = new AtomicBoolean(false);
-    lastBufferLineNr = KettleLogStore.getLastBufferLineNr();
   }
   
   /**
@@ -129,7 +126,7 @@ public class LogChannelFileWriter {
 		int last = KettleLogStore.getLastBufferLineNr();
 		StringBuffer buffer = KettleLogStore.getAppender().getBuffer(logChannelId, false, lastBufferLineNr, last);
 		logFileOutputStream.write(buffer.toString().getBytes());
-		lastBufferLineNr = last + 1;
+		lastBufferLineNr = last;
 		logFileOutputStream.flush();
 	} catch (Exception e) {
 		exception = new KettleException("There was an error logging to file '" + logFile + "'", e);
