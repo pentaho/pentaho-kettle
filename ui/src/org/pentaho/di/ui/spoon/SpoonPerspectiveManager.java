@@ -63,7 +63,8 @@ public class SpoonPerspectiveManager {
 
   private Map<Class<? extends SpoonPerspective>, SpoonPerspective> perspectives;
 
-  private OrderedHashSet<SpoonPerspective> orderedPerspectives;
+  @SuppressWarnings("rawtypes")
+  private OrderedHashSet orderedPerspectives;
 
   private XulDeck deck;
 
@@ -89,9 +90,10 @@ public class SpoonPerspectiveManager {
     }
   }
 
+  @SuppressWarnings("rawtypes")
   private SpoonPerspectiveManager() {
     perspectives = new LinkedHashMap<Class<? extends SpoonPerspective>, SpoonPerspective>();
-    orderedPerspectives = new OrderedHashSet<SpoonPerspective>();
+    orderedPerspectives = new OrderedHashSet();
   }
 
   /**
@@ -147,6 +149,7 @@ public class SpoonPerspectiveManager {
    * 
    * @return
    */
+  @SuppressWarnings("unchecked")
   public List<SpoonPerspective> getPerspectives() {
     return Collections.unmodifiableList(orderedPerspectives.elements());
   }
