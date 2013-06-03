@@ -59,52 +59,62 @@ import org.pentaho.ui.xul.swt.tags.SwtToolbarbutton;
  *
  */
 public class SpoonPerspectiveManager {
-  private static SpoonPerspectiveManager instance = new SpoonPerspectiveManager();
-  private Map<Class<? extends SpoonPerspective>, SpoonPerspective> perspectives = new LinkedHashMap<Class<? extends SpoonPerspective>, SpoonPerspective>();
-  private OrderedHashSet<SpoonPerspective> orderedPerspectives = new OrderedHashSet<SpoonPerspective>();
+  private static SpoonPerspectiveManager instance;
+
+  private Map<Class<? extends SpoonPerspective>, SpoonPerspective> perspectives;
+
+  private OrderedHashSet<SpoonPerspective> orderedPerspectives;
 
   private XulDeck deck;
+
   private SpoonPerspective activePerspective;
+
   private XulDomContainer domContainer;
+
   private boolean forcePerspective = false;
+
   private String startupPerspective = null;
 
   public String getStartupPerspective() {
-	return startupPerspective;
-}
+    return startupPerspective;
+  }
 
-public void setStartupPerspective(String startupPerspective) {
-	this.startupPerspective = startupPerspective;
-}
+  public void setStartupPerspective(String startupPerspective) {
+    this.startupPerspective = startupPerspective;
+  }
 
-protected static class SpoonPerspectiveComparator implements Comparator<SpoonPerspective> {
+  protected static class SpoonPerspectiveComparator implements Comparator<SpoonPerspective> {
     public int compare(SpoonPerspective o1, SpoonPerspective o2) {
       return o1.getId().compareTo(o2.getId());
     }
   }
-  
-  private SpoonPerspectiveManager(){
 
+  private SpoonPerspectiveManager() {
+    perspectives = new LinkedHashMap<Class<? extends SpoonPerspective>, SpoonPerspective>();
+    orderedPerspectives = new OrderedHashSet<SpoonPerspective>();
   }
-  
+
   /**
    * Returns the single instance of this class.
    * 
    * @return SpoonPerspectiveManager instance.
    */
-  public static SpoonPerspectiveManager getInstance(){
+  public synchronized static SpoonPerspectiveManager getInstance() {
+    if (instance==null) {
+      instance = new SpoonPerspectiveManager();
+    }
     return instance;
   }
-  
+
   /**
    * Sets the deck used by the Perspective Manager to display Perspectives in.
    * 
    * @param deck
    */
-  public void setDeck(XulDeck deck){
+  public void setDeck(XulDeck deck) {
     this.deck = deck;
   }
-  
+
   /**
    * Receives the main XUL document comprising the menuing system and main layout of Spoon. 
    * Perspectives are able to modify these areas when activated. Any other areas need to be 
@@ -112,42 +122,42 @@ protected static class SpoonPerspectiveComparator implements Comparator<SpoonPer
    * 
    * @param doc
    */
-  public void setXulDoc(XulDomContainer doc){
+  public void setXulDoc(XulDomContainer doc) {
     this.domContainer = doc;
   }
-  
+
   /**
    * Adds a SpoonPerspective making it available to be activated later.
    * 
    * @param perspective
    */
-  public void addPerspective(SpoonPerspective perspective){
-    if(activePerspective == null){
+  public void addPerspective(SpoonPerspective perspective) {
+    if (activePerspective == null) {
       activePerspective = perspective;
     }
     perspectives.put(perspective.getClass(), perspective);
     orderedPerspectives.add(perspective);
-    if(domContainer != null){
+    if (domContainer != null) {
       initialize();
     }
   }
-  
+
   /**
    * Returns an unmodifiable List of perspectives in no set order.
    * 
    * @return
    */
-  public List<SpoonPerspective> getPerspectives(){
+  public List<SpoonPerspective> getPerspectives() {
     return Collections.unmodifiableList(orderedPerspectives.elements());
   }
-  
-  private void unloadPerspective(SpoonPerspective per){
+
+  private void unloadPerspective(SpoonPerspective per) {
     per.setActive(false);
     List<XulOverlay> overlays = per.getOverlays();
-    if(overlays != null){
-      for(XulOverlay overlay : overlays){
+    if (overlays != null) {
+      for (XulOverlay overlay : overlays) {
         try {
-         domContainer.removeOverlay(overlay.getOverlayUri());
+          domContainer.removeOverlay(overlay.getOverlayUri());
         } catch (XulException e) {
           e.printStackTrace();
         }
@@ -155,7 +165,7 @@ protected static class SpoonPerspectiveComparator implements Comparator<SpoonPer
     }
     Spoon.getInstance().enableMenus();
   }
-  
+
   /**
    * 
    * Activates the given instance of the class literal passed in. Activating a perspective first 
@@ -166,36 +176,36 @@ protected static class SpoonPerspectiveComparator implements Comparator<SpoonPer
    * @param clazz SpoonPerspective class literal  
    * @throws KettleException throws a KettleException if no perspective is found for the given parameter
    */
-  public void activatePerspective(Class<? extends SpoonPerspective> clazz) throws KettleException{
+  public void activatePerspective(Class<? extends SpoonPerspective> clazz) throws KettleException {
 
-	  
-	if(this.forcePerspective) {
-		// we are currently prevented from switching perspectives
-		return;
-	}
+    if (this.forcePerspective) {
+      // we are currently prevented from switching perspectives
+      return;
+    }
     SpoonPerspective sp = perspectives.get(clazz);
-    if(sp == null){
-      throw new KettleException("Could not locate perspective by class: "+clazz);
+    if (sp == null) {
+      throw new KettleException("Could not locate perspective by class: " + clazz);
     }
     unloadPerspective(activePerspective);
     activePerspective = sp;
-    
 
     List<XulOverlay> overlays = sp.getOverlays();
-    if(overlays != null){
-      for(XulOverlay overlay : overlays){
+    if (overlays != null) {
+      for (XulOverlay overlay : overlays) {
         try {
           ResourceBundle res = null;
-          if(overlay.getResourceBundleUri() != null){
-            try{
+          if (overlay.getResourceBundleUri() != null) {
+            try {
               res = ResourceBundle.getBundle(overlay.getResourceBundleUri());
-            } catch(MissingResourceException ignored){}
+            } catch (MissingResourceException ignored) {
+            }
           } else {
-            try{
+            try {
               res = ResourceBundle.getBundle(overlay.getOverlayUri().replace(".xul", ".properties"));
-            } catch(MissingResourceException ignored){}
+            } catch (MissingResourceException ignored) {
+            }
           }
-          if(res == null){
+          if (res == null) {
             res = new XulSpoonResourceBundle(sp.getClass());
           }
           domContainer.loadOverlay(overlay.getOverlayUri(), res);
@@ -206,22 +216,22 @@ protected static class SpoonPerspectiveComparator implements Comparator<SpoonPer
     }
 
     List<XulEventHandler> theXulEventHandlers = sp.getEventHandlers();
-    if(theXulEventHandlers != null) {
+    if (theXulEventHandlers != null) {
       for (XulEventHandler handler : theXulEventHandlers) {
         domContainer.addEventHandler(handler);
       }
     }
-    
+
     sp.setActive(true);
-    deck.setSelectedIndex(deck.getChildNodes().indexOf(deck.getElementById("perspective-"+sp.getId())));
+    deck.setSelectedIndex(deck.getChildNodes().indexOf(deck.getElementById("perspective-" + sp.getId())));
     Spoon.getInstance().enableMenus();
   }
-  
+
   /**
    * Returns the current active perspective.
    * @return active SpoonPerspective
    */
-  public SpoonPerspective getActivePerspective(){
+  public SpoonPerspective getActivePerspective() {
     return activePerspective;
   }
 
@@ -229,7 +239,7 @@ protected static class SpoonPerspectiveComparator implements Comparator<SpoonPer
    * Returns whether this perspective manager is prevented from switching perspectives
    */
   public boolean isForcePerspective() {
-	return forcePerspective;
+    return forcePerspective;
   }
 
   /**
@@ -238,7 +248,7 @@ protected static class SpoonPerspectiveComparator implements Comparator<SpoonPer
    * to prevent other perpsectives from openeing.
    */
   public void setForcePerspective(boolean forcePerspective) {
-	this.forcePerspective = forcePerspective;
+    this.forcePerspective = forcePerspective;
   }
 
   public void removePerspective(SpoonPerspective per) {
@@ -264,20 +274,19 @@ protected static class SpoonPerspectiveComparator implements Comparator<SpoonPer
     XulToolbar mainToolbar = (XulToolbar) domContainer.getDocumentRoot().getElementById("main-toolbar");
     SwtDeck deck = (SwtDeck) domContainer.getDocumentRoot().getElementById("canvas-deck");
 
-
     boolean firstBtn = true;
     int y = 0;
     int perspectiveIdx = 0;
     Class<? extends SpoonPerspective> perClass = null;
 
     for (SpoonPerspective per : SpoonPerspectiveManager.getInstance().getPerspectives()) {
-      if(installedPerspectives.contains(per)){
+      if (installedPerspectives.contains(per)) {
         y++;
         continue;
       }
       String name = per.getDisplayName(LanguageChoice.getInstance().getDefaultLocale());
       InputStream in = per.getPerspectiveIcon();
-      if( this.startupPerspective != null && per.getId().equals(this.startupPerspective)) {
+      if (this.startupPerspective != null && per.getId().equals(this.startupPerspective)) {
         // we have a startup perspective. Hold onto the index and the class
         perspectiveIdx = y;
         perClass = per.getClass();
@@ -330,18 +339,17 @@ protected static class SpoonPerspectiveComparator implements Comparator<SpoonPer
       installedPerspectives.add(per);
     }
     deck.setSelectedIndex(perspectiveIdx);
-    if(perClass != null) {
+    if (perClass != null) {
       // activate the startup perspective
       try {
-		activatePerspective(perClass);
-	    // stop other perspectives from opening
+        activatePerspective(perClass);
+        // stop other perspectives from opening
         SpoonPerspectiveManager.getInstance().setForcePerspective(true);
-	  } catch (KettleException e) {
-		// TODO Auto-generated catch block
-	  }
+      } catch (KettleException e) {
+        // TODO Auto-generated catch block
+      }
     }
 
   }
 
-  
 }
