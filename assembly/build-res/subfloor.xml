@@ -146,8 +146,8 @@ TYPICAL TARGET SEQUENCE
             value="${basedir}/lib"
             description="Directory that hosts Jar files required to compile project source.  (IVY will populate this directory with required jars)" />
   <property name="devlib.dir"
-            value="${basedir}/dev-lib"
-            description="Directory for developer to place development Jar files (not affected by clean targets)" />
+        value="${basedir}/dev-lib"
+        description="Directory for developer to place development Jar files (not affected by clean targets)" />
 
   <!-- Compiler properties (passed directly to javac ant target) -->
   <property name="javac.debug"
@@ -494,6 +494,7 @@ TYPICAL TARGET SEQUENCE
     <mkdir dir="${classes.dir}" />
     <mkdir dir="${dist.dir}" />
     <mkdir dir="${lib.dir}" />
+  	<mkdir dir="${plugins.dir}" />
     <mkdir dir="${devlib.dir}" />
     <mkdir dir="${testlib.dir}" />
   </target>
@@ -1045,6 +1046,7 @@ TYPICAL TARGET SEQUENCE
       ====================================================================-->
   <target name="clean-jars">
     <delete dir="${lib.dir}" />
+  	<delete dir="${plugins.dir}" />
     <delete dir="${testlib.dir}" />
   </target>
 
