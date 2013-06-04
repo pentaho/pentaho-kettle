@@ -123,70 +123,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       </zipfileset>
     </zip>
   </target>
-	
-	
-	  <!-- ======================================== EULA assembly packaging ========================================= -->
+  
 
-	  <property name="eula.version" value="040313" />
-	  <property name="sidebar_logo.version" value="1.0.0" />
-
-	  <target name="init-izpack" depends="install-ivy">
-	  	<taskdef-with-ivy 
-	  		  task-name="izpack"
-	  	      organisation="org.codehaus.izpack"
-	  	      module="izpack-standalone-compiler"
-	  	      revision="4.3.5"
-	  	      classname="com.izforge.izpack.ant.IzPackTask" />
-	  </target>
-	  	
-	  <target name="package-eula"
-				depends="assemble,package-zip-eula"
-				description="package distributable artifacts in an IzPack jar that prompts for EULA acceptance" />
-		
-	  <target name="package-zip-eula" depends="package-zip,init-izpack">
-					 
-			<get src="http://repo.pentaho.org/artifactory/pentaho-local/com/pentaho/eula/${eula.version}/eula-${eula.version}.txt" 
-	  	    	dest="lib/pentaho-eula-${eula.version}.txt" 
-	  	    	verbose="true" />
-
-	  		<get src="http://repo.pentaho.org/artifactory/pentaho-local/com/pentaho/image/logo/pentaho-eula-package-installer-sidebar-logo/${sidebar_logo.version}/pentaho-eula-package-installer-sidebar-logo-${sidebar_logo.version}.png" 
-	  	    	dest="lib/pentaho-eula-package-installer-sidebar-logo-${sidebar_logo.version}.png" 
-	  	    	verbose="true" />
-					  	
-	  		<izpack output="${dist.dir}/${package.basename}-pkg.jar"
-			    installerType="standard"
-			    basedir="."
-			    IzPackDir=".">
-				<config><![CDATA[
-							<installation version="1.0">
-		  					    <info>
-		  					        <appname>@{package.basename}</appname>
-		  							<appversion>.</appversion>
-		  					    </info>
-		  					    <guiprefs width="750" height="500" resizable="yes"/>
-		  					    <locale>
-		  					        <langpack iso3="eng"/>
-		  					    </locale>
-		  					    <resources>
-		  							<res id="LicencePanel.licence" src="lib/pentaho-eula-@{eula.version}.txt"/>
-		  							<res id="Installer.image" src="lib/pentaho-eula-package-installer-sidebar-logo-@{sidebar_logo.version}.png"/>
-		  					    </resources>
-		  					    <panels>
-		  							<panel classname="LicencePanel"/>
-		  					        <panel classname="TargetPanel"/>
-		  					        <panel classname="InstallPanel"/>
-		  					    </panels>
-		  					    <packs>
-		  					        <pack name="Base" required="yes">
-		 								<description>unpack @{package.basename}</description>
-		  					            <file src="@{dist.dir}/@{package.basename}.zip" unpack="true" targetdir="$INSTALL_PATH"/>
-		  					        </pack>
-		  					    </packs>
-							</installation>
-					]]></config>
-		  		</izpack>
-		  </target>
-	
+  
   <!-- ============================================linuxPackage===================================================== -->
 
   <property name="linuxPackage.name" value="pentaho-${package.id}" />
