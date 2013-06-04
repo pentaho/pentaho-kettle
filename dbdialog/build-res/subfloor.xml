@@ -157,7 +157,7 @@ TYPICAL TARGET SEQUENCE
             value="true"
             description="Indicates whether source should be compiled with deprecation information" />
   <property name="javac.source" value="6" description="Provide source compatibility with specified release" />
-  <property name="javac.target" value="6" description="Generate class files for specific VM version" />
+  <property name="javac.target" value="7" description="Generate class files for specific VM version" />
   <property name="javac.maxmemory" value="256M" description="Max memory alloted to java compile" />
 
   <!-- Third party Ant tasks and tools properties -->
@@ -181,6 +181,7 @@ TYPICAL TARGET SEQUENCE
             description="The URL to the current release of Apache IVY" />
 
   <!-- Test properties -->
+  <property name="junit.base.dir" value="${basedir}" description="Directory in which the junit test VM will be invoked" />
   <property name="testsrc.dir" value="${basedir}/test-src" description="Directory that hosts the test source files" />
   <property name="testlib.dir"
             value="${basedir}/test-lib"
@@ -373,7 +374,7 @@ TYPICAL TARGET SEQUENCE
     <fileset dir="${testlib.dir}">
       <include name="**/*.jar" />
     </fileset>
-  	<fileset dir="${lib.dir}">
+    <fileset dir="${lib.dir}">
       <include name="**/*.jar" />
     </fileset>
     <pathelement path="${testclasses.dir}" />
@@ -1370,6 +1371,7 @@ TYPICAL TARGET SEQUENCE
       ====================================================================-->
   <target name="test" depends="compile,compile-tests, init-test-reports" description="Compiles and runs unit tests">
     <junit maxmemory="${junit.maxmemory}"
+           dir="${junit.base.dir}"
            fork="yes"
            failureProperty="test.failed"
            haltonfailure="${junit.haltonfailure}"
@@ -1630,6 +1632,7 @@ TYPICAL TARGET SEQUENCE
       </fileset>
     </path>
     <junit fork="yes"
+           dir="${junit.base.dir}"
            maxmemory="${junit.maxmemory}"
            failureProperty="test.failed"
            haltonfailure="${junit.haltonfailure}">
@@ -1722,10 +1725,10 @@ TYPICAL TARGET SEQUENCE
         <fileset dir="${devlib.dir}">
           <include name="*.jar" />
         </fileset>
-      	<fileset dir="${testlib.dir}">
+        <fileset dir="${testlib.dir}">
           <include name="*.jar" />
         </fileset>
-      	<fileset dir="${lib.dir}">
+        <fileset dir="${lib.dir}">
           <include name="*.jar" />
         </fileset>
       </classpath>
