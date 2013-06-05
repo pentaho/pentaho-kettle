@@ -93,7 +93,11 @@ public class CarteServlet extends HttpServlet {
 
   public void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
-    CartePluginInterface plugin = cartePluginRegistry.getCartePlugin(req.getPathInfo());
+    String servletPath = req.getPathInfo();
+    if (servletPath.endsWith("/")) {
+      servletPath = servletPath.substring(0, servletPath.length() - 1);
+    }
+    CartePluginInterface plugin = cartePluginRegistry.getCartePlugin(servletPath);
     if (plugin != null) {
       try {
         plugin.doGet(req, resp);
