@@ -29,7 +29,6 @@ import java.util.Map;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.plugins.BasePluginType;
-import org.pentaho.di.core.plugins.JarFileAnnotationPlugin;
 import org.pentaho.di.core.plugins.PluginAnnotationType;
 import org.pentaho.di.core.plugins.PluginFolderInterface;
 import org.pentaho.di.core.plugins.PluginMainClassType;
@@ -61,10 +60,6 @@ public class LogTablePluginType extends BasePluginType implements PluginTypeInte
 			logTablePluginType=new LogTablePluginType();
 		}
 		return logTablePluginType;
-	}
-	
-	protected List<JarFileAnnotationPlugin> findAnnotatedClassFiles(String annotationClassName) {
-	  return super.findAnnotatedClassFiles(annotationClassName);
 	}
 	
 	/**

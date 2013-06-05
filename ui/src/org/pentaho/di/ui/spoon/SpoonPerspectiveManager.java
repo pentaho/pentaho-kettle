@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,12 +60,14 @@ import org.pentaho.ui.xul.swt.tags.SwtToolbarbutton;
  *
  */
 public class SpoonPerspectiveManager {
-  private static SpoonPerspectiveManager instance;
+  private static SpoonPerspectiveManager instance = new SpoonPerspectiveManager();
 
-  private Map<Class<? extends SpoonPerspective>, SpoonPerspective> perspectives;
+  private final Map<Class<? extends SpoonPerspective>, SpoonPerspective> perspectives;
+
+  private final Map<SpoonPerspective, PerspectiveInitializer> initializerMap;
 
   @SuppressWarnings("rawtypes")
-  private OrderedHashSet orderedPerspectives;
+  private final OrderedHashSet orderedPerspectives;
 
   private XulDeck deck;
 
@@ -90,9 +93,44 @@ public class SpoonPerspectiveManager {
     }
   }
 
+  private class PerspectiveInitializer {
+    private final SpoonPerspective per;
+
+    private final XulVbox box;
+
+    private final XulToolbar mainToolbar;
+
+    private final SwtToolbarbutton btn;
+
+    public PerspectiveInitializer(SpoonPerspective per, XulVbox box, XulToolbar mainToolbar, SwtToolbarbutton btn) {
+      super();
+      this.per = per;
+      this.box = box;
+      this.mainToolbar = mainToolbar;
+      this.btn = btn;
+    }
+
+    public void initialize() {
+      per.getUI().setParent((Composite) box.getManagedObject());
+      per.getUI().layout();
+      ((Composite) mainToolbar.getManagedObject()).layout(true, true);
+
+      per.addPerspectiveListener(new SpoonPerspectiveListener() {
+        public void onActivation() {
+          btn.setSelected(true);
+        }
+
+        public void onDeactication() {
+          btn.setSelected(false);
+        }
+      });
+    }
+  }
+
   @SuppressWarnings("rawtypes")
   private SpoonPerspectiveManager() {
     perspectives = new LinkedHashMap<Class<? extends SpoonPerspective>, SpoonPerspective>();
+    initializerMap = new HashMap<SpoonPerspective, PerspectiveInitializer>();
     orderedPerspectives = new OrderedHashSet();
   }
 
@@ -101,10 +139,7 @@ public class SpoonPerspectiveManager {
    * 
    * @return SpoonPerspectiveManager instance.
    */
-  public synchronized static SpoonPerspectiveManager getInstance() {
-    if (instance==null) {
-      instance = new SpoonPerspectiveManager();
-    }
+  public static SpoonPerspectiveManager getInstance() {
     return instance;
   }
 
@@ -188,6 +223,10 @@ public class SpoonPerspectiveManager {
     SpoonPerspective sp = perspectives.get(clazz);
     if (sp == null) {
       throw new KettleException("Could not locate perspective by class: " + clazz);
+    }
+    PerspectiveInitializer perspectiveInitializer = initializerMap.remove(sp);
+    if (perspectiveInitializer != null) {
+      perspectiveInitializer.initialize();
     }
     unloadPerspective(activePerspective);
     activePerspective = sp;
@@ -277,23 +316,27 @@ public class SpoonPerspectiveManager {
     XulToolbar mainToolbar = (XulToolbar) domContainer.getDocumentRoot().getElementById("main-toolbar");
     SwtDeck deck = (SwtDeck) domContainer.getDocumentRoot().getElementById("canvas-deck");
 
-    boolean firstBtn = true;
     int y = 0;
     int perspectiveIdx = 0;
     Class<? extends SpoonPerspective> perClass = null;
 
-    for (SpoonPerspective per : SpoonPerspectiveManager.getInstance().getPerspectives()) {
+    List<SpoonPerspective> perspectives = getPerspectives();
+    if (this.startupPerspective != null) {
+      for (int i = 0; i < perspectives.size(); i++) {
+        if (perspectives.get(i).getId().equals(this.startupPerspective)) {
+          perspectiveIdx = i;
+          break;
+        }
+      }
+    }
+
+    for (SpoonPerspective per : getPerspectives()) {
       if (installedPerspectives.contains(per)) {
         y++;
         continue;
       }
       String name = per.getDisplayName(LanguageChoice.getInstance().getDefaultLocale());
       InputStream in = per.getPerspectiveIcon();
-      if (this.startupPerspective != null && per.getId().equals(this.startupPerspective)) {
-        // we have a startup perspective. Hold onto the index and the class
-        perspectiveIdx = y;
-        perClass = per.getClass();
-      }
 
       SwtToolbarbutton btn = null;
       try {
@@ -307,10 +350,6 @@ public class SpoonPerspectiveManager {
       btn.setOnclick("spoon.loadPerspective(" + y + ")");
       btn.setId("perspective-btn-" + per.getId());
       mainToolbar.addChild(btn);
-      if ((firstBtn && this.startupPerspective == null) || (perspectiveIdx == y)) {
-        btn.setSelected(true);
-        firstBtn = false;
-      }
       if (in != null) {
         btn.setImageFromStream(in);
         try {
@@ -324,20 +363,19 @@ public class SpoonPerspectiveManager {
       box.setFlex(1);
       deck.addChild(box);
 
-      per.getUI().setParent((Composite) box.getManagedObject());
-      per.getUI().layout();
-      ((Composite) mainToolbar.getManagedObject()).layout(true, true);
-
-      final SwtToolbarbutton finalBtn = btn;
-      per.addPerspectiveListener(new SpoonPerspectiveListener() {
-        public void onActivation() {
-          finalBtn.setSelected(true);
+      PerspectiveInitializer perspectiveInitializer = new PerspectiveInitializer(per, box, mainToolbar, btn);
+      //Need to force init for main perspective even if it won't be shown
+      if (perspectiveIdx == y || y == 0) {
+        if (perspectiveIdx == y) {
+          //we have a startup perspective. Hold onto the class
+          btn.setSelected(true);
+          perClass = per.getClass();
         }
-
-        public void onDeactication() {
-          finalBtn.setSelected(false);
-        }
-      });
+        // force init
+        perspectiveInitializer.initialize();
+      } else {
+        initializerMap.put(per, perspectiveInitializer);
+      }
       y++;
       installedPerspectives.add(per);
     }
@@ -354,5 +392,4 @@ public class SpoonPerspectiveManager {
     }
 
   }
-
 }

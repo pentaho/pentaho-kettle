@@ -138,17 +138,10 @@ public class SpoonPluginManager {
               if(sp == null){ //invalid or already loaded
                 return;
               }
-
-              ((Spoon) SpoonFactory.getInstance()).getDisplay().syncExec(new Runnable() {
-                public void run() {
-                  try{
-                    sp.applyToContainer(category, container);
-                  } catch (XulException e) {
-                    e.printStackTrace();
-                  }
-                }
-              });
+              sp.applyToContainer(category, container);
             } catch (KettlePluginException e) {
+              e.printStackTrace();
+            } catch (XulException e) {
               e.printStackTrace();
             }
           }

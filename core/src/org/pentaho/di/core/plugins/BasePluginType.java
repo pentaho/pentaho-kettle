@@ -215,7 +215,7 @@ public abstract class BasePluginType implements PluginTypeInterface{
 	}
 	
 	protected List<JarFileAnnotationPlugin> findAnnotatedClassFiles(String annotationClassName) {
-		
+		JarFileCache jarFileCache = JarFileCache.getInstance();
 		List<JarFileAnnotationPlugin> classFiles = new ArrayList<JarFileAnnotationPlugin>();
 		
 		// We want to scan the plugins folder for plugin.xml files...
@@ -227,20 +227,13 @@ public abstract class BasePluginType implements PluginTypeInterface{
 				try {
 					// Get all the jar files in the plugin folder...
 					//
-					FileObject[] fileObjects = pluginFolder.findJarFiles();
+					FileObject[] fileObjects = jarFileCache.getFileObjects(pluginFolder);
 					if (fileObjects!=null) {
 						for (FileObject fileObject : fileObjects) {
 							
 							// These are the jar files : find annotations in it...
 							//
-				      AnnotationDB annotationDB = JarFileCache.getInstance().getEntry(fileObject);
-				      if (annotationDB==null) {
-				        annotationDB = new AnnotationDB();
-				        annotationDB.scanArchives(fileObject.getURL());
-				        JarFileCache.getInstance().addEntry(fileObject, annotationDB);
-				      } else {
-				        // System.out.println("Cache hit for : "+fileObject.toString());
-				      }
+				      AnnotationDB annotationDB = jarFileCache.getAnnotationDB(fileObject);
 				      
 				      // These are the jar files : find annotations in it...
 				      //
@@ -258,7 +251,6 @@ public abstract class BasePluginType implements PluginTypeInterface{
 				}
 			}
 		}
-		
 		return classFiles;
 	}
 	
@@ -507,65 +499,65 @@ public abstract class BasePluginType implements PluginTypeInterface{
     this.searchLibDir = transverseLibDirs;
   }
 
-	protected void registerPluginJars() throws KettlePluginException {
-	    
-	    List<JarFileAnnotationPlugin> jarFilePlugins = findAnnotatedClassFiles(pluginType.getName());
-	    for (JarFileAnnotationPlugin jarFilePlugin : jarFilePlugins) {
-	      
-	      URLClassLoader urlClassLoader = createUrlClassLoader(jarFilePlugin.getJarFile(), getClass().getClassLoader());
+  protected void registerPluginJars() throws KettlePluginException {
+    List<JarFileAnnotationPlugin> jarFilePlugins = findAnnotatedClassFiles(pluginType.getName());
+    for (JarFileAnnotationPlugin jarFilePlugin : jarFilePlugins) {
 
-	      try {
-	        Class<?> clazz = urlClassLoader.loadClass(jarFilePlugin.getClassName());
-	        if (clazz==null) {
-	        	throw new KettlePluginException("Unable to load class: "+jarFilePlugin.getClassName());
-	        }
-	        List<String> libraries = new ArrayList<String>();
-	        java.lang.annotation.Annotation annotation = null;
-	        try {
-	        	annotation = clazz.getAnnotation(pluginType);
-		        
-	        	String jarFilename = URLDecoder.decode(jarFilePlugin.getJarFile().getFile(), "UTF-8");
-	        	libraries.add( jarFilename );
-	        	FileObject fileObject = KettleVFS.getFileObject(jarFilename);
-	        	FileObject parentFolder = fileObject.getParent();
-	        	String parentFolderName = KettleVFS.getFilename(parentFolder);
-            String libFolderName = null;
-            if(parentFolderName.endsWith(Const.FILE_SEPARATOR+"lib")){
-	        	  libFolderName = parentFolderName;
-            } else {
-              libFolderName = parentFolderName+Const.FILE_SEPARATOR+"lib";
+      URLClassLoader urlClassLoader = createUrlClassLoader(jarFilePlugin.getJarFile(), getClass().getClassLoader());
+
+      try {
+        Class<?> clazz = urlClassLoader.loadClass(jarFilePlugin.getClassName());
+        if (clazz == null) {
+          throw new KettlePluginException("Unable to load class: " + jarFilePlugin.getClassName());
+        }
+        List<String> libraries = new ArrayList<String>();
+        java.lang.annotation.Annotation annotation = null;
+        try {
+          annotation = clazz.getAnnotation(pluginType);
+
+          String jarFilename = URLDecoder.decode(jarFilePlugin.getJarFile().getFile(), "UTF-8");
+          libraries.add(jarFilename);
+          FileObject fileObject = KettleVFS.getFileObject(jarFilename);
+          FileObject parentFolder = fileObject.getParent();
+          String parentFolderName = KettleVFS.getFilename(parentFolder);
+          String libFolderName = null;
+          if (parentFolderName.endsWith(Const.FILE_SEPARATOR + "lib")) {
+            libFolderName = parentFolderName;
+          } else {
+            libFolderName = parentFolderName + Const.FILE_SEPARATOR + "lib";
+          }
+
+          PluginFolder folder = new PluginFolder(libFolderName, false, false, searchLibDir);
+          FileObject[] jarFiles = folder.findJarFiles(true);
+
+          if (jarFiles != null) {
+            for (FileObject jarFile : jarFiles) {
+
+              String fileName = KettleVFS.getFilename(jarFile);
+
+              // If the plugin is in the lib folder itself, we'll ignore it here
+              if (fileObject.equals(jarFile)) {
+                continue;
+              }
+              libraries.add(fileName);
             }
+          }
+        } catch (Exception e) {
+          throw new KettlePluginException("Unexpected error loading class " + clazz.getName() + " of plugin type: "
+              + pluginType, e);
+        }
 
-            PluginFolder folder = new PluginFolder(libFolderName, false, false, searchLibDir);
-	        	FileObject[] jarFiles = folder.findJarFiles(true);
-            
-	        	if (jarFiles!=null) {
-		          for(FileObject jarFile : jarFiles) {
-
-                String fileName = KettleVFS.getFilename(jarFile);
-                
-                // If the plugin is in the lib folder itself, we'll ignore it here
-                if(fileObject.equals(jarFile)){
-                  continue;
-                }
-		            libraries.add( fileName );
-		          }
-		        }
-	        } catch(Exception e) {
-	        	throw new KettlePluginException("Unexpected error loading class "+clazz.getName()+" of plugin type: "+pluginType, e);
-	        }
-
-	        handlePluginAnnotation(clazz, annotation, libraries, false, jarFilePlugin.getPluginFolder());
-	      } catch(Exception e) {
-	        // Ignore for now, don't know if it's even possible.
-	        LogChannel.GENERAL.logError("Unexpected error registering jar plugin file: "+jarFilePlugin.getJarFile(), e);
-	      } finally {
-	        if (urlClassLoader != null && urlClassLoader instanceof KettleURLClassLoader) {
-	          ((KettleURLClassLoader)urlClassLoader).closeClassLoader();
-	        }
-	      }
-	    }
-	  }
+        handlePluginAnnotation(clazz, annotation, libraries, false, jarFilePlugin.getPluginFolder());
+      } catch (Exception e) {
+        // Ignore for now, don't know if it's even possible.
+        LogChannel.GENERAL.logError("Unexpected error registering jar plugin file: " + jarFilePlugin.getJarFile(), e);
+      } finally {
+        if (urlClassLoader != null && urlClassLoader instanceof KettleURLClassLoader) {
+          ((KettleURLClassLoader) urlClassLoader).closeClassLoader();
+        }
+      }
+    }
+  }
 	  
 
 	/**

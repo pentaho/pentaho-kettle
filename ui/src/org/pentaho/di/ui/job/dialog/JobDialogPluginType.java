@@ -83,10 +83,6 @@ public class JobDialogPluginType extends BasePluginType implements PluginTypeInt
 	protected void registerXmlPlugins() throws KettlePluginException {
 	  // No longer performed.
 	}
-	
-	protected void registerPluginJars() throws KettlePluginException {
-	  super.registerPluginJars();
-	}
 
   @Override
   protected String extractCategory(Annotation annotation) {

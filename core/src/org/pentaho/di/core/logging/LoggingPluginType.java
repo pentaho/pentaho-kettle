@@ -33,7 +33,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.plugins.BasePluginType;
-import org.pentaho.di.core.plugins.JarFileAnnotationPlugin;
 import org.pentaho.di.core.plugins.PluginAnnotationType;
 import org.pentaho.di.core.plugins.PluginFolderInterface;
 import org.pentaho.di.core.plugins.PluginMainClassType;
@@ -65,10 +64,6 @@ public class LoggingPluginType extends BasePluginType implements PluginTypeInter
 			loggingPluginType=new LoggingPluginType();
 		}
 		return loggingPluginType;
-	}
-	
-	protected List<JarFileAnnotationPlugin> findAnnotatedClassFiles(String annotationClassName) {
-	  return super.findAnnotatedClassFiles(annotationClassName);
 	}
 	
 	/**
