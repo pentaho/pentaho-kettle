@@ -1650,9 +1650,9 @@ TYPICAL TARGET SEQUENCE
         Note the classpath order: instrumented classes are before the
         original (uninstrumented) classes.  This is important.
       -->
+      <classpath location="${testclasses.dir}" />
       <classpath location="${instrumented.classes.dir}" />
       <classpath location="${classes.dir}" />
-      <classpath location="${testclasses.dir}" />
       <classpath refid="test.classpath" />
       <classpath refid="cobertura.classpath" />
 
