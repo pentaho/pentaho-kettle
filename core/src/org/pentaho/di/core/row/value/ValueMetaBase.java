@@ -2023,7 +2023,7 @@ public class ValueMetaBase implements ValueMetaInterface {
    * @return true if the value is a Date
    */
   public boolean isDate() {
-    return type == TYPE_DATE;
+    return type == TYPE_DATE || type == TYPE_TIMESTAMP;
   }
 
   /**
