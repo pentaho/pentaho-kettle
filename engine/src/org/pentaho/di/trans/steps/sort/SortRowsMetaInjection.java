@@ -52,6 +52,7 @@ public class SortRowsMetaInjection implements StepMetaInjectionInterface {
     NAME(ValueMetaInterface.TYPE_STRING, "Field name"),
     SORT_ASCENDING(ValueMetaInterface.TYPE_STRING, "Sort ascending? (Y/N)"),
     IGNORE_CASE(ValueMetaInterface.TYPE_STRING, "Ignore case? (Y/N)"),
+    PRESORTED(ValueMetaInterface.TYPE_STRING, "Presorted? (Y/N)"),
     ;
     
     private int valueType;
@@ -104,7 +105,7 @@ public class SortRowsMetaInjection implements StepMetaInjectionInterface {
     StepInjectionMetaEntry fieldEntry = new StepInjectionMetaEntry("FIELD", ValueMetaInterface.TYPE_NONE, Entry.FIELD.description);
     fieldsEntry.getDetails().add(fieldEntry);
     
-    Entry[] fieldsEntries = new Entry[] { Entry.NAME, Entry.SORT_ASCENDING, Entry.IGNORE_CASE, };
+    Entry[] fieldsEntries = new Entry[] { Entry.NAME, Entry.SORT_ASCENDING, Entry.IGNORE_CASE, Entry.PRESORTED};
     for (Entry entry : fieldsEntries) {
       StepInjectionMetaEntry metaEntry = new StepInjectionMetaEntry(entry.name(), entry.getValueType(), entry.getDescription());
       fieldEntry.getDetails().add(metaEntry);
@@ -119,6 +120,7 @@ public class SortRowsMetaInjection implements StepMetaInjectionInterface {
     List<String> sortNames = new ArrayList<String>();
     List<Boolean> sortAscs = new ArrayList<Boolean>();
     List<Boolean> sortCases = new ArrayList<Boolean>();
+    List<Boolean> sortPresorteds = new ArrayList<Boolean>();
     
     // Parse the fields, inject into the meta class..
     //
@@ -138,6 +140,7 @@ public class SortRowsMetaInjection implements StepMetaInjectionInterface {
                   String sortName = null;
                   boolean sortAsc = false;
                   boolean sortCase = false;
+                  boolean sortPresorted = false;
                   
                   List<StepInjectionMetaEntry> entries = lookField.getDetails();
                   for (StepInjectionMetaEntry entry : entries) {
@@ -148,12 +151,14 @@ public class SortRowsMetaInjection implements StepMetaInjectionInterface {
                       case NAME:               sortName = value; break;
                       case SORT_ASCENDING:     sortAsc = "Y".equalsIgnoreCase(value); break;
                       case IGNORE_CASE:        sortCase = "Y".equalsIgnoreCase(value); break;
+                      case PRESORTED:          sortPresorted = "Y".equalsIgnoreCase(value); break;
                       }
                     }
                   }
                   sortNames.add(sortName);
                   sortAscs.add(sortAsc);
                   sortCases.add(sortCase);
+                  sortPresorteds.add(sortPresorted);
                 }
               }
             }
@@ -177,12 +182,15 @@ public class SortRowsMetaInjection implements StepMetaInjectionInterface {
     meta.setFieldName(sortNames.toArray(new String[sortNames.size()]));
     boolean ascending[] = new boolean[sortAscs.size()];
     boolean cases[] = new boolean[sortCases.size()];
+    boolean presorteds[] = new boolean[sortPresorteds.size()];
     for (int i=0;i<ascending.length;i++) {
       ascending[i] = sortAscs.get(i);
       cases[i] = sortCases.get(i);
+      presorteds[i] = sortPresorteds.get(i);
     }
     meta.setAscending(ascending);
     meta.setCaseSensitive(cases);
+    meta.setPreSortedField(presorteds);
   }
 
   public SortRowsMeta getMeta() {
