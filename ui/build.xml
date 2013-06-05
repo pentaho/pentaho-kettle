@@ -32,5 +32,32 @@
   <target name="default" depends="clean,init,resolve,dist"/>
       
   <target name="create-dot-classpath" depends="init,resolve,subfloor.create-dot-classpath"/>
+	
+  <target name="compile.res_copy" depends="install-antcontrib">
+    <if>
+      <available file="${res.dir}" />
+      <then>
+        <copy todir="${classes.dir}">
+          <fileset dir="${res.dir}" />
+        </copy>
+      </then>
+    </if>
+    
+    <!-- embed the UI definition files in the jar so that webstart will work -->
+    <copy todir="${classes.dir}/ui">
+        <fileset dir="${ui}" includes="**/*.png **/*.xml **/*.xul **/*.properties"/>
+    </copy>
+
+    <if>
+      <not>
+        <isset property="jar.include.source" />
+      </not>
+      <then>
+        <copy todir="${classes.dir}" flatten="false">
+          <fileset dir="${src.dir}" excludes="**/*.java" />
+        </copy>
+      </then>
+    </if>
+  </target>
 
 </project>
