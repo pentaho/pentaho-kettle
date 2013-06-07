@@ -209,6 +209,9 @@ TYPICAL TARGET SEQUENCE
   <property name="instrumented.classes.dir"
             value="${testbin.dir}/instrumented-classes"
             description="Directory where instrumented project classes are placed for use by code coverage utility" />
+  <property name="cobertura.version"
+            value="2.0"
+            description="The version of cobertura to use for code coverage" />
   <property name="cobertura.data.dir"
             value="${testbin.dir}/cobertura-bin"
             description="Temporary data directory used by Cobertura" />
@@ -1573,7 +1576,7 @@ TYPICAL TARGET SEQUENCE
       Downloads and installs Cobertura ant tasks
       ====================================================================-->
   <target name="install-cobertura" depends="install-ivy">
-    <taskdef-with-ivy organisation="net.sourceforge.cobertura" module="cobertura" revision="1.9.4.1" resource="tasks.properties" classname="net.sourceforge.cobertura.ant.InstrumentTask"/>
+    <taskdef-with-ivy organisation="net.sourceforge.cobertura" module="cobertura" revision="${cobertura.version}" resource="tasks.properties" classname="net.sourceforge.cobertura.ant.InstrumentTask"/>
   </target>
 
 
@@ -1627,7 +1630,7 @@ TYPICAL TARGET SEQUENCE
           depends="init-test-reports,install-cobertura,compile,compile-tests,cobertura.instrument-classes">
     <mkdir dir="${instrumented.classes.dir}" />
     <path id="cobertura.classpath">
-      <fileset dir="${subfloor.resources.dir}/cobertura">
+      <fileset dir="${subfloor.resources.dir}/cobertura-${cobertura.version}">
         <include name="*.jar" />
       </fileset>
     </path>
