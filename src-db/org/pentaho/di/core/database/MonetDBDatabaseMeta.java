@@ -44,6 +44,8 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	
 	private static final String FIELDNAME_PROTECTOR = "_";
 	
+	private static final int MAX_VARCHAR_LENGTH = Integer.MAX_VALUE;
+	
 	private static Collection<String> reservedWordAlt = new HashSet<String>();
 	
 	static {
@@ -350,7 +352,7 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 			}
 			break;
 		case ValueMetaInterface.TYPE_STRING:
-			if (length>=DatabaseMeta.CLOB_LENGTH)
+			if (length > getMaxVARCHARLength())
 			{
 				retval.append("CLOB");
 			}
@@ -401,5 +403,9 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
   	  return true;
     }
     
+    @Override
+    public int getMaxVARCHARLength() {
+      return MAX_VARCHAR_LENGTH;
+    }
 }
 
