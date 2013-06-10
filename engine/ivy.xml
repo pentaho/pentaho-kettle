@@ -134,5 +134,6 @@
     
     <!-- excludes -->
     <exclude org="pentaho-kettle" module="kettle-db"/>
+    <exclude org="org.hibernate" module="hibernate-core"/>
   </dependencies>
 </ivy-module>
