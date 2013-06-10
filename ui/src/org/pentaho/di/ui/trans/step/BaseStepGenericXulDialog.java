@@ -203,7 +203,20 @@ public abstract class BaseStepGenericXulDialog extends AbstractXulEventHandler i
     
   }
 
+  public int showClearDataMessage(){
+    String message = "There already is data entered.\nHow do you want to add the data that were found?";
+    String title = "Question";
+    Object[] buttons = new Object[]{"Add new","Add all","Clear and add all","Cancel"};
+    
+    return showPromptMessage(message, title, buttons);
+  }
+
   public int showPromptMessage(final String message, final String title){
+    
+    return showPromptMessage(message, title, new Object[]{"OK", "Cancel"});
+  }
+
+  public int showPromptMessage(final String message, final String title, Object[] buttons){
     
     try {
       
@@ -211,7 +224,7 @@ public abstract class BaseStepGenericXulDialog extends AbstractXulEventHandler i
       msg.setModalParent(modalParent);
       msg.setTitle(title);
       msg.setMessage(message);
-      msg.setButtons(new Object[]{ "OK", "Cancel" });
+      msg.setButtons(buttons);
       return msg.open();
     
     } catch (XulException e) {
