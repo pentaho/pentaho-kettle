@@ -210,6 +210,7 @@ public class RulesAccumulatorMeta extends BaseStepMeta implements StepMetaInterf
 
     if (ruleResultColumns != null) {
       for (int i = 0; i < ruleResultColumns.size(); i++) {
+        ruleResultColumns.get(i).setOrigin(origin);
         row.addValueMeta(ruleResultColumns.get(i));
       }
     }
