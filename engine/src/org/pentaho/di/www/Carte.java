@@ -54,11 +54,11 @@ public class Carte
 	private SlaveServerConfig config;
 
 	public Carte(final SlaveServerConfig config) throws Exception {
-	  
 		this.config = config;
 
 		boolean allOK=true;
 		
+		CarteSingleton.setSlaveServerConfig(config);
 	  LogChannelInterface log =CarteSingleton.getInstance().getLog();
 		
         final TransformationMap transformationMap = CarteSingleton.getInstance().getTransformationMap();

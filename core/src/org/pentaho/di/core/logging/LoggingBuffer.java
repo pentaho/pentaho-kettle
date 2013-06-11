@@ -178,9 +178,11 @@ public class LoggingBuffer {
   }
 
   public void doAppend(KettleLoggingEvent event) {
-    buffer.add(new BufferLine(event));
-    if (bufferSize > 0 && buffer.size() > bufferSize) {
-      buffer.remove(0);
+    synchronized (buffer) {
+      buffer.add(new BufferLine(event));
+      while (bufferSize > 0 && buffer.size() > bufferSize) {
+        buffer.remove(0);
+      }
     }
   }
 
@@ -292,9 +294,7 @@ public class LoggingBuffer {
   }
 
   public void removeBufferLines(List<BufferLine> linesToRemove) {
-    synchronized (buffer) {
-      buffer.removeAll(linesToRemove);
-    }
+    buffer.removeAll(linesToRemove);
   }
 
   public List<BufferLine> getBufferLinesBefore(long minTimeBoundary) {
@@ -313,11 +313,9 @@ public class LoggingBuffer {
   }
   
   public void addLogggingEvent(KettleLoggingEvent loggingEvent) {
-    synchronized(buffer) {
-      buffer.add( new BufferLine(loggingEvent) );
-      for (KettleLoggingEventListener listener : eventListeners) {
-        listener.eventAdded(loggingEvent);
-      }
+    doAppend(loggingEvent);
+    for (KettleLoggingEventListener listener : eventListeners) {
+      listener.eventAdded(loggingEvent);
     }
   }
   
