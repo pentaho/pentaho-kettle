@@ -170,7 +170,7 @@ public class FastloadControlBuilder {
             } else {
                 length = value.getLength();
             }
-            this.builder.append("(" + "VARCHAR(" + length + "), nullif = '" + String.format("%1$#" + length + "s", DEFAULT_NULL_VALUE) + "'), ");
+            this.builder.append("(" + "VARCHAR(" + length + "), nullif = '" + String.format("%1$" + length + "s", DEFAULT_NULL_VALUE) + "'), ");
             this.builder.append(SystemUtils.LINE_SEPARATOR);
         }
         }
