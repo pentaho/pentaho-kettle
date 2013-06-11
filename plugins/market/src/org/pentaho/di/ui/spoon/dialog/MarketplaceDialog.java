@@ -29,6 +29,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
@@ -48,6 +50,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.market.Market;
@@ -72,6 +75,7 @@ public class MarketplaceDialog extends Dialog {
   private ExpandBar bar;
   private int margin;
   private int middle;
+  private Text selectionFilter;
 
   public MarketplaceDialog(Shell parent) {
     super(parent, SWT.NONE);
@@ -104,7 +108,24 @@ public class MarketplaceDialog extends Dialog {
     fdlMarketplaces.left = new FormAttachment(0, 0);
     fdlMarketplaces.top = new FormAttachment(0, margin);
     wlMarketplaces.setLayoutData(fdlMarketplaces);
-
+    
+    selectionFilter = new Text(shell, SWT.SINGLE | SWT.BORDER | SWT.LEFT | SWT.SEARCH | SWT.ICON_SEARCH
+            | SWT.ICON_CANCEL);
+    selectionFilter.setFont(GUIResource.getInstance().getFontSmall());
+    selectionFilter.setToolTipText("Filters the installed and uninstalled filters.");
+    FormData fdSelectionFilter = new FormData();
+    fdSelectionFilter.top = new FormAttachment(0, margin);
+    fdSelectionFilter.right = new FormAttachment(100, 0);
+    fdSelectionFilter.left = new FormAttachment(wlMarketplaces, 10);
+    selectionFilter.setLayoutData(fdSelectionFilter);
+    selectionFilter.addModifyListener(new ModifyListener() {
+        public void modifyText(ModifyEvent arg0) {
+        	if (!Const.isEmpty(selectionFilter.getText())) {
+        		filter(selectionFilter.getText());
+        	}
+        }
+    });
+    
     bar = new ExpandBar(shell, SWT.V_SCROLL | SWT.H_SCROLL);
     FormData fdBar = new FormData();
     fdBar.left = new FormAttachment(0, 0);
@@ -112,7 +133,7 @@ public class MarketplaceDialog extends Dialog {
     fdBar.right = new FormAttachment(100, 0);
     fdBar.bottom = new FormAttachment(100, -50);
     bar.setLayoutData(fdBar);
-
+   
     // Add an expand item for each market place...
     //
     MarketEntries marketEntries = new MarketEntries();
@@ -493,5 +514,10 @@ public class MarketplaceDialog extends Dialog {
 				throw new InvocationTargetException(e, "Error during install: "+e.toString());
 			}
 		}
+  }
+  
+  private void filter(String filter) {
+	  //TODO:  Need to only show entries that match the filter
+	  //       or start with, or contain the text in the filer.
   }
 }
