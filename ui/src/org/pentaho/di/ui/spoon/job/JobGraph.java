@@ -1428,11 +1428,6 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
 		{
 			spoon.tabCloseSelected();
 		}
-		
-    if ((e.keyCode=='j' && (e.stateMask & SWT.MOD1) != 0 )) {
-      editProperties(jobMeta, spoon, spoon.rep, true);
-    }
-
 	}  
 
  	 public void keyReleased(KeyEvent e) {
