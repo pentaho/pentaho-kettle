@@ -26,7 +26,14 @@ public enum KettleExtensionPoint {
   SpoonJobExecutionConfiguration("SpoonJobExecutionConfiguration", "Right before Spoon configuration of job to be executed takes place"),
   
   DatabaseConnected("DatabaseConnected", "A connection to a database was made"),
+  
   DatabaseDisconnected("DatabaseDisconnected", "A connection to a database was terminated"),
+  
+  StepBeforeInitialize("StepBeforeInitialize", "Right before a step is about to be initialized"),
+  StepAfterInitialize("StepAfterInitialize", "After a step is initialized"),
+  
+  StepBeforeStart("StepBeforeStart", "Right before a step is about to be started"),
+  StepFinished("StepFinished", "After a step has finished"),
   ;
 
   public String id;

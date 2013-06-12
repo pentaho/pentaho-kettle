@@ -74,9 +74,9 @@ import org.pentaho.di.core.exception.KettleTransException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
-import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.ChannelLogTable;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogLevel;
@@ -121,6 +121,7 @@ import org.pentaho.di.trans.performance.StepPerformanceSnapShot;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 import org.pentaho.di.trans.step.RunThread;
+import org.pentaho.di.trans.step.StepAdapter;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInitThread;
 import org.pentaho.di.trans.step.StepInterface;
@@ -991,12 +992,16 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       //
       threads[i] = new Thread(initThreads[i]);
       threads[i].setName("init of " + sid.stepname + "." + sid.copy + " (" + threads[i].getName() + ")");
+      
+      ExtensionPointHandler.callExtensionPoint(log, KettleExtensionPoint.StepBeforeInitialize.id, initThreads[i]);
+      
       threads[i].start();
     }
 
     for (int i = 0; i < threads.length; i++) {
       try {
         threads[i].join();
+        ExtensionPointHandler.callExtensionPoint(log, KettleExtensionPoint.StepAfterInitialize.id, initThreads[i]);
       } catch (Exception ex) {
         log.logError("Error with init thread: " + ex.getMessage(), ex.getMessage());
         log.logError(Const.getStackTracker(ex));
@@ -1253,11 +1258,27 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         // Now start all the threads...
         //
         for (int i = 0; i < steps.size(); i++) {
-          StepMetaDataCombi combi = steps.get(i);
+          final StepMetaDataCombi combi = steps.get(i);
           RunThread runThread = new RunThread(combi);
           Thread thread = new Thread(runThread);
           thread.setName(getName() + " - " + combi.stepname);
+          ExtensionPointHandler.callExtensionPoint(log, KettleExtensionPoint.StepBeforeStart.id, combi);
           thread.start();
+          
+          // Call an extension point at the end of the step
+          //
+          combi.step.addStepListener(new StepAdapter() {
+            
+            @Override
+            public void stepFinished(Trans trans, StepMeta stepMeta, StepInterface step) {
+              try {
+                ExtensionPointHandler.callExtensionPoint(log, KettleExtensionPoint.StepFinished.id, combi);
+              } catch(KettleException e) {
+                throw new RuntimeException("Unexpected error in calling extension point upon step finish", e);
+              }
+            }
+            
+          });
         }
         break;
 
