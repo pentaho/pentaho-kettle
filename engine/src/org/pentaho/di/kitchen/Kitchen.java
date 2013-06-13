@@ -415,10 +415,6 @@ public class Kitchen {
     } finally {
       if (repository != null)
         repository.disconnect();
-      if (fileAppender != null) {
-        fileAppender.close();
-        KettleLogStore.getAppender().removeLoggingEventListener(fileAppender);
-      }
     }
 
     log.logMinimal(BaseMessages.getString(PKG, "Kitchen.Log.Finished"));
@@ -460,6 +456,11 @@ public class Kitchen {
       rem = rem % 60;
       log.logMinimal(BaseMessages.getString(PKG, "Kitchen.Log.ProcessEndAfterLongest", String.valueOf(days),
           String.valueOf(hour), String.valueOf(min), String.valueOf(rem), String.valueOf(seconds)));
+    }
+
+    if (fileAppender != null) {
+        fileAppender.close();
+        KettleLogStore.getAppender().removeLoggingEventListener(fileAppender);
     }
 
     exitJVM(returnCode);
