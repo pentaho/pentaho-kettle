@@ -55,12 +55,9 @@ public class CarteServlet extends HttpServlet {
   public CarteServlet() {
     this.log = new LogChannel(STRING_CARTE_SERVLET);
     
-    SlaveServerConfig config = new SlaveServerConfig();
     final TransformationMap transformationMap = CarteSingleton.getInstance().getTransformationMap();
-    transformationMap.setSlaveServerConfig(config);
     final JobMap jobMap = CarteSingleton.getInstance().getJobMap();
-    jobMap.setSlaveServerConfig(config);
-    
+   
     List<SlaveServerDetection> detections = Collections.synchronizedList(new ArrayList<SlaveServerDetection>());
     SocketRepository socketRepository = CarteSingleton.getInstance().getSocketRepository();
     
