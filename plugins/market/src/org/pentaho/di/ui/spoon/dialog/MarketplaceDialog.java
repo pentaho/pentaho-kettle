@@ -163,6 +163,12 @@ public class MarketplaceDialog extends Dialog {
       addLeftLabel(composite, BaseMessages.getString(MARKET_PKG, "MarketplacesDialog.AvailableVersion.label"), lastControl);
       lastControl = addRightLabel(composite, Const.NVL(marketEntry.getVersion(), ""), lastControl);
 
+      // The author
+      if (!Const.isEmpty(marketEntry.getAuthor())) {
+        addLeftLabel(composite, BaseMessages.getString(MARKET_PKG, "MarketplacesDialog.Author.label"), lastControl);
+        lastControl = addRightLabel(composite, Const.NVL(marketEntry.getAuthor(), ""), lastControl);
+      }
+
       // Installation path
       addLeftLabel(composite, BaseMessages.getString(MARKET_PKG, "MarketplacesDialog.InstallPath.label"), lastControl);
       lastControl = addRightLabel(composite, new File(Market.buildPluginsFolderPath(marketEntry)).getAbsolutePath(), lastControl);
