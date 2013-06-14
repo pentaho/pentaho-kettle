@@ -367,7 +367,7 @@ public class MarketplaceDialog extends Dialog {
       //
 
       setPluginName(expandItem, marketEntry.getName(), marketEntry.isInstalled());
-      expandItem.setHeight(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
+      expandItem.setHeight(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y+30);
       expandItem.setControl(composite);
       Image image;
       switch (marketEntry.getType()) {
