@@ -51,7 +51,6 @@ import org.pentaho.di.core.plugins.KettleURLClassLoader;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.PluginTypeInterface;
-import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.spoon.Spoon;
@@ -271,50 +270,73 @@ public class Market implements SpoonPluginInterface {
    * @throws KettleException
    */
   private static void unzipMarketEntry(String folderName, String packageUrl) throws KettleException {
-    // Read the package, extract in folder
+    
+    // Copy the file locally first
     //
-    InputStream inputStream = KettleVFS.getInputStream(packageUrl);
-    ZipInputStream zis = new ZipInputStream(inputStream);
-    ZipEntry zipEntry = null;
+    File tmpFile = null;
+    InputStream inputStream = null;
+    ZipInputStream zis = null;
+    
     try {
-      zipEntry = zis.getNextEntry();
-    } catch (IOException ioe) {
-      throw new KettleException(ioe);
-    }
-    byte[] buffer = new byte[1024];
-    int bytesRead = 0;
-    FileOutputStream fos = null;
-
-    while (zipEntry != null) {
+      tmpFile = File.createTempFile("plugin", ".zip");
+      org.apache.commons.io.FileUtils.copyURLToFile(new URL(packageUrl), tmpFile);
+    
+      // Read the package, extract in folder
+      //
+      inputStream = new FileInputStream(tmpFile);
+      zis = new ZipInputStream(inputStream);
+      ZipEntry zipEntry = null;
       try {
-        File file = new File(folderName + File.separator + zipEntry.getName());
-
-        if (zipEntry.isDirectory()) {
-          file.mkdirs();
-        } else {
-          file.getParentFile().mkdirs();
-
-          fos = new FileOutputStream(file);
-          while ((bytesRead = zis.read(buffer)) != -1) {
-            fos.write(buffer, 0, bytesRead);
-          }
-        }
-
         zipEntry = zis.getNextEntry();
-      } catch (FileNotFoundException fnfe) {
-        throw new KettleException(fnfe);
       } catch (IOException ioe) {
         throw new KettleException(ioe);
-      } finally {
-        if (fos != null) {
-          try {
-            fos.close();
-          } catch (IOException e) {
-            // Ignore.
+      }
+      byte[] buffer = new byte[1024];
+      int bytesRead = 0;
+      FileOutputStream fos = null;
+  
+      while (zipEntry != null) {
+        try {
+          File file = new File(folderName + File.separator + zipEntry.getName());
+  
+          if (zipEntry.isDirectory()) {
+            file.mkdirs();
+          } else {
+            file.getParentFile().mkdirs();
+  
+            fos = new FileOutputStream(file);
+            while ((bytesRead = zis.read(buffer)) != -1) {
+              fos.write(buffer, 0, bytesRead);
+            }
+          }
+  
+          zipEntry = zis.getNextEntry();
+        } catch (FileNotFoundException fnfe) {
+          throw new KettleException(fnfe);
+        } catch (IOException ioe) {
+          throw new KettleException(ioe);
+        } finally {
+          if (fos != null) {
+            try {
+              fos.close();
+            } catch (IOException e) {
+              // Ignore.
+            }
           }
         }
       }
+    } catch(IOException e) {
+      throw new KettleException("Unable to unzip file "+packageUrl, e);
+    } finally {
+      if (zis!=null) {
+        try {
+          zis.close();
+        } catch(Exception e) {
+          throw new KettleException("Unable to close zip file stream (corrupt file?) of file "+tmpFile, e);
+        }
+      }
     }
+
   }
     
   /**
