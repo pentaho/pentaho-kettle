@@ -72,7 +72,7 @@ public class Const
   /**
    * Version number
    */
-  public static final String VERSION = "4.3.0.4";
+  public static final String VERSION = "4.3.0.6";
 
   /**
    * Release Type
