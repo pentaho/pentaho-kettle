@@ -28,6 +28,11 @@ public class ValueMetaTimestamp extends ValueMetaDate {
 	}
 	
 	@Override
+	public boolean isDate() {
+	  return true;
+	}
+	
+	@Override
 	public Date getDate(Object object) throws KettleValueException {
 	  Timestamp timestamp = getTimestamp(object);
 	  if (timestamp==null) {
@@ -407,6 +412,37 @@ public class ValueMetaTimestamp extends ValueMetaDate {
       
     } catch(Exception e) {
       throw new KettleDatabaseException(toStringMeta()+" : Unable to set value on prepared statement on index "+index, e);
+    }
+    
+  }
+  
+  @Override
+  public Object convertDataUsingConversionMetaData(Object data2) throws KettleValueException {
+    if (conversionMetadata==null) {
+      throw new KettleValueException("API coding error: please specify the conversion metadata before attempting to convert value " + name);
+    }
+    
+    return super.convertDataUsingConversionMetaData(data2);
+  }
+  
+  @Override
+  public byte[] getBinaryString(Object object) throws KettleValueException {
+    
+    if (object == null) return null;    
+    
+    if (isStorageBinaryString() && identicalFormat) {
+      return (byte[]) object; // shortcut it directly for better performance.
+    }
+    
+    switch (storageType) {
+      case STORAGE_TYPE_NORMAL:
+        return convertStringToBinaryString(getString(object));
+      case STORAGE_TYPE_BINARY_STRING:
+        return convertStringToBinaryString( (String) convertBinaryStringToNativeType((byte[]) object));
+      case STORAGE_TYPE_INDEXED:
+        return convertStringToBinaryString( getString(index[((Integer) object).intValue()]));
+      default:
+        throw new KettleValueException(toString() + " : Unknown storage type " + storageType + " specified.");
     }
     
   }

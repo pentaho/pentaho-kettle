@@ -4425,9 +4425,6 @@ public class ValueMetaBase implements ValueMetaInterface {
           data = resultSet.getBytes(index + 1);
         }
         break;
-      case ValueMetaInterface.TYPE_TIMESTAMP:
-        data = resultSet.getTimestamp(index + 1);
-        break;
         
       case ValueMetaInterface.TYPE_DATE:
         if (getPrecision() != 1 && databaseInterface.supportsTimeStampToDateConversion()) {
@@ -4584,7 +4581,13 @@ public class ValueMetaBase implements ValueMetaInterface {
   
   @Override
   public Object getNativeDataType(Object object) throws KettleValueException {
-    return object;
+    switch(getStorageType()) {
+      case STORAGE_TYPE_BINARY_STRING : return convertBinaryStringToNativeType((byte[])object);
+      case STORAGE_TYPE_INDEXED : return index[(Integer)object];
+      case STORAGE_TYPE_NORMAL: 
+      default: 
+        return object;
+    }
   }
 
   @Override
