@@ -24,6 +24,7 @@ package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
 import java.lang.reflect.Constructor;
 
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
@@ -35,14 +36,14 @@ public class UIObjectRegistry {
   public static final Class<?> DEFAULT_UIJOB_CLASS = UIJob.class;
   public static final Class<?> DEFAULT_UITRANS_CLASS = UITransformation.class;
   public static final Class<?> DEFAULT_UIDIR_CLASS = UIRepositoryDirectory.class;
-  
+  public static final Class<?> DEFAULT_DBCONN_CLASS = UIDatabaseConnection.class;
   private static UIObjectRegistry instance;
   
   private Class<?> repositoryUserClass = DEFAULT_UIREPOSITORYUSER_CLASS;
   private Class<?> jobClass = DEFAULT_UIJOB_CLASS;
   private Class<?> transClass = DEFAULT_UITRANS_CLASS;
   private Class<?> dirClass = DEFAULT_UIDIR_CLASS;
-
+  private Class<?> dbConnClass = DEFAULT_DBCONN_CLASS;
 
   private UIObjectRegistry() {
 
@@ -78,6 +79,7 @@ public class UIObjectRegistry {
   public Class<?> getRegisteredUITransformationClass() {
     return this.transClass;
   }
+
   public void registerUIRepositoryDirectoryClass(Class<?> dirClass) {
     this.dirClass = dirClass;
   }
@@ -86,6 +88,14 @@ public class UIObjectRegistry {
     return this.dirClass;
   }
 
+  public void registerUIDatabaseConnectionClass(Class<?> dbConnClass) {
+    this.dbConnClass = dbConnClass;
+  }
+  
+  public Class<?> getRegisteredUIDatabaseConnectionClass() {
+    return this.dbConnClass;
+  }
+  
   public IUIUser constructUIRepositoryUser(IUser user) throws UIObjectCreationException {
     try {
       Constructor<?> constructor = repositoryUserClass.getConstructor(IUser.class);
@@ -135,6 +145,19 @@ public class UIObjectRegistry {
       }
     } catch (Exception e) {
       throw new UIObjectCreationException("Unable to instantiate object for " + dirClass);
+    }
+  }
+  
+  public UIDatabaseConnection constructUIDatabaseConnection(DatabaseMeta dbmeta, Repository rep) throws UIObjectCreationException {
+    try {
+      Constructor<?> constructor = dbConnClass.getConstructor(DatabaseMeta.class, Repository.class);
+      if (constructor != null) {
+        return (UIDatabaseConnection) constructor.newInstance(dbmeta, rep);
+      } else {
+        throw new UIObjectCreationException("Unable to get the constructor for " + dbConnClass);
+      }
+    } catch (Exception e) {
+      throw new UIObjectCreationException("Unable to instantiate object for " + dbConnClass);
     }
   }
 }

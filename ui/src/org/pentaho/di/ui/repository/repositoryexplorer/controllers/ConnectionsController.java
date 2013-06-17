@@ -37,11 +37,17 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeVetoer;
+import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeVetoer.TYPE;
+import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeVetoerCollection;
 import org.pentaho.di.ui.repository.repositoryexplorer.ControllerInitializationException;
 import org.pentaho.di.ui.repository.repositoryexplorer.IUISupportController;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIDatabaseConnection;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIDatabaseConnections;
+import org.pentaho.di.ui.repository.repositoryexplorer.model.UIObjectCreationException;
+import org.pentaho.di.ui.repository.repositoryexplorer.model.UIObjectRegistry;
+import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObject;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
@@ -70,7 +76,12 @@ public class ConnectionsController extends LazilyInitializedController implement
   private UIDatabaseConnections dbConnectionList = new UIDatabaseConnections();
 
   private DatabaseDialog databaseDialog;
+  
+  protected ContextChangeVetoerCollection contextChangeVetoers;
 
+  protected List<UIDatabaseConnection> selectedConnections;
+  protected List<UIDatabaseConnection> repositoryConnections;
+  
   public ConnectionsController() {
   }
 
@@ -105,7 +116,7 @@ public class ConnectionsController extends LazilyInitializedController implement
       (bindButtonRemove = bf.createBinding(this, "repReadOnly", "connections-remove", "disabled")).fireSourceChanged();   //$NON-NLS-3$
 
       if (repository != null) {
-        bf.createBinding(connectionsTable, "selectedItems", this, "enableButtons");  
+        bf.createBinding(connectionsTable, "selectedItems", this, "selectedConnections");
       }
     } catch (Exception ex) {
       // convert to runtime exception so it bubbles up through the UI
@@ -162,7 +173,11 @@ public class ConnectionsController extends LazilyInitializedController implement
           ObjectId[] dbIdList = repository.getDatabaseIDs(false);
           for (ObjectId dbId : dbIdList) {
             DatabaseMeta dbMeta = repository.loadDatabaseMeta(dbId, null);
-            tmpList.add(new UIDatabaseConnection(dbMeta));
+            try {
+              tmpList.add(UIObjectRegistry.getInstance().constructUIDatabaseConnection(dbMeta, repository));
+            } catch (UIObjectCreationException uoe) {
+              tmpList.add(new UIDatabaseConnection(dbMeta, repository));
+            }
           }
         } catch (KettleException e) {
           // convert to runtime exception so it bubbles up through the UI
@@ -213,6 +228,61 @@ public class ConnectionsController extends LazilyInitializedController implement
     } finally {
       refreshConnectionList();
     }
+  }
+
+  /**
+   * Fire all current {@link ContextChangeVetoer}.
+   * Every one who has added their self as a vetoer has a change to vote on what
+   * should happen. 
+   */
+  List<TYPE> pollContextChangeVetoResults() {
+    if (contextChangeVetoers != null) {
+      return contextChangeVetoers.fireContextChange();
+    } else {
+      List<TYPE> returnValue = new ArrayList<TYPE>();
+      returnValue.add(TYPE.NO_OP);
+      return returnValue;
+    }
+  }
+
+  public void addContextChangeVetoer(ContextChangeVetoer listener) {
+    if (contextChangeVetoers == null) {
+      contextChangeVetoers = new ContextChangeVetoerCollection();
+    }
+    contextChangeVetoers.add(listener);
+  }
+
+  public void removeContextChangeVetoer(ContextChangeVetoer listener) {
+    if (contextChangeVetoers != null) {
+      contextChangeVetoers.remove(listener);
+    }
+  }
+
+  private boolean contains(TYPE type, List<TYPE> typeList) {
+    for (TYPE t : typeList) {
+      if (t.equals(type)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  boolean compareConnections(List<UIDatabaseConnection> ro1, List<UIDatabaseConnection> ro2) {
+    if (ro1 != null && ro2 != null) {
+      if (ro1.size() != ro2.size()) {
+        return false;
+      }
+      for (int i = 0; i < ro1.size(); i++) {
+        if (ro1.get(i) != null && ro2.get(i) != null) {
+          if (!ro1.get(i).getName().equals(ro2.get(i).getName())) {
+            return false;
+          }
+        }
+      }
+    } else {
+      return false;
+    }
+    return true;
   }
 
   public void editConnection() {
@@ -302,7 +372,20 @@ public class ConnectionsController extends LazilyInitializedController implement
     }
   }
 
-  public void setEnableButtons(List<UIDatabaseConnection> connections) {
+  public void setSelectedConnections(List<UIDatabaseConnection> connections) {
+    // SELECTION LOGIC
+    if (!compareConnections(connections, this.selectedConnections)) {
+      List<TYPE> pollResults = pollContextChangeVetoResults();
+      if (!contains(TYPE.CANCEL, pollResults)) {
+        this.selectedConnections = connections;
+        setRepositoryConnections(connections);
+      } else {
+        connectionsTable.setSelectedItems(this.selectedConnections);
+        return;
+      }
+    }
+
+    // ENABLE BUTTONS LOGIC
     boolean enableEdit = false;
     boolean enableRemove = false;
     if(connections != null && connections.size() > 0) {
@@ -314,6 +397,16 @@ public class ConnectionsController extends LazilyInitializedController implement
     // Convenience - Leave 'new' enabled, modify 'edit' and 'remove'
     enableButtons(true, enableEdit, enableRemove);
   }
+
+  public List<UIDatabaseConnection> getRepositoryConnections() {
+    return repositoryConnections;
+  }
+
+  public void setRepositoryConnections(List<UIDatabaseConnection> connections) {
+    this.repositoryConnections = connections;
+    firePropertyChange("repositoryConnections", null, connections);
+  }
+
   public void enableButtons(boolean enableNew, boolean enableEdit, boolean enableRemove) {
     XulButton bNew = (XulButton) document.getElementById("connections-new"); 
     XulButton bEdit = (XulButton) document.getElementById("connections-edit"); 

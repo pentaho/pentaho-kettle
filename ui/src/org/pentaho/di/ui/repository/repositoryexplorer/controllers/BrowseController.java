@@ -820,7 +820,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
   /**
    * Fire all current {@link ContextChangeVetoer}.
-   * Every on who has added their self as a vetoer has a change to vote on what
+   * Every one who has added their self as a vetoer has a change to vote on what
    * should happen. 
    */
   List<TYPE> pollContextChangeVetoResults() {

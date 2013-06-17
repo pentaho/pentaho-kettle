@@ -135,49 +135,30 @@
 				
 				<tabpanel id="connections">
 					<hbox flex="1">
-					<vbox flex="1">
-						<!-- Connection list tool pane -->
-						<hbox height="20px">
-							<label value="${RepositoryExplorerDialog.ConnectionsTab.Label}"/>
-							<label id="spacer-label" flex="1" />
-							<button id="connections-edit" image="images/Edit.png" pen:disabledimage="images/dEdit.png" onclick="connectionsController.editConnection()"/>
-							<button id="connections-new" image="images/Add.png" pen:disabledimage="images/dAdd.png" onclick="connectionsController.createConnection()"/>
-							<button id="connections-remove" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="connectionsController.removeConnection()" />
-						</hbox>
-						<!-- Connection list -->
-						<tree id="connections-table" flex="1" hidecolumnpicker="true" treeLines="false" sortable="true">
-							<treecols>
-								<treecol id="name-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.Name}" pen:binding="name" sortActive="true" sortDirection="ASCENDING"/>
-								<treecol id="type-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.Type}" pen:binding="type"/>
-								<treecol id="date-mod-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.DateModified}" pen:binding="dateModified"/>
-								<!--<treecol id="size-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.Size}"/>-->
-							</treecols>
-							<treechildren/>
-						</tree>
-						<!-- Version history tool pane -->
-	<!--
-						<hbox height="20px">
-							<label id="connection-revision-label" value="Version History:"/>
-						</hbox>
-	-->
-						<!-- Version history -->
-	<!--
-						<tree id="connection-revision-table" flex="1" hidecolumnpicker="true"
-							enableColumnDrag="true" context="revisionContextMenu">
-							<treecols>
-								<treecol id="revision-label-col" flex="1" label="${RepositoryExplorerDialog.Tab.VersionHistory.Column.Label}" 
-									pen:binding="name" pen:childrenbinding="children" context="revisionContextMenu" />
-								<treecol id="revision-date-mod-col" flex="1" label="${RepositoryExplorerDialog.Tab.VersionHistory.Column.DateCreated}"
-									pen:binding="formatCreationDate" context="revisionContextMenu" />
-								<treecol id="revision-comment-col" flex="1" label="${RepositoryExplorerDialog.Tab.VersionHistory.Column.Comment}"
-									pen:binding="comment" />
-								<treecol id="revision-user-col" flex="1" label="${RepositoryExplorerDialog.Tab.VersionHistory.Column.User}"
-									pen:binding="login" />
-							</treecols>
-							<treechildren />
-						</tree>
-	-->
-					</vbox>
+						<vbox flex="1">
+							<splitter flex="1" orient="VERTICAL">
+								<vbox flex="4">
+									<!-- Connection list tool pane -->
+									<hbox height="20px">
+										<label value="${RepositoryExplorerDialog.ConnectionsTab.Label}"/>
+										<label id="spacer-label" flex="1" />
+										<button id="connections-edit" image="images/Edit.png" pen:disabledimage="images/dEdit.png" onclick="connectionsController.editConnection()"/>
+										<button id="connections-new" image="images/Add.png" pen:disabledimage="images/dAdd.png" onclick="connectionsController.createConnection()"/>
+										<button id="connections-remove" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="connectionsController.removeConnection()" />
+									</hbox>
+									<!-- Connection list -->
+									<tree id="connections-table" flex="1" hidecolumnpicker="true" treeLines="false" sortable="true">
+										<treecols>
+											<treecol id="name-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.Name}" pen:binding="name" sortActive="true" sortDirection="ASCENDING"/>
+											<treecol id="type-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.Type}" pen:binding="type"/>
+											<treecol id="date-mod-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.DateModified}" pen:binding="dateModified"/>
+										</treecols>
+										<treechildren/>
+									</tree>
+								</vbox>
+								<vbox flex="3" id="conn-addl-info-box" visible="false"/>
+							</splitter>
+						</vbox>
 					</hbox>
 				</tabpanel>
 				
@@ -204,26 +185,26 @@
 	
 				<tabpanel id="slaves">
 					<hbox flex="1">
-					<vbox flex="1">
-						<!-- Slaves list tool pane -->
-						<hbox>
-							<label value="${RepositoryExplorerDialog.SlavesTab.Label}"/>
-							<label id="spacer-label" flex="1" />
-							<button id="slaves-edit" image="images/Edit.png" pen:disabledimage="images/dEdit.png" onclick="slavesController.editSlave()"/>
-							<button id="slaves-new" image="images/Add.png" pen:disabledimage="images/dAdd.png" onclick="slavesController.createSlave()"/>
-							<button id="slaves-remove" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="slavesController.removeSlave()" />
-						</hbox>
-						<!-- Slaves list -->
-						<tree id="slaves-table" flex="1" hidecolumnpicker="true" treeLines="false" sortable="true">
-							<treecols>
-								<treecol id="name-col" flex="4" label="${RepositoryExplorerDialog.SlavesTab.TableColumn.Name}" pen:binding="name" sortActive="true" sortDirection="ASCENDING"/>
-								<treecol id="host-col" flex="4" label="${RepositoryExplorerDialog.SlavesTab.TableColumn.Host}" pen:binding="host"/>
-								<treecol id="port-col" flex="2" label="${RepositoryExplorerDialog.SlavesTab.TableColumn.Port}" pen:binding="port"/>
-								<treecol id="master-col" flex="1" label="${RepositoryExplorerDialog.SlavesTab.TableColumn.Master}" pen:binding="master"/>
-							</treecols>
-							<treechildren/>
-						</tree>
-					</vbox>
+						<vbox flex="1">
+							<!-- Slaves list tool pane -->
+							<hbox>
+								<label value="${RepositoryExplorerDialog.SlavesTab.Label}"/>
+								<label id="spacer-label" flex="1" />
+								<button id="slaves-edit" image="images/Edit.png" pen:disabledimage="images/dEdit.png" onclick="slavesController.editSlave()"/>
+								<button id="slaves-new" image="images/Add.png" pen:disabledimage="images/dAdd.png" onclick="slavesController.createSlave()"/>
+								<button id="slaves-remove" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="slavesController.removeSlave()" />
+							</hbox>
+							<!-- Slaves list -->
+							<tree id="slaves-table" flex="1" hidecolumnpicker="true" treeLines="false" sortable="true">
+								<treecols>
+									<treecol id="name-col" flex="4" label="${RepositoryExplorerDialog.SlavesTab.TableColumn.Name}" pen:binding="name" sortActive="true" sortDirection="ASCENDING"/>
+									<treecol id="host-col" flex="4" label="${RepositoryExplorerDialog.SlavesTab.TableColumn.Host}" pen:binding="host"/>
+									<treecol id="port-col" flex="2" label="${RepositoryExplorerDialog.SlavesTab.TableColumn.Port}" pen:binding="port"/>
+									<treecol id="master-col" flex="1" label="${RepositoryExplorerDialog.SlavesTab.TableColumn.Master}" pen:binding="master"/>
+								</treecols>
+								<treechildren/>
+							</tree>
+						</vbox>
 					</hbox>
 				</tabpanel>
 				
