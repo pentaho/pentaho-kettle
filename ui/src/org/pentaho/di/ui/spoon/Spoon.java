@@ -53,6 +53,7 @@ import javax.swing.UIManager;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.apache.commons.vfs.FileObject;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
@@ -1590,14 +1591,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public void addMenuLast() {
     org.pentaho.ui.xul.dom.Document doc = (org.pentaho.ui.xul.dom.Document) mainSpoonContainer.getDocumentRoot();
-    XulMenupopup recentFilesPopup = (XulMenupopup) doc.getElementById("file-open-recent-popup");
+    JfaceMenupopup recentFilesPopup = (JfaceMenupopup) doc.getElementById("file-open-recent-popup");
 
-    int max = recentFilesPopup.getChildNodes().size();
-    for (int i = max - 1; i >= 0; i--) {
-      XulComponent mi = recentFilesPopup.getChildNodes().get(i);
-      mi.getParent().removeChild(mi);
-    }
-
+    recentFilesPopup.removeChildren();
+    
     // Previously loaded files...
     List<LastUsedFile> lastUsedFiles = props.getLastUsedFiles();
     for (int i = 0; i < lastUsedFiles.size(); i++) {
@@ -1609,12 +1606,18 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       String text = lastUsedFile.toString();
       String id = "last-file-" + i;
 
-      if (i > 9) {
+      if (i > 8) {
         accessKey = null;
         accessText = null;
       }
 
-      XulMenuitem miFileLast = ((JfaceMenupopup) recentFilesPopup).createNewMenuitem();
+      final String lastFileId = Integer.toString(i);
+      
+      Action action = new Action("open-last-file-"+(i+1), Action.AS_DROP_DOWN_MENU) {
+        public void run() {
+          lastFileSelect(lastFileId);
+        };
+      };       
 
       // shorten the filename if necessary
       int targetLength = 40;
@@ -1632,11 +1635,16 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         }
       }
 
+      // JfaceMenuitem miFileLast = (JfaceMenuitem)recentFilesPopup.createNewMenuitem();
+      JfaceMenuitem miFileLast = new JfaceMenuitem(null, recentFilesPopup, mainSpoonContainer, text, 0, action);
+
       miFileLast.setLabel(text);
       miFileLast.setId(id);
-      miFileLast.setAcceltext(accessText);
-      miFileLast.setAccesskey(accessKey);
-
+      if (accessText!=null && accessKey!=null) {
+        miFileLast.setAcceltext(accessText);
+        miFileLast.setAccesskey(accessKey);
+      }
+      
       if (lastUsedFile.isTransformation()) {
         ((JfaceMenuitem) miFileLast).setImage(GUIResource.getInstance().getImageTransGraph());
       } else if (lastUsedFile.isJob()) {
