@@ -51,6 +51,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ExpandBar;
+import org.eclipse.swt.events.ExpandListener;
+import org.eclipse.swt.events.ExpandEvent;
 import org.eclipse.swt.widgets.ExpandItem;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
@@ -84,7 +86,7 @@ public class MarketplaceDialog extends Dialog {
   private int middle;
   private Text selectionFilter;
 
-  private MarketEntries marketEntries = null;
+  private static MarketEntries marketEntries = null;
   private Map<MarketEntry, Composite> marketEntryControls = new HashMap<MarketEntry, Composite>();
   
   public MarketplaceDialog(Shell parent) {
@@ -134,7 +136,21 @@ public class MarketplaceDialog extends Dialog {
       }
     });
     
+    //Add an expand listener to allow lazy loading of the market entry controls
     expandBar = new ExpandBar(shell, SWT.V_SCROLL | SWT.H_SCROLL);
+    expandBar.addExpandListener(new ExpandListener(){
+      public void itemCollapsed(ExpandEvent e){
+        
+      }
+      
+      public void itemExpanded(ExpandEvent e){
+        ExpandItem item = (ExpandItem)e.item;
+        //if the control is not null, it was already loaded
+        if (item.getControl() != null) return;
+        initExpandItemControl(item);
+      }
+    });
+    
     FormData fdBar = new FormData();
     fdBar.left = new FormAttachment(0, 0);
     fdBar.top = new FormAttachment(wlMarketplaces, margin);
@@ -170,7 +186,7 @@ public class MarketplaceDialog extends Dialog {
     }
   }
     
-  private ExpandItem getExpandItem(final MarketEntry marketEntry) {
+  private ExpandItem findExpandItem(final MarketEntry marketEntry) {
     //finds the expand item associated with the specified marketEntry.
     Composite composite = marketEntryControls.get(marketEntry);
     if (composite == null) return null;
@@ -180,12 +196,33 @@ public class MarketplaceDialog extends Dialog {
     return null;
   }
   
-  private ExpandItem createExpandItem(final MarketEntry marketEntry){
-    ExpandItem expandItem = new ExpandItem(expandBar, SWT.NONE);
-    Composite composite = marketEntryControls.get(marketEntry);
-    setPluginName(expandItem, marketEntry.getName(), marketEntry.isInstalled());
+  private Composite getMarketEntryControl(MarketEntry marketEntry){
+    Composite composite;
+    if (marketEntryControls.containsKey(marketEntry)) {
+      composite = marketEntryControls.get(marketEntry);
+    }
+    else {
+      composite = createMarketEntryControl(marketEntry);
+      marketEntryControls.put(marketEntry, composite);
+    }
+    return composite;
+  }
+  
+  private void initExpandItemControl(final ExpandItem expandItem){
+    MarketEntry marketEntry = (MarketEntry)expandItem.getData("marketEntry");
+    Composite composite = getMarketEntryControl(marketEntry);
     expandItem.setHeight(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y+30);
     expandItem.setControl(composite);
+  }
+  
+  private ExpandItem createExpandItem(final MarketEntry marketEntry){
+    ExpandItem expandItem = new ExpandItem(expandBar, SWT.NONE);
+    expandItem.setData("marketEntry", marketEntry);
+    //Composite composite = marketEntryControls.get(marketEntry);
+    setPluginName(expandItem, marketEntry.getName(), marketEntry.isInstalled());
+    //expandItem.setHeight(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y+30);
+    expandItem.setHeight(30);
+    //expandItem.setControl(composite);
     Image image;
     switch (marketEntry.getType()) {
       case Step:
@@ -425,12 +462,13 @@ public class MarketplaceDialog extends Dialog {
     //we create and cache controls to go inside the expand items
     //these are then reused whenever we need to populate the expandbar (filtering)
     //initially, there's no filter so we create an expanditem for each entry.
-    if (marketEntries != null) return;
-    marketEntries = new MarketEntries();
-    Composite composite;
+    if (marketEntries == null) {
+      marketEntries = new MarketEntries();
+    }
+    //Composite composite;
     for (final MarketEntry marketEntry : marketEntries) {
-      composite = createMarketEntryControl(marketEntry);
-      marketEntryControls.put(marketEntry, composite);
+      //composite = createMarketEntryControl(marketEntry);
+      //marketEntryControls.put(marketEntry, composite);
       createExpandItem(marketEntry);
     }
   }
@@ -448,7 +486,7 @@ public class MarketplaceDialog extends Dialog {
   
   
   private void setPluginName(MarketEntry marketEntry) {
-    ExpandItem expandItem = getExpandItem(marketEntry);
+    ExpandItem expandItem = findExpandItem(marketEntry);
     setPluginName(expandItem, marketEntry.getName(), marketEntry.isInstalled());
   }
   
