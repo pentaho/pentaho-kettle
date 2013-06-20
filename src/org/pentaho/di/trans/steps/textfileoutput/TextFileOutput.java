@@ -343,7 +343,12 @@ public class TextFileOutput extends BaseStep implements StepInterface
         		int size = 0;
         		byte filler[] = null;
         		try {
-        			filler = " ".getBytes(meta.getEncoding());
+        			if (!Const.isEmpty(meta.getEncoding())) {
+        				filler = " ".getBytes(meta.getEncoding());
+        			}
+        			else {
+        				filler = " ".getBytes();
+        			}
         			size = text.length + filler.length*(length - string.length());
         		}
         		catch (UnsupportedEncodingException uee) {
