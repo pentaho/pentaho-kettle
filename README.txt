@@ -211,7 +211,18 @@ I seem to be getting Ivy-related errors while running Ant targets. What should I
      folder at .ivy2/cache), find the folder containing the artifact(s), delete the folder, then re-run your Ant target. If this does not work, you can run the 
      "ivy-clean-cache" and "ivy-clean-local" Ant tasks to clean your entire Ivy cache and local repository, respectively.
 
-     
+I removed the right directories from the ~/.ivy2/cache directory but I am still having ivy issues.
+
+    If you are seeing error messages like:
+    
+    [ivy:resolve] :: problems summary ::
+[ivy:resolve] :::: WARNINGS
+[ivy:resolve]     module not found: pentaho-kettle#kettle-db;TRUNK-SNAPSHOT
+[ivy:resolve]   ==== local: tried
+[ivy:resolve]     /home/rbouman/.ivy2/local/pentaho-kettle/kettle-db/TRUNK-SNAPSHOT/ivys/ivy.xml
+    
+    then your local ivy files (in .ivy2/local) is trying to pull in a jar that is no longer available (and probably, no longer needed).
+    To remedy this, remove the entire .ivy2/local directory and retry.
      
 I'm making a change to Kettle that requires a new (or newer version of a) third-party library or dependency. What do I do?
 
