@@ -56,12 +56,16 @@ What is the best way to merge?
     
 OK, I have the new project structure checked out. So now what can I do?
 
+    Right after checking out, you should run the following:
+    
+    ant clean-all resolve create-dot-classpath
+    
     If you are using Ant, the default Ant target will build Spoon which can then be run from 
     the project's dist/ folder.
      
      Linux example:
         
-         ant 
+         ant
          cd dist
          sh spoon.sh     
          
