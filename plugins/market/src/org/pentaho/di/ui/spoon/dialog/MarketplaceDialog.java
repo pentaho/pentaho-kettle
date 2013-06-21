@@ -45,6 +45,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -85,6 +86,8 @@ public class MarketplaceDialog extends Dialog {
   private int margin;
   private int middle;
   private Text selectionFilter;
+  private Button checkInstalled;
+  private Button checkNotinstalled;
 
   private static MarketEntries marketEntries = null;
   private Map<MarketEntry, Composite> marketEntryControls = new HashMap<MarketEntry, Composite>();
@@ -132,7 +135,7 @@ public class MarketplaceDialog extends Dialog {
     selectionFilter.setLayoutData(fdSelectionFilter);
     selectionFilter.addModifyListener(new ModifyListener() {
       public void modifyText(ModifyEvent arg0) {
-        filter(selectionFilter.getText());
+        filter();
       }
     });
     
@@ -159,7 +162,37 @@ public class MarketplaceDialog extends Dialog {
     expandBar.setLayoutData(fdBar);
 
     addMarketPlaceEntries();
-
+    
+    SelectionAdapter checkListener = new SelectionAdapter(){
+      public void widgetSelected(SelectionEvent e){
+        filter();
+      }
+    };
+    
+    Rectangle rect = expandBar.getClientArea();
+    
+    checkInstalled = new Button(shell, SWT.CHECK);
+    checkInstalled.setText(BaseMessages.getString(MARKET_PKG, "MarketplacesDialog.CheckInstalled"));
+    checkInstalled.setSelection(true);
+    checkInstalled.addSelectionListener(checkListener);
+    FormData fdInstalled = new FormData();
+    fdInstalled.left = new FormAttachment(0,0);
+    fdInstalled.top = new FormAttachment(expandBar, margin);
+    fdInstalled.right = new FormAttachment(100, 0);
+    fdInstalled.bottom = new FormAttachment(100, -35);
+    checkInstalled.setLayoutData(fdInstalled);
+    
+    checkNotinstalled = new Button(shell, SWT.CHECK);
+    checkNotinstalled.setText(BaseMessages.getString(MARKET_PKG, "MarketplacesDialog.CheckNotinstalled"));
+    checkNotinstalled.setSelection(true);
+    checkNotinstalled.addSelectionListener(checkListener);
+    FormData fdNotinstalled = new FormData();
+    fdNotinstalled.left = new FormAttachment(0,0);
+    fdNotinstalled.top = new FormAttachment(checkInstalled, margin);
+    fdNotinstalled.right = new FormAttachment(100, 0);
+    fdNotinstalled.bottom = new FormAttachment(100, -20);
+    checkNotinstalled.setLayoutData(fdNotinstalled);
+    
     wClose = new Button(shell, SWT.PUSH);
     wClose.setText(BaseMessages.getString(MARKET_PKG, "System.Button.Close"));
     wClose.addSelectionListener(new SelectionAdapter() {
@@ -391,7 +424,7 @@ public class MarketplaceDialog extends Dialog {
           if(upgradeButton != null) {
             upgradeButton.setVisible(marketEntry.isInstalled());
           }
-      }
+        }
         catch(KettleException ke) {
           new ErrorDialog(shell, BaseMessages.getString(MARKET_PKG, "Market.error"),
               BaseMessages.getString(MARKET_PKG, "Market.installUninstall.error"), ke);
@@ -406,14 +439,12 @@ public class MarketplaceDialog extends Dialog {
         ) ;
     upgradeButton.setVisible(showUpgradeButton);
     
-    
-    
     // Create runner for market uninstallation
     final ProgressMonitorRunner uninstallMarketRunner = new ProgressMonitorRunner(new Runnable() {
       public void run() {
         try {
           Market.uninstallMarket();
-      }
+        }
         catch(KettleException ke) {
           new ErrorDialog(shell, BaseMessages.getString(MARKET_PKG, "Market.error"),
               BaseMessages.getString(MARKET_PKG, "Market.installUninstall.error"), ke);
@@ -592,9 +623,14 @@ public class MarketplaceDialog extends Dialog {
   
   private void clearExpandItems(){
     for (ExpandItem item: expandBar.getItems()){
+      item.setExpanded(false);
       item.setControl(null);
       item.dispose();
     }
+  }
+  
+  private void filter(){
+    filter(selectionFilter.getText());
   }
   
   private void filter(String filter) {
@@ -602,9 +638,14 @@ public class MarketplaceDialog extends Dialog {
     //so, we first wipe all expand items, then add only those that match the filter.
     clearExpandItems();
     String filterUCase = filter.toUpperCase();
-    String name;
-    boolean visible;
+    boolean installed = checkInstalled.getSelection();
+    boolean notInstalled = checkNotinstalled.getSelection();
+    boolean isInstalled;
     for (MarketEntry marketEntry : marketEntries) {
+      if (!installed || !notInstalled) {
+        isInstalled = marketEntry.isInstalled();
+        if (isInstalled && !installed || !isInstalled && !notInstalled) continue;
+      }
       if (!filter.isEmpty() && !marketEntry.getName().toUpperCase().contains(filterUCase)) continue;
       createExpandItem(marketEntry);
     }
