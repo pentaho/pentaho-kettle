@@ -97,6 +97,12 @@ public class XMLJoin extends BaseStep implements StepInterface
             
           //get the first line from the target row set
         	Object[] rTarget = getRowFrom(data.TargetRowSet);
+
+        	if(rTarget==null) { // nothing to do
+        		logBasic(BaseMessages.getString(PKG,"XMLJoin.NoRowsFoundInTarget"));
+	            setOutputDone();
+	            return false;      
+        	}
         	
         	//get target xml
         	meta.getTargetXMLstep();
