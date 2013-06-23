@@ -389,12 +389,12 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
 		wTest = new Button(shell, SWT.PUSH);
 		wTest.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.TestClass.Button")); 
-		wCreatePlugin = new Button(shell, SWT.PUSH);
-		wCreatePlugin.setText("Create Plug-in"); 
+		//wCreatePlugin = new Button(shell, SWT.PUSH);
+		//wCreatePlugin.setText("Create Plug-in"); //$NON-NLS-1$
 		wCancel = new Button(shell, SWT.PUSH);
 		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
-		setButtonPositions(new Button[] { wOK, wCancel, wTest, wCreatePlugin }, margin, null);
+		setButtonPositions(new Button[] { wOK, wCancel, wTest/*, wCreatePlugin*/ }, margin, null);
 
 		lsCancel = new Listener() {
 			public void handleEvent(Event e) {
@@ -416,16 +416,16 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 				treeDblClick(e);
 			}
 		};
-		lsCreatePlugin = new Listener() {
+		/*lsCreatePlugin = new Listener() {
 			public void handleEvent(Event e) {
 				createPlugin();
 			}
-		};
+		};*/
 
 		wCancel.addListener(SWT.Selection, lsCancel);
 		wTest.addListener(SWT.Selection, lsTest);
 		wOK.addListener(SWT.Selection, lsOK);
-		wCreatePlugin.addListener(SWT.Selection, lsCreatePlugin);
+		//wCreatePlugin.addListener(SWT.Selection, lsCreatePlugin);
 		wTree.addListener(SWT.MouseDoubleClick, lsTree);
 
 		lsDef = new SelectionAdapter() {
