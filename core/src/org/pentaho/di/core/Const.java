@@ -235,7 +235,7 @@ public class Const
 	/**
 	 * Max nr. of files to remember
 	 */
-	public static final int MAX_FILE_HIST = 15;
+	public static final int MAX_FILE_HIST = 9; // Having more than 9 files in the file history is not compatible with pre 5.0 versions
 
 	/**
 	 * The default locale for the kettle environment (system defined)
