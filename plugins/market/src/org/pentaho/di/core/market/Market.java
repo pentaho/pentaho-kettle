@@ -22,11 +22,13 @@
 
 package org.pentaho.di.core.market;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -173,6 +175,7 @@ public class Market implements SpoonPluginInterface {
     return "Unknown";
   }
 
+ 
   /**
    * Builds and returns the path to the plugins folder.
    * 
@@ -253,12 +256,46 @@ public class Market implements SpoonPluginInterface {
         }
         deleteDirectory(pluginFolder);
         unzipMarketEntry(parentFolderName, marketEntry.getPackageUrl());
+        if (Market.discoverInstalledVersion(marketEntry).equalsIgnoreCase("unknown")) {
+        	createVersionXML(marketEntry);    		
+        }
         refreshSpoon(monitorDialog);
       }
     } else {
       unzipMarketEntry(parentFolderName, marketEntry.getPackageUrl());
+      if (Market.discoverInstalledVersion(marketEntry).equalsIgnoreCase("unknown")) {
+      	createVersionXML(marketEntry);    		
+      }
       refreshSpoon(monitorDialog);
     }
+  }
+  
+  
+  private static void createVersionXML(MarketEntry marketEntry) throws KettleException {
+	  String pluginFolder = buildPluginsFolderPath(marketEntry)+File.separator+marketEntry.getId();
+	  String versionPath = pluginFolder + File.separator + "version.xml";
+	  File file = new File(versionPath);
+	  if (file != null) {
+ 	     BufferedWriter bufferedWriter = null;
+		 try {
+			 FileWriter fw = new FileWriter(file.getAbsoluteFile());
+			 bufferedWriter = new BufferedWriter(fw);
+			 bufferedWriter.write("<version>"+marketEntry.getVersion()+"</version>");
+		 }
+		 catch (IOException ioe) {
+			throw new KettleException(ioe);
+		 }
+		 finally {
+			 if (bufferedWriter != null) {
+				 try {
+					 bufferedWriter.close();
+				 }
+				 catch (IOException ioe) {
+					 throw new KettleException(ioe);
+				 }
+			 }
+		 }
+	  }
   }
 	 
   /**
