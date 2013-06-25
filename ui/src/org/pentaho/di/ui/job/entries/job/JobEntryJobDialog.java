@@ -1553,6 +1553,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
     jej.setWaitingToFinish(wWaitingToFinish.getSelection());
     jej.createParentFolder = wCreateParentFolder.getSelection();
     jej.setFollowingAbortRemotely(wFollowingAbortRemotely.getSelection());
+    jej.setExpandingRemoteJob(wExpandRemote.getSelection());
   }
 
   private void ok() {
