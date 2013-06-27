@@ -439,15 +439,15 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 							String realSchemaname = environmentSubstitute(schemaname);
 							// Get tablename
 							String realTablename = environmentSubstitute(tablename);
-	
+
+							// Add schemaname (Most the time Schemaname.Tablename)
+							if (schemaname !=null)	realTablename= realSchemaname + "." + realTablename;
+							
 							if (db.checkTableExists(realTablename))
 							{
 								// The table existe, We can continue ...
 								if(log.isDetailed())	
 									logDetailed(BaseMessages.getString(PKG, "JobMssqlBulkLoad.TableExists.Label",realTablename));
-	
-								// Add schemaname (Most the time Schemaname.Tablename)
-								if (schemaname !=null)	realTablename= realSchemaname + "." + realTablename;
 	
 								// FIELDTERMINATOR
 								String Fieldterminator=getRealFieldTerminator();
