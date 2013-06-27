@@ -90,8 +90,10 @@ public class DynamicSQLRow extends BaseStep implements StepInterface
 		{
 			if(loadFromBuffer)
 			{
-				if(!data.previousSQL.equals(sql))	loadFromBuffer=false;
+				if(data.previousSQL!=null && !data.previousSQL.equals(sql))	loadFromBuffer=false;
 			}
+			// Save current parameters value as previous ones	
+			data.previousSQL= sql;
 		}else
 			loadFromBuffer=false;
 		
@@ -219,11 +221,6 @@ public class DynamicSQLRow extends BaseStep implements StepInterface
 			if(data.db!=null) data.db.closeQuery(rs);
 		}
 	
-		// Save current parameters value as previous ones	
-		if(meta.isQueryOnlyOnChange())
-		{
-			data.previousSQL= sql;
-		}
 	}
 	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
