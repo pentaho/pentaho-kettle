@@ -2565,8 +2565,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     // Don't close any connections if the parent transformation is using the same transaction
     // 
-    if (parentTrans.getTransMeta().isUsingUniqueConnections() && 
-        parentTrans != null && transactionId != null && parentTrans.getTransactionId() != null
+    if (parentTrans != null && parentTrans.getTransMeta().isUsingUniqueConnections() 
+        && transactionId != null && parentTrans.getTransactionId() != null
         && transactionId.equals(parentTrans.getTransactionId())) {
       return;
     }
