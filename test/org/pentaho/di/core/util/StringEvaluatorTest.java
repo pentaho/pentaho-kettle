@@ -32,7 +32,11 @@ import java.util.Locale;
 
 import junit.framework.TestCase;
 
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.PluginTypeInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaPluginType;
 
 public class StringEvaluatorTest extends TestCase {
 	
@@ -64,7 +68,7 @@ public class StringEvaluatorTest extends TestCase {
 		assertEquals(evaluator.getMaxLength(), 19);
 		StringEvaluationResult result = evaluator.getStringEvaluationResults().get(0);
 		
-		assertEquals("Not a date detetected", result.getConversionMeta().getType(), ValueMetaInterface.TYPE_DATE);
+		assertEquals("Not a date detected", result.getConversionMeta().getType(), ValueMetaInterface.TYPE_DATE);
 		Date minDate = result.getConversionMeta().getDate(result.getMin());
 		assertEquals(minDate.getTime(), 1262280896000L);
 		
@@ -84,7 +88,7 @@ public class StringEvaluatorTest extends TestCase {
 		assertEquals(evaluator.getCount(), series3.length);
 		assertEquals(evaluator.getMaxLength(), 8);
 		StringEvaluationResult result = evaluator.getStringEvaluationResults().get(0);
-		assertEquals("Not a number detetected", result.getConversionMeta().getType(), ValueMetaInterface.TYPE_NUMBER);
+		assertEquals("Not a number detected", result.getConversionMeta().getType(), ValueMetaInterface.TYPE_NUMBER);
 		
 		int nrEmpty = result.getNrNull();
 		assertEquals(nrEmpty, 1);
@@ -102,7 +106,7 @@ public class StringEvaluatorTest extends TestCase {
 		assertEquals(evaluator.getCount(), series4.length);
 		assertEquals(evaluator.getMaxLength(), 13);
 		StringEvaluationResult result = evaluator.getStringEvaluationResults().get(0);
-		assertEquals("Not a number detetected", result.getConversionMeta().getType(), ValueMetaInterface.TYPE_NUMBER);
+		assertEquals("Not a number detected", result.getConversionMeta().getType(), ValueMetaInterface.TYPE_NUMBER);
 		
 		int nrEmpty = result.getNrNull();
 		assertEquals(nrEmpty, 1);
@@ -117,7 +121,7 @@ public class StringEvaluatorTest extends TestCase {
     }
     assertEquals(values.length, eval.getCount());
     StringEvaluationResult result = eval.getAdvicedResult();
-    assertEquals("Not a number detetected", ValueMetaInterface.TYPE_NUMBER, result.getConversionMeta().getType());
+    assertEquals("Not a number detected", ValueMetaInterface.TYPE_NUMBER, result.getConversionMeta().getType());
     assertEquals("Precision not correct", 2, result.getConversionMeta().getPrecision());
     assertEquals("Currency format mask is incorrect", "$#,##0.00;($#,##0.00)", result.getConversionMeta().getConversionMask());
   }
@@ -128,7 +132,6 @@ public class StringEvaluatorTest extends TestCase {
     StringEvaluator eval = new StringEvaluator(true);
 
     DecimalFormat currencyFormat = ((DecimalFormat) NumberFormat.getCurrencyInstance());
-    System.out.println("UK Locale currency format: " + currencyFormat.toLocalizedPattern());
     try {
       currencyFormat.parse("-£400.059");
     } catch (ParseException e) {
@@ -143,7 +146,7 @@ public class StringEvaluatorTest extends TestCase {
 
     Locale.setDefault(orig);
 
-    assertEquals("Not a number detetected", ValueMetaInterface.TYPE_NUMBER, result.getConversionMeta().getType());
+    assertEquals("Not a number detected", ValueMetaInterface.TYPE_NUMBER, result.getConversionMeta().getType());
     assertEquals("Precision not correct", 2, result.getConversionMeta().getPrecision());
     assertEquals("Currency format mask is incorrect", "£#,##0.00", result.getConversionMeta().getConversionMask());
   }
@@ -161,7 +164,7 @@ public class StringEvaluatorTest extends TestCase {
     }
     assertEquals(goodDateValues.length, eval.getCount());
     StringEvaluationResult result = eval.getAdvicedResult();
-    assertEquals("Not a date detetected", result.getConversionMeta().getType(), ValueMetaInterface.TYPE_DATE);
+    assertEquals("Not a date detected", result.getConversionMeta().getType(), ValueMetaInterface.TYPE_DATE);
 
     eval = new StringEvaluator(true, numbers, dates);
     for (String value : badDateValues) {
@@ -169,10 +172,37 @@ public class StringEvaluatorTest extends TestCase {
     }
     assertEquals(badDateValues.length, eval.getCount());
     result = eval.getAdvicedResult();
-    assertFalse("Date detetected", result.getConversionMeta().getType() == ValueMetaInterface.TYPE_DATE);
+    assertFalse("Date detected", result.getConversionMeta().getType() == ValueMetaInterface.TYPE_DATE);
   }
 
   public void testCustomNumberFormats() {
+    // Need to load the ValueMeta plugins
+    PluginRegistry registry = PluginRegistry.getInstance();
+    assertNotNull("Registry singleton was not found!", registry);
+    
+    // Register a new plugin type...
+    //
+    PluginRegistry.addPluginType(ValueMetaPluginType.getInstance());
+    
+    // Plugin Registry should initialize without exception
+    Exception initException = null;
+    try {
+      PluginRegistry.init();
+    } catch (Exception e) {
+      initException = e;
+    }
+    assertNull(initException); 
+   
+    // There will always be a PluginRegistryPluginType, so see if we have only 2 plugins here.
+    //
+    List<Class<? extends PluginTypeInterface>> pluginTypes = registry.getPluginTypes();
+    assertEquals("Two plugin types expected in the registry", 2, pluginTypes.size());
+     
+    // ... and have at least 1 ValueMetaPlugin
+    List<PluginInterface> valueMetaPlugins = registry.getPlugins(ValueMetaPluginType.class);
+    assertTrue("Size of plugins list expected to be >1", valueMetaPlugins.size() > 1);
+    
+    // Now get to the real testing
     Locale orig = Locale.getDefault();
     Locale.setDefault(Locale.US);
 
@@ -185,7 +215,7 @@ public class StringEvaluatorTest extends TestCase {
     }
     assertEquals(goodValues.length, eval.getCount());
     StringEvaluationResult result = eval.getAdvicedResult();
-    assertEquals("Not a number detetected", result.getConversionMeta().getTypeDesc(), "Number");
+    assertEquals("Not a number detected", result.getConversionMeta().getTypeDesc(), "Number");
 
     eval = new StringEvaluator();
     for (String value : badValues) {
@@ -193,7 +223,7 @@ public class StringEvaluatorTest extends TestCase {
     }
     assertEquals(badValues.length, eval.getCount());
     result = eval.getAdvicedResult();
-    assertFalse("Number detetected", result.getConversionMeta().getType() == ValueMetaInterface.TYPE_NUMBER);
+    assertFalse("Number detected", result.getConversionMeta().getType() == ValueMetaInterface.TYPE_NUMBER);
     
     Locale.setDefault(orig);
   }
@@ -204,7 +234,5 @@ public class StringEvaluatorTest extends TestCase {
     assertEquals(0, StringEvaluator.determinePrecision(null));
     assertEquals(4, StringEvaluator.determinePrecision("0.##00 $"));
     assertEquals(4, StringEvaluator.determinePrecision("##,##0.#0## $"));
-
   }
-
 }

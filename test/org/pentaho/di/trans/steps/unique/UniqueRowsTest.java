@@ -459,6 +459,7 @@ public class UniqueRowsTest extends TestCase
         srm.setFieldName(new String[] {"KEY"});
         srm.setAscending(new boolean[] {true});
         srm.setCaseSensitive(new boolean[] {true});
+        srm.setPreSortedField(new boolean[] {false});
         srm.setPrefix("SortRowsTest");
         srm.setDirectory(".");
 
@@ -551,6 +552,7 @@ public class UniqueRowsTest extends TestCase
         srm.setFieldName(new String[] {"KEY"});
         srm.setAscending(new boolean[] {true});
         srm.setCaseSensitive(new boolean[] {true});
+        srm.setPreSortedField(new boolean[] {false});
         srm.setPrefix("SortRowsTest");
         srm.setDirectory(".");
 
@@ -643,6 +645,7 @@ public class UniqueRowsTest extends TestCase
         srm.setFieldName(new String[] {"KEY"});
         srm.setAscending(new boolean[] {true});
         srm.setCaseSensitive(new boolean[] {false});
+        srm.setPreSortedField(new boolean[] {false});
         srm.setPrefix("SortRowsTest");
         srm.setDirectory(".");
 
@@ -735,6 +738,7 @@ public class UniqueRowsTest extends TestCase
         srm.setFieldName(new String[] {"KEY"});
         srm.setAscending(new boolean[] {true});
         srm.setCaseSensitive(new boolean[] {false});
+        srm.setPreSortedField(new boolean[] {false});
         srm.setPrefix("SortRowsTest");
         srm.setDirectory(".");
 

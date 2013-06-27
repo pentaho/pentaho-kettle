@@ -150,7 +150,7 @@ public class KettleFileRepositoryTest extends TestCase {
   }
 
   private void verifyTransformationSamples(RepositoryDirectoryInterface samplesDirectory) throws Exception {
-    File transSamplesFolder = new File("package-res/samples/transformations/");
+    File transSamplesFolder = new File("samples/transformations/");
     String[] files = transSamplesFolder.list(new FilenameFilter() { public boolean accept(File dir, String name) { return name.endsWith(".ktr") && !name.contains("HL7"); }});
     Arrays.sort(files);
     
@@ -202,7 +202,7 @@ public class KettleFileRepositoryTest extends TestCase {
   }
   
   private void verifyJobSamples(RepositoryDirectoryInterface samplesDirectory) throws Exception {
-    FileObject jobSamplesFolder = KettleVFS.getFileObject("package-res/samples/jobs/");
+    FileObject jobSamplesFolder = KettleVFS.getFileObject("samples/jobs/");
     FileObject[] files = jobSamplesFolder.findFiles(new FileSelector() {
       
       @Override

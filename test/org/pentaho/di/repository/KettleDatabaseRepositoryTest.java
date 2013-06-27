@@ -151,7 +151,7 @@ public class KettleDatabaseRepositoryTest extends TestCase {
   }
 
   private void verifyTransformationSamples(RepositoryDirectoryInterface samplesDirectory) throws Exception {
-    File transSamplesFolder = new File("package-res/samples/transformations/");
+    File transSamplesFolder = new File("samples/transformations/");
     String[] files = transSamplesFolder.list(new FilenameFilter() { public boolean accept(File dir, String name) { return name.endsWith(".ktr") && !name.contains("HL7"); }});
     Arrays.sort(files);
     
@@ -169,7 +169,7 @@ public class KettleDatabaseRepositoryTest extends TestCase {
       // Save it in the repository in the samples folder
       //
       transMeta.setRepositoryDirectory(samplesDirectory);
-      repository.save(transMeta, "unit testing");
+      repository.save(transMeta, "unit testing", null, true);
       assertNotNull(transMeta.getObjectId());
       
       // Load it back up again...
@@ -179,7 +179,7 @@ public class KettleDatabaseRepositoryTest extends TestCase {
       
       // Save & load it again
       //
-      repository.save(transMeta, "unit testing");
+      repository.save(transMeta, "unit testing", null, true);
       repTransMeta = repository.loadTransformation(transMeta.getObjectId(), null);
       String twoXml = repTransMeta.getXML();
       
@@ -199,7 +199,7 @@ public class KettleDatabaseRepositoryTest extends TestCase {
   }
   
   private void verifyJobSamples(RepositoryDirectoryInterface samplesDirectory) throws Exception {
-    FileObject jobSamplesFolder = KettleVFS.getFileObject("package-res/samples/jobs/");
+    FileObject jobSamplesFolder = KettleVFS.getFileObject("samples/jobs/");
     FileObject[] files = jobSamplesFolder.findFiles(new FileSelector() {
       
       @Override

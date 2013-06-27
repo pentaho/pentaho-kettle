@@ -772,7 +772,7 @@ public class ValueTest extends TestCase
 	    vs6.setLength(4);
 	    vs6.setPrecision(2);
 	    result = vs6.getXML();
-	    assertEquals("<value><name>Name</name><type>Date</type><text>2006&#47;03&#47;01 17:01:02.005</text><length>-1</length><precision>2</precision><isnull>N</isnull></value>", result);	   	    		
+	    assertEquals("<value><name>Name</name><type>Date</type><text>2006&#x2f;03&#x2f;01 17&#x3a;01&#x3a;02.005</text><length>-1</length><precision>2</precision><isnull>N</isnull></value>", result);	   	    		
 	}
 
 	/**

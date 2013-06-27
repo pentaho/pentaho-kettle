@@ -22,16 +22,23 @@
 
 package org.pentaho.di.job.entries.copyfiles;
 
+import static org.junit.Assert.*;
+
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.pentaho.di.TestUtilities;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.job.Job;
 
 
-import junit.framework.TestCase;
-
-public class CopyFilesTest 
-extends TestCase {
+public class CopyFilesTest {
+  
+  @BeforeClass
+  public static void setUpBeforeClass() {
+    KettleLogStore.init();
+  }
     
     /**
      * Creates a Result and logs that fact.
@@ -51,6 +58,7 @@ extends TestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testLocalFileCopy() throws Exception {
  
         String sourceFolder = TestUtilities.createTempFolder("testLocalFileCopy_source");

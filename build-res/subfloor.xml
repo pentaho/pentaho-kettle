@@ -382,6 +382,7 @@ TYPICAL TARGET SEQUENCE
     </fileset>
     <pathelement path="${testclasses.dir}" />
     <pathelement path="${classes.dir}" />
+  	<pathelement path="${package-res.dir}" />
   </path>
 
 
@@ -1352,7 +1353,7 @@ TYPICAL TARGET SEQUENCE
            optimize="false"
            source="${javac.source}"
            target="${javac.target}"
-           fork="true">
+           fork="true" verbose="yes">
       <src path="${testsrc.dir}" />
       <classpath refid="test.classpath" />
     </javac>
@@ -1392,6 +1393,7 @@ TYPICAL TARGET SEQUENCE
       <batchtest fork="yes" todir="${testreports.xml.dir}" unless="testcase">
         <fileset dir="${testsrc.dir}" casesensitive="yes">
           <include name="**/*Test.java" />
+          <include name="**/*Tests.java" />
         </fileset>
       </batchtest>
     </junit>

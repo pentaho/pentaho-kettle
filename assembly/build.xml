@@ -28,10 +28,13 @@
 
   <target name="dist" depends="init,resolve,resolve-swtlibs,resolve-launcher,resolve-plugins,package" description="Builds and packages the application"/>
   	
-	<target name="assemble-full" depends="init,resolve,resolve-swtlibs,resolve-launcher,resolve-plugins,assemble" description="Builds the application" />
-
+  <target name="assemble-full" depends="init,resolve-all,assemble-plugins,assemble" description="Builds the application" />
 	
-  <target name="assemble" depends="assemble-plugins,subfloor-pkg.assemble" description="copy jar files to distribution directory" >
+  <target name="assemble-no-plugins" depends="init,resolve-all,assemble" description="Builds the application" />
+
+  <target name="resolve-all" depends="init,resolve,resolve-swtlibs,resolve-launcher,resolve-plugins"/>
+	
+  <target name="assemble" depends="subfloor-pkg.assemble" description="copy jar files to distribution directory" >
   	<echo>Construct the distribution package...</echo>
     <!-- make JavaApplicationStub executable for OSX -->
     <chmod file="${approot.stage.dir}/Data Integration.app/Contents/MacOS/JavaApplicationStub" perm="ugo+rx"/>

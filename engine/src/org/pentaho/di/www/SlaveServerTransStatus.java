@@ -100,7 +100,7 @@ public class SlaveServerTransStatus {
       xml.append(resultXML);
     }
 
-    xml.append(XMLHandler.addTagValue("logging_string", XMLHandler.buildCDATA(loggingString)));
+    xml.append(XMLHandler.addTagValue("logging_string", loggingString));
 
     xml.append("</" + XML_TAG + ">");
 

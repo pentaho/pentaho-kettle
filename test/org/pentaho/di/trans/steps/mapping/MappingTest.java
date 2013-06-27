@@ -112,7 +112,7 @@ public class MappingTest extends TestCase {
     String mappingName = "mapping"; 
     MappingMeta mappingMeta = new MappingMeta();
     mappingMeta.setSpecificationMethod(ObjectLocationSpecificationMethod.FILENAME);
-    mappingMeta.setFileName("test-src/org/pentaho/di/trans/steps/mapping/subtrans.ktr"); 
+    mappingMeta.setFileName("test/org/pentaho/di/trans/steps/mapping/subtrans.ktr"); 
     String mappingInputStepName = "input"; 
     mappingMeta
         .setInputMappings(Collections.singletonList(createMappingDef(rowGenerator.getName(), mappingInputStepName, "string", "a")));  
@@ -183,7 +183,7 @@ public class MappingTest extends TestCase {
     String mappingName = "mapping"; 
     MappingMeta mappingMeta = new MappingMeta();
     mappingMeta.setSpecificationMethod(ObjectLocationSpecificationMethod.FILENAME);
-    mappingMeta.setFileName("test-src/org/pentaho/di/trans/steps/mapping/subtrans.ktr"); 
+    mappingMeta.setFileName("test/org/pentaho/di/trans/steps/mapping/subtrans.ktr"); 
     List<MappingIODefinition> inputMappings = new ArrayList<MappingIODefinition>();
     String mappingInputStepName = "input"; 
     inputMappings.add(createMappingDef(rowGenerator.getName(), mappingInputStepName, "string", "a"));  

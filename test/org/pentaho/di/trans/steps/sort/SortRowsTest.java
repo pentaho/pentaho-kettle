@@ -198,9 +198,11 @@ public class SortRowsTest extends TestCase
         String [] sortFields = { "KEY1", "KEY2" };
         boolean [] ascendingFields = { true, true };
         boolean [] caseSensitive = { true, true };
+        boolean [] presortedFields = { false, false };
         srm.setFieldName(sortFields);
         srm.setAscending(ascendingFields);
         srm.setCaseSensitive(caseSensitive);
+        srm.setPreSortedField(presortedFields);
         srm.setPrefix("SortRowsTest");
         srm.setDirectory(".");
 
@@ -285,9 +287,11 @@ public class SortRowsTest extends TestCase
         String [] sortFields = { "KEY1", "KEY2" };
         boolean [] ascendingFields = { false, false };
         boolean [] caseSensitive = { true, true };
+        boolean [] presortedFields = { false, false };
         srm.setFieldName(sortFields);
         srm.setAscending(ascendingFields);
         srm.setCaseSensitive(caseSensitive);
+        srm.setPreSortedField(presortedFields);
         srm.setPrefix("SortRowsTest");
         srm.setDirectory(".");
 
