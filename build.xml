@@ -144,7 +144,7 @@
 			</classpath>
 			
 			<formatter type="xml"/>
-		  	<test todir="${testreports.xml.dir}" name="org.pentaho.di.core.KettleEnvironmentTest" haltonerror="false" />
+			<!-- Removed while PDI-10166 is open <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.KettleEnvironmentTest" haltonerror="false" />-->
 		  	<test todir="${testreports.xml.dir}" name="org.pentaho.di.compatibility.ValueBigNumberTest" haltonerror="false" />
 		  	<test todir="${testreports.xml.dir}" name="org.pentaho.di.compatibility.ValueBooleanTest" haltonerror="false" />
 		  	<test todir="${testreports.xml.dir}" name="org.pentaho.di.compatibility.ValueDateTest" haltonerror="false" />
