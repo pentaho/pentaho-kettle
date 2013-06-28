@@ -65,6 +65,7 @@
 		           deprecation="true"
 		    	   debug="true"
 	        	   includeantruntime="false"
+		    	   encoding="utf-8"
 		    	>
 
 		    	<classpath id="cp-kettle-test">
@@ -297,7 +298,7 @@
 	
 	<target name="tests-all" depends="tests-clean, tests-stage, tests-core, tests-trans, tests-run, tests-blackbox, tests-plugins" />
 	
-	<target name="tests-stage-init" depends="init-test-reports">
+	<target name="tests-stage-init" depends="init, init-tests, init-test-reports">
 	    <mkdir dir="${assembly.stage.test.dir}"/>
 		<mkdir dir="${assembly.stage.test.dir}/data-integration"/>
 		<mkdir dir="${assembly.stage.test.dir}/data-integration/testfiles"/>
