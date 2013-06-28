@@ -357,7 +357,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       }
       
     } finally {
-      log.snap(Metrics.METRIC_DATABASE_CONNECT_START, databaseMeta.getName());
+      log.snap(Metrics.METRIC_DATABASE_CONNECT_STOP, databaseMeta.getName());
       
     }
   }
