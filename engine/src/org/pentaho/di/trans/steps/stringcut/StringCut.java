@@ -150,15 +150,15 @@ public class StringCut extends BaseStep implements StepInterface {
 			data.cutFrom = new int[meta.getFieldInStream().length];
 			data.cutTo = new int[meta.getFieldInStream().length];
 			for (int i = 0; i < meta.getFieldInStream().length; i++) {
-				if (Const.isEmpty(meta.getCutFrom()[i]))
+				if (Const.isEmpty(environmentSubstitute(meta.getCutFrom()[i])))
 					data.cutFrom[i] = 0;
 				else
-					data.cutFrom[i]= Const.toInt(meta.getCutFrom()[i],0);
+					data.cutFrom[i]= Const.toInt(environmentSubstitute(meta.getCutFrom()[i]),0);
 				
-				 if (Const.isEmpty(meta.getCutTo()[i])) 
+				 if (Const.isEmpty(environmentSubstitute(meta.getCutTo()[i]))) 
 					data.cutTo[i] = 0;
 				else
-					data.cutTo[i] =  Const.toInt(meta.getCutTo()[i],0);
+					data.cutTo[i] =  Const.toInt(environmentSubstitute(meta.getCutTo()[i]),0);
 				 
 			} // end for
 		} // end if first
