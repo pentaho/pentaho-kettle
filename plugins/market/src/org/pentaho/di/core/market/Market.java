@@ -386,11 +386,21 @@ public class Market implements SpoonPluginInterface {
     
     String parentFolderName = buildPluginsFolderPath(marketEntry);
     File pluginFolder = new File(parentFolderName + File.separator + marketEntry.getId());
-    LogChannel.GENERAL.logBasic("Installing plugin in folder: "+pluginFolder.getAbsolutePath());
-    if (!pluginFolder.exists()) {
-        throw new KettleException("No plugin was found in the expected folder : "+pluginFolder.getAbsolutePath());
+    LogChannel.GENERAL.logBasic("Uninstalling plugin in folder: "+pluginFolder.getAbsolutePath());
+    
+    PluginInterface plugin = getPluginObject(marketEntry.getId());
+    if (plugin == null) {
+      throw new KettleException("No plugin was found in the expected folder : "+pluginFolder.getAbsolutePath());
     }
-
+    pluginFolder = new File(plugin.getPluginDirectory().getFile());
+    parentFolderName = pluginFolder.getParent();
+    
+    // unload plugin
+    ClassLoader cl = PluginRegistry.getInstance().getClassLoader(plugin);
+    if (cl instanceof KettleURLClassLoader) {
+      ((KettleURLClassLoader)cl).closeClassLoader();
+    }
+    // remove plugin
     deleteDirectory(pluginFolder);
 
     if (!Display.getDefault().getThread().equals(Thread.currentThread()) ) {
@@ -573,6 +583,7 @@ public class Market implements SpoonPluginInterface {
       final File finalJar = jar;
       
       Thread t = new Thread() {
+        KettleURLClassLoader classloader = null;
         public void run() {
           try {
             File tmpJar = File.createTempFile("kettle_marketplace_tmp", ".jar");
@@ -581,13 +592,18 @@ public class Market implements SpoonPluginInterface {
             IOUtils.copy(fis, fos);
             fis.close();
             fos.close();
-            KettleURLClassLoader classloader = new KettleURLClassLoader(new URL[] {tmpJar.toURI().toURL()}, Spoon.getInstance().getClass().getClassLoader());
+            classloader = new KettleURLClassLoader(new URL[] {tmpJar.toURI().toURL()}, Spoon.getInstance().getClass().getClassLoader());
             Class<?> clazz = classloader.loadClass("org.pentaho.di.core.market.Market");
             // remove the plugin, unload when done.
-            Method m = clazz.getMethod("uninstallMarketInSeparateClassLoader", File.class);
-            m.invoke(null, tmpJar);
+            Method m = clazz.getMethod("uninstallMarketInSeparateClassLoader", File.class, ProgressMonitorDialog.class);
+            m.invoke(null, tmpJar, null);
           } catch (Throwable t) {
             t.printStackTrace();
+          }
+          finally {
+            if(classloader != null) {
+              classloader.closeClassLoader();              
+            }
           }
         }
       };
