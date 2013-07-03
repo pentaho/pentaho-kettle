@@ -157,7 +157,7 @@ TYPICAL TARGET SEQUENCE
             value="true"
             description="Indicates whether source should be compiled with deprecation information" />
   <property name="javac.source" value="6" description="Provide source compatibility with specified release" />
-  <property name="javac.target" value="7" description="Generate class files for specific VM version" />
+  <property name="javac.target" value="6" description="Generate class files for specific VM version" />
   <property name="javac.maxmemory" value="256M" description="Max memory alloted to java compile" />
 
   <!-- Third party Ant tasks and tools properties -->
@@ -202,7 +202,11 @@ TYPICAL TARGET SEQUENCE
             value="${testreports.dir}/html"
             description="Unit test html reports are placed here" />
   <property name="junit.haltonfailure" value="no" description="Fail the build if a test fails" />
+  <property name="junit.haltonerror" value="yes" description="Fail the build if a error occurs" />
   <property name="junit.maxmemory" value="256M" description="Heap size when Junit is run in fork mode" />
+  <property name="junit.forkmode" 
+            value="perTest" 
+            description="Defines whether JUnit forks a new JVM for each test. Use 'once' for faster test runs, and 'perTest' for complete tests."/>
   <property name="headless.unittest" value="true" description="Runs the unit tests in headless mode" />
 
   <!-- Code Coverage properties -->
@@ -371,6 +375,8 @@ TYPICAL TARGET SEQUENCE
 
   <!-- Setup the classpath used for testing -->
   <path id="test.classpath">
+    <pathelement path="${testclasses.dir}" />
+    <pathelement path="${classes.dir}" />
     <fileset dir="${devlib.dir}">
       <include name="**/*.jar" />
     </fileset>
@@ -380,8 +386,6 @@ TYPICAL TARGET SEQUENCE
     <fileset dir="${lib.dir}">
       <include name="**/*.jar" />
     </fileset>
-    <pathelement path="${testclasses.dir}" />
-    <pathelement path="${classes.dir}" />
   </path>
 
 
@@ -1376,8 +1380,10 @@ TYPICAL TARGET SEQUENCE
     <junit maxmemory="${junit.maxmemory}"
            dir="${junit.base.dir}"
            fork="yes"
+           forkmode="${junit.forkmode}"
            failureProperty="test.failed"
            haltonfailure="${junit.haltonfailure}"
+           haltonerror="${junit.haltonerror}"
            printsummary="yes">
       <sysproperty key="java.awt.headless" value="${headless.unittest}" />
       
@@ -1635,9 +1641,11 @@ TYPICAL TARGET SEQUENCE
       </fileset>
     </path>
     <junit fork="yes"
+           forkmode="${junit.forkmode}"
            dir="${junit.base.dir}"
            maxmemory="${junit.maxmemory}"
            failureProperty="test.failed"
+           haltonerror="${junit.haltonerror}"
            haltonfailure="${junit.haltonfailure}">
       <sysproperty key="java.awt.headless" value="${headless.unittest}" />
 
@@ -1653,9 +1661,7 @@ TYPICAL TARGET SEQUENCE
         Note the classpath order: instrumented classes are before the
         original (uninstrumented) classes.  This is important.
       -->
-      <classpath location="${testclasses.dir}" />
       <classpath location="${instrumented.classes.dir}" />
-      <classpath location="${classes.dir}" />
       <classpath refid="test.classpath" />
       <classpath refid="cobertura.classpath" />
 
