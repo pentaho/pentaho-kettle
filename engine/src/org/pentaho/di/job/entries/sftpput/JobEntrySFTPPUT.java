@@ -101,6 +101,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 	private String localDirectory;
 	private String wildcard;
 	private boolean copyprevious;
+	private boolean copypreviousfiles;
 	private boolean addFilenameResut;
 	private boolean usekeyfilename;
 	private String keyfilename;
@@ -125,6 +126,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 		serverName=null;
         serverPort="22";
         copyprevious=false;
+        copypreviousfiles=false;
         addFilenameResut=false;
         usekeyfilename=false;
         keyfilename=null;
@@ -168,6 +170,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 		retval.append("      ").append(XMLHandler.addTagValue("localdirectory", localDirectory));
 		retval.append("      ").append(XMLHandler.addTagValue("wildcard",     wildcard));
 		retval.append("      ").append(XMLHandler.addTagValue("copyprevious", copyprevious));
+		retval.append("      ").append(XMLHandler.addTagValue("copypreviousfiles", copypreviousfiles));
 		retval.append("      ").append(XMLHandler.addTagValue("addFilenameResut", addFilenameResut));
 		retval.append("      ").append(XMLHandler.addTagValue("usekeyfilename",       usekeyfilename));
 		retval.append("      ").append(XMLHandler.addTagValue("keyfilename",       keyfilename));
@@ -205,6 +208,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 			localDirectory  = XMLHandler.getTagValue(entrynode, "localdirectory");
 			wildcard        = XMLHandler.getTagValue(entrynode, "wildcard");
 			copyprevious    = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "copyprevious") );
+			copypreviousfiles    = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "copypreviousfiles") );
 			addFilenameResut    = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "addFilenameResut") );
 			
 			usekeyfilename          = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "usekeyfilename") );
@@ -277,6 +281,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 			localDirectory  = rep.getJobEntryAttributeString(id_jobentry, "localdirectory");
 			wildcard        = rep.getJobEntryAttributeString(id_jobentry, "wildcard");
 			copyprevious          = rep.getJobEntryAttributeBoolean(id_jobentry, "copyprevious");
+			copypreviousfiles     = rep.getJobEntryAttributeBoolean(id_jobentry, "copypreviousfiles");
 			addFilenameResut          = rep.getJobEntryAttributeBoolean(id_jobentry, "addFilenameResut");
 			
 			usekeyfilename          = rep.getJobEntryAttributeBoolean(id_jobentry, "usekeyfilename");
@@ -321,6 +326,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "localdirectory", localDirectory);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "wildcard",        wildcard);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "copyprevious",   copyprevious);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "copypreviousfiles",   copypreviousfiles);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "addFilenameResut",   addFilenameResut);
 			
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "usekeyfilename",          usekeyfilename);
@@ -507,6 +513,17 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 	{
 		this.copyprevious=copyprevious;
 	}
+	
+	public boolean isCopyPreviousFiles()
+	{
+		return copypreviousfiles;
+	}
+	
+	public void setCopyPreviousFiles(boolean copypreviousfiles)
+	{
+		this.copypreviousfiles=copypreviousfiles;
+	}
+	
 	public boolean isAddFilenameResut()
 	{
 		return addFilenameResut;
@@ -651,6 +668,42 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 				return result;
 			}
 		}
+		
+		if(copypreviousfiles)
+		{
+			List <ResultFile> resultFiles = result.getResultFilesList();
+			if(resultFiles == null || resultFiles.size()==0)
+			{
+				if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobSFTPPUT.ArgsFromPreviousNothingFiles"));
+				result.setResult(true);
+				return result;
+			}
+			
+			try{
+				for (Iterator <ResultFile>  it = resultFiles.iterator() ; it.hasNext() && !parentJob.isStopped();) 
+				{			
+			       	  ResultFile resultFile = (ResultFile) it.next();
+			       	FileObject file = resultFile.getFile();
+			          if (file != null)
+			          {
+						if(!file.exists())
+							logError(BaseMessages.getString(PKG, "JobSFTPPUT.Log.FilefromPreviousNotFound",file.toString()));
+						else
+						{
+							myFileList.add(file);
+							if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "JobSFTPPUT.Log.FilenameFromResult",file.toString()));
+						}
+					}
+				}
+			}catch(Exception e)	{
+				logError(BaseMessages.getString(PKG, "JobSFTPPUT.Error.ArgFromPrevious"));
+				result.setNrErrors(1);
+				// free resource
+				myFileList=null;
+				return result;
+			}
+		}
+
 		SFTPClient sftpclient = null;
 
         // String substitution..
@@ -768,7 +821,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 				if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobSFTPPUT.Log.ChangedDirectory",realSftpDirString));
 			} // end if
 
-			if(!copyprevious)
+			if(!copyprevious && !copypreviousfiles)
 			{
 				// Get all the files in the local directory...
 				myFileList = new ArrayList<FileObject>();
@@ -802,7 +855,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 			if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobSFTPPUT.Log.RowsFromPreviousResult",myFileList.size()));
 
 			Pattern pattern = null;
-			if(!copyprevious)
+			if(!copyprevious && !copypreviousfiles)
 			{
 				if (!Const.isEmpty(realWildcard)) {
 					pattern = Pattern.compile(realWildcard);

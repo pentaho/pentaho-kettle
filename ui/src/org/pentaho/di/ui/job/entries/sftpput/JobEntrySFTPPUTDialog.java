@@ -160,6 +160,12 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
     private Button wgetPrevious;
 
     private FormData fdlgetPrevious, fdgetPrevious;
+
+    private Label wlgetPreviousFiles;
+
+    private Button wgetPreviousFiles;
+
+    private FormData fdlgetPreviousFiles, fdgetPreviousFiles;
     
     private Label wlSuccessWhenNoFile;
 
@@ -667,18 +673,46 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
 		{
 			public void widgetSelected(SelectionEvent e)
 			{
+		    	if(wgetPrevious.getSelection()) wgetPreviousFiles.setSelection(false); //only one is allowed
 				 activeCopyFromPrevious();
 				jobEntry.setChanged();
 			}
 		});
 
+        // Get arguments from previous files result...
+        wlgetPreviousFiles = new Label(wSourceFiles, SWT.RIGHT);
+        wlgetPreviousFiles.setText(BaseMessages.getString(PKG, "JobSFTPPUT.getPreviousFiles.Label"));
+        props.setLook(wlgetPreviousFiles);
+        fdlgetPreviousFiles = new FormData();
+        fdlgetPreviousFiles.left = new FormAttachment(0, 0);
+        fdlgetPreviousFiles.top = new FormAttachment(wgetPrevious, 2*margin);
+        fdlgetPreviousFiles.right = new FormAttachment(middle, -margin);
+        wlgetPreviousFiles.setLayoutData(fdlgetPreviousFiles);
+        wgetPreviousFiles = new Button(wSourceFiles, SWT.CHECK);
+        props.setLook(wgetPreviousFiles);
+        wgetPreviousFiles.setToolTipText(BaseMessages.getString(PKG, "JobSFTPPUT.getPreviousFiles.Tooltip"));
+        fdgetPreviousFiles = new FormData();
+        fdgetPreviousFiles.left = new FormAttachment(middle, 0);
+        fdgetPreviousFiles.top = new FormAttachment(wgetPrevious, 2*margin);
+        fdgetPreviousFiles.right = new FormAttachment(100, 0);
+        wgetPreviousFiles.setLayoutData(fdgetPreviousFiles);
+        wgetPreviousFiles.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+		    	if(wgetPreviousFiles.getSelection()) wgetPrevious.setSelection(false); //only one is allowed				
+				 activeCopyFromPrevious();
+				jobEntry.setChanged();
+			}
+		});
+        
 		// Local Directory line
 		wlLocalDirectory=new Label(wSourceFiles, SWT.RIGHT);
 		wlLocalDirectory.setText(BaseMessages.getString(PKG, "JobSFTPPUT.LocalDir.Label"));
  		props.setLook(wlLocalDirectory);
 		fdlLocalDirectory=new FormData();
 		fdlLocalDirectory.left = new FormAttachment(0, 0);
-		fdlLocalDirectory.top  = new FormAttachment(wgetPrevious, margin);
+		fdlLocalDirectory.top  = new FormAttachment(wgetPreviousFiles, margin);
 		fdlLocalDirectory.right= new FormAttachment(middle, -margin);
 		wlLocalDirectory.setLayoutData(fdlLocalDirectory);
 		
@@ -688,7 +722,7 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
 		wbLocalDirectory.setText(BaseMessages.getString(PKG, "JobSFTPPUT.BrowseFolders.Label"));
 		fdbLocalDirectory=new FormData();
 		fdbLocalDirectory.right= new FormAttachment(100, 0);
-		fdbLocalDirectory.top  = new FormAttachment(wgetPrevious, margin);
+		fdbLocalDirectory.top  = new FormAttachment(wgetPreviousFiles, margin);
 		wbLocalDirectory.setLayoutData(fdbLocalDirectory);
 		wbLocalDirectory.addSelectionListener
 			(
@@ -723,7 +757,7 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
 		wLocalDirectory.addModifyListener(lsMod);
 		fdLocalDirectory=new FormData();
 		fdLocalDirectory.left = new FormAttachment(middle, 0);
-		fdLocalDirectory.top  = new FormAttachment(wgetPrevious, margin);
+		fdLocalDirectory.top  = new FormAttachment(wgetPreviousFiles, margin);
 		fdLocalDirectory.right= new FormAttachment(wbLocalDirectory, -margin);
 		wLocalDirectory.setLayoutData(fdLocalDirectory);
 
@@ -1075,12 +1109,13 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
 
     private void activeCopyFromPrevious()
     {
-    	wLocalDirectory.setEnabled(!wgetPrevious.getSelection());
-    	wlLocalDirectory.setEnabled(!wgetPrevious.getSelection());
-    	wbLocalDirectory.setEnabled(!wgetPrevious.getSelection());
-    	wlWildcard.setEnabled(!wgetPrevious.getSelection());
-    	wWildcard.setEnabled(!wgetPrevious.getSelection());
-    	wbTestChangeFolderExists.setEnabled(!wgetPrevious.getSelection());
+    	boolean enabled=!wgetPrevious.getSelection() && !wgetPreviousFiles.getSelection(); 
+    	wLocalDirectory.setEnabled(enabled);
+    	wlLocalDirectory.setEnabled(enabled);
+    	wbLocalDirectory.setEnabled(enabled);
+    	wlWildcard.setEnabled(enabled);
+    	wWildcard.setEnabled(enabled);
+    	wbTestChangeFolderExists.setEnabled(enabled);
     }
 	 private void test()
 	    {
@@ -1194,6 +1229,7 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
     wLocalDirectory.setText(Const.NVL(jobEntry.getLocalDirectory(), ""));
     wWildcard.setText(Const.NVL(jobEntry.getWildcard(), ""));
     wgetPrevious.setSelection(jobEntry.isCopyPrevious());
+    wgetPreviousFiles.setSelection(jobEntry.isCopyPreviousFiles());
     wAddFilenameToResult.setSelection(jobEntry.isAddFilenameResut());
     wusePublicKey.setSelection(jobEntry.isUseKeyFile());
     wKeyFilename.setText(Const.NVL(jobEntry.getKeyFilename(), ""));
@@ -1242,6 +1278,7 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
 		jobEntry.setLocalDirectory(wLocalDirectory.getText());
 		jobEntry.setWildcard(wWildcard.getText());
 	    jobEntry.setCopyPrevious(wgetPrevious.getSelection());
+	    jobEntry.setCopyPreviousFiles(wgetPreviousFiles.getSelection());
 	    jobEntry.setAddFilenameResut(wAddFilenameToResult.getSelection());
 	    jobEntry.setUseKeyFile(wusePublicKey.getSelection());
 	    jobEntry.setKeyFilename(wKeyFilename.getText());
