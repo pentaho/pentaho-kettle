@@ -1071,6 +1071,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 			pathFieldName = rep.getStepAttributeString(id_step, "pathFieldName");
 			hiddenFieldName = rep.getStepAttributeString(id_step, "hiddenFieldName");
 			lastModificationTimeFieldName = rep.getStepAttributeString(id_step, "lastModificationTimeFieldName");
+			uriNameFieldName = rep.getStepAttributeString(id_step, "uriNameFieldName");
 			rootUriNameFieldName = rep.getStepAttributeString(id_step, "rootUriNameFieldName");
 			extensionFieldName = rep.getStepAttributeString(id_step, "extensionFieldName");
 			sizeFieldName = rep.getStepAttributeString(id_step, "sizeFieldName");
