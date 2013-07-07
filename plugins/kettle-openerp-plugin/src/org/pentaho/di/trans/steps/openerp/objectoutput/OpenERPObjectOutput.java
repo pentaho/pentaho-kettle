@@ -127,9 +127,12 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
 			for (int i = 0; i < meta.getModelFields().length; i++)
 			  updateRow.put(meta.getModelFields()[i], this.getInputValue(inputRow, this.index[i]));
 				
-			// The import function does not return the ID field once complete
-			// We have to call the create function for each row, to return the ID
-			if (meta.getOutputIDField() && updateRow.getID() == 0){
+			// If the import function does not return the ID field once complete then
+			// we have to call the create function for each row, to return the ID
+			if (data.helper.getImportReturnIDS() == false 
+			    && meta.getOutputIDField() 
+			    && updateRow.getID() == 0){
+			  
 				openerERPAdapter.createObject(updateRow);
 				outputRow[data.outputRowMeta.indexOfValue(meta.getOutputIDFieldName())] = Long.parseLong(updateRow.get("id").toString());
 				
@@ -138,7 +141,8 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
 				
 			}
 			else{
-				if (meta.getOutputIDField())
+			  // Get the ID of an existing row
+				if (data.helper.getImportReturnIDS() == false && meta.getOutputIDField())
 					outputRow[data.outputRowMeta.indexOfValue(meta.getOutputIDFieldName())] = Long.parseLong(updateRow.get("id").toString());
 					
 				data.updateBatchRows.add(updateRow);
@@ -167,10 +171,20 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
 		
 		try {
 			openerERPAdapter.importData(data.updateBatchRows);
+			int idFieldIndex = -1;
+			if (meta.getOutputIDField())
+			  idFieldIndex = data.outputRowMeta.indexOfValue(meta.getOutputIDFieldName());
+			
+			// The input and output rows are in the same order
 			for (int i = 0; i < data.updateBatchRows.size(); i++){
 				incrementLinesOutput();
 				
-				putRow(data.outputRowMeta, data.outputBatchRows.get(i));
+				Object[] outputrow = data.outputBatchRows.get(i);
+				
+				if (data.helper.getImportReturnIDS() && idFieldIndex >=0)
+				  outputrow[idFieldIndex] = Long.parseLong(data.updateBatchRows.get(i).get("id").toString());
+          
+        putRow(data.outputRowMeta, outputrow);
 			}
 		} finally {
 			data.updateBatchRows.clear();

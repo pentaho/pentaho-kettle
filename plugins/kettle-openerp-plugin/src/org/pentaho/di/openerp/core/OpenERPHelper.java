@@ -44,6 +44,7 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
 
 	private Session openERPConnection;
 	private OpenERPCommand commands;
+	private boolean importReturnsIDS = false;
 	
 
 	@Override
@@ -81,6 +82,13 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
 		
 		// Don't automatically filter out active items in any steps 
 		openERPConnection.getContext().setActiveTest(false);
+		
+		try {
+		  importReturnsIDS = openERPConnection.getServerVersion().getMajor() >= 7;
+    } catch (XmlRpcException e) {
+      // Play it safe
+      importReturnsIDS = false;
+    }
 	}
 
 	public String[] getModelList(){
@@ -160,6 +168,10 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
 
 	public void deleteObjects(String model, ArrayList<Object> ids) throws XmlRpcException{
 		commands.unlinkObject(model, ids.toArray(new Object[ids.size()]));
+	}
+	
+	public boolean getImportReturnIDS(){
+	  return importReturnsIDS;
 	}
 
 	public ArrayList<FieldMapping> getDefaultFieldMappings(String model) throws Exception{
