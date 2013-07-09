@@ -15,7 +15,7 @@
     <dependency org="${ivy.artifact.group}" name="kettle-jdbc"     rev="${project.revision}" changing="true"/>
     <dependency org="${ivy.artifact.group}" name="kettle-ui-swt"   rev="${project.revision}" changing="true"/>
     
-    <dependency org="pentaho"               name="launcher"        rev="${launcher.revision}" />
+    <dependency org="pentaho"               name="pentaho-application-launcher"        rev="${launcher.revision}" />
     <dependency org="pentaho"               name="pentaho-hadoop-hive-jdbc-shim" rev="${dependency.pentaho-hadoop-hive-jdbc-shim.revision}"/>
     
     <!-- The OS-specific libraries are bundled together, unzip them all for assembly -->
