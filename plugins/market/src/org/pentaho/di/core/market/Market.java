@@ -207,7 +207,7 @@ public class Market implements SpoonPluginInterface {
    */
   public static void installUninstall(final MarketEntry marketEntry, boolean isInstalled, ProgressMonitorDialog monitorDialog) throws KettleException {
     if (isInstalled) {
-      Market.uninstall(marketEntry, monitorDialog);
+      Market.uninstall(marketEntry, monitorDialog, true);
     } else {
       Market.install(marketEntry, monitorDialog);
     }
@@ -274,14 +274,19 @@ public class Market implements SpoonPluginInterface {
   private static void createVersionXML(MarketEntry marketEntry) throws KettleException {
 	  String pluginFolder = buildPluginsFolderPath(marketEntry)+File.separator+marketEntry.getId();
 	  String versionPath = pluginFolder + File.separator + "version.xml";
+	  File parentFolder = new File(pluginFolder);
 	  File file = new File(versionPath);
 	  if (file != null) {
- 	     BufferedWriter bufferedWriter = null;
-		 try {
-			 FileWriter fw = new FileWriter(file.getAbsoluteFile());
-			 bufferedWriter = new BufferedWriter(fw);
-			 bufferedWriter.write("<version>"+marketEntry.getVersion()+"</version>");
-		 }
+	    BufferedWriter bufferedWriter = null;
+	    try {
+	      if(!parentFolder.exists()) {
+	        parentFolder.mkdirs();
+	      }
+	      
+	      FileWriter fw = new FileWriter(file.getAbsoluteFile());
+	      bufferedWriter = new BufferedWriter(fw);
+	      bufferedWriter.write("<version>"+marketEntry.getVersion()+"</version>");
+	    }
 		 catch (IOException ioe) {
 			throw new KettleException(ioe);
 		 }
@@ -382,53 +387,63 @@ public class Market implements SpoonPluginInterface {
    * @param marketEntry
    * @throws KettleException
    */
-  public static void uninstall(final MarketEntry marketEntry, final ProgressMonitorDialog monitorDialog) throws KettleException {
+  public static void uninstall(final MarketEntry marketEntry, final ProgressMonitorDialog monitorDialog, boolean refresh) throws KettleException {
     
     String parentFolderName = buildPluginsFolderPath(marketEntry);
     File pluginFolder = new File(parentFolderName + File.separator + marketEntry.getId());
     LogChannel.GENERAL.logBasic("Uninstalling plugin in folder: "+pluginFolder.getAbsolutePath());
-    
     PluginInterface plugin = getPluginObject(marketEntry.getId());
-    if (plugin == null) {
+    
+    if (!pluginFolder.exists()) {
       throw new KettleException("No plugin was found in the expected folder : "+pluginFolder.getAbsolutePath());
     }
-    pluginFolder = new File(plugin.getPluginDirectory().getFile());
-    parentFolderName = pluginFolder.getParent();
     
-    // unload plugin
-    ClassLoader cl = PluginRegistry.getInstance().getClassLoader(plugin);
-    if (cl instanceof KettleURLClassLoader) {
-      ((KettleURLClassLoader)cl).closeClassLoader();
+    if(plugin != null) {
+      
+      pluginFolder = new File(plugin.getPluginDirectory().getFile());
+      parentFolderName = pluginFolder.getParent();
+    
+      // unload plugin
+      ClassLoader cl = PluginRegistry.getInstance().getClassLoader(plugin);
+      if (cl instanceof KettleURLClassLoader) {
+        ((KettleURLClassLoader)cl).closeClassLoader();
+      }
+      
+      // remove plugin from registry
+      PluginRegistry.getInstance().removePlugin(plugin.getPluginType(), plugin);
     }
-    // remove plugin
+    
+    // delete plugin folder
     deleteDirectory(pluginFolder);
 
-    if (!Display.getDefault().getThread().equals(Thread.currentThread()) ) {
-      Spoon.getInstance().getDisplay().asyncExec(new Runnable() {
-        public void run() {
-          try {
-            refreshSpoon(monitorDialog);
-          } catch (KettleException e) {
-            e.printStackTrace();
+    if(refresh) {
+      if (!Display.getDefault().getThread().equals(Thread.currentThread()) ) {
+        Spoon.getInstance().getDisplay().asyncExec(new Runnable() {
+          public void run() {
+            try {
+              refreshSpoon(monitorDialog);
+            } catch (KettleException e) {
+              e.printStackTrace();
+            }
           }
-        }
-      });
-    } else {
-      refreshSpoon(monitorDialog);
+        });
+      } else {
+        refreshSpoon(monitorDialog);
+      }
     }
   }
   
-  public static void uninstallMarketInSeparateClassLoader(final File path, ProgressMonitorDialog monitorDialog) throws Exception {
+  public static void uninstallMarketInSeparateClassLoader(final File path, final ProgressMonitorDialog monitorDialog) throws Exception {
     try {
-      uninstall(new MarketEntry("market", MarketEntryType.Mixed), monitorDialog);
+      Spoon.getInstance().getMainSpoonContainer().removeOverlay("org/pentaho/di/core/market/spoon_overlays.xul");
+      uninstall(new MarketEntry("market", MarketEntryType.Mixed), monitorDialog, false);
       Spoon.getInstance().getDisplay().asyncExec(new Runnable() {
         public void run() {
          try {
-           MessageBox box = new MessageBox(Spoon.getInstance().getShell(), SWT.ICON_WARNING | SWT.OK);
-           box.setText(BaseMessages.getString(PKG, "MarketplacesDialog.RestartUninstall.Title"));
-           box.setMessage(BaseMessages.getString(PKG, "MarketplacesDialog.RestartUninstall.Message"));
-           box.open();
-         } finally {
+           refreshSpoon(monitorDialog);
+         } catch (Exception e) {
+          e.printStackTrace();
+        } finally {
            if (Market.class.getClassLoader() instanceof KettleURLClassLoader) {
              ((KettleURLClassLoader)Market.class.getClassLoader()).closeClassLoader();
            }
@@ -592,7 +607,8 @@ public class Market implements SpoonPluginInterface {
             IOUtils.copy(fis, fos);
             fis.close();
             fos.close();
-            classloader = new KettleURLClassLoader(new URL[] {tmpJar.toURI().toURL()}, Spoon.getInstance().getClass().getClassLoader());
+            @SuppressWarnings("resource") // The classloader will be closed by the invoked method
+            KettleURLClassLoader classloader = new KettleURLClassLoader(new URL[] {tmpJar.toURI().toURL()}, Spoon.getInstance().getClass().getClassLoader());
             Class<?> clazz = classloader.loadClass("org.pentaho.di.core.market.Market");
             // remove the plugin, unload when done.
             Method m = clazz.getMethod("uninstallMarketInSeparateClassLoader", File.class, ProgressMonitorDialog.class);
@@ -615,14 +631,17 @@ public class Market implements SpoonPluginInterface {
     }
   }
   
+  
   /**
    * Refreshes Spoons plugin registry, core objects and some UI things.
    * 
    * @throws KettleException
    */
   private static void refreshSpoon(ProgressMonitorDialog monitorDialog) throws KettleException {
-    
-    monitorDialog.close();
+   
+    if(monitorDialog != null) {
+      monitorDialog.close();
+    }
     
     MessageBox box = new MessageBox(Spoon.getInstance().getShell(), SWT.ICON_QUESTION | SWT.OK);
     box.setText(BaseMessages.getString(PKG, "MarketplacesDialog.RestartUpdate.Title"));
@@ -646,7 +665,7 @@ public class Market implements SpoonPluginInterface {
    * @return
    */
   public static String getInstallationSubfolder(MarketEntry marketEntry) {
-    String subfolder;
+    String subfolder = null;
     switch (marketEntry.getType()) {
     case Step:
       subfolder = "steps";
@@ -669,12 +688,11 @@ public class Market implements SpoonPluginInterface {
     case HadoopShim:
       subfolder = "pentaho-big-data-plugin"+File.separator+"hadoop-configurations";
       break;
+    case Mixed:
     case General:
       subfolder = "";
       break;
     
-    // TODO: The KFF project has a type of "MarketEntryType" which will
-    // default to null. the plugin will not be installed.
     default:
       subfolder = null;
     }
@@ -694,16 +712,20 @@ public class Market implements SpoonPluginInterface {
    * @param dir
    */
   private static void deleteDirectory(File dir) throws KettleException {
-    File[] files = dir.listFiles();
-    for (int i = 0; i < files.length; i++) {
-      if (files[i].isDirectory()) {
-        deleteDirectory(files[i]);
-      } else if (!files[i].delete()) {
-        throw new KettleException("Failed to delete " + files[i]);
+    if(dir != null) {
+      File[] files = dir.listFiles();
+      if(files != null) {
+        for (int i = 0; i < files.length; i++) {
+          if (files[i].isDirectory()) {
+            deleteDirectory(files[i]);
+          } else if (!files[i].delete()) {
+            throw new KettleException("Failed to delete " + files[i]);
+          }
+        }
       }
-    }
-    if (!dir.delete()) {
-      throw new KettleException("Failed to delete directory " + dir);
+      if (!dir.delete()) {
+        throw new KettleException("Failed to delete directory " + dir);
+      }
     }
   }
 }

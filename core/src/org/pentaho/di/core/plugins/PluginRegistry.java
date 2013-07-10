@@ -113,6 +113,11 @@ public class PluginRegistry {
   public synchronized void  removePlugin(Class<? extends PluginTypeInterface> pluginType, PluginInterface plugin){
 	  List<PluginInterface> list = pluginMap.get(pluginType);
 	  list.remove(plugin);
+	  Map<PluginInterface, URLClassLoader> classLoaders = classLoaderMap.get(plugin.getPluginType());
+    if (classLoaders != null) {
+      classLoaders.remove(plugin);
+    }
+    
 	  List<PluginTypeListener> listeners = this.getListenersForType(pluginType);
       if (listeners != null) {
         for (PluginTypeListener listener : listeners) {
