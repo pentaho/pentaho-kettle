@@ -1155,6 +1155,16 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     return list.toArray(new DatabaseInterface[list.size()]);
   }
 
+  
+  /**
+   * Clear the database interfaces map. The map is cached by getDatabaseInterfacesMap(), but in some instances
+   * it may need to be reloaded (such as adding/updating Database plugins). After calling 
+   * clearDatabaseInterfacesMap(), the next call to getDatabaseInterfacesMap() will reload the map.
+   */
+  public static final void clearDatabaseInterfacesMap() {
+    allDatabaseInterfaces = null;
+  }
+  
   public static final Map<String, DatabaseInterface> getDatabaseInterfacesMap() {
     if (allDatabaseInterfaces != null) {
       return allDatabaseInterfaces;

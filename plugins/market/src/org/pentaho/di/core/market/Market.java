@@ -45,6 +45,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.market.entry.MarketEntry;
@@ -648,6 +649,7 @@ public class Market implements SpoonPluginInterface {
     box.setMessage(BaseMessages.getString(PKG, "MarketplacesDialog.RestartUpdate.Message"));
     box.open();
     
+    DatabaseMeta.clearDatabaseInterfacesMap();
     PluginRegistry.init();
     Spoon spoon = Spoon.getInstance();
     spoon.refreshCoreObjects();
