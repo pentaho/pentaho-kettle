@@ -202,7 +202,7 @@ TYPICAL TARGET SEQUENCE
             value="${testreports.dir}/html"
             description="Unit test html reports are placed here" />
   <property name="junit.haltonfailure" value="no" description="Fail the build if a test fails" />
-  <property name="junit.haltonerror" value="yes" description="Fail the build if a error occurs" />
+  <property name="junit.haltonerror" value="no" description="Fail the build if a error occurs" />
   <property name="junit.maxmemory" value="256M" description="Heap size when Junit is run in fork mode" />
   <property name="junit.forkmode" 
             value="perTest" 
@@ -214,7 +214,7 @@ TYPICAL TARGET SEQUENCE
             value="${testbin.dir}/instrumented-classes"
             description="Directory where instrumented project classes are placed for use by code coverage utility" />
   <property name="cobertura.version"
-            value="2.0"
+            value="1.9.4.1"
             description="The version of cobertura to use for code coverage" />
   <property name="cobertura.data.dir"
             value="${testbin.dir}/cobertura-bin"
