@@ -526,19 +526,8 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
 	        	// Unix to Dos
 	        	 while (in.available() > 0) {
         	        int b1 = in.read();
-        	        if (b1 == CR) {
-        	          boolean b = true;
-        	          while(b) {
-        	            if (in.available() > 0) {
-        	              int b2 = in.read();
-        	              if (b2 != CR) {
-        	                b = false;
-        	              }
-        	            } else {
-        	              b = false;
-        	            }
-        	          }
-        	          out.write(CR);
+        	        if (b1 == LF) {
+         	          out.write(CR);
         	          out.write(LF);
         	        } else {
         	          out.write(b1);
