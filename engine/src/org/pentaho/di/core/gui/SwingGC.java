@@ -108,6 +108,7 @@ public class SwingGC implements GCInterface {
   protected Color gray;
   protected Color lightGray;
   protected Color darkGray;
+  protected Color lightBlue;
 
   private Graphics2D gc;
 
@@ -182,6 +183,7 @@ public class SwingGC implements GCInterface {
     this.gray = new Color(128, 128, 128);
     this.lightGray = new Color(200, 200, 200);
     this.darkGray = new Color(80, 80, 80);
+    this.lightBlue = new Color(135, 206, 250); // light sky blue
 
     imageLocked = getImageIcon(BasePropertyHandler.getProperty("Locked_image"));
     imageStepError = getImageIcon(BasePropertyHandler.getProperty("StepErrorLines_image"));
@@ -429,6 +431,11 @@ public class SwingGC implements GCInterface {
     gc.fillRect(x + xOffset, y + yOffset, width, height);
     switchForegroundBackgroundColors();
   }
+  
+  // TODO: complete code 
+  public void fillGradientRectangle(int x, int y, int width, int height, boolean vertical) {
+    fillRectangle(x, y, width, height);
+  }
 
   public void fillRoundRectangle(int x, int y, int width, int height, int circleWidth, int circleHeight) {
     switchForegroundBackgroundColors();
@@ -478,6 +485,8 @@ public class SwingGC implements GCInterface {
       return lightGray;
     case DARKGRAY:
       return darkGray;
+    case LIGHTBLUE:
+      return lightBlue;
     }
     return null;
   }

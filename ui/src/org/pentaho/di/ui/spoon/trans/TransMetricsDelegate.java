@@ -236,11 +236,12 @@ public class TransMetricsDelegate extends SpoonDelegate {
           MetricsDrawArea drawArea = drawAreas.get(i);
           if (drawArea.getArea().contains(event.x, event.y)) {
             MetricsDuration duration = drawArea.getDuration();
-            
+            if (duration==null) continue;
             System.out.println(duration.toString());
             LoggingObjectInterface loggingObject = LoggingRegistry.getInstance().getLoggingObject(duration.getLogChannelId());
-            System.out.println(loggingObject.getObjectType()+" : "+loggingObject.getObjectName());
+            if (loggingObject==null) continue;
             
+            System.out.println(loggingObject.getObjectType()+" : "+loggingObject.getObjectName());                       
           }
         }
       }
@@ -323,7 +324,7 @@ public class TransMetricsDelegate extends SpoonDelegate {
 	  //
 	  
 	  org.eclipse.swt.graphics.Point textExtent = canvasGc.textExtent("AagKkiw");
-	  int height = textExtent.y+4;
+	  int height = textExtent.y+8;
 	  
 	  // Make the height larger if needed for clarify
 	  //
@@ -331,14 +332,14 @@ public class TransMetricsDelegate extends SpoonDelegate {
 	  canvas.setSize(bounds.width, bounds.height);
 		
 		SWTGC gc = new SWTGC(Display.getCurrent(), new Point(bounds.width, bounds.height), PropsUI.getInstance().getIconSize());
-	  MetricsPainter painter = new MetricsPainter(gc);
+	  MetricsPainter painter = new MetricsPainter(gc, height);
 	  drawAreas = painter.paint(durations);
 	  image = (Image) gc.getImage();
 	  
 	  // refresh the scrolled composite
 	  //
-    // sMetricsComposite.setMinHeight(bounds.height);
-    // sMetricsComposite.setMinWidth(bounds.width);
+    sMetricsComposite.setMinHeight(bounds.height);
+    sMetricsComposite.setMinWidth(bounds.width);
     sMetricsComposite.layout(true, true);
 	  
 		// Draw the image on the canvas...
@@ -368,6 +369,21 @@ public class TransMetricsDelegate extends SpoonDelegate {
 		if (!metricsComposite.isDisposed()) {
 		  metricsComposite.layout(true,true);
 		}
+	}
+	
+	public void refresh() {
+    System.out.println("finished="+transGraph.trans.isFinished());
+	  updateGraph();
+	  /*
+	  canvas.getDisplay().asyncExec(
+	      new Runnable() {
+        	  public void run() {
+        	    lastRefreshTime=0;
+        	    canvas.update();         	  
+        	  }
+    	  }
+    	);
+    	*/
 	}
 
 }

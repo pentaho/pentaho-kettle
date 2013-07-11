@@ -65,6 +65,7 @@ public class SWTDirectGC implements GCInterface {
     protected Color        gray;
     protected Color        lightGray;
     protected Color        darkGray;
+    protected Color        lightBlue;
 
 	private GC gc;
 
@@ -99,6 +100,7 @@ public class SWTDirectGC implements GCInterface {
         this.gray           = GUIResource.getInstance().getColorGray();
         this.lightGray      = GUIResource.getInstance().getColorLightGray();
         this.darkGray       = GUIResource.getInstance().getColorDarkGray();
+        this.lightBlue      = GUIResource.getInstance().getColorLightBlue();
 
 	}
 	
@@ -188,6 +190,10 @@ public class SWTDirectGC implements GCInterface {
 	public void fillRectangle(int x, int y, int width, int height) {
 		gc.fillRectangle(x, y, width, height);
 	}
+	
+	public void fillGradientRectangle(int x, int y, int width, int height, boolean vertical) {
+	  gc.fillGradientRectangle(x,  y,  width, height, vertical);
+	}
 
 	public void fillRoundRectangle(int x, int y, int width, int height, int circleWidth, int circleHeight) {
 		gc.fillRoundRectangle(x, y, width, height, circleWidth, circleHeight);
@@ -223,6 +229,7 @@ public class SWTDirectGC implements GCInterface {
 		case GRAY: return gray;
 		case LIGHTGRAY: return lightGray;
 		case DARKGRAY: return darkGray;
+    case LIGHTBLUE: return lightBlue;
 		}
 		return null;
 	}

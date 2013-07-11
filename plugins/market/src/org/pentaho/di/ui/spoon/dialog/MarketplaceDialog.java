@@ -281,6 +281,7 @@ public class MarketplaceDialog extends Dialog {
     checkInstalled.setText(BaseMessages.getString(MARKET_PKG, "MarketplacesDialog.CheckInstalled"));
     checkInstalled.setSelection(true);
     checkInstalled.addSelectionListener(checkListener);
+    props.setLook(checkInstalled);
     FormData fdInstalled = new FormData();
     fdInstalled.left = new FormAttachment(0,0);
     fdInstalled.top = new FormAttachment(expandBar, margin);
@@ -291,6 +292,7 @@ public class MarketplaceDialog extends Dialog {
     checkNotinstalled.setText(BaseMessages.getString(MARKET_PKG, "MarketplacesDialog.CheckNotinstalled"));
     checkNotinstalled.setSelection(true);
     checkNotinstalled.addSelectionListener(checkListener);
+    props.setLook(checkNotinstalled);
     FormData fdNotinstalled = new FormData();
     fdNotinstalled.left = new FormAttachment(0,0);
     fdNotinstalled.top = new FormAttachment(checkInstalled, margin);

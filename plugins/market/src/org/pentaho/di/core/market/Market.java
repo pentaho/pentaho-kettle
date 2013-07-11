@@ -372,6 +372,7 @@ public class Market implements SpoonPluginInterface {
       throw new KettleException("Unable to unzip file "+packageUrl, e);
     } finally {
       if (zis!=null) {
+        tmpFile.delete();
         try {
           zis.close();
         } catch(Exception e) {
@@ -608,7 +609,9 @@ public class Market implements SpoonPluginInterface {
             IOUtils.copy(fis, fos);
             fis.close();
             fos.close();
-            @SuppressWarnings("resource") // The classloader will be closed by the invoked method
+            
+            // The classloader will be closed by the invoked method
+            //
             KettleURLClassLoader classloader = new KettleURLClassLoader(new URL[] {tmpJar.toURI().toURL()}, Spoon.getInstance().getClass().getClassLoader());
             Class<?> clazz = classloader.loadClass("org.pentaho.di.core.market.Market");
             // remove the plugin, unload when done.

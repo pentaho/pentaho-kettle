@@ -119,6 +119,8 @@ public class GUIResource {
 
   private ManagedColor colorCreamPentaho;
 
+  private ManagedColor colorLightBlue;
+
   /* * * Fonts * * */
   private ManagedFont fontGraph;
 
@@ -240,6 +242,10 @@ public class GUIResource {
   private Image imageShowInactive;
 
   private Image imageHideInactive;
+
+  private Image imageShowSelected;
+
+  private Image imageShowAll;
 
   private Image imageClosePanel;
 
@@ -413,6 +419,7 @@ public class GUIResource {
     colorGray = new ManagedColor(display, 215, 215, 215);
     colorDarkGray = new ManagedColor(display, 100, 100, 100);
     colorBlack = new ManagedColor(display, 0, 0, 0);
+    colorLightBlue = new ManagedColor(display, 135, 206, 250); // light sky blue
 
     colorDirectory = new ManagedColor(display, 0, 0, 255);
     // colorPentaho = new ManagedColor(display, 239, 128, 51 ); // Orange
@@ -448,6 +455,7 @@ public class GUIResource {
     colorLightGray.dispose();
     colorDarkGray.dispose();
     colorBlack.dispose();
+    colorLightBlue.dispose();
 
     colorDirectory.dispose();
     colorPentaho.dispose();
@@ -560,6 +568,9 @@ public class GUIResource {
 
       disposeImage(imageShowInactive);
       disposeImage(imageHideInactive);
+
+      disposeImage(imageShowSelected);
+      disposeImage(imageShowAll);
 
       disposeImage(imageClosePanel);
       disposeImage(imageMaximizePanel);
@@ -747,6 +758,9 @@ public class GUIResource {
 
     imageShowInactive = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ShowInactive_image")); // ui/images/show-inactive-selected.png
     imageHideInactive = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("HideInactive_image")); // ui/images/show-inactive-selected.png
+
+    imageShowSelected= ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ShowSelected_image")); // ui/images/show-selected.png
+    imageShowAll= ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ShowAll_image")); // ui/images/show-all.png
 
     imageClosePanel = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ClosePanel_image")); // , "ui/images/show-perf.png"
     imageMaximizePanel = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("MaximizePanel_image")); // , "ui/images/show-perf.png"
@@ -980,6 +994,13 @@ public class GUIResource {
    */
   public Color getColorLightGray() {
     return colorLightGray.getColor();
+  }
+
+  /**
+   * @return Returns the colorLightBlue.
+   */
+  public Color getColorLightBlue() {
+    return colorLightBlue.getColor();
   }
 
   /**
@@ -1642,6 +1663,20 @@ public class GUIResource {
    */
   public Image getImageShowInactive() {
     return imageShowInactive;
+  }
+
+  /**
+   * @return the "show selected" image 
+   */
+  public Image getImageShowSelected() {
+    return imageShowSelected;
+  }
+
+  /**
+   * @return the "show all" image 
+   */
+  public Image getImageShowAll() {
+    return imageShowAll;
   }
 
   /**

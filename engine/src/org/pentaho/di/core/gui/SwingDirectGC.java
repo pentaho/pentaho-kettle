@@ -107,6 +107,7 @@ public class SwingDirectGC implements GCInterface {
     protected Color        gray;
     protected Color        lightGray;
     protected Color        darkGray;
+    protected Color        lightBlue;
 
 	private Graphics2D gc;
 
@@ -165,55 +166,56 @@ public class SwingDirectGC implements GCInterface {
 		init();
    	}
 
-	private void init() throws KettleException {
-		this.lineStyle = ELineStyle.SOLID;
-		this.lineWidth = 1;
-		this.alpha = 255;
-		
-        this.background     = new Color(255, 255, 255);
-        this.black          = new Color(0, 0, 0);
-        this.red            = new Color(255, 0, 0);
-        this.yellow         = new Color(255, 255, 0);
-        this.orange         = new Color(255, 165, 0);
-        this.green          = new Color(0, 255, 0);
-        this.blue           = new Color(0, 0, 255);
-        this.magenta        = new Color(255, 0, 255);
-        this.gray           = new Color(128, 128, 128);
-        this.lightGray      = new Color(200, 200, 200);
-        this.darkGray       = new Color(80, 80, 80);
-        
-        imageLocked = getImageIcon(BasePropertyHandler.getProperty("Locked_image"));
-        imageStepError = getImageIcon(BasePropertyHandler.getProperty("StepErrorLines_image"));
-    	imageEdit = getImageIcon(BasePropertyHandler.getProperty("Edit_image"));
-    	imageContextMenu = getImageIcon(BasePropertyHandler.getProperty("ContextMenu_image"));
-    	imageTrue = getImageIcon(BasePropertyHandler.getProperty("True_image"));
-    	imageFalse = getImageIcon(BasePropertyHandler.getProperty("False_image"));
-    	imageErrorHop = getImageIcon(BasePropertyHandler.getProperty("ErrorHop_image"));
-    	imageInfoHop = getImageIcon(BasePropertyHandler.getProperty("InfoHop_image"));
-    	imageHopTarget = getImageIcon(BasePropertyHandler.getProperty("HopTarget_image"));
-    	imageHopInput = getImageIcon(BasePropertyHandler.getProperty("HopInput_image"));
-    	imageHopOutput = getImageIcon(BasePropertyHandler.getProperty("HopOutput_image"));
-    	imageArrow = getImageIcon(BasePropertyHandler.getProperty("ArrowIcon_image"));
-    	imageCopyHop = getImageIcon(BasePropertyHandler.getProperty("CopyHop_image"));
-      imageLoadBalance = getImageIcon(BasePropertyHandler.getProperty("LoadBalance_image"));
-      imageCheckpoint = getImageIcon(BasePropertyHandler.getProperty("CheckeredFlag_image"));
-      imageDatabase = getImageIcon(BasePropertyHandler.getProperty("Database_image"));
-    	imageParallelHop = getImageIcon(BasePropertyHandler.getProperty("ParallelHop_image"));
-    	imageUnconditionalHop = getImageIcon(BasePropertyHandler.getProperty("UnconditionalHop_image"));
-    	imageStart = getImageIcon(BasePropertyHandler.getProperty("STR_image"));
-    	imageDummy = getImageIcon(BasePropertyHandler.getProperty("DUM_image"));
-    	imageBusy = getImageIcon(BasePropertyHandler.getProperty("Busy_image"));
-      imageInject = getImageIcon(BasePropertyHandler.getProperty("Inject_image"));
-    	
-    	fontGraph = new Font("FreeSans", Font.PLAIN, 10);
-    	fontNote = new Font("FreeSans", Font.PLAIN, 10);
-    	fontSmall = new Font("FreeSans", Font.PLAIN, 8);
-    	
-    	gc.setFont(fontGraph);
-    	
-    	gc.setColor(background);
-    	gc.fillRect(0, 0, area.x, area.y);
-	}
+  private void init() throws KettleException {
+    this.lineStyle = ELineStyle.SOLID;
+    this.lineWidth = 1;
+    this.alpha = 255;
+
+    this.background = new Color(255, 255, 255);
+    this.black = new Color(0, 0, 0);
+    this.red = new Color(255, 0, 0);
+    this.yellow = new Color(255, 255, 0);
+    this.orange = new Color(255, 165, 0);
+    this.green = new Color(0, 255, 0);
+    this.blue = new Color(0, 0, 255);
+    this.magenta = new Color(255, 0, 255);
+    this.gray = new Color(128, 128, 128);
+    this.lightGray = new Color(200, 200, 200);
+    this.darkGray = new Color(80, 80, 80);
+    this.lightBlue = new Color(135, 206, 250); // light sky blue
+
+    imageLocked = getImageIcon(BasePropertyHandler.getProperty("Locked_image"));
+    imageStepError = getImageIcon(BasePropertyHandler.getProperty("StepErrorLines_image"));
+    imageEdit = getImageIcon(BasePropertyHandler.getProperty("Edit_image"));
+    imageContextMenu = getImageIcon(BasePropertyHandler.getProperty("ContextMenu_image"));
+    imageTrue = getImageIcon(BasePropertyHandler.getProperty("True_image"));
+    imageFalse = getImageIcon(BasePropertyHandler.getProperty("False_image"));
+    imageErrorHop = getImageIcon(BasePropertyHandler.getProperty("ErrorHop_image"));
+    imageInfoHop = getImageIcon(BasePropertyHandler.getProperty("InfoHop_image"));
+    imageHopTarget = getImageIcon(BasePropertyHandler.getProperty("HopTarget_image"));
+    imageHopInput = getImageIcon(BasePropertyHandler.getProperty("HopInput_image"));
+    imageHopOutput = getImageIcon(BasePropertyHandler.getProperty("HopOutput_image"));
+    imageArrow = getImageIcon(BasePropertyHandler.getProperty("ArrowIcon_image"));
+    imageCopyHop = getImageIcon(BasePropertyHandler.getProperty("CopyHop_image"));
+    imageLoadBalance = getImageIcon(BasePropertyHandler.getProperty("LoadBalance_image"));
+    imageCheckpoint = getImageIcon(BasePropertyHandler.getProperty("CheckeredFlag_image"));
+    imageDatabase = getImageIcon(BasePropertyHandler.getProperty("Database_image"));
+    imageParallelHop = getImageIcon(BasePropertyHandler.getProperty("ParallelHop_image"));
+    imageUnconditionalHop = getImageIcon(BasePropertyHandler.getProperty("UnconditionalHop_image"));
+    imageStart = getImageIcon(BasePropertyHandler.getProperty("STR_image"));
+    imageDummy = getImageIcon(BasePropertyHandler.getProperty("DUM_image"));
+    imageBusy = getImageIcon(BasePropertyHandler.getProperty("Busy_image"));
+    imageInject = getImageIcon(BasePropertyHandler.getProperty("Inject_image"));
+
+    fontGraph = new Font("FreeSans", Font.PLAIN, 10);
+    fontNote = new Font("FreeSans", Font.PLAIN, 10);
+    fontSmall = new Font("FreeSans", Font.PLAIN, 8);
+
+    gc.setFont(fontGraph);
+
+    gc.setColor(background);
+    gc.fillRect(0, 0, area.x, area.y);
+  }
 	
 	private BufferedImage getImageIcon(String fileName) throws KettleException {
 	  InputStream inputStream=null;
@@ -395,6 +397,11 @@ public class SwingDirectGC implements GCInterface {
 		gc.fillRect(x+xOffset, y+yOffset, width, height);
 		switchForegroundBackgroundColors();
 	}
+	
+	// TODO: complete code 
+	public void fillGradientRectangle(int x, int y, int width, int height, boolean vertical) {
+	  fillRectangle(x, y, width, height);
+	}
 
 	public void fillRoundRectangle(int x, int y, int width, int height, int circleWidth, int circleHeight) {
 		switchForegroundBackgroundColors();
@@ -433,6 +440,7 @@ public class SwingDirectGC implements GCInterface {
 		case GRAY: return gray;
 		case LIGHTGRAY: return lightGray;
 		case DARKGRAY: return darkGray;
+		case LIGHTBLUE: return lightBlue;
 		}
 		return null;
 	}

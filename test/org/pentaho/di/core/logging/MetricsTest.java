@@ -46,6 +46,7 @@ public class MetricsTest extends TestCase {
   public void testTransformation() throws Exception {
     
     TransMeta transMeta = new TransMeta("testfiles/metrics/simple-test.ktr");
+    transMeta.setGatheringMetrics(true);
     Trans trans = new Trans(transMeta);
     trans.setGatheringMetrics(true);
     trans.execute(null);
@@ -64,7 +65,8 @@ public class MetricsTest extends TestCase {
     
     // Get all durations...
     //
-    durationList = MetricsUtil.getDurations(log.getLogChannelId());
+    // durationList = MetricsUtil.getDurations(trans.getLogChannelId());
+
   }
   
   public void testDatabaseGetRow() throws Exception {

@@ -15,6 +15,8 @@ public class MetricsPainter {
   
   private Long periodStart=null;
   private Long periodEnd=null;
+
+  private int barHeight;
   
   public class MetricsDrawArea {
     private Rectangle area;
@@ -32,8 +34,9 @@ public class MetricsPainter {
     }
   }
 
-  public MetricsPainter(GCInterface gc) {
+  public MetricsPainter(GCInterface gc, int barHeight) {
     this.gc = gc;   
+    this.barHeight = barHeight;
   }
   
   public List<MetricsDrawArea> paint(List<MetricsDuration> durations) {
@@ -48,19 +51,13 @@ public class MetricsPainter {
       return areas; // nothing to do;
     }
     double pixelsPerMs = (double)width/((double)(periodEnd-periodStart));
-    int barHeight = Math.round(((height-10)/durations.size()))-2;
-    
     
     // Draw some lines in the background.
     //
     long periodInMs = periodEnd - periodStart;
-    int log10 = (int)Math.log10(periodInMs);
+    int log10 = (int)Math.log10(periodInMs)+1;
     
-    // 150 --> 2
-    // 1243 --> 3
-    // 
-    
-    int timeLineDistance = (int)Math.pow(10, log10-1);
+    int timeLineDistance = (int)Math.pow(10, log10-1)/2;
     
     for (int time=timeLineDistance;time<periodInMs;time+=timeLineDistance) {
       int x = (int)(time * pixelsPerMs);
@@ -73,7 +70,7 @@ public class MetricsPainter {
     }
     
     
-    int y=14;
+    int y=20;
     
     // Draw the durations...
     //
@@ -87,9 +84,10 @@ public class MetricsPainter {
       int durationWidth = (int)(realDuration*pixelsPerMs);
       int x = 2+  (int)((duration.getDate().getTime()-periodStart)*pixelsPerMs);
       
+      gc.setBackground(EColor.BACKGROUND);
+      gc.setForeground(EColor.LIGHTBLUE);
+      gc.fillGradientRectangle(x, y, durationWidth, barHeight, false);
       gc.setForeground(EColor.BLACK);
-      gc.setBackground(EColor.LIGHTGRAY);
-      gc.fillRectangle(x, y, durationWidth, barHeight);
       gc.drawRectangle(x, y, durationWidth, barHeight);
       areas.add(new MetricsDrawArea(new Rectangle(x, y, durationWidth, barHeight), duration));
       
@@ -102,9 +100,9 @@ public class MetricsPainter {
       
       gc.setFont(EFont.GRAPH);
       gc.textExtent(message);
-      gc.drawText(message, x+2, y+2, true);
+      gc.drawText(message, x+3, y+4, true);
       
-      y+=barHeight+2;
+      y+=barHeight+5;
     }
     return areas;
   }
