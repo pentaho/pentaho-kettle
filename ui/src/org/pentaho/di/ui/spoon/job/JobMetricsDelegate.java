@@ -237,9 +237,11 @@ public class JobMetricsDelegate extends SpoonDelegate {
           MetricsDrawArea drawArea = drawAreas.get(i);
           if (drawArea.getArea().contains(event.x, event.y)) {
             MetricsDuration duration = drawArea.getDuration();
+            if (duration==null) continue;
             
             System.out.println(duration.toString());
             LoggingObjectInterface loggingObject = LoggingRegistry.getInstance().getLoggingObject(duration.getLogChannelId());
+            if (loggingObject==null) return;
             System.out.println(loggingObject.getObjectType()+" : "+loggingObject.getObjectName());
             
           }
@@ -273,13 +275,13 @@ public class JobMetricsDelegate extends SpoonDelegate {
   }
     
     
-	private void updateGraph() {
+	public void updateGraph() {
 		
 		jobGraph.getDisplay().asyncExec(new Runnable() {		
 			public void run() {
 				if (metricsComposite!=null && !metricsComposite.isDisposed() && canvas!=null && !canvas.isDisposed() && jobMetricsTab!=null && !jobMetricsTab.isDisposed()) {
 					if (jobMetricsTab.isShowing()) {
-						canvas.update();
+						canvas.redraw();
 					}
 				}
 			}		
@@ -287,6 +289,10 @@ public class JobMetricsDelegate extends SpoonDelegate {
 	}
 	
 	private long lastRefreshTime=0;
+	
+	public void resetLastRefreshTime() {
+	  lastRefreshTime=0;
+	}
 	
 	private void refreshImage(GC canvasGc) {
 		Rectangle bounds = canvas.getBounds();
@@ -323,15 +329,15 @@ public class JobMetricsDelegate extends SpoonDelegate {
 	  //
 	  
 	  org.eclipse.swt.graphics.Point textExtent = canvasGc.textExtent("AagKkiw");
-	  int height = textExtent.y+4;
+	  int barHeight = textExtent.y+8;
 	  
 	  // Make the height larger if needed for clarify
 	  //
-	  bounds.height = Math.max(durations.size()*height, bounds.height);
+	  bounds.height = Math.max(durations.size()*barHeight, bounds.height);
 	  canvas.setSize(bounds.width, bounds.height);
 		
 		SWTGC gc = new SWTGC(Display.getCurrent(), new Point(bounds.width, bounds.height), PropsUI.getInstance().getIconSize());
-	  MetricsPainter painter = new MetricsPainter(gc);
+	  MetricsPainter painter = new MetricsPainter(gc, barHeight);
 	  drawAreas = painter.paint(durations);
 	  image = (Image) gc.getImage();
 	  
@@ -369,5 +375,9 @@ public class JobMetricsDelegate extends SpoonDelegate {
 		  metricsComposite.layout(true,true);
 		}
 	}
+
+  public void refresh() {
+    canvas.update();
+  }
 
 }

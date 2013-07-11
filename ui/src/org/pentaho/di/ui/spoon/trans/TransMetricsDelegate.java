@@ -186,7 +186,6 @@ public class TransMetricsDelegate extends SpoonDelegate {
     canvas.addPaintListener(new PaintListener() {
 
       public void paintControl(final PaintEvent event) {;
-      
         if (transGraph.trans!=null && transGraph.trans.isFinished()) {
           refreshImage(event.gc);
 
@@ -275,13 +274,14 @@ public class TransMetricsDelegate extends SpoonDelegate {
   }
     
     
-	private void updateGraph() {
+	public void updateGraph() {
 		
 		transGraph.getDisplay().asyncExec(new Runnable() {		
 			public void run() {
+	      
 				if (metricsComposite!=null && !metricsComposite.isDisposed() && canvas!=null && !canvas.isDisposed() && transMetricsTab!=null && !transMetricsTab.isDisposed()) {
 					if (transMetricsTab.isShowing()) {
-						canvas.update();
+						canvas.redraw();
 					}
 				}
 			}		
@@ -289,6 +289,10 @@ public class TransMetricsDelegate extends SpoonDelegate {
 	}
 	
 	private long lastRefreshTime;
+	
+	public void resetLastRefreshTime() {
+	  lastRefreshTime = 0L;
+	}
 	
 	private void refreshImage(GC canvasGc) {
 		Rectangle bounds = canvas.getBounds();
@@ -369,21 +373,6 @@ public class TransMetricsDelegate extends SpoonDelegate {
 		if (!metricsComposite.isDisposed()) {
 		  metricsComposite.layout(true,true);
 		}
-	}
-	
-	public void refresh() {
-    System.out.println("finished="+transGraph.trans.isFinished());
-	  updateGraph();
-	  /*
-	  canvas.getDisplay().asyncExec(
-	      new Runnable() {
-        	  public void run() {
-        	    lastRefreshTime=0;
-        	    canvas.update();         	  
-        	  }
-    	  }
-    	);
-    	*/
 	}
 
 }

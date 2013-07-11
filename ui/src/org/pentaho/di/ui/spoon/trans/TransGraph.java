@@ -1812,9 +1812,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       if (e.character == 'E' && (e.stateMask & SWT.CTRL) != 0) {
       	checkErrorVisuals();
       }
-      
-      // System.out.println("e.character="+e.character+", e.keyCode="+e.keyCode+", stateMask & SWT.CTRL = "+(e.stateMask & SWT.CTRL));
-      
+           
       // CTRL-W or CTRL-F4 : close tab
       if ((e.keyCode=='w' && (e.stateMask & SWT.MOD1) != 0 ) ||
           (e.keyCode==SWT.F4 && (e.stateMask & SWT.MOD1) != 0 )
@@ -2380,12 +2378,14 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             XulMenuitem item = (XulMenuitem) doc.getElementById("trans-graph-entry-newhop"); 
             item.setDisabled(sels != 2);
 
+            // TODO: cache the next line (seems fast enough)?
+            //
             List<PluginInterface> rowDistributionPlugins = PluginRegistry.getInstance().getPlugins(RowDistributionPluginType.class);
             
             JfaceMenupopup customRowDistMenu = (JfaceMenupopup) doc.getElementById("trans-graph-entry-data-movement-popup");
-            customRowDistMenu.setDisabled(rowDistributionPlugins.isEmpty());
+            customRowDistMenu.setDisabled(false);
             customRowDistMenu.removeChildren();
-            
+                       
             // Add the default round robin plugin...
             //
             {
@@ -2423,7 +2423,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
               child.setSelected(selected);
             }
             
-            // Add the default round robin plugin...
+            // Add the default copy rows plugin...
             //
             {
               Action action = new Action("CopyRowsDistribution", Action.AS_CHECK_BOX) {
@@ -3921,6 +3921,9 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           checkTransEnded();
           checkErrorVisuals();
           stopRedrawTimer();
+          
+          transMetricsDelegate.resetLastRefreshTime();
+          transMetricsDelegate.updateGraph();
         }
       });
 

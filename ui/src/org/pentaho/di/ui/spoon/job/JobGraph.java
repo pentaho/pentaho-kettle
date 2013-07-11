@@ -3387,8 +3387,11 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
     // Do a final check to see if it all ended...
     //
     if (job != null && job.isInitialized() && job.isFinished()) {
-      for (RefreshListener listener : refreshListeners)
+      for (RefreshListener listener : refreshListeners) {
         listener.refreshNeeded();
+      }
+      jobMetricsDelegate.resetLastRefreshTime();
+      jobMetricsDelegate.updateGraph();
       log.logMinimal(BaseMessages.getString(PKG, "JobLog.Log.JobHasEnded")); 
     }
     setControlStates();
