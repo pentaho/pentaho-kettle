@@ -136,7 +136,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
     //
     jobHistoryTab = new CTabItem(jobGraph.extraViewTabFolder, SWT.NONE);
     jobHistoryTab.setImage(GUIResource.getInstance().getImageShowHistory());
-    jobHistoryTab.setText(BaseMessages.getString(PKG, "Spoon.TransGraph.HistoryTab.Name")); 
+    jobHistoryTab.setText(BaseMessages.getString(PKG, "Spoon.TransGraph.HistoryTab.Name"));
 
     // Create a composite, slam everything on there like it was in the history tab.
     //

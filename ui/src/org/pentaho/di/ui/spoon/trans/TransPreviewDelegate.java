@@ -98,7 +98,7 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
   private PreviewMode previewMode;
   
   private StepMeta selectedStep;
-  private StepMeta lastSelectedStep;
+  protected StepMeta lastSelectedStep;
   private SwtRadio firstRadio;
   private SwtRadio lastRadio;
   private SwtRadio offRadio;

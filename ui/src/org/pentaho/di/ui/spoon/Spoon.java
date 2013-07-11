@@ -109,6 +109,7 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Sash;
 import org.eclipse.swt.widgets.Shell;
@@ -2914,6 +2915,64 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     tabfolder.setChangedFont(GUIResource.getInstance().getFontBold());
     tabfolder.setUnchangedFont(GUIResource.getInstance().getFontGraph());
     props.setLook(tabfolder.getSwtTabset(), Props.WIDGET_STYLE_TAB);
+    final CTabFolder cTabFolder = tabfolder.getSwtTabset();
+    cTabFolder.addMenuDetectListener(new MenuDetectListener() {
+      @Override
+      public void menuDetected(MenuDetectEvent event) {
+        org.eclipse.swt.graphics.Point real = new org.eclipse.swt.graphics.Point(event.x, event.y);
+        org.eclipse.swt.graphics.Point point = display.map(null, cTabFolder, real);
+        final CTabItem item = cTabFolder.getItem(point); 
+        if (item != null) { 
+          Menu menu = new Menu(cTabFolder);
+          MenuItem closeItem = new MenuItem(menu, SWT.NONE);
+          closeItem.setText(BaseMessages.getString(PKG, "Spoon.Tab.Close"));
+          closeItem.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+              int index = tabfolder.getSwtTabset().indexOf(item);
+              if (index>=0) {
+                TabMapEntry entry = delegates.tabs.getTabs().get(index);
+                tabClose(entry.getTabItem());
+              }
+            }
+          });
+
+          MenuItem closeAllItems = new MenuItem(menu, SWT.NONE);
+          closeAllItems.setText(BaseMessages.getString(PKG, "Spoon.Tab.CloseAll"));
+          closeAllItems.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+              for (TabMapEntry entry : delegates.tabs.getTabs()) {
+                tabClose(entry.getTabItem());
+              }
+            }
+          });
+
+          MenuItem closeOtherItems = new MenuItem(menu, SWT.NONE);
+          closeOtherItems.setText(BaseMessages.getString(PKG, "Spoon.Tab.CloseOthers"));
+          closeOtherItems.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+              int index = tabfolder.getSwtTabset().indexOf(item);
+              if (index>=0) {
+                TabMapEntry entry = delegates.tabs.getTabs().get(index);
+                for (TabMapEntry closeEntry : delegates.tabs.getTabs()) {
+                  if (!closeEntry.equals(entry)) {
+                    tabClose(closeEntry.getTabItem());
+                  }
+                }
+              }
+            }
+          });
+
+          
+          menu.setLocation(real);
+          menu.setVisible(true);
+          
+        } 
+      }
+    });
+    
 
     int weights[] = props.getSashWeights();
     sashform.setWeights(weights);

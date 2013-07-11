@@ -22,7 +22,9 @@
 
 package org.pentaho.di.ui.spoon.trans;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -45,6 +47,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.GlobalMessages;
 import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepStatus;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -61,168 +64,168 @@ import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.ui.xul.swt.tags.SwtToolbarbutton;
 
 public class TransGridDelegate extends SpoonDelegate implements XulEventHandler {
-	private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	private static final String XUL_FILE_TRANS_GRID_TOOLBAR = "ui/trans-grid-toolbar.xul";
+  private static final String XUL_FILE_TRANS_GRID_TOOLBAR = "ui/trans-grid-toolbar.xul";
 
-	public static final long REFRESH_TIME = 100L;
-    public static final long UPDATE_TIME_VIEW = 1000L;
-    
+  public static final long REFRESH_TIME = 100L;
 
-	private TransGraph transGraph;
+  public static final long UPDATE_TIME_VIEW = 1000L;
 
-	private CTabItem transGridTab;
-	private TableView transGridView;
-	
-	private boolean refresh_busy;
-	private long lastUpdateView;
-	
-	private XulToolbar       toolbar;
-	private Composite transGridComposite;
-	private boolean hideInactiveSteps;
-	
-	/**
-	 * @param spoon
-	 * @param transGraph
-	 */
-	public TransGridDelegate(Spoon spoon, TransGraph transGraph) {
-		super(spoon);
-		this.transGraph = transGraph;
-		
-		hideInactiveSteps = false;
-	}
-	
-	
-    public void showGridView() {
-    	
-    	if (transGridTab==null || transGridTab.isDisposed()) {
-    		addTransGrid();
-    	} else {
-    		transGridTab.dispose();
-    		
-    		transGraph.checkEmptyExtraView();
-    	}
+  private TransGraph transGraph;
+
+  private CTabItem transGridTab;
+
+  private TableView transGridView;
+
+  private boolean refresh_busy;
+
+  private long lastUpdateView;
+
+  private XulToolbar toolbar;
+
+  private Composite transGridComposite;
+
+  private boolean hideInactiveSteps;
+
+  private boolean showSelectedSteps;
+
+  /**
+   * @param spoon
+   * @param transGraph
+   */
+  public TransGridDelegate(Spoon spoon, TransGraph transGraph) {
+    super(spoon);
+    this.transGraph = transGraph;
+
+    hideInactiveSteps = false;
+  }
+
+  public void showGridView() {
+
+    if (transGridTab == null || transGridTab.isDisposed()) {
+      addTransGrid();
+    } else {
+      transGridTab.dispose();
+
+      transGraph.checkEmptyExtraView();
     }
-    
-	/**
-	 *  Add a grid with the execution metrics per step in a table view
-	 *  
-	 */ 
-	public void addTransGrid() {
+  }
 
-		// First, see if we need to add the extra view...
-		//
-		if (transGraph.extraViewComposite==null || transGraph.extraViewComposite.isDisposed()) {
-			transGraph.addExtraView();
-		} else {
-			if (transGridTab!=null && !transGridTab.isDisposed()) {
-				// just set this one active and get out...
-				//
-				transGraph.extraViewTabFolder.setSelection(transGridTab);
-				return; 
-			}
-		}
+  /**
+   *  Add a grid with the execution metrics per step in a table view
+   *  
+   */
+  public void addTransGrid() {
 
-		transGridTab = new CTabItem(transGraph.extraViewTabFolder, SWT.NONE);
-		transGridTab.setImage(GUIResource.getInstance().getImageShowGrid());
-		transGridTab.setText(BaseMessages.getString(PKG, "Spoon.TransGraph.GridTab.Name"));
+    // First, see if we need to add the extra view...
+    //
+    if (transGraph.extraViewComposite == null || transGraph.extraViewComposite.isDisposed()) {
+      transGraph.addExtraView();
+    } else {
+      if (transGridTab != null && !transGridTab.isDisposed()) {
+        // just set this one active and get out...
+        //
+        transGraph.extraViewTabFolder.setSelection(transGridTab);
+        return;
+      }
+    }
 
-		transGridComposite = new Composite(transGraph.extraViewTabFolder, SWT.NONE);
-		transGridComposite.setLayout(new FormLayout());
-		
-		addToolBar();
+    transGridTab = new CTabItem(transGraph.extraViewTabFolder, SWT.NONE);
+    transGridTab.setImage(GUIResource.getInstance().getImageShowGrid());
+    transGridTab.setText(BaseMessages.getString(PKG, "Spoon.TransGraph.GridTab.Name"));
+
+    transGridComposite = new Composite(transGraph.extraViewTabFolder, SWT.NONE);
+    transGridComposite.setLayout(new FormLayout());
+
+    addToolBar();
 
     Control toolbarControl = (Control) toolbar.getManagedObject();
-    
+
     toolbarControl.setLayoutData(new FormData());
     FormData fd = new FormData();
     fd.left = new FormAttachment(0, 0); // First one in the left top corner
     fd.top = new FormAttachment(0, 0);
     fd.right = new FormAttachment(100, 0);
     toolbarControl.setLayoutData(fd);
-    
+
     toolbarControl.setParent(transGridComposite);
-		
-		ColumnInfo[] colinf = new ColumnInfo[] { 
-                new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Stepname"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
-				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Copynr"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
-				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Read"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
-				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Written"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
-				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Input"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
-				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Output"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
-				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Updated"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
-                new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Rejected"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
-				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Errors"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
-				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Active"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
-				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Time"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
-				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Speed"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
-				new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.PriorityBufferSizes"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
-		};
 
-		colinf[1].setAllignement(SWT.RIGHT);
-		colinf[2].setAllignement(SWT.RIGHT);
-		colinf[3].setAllignement(SWT.RIGHT);
-		colinf[4].setAllignement(SWT.RIGHT);
-		colinf[5].setAllignement(SWT.RIGHT);
-		colinf[6].setAllignement(SWT.RIGHT);
-		colinf[7].setAllignement(SWT.RIGHT);
-		colinf[8].setAllignement(SWT.RIGHT);
-		colinf[9].setAllignement(SWT.LEFT);
-		colinf[10].setAllignement(SWT.RIGHT);
-		colinf[11].setAllignement(SWT.RIGHT);
-        colinf[12].setAllignement(SWT.RIGHT);
+    ColumnInfo[] colinf = new ColumnInfo[] {
+        new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Stepname"), ColumnInfo.COLUMN_TYPE_TEXT, false,
+            true),
+        new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Copynr"), ColumnInfo.COLUMN_TYPE_TEXT, false, true),
+        new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Read"), ColumnInfo.COLUMN_TYPE_TEXT, false, true),
+        new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Written"), ColumnInfo.COLUMN_TYPE_TEXT, false, true),
+        new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Input"), ColumnInfo.COLUMN_TYPE_TEXT, false, true),
+        new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Output"), ColumnInfo.COLUMN_TYPE_TEXT, false, true),
+        new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Updated"), ColumnInfo.COLUMN_TYPE_TEXT, false, true),
+        new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Rejected"), ColumnInfo.COLUMN_TYPE_TEXT, false,
+            true),
+        new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Errors"), ColumnInfo.COLUMN_TYPE_TEXT, false, true),
+        new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Active"), ColumnInfo.COLUMN_TYPE_TEXT, false, true),
+        new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Time"), ColumnInfo.COLUMN_TYPE_TEXT, false, true),
+        new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Speed"), ColumnInfo.COLUMN_TYPE_TEXT, false, true),
+        new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.PriorityBufferSizes"), ColumnInfo.COLUMN_TYPE_TEXT,
+            false, true), };
 
-		transGridView = new TableView(transGraph.getManagedObject(), transGridComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, 1, true, // readonly!
-				null, // Listener
-				spoon.props);
-		FormData fdView = new FormData();
-		fdView.left = new FormAttachment(0,0);
-		fdView.right = new FormAttachment(100,0);
-		fdView.top = new FormAttachment((Control)toolbar.getManagedObject(),0);
-		fdView.bottom = new FormAttachment(100,0);
-		transGridView.setLayoutData(fdView);
-		
-		// Add a timer to update this view every couple of seconds...
-		//
-		final Timer tim = new Timer("TransGraph: " + transGraph.getMeta().getName());
-        final AtomicBoolean busy = new AtomicBoolean(false);
+    colinf[1].setAllignement(SWT.RIGHT);
+    colinf[2].setAllignement(SWT.RIGHT);
+    colinf[3].setAllignement(SWT.RIGHT);
+    colinf[4].setAllignement(SWT.RIGHT);
+    colinf[5].setAllignement(SWT.RIGHT);
+    colinf[6].setAllignement(SWT.RIGHT);
+    colinf[7].setAllignement(SWT.RIGHT);
+    colinf[8].setAllignement(SWT.RIGHT);
+    colinf[9].setAllignement(SWT.LEFT);
+    colinf[10].setAllignement(SWT.RIGHT);
+    colinf[11].setAllignement(SWT.RIGHT);
+    colinf[12].setAllignement(SWT.RIGHT);
 
-        TimerTask timtask = new TimerTask()
-        {
-            public void run()
-            {
-                if (!spoon.getDisplay().isDisposed())
-                {
-                    spoon.getDisplay().asyncExec(
-                        new Runnable()
-                        {
-                            public void run()
-                            {
-                                if (!busy.get())
-                                {
-                                    busy.set(true);
-                                    refreshView();
-                                    busy.set(false);
-                                }
-                            }
-                        }
-                    );
-                }
+    transGridView = new TableView(transGraph.getManagedObject(), transGridComposite, SWT.BORDER | SWT.FULL_SELECTION
+        | SWT.MULTI, colinf, 1, true, // readonly!
+        null, // Listener
+        spoon.props);
+    FormData fdView = new FormData();
+    fdView.left = new FormAttachment(0, 0);
+    fdView.right = new FormAttachment(100, 0);
+    fdView.top = new FormAttachment((Control) toolbar.getManagedObject(), 0);
+    fdView.bottom = new FormAttachment(100, 0);
+    transGridView.setLayoutData(fdView);
+
+    // Add a timer to update this view every couple of seconds...
+    //
+    final Timer tim = new Timer("TransGraph: " + transGraph.getMeta().getName());
+    final AtomicBoolean busy = new AtomicBoolean(false);
+
+    TimerTask timtask = new TimerTask() {
+      public void run() {
+        if (!spoon.getDisplay().isDisposed()) {
+          spoon.getDisplay().asyncExec(new Runnable() {
+            public void run() {
+              if (!busy.get()) {
+                busy.set(true);
+                refreshView();
+                busy.set(false);
+              }
             }
-        };
+          });
+        }
+      }
+    };
 
-        tim.schedule(timtask, 0L, REFRESH_TIME); // schedule to repeat a couple of times per second to get fast feedback 
+    tim.schedule(timtask, 0L, REFRESH_TIME); // schedule to repeat a couple of times per second to get fast feedback 
 
-        transGridTab.addDisposeListener(new DisposeListener() {
-			public void widgetDisposed(DisposeEvent disposeEvent) {
-				tim.cancel();
-			}
-		});
-		
-		transGridTab.setControl(transGridComposite);
+    transGridTab.addDisposeListener(new DisposeListener() {
+      public void widgetDisposed(DisposeEvent disposeEvent) {
+        tim.cancel();
+      }
+    });
 
-		transGraph.extraViewTabFolder.setSelection(transGridTab);		
-	}
+    transGridTab.setControl(transGridComposite);
+
+    transGraph.extraViewTabFolder.setSelection(transGridTab);
+  }
 
   private void addToolBar() {
 
@@ -238,34 +241,54 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
       swtToolBar.layout(true, true);
     } catch (Throwable t) {
       log.logError(toString(), Const.getStackTracker(t));
-      new ErrorDialog(transGridComposite.getShell(), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR), new Exception(t));
+      new ErrorDialog(transGridComposite.getShell(), BaseMessages.getString(PKG,
+          "Spoon.Exception.ErrorReadingXULFile.Title"), BaseMessages.getString(PKG,
+          "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR), new Exception(t));
     }
   }
-  
-	public void showHideInactive() {
-		hideInactiveSteps=!hideInactiveSteps;
-		
-		// TODO: change icon
-		SwtToolbarbutton onlyActiveButton = (SwtToolbarbutton) toolbar.getElementById("show-inactive");
-		if (onlyActiveButton!=null) {
-			onlyActiveButton.setSelected(hideInactiveSteps);
-			if (hideInactiveSteps) {
-				onlyActiveButton.setImage(GUIResource.getInstance().getImageHideInactive());
-			} else {
-				onlyActiveButton.setImage(GUIResource.getInstance().getImageShowInactive());
-			}
-		}
-	}
-  
+
+  public void showHideInactive() {
+    hideInactiveSteps = !hideInactiveSteps;
+
+    SwtToolbarbutton onlyActiveButton = (SwtToolbarbutton) toolbar.getElementById("show-inactive");
+    if (onlyActiveButton != null) {
+      onlyActiveButton.setSelected(hideInactiveSteps);
+      if (hideInactiveSteps) {
+        onlyActiveButton.setImage(GUIResource.getInstance().getImageHideInactive());
+      } else {
+        onlyActiveButton.setImage(GUIResource.getInstance().getImageShowInactive());
+      }
+    }
+  }
+
+  public void showHideSelected() {
+    showSelectedSteps = !showSelectedSteps;
+
+    SwtToolbarbutton onlySelectedButton = (SwtToolbarbutton) toolbar.getElementById("show-selected");
+    if (onlySelectedButton != null) {
+      onlySelectedButton.setSelected(showSelectedSteps);
+      if (showSelectedSteps) {
+        onlySelectedButton.setImage(GUIResource.getInstance().getImageShowSelected());
+      } else {
+        onlySelectedButton.setImage(GUIResource.getInstance().getImageShowAll());
+      }
+    }
+  }
+
   private void refreshView() {
     boolean insert = true;
     int nrSteps = -1;
     int totalSteps = -1;
-    
+
     if (transGridView == null || transGridView.isDisposed())
       return;
     if (refresh_busy)
       return;
+
+    List<StepMeta> selectedSteps = new ArrayList<StepMeta>();
+    if (showSelectedSteps) {
+      selectedSteps = transGraph.trans.getTransMeta().getSelectedSteps();
+    }
 
     int topIdx = transGridView.getTable().getTopIndex();
 
@@ -277,12 +300,12 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
     long msSinceLastUpdate = time - lastUpdateView;
     if (transGraph.trans != null && msSinceLastUpdate > UPDATE_TIME_VIEW) {
       lastUpdateView = time;
-      
+
       nrSteps = transGraph.trans.nrSteps();
       totalSteps = nrSteps;
       if (hideInactiveSteps)
         nrSteps = transGraph.trans.nrActiveSteps();
-      
+
       StepExecutionStatus[] stepStatusLookup = transGraph.trans.getTransStepExecutionStatusLookup();
       boolean[] isRunningLookup = transGraph.trans.getTransStepIsRunningLookup();
 
@@ -303,36 +326,56 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
       }
 
       int nr = 0;
-      StepInterface baseStep;
-      
+
       for (int i = 0; i < totalSteps; i++) {
-    	baseStep = null;
+        StepInterface baseStep = transGraph.trans.getRunThread(i);;
+        
+        // See if the step is selected & in need of display
+        //
+        boolean showSelected;
+        if (showSelectedSteps) {
+          if (selectedSteps.size()==0) {
+            showSelected = true; 
+          } else {
+            showSelected = false;
+            for (StepMeta stepMeta : selectedSteps) {
+              if (baseStep.getStepMeta().equals(stepMeta)) {
+                showSelected = true;
+                break;
+              }
+            }
+          }
+        } else {
+          showSelected = true;
+        }
+        
         // when "Hide active" steps is enabled show only alive steps
         // otherwise only those that have not STATUS_EMPTY
-        if ((hideInactiveSteps && (isRunningLookup[i] || stepStatusLookup[i] != StepExecutionStatus.STATUS_FINISHED)) || (!hideInactiveSteps && stepStatusLookup[i] != StepExecutionStatus.STATUS_EMPTY)) {
+        //
+        if (showSelected && (hideInactiveSteps && (isRunningLookup[i] || stepStatusLookup[i] != StepExecutionStatus.STATUS_FINISHED))
+            || (!hideInactiveSteps && stepStatusLookup[i] != StepExecutionStatus.STATUS_EMPTY)) {
           TableItem ti = null;
           if (insert) {
             ti = new TableItem(table, SWT.NONE);
           } else {
             ti = table.getItem(nr);
           }
-          
-          if (ti == null) { continue; }
-          
-		  String num=""+(i+1);
-		  if (ti.getText(0).length() < 1) {
-			ti.setText(0, num);
-		  }
-		  
+
+          if (ti == null) {
+            continue;
+          }
+
+          String num = "" + (i + 1);
+          if (ti.getText(0).length() < 1) {
+            ti.setText(0, num);
+          }
+
           if (ti.getText(0).length() > 0) {
-        	  Integer tIndex = Integer.parseInt(ti.getText(0));
-        	  tIndex--;
-        	  baseStep = transGraph.trans.getRunThread(tIndex);
+            Integer tIndex = Integer.parseInt(ti.getText(0));
+            tIndex--;
+            baseStep = transGraph.trans.getRunThread(tIndex);
           }
-          if (baseStep == null) {
-        	  baseStep = transGraph.trans.getRunThread(i);
-          }
-          
+
           StepStatus stepStatus = new StepStatus(baseStep);
 
           String fields[] = stepStatus.getTransLogFields();
@@ -357,7 +400,7 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
           nr++;
         }
       }
-      
+
       // Only need to resort if the output has been sorted differently to the
       // default
       if (table.getItemCount() > 0 && (sortColumn != 0 || !sortDescending)) {
@@ -372,7 +415,7 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
       }
       //transGridView.getTable().setTopIndex(topIdx);
       if (transGridView.getTable().getTopIndex() != topIdx) {
-    	  transGridView.getTable().setTopIndex(topIdx);
+        transGridView.getTable().setTopIndex(topIdx);
       }
     } else {
       // We need at least one table-item in a table!
@@ -383,13 +426,11 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
     refresh_busy = false;
   }
 
-	public CTabItem getTransGridTab() {
-		return transGridTab;
-	}
+  public CTabItem getTransGridTab() {
+    return transGridTab;
+  }
 
-	
-
-	/* (non-Javadoc)
+  /* (non-Javadoc)
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getData()
    */
   public Object getData() {
