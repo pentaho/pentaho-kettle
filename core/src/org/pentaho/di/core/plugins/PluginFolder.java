@@ -114,7 +114,13 @@ public class PluginFolder implements PluginFolderInterface {
 			FileObject folderObject = KettleVFS.getFileObject( this.getFolder() );
 			FileObject[] fileObjects = folderObject.findFiles(new FileSelector() {
 				public boolean traverseDescendents(FileSelectInfo fileSelectInfo) throws Exception {
-				  return includeLibJars || !"lib".equals( fileSelectInfo.getFile().getName().getBaseName() );				  
+				  String folder = fileSelectInfo.getFile().getName().getBaseName();
+				  return ( includeLibJars || !"lib".equals( folder ) ) &&
+				      // Avoid slow unit testing and slow loading...
+				      "dev-lib".equalsIgnoreCase(folder) &&
+				      // Avoid looking into all the shims
+				      "hadoop-configurations".equalsIgnoreCase(folder)
+				      ;				  
 				}
 				
 				public boolean includeFile(FileSelectInfo fileSelectInfo) throws Exception {
