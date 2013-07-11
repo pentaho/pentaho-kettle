@@ -117,9 +117,9 @@ public class PluginFolder implements PluginFolderInterface {
 				  String folder = fileSelectInfo.getFile().getName().getBaseName();
 				  return ( includeLibJars || !"lib".equals( folder ) ) &&
 				      // Avoid slow unit testing and slow loading...
-				      "dev-lib".equalsIgnoreCase(folder) &&
+				      !"dev-lib".equalsIgnoreCase(folder) &&
 				      // Avoid looking into all the shims
-				      "hadoop-configurations".equalsIgnoreCase(folder)
+				      !"hadoop-configurations".equalsIgnoreCase(folder)
 				      ;				  
 				}
 				
