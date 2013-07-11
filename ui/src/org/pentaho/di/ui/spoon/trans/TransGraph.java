@@ -4585,9 +4585,5 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       }
     }
   }
-  
-  public void enableDisablePreviewMode() {
-    transPreviewDelegate.setActive(!transPreviewDelegate.isActive());
-  }
 }
 
