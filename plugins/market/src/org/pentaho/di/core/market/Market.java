@@ -65,6 +65,7 @@ import org.pentaho.di.ui.spoon.SpoonPluginInterface;
 import org.pentaho.di.ui.spoon.dialog.MarketplaceController;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
+import org.pentaho.xul.swt.tab.TabSet;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -612,6 +613,7 @@ public class Market implements SpoonPluginInterface {
             
             // The classloader will be closed by the invoked method
             //
+            @SuppressWarnings("resource")
             KettleURLClassLoader classloader = new KettleURLClassLoader(new URL[] {tmpJar.toURI().toURL()}, Spoon.getInstance().getClass().getClassLoader());
             Class<?> clazz = classloader.loadClass("org.pentaho.di.core.market.Market");
             // remove the plugin, unload when done.
@@ -655,7 +657,21 @@ public class Market implements SpoonPluginInterface {
     DatabaseMeta.clearDatabaseInterfacesMap();
     PluginRegistry.init();
     Spoon spoon = Spoon.getInstance();
+    
+    // Close all Execution Results panes to avoid SWT disposal issues during refresh
+    int numTabs = spoon.delegates.tabs.getTabs().size();
+    TabSet tabSet = spoon.getTabSet();
+    int selectedIndex = tabSet.getSelectedIndex();
+    for (int i = numTabs - 1; i >= 0; i--) {
+      if(i != selectedIndex) {
+        tabSet.setSelected(i);
+        if(spoon.isExecutionResultsPaneVisible()) spoon.showExecutionResults();        
+      }
+    }
+    tabSet.setSelected(selectedIndex);
     if(spoon.isExecutionResultsPaneVisible()) spoon.showExecutionResults();
+    
+    // Refresh Spoon objects and UI components
     spoon.refreshCoreObjects();
     spoon.refreshTree();
     spoon.refreshGraph();
