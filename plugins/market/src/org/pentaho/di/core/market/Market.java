@@ -655,6 +655,7 @@ public class Market implements SpoonPluginInterface {
     DatabaseMeta.clearDatabaseInterfacesMap();
     PluginRegistry.init();
     Spoon spoon = Spoon.getInstance();
+    if(spoon.isExecutionResultsPaneVisible()) spoon.showExecutionResults();
     spoon.refreshCoreObjects();
     spoon.refreshTree();
     spoon.refreshGraph();
