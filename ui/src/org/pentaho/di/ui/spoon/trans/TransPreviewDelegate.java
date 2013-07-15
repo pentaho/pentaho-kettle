@@ -207,6 +207,10 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
       lastRadio = (SwtRadio) xulDomContainer.getDocumentRoot().getElementById("preview-last");
       offRadio = (SwtRadio) xulDomContainer.getDocumentRoot().getElementById("preview-off");
       
+      PropsUI.getInstance().setLook((Control)firstRadio.getManagedObject());
+      PropsUI.getInstance().setLook((Control)lastRadio.getManagedObject());
+      PropsUI.getInstance().setLook((Control)offRadio.getManagedObject());
+      
     } catch (Throwable t) {
       log.logError(toString(), Const.getStackTracker(t));
       new ErrorDialog(transPreviewComposite.getShell(), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"),
@@ -412,6 +416,13 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
 
   public void capturePreviewData(final Trans trans, List<StepMeta> stepMetas) {
     final StringBuffer loggingText = new StringBuffer();
+    
+    // First clean out previous preview data. Otherwise this method leaks memory like crazy.
+    //
+    previewLogMap.clear();
+    previewMetaMap.clear();
+    previewDataMap.clear();
+    
     try {
       final TransMeta transMeta = trans.getTransMeta();
     
