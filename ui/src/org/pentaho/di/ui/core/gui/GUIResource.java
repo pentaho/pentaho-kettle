@@ -341,6 +341,8 @@ public class GUIResource {
   private ManagedFont fontBold;
 
   private Image imageSpoonHigh;
+  
+  private Image imageHadoop;
 
   /**
    * GUIResource also contains the clipboard as it has to be allocated only
@@ -552,6 +554,7 @@ public class GUIResource {
       imageCheckpoint.dispose();
       imageGantt.dispose();
       imageHelpWeb.dispose();
+      imageHadoop.dispose();
 
       disposeImage(imageNoteSmall);
       disposeImage(imageColor);
@@ -814,6 +817,7 @@ public class GUIResource {
     imageCheckpoint = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("CheckeredFlag_image")); // , "ui/images/scales.png
     imageGantt = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Gantt_image")); // , "ui/images/gantt.png
     imageHelpWeb = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("HelpWeb_image")); // , "ui/images/help_web.png
+    imageHadoop = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Hadoop_image")); // , "ui/images/hadoop.png
 
     imageEmpty16x16 = new Image(display, 16, 16);
 
@@ -1909,6 +1913,10 @@ public class GUIResource {
 
   public Image getImageHelpWeb() {
     return imageHelpWeb;
+  }
+
+  public Image getHadoop() {
+    return imageHadoop;
   }
 
 }

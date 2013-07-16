@@ -377,6 +377,9 @@ public class MarketplaceDialog extends Dialog {
       case Database:
         image = GUIResource.getInstance().getImageConnection();
         break;
+      case HadoopShim:
+        image = GUIResource.getInstance().getHadoop();
+        break;
       default:
         image = GUIResource.getInstance().getImageArrow();
         break;
