@@ -442,7 +442,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   private static final String FILE_WELCOME_PAGE = Const.safeAppendDirectory(
       BasePropertyHandler.getProperty("documentationDirBase", "docs/"),
-      BaseMessages.getString(PKG, "Spoon.Title.STRING_DOCUMENT_WELCOME")); // "docs/English/welcome/kettle_document_map.html";
+      BaseMessages.getString(PKG, "Spoon.Title.STRING_DOCUMENT_WELCOME")); // "docs/English/welcome/index.html";
 
   private static final String UNDO_MENUITEM = "edit-undo";
 

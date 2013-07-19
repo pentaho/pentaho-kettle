@@ -101,8 +101,8 @@ import org.pentaho.di.trans.steps.userdefinedjavaclass.FieldHelper;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.StepDefinition;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UsageParameter;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef;
-import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef.ClassType;
+import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta.FieldInfo;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -135,8 +135,8 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 	private Button			wTest;
 	private Listener		lsTest;
 	
-	private Button			wCreatePlugin;
-	private Listener		lsCreatePlugin;
+	protected Button			wCreatePlugin;
+	protected Listener		lsCreatePlugin;
 
 	private Tree			wTree;
 	private TreeItem		wTreeClassesItem;

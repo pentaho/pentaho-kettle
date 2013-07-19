@@ -1650,6 +1650,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
   protected void newTransformation() {
     TransMeta newTransMeta = new TransMeta();
     
+    newTransMeta.getDatabases().addAll(transMeta.getDatabases());
+    
     TransDialog transDialog = new TransDialog(shell, SWT.NONE, newTransMeta, repository);
     if (transDialog.open()!=null) {
       Spoon spoon = Spoon.getInstance();

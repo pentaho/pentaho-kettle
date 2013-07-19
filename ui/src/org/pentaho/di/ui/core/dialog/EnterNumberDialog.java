@@ -161,9 +161,10 @@ public class EnterNumberDialog extends Dialog
 
         // Detect [X] or ALT-F4 or something that kills this window...
         shell.addShellListener( new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
-
         
         getData();
+        
+        shell.pack();
 
         BaseStepDialog.setSize(shell);
 

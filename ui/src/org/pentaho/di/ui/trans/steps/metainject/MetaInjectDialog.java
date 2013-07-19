@@ -1057,6 +1057,8 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
 
     TransMeta newTransMeta = new TransMeta();
     
+    newTransMeta.getDatabases().addAll(transMeta.getDatabases());
+    
     // Pass some interesting settings from the parent transformations...
     //
     newTransMeta.setUsingUniqueConnections(transMeta.isUsingUniqueConnections());

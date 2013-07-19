@@ -1017,6 +1017,8 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
     
     TransMeta newTransMeta = new TransMeta();
     
+    newTransMeta.getDatabases().addAll(transMeta.getDatabases());
+    
     // Pass some interesting settings from the parent transformations...
     //
     newTransMeta.setUsingUniqueConnections(transMeta.isUsingUniqueConnections());

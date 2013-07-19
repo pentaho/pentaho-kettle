@@ -868,6 +868,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
     
     TransMeta newTransMeta = new TransMeta();
     
+    newTransMeta.getDatabases().addAll(transMeta.getDatabases());
+    
     // Pass some interesting settings from the parent transformations...
     //
     newTransMeta.setUsingUniqueConnections(transMeta.isUsingUniqueConnections());

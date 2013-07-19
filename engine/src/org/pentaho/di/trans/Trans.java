@@ -2690,6 +2690,50 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     }
     return baseSteps;
   }
+  
+  /**
+   * Find the executing step copy for the step with the specified name and copy number
+   *
+   * @param stepname the step name
+   * @param copynr
+   * @return the executing step found or null if no copy could be found.
+   */
+  public StepInterface findStepInterface(String stepname, int copyNr) {
+    if (steps == null)
+      return null;
+
+    for (int i = 0; i < steps.size(); i++) {
+      StepMetaDataCombi sid = steps.get(i);
+      StepInterface stepInterface = sid.step;
+      if (stepInterface.getStepname().equalsIgnoreCase(stepname) && sid.copy==copyNr) {
+        return stepInterface;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Find the available executing step copies for the step with the specified name
+   *
+   * @param stepname the step name
+   * @param copynr
+   * @return the list of executing step copies found or null if no steps are available yet (incorrect usage)
+   */
+  public List<StepInterface> findStepInterfaces(String stepname) {
+    if (steps == null)
+      return null;
+    
+    List<StepInterface> list = new ArrayList<StepInterface>();
+
+    for (int i = 0; i < steps.size(); i++) {
+      StepMetaDataCombi sid = steps.get(i);
+      StepInterface stepInterface = sid.step;
+      if (stepInterface.getStepname().equalsIgnoreCase(stepname)) {
+        list.add(stepInterface);
+      }
+    }
+    return list;
+  }
 
   /**
    * Find the data interface for the step with the specified name. 

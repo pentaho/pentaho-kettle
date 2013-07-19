@@ -38,6 +38,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -1039,7 +1040,13 @@ public class PropsUI extends Props
         
         if (background!=null && !background.isDisposed())
         {
-    		control.setBackground(background);
+          if (control instanceof Button) {
+            Button b = (Button) control;
+            if ((b.getStyle()&SWT.PUSH)!=0) {
+              return;
+            }
+          }
+          control.setBackground(background);
         }        
     }
 
