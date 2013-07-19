@@ -28,7 +28,6 @@ import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
-import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -107,7 +106,8 @@ public class MappingInput extends BaseStep implements StepInterface
       // In essence, we need to rename a couple of fields...
       //
             data.outputRowMeta = getInputRowMeta().clone();
-            
+            meta.setInputRowMeta(getInputRowMeta());
+
             if (meta.isSelectingAndSortingUnspecifiedFields()) {
               //
               // Create a list of the indexes to select to get the right order or fields on the output.
@@ -117,7 +117,7 @@ public class MappingInput extends BaseStep implements StepInterface
                 data.fieldNrs[i] = getInputRowMeta().indexOfValue(data.outputRowMeta.getValueMeta(i).getName());
               }
             }
-            
+
             // Now change the field names according to the mapping specification...
             // That means that all fields go through unchanged, unless specified.
             // 
@@ -127,37 +127,11 @@ public class MappingInput extends BaseStep implements StepInterface
                 throw new KettleStepException(BaseMessages.getString(PKG, "MappingInput.Exception.UnableToFindMappedValue", valueRename.getSourceValueName()));
               }
               valueMeta.setName(valueRename.getTargetValueName());
-              
-              valueMeta = getInputRowMeta().searchValueMeta(valueRename.getSourceValueName());
-              if (valueMeta==null) {
-                throw new KettleStepException(BaseMessages.getString(PKG, "MappingInput.Exception.UnableToFindMappedValue", valueRename.getSourceValueName()));
-              }
-              valueMeta.setName(valueRename.getTargetValueName());
             }
-            
-            // The input row meta has been manipulated correctly for the call to meta.getFields(), so create a blank outputRowMeta 
-            if (meta.isSelectingAndSortingUnspecifiedFields()) {
-              data.outputRowMeta = new RowMeta();
-              meta.setInputRowMeta(getInputRowMeta());
-            }
-            else {
-              // Filter out unused fields
-              RowMeta newRow = new RowMeta();
-              for(String field : meta.getFieldName()) {
-                ValueMetaInterface vmi = data.outputRowMeta.searchValueMeta(field);
-                if(vmi != null) {
-                  newRow.addValueMeta(vmi);
-                }
-              }
-              data.outputRowMeta = new RowMeta();
-              meta.setInputRowMeta(newRow);
-            }
-            
-            // Fill the output row meta with the processed fields
-            meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+
+            // meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
     }
     
-    // Fill and send the output row
     if (meta.isSelectingAndSortingUnspecifiedFields()) {
       Object[] outputRowData = RowDataUtil.allocateRowData(data.outputRowMeta.size());
       for (int i=0;i<data.fieldNrs.length;i++) {
