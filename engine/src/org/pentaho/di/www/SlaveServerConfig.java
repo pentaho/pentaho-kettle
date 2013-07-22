@@ -104,6 +104,15 @@ public class SlaveServerConfig {
 		automaticCreationAllowed=false;
 		services = new ArrayList<TransDataService>();
 		metaStore = new DelegatingMetaStore();
+    // Add the local Pentaho MetaStore to the delegation.
+    // This sets it as the active one.
+    //
+    try {
+      XmlMetaStore localStore = new XmlMetaStore(MetaStoreConst.getDefaultPentahoMetaStoreLocation());
+      metaStore.addMetaStore(localStore);
+    } catch(MetaStoreException e) {
+      throw new RuntimeException("Unable to open local Pentaho meta store", e);
+    }
 		passwordFile = null; // force lookup by server in ~/.kettle or local folder
 	}
 	
@@ -221,16 +230,6 @@ public class SlaveServerConfig {
     for (Node serviceNode : servicesNodes) {
       TransDataService service = new TransDataService(serviceNode);
       services.add(service);
-    }
-    
-    // Add the local Pentaho MetaStore to the delegation.
-    // This sets it as the active one.
-    //
-    try {
-      XmlMetaStore localStore = new XmlMetaStore(MetaStoreConst.getDefaultPentahoMetaStoreLocation());
-      metaStore.addMetaStore(localStore);
-    } catch(MetaStoreException e) {
-      throw new KettleXMLException("Unable to open local Pentaho meta store", e);
     }
     
     Node repositoryNode = XMLHandler.getSubNode(node, XML_TAG_REPOSITORY);
