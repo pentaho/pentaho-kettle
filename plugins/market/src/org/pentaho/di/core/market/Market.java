@@ -613,7 +613,6 @@ public class Market implements SpoonPluginInterface {
             
             // The classloader will be closed by the invoked method
             //
-            @SuppressWarnings("resource")
             KettleURLClassLoader classloader = new KettleURLClassLoader(new URL[] {tmpJar.toURI().toURL()}, Spoon.getInstance().getClass().getClassLoader());
             Class<?> clazz = classloader.loadClass("org.pentaho.di.core.market.Market");
             // remove the plugin, unload when done.
