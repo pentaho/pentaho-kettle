@@ -286,6 +286,7 @@ import org.pentaho.di.ui.spoon.job.JobGraph;
 import org.pentaho.di.ui.spoon.trans.TransGraph;
 import org.pentaho.di.ui.spoon.wizards.CopyTableWizardPage1;
 import org.pentaho.di.ui.spoon.wizards.CopyTableWizardPage2;
+import org.pentaho.di.ui.trans.dialog.TransDialogPluginType;
 import org.pentaho.di.ui.trans.dialog.TransHopDialog;
 import org.pentaho.di.ui.trans.dialog.TransLoadProgressDialog;
 import org.pentaho.di.ui.util.ThreadGuiResources;
@@ -717,7 +718,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     LifecyclePluginType.getInstance().getPluginFolders().add(new PluginFolder("plugins/repositories", false, true));
 
     PluginRegistry.addPluginType(JobDialogPluginType.getInstance());
-
+    PluginRegistry.addPluginType(TransDialogPluginType.getInstance());
   }
 
   public void init(TransMeta ti) {

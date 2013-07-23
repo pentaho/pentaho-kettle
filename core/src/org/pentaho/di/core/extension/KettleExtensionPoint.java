@@ -9,6 +9,8 @@ public enum KettleExtensionPoint {
   TransformationStarted("TransformationStart", "A transformation has started"),
   TransformationFinish("TransformationFinish", "A transformation finishes"),
   TransformationMetaLoaded("TransformationMetaLoaded", "Transformation metadata was loaded"),
+  TransPainterArrow("TransPainterArrow", "Draw additional information on top of a transformation hop (arrow)"),
+  TransPainterStep("TransPainterStep", "Draw additional information on top of a transformation step icon"),
   SpoonTransMetaExecutionStart("SpoonTransMetaExecutionStart", "Spoon initiates the execution of a trans (TransMeta)"),
   SpoonTransExecutionConfiguration("SpoonTransExecutionConfiguration", "Right before Spoon configuration of transformation to be executed takes place"),
 
@@ -18,6 +20,7 @@ public enum KettleExtensionPoint {
   JobAfterJobEntryExecution("JobAfterJobEntryExecution", "After a job entry executes"),
   JobBeginProcessing("JobBeginProcessing", "Start of a job at the end of the log table handling"),
   JobPainterArrow("JobPainterArrow", "Draw additional information on top of a job hop (arrow)"),
+  JobPainterJobEntry("TransPainterJobEntry", "Draw additional information on top of a job entry copy icon"),
   JobGraphJobEntrySetMenu("JobGraphJobEntrySetMenu", "Manipulate the menu on right click on a job entry"),
   JobDialogShowRetrieveLogTableFields("JobDialogShowRetrieveLogTableFields", "Show or retrieve the contents of the fields of a log channel on the log channel composite"),
           

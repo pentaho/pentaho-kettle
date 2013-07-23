@@ -903,7 +903,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 				  break;
 				
 				case STEP_DATA_SERVICE:
-				  editProperties(transMeta, spoon, spoon.getRepository(), true, TransDialog.Tabs.DATA_SERVICE_TAB);
+				  editProperties(transMeta, spoon, spoon.getRepository(), true, TransDialog.Tabs.EXTRA_TAB);
 				  break;
 				}
       } else {
@@ -2698,11 +2698,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         }
         tipImage = GUIResource.getInstance().getImageEdit();
         break;
-      case STEP_DATA_SERVICE:
-        transMeta = (TransMeta) areaOwner.getParent();
-        tip.append(BaseMessages.getString(PKG, "TransGraph.DataServiceDefined", transMeta.getDataService().getName())); // $NON-NLS-1$
-        tipImage = GUIResource.getInstance().getImageConnection();
-        break;
+
 			}
 		}
 

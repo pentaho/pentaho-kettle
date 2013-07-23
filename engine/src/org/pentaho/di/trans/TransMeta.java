@@ -366,8 +366,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /** The container object id. */
   protected String containerObjectId;
-
-  protected DataServiceMeta dataService;
   
   protected IMetaStore metaStore;
   
@@ -752,8 +750,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     clusterSchemas = new ArrayList<ClusterSchema>();
 
     slaveStepCopyPartitionDistribution = new SlaveStepCopyPartitionDistribution();
-
-    dataService = new DataServiceMeta();
 
     setName(null);
     description = null;
@@ -2602,17 +2598,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
     retval.append("  ").append(XMLHandler.closeTag(XML_TAG_INFO)).append(Const.CR); 
 
-    // Add the data service name for this transformation
-    //
-    // The actual service details are saved in saveMetaStoreObjects()
-    //
-    if (dataService!=null && dataService.isDefined()) {
-      retval.append(XMLHandler.openTag(DataServiceMeta.XML_TAG));
-      retval.append(dataService.getName());
-      retval.append(XMLHandler.closeTag(DataServiceMeta.XML_TAG));
-      retval.append(Const.CR);
-    }
-
     retval.append("  ").append(XMLHandler.openTag(XML_TAG_NOTEPADS)).append(Const.CR); 
     if (notes != null)
       for (int i = 0; i < nrNotes(); i++) {
@@ -3003,18 +2988,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
               }
             }
           }
-        }
-
-        // Read data service metadata
-        //
-        Node dataServiceNode = XMLHandler.getSubNode(transnode, DataServiceMeta.XML_TAG);
-        String dataServiceName = XMLHandler.getNodeValue(dataServiceNode);
-        if (!Const.isEmpty(dataServiceName) && metaStore!=null) {
-          // Load the data service from the meta store
-          //
-          dataService = new DataServiceMeta(metaStore, dataServiceName);
-        } else {
-          dataService = new DataServiceMeta();
         }
 
         // Read the notes...
@@ -7074,14 +7047,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     log.setForcingSeparateLogging(forcingSeparateLogging);
   }
 
-  public DataServiceMeta getDataService() {
-    return dataService;
-  }
-
-  public void setDataService(DataServiceMeta dataService) {
-    this.dataService = dataService;
-  }
-
   public IMetaStore getMetaStore() {
     return metaStore;
   }
@@ -7098,26 +7063,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * @throws MetaStoreException in case there is an error.
    */
   public void saveMetaStoreObjects(Repository repository, IMetaStore metaStore) throws MetaStoreException {
-    // First new object: the Kettle data service
-    //
-    if (dataService!=null && dataService.isDefined()) {
-      
-      // Leave trace of this transformation...
-      //
-      if (repository!=null) {
-        dataService.setTransRepositoryPath(getRepositoryDirectory().getPath()+RepositoryDirectory.DIRECTORY_SEPARATOR+getName());
-        if (repository.getRepositoryMeta().getRepositoryCapabilities().supportsReferences()) {
-          dataService.setTransObjectId(id);
-        } else {
-          dataService.setTransRepositoryPath(directory.getPath()+"/"+getName());
-        }
-      }
-      dataService.setTransFilename(filename);
-      
-      // Now save the data service definition
-      //
-      DataServiceMetaStoreUtil.createOrUpdateDataServiceElement(metaStore, dataService);
-    }
+    
   }
  
   @Override

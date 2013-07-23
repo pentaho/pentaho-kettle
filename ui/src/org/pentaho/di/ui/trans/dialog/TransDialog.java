@@ -22,7 +22,7 @@
 
 package org.pentaho.di.ui.trans.dialog;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -67,14 +67,14 @@ import org.pentaho.di.core.logging.StepLogTable;
 import org.pentaho.di.core.logging.TransLogTable;
 import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.UnknownParamException;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.sql.ServiceCacheMethod;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
-import org.pentaho.di.trans.DataServiceMeta;
 import org.pentaho.di.trans.TransDependency;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransMeta.TransformationType;
@@ -107,12 +107,12 @@ public class TransDialog extends Dialog
 	
 	private static Class<?> PKG = TransDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-    public static enum Tabs { TRANS_TAB, PARAM_TAB, LOG_TAB, DATE_TAB, DEP_TAB, MISC_TAB, MONITOR_TAB, DATA_SERVICE_TAB, };
+  public static enum Tabs { TRANS_TAB, PARAM_TAB, LOG_TAB, DATE_TAB, DEP_TAB, MISC_TAB, MONITOR_TAB, EXTRA_TAB, };
   
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
 	
-	private CTabItem     wTransTab, wParamTab, wLogTab, wDateTab, wDepTab, wMiscTab, wMonitorTab, wDataServiceTab;
+	private CTabItem     wTransTab, wParamTab, wLogTab, wDateTab, wDepTab, wMiscTab, wMonitorTab;
 
 	private Text         wTransname;
 
@@ -224,12 +224,10 @@ public class TransDialog extends Dialog
   private DatabaseDialog databaseDialog;
 	private SelectionAdapter	lsModSel;
   private TextVar wStepPerfMaxSize;
-  private TextVar wServiceName;
-  private CCombo wServiceStep;
-  private Button wServiceOutput;
-  private Button wServiceAllowOptimization;
-  private CCombo wServiceCacheMethod;
+
 	
+  private ArrayList<TransDialogPluginInterface> extraTabs;
+
   public TransDialog(Shell parent, int style, TransMeta transMeta, Repository rep, Tabs currentTab)
   {
       this(parent, style, transMeta, rep);
@@ -292,7 +290,20 @@ public class TransDialog extends Dialog
 		addDepTab();
 		addMiscTab();
     addMonitoringTab();
-    addDataServiceTab();
+    
+    // See if there are any other tabs to be added...
+    extraTabs = new ArrayList<TransDialogPluginInterface>();
+    java.util.List<PluginInterface> transDialogPlugins = PluginRegistry.getInstance().getPlugins(TransDialogPluginType.class);
+    for (PluginInterface transDialogPlugin : transDialogPlugins) {
+      try {
+        TransDialogPluginInterface extraTab = (TransDialogPluginInterface) PluginRegistry.getInstance().loadClass(transDialogPlugin);
+        extraTab.addTab(transMeta, parent, wTabFolder);
+        extraTabs.add(extraTab);
+      } catch(Exception e) {
+        new ErrorDialog(shell, "Error", "Error loading transformation dialog plugin with id "+transDialogPlugin.getIds()[0], e);
+      }
+    }
+
     
 		fdTabFolder = new FormData();
 		fdTabFolder.left  = new FormAttachment(0, 0);
@@ -2044,151 +2055,6 @@ public class TransDialog extends Dialog
 
   }
 
-  private void addDataServiceTab() {
-    // ////////////////////////
-    // START OF DATA SERVICE TAB///
-    // /
-    wDataServiceTab = new CTabItem(wTabFolder, SWT.NONE);
-    wDataServiceTab.setText(BaseMessages.getString(PKG, "TransDialog.DataServiceTab.Label")); 
-
-    Composite wDataServiceComp = new Composite(wTabFolder, SWT.NONE);
-    props.setLook(wDataServiceComp);
-
-    FormLayout dataServiceLayout = new FormLayout();
-    dataServiceLayout.marginWidth = Const.FORM_MARGIN;
-    dataServiceLayout.marginHeight = Const.FORM_MARGIN;
-    wDataServiceComp.setLayout(dataServiceLayout);
-
-    // 
-    // Service name
-    //
-    Label wlServiceName = new Label(wDataServiceComp, SWT.LEFT);
-    wlServiceName.setText(BaseMessages.getString(PKG, "TransDialog.DataServiceName.Label")); 
-    wlServiceName.setToolTipText(BaseMessages.getString(PKG, "TransDialog.DataServiceName.Tooltip"));
-    props.setLook(wlServiceName);
-    FormData fdlServiceName = new FormData();
-    fdlServiceName.left = new FormAttachment(0, 0);
-    fdlServiceName.right = new FormAttachment(middle, -margin);
-    fdlServiceName.top = new FormAttachment(0, 0);
-    wlServiceName.setLayoutData(fdlServiceName);
-    wServiceName = new TextVar(transMeta, wDataServiceComp, SWT.LEFT | SWT.BORDER | SWT.SINGLE);
-    wServiceName.setToolTipText(BaseMessages.getString(PKG, "TransDialog.DataServiceName.Tooltip"));
-    props.setLook(wServiceName);
-    FormData fdServiceName = new FormData();
-    fdServiceName.left = new FormAttachment(middle, 0);
-    fdServiceName.right = new FormAttachment(100, 0);
-    fdServiceName.top = new FormAttachment(0, 0);
-    wServiceName.setLayoutData(fdServiceName);
-    wServiceName.addModifyListener(lsMod);
-
-    // 
-    // Service step
-    //
-    Label wlServiceStep = new Label(wDataServiceComp, SWT.LEFT);
-    wlServiceStep.setText(BaseMessages.getString(PKG, "TransDialog.DataServiceStep.Label")); 
-    wlServiceStep.setToolTipText(BaseMessages.getString(PKG, "TransDialog.DataServiceStep.Tooltip"));
-    props.setLook(wlServiceStep);
-    FormData fdlServiceStep = new FormData();
-    fdlServiceStep.left = new FormAttachment(0, 0);
-    fdlServiceStep.right = new FormAttachment(middle, -margin);
-    fdlServiceStep.top = new FormAttachment(wServiceName, margin);
-    wlServiceStep.setLayoutData(fdlServiceStep);
-    wServiceStep = new CCombo(wDataServiceComp, SWT.LEFT | SWT.BORDER | SWT.SINGLE);
-    wServiceStep.setToolTipText(BaseMessages.getString(PKG, "TransDialog.DataServiceStep.Tooltip"));
-    props.setLook(wServiceStep);
-    FormData fdServiceStep = new FormData();
-    fdServiceStep.left = new FormAttachment(middle, 0);
-    fdServiceStep.right = new FormAttachment(100, 0);
-    fdServiceStep.top = new FormAttachment(wServiceName, margin);
-    wServiceStep.setLayoutData(fdServiceStep);
-    wServiceStep.addModifyListener(lsMod);
-    String[] stepnames = transMeta.getStepNames();
-    Arrays.sort(stepnames);
-    wServiceStep.setItems(stepnames);
-    
-    // 
-    // Service step
-    //
-    Label wlServiceCacheMethod = new Label(wDataServiceComp, SWT.LEFT);
-    wlServiceCacheMethod.setText(BaseMessages.getString(PKG, "TransDialog.DataServiceCacheMethod.Label")); 
-    wlServiceCacheMethod.setToolTipText(BaseMessages.getString(PKG, "TransDialog.DataServiceCacheMethod.Tooltip"));
-    props.setLook(wlServiceCacheMethod);
-    FormData fdlServiceCacheMethod = new FormData();
-    fdlServiceCacheMethod.left = new FormAttachment(0, 0);
-    fdlServiceCacheMethod.right = new FormAttachment(middle, -margin);
-    fdlServiceCacheMethod.top = new FormAttachment(wServiceStep, margin);
-    wlServiceCacheMethod.setLayoutData(fdlServiceCacheMethod);
-    wServiceCacheMethod = new CCombo(wDataServiceComp, SWT.LEFT | SWT.BORDER | SWT.SINGLE);
-    wServiceCacheMethod.setToolTipText(BaseMessages.getString(PKG, "TransDialog.DataServiceCacheMethod.Tooltip"));
-    props.setLook(wServiceCacheMethod);
-    FormData fdServiceCacheMethod = new FormData();
-    fdServiceCacheMethod.left = new FormAttachment(middle, 0);
-    fdServiceCacheMethod.right = new FormAttachment(100, 0);
-    fdServiceCacheMethod.top = new FormAttachment(wServiceStep, margin);
-    wServiceCacheMethod.setLayoutData(fdServiceCacheMethod);
-    wServiceCacheMethod.addModifyListener(lsMod);
-    String[] cacheMethodDescriptions = ServiceCacheMethod.getDescriptions();
-    Arrays.sort(cacheMethodDescriptions);
-    wServiceCacheMethod.setItems(cacheMethodDescriptions);
-    
-    // 
-    // output service?
-    //
-    Label wlServiceOutput = new Label(wDataServiceComp, SWT.LEFT);
-    wlServiceOutput.setText(BaseMessages.getString(PKG, "TransDialog.DataServiceOutput.Label")); 
-    props.setLook(wlServiceOutput);
-    FormData fdlServiceOutput = new FormData();
-    fdlServiceOutput.left = new FormAttachment(0, 0);
-    fdlServiceOutput.right = new FormAttachment(middle, -margin);
-    fdlServiceOutput.top = new FormAttachment(wServiceCacheMethod, margin);
-    wlServiceOutput.setLayoutData(fdlServiceOutput);
-    wlServiceOutput.setEnabled(false);
-    wServiceOutput = new Button(wDataServiceComp, SWT.CHECK);
-    props.setLook(wServiceOutput);
-    FormData fdServiceOutput = new FormData();
-    fdServiceOutput.left = new FormAttachment(middle, 0);
-    fdServiceOutput.right = new FormAttachment(100, 0);
-    fdServiceOutput.top = new FormAttachment(wServiceCacheMethod, margin);
-    wServiceOutput.setLayoutData(fdServiceOutput);
-    wServiceOutput.setEnabled(false);
-
-    // 
-    // Allow optimisation?
-    //
-    Label wlServiceAllowOptimization = new Label(wDataServiceComp, SWT.LEFT);
-    wlServiceAllowOptimization.setText(BaseMessages.getString(PKG, "TransDialog.DataServiceAllowOptimization.Label")); 
-    props.setLook(wlServiceAllowOptimization);
-    FormData fdlServiceAllowOptimization = new FormData();
-    fdlServiceAllowOptimization.left = new FormAttachment(0, 0);
-    fdlServiceAllowOptimization.right = new FormAttachment(middle, -margin);
-    fdlServiceAllowOptimization.top = new FormAttachment(wServiceOutput, margin);
-    wlServiceAllowOptimization.setLayoutData(fdlServiceAllowOptimization);
-    wlServiceAllowOptimization.setEnabled(false);
-    wServiceAllowOptimization = new Button(wDataServiceComp, SWT.CHECK);
-    props.setLook(wServiceAllowOptimization);
-    FormData fdServiceAllowOptimization = new FormData();
-    fdServiceAllowOptimization.left = new FormAttachment(middle, 0);
-    fdServiceAllowOptimization.right = new FormAttachment(100, 0);
-    fdServiceAllowOptimization.top = new FormAttachment(wServiceOutput, margin);
-    wServiceAllowOptimization.setLayoutData(fdServiceAllowOptimization);
-    wServiceAllowOptimization.setEnabled(false);
-    
-
-    FormData fdDataServiceComp = new FormData();
-    fdDataServiceComp.left = new FormAttachment(0, 0);
-    fdDataServiceComp.top = new FormAttachment(0, 0);
-    fdDataServiceComp.right = new FormAttachment(100, 0);
-    fdDataServiceComp.bottom = new FormAttachment(100, 0);
-    wDataServiceComp.setLayoutData(fdDataServiceComp);
-
-    wDataServiceComp.layout();
-    wDataServiceTab.setControl(wDataServiceComp);
-
-    // ///////////////////////////////////////////////////////////
-    // / END OF MONITORING TAB
-    // ///////////////////////////////////////////////////////////
-
-  }
 
   
     public void dispose()
@@ -2289,19 +2155,16 @@ public class TransDialog extends Dialog
     wStepPerfInterval.setText(Long.toString(transMeta.getStepPerformanceCapturingDelay()));
     wStepPerfMaxSize.setText(Const.NVL(transMeta.getStepPerformanceCapturingSizeLimit(), ""));
 
-    // Data service metadata
-    //
-    DataServiceMeta dataService = transMeta.getDataService();
-    if (dataService != null) {
-      wServiceName.setText(Const.NVL(dataService.getName(), ""));
-      wServiceStep.setText(Const.NVL(dataService.getStepname(), ""));
-      // wServiceOutput.setSelection(dataService.isOutput());
-      // wServiceAllowOptimization.setSelection(dataService.isOptimizationAllowed());
-      wServiceCacheMethod.setText(dataService.getCacheMethod()==null ? "" : dataService.getCacheMethod().getDescription());
-    }
-
     wTransname.selectAll();
     wTransname.setFocus();
+
+      for (TransDialogPluginInterface extraTab : extraTabs) {
+        try {
+          extraTab.getData(transMeta);
+        } catch(Exception e) {
+          new ErrorDialog(shell, "Error", "Error adding extra plugin tab", e);
+        }
+      }
 
     setFlags();
   }
@@ -2460,14 +2323,13 @@ public class TransDialog extends Dialog
 			OK = false;
 		}
 		
-		// Get data service details...
-		//
-		DataServiceMeta dataService = transMeta.getDataService();
-		dataService.setName(wServiceName.getText());
-    dataService.setStepname(wServiceStep.getText());
-    // dataService.setOutput(wServiceOutput.getSelection());
-    // dataService.setOptimizationAllowed(wServiceAllowOptimization.getSelection());
-    dataService.setCacheMethod(ServiceCacheMethod.getMethodByDescription(wServiceCacheMethod.getText()));
+    for (TransDialogPluginInterface extraTab : extraTabs) {
+      try {
+        extraTab.ok(transMeta);
+      } catch(Exception e) {
+        new ErrorDialog(shell, "Error", "Error getting information from extra plugin tab", e);
+      }
+    }
 
 		if (OK) {
 			transMeta.setChanged(changed || transMeta.hasChanged());
@@ -2624,6 +2486,7 @@ public class TransDialog extends Dialog
 	
 	private void setCurrentTab(Tabs currentTab){
 	  
+	  
 	  switch (currentTab) {
 		case PARAM_TAB:
 			wTabFolder.setSelection(wParamTab);
@@ -2643,10 +2506,11 @@ public class TransDialog extends Dialog
 		case MONITOR_TAB:
 			wTabFolder.setSelection(wMonitorTab);
 			break;
-    case DATA_SERVICE_TAB:
-      wTabFolder.setSelection(wDataServiceTab);
+    case EXTRA_TAB:
+      if (extraTabs.size()>0) {
+        wTabFolder.setSelection(extraTabs.get(0).getTab());
+      }
       break;
-			
 		case TRANS_TAB:
     default:
       wTabFolder.setSelection(wTransTab);

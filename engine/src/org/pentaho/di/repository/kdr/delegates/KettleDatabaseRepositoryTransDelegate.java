@@ -51,8 +51,6 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 import org.pentaho.di.shared.SharedObjects;
-import org.pentaho.di.trans.DataServiceMeta;
-import org.pentaho.di.trans.DataServiceMetaStoreUtil;
 import org.pentaho.di.trans.TransDependency;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -61,7 +59,6 @@ import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
-import org.pentaho.metastore.api.exceptions.MetaStoreException;
 
 public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseRepositoryBaseDelegate {
 	
@@ -499,16 +496,6 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
 	                for (LogTableInterface logTable : transMeta.getLogTables()) {
 	                  logTable.loadFromRepository(attributeInterface);
 	                }	     
-	                
-	                // Load the data service metadata
-	                //
-	                String dataServiceName = repository.connectionDelegate.getTransAttributeString(transMeta.getObjectId(), 0, KettleDatabaseRepository.TRANS_ATTRIBUTE_DATA_SERVICE_NAME);
-	                if (!Const.isEmpty(dataServiceName)) {
-	                  DataServiceMeta dataServiceMeta = new DataServiceMeta(repository.metaStore, dataServiceName);
-	                  transMeta.setDataService(dataServiceMeta);
-	                } else {
-	                  transMeta.setDataService(new DataServiceMeta());
-	                }
 	                
 	                if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.SortingStepsTask.Title")); 
 	                transMeta.sortSteps();
@@ -1182,15 +1169,6 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
 	  transMeta.getStepLogTable().saveToRepository(attributeInterface);
 	  transMeta.getPerformanceLogTable().saveToRepository(attributeInterface);
 	  transMeta.getChannelLogTable().saveToRepository(attributeInterface);
-	  
-	  if (transMeta.getDataService().isDefined()) {
-	    try {
-        DataServiceMetaStoreUtil.createOrUpdateDataServiceElement(repository.metaStore, transMeta.getDataService());
-        repository.connectionDelegate.insertTransAttribute(transMeta.getObjectId(), 0, KettleDatabaseRepository.TRANS_ATTRIBUTE_DATA_SERVICE_NAME, 0, transMeta.getDataService().getName());
-      } catch (MetaStoreException e) {
-        throw new KettleException("Unable to save data service to the meta store", e);
-      }
-	  }
 	}
 
   

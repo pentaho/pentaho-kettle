@@ -27,6 +27,8 @@ import java.util.Map;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.NotePadMeta;
+import org.pentaho.di.core.extension.ExtensionPointHandler;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.gui.AreaOwner;
 import org.pentaho.di.core.gui.AreaOwner.AreaType;
 import org.pentaho.di.core.gui.BasePainter;
@@ -38,6 +40,7 @@ import org.pentaho.di.core.gui.PrimitiveGCInterface.EImage;
 import org.pentaho.di.core.gui.PrimitiveGCInterface.ELineStyle;
 import org.pentaho.di.core.gui.Rectangle;
 import org.pentaho.di.core.gui.ScrollBarInterface;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
@@ -210,7 +213,7 @@ public class TransPainter extends BasePainter
 	        	}
 	        	Point start = real2screen(fr.x+iconsize/2, fr.y+iconsize/2);
 	        	Point end = real2screen(to.x, to.y);
-	        	drawArrow(start.x, start.y, end.x, end.y, theta, calcArrowLength(), 1.2, startHopStep, endHopStep==null ? endHopLocation : endHopStep);
+	        	drawArrow(start.x, start.y, end.x, end.y, theta, calcArrowLength(), 1.2, null, startHopStep, endHopStep==null ? endHopLocation : endHopStep);
 	        }  else if (endHopStep!=null && endHopLocation!=null) {
 	        	Point fr = endHopLocation;
 	        	Point to = endHopStep.getLocation();
@@ -221,7 +224,7 @@ public class TransPainter extends BasePainter
 	        	}
 	        	Point start = real2screen(fr.x, fr.y);
 	        	Point end = real2screen(to.x+iconsize/2, to.y+iconsize/2);
-	        	drawArrow(start.x, start.y, end.x, end.y, theta, calcArrowLength(), 1.2, startHopStep==null ? endHopLocation : startHopStep, endHopStep);
+	        	drawArrow(start.x, start.y, end.x, end.y, theta, calcArrowLength(), 1.2, null, startHopStep==null ? endHopLocation : startHopStep, endHopStep);
 	        }
 
         }
@@ -559,7 +562,7 @@ public class TransPainter extends BasePainter
             gc.setFont(EFont.GRAPH);
         	String nrInput = Integer.toString(stepMeta.getRemoteInputSteps().size());
         	Point textExtent = gc.textExtent(nrInput);
-        	textExtent.x+=2; // add a tiny little bit of a margin
+        	textExtent.x+=2; // add a tiny listartHopStepttle bit of a margin
         	textExtent.y+=2;
         	
         	// Draw it an icon above the step icon.
@@ -572,7 +575,7 @@ public class TransPainter extends BasePainter
         	// Now we draw an arrow from the cube to the step...
         	// 
         	gc.drawLine(point.x+textExtent.x, point.y+textExtent.y/2, x-iconsize/2, point.y+textExtent.y/2);
-         	drawArrow(x-iconsize/2, point.y+textExtent.y/2, x+iconsize/3, y, Math.toRadians(15), 15, 1.8, null, null );
+         	drawArrow(x-iconsize/2, point.y+textExtent.y/2, x+iconsize/3, y, Math.toRadians(15), 15, 1.8, null, null, null );
          	
             // Add to the list of areas...
             if (!shadow) {
@@ -603,7 +606,7 @@ public class TransPainter extends BasePainter
         	// This time, we start at the left side...
         	// 
         	gc.drawLine(point.x, point.y+textExtent.y/2, x+iconsize+iconsize/2, point.y+textExtent.y/2);
-         	drawArrow(x+2*iconsize/3, y, x+iconsize+iconsize/2, point.y+textExtent.y/2, Math.toRadians(15), 15, 1.8, null, null );
+         	drawArrow(x+2*iconsize/3, y, x+iconsize+iconsize/2, point.y+textExtent.y/2, Math.toRadians(15), 15, 1.8, null, null, null );
 
          	// Add to the list of areas...
             if (!shadow) {
@@ -871,16 +874,14 @@ public class TransPainter extends BasePainter
         	}
         }
         
-        // Is this step a data service provider?
-        //
-        DataServiceMeta dataService = transMeta.getDataService();
-        if (dataService.isDefined() && stepMeta.getName().equalsIgnoreCase(transMeta.getDataService().getStepname())) {
-          // Draw a database icon in the upper right corner.
-          //
-          gc.drawImage(EImage.DB, x-8+iconsize, y-8);
-          areaOwners.add(new AreaOwner(AreaType.STEP_DATA_SERVICE, x-8+iconsize, y-8, 16, 16, offset, transMeta, stepMeta));
+        TransPainterExtension extension = new TransPainterExtension(gc, shadow, areaOwners, transMeta, stepMeta, null, x, y, 0, 0, 0, 0, offset, iconsize);
+        try {
+          ExtensionPointHandler.callExtensionPoint(LogChannel.GENERAL, KettleExtensionPoint.TransPainterStep.id, extension);
+        } catch(Exception e) {
+          LogChannel.GENERAL.logError("Error calling extension point(s) for the transformation painter step", e);
         }
-        
+
+                
         // Restore the previous alpha value
         //
         gc.setAlpha(alpha);
@@ -955,7 +956,7 @@ public class TransPainter extends BasePainter
         gc.setLineStyle(linestyle);
         gc.setLineWidth(activeLinewidth);
         
-        drawArrow(line, fs, ts);
+        drawArrow(line, hi, fs, ts);
         
         if (hi.split) gc.setLineWidth(linewidth);
 
@@ -979,15 +980,15 @@ public class TransPainter extends BasePainter
         return new int[] { x1, y1, x2, y2 };
     }
 
-    private void drawArrow(int line[], Object startObject, Object endObject)
+    private void drawArrow(int line[], TransHopMeta transHop, Object startObject, Object endObject)
     {
     	Point screen_from = real2screen(line[0], line[1]);
         Point screen_to = real2screen(line[2], line[3]);
         
-        drawArrow(screen_from.x, screen_from.y, screen_to.x, screen_to.y, theta, calcArrowLength(), -1, startObject, endObject);
+        drawArrow(screen_from.x, screen_from.y, screen_to.x, screen_to.y, theta, calcArrowLength(), -1, transHop, startObject, endObject);
     }
 
-  private void drawArrow(int x1, int y1, int x2, int y2, double theta, int size, double factor, Object startObject, Object endObject) {
+  private void drawArrow(int x1, int y1, int x2, int y2, double theta, int size, double factor, TransHopMeta transHop, Object startObject, Object endObject) {
     int mx, my;
     int x3;
     int y3;
@@ -1132,6 +1133,12 @@ public class TransPainter extends BasePainter
 
     }
 
+    TransPainterExtension extension = new TransPainterExtension(gc, shadow, areaOwners, transMeta, null, transHop, x1, y1, x2, y2, mx, my, offset, iconsize);
+    try {
+      ExtensionPointHandler.callExtensionPoint(LogChannel.GENERAL, KettleExtensionPoint.TransPainterArrow.id, extension);
+    } catch(Exception e) {
+      LogChannel.GENERAL.logError("Error calling extension point(s) for the transformation painter arrow", e);
+    }
   }
 
 	/**
