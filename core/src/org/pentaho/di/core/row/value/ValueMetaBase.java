@@ -73,10 +73,9 @@ import org.w3c.dom.Node;
  * 
  */
 public class ValueMetaBase implements ValueMetaInterface {
-  protected static Class<?> PKG = Const.class; // for i18n purposes, needed by
-                                             // Translator2!! $NON-NLS-1$
+  protected static Class<?> PKG = Const.class; // for i18n purposes, needed by Translator2
 
-  public static final String DEFAULT_DATE_FORMAT_MASK = "yyyy/MM/dd HH:mm:ss.SSS";
+  public static final String DEFAULT_DATE_FORMAT_MASK = Const.NVL(EnvUtil.getSystemProperty(Const.KETTLE_DEFAULT_DATE_FORMAT), "yyyy/MM/dd HH:mm:ss.SSS");
 
   public static final String XML_META_TAG = "value-meta";
   public static final String XML_DATA_TAG = "value-data";
@@ -200,13 +199,28 @@ public class ValueMetaBase implements ValueMetaInterface {
     //
     switch (type) {
     case TYPE_INTEGER:
-      setConversionMask("#;-#");
+      String alternativeIntegerMask = EnvUtil.getSystemProperty(Const.KETTLE_DEFAULT_INTEGER_FORMAT);
+      if (Const.isEmpty(alternativeIntegerMask)) {
+        setConversionMask("#;-#");
+      } else {
+        setConversionMask(alternativeIntegerMask);
+      }
       break;
     case TYPE_NUMBER:
-      setConversionMask("#.#;-#.#");
+      String alternativeNumberMask = EnvUtil.getSystemProperty(Const.KETTLE_DEFAULT_NUMBER_FORMAT);
+      if (Const.isEmpty(alternativeNumberMask)) {
+        setConversionMask("#.#;-#.#");
+      } else {
+        setConversionMask(alternativeNumberMask);
+      }
       break;
     case TYPE_BIGNUMBER:
-      setConversionMask("#.###############################################;-#.###############################################");
+      String alternativeBigNumberMask = EnvUtil.getSystemProperty(Const.KETTLE_DEFAULT_NUMBER_FORMAT);
+      if (Const.isEmpty(alternativeBigNumberMask)) {
+        setConversionMask("#.###############################################;-#.###############################################");
+      } else {
+        setConversionMask(alternativeBigNumberMask);
+      }
       setGroupingSymbol(null);
       setDecimalSymbol("."); // For backward compatibility reasons!
       break;

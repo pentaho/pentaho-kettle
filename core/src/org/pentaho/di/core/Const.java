@@ -836,6 +836,26 @@ public class Const
 	 */
 	public static final String KETTLE_TRANS_PAN_JVM_EXIT_CODE = "KETTLE_TRANS_PAN_JVM_EXIT_CODE";
 
+	/**
+	 * The name of the variable containing an alternative default number format
+	 */
+	public static final String KETTLE_DEFAULT_NUMBER_FORMAT = "KETTLE_DEFAULT_NUMBER_FORMAT";
+
+	 /**
+   * The name of the variable containing an alternative default bignumber format
+   */
+  public static final String KETTLE_DEFAULT_BIGNUMBER_FORMAT = "KETTLE_DEFAULT_BIGNUMBER_FORMAT";
+
+	 /**
+   * The name of the variable containing an alternative default integer format
+   */
+  public static final String KETTLE_DEFAULT_INTEGER_FORMAT = "KETTLE_DEFAULT_INTEGER_FORMAT";
+
+  /**
+   * The name of the variable containing an alternative default date format
+   */
+  public static final String KETTLE_DEFAULT_DATE_FORMAT = "KETTLE_DEFAULT_DATE_FORMAT";
+  
   /**
    * The XML file that contains the list of native import rules
    */
