@@ -3351,7 +3351,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         
         // Load the attribute groups map
         //
-        attributesMap = AttributesUtil.loadAttributes(XMLHandler.getSubNode(transnode, AttributesUtil.XML_TAG_ATTRIBUTE));
+        attributesMap = AttributesUtil.loadAttributes(XMLHandler.getSubNode(transnode, AttributesUtil.XML_TAG));
         
       } catch (KettleXMLException xe) {
         throw new KettleXMLException(BaseMessages.getString(PKG, "TransMeta.Exception.ErrorReadingTransformation"), xe); 

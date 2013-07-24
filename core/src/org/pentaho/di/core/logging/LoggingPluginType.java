@@ -144,10 +144,7 @@ public class LoggingPluginType extends BasePluginType implements PluginTypeInter
 
   @Override
   protected String extractID(Annotation annotation) {
-    String id = ((LoggingPlugin) annotation).id();
-    
-    LogChannel.GENERAL.logBasic("Logging plugin type found with ID: "+id);
-    
+    String id = ((LoggingPlugin) annotation).id();    
     return id;
   }
 

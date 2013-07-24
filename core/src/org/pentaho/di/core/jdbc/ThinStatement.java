@@ -6,6 +6,9 @@ import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 
+import org.pentaho.di.cluster.HttpUtil;
+import org.pentaho.di.core.variables.Variables;
+
 public class ThinStatement implements Statement {
 
   protected ThinConnection connection;
@@ -87,8 +90,13 @@ public class ThinStatement implements Statement {
 
   @Override
   public ResultSet executeQuery(String sql) throws SQLException {
-    resultSet = new ThinResultSet(this, connection.getSlaveBaseAddress()+"/sql/", connection.getUsername(), connection.getPassword(), sql);
-    return resultSet;
+    try {
+      String url = HttpUtil.constructUrl(new Variables(), connection.getHostname(), connection.getPort(), connection.getWebAppName(), connection.getService()+"/sql/");
+      resultSet = new ThinResultSet(this, url, connection.getUsername(), connection.getPassword(), sql);
+      return resultSet;
+    } catch(Exception e) {
+      throw new SQLException("Unable to execute query: ", e);
+    }
   }
 
   @Override

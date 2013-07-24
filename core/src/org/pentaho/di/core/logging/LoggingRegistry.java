@@ -159,19 +159,19 @@ public class LoggingRegistry
     synchronized (this.syncObject) {
       List<String> list = this.childrenMap.get(parentLogChannelId);
       if (list == null) {
-        list = new ArrayList<String>();
-
-        children.add(parentLogChannelId);
-        return list;
+        // Don't do anything, just return the input.
+        return children;
       }
 
       Iterator<String> kids = list.iterator();
       while (kids.hasNext()) {
         String logChannelId = (String)kids.next();
 
-        if (getLogChannelChildren(children, logChannelId) != null) {
-          children.add(logChannelId);
-        }
+        // Add the children recursively
+        getLogChannelChildren(children, logChannelId); 
+
+        // Also add the current parent
+        children.add(logChannelId);
       }
     }
 

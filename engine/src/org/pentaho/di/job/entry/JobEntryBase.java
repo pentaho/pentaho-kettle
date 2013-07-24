@@ -413,7 +413,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
             
       // Load the attribute groups map
       //
-      attributesMap = AttributesUtil.loadAttributes(XMLHandler.getSubNode(entrynode, AttributesUtil.XML_TAG_ATTRIBUTE));        
+      attributesMap = AttributesUtil.loadAttributes(XMLHandler.getSubNode(entrynode, AttributesUtil.XML_TAG));        
 
     } catch (Exception e) {
       throw new KettleXMLException("Unable to load base info for job entry", e);

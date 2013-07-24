@@ -105,15 +105,15 @@ public class ThinResultSet implements ResultSet {
         
         if (result==500) {
           String response = getErrorString(method.getResponseBodyAsStream());
-          throw new KettleException("Error 500 reading data from slave server: "+response);
+          throw new KettleException("Error 500 reading data from slave server, url='"+urlString+"', response: "+response);
         } 
         if (result==401) {
           String response = getErrorString(method.getResponseBodyAsStream());
-          throw new KettleException("Access denied error 401 received while attempting to read data from server: "+response);
+          throw new KettleException("Access denied error 401 received while attempting to read data from server, url='"+urlString+"', response: "+response);
         }
         if (result!=200) {
           String response = getErrorString(method.getResponseBodyAsStream());
-          throw new KettleException("Error received while attempting to read data from server: "+response);
+          throw new KettleException("Error received while attempting to read data from server, url='"+urlString+"', response: "+response);
         }
         
         dataInputStream = new DataInputStream(method.getResponseBodyAsStream());

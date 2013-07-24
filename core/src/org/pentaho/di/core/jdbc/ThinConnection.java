@@ -21,6 +21,7 @@ import java.util.Properties;
 import java.util.concurrent.Executor;
 
 import org.pentaho.di.cluster.HttpUtil;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.variables.Variables;
 
 public class ThinConnection implements Connection {
@@ -80,7 +81,7 @@ public class ThinConnection implements Connection {
       hostname = url.substring(ThinDriver.BASE_URL.length(), portColonIndex);
       int kettleIndex = url.indexOf(ThinDriver.SERVICE_NAME, portColonIndex);
       port = url.substring(portColonIndex+1, kettleIndex);
-      service = ThinDriver.SERVICE_NAME;
+
       int startIndex = url.indexOf('?', kettleIndex)+1;
       arguments = new HashMap<String, String>();
       if (startIndex>0) {
@@ -96,11 +97,18 @@ public class ThinConnection implements Connection {
         }
       }
       
-      slaveBaseAddress = "http://"+hostname+":"+port+service;
-      
       // Determine the web app name
       //
       webAppName = arguments.get(ARG_WEBAPPNAME);
+
+      // if (Const.isEmpty(webAppName)) {
+        service = ThinDriver.SERVICE_NAME;
+      // } else {
+      //  service = "/"+webAppName+ThinDriver.SERVICE_NAME;
+      // }
+      
+      slaveBaseAddress = "http://"+hostname+":"+port+service;
+      
       proxyHostname = arguments.get(ARG_PROXYHOSTNAME);
       proxyPort= arguments.get(ARG_PROXYPORT);
       nonProxyHosts= arguments.get(ARG_NONPROXYHOSTS);

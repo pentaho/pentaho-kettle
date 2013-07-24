@@ -302,7 +302,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
       
       // Load the attribute groups map
       //
-      attributesMap = AttributesUtil.loadAttributes(XMLHandler.getSubNode(stepnode, AttributesUtil.XML_TAG_ATTRIBUTE));
+      attributesMap = AttributesUtil.loadAttributes(XMLHandler.getSubNode(stepnode, AttributesUtil.XML_TAG));
       
       // Determine the row distribution
       //
