@@ -254,4 +254,28 @@
 		<default-value></default-value>
 	</kettle-variable>
 
+	<kettle-variable>
+		<description>The name of the variable containing an alternative default number format</description>
+		<variable>KETTLE_DEFAULT_NUMBER_FORMAT</variable>
+		<default-value></default-value>
+	</kettle-variable>
+
+	<kettle-variable>
+		<description>The name of the variable containing an alternative default bignumber format</description>
+		<variable>KETTLE_DEFAULT_BIGNUMBER_FORMAT</variable>
+		<default-value></default-value>
+	</kettle-variable>
+
+	<kettle-variable>
+		<description>The name of the variable containing an alternative default integer format</description>
+		<variable>KETTLE_DEFAULT_INTEGER_FORMAT</variable>
+		<default-value></default-value>
+	</kettle-variable>
+	
+	<kettle-variable>
+		<description>The name of the variable containing an alternative default date format</description>
+		<variable>KETTLE_DEFAULT_DATE_FORMAT</variable>
+		<default-value></default-value>
+	</kettle-variable>
+	
 </kettle-variables>
