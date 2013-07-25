@@ -766,20 +766,22 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public void allocate(int nrfiles, int nrsheets, int nrfields)
 	{
-		fileName      = new String[nrfiles];
-		fileMask      = new String[nrfiles];
-		excludeFileMask = new String[nrfiles];
-		fileRequired  = new String[nrfiles];
-		includeSubFolders = new String[nrfiles];
-		
+	  allocateFiles(nrfiles);
 		sheetName     = new String[nrsheets];
 		startRow      = new int   [nrsheets];
 		startColumn   = new int   [nrsheets];
-		
 		field         = new ExcelInputField[nrfields];
 	}
 	
-	public void setDefault()
+	public void allocateFiles(int nrfiles) {
+    fileName      = new String[nrfiles];
+    fileMask      = new String[nrfiles];
+    excludeFileMask = new String[nrfiles];
+    fileRequired  = new String[nrfiles];
+    includeSubFolders = new String[nrfiles];
+  }
+	
+  public void setDefault()
 	{
 		startsWithHeader     = true;
 		ignoreEmptyRows    = true;
