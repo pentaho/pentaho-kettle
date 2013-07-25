@@ -2391,8 +2391,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     }
 
     result.setRows(resultRows);
-    result.setResultFiles(new HashMap<String, ResultFile>());
-    if (resultFiles!=null) {
+    if (!Const.isEmpty(resultFiles)) {
+      result.setResultFiles(new HashMap<String, ResultFile>());
       for (ResultFile resultFile : resultFiles) {
         result.getResultFiles().put(resultFile.toString(), resultFile);
       }

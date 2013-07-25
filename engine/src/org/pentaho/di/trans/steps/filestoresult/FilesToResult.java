@@ -88,7 +88,7 @@ public class FilesToResult extends BaseStep implements StepInterface
 		}
 
 		// OK, get the filename field from the row
-		String filename = (String)r[data.filenameIndex];
+		String filename = getInputRowMeta().getString(r, data.filenameIndex);
 
 		try
 		{
