@@ -176,8 +176,8 @@ public class ExcelInputMetaInjection implements StepMetaInjectionInterface {
                     String value = (String)entry.getValue();
                     switch(metaEntry) {
                     case SHEET_NAME: sheetName = value; break;
-                    case SHEET_START_ROW:  startRow = Const.toInt(value, 0); break;
-                    case SHEET_START_COL:  startCol = Const.toInt(value, 0); break;
+                    case SHEET_START_ROW:  startRow = Const.toInt(Const.trim(value), 0); break;
+                    case SHEET_START_COL:  startCol = Const.toInt(Const.trim(value), 0); break;
                     }
                   }
                 }
@@ -211,8 +211,6 @@ public class ExcelInputMetaInjection implements StepMetaInjectionInterface {
             }
           }
         }
-        break;
-
       }
     }
 
