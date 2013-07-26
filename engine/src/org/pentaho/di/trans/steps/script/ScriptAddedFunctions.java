@@ -2120,7 +2120,8 @@ public static String getParentFoldername(ScriptEngine actualContext, Bindings ac
 		}
 	}
 	
-	public static Object truncDate(ScriptEngine actualContext, Bindings actualObject, Object[] ArgList, Object FunctionContext) {
+	@SuppressWarnings("fallthrough")
+  public static Object truncDate(ScriptEngine actualContext, Bindings actualObject, Object[] ArgList, Object FunctionContext) {
 		try {
 			// 2 arguments: truncation of dates to a certain precision
 			//
@@ -2146,19 +2147,14 @@ public static String getParentFoldername(ScriptEngine actualContext, Bindings ac
 				// MONTHS
 				case 5: cal.set(Calendar.MONTH, 1);
 				// DAYS
-				//$FALL-THROUGH$
 				case 4: cal.set(Calendar.DAY_OF_MONTH, 1);
 				// HOURS 
-        //$FALL-THROUGH$
 				case 3: cal.set(Calendar.HOUR_OF_DAY, 0);
 				// MINUTES
-        //$FALL-THROUGH$
 				case 2: cal.set(Calendar.MINUTE, 0);
 				// SECONDS
-        //$FALL-THROUGH$
 				case 1: cal.set(Calendar.SECOND, 0);
         // MILI-SECONDS
-        //$FALL-THROUGH$
 	      case 0: cal.set(Calendar.MILLISECOND, 0);  break;
 	      default:
 					throw new RuntimeException("Argument of TRUNC of date has to be between 0 and 5");

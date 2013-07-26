@@ -1424,7 +1424,8 @@ public class UDJCStepDialog extends BaseStepDialog implements StepDialogInterfac
 					}
 				});
 				Listener textListener = new Listener() {
-					public void handleEvent(final Event e) {
+					@SuppressWarnings("fallthrough")
+          public void handleEvent(final Event e) {
 						switch (e.type) {
 							case SWT.FocusOut:
 								if (text.getText().length() > 0) {
@@ -1464,7 +1465,6 @@ public class UDJCStepDialog extends BaseStepDialog implements StepDialogInterfac
 												item.setText(cleanClassName(text.getText()));
 											}
 										}
-								  //$FALL-THROUGH$
 									case SWT.TRAVERSE_ESCAPE:
 										composite.dispose();
 										e.doit = false;

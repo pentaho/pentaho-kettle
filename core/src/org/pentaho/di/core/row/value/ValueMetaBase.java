@@ -4250,6 +4250,7 @@ public class ValueMetaBase implements ValueMetaInterface {
     gc.drawText(getString(value), 0, 0);
   }
 
+  @SuppressWarnings("fallthrough")
   @Override
   public ValueMetaInterface getValueFromSQLType(DatabaseMeta databaseMeta, String name, java.sql.ResultSetMetaData rm, int index, boolean ignoreLength, boolean lazyConversion) throws KettleDatabaseException {
     try {
@@ -4396,7 +4397,6 @@ public class ValueMetaBase implements ValueMetaInterface {
           if (databaseMeta.getDatabaseInterface() instanceof TeradataDatabaseMeta) {
             precision = 1;
           }
-        // $FALL-THROUGH$
         case java.sql.Types.TIME:
           valtype = ValueMetaInterface.TYPE_DATE;
           //

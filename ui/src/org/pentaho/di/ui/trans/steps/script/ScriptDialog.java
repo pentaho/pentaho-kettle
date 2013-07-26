@@ -1866,7 +1866,8 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 					}
 				});
 				Listener textListener = new Listener () {
-					public void handleEvent (final Event e) {
+					@SuppressWarnings("fallthrough")
+          public void handleEvent (final Event e) {
 						switch (e.type) {
 							case SWT.FocusOut:
 								if(text.getText().length()>0){
@@ -1904,7 +1905,6 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
                         item.setText(text.getText());
                       }
                     }
-                    //$FALL-THROUGH$
                   case SWT.TRAVERSE_ESCAPE:
                     composite.dispose();
                     e.doit = false;

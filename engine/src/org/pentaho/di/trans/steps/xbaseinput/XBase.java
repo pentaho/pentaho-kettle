@@ -93,6 +93,7 @@ public class XBase
         }
     }
         
+    @SuppressWarnings("fallthrough")
     public RowMetaInterface getFields() throws KettleException
     {
         String debug="get fields from XBase file";
@@ -118,7 +119,6 @@ public class XBase
               case DBFField.FIELD_TYPE_M: // Memo
                   debug="memo field";
 				  System.out.println("Field #"+i+" is a memo-field! ("+field.getName()+")");
-				      // $FALL-THROUGH$
               case DBFField.FIELD_TYPE_C: // Character
                   // case DBFField.FIELD_TYPE_P: // Picture
                   debug="character field";

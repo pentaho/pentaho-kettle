@@ -3340,7 +3340,8 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	// implement the TRUNC function, arguments in args[]
 	public Value trunc(double level) throws KettleValueException { return trunc((int)level); }
 
-	public Value trunc(int level) throws KettleValueException
+	@SuppressWarnings("fallthrough")
+  public Value trunc(int level) throws KettleValueException
 	{
 		if (isNull()) return this; // don't do anything, leave it at NULL!
 
@@ -3370,19 +3371,14 @@ public class Value implements Cloneable, XMLInterface, Serializable
 			// MONTHS
 			case 5: cal.set(Calendar.MONTH, 1);
 			// DAYS
-			// $FALL-THROUGH$
 			case 4: cal.set(Calendar.DAY_OF_MONTH, 1);
 			// HOURS 
-      // $FALL-THROUGH$
 			case 3: cal.set(Calendar.HOUR_OF_DAY, 0);
 			// MINUTES
-      // $FALL-THROUGH$
 			case 2: cal.set(Calendar.MINUTE, 0);
 			// SECONDS
-      // $FALL-THROUGH$
 			case 1: cal.set(Calendar.SECOND, 0);
       // MILI-SECONDS
-      // $FALL-THROUGH$
       case 0: cal.set(Calendar.MILLISECOND, 0);  break;
 			default:
 				throw new KettleValueException("Argument of TRUNC of date has to be between 0 and 5");
