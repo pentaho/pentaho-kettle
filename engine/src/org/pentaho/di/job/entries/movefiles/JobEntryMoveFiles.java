@@ -416,7 +416,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 				 if ( folder != null ){
 						try {
 							folder.close();
-						}catch ( IOException ex ) {};
+						}catch ( IOException ex) { /* Ignore */ }
 					} 
 			 }
 		}
@@ -628,7 +628,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 	                                    	finally {
 	                                			if ( fileObject != null )
 {
-	                                				try  {fileObject.close();} catch ( IOException ex ) {};
+	                                				try  {fileObject.close();} catch ( IOException ex) { /* Ignore */ }
 	                                			}
 	           
 	                                		}
@@ -684,25 +684,25 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 				try  {
 					sourcefilefolder.close();
 				}
-				catch ( IOException ex ) {};
+				catch ( IOException ex) { /* Ignore */ }
 			}
 			if ( destinationfilefolder != null ){
 				try  {
 					 destinationfilefolder.close();
 				}
-				catch ( IOException ex ) {};
+				catch ( IOException ex) { /* Ignore */ }
 			}
 			if ( Currentfile != null ){
 				try {
 					Currentfile.close();
 				}
-				catch ( IOException ex ) {};
+				catch ( IOException ex) { /* Ignore */ }
 			}
 			if ( movetofolderfolder != null ){
 				try  {
 					movetofolderfolder.close();
 				}
-				catch ( IOException ex ) {};
+				catch ( IOException ex) { /* Ignore */ }
 			}
 		}
 		return entrystatus;
@@ -854,7 +854,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 				try  {
 					destinationfile.close();
 				}
-				catch ( IOException ex ) {};
+				catch ( IOException ex) { /* Ignore */ }
 			}
 		}
 		return retval;
@@ -957,7 +957,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 				file_name.close();
 				
 			}
-			catch ( IOException ex ) {};
+			catch ( IOException ex) { /* Ignore */ }
 		}
 	
 	}
@@ -1042,7 +1042,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
          		try  {
          			folder.close();
          		}
-         		catch (Exception ex ) {};
+         		catch (Exception ex) { /* Ignore */ }
          	}
          }
 		 return false;

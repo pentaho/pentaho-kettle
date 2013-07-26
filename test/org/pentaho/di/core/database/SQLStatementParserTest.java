@@ -80,7 +80,7 @@ public class SQLStatementParserTest extends TestCase {
     public String[] getUsedLibraries() {
       return new String[0];
     }
-  };
+  }
 
   public void testParseStatements_simple() {
     BaseDatabaseMeta dbMeta = new BaseDatabaseMetaForTest();

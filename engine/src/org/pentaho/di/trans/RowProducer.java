@@ -63,7 +63,9 @@ public class RowProducer
      */
     public boolean putRow(RowMetaInterface rowMeta, Object[] row, boolean block) {
       if (block) {
-        while (!rowSet.putRowWait(rowMeta, row, Long.MAX_VALUE, TimeUnit.DAYS));
+        while (!rowSet.putRowWait(rowMeta, row, Long.MAX_VALUE, TimeUnit.DAYS)) {
+          // Wait
+        }
         return true;
       }
       return rowSet.putRow(rowMeta, row);

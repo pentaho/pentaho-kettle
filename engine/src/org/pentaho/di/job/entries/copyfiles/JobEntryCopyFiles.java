@@ -549,7 +549,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 					sourcefilefolder.close();
 					sourcefilefolder=null;
 				}
-				catch ( IOException ex ) {};
+				catch ( IOException ex) { /* Ignore */ }
 			}
 			if ( destinationfilefolder != null )
 			{
@@ -558,7 +558,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 					destinationfilefolder.close();
 					destinationfilefolder=null;
 				}
-				catch ( IOException ex ) {};
+				catch ( IOException ex) { /* Ignore */ }
 			}
 		}
 
@@ -684,7 +684,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
          			folder.close();
          			folder=null;
          		}
-         		catch (Exception ex ) {};
+         		catch (Exception ex) { /* Ignore */ }
          	}
          }
 		 return false;
@@ -934,7 +934,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 						file_name.close();
 						file_name=null;
 					}
-					catch ( IOException ex ) {};
+					catch ( IOException ex) { /* Ignore */ }
 				}
 				
 				
@@ -971,7 +971,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
           destinationFolderObject.close();
           
         }
-        catch ( IOException ex ) {};
+        catch ( IOException ex) { /* Ignore */ }
       }
 		}
 	}

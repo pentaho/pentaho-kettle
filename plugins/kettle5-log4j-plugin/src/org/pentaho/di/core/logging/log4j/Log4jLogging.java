@@ -46,6 +46,5 @@ public class Log4jLogging implements LoggingPluginInterface {
   
   public void dispose() {
     KettleLogStore.getAppender().removeLoggingEventListener(this);
-  };
-
+  }
 }

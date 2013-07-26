@@ -892,7 +892,7 @@ Also in array context a logical AND of all arguments is computed, range or array
     <syntax>IF( Logical Condition [ ; [ Any IfTrue ] [ ; [ Any IfFalse ] ] ] )</syntax>
   	<returns>Any</returns>
   	<constraints>None.</constraints>
-  	<semantics>Computes Condition. If it is TRUE, it returns IfTrue, else it returns IfFalse. If there is only 1 parameter, IfTrue is considered to be TRUE(). If there are less than 3 parameters, IfFalse is considered to be FALSE(). Thus the 1 parameter version converts Condition into a Logical value. If there are 2 or 3 parameters but the second parameter is null (two consecutive ;; semicolons), IfFalse is considered to be 0. If there are 3 parameters but the third parameter is null, IfFalse is considered to be 0. This function only evaluates IfTrue, or ifFalse, and never both; that is to say, it short-circuits.</semantics>
+  	<semantics>Computes Condition. If it is TRUE, it returns IfTrue, else it returns IfFalse. If there is only 1 parameter, IfTrue is considered to be TRUE(). If there are less than 3 parameters, IfFalse is considered to be FALSE(). Thus the 1 parameter version converts Condition into a Logical value. If there are 2 or 3 parameters but the second parameter is null (two consecutive ; semicolons), IfFalse is considered to be 0. If there are 3 parameters but the third parameter is null, IfFalse is considered to be 0. This function only evaluates IfTrue, or ifFalse, and never both; that is to say, it short-circuits.</semantics>
 	<examples>
 	   	<example><expression>IF(FALSE();7;8)</expression> <result>8</result> <level>1</level> <comment>Simple if.</comment></example>
 	   	<example><expression>IF(TRUE();7;8)</expression> <result>7</result> <level>1</level> <comment>Simple if.</comment></example>
@@ -908,7 +908,7 @@ Also in array context a logical AND of all arguments is computed, range or array
 	   	<example><expression>IF(FALSE();7)</expression> <result>FALSE</result> <level>1</level> <comment>Default IfFalse is FALSE</comment></example>
 	   	<example><expression>IF(3)</expression> <result>TRUE</result> <level>1</level> <comment>Default IfTrue is TRUE</comment></example>
 	   	<example><expression>IF(FALSE();7;)</expression> <result>0</result> <level>1</level> <comment>Empty parameter is considered 0</comment></example>
-	   	<example><expression>IF(TRUE();;7)</expression> <result>0</result> <level>1</level> <comment>Empty parameter is considered 0</comment></example>
+	   	<example><expression>IF(TRUE();7)</expression> <result>0</result> <level>1</level> <comment>Empty parameter is considered 0</comment></example>
 	   	<example><expression>IF(TRUE();4;1/0)</expression> <result>4</result> <level>1</level> <comment>If condition is true, ifFalse is not considered – even if it would produce Error.</comment></example>
 	   	<example><expression>IF(FALSE();1/0;5)</expression> <result>5</result> <level>1</level> <comment>If condition is false, ifTrue is not considered – even if it would produce Error.</comment></example>
 

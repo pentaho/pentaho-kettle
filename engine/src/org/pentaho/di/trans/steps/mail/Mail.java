@@ -374,7 +374,7 @@ public class Mail extends BaseStep implements StepInterface
 					if(image!=null) {
 						try {
 							image.close();
-						}catch(Exception e){};
+						}catch(Exception e){ /* Ignore */ }
 					}
 				}
 			}

@@ -30,7 +30,7 @@ public class Launch {
 
   public enum Status {
     Success, Failed
-  };
+  }
 
   public static Status openURL(String url) {
 

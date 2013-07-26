@@ -542,9 +542,9 @@ public class JobEntryDeleteFoldersDialog extends JobEntryDialog implements JobEn
     if (jobEntry.arguments != null) {
       for (int i = 0; i < jobEntry.arguments.length; i++) {
         TableItem ti = wFields.table.getItem(i);
-        if (jobEntry.arguments[i] != null)
-          ;
-        ti.setText(1, jobEntry.arguments[i]);
+        if (jobEntry.arguments[i] != null) {
+          ti.setText(1, jobEntry.arguments[i]);
+        }
       }
       wFields.setRowNums();
       wFields.optWidth(true);

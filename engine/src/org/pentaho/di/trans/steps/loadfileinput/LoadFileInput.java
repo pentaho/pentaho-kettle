@@ -301,8 +301,8 @@ public class LoadFileInput extends BaseStep implements StepInterface
     	}catch(Exception e) {
     		throw new KettleException(BaseMessages.getString(PKG, "LoadFileInput.Error.GettingFileContent", vfsFilename, e.toString()));
     	}finally {
-    		if(reader!=null) try {reader.close();}catch(Exception e){};
-    		if(inputStream!=null) try {inputStream.close();}catch(Exception e){};
+    		if(reader!=null) try {reader.close();}catch(Exception e){ /* Ignore */ }
+    		if(inputStream!=null) try {inputStream.close();}catch(Exception e){ /* Ignore */ }
     	}
         
         return retval;

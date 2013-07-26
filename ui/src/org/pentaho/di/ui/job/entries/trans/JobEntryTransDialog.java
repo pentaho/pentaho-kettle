@@ -1105,8 +1105,10 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
         				// Set filename without extension ...
         				wLogfile.setText(wLogfile.getText().substring(0,wLogfile.getText().length()-wLogext.getText().length()-1));	
         			}
-        			catch (Exception ex){};
-        			if ( file != null ) {try  {file.close();}catch ( IOException ex ) {};}
+        			catch (Exception ex){
+                // Ignore
+        			}
+        			if ( file != null ) {try  {file.close();}catch ( IOException ex) { /* Ignore */ }}
         		}
         	
         }

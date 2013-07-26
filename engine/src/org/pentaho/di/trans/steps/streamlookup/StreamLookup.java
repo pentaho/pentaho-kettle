@@ -107,11 +107,11 @@ public class StreamLookup extends BaseStep implements StepInterface
 				break;
 			case ValueMetaInterface.TYPE_BOOLEAN: 
 				if ("TRUE".equalsIgnoreCase(meta.getValueDefault()[i]) || 
-				    "Y".equalsIgnoreCase(meta.getValueDefault()[i]) )  
+				    "Y".equalsIgnoreCase(meta.getValueDefault()[i]) ) { 
 				    data.nullIf[i] = Boolean.TRUE; 
-				else
-				    data.nullIf[i] = Boolean.FALSE; 
-				;
+				} else { 
+				    data.nullIf[i] = Boolean.FALSE;
+				}
 				break;
 			case ValueMetaInterface.TYPE_BIGNUMBER: 
 				try { data.nullIf[i] = new BigDecimal(meta.getValueDefault()[i]); }

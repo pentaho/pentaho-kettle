@@ -278,7 +278,9 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
       if (filefolder != null) {
         try {
           filefolder.close();
-        } catch (IOException ex) {};
+        } catch (IOException ex) {
+          // Ignore
+        }
       }
     }
   }
@@ -374,7 +376,7 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
 						file_name.close();
 						
 					}
-					catch ( IOException ex ) {};
+					catch ( IOException ex) { /* Ignore */ }
 				}	
 			}
 			

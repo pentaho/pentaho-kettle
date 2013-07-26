@@ -202,7 +202,9 @@ public class GPG {
 				if(out!=null) 	{
 					try {
 						out.close();
-					}catch(Exception e){};
+					}catch(Exception e){
+				    // Ignore
+					}
 				}
 			}
 		}

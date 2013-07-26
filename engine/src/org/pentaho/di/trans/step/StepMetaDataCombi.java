@@ -35,4 +35,4 @@ public class StepMetaDataCombi
     public String toString() {
     	return step.toString();
     }
-};
+}

@@ -1265,7 +1265,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 				} catch (Exception ex) {
 					testException = new KettleException(BaseMessages.getString(PKG, "ScriptValuesDialogMod.CouldNotAddDefaultFunctions", ex.toString())); 
 					retval = false;
-				};
+				}
 
 				// Adding some Constants to the JavaScript
 				try {
@@ -1276,7 +1276,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 				} catch (Exception ex) {
 					testException = new KettleException(BaseMessages.getString(PKG, "ScriptValuesDialogMod.CouldNotAddTransformationConstants",ex.toString())); 
 					retval = false;
-				};
+				}
 				
 				try{
 					Object[] row=new Object[rowMeta.size()];
@@ -1349,7 +1349,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 				}catch(Exception e){
 					testException = new KettleException(BaseMessages.getString(PKG, "ScriptValuesDialogMod.CouldProcessStartScript",e.toString())); 
 					retval = false;					
-				};
+				}
 				
 				try {
 					

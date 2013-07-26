@@ -243,6 +243,7 @@ public class LogWriter {
    * @deprecated Please use {@link CentralLogStore.getAppender()} instead.  This uses a central logging buffer in stead of a distributed one.
    * It also supports incremental buffer gets, and much more.
    */
+  @Deprecated
   public static final Log4jStringAppender createStringAppender() {
     Log4jStringAppender appender = new Log4jStringAppender();
     appender.setLayout(new Log4jKettleLayout(true));

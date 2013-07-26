@@ -71,7 +71,7 @@ public class SAPConnectionMock implements SAPConnection {
 		for (SAPFunction sapFunction : this.sfc) {
 			// This emulates a longer wait time, showing a wait cursor to notify the user
 			//
-			try { Thread.sleep(250); } catch(InterruptedException e) {};
+			try { Thread.sleep(250); } catch(InterruptedException e){ /* Ignore */ }
 
 			if (sapFunction.getName().contains(query)) {
 				sfc.add(sapFunction);
@@ -111,7 +111,7 @@ public class SAPConnectionMock implements SAPConnection {
 		// Simulate a longer wait by sleeping a bit...
 		// This tests the wait cursor in the UI...
 		//
-		try { Thread.sleep(1500); } catch(InterruptedException e) {};
+		try { Thread.sleep(1500); } catch(InterruptedException e){ /* Ignore */ }
 
 		return sfs;
 	}

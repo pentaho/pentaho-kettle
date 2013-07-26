@@ -610,7 +610,7 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
                              		{
                              			if ( fileObject != null )
                              			{
-                             				try  {fileObject.close();} catch ( IOException ex ) {};
+                             				try  {fileObject.close();} catch ( IOException ex) { /* Ignore */ }
                              			}
         
                              		}
@@ -683,14 +683,14 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
 			{
 				try{
 					sourcefilefolder.close();
-				}catch ( IOException ex ) {};
+				}catch ( IOException ex) { /* Ignore */ }
 
 			}
 			if ( CurrentFile != null )
 			{
 				try {
 					CurrentFile.close();
-				}catch ( IOException ex ) {};
+				}catch ( IOException ex) { /* Ignore */ }
 			}
 		}
 		return entrystatus;

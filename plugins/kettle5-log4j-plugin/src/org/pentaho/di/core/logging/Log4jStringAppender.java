@@ -40,6 +40,7 @@ import org.pentaho.di.core.logging.BufferChangedListener;
  * @author matt
  *
  */
+@Deprecated
 public class Log4jStringAppender implements Appender
 {
     private Layout layout;

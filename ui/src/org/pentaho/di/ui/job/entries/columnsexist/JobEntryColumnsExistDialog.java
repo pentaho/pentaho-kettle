@@ -176,7 +176,7 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
 		
 		// Connection line
 		wConnection = addConnectionLine(shell, wName, middle, margin);
-		if (jobEntry.getDatabase()==null && jobMeta.nrDatabases()==1) ;//wConnection.select(0);
+		if (jobEntry.getDatabase()==null && jobMeta.nrDatabases()==1) wConnection.select(0);
 		wConnection.addModifyListener(lsMod);
 
 		

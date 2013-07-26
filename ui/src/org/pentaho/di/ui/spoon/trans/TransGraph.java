@@ -2401,7 +2401,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
                 public void run() {
                   stepMeta.setDistributes(true);
                   stepMeta.setRowDistribution(null); // default
-                };
+                }
               };       
               boolean selected = stepMeta.isDistributes() && stepMeta.getRowDistribution()==null; 
               action.setChecked(selected);
@@ -2422,7 +2422,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
                   } catch(Exception e) {
                     LogChannel.GENERAL.logError("Error loading row distribution plugin class: ", e);
                   }
-                };
+                }
               };            
               action.setChecked(selected);
               JfaceMenuitem child = new JfaceMenuitem(null, customRowDistMenu, xulDomContainer, rowDistributionPlugin.getName(), p+1, action);
@@ -2437,7 +2437,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
               Action action = new Action("CopyRowsDistribution", Action.AS_CHECK_BOX) {
                 public void run() {
                   stepMeta.setDistributes(false);
-                };
+                }
               };       
               boolean selected = !stepMeta.isDistributes(); 
               action.setChecked(selected);
@@ -2462,7 +2462,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
                 Action action = new Action(referencedObject, Action.AS_DROP_DOWN_MENU) {
                   public void run() {
                     openMapping(stepMeta, index);
-                  };
+                  }
                 };            
                 JfaceMenuitem child = new JfaceMenuitem(null, launchMenu, xulDomContainer, referencedObject, i, action);
                 child.setLabel(referencedObject);
@@ -2829,8 +2829,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             try {
               Thread.sleep(250);
             } catch (InterruptedException e) {
+              // Ignore
             }
-            ;
           }
 
           if (monitor.isCanceled()) // Disconnect and see what happens!
@@ -2838,8 +2838,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             try {
               transMeta.cancelQueries();
             } catch (Exception e) {
+              // Ignore
             }
-            ;
           }
         }
       };

@@ -583,8 +583,8 @@ public class StringUtil {
       try {
         socket.close();
       } catch (Exception e) {
+        // Ignore
       }
-      ;
     }
   }
 

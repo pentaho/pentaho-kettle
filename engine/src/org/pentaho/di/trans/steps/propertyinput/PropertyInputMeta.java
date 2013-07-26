@@ -1140,7 +1140,9 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
         String required[] = new String[fileName.length];
         boolean subdirs[] = new boolean[fileName.length]; // boolean arrays are defaulted to false.
-        for (int i=0;i<required.length; required[i]="Y", i++); 
+        for (int i=0;i<required.length; i++) {
+          required[i]="Y";
+        }
         return FileInputList.createFileList(space, fileName, fileMask, excludeFileMask, required, subdirs);
         
 	}

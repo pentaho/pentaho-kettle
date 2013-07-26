@@ -320,7 +320,7 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface
 			logFile        = XMLHandler.getTagValue(stepnode, "log_file");     
 			eraseFiles     = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "erase_files")); 
 			encoding       = XMLHandler.getTagValue(stepnode, "encoding");         
-         updateCondition = XMLHandler.getTagValue(stepnode, "update_condition");         ;
+         updateCondition = XMLHandler.getTagValue(stepnode, "update_condition");
 			
 			Node localHostsNode = XMLHandler.getSubNode(stepnode, "local_hosts");
 			int nLocalHosts = XMLHandler.countNodes(localHostsNode, "local_host");

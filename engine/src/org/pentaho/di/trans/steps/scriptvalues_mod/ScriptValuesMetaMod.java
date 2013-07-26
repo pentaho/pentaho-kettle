@@ -100,7 +100,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 		compatible=true;
 		try{
 			parseXmlForAdditionalClasses();
-		}catch(Exception e){};
+		}catch(Exception e){ /* Ignore */ }
 	}
 	
     /**
@@ -570,7 +570,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 				error_message="Couldn't add Default Functions! Error:"+Const.CR+ex.toString();
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
-			};
+			}
 
 			// Adding some Constants to the JavaScript
 			try {
@@ -582,7 +582,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 				error_message="Couldn't add Transformation Constants! Error:"+Const.CR+ex.toString(); 
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
-			};
+			}
 
 			try{
 				ScriptValuesModDummy dummyStep = new ScriptValuesModDummy(prev, transMeta.getStepFields(stepMeta));
@@ -652,7 +652,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 				error_message="Couldn't process Start Script! Error:"+Const.CR+e.toString(); 
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);				
-			};
+			}
 			
 			try{
 				jsscript=jscx.compileString(strActiveScript, "script", 1, null); 
@@ -704,7 +704,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 					error_message="Couldn't process End Script! Error:"+Const.CR+e.toString(); 
 					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 					remarks.add(cr);				
-				};
+				}
 			}catch(Exception e){
 				Context.exit();
 				error_message = BaseMessages.getString(PKG, "ScriptValuesMetaMod.CheckResult.CouldNotCompileScript")+Const.CR+e.toString(); 

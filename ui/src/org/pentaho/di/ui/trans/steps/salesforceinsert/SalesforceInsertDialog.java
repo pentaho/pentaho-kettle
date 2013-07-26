@@ -753,7 +753,7 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
 			msgError=e.getMessage();
 		} finally{
 			if(connection!=null) {
-				try {connection.close();}catch(Exception e){};
+				try {connection.close();}catch(Exception e){ /* Ignore */ }
 			}
 		}
 		
@@ -909,7 +909,7 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
 			  throw new KettleException("Erreur getting fields from module [" + url + "]!", e);
 		   } finally{
 			  if(connection!=null) {
-					try {connection.close();}catch(Exception e){};
+					try {connection.close();}catch(Exception e){ /* Ignore */ }
 				}
 		  }
 	}
@@ -1109,7 +1109,7 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
 					getModulesListError = true;
 			  } finally{
 				  if(connection!=null) {
-						try {connection.close();}catch(Exception e){};
+						try {connection.close();}catch(Exception e){ /* Ignore */ }
 					}
 		 	 }
 		  }

@@ -162,7 +162,7 @@ public class Xslt extends BaseStep implements StepInterface
 				} finally {
 					try {
 						if(file!=null) file.close();
-					}catch(Exception e){};
+					}catch(Exception e){ /* Ignore */ }
 				}
 			}
 			

@@ -223,7 +223,7 @@ public class XMLInputFieldsImportProgressDialog
 		}finally {
 			try {
 				if(is!=null) is.close();
-			}catch(Exception e){};
+			}catch(Exception e){ /* Ignore */ }
 		}
 
 

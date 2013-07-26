@@ -1384,7 +1384,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 			msgError=e.getMessage();
 		} finally{
 			if(connection!=null) {
-				try {connection.close();}catch(Exception e){};
+				try {connection.close();}catch(Exception e){ /* Ignore */ }
 			}
 		}
 		if(successConnection) {
@@ -1845,7 +1845,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 			  } finally{
 				  if(!Const.isEmpty(selectedField)) wModule.setText(selectedField);
 				  if(connection!=null) {
-						try {connection.close();}catch(Exception e){};
+						try {connection.close();}catch(Exception e){ /* Ignore */ }
 					}
 		 	 }
 		  }

@@ -1269,7 +1269,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wInclFilename.setSelection(in.includeFilename());
     wInclRownum.setSelection(in.includeRowNumber());
     wAddResult.setSelection(in.addResultFile());
-    ;
+    
     wIgnoreEmptyFile.setSelection(in.isIgnoreEmptyFile());
 
     wFilenameInField.setSelection(in.getIsInFields());

@@ -57,7 +57,9 @@ public class RunThread implements Runnable {
 			
 			if (log.isDetailed()) log.logDetailed(BaseMessages.getString("System.Log.StartingToRun")); 
 
-			while (step.processRow(meta, data) && !step.isStopped());
+			while (step.processRow(meta, data) && !step.isStopped()) {
+			  // Wait
+			}
 		}
 		catch(Throwable t)
 		{

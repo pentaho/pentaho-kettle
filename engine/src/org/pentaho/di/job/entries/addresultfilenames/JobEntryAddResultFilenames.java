@@ -307,8 +307,8 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
           filefolder.close();
           filefolder=null;
         } catch (IOException ex) {
+          // Ignore
         }
-        ;
       }
     }
 

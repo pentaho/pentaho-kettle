@@ -1337,7 +1337,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
          		try  {
          			folder.close();
          		}
-         		catch (Exception ex ) {};
+         		catch (Exception ex) { /* Ignore */ }
          	}
          }
 		 return false;

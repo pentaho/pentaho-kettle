@@ -627,7 +627,7 @@ public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface
     		throw new KettleStepException(BaseMessages.getString(PKG, "RssOutput.Meta.ErrorGettingFile",getFileName()), e);
     	}finally 
     	{
-    		if(file!=null) {try { file.close();}catch(Exception e){};};
+    		if(file!=null) {try { file.close();}catch(Exception e){ /* Ignore */ }}
     	}
     }
 	public String buildFilename(VariableSpace space, int stepnr) throws KettleStepException

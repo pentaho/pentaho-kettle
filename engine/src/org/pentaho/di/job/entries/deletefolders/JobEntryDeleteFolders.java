@@ -335,7 +335,8 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
           filefolder.close();
           filefolder=null;
         } catch (IOException ex) {
-        };
+          // Ignore
+        }
       }
     }
 

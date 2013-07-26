@@ -82,7 +82,7 @@ public class RulesExecutorMeta extends BaseStepMeta implements StepMetaInterface
     public String toString() {
       return storageKey;
     }
-  };
+  }
 
   private List<ValueMetaInterface> ruleResultColumns = new ArrayList<ValueMetaInterface>();
 

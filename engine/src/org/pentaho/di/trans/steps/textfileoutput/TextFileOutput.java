@@ -957,8 +957,8 @@ public class TextFileOutput extends BaseStep implements StepInterface {
         try {
           parentfolder.close();
         } catch (Exception ex) {
+          // Ignore
         }
-        ;
       }
     }
   }

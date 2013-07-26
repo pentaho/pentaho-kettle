@@ -1618,7 +1618,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       Action action = new Action("open-last-file-"+(i+1), Action.AS_DROP_DOWN_MENU) {
         public void run() {
           lastFileSelect(lastFileId);
-        };
+        }
       };       
 
       // shorten the filename if necessary

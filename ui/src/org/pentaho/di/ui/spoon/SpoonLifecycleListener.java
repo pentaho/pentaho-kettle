@@ -30,6 +30,6 @@ package org.pentaho.di.ui.spoon;
  *
  */
 public interface SpoonLifecycleListener {
-  public enum SpoonLifeCycleEvent{STARTUP, SHUTDOWN, REPOSITORY_CONNECTED, REPOSITORY_CHANGED, REPOSITORY_DISCONNECTED, MENUS_REFRESHED};
+  public enum SpoonLifeCycleEvent{STARTUP, SHUTDOWN, REPOSITORY_CONNECTED, REPOSITORY_CHANGED, REPOSITORY_DISCONNECTED, MENUS_REFRESHED}
   void onEvent(SpoonLifeCycleEvent evt);
 }

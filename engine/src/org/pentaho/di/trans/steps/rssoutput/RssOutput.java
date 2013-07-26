@@ -189,7 +189,7 @@ public class RssOutput extends BaseStep implements StepInterface
 	             		try  {
 	             			parentfolder.close();
 	             		}
-	             		catch ( Exception ex ) {};
+	             		catch ( Exception ex) { /* Ignore */ }
 	             	}
 	             }		
 			}		

@@ -66,8 +66,9 @@ public class StepLogTable extends BaseLogTable implements Cloneable, LogTableInt
 		LINES_OUTPUT("LINES_OUTPUT"),
 		LINES_REJECTED("LINES_REJECTED"),
 		ERRORS("ERRORS"),
-		LOG_FIELD("LOG_FIELD");
+		LOG_FIELD("LOG_FIELD"),
 		;
+		
 		
 		private String id;
 		private ID(String id) {

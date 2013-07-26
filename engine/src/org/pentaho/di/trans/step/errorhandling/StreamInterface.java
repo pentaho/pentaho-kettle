@@ -28,7 +28,7 @@ public interface StreamInterface {
 	
 	public enum StreamType {
 		INPUT, OUTPUT, INFO, TARGET, ERROR,
-	};
+	}
 	
 	public String getStepname();
 	

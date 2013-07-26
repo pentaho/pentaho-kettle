@@ -202,7 +202,7 @@ public class LoopNodesImportProgressDialog
 		}finally {
 			try {
 				if(is!=null) is.close();
-			}catch(Exception e){};
+			}catch(Exception e){ /* Ignore */ }
 		}
 		String[] list_xpath = listpath.toArray(new String[listpath.size()]);
 

@@ -519,7 +519,7 @@ public class JobEntrySNMPTrap extends JobEntryBase implements Cloneable, JobEntr
 		}
         finally{
         	try{
-            if(snmp!=null) snmp.close();}catch(Exception e){};
+            if(snmp!=null) snmp.close();}catch(Exception e){ /* Ignore */ }
         }
 
 

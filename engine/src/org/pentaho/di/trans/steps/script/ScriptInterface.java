@@ -108,4 +108,4 @@ public interface ScriptInterface extends StepInterface
 	void pauseRunning();
 
 	void resumeRunning();
-};
+}

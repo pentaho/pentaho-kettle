@@ -318,7 +318,7 @@ public class SalesforceUpdate extends BaseStep implements StepInterface
 			if(data.outputBuffer!=null) data.outputBuffer=null;
 			if(data.sfBuffer!=null) data.sfBuffer=null;
 			if(data.connection!=null) data.connection.close();
-		}catch(Exception e){};
+		}catch(Exception e){ /* Ignore */ }
 		super.dispose(smi, sdi);
 	}
 

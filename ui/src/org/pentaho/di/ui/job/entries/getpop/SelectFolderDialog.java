@@ -207,7 +207,7 @@ public class SelectFolderDialog extends Dialog
     	if(this.folder!=null) {
 	    	try {
 	    		this.folder.close(false);
-	    	}catch(Exception e){};
+	    	}catch(Exception e){ /* Ignore */ }
     	}
         props.setScreen(new WindowProperty(shell));
         shell.dispose();

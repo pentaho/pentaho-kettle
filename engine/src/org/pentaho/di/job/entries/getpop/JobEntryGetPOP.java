@@ -772,7 +772,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 				targetAttachmentFolder=KettleVFS.getFilename(fileObject);
 			}
 		    // Close fileObject! we don't need it anymore ...
-			try  {fileObject.close();fileObject=null;}catch ( IOException ex ) {};
+			try  {fileObject.close();fileObject=null;}catch ( IOException ex) { /* Ignore */ }
 			
 			// Check destination folder
 			String realMoveToIMAPFolder=environmentSubstitute(getMoveToIMAPFolder());
@@ -952,14 +952,14 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 			if ( fileObject != null ) {
 				try  {fileObject.close();
 					fileObject=null;
-				}catch ( IOException ex ) {};
+				}catch ( IOException ex) { /* Ignore */ }
 			}
 			try {
 				if(mailConn!=null){
 					mailConn.disconnect();
 					mailConn=null;
 				}
-			}catch(Exception e){};
+			}catch(Exception e){ /* Ignore */ }
 		}
 		
 		return result;

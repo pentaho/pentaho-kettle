@@ -67,7 +67,7 @@ public class RulesAccumulatorMeta extends BaseStepMeta implements StepMetaInterf
     public String toString() {
       return storageKey;
     }
-  };
+  }
 
   private List<ValueMetaInterface> ruleResultColumns = new ArrayList<ValueMetaInterface>();
 

@@ -64,8 +64,6 @@ public class PrioritizeStreamsDialog extends BaseStepDialog implements StepDialo
 	private TableView    wFields;
 	private FormData     fdlFields, fdFields;
 	
-	;
-	
 	public PrioritizeStreamsDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
 		super(parent, (BaseStepMeta)in, tr, sname);

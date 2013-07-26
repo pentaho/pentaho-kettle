@@ -63,7 +63,7 @@ public class Log4jKettleLayout extends Layout implements Log4JLayoutInterface
 
     String dateTimeString = "";
     if (timeAdded) {
-      dateTimeString = ((SimpleDateFormat) LOCAL_SIMPLE_DATE_PARSER.get()).format(new Date(event.timeStamp)) + " - ";
+      dateTimeString = LOCAL_SIMPLE_DATE_PARSER.get().format(new Date(event.timeStamp)) + " - ";
     }
 
     Object object = event.getMessage();

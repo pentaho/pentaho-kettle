@@ -237,7 +237,7 @@ public class JobEntryTelnet extends JobEntryBase implements Cloneable, JobEntryI
 		}finally {
     		try {
     			socket.close();
-    		}catch(Exception e){};	
+    		}catch(Exception e){ /* Ignore */ }	
 		}
 	}
 	  public List<ResourceReference> getResourceDependencies(JobMeta jobMeta) {

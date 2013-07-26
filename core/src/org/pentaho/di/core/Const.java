@@ -2646,10 +2646,9 @@ public class Const
 		for (int i = 0; i < inArray.length; i++)
 		{
 			char c = inArray[i];
-			if (c == '\n' || c == '\r')
-				;
-			else
+			if (!(c == '\n' || c == '\r')) {
 				out.append(c);
+			}
 		}
 		return out.toString();
 	}
@@ -2666,10 +2665,9 @@ public class Const
 		for (int i = 0; i < inArray.length; i++)
 		{
 			char c = inArray[i];
-			if (c == '\n')
-				;
-			else
+			if (c != '\n') {
 				out.append(c);
+			}
 		}
 		return out.toString();
 	}	//	removeCR
@@ -2685,10 +2683,9 @@ public class Const
 		for (int i = 0; i < inArray.length; i++)
 		{
 			char c = inArray[i];
-			if (c == '\r')
-				;
-			else
+			if (c != '\r') {
 				out.append(c);
+			}
 		}
 		return out.toString();
 	}	//	removeCRLF
@@ -2704,10 +2701,9 @@ public class Const
 		for (int i = 0; i < inArray.length; i++)
 		{
 			char c = inArray[i];
-			if (c == '\t')
-				;
-			else
+			if (c != '\t') {
 				out.append(c);
+			}
 		}
 		return out.toString();
 	}	

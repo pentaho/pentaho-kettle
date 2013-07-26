@@ -1200,7 +1200,7 @@ public void setSensitivity(String sensitivity) {
 		                  result.setNrErrors(1);
 		    	  }finally {
 		    		  if(imageFile!=null) {
-		    			  try { imageFile.close();}catch(Exception e){};
+		    			  try { imageFile.close();}catch(Exception e){ /* Ignore */ }
 		    		  }
 		    	  }
     		  }

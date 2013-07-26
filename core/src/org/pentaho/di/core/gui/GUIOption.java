@@ -38,7 +38,7 @@ public interface GUIOption<E>
 	 * @author Alex Silva
 	 *
 	 */
-	enum DisplayType {CHECK_BOX,TEXT_FIELD,ACTION_BUTTON};
+	enum DisplayType {CHECK_BOX,TEXT_FIELD,ACTION_BUTTON}
 	
 	public E getLastValue();
 	

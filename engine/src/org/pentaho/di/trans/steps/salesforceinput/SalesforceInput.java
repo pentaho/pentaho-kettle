@@ -445,7 +445,7 @@ public class SalesforceInput extends BaseStep implements StepInterface
 			if(data.endCal!=null) {
 				data.endCal=null;
 			}
-		}catch(Exception e){};
+		}catch(Exception e){ /* Ignore */ }
 		super.dispose(smi, sdi);
 	}
 }

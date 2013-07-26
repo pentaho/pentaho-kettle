@@ -417,7 +417,7 @@ public class PreviewRowsDialog {
           loggingText);
       etd.open();
     }
-  };
+  }
 
   public boolean isDisposed() {
     return shell.isDisposed();

@@ -571,8 +571,9 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 	}
 
 	private void ok() {
-		if (SaveToMeta(meta));
+		if (SaveToMeta(meta)) {
 		  dispose();
+		}
 	}
 
 	private boolean SaveToMeta(OpenERPObjectInputMeta targetMeta) {

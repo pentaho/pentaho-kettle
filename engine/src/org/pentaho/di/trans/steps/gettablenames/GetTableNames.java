@@ -306,7 +306,9 @@ public class GetTableNames extends BaseStep implements StepInterface
     	            }
     	            if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "GetTableNames.Log.PutoutRow",data.outputRowMeta.getString(outputRowView)));   
     	        }
-            }catch(Exception e){};
+            }catch(Exception e){
+              // Ignore
+            }
         }
 		 if(meta.isIncludeProcedure())
          {

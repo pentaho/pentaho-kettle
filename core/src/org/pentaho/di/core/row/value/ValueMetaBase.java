@@ -2901,11 +2901,9 @@ public class ValueMetaBase implements ValueMetaInterface {
             break;
           case TYPE_DATE:
             index[i] = XMLHandler.stringToDate(valueString);
-            ;
             break;
           case TYPE_BIGNUMBER:
             index[i] = new BigDecimal(valueString);
-            ;
             break;
           case TYPE_BOOLEAN:
             index[i] = Boolean.valueOf("Y".equalsIgnoreCase(valueString));

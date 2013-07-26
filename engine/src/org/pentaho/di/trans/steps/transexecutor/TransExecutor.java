@@ -392,7 +392,6 @@ public class TransExecutor extends BaseStep implements StepInterface {
             data.groupTime = Const.toInt(environmentSubstitute(meta.getGroupTime()), -1);
           }
           data.groupTimeStart = System.currentTimeMillis();
-          ;
 
           // Is there a grouping field set?
           //

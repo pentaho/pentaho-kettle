@@ -231,13 +231,13 @@ public class JobEntryWriteToFile extends JobEntryBase implements Cloneable, JobE
             		try { 
             			osw.flush();
             			osw.close();
-            		} catch ( Exception ex ) {};
+            		} catch ( Exception ex) { /* Ignore */ }
             	}
             	if ( os != null ) {
             		try { 
             			os.flush();
             			os.close();
-            		} catch ( Exception ex ) {};
+            		} catch ( Exception ex) { /* Ignore */ }
             	}
             }			
 		} else {			
@@ -266,7 +266,7 @@ public class JobEntryWriteToFile extends JobEntryBase implements Cloneable, JobE
 			if(parent!=null) {
 				try {
 					parent.close();
-				}catch(Exception e){};
+				}catch(Exception e){ /* Ignore */ }
 			}
 		}
 	}

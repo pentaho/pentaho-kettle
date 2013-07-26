@@ -213,7 +213,7 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
             		     fileObject.close();
             		     fileObject=null;
             		}
-            		catch ( IOException ex ) {};
+            		catch ( IOException ex) { /* Ignore */ }
             	}
             }
 		}

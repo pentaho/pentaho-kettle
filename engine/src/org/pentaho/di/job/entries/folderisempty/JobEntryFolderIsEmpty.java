@@ -259,7 +259,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
             		     folderObject.close();
             		     folderObject=null;
             		}
-            		catch ( IOException ex ) {};
+            		catch ( IOException ex) { /* Ignore */ }
             	}
             }			
 		}
@@ -342,7 +342,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 						file_name.close();
 						file_name=null;
 					}
-					catch ( IOException ex ) {};
+					catch ( IOException ex) { /* Ignore */ }
 				}
 			}
 			return returncode;

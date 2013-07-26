@@ -103,12 +103,16 @@ public class GetQueryFieldsProgressDialog
                     IProgressMonitor monitor = pmd.getProgressMonitor();
                     while (pmd.getShell()==null || ( !pmd.getShell().isDisposed() && !monitor.isCanceled() ))
                     {
-                        try { Thread.sleep(250); } catch(InterruptedException e) { };
+                        try { Thread.sleep(250); } catch(InterruptedException e) {
+                          // Ignore
+                        }
                     }
                     
                     if (monitor.isCanceled()) // Disconnect and see what happens!
                     {
-                        try { db.cancelQuery(); } catch(Exception e) {};
+                        try { db.cancelQuery(); } catch(Exception e) {
+                          // Ignore
+                        }
                     }
                 }
             };

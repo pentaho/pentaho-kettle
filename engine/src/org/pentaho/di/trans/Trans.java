@@ -1468,8 +1468,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    */
   public void waitUntilFinished() {
     try {
-      while (transFinishedBlockingQueue.poll(1, TimeUnit.DAYS) == null)
-        ;
+      while (transFinishedBlockingQueue.poll(1, TimeUnit.DAYS) == null) {
+        // Wait
+      }
     } catch (InterruptedException e) {
       throw new RuntimeException("Waiting for transformation to be finished interrupted!", e);
     }

@@ -2990,4 +2990,4 @@ public class TableView extends Composite {
   public void setShowingConversionErrorsInline(boolean showingConversionErrorsInline) {
     this.showingConversionErrorsInline = showingConversionErrorsInline;
   }
-};
+}

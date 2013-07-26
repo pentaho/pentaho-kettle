@@ -246,7 +246,7 @@ public class ZipFile extends BaseStep implements StepInterface
         	try {
         		if(data.sourceFile!=null) data.sourceFile.close();
         		if(data.zipFile!=null) data.zipFile.close();
-        	}catch(Exception e){};
+        	}catch(Exception e){ /* Ignore */ }
         }
             
         return true;
@@ -281,12 +281,12 @@ public class ZipFile extends BaseStep implements StepInterface
     				if(file!=null) {
     					try {
     						file.close();
-    					}catch(Exception e){};
+    					}catch(Exception e){ /* Ignore */ }
     				}
     				if(moveToFolder!=null) {
     					try {
     						moveToFolder.close();
-    					}catch(Exception e){};
+    					}catch(Exception e){ /* Ignore */ }
     				}
     			}
     			break;
@@ -440,7 +440,7 @@ public class ZipFile extends BaseStep implements StepInterface
 	            }
 	            fileSet=null;
 	            
-	    	}catch(Exception e){};
+	    	}catch(Exception e){ /* Ignore */ }
 	    }
 	
     		

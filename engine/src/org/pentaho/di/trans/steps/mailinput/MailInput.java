@@ -536,7 +536,7 @@ public class MailInput extends BaseStep implements StepInterface
 			try {
 				data.mailConn.disconnect();
 				data.mailConn=null;
-			}catch(Exception e){};
+			}catch(Exception e){ /* Ignore */ }
 		}
 		
 		super.dispose(smi, sdi);

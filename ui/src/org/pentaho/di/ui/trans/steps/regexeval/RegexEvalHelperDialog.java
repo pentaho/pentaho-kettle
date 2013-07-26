@@ -502,7 +502,7 @@ public class RegexEvalHelperDialog extends Dialog
     			wRegExScriptCompile.setToolTipText(BaseMessages.getString(PKG, "RegexEvalHelperDialog.ErrorCompiling.Message")+Const.CR+e.toString());
     			this.errorDisplayed=true;
     		}
-    	};
+    	}
     }
     public void dispose()
     {

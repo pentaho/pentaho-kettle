@@ -467,7 +467,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
                              		{
                              			if ( fileObject != null )
                              			{
-                             				try  {fileObject.close();} catch ( IOException ex ) {};
+                             				try  {fileObject.close();} catch ( IOException ex) { /* Ignore */ }
                              			}
         
                              		}
@@ -540,14 +540,14 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 			{
 				try{
 					sourcefilefolder.close();
-				}catch ( IOException ex ) {};
+				}catch ( IOException ex) { /* Ignore */ }
 
 			}
 			if ( CurrentFile != null )
 			{
 				try {
 					CurrentFile.close();
-				}catch ( IOException ex ) {};
+				}catch ( IOException ex) { /* Ignore */ }
 			}
 		}
 		return entrystatus;

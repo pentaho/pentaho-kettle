@@ -1313,7 +1313,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		} finally {
 			if(connection!=null) {
 				// Disconnect ...
-				try {connection.close();}catch(Exception e){};
+				try {connection.close();}catch(Exception e){ /* Ignore */ }
 			}
 		}
 	}
@@ -1378,7 +1378,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 
 		}finally {
 			if(connection!=null) {
-				try {connection.close();}catch(Exception e){};
+				try {connection.close();}catch(Exception e){ /* Ignore */ }
 			}
 		}
 	}

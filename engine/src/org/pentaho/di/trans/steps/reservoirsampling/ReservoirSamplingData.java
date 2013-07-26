@@ -64,7 +64,7 @@ public class ReservoirSamplingData extends BaseStepData
   // state of processing
   protected PROC_MODE m_state;
   
-  public enum PROC_MODE {SAMPLING, PASSTHROUGH, DISABLED};
+  public enum PROC_MODE {SAMPLING, PASSTHROUGH, DISABLED}
 
   /**
    * Set the meta data for the output format

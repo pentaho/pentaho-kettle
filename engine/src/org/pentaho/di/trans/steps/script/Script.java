@@ -249,7 +249,6 @@ public class Script extends BaseStep implements StepInterface {
 					// ex.toString());
 					throw new KettleValueException(BaseMessages.getString(PKG, "Script.Log.CouldNotAddDefaultConstants"), ex);
 				}
-				;
 
 				try {
 					// Checking for StartScript
@@ -681,7 +680,6 @@ public class Script extends BaseStep implements StepInterface {
 			// "Calling Context.exit without previous Context.enter"
 			// logError(BaseMessages.getString(PKG, "System.Log.UnexpectedError"), er);
 		}
-		;
 
 		super.dispose(smi, sdi);
 	}

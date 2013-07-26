@@ -63,8 +63,8 @@ public class LockFile {
 			// The is locked by another process
 			setLocked(true);
 		} finally {
-			if(file!=null) try{ file.close();}catch(Exception e){};
-			if(dummyfile!=null) try{ file.close();}catch(Exception e){};
+			if(file!=null) try{ file.close();}catch(Exception e){ /* Ignore */ }
+			if(dummyfile!=null) try{ file.close();}catch(Exception e){ /* Ignore */ }
 		}
 
 	}

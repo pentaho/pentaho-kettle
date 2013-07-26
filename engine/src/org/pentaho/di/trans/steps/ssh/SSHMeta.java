@@ -530,7 +530,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface
                 boolean keyFileExists=false;
                 try {
                 	keyFileExists=KettleVFS.fileExists(keyfilename);
-                }catch(Exception e){};
+                }catch(Exception e){ /* Ignore */ }
                 if(!keyFileExists)
                 {
                     error_message = BaseMessages.getString(PKG, "SSHMeta.CheckResult.PrivateKeyFileNotExist", keyfilename); 

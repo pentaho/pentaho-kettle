@@ -184,7 +184,9 @@ public class ReservoirSampling extends BaseStep
   public void run() {
     logBasic("Starting to run...");
     try {
-      while (processRow(m_meta, m_data) && !isStopped());
+      while (processRow(m_meta, m_data) && !isStopped()) {
+        // Wait
+      }
     } catch(Exception e) {
       logError("Unexpected error : "+e.toString());
       logError(Const.getStackTracker(e));

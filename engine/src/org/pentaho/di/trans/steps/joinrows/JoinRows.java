@@ -306,7 +306,9 @@ public class JoinRows extends BaseStep implements StepInterface
          //
          // Before we exit we need to make sure the 100 rows in the other streams are consumed though...
          //
-         while (!isStopped() && getRow()!=null);
+         while (!isStopped() && getRow()!=null) {
+           // Consume
+         }
        
          setOutputDone();
          return false;

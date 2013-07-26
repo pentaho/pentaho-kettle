@@ -85,28 +85,28 @@ public class LAFMessageHandler extends GlobalMessages {
     	String string = null;
 
     	// Then try the original package
-        try { string = findString(packageName, langChoice.getDefaultLocale(), key, parameters, resourceClass); } catch(MissingResourceException e) {};
+        try { string = findString(packageName, langChoice.getDefaultLocale(), key, parameters, resourceClass); } catch(MissingResourceException e){ /* Ignore */ }
         if (string!=null) {
         	//System.out.println("found: "+key+"/"+string+" in "+packageName+" lang "+langChoice.getDefaultLocale());
         	return string;
         }
         
         // Then try to find it in the i18n package, in the system messages of the preferred language.
-        try { string = findString(global, langChoice.getDefaultLocale(), key, parameters, resourceClass); } catch(MissingResourceException e) {};
+        try { string = findString(global, langChoice.getDefaultLocale(), key, parameters, resourceClass); } catch(MissingResourceException e){ /* Ignore */ }
         if (string!=null) {
         	//System.out.println("found: "+key+"/"+string+" in "+global+" lang "+langChoice.getDefaultLocale());
         	return string;
         }
         
         // Then try the failover locale, in the local package
-        try { string = findString(packageName, langChoice.getFailoverLocale(), key, parameters, resourceClass); } catch(MissingResourceException e) {};
+        try { string = findString(packageName, langChoice.getFailoverLocale(), key, parameters, resourceClass); } catch(MissingResourceException e){ /* Ignore */ }
         if (string!=null) {
         	//System.out.println("found: "+key+"/"+string+" in "+packageName+" lang "+langChoice.getFailoverLocale());
         	return string;
         }
         
         // Then try to find it in the i18n package, in the system messages of the failover language.
-        try { string = findString(global, langChoice.getFailoverLocale(), key, parameters, resourceClass); } catch(MissingResourceException e) {};
+        try { string = findString(global, langChoice.getFailoverLocale(), key, parameters, resourceClass); } catch(MissingResourceException e){ /* Ignore */ }
         //System.out.println("found: "+key+"/"+string+" in "+global+" lang "+langChoice.getFailoverLocale());
         return string; 
     }

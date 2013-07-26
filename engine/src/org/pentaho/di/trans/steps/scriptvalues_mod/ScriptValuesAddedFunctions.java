@@ -1522,7 +1522,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 	// Returns the actual ClassName
 	public String getClassName () {
 		return "SciptValuesAddedFunctions";
-	};
+	}
 	
 	// Evaluates the given ScriptFile
 	private static void checkAndLoadJSFile(Context actualContext, Scriptable eval_scope, String fileName) {
@@ -1546,10 +1546,10 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 	      try {
 	        if (inStream != null) inStream.close();
 	      } catch (Exception Signal) {
-	        /* nop */
-	      };
-	    };
-    };
+	        // Ignore
+	      }
+	    }
+    }
     
 	  
   	// Setting Variable

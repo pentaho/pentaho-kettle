@@ -1488,7 +1488,7 @@ public class ScriptAddedFunctions {
 	// Returns the actual ClassName
 	public String getClassName () {
 		return "SciptValuesAddedFunctions";
-	};
+	}
 	
 	// Evaluates the given ScriptFile
 	private static void checkAndLoadJSFile(ScriptEngine actualContext, Bindings eval_scope, String fileName) {
@@ -1517,10 +1517,10 @@ public class ScriptAddedFunctions {
 	      try {
 	        if (inStream != null) inStream.close();
 	      } catch (Exception Signal) {
-	        /* nop */
-	      };
-	    };
-    };
+	        // Ignore
+	      }
+	    }
+    }
     
 	  
   	// Setting Variable

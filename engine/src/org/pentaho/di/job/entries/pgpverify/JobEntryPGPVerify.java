@@ -233,7 +233,7 @@ public class JobEntryPGPVerify extends JobEntryBase implements Cloneable, JobEnt
 			try {
 				if(file!=null) file.close();
 				if(detachedSignature!=null) detachedSignature.close();
-			}catch(Exception e){};
+			}catch(Exception e){ /* Ignore */ }
 		}
 
 		return result;

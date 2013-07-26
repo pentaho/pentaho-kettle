@@ -750,7 +750,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 						if(folder!=null) {
 							try{
 								folder.close();
-							}catch(Exception e){};
+							}catch(Exception e){ /* Ignore */ }
 						}
 					}
 				}

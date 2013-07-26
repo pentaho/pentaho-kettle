@@ -1562,7 +1562,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 	    			mailConn.disconnect();
 	    			mailConn=null;
 	    		}
-			}catch(Exception e){};
+			}catch(Exception e){ /* Ignore */ }
 	    }
    private void conditionReceivedDate()
    {

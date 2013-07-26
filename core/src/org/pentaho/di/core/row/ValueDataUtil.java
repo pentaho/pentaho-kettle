@@ -290,8 +290,8 @@ public class ValueDataUtil {
         if (in != null)
           in.close();
       } catch (Exception e) {
+        // Ignore
       }
-      ;
     }
 
     return md5Hash;
@@ -319,8 +319,8 @@ public class ValueDataUtil {
           file.close();
           file = null;
         } catch (Exception e) {
+          // Ignore
         }
-      ;
     }
     return checksum;
   }
@@ -348,8 +348,8 @@ public class ValueDataUtil {
           file.close();
           file = null;
         } catch (Exception e) {
+          // Ignore
         }
-      ;
     }
     return checksum;
   }
@@ -437,8 +437,8 @@ public class ValueDataUtil {
           file.close();
         file = null;
       } catch (Exception e) {
+        // Ignore
       }
-      ;
     }
   }
 
@@ -1535,8 +1535,8 @@ public class ValueDataUtil {
         try {
           file.close();
         } catch (Exception e) {
+          // Ignore
         }
-      ;
     }
     return false;
   }

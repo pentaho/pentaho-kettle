@@ -775,7 +775,7 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 							try{
 								folder.close();
 								folder=null;
-							}catch(Exception e){};
+							}catch(Exception e){ /* Ignore */ }
 						}
 					}
 				}
@@ -1183,10 +1183,10 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 				finally 
 				{
 					if ( destination != null ) 
-					{try {destination.close();}catch (Exception ex ) {};}
+					{try {destination.close();}catch (Exception ex) { /* Ignore */ }}
 					if ( source != null ) 
 					{try  {source.close();}
-						catch (Exception ex ) {};
+						catch (Exception ex) { /* Ignore */ }
 					}
 				}
 				if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobSSH2PUT.Log.MovedFile",file.toString(),ftpDirectory));

@@ -155,5 +155,5 @@ public class KettleSftpFileSystemConfigBuilder extends KettleGenericFileSystemCo
     @Override
     public void showMessage(String arg0) {
     }
-  };
+  }
 }

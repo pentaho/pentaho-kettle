@@ -265,8 +265,8 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
           parentfolder.close();
           parentfolder = null;
         } catch (Exception ex) {
+          // Ignore
         }
-        ;
       }
     }
     return result;
@@ -301,8 +301,8 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
         try {
           originFile.close();
         } catch (IOException ex) {
+          // Ignore
         }
-        ;
       }
     }
 
@@ -636,7 +636,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
                     		if(fileObjectm!=null) {
                     			fileObjectm.close();
                     		}
-                    	}catch(Exception e){};
+                    	}catch(Exception e){ /* Ignore */ }
                     }
                     // File moved
                     if (log.isDebug())
@@ -666,8 +666,8 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
             fileObject.close();
             fileObject = null;
           } catch (IOException ex) {
+            // Ignore
           }
-          ;
         }
 
         try {
@@ -683,8 +683,8 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
             entry = null;
 
         } catch (IOException ex) {
+          // Ignore
         }
-        ;
       }
     } else {
       resultat = true;
@@ -769,8 +769,8 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
               moveToDirectory.close();
               moveToDirectory = null;
             } catch (Exception e) {
+              // Ignore
             }
-            ;
           }
         }
       }

@@ -272,7 +272,6 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
           // System.out.println(ex.toString());
           throw new KettleValueException(BaseMessages.getString(PKG, "ScriptValuesMod.Log.CouldNotAddDefaultFunctions"), ex); 
         }
-        ;
 
         // Adding some Constants to the JavaScript
         try {
@@ -286,7 +285,6 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
           // System.out.println("Exception Adding the Constants " + ex.toString());
           throw new KettleValueException(BaseMessages.getString(PKG, "ScriptValuesMod.Log.CouldNotAddDefaultConstants"), ex);
         }
-        ;
 
         try {
           // Checking for StartScript
@@ -750,7 +748,6 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
       // Eat this error, it's typically : "Calling Context.exit without previous Context.enter"
       // logError(BaseMessages.getString(PKG, "System.Log.UnexpectedError"), er);
     }
-    ;
 
     super.dispose(smi, sdi);
   }

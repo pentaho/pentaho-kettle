@@ -32,7 +32,7 @@ import org.pentaho.ui.xul.XulEventSourceAdapter;
 
 public class UISecurity extends XulEventSourceAdapter {
 
-  public static enum Mode { ADD, EDIT, EDIT_MEMBER  };
+  public static enum Mode { ADD, EDIT, EDIT_MEMBER  }
   
   private Type selectedDeck;
 

@@ -1851,8 +1851,8 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
         mailConn = null;
       }
     } catch (Exception e) {
-    }
-    ;
+      // Ignore
+    }    
   }
 
   private void conditionReceivedDate() {

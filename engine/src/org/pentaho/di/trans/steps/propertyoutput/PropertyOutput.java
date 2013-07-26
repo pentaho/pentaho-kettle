@@ -259,7 +259,7 @@ public class PropertyOutput extends BaseStep implements StepInterface
 	         	{
 	         		try  {
 	         			parentfolder.close();
-	         		}catch ( Exception ex ) {};
+	         		}catch ( Exception ex) { /* Ignore */ }
 	         	}
 		 }
 		} 	
@@ -293,13 +293,13 @@ public class PropertyOutput extends BaseStep implements StepInterface
         
         			propsFile.close();
         			propsFile=null;
-        		}catch(Exception e){};
+        		}catch(Exception e){ /* Ignore */ }
         	}
         	if(data.file!=null) {
         		try{
         			data.file.close();
         			data.file=null;
-        		}catch(Exception e){};
+        		}catch(Exception e){ /* Ignore */ }
 	     	}
         	if(data.pro!=null) data.pro=null;
         }

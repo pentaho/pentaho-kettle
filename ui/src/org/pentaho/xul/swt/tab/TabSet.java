@@ -122,7 +122,9 @@ public class TabSet implements SelectionListener, CTabFolder2Listener {
 	 * @param item the tab item to remove
 	 */
 	private void removeItemFromHistory(TabItem item) {
-		while (lastUsedTabs.remove(item));	
+		while (lastUsedTabs.remove(item)) {
+		  // Remove
+		}
 	}
 
 

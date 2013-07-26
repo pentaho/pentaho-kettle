@@ -213,7 +213,7 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
             		     folderObject.close();
             		     folderObject=null;
             		}
-            		catch ( IOException ex ) {};
+            		catch ( IOException ex) { /* Ignore */ }
             	}
             }			
 		}

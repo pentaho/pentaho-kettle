@@ -30,7 +30,7 @@ public class KettleClientEnvironment {
 
 	private static Boolean initialized;
 	
-	public enum ClientType {SPOON, PAN, KITCHEN, CARTE, DI_SERVER};
+	public enum ClientType {SPOON, PAN, KITCHEN, CARTE, DI_SERVER}
 	
 	private ClientType client;
 	

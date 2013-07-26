@@ -563,7 +563,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
     
     public void resetStepIoMeta() {
         // Do nothing, don't reset as there is no need to do this.
-    };
+    }
 
     /**
      * For compatibility, wraps around the standard step IO metadata

@@ -471,7 +471,7 @@ public class JobEntryPGPEncryptFiles extends JobEntryBase implements Cloneable, 
 					 if ( folder != null ){
 							try {
 								folder.close();
-							}catch ( IOException ex ) {};
+							}catch ( IOException ex) { /* Ignore */ }
 						} 
 				 }
 			}
@@ -716,7 +716,7 @@ public class JobEntryPGPEncryptFiles extends JobEntryBase implements Cloneable, 
 	                                    	
 	                                    	finally {
 	                                			if ( fileObject != null ){
-	                                				try  {fileObject.close();fileObject=null;} catch ( IOException ex ) {};
+	                                				try  {fileObject.close();fileObject=null;} catch ( IOException ex) { /* Ignore */ }
 	                                			}
 	                                		}
 	                                    	return true;
@@ -772,25 +772,25 @@ public class JobEntryPGPEncryptFiles extends JobEntryBase implements Cloneable, 
 				try  {
 					sourcefilefolder.close();
 				}
-				catch ( IOException ex ) {};
+				catch ( IOException ex) { /* Ignore */ }
 			}
 			if ( destinationfilefolder != null ){
 				try  {
 					 destinationfilefolder.close();
 				}
-				catch ( IOException ex ) {};
+				catch ( IOException ex) { /* Ignore */ }
 			}
 			if ( Currentfile != null ){
 				try {
 					Currentfile.close();
 				}
-				catch ( IOException ex ) {};
+				catch ( IOException ex) { /* Ignore */ }
 			}
 			if ( movetofolderfolder != null ){
 				try  {
 					movetofolderfolder.close();
 				}
-				catch ( IOException ex ) {};
+				catch ( IOException ex) { /* Ignore */ }
 			}
 		}
 		return entrystatus;
@@ -929,7 +929,7 @@ public class JobEntryPGPEncryptFiles extends JobEntryBase implements Cloneable, 
 				try  {
 					destinationfile.close();
 				}
-				catch ( IOException ex ) {};
+				catch ( IOException ex) { /* Ignore */ }
 			}
 		}
 		return retval;
@@ -1033,7 +1033,7 @@ public class JobEntryPGPEncryptFiles extends JobEntryBase implements Cloneable, 
 				file_name.close();
 				
 			}
-			catch ( IOException ex ) {};
+			catch ( IOException ex) { /* Ignore */ }
 		}
 	
 	}
@@ -1114,7 +1114,7 @@ public class JobEntryPGPEncryptFiles extends JobEntryBase implements Cloneable, 
          		try  {
          			folder.close();
          		}
-         		catch (Exception ex ) {};
+         		catch (Exception ex) { /* Ignore */ }
          	}
          }
 		 return false;

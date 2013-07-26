@@ -104,7 +104,7 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
 
   private TransHistoryModel[] models;
   
-  private enum Mode { INITIAL, NEXT_BATCH, ALL };
+  private enum Mode { INITIAL, NEXT_BATCH, ALL }
 
   /**
    * @param spoon

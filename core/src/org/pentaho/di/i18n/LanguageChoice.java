@@ -137,7 +137,7 @@ public class LanguageChoice
         }
         catch(IOException e)
         {
-            ;
+          // Ignore
         }
     }
     

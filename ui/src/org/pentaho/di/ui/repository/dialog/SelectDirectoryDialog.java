@@ -86,7 +86,7 @@ public class SelectDirectoryDialog extends Dialog
 	private RepositoryDirectoryInterface	repositoryTree;
 
 	private boolean readOnly;
-;
+
     public SelectDirectoryDialog(Shell parent, int style, Repository rep)
     {
         super(parent, style);

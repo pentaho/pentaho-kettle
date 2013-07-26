@@ -220,8 +220,8 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
             fileObject=null;
           } catch (IOException ex)
           {
+            // Ignore
           }
-          ;
         }
       }
     } else

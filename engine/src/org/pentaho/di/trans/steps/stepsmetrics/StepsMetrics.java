@@ -161,7 +161,9 @@ public class StepsMetrics extends BaseStep implements StepInterface
     		  if (data.continueLoop) {
 		       	try {
 					Thread.sleep(200);
-				   } catch (Exception d){};
+				   } catch (Exception d){
+				     // Ignore
+				   }
 	    	  } 
 		}
 	      

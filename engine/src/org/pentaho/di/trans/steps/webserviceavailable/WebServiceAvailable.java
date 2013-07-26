@@ -123,7 +123,7 @@ public class WebServiceAvailable extends BaseStep implements StepInterface
         		if(in!=null){
             		try{
             			in.close();
-            		}catch(Exception e){};
+            		}catch(Exception e){ /* Ignore */ }
             	}
         	}
 	        

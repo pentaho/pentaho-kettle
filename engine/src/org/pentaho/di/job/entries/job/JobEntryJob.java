@@ -925,11 +925,12 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                      // come back on-line
             }
 
+            // sleep for 1 second
             try {
               Thread.sleep(1000);
             } catch (InterruptedException e) {
+              // Ignore
             }
-            ; // sleep for 10 seconds
           }
 
           if (!waitingToFinish) {
@@ -1041,8 +1042,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
           parentfolder.close();
           parentfolder = null;
         } catch (Exception ex) {
+          // Ignore
         }
-        ;
       }
     }
 

@@ -111,7 +111,7 @@ public class XsltData extends BaseStepData implements StepDataInterface
 	  		try {
 	  			if(file!=null) file.close();
 	  			if(xslInputStream!=null) xslInputStream.close();
-	  		}catch(Exception e){};
+	  		}catch(Exception e){ /* Ignore */ }
 	  	}
 	}
 

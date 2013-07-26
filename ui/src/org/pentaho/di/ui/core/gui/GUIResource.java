@@ -722,8 +722,7 @@ public class GUIResource {
     imageNoteSmall = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Note_image")); //, "ui/images/noteSmall.png"
     imageProcedure = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ProcedureSmall_image")); //, "ui/images/proc.png"
     imageExploreDbSmall = ImageUtil.makeImageTransparent(display, ImageUtil.getImageAsResource(display,
-        BasePropertyHandler.getProperty("ExploreDbSmall_image")), new RGB(255, 255, 255));
-    ; //, "ui/images/exploreDbSmall.png"
+        BasePropertyHandler.getProperty("ExploreDbSmall_image")), new RGB(255, 255, 255));   //, "ui/images/exploreDbSmall.png"
 
     imageCluster = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Cluster_image")); // , "ui/images/cluster.png"
     imageSlave = ImageUtil.makeImageTransparent(display,

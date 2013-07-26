@@ -682,7 +682,7 @@ public class KettleFileRepository extends AbstractRepository {
 		}
 	}
 
-	public ObjectId[] getTransformationPartitionSchemaIDs(ObjectId id_transformation) throws KettleException {return new ObjectId[] {}; };
+	public ObjectId[] getTransformationPartitionSchemaIDs(ObjectId id_transformation) throws KettleException {return new ObjectId[] {}; }
 	public String[] getTransformationsUsingCluster(ObjectId id_cluster) throws KettleException { return new String[] {}; }
 	public String[] getTransformationsUsingDatabase(ObjectId id_database) throws KettleException { return new String[] {}; }
 	public String[] getTransformationsUsingPartitionSchema(ObjectId id_partition_schema) throws KettleException { return new String[] {}; }

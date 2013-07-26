@@ -197,7 +197,7 @@ public class FormInput<C extends Control> extends Object /*implements ConstantsI
 	    Method method = control.getClass( ).getDeclaredMethod( "setText", params );
 	    method.invoke( control, text );
 	} catch ( Exception ex ) {
-	    ; // oops
+    // Ignore
 	}
     }
 
@@ -214,7 +214,7 @@ public class FormInput<C extends Control> extends Object /*implements ConstantsI
 	    Method method = control.getClass( ).getDeclaredMethod( "getText" );
 	    text = (String)method.invoke( control );
 	} catch ( Exception ex ) {
-	    ; // oops
+    // Ignore
 	}
 	
 	return text;

@@ -1282,7 +1282,7 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 		} finally {
 			if(connection!=null) {
 				// Disconnect ...
-				try {connection.close();}catch(Exception e){};
+				try {connection.close();}catch(Exception e){ /* Ignore */ }
 			}
 		}
 	}
@@ -1552,7 +1552,7 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 			  if(connection!=null) {
 				  try {
 					  connection.close();
-				  }catch(Exception e){};
+				  }catch(Exception e){ /* Ignore */ }
 			  }
 		  }
 	}
@@ -1590,7 +1590,7 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 			  if(connection!=null) {
 				  try {
 					  connection.close();
-				  }catch(Exception e){};
+				  }catch(Exception e){ /* Ignore */ }
 			  }
 		  }
 		  

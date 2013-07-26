@@ -1200,7 +1200,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
   }
   
   public void mouseExit(MouseEvent event) {
-  };
+  }
 
 	public void mouseScrolled(MouseEvent e) {
 		/*
@@ -1778,7 +1778,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
             Action action = new Action(referencedObject, Action.AS_DROP_DOWN_MENU) {
               public void run() {
                 loadReferencedObject(jobEntry, index);
-              };
+              }
             };            
             JfaceMenuitem child = new JfaceMenuitem(null, launchMenu, xulDomContainer, referencedObject, i, action);
             child.setLabel(referencedObject);

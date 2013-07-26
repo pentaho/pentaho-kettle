@@ -504,17 +504,17 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 			if ( fileObject != null ){
 				try{
 					fileObject.close();
-				}catch ( IOException ex ) {};
+				}catch ( IOException ex) { /* Ignore */ }
 			}
 			if ( targetdir != null ){
 				try{
 					targetdir.close();
-				}catch ( IOException ex ) {};
+				}catch ( IOException ex) { /* Ignore */ }
 			}
 			if ( movetodir != null ){
 				try{
 					movetodir.close();
-				}catch ( IOException ex ) {};
+				}catch ( IOException ex) { /* Ignore */ }
 			}	
 		}
 		
@@ -605,7 +605,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 			{
 				try {
 					fileObject.close();
-				}catch ( IOException ex ) {};
+				}catch ( IOException ex) { /* Ignore */ }
 			}
 		}
 		return retval;
@@ -792,7 +792,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
   								  // Change last modification date
   								  newFileObject.getContent().setLastModifiedTime(item.getContent().getLastModifiedTime());
   							  }
-  						 }catch(Exception e){};// ignore this
+  						 }catch(Exception e){ /* Ignore */ }// ignore this
   					  }
   					  // Close file object
   					  // close() does not release resources!
@@ -846,7 +846,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 						if ( destFile != null ){
 							try{
 								destFile.close();
-							}catch ( IOException ex ) {};
+							}catch ( IOException ex) { /* Ignore */ }
 						}
 					}
 			 }

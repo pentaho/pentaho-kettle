@@ -379,7 +379,7 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
         String format = input.getFieldFormat()[i];
         String length = input.getFieldLength()[i] < 0 ? "" : ("" + input.getFieldLength()[i]);
         String prec = input.getFieldPrecision()[i] < 0 ? "" : ("" + input.getFieldPrecision()[i]);
-        ;
+        
         String curr = input.getCurrency()[i];
         String group = input.getGroup()[i];
         String decim = input.getDecimal()[i];

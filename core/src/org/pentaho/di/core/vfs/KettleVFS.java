@@ -237,7 +237,7 @@ public class KettleVFS
     		throw new KettleFileException(e);
     	}finally {
     		if(fileObject!=null) {
-    			try { fileObject.close();}catch(Exception e){};
+    			try { fileObject.close();}catch(Exception e){ /* Ignore */ }
     		}
     	}
     }

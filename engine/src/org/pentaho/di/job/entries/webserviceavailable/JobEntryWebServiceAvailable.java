@@ -191,7 +191,7 @@ public class JobEntryWebServiceAvailable extends JobEntryBase implements Cloneab
             	{
             		try{
             			in.close();
-            		}catch(Exception e){};
+            		}catch(Exception e){ /* Ignore */ }
             	}
             }
 		}else{

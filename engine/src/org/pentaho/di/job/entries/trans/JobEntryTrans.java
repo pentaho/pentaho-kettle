@@ -958,11 +958,12 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
               break; // Stop looking too, chances are too low the server will come back on-line
             }
 
+            // sleep for 2 seconds
             try {
               Thread.sleep(2000);
             } catch (InterruptedException e) {
+              // Ignore
             }
-            ; // sleep for 2 seconds
           }
 
           if (parentJob.isStopped()) {
@@ -1141,8 +1142,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
           parentfolder.close();
           parentfolder = null;
         } catch (Exception ex) {
+          // Ignore
         }
-        ;
       }
     }
 

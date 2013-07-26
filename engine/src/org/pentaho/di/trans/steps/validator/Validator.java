@@ -62,7 +62,7 @@ public class Validator extends BaseStep implements StepInterface
         public int indexA;
         public int indexB;
         public int indexC;
-    };    
+    }   
 
 	private ValidatorMeta meta;
 	private ValidatorData data;

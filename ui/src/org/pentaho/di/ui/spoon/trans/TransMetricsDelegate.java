@@ -185,7 +185,7 @@ public class TransMetricsDelegate extends SpoonDelegate {
 
     canvas.addPaintListener(new PaintListener() {
 
-      public void paintControl(final PaintEvent event) {;
+      public void paintControl(final PaintEvent event) {
         if (transGraph.trans!=null && transGraph.trans.isFinished()) {
           refreshImage(event.gc);
 

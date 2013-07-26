@@ -233,7 +233,7 @@ public class WMIInputMeta extends BaseStepMeta implements StepMetaInterface
 			// don't forget close connection
 			try {
 				if(query!=null) query.close();
-			}catch(Exception e){};
+			}catch(Exception e){ /* Ignore */ }
 		}
 	}
 

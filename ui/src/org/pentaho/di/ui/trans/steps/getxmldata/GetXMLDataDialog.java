@@ -1602,7 +1602,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
         }finally {
         	try {
         		if(is!=null) is.close();
-        	}catch(Exception e){};
+        	}catch(Exception e){ /* Ignore */ }
         }
 	}
 	

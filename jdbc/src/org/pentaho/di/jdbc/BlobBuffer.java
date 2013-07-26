@@ -1215,9 +1215,10 @@ public class BlobBuffer {
                     int p;
                     for (p = 0;
                          p < pattern.length && buffer[i + p] == pattern[p];
-                         p++);
-                    if (p == pattern.length) {
+                         p++) {
+                      if (p == pattern.length) {
                         return i + 1;
+                      }
                     }
                 }
             } else {
@@ -1226,10 +1227,11 @@ public class BlobBuffer {
                     int p;
                     for (p = 0;
                          p < pattern.length && read(i + p) == (pattern[p] & 0xFF);
-                         p++);
-                    if (p == pattern.length) {
-                        close();
-                        return i + 1;
+                         p++) {
+                      if (p == pattern.length) {
+                          close();
+                          return i + 1;
+                      }
                     }
                 }
                 close();

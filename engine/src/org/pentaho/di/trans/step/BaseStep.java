@@ -1168,8 +1168,9 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
             // Loop until we find room in the target rowset
             //
-            while (!rs.putRow(rowMeta, row) && !isStopped())
-              ;
+            while (!rs.putRow(rowMeta, row) && !isStopped()) {
+              // Wait
+            }
             incrementLinesWritten();
 
             // Now determine the next output rowset!
@@ -1204,8 +1205,9 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
             try {
               // Loop until we find room in the target rowset
               //
-              while (!rs.putRow(rowMeta, rowMeta.cloneRow(row)) && !isStopped())
-                ;
+              while (!rs.putRow(rowMeta, rowMeta.cloneRow(row)) && !isStopped()) {
+                // Wait
+              }
               incrementLinesWritten();
             } catch (KettleValueException e) {
               throw new KettleStepException("Unable to clone row while copying rows to multiple target steps", e);
@@ -1215,8 +1217,9 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
           // set row in first output rowset
           //
           RowSet rs = outputRowSets.get(0);
-          while (!rs.putRow(rowMeta, row) && !isStopped())
-            ;
+          while (!rs.putRow(rowMeta, row) && !isStopped()) {
+            // Wait
+          }
           incrementLinesWritten();
         }
       }
@@ -1322,8 +1325,9 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
         // logBasic("Putting row to partition #"+partitionNr);
 
-        while (!selectedRowSet.putRow(rowMeta, row) && !isStopped())
-          ;
+        while (!selectedRowSet.putRow(rowMeta, row) && !isStopped()) {
+          // Wait
+        }
         incrementLinesWritten();
 
         if (log.isRowLevel())
@@ -1339,8 +1343,9 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
         // 
         for (int r = 0; r < outputRowSets.size(); r++) {
           RowSet rowSet = outputRowSets.get(r);
-          while (!rowSet.putRow(rowMeta, row) && !isStopped())
-            ;
+          while (!rowSet.putRow(rowMeta, row) && !isStopped()) {
+            // Wait
+          }
         }
       }
         break;
@@ -1400,8 +1405,9 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
     // Don't distribute or anything, only go to this rowset!
     //
-    while (!rowSet.putRow(rowMeta, row) && !isStopped())
-      ;
+    while (!rowSet.putRow(rowMeta, row) && !isStopped()) {
+      // Wait
+    }
     incrementLinesWritten();
   }
 
@@ -1451,8 +1457,9 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     }
 
     if (errorRowSet != null) {
-      while (!errorRowSet.putRow(errorRowMeta, errorRowData) && !isStopped())
-        ;
+      while (!errorRowSet.putRow(errorRowMeta, errorRowData) && !isStopped()) {
+        // Wait
+      }
       incrementLinesRejected();
     }
 

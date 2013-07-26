@@ -91,7 +91,7 @@ public class JsonReader {
 			try {
 				if(is!=null) is.close();
 				if(isr!=null) isr.close();
-			}catch(Exception e){};
+			}catch(Exception e){ /* Ignore */ }
 		}
 	}
 	private ScriptEngine getEngine() {

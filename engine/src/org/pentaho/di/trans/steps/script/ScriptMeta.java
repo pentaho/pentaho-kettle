@@ -95,7 +95,7 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface
 		super(); // allocate BaseStepMeta
 		try{
 			parseXmlForAdditionalClasses();
-		}catch(Exception e){};
+		}catch(Exception e){ /* Ignore */ }
 	}
 	
     /**
@@ -529,7 +529,7 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface
 				error_message="Couldn't add Transformation Constants! Error:"+Const.CR+ex.toString(); 
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
-			};
+			}
 
 			try{
 				ScriptDummy dummyStep = new ScriptDummy(prev, transMeta.getStepFields(stepMeta));
@@ -580,7 +580,7 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface
 				error_message="Couldn't process Start Script! Error:"+Const.CR+e.toString(); 
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);				
-			};
+			}
 			
 			try{
 				jsscript = ((Compilable) jscx).compile(strActiveScript);
@@ -632,7 +632,7 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface
 					error_message="Couldn't process End Script! Error:"+Const.CR+e.toString(); 
 					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 					remarks.add(cr);				
-				};
+				}
 			}catch(Exception e){
 				//Context.exit(); TODO AKRETION NOT SURE
 				error_message = BaseMessages.getString(PKG, "ScriptMeta.CheckResult.CouldNotCompileScript")+Const.CR+e.toString(); 

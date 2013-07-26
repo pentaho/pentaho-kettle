@@ -594,7 +594,7 @@ public class SalesforceDeleteDialog extends BaseStepDialog implements StepDialog
 			msgError=e.getMessage();
 		} finally{
 			if(connection!=null) {
-				try {connection.close();}catch(Exception e){};
+				try {connection.close();}catch(Exception e){ /* Ignore */ }
 			}
 		}
 		
@@ -727,7 +727,7 @@ public class SalesforceDeleteDialog extends BaseStepDialog implements StepDialog
 					getModulesListError = true;
 			  } finally{
 				  if(connection!=null) {
-						try {connection.close();}catch(Exception e){};
+						try {connection.close();}catch(Exception e){ /* Ignore */ }
 					}
 		 	 }
 		  }

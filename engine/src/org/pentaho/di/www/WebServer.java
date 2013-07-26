@@ -118,7 +118,6 @@ public class WebServer {
     
     Constraint constraint = new Constraint();
     constraint.setName(Constraint.__BASIC_AUTH);
-    ;
     constraint.setRoles(new String[] { Constraint.ANY_ROLE });
     constraint.setAuthenticate(true);
 

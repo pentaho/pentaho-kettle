@@ -204,14 +204,12 @@ public class TableCompare extends BaseStep implements StepInterface {
 			Object[] errorRowData = constructErrorRow(rowMeta, r, null, null, null);
 			putError(data.errorRowMeta, errorRowData, 1, BaseMessages.getString(PKG, "TableCompare.Exception.NoReferenceTableDefined"), null, "TAC008");
 			nrErrors++;
-			;
 		}
 
 		if (Const.isEmpty(compareTable)) {
 			Object[] errorRowData = constructErrorRow(rowMeta, r, null, null, null);
 			putError(data.errorRowMeta, errorRowData, 1, BaseMessages.getString(PKG, "TableCompare.Exception.NoCompareTableDefined"), null, "TAC008");
 			nrErrors++;
-			;
 		}
 
 		String refSchemaTable = meta.getReferenceConnection().getQuotedSchemaTableCombination(referenceSchema, referenceTable);
@@ -221,7 +219,6 @@ public class TableCompare extends BaseStep implements StepInterface {
 			Object[] errorRowData = constructErrorRow(rowMeta, r, null, null, null);
 			putError(data.errorRowMeta, errorRowData, 1, BaseMessages.getString(PKG, "TableCompare.Exception.NoKeyFieldsDefined", refSchemaTable, cmpSchemaTable), null, "TAC007");
 			nrErrors++;
-			;
 		}
 		
 		// If something is wrong here, we can't continue...

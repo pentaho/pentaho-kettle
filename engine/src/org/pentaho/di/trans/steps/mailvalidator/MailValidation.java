@@ -272,20 +272,20 @@ public class MailValidation {
 					try {
 						rdr.close();
 					} catch (Exception e) {
+					  // ignore this
 					}
-				;// ignore this
 				if (wtr != null)
 					try {
 						wtr.close();
 					} catch (Exception e) {
+					  // ignore this
 					}
-				;// ignore this
 				if (skt != null)
 					try {
 						skt.close();
 					} catch (Exception e) {
+					  // ignore this
 					}
-				; // ignore this
 
 				if (valid) {
 					result.setValide(true);

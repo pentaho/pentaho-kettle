@@ -403,13 +403,14 @@ public class YamlInput extends BaseStep implements StepInterface {
       try {
         data.yaml.close();
       } catch (Exception e) {
+        // Ignore
       }
-      ;
     }
     if (data.file != null) {
       try {
         data.file.close();
       } catch (Exception e) {
+        // Ignore
       }
     }
     super.dispose(smi, sdi);

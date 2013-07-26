@@ -296,7 +296,7 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
 				logError(BaseMessages.getString(PKG, "JobEntryColumnsExist.Error.UnexpectedError",dbe.getMessage()));
 			}finally
 			{
-				if(db!=null) try{db.disconnect();}catch(Exception e){};
+				if(db!=null) try{db.disconnect();}catch(Exception e){ /* Ignore */ }
 			}
 		}
 		else

@@ -93,7 +93,7 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
   private Text logText;
   private TableView tableView; 
   
-  public enum PreviewMode { FIRST, LAST, OFF, };
+  public enum PreviewMode { FIRST, LAST, OFF, }
   
   private PreviewMode previewMode;
   
@@ -499,7 +499,7 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
             }
           }
         }
-      };
+      }
     });
   }
 

@@ -30,12 +30,12 @@ public class LifeEventInfo
 	public enum Hint
 	{
 		DISPLAY_MSG_BOX, DISPLAY_BROWSER;
-	};
+	}
 	
 	public enum State
 	{
 		SUCCESS,FAIL,HALTED;
-	};
+	}
 
 	private String message;
 	

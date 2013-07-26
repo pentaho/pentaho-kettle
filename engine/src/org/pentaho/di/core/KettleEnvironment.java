@@ -140,7 +140,7 @@ public class KettleEnvironment {
           System.err.println(BaseMessages.getString(PKG, "LifecycleSupport.ErrorInvokingKettleEnvironmentShutdownListeners"));
           t.printStackTrace();
         }
-      };
+      }
     });
 
   }

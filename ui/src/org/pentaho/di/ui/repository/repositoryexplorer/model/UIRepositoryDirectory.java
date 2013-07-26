@@ -111,7 +111,7 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
               }
             }
           }
-        };
+        }
       };
     }
     for (UIRepositoryObject child : getChildren()) {

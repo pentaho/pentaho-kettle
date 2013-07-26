@@ -130,7 +130,7 @@ public class SymmetricCrypto {
 			  if(file!=null) {
 				  try {
 					  file.close();
-				  }catch(Exception e){};
+				  }catch(Exception e){ /* Ignore */ }
 			  }
 		  }  
 	   }

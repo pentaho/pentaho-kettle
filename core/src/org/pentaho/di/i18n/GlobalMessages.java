@@ -273,19 +273,19 @@ public class GlobalMessages extends AbstractMessageHandler
         String string=null;
         
         // First try the standard locale, in the local package
-        try { string = findString(packageName, langChoice.getDefaultLocale(), key, parameters, resourceClass); } catch(MissingResourceException e) {};
+        try { string = findString(packageName, langChoice.getDefaultLocale(), key, parameters, resourceClass); } catch(MissingResourceException e){ /* Ignore */ }
         if (string!=null) return string;
         
         // Then try to find it in the i18n package, in the system messages of the preferred language.
-        try { string = findString(SYSTEM_BUNDLE_PACKAGE, langChoice.getDefaultLocale(), key, parameters, resourceClass); } catch(MissingResourceException e) {};
+        try { string = findString(SYSTEM_BUNDLE_PACKAGE, langChoice.getDefaultLocale(), key, parameters, resourceClass); } catch(MissingResourceException e){ /* Ignore */ }
         if (string!=null) return string;
         
         // Then try the failover locale, in the local package
-        try { string = findString(packageName, langChoice.getFailoverLocale(), key, parameters, resourceClass); } catch(MissingResourceException e) {};
+        try { string = findString(packageName, langChoice.getFailoverLocale(), key, parameters, resourceClass); } catch(MissingResourceException e){ /* Ignore */ }
         if (string!=null) return string;
         
         // Then try to find it in the i18n package, in the system messages of the failover language.
-        try { string = findString(SYSTEM_BUNDLE_PACKAGE, langChoice.getFailoverLocale(), key, parameters, resourceClass); } catch(MissingResourceException e) {};
+        try { string = findString(SYSTEM_BUNDLE_PACKAGE, langChoice.getFailoverLocale(), key, parameters, resourceClass); } catch(MissingResourceException e){ /* Ignore */ }
         if (string!=null) return string;
         
         string = "!"+key+"!";

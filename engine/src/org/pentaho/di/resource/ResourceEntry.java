@@ -25,7 +25,7 @@ package org.pentaho.di.resource;
 import org.pentaho.di.core.util.StringUtil;
 
 public class ResourceEntry {
-	public enum ResourceType { FILE, CONNECTION, SERVER, URL, DATABASENAME, ACTIONFILE, OTHER };
+	public enum ResourceType { FILE, CONNECTION, SERVER, URL, DATABASENAME, ACTIONFILE, OTHER }
 	
 	private String resource;
 	private ResourceType resourcetype;

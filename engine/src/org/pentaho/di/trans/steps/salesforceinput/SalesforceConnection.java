@@ -413,7 +413,7 @@ public class SalesforceConnection {
 				if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.ConnectionClosed"));
 			}catch(Exception e){
 				throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.Error.ClosingConnection"),e);
-			};
+			}
 	 }
 	 public int getQueryResultSize() {
 		 return this.queryResultSize;

@@ -290,8 +290,8 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
           filefolder.close();
           filefolder=null;
         } catch (IOException ex) {
+          // Ignore
         }
-        ;
       }
     }
 
@@ -381,7 +381,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 						file_name.close();
 						file_name=null;
 					}
-					catch ( IOException ex ) {};
+					catch ( IOException ex) { /* Ignore */ }
 				}
 				
 				

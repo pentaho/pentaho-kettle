@@ -93,7 +93,7 @@ public class SessionResult {
 			try {
 				if(isOut!=null) isOut.close();
 				if(isErr!=null) isErr.close();
-			}catch(Exception e){};
+			}catch(Exception e){ /* Ignore */ }
 		}
 		
 	}
@@ -119,7 +119,7 @@ public class SessionResult {
 		}finally {
 			try {
 			if(br!=null) br.close();
-			}catch(Exception e){};
+			}catch(Exception e){ /* Ignore */ }
 		}
 	}
 }

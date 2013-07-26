@@ -75,4 +75,4 @@ public class Schema
 	{
 		this.items = items;
 	}
-};
+}

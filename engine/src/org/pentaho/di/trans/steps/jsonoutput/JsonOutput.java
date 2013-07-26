@@ -327,7 +327,7 @@ public class JsonOutput extends BaseStep implements StepInterface
          	if ( parentfolder != null ){
          		try  {
          			parentfolder.close();
-         		}catch ( Exception ex ) {};
+         		}catch ( Exception ex) { /* Ignore */ }
          	}
          }
     }

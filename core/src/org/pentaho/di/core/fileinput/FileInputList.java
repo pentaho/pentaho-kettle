@@ -411,7 +411,9 @@ public class FileInputList
 	        {
 	        	log.logError(Const.getStackTracker(e));
 	        }finally{
-	        	try{if(directoryFileObject!=null) directoryFileObject.close();directoryFileObject=null;}catch(Exception e){};
+	        	try{if(directoryFileObject!=null) directoryFileObject.close();directoryFileObject=null;}catch(Exception e) {
+	        	  // Ignore
+	        	}
 	        }
 	    }
 

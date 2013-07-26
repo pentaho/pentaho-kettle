@@ -127,7 +127,7 @@ public class SwitchCase extends BaseStep implements StepInterface
 	        		data.defaultRowSet = findOutputRowSet(meta.getDefaultTargetStep().getName());
 	        	} else {
 	        		data.defaultRowSet = null;
-	        	};
+	        	}
         	}
         	catch(Exception e) {
         	    throw new KettleException(e);

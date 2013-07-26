@@ -833,7 +833,7 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface
     	}catch(Exception e) {
     		errMsg=e.getMessage();
     	}finally {
-    		if(conn!=null) try { conn.close();}catch(Exception e){};
+    		if(conn!=null) try { conn.close();}catch(Exception e){ /* Ignore */ }
     	}
     	if(testOK) {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );

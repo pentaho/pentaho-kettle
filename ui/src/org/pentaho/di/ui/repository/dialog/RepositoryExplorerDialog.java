@@ -1591,7 +1591,7 @@ public class RepositoryExplorerDialog extends Dialog
 						if (e.keyCode   == SWT.ESC)   
 						{ 
 							text.dispose(); 
-						};
+						}
 						// ENTER --> Save changes...
 						if (e.character == SWT.CR )
 						{
@@ -1803,7 +1803,7 @@ public class RepositoryExplorerDialog extends Dialog
 						if (e.keyCode   == SWT.ESC)   
 						{ 
 							text.dispose(); 
-						};
+						}
 						// ENTER --> Save changes...
 						if (e.character == SWT.CR )
 						{
@@ -1902,7 +1902,7 @@ public class RepositoryExplorerDialog extends Dialog
 					if (e.keyCode   == SWT.ESC)   
 					{ 
 						text.dispose(); 
-					};
+					}
 					// ENTER --> Save changes...
 					if (e.character == SWT.CR )
 					{
@@ -2077,7 +2077,7 @@ public class RepositoryExplorerDialog extends Dialog
 						if (e.keyCode   == SWT.ESC)   
 						{ 
 							text.dispose(); 
-						};
+						}
 						// ENTER --> Save changes...
 						if (e.character == SWT.CR )
 						{
@@ -2262,7 +2262,7 @@ public class RepositoryExplorerDialog extends Dialog
 						if (e.keyCode   == SWT.ESC)   
 						{ 
 							text.dispose(); 
-						};
+						}
 						// ENTER --> Save changes...
 						if (e.character == SWT.CR )
 						{
@@ -2366,7 +2366,7 @@ public class RepositoryExplorerDialog extends Dialog
 					if (e.keyCode   == SWT.ESC)   
 					{ 
 						text.dispose(); 
-					};
+					}
 					// ENTER --> Save changes...
 					if (e.character == SWT.CR )
 					{

@@ -464,7 +464,7 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
 		        		  incrementErrors();
 		        		  logError( BaseMessages.getString(PKG, "JobEvalFilesMetrics.Error.GettingFileFromResultFilenames", file.toString(), e.toString()));
 		        	  }finally {
-		        		  if(file!=null) { try{file.close();}catch(Exception e){};};
+		        		  if(file!=null) { try{file.close();}catch(Exception e){ /* Ignore */ }}
 		        	  }
 			        }
 				}
@@ -668,7 +668,7 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
                                  		return false;
                                  	} finally {
                              			if ( fileObject != null ) {
-                             				try  {fileObject.close();} catch ( IOException ex ) {};
+                             				try  {fileObject.close();} catch ( IOException ex) { /* Ignore */ }
                              			}
                              		}
                                  	return true;
@@ -712,12 +712,12 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
 			if ( sourcefilefolder != null ){
 				try{
 					sourcefilefolder.close();
-				}catch ( IOException ex ) {};
+				}catch ( IOException ex) { /* Ignore */ }
 
 			} if ( CurrentFile != null ){
 				try {
 					CurrentFile.close();
-				}catch ( IOException ex ) {};
+				}catch ( IOException ex) { /* Ignore */ }
 			}
 		}
 	}

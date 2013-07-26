@@ -631,7 +631,7 @@ public class MailConnection {
 			if(os!=null) {
 				try{
 					os.close();os=null;
-				}catch(Exception e){};
+				}catch(Exception e){ /* Ignore */ }
 			}
 		}
 	}
@@ -730,9 +730,9 @@ public class MailConnection {
    			throw new KettleException(e);
    		}finally {
    			try {
-   				if(bos!=null) { bos.flush();bos.close();};
-   				if(bis!=null) {bis.close();bis=null;};
-   				file=null;}catch(Exception e){};
+   				if(bos!=null) { bos.flush();bos.close();}
+   				if(bis!=null) {bis.close();bis=null;}
+   				file=null;}catch(Exception e){ /* Ignore */ }
    		}
    	}
 	private boolean isWildcardMatch(String filename, Pattern pattern) {
@@ -941,7 +941,7 @@ public class MailConnection {
     	} finally {
     		try {
     			if(dfolder!=null) dfolder.close(false);
-    		}catch(Exception e){};
+    		}catch(Exception e){ /* Ignore */ }
     	}
     	return retval;
     }
@@ -1005,7 +1005,7 @@ public class MailConnection {
     	} finally {
     		try {
     			if(dfolder!=null) dfolder.close(false);
-    		}catch(Exception e){};
+    		}catch(Exception e){ /* Ignore */ }
     	}
     	return retval;
     }
