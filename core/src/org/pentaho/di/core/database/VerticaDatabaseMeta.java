@@ -36,12 +36,14 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
-	public int[] getAccessTypeList()
+	@Override
+  public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
 	}
 	
-	public String getDriverClass()
+	@Override
+  public String getDriverClass()
 	{
         if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE)
         {
@@ -54,6 +56,7 @@ public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
 	}
 	
+    @Override
     public String getURL(String hostname, String port, String databaseName)
     {
         if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE)
@@ -70,7 +73,8 @@ public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	 * Checks whether or not the command setFetchSize() is supported by the JDBC driver...
 	 * @return true is setFetchSize() is supported!
 	 */
-	public boolean isFetchSizeSupported()
+	@Override
+  public boolean isFetchSizeSupported()
 	{
 		return false;
 	}
@@ -78,7 +82,8 @@ public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	/**
 	 * @return true if the database supports bitmap indexes
 	 */
-	public boolean supportsBitmapIndex()
+	@Override
+  public boolean supportsBitmapIndex()
 	{
 		return false;
 	}
@@ -86,7 +91,8 @@ public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	/**
 	 * @return true if Kettle can create a repository on this type of database.
 	 */
-	public boolean supportsRepository()
+	@Override
+  public boolean supportsRepository()
 	{
 		return false;
 	}
@@ -104,7 +110,8 @@ public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to add a column to the specified table
 	 */
-	public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "--NOTE: Table cannot be altered unless all projections are dropped.\nALTER TABLE "+tablename+" ADD "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
@@ -119,12 +126,14 @@ public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to modify a column in the specified table
 	 */
-	public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "--NOTE: Table cannot be altered unless all projections are dropped.\nALTER TABLE "+tablename+" MODIFY "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
 
-	public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
+	@Override
+  public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
 	{
 		String retval="";
 		
@@ -160,6 +169,7 @@ public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 		return retval;
 	}
 
+    @Override
     public String[] getUsedLibraries()
     {
         return new String[] { "vertica_2.5_jdk_5.jar" };
@@ -290,13 +300,15 @@ public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	 * @return true if the database requires you to cast a parameter to varchar before comparing to null.  Only required for DB2 and Vertica
 	 * 
 	 */
-	public boolean requiresCastToVariousForIsNull() {
+	@Override
+  public boolean requiresCastToVariousForIsNull() {
 		return true;
 	}
 
   /**
    * @return This indicator separates the normal URL from the options
    */
+  @Override
   public String getExtraOptionIndicator()
   {
       return "?";
@@ -310,6 +322,7 @@ public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
   /**
    * @return true if the database supports sequences
    */
+  @Override
   public boolean supportsSequences()
   {
 	return true;
@@ -320,6 +333,7 @@ public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
    * @param sequenceName The sequence name
    * @return the SQL to get the next value of a sequence.
    */
+  @Override
   public String getSQLCurrentSequenceValue(String sequenceName)
   {
       return  "SELECT currval('"+sequenceName+"')";
@@ -330,6 +344,7 @@ public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
    * @param sequenceName The sequence name
    * @return the SQL to get the next value of a sequence.
    */
+  @Override
   public String getSQLNextSequenceValue(String sequenceName)
   {
 	  return "SELECT nextval('"+sequenceName+"')";

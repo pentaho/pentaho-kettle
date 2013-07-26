@@ -146,7 +146,7 @@ public class BlobBuffer {
             blobFile.deleteOnExit();
             raFile = new RandomAccessFile(blobFile, "rw");
             if (length > 0) {
-                raFile.write(buffer, 0, (int) length);
+                raFile.write(buffer, 0, length);
             }
             buffer = new byte[PAGE_SIZE];
             currentPage = INVALID_PAGE;
@@ -350,7 +350,7 @@ public class BlobBuffer {
         } else if (len == 0) {
             return;
         }
-        if ((long) writePtr + len > (long) Integer.MAX_VALUE) {
+        if ((long) writePtr + len > Integer.MAX_VALUE) {
             throw new IOException("BLOB may not exceed 2GB in size");
         }
         if (writePtr > length) {
@@ -1074,7 +1074,7 @@ public class BlobBuffer {
             throw new SQLException(BaseMessages.getString(PKG, "error.blobclob.badoffset"),
                     "HY090");
         }
-        if (len < 0 || pos + len > (long) Integer.MAX_VALUE
+        if (len < 0 || pos + len > Integer.MAX_VALUE
                 || offset + len > bytes.length) {
             throw new SQLException(BaseMessages.getString(PKG, "error.blobclob.badlen"),
                     "HY090");
@@ -1209,7 +1209,7 @@ public class BlobBuffer {
                 return -1;
             }
             // FIXME Implement a better (O(n)) search algorithm
-            int limit = (int) length - pattern.length;
+            int limit = length - pattern.length;
             if (blobFile == null) {
                 for (int i = (int) start; i <= limit; i++) {
                     int p;

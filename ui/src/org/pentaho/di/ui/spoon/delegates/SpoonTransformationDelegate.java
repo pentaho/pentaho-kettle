@@ -994,7 +994,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
         // Then the slaves...
         //
         for (int i = 0; i < slaves.length; i++) {
-          TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
+          TransMeta slaveTrans = transSplitter.getSlaveTransMap().get(slaves[i]);
           addTransGraph(slaveTrans);
         }
       }

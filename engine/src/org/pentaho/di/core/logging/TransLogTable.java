@@ -393,6 +393,8 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
             case EXECUTING_SERVER: value = trans.getExecutingServer(); break;
             case EXECUTING_USER: value = trans.getExecutingUser(); break;
             case CLIENT: value = KettleClientEnvironment.getInstance().getClient() != null ? KettleClientEnvironment.getInstance().getClient().toString() : "unknown"; break;
+              default:
+                break;
 						}
 					}
 

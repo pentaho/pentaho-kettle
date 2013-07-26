@@ -232,6 +232,7 @@ public class ThinStatement implements Statement {
   /**
    * @return the maxRows
    */
+  @Override
   public int getMaxRows() {
     return maxRows;
   }
@@ -239,6 +240,7 @@ public class ThinStatement implements Statement {
   /**
    * @param maxRows the maxRows to set
    */
+  @Override
   public void setMaxRows(int maxRows) {
     this.maxRows = maxRows;
   }

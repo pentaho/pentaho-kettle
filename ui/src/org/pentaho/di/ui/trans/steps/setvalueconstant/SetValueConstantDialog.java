@@ -283,7 +283,7 @@ public class SetValueConstantDialog extends BaseStepDialog implements StepDialog
         Set<String> keySet = fields.keySet();
         List<String> entries = new ArrayList<String>(keySet);
         
-        String[] fieldNames = (String[]) entries.toArray(new String[entries.size()]);
+        String[] fieldNames = entries.toArray(new String[entries.size()]);
 
         Const.sortStrings(fieldNames);
         colinf[0].setComboValues(fieldNames);

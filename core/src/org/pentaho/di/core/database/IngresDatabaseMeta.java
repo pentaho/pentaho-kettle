@@ -34,18 +34,21 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class IngresDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
-	public int[] getAccessTypeList()
+	@Override
+  public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
 	}
 	
-	public int getDefaultDatabasePort()
+	@Override
+  public int getDefaultDatabasePort()
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE) return -1;
 		return -1;
 	}
 
-	public String getDriverClass()
+	@Override
+  public String getDriverClass()
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
 		{
@@ -57,6 +60,7 @@ public class IngresDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 		}
 	}
     
+    @Override
     public String getURL(String hostname, String port, String databaseName)
     {
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
@@ -79,7 +83,8 @@ public class IngresDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	/**
 	 * @return true if the database supports bitmap indexes
 	 */
-	public boolean supportsBitmapIndex()
+	@Override
+  public boolean supportsBitmapIndex()
 	{
 		return false;
 	}
@@ -87,7 +92,8 @@ public class IngresDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	/**
 	 * @return true if the database supports synonyms
 	 */
-	public boolean supportsSynonyms()
+	@Override
+  public boolean supportsSynonyms()
 	{
 		return false;
 	}
@@ -102,7 +108,8 @@ public class IngresDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to add a column to the specified table
 	 */
-	public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" ADD COLUMN "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
@@ -117,7 +124,8 @@ public class IngresDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to modify a column in the specified table
 	 */
-	public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" ALTER COLUMN "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
@@ -132,12 +140,14 @@ public class IngresDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to drop a column from the specified table
 	 */
-	public String getDropColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getDropColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" DROP COLUMN "+v.getName()+Const.CR;
 	}
 
-	public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
+	@Override
+  public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
 	{
 		String retval="";
 		
@@ -226,11 +236,13 @@ public class IngresDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
      * @param tableName The table to be truncated.
      * @return The SQL statement to truncate a table: remove all rows from it without a transaction
      */
+    @Override
     public String getTruncateTableStatement(String tableName)
     {
         return "DELETE FROM "+tableName;
     }
 
+    @Override
     public String[] getUsedLibraries()
     {
         return new String[] { "iijdbc.jar" };

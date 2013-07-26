@@ -142,6 +142,8 @@ public class OsHelper {
 					});
 
 					break;
+          default:
+            break;
 
 				}
 			}

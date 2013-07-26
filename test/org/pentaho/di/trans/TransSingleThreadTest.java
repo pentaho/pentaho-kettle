@@ -101,7 +101,7 @@ public class TransSingleThreadTest extends TestCase {
       totalWait += delay;
       if (i > 0 && (i % 100000) == 0) {
         long rowsProcessed = trans.findRunThread("bottles").getLinesRead();
-        double speed = Const.round(((double)rowsProcessed) / ((double) (end - transStart) / 1000), 1);
+        double speed = Const.round((rowsProcessed) / ((double) (end - transStart) / 1000), 1);
         int totalRows = 0;
         for (StepMetaDataCombi combi : trans.getSteps()) {
           for (RowSet rowSet : combi.step.getInputRowSets())
@@ -136,7 +136,7 @@ public class TransSingleThreadTest extends TestCase {
     System.out.println("Total transformation runtime for " + iterations + " iterations :" + transTimeSeconds + " seconds");
     double transTimePerIteration = Const.round(((double) transTime / iterations), 2);
     System.out.println("Runtime per iteration: " + transTimePerIteration + " miliseconds");
-    double rowsPerSecond = Const.round(((double) rowsProcessed) / ((double) transTime / 1000), 1);
+    double rowsPerSecond = Const.round((rowsProcessed) / ((double) transTime / 1000), 1);
     System.out.println("Average speed: " + rowsPerSecond + " rows/second");
   }
 

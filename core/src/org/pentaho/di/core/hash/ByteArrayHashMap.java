@@ -49,10 +49,12 @@ public class ByteArrayHashMap extends AbstractHashedMap {
     this.keyMeta = keyMeta;
   }
   
+  @Override
   protected boolean isEqualKey(Object key1, Object key2) {
     return equalsByteArray((byte[]) key1, (byte[]) key2);
   }
   
+  @Override
   protected boolean isEqualValue(Object value1, Object value2) {
     return equalsByteArray((byte[]) value1, (byte[]) value2);
   }
@@ -113,6 +115,7 @@ public class ByteArrayHashMap extends AbstractHashedMap {
     super.put(key, value);
   }
 
+  @Override
   protected int hash(Object key) {
     byte[] rowKey = (byte[])key;
     try {

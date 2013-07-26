@@ -150,6 +150,8 @@ public class ExcelInputMetaInjection implements StepMetaInjectionInterface {
                     case FORMAT:    inputField.setFormat(value); break;
                     case TRIM_TYPE: inputField.setTrimType(ValueMeta.getTrimTypeByCode(value)); break;
                     case REPEAT:    inputField.setRepeated(ValueMeta.convertStringToBoolean(value)); break;
+                    default:
+                      break;
                     }
                   }
                 }
@@ -178,6 +180,8 @@ public class ExcelInputMetaInjection implements StepMetaInjectionInterface {
                     case SHEET_NAME: sheetName = value; break;
                     case SHEET_START_ROW:  startRow = Const.toInt(Const.trim(value), 0); break;
                     case SHEET_START_COL:  startCol = Const.toInt(Const.trim(value), 0); break;
+                    default:
+                      break;
                     }
                   }
                 }
@@ -204,6 +208,8 @@ public class ExcelInputMetaInjection implements StepMetaInjectionInterface {
                   case EXCLUDE_FILEMASK: fileLine.excludeMask = value; break;
                   case FILE_REQUIRED: fileLine.required= value; break;
                   case INCLUDE_SUBFOLDERS: fileLine.includeSubfolders= value; break;
+                  default:
+                    break;
                   }
                 }
               }

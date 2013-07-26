@@ -754,6 +754,8 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
 						redraw();
 					}
 					break;
+        default:
+          break;
 				}
 			} else {
 	          // A hop? --> enable/disable
@@ -1179,7 +1181,9 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
       			redraw();
       			tip=false;
       		}
-  			break;
+      		break;
+        default:
+          break;
       	}
       }
       
@@ -2235,6 +2239,8 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
 	    tip.append("The job started here since this is the furthest checkpoint that was reached last time the transformation was executed.");
 	    tipImage = GUIResource.getInstance().getImageCheckpoint();
 	    break;
+    default:
+      break;
 		}
 	}
 
@@ -2367,7 +2373,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
       new ErrorDialog(shell, 
           BaseMessages.getString(PKG, "JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Title"),
           BaseMessages.getString(PKG, "JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Message"), 
-         (Exception) e); 
+         e); 
     }
   }
 
@@ -2435,6 +2441,8 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
         }
         launchTransMeta = spoon.rep.loadTransformation(entry.getTransObjectId(), null);
         break;
+        default:
+          break;
       }
       
       // If we didn't find a valid transformation, stop here...
@@ -2527,6 +2535,8 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
         // Always reads last revision
         launchJobMeta = spoon.rep.loadJob(entry.getJobObjectId(), null);
         break;
+        default:
+          break;
       }
       
       // If we didn't find a valid job, stop here...

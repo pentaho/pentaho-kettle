@@ -34,23 +34,27 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
-	public int[] getAccessTypeList()
+	@Override
+  public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
 	}
 	
-	public int getDefaultDatabasePort()
+	@Override
+  public int getDefaultDatabasePort()
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE) return 50000;
 		return -1;
 	}
 	
-	public boolean supportsSetCharacterStream()
+	@Override
+  public boolean supportsSetCharacterStream()
 	{
 		return false;
 	}
 	
-	public String getDriverClass()
+	@Override
+  public String getDriverClass()
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
 		{
@@ -62,6 +66,7 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
 		}
 	}
 	
+    @Override
     public String getURL(String hostname, String port, String databaseName)
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
@@ -77,7 +82,8 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
 	/**
 	 * @return true if the database supports schemas, DB2 supports it (v7 and v8 for sure).
 	 */
-	public boolean supportsSchemas()
+	@Override
+  public boolean supportsSchemas()
 	{
 		return true;
 	}
@@ -86,7 +92,8 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
 	 * @param tableName The table to be truncated.
 	 * @return The SQL statement to truncate a table: remove all rows from it without a transaction
 	 */
-	public String getTruncateTableStatement(String tableName)
+	@Override
+  public String getTruncateTableStatement(String tableName)
 	{
 	    return "ALTER TABLE "+tableName+" ACTIVATE NOT LOGGED INITIALLY WITH EMPTY TABLE";
 	}
@@ -102,7 +109,8 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to add a column to the specified table
 	 */
-	public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" ADD COLUMN "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
@@ -117,7 +125,8 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to drop a column from the specified table
 	 */
-	public String getDropColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getDropColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" DROP COLUMN "+v.getName()+Const.CR;
 	}
@@ -132,7 +141,8 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to modify a column in the specified table
 	 */
-	public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		String retval="";
 		retval+="ALTER TABLE "+tablename+" DROP COLUMN "+v.getName()+Const.CR+";"+Const.CR;
@@ -140,7 +150,8 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
 		return retval;
 	}
 
-	public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
+	@Override
+  public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
 	{
 		String retval="";
 		
@@ -238,7 +249,8 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
 	/* (non-Javadoc)
 	 * @see DatabaseInterface#getReservedWords()
 	 */
-	public String[] getReservedWords()
+	@Override
+  public String[] getReservedWords()
 	{
 		return new String[]
 		{
@@ -306,6 +318,7 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
         };
 	}
 
+    @Override
     public String getSQLLockTables(String tableNames[])
     {
         String sql="";
@@ -316,6 +329,7 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
         return sql;
     }
 
+    @Override
     public String getSQLUnlockTables(String tableName[])
     {
         return null; // lock release on commit point.
@@ -326,11 +340,13 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
 	 * If this size is exceeded use a CLOB.
 	 * @return The maximum VARCHAR field length for this database type. (mostly identical to getMaxTextFieldLength() - CLOB_LENGTH)
 	 */
-	public int getMaxVARCHARLength()
+	@Override
+  public int getMaxVARCHARLength()
 	{
 		return 32672;
 	}
 	
+    @Override
     public boolean supportsBatchUpdates()
     {
         return true;
@@ -339,11 +355,13 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
     /**
      * @return false because the DB2 JDBC driver doesn't support getBlob on the resultset.  We must use getBytes() to get the data.
      */
+    @Override
     public boolean supportsGetBlob()
     {
         return false;
     }
 
+    @Override
     public String[] getUsedLibraries()
     {
         return new String[] { "db2jcc.jar" , "db2jcc_license_cu.jar" };
@@ -352,7 +370,8 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
 	/**
 	 * @return true if the database supports sequences
 	 */
-	public boolean supportsSequences()
+	@Override
+  public boolean supportsSequences()
 	{
 		return true;
 	}
@@ -362,6 +381,7 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
      * @param sequenceName The sequence to check
      * @return The SQL to get the name of the sequence back from the databases data dictionary
      */
+    @Override
     public String getSQLSequenceExists(String sequenceName)
     {
     	if (sequenceName.contains("."))
@@ -377,6 +397,7 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
      * @param sequenceName The sequence to check
      * @return The current value of a database sequence
      */
+    @Override
     public String getSQLCurrentSequenceValue(String sequenceName)
     {
         return "SELECT PREVIOUS VALUE FOR "+sequenceName+" FROM SYSIBM.SYSDUMMY1";
@@ -387,6 +408,7 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
      * @param sequenceName The sequence name
      * @return the SQL to get the next value of a sequence. (Oracle only)
      */
+    @Override
     public String getSQLNextSequenceValue(String sequenceName)
     {
     	return "SELECT NEXT VALUE FOR "+sequenceName+" FROM SYSIBM.SYSDUMMY1";
@@ -396,6 +418,7 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
      * @return This indicator separates the normal URL from the options. DB2 is special
      * in the sense that it requires a : instead of the usual ;.
      */
+    @Override
     public String getExtraOptionIndicator()
     {
         return ":";
@@ -405,7 +428,8 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
 	 * @return true if the database supports the NOMAXVALUE sequence option.
 	 * The default is false, AS/400 and DB2 support this. 
 	 */
-	public boolean supportsSequenceNoMaxValueOption() {
+	@Override
+  public boolean supportsSequenceNoMaxValueOption() {
 		return false;
 	}
 	
@@ -413,7 +437,8 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
 	 * @return true if the database requires you to cast a parameter to varchar before comparing to null.  Only required for DB2 and Vertica
 	 * 
 	 */
-	public boolean requiresCastToVariousForIsNull() {
+	@Override
+  public boolean requiresCastToVariousForIsNull() {
 		return true;
 	}
 	
@@ -423,14 +448,16 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
 	 * In that case, the length is the precision.
 	 * 
 	 */
-	public boolean isDisplaySizeTwiceThePrecision() {
+	@Override
+  public boolean isDisplaySizeTwiceThePrecision() {
 		return true;
 	}
 	
 	/**
 	 * @return true if the database supports newlines in a SQL statements.
 	 */
-	public boolean supportsNewLinesInSQL() {
+	@Override
+  public boolean supportsNewLinesInSQL() {
 		return false;
 	}
 	
@@ -441,7 +468,8 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
 	 * @param versionField the version field
 	 * @return the SQL to insert the unknown record into the SCD.
 	 */
-	public String getSQLInsertAutoIncUnknownDimensionRow(String schemaTable, String keyField, String versionField) {
+	@Override
+  public String getSQLInsertAutoIncUnknownDimensionRow(String schemaTable, String keyField, String versionField) {
 		return "insert into "+schemaTable+"("+versionField+") values (1)";		
 	}
 

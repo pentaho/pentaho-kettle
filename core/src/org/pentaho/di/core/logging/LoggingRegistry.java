@@ -112,7 +112,7 @@ public class LoggingRegistry
         });
         int cutCount = this.maxSize < 1000 ? this.maxSize : 1000;
         for (int i = 0; i < cutCount; i++) {
-          LoggingObjectInterface toRemove = (LoggingObjectInterface)all.get(i);
+          LoggingObjectInterface toRemove = all.get(i);
           this.map.remove(toRemove.getLogChannelId());
 
           this.childrenMap.remove(toRemove.getLogChannelId());
@@ -137,7 +137,7 @@ public class LoggingRegistry
 
   public LoggingObjectInterface getLoggingObject(String logChannelId)
   {
-    return (LoggingObjectInterface)this.map.get(logChannelId);
+    return this.map.get(logChannelId);
   }
 
   public Map<String, LoggingObjectInterface> getMap() {
@@ -165,7 +165,7 @@ public class LoggingRegistry
 
       Iterator<String> kids = list.iterator();
       while (kids.hasNext()) {
-        String logChannelId = (String)kids.next();
+        String logChannelId = kids.next();
 
         // Add the children recursively
         getLogChannelChildren(children, logChannelId); 

@@ -244,7 +244,7 @@ public class JobExecutionConfiguration implements Cloneable {
       HashMap<String, String> newVariables = new HashMap<String, String>();
 
       for (int i = 0; i < vars.size(); i++) {
-        String varname = (String) vars.get(i);
+        String varname = vars.get(i);
         if (!varname.startsWith(Const.INTERNAL_VARIABLE_PREFIX)) {
           newVariables.put(varname, Const.NVL(variables.get(varname), sp.getProperty(varname, "")));
         }

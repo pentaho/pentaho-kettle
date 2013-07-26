@@ -46,11 +46,13 @@ public class ExtenDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
     /**
      * @see DatabaseInterface#getAccessTypeList()
      */
+    @Override
     public int[] getAccessTypeList()
     {
         return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
     }
 
+    @Override
     public int getDefaultDatabasePort()
     {
         if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE) return 6453;
@@ -60,6 +62,7 @@ public class ExtenDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
     /**
      * @see DatabaseInterface#getDriverClass()
      */
+    @Override
     public String getDriverClass()
     {
         if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
@@ -72,6 +75,7 @@ public class ExtenDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
         }
     }
     
+    @Override
     public String getURL(String hostname, String port, String databaseName)
     {
         if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
@@ -87,6 +91,7 @@ public class ExtenDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
     /**
      * @return an array of reserved words for the database type...
      */
+    @Override
     public String[] getReservedWords()
     {
         return RESERVED_WORDS;
@@ -96,6 +101,7 @@ public class ExtenDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
      * Checks whether or not the command setFetchSize() is supported by the JDBC driver...
      * @return true is setFetchSize() is supported!
      */
+    @Override
     public boolean isFetchSizeSupported()
     {
         return false;
@@ -104,6 +110,7 @@ public class ExtenDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
     /**
      * @return true if the database supports bitmap indexes
      */
+    @Override
     public boolean supportsBitmapIndex()
     {
         return false;
@@ -112,6 +119,7 @@ public class ExtenDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
     /**
      * @return true if the database supports synonyms
      */
+    @Override
     public boolean supportsSynonyms()
     {
         return false;
@@ -127,6 +135,7 @@ public class ExtenDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
      * @param semicolon whether or not to add a semi-colon behind the statement.
      * @return the SQL statement to add a column to the specified table
      */
+    @Override
     public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
     {
         return "ALTER TABLE "+tablename+" ADD "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
@@ -142,6 +151,7 @@ public class ExtenDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
      * @param semicolon whether or not to add a semi-colon behind the statement.
      * @return the SQL statement to drop a column from the specified table
      */
+    @Override
     public String getDropColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
     {
         return "ALTER TABLE "+tablename+" DROP "+v.getName()+Const.CR;
@@ -157,6 +167,7 @@ public class ExtenDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
      * @param semicolon whether or not to add a semi-colon behind the statement.
      * @return the SQL statement to modify a column in the specified table
      */
+    @Override
     public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
     {
         String retval="";
@@ -165,6 +176,7 @@ public class ExtenDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
         return retval;
     }
 
+    @Override
     public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
     {
         String retval="";
@@ -258,6 +270,7 @@ public class ExtenDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
         return retval;
     }
 
+    @Override
     public String[] getUsedLibraries()
     {
         return new String[] { "xdbjdbc.jar" };

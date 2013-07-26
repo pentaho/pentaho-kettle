@@ -192,7 +192,7 @@ public class JsonInput extends BaseStep implements StepInterface
             // Close previous file if needed
             if(data.file!=null) data.file.close();
             // get file
-    		data.file = (FileObject) data.files.getFile(data.filenr);
+    		data.file = data.files.getFile(data.filenr);
     		if(meta.isIgnoreEmptyFile() && data.file.getContent().getSize()==0) {
     			// log only basic as a warning (was before logError)
     			logBasic(BaseMessages.getString(PKG, "JsonInput.Error.FileSizeZero", ""+data.file.getName()));
@@ -410,7 +410,7 @@ public class JsonInput extends BaseStep implements StepInterface
 			JSONArray jsona=data.resultList.get(i).getJSONArray();
 			String nodevalue=null;
 			if(jsona!=null) {
-				Object jo= (Object) jsona.get(data.recordnr);
+				Object jo= jsona.get(data.recordnr);
 				if(jo!=null){
 					nodevalue = jo.toString();
 				}

@@ -172,6 +172,8 @@ public class SWTGC implements GCInterface {
       return GUIResource.getInstance().getImageBusy();
     case INJECT:
       return GUIResource.getInstance().getImageInject();
+      default:
+        break;
     }
     return null;
   }
@@ -263,6 +265,8 @@ public class SWTGC implements GCInterface {
       return darkGray;
     case LIGHTBLUE:
       return lightBlue;
+      default:
+        break;
     }
     return null;
   }
@@ -278,6 +282,8 @@ public class SWTGC implements GCInterface {
     case SMALL:
       gc.setFont(GUIResource.getInstance().getFontSmall());
       break;
+      default:
+        break;
     }
   }
 
@@ -297,9 +303,11 @@ public class SWTGC implements GCInterface {
       gc.setLineStyle(SWT.LINE_DOT);
       break;
     case PARALLEL:
-      gc.setLineAttributes(new LineAttributes((float) gc.getLineWidth(), SWT.CAP_FLAT, SWT.JOIN_MITER, SWT.LINE_CUSTOM,
+      gc.setLineAttributes(new LineAttributes(gc.getLineWidth(), SWT.CAP_FLAT, SWT.JOIN_MITER, SWT.LINE_CUSTOM,
           new float[] { 5, 3, }, 0, 10));
       break;
+      default:
+        break;
     }
   }
 
@@ -327,7 +335,7 @@ public class SWTGC implements GCInterface {
     //
     gc.fillRectangle(x, y, iconsize, iconsize);
     String steptype = stepMeta.getStepID();
-    Image im = (Image) images.get(steptype);
+    Image im = images.get(steptype);
     if (im != null) // Draw the icon!
     {
       org.eclipse.swt.graphics.Rectangle bounds = im.getBounds();

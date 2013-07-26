@@ -112,6 +112,8 @@ public class FixedInputMetaInjection implements StepMetaInjectionInterface {
                     case DECIMAL:   inputField.setDecimal(value); break;
                     case FORMAT:    inputField.setFormat(value); break;
                     case TRIM_TYPE: inputField.setTrimType(ValueMeta.getTrimTypeByCode(value)); break;
+                    default:
+                      break;
                     }
                   }
                 }
@@ -131,6 +133,8 @@ public class FixedInputMetaInjection implements StepMetaInjectionInterface {
         case RUNNING_IN_PARALLEL: meta.setRunningInParallel("Y".equalsIgnoreCase(lookValue)); break;
         case FILE_TYPE_CODE: meta.setFileType(FixedInputMeta.getFileType(lookValue)); break;
         case ADD_TO_RESULT: meta.setAddResultFile("Y".equalsIgnoreCase(lookValue)); break;
+        default:
+          break;
         }
       }
     }

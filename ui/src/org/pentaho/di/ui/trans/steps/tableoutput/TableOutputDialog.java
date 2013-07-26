@@ -1043,7 +1043,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 				wFields.table.removeAll();
 				wFields.table.setItemCount(mappings.size());
 				for (int i = 0; i < mappings.size(); i++) {
-					SourceToTargetMapping mapping = (SourceToTargetMapping) mappings.get(i);
+					SourceToTargetMapping mapping = mappings.get(i);
 					TableItem item = wFields.table.getItem(i);
 					item.setText(2, sourceFields.getValueMeta(mapping.getSourcePosition()).getName());
 					item.setText(1, targetFields.getValueMeta(mapping.getTargetPosition()).getName());
@@ -1169,7 +1169,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         Set<String> keySet = fields.keySet();
         List<String> entries = new ArrayList<String>(keySet);
 
-        String fieldNames[] = (String[]) entries.toArray(new String[entries.size()]);
+        String fieldNames[] = entries.toArray(new String[entries.size()]);
 
         Const.sortStrings(fieldNames);
         ciFields[1].setComboValues(fieldNames);

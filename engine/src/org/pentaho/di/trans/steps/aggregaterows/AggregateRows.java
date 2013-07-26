@@ -114,6 +114,8 @@ public class AggregateRows extends BaseStep implements StepInterface
 				case AggregateRowsMeta.TYPE_AGGREGATE_LAST:
 					data.values[i]=valueData;
 					break;
+        default:
+          break;
 				}
 			}
             

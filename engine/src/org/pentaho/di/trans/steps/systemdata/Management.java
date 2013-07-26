@@ -62,49 +62,35 @@ public class Management {
      */
     public static long getJVMCpuTime( ) {
     	setOperatingSystemMXBean();
-    	if ( ! (bean instanceof OperatingSystemMXBean) )
-    		return 0L;
-    	return ((OperatingSystemMXBean)bean).getProcessCpuTime();
+    	return bean.getProcessCpuTime();
     }
     /** 
      * @return the amount of free physical memory in bytes
      */
     public static long getFreePhysicalMemorySize() {
     	setOperatingSystemMXBean();
-
-        if ( ! (bean instanceof OperatingSystemMXBean) )
-            return 0L;
-        return ((OperatingSystemMXBean)bean).getFreePhysicalMemorySize();
+        return bean.getFreePhysicalMemorySize();
     }
     /** 
      * @return the amount of free swap space in bytes
      */
     public static long getFreeSwapSpaceSize() {
     	setOperatingSystemMXBean();
-
-        if ( ! (bean instanceof OperatingSystemMXBean) )
-            return 0L;
-        return ((OperatingSystemMXBean)bean).getFreeSwapSpaceSize();
+        return bean.getFreeSwapSpaceSize();
     }
     /** 
      * @return the total amount of physical memory in bytes
      */
     public static long getTotalPhysicalMemorySize() {
     	setOperatingSystemMXBean();
-
-        if ( ! (bean instanceof OperatingSystemMXBean) )
-            return 0L;
-        return ((OperatingSystemMXBean)bean).getTotalPhysicalMemorySize( );
+        return bean.getTotalPhysicalMemorySize( );
     }
     /** 
      * @return the total amount of swap space in bytes.
      */
     public static long getTotalSwapSpaceSize() {
     	setOperatingSystemMXBean();
-
-        if ( ! (bean instanceof OperatingSystemMXBean) )
-            return 0L;
-        return ((OperatingSystemMXBean)bean).getTotalSwapSpaceSize();
+        return bean.getTotalSwapSpaceSize();
     }
     
     /** 
@@ -112,10 +98,7 @@ public class Management {
      */
     public static long getCommittedVirtualMemorySize() {
     	setOperatingSystemMXBean();
-
-        if ( ! (bean instanceof OperatingSystemMXBean) )
-            return 0L;
-        return ((OperatingSystemMXBean)bean).getCommittedVirtualMemorySize();
+        return bean.getCommittedVirtualMemorySize();
     }
     /**
      *  @return CPU time in nanoseconds. 

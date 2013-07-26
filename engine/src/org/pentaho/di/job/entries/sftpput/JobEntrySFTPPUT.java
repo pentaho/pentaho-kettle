@@ -682,7 +682,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 			try{
 				for (Iterator <ResultFile>  it = resultFiles.iterator() ; it.hasNext() && !parentJob.isStopped();) 
 				{			
-			       	  ResultFile resultFile = (ResultFile) it.next();
+			       	  ResultFile resultFile = it.next();
 			       	FileObject file = resultFile.getFile();
 			          if (file != null)
 			          {

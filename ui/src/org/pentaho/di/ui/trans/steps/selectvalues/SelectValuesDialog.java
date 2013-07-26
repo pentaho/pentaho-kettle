@@ -534,7 +534,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 				Arrays.sort(prevStepFieldNames);
 				bPreviousFieldsLoaded = true;
 				for (int i = 0; i < fieldColumns.size(); i++) {
-					ColumnInfo colInfo = (ColumnInfo) fieldColumns.get(i);
+					ColumnInfo colInfo = fieldColumns.get(i);
 					colInfo.setComboValues(prevStepFieldNames);
 				}
 			}
@@ -734,6 +734,8 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
     			case 0 : BaseStepDialog.getFieldsFromPrevious(r, wFields, 1, new int[] { 1 }, new int[] {}, -1, -1, null); break;
                 case 1 : BaseStepDialog.getFieldsFromPrevious(r, wRemove, 1, new int[] { 1 }, new int[] {}, -1, -1, null); break;
                 case 2 : BaseStepDialog.getFieldsFromPrevious(r, wMeta, 1, new int[] { 1 }, new int[] {}, 4, 5, null); break;
+            default:
+              break;
     			}
             }
 		}
@@ -860,7 +862,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 			wFields.table.removeAll();
 			wFields.table.setItemCount(mappings.size());
 			for (int i = 0; i < mappings.size(); i++) {
-				SourceToTargetMapping mapping = (SourceToTargetMapping) mappings.get(i);
+				SourceToTargetMapping mapping = mappings.get(i);
 				TableItem item = wFields.table.getItem(i);
 				item.setText(1, prevFields.getValueMeta(mapping.getSourcePosition()).getName());
 				item.setText(2, outputNames[mapping.getTargetPosition()]);
@@ -884,14 +886,14 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
         Set<String> keySet = fields.keySet();
         List<String> entries = new ArrayList<String>(keySet);
 
-        String fieldNames[] = (String[]) entries.toArray(new String[entries.size()]);
+        String fieldNames[] = entries.toArray(new String[entries.size()]);
 
         Const.sortStrings(fieldNames);
         
         bPreviousFieldsLoaded = true;
         for (int i = 0; i < fieldColumns.size(); i++) 
         {
-			ColumnInfo colInfo = (ColumnInfo) fieldColumns.get(i);
+			ColumnInfo colInfo = fieldColumns.get(i);
 			colInfo.setComboValues(fieldNames);
 		}
     }

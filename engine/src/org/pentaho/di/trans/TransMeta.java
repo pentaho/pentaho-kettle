@@ -707,7 +707,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
       for (SlaveServer slave : slaveServers)
         transMeta.getSlaveServers().add((SlaveServer) slave.clone());
       for (ClusterSchema schema : clusterSchemas)
-        transMeta.getClusterSchemas().add((ClusterSchema) schema.clone());
+        transMeta.getClusterSchemas().add(schema.clone());
       for (PartitionSchema schema : partitionSchemas)
         transMeta.getPartitionSchemas().add((PartitionSchema) schema.clone());
       for (String key : listParameters())
@@ -4005,6 +4005,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         break;
       case TYPE_UNDO_POSITION:
         ta.setPosition(from, pos, prev, curr);
+        break;
+      default:
         break;
     }
     ta.setNextAlso(nextAlso);

@@ -69,7 +69,8 @@ public class LoggingPluginType extends BasePluginType implements PluginTypeInter
 	/**
 	 * Scan & register internal logging plugins
 	 */
-	protected void registerNatives() throws KettlePluginException {
+	@Override
+  protected void registerNatives() throws KettlePluginException {
 		// Scan the native steps...
 		//
 		String kettleLoggingPluginsXmlFile = Const.XML_FILE_KETTLE_LOGGING_PLUGINS;
@@ -109,7 +110,8 @@ public class LoggingPluginType extends BasePluginType implements PluginTypeInter
 		}
 	}
 	
-	protected void registerXmlPlugins() throws KettlePluginException {
+	@Override
+  protected void registerXmlPlugins() throws KettlePluginException {
 		for (PluginFolderInterface folder : pluginFolders) {
 			
 			if (folder.isPluginXmlFolder()) {

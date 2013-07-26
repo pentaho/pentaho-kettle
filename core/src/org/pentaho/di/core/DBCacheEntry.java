@@ -75,7 +75,8 @@ public class DBCacheEntry
 		return false;
 	}
 	
-	public int hashCode()
+	@Override
+  public int hashCode()
 	{
 		if ((0 >= hashCode) && (null != dbname) && (null != sql)) {
 		     hashCode = dbname.toLowerCase().hashCode() ^ sql.toLowerCase().hashCode();
@@ -83,7 +84,8 @@ public class DBCacheEntry
 		return hashCode;
 	}
 	
-	public boolean equals(Object o)
+	@Override
+  public boolean equals(Object o)
 	{
 		if ((null != o) && (o instanceof DBCacheEntry)) {
 		    DBCacheEntry obj = (DBCacheEntry)o;

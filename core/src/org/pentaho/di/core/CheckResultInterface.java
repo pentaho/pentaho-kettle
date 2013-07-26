@@ -54,6 +54,7 @@ public interface CheckResultInterface {
   /**
    * @return String description of the check result
    */
+  @Override
   public String toString();
   /**
    * @return The component-specific result code. 

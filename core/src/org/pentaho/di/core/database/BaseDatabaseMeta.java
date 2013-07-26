@@ -250,20 +250,23 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @return plugin ID of this class
 	 */
-	public String getPluginId() {
+	@Override
+  public String getPluginId() {
 		return pluginId;
 	}
 	
 	/**
 	 * @param pluginId The plugin ID to set.
 	 */
-	public void setPluginId(String pluginId) {
+	@Override
+  public void setPluginId(String pluginId) {
 		this.pluginId = pluginId;
 	}
 
 	 /**
    * @return plugin name of this class
    */
+  @Override
   public String getPluginName() {
     return pluginName;
   }
@@ -271,16 +274,19 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
   /**
    * @param pluginName The plugin name to set.
    */
+  @Override
   public void setPluginName(String pluginName) {
     this.pluginName = pluginName;
   }
   
+  @Override
   abstract public int[] getAccessTypeList();
 	
 	/**
 	 * @return Returns the accessType.
 	 */
-	public int getAccessType()
+	@Override
+  public int getAccessType()
 	{
 		return accessType;
 	}
@@ -288,7 +294,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @param accessType The accessType to set.
 	 */
-	public void setAccessType(int accessType)
+	@Override
+  public void setAccessType(int accessType)
 	{
 		this.accessType = accessType;
 		if (this.accessType == DatabaseMeta.TYPE_ACCESS_JNDI) {
@@ -300,7 +307,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @return Returns the changed.
 	 */
-	public boolean isChanged()
+	@Override
+  public boolean isChanged()
 	{
 		return changed;
 	}
@@ -308,7 +316,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @param changed The changed to set.
 	 */
-	public void setChanged(boolean changed)
+	@Override
+  public void setChanged(boolean changed)
 	{
 		this.changed = changed;
 	}
@@ -316,7 +325,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @return Returns the connection name.
 	 */
-	public String getName()
+	@Override
+  public String getName()
 	{
 		return name;
 	}
@@ -324,7 +334,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @param name The connection Name to set.
 	 */
-	public void setName(String name)
+	@Override
+  public void setName(String name)
 	{
 		this.name = name;
 	}
@@ -332,7 +343,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @return Returns the databaseName.
 	 */
-	public String getDatabaseName()
+	@Override
+  public String getDatabaseName()
 	{
 		return databaseName;
 	}
@@ -340,7 +352,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @param databaseName The databaseName to set.
 	 */
-	public void setDatabaseName(String databaseName)
+	@Override
+  public void setDatabaseName(String databaseName)
 	{
 		this.databaseName = databaseName;
 	}
@@ -348,7 +361,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @param databasePortNumberString The databasePortNumber string to set.
 	 */
-	public void setDatabasePortNumberString(String databasePortNumberString)
+	@Override
+  public void setDatabasePortNumberString(String databasePortNumberString)
 	{
         if (databasePortNumberString!=null) getAttributes().put(BaseDatabaseMeta.ATTRIBUTE_PORT_NUMBER, databasePortNumberString);
 	}
@@ -356,7 +370,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @return Returns the databasePortNumber string.
 	 */
-	public String getDatabasePortNumberString()
+	@Override
+  public String getDatabasePortNumberString()
 	{
 		return getAttributes().getProperty(ATTRIBUTE_PORT_NUMBER, "-1");
 	}
@@ -364,7 +379,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @return Returns the hostname.
 	 */
-	public String getHostname()
+	@Override
+  public String getHostname()
 	{
 		return hostname;
 	}
@@ -372,7 +388,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @param hostname The hostname to set.
 	 */
-	public void setHostname(String hostname)
+	@Override
+  public void setHostname(String hostname)
 	{
 		this.hostname = hostname;
 	}
@@ -380,7 +397,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @return Returns the id.
 	 */
-	public ObjectId getObjectId()
+	@Override
+  public ObjectId getObjectId()
 	{
 		return objectId;
 	}
@@ -388,7 +406,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @param id The id to set.
 	 */
-	public void setObjectId(ObjectId id)
+	@Override
+  public void setObjectId(ObjectId id)
 	{
 		this.objectId = id;
 	}
@@ -396,7 +415,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @return Returns the password.
 	 */
-	public String getPassword()
+	@Override
+  public String getPassword()
 	{
 		return password;
 	}
@@ -404,7 +424,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @param password The password to set.
 	 */
-	public void setPassword(String password)
+	@Override
+  public void setPassword(String password)
 	{
 	   if (this.accessType == DatabaseMeta.TYPE_ACCESS_JNDI) {
 	       this.password = "";
@@ -417,7 +438,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @return Returns the servername.
 	 */
-	public String getServername()
+	@Override
+  public String getServername()
 	{
 		return servername;
 	}
@@ -425,7 +447,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @param servername The servername to set.
 	 */
-	public void setServername(String servername)
+	@Override
+  public void setServername(String servername)
 	{
 		this.servername = servername;
 	}
@@ -433,7 +456,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @return Returns the tablespaceData.
 	 */
-	public String getDataTablespace()
+	@Override
+  public String getDataTablespace()
 	{
 		return dataTablespace;
 	}
@@ -441,7 +465,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @param dataTablespace The data tablespace to set.
 	 */
-	public void setDataTablespace(String dataTablespace)
+	@Override
+  public void setDataTablespace(String dataTablespace)
 	{
 		this.dataTablespace = dataTablespace;
 	}
@@ -449,7 +474,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @return Returns the index tablespace.
 	 */
-	public String getIndexTablespace()
+	@Override
+  public String getIndexTablespace()
 	{
 		return indexTablespace;
 	}
@@ -457,7 +483,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @param indexTablespace The index tablespace to set.
 	 */
-	public void setIndexTablespace(String indexTablespace)
+	@Override
+  public void setIndexTablespace(String indexTablespace)
 	{
 		this.indexTablespace = indexTablespace;
 	}
@@ -465,7 +492,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @return Returns the username.
 	 */
-	public String getUsername()
+	@Override
+  public String getUsername()
 	{
 		return username;
 	}
@@ -473,7 +501,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @param username The username to set.
 	 */
-	public void setUsername(String username)
+	@Override
+  public void setUsername(String username)
 	{
 	   if (this.accessType == DatabaseMeta.TYPE_ACCESS_JNDI) {
 	      this.username = "";
@@ -484,6 +513,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     /**
      * @return The extra attributes for this database connection
      */
+    @Override
     public Properties getAttributes()
     {
         return attributes;
@@ -493,6 +523,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
      * Set extra attributes on this database connection
      * @param attributes The extra attributes to set on this database connection.
      */
+    @Override
     public void setAttributes(Properties attributes)
     {
         this.attributes = attributes;
@@ -501,7 +532,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * Clone the basic settings for this connection!
 	 */
-	public Object clone()
+	@Override
+  public Object clone()
 	{
 		BaseDatabaseMeta retval = null;
 		try
@@ -527,7 +559,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @return the default database port number
 	 */
-	public int getDefaultDatabasePort()
+	@Override
+  public int getDefaultDatabasePort()
 	{
 		return -1; // No default port or not used.
 	}
@@ -537,7 +570,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	 * 
 	 * @return true if we can set a Stream on a field in a PreparedStatement.  False if not. 
 	 */
-	public boolean supportsSetCharacterStream()
+	@Override
+  public boolean supportsSetCharacterStream()
 	{
 		return true;
 	}
@@ -545,17 +579,20 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @return Whether or not the database can use auto increment type of fields (pk)
 	 */
-	public boolean supportsAutoInc()
+	@Override
+  public boolean supportsAutoInc()
 	{
 		return true;
 	}
 	
-	public String getLimitClause(int nrRows)
+	@Override
+  public String getLimitClause(int nrRows)
 	{
 		return "";	
 	}
 
-	public int getNotFoundTK(boolean use_autoinc)
+	@Override
+  public int getNotFoundTK(boolean use_autoinc)
 	{
 		return 0;
 	}
@@ -565,7 +602,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	 * @param sequenceName The sequence name
 	 * @return the SQL to get the next value of a sequence. (Oracle/PGSQL only)
 	 */
-	public String getSQLNextSequenceValue(String sequenceName)
+	@Override
+  public String getSQLNextSequenceValue(String sequenceName)
 	{
 		return "";
 	}
@@ -575,6 +613,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
      * @param sequenceName The sequence to check
      * @return The current value of a database sequence
      */
+    @Override
     public String getSQLCurrentSequenceValue(String sequenceName)
     {
         return "";
@@ -585,6 +624,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
      * @param sequenceName The sequence to check
      * @return The SQL to get the name of the sequence back from the databases data dictionary
      */
+    @Override
     public String getSQLSequenceExists(String sequenceName)
     {
         return "";
@@ -595,7 +635,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	 * Checks whether or not the command setFetchSize() is supported by the JDBC driver...
 	 * @return true is setFetchSize() is supported!
 	 */
-	public boolean isFetchSizeSupported()
+	@Override
+  public boolean isFetchSizeSupported()
 	{
 		return true;
 	}
@@ -604,7 +645,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	 * Indicates the need to insert a placeholder (0) for auto increment fields.
 	 * @return true if we need a placeholder for auto increment fields in insert statements.
 	 */
-	public boolean needsPlaceHolder()
+	@Override
+  public boolean needsPlaceHolder()
 	{
 		return false;
 	}
@@ -612,7 +654,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @return true if the database supports schemas
 	 */
-	public boolean supportsSchemas()
+	@Override
+  public boolean supportsSchemas()
 	{
 		return true;
 	}
@@ -620,6 +663,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     /**
      * @return true if the database supports catalogs
      */
+    @Override
     public boolean supportsCatalogs()
     {
         return true;
@@ -630,7 +674,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	 * @return true when the database engine supports empty transaction.
 	 * (for example Informix does not on a non-ANSI database type!)
 	 */
-	public boolean supportsEmptyTransactions()
+	@Override
+  public boolean supportsEmptyTransactions()
 	{
 		return true;
 	}
@@ -638,7 +683,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @return the function for SUM agrregate 
 	 */
-	public String getFunctionSum()
+	@Override
+  public String getFunctionSum()
 	{
 		return "SUM";
 	}
@@ -646,7 +692,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @return the function for Average agrregate 
 	 */
-	public String getFunctionAverage()
+	@Override
+  public String getFunctionAverage()
 	{
 		return "AVG";
 	}
@@ -654,7 +701,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @return the function for Minimum agrregate 
 	 */
-	public String getFunctionMinimum()
+	@Override
+  public String getFunctionMinimum()
 	{
 		return "MIN";
 	}
@@ -663,7 +711,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @return the function for Maximum agrregate 
 	 */
-	public String getFunctionMaximum()
+	@Override
+  public String getFunctionMaximum()
 	{
 		return "MAX";
 	}
@@ -671,7 +720,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @return the function for Count agrregate 
 	 */
-	public String getFunctionCount()
+	@Override
+  public String getFunctionCount()
 	{
 		return "COUNT";
 	}
@@ -683,7 +733,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	 * @param table_part The tablename
 	 * @return the schema-table combination to query the right table.
 	 */
-	public String getSchemaTableCombination(String schema_name, String table_part)
+	@Override
+  public String getSchemaTableCombination(String schema_name, String table_part)
 	{
 		return schema_name+"."+table_part;
 	}
@@ -740,7 +791,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	 * This includes optional CLOB, Memo and Text fields. (the maximum!)
 	 * @return The maximum text field length for this database type. (mostly CLOB_LENGTH)
 	 */
-	public int getMaxTextFieldLength()
+	@Override
+  public int getMaxTextFieldLength()
 	{
 		return DatabaseMeta.CLOB_LENGTH;
 	}
@@ -750,7 +802,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	 * If this size is exceeded use a CLOB.
 	 * @return The maximum VARCHAR field length for this database type. (mostly identical to getMaxTextFieldLength() - CLOB_LENGTH)
 	 */
-	public int getMaxVARCHARLength()
+	@Override
+  public int getMaxVARCHARLength()
 	{
 		return DatabaseMeta.CLOB_LENGTH;
 	}
@@ -759,7 +812,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @return true if the database supports transactions.
 	 */
-	public boolean supportsTransactions()
+	@Override
+  public boolean supportsTransactions()
 	{
 		return true;
 	}
@@ -767,7 +821,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @return true if the database supports sequences
 	 */
-	public boolean supportsSequences()
+	@Override
+  public boolean supportsSequences()
 	{
 		return false;
 	}
@@ -775,7 +830,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @return true if the database supports bitmap indexes
 	 */
-	public boolean supportsBitmapIndex()
+	@Override
+  public boolean supportsBitmapIndex()
 	{
 		return true;
 	}
@@ -783,7 +839,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @return true if the database JDBC driver supports the setLong command
 	 */
-	public boolean supportsSetLong()
+	@Override
+  public boolean supportsSetLong()
 	{
 		return true;
 	}
@@ -798,7 +855,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to drop a column from the specified table
 	 */
-	public String getDropColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getDropColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" DROP "+v.getName()+Const.CR;
 	}
@@ -806,7 +864,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @return an array of reserved words for the database type...
 	 */
-	public String[] getReservedWords()
+	@Override
+  public String[] getReservedWords()
 	{
 		return new String[] {};
 	}
@@ -814,7 +873,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @return true if reserved words need to be double quoted ("password", "select", ...)
 	 */
-	public boolean quoteReservedWords()
+	@Override
+  public boolean quoteReservedWords()
 	{
 		return true;
 	}
@@ -822,7 +882,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @return The start quote sequence, mostly just double quote, but sometimes [, ...
 	 */
-	public String getStartQuote()
+	@Override
+  public String getStartQuote()
 	{
 		return "\"";
 	}
@@ -830,7 +891,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @return The end quote sequence, mostly just double quote, but sometimes ], ...
 	 */
-	public String getEndQuote()
+	@Override
+  public String getEndQuote()
 	{
 		return "\"";
 	}
@@ -838,7 +900,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @return true if Kettle can create a repository on this type of database.
 	 */
-	public boolean supportsRepository()
+	@Override
+  public boolean supportsRepository()
 	{
 		return true;
 	}
@@ -846,7 +909,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @return a list of table types to retrieve tables for the database
 	 */
-	public String[] getTableTypes()
+	@Override
+  public String[] getTableTypes()
 	{
 		return new String[] { "TABLE" };
 	}
@@ -854,7 +918,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @return a list of table types to retrieve views for the database
 	 */
-	public String[] getViewTypes()
+	@Override
+  public String[] getViewTypes()
 	{
 		return new String[] { "VIEW" };
 	}
@@ -862,7 +927,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @return a list of table types to retrieve synonyms for the database
 	 */
-	public String[] getSynonymTypes()
+	@Override
+  public String[] getSynonymTypes()
 	{
 		return new String[] { "SYNONYM" };
 	}
@@ -871,7 +937,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @return true if we need to supply the schema-name to getTables in order to get a correct list of items.
 	 */
-	public boolean useSchemaNameForTableList()
+	@Override
+  public boolean useSchemaNameForTableList()
 	{
 		return false;
 	}
@@ -879,7 +946,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @return true if the database supports views
 	 */
-	public boolean supportsViews()
+	@Override
+  public boolean supportsViews()
 	{
 		return true;
 	}
@@ -887,7 +955,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @return true if the database supports synonyms
 	 */
-	public boolean supportsSynonyms()
+	@Override
+  public boolean supportsSynonyms()
 	{
 		return false;
 	}
@@ -897,14 +966,16 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @return The SQL on this database to get a list of stored procedures.
 	 */
-	public String getSQLListOfProcedures()
+	@Override
+  public String getSQLListOfProcedures()
 	{
 		return null;
 	}
 	/**
 	 * @return The SQL on this database to get a list of sequences.
 	 */
-	public String getSQLListOfSequences()
+	@Override
+  public String getSQLListOfSequences()
 	{
 		return  null; 
 	}
@@ -913,7 +984,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	 * @param tableName The table to be truncated.
 	 * @return The SQL statement to truncate a table: remove all rows from it without a transaction
 	 */
-	public String getTruncateTableStatement(String tableName)
+	@Override
+  public String getTruncateTableStatement(String tableName)
 	{
 	    return "TRUNCATE TABLE "+tableName;
 	}
@@ -923,7 +995,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	 * @param tableName The name of the table to determine the layout for
 	 * @return The SQL to launch.
 	 */
-	public String getSQLQueryFields(String tableName)
+	@Override
+  public String getSQLQueryFields(String tableName)
 	{
 	    return "SELECT * FROM "+tableName;
 	}
@@ -932,6 +1005,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
      * Most databases round number(7,2) 17.29999999 to 17.30, but some don't.
      * @return true if the database supports roundinf of floating point data on update/insert
      */
+    @Override
     public boolean supportsFloatRoundingOnUpdate()
     {
         return true;
@@ -943,6 +1017,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
      *         null is returned in case locking is not supported on the target database.
      *         null is the default value
      */
+    @Override
     public String getSQLLockTables(String tableNames[])
     {
         return null;
@@ -954,6 +1029,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
      *         null is returned in case locking is not supported on the target database.
      *         null is the default value
      */
+    @Override
     public String getSQLUnlockTables(String tableNames[])
     {
         return null;
@@ -964,6 +1040,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
      * @return true if the database supports timestamp to date conversion.
      * For example Interbase doesn't support this!
      */
+    @Override
     public boolean supportsTimeStampToDateConversion()
     {
         return true;
@@ -973,6 +1050,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
      * @return true if the database JDBC driver supports batch updates
      * For example Interbase doesn't support this!
      */
+    @Override
     public boolean supportsBatchUpdates()
     {
         return true;
@@ -982,6 +1060,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
      * @return true if the database supports a boolean, bit, logical, ... datatype
      * The default is false: map to a string.
      */
+    @Override
     public boolean supportsBooleanDataType()
     {
         String usePool = attributes.getProperty(ATTRIBUTE_SUPPORTS_BOOLEAN_DATA_TYPE, "N");
@@ -991,7 +1070,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     /**
      * @param b Set to true if the database supports a boolean, bit, logical, ... datatype
      */
-	public void setSupportsBooleanDataType(boolean b) 
+	@Override
+  public void setSupportsBooleanDataType(boolean b) 
 	{
 		attributes.setProperty(ATTRIBUTE_SUPPORTS_BOOLEAN_DATA_TYPE, b?"Y":"N");
 	}
@@ -999,6 +1079,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
   /**
    * @return true if the database supports the Timestamp data type (nanosecond precision and all)
    */
+  @Override
   public boolean supportsTimestampDataType() {
     String supportsTimestamp = attributes.getProperty(ATTRIBUTE_SUPPORTS_TIMESTAMP_DATA_TYPE, "N");
     return "Y".equalsIgnoreCase(supportsTimestamp);
@@ -1008,6 +1089,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
    * 
    * @param b Set to true if the database supports the Timestamp data type (nanosecond precision and all)
    */
+  @Override
   public void setSupportsTimestampDataType(boolean b) {
     attributes.setProperty(ATTRIBUTE_SUPPORTS_TIMESTAMP_DATA_TYPE, b?"Y":"N");
   }
@@ -1016,6 +1098,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
   /**
    * @return true if reserved words' case should be preserved
    */
+  @Override
   public boolean preserveReservedCase() {
     String usePool = attributes.getProperty(ATTRIBUTE_PRESERVE_RESERVED_WORD_CASE, "N");
     return "Y".equalsIgnoreCase(usePool);
@@ -1024,6 +1107,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
   /**
    * @param b Set to true if reserved words' case should be preserved
    */
+  @Override
   public void setPreserveReservedCase(boolean b) {
     attributes.setProperty(ATTRIBUTE_PRESERVE_RESERVED_WORD_CASE, b?"Y":"N");
   }
@@ -1032,6 +1116,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
      * @return true if the database defaults to naming tables and fields in uppercase.
      * True for most databases except for stuborn stuff like Postgres ;-)
      */
+    @Override
     public boolean isDefaultingToUppercase()
     {
         return true;
@@ -1040,6 +1125,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     /**
      * @return all the extra options that are set to be used for the database URL
      */
+    @Override
     public Map<String, String> getExtraOptions()
     {
         Map<String,String> map = new Hashtable<String,String>();
@@ -1065,6 +1151,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
      * @param option The option to set
      * @param value The value of the option
      */
+    @Override
     public void addExtraOption(String databaseTypeCode, String option, String value)
     {
         attributes.put(ATTRIBUTE_PREFIX_EXTRA_OPTION+databaseTypeCode+"."+option, value);
@@ -1073,6 +1160,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     /**
      * @return The extra option separator in database URL for this platform (usually this is semicolon ; ) 
      */
+    @Override
     public String getExtraOptionSeparator()
     {
         return ";";
@@ -1081,6 +1169,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     /**
      * @return The extra option value separator in database URL for this platform (usually this is the equal sign = ) 
      */
+    @Override
     public String getExtraOptionValueSeparator()
     {
         return "=";
@@ -1089,6 +1178,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     /**
      * @return This indicator separates the normal URL from the options
      */
+    @Override
     public String getExtraOptionIndicator()
     {
         return ";";
@@ -1097,6 +1187,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     /**
      * @return true if the database supports connection options in the URL, false if they are put in a Properties object.
      */
+    @Override
     public boolean supportsOptionsInURL()
     {
         return true;
@@ -1105,6 +1196,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     /**
      * @return extra help text on the supported options on the selected database platform.
      */
+    @Override
     public String getExtraOptionsHelpText()
     {
         return null;
@@ -1113,6 +1205,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     /**
      * @return true if the database JDBC driver supports getBlob on the resultset.  If not we must use getBytes() to get the data.
      */
+    @Override
     public boolean supportsGetBlob()
     {
         return true;
@@ -1121,6 +1214,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     /**
      * @return The SQL to execute right after connecting
      */
+    @Override
     public String getConnectSQL()
     {
         return attributes.getProperty(ATTRIBUTE_SQL_CONNECT);
@@ -1129,6 +1223,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     /**
      * @param sql The SQL to execute right after connecting
      */
+    @Override
     public void setConnectSQL(String sql)
     {
         attributes.setProperty(ATTRIBUTE_SQL_CONNECT, sql);
@@ -1137,6 +1232,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     /**
      * @return true if the database supports setting the maximum number of return rows in a resultset.
      */
+    @Override
     public boolean supportsSetMaxRows()
     {
         return true;
@@ -1145,6 +1241,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     /**
      * @return true if we want to use a database connection pool
      */
+    @Override
     public boolean isUsingConnectionPool()
     {
         String usePool = attributes.getProperty(ATTRIBUTE_USE_POOLING);
@@ -1154,6 +1251,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     /**
      * @param usePool true if we want to use a database connection pool
      */
+    @Override
     public void setUsingConnectionPool(boolean usePool)
     {
         attributes.setProperty(ATTRIBUTE_USE_POOLING, usePool?"Y":"N");
@@ -1162,6 +1260,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     /**
      * @return the maximum pool size
      */
+    @Override
     public int getMaximumPoolSize()
     {
         return Const.toInt(attributes.getProperty(ATTRIBUTE_MAXIMUM_POOL_SIZE), ConnectionPoolUtil.defaultMaximumNrOfConnections);
@@ -1170,6 +1269,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     /**
      * @param maximumPoolSize the maximum pool size
      */
+    @Override
     public void setMaximumPoolSize(int maximumPoolSize)
     {
         attributes.setProperty(ATTRIBUTE_MAXIMUM_POOL_SIZE, Integer.toString(maximumPoolSize));
@@ -1178,6 +1278,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     /**
      * @return the initial pool size
      */
+    @Override
     public int getInitialPoolSize()
     {
         return Const.toInt(attributes.getProperty(ATTRIBUTE_INITIAL_POOL_SIZE), ConnectionPoolUtil.defaultInitialNrOfConnections);
@@ -1186,6 +1287,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     /**
      * @param initialPoolSize the initial pool size
      */
+    @Override
     public void setInitialPoolSize(int initialPoolSize)
     {
         attributes.setProperty(ATTRIBUTE_INITIAL_POOL_SIZE, Integer.toString(initialPoolSize));
@@ -1196,6 +1298,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     /**
      * @return true if we want to use a database connection pool
      */
+    @Override
     public boolean isPartitioned()
     {
         String isClustered = attributes.getProperty(ATTRIBUTE_IS_CLUSTERED);
@@ -1205,6 +1308,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     /**
      * @param usePool true if we want to use a database connection pool
      */
+    @Override
     public void setPartitioned(boolean clustered)
     {
         attributes.setProperty(ATTRIBUTE_IS_CLUSTERED, clustered?"Y":"N");
@@ -1214,6 +1318,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     /**
      * @return the available partition/host/databases/port combinations in the cluster
      */
+    @Override
     public PartitionDatabaseMeta[] getPartitioningInformation()
     {
         // find the maximum number of attributes starting with ATTRIBUTE_CLUSTER_HOSTNAME_PREFIX 
@@ -1242,6 +1347,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     /**
      * @param clusterInfo the available partition/host/databases/port combinations in the cluster
      */
+    @Override
     public void setPartitioningInformation(PartitionDatabaseMeta[] clusterInfo)
     {
         for (int nr=0;nr<clusterInfo.length;nr++)
@@ -1261,6 +1367,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
      * @return The set of properties (newly created object) that contains the connection pooling parameters
      * All environment variables will be replaced here.
      */
+    @Override
     public Properties getConnectionPoolingProperties()
     {
         Properties properties = new Properties();
@@ -1279,6 +1386,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
         return properties;
     }
     
+    @Override
     public void setConnectionPoolingProperties(Properties properties)
     {
         // Clear our the previous set of pool parameters
@@ -1302,14 +1410,17 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
         }
     }
     
+    @Override
     public String getSQLTableExists(String tablename)
     {
         return "SELECT 1 FROM "+tablename;
     }
+    @Override
     public String getSQLColumnExists(String columnname, String tablename)
     {
         return "SELECT " + columnname + " FROM "+tablename;
     }
+    @Override
     public boolean needsToLockAllTables()
     {
         return true;
@@ -1319,6 +1430,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     /**
      * @return true if the database is streaming results (normally this is an option just for MySQL).
      */
+    @Override
     public boolean isStreamingResults()
     {
         String usePool = attributes.getProperty(ATTRIBUTE_USE_RESULT_STREAMING, "Y"); // DEFAULT TO YES!!
@@ -1328,6 +1440,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     /**
      * @param useStreaming true if we want the database to stream results (normally this is an option just for MySQL).
      */
+    @Override
     public void setStreamingResults(boolean useStreaming)
     {
         attributes.setProperty(ATTRIBUTE_USE_RESULT_STREAMING, useStreaming?"Y":"N");
@@ -1336,6 +1449,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     /**
      * @return true if all fields should always be quoted in db
      */
+    @Override
     public boolean isQuoteAllFields()
     {
         String quoteAllFields = attributes.getProperty(ATTRIBUTE_QUOTE_ALL_FIELDS, "N"); // DEFAULT TO NO!!
@@ -1345,6 +1459,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     /**
      * @param useStreaming true if we want the database to stream results (normally this is an option just for MySQL).
      */
+    @Override
     public void setQuoteAllFields(boolean quoteAllFields)
     {
         attributes.setProperty(ATTRIBUTE_QUOTE_ALL_FIELDS, quoteAllFields?"Y":"N");
@@ -1353,6 +1468,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     /**
      * @return true if all identifiers should be forced to lower case
      */
+    @Override
     public boolean isForcingIdentifiersToLowerCase()
     {
         String forceLowerCase = attributes.getProperty(ATTRIBUTE_FORCE_IDENTIFIERS_TO_LOWERCASE, "N"); // DEFAULT TO NO!!
@@ -1362,6 +1478,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     /**
      * @param forceLowerCase true if all identifiers should be forced to lower case
      */
+    @Override
     public void setForcingIdentifiersToLowerCase(boolean forceLowerCase)
     {
         attributes.setProperty(ATTRIBUTE_FORCE_IDENTIFIERS_TO_LOWERCASE, forceLowerCase?"Y":"N");
@@ -1370,6 +1487,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     /**
      * @return true if all identifiers should be forced to upper case
      */
+    @Override
     public boolean isForcingIdentifiersToUpperCase()
     {
         String forceUpperCase = attributes.getProperty(ATTRIBUTE_FORCE_IDENTIFIERS_TO_UPPERCASE, "N"); // DEFAULT TO NO!!
@@ -1379,6 +1497,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     /**
      * @param forceLowerCase true if all identifiers should be forced to upper case
      */
+    @Override
     public void setForcingIdentifiersToUpperCase(boolean forceUpperCase)
     {
         attributes.setProperty(ATTRIBUTE_FORCE_IDENTIFIERS_TO_UPPERCASE, forceUpperCase?"Y":"N");
@@ -1387,6 +1506,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     /**
      * @return true if we use a double decimal separator to specify schema/table combinations on MS-SQL server
      */
+    @Override
     public boolean isUsingDoubleDecimalAsSchemaTableSeparator()
     {
         String usePool = attributes.getProperty(ATTRIBUTE_MSSQL_DOUBLE_DECIMAL_SEPARATOR, "N"); // DEFAULT TO YES!!
@@ -1396,6 +1516,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     /**
      * @param useDoubleDecimalSeparator true if we should use a double decimal separator to specify schema/table combinations on MS-SQL server
      */
+    @Override
     public void setUsingDoubleDecimalAsSchemaTableSeparator(boolean useDoubleDecimalSeparator)
     {
         attributes.setProperty(ATTRIBUTE_MSSQL_DOUBLE_DECIMAL_SEPARATOR, useDoubleDecimalSeparator?"Y":"N");
@@ -1404,7 +1525,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	/**
 	 * @return true if this database needs a transaction to perform a query (auto-commit turned off).
 	 */
-	public boolean isRequiringTransactionsOnQueries()
+	@Override
+  public boolean isRequiringTransactionsOnQueries()
 	{
 		return true;
 	}
@@ -1415,7 +1537,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	 *  
 	 * @return the name of the database test factory to use.
 	 */
-	public String getDatabaseFactoryName()
+	@Override
+  public String getDatabaseFactoryName()
 	{
 		return DatabaseFactory.class.getName();
 	}
@@ -1423,6 +1546,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     /**
      * @return The preferred schema name of this database connection.
      */
+    @Override
     public String getPreferredSchemaName()
     {
         return attributes.getProperty(ATTRIBUTE_PREFERRED_SCHEMA_NAME);
@@ -1431,6 +1555,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     /**
      * @param preferredSchemaName The preferred schema name of this database connection.
      */
+    @Override
     public void setPreferredSchemaName(String preferredSchemaName)
     {
         attributes.setProperty(ATTRIBUTE_PREFERRED_SCHEMA_NAME, preferredSchemaName);
@@ -1446,7 +1571,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
      * @return true if the index exists, false if it doesn't.
      * @throws KettleException
      */
-	public boolean checkIndexExists(Database database, String schemaName, String tableName, String[] idx_fields) throws KettleDatabaseException {
+	@Override
+  public boolean checkIndexExists(Database database, String schemaName, String tableName, String[] idx_fields) throws KettleDatabaseException {
 		
         String tablename = database.getDatabaseMeta().getQuotedSchemaTableCombination(schemaName, tableName);
 
@@ -1497,14 +1623,16 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	 * @return true if the database supports the NOMAXVALUE sequence option.
 	 * The default is false, AS/400 and DB2 support this. 
 	 */
-	public boolean supportsSequenceNoMaxValueOption() {
+	@Override
+  public boolean supportsSequenceNoMaxValueOption() {
 		return false;
 	}
 
 	/**
 	 * @return true if we need to append the PRIMARY KEY block in the create table block after the fields, required for Cache.
 	 */
-	public boolean requiresCreateTablePrimaryKeyAppend() {
+	@Override
+  public boolean requiresCreateTablePrimaryKeyAppend() {
 		return false;
 	}
 
@@ -1512,7 +1640,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	 * @return true if the database requires you to cast a parameter to varchar before comparing to null.  Only required for DB2 and Vertica
 	 * 
 	 */
-	public boolean requiresCastToVariousForIsNull() {
+	@Override
+  public boolean requiresCastToVariousForIsNull() {
 		return false;
 	}
 	
@@ -1521,7 +1650,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	 * In that case, the length is the precision.
 	 * 
 	 */
-	public boolean isDisplaySizeTwiceThePrecision() {
+	@Override
+  public boolean isDisplaySizeTwiceThePrecision() {
 		return false;
 	}
 	
@@ -1530,7 +1660,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	 * 
 	 * @return true if the database supports retrieval of query metadata from a prepared statement.  False if the query needs to be executed first.
 	 */
-	public boolean supportsPreparedStatementMetadataRetrieval() {
+	@Override
+  public boolean supportsPreparedStatementMetadataRetrieval() {
 		return true;
 	}
 
@@ -1538,6 +1669,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
    * @return true if this database only supports metadata retrieval on a result set,
    * never on a statement (even if the statement has been executed)
    */
+  @Override
   public boolean supportsResultSetMetadataRetrievalOnly() {
     return false;
   }
@@ -1546,35 +1678,40 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	 * @param tableName
 	 * @return true if the specified table is a system table
 	 */
-	public boolean isSystemTable(String tableName) {
+	@Override
+  public boolean isSystemTable(String tableName) {
 		return false;
 	}
 	
 	/**
 	 * @return true if the database supports newlines in a SQL statements.
 	 */
-	public boolean supportsNewLinesInSQL() {
+	@Override
+  public boolean supportsNewLinesInSQL() {
 		return true;
 	}
 
 	/**
 	 * @return the SQL to retrieve the list of schemas or null if the JDBC metadata needs to be used.
 	 */
-	public String getSQLListOfSchemas() {
+	@Override
+  public String getSQLListOfSchemas() {
 		return null;
 	}
 	
 	/**
 	 * @return The maximum number of columns in a database, <=0 means: no known limit
 	 */
-	public int getMaxColumnsInIndex() {
+	@Override
+  public int getMaxColumnsInIndex() {
 		return 0;
 	}
 	
 	/**
 	 * @return true if the database supports error handling (recovery of failure) while doing batch updates.
 	 */
-	public boolean supportsErrorHandlingOnBatchUpdates() {
+	@Override
+  public boolean supportsErrorHandlingOnBatchUpdates() {
 		return true;
 	}
 
@@ -1585,7 +1722,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	 * @param versionField the version field
 	 * @return the SQL to insert the unknown record into the SCD.
 	 */
-	public String getSQLInsertAutoIncUnknownDimensionRow(String schemaTable, String keyField, String versionField) {
+	@Override
+  public String getSQLInsertAutoIncUnknownDimensionRow(String schemaTable, String keyField, String versionField) {
 		return "insert into "+schemaTable+"("+keyField+", "+versionField+") values (0, 1)";		
 	}
 
@@ -1593,7 +1731,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	 * @return true if this is a relational database you can explore.
 	 * Return false for SAP, PALO, etc.
 	 */
-	public boolean isExplorable() {
+	@Override
+  public boolean isExplorable() {
 		return true;
 	}
 
@@ -1602,7 +1741,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	 * This is only used in case of a non-standard plugin.
 	 * Usually this method returns null.
 	 */
-	public String getXulOverlayFile() {
+	@Override
+  public String getXulOverlayFile() {
 		return null;
 	}
 	
@@ -1610,6 +1750,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
    * @param string
    * @return A string that is properly quoted for use in a SQL statement (insert, update, delete, etc)
    */
+  @Override
   public String quoteSQLString(String string) {
     string = string.replaceAll("'", "''"); 
     string = string.replaceAll("\\n", "\\\\n");
@@ -1623,10 +1764,12 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
    * @param tableName
    * @return
    */
+  @Override
   public String getSelectCountStatement(String tableName) {
       return SELECT_COUNT_STATEMENT+" "+tableName;
   }
   
+  @Override
   public String generateColumnAlias(int columnIndex, String suggestedName) {
     return "COL" + Integer.toString(columnIndex); 
   }
@@ -1637,6 +1780,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
    * @param sqlScript Raw SQL Script to be parsed into executable statements.
    * @return List of parsed SQL statements to be executed separately.
    */
+  @Override
   public List<String> parseStatements(String sqlScript) {
     
     List<SqlScriptStatement> scriptStatements = getSqlScriptStatements(sqlScript);
@@ -1653,6 +1797,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
    * @param sqlScript Raw SQL Script to be parsed into executable statements.
    * @return List of SQL script statements to be executed separately.
    */
+  @Override
   public List<SqlScriptStatement> getSqlScriptStatements(String sqlScript) {
     List<SqlScriptStatement> statements = new ArrayList<SqlScriptStatement>();
     String all = sqlScript;
@@ -1770,6 +1915,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
   /**
    * @return true if the database is a MySQL variant, like MySQL 5.1, InfiniDB, InfoBright, and so on.
    */
+  @Override
   public boolean isMySQLVariant() {
     return false;
   }
@@ -1778,6 +1924,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
    * Returns a true of savepoints can be released, false if not.
    * @return
    */
+  @Override
   public boolean releaseSavepoint() {
      return releaseSavepoint;
   }
@@ -1834,6 +1981,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     return rtn;
   }
   
+  @Override
   public Long getNextBatchId(DatabaseMeta dbm, Database ldb, String schemaName, String tableName, String fieldName) throws KettleDatabaseException {
     // Always take off autocommit.
     ldb.setCommit(10);
@@ -1867,6 +2015,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
    * @return String the tablespace name for tables in the format "tablespace TABLESPACE_NAME".  The TABLESPACE_NAME and
    * the passed DatabaseMata determines if TABLESPACE_NAME is to be enclosed in quotes.
    */
+  @Override
   public String getDataTablespaceDDL(VariableSpace variables, DatabaseMeta databaseMeta) {
      return getTablespaceDDL(variables, databaseMeta, databaseMeta.getDatabaseInterface().getDataTablespace());
   }
@@ -1881,6 +2030,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
    * @return String the tablespace name for indices in the format "tablespace TABLESPACE_NAME".  The TABLESPACE_NAME and
    * the passed DatabaseMata determines if TABLESPACE_NAME is to be enclosed in quotes.
    */
+  @Override
   public String getIndexTablespaceDDL(VariableSpace variables, DatabaseMeta databaseMeta) {
      return getTablespaceDDL(variables, databaseMeta, databaseMeta.getDatabaseInterface().getIndexTablespace());
   }
@@ -1910,6 +2060,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
    * @return The correctly converted Kettle data type corresponding to the valueMeta description.
    * @throws KettleDatabaseException
    */
+  @Override
   public Object getValueFromResultSet(ResultSet rs, ValueMetaInterface val, int i) throws KettleDatabaseException {
     
     return val.getValueFromResultSet(this, rs, i);
@@ -1919,6 +2070,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
   /**
    * @return true if the database supports the use of safe-points and if it is appropriate to ever use it (default to false)
    */
+  @Override
   public boolean useSafePoints() {
     return false;
   }
@@ -1927,10 +2079,12 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
    * @return true if the database supports error handling (the default). 
    *         Returns false for certain databases (SQLite) that invalidate a prepared statement or even the complete connection when an error occurs. 
    */
+  @Override
   public boolean supportsErrorHandling() {
     return true;
   }
 
+  @Override
   public String getSQLValue(ValueMetaInterface valueMeta, Object valueData, String dateFormat) throws KettleValueException {
     
     StringBuilder ins = new StringBuilder();
@@ -1988,6 +2142,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
    * @param fieldname value to sanitize
    * @return
    */
+  @Override
   public String getSafeFieldname(String fieldname) {    StringBuffer newName = new StringBuffer(fieldname.length());
 
     // alpha numerics only

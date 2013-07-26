@@ -147,7 +147,7 @@ public class IfNull extends BaseStep implements StepInterface
 					}
 					data.fieldnrs=new int[fieldsSelectedIndex.size()];
 			        List<Integer> entries = new ArrayList<Integer>(fieldsSelectedIndex);
-			        Integer fieldnr[] = (Integer[]) entries.toArray(new Integer[entries.size()]);
+			        Integer fieldnr[] = entries.toArray(new Integer[entries.size()]);
 			        for(int i=0;i<fieldnr.length;i++)
 					{
 						data.fieldnrs[i]=fieldnr[i];

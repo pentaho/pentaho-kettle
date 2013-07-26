@@ -1645,8 +1645,14 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 								switch(fieldUpdate[i]) {
 								case TYPE_UPDATE_DATE_INSUP    :
 								case TYPE_UPDATE_DATE_INSERTED :
-								case TYPE_UPDATE_DATE_UPDATED  : valueMeta = new ValueMeta(fieldLookup[i], ValueMetaInterface.TYPE_DATE); break;
-								case TYPE_UPDATE_LAST_VERSION  : valueMeta = new ValueMeta(fieldLookup[i], ValueMetaInterface.TYPE_BOOLEAN); break;
+								case TYPE_UPDATE_DATE_UPDATED  : 
+								  valueMeta = new ValueMeta(fieldLookup[i], ValueMetaInterface.TYPE_DATE); 
+								  break;
+								case TYPE_UPDATE_LAST_VERSION  : 
+								  valueMeta = new ValueMeta(fieldLookup[i], ValueMetaInterface.TYPE_BOOLEAN); 
+								  break;
+                default:
+                  break;
 								}
 								if (valueMeta!=null) {
 									fields.addValueMeta(valueMeta);

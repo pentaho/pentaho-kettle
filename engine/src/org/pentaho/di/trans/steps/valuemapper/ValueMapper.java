@@ -133,7 +133,7 @@ public class ValueMapper extends BaseStep implements StepInterface
         {
             if (!Const.isEmpty(source))
             {
-                target=(String)data.hashtable.get(source);
+                target=data.hashtable.get(source);
                 if ( nonMatchActivated && target == null )
                 {
                 	// If we do non matching and we don't have a match

@@ -353,7 +353,8 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable
 	 * Convert the row to a String representation.
 	 * @return the row as a String.
 	 */
-	public String toString()
+	@Override
+  public String toString()
 	{
 		StringBuffer retval= new StringBuffer(128);
 		
@@ -703,18 +704,21 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable
 		return 0;
 	}
 
+    @Override
     public int compareTo(Row obj)
     {
         return compare(obj);
     }
 
-	public boolean equals(Object r)
+	@Override
+  public boolean equals(Object r)
 	{
 		Row row=(Row)r;
 		return (compare(row) == 0);
 	}
 
-	public int hashCode()
+	@Override
+  public int hashCode()
 	{
 		int hash=0;
 		int i;
@@ -913,7 +917,8 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable
 	 *
 	 * @return The XML representation of this row
 	 */
-	public String getXML()
+	@Override
+  public String getXML()
 	{
 		StringBuilder xml= new StringBuilder();
 		
@@ -946,6 +951,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable
 
         Comparator<Row> comparator = new Comparator<Row>()
         {
+            @Override
             public int compare(Row one, Row two)
             {
                 return one.compare(two, fieldNumbers, ascending);

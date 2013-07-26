@@ -244,8 +244,8 @@ public class DatabaseLookup extends BaseStep implements StepInterface
             if (incr==0) incr=1;
             for (int k=0;k<keys.size();k+=incr)
             {
-                RowMetaAndData key = (RowMetaAndData) keys.get(k);
-                TimedRow timedRow = (TimedRow) data.look.get(key);
+                RowMetaAndData key = keys.get(k);
+                TimedRow timedRow = data.look.get(key);
                 samples.add(timedRow.getLogDate());
             }
             
@@ -253,13 +253,13 @@ public class DatabaseLookup extends BaseStep implements StepInterface
             
             if (samples.size()>1)
             {
-                Date smallest = (Date) samples.get(1);
+                Date smallest = samples.get(1);
                 
                 // Everything below the smallest date goes away...
                 for (int k=0;k<keys.size();k++)
                 {
-                    RowMetaAndData key = (RowMetaAndData) keys.get(k);
-                    TimedRow timedRow = (TimedRow) data.look.get(key);
+                    RowMetaAndData key = keys.get(k);
+                    TimedRow timedRow = data.look.get(key);
                     
                     if (timedRow.getLogDate().compareTo(smallest)<0)
                     {
@@ -273,7 +273,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 	private Object[] getRowFromCache(RowMetaInterface lookupMeta, Object[] lookupRow) throws KettleException {
 		if (data.allEquals) {
 			// only do the hashtable lookup when all equals otherwise conditions >, <, <> will give wrong results
-	        TimedRow timedRow = (TimedRow) data.look.get(new RowMetaAndData(data.lookupMeta, lookupRow));
+	        TimedRow timedRow = data.look.get(new RowMetaAndData(data.lookupMeta, lookupRow));
 	        if (timedRow!=null)
 	        {
 	            return timedRow.getRow();

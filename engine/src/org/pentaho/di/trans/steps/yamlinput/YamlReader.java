@@ -155,7 +155,7 @@ public class YamlReader {
 					List<Object> list = (List<Object>) getDocument();
 					if(list.size()==1) {
 					    Iterator<Object> it = list.iterator();
-					    Object value = (Object)it.next();
+					    Object value = it.next();
 						Map<Object, Object> map = (Map<Object, Object>) value; 
 						retval = new Object[rowMeta.size()];
 						for(int i=0; i<rowMeta.size(); i++) {
@@ -224,7 +224,7 @@ public class YamlReader {
 			  }else if(value instanceof Long) {
 			      o= new Double((Long) value); 
 			  }else if(value instanceof Double) {
-			      o= (Double) value; 
+			      o= value; 
 			  }else {
 				  o= new Double((String) value);
 			  }
@@ -241,13 +241,13 @@ public class YamlReader {
 			  }
 			break;
 		case ValueMeta.TYPE_BOOLEAN:
-		      o= (Boolean) value;
+		      o= value;
 			break;
 		case ValueMeta.TYPE_DATE:
-		      o= (Date) value;
+		      o= value;
 			break;
 		case ValueMeta.TYPE_BINARY:
-		      o= (byte[]) value;
+		      o= value;
 			break;
 		default:
 			String s=setMap(value);
@@ -331,7 +331,7 @@ public class YamlReader {
 	    		// Maybe we deals with List
 			    List<Object> list = (List<Object>) data; 
 			    Iterator<Object> it = list.iterator();
-			    Object value = (Object)it.next();
+			    Object value = it.next();
 			    
 			    if(list.size()==1) {
 			    	Map<Object, Object> map = (Map<Object, Object>) value; 

@@ -448,6 +448,8 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
             stopAll();
             bRC = false;
             break;
+          default:
+            break;
         }
 
         // TODO: kick this "ERROR handling" junk out now that we have solid error handling in place.
@@ -532,12 +534,12 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
                 } catch (Exception ev) {
                   // convert to a string should work in most cases...
                   //
-                  String string = (String) Context.toString(result);
+                  String string = Context.toString(result);
                   return string;
                 }
               } else {
                 // A String perhaps?
-                String string = (String) Context.toString(result);
+                String string = Context.toString(result);
                 return string;
               }
 
@@ -562,7 +564,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
                       return value.getDate();
                     } catch (Exception e2) {
                       try {
-                        String string = (String) Context.toString(result);
+                        String string = Context.toString(result);
                         return XMLHandler.stringToDate(string);
                       } catch (Exception e3) {
                         throw new KettleValueException("Can't convert a string to a date");
@@ -581,7 +583,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
               }
 
             case ValueMetaInterface.TYPE_BOOLEAN:
-              return (Boolean) result;
+              return result;
 
             case ValueMetaInterface.TYPE_BIGNUMBER:
               if (classType.equalsIgnoreCase("org.mozilla.javascript.Undefined")) {
@@ -729,6 +731,8 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
             break;
           case ScriptValuesScript.END_SCRIPT:
             strEndScript = jsScripts[j].getScript();
+            break;
+          default:
             break;
         }
       }

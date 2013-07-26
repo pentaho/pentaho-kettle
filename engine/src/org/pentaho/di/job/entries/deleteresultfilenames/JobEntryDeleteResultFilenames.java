@@ -229,7 +229,7 @@ public class JobEntryDeleteResultFilenames extends JobEntryBase implements Clone
 			        {
 			        	for (Iterator <ResultFile>  it = resultFiles.iterator(); it.hasNext() && !parentJob.isStopped();)
 			            {
-			        	  ResultFile resultFile = (ResultFile) it.next();
+			        	  ResultFile resultFile = it.next();
 			              FileObject file = resultFile.getFile();
 			              if (file != null && file.exists())
 			              {

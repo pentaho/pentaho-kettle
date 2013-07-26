@@ -150,11 +150,11 @@ public class SalesforceUpsert extends BaseStep implements StepInterface
 				SObject	sobjPass = new SObject();
 				sobjPass.setType(data.realModule);
 				if(upsertfields.size()>0) {
-					sobjPass.set_any((MessageElement[])upsertfields.toArray(new MessageElement[upsertfields.size()]));
+					sobjPass.set_any(upsertfields.toArray(new MessageElement[upsertfields.size()]));
 				}
 				if(fieldsToNull.size()>0) {
 					// Set Null to fields
-					sobjPass.setFieldsToNull((String[])fieldsToNull.toArray(new String[fieldsToNull.size()]));
+					sobjPass.setFieldsToNull(fieldsToNull.toArray(new String[fieldsToNull.size()]));
 				}
 				//Load the buffer array
 				data.sfBuffer[data.iBufferPos] = sobjPass;

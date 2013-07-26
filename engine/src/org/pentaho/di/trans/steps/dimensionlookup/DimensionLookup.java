@@ -215,7 +215,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
             
             determineTechKeyCreation();
 
-            data.notFoundTk = new Long( (long)meta.getDatabaseMeta().getNotFoundTK(isAutoIncrement()) );
+            data.notFoundTk = new Long( meta.getDatabaseMeta().getNotFoundTK(isAutoIncrement()) );
             // if (meta.getKeyRename()!=null && meta.getKeyRename().length()>0) data.notFoundTk.setName(meta.getKeyRename());
                         
             if (getCopy()==0) checkDimZero();
@@ -517,6 +517,8 @@ public class DimensionLookup extends BaseStep implements StepInterface
           technicalKey = data.db.getNextSequenceValue(data.realSchemaName, meta.getSequenceName(), meta.getKeyField());
           if (technicalKey != null && log.isRowLevel())
             logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.FoundNextSequence") + technicalKey.toString()); 
+          break;
+        default:
           break;
         }
 
@@ -970,6 +972,8 @@ public class DimensionLookup extends BaseStep implements StepInterface
         case DimensionLookupMeta.TYPE_UPDATE_LAST_VERSION:
           valueMeta = new ValueMeta(meta.getFieldLookup()[i], ValueMetaInterface.TYPE_BOOLEAN);
           break;
+        default:
+          break;
         }
         if (valueMeta != null) {
           sql += ", " + databaseMeta.quoteField(valueMeta.getName());
@@ -1004,6 +1008,8 @@ public class DimensionLookup extends BaseStep implements StepInterface
         case DimensionLookupMeta.TYPE_UPDATE_DATE_INSERTED:
         case DimensionLookupMeta.TYPE_UPDATE_LAST_VERSION:
           sql += ", ?";
+          break;
+        default:
           break;
         }
       }
@@ -1048,6 +1054,8 @@ public class DimensionLookup extends BaseStep implements StepInterface
           break;
         case DimensionLookupMeta.TYPE_UPDATE_LAST_VERSION:
           valueMeta = new ValueMeta(meta.getFieldLookup()[i], ValueMetaInterface.TYPE_BOOLEAN);
+          break;
+        default:
           break;
         }
         if (valueMeta != null) {
@@ -1134,6 +1142,8 @@ public class DimensionLookup extends BaseStep implements StepInterface
       case DimensionLookupMeta.TYPE_UPDATE_LAST_VERSION:
         insertRow[insertIndex++] = Boolean.TRUE;
         break; // Always the last version on insert.
+      default:
+        break;
       }
     }
 
@@ -1192,6 +1202,8 @@ public class DimensionLookup extends BaseStep implements StepInterface
         case DimensionLookupMeta.TYPE_UPDATE_DATE_UPDATED:
           updateRow[updateIndex++] = new Date();
           break; 
+        default:
+          break;
         }
       }
 
@@ -1256,6 +1268,8 @@ public class DimensionLookup extends BaseStep implements StepInterface
         case DimensionLookupMeta.TYPE_UPDATE_DATE_UPDATED:
           valueMeta = new ValueMeta(meta.getFieldLookup()[i], ValueMetaInterface.TYPE_DATE);
           break;
+        default:
+          break;
         }
         if (valueMeta != null) {
           if (comma)
@@ -1297,6 +1311,8 @@ public class DimensionLookup extends BaseStep implements StepInterface
       case DimensionLookupMeta.TYPE_UPDATE_DATE_INSUP:
       case DimensionLookupMeta.TYPE_UPDATE_DATE_UPDATED:
         dimensionUpdateRow[updateIndex++] = valueDate;
+        break;
+      default:
         break;
       }
     }
@@ -1344,6 +1360,8 @@ public class DimensionLookup extends BaseStep implements StepInterface
 				switch(meta.getFieldUpdate()[i]) {
 				case DimensionLookupMeta.TYPE_UPDATE_DATE_INSUP    : 
 				case DimensionLookupMeta.TYPE_UPDATE_DATE_UPDATED  : valueMeta = new ValueMeta(meta.getFieldLookup()[i], ValueMetaInterface.TYPE_DATE); break;
+        default:
+          break;
 				}
 				if (valueMeta!=null) {
 					sql_upd+=", "+databaseMeta.quoteField(valueMeta.getName()) +" = ?"+Const.CR;
@@ -1382,7 +1400,10 @@ public class DimensionLookup extends BaseStep implements StepInterface
         for (int i=0;i<meta.getFieldUpdate().length;i++) {
         	switch(meta.getFieldUpdate()[i]) {
 			case DimensionLookupMeta.TYPE_UPDATE_DATE_INSUP    : 
-			case DimensionLookupMeta.TYPE_UPDATE_DATE_UPDATED  : punchThroughRow[punchIndex++] = new Date(); break;
+			case DimensionLookupMeta.TYPE_UPDATE_DATE_UPDATED  : 
+			  punchThroughRow[punchIndex++] = new Date(); break;
+      default:
+        break;
 			}	
         }
         for (int i=0;i<data.keynrs.length;i++)
@@ -1492,7 +1513,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
             if (stepsize<1) stepsize=1; //make shure we have no endless loop
             for (int i=0;i<keys.size();i+=stepsize)
             {
-                byte[] key = (byte[]) keys.get(i);
+                byte[] key = keys.get(i);
                 byte[] value = data.cache.get(key);
                 if (value!=null)
                 {
@@ -1521,7 +1542,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
             //
             for (int i=0;i<keys.size();i++)
             {
-                byte[] key = (byte[]) keys.get(i);
+                byte[] key = keys.get(i);
                 byte[] value = data.cache.get(key);
                 if (value!=null)
                 {

@@ -44,7 +44,6 @@ import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
 
@@ -206,7 +205,7 @@ public class NullIfTest extends TestCase
         
         // Set the information of the injector.                
         String injectorPid = registry.getPluginId(StepPluginType.class, im);
-        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
+        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, im);
         transMeta.addStep(injectorStep);
 
         // 
@@ -216,7 +215,7 @@ public class NullIfTest extends TestCase
         DummyTransMeta dm1 = new DummyTransMeta();
 
         String dummyPid1 = registry.getPluginId(StepPluginType.class, dm1);
-        StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, (StepMetaInterface)dm1);
+        StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, dm1);
         transMeta.addStep(dummyStep1);                              
 
         TransHopMeta hi = new TransHopMeta(injectorStep, dummyStep1);
@@ -232,7 +231,7 @@ public class NullIfTest extends TestCase
         ni.setFieldValue(new String[] {"1", "tst"});
 
         String nullIfPid = registry.getPluginId(StepPluginType.class, ni);
-        StepMeta nullIfStep = new StepMeta(nullIfPid, nullIfName, (StepMetaInterface)ni);
+        StepMeta nullIfStep = new StepMeta(nullIfPid, nullIfName, ni);
         transMeta.addStep(nullIfStep);                              
 
         TransHopMeta hi2 = new TransHopMeta(dummyStep1, nullIfStep);
@@ -245,7 +244,7 @@ public class NullIfTest extends TestCase
         DummyTransMeta dm2 = new DummyTransMeta();
 
         String dummyPid2 = registry.getPluginId(StepPluginType.class, dm2);
-        StepMeta dummyStep2 = new StepMeta(dummyPid2, dummyStepname2, (StepMetaInterface)dm2);
+        StepMeta dummyStep2 = new StepMeta(dummyPid2, dummyStepname2, dm2);
         transMeta.addStep(dummyStep2);                              
 
         TransHopMeta hi3 = new TransHopMeta(nullIfStep, dummyStep2);

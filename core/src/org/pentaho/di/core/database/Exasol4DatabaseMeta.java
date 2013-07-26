@@ -35,11 +35,13 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  */
 
 public class Exasol4DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface {
-	public int[] getAccessTypeList() {
+	@Override
+  public int[] getAccessTypeList() {
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_JNDI };
 	}
 
-	public int getDefaultDatabasePort() {
+	@Override
+  public int getDefaultDatabasePort() {
 		if (getAccessType() == DatabaseMeta.TYPE_ACCESS_NATIVE)
 			return 8563;
 		return -1;
@@ -49,7 +51,8 @@ public class Exasol4DatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	 * @return Whether or not the database can use auto increment type of fields
 	 *         (pk)
 	 */
-	public boolean supportsAutoInc() {
+	@Override
+  public boolean supportsAutoInc() {
 		// Exasol does support the identity column type, but does not support returning generated
 		// keys on the jdbc driver
 		return false;
@@ -58,7 +61,8 @@ public class Exasol4DatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	/**
 	 * @see org.pentaho.di.core.database.DatabaseInterface#getLimitClause(int)
 	 */
-	public String getLimitClause(int nrRows) {
+	@Override
+  public String getLimitClause(int nrRows) {
 		return " WHERE ROWNUM <= " + nrRows;
 	}
 
@@ -70,15 +74,18 @@ public class Exasol4DatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	 *            The name of the table to determine the layout for
 	 * @return The SQL to launch.
 	 */
-	public String getSQLQueryFields(String tableName) {
+	@Override
+  public String getSQLQueryFields(String tableName) {
 		return "SELECT /*+FIRST_ROWS*/ * FROM " + tableName + " WHERE 1=0";
 	}
 
-	public String getSQLTableExists(String tablename) {
+	@Override
+  public String getSQLTableExists(String tablename) {
 		return getSQLQueryFields(tablename);
 	}
 
-	public String getSQLColumnExists(String columnname, String tablename) {
+	@Override
+  public String getSQLColumnExists(String columnname, String tablename) {
 		return getSQLQueryColumnFields(columnname, tablename);
 	}
 
@@ -86,15 +93,18 @@ public class Exasol4DatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 		return "SELECT /*+FIRST_ROWS*/ " + columnname + " FROM " + tableName + " WHERE 1=0";
 	}
 
-	public boolean needsToLockAllTables() {
+	@Override
+  public boolean needsToLockAllTables() {
 		return false;
 	}
 
-	public String getDriverClass() {
+	@Override
+  public String getDriverClass() {
 		return "com.exasol.jdbc.EXADriver";
 	}
 
-	public String getURL(String hostname, String port, String databaseName) throws KettleDatabaseException {
+	@Override
+  public String getURL(String hostname, String port, String databaseName) throws KettleDatabaseException {
 		return "jdbc:exa:" + hostname + ":" + port;
 	}
 
@@ -102,14 +112,16 @@ public class Exasol4DatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	 * Oracle doesn't support options in the URL, we need to put these in a
 	 * Properties object at connection time...
 	 */
-	public boolean supportsOptionsInURL() {
+	@Override
+  public boolean supportsOptionsInURL() {
 		return true;
 	}
 
 	/**
 	 * @return true if the database supports sequences
 	 */
-	public boolean supportsSequences() {
+	@Override
+  public boolean supportsSequences() {
 		return false;
 	}
 
@@ -117,14 +129,16 @@ public class Exasol4DatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	 * @return true if we need to supply the schema-name to getTables in order
 	 *         to get a correct list of items.
 	 */
-	public boolean useSchemaNameForTableList() {
+	@Override
+  public boolean useSchemaNameForTableList() {
 		return true;
 	}
 
 	/**
 	 * @return true if the database supports synonyms
 	 */
-	public boolean supportsSynonyms() {
+	@Override
+  public boolean supportsSynonyms() {
 		return false;
 	}
 
@@ -145,7 +159,8 @@ public class Exasol4DatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	 *            whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to add a column to the specified table
 	 */
-	public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon) {
+	@Override
+  public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon) {
 		return "ALTER TABLE " + tablename + " ADD ( " + getFieldDefinition(v, tk, pk, use_autoinc, true, false) + " ) ";
 	}
 
@@ -166,7 +181,8 @@ public class Exasol4DatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	 *            whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to drop a column from the specified table
 	 */
-	public String getDropColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon) {
+	@Override
+  public String getDropColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon) {
 		return "ALTER TABLE " + tablename + " DROP COLUMN " + v.getName() + Const.CR;
 	}
 
@@ -187,13 +203,15 @@ public class Exasol4DatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	 *            whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to modify a column in the specified table
 	 */
-	public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon) {
+	@Override
+  public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon) {
 
 		return "ALTER TABLE " + tablename + " MODIFY COLUMN " + getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 
 	}
 
-	public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr) {
+	@Override
+  public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr) {
 		StringBuffer retval = new StringBuffer(128);
 
 		String fieldname = v.getName();
@@ -264,7 +282,8 @@ public class Exasol4DatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	 * @see
 	 * com.ibridge.kettle.core.database.DatabaseInterface#getReservedWords()
 	 */
-	public String[] getReservedWords() {
+	@Override
+  public String[] getReservedWords() {
 		return new String[] { "ABSOLUTE", "ACTION", "ADD", "AFTER", "ALL", "ALLOCATE", "ALTER", "AND", "APPEND", "ARE", "ARRAY", "AS", "ASC", "ASENSITIVE", "ASSERTION", "AT", "ATTRIBUTE", "AUTHID", "AUTHORIZATION", "BEFORE", "BEGIN", "BETWEEN", "BIGINT", "BINARY", "BIT", "BLOB", "BLOCKED", "BOOL",
 				"BOOLEAN", "BOTH", "BY", "BYTE", "CALL", "CALLED", "CARDINALITY", "CASCADE", "CASCADED", "CASE", "CASESPECIFIC", "CAST", "CATALOG", "CHAIN", "CHAR", "CHARACTER", "CHARACTERISTICS", "CHARACTER_SET_CATALOG", "CHARACTER_SET_NAME", "CHARACTER_SET_SCHEMA", "CHECK", "CHECKED", "CLOSE",
 				"COALESCE", "COLLATE", "COLLATION", "COLLATION_CATALOG", "COLLATION_NAME", "COLLATION_SCHEMA", "COLUMN", "COMMIT", "CONDITION", "CONNECTION", "CONSTANT", "CONSTRAINT", "CONSTRAINTS", "CONSTRUCTOR", "CONTAINS", "CONTINUE", "CONTROL", "CONVERT", "CORRESPONDING", "CREATE", "CS", "CSV",
@@ -289,11 +308,13 @@ public class Exasol4DatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	 * @return extra help text on the supported options on the selected database
 	 *         platform.
 	 */
-	public String getExtraOptionsHelpText() {
+	@Override
+  public String getExtraOptionsHelpText() {
 		return "http://www.exasol.com/knowledge-center.html";
 	}
 
-	public String[] getUsedLibraries() {
+	@Override
+  public String[] getUsedLibraries() {
 		return new String[] { "exajdbc.jar" };
 	}
 
@@ -309,7 +330,8 @@ public class Exasol4DatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	 * @return true if the index exists, false if it doesn't.
 	 * @throws KettleException
 	 */
-	public boolean checkIndexExists(Database database, String schemaName, String tableName, String[] idx_fields) throws KettleDatabaseException {
+	@Override
+  public boolean checkIndexExists(Database database, String schemaName, String tableName, String[] idx_fields) throws KettleDatabaseException {
 
 		// no explicit index handling, indexes are not exposed in exasol. Assume
 		// all indexes are there!
@@ -329,7 +351,8 @@ public class Exasol4DatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	 *         prepared statement. False if the query needs to be executed
 	 *         first.
 	 */
-	public boolean supportsPreparedStatementMetadataRetrieval() {
+	@Override
+  public boolean supportsPreparedStatementMetadataRetrieval() {
 		return false;
 	}
 
@@ -337,7 +360,8 @@ public class Exasol4DatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	 * @return The maximum number of columns in a database, <=0 means: no known
 	 *         limit
 	 */
-	public int getMaxColumnsInIndex() {
+	@Override
+  public int getMaxColumnsInIndex() {
 		return -1;
 	}
 
@@ -346,7 +370,8 @@ public class Exasol4DatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	 * @return A string that is properly quoted for use in an Exasol SQL
 	 *         statement (insert, update, delete, etc)
 	 */
-	public String quoteSQLString(String string) {
+	@Override
+  public String quoteSQLString(String string) {
 		string = string.replaceAll("'", "''");
 		string = string.replaceAll("\\n", "'||chr(13)||'");
 		string = string.replaceAll("\\r", "'||chr(10)||'");

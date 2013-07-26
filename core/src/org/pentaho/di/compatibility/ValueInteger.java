@@ -54,97 +54,116 @@ public class ValueInteger implements ValueInterface, Cloneable
 		this.length    = -1;
 	}
 
-	public int getType()
+	@Override
+  public int getType()
 	{
 		return Value.VALUE_TYPE_INTEGER;
 	}
 
-	public String getTypeDesc()
+	@Override
+  public String getTypeDesc()
 	{
 		return "Integer";
 	}
 
-	public String getString()
+	@Override
+  public String getString()
 	{
 		return Long.toString(number);
 	}
 
-	public double getNumber()
+	@Override
+  public double getNumber()
 	{
 		return this.number;
 	}
 
-	public Date getDate()
+	@Override
+  public Date getDate()
 	{
 		return new Date(number);
 	}
 
-	public boolean getBoolean()
+	@Override
+  public boolean getBoolean()
 	{
 		return number!=0L;
 	}
 
-	public long getInteger()
+	@Override
+  public long getInteger()
 	{
 		return number;
 	}	
 	
+    @Override
     public void setSerializable(Serializable ser) {
         
     }
     
-	public void    setString(String string)
+	@Override
+  public void    setString(String string)
 	{
 		this.number = Const.toLong(string, 0L);
 	}
 	
-	public void    setNumber(double number)
+	@Override
+  public void    setNumber(double number)
 	{
 		this.number = Math.round(number);
 	}
 	
-	public void    setDate(Date date)
+	@Override
+  public void    setDate(Date date)
 	{
 		this.number = date.getTime();
 	}
 	
-	public void    setBoolean(boolean bool)
+	@Override
+  public void    setBoolean(boolean bool)
 	{
 		this.number = bool?1L:0L;
 	}
 	
-	public void    setInteger(long number)
+	@Override
+  public void    setInteger(long number)
 	{
 		this.number = number;
 	}
 
 	
 	
-	public int getLength()
+	@Override
+  public int getLength()
 	{
 		return length;
 	}
 	
-	public int getPrecision()
+	@Override
+  public int getPrecision()
 	{
 		return 0;
 	}
 	
-	public void setLength(int length, int precision)
+	@Override
+  public void setLength(int length, int precision)
 	{
 		this.length = length;
 	}
 	
-	public void setLength(int length)
+	@Override
+  public void setLength(int length)
 	{
 		this.length = length;
 	}
 	
-	public void setPrecision(int precision)
+	@Override
+  public void setPrecision(int precision)
 	{
 	}
 	
-	public Object clone()
+	@Override
+  public Object clone()
 	{
 		try
 		{
@@ -157,24 +176,29 @@ public class ValueInteger implements ValueInterface, Cloneable
 		}
 	}
 
+    @Override
     public BigDecimal getBigNumber()
     {
         return new BigDecimal(number);
     }
 
+    @Override
     public void setBigNumber(BigDecimal number)
     {
         this.number = number.longValue();
         
     }
+    @Override
     public Serializable getSerializable() {
         return new Long(number);
     }
     
-	public byte[] getBytes() {
+	@Override
+  public byte[] getBytes() {
 		return null;
 	}
 
-	public void setBytes(byte[] b) {
+	@Override
+  public void setBytes(byte[] b) {
 	}
 }

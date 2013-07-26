@@ -71,7 +71,8 @@ public class PluginFolder implements PluginFolderInterface {
     this.searchLibDir = searchLibDir;
   }
 	
-	public String toString() {
+	@Override
+  public String toString() {
 		return folder;
 	}
 	
@@ -102,6 +103,7 @@ public class PluginFolder implements PluginFolderInterface {
 		return pluginFolders;
 	}
 
+    @Override
     public FileObject[] findJarFiles() throws KettleFileException {
       return findJarFiles(searchLibDir);
     }
@@ -113,7 +115,8 @@ public class PluginFolder implements PluginFolderInterface {
 			//
 			FileObject folderObject = KettleVFS.getFileObject( this.getFolder() );
 			FileObject[] fileObjects = folderObject.findFiles(new FileSelector() {
-				public boolean traverseDescendents(FileSelectInfo fileSelectInfo) throws Exception {
+				@Override
+        public boolean traverseDescendents(FileSelectInfo fileSelectInfo) throws Exception {
 				  String folder = fileSelectInfo.getFile().getName().getBaseName();
 				  return ( includeLibJars || !"lib".equals( folder ) ) &&
 				      // Avoid slow unit testing and slow loading...
@@ -123,7 +126,8 @@ public class PluginFolder implements PluginFolderInterface {
 				      ;				  
 				}
 				
-				public boolean includeFile(FileSelectInfo fileSelectInfo) throws Exception {
+				@Override
+        public boolean includeFile(FileSelectInfo fileSelectInfo) throws Exception {
 					return fileSelectInfo.getFile().toString().matches(".*\\.jar$");
 				}
 			});
@@ -137,7 +141,8 @@ public class PluginFolder implements PluginFolderInterface {
 	/**
 	 * @return the folder
 	 */
-	public String getFolder() {
+	@Override
+  public String getFolder() {
 		return folder;
 	}
 	
@@ -151,7 +156,8 @@ public class PluginFolder implements PluginFolderInterface {
 	/**
 	 * @return the pluginXmlFolder
 	 */
-	public boolean isPluginXmlFolder() {
+	@Override
+  public boolean isPluginXmlFolder() {
 		return pluginXmlFolder;
 	}
 
@@ -165,7 +171,8 @@ public class PluginFolder implements PluginFolderInterface {
 	/**
 	 * @return the pluginAnnotationsFolder
 	 */
-	public boolean isPluginAnnotationsFolder() {
+	@Override
+  public boolean isPluginAnnotationsFolder() {
 		return pluginAnnotationsFolder;
 	}
 

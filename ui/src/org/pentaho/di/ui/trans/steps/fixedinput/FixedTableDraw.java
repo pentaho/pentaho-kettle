@@ -382,7 +382,7 @@ public class FixedTableDraw extends Canvas
 			// 
 			for (int i=fromy;i<rows.size() && i<toy;i++)
 			{
-				String str = (String)rows.get(i);
+				String str = rows.get(i);
 				for (int p=fromx;p<str.length() && p<tox;p++)
 				{
 					gc.drawText(""+str.charAt(p), LEFT+MARGIN+p*fontwidth + offset.x, TOP + i*(fontheight+2) + offset.y, true);
@@ -536,7 +536,7 @@ public class FixedTableDraw extends Canvas
 		
 		for (int i=0;i<rows.size();i++)
 		{
-			String str = (String)rows.get(i);
+			String str = rows.get(i);
 			int len = (str.length()+10)*fontwidth;
 			
 			if (maxx < len) maxx=len;
@@ -551,7 +551,7 @@ public class FixedTableDraw extends Canvas
 		
 		for (int i=0;i<rows.size();i++)
 		{
-			String str = (String)rows.get(i);
+			String str = rows.get(i);
 			int len = str.length();
 			
 			if (maxx < len) maxx=len;

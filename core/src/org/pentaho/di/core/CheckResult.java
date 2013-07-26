@@ -73,26 +73,31 @@ public class CheckResult implements CheckResultInterface
     }
 
 
+    @Override
     public int getType()
     {
         return type;
     }
 
+    @Override
     public String getTypeDesc()
     {
         return typeDesc[type];
     }
 
+    @Override
     public String getText()
     {
         return text;
     }
 
+    @Override
     public CheckResultSourceInterface getSourceInfo()
     {
         return sourceMeta;
     }
 
+    @Override
     public String toString()
     {
         StringBuffer sb = new StringBuffer();
@@ -107,6 +112,7 @@ public class CheckResult implements CheckResultInterface
     /**
      * @return the errorCode
      */
+    @Override
     public String getErrorCode()
     {
         return errorCode;
@@ -115,14 +121,17 @@ public class CheckResult implements CheckResultInterface
     /**
      * @param errorCode the errorCode to set
      */
+    @Override
     public void setErrorCode(String errorCode)
     {
         this.errorCode = errorCode;
     }
+    @Override
     public void setText(String value) {
       this.text = value;
     }
 
+    @Override
     public void setType(int value) {
       this.type = value;
     }

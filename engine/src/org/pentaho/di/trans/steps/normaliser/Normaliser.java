@@ -122,7 +122,7 @@ public class Normaliser extends BaseStep implements StepInterface
 		//
 		for (int e=0;e<data.type_occ.size();e++)
 		{
-			String typevalue = (String)data.type_occ.get(e);
+			String typevalue = data.type_occ.get(e);
 
 			// Create an output row per type
 			//

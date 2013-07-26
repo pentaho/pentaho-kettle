@@ -649,6 +649,8 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
       }    	
       mappingTransMeta = rep.loadTransformation(mappingMeta.getTransObjectId(), null);
       break;
+      default:
+        break;
     }
     
     // Pass some important information to the mapping transformation metadata:

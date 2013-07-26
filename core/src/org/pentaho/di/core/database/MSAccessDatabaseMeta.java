@@ -38,12 +38,14 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
-	public int[] getAccessTypeList()
+	@Override
+  public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_ODBC };
 	}
 	
-	public boolean supportsSetCharacterStream()
+	@Override
+  public boolean supportsSetCharacterStream()
 	{
 		return false;
 	}
@@ -51,7 +53,8 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	/**
 	 * @see DatabaseInterface#getNotFoundTK(boolean)
 	 */
-	public int getNotFoundTK(boolean use_autoinc)
+	@Override
+  public int getNotFoundTK(boolean use_autoinc)
 	{
 		if ( supportsAutoInc() && use_autoinc)
 		{
@@ -60,11 +63,13 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 		return super.getNotFoundTK(use_autoinc);
 	}
 
-	public String getDriverClass()
+	@Override
+  public String getDriverClass()
 	{
 		return "sun.jdbc.odbc.JdbcOdbcDriver"; // always ODBC!
 	}	
 
+    @Override
     public String getURL(String hostname, String port, String databaseName)
     {
 		return "jdbc:odbc:"+databaseName;
@@ -74,7 +79,8 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	 * Checks whether or not the command setFetchSize() is supported by the JDBC driver...
 	 * @return true is setFetchSize() is supported!
 	 */
-	public boolean isFetchSizeSupported()
+	@Override
+  public boolean isFetchSizeSupported()
 	{
 		return false;
 	}
@@ -82,7 +88,8 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	/**
 	 * @see org.pentaho.di.core.database.DatabaseInterface#getSchemaTableCombination(java.lang.String, java.lang.String)
 	 */
-	@SuppressWarnings("deprecation")
+	@Override
+  @SuppressWarnings("deprecation")
   public String getSchemaTableCombination(String schema_name, String table_part)
 	{
 		return getBackwardsCompatibleSchemaTableCombination(schema_name, table_part);
@@ -92,7 +99,8 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	 * This includes optional CLOB, Memo and Text fields. (the maximum!)
 	 * @return The maximum text field length for this database type. (mostly CLOB_LENGTH)
 	 */
-	public int getMaxTextFieldLength()
+	@Override
+  public int getMaxTextFieldLength()
 	{
 		return 65536;
 	}
@@ -100,7 +108,8 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	/**
 	 * @return true if the database supports transactions.
 	 */
-	public boolean supportsTransactions()
+	@Override
+  public boolean supportsTransactions()
 	{
 		return false;
 	}
@@ -108,7 +117,8 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	/**
 	 * @return true if the database supports bitmap indexes
 	 */
-	public boolean supportsBitmapIndex()
+	@Override
+  public boolean supportsBitmapIndex()
 	{
 		return false;
 	}
@@ -116,7 +126,8 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	/**
 	 * @return true if the database JDBC driver supports the setLong command
 	 */
-	public boolean supportsSetLong()
+	@Override
+  public boolean supportsSetLong()
 	{
 		return false;
 	}
@@ -124,7 +135,8 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	/**
 	 * @return true if the database supports views
 	 */
-	public boolean supportsViews()
+	@Override
+  public boolean supportsViews()
 	{
 		return false;
 	}
@@ -132,7 +144,8 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	/**
 	 * @return true if the database supports synonyms
 	 */
-	public boolean supportsSynonyms()
+	@Override
+  public boolean supportsSynonyms()
 	{
 		return false;
 	}
@@ -141,7 +154,8 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	 * @param tableName The table to be truncated.
 	 * @return The SQL statement to truncate a table: remove all rows from it without a transaction
 	 */
-	public String getTruncateTableStatement(String tableName)
+	@Override
+  public String getTruncateTableStatement(String tableName)
 	{
 	    return "DELETE FROM "+tableName;
 	}
@@ -157,7 +171,8 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to add a column to the specified table
 	 */
-	public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" ADD COLUMN "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
@@ -172,7 +187,8 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to drop a column from the specified table
 	 */
-	public String getDropColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getDropColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" DROP COLUMN "+v.getName()+Const.CR;
 	}
@@ -187,12 +203,14 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to modify a column in the specified table
 	 */
-	public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" ALTER COLUMN "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
 
-	public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
+	@Override
+  public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
 	{
 		String retval="";
 		
@@ -289,7 +307,8 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	/* (non-Javadoc)
 	 * @see org.pentaho.di.core.database.DatabaseInterface#getReservedWords()
 	 */
-	public String[] getReservedWords()
+	@Override
+  public String[] getReservedWords()
 	{
 		return new String[]
 		{
@@ -340,7 +359,8 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	/**
 	 * @return The start quote sequence, mostly just double quote, but sometimes [, ...
 	 */
-	public String getStartQuote()
+	@Override
+  public String getStartQuote()
 	{
 		return "[";
 	}
@@ -348,16 +368,19 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	/**
 	 * @return The end quote sequence, mostly just double quote, but sometimes ], ...
 	 */
-	public String getEndQuote()
+	@Override
+  public String getEndQuote()
 	{
 		return "]";
 	}
     
+    @Override
     public String[] getUsedLibraries()
     {
         return new String[] { };
     }
     
+    @Override
     public boolean supportsGetBlob()
     {
         return false;
@@ -373,7 +396,8 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
      * @return true if the index exists, false if it doesn't.
      * @throws KettleException
      */
-	public boolean checkIndexExists(Database database, String schemaName, String tableName, String[] idx_fields) throws KettleDatabaseException  {
+	@Override
+  public boolean checkIndexExists(Database database, String schemaName, String tableName, String[] idx_fields) throws KettleDatabaseException  {
 		
         String tablename = database.getDatabaseMeta().getQuotedSchemaTableCombination(schemaName, tableName);
 
@@ -427,7 +451,8 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	 * @param versionField the version field
 	 * @return the SQL to insert the unknown record into the SCD.
 	 */
-	public String getSQLInsertAutoIncUnknownDimensionRow(String schemaTable, String keyField, String versionField) {
+	@Override
+  public String getSQLInsertAutoIncUnknownDimensionRow(String schemaTable, String keyField, String versionField) {
 		return "insert into "+schemaTable+"("+versionField+") values (1)";		
 	}
 

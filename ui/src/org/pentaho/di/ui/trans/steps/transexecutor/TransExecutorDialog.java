@@ -699,6 +699,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
       executorTransMeta = repository.loadTransformation(referenceObjectId, null); // load the last version
       executorTransMeta.clearChanged();
       break;
+      default:
+        break;
 	  }
 	}
 	
@@ -751,6 +753,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
         referenceObjectId = transExecutorMeta.getTransObjectId();
         wByReference.setText("");
         getByReferenceData(transExecutorMeta.getTransObjectId());
+        break;
+      default:
         break;
     }
     setRadioButtons();
@@ -1561,6 +1565,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
       transExecutorMeta.setTransName(null);
       transExecutorMeta.setTransObjectId(referenceObjectId);
       break;
+      default:
+        break;
     }
 
 		// Load the information on the tabs, optionally do some
@@ -1687,6 +1693,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
             break;
           case REPOSITORY_BY_REFERENCE:
             getByReferenceData(newTransMeta.getObjectId());
+            break;
+          default:
             break;
         }
         

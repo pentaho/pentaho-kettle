@@ -1852,7 +1852,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		}
 
 		// Put it in an array:
-		String lst[] = (String[])sheetnames.toArray(new String[sheetnames.size()]);
+		String lst[] = sheetnames.toArray(new String[sheetnames.size()]);
 
 		// Let the user select the sheet-names...
 		EnterListDialog esd = new EnterListDialog(shell, SWT.NONE, lst);
@@ -2056,7 +2056,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
             List<Charset> values = new ArrayList<Charset>(Charset.availableCharsets().values());
             for (int i=0;i<values.size();i++)
             {
-                Charset charSet = (Charset)values.get(i);
+                Charset charSet = values.get(i);
                 wEncoding.add( charSet.displayName() );
             }
             

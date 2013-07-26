@@ -34,12 +34,14 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class SybaseIQDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
-	public int[] getAccessTypeList()
+	@Override
+  public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
 	}
 	
-	public int getDefaultDatabasePort()
+	@Override
+  public int getDefaultDatabasePort()
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE) return 2638;
 		return -1;
@@ -48,7 +50,8 @@ public class SybaseIQDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	/**
 	 * @see org.pentaho.di.core.database.DatabaseInterface#getNotFoundTK(boolean)
 	 */
-	public int getNotFoundTK(boolean use_autoinc)
+	@Override
+  public int getNotFoundTK(boolean use_autoinc)
 	{
 		if ( supportsAutoInc() && use_autoinc)
 		{
@@ -57,7 +60,8 @@ public class SybaseIQDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 		return super.getNotFoundTK(use_autoinc);
 	}
 
-	public String getDriverClass()
+	@Override
+  public String getDriverClass()
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
 		{
@@ -70,6 +74,7 @@ public class SybaseIQDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 		}
 	}
   
+    @Override
     public String getURL(String hostname, String port, String databaseName)
     {
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
@@ -88,7 +93,8 @@ public class SybaseIQDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	/**
 	 * @see org.pentaho.di.core.database.DatabaseInterface#getSchemaTableCombination(java.lang.String, java.lang.String)
 	 */
-	public String getSchemaTableCombination(String schema_name, String table_part)
+	@Override
+  public String getSchemaTableCombination(String schema_name, String table_part)
 	{
 		return schema_name+"."+table_part;
 	}
@@ -96,7 +102,8 @@ public class SybaseIQDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	/**
 	 * @return true if Kettle can create a repository on this type of database.
 	 */
-	public boolean supportsRepository()
+	@Override
+  public boolean supportsRepository()
 	{
 		return false;
 	}
@@ -111,7 +118,8 @@ public class SybaseIQDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to add a column to the specified table
 	 */
-	public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" ADD "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
@@ -126,12 +134,14 @@ public class SybaseIQDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to modify a column in the specified table
 	 */
-	public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" MODIFY "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
 
-	public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
+	@Override
+  public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
 	{
 		String retval="";
 		
@@ -224,11 +234,13 @@ public class SybaseIQDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 		return retval;
 	}
     
+    @Override
     public String getExtraOptionsHelpText()
     {
         return "http://jtds.sourceforge.net/faq.html#urlFormat";
     }
     
+    @Override
     public String[] getUsedLibraries()
     {
         return new String[] { "jtds-1.2.jar" };
@@ -237,7 +249,8 @@ public class SybaseIQDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	/**
 	 * @return true if we need to supply the schema-name to getTables in order to get a correct list of items.
 	 */
-	public boolean useSchemaNameForTableList()
+	@Override
+  public boolean useSchemaNameForTableList()
 	{
 		return true;
 	}
@@ -250,7 +263,8 @@ public class SybaseIQDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	 * @return The SQL to launch.
 	 */
 	// 
-	public String getSQLQueryFields(String tableName)
+	@Override
+  public String getSQLQueryFields(String tableName)
 	{
 	    return "SELECT * FROM "+tableName+" WHERE 1=2";
 	}
@@ -260,7 +274,8 @@ public class SybaseIQDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	 * 
 	 * @return true if the database supports retrieval of query metadata from a prepared statement.  False if the query needs to be executed first.
 	 */
-	public boolean supportsPreparedStatementMetadataRetrieval() {
+	@Override
+  public boolean supportsPreparedStatementMetadataRetrieval() {
 		return false;
 	}
 

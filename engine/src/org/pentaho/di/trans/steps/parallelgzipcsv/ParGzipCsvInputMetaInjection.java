@@ -177,6 +177,8 @@ public class ParGzipCsvInputMetaInjection implements StepMetaInjectionInterface 
                 case FIELD_REPEAT: field.setRepeated("Y".equalsIgnoreCase(value)); break;
                 case FIELD_NULL_STRING: field.setNullString(value); break;
                 case FIELD_IF_NULL: field.setIfNullValue(value); break;
+                default:
+                  break;
                 }
               }
             }
@@ -199,7 +201,8 @@ public class ParGzipCsvInputMetaInjection implements StepMetaInjectionInterface 
       case ADD_FILES_TO_RESULT: meta.setAddResultFile("Y".equalsIgnoreCase(lookValue)); break;
       case RUN_IN_PARALLEL: meta.setRunningInParallel("Y".equalsIgnoreCase(lookValue)); break;
       case ENCODING: meta.setEncoding(lookValue); break;
-
+      default:
+        break;
       }
     }
     

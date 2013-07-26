@@ -62,7 +62,8 @@ public class DatabasePluginType extends BasePluginType implements PluginTypeInte
 	/**
 	 * Scan & register internal step plugins
 	 */
-	protected void registerNatives() throws KettlePluginException {
+	@Override
+  protected void registerNatives() throws KettlePluginException {
 		// Scan the native database types...
 		//
 		String xmlFile = Const.XML_FILE_KETTLE_DATABASE_TYPES;
@@ -89,7 +90,8 @@ public class DatabasePluginType extends BasePluginType implements PluginTypeInte
 		}
 	}
 	
-	protected void registerXmlPlugins() throws KettlePluginException {
+	@Override
+  protected void registerXmlPlugins() throws KettlePluginException {
 	}
 	
 	@Override

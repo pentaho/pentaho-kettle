@@ -413,6 +413,8 @@ public class UDJCStepDialog extends BaseStepDialog implements StepDialogInterfac
 							modifyTabTree(cItem, TabActions.DELETE_ITEM);
 							event.doit = true;
 							break;
+            default:
+              break;
 					}
 				}
 			}
@@ -840,6 +842,8 @@ public class UDJCStepDialog extends BaseStepDialog implements StepDialogInterfac
 			case SET_ACTIVE_ITEM:
 				input.setChanged();
 				break;
+      default:
+        break;
 		}
 	}
 
@@ -899,6 +903,8 @@ public class UDJCStepDialog extends BaseStepDialog implements StepDialogInterfac
 					}
 				}
 				break;
+      default:
+        break;
 		}
 
 	}
@@ -1145,6 +1151,8 @@ public class UDJCStepDialog extends BaseStepDialog implements StepDialogInterfac
 				case SWT.CANCEL:
 					hasTransformClass = false;
 					break;
+        default:
+          break;
 			}
 		}
 		return hasTransformClass;
@@ -1323,6 +1331,8 @@ public class UDJCStepDialog extends BaseStepDialog implements StepDialogInterfac
 							tItem.dispose();
 							input.setChanged();
 							break;
+            default:
+              break;
 					}
 				}
 			}
@@ -1454,11 +1464,17 @@ public class UDJCStepDialog extends BaseStepDialog implements StepDialogInterfac
 												item.setText(cleanClassName(text.getText()));
 											}
 										}
+								  //$FALL-THROUGH$
 									case SWT.TRAVERSE_ESCAPE:
 										composite.dispose();
 										e.doit = false;
+										break;
+                  default:
+                    break;
 								}
 								break;
+              default:
+                break;
 						}
 					}
 				};

@@ -553,7 +553,7 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 			wReturn.table.removeAll();
 			wReturn.table.setItemCount(mappings.size());
 			for (int i = 0; i < mappings.size(); i++) {
-				SourceToTargetMapping mapping = (SourceToTargetMapping) mappings.get(i);
+				SourceToTargetMapping mapping = mappings.get(i);
 				TableItem item = wReturn.table.getItem(i);
 				item.setText(2, sourceFields.getValueMeta(mapping.getSourcePosition()).getName());
 				item.setText(1, targetFields.getValueMeta(mapping.getTargetPosition()).getName());

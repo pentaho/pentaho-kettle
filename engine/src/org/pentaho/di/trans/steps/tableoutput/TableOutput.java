@@ -260,7 +260,7 @@ public class TableOutput extends BaseStep implements StepInterface
         }
         
         
-        insertStatement = (PreparedStatement) data.preparedStatements.get(tableName);
+        insertStatement = data.preparedStatements.get(tableName);
         if (insertStatement==null)
         {
             String sql = data.db.getInsertStatement(
@@ -480,7 +480,7 @@ public class TableOutput extends BaseStep implements StepInterface
                 {
                     for (int i=0;i<data.batchBuffer.size();i++)
                     {
-                        Object[] row = (Object[]) data.batchBuffer.get(i);
+                        Object[] row = data.batchBuffer.get(i);
                         putRow(data.outputRowMeta, row);
                         incrementLinesOutput();
                     }
@@ -511,7 +511,7 @@ public class TableOutput extends BaseStep implements StepInterface
             int errNr = 0;
             for (int i=0;i<updateCounts.length;i++)
             {
-                Object[] row = (Object[]) data.batchBuffer.get(i);
+                Object[] row = data.batchBuffer.get(i);
                 if (updateCounts[i]>0)
                 {
                     // send the error foward
@@ -538,7 +538,7 @@ public class TableOutput extends BaseStep implements StepInterface
             // 
             for (int i=0;i<data.batchBuffer.size();i++)
             {
-                Object[] row = (Object[]) data.batchBuffer.get(i);
+                Object[] row = data.batchBuffer.get(i);
                 putError(data.outputRowMeta, row, 1L, errorMessage, null, "TOP0003");
             }
         }
@@ -659,7 +659,7 @@ public class TableOutput extends BaseStep implements StepInterface
 	            }
 	            for (int i=0;i<data.batchBuffer.size();i++)
 	            {
-	                Object[] row = (Object[]) data.batchBuffer.get(i);
+	                Object[] row = data.batchBuffer.get(i);
 	                putRow(data.outputRowMeta, row);
 	                incrementLinesOutput();
 	            }

@@ -90,8 +90,8 @@ public class DateTime {
      * @param time server time field
      */
     DateTime(short date, short time) {
-        this.date = (int) date & 0xFFFF;
-        this.time = (int) time * 60 * 300;
+        this.date = date & 0xFFFF;
+        this.time = time * 60 * 300;
     }
 
     /**
@@ -103,7 +103,7 @@ public class DateTime {
     DateTime(Timestamp ts) throws SQLException {
         tsValue = ts;
         GregorianCalendar cal = (GregorianCalendar)calendar.get();
-        cal.setTime((java.util.Date) ts);
+        cal.setTime(ts);
 
        
         this.year   = (short)cal.get(Calendar.YEAR);
@@ -126,7 +126,7 @@ public class DateTime {
     DateTime(Time t) {
         timeValue = t;
         GregorianCalendar cal = (GregorianCalendar)calendar.get();
-        cal.setTime((java.util.Date) t);
+        cal.setTime(t);
         this.date   = DATE_NOT_USED;
         this.year   = 1900;
         this.month  = 1;
@@ -151,7 +151,7 @@ public class DateTime {
     DateTime(Date d) throws SQLException {
         dateValue = d;
         GregorianCalendar cal = (GregorianCalendar)calendar.get();
-        cal.setTime((java.util.Date) d);
+        cal.setTime(d);
         this.year   = (short)cal.get(Calendar.YEAR);
         this.month  = (short)(cal.get(Calendar.MONTH) + 1);
         this.day    = (short)cal.get(Calendar.DAY_OF_MONTH);
@@ -254,7 +254,7 @@ public class DateTime {
             time = time - (minutes * 18000);
             int seconds = time / 300;
             time = time - seconds * 300;
-            time = (int) Math.round(time * 1000 / 300f);
+            time = Math.round(time * 1000 / 300f);
             this.hour = (short)hours;
             this.minute = (short)minutes;
             this.second = (short)seconds;

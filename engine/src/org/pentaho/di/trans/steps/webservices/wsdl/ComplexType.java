@@ -104,7 +104,7 @@ public final class ComplexType implements java.io.Serializable {
      * @return Xmltype of the element or null if element can not be found in the complex type.
      */
     public QName getElementType(String elementName) {
-        return (QName) _elements.get(elementName.toLowerCase());
+        return _elements.get(elementName.toLowerCase());
     }
 
     /**
@@ -127,7 +127,7 @@ public final class ComplexType implements java.io.Serializable {
         // annotation?, element*
         List<Element> elements = DomUtils.getChildElementsByName(all, "element");
         for (Iterator<Element> itr = elements.iterator(); itr.hasNext();) {
-            processElement((Element) itr.next());
+            processElement(itr.next());
         }
     }
 
@@ -276,27 +276,27 @@ public final class ComplexType implements java.io.Serializable {
         // annotation?, (element | group | choice | sequence | any)*
         List<Element> elements = DomUtils.getChildElementsByName(sequence, "element");
         for (Iterator<Element> itr = elements.iterator(); itr.hasNext();) {
-            processElement((Element) itr.next());
+            processElement(itr.next());
         }
 
         elements = DomUtils.getChildElementsByName(sequence, "group");
         for (Iterator<Element> itr = elements.iterator(); itr.hasNext();) {
-            processGroup((Element) itr.next());
+            processGroup(itr.next());
         }
 
         elements = DomUtils.getChildElementsByName(sequence, "choice");
         for (Iterator<Element> itr = elements.iterator(); itr.hasNext();) {
-            processChoice((Element) itr.next());
+            processChoice(itr.next());
         }
 
         elements = DomUtils.getChildElementsByName(sequence, "sequence");
         for (Iterator<Element> itr = elements.iterator(); itr.hasNext();) {
-            processSequence((Element) itr.next());
+            processSequence(itr.next());
         }
 
         elements = DomUtils.getChildElementsByName(sequence, "any");
         for (Iterator<Element> itr = elements.iterator(); itr.hasNext();) {
-            processAny((Element) itr.next());
+            processAny(itr.next());
         }
     }
 

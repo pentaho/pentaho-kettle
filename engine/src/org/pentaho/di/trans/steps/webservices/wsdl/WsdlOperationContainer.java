@@ -54,7 +54,7 @@ public class WsdlOperationContainer implements WsdlParamContainer
                 paramsRet.add(param.getName().getLocalPart());
             }
         }
-        return (String[]) paramsRet.toArray(new String[paramsRet.size()]);
+        return paramsRet.toArray(new String[paramsRet.size()]);
     }
 
     public String getParamType(String paramName)

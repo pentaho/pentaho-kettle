@@ -230,47 +230,48 @@ public class ConditionEditor extends Composite
 				else setToolTipText(BaseMessages.getString(PKG, "ConditionEditor.AddCondition.Label"));
 				
 				
-				switch(area)
-				{
-				case AREA_NOT         : 
-					hover_not = true;
-					nr = 1;
-					break;
-				case AREA_UP          : 
-					hover_up = getLevel()>0;
-					nr = 1;
-					break;
-				case AREA_BACKGROUND  :
-					break;
-				case AREA_SUBCONDITION : 
-					hover_condition = getNrSubcondition(screen);
-					nr=hover_condition;
-					break;
-				case AREA_OPERATOR : 
-					hover_operator = getNrOperator(screen);
-					nr=hover_operator;
-					break;
-				case AREA_LEFT:
-					hover_left = true;
-					nr = 1;
-					break;
-				case AREA_FUNCTION:
-					hover_fn = true;
-					nr = 1;
-					break;
-				case AREA_RIGHT_VALUE:
-					hover_rightval = true;
-					nr = 1;
-					break;
-				case AREA_RIGHT_EXACT:
-					hover_rightex = true;
-					nr = 1;
-					break;
-                case AREA_CONDITION   :
-                    break;
-				case AREA_NONE        : 
-					break;
-				}
+        switch (area) {
+          case AREA_NOT:
+            hover_not = true;
+            nr = 1;
+            break;
+          case AREA_UP:
+            hover_up = getLevel() > 0;
+            nr = 1;
+            break;
+          case AREA_BACKGROUND:
+            break;
+          case AREA_SUBCONDITION:
+            hover_condition = getNrSubcondition(screen);
+            nr = hover_condition;
+            break;
+          case AREA_OPERATOR:
+            hover_operator = getNrOperator(screen);
+            nr = hover_operator;
+            break;
+          case AREA_LEFT:
+            hover_left = true;
+            nr = 1;
+            break;
+          case AREA_FUNCTION:
+            hover_fn = true;
+            nr = 1;
+            break;
+          case AREA_RIGHT_VALUE:
+            hover_rightval = true;
+            nr = 1;
+            break;
+          case AREA_RIGHT_EXACT:
+            hover_rightex = true;
+            nr = 1;
+            break;
+          case AREA_CONDITION:
+            break;
+          case AREA_NONE:
+            break;
+          default:
+            break;
+        }
 				
 				if (area!=previous_area || nr!=previous_area_nr) need_redraw = true;
 

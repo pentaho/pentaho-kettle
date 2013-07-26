@@ -46,7 +46,7 @@ public class WsdlOpParameterContainer implements WsdlParamContainer
         {
             if (parameter.getItemComplexType() != null)
             {
-                return (String[]) parameter.getItemComplexType().getElementNames().toArray(new String[parameter.getItemComplexType().getElementNames().size()]);
+                return parameter.getItemComplexType().getElementNames().toArray(new String[parameter.getItemComplexType().getElementNames().size()]);
             }
             else
             {

@@ -229,7 +229,7 @@ public class SlaveServerStatus
     {
         for (int i=0;i<transStatusList.size();i++)
         {
-            SlaveServerTransStatus transStatus = (SlaveServerTransStatus) transStatusList.get(i);
+            SlaveServerTransStatus transStatus = transStatusList.get(i);
             if (transStatus.getTransName().equalsIgnoreCase(transName) && 
             	(Const.isEmpty(id) || transStatus.getId().equals(id))
             ) return transStatus;
@@ -241,7 +241,7 @@ public class SlaveServerStatus
     {
         for (int i=0;i<jobStatusList.size();i++)
         {
-            SlaveServerJobStatus jobStatus = (SlaveServerJobStatus) jobStatusList.get(i);
+            SlaveServerJobStatus jobStatus = jobStatusList.get(i);
             if (jobStatus.getJobName().equalsIgnoreCase(jobName) &&
             	(Const.isEmpty(id) || jobStatus.getId().equals(id))
             ) return jobStatus;

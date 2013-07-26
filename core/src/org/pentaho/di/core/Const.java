@@ -1286,7 +1286,7 @@ public class Const
 
                 while (ip.hasMoreElements())
                 {
-                    InetAddress in = (InetAddress) ip.nextElement();
+                    InetAddress in = ip.nextElement();
                     lastHostname=in.getHostName();
                     //System.out.println("  ip address bound : "+in.getHostAddress());
                     //System.out.println("  hostname         : "+in.getHostName());
@@ -1315,11 +1315,11 @@ public class Const
 		Enumeration<NetworkInterface> enumInterfaces = NetworkInterface.getNetworkInterfaces();
 		while (enumInterfaces.hasMoreElements())
 		{
-			NetworkInterface nwi = (NetworkInterface) enumInterfaces.nextElement();
+			NetworkInterface nwi = enumInterfaces.nextElement();
 			Enumeration<InetAddress> ip = nwi.getInetAddresses();
 			while (ip.hasMoreElements())
 			{
-				InetAddress in = (InetAddress) ip.nextElement();
+				InetAddress in = ip.nextElement();
 				if (!in.isLoopbackAddress() && in.toString().indexOf(":") < 0)
 				{
 					return in.getHostAddress();
@@ -1341,7 +1341,7 @@ public class Const
 		Enumeration<InetAddress> ipAddresses = networkInterface.getInetAddresses();
 		while (ipAddresses.hasMoreElements())
 		{
-			InetAddress inetAddress = (InetAddress) ipAddresses.nextElement();
+			InetAddress inetAddress = ipAddresses.nextElement();
 			if (!inetAddress.isLoopbackAddress() && inetAddress.toString().indexOf(":") < 0)
 			{
 				String hostname = inetAddress.getHostAddress();
@@ -2512,7 +2512,7 @@ public class Const
 		long freeMemory = runtime.freeMemory();
 		long totalFreeMemory = (freeMemory + (maxMemory - allocatedMemory));
 		
-		int percentage = (int)Math.round(100*(double)totalFreeMemory / (double)maxMemory);
+		int percentage = (int)Math.round(100*(double)totalFreeMemory / maxMemory);
 		
 		return percentage;
 	}

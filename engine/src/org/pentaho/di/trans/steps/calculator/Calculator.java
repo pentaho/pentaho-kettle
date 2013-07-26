@@ -167,7 +167,7 @@ public class Calculator extends BaseStep implements StepInterface
             data.tempIndexes = new int[tempIndexes.size()];
             for (int i=0;i<data.tempIndexes.length;i++)
             {
-                data.tempIndexes[i] = ((Integer)tempIndexes.get(i)).intValue();
+                data.tempIndexes[i] = tempIndexes.get(i).intValue();
             }
         }
 

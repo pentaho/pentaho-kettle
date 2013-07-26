@@ -34,18 +34,21 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
-	public int[] getAccessTypeList()
+	@Override
+  public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
 	}
 	
-	public int getDefaultDatabasePort()
+	@Override
+  public int getDefaultDatabasePort()
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE) return 9001;
 		return -1;
 	}
 
-	public String getDriverClass()
+	@Override
+  public String getDriverClass()
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
 		{
@@ -57,6 +60,7 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
 		}
 	}
 
+    @Override
     public String getURL(String hostname, String port, String databaseName)
     {
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
@@ -81,11 +85,13 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
 	/**
 	 * @return true if the database supports bitmap indexes
 	 */
-	public boolean supportsBitmapIndex()
+	@Override
+  public boolean supportsBitmapIndex()
 	{
 		return false;
 	}
 
+    @Override
     public String getTruncateTableStatement(String tableName)
     {
         return "DELETE FROM "+tableName.toUpperCase();
@@ -102,7 +108,8 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
 	 * @return the SQL statement to add a column to the specified table
 	 * 
 	 */
-	public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename.toUpperCase()+" ADD "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
@@ -117,12 +124,14 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to modify a column in the specified table
 	 */
-	public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename.toUpperCase()+" ALTER COLUMN "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
 
-	public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
+	@Override
+  public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
 	{
 		StringBuffer retval=new StringBuffer(128);
 		
@@ -215,16 +224,19 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
 		return retval.toString();
 	}
 
+    @Override
     public String[] getUsedLibraries()
     {
         return new String[] { "hsqldb.jar" };
     }
     
+    @Override
     public String getExtraOptionsHelpText()
     {
         return "http://hsqldb.sourceforge.net/doc/guide/ch04.html#N109DA";
     }
     
+    @Override
     public String[] getReservedWords()
     {
         return new String[] 
@@ -275,6 +287,7 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
     /**
      * @return true if the database supports sequences
      */
+    @Override
     public boolean supportsSequences()
     {
       return true;
@@ -285,6 +298,7 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
        * @param sequenceName The sequence to check
        * @return The SQL to get the name of the sequence back from the databases data dictionary
        */
+      @Override
       public String getSQLSequenceExists(String sequenceName)
       {
           return "SELECT * FROM INFORMATION_SCHEMA.SYSTEM_SEQUENCES WHERE SEQUENCE_NAME = '"+sequenceName.toUpperCase()+"'";
@@ -295,6 +309,7 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
        * @param sequenceName The sequence to check
        * @return The current value of a database sequence
        */
+      @Override
       public String getSQLCurrentSequenceValue(String sequenceName)
       {
         // Note - the following only works for 2.x and higher HSQLDB. But we don't really use it anywhere
@@ -306,6 +321,7 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
        * @param sequenceName The sequence name
        * @return the SQL to get the next value of a sequence.
        */
+      @Override
       public String getSQLNextSequenceValue(String sequenceName)
       {
           return "SELECT NEXT VALUE FOR "+sequenceName+" FROM INFORMATION_SCHEMA.SYSTEM_SEQUENCES WHERE SEQUENCE_NAME = '"+sequenceName.toUpperCase()+"'";

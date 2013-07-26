@@ -49,6 +49,7 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -82,6 +83,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   // Comparator for sorting databases alphabetically by name
   public static final Comparator<DatabaseMeta> comparator = new Comparator<DatabaseMeta>() {
+    @Override
     public int compare(DatabaseMeta dbm1, DatabaseMeta dbm2) {
       return dbm1.getName().compareToIgnoreCase(dbm2.getName());
     }
@@ -527,14 +529,17 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    * 
    * @return the ID of the db connection.
    */
+  @Override
   public ObjectId getObjectId() {
     return databaseInterface.getObjectId();
   }
 
+  @Override
   public void setObjectId(ObjectId id) {
     databaseInterface.setObjectId(id);
   }
 
+  @Override
   public Object clone() {
     DatabaseMeta databaseMeta = new DatabaseMeta();
     databaseMeta.replaceMeta(this);
@@ -607,6 +612,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    * 
    * @param name The name of the database connection
    */
+  @Override
   public void setName(String name) {
     databaseInterface.setName(name);
   }
@@ -615,6 +621,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    * Returns the name of the database connection
    * @return The name of the database connection
    */
+  @Override
   public String getName() {
     return databaseInterface.getName();
   }
@@ -815,6 +822,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     databaseInterface.setChanged(false);
   }
 
+  @Override
   public String toString() {
     return getName();
   }
@@ -896,6 +904,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     }
   }
 
+  @Override
   public String getXML() {
     StringBuffer retval = new StringBuffer(250);
 
@@ -941,10 +950,12 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     return retval.toString();
   }
 
+  @Override
   public int hashCode() {
     return getName().hashCode(); // name of connection is unique!
   }
 
+  @Override
   public boolean equals(Object obj) {
     return getName().equals(((DatabaseMeta) obj).getName());
   }
@@ -992,7 +1003,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
         Iterator<String> iterator = map.keySet().iterator();
         boolean first = true;
         while (iterator.hasNext()) {
-          String typedParameter = (String) iterator.next();
+          String typedParameter = iterator.next();
           int dotIndex = typedParameter.indexOf('.');
           if (dotIndex >= 0) {
             String typeCode = typedParameter.substring(0, dotIndex);
@@ -1032,12 +1043,12 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     if (map.size() > 0) {
       Iterator<String> iterator = map.keySet().iterator();
       while (iterator.hasNext()) {
-        String typedParameter = (String) iterator.next();
+        String typedParameter = iterator.next();
         int dotIndex = typedParameter.indexOf('.');
         if (dotIndex >= 0) {
           String typeCode = typedParameter.substring(0, dotIndex);
           String parameter = typedParameter.substring(dotIndex + 1);
-          String value = (String) map.get(typedParameter);
+          String value = map.get(typedParameter);
 
           // Only add to the URL if it's the same database type code...
           //
@@ -2319,64 +2330,78 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     return null;
   }
 
+  @Override
   public void copyVariablesFrom(VariableSpace space) {
     variables.copyVariablesFrom(space);
   }
 
+  @Override
   public String environmentSubstitute(String aString) {
     return variables.environmentSubstitute(aString);
   }
 
+  @Override
   public String[] environmentSubstitute(String aString[]) {
     return variables.environmentSubstitute(aString);
   }
 
+  @Override
   public String fieldSubstitute(String aString, RowMetaInterface rowMeta, Object[] rowData) throws KettleValueException {
     return variables.fieldSubstitute(aString, rowMeta, rowData);
   }
 
+  @Override
   public VariableSpace getParentVariableSpace() {
     return variables.getParentVariableSpace();
   }
 
+  @Override
   public void setParentVariableSpace(VariableSpace parent) {
     variables.setParentVariableSpace(parent);
   }
 
+  @Override
   public String getVariable(String variableName, String defaultValue) {
     return variables.getVariable(variableName, defaultValue);
   }
 
+  @Override
   public String getVariable(String variableName) {
     return variables.getVariable(variableName);
   }
 
+  @Override
   public boolean getBooleanValueOfVariable(String variableName, boolean defaultValue) {
     if (!Const.isEmpty(variableName)) {
       String value = environmentSubstitute(variableName);
       if (!Const.isEmpty(value)) {
-        return ValueMeta.convertStringToBoolean(value);
+        return ValueMetaBase.convertStringToBoolean(value);
       }
     }
     return defaultValue;
   }
 
+  @Override
   public void initializeVariablesFrom(VariableSpace parent) {
     variables.initializeVariablesFrom(parent);
   }
 
+  @Override
   public String[] listVariables() {
     return variables.listVariables();
   }
 
+  @Override
   public void setVariable(String variableName, String variableValue) {
     variables.setVariable(variableName, variableValue);
   }
 
+  @Override
   public void shareVariablesWith(VariableSpace space) {
     variables = space;
   }
 
+  @Override
   public void injectVariables(Map<String, String> prop) {
     variables.injectVariables(prop);
   }
@@ -2388,7 +2413,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     // This is also covered/persisted by JDBC option MS SQL Server / instancename / <somevalue>
     // We want to return <somevalue>
     // --> MSSQL.instancename
-    return (String) getExtraOptions().get("MSSQL.instance");
+    return getExtraOptions().get("MSSQL.instance");
   }
 
   /**
@@ -2470,31 +2495,38 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   /**
    * Not used in this case, simply return root /
    */
+  @Override
   public RepositoryDirectoryInterface getRepositoryDirectory() {
     return new RepositoryDirectory();
   }
 
+  @Override
   public void setRepositoryDirectory(RepositoryDirectoryInterface repositoryDirectory) {
     throw new RuntimeException("Setting a directory on a database connection is not supported");
   }
 
+  @Override
   public RepositoryObjectType getRepositoryElementType() {
     return REPOSITORY_ELEMENT_TYPE;
   }
 
+  @Override
   public ObjectRevision getObjectRevision() {
     return objectRevision;
   }
 
+  @Override
   public void setObjectRevision(ObjectRevision objectRevision) {
     this.objectRevision = objectRevision;
   }
 
+  @Override
   public String getDescription() {
     // NOT USED
     return null;
   }
 
+  @Override
   public void setDescription(String description) {
     // NOT USED
   }

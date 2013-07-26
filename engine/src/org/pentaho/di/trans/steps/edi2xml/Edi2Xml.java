@@ -8,7 +8,6 @@ import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
-import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -50,8 +49,8 @@ public class Edi2Xml extends BaseStep implements StepInterface {
 		if (first) {
 			first = false;
 
-			data.inputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
-			data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
+			data.inputRowMeta = getInputRowMeta().clone();
+			data.outputRowMeta = getInputRowMeta().clone();
 
 			meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
 

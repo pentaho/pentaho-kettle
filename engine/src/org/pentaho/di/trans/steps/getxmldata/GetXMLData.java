@@ -510,7 +510,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 	    	   xpath.setNamespaceURIs(data.NAMESPACE);
 	       }
 	       // get nodes list
-		   data.an =  (List<AbstractNode>) xpath.selectNodes(data.document);
+		   data.an =  xpath.selectNodes(data.document);
 		   data.nodesize=data.an.size();
 		   data.nodenr=0;
 	   }catch (Exception e)
@@ -530,7 +530,7 @@ public class GetXMLData extends BaseStep implements StepInterface
                 return false;
             }
             // get file
-			data.file = (FileObject) data.files.getFile(data.filenr);
+			data.file = data.files.getFile(data.filenr);
 			data.filename =  KettleVFS.getFilename(data.file);
 			// Add additional fields?
 			if (meta.getShortFileNameField()!=null && meta.getShortFileNameField().length()>0)
@@ -716,7 +716,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 				}
 			 }
 			 	
-			 r= processPutRow((AbstractNode)data.an.get(data.nodenr));
+			 r= processPutRow(data.an.get(data.nodenr));
 		 }
 		 catch (Exception e)
 		 {

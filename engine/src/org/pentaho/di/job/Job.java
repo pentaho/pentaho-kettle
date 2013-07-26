@@ -615,7 +615,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     final Result result;
     Result prevResult = null;
     if (prev_result != null) {
-      prevResult = (Result) prev_result.clone();
+      prevResult = prev_result.clone();
     } else {
       prevResult = new Result();
     }
@@ -1301,7 +1301,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    * @return the thread
    */
   public Thread getThread() {
-    return (Thread) this;
+    return this;
   }
 
   /**

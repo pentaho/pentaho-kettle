@@ -207,7 +207,7 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
         repository.deleteJob(id);
       } 
       for(RepositoryDirectoryInterface subDir : dir.getChildren()) {
-        deleteDirectoryRecursively((RepositoryDirectory)subDir);   
+        deleteDirectoryRecursively(subDir);   
       }
       repository.directoryDelegate.deleteDirectory(dir.getObjectId());
   }

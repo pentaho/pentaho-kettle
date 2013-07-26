@@ -215,7 +215,7 @@ public class XMLInputFieldPosition implements Cloneable
         String encoded = "";
         for (int p=0;p<path.size();p++) 
         {
-            XMLInputFieldPosition pos = (XMLInputFieldPosition)path.get(p); 
+            XMLInputFieldPosition pos = path.get(p); 
             String elementName = pos.toString();
             if (p>0) encoded+=XMLInputField.POSITION_MARKER;
             encoded+=elementName;

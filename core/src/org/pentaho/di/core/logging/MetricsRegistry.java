@@ -52,6 +52,8 @@ public class MetricsRegistry {
         map.put(snapshot.getKey(), snapshot);
       }
       break;
+      default:
+        break;
     }
   }
   

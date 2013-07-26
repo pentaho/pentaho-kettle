@@ -615,7 +615,7 @@ public class OpenERPObjectOutputDialog extends BaseStepDialog implements StepDia
 			tableViewFieldMappings.table.removeAll();
 			tableViewFieldMappings.table.setItemCount(mappings.size());
 			for (int i = 0; i < mappings.size(); i++) {
-				SourceToTargetMapping mapping = (SourceToTargetMapping) mappings.get(i);
+				SourceToTargetMapping mapping = mappings.get(i);
 				TableItem item = tableViewFieldMappings.table.getItem(i);
 				item.setText(2, sourceFields[mapping.getSourcePosition()]);
 				item.setText(1, targetFields[mapping.getTargetPosition()]);

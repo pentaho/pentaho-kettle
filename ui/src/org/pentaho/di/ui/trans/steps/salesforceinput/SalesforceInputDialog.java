@@ -1472,7 +1472,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
     if (value != null && value instanceof SObject) {
       SObject sobject = (SObject) value;
       for (MessageElement element : sobject.get_any()) {
-        addFields(fieldname + ".", fieldNames, (MessageElement) element);
+        addFields(fieldname + ".", fieldNames, element);
       }
     } else {
       addField(fieldname, fieldNames, field.getValue());

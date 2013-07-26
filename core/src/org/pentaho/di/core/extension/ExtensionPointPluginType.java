@@ -65,7 +65,8 @@ public class ExtensionPointPluginType extends BasePluginType implements PluginTy
 	/**
 	 * Scan & register internal step plugins
 	 */
-	protected void registerNatives() throws KettlePluginException {
+	@Override
+  protected void registerNatives() throws KettlePluginException {
 		// Scan the native database types...
 		//
 		String xmlFile = Const.XML_FILE_KETTLE_EXTENSION_POINTS;
@@ -92,7 +93,8 @@ public class ExtensionPointPluginType extends BasePluginType implements PluginTy
 		}
 	}
 	
-	protected void registerXmlPlugins() throws KettlePluginException {
+	@Override
+  protected void registerXmlPlugins() throws KettlePluginException {
 	}
 	
 	@Override

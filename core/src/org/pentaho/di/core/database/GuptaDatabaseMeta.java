@@ -34,12 +34,14 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class GuptaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
-	public int[] getAccessTypeList()
+	@Override
+  public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
 	}
 	
-	public int getDefaultDatabasePort()
+	@Override
+  public int getDefaultDatabasePort()
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE) return 2155;
 		return -1;
@@ -48,12 +50,14 @@ public class GuptaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	/**
 	 * @return Whether or not the database can use auto increment type of fields (pk)
 	 */
-	public boolean supportsAutoInc()
+	@Override
+  public boolean supportsAutoInc()
 	{
 		return false;
 	}
 
-	public String getDriverClass()
+	@Override
+  public String getDriverClass()
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
 		{
@@ -65,6 +69,7 @@ public class GuptaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 		}
 	}
     
+    @Override
     public String getURL(String hostname, String port, String databaseName)
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
@@ -81,7 +86,8 @@ public class GuptaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	 * Checks whether or not the command setFetchSize() is supported by the JDBC driver...
 	 * @return true is setFetchSize() is supported!
 	 */
-	public boolean isFetchSizeSupported()
+	@Override
+  public boolean isFetchSizeSupported()
 	{
 		return false;
 	}
@@ -89,7 +95,8 @@ public class GuptaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	/**
 	 * @return true if the database supports bitmap indexes
 	 */
-	public boolean supportsBitmapIndex()
+	@Override
+  public boolean supportsBitmapIndex()
 	{
 		return false;
 	}
@@ -97,7 +104,8 @@ public class GuptaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	/**
 	 * @return true if Kettle can create a repository on this type of database.
 	 */
-	public boolean supportsRepository()
+	@Override
+  public boolean supportsRepository()
 	{
 		return false;
 	}
@@ -105,6 +113,7 @@ public class GuptaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
     /**
      * @return true if the database supports catalogs
      */
+    @Override
     public boolean supportsCatalogs()
     {
         return false;
@@ -114,6 +123,7 @@ public class GuptaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
      * @return true if the database supports timestamp to date conversion.
      * Gupta doesn't support this!
      */
+    @Override
     public boolean supportsTimeStampToDateConversion()
     {
         return false;
@@ -129,7 +139,8 @@ public class GuptaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to add a column to the specified table
 	 */
-	public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" ADD "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
@@ -144,7 +155,8 @@ public class GuptaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to modify a column in the specified table
 	 */
-	public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		String retval="";
 		retval+="ALTER TABLE "+tablename+" DROP "+v.getName()+Const.CR+";"+Const.CR;
@@ -153,7 +165,8 @@ public class GuptaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	}
 
 
-	public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
+	@Override
+  public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
 	{
 		String retval="";
 		
@@ -209,6 +222,7 @@ public class GuptaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 		return retval;
 	}
 
+    @Override
     public String[] getUsedLibraries()
     {
         return new String[] { "SQLBaseJDBC.jar" };
@@ -218,7 +232,8 @@ public class GuptaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	 * @param tableName
 	 * @return true if the specified table is a system table
 	 */
-	public boolean isSystemTable(String tableName) {
+	@Override
+  public boolean isSystemTable(String tableName) {
 		if ( tableName.startsWith("SYS")) return true;
 		return false;
 	}

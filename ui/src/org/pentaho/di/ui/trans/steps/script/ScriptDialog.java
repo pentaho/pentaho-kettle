@@ -502,6 +502,8 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 		            		modifyScriptTree(cItem,DELETE_ITEM);
 		            		event.doit=true;
 		            		break;
+                  default:
+                    break;
 		            }
 	        	}
 			}
@@ -697,6 +699,8 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 			case SET_ACTIVE_ITEM :
 	        	input.setChanged();
 				break;
+      default:
+        break;
 		}
 	}
 	
@@ -757,6 +761,8 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 					}
 				}
 				break;
+      default:
+        break;
 		}
 		
 	}
@@ -961,6 +967,8 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 				break;
 				case SWT.CANCEL: bInputOK = false;
 					break;
+        default:
+          break;
 			}
 		}else{
 			bInputOK = true;
@@ -1418,7 +1426,7 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 	    Collections.sort(v);
 	    
 	    for (String strFunction : v) {
-	       String strFunctionType =(String)hatFunctions.get(strFunction);
+	       String strFunctionType =hatFunctions.get(strFunction);
 	       int iFunctionType = Integer.valueOf(strFunctionType).intValue();
 
 	       TreeItem itemFunction=null;
@@ -1429,6 +1437,8 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 				case ScriptAddedFunctions.LOGIC_FUNCTION:itemFunction = new TreeItem(itemLogicFunctionsGroup,SWT.NULL); break;
 				case ScriptAddedFunctions.SPECIAL_FUNCTION:itemFunction = new TreeItem(itemSpecialFunctionsGroup,SWT.NULL); break;
 				case ScriptAddedFunctions.FILE_FUNCTION:itemFunction = new TreeItem(itemFileFunctionsGroup,SWT.NULL); break;
+        default:
+          break;
 			}
 			if(itemFunction !=null){
 				itemFunction.setText(strFunction);
@@ -1567,7 +1577,7 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
         		iStart=iStart-selCount; //when a selection is already there we need to subtract the position
         		if (iStart<0) iStart=0; // just safety
             	String strInsert =(String)item.getData();
-            	if(strInsert.equals("jsFunction")) strInsert = (String)item.getText();
+            	if(strInsert.equals("jsFunction")) strInsert = item.getText();
             	wScript.insert(strInsert);
             	wScript.setSelection(iStart,iStart+strInsert.length());
         	}
@@ -1762,6 +1772,8 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 				        	tItem.dispose();
 				        	input.setChanged();
 		            		break;
+                  default:
+                    break;
 		            }
 		        }
 			}
@@ -1883,20 +1895,27 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 								editor.layout ();
 								break;
 							case SWT.Traverse:
-								switch (e.detail) {
-									case SWT.TRAVERSE_RETURN:
-										if(text.getText().length()>0){
-											// Check if the name Exists
-											if(getCTabItemByName(text.getText())==null){
-												modifyCTabItem(item,RENAME_ITEM, text.getText());
-												item.setText (text.getText ());
-											}
-										}
-									case SWT.TRAVERSE_ESCAPE:
-										composite.dispose ();
-										e.doit = false;
-								}
+                switch (e.detail) {
+                  case SWT.TRAVERSE_RETURN:
+                    if (text.getText().length() > 0) {
+                      // Check if the name Exists
+                      if (getCTabItemByName(text.getText()) == null) {
+                        modifyCTabItem(item, RENAME_ITEM, text.getText());
+                        item.setText(text.getText());
+                      }
+                    }
+                    //$FALL-THROUGH$
+                  case SWT.TRAVERSE_ESCAPE:
+                    composite.dispose();
+                    e.doit = false;
+                    break;
+                  default:
+                    break;
+
+                }
 								break;
+              default:
+                break;
 						}
 					}
 				};

@@ -122,7 +122,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
 
 		// try to find the row in the cache...
 		// 
-		Long tk = (Long) data.cache.get(new RowMetaAndData(rowMeta, row));
+		Long tk = data.cache.get(new RowMetaAndData(rowMeta, row));
 		return tk;
 	}
     
@@ -177,8 +177,8 @@ public class CombinationLookup extends BaseStep implements StepInterface
             if (stepsize<1) stepsize=1; //make sure we have no endless loop
             for (int i=0;i<keys.size();i+=stepsize)
             {
-                RowMetaAndData key = (RowMetaAndData) keys.get(i);
-                Long value = (Long) data.cache.get(key);
+                RowMetaAndData key = keys.get(i);
+                Long value = data.cache.get(key);
                 if (value!=null)
                 {
                     samples.add(value);
@@ -190,9 +190,9 @@ public class CombinationLookup extends BaseStep implements StepInterface
             // What is the smallest?
             // Take the second, not the fist in the list, otherwise we would be removing a single entry = not good.
             if (samples.size()>1) {
-                data.smallestCacheKey = ((Long) samples.get(1)).longValue();
+                data.smallestCacheKey = samples.get(1).longValue();
             } else { // except when there is only one sample
-                data.smallestCacheKey = ((Long) samples.get(0)).longValue();
+                data.smallestCacheKey = samples.get(0).longValue();
             }
             
             // Remove anything in the cache <= smallest.
@@ -201,8 +201,8 @@ public class CombinationLookup extends BaseStep implements StepInterface
             //
             for (int i=0;i<keys.size();i++)
             {
-                RowMetaAndData key = (RowMetaAndData) keys.get(i);
-                Long value = (Long) data.cache.get(key);
+                RowMetaAndData key = keys.get(i);
+                Long value = data.cache.get(key);
                 if (value!=null)
                 {
                     if (value.longValue()<=data.smallestCacheKey)
@@ -279,21 +279,26 @@ public class CombinationLookup extends BaseStep implements StepInterface
 
 			if (add==null) // The dimension entry was not found, we need to add it!
 			{
-				// First try to use an AUTOINCREMENT field
-				switch ( getTechKeyCreation() )
-				{
-				    case CREATION_METHOD_TABLEMAX:
-				    	//  Use our own counter: what's the next value for the technical key?
-				        val_key = data.db.getNextValue(getTransMeta().getCounters(), data.realSchemaName, data.realTableName, meta.getTechnicalKeyField());
-                        break;
-				    case CREATION_METHOD_AUTOINC:
-						val_key=new Long(0); // value to accept new key...
-						break;
-				    case CREATION_METHOD_SEQUENCE:
-						val_key=data.db.getNextSequenceValue(data.realSchemaName, meta.getSequenceFrom(), meta.getTechnicalKeyField());
-						if (val_key!=null && log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "CombinationLookup.Log.FoundNextSequenceValue")+val_key.toString()); 
-						break;
-				}
+        // First try to use an AUTOINCREMENT field
+        switch (getTechKeyCreation()) {
+          case CREATION_METHOD_TABLEMAX:
+            //  Use our own counter: what's the next value for the technical key?
+            val_key = data.db.getNextValue(getTransMeta().getCounters(), data.realSchemaName, data.realTableName,
+                meta.getTechnicalKeyField());
+            break;
+          case CREATION_METHOD_AUTOINC:
+            val_key = new Long(0); // value to accept new key...
+            break;
+          case CREATION_METHOD_SEQUENCE:
+            val_key = data.db.getNextSequenceValue(data.realSchemaName, meta.getSequenceFrom(),
+                meta.getTechnicalKeyField());
+            if (val_key != null && log.isRowLevel())
+              logRowlevel(BaseMessages.getString(PKG, "CombinationLookup.Log.FoundNextSequenceValue")
+                  + val_key.toString());
+            break;
+          default:
+            break;
+        }
 
 				val_key = combiInsert( rowMeta, row, val_key, val_hash );
 				incrementLinesOutput();

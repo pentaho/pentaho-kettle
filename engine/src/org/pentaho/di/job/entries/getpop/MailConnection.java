@@ -973,7 +973,7 @@ public class MailConnection {
     public String[] returnAllFolders(Folder folder) throws KettleException {
     	HashSet<String> list= new HashSet<String>();
     	list=returnSubfolders(folder);
-    	return (String[]) list.toArray(new String[list.size()]);
+    	return list.toArray(new String[list.size()]);
     }
     /**
 	 * Returns all subfolders

@@ -240,7 +240,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    <fieldsIn>" + Const.CR);
         for (int i = 0; i < getFieldsIn().size(); i++)
         {
-            WebServiceField vField = (WebServiceField) getFieldsIn().get(i);
+            WebServiceField vField = getFieldsIn().get(i);
             retval.append("    <field>" + Const.CR);
             retval.append("        " + XMLHandler.addTagValue("name", vField.getName()));
             retval.append("        " + XMLHandler.addTagValue("wsName", vField.getWsName()));
@@ -254,7 +254,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    <fieldsOut>" + Const.CR);
         for (int i = 0; i < getFieldsOut().size(); i++)
         {
-            WebServiceField vField = (WebServiceField) getFieldsOut().get(i);
+            WebServiceField vField = getFieldsOut().get(i);
             retval.append("    <field>" + Const.CR);
             retval.append("        " + XMLHandler.addTagValue("name", vField.getName()));
             retval.append("        " + XMLHandler.addTagValue("wsName", vField.getWsName()));
@@ -412,7 +412,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         //
         for (int i = 0; i < getFieldsIn().size(); ++i)
         {
-            WebServiceField vField = (WebServiceField) getFieldsIn().get(i);
+            WebServiceField vField = getFieldsIn().get(i);
             rep.saveStepAttribute(id_transformation, id_step, i, "fieldIn_name", vField.getName());
             rep.saveStepAttribute(id_transformation, id_step, i, "fieldIn_ws_name", vField.getWsName());
             rep.saveStepAttribute(id_transformation, id_step, i, "fieldIn_xsd_type", vField.getXsdType());
@@ -422,7 +422,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         //
         for (int i = 0; i < getFieldsOut().size(); ++i)
         {
-            WebServiceField vField = (WebServiceField) getFieldsOut().get(i);
+            WebServiceField vField = getFieldsOut().get(i);
             rep.saveStepAttribute(id_transformation, id_step, i, "fieldOut_name", vField.getName());
             rep.saveStepAttribute(id_transformation, id_step, i, "fieldOut_ws_name", vField.getWsName());
             rep.saveStepAttribute(id_transformation, id_step, i, "fieldOut_xsd_type", vField.getXsdType());
@@ -454,7 +454,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         WebServiceField param = null;
         for (Iterator<WebServiceField> iter = getFieldsIn().iterator(); iter.hasNext();)
         {
-            WebServiceField paramCour = (WebServiceField) iter.next();
+            WebServiceField paramCour = iter.next();
             if (name.equals(paramCour.getName()))
             {
                 param = paramCour;
@@ -489,7 +489,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         
         //  we now look for the wsname
         for (Iterator<WebServiceField> iter = getFieldsOut().iterator(); iter.hasNext();) {
-            WebServiceField paramCour = (WebServiceField) iter.next();
+            WebServiceField paramCour = iter.next();
             if (paramCour.getWsName().equals(wsName))
             {
                 param = paramCour;

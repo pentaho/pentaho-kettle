@@ -46,7 +46,6 @@ import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
@@ -157,8 +156,8 @@ public class AppendTest extends TestCase
         
         while ( it1.hasNext() && it2.hasNext() )
         {
-        	RowMetaAndData rm1 = (RowMetaAndData)it1.next();
-        	RowMetaAndData rm2 = (RowMetaAndData)it2.next();
+        	RowMetaAndData rm1 = it1.next();
+        	RowMetaAndData rm2 = it2.next();
         	
         	Object[] r1 = rm1.getData();
         	Object[] r2 = rm2.getData();
@@ -211,7 +210,7 @@ public class AppendTest extends TestCase
         
         // Set the information of the injector.                
         String injectorPid1 = registry.getPluginId(StepPluginType.class, im1);
-        StepMeta injectorStep1 = new StepMeta(injectorPid1, injectorStepname1, (StepMetaInterface)im1);
+        StepMeta injectorStep1 = new StepMeta(injectorPid1, injectorStepname1, im1);
         transMeta.addStep(injectorStep1);
 
         // 
@@ -222,7 +221,7 @@ public class AppendTest extends TestCase
         
         // Set the information of the injector.                
         String injectorPid2 = registry.getPluginId(StepPluginType.class, im2);
-        StepMeta injectorStep2 = new StepMeta(injectorPid2, injectorStepname2, (StepMetaInterface)im2);
+        StepMeta injectorStep2 = new StepMeta(injectorPid2, injectorStepname2, im2);
         transMeta.addStep(injectorStep2);
                 
         // 
@@ -235,7 +234,7 @@ public class AppendTest extends TestCase
         infoStreams.get(1).setStepMeta(injectorStep2);
         
         String appendPid = registry.getPluginId(StepPluginType.class, am);
-        StepMeta append = new StepMeta(appendPid, appendName, (StepMetaInterface)am);
+        StepMeta append = new StepMeta(appendPid, appendName, am);
         transMeta.addStep(append);            
 
         TransHopMeta hi2 = new TransHopMeta(injectorStep1, append);
@@ -252,7 +251,7 @@ public class AppendTest extends TestCase
         DummyTransMeta dm1 = new DummyTransMeta();
 
         String dummyPid1 = registry.getPluginId(StepPluginType.class, dm1);
-        StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, (StepMetaInterface)dm1);
+        StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, dm1);
         transMeta.addStep(dummyStep1);                              
 
         TransHopMeta hi4 = new TransHopMeta(append, dummyStep1);
@@ -280,7 +279,7 @@ public class AppendTest extends TestCase
         Iterator<RowMetaAndData> it2 = inputList2.iterator();
         while ( it2.hasNext() )
         {
-        	RowMetaAndData rm = (RowMetaAndData)it2.next();
+        	RowMetaAndData rm = it2.next();
         	rp2.putRow(rm.getRowMeta(), rm.getData());
         }   
         rp2.finished();        
@@ -290,7 +289,7 @@ public class AppendTest extends TestCase
         Iterator<RowMetaAndData> it1 = inputList1.iterator();
         while ( it1.hasNext() )
         {
-        	RowMetaAndData rm = (RowMetaAndData)it1.next();
+        	RowMetaAndData rm = it1.next();
         	rp1.putRow(rm.getRowMeta(), rm.getData());
         }   
         rp1.finished();

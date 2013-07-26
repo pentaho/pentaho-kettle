@@ -447,7 +447,7 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
 			        }
 			        
 			        for (Iterator<ResultFile> it = resultFiles.iterator(); it.hasNext() && !parentJob.isStopped();){
-		        	  ResultFile resultFile = (ResultFile) it.next();
+		        	  ResultFile resultFile = it.next();
 		              FileObject file = resultFile.getFile();
 		        	  try {
 			              if (file != null && file.exists()) {

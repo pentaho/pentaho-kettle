@@ -70,7 +70,8 @@ public class NamedParamsDefault implements NamedParams
 	public NamedParamsDefault() {	
 	}
 	
-	public void addParameterDefinition(String key, String defValue, String description) throws DuplicateParamException {
+	@Override
+  public void addParameterDefinition(String key, String defValue, String description) throws DuplicateParamException {
 		
 		if ( params.get(key) == null )  {
 			OneNamedParam oneParam = new OneNamedParam();
@@ -87,7 +88,8 @@ public class NamedParamsDefault implements NamedParams
 		}	
 	}
 
-	public String getParameterDescription(String key) throws UnknownParamException {
+	@Override
+  public String getParameterDescription(String key) throws UnknownParamException {
 		String description = null;
 		
 		OneNamedParam theParam = params.get(key);
@@ -98,7 +100,8 @@ public class NamedParamsDefault implements NamedParams
 		return description;
 	}
 
-	public String getParameterValue(String key) throws UnknownParamException {
+	@Override
+  public String getParameterValue(String key) throws UnknownParamException {
 		String value = null;
 		
 		OneNamedParam theParam = params.get(key);
@@ -109,7 +112,8 @@ public class NamedParamsDefault implements NamedParams
 		return value;
 	}
 	
-	public String getParameterDefault(String key) throws UnknownParamException {
+	@Override
+  public String getParameterDefault(String key) throws UnknownParamException {
 		String value = null;
 		
 		OneNamedParam theParam = params.get(key);
@@ -120,7 +124,8 @@ public class NamedParamsDefault implements NamedParams
 		return value;
 	}	
 
-	public String[] listParameters() {
+	@Override
+  public String[] listParameters() {
 		Set<String> keySet = params.keySet();
 		
 		String[] paramArray = keySet.toArray(new String[0]);
@@ -129,18 +134,21 @@ public class NamedParamsDefault implements NamedParams
 	    return paramArray;
 	}
 
-	public void setParameterValue(String key, String value) {
+	@Override
+  public void setParameterValue(String key, String value) {
 		OneNamedParam theParam = params.get(key);
 		if ( theParam != null )  {
 			theParam.value = value;
 		}		
 	}
 
-	public void eraseParameters() {
+	@Override
+  public void eraseParameters() {
 		params.clear();
 	}
 
-	public void clearParameters() {	
+	@Override
+  public void clearParameters() {	
 		String[] keys = listParameters();
 		for ( int idx = 0; idx < keys.length; idx++)  {
 			OneNamedParam theParam = params.get(keys[idx]);
@@ -150,11 +158,13 @@ public class NamedParamsDefault implements NamedParams
 		}
 	}
 
-	public void activateParameters() {
+	@Override
+  public void activateParameters() {
 		// Do nothing here.
 	}
 
-	public void copyParametersFrom(NamedParams aParam) {
+	@Override
+  public void copyParametersFrom(NamedParams aParam) {
 		if ( params != null )  {
 			params.clear();
 			String[] keys = aParam.listParameters();

@@ -172,7 +172,7 @@ public class SalesforceInput extends BaseStep implements StepInterface
             }
 			
             // Return a record
-			SalesforceRecordValue srvalue=data.connection.getRecord((int)data.recordIndex);
+			SalesforceRecordValue srvalue=data.connection.getRecord(data.recordIndex);
 			data.finishedRecord=srvalue.isAllRecordsProcessed();
 			
 			if(meta.getRecordsFilter()==SalesforceConnectionUtils.RECORDS_FILTER_DELETED) {

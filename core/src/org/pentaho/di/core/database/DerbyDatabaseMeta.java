@@ -34,7 +34,8 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class DerbyDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
-	public int[] getAccessTypeList()
+	@Override
+  public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
 	}
@@ -42,7 +43,8 @@ public class DerbyDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	/**
 	 * @see DatabaseInterface#getNotFoundTK(boolean)
 	 */
-	public int getNotFoundTK(boolean use_autoinc)
+	@Override
+  public int getNotFoundTK(boolean use_autoinc)
 	{
 		if ( supportsAutoInc() && use_autoinc)
 		{
@@ -51,7 +53,8 @@ public class DerbyDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 		return super.getNotFoundTK(use_autoinc);
 	}
 	
-	public String getDriverClass()
+	@Override
+  public String getDriverClass()
 	{
         if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE)
         {
@@ -69,6 +72,7 @@ public class DerbyDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 
 	}
     
+    @Override
     public String getURL(String hostname, String port, String databaseName)
     {
         if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE)
@@ -95,7 +99,8 @@ public class DerbyDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	 * Checks whether or not the command setFetchSize() is supported by the JDBC driver...
 	 * @return true is setFetchSize() is supported!
 	 */
-	public boolean isFetchSizeSupported()
+	@Override
+  public boolean isFetchSizeSupported()
 	{
 		return true;
 	}
@@ -103,7 +108,8 @@ public class DerbyDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	/**
 	 * @return true if the database supports bitmap indexes
 	 */
-	public boolean supportsBitmapIndex()
+	@Override
+  public boolean supportsBitmapIndex()
 	{
 		return false;
 	}
@@ -111,7 +117,8 @@ public class DerbyDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	/**
 	 * @return true if Kettle can create a repository on this type of database.
 	 */
-	public boolean supportsRepository()
+	@Override
+  public boolean supportsRepository()
 	{
 		return true;
 	}
@@ -120,7 +127,8 @@ public class DerbyDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	 * @param tableName The table to be truncated.
 	 * @return The SQL statement to truncate a table: remove all rows from it without a transaction
 	 */
-	public String getTruncateTableStatement(String tableName)
+	@Override
+  public String getTruncateTableStatement(String tableName)
 	{
 	    return "DELETE FROM "+tableName;
 	}
@@ -138,7 +146,8 @@ public class DerbyDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to add a column to the specified table
 	 */
-	public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" ADD "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
@@ -153,12 +162,14 @@ public class DerbyDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to modify a column in the specified table
 	 */
-	public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" ALTER "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
 
-	public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
+	@Override
+  public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
 	{
 		String retval="";
 		
@@ -258,21 +269,25 @@ public class DerbyDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 		return retval;
 	}
 
+    @Override
     public String[] getUsedLibraries()
     {
         return new String[] { "derbyclient.jar" };
     }
     
+    @Override
     public int getDefaultDatabasePort()
     {
         return 1527;
     }
     
+    @Override
     public boolean supportsGetBlob()
     {
         return false;
     }
     
+    @Override
     public String getExtraOptionsHelpText()
     {
         return "http://db.apache.org/derby/papers/DerbyClientSpec.html";
@@ -498,7 +513,8 @@ public class DerbyDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	 * @param versionField the version field
 	 * @return the SQL to insert the unknown record into the SCD.
 	 */
-	public String getSQLInsertAutoIncUnknownDimensionRow(String schemaTable, String keyField, String versionField) {
+	@Override
+  public String getSQLInsertAutoIncUnknownDimensionRow(String schemaTable, String keyField, String versionField) {
 		return "insert into "+schemaTable+"("+versionField+") values (1)";		
 	}
 

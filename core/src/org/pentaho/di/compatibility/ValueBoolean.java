@@ -46,95 +46,114 @@ public class ValueBoolean implements ValueInterface, Cloneable
 		this.bool = bool;
 	}
 
-	public int getType()
+	@Override
+  public int getType()
 	{
 		return Value.VALUE_TYPE_BOOLEAN;
 	}
 
-	public String getTypeDesc()
+	@Override
+  public String getTypeDesc()
 	{
 		return "Boolean";
 	}
 
-	public String getString()
+	@Override
+  public String getString()
 	{
 		return bool?"Y":"N";
 	}
 
-	public double getNumber()
+	@Override
+  public double getNumber()
 	{
 		return bool?1.0:0.0;
 	}
 
-	public Date getDate()
+	@Override
+  public Date getDate()
 	{
 		return null;
 	}
     
-	public boolean getBoolean()
+	@Override
+  public boolean getBoolean()
 	{
 		return bool;
 	}
 
-	public long getInteger()
+	@Override
+  public long getInteger()
 	{
 		return bool?1L:0L;
 	}
 	
-	public void setString(String string)
+	@Override
+  public void setString(String string)
 	{
 		this.bool = "Y".equalsIgnoreCase(string) || 
 		            "TRUE".equalsIgnoreCase(string) ||
 					"YES".equalsIgnoreCase(string);
 	}
 	
-	public void setNumber(double number)
+	@Override
+  public void setNumber(double number)
 	{
 		this.bool = (number == 0.0)?false:true;
 	}
 	
-	public void setDate(Date date)
+	@Override
+  public void setDate(Date date)
 	{
 		this.bool = false;
 	}
 	
+    @Override
     public void setSerializable(Serializable ser) {
         
     }
     
-	public void setBoolean(boolean bool)
+	@Override
+  public void setBoolean(boolean bool)
 	{
 		this.bool = bool;
 	}
 	
-	public void setInteger(long number)
+	@Override
+  public void setInteger(long number)
 	{
 		this.bool = (number == 0)?false:true;
 	}
 	
-	public int getLength()
+	@Override
+  public int getLength()
 	{
 		return -1;
 	}
 	
-	public int getPrecision()
+	@Override
+  public int getPrecision()
 	{
 		return -1;
 	}
 	
-	public void setLength(int length, int precision)
+	@Override
+  public void setLength(int length, int precision)
 	{
 	}
 	
-	public void setLength(int length)
+	@Override
+  public void setLength(int length)
 	{
 	}
 	
-	public void setPrecision(int precision)
+	@Override
+  public void setPrecision(int precision)
 	{
 	}
 	
-	public Object clone()
+	@Override
+  public Object clone()
 	{
 		try
 		{
@@ -147,24 +166,29 @@ public class ValueBoolean implements ValueInterface, Cloneable
 		}
 	}
 
+    @Override
     public BigDecimal getBigNumber()
     {
         return new BigDecimal(bool?1:0);
     }
 
+    @Override
     public void setBigNumber(BigDecimal number)
     {
         bool = number.intValue()!=0;
     }
 
+    @Override
     public Serializable getSerializable() {
         return Boolean.valueOf(bool);
     }
     
-	public byte[] getBytes() {
+	@Override
+  public byte[] getBytes() {
 		return null;
 	}
 
-	public void setBytes(byte[] b) {
+	@Override
+  public void setBytes(byte[] b) {
 	}
 }

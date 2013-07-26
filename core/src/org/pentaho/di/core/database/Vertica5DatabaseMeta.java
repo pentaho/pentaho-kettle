@@ -73,7 +73,8 @@ public class Vertica5DatabaseMeta extends VerticaDatabaseMeta {
 	 *         valueMeta description.
 	 * @throws KettleDatabaseException
 	 */
-	public Object getValueFromResultSet(ResultSet rs, ValueMetaInterface val,
+	@Override
+  public Object getValueFromResultSet(ResultSet rs, ValueMetaInterface val,
 			int i) throws KettleDatabaseException {
 		Object data = null;
 

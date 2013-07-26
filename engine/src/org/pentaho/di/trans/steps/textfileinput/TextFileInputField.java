@@ -631,7 +631,7 @@ public class TextFileInputField implements Cloneable, TextFileInputFieldInterfac
 		// remainder:   12.345678 --> 0.345678
 		for (int i=1;i<maxprec;i++) // cap off precision at a reasonable maximum 
 		{
-			double factor=Math.pow(10.0, (double)i);
+			double factor=Math.pow(10.0, i);
 			diff = Math.abs( Math.floor(d*factor) - (d*factor) );
 			if (diff<maxdiff) 
 			{

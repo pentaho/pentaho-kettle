@@ -206,7 +206,7 @@ public final class Wsdl implements java.io.Serializable {
 
         // is the operation in the cache?
         if (_operationCache.containsKey(operationName)) {
-            return (WsdlOperation) _operationCache.get(operationName);
+            return _operationCache.get(operationName);
         }
 
         Binding b = _port.getBinding();
@@ -240,7 +240,7 @@ public final class Wsdl implements java.io.Serializable {
 
         List<Operation> operations = pt.getOperations();
         for (Iterator<Operation> itr = operations.iterator(); itr.hasNext();) {
-        	WsdlOperation operation = getOperation(((Operation) itr.next()).getName());
+        	WsdlOperation operation = getOperation(itr.next().getName());
         	if (operation!=null) {
         		opList.add(operation);
         	}

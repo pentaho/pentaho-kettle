@@ -34,7 +34,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -263,7 +262,7 @@ public class TransDialog extends Dialog
 
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
  		props.setLook(shell);
-		shell.setImage((Image) GUIResource.getInstance().getImageTransGraph());
+		shell.setImage(GUIResource.getInstance().getImageTransGraph());
 	
 		
 		lsMod = new ModifyListener() { public void modifyText(ModifyEvent e) { changed=true; } };

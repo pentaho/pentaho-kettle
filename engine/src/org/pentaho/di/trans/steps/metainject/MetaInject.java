@@ -322,6 +322,8 @@ public class MetaInject extends BaseStep implements StepInterface {
     case ValueMetaInterface.TYPE_NUMBER: value = row.getNumber(source.getField(), 0.0D); break;
     case ValueMetaInterface.TYPE_DATE: value = row.getDate(source.getField(), null); break;
     case ValueMetaInterface.TYPE_BIGNUMBER: value = row.getBigNumber(source.getField(), null); break;
+      default:
+        break;
     }
     entry.setValue(value);
   }

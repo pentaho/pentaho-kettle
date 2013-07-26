@@ -1569,6 +1569,8 @@ public class GUIResource {
       case Const.WARNING:
         imageType = MessageDialog.WARNING;
         break;
+      default:
+        break;
     }
 
     MessageDialogWithToggle md = new MessageDialogWithToggle(shell, dialogTitle, image, message, imageType,

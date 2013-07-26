@@ -30,7 +30,6 @@ import netscape.ldap.util.LDIF;
 import netscape.ldap.util.LDIFAttributeContent;
 import netscape.ldap.util.LDIFContent;
 
-import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
@@ -312,7 +311,7 @@ public class LDIFInput extends BaseStep implements StepInterface
 	            
 			    // Is this the last file?
 				data.last_file = ( data.filenr==data.files.nrOfFiles()-1);
-				data.file = (FileObject) data.files.getFile(data.filenr);
+				data.file = data.files.getFile(data.filenr);
 				
 				// Move file pointer ahead!
 				data.filenr++;
@@ -442,7 +441,7 @@ public class LDIFInput extends BaseStep implements StepInterface
 				
 				while (valuesLDIF.hasMoreElements()) 
 				{
-					String valueLDIF = (String) valuesLDIF.nextElement();
+					String valueLDIF = valuesLDIF.nextElement();
 					if (i==0)	
 						Stringvalue=  valueLDIF;
 					else

@@ -827,6 +827,8 @@ public class TransPainter extends BasePainter
               enabled = injectionInterface!=null;
               areaOwners.add(new AreaOwner(AreaType.STEP_INJECT_ICON, xIcon, yIcon, bounds.x, bounds.y, offset, stepMeta, injectionInterface));
               break;
+              default:
+                break;
         		}
         		if (enabled) {
         			gc.setAlpha(255);

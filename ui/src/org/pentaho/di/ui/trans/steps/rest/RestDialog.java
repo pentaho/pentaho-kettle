@@ -1165,7 +1165,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
         Set<String> keySet = fields.keySet();
         List<String> entries = new ArrayList<String>(keySet);
         
-        fieldNames = (String[]) entries.toArray(new String[entries.size()]);
+        fieldNames = entries.toArray(new String[entries.size()]);
 
         Const.sortStrings(fieldNames);
         colinfoparams[0].setComboValues(fieldNames);

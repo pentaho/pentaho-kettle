@@ -325,7 +325,7 @@ public class UnivariateStatsDialog extends BaseStepDialog
     Set<String> keySet = m_inputFields.keySet();
     List<String> entries = new ArrayList<String>(keySet);
     String[] fieldNames = 
-      (String[]) entries.toArray(new String[entries.size()]);
+      entries.toArray(new String[entries.size()]);
     Const.sortStrings(fieldNames);
     m_colinf[0].setComboValues(fieldNames);
   }

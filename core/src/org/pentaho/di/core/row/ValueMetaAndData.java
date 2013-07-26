@@ -27,6 +27,7 @@ import java.util.Date;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.w3c.dom.Node;
 
@@ -89,6 +90,7 @@ public class ValueMetaAndData
         }
     }
 
+    @Override
     public Object clone()
     {
         ValueMetaAndData vmad = new ValueMetaAndData();
@@ -111,6 +113,7 @@ public class ValueMetaAndData
     public static final String VALUE_REPOSITORY_DECIMAL_SYMBOL = ".";
     public static final String VALUE_REPOSITORY_GROUPING_SYMBOL = ",";
     
+    @Override
     public String toString()
     {
         try
@@ -179,7 +182,7 @@ public class ValueMetaAndData
         try
         {
             String valname =  XMLHandler.getTagValue(valnode, "name");
-            int valtype    =  ValueMeta.getType( XMLHandler.getTagValue(valnode, "type") );
+            int valtype    =  ValueMetaBase.getType( XMLHandler.getTagValue(valnode, "type") );
             String text    =  XMLHandler.getTagValue(valnode, "text");
             boolean isnull =  "Y".equalsIgnoreCase(XMLHandler.getTagValue(valnode, "isnull"));
             int len        =  Const.toInt(XMLHandler.getTagValue(valnode, "length"), -1);

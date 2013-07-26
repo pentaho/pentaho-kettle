@@ -130,6 +130,8 @@ public class FragmentHandler extends AbstractXulEventHandler {
       case DatabaseMeta.TYPE_ACCESS_PLUGIN:
         fragment = getFragment(database, databaseName, "_plugin.xul", "common_native.xul");  
         break;
+      default:
+        break;
     }
     
     try {

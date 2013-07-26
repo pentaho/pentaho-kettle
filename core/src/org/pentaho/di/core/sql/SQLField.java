@@ -159,6 +159,8 @@ public class SQLField {
               case MAX:
               case AVG:
               case SUM:   valueMeta = selectField.getValueMeta(); break;
+                default:
+                  break;
               }
               alias = selectField.getAlias();
               

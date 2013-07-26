@@ -137,14 +137,16 @@ public class Plugin implements PluginInterface {
 		return ids[0].hashCode();
 	}
 
-	public boolean matches(String id) {
+	@Override
+  public boolean matches(String id) {
 		return Const.indexOfString(id, ids)>=0;
 	}
 
 	/**
 	 * @return the category
 	 */
-	public String getCategory() {
+	@Override
+  public String getCategory() {
 		return category;
 	}
 
@@ -159,7 +161,8 @@ public class Plugin implements PluginInterface {
 	/**
 	 * @return the name
 	 */
-	public String getName() {
+	@Override
+  public String getName() {
 		return name;
 	}
 
@@ -174,7 +177,8 @@ public class Plugin implements PluginInterface {
 	/**
 	 * @return the description
 	 */
-	public String getDescription() {
+	@Override
+  public String getDescription() {
 		return description;
 	}
 
@@ -189,7 +193,8 @@ public class Plugin implements PluginInterface {
 	/**
 	 * @return the ids
 	 */
-	public String[] getIds() {
+	@Override
+  public String[] getIds() {
 		return ids;
 	}
 
@@ -204,7 +209,8 @@ public class Plugin implements PluginInterface {
 	/**
 	 * @return the pluginType
 	 */
-	public Class<? extends PluginTypeInterface> getPluginType() {
+	@Override
+  public Class<? extends PluginTypeInterface> getPluginType() {
 		return pluginType;
 	}
 
@@ -219,7 +225,8 @@ public class Plugin implements PluginInterface {
 	/**
 	 * @return the imageFile
 	 */
-	public String getImageFile() {
+	@Override
+  public String getImageFile() {
 		return imageFile;
 	}
 
@@ -234,7 +241,8 @@ public class Plugin implements PluginInterface {
 	/**
 	 * @return the separateClassLoaderNeeded
 	 */
-	public boolean isSeparateClassLoaderNeeded() {
+	@Override
+  public boolean isSeparateClassLoaderNeeded() {
 		return separateClassLoaderNeeded;
 	}
 
@@ -249,7 +257,8 @@ public class Plugin implements PluginInterface {
 	/**
 	 * @return the nativePlugin
 	 */
-	public boolean isNativePlugin() {
+	@Override
+  public boolean isNativePlugin() {
 		return nativePlugin;
 	}
 
@@ -264,7 +273,8 @@ public class Plugin implements PluginInterface {
 	/**
 	 * @return the classMap
 	 */
-	public Map<Class<?>, String> getClassMap() {
+	@Override
+  public Map<Class<?>, String> getClassMap() {
 		return classMap;
 	}
 
@@ -279,7 +289,8 @@ public class Plugin implements PluginInterface {
 	/**
 	 * @return the libraries
 	 */
-	public List<String> getLibraries() {
+	@Override
+  public List<String> getLibraries() {
 		return libraries;
 	}
 
@@ -293,7 +304,8 @@ public class Plugin implements PluginInterface {
 	/**
 	 * @return the errorHelpFile
 	 */
-	public String getErrorHelpFile() {
+	@Override
+  public String getErrorHelpFile() {
 		return errorHelpFile;
 	}
 
@@ -304,18 +316,21 @@ public class Plugin implements PluginInterface {
 		this.errorHelpFile = errorHelpFile;
 	}
 
-	public Class<?> getMainType() {
+	@Override
+  public Class<?> getMainType() {
 		return mainType;
 	}
 
-	public URL getPluginDirectory() {
+	@Override
+  public URL getPluginDirectory() {
 		return this.pluginFolder;
 	}
 
 	/**
 	 * @return the documentationUrl
 	 */
-	public String getDocumentationUrl() {
+	@Override
+  public String getDocumentationUrl() {
 		return documentationUrl;
 	}
 
@@ -323,13 +338,15 @@ public class Plugin implements PluginInterface {
 	 * @param documentationUrl
 	 *            the documentationUrl to set
 	 */
-	public void setDocumentationUrl(String documentationUrl) {
+	@Override
+  public void setDocumentationUrl(String documentationUrl) {
 		this.documentationUrl = documentationUrl;
 	}
 
   /**
    * @return the casesUrl
    */
+  @Override
   public String getCasesUrl() {
     return casesUrl;
   }
@@ -337,6 +354,7 @@ public class Plugin implements PluginInterface {
   /**
    * @param casesUrl the casesUrl to set
    */
+  @Override
   public void setCasesUrl(String casesUrl) {
     this.casesUrl = casesUrl;
   }
@@ -344,6 +362,7 @@ public class Plugin implements PluginInterface {
   /**
    * @return the forum URL
    */
+  @Override
   public String getForumUrl() {
     return forumUrl;
   }
@@ -351,6 +370,7 @@ public class Plugin implements PluginInterface {
   /**
    * @param forumUrl the forum URL to set
    */
+  @Override
   public void setForumUrl(String forumUrl) {
     this.forumUrl = forumUrl;
   }  

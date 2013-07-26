@@ -37,7 +37,8 @@ public class OverlayProperties extends Properties implements PropertyHandler {
 		load(file);
 	}
 	
-	public boolean exists(String filename) {
+	@Override
+  public boolean exists(String filename) {
 		try {
 			return (getURL(filename)!=null);
 		} catch (MalformedURLException e) {
@@ -45,7 +46,8 @@ public class OverlayProperties extends Properties implements PropertyHandler {
 		} 
 	}
 	
-	public boolean loadProps(String filename) {
+	@Override
+  public boolean loadProps(String filename) {
 		try {
 			return load(filename);
 		} catch (IOException e) {

@@ -244,7 +244,7 @@ public class MarketplaceDialog extends Dialog {
                   setPluginName(marketEntry);
                   Button upgradeButton = null;
                   for (Control control: composite.getChildren()) {
-                    if (control instanceof Button && "upgradeButton".equals((String)control.getData("id"))){
+                    if (control instanceof Button && "upgradeButton".equals(control.getData("id"))){
                       upgradeButton = (Button)control;
                       break;
                     }

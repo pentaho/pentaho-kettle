@@ -71,6 +71,7 @@ public class KettleLogStore {
     logCleanerTimer = new Timer(true);
     
     TimerTask timerTask = new TimerTask() {
+      @Override
       public void run() {
 
         if (maxLogTimeoutMinutes>0) {

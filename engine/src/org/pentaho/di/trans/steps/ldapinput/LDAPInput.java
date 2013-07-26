@@ -274,7 +274,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 			// It's a binary field
 			// no need to convert, just return the value as it
 			try  {
-				return (byte[])attr.get();
+				return attr.get();
 			}catch(java.lang.ClassCastException e){
 				return attr.get().toString().getBytes();
 			}

@@ -332,6 +332,8 @@ public class JobPainter extends BasePainter {
         			enabled=true;
                 	areaOwners.add(new AreaOwner(AreaType.JOB_ENTRY_MINI_ICON_OUTPUT, xIcon, yIcon, bounds.x, bounds.y, offset, jobMeta, jobEntryCopy));
         			break;
+            default:
+              break;
         		}
         		if (enabled) {
         			gc.setAlpha(255);

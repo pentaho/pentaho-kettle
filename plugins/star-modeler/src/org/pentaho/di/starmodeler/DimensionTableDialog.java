@@ -23,7 +23,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -122,7 +121,7 @@ public class DimensionTableDialog extends Dialog
 
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
 		props.setLook(shell);
-		shell.setImage((Image) GUIResource.getInstance().getImageLogoSmall());
+		shell.setImage(GUIResource.getInstance().getImageLogoSmall());
 		
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -400,6 +399,8 @@ public class DimensionTableDialog extends Dialog
         addAttribute("Natural Key", "Natural key of the dimension", "???_id", AttributeType.NATURAL_KEY, DataType.NUMERIC, 9, -1, "Copy from source table");
         break;
       case OTHER:
+        break;
+      default:
         break;
       }
         

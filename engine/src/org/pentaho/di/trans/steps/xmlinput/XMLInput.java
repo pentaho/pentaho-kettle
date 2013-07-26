@@ -22,7 +22,6 @@
 
 package org.pentaho.di.trans.steps.xmlinput;
 
-import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
@@ -296,7 +295,7 @@ public class XMLInput extends BaseStep implements StepInterface
 
 			// Is this the last file?
 			data.last_file = (data.filenr == data.files.size() - 1);
-			data.file = (FileObject) data.files.get(data.filenr);
+			data.file = data.files.get(data.filenr);
 
 			logBasic(BaseMessages.getString(PKG, "XMLInput.Log.OpeningFile", data.file.toString()));
 
@@ -331,7 +330,7 @@ public class XMLInput extends BaseStep implements StepInterface
 			data.itemElement = meta.getInputPosition()[meta.getInputPosition().length - 1];
 
 			data.itemCount = XMLHandler.countNodes(data.section, data.itemElement);
-			data.itemPosition = (int) meta.getNrRowsToSkip();
+			data.itemPosition = meta.getNrRowsToSkip();
 		} catch (Exception e)
 		{
 			logError(BaseMessages.getString(PKG, "XMLInput.Log.UnableToOpenFile", "" + data.filenr, data.file

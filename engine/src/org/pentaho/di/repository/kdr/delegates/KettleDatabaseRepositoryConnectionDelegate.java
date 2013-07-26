@@ -460,7 +460,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
       //
       return 1;
     }
-    Object[] look = (Object[]) stepAttributesBuffer.get(idx + offset);
+    Object[] look = stepAttributesBuffer.get(idx + offset);
     RowMetaInterface rowMeta = stepAttributesRowMeta;
 
     long lookID = rowMeta.getInteger(look, 0);
@@ -472,7 +472,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
       nr = rowMeta.getInteger(look, 2).intValue() + 1;
       offset++;
       if (idx + offset < stepAttributesBuffer.size()) {
-        look = (Object[]) stepAttributesBuffer.get(idx + offset);
+        look = stepAttributesBuffer.get(idx + offset);
 
         lookID = rowMeta.getInteger(look, 0);
         lookCode = rowMeta.getString(look, 1);
@@ -596,7 +596,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
   public synchronized long getStepAttributeInteger(ObjectId id_step, int nr, String code) throws KettleException {
     RowMetaAndData r = null;
     if (stepAttributesBuffer != null)
-      r = searchStepAttributeInBuffer(id_step, code, (long) nr);
+      r = searchStepAttributeInBuffer(id_step, code, nr);
     else
       r = getStepAttributeRow(id_step, nr, code);
     if (r == null)
@@ -608,7 +608,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
   public synchronized ObjectId findStepAttributeID(ObjectId id_step, int nr, String code) throws KettleException {
     RowMetaAndData r = null;
     if (stepAttributesBuffer != null)
-      r = searchStepAttributeInBuffer(id_step, code, (long) nr);
+      r = searchStepAttributeInBuffer(id_step, code, nr);
     else
       r = getStepAttributeRow(id_step, nr, code);
     if (r == null)
@@ -624,7 +624,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
   public synchronized String getStepAttributeString(ObjectId id_step, int nr, String code) throws KettleException {
     RowMetaAndData r = null;
     if (stepAttributesBuffer != null)
-      r = searchStepAttributeInBuffer(id_step, code, (long) nr);
+      r = searchStepAttributeInBuffer(id_step, code, nr);
     else
       r = getStepAttributeRow(id_step, nr, code);
     if (r == null)
@@ -635,7 +635,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
   public synchronized boolean getStepAttributeBoolean(ObjectId id_step, int nr, String code, boolean def) throws KettleException {
     RowMetaAndData r = null;
     if (stepAttributesBuffer != null)
-      r = searchStepAttributeInBuffer(id_step, code, (long) nr);
+      r = searchStepAttributeInBuffer(id_step, code, nr);
     else
       r = getStepAttributeRow(id_step, nr, code);
 

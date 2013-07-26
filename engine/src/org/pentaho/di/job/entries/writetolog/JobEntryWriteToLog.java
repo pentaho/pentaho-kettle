@@ -260,6 +260,8 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 				case DETAILED: logChannel.logDetailed(message+ Const.CR); break;
 				case DEBUG: logChannel.logDebug(message+ Const.CR); break;
 				case ROWLEVEL: logChannel.logRowlevel(message+ Const.CR); break;
+		    default: // NOTHING
+		      break;
 			}
 
 			return true;

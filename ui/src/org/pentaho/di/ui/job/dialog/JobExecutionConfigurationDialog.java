@@ -217,7 +217,7 @@ public class JobExecutionConfigurationDialog extends Dialog
         wRemoteHost.setLayoutData(fdRemoteHost);
         for (int i=0;i<jobMeta.getSlaveServers().size();i++)
         {
-            SlaveServer slaveServer = (SlaveServer)jobMeta.getSlaveServers().get(i);
+            SlaveServer slaveServer = jobMeta.getSlaveServers().get(i);
             wRemoteHost.add(slaveServer.toString());
         }
         

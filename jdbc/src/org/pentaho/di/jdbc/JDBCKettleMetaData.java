@@ -639,7 +639,7 @@ public class JDBCKettleMetaData implements java.sql.DatabaseMetaData {
 			log.debug("tables:"+tables);
 			for (Iterator<Map.Entry<String, String[]>> iterator = tables.iterator(); iterator.hasNext();) {
 				Map.Entry<String, String[]> o = iterator.next();
-				String[] values = (String[]) (o.getValue());
+				String[] values = (o.getValue());
 				for (int i = 0; i < values.length; i++) {
 			RowMetaAndData rd = new RowMetaAndData();
 			rd.addValue("TABLE_CAT", ValueMetaInterface.TYPE_STRING,
@@ -676,7 +676,7 @@ public class JDBCKettleMetaData implements java.sql.DatabaseMetaData {
 				if ((!schema.equals(schemaPattern))&&isBirtSchema) {
 					continue;
 				}
-				String[] values = (String[]) (o.getValue());
+				String[] values = (o.getValue());
 //				log.debug("getTables:"
 //						+ java.util.Arrays.toString(values));
 				

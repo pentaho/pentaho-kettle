@@ -305,7 +305,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
             String hashName = vMeta.getName();
             if (isHeader) hashName = "____header_field____"; // all strings, can map to the same format.
             
-            WritableCellFormat cellFormat=(WritableCellFormat) data.formats.get(hashName);
+            WritableCellFormat cellFormat=data.formats.get(hashName);
 
             // when template is used, take over the column format
             if (cellFormat==null && meta.isTemplateEnabled() && !isHeader)

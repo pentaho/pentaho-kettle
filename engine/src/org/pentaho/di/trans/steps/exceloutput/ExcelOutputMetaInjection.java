@@ -94,6 +94,8 @@ public class ExcelOutputMetaInjection implements StepMetaInjectionInterface {
                       case NAME:           excelOutputField.setName(value); break;
                       case TYPE:           excelOutputField.setType(value); break;
                       case FORMAT:         excelOutputField.setFormat(value); break;
+                      default:
+                        break;
                     }
                   }
                 }

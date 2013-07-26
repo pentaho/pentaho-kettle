@@ -73,7 +73,7 @@ public class RowForumulaContext implements FormulaContext
         if(name instanceof String)
         {
             ValueMetaInterface valueMeta;
-            Integer idx = (Integer) valueIndexMap.get(name);
+            Integer idx = valueIndexMap.get(name);
             if (idx!=null)
             {
                 valueMeta = rowMeta.getValueMeta(idx.intValue());
@@ -171,7 +171,7 @@ public class RowForumulaContext implements FormulaContext
         case ValueMetaInterface.TYPE_BINARY: return valueMeta.getBinary(valueData);
         case ValueMetaInterface.TYPE_BOOLEAN: return valueMeta.getBoolean(valueData);
         case ValueMetaInterface.TYPE_DATE: return valueMeta.getDate(valueData);
-        case ValueMetaInterface.TYPE_INTEGER: valueMeta.getInteger(valueData);
+        case ValueMetaInterface.TYPE_INTEGER: return valueMeta.getInteger(valueData);
         case ValueMetaInterface.TYPE_NUMBER: return valueMeta.getNumber(valueData);
         // case ValueMetaInterface.TYPE_SERIALIZABLE: return valueMeta.(valueData);
         case ValueMetaInterface.TYPE_STRING: return valueMeta.getString(valueData);

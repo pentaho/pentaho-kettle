@@ -484,7 +484,7 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
         Set<String> keySet = fields.keySet();
         List<String> entries = new ArrayList<String>(keySet);
 
-        String fieldNames[] = (String[]) entries.toArray(new String[entries.size()]);
+        String fieldNames[] = entries.toArray(new String[entries.size()]);
 
         Const.sortStrings(fieldNames);
         ciKeys[0].setComboValues(fieldNames);

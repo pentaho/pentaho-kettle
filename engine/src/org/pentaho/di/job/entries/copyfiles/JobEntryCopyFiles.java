@@ -443,7 +443,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 						  
 							 for (Iterator<String> iter = list_files_remove.iterator(); iter.hasNext() && !parentJob.isStopped();)
 					        {
-					            String fileremoventry = (String) iter.next();
+					            String fileremoventry = iter.next();
                       removeFile = null; // re=null each iteration
 					            // Try to get the file relative to the existing connection
 					            if(fileremoventry.startsWith(sourceFilefoldername)) {
@@ -485,7 +485,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 						  
 							 for (Iterator<String> iter = list_add_result.iterator(); iter.hasNext();)
 					        {
-					            String fileaddentry = (String) iter.next();
+					            String fileaddentry = iter.next();
                       addFile = null; // re=null each iteration
 					            
                       // Try to get the file relative to the existing connection

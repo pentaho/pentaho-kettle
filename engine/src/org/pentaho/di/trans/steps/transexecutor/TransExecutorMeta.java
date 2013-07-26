@@ -613,6 +613,8 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
         // Read the last revision by reference...
         mappingTransMeta = rep.loadTransformation(executorMeta.getTransObjectId(), null);
         break;
+      default:
+        break;
     }
 
     // Pass some important information to the mapping transformation metadata:
@@ -762,6 +764,8 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
         break;
       case 2:
         setResultFilesTargetStepMeta(step);
+        break;
+      default:
         break;
     }
 

@@ -153,11 +153,11 @@ public class SalesforceUpdate extends BaseStep implements StepInterface
 				SObject	sobjPass = new SObject();
 				sobjPass.setType(data.realModule);
 				if(updatefields.size()>0) {
-					sobjPass.set_any((MessageElement[])updatefields.toArray(new MessageElement[updatefields.size()]));
+					sobjPass.set_any(updatefields.toArray(new MessageElement[updatefields.size()]));
 				}
 				if(fieldsToNull.size()>0) {
 					// Set Null to fields
-					sobjPass.setFieldsToNull((String[])fieldsToNull.toArray(new String[fieldsToNull.size()]));
+					sobjPass.setFieldsToNull(fieldsToNull.toArray(new String[fieldsToNull.size()]));
 				}
 				
 				//Load the buffer array

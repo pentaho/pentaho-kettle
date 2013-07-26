@@ -184,6 +184,8 @@ public class ChannelLogTable extends BaseLogTable implements Cloneable, LogTable
 						case OBJECT_REVISION : value = loggingObject.getObjectRevision()==null ? null : loggingObject.getObjectRevision().toString(); break;
 						case PARENT_CHANNEL_ID : value = loggingObject.getParent() == null ? null : loggingObject.getParent().getLogChannelId(); break;
 						case ROOT_CHANNEL_ID : value = loggingHierarchy.getRootChannelId(); break;
+            default:
+              break;
 						}
 						
 					}

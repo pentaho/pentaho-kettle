@@ -110,7 +110,7 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
     {
         try
         {
-    		Writer outputStreamWriter = (Writer) writers.get(source);
+    		Writer outputStreamWriter = writers.get(source);
     		if (outputStreamWriter != null)
     			return outputStreamWriter;
     		FileObject file = getReplayFilename(destinationDirectory, processingFilename, dateString, fileExtension, source);

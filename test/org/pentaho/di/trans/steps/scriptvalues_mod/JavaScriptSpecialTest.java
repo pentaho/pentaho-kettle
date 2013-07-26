@@ -44,7 +44,6 @@ import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
 
@@ -312,7 +311,7 @@ public class JavaScriptSpecialTest extends TestCase
 
         // Set the information of the injector.
         String injectorPid = registry.getPluginId(StepPluginType.class, im);
-        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
+        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, im);
         transMeta.addStep(injectorStep);
 
         //
@@ -335,7 +334,7 @@ public class JavaScriptSpecialTest extends TestCase
         svm.setCompatible(false);
 
         String javaScriptStepPid = registry.getPluginId(StepPluginType.class, svm);
-        StepMeta javaScriptStep = new StepMeta(javaScriptStepPid, javaScriptStepname, (StepMetaInterface)svm);
+        StepMeta javaScriptStep = new StepMeta(javaScriptStepPid, javaScriptStepname, svm);
         transMeta.addStep(javaScriptStep);
 
         TransHopMeta hi1 = new TransHopMeta(injectorStep, javaScriptStep);
@@ -348,7 +347,7 @@ public class JavaScriptSpecialTest extends TestCase
         DummyTransMeta dm = new DummyTransMeta();
 
         String dummyPid = registry.getPluginId(StepPluginType.class, dm);
-        StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, (StepMetaInterface)dm);
+        StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, dm);
         transMeta.addStep(dummyStep);
 
         TransHopMeta hi2 = new TransHopMeta(javaScriptStep, dummyStep);
@@ -377,7 +376,7 @@ public class JavaScriptSpecialTest extends TestCase
         Iterator<RowMetaAndData> it = inputList.iterator();
         while ( it.hasNext() )
         {
-        	RowMetaAndData rm = (RowMetaAndData)it.next();
+        	RowMetaAndData rm = it.next();
         	rp.putRow(rm.getRowMeta(), rm.getData());
         }
         rp.finished();
@@ -416,7 +415,7 @@ public class JavaScriptSpecialTest extends TestCase
 
         // Set the information of the injector.
         String injectorPid = registry.getPluginId(StepPluginType.class, im);
-        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
+        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, im);
         transMeta.addStep(injectorStep);
 
         //
@@ -441,7 +440,7 @@ public class JavaScriptSpecialTest extends TestCase
         svm.setCompatible(false);
 
         String javaScriptStepPid = registry.getPluginId(StepPluginType.class, svm);
-        StepMeta javaScriptStep = new StepMeta(javaScriptStepPid, javaScriptStepname, (StepMetaInterface)svm);
+        StepMeta javaScriptStep = new StepMeta(javaScriptStepPid, javaScriptStepname, svm);
         transMeta.addStep(javaScriptStep);
 
         TransHopMeta hi1 = new TransHopMeta(injectorStep, javaScriptStep);
@@ -454,7 +453,7 @@ public class JavaScriptSpecialTest extends TestCase
         DummyTransMeta dm = new DummyTransMeta();
 
         String dummyPid = registry.getPluginId(StepPluginType.class, dm);
-        StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, (StepMetaInterface)dm);
+        StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, dm);
         transMeta.addStep(dummyStep);
 
         TransHopMeta hi2 = new TransHopMeta(javaScriptStep, dummyStep);
@@ -483,7 +482,7 @@ public class JavaScriptSpecialTest extends TestCase
         Iterator<RowMetaAndData> it = inputList.iterator();
         while ( it.hasNext() )
         {
-        	RowMetaAndData rm = (RowMetaAndData)it.next();
+        	RowMetaAndData rm = it.next();
         	rp.putRow(rm.getRowMeta(), rm.getData());
         }
         rp.finished();
@@ -521,7 +520,7 @@ public class JavaScriptSpecialTest extends TestCase
 
         // Set the information of the injector.
         String injectorPid = registry.getPluginId(StepPluginType.class, im);
-        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
+        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, im);
         transMeta.addStep(injectorStep);
 
         //
@@ -553,7 +552,7 @@ public class JavaScriptSpecialTest extends TestCase
         svm.setCompatible(false);
 
         String javaScriptStepPid = registry.getPluginId(StepPluginType.class, svm);
-        StepMeta javaScriptStep = new StepMeta(javaScriptStepPid, javaScriptStepname, (StepMetaInterface)svm);
+        StepMeta javaScriptStep = new StepMeta(javaScriptStepPid, javaScriptStepname, svm);
         transMeta.addStep(javaScriptStep);
 
         TransHopMeta hi1 = new TransHopMeta(injectorStep, javaScriptStep);
@@ -566,7 +565,7 @@ public class JavaScriptSpecialTest extends TestCase
         DummyTransMeta dm = new DummyTransMeta();
 
         String dummyPid = registry.getPluginId(StepPluginType.class, dm);
-        StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, (StepMetaInterface)dm);
+        StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, dm);
         transMeta.addStep(dummyStep);
 
         TransHopMeta hi2 = new TransHopMeta(javaScriptStep, dummyStep);
@@ -595,7 +594,7 @@ public class JavaScriptSpecialTest extends TestCase
         Iterator<RowMetaAndData> it = inputList.iterator();
         while ( it.hasNext() )
         {
-        	RowMetaAndData rm = (RowMetaAndData)it.next();
+        	RowMetaAndData rm = it.next();
         	rp.putRow(rm.getRowMeta(), rm.getData());
         }
         rp.finished();

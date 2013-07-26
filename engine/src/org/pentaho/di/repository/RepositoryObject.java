@@ -150,7 +150,9 @@ public class RepositoryObject implements RepositoryElementMetaInterface
                     case 1: result=compareStrings(r1.getObjectType().getTypeDescription(), r2.getObjectType().getTypeDescription()); break;
                     case 2: result=compareStrings(r1.getModifiedUser(), r2.getModifiedUser()); break;
                     case 3: result=compareDates(r1.getModifiedDate(), r2.getModifiedDate()); break; 
-                    case 4: result=compareStrings(r1.getDescription(), r2.getDescription()); break; 
+                    case 4: result=compareStrings(r1.getDescription(), r2.getDescription()); break;
+                      default:
+                        break; 
                     }
                     
                     if (!ascending) result*=-1;

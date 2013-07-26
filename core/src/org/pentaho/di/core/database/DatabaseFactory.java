@@ -50,6 +50,7 @@ public class DatabaseFactory implements DatabaseFactoryInterface {
   public DatabaseFactory() {
   }
 
+  @Override
   public String getConnectionTestReport(DatabaseMeta databaseMeta) throws KettleDatabaseException {
     if (databaseMeta.getAccessType() != DatabaseMeta.TYPE_ACCESS_PLUGIN) {
 

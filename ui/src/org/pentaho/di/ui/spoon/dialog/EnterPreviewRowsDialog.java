@@ -113,7 +113,7 @@ public class EnterPreviewRowsDialog extends Dialog
 		wStepList=new List(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER | SWT.READ_ONLY | SWT.V_SCROLL | SWT.H_SCROLL);
 		for (int i=0;i<stepNames.size();i++)
 		{
-			wStepList.add((String)stepNames.get(i)); 
+			wStepList.add(stepNames.get(i)); 
 		}
 		wStepList.select(0);
  		props.setLook(wStepList);
@@ -191,9 +191,9 @@ public class EnterPreviewRowsDialog extends Dialog
 		
 		int nr = wStepList.getSelectionIndex();
 
-		java.util.List<Object[]> buffer = (java.util.List<Object[]>)rowDatas.get(nr);
-        RowMetaInterface rowMeta = (RowMetaInterface)rowMetas.get(nr);
-		String    name   = (String)stepNames.get(nr);
+		java.util.List<Object[]> buffer = rowDatas.get(nr);
+        RowMetaInterface rowMeta = rowMetas.get(nr);
+		String    name   = stepNames.get(nr);
 		
         if (rowMeta!=null && buffer!=null && buffer.size()>0)
         {

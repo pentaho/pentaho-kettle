@@ -279,7 +279,7 @@ public class XMLInputSaxFieldPosition
         String encoded = "";
         for (int p=0;p<path.size();p++) 
         {
-            XMLInputSaxFieldPosition pos = (XMLInputSaxFieldPosition)path.get(p); 
+            XMLInputSaxFieldPosition pos = path.get(p); 
             String elementName = pos.toString();
             if (p>0) encoded+=XMLInputSaxField.POSITION_MARKER;
             encoded+=elementName;

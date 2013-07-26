@@ -2247,6 +2247,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
       case TYPE_UNDO_POSITION:
         ta.setPosition(from, pos, prev, curr);
         break;
+      default:
+        break;
     }
     undo.add(ta);
     undo_position++;
@@ -2565,7 +2567,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
         monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.GettingSQLForJobEntryCopy") + copy + "]");
       stats.addAll(copy.getEntry().getSQLStatements(repository, metaStore, this));
       stats.addAll(compatibleGetEntrySQLStatements(copy.getEntry(), repository));
-      stats.addAll(compatibleGetEntrySQLStatements(copy.getEntry(), repository, (VariableSpace) this));
+      stats.addAll(compatibleGetEntrySQLStatements(copy.getEntry(), repository, this));
       if (monitor != null)
         monitor.worked(1);
     }

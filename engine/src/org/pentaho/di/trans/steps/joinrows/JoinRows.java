@@ -245,7 +245,7 @@ public class JoinRows extends BaseStep implements StepInterface
 					if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "JoinRows.Log.NoRowsComingFromStep")+data.rs[filenr].getOriginStepName()+"]");  
 					return null;
 				}
-				rowData = (Object[]) data.cache[filenr].get(data.position[data.filenr]);
+				rowData = data.cache[filenr].get(data.position[data.filenr]);
 			
                 // Don't forget to clone the data to protect it against data alteration downstream.
                 //

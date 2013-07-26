@@ -178,6 +178,8 @@ public class FieldSplitterMetaInjection implements StepMetaInjectionInterface {
                       case NULL_IF:  split.nullIf = value; break;
                       case DEFAULT:  split.ifNull = value; break;
                       case TRIM_TYPE:  split.trimType = ValueMeta.getTrimTypeByCode(value); break;
+                      default:
+                        break;
                       }
                     }
                   }

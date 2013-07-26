@@ -138,7 +138,7 @@ public class TimedTransRunner
         result = trans.getResult();
         
         runTime = (double)(stopTime - startTime) / 1000;
-        speed = (double)records / (runTime);
+        speed = records / (runTime);
         
         printStats("V3 results", records, runTime, speed);
         

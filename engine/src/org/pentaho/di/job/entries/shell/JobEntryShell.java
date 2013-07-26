@@ -368,7 +368,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
         || (execPerRow && rows != null && iteration < rows.size() && result.getNrErrors() == 0)) {
       first = false;
       if (rows != null && execPerRow) {
-        resultRow = (RowMetaAndData) rows.get(iteration);
+        resultRow = rows.get(iteration);
       } else {
         resultRow = null;
       }
@@ -494,7 +494,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
           // have
           // multiple.
           {
-            RowMetaAndData r = (RowMetaAndData) cmdRows.get(i);
+            RowMetaAndData r = cmdRows.get(i);
             for (int j = 0; j < r.size(); j++) {
               cmdline.append(' ');
               cmdline.append(Const.optionallyQuoteStringByOS(r.getString(j, null)));
@@ -513,7 +513,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
           // have
           // multiple.
           {
-            RowMetaAndData r = (RowMetaAndData) cmdRows.get(i);
+            RowMetaAndData r = cmdRows.get(i);
             for (int j = 0; j < r.size(); j++) {
               cmds.add(Const.optionallyQuoteStringByOS(r.getString(j, null)));
             }
@@ -556,7 +556,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
           command.append(' ');
         else
           first = false;
-        command.append((String) it.next());
+        command.append(it.next());
       }
       if (log.isBasic())
         logBasic(BaseMessages.getString(PKG, "JobShell.ExecCommand", command.toString()));

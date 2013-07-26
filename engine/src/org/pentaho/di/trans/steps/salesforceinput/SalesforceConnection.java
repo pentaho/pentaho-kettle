@@ -349,7 +349,7 @@ public class SalesforceConnection {
 		 							list.add(updatedRecords.getIds(i));
 	
 		 							if(i%SalesforceConnectionUtils.MAX_UPDATED_OBJECTS_IDS ==0 || i==nr-1){
-		 								SObject[] s =getBinding().retrieve(this.fieldsList,getModule(), (String[]) list.toArray(new String[list.size()]));
+		 								SObject[] s =getBinding().retrieve(this.fieldsList,getModule(), list.toArray(new String[list.size()]));
 		 								System.arraycopy(s, 0, this.sObjects, desPos, s.length);
 		 								desPos+=s.length;
 		 								s=null;
@@ -592,7 +592,7 @@ public class SalesforceConnection {
 	    		  objects.add(o.getName());
 	    	  }
 	      }
-	      return  (String[]) objects.toArray(new String[objects.size()]);
+	      return  objects.toArray(new String[objects.size()]);
 	   } catch(Exception e){
 		   throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.Error.GettingModules"),e);
 	   }finally  {

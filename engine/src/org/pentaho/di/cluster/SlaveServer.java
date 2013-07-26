@@ -439,6 +439,8 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
           bodyBuffer.setLength(0);
           bodyBuffer.append(webResult.getXML());
           break;
+        default:
+          break;
       }
 
       String body = bodyBuffer.toString();
@@ -535,6 +537,8 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
             WebResult webResult = new WebResult(WebResult.STRING_ERROR, message);
             bodyBuffer.setLength(0);
             bodyBuffer.append(webResult.getXML());
+            break;
+          default:
             break;
         }
 

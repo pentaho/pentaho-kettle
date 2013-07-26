@@ -60,6 +60,7 @@ public class RowMeta implements RowMetaInterface
         valueMetaList = new ArrayList<ValueMetaInterface>();
     }
     
+    @Override
     public RowMeta clone()
     {
       try {
@@ -81,6 +82,7 @@ public class RowMeta implements RowMetaInterface
      * @return The cloned metadata
      * @throws if the target type could not be loaded from the plugin registry
      */
+    @Override
     public RowMetaInterface cloneToType(int targetType) throws KettleValueException {
       try {
         RowMeta rowMeta = new RowMeta();
@@ -108,6 +110,7 @@ public class RowMeta implements RowMetaInterface
     /**
      * @return the list of value metadata 
      */
+    @Override
     public List<ValueMetaInterface> getValueMetaList()
     {
         return valueMetaList;
@@ -116,6 +119,7 @@ public class RowMeta implements RowMetaInterface
     /**
      * @param valueMetaList the list of valueMeta to set
      */
+    @Override
     public void setValueMetaList(List<ValueMetaInterface> valueMetaList)
     {
         this.valueMetaList = valueMetaList;
@@ -124,6 +128,7 @@ public class RowMeta implements RowMetaInterface
     /**
      * @return the number of values in the row
      */
+    @Override
     public int size()
     {
         return valueMetaList.size();
@@ -132,11 +137,13 @@ public class RowMeta implements RowMetaInterface
     /**
      * @return true if there are no elements in the row metadata
      */
+    @Override
     public boolean isEmpty()
     {
         return size()==0;
     }
 
+    @Override
     public boolean exists(ValueMetaInterface meta)
     {
         return searchValueMeta(meta.getName())!=null;
@@ -148,6 +155,7 @@ public class RowMeta implements RowMetaInterface
      * 
      * @param meta The metadata value to add
      */
+    @Override
     public void addValueMeta(ValueMetaInterface meta)
     {
         if (!exists(meta))
@@ -168,6 +176,7 @@ public class RowMeta implements RowMetaInterface
      * @param index The index where the metadata value needs to be put in the row
      * @param meta The metadata value to add to the row
      */
+    @Override
     public void addValueMeta(int index, ValueMetaInterface meta)
     {
         if (!exists(meta))
@@ -185,6 +194,7 @@ public class RowMeta implements RowMetaInterface
      * @param index The index to get the value metadata from
      * @return The value metadata specified by the index.
      */
+    @Override
     public ValueMetaInterface getValueMeta(int index)
     {
         return valueMetaList.get(index);
@@ -195,6 +205,7 @@ public class RowMeta implements RowMetaInterface
      * @param index The index in the row to replace at
      * @param valueMeta the metadata to replace with
      */
+    @Override
     public void setValueMeta(int index, ValueMetaInterface valueMeta)
     {
         valueMetaList.set(index, valueMeta);
@@ -209,6 +220,7 @@ public class RowMeta implements RowMetaInterface
      * @return The string found on that position in the row
      * @throws KettleValueException in case there was a problem converting the data.
      */
+    @Override
     public String getString(Object[] dataRow, int index) throws KettleValueException
     {
     	if( dataRow == null ) {
@@ -226,6 +238,7 @@ public class RowMeta implements RowMetaInterface
      * @return The integer found on that position in the row
      * @throws KettleValueException in case there was a problem converting the data.
      */
+    @Override
     public Long getInteger(Object[] dataRow, int index) throws KettleValueException
     {
     	if( dataRow == null ) {
@@ -243,6 +256,7 @@ public class RowMeta implements RowMetaInterface
      * @return The number found on that position in the row
      * @throws KettleValueException in case there was a problem converting the data.
      */
+    @Override
     public Double getNumber(Object[] dataRow, int index) throws KettleValueException
     {
     	if( dataRow == null ) {
@@ -260,6 +274,7 @@ public class RowMeta implements RowMetaInterface
      * @return The date found on that position in the row
      * @throws KettleValueException in case there was a problem converting the data.
      */
+    @Override
     public Date getDate(Object[] dataRow, int index) throws KettleValueException
     {
     	if( dataRow == null ) {
@@ -277,6 +292,7 @@ public class RowMeta implements RowMetaInterface
      * @return The bignumber found on that position in the row
      * @throws KettleValueException in case there was a problem converting the data.
      */
+    @Override
     public BigDecimal getBigNumber(Object[] dataRow, int index) throws KettleValueException
     {
     	if( dataRow == null ) {
@@ -294,6 +310,7 @@ public class RowMeta implements RowMetaInterface
      * @return The boolean found on that position in the row
      * @throws KettleValueException in case there was a problem converting the data.
      */
+    @Override
     public Boolean getBoolean(Object[] dataRow, int index) throws KettleValueException
     {
     	if( dataRow == null ) {
@@ -311,6 +328,7 @@ public class RowMeta implements RowMetaInterface
      * @return The binary found on that position in the row
      * @throws KettleValueException in case there was a problem converting the data.
      */
+    @Override
     public byte[] getBinary(Object[] dataRow, int index) throws KettleValueException
     {
     	if( dataRow == null ) {
@@ -329,6 +347,7 @@ public class RowMeta implements RowMetaInterface
      * @return true if the value on the index is null.
      * @throws KettleValueException in case there is a conversion error (only thrown in case of lazy conversion)
      */
+    @Override
     public boolean isNull(Object[] dataRow, int index) throws KettleValueException
     {
     	if( dataRow == null ) {
@@ -342,6 +361,7 @@ public class RowMeta implements RowMetaInterface
      * @return a cloned Object[] object.
      * @throws KettleValueException in case something is not quite right with the expected data
      */
+    @Override
     public Object[] cloneRow(Object[] objects) throws KettleValueException
     {
       return cloneRow(objects, objects.clone());
@@ -351,6 +371,7 @@ public class RowMeta implements RowMetaInterface
      * @return a cloned Object[] object.
      * @throws KettleValueException in case something is not quite right with the expected data
      */
+    @Override
     public Object[] cloneRow(Object[] objects, Object[] newObjects) throws KettleValueException {
 		if (valuesThatNeedRealClone == null) {
 			valuesThatNeedRealClone = new ArrayList<Integer>();
@@ -369,6 +390,7 @@ public class RowMeta implements RowMetaInterface
 	} 
 
     
+    @Override
     public String getString(Object[] dataRow, String valueName, String defaultValue) throws KettleValueException
     {
         int index = indexOfValue(valueName);
@@ -376,6 +398,7 @@ public class RowMeta implements RowMetaInterface
         return getString(dataRow, index);
     }
 
+    @Override
     public Long getInteger(Object[] dataRow, String valueName, Long defaultValue) throws KettleValueException
     {
         int index = indexOfValue(valueName);
@@ -383,6 +406,7 @@ public class RowMeta implements RowMetaInterface
         return getInteger(dataRow, index);
     }
 
+    @Override
     public Date getDate(Object[] dataRow, String valueName, Date defaultValue) throws KettleValueException
     {
         int index = indexOfValue(valueName);
@@ -395,6 +419,7 @@ public class RowMeta implements RowMetaInterface
      * @param valueName the name of the value metadata to look for
      * @return the index or -1 in case we didn't find the value
      */
+    @Override
     public int indexOfValue(String valueName)
     {
         for (int i=0;i<valueMetaList.size();i++)
@@ -409,6 +434,7 @@ public class RowMeta implements RowMetaInterface
      * @param valueName The value name to search for
      * @return The value metadata or null if nothing was found
      */
+    @Override
     public ValueMetaInterface searchValueMeta(String valueName)
     {
         for (int i=0;i<valueMetaList.size();i++)
@@ -419,6 +445,7 @@ public class RowMeta implements RowMetaInterface
         return null;
     }
 
+    @Override
     public void addRowMeta(RowMetaInterface rowMeta)
     {
         for (int i=0;i<rowMeta.size();i++)
@@ -434,6 +461,7 @@ public class RowMeta implements RowMetaInterface
      *
      * @param r The row to be merged with this row
      */
+    @Override
     public void mergeRowMeta(RowMetaInterface r)
     {
         for (int x=0;x<r.size();x++)
@@ -480,6 +508,7 @@ public class RowMeta implements RowMetaInterface
      * Get an array of the names of all the Values in the Row.
      * @return an array of Strings: the names of all the Values in the Row.
      */
+    @Override
     public String[] getFieldNames()
     {
         String retval[] = new String[size()];
@@ -496,6 +525,7 @@ public class RowMeta implements RowMetaInterface
      * Write ONLY the specified data to the outputStream
      * @throws KettleFileException  in case things go awry
      */
+    @Override
     public void writeData(DataOutputStream outputStream, Object[] data) throws KettleFileException
     {
         // Write all values in the row
@@ -516,6 +546,7 @@ public class RowMeta implements RowMetaInterface
      * Write ONLY the specified metadata to the outputStream
      * @throws KettleFileException  in case things go awry
      */
+    @Override
     public void writeMeta(DataOutputStream outputStream) throws KettleFileException
     {
         // First handle the number of fields in a row
@@ -562,7 +593,8 @@ public class RowMeta implements RowMetaInterface
       }
     }
 
-	public Object[] readData(DataInputStream inputStream) throws KettleFileException, KettleEOFException, SocketTimeoutException
+	@Override
+  public Object[] readData(DataInputStream inputStream) throws KettleFileException, KettleEOFException, SocketTimeoutException
     {
         Object[] data = new Object[size()];
         for (int i=0;i<size();i++)
@@ -592,11 +624,13 @@ public class RowMeta implements RowMetaInterface
         return data;
     }
 
+    @Override
     public void clear()
     {
         valueMetaList.clear();
     }
 
+    @Override
     public void removeValueMeta(String valueName) throws KettleValueException
     {
         int index = indexOfValue(valueName);
@@ -604,6 +638,7 @@ public class RowMeta implements RowMetaInterface
         valueMetaList.remove(index);
     }
 
+    @Override
     public void removeValueMeta(int index)
     {
         valueMetaList.remove(index);
@@ -612,6 +647,7 @@ public class RowMeta implements RowMetaInterface
     /**
      * @return a string with a description of all the metadata values of the complete row of metadata
      */
+    @Override
     public String toStringMeta()
     {
         StringBuffer buffer = new StringBuffer();
@@ -631,6 +667,7 @@ public class RowMeta implements RowMetaInterface
      * @return the row of data in string form
      * @throws KettleValueException in case of a conversion error
      */
+    @Override
     public String getString(Object[] row) throws KettleValueException
     {
         StringBuffer buffer = new StringBuffer();
@@ -651,6 +688,7 @@ public class RowMeta implements RowMetaInterface
      * @param maxlen The length to which the name will be padded.
      * @return an array of strings: the names and the types of the fieldnames in the row.
      */
+    @Override
     public String[] getFieldNamesAndTypes(int maxlen)
     {
         String retval[] = new String[size()];
@@ -674,6 +712,7 @@ public class RowMeta implements RowMetaInterface
      * @return 0 if the rows are considered equal, -1 is data1 is smaller, 1 if data2 is smaller.
      * @throws KettleValueException
      */
+    @Override
     public int compare(Object[] rowData1, Object[] rowData2, int fieldnrs[]) throws KettleValueException
     {
         for (int i=0;i<fieldnrs.length;i++)
@@ -697,6 +736,7 @@ public class RowMeta implements RowMetaInterface
      * @return true if the rows are considered equal, false if they are not.
      * @throws KettleValueException
      */
+    @Override
     public boolean equals(Object[] rowData1, Object[] rowData2, int[] fieldnrs) throws KettleValueException
     {
         for (int i=0;i<fieldnrs.length;i++)
@@ -721,6 +761,7 @@ public class RowMeta implements RowMetaInterface
      * @return 0 if the rows are considered equal, -1 is data1 is smaller, 1 if data2 is smaller.
      * @throws KettleValueException
      */
+    @Override
     public int compare(Object[] rowData1, Object[] rowData2, int fieldnrs1[], int fieldnrs2[]) throws KettleValueException
     {
     	int len = (fieldnrs1.length < fieldnrs2.length) ? fieldnrs1.length : fieldnrs2.length;
@@ -748,6 +789,7 @@ public class RowMeta implements RowMetaInterface
      * @return 0 if the rows are considered equal, -1 is data1 is smaller, 1 if data2 is smaller.
      * @throws KettleValueException
      */
+    @Override
     public int compare(Object[] rowData1, RowMetaInterface rowMeta2, Object[] rowData2, int fieldnrs1[], int fieldnrs2[]) throws KettleValueException
     {
     	int len = (fieldnrs1.length < fieldnrs2.length) ? fieldnrs1.length : fieldnrs2.length;
@@ -773,6 +815,7 @@ public class RowMeta implements RowMetaInterface
      * @return 0 if the rows are considered equal, -1 is data1 is smaller, 1 if data2 is smaller.
      * @throws KettleValueException
      */
+    @Override
     public int compare(Object[] rowData1, Object[] rowData2) throws KettleValueException
     {
         for (int i=0;i<size();i++)
@@ -797,6 +840,7 @@ public class RowMeta implements RowMetaInterface
      * @throws KettleValueException in case there is a data conversion error
      * @deprecated
      */
+    @Override
     @Deprecated
     public int oldXORHashCode(Object[] rowData) throws KettleValueException
     {
@@ -826,6 +870,7 @@ public class RowMeta implements RowMetaInterface
      * @return the calculated hashCode
      * @throws KettleValueException in case there is a data conversion error
      */
+    @Override
     public int hashCode(Object[] rowData) throws KettleValueException
     {
         return Arrays.hashCode(rowData);
@@ -841,6 +886,7 @@ public class RowMeta implements RowMetaInterface
      * @return the calculated hashCode
      * @throws KettleValueException in case there is a data conversion error
      */
+    @Override
     public int convertedValuesHashCode(Object[] rowData) throws KettleValueException
     {
         if (rowData == null) return 0;
@@ -914,7 +960,8 @@ public class RowMeta implements RowMetaInterface
 	 * @return an XML representation of the row metadata
 	 * @throws IOException Thrown in case there is an (Base64/GZip) encoding problem
 	 */
-	public String getMetaXML() throws IOException
+	@Override
+  public String getMetaXML() throws IOException
 	{
 		StringBuffer xml= new StringBuffer();
 		
@@ -950,7 +997,8 @@ public class RowMeta implements RowMetaInterface
 	 * @return an XML representation of the row data
 	 * @throws IOException Thrown in case there is an (Base64/GZip) encoding problem
 	 */
-	public String getDataXML(Object[] rowData) throws IOException
+	@Override
+  public String getDataXML(Object[] rowData) throws IOException
 	{
 		StringBuffer xml= new StringBuffer();
 		
@@ -972,7 +1020,8 @@ public class RowMeta implements RowMetaInterface
 	 * @throws IOException Thrown in case there is an (Base64/GZip) decoding problem
 	 * @return a row of data, converted from XML
 	 */
-	public Object[] getRow(Node node) throws KettleException 
+	@Override
+  public Object[] getRow(Node node) throws KettleException 
 	{
 		Object[] rowData = RowDataUtil.allocateRowData(size());
 

@@ -410,7 +410,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
                         Set<String> keySet = fields.keySet();
                         List<String> entries = new ArrayList<String>(keySet);
                         
-                        String[] fieldNames= (String[]) entries.toArray(new String[entries.size()]);
+                        String[] fieldNames= entries.toArray(new String[entries.size()]);
                         Const.sortStrings(fieldNames);
                         // return fields
                         ciKey[0].setComboValues(fieldNames);
@@ -453,7 +453,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
         		        Set<String> keySet = fields.keySet();
         		        List<String> entries = new ArrayList<String>(keySet);
         		        
-        		        String[] fieldNames= (String[]) entries.toArray(new String[entries.size()]);
+        		        String[] fieldNames= entries.toArray(new String[entries.size()]);
         		        Const.sortStrings(fieldNames);
         		        // return fields
         		        ciReturn[0].setComboValues(fieldNames);

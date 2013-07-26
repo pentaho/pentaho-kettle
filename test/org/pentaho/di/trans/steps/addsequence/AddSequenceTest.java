@@ -42,7 +42,6 @@ import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
 
 
@@ -176,7 +175,7 @@ public class AddSequenceTest extends TestCase
         
         // Set the information of the row generator.                
         String rowGeneratorPid = registry.getPluginId(rm);
-        StepMeta rowGeneratorStep = new StepMeta(rowGeneratorPid, rowGeneratorStepname, (StepMetaInterface)rm);
+        StepMeta rowGeneratorStep = new StepMeta(rowGeneratorPid, rowGeneratorStepname, rm);
         transMeta.addStep(rowGeneratorStep);
         
         //
@@ -214,7 +213,7 @@ public class AddSequenceTest extends TestCase
         asm1.setMaxValue(100);
 
         String addSeqPid1 = registry.getPluginId(asm1);
-        StepMeta addSeqStep1 = new StepMeta(addSeqPid1, seqStepname1, (StepMetaInterface)asm1);
+        StepMeta addSeqStep1 = new StepMeta(addSeqPid1, seqStepname1, asm1);
         transMeta.addStep(addSeqStep1);                              
 
         TransHopMeta hi1 = new TransHopMeta(rowGeneratorStep, addSeqStep1);
@@ -233,7 +232,7 @@ public class AddSequenceTest extends TestCase
         asm2.setMaxValue(5);
 
         String addSeqPid2 = registry.getPluginId(asm2);
-        StepMeta addSeqStep2 = new StepMeta(addSeqPid2, seqStepname2, (StepMetaInterface)asm2);
+        StepMeta addSeqStep2 = new StepMeta(addSeqPid2, seqStepname2, asm2);
         transMeta.addStep(addSeqStep2);                              
 
         TransHopMeta hi2 = new TransHopMeta(addSeqStep1, addSeqStep2);
@@ -252,7 +251,7 @@ public class AddSequenceTest extends TestCase
         asm3.setMaxValue(17);
 
         String addSeqPid3 = registry.getPluginId(asm3);
-        StepMeta addSeqStep3 = new StepMeta(addSeqPid3, seqStepname3, (StepMetaInterface)asm3);
+        StepMeta addSeqStep3 = new StepMeta(addSeqPid3, seqStepname3, asm3);
         transMeta.addStep(addSeqStep3);                              
 
         TransHopMeta hi3 = new TransHopMeta(addSeqStep2, addSeqStep3);
@@ -271,7 +270,7 @@ public class AddSequenceTest extends TestCase
         asm4.setMaxValue(3);
 
         String addSeqPid4 = registry.getPluginId(asm4);
-        StepMeta addSeqStep4 = new StepMeta(addSeqPid4, seqStepname4, (StepMetaInterface)asm4);
+        StepMeta addSeqStep4 = new StepMeta(addSeqPid4, seqStepname4, asm4);
         transMeta.addStep(addSeqStep4);                              
 
         TransHopMeta hi4 = new TransHopMeta(addSeqStep3, addSeqStep4);

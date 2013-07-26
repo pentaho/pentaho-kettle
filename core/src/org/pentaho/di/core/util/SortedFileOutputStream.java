@@ -64,6 +64,7 @@ public class SortedFileOutputStream extends FileOutputStream
     /**
      * Appending to internal StringBuffer, instead of immediately writing to the file
      */
+    @Override
     public void write(byte[] b, int off, int len) throws IOException
     {
         if (sb == null)
@@ -74,6 +75,7 @@ public class SortedFileOutputStream extends FileOutputStream
     /**
      * Appending to internal StringBuffer, instead of immediately writing to the file
      */
+    @Override
     public void write(byte[] b) throws IOException
     {
         if (sb == null)
@@ -84,6 +86,7 @@ public class SortedFileOutputStream extends FileOutputStream
     /**
      * Appending to internal StringBuffer, instead of immediately writing to the file
      */
+    @Override
     public void write(int b) throws IOException
     {
         if (sb == null)
@@ -94,6 +97,7 @@ public class SortedFileOutputStream extends FileOutputStream
     /**
      * Catch <code>flush</code> method, don't do nothing
      */
+    @Override
     public void flush() throws IOException
     {
     }
@@ -102,6 +106,7 @@ public class SortedFileOutputStream extends FileOutputStream
      * If internally stored content is available, sorting keys of content, then sending content to
      * file. Then calling {@link FileOutputStream#close()} method.
      */
+    @Override
     public void close() throws IOException
     {
         if (sb == null || sb.length() == 0)

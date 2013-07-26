@@ -37,7 +37,8 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 	/**
 	 * @return The extra option separator in database URL for this platform
 	 */
-	public String getExtraOptionSeparator() 
+	@Override
+  public String getExtraOptionSeparator() 
 	{
 		return "&";
 	}
@@ -45,23 +46,27 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 	/**
 	 * @return This indicator separates the normal URL from the options
 	 */
-	public String getExtraOptionIndicator() 
+	@Override
+  public String getExtraOptionIndicator() 
 	{
 		return "?";
 	}
 		
-	public int[] getAccessTypeList()
+	@Override
+  public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
 	}
 	
-	public int getDefaultDatabasePort()
+	@Override
+  public int getDefaultDatabasePort()
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE) return 5432;
 		return -1;
 	}
 
-	public String getDriverClass()
+	@Override
+  public String getDriverClass()
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
 		{
@@ -73,6 +78,7 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 		}
 	}
 
+    @Override
     public String getURL(String hostname, String port, String databaseName)
     {
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
@@ -89,7 +95,8 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 	 * Checks whether or not the command setFetchSize() is supported by the JDBC driver...
 	 * @return true is setFetchSize() is supported!
 	 */
-	public boolean isFetchSizeSupported()
+	@Override
+  public boolean isFetchSizeSupported()
 	{
 		return true;
 	}
@@ -97,7 +104,8 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 	/**
 	 * @return true if the database supports bitmap indexes
 	 */
-	public boolean supportsBitmapIndex()
+	@Override
+  public boolean supportsBitmapIndex()
 	{
 		return false;
 	}
@@ -105,11 +113,13 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 	/**
 	 * @return true if the database supports synonyms
 	 */
-	public boolean supportsSynonyms()
+	@Override
+  public boolean supportsSynonyms()
 	{
 		return false;
 	}
     
+    @Override
     public boolean supportsSequences()
     {
         return true;
@@ -120,26 +130,31 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
      * You can't get back the value after the inserts (getGeneratedKeys) through JDBC calls.
      * Therefor it's wiser to use the built-in sequence support directly, not the auto increment features.
      */
+    @Override
     public boolean supportsAutoInc()
     {
         return true;
     }
     
+    @Override
     public String getLimitClause(int nrRows)
     {
         return " limit "+nrRows;
     }
     
+    @Override
     public String getSQLQueryFields(String tableName)
     {
         return "SELECT * FROM "+tableName+getLimitClause(1);
     }
     
+    @Override
     public String getSQLTableExists(String tablename)
     {
         return getSQLQueryFields(tablename);
     }
     
+    @Override
     public String getSQLColumnExists(String columnname, String tablename)
     {
         return  getSQLQueryColumnFields(columnname, tablename);
@@ -151,6 +166,7 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 
 
     
+    @Override
     public boolean needsToLockAllTables()
     {
         return false;
@@ -161,6 +177,7 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
      * @param sequenceName The sequence name
      * @return the SQL to get the next value of a sequence.
      */
+    @Override
     public String getSQLNextSequenceValue(String sequenceName)
     {
         return "SELECT nextval('"+sequenceName+"')";
@@ -171,6 +188,7 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
      * @param sequenceName The sequence name
      * @return the SQL to get the next value of a sequence.
      */
+    @Override
     public String getSQLCurrentSequenceValue(String sequenceName)
     {
         return "SELECT last_value FROM "+sequenceName;
@@ -181,6 +199,7 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
      * @param sequenceName The sequence to check
      * @return The SQL to get the name of the sequence back from the databases data dictionary
      */
+    @Override
     public String getSQLSequenceExists(String sequenceName)
     {
         return "SELECT relname AS sequence_name FROM pg_statio_all_sequences WHERE relname = '"+sequenceName.toLowerCase()+"'";
@@ -196,7 +215,8 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to add a column to the specified table
 	 */
-	public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" ADD COLUMN "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
@@ -211,7 +231,8 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to drop a column from the specified table
 	 */
-	public String getDropColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getDropColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" DROP COLUMN "+v.getName();
 	}
@@ -226,6 +247,7 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to modify a column in the specified table
 	 */
+  @Override
   public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon) {
     String retval = "";
 
@@ -259,7 +281,8 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
     return retval;
   }
 
-	public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
+	@Override
+  public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
 	{
 		String retval="";
 		
@@ -347,7 +370,8 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 	/* (non-Javadoc)
 	 * @see org.pentaho.di.core.database.DatabaseInterface#getSQLListOfProcedures()
 	 */
-	public String getSQLListOfProcedures()
+	@Override
+  public String getSQLListOfProcedures()
 	{
 		return  "select proname " +
 				"from pg_proc, pg_user " +
@@ -360,7 +384,8 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 	/* (non-Javadoc)
 	 * @see org.pentaho.di.core.database.DatabaseInterface#getReservedWords()
 	 */
-	public String[] getReservedWords()
+	@Override
+  public String[] getReservedWords()
 	{
 		return new String[]
 		{
@@ -458,6 +483,7 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
      * @param tableNames The names of the tables to lock
      * @return The SQL commands to lock database tables for write purposes.
      */
+    @Override
     public String getSQLLockTables(String tableNames[])
     {
         String sql="LOCK TABLE ";
@@ -475,6 +501,7 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
      * @param tableName The name of the table to unlock
      * @return The SQL command to unlock a database table.
      */
+    @Override
     public String getSQLUnlockTables(String tableName[])
     {
         return null; // commit unlocks everything!
@@ -484,16 +511,19 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
      * @return true if the database defaults to naming tables and fields in uppercase.
      * True for most databases except for stubborn stuff like PostgreSQL ;-)
      */
+    @Override
     public boolean isDefaultingToUppercase()
     {
         return false;
     }
     
+    @Override
     public String getExtraOptionsHelpText() 
     {
     	return "http://jdbc.postgresql.org/documentation/83/connect.html#connection-parameters";
     }
 
+    @Override
     public String[] getUsedLibraries()
     {
         return new String[] { "postgresql-8.2-506.jdbc3.jar" };
@@ -502,7 +532,8 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 	/**
 	 * @return true if the database supports error handling (recovery of failure) while doing batch updates.
 	 */
-	public boolean supportsErrorHandlingOnBatchUpdates() {
+	@Override
+  public boolean supportsErrorHandlingOnBatchUpdates() {
 		return false;
 	}
 
@@ -514,6 +545,7 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
    * @param string
    * @return A string that is properly quoted for use in a SQL statement (insert, update, delete, etc)
    */
+  @Override
   public String quoteSQLString(String string) {
     string = string.replaceAll("'", "''"); 
     string = string.replaceAll("\\n", "\\\\n");
@@ -534,6 +566,7 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
   /**
    * @return true if the database supports the use of safe-points and if it is appropriate to ever use it (default to false)
    */
+  @Override
   public boolean useSafePoints() {
     return true;
   }

@@ -459,6 +459,7 @@ public class GroupBy extends BaseStep implements StepInterface {
               data.agg[i] = (Long) value + 1;
             }
           }
+          break;
         case GroupByMeta.TYPE_GROUP_COUNT_ALL:
           if (!subjMeta.isNull(subj)) {
             data.counts[i]++;
@@ -694,7 +695,6 @@ public class GroupBy extends BaseStep implements StepInterface {
             ag = Double.valueOf(Math.sqrt(sum));
             break;
           case GroupByMeta.TYPE_GROUP_CONCAT_COMMA:
-            ;
           case GroupByMeta.TYPE_GROUP_CONCAT_STRING:
             ag = ((StringBuilder) ag).toString();
             break;
@@ -724,7 +724,7 @@ public class GroupBy extends BaseStep implements StepInterface {
         }
       }
       // OK, save the oldest rows to disk!
-      Object[] oldest = (Object[]) data.bufferList.get(0);
+      Object[] oldest = data.bufferList.get(0);
       data.inputRowMeta.writeData(data.dos, oldest);
       data.bufferList.remove(0);
       data.rowsOnFile++;
@@ -757,7 +757,7 @@ public class GroupBy extends BaseStep implements StepInterface {
       return row;
     } else {
       if (data.bufferList.size() > 0) {
-        Object[] row = (Object[]) data.bufferList.get(0);
+        Object[] row = data.bufferList.get(0);
         data.bufferList.remove(0);
         return row;
       } else {

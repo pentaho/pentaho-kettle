@@ -407,6 +407,8 @@ public class PGBulkLoader extends BaseStep implements StepInterface
 			    				}
 			    			}
 		    			break;
+                default:
+                  break;
 		    			}
 		    			break;
 		    		case ValueMetaInterface.TYPE_BOOLEAN:
@@ -433,6 +435,8 @@ public class PGBulkLoader extends BaseStep implements StepInterface
 		    				}
 		    			}
 		    			break;
+              default:
+                break;
 		    		}
 	    		}
 	    	}

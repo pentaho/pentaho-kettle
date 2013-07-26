@@ -552,6 +552,8 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		            		modifyScriptTree(cItem,DELETE_ITEM);
 		            		event.doit=true;
 		            		break;
+                  default:
+                    break;
 		            }
 	        	}
 			}
@@ -748,6 +750,8 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 			case SET_ACTIVE_ITEM :
 	        	input.setChanged();
 				break;
+      default:
+        break;
 		}
 	}
 	
@@ -808,6 +812,8 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 					}
 				}
 				break;
+      default:
+        break;
 		}
 		
 	}
@@ -1021,6 +1027,8 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 				break;
 				case SWT.CANCEL: bInputOK = false;
 					break;
+        default:
+          break;
 			}
 		}else{
 			bInputOK = true;
@@ -1509,7 +1517,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 	    Collections.sort(v);
 	    
 	    for (String strFunction : v) {
-	       String strFunctionType =(String)hatFunctions.get(strFunction);
+	       String strFunctionType =hatFunctions.get(strFunction);
 	       int iFunctionType = Integer.valueOf(strFunctionType).intValue();
 
 	       TreeItem itemFunction=null;
@@ -1520,6 +1528,8 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 				case ScriptValuesAddedFunctions.LOGIC_FUNCTION:itemFunction = new TreeItem(itemLogicFunctionsGroup,SWT.NULL); break;
 				case ScriptValuesAddedFunctions.SPECIAL_FUNCTION:itemFunction = new TreeItem(itemSpecialFunctionsGroup,SWT.NULL); break;
 				case ScriptValuesAddedFunctions.FILE_FUNCTION:itemFunction = new TreeItem(itemFileFunctionsGroup,SWT.NULL); break;
+        default:
+          break;
 			}
 			if(itemFunction !=null){
 				itemFunction.setText(strFunction);
@@ -1685,7 +1695,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
         		iStart=iStart-selCount; //when a selection is already there we need to subtract the position
         		if (iStart<0) iStart=0; // just safety
             	String strInsert =(String)item.getData();
-            	if(strInsert.equals("jsFunction")) strInsert = (String)item.getText();
+            	if(strInsert.equals("jsFunction")) strInsert = item.getText();
             	wScript.insert(strInsert);
             	wScript.setSelection(iStart,iStart+strInsert.length());
         	}
@@ -1887,6 +1897,8 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 				        	tItem.dispose();
 				        	input.setChanged();
 		            		break;
+                  default:
+                    break;
 		            }
 		        }
 			}
@@ -2017,11 +2029,17 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 												item.setText (text.getText ());
 											}
 										}
-									case SWT.TRAVERSE_ESCAPE:
+                    break;
+                  case SWT.TRAVERSE_ESCAPE:
 										composite.dispose ();
 										e.doit = false;
+										break;
+                  default:
+                    break;
 								}
 								break;
+              default:
+                break;
 						}
 					}
 				};

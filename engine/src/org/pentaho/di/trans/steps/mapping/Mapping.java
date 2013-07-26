@@ -357,6 +357,8 @@ public class Mapping extends BaseStep implements StepInterface
         throw new KettleException(BaseMessages.getString(PKG, "Mapping.Exception.UnableToInitSingleThreadedTransformation"));
       }
       break;
+      default:
+        break;
     }
 
     // If there is no read/write logging step set, we can insert the data from
@@ -390,7 +392,7 @@ public class Mapping extends BaseStep implements StepInterface
       // If we have a single step to read from, we use this
       //
       if (!Const.isEmpty(inputDefinition.getInputStepname())) {
-        StepInterface sourceStep = (StepInterface) getTrans().findRunThread(inputDefinition.getInputStepname());
+        StepInterface sourceStep = getTrans().findRunThread(inputDefinition.getInputStepname());
         if (sourceStep == null) {
           throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.StepNameNotFound", inputDefinition.getInputStepname()));
         }
@@ -411,7 +413,7 @@ public class Mapping extends BaseStep implements StepInterface
         //
         sourceSteps = new StepInterface[prevSteps.size()];
         for (int s = 0; s < sourceSteps.length; s++) {
-          sourceSteps[s] = (StepInterface) getTrans().findRunThread(prevSteps.get(s).getName());
+          sourceSteps[s] = getTrans().findRunThread(prevSteps.get(s).getName());
         }
       }
 
@@ -491,7 +493,7 @@ public class Mapping extends BaseStep implements StepInterface
         // If we have a target step specification for the output of the mapping,
         // we need to send it over there...
         //
-        StepInterface target = (StepInterface) getTrans().findRunThread(outputDefinition.getOutputStepname());
+        StepInterface target = getTrans().findRunThread(outputDefinition.getOutputStepname());
         if (target == null) {
           throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.StepNameNotFound", outputDefinition.getOutputStepname()));
         }
@@ -508,7 +510,7 @@ public class Mapping extends BaseStep implements StepInterface
         //
         targetSteps = new StepInterface[nextSteps.size()];
         for (int s = 0; s < targetSteps.length; s++) {
-          targetSteps[s] = (StepInterface) getTrans().findRunThread(nextSteps.get(s).getName());
+          targetSteps[s] = getTrans().findRunThread(nextSteps.get(s).getName());
         }
       }
 

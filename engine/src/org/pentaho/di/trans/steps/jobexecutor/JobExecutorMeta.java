@@ -572,6 +572,8 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
       // Read the last revision by reference...
       mappingJobMeta = rep.loadJob(executorMeta.getJobObjectId(), null);
       break;
+      default:
+        break;
     }
     
  // Pass some important information to the mapping transformation metadata:
@@ -707,6 +709,8 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
     case 0: setExecutionResultTargetStepMeta(step); break; 
     case 1: setResultRowsTargetStepMeta(step); break; 
     case 2: setResultFilesTargetStepMeta(step); break; 
+    default:
+      break;
     }
     
   }

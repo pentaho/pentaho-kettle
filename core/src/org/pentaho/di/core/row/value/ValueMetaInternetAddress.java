@@ -218,6 +218,7 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
     return inetAddress.getHostAddress();
   }
   
+  @Override
   public Object convertDataFromString(String pol, ValueMetaInterface convertMeta, String nullIf, String ifNull, int trim_type) throws KettleValueException {
     // null handling and conversion of value to null
     //
@@ -338,6 +339,7 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
    * @throws KettleValueException
    *           in case there is a data conversion error
    */
+  @Override
   public Object convertData(ValueMetaInterface meta2, Object data2) throws KettleValueException {
     switch(meta2.getType()) {
     case TYPE_STRING: return convertStringToInternetAddress(meta2.getString(data2)); 
@@ -412,6 +414,7 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
     
   }
   
+  @Override
   public String getDatabaseColumnTypeDefinition(DatabaseInterface databaseInterface, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr) {
 
     String retval=null;

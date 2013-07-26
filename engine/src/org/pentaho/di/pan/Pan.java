@@ -421,7 +421,7 @@ public class Pan {
 
       // allocate & run the required sub-threads
       try {
-        trans.execute((String[]) args.toArray(new String[args.size()]));
+        trans.execute(args.toArray(new String[args.size()]));
       } catch (KettleException e) {
         System.out.println(BaseMessages.getString(PKG, "Pan.Error.UnablePrepareInitTrans"));
 

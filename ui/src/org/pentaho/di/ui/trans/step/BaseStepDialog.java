@@ -316,6 +316,8 @@ public class BaseStepDialog extends Dialog {
       case BUTTON_ALIGNMENT_RIGHT:
         rightAlignButtons(buttons, largest.width, margin, lastControl);
         break;
+      default:
+        break;
     }
     if (Const.isOSX())
     {

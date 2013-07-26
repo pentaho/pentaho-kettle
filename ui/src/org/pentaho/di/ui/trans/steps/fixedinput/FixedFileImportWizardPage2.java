@@ -706,7 +706,7 @@ public class FixedFileImportWizardPage2 extends WizardPage
 		wFields.removeAll();
 		for (int i=0;i<fields.size();i++)
 		{
-			wFields.add( ((FixedFileInputField)fields.get(i)).getName() );
+			wFields.add( fields.get(i).getName() );
 		}
 	}
 	
@@ -718,7 +718,7 @@ public class FixedFileImportWizardPage2 extends WizardPage
 		
 		for (int i=0;i<rows.size();i++)
 		{
-			String line = (String)rows.get(i);
+			String line = rows.get(i);
 	
             if (position<line.length())
             {

@@ -698,6 +698,8 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
       injectTransMeta = repository.loadTransformation(referenceObjectId, null); // load the last version
       injectTransMeta.clearChanged();
       break;
+    default:
+      break;
     }
   }
 
@@ -758,6 +760,8 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
         new ErrorDialog(shell, BaseMessages.getString(PKG, "MetaInjectDialog.Exception.UnableToReferenceObjectId.Title"), BaseMessages.getString(PKG, "MetaInjectDialog.Exception.UnableToReferenceObjectId.Message"), e);
       }
       break;
+      default:
+        break;
     }
     
     wSourceStep.setText(Const.NVL(metaInjectMeta.getSourceStepName(), ""));
@@ -1038,6 +1042,8 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
       metaInjectMeta.setTransName(null);
       metaInjectMeta.setTransObjectId(referenceObjectId);
       break;
+      default:
+        break;
     }
     
     metaInjectMeta.setSourceStepName(wSourceStep.getText());
@@ -1098,6 +1104,8 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
             break;
           case REPOSITORY_BY_REFERENCE:
             getByReferenceData(newTransMeta.getObjectId());
+            break;
+          default:
             break;
         }
       }

@@ -99,7 +99,7 @@ public class GlobalMessages extends AbstractMessageHandler
     	if (GMinstance == null) {
     		GMinstance = new GlobalMessages();
     	}
-    	return (MessageHandler)GMinstance;
+    	return GMinstance;
     }
     
     protected static Map<String, ResourceBundle> getLocales()
@@ -295,23 +295,27 @@ public class GlobalMessages extends AbstractMessageHandler
         return string;
     }
     
+    @Override
     public String getString(String key) 
     {
         Object[] parameters = null;
         return calculateString(packageNM, key, parameters);
     }
     
+    @Override
     public String getString(String packageName, String key) 
     {
         Object[] parameters = new Object[] {};
         return calculateString(packageName, key, parameters);
     }
     
+    @Override
     public String getString(String packageName, String key, String...parameters)
     {
         return calculateString(packageName, key, parameters);
     }
     
+    @Override
     public String getString(String packageName, String key, Class<?> resourceClass, String...parameters)
     {
         return calculateString(packageName, key, parameters, resourceClass);

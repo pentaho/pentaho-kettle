@@ -227,7 +227,7 @@ public class CheckResultDialog extends Dialog
 		
 		for (int i=0;i<remarks.size();i++)
 		{
-      CheckResultInterface cr = (CheckResultInterface)remarks.get(i);
+      CheckResultInterface cr = remarks.get(i);
 			if (show_successful_results || cr.getType()!=CheckResultInterface.TYPE_RESULT_OK)
 			{
 				TableItem ti = new TableItem(wFields.table, SWT.NONE); 

@@ -87,7 +87,7 @@ public class SlaveServerTransStatus {
 
     xml.append("  <stepstatuslist>").append(Const.CR);
     for (int i = 0; i < stepStatusList.size(); i++) {
-      StepStatus stepStatus = (StepStatus) stepStatusList.get(i);
+      StepStatus stepStatus = stepStatusList.get(i);
       xml.append("    ").append(stepStatus.getXML()).append(Const.CR);
     }
     xml.append("  </stepstatuslist>").append(Const.CR);
@@ -247,7 +247,7 @@ public class SlaveServerTransStatus {
   public long getNrStepErrors() {
     long errors = 0L;
     for (int i = 0; i < stepStatusList.size(); i++) {
-      StepStatus stepStatus = (StepStatus) stepStatusList.get(i);
+      StepStatus stepStatus = stepStatusList.get(i);
       errors += stepStatus.getErrors();
     }
     return errors;

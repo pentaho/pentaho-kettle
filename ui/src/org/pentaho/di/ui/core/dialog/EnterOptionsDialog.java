@@ -1525,6 +1525,9 @@ public class EnterOptionsDialog extends Dialog
 					}});
 				
 				lastbtn = btn;
+				break;
+      default:
+        break;
 			}
 
 		}

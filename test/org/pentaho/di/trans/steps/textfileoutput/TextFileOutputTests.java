@@ -531,7 +531,7 @@ public class TextFileOutputTests extends TestCase {
 	        Enumeration<? extends ZipEntry> entries = zf.entries();
 	
 	        while (entries.hasMoreElements()) {
-	          ZipEntry ze = (ZipEntry) entries.nextElement();
+	          ZipEntry ze = entries.nextElement();
 	          zipEntryCount++;
 	          BufferedReader input = new BufferedReader(
 	                  new InputStreamReader(zf.getInputStream(ze)));

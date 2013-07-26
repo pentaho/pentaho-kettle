@@ -67,7 +67,8 @@ abstract class BaseRowSet implements Comparable<RowSet>, RowSet
      * That way, re-partitioning is always done in the same way.
      * 
      */
-	public int compareTo(RowSet rowSet) {
+	@Override
+  public int compareTo(RowSet rowSet) {
 		String target = remoteSlaveServerName+"."+destinationStepName+"."+destinationStepCopy.intValue();
 		String comp   = rowSet.getRemoteSlaveServerName()+"."+rowSet.getDestinationStepName()+"."+rowSet.getDestinationStepCopy();
 		
@@ -81,11 +82,13 @@ abstract class BaseRowSet implements Comparable<RowSet>, RowSet
     /* (non-Javadoc)
 	 * @see org.pentaho.di.core.RowSetInterface#putRow(org.pentaho.di.core.row.RowMetaInterface, java.lang.Object[])
 	 */
+    @Override
     public abstract boolean putRow(RowMetaInterface rowMeta, Object[] rowData);
     
     /* (non-Javadoc)
 	 * @see org.pentaho.di.core.RowSetInterface#putRowWait(org.pentaho.di.core.row.RowMetaInterface, java.lang.Object[], long, java.util.concurrent.TimeUnit)
 	 */
+    @Override
     public abstract boolean putRowWait(RowMetaInterface rowMeta, Object[] rowData, long time, TimeUnit tu);
     
     // default getRow with wait time = 100ms
@@ -93,22 +96,26 @@ abstract class BaseRowSet implements Comparable<RowSet>, RowSet
     /* (non-Javadoc)
 	 * @see org.pentaho.di.core.RowSetInterface#getRow()
 	 */
+    @Override
     public abstract Object[] getRow();
     
     
     /* (non-Javadoc)
 	 * @see org.pentaho.di.core.RowSetInterface#getRowImmediate()
 	 */       
+    @Override
     public abstract Object[] getRowImmediate();
     
     /* (non-Javadoc)
 	 * @see org.pentaho.di.core.RowSetInterface#getRowWait(long, java.util.concurrent.TimeUnit)
 	 */
+    @Override
     public abstract Object[] getRowWait(long timeout, TimeUnit tu);
     
     /* (non-Javadoc)
 	 * @see org.pentaho.di.core.RowSetInterface#setDone()
 	 */
+    @Override
     public void setDone() {
     	done.set(true);
     }
@@ -116,6 +123,7 @@ abstract class BaseRowSet implements Comparable<RowSet>, RowSet
     /* (non-Javadoc)
 	 * @see org.pentaho.di.core.RowSetInterface#isDone()
 	 */
+    @Override
     public boolean isDone() {
     	return done.get();
     }
@@ -123,6 +131,7 @@ abstract class BaseRowSet implements Comparable<RowSet>, RowSet
     /* (non-Javadoc)
 	 * @see org.pentaho.di.core.RowSetInterface#getOriginStepName()
 	 */
+    @Override
     public String getOriginStepName()
     {
     	synchronized(originStepName){
@@ -134,6 +143,7 @@ abstract class BaseRowSet implements Comparable<RowSet>, RowSet
     /* (non-Javadoc)
 	 * @see org.pentaho.di.core.RowSetInterface#getOriginStepCopy()
 	 */
+    @Override
     public int getOriginStepCopy()
     {
         return originStepCopy.get();
@@ -142,6 +152,7 @@ abstract class BaseRowSet implements Comparable<RowSet>, RowSet
     /* (non-Javadoc)
 	 * @see org.pentaho.di.core.RowSetInterface#getDestinationStepName()
 	 */
+    @Override
     public String getDestinationStepName()
     {
         return destinationStepName;
@@ -150,6 +161,7 @@ abstract class BaseRowSet implements Comparable<RowSet>, RowSet
     /* (non-Javadoc)
 	 * @see org.pentaho.di.core.RowSetInterface#getDestinationStepCopy()
 	 */
+    @Override
     public int getDestinationStepCopy()
     {
     	return destinationStepCopy.get();    	
@@ -159,6 +171,7 @@ abstract class BaseRowSet implements Comparable<RowSet>, RowSet
     /* (non-Javadoc)
 	 * @see org.pentaho.di.core.RowSetInterface#getName()
 	 */
+    @Override
     public String getName()
     {
         return toString();
@@ -167,11 +180,13 @@ abstract class BaseRowSet implements Comparable<RowSet>, RowSet
     /* (non-Javadoc)
 	 * @see org.pentaho.di.core.RowSetInterface#size()
 	 */
+    @Override
     public abstract int size();
 
     /* (non-Javadoc)
 	 * @see org.pentaho.di.core.RowSetInterface#setThreadNameFromToCopy(java.lang.String, int, java.lang.String, int)
 	 */
+    @Override
     public void setThreadNameFromToCopy(String from, int from_copy, String to, int to_copy)
     {
     	if (originStepName == null)
@@ -195,6 +210,7 @@ abstract class BaseRowSet implements Comparable<RowSet>, RowSet
     	destinationStepCopy.set(to_copy);
     }
     
+    @Override
     public String toString()
     {
     	StringBuffer str;
@@ -226,28 +242,32 @@ abstract class BaseRowSet implements Comparable<RowSet>, RowSet
 	/* (non-Javadoc)
 	 * @see org.pentaho.di.core.RowSetInterface#getRowMeta()
 	 */
-	public RowMetaInterface getRowMeta() {
+	@Override
+  public RowMetaInterface getRowMeta() {
 		return rowMeta;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.pentaho.di.core.RowSetInterface#setRowMeta(org.pentaho.di.core.row.RowMetaInterface)
 	 */
-	public void setRowMeta(RowMetaInterface rowMeta) {
+	@Override
+  public void setRowMeta(RowMetaInterface rowMeta) {
 		this.rowMeta = rowMeta;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.pentaho.di.core.RowSetInterface#getRemoteSlaveServerName()
 	 */
-	public String getRemoteSlaveServerName() {
+	@Override
+  public String getRemoteSlaveServerName() {
 		return remoteSlaveServerName;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.pentaho.di.core.RowSetInterface#setRemoteSlaveServerName(java.lang.String)
 	 */
-	public void setRemoteSlaveServerName(String remoteSlaveServerName) {
+	@Override
+  public void setRemoteSlaveServerName(String remoteSlaveServerName) {
 		this.remoteSlaveServerName = remoteSlaveServerName;
 	}
 
@@ -255,6 +275,7 @@ abstract class BaseRowSet implements Comparable<RowSet>, RowSet
 	 * By default we don't report blocking, only for monitored transformations.
 	 * @return true if this row set is blocking on reading or writing.
 	 */
+    @Override
     public boolean isBlocking() {
       return false;
     }

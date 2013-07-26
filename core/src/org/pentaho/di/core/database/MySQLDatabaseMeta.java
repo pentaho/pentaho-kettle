@@ -34,18 +34,21 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
-	public int[] getAccessTypeList()
+	@Override
+  public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
 	}
 	
-	public int getDefaultDatabasePort()
+	@Override
+  public int getDefaultDatabasePort()
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE) return 3306;
 		return -1;
 	}
 	
-	public String getLimitClause(int nrRows)
+	@Override
+  public String getLimitClause(int nrRows)
 	{
 		return " LIMIT "+nrRows;	
 	}
@@ -55,16 +58,19 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	 * @param tableName The name of the table to determine the layout for
 	 * @return The SQL to launch.
 	 */
-	public String getSQLQueryFields(String tableName)
+	@Override
+  public String getSQLQueryFields(String tableName)
 	{
 	    return "SELECT * FROM "+tableName+" LIMIT 0";  
 	}
 
+    @Override
     public String getSQLTableExists(String tablename)
     {
         return getSQLQueryFields(tablename);
     }
     
+    @Override
     public String getSQLColumnExists(String columnname, String tablename)
     {
         return  getSQLQueryColumnFields(columnname, tablename);
@@ -77,7 +83,8 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	/**
 	 * @see org.pentaho.di.core.database.DatabaseInterface#getNotFoundTK(boolean)
 	 */
-	public int getNotFoundTK(boolean use_autoinc)
+	@Override
+  public int getNotFoundTK(boolean use_autoinc)
 	{
 		if ( supportsAutoInc() && use_autoinc)
 		{
@@ -86,7 +93,8 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 		return super.getNotFoundTK(use_autoinc);
 	}
 
-	public String getDriverClass()
+	@Override
+  public String getDriverClass()
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
 		{
@@ -99,6 +107,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	}
     
 
+    @Override
     public String getURL(String hostname, String port, String databaseName)
     {
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
@@ -121,6 +130,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
     /**
      * @return The extra option separator in database URL for this platform (usually this is semicolon ; ) 
      */
+    @Override
     public String getExtraOptionSeparator()
     {
         return "&";
@@ -129,6 +139,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
     /**
      * @return This indicator separates the normal URL from the options
      */
+    @Override
     public String getExtraOptionIndicator()
     {
         return "?";
@@ -137,7 +148,8 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	/**
 	 * @return true if the database supports transactions.
 	 */
-	public boolean supportsTransactions()
+	@Override
+  public boolean supportsTransactions()
 	{
 		return false;
 	}
@@ -145,7 +157,8 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	/**
 	 * @return true if the database supports bitmap indexes
 	 */
-	public boolean supportsBitmapIndex()
+	@Override
+  public boolean supportsBitmapIndex()
 	{
 		return false;
 	}
@@ -153,7 +166,8 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	/**
 	 * @return true if the database supports views
 	 */
-	public boolean supportsViews()
+	@Override
+  public boolean supportsViews()
 	{
 		return true;
 	}
@@ -161,7 +175,8 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	/**
 	 * @return true if the database supports synonyms
 	 */
-	public boolean supportsSynonyms()
+	@Override
+  public boolean supportsSynonyms()
 	{
 		return false;
 	}
@@ -176,7 +191,8 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to add a column to the specified table
 	 */
-	public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" ADD "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
@@ -191,12 +207,14 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to modify a column in the specified table
 	 */
-	public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" MODIFY "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
 
-	public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
+	@Override
+  public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
 	{
 		String retval="";
 		
@@ -303,7 +321,8 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	/* (non-Javadoc)
 	 * @see org.pentaho.di.core.database.DatabaseInterface#getReservedWords()
 	 */
-	public String[] getReservedWords()
+	@Override
+  public String[] getReservedWords()
 	{
 		return new String[]
 		{
@@ -333,7 +352,8 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	/* (non-Javadoc)
 	 * @see org.pentaho.di.core.database.DatabaseInterface#getStartQuote()
 	 */
-	public String getStartQuote()
+	@Override
+  public String getStartQuote()
 	{
 		return "`";
 	}
@@ -342,7 +362,8 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	 * Simply add an underscore in the case of MySQL!
 	 * @see org.pentaho.di.core.database.DatabaseInterface#getEndQuote()
 	 */
-	public String getEndQuote()
+	@Override
+  public String getEndQuote()
 	{
 		return "`";
 	}
@@ -351,6 +372,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
      * @param tableNames The names of the tables to lock
      * @return The SQL command to lock database tables for write purposes.
      */
+    @Override
     public String getSQLLockTables(String tableNames[])
     {
         String sql="LOCK TABLES ";
@@ -368,11 +390,13 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
      * @param tableName The name of the table to unlock
      * @return The SQL command to unlock a database table.
      */
+    @Override
     public String getSQLUnlockTables(String tableName[])
     {
         return "UNLOCK TABLES"; // This unlocks all tables
     }
     
+    @Override
     public boolean needsToLockAllTables() {
     	return true;
     }
@@ -380,11 +404,13 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
     /**
      * @return extra help text on the supported options on the selected database platform.
      */
+    @Override
     public String getExtraOptionsHelpText()
     {
         return "http://dev.mysql.com/doc/refman/5.0/en/connector-j-reference-configuration-properties.html";
     }
 
+    @Override
     public String[] getUsedLibraries()
     {
         return new String[] { "mysql-connector-java-3.1.14-bin.jar" };
@@ -394,7 +420,8 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	 * @param tableName
 	 * @return true if the specified table is a system table
 	 */
-	public boolean isSystemTable(String tableName) {
+	@Override
+  public boolean isSystemTable(String tableName) {
 		if ( tableName.startsWith("sys")) return true;
 		if ( tableName.equals("dtproperties")) return true;
 		return false;
@@ -407,7 +434,8 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	 * @param versionField the version field
 	 * @return the SQL to insert the unknown record into the SCD.
 	 */
-	public String getSQLInsertAutoIncUnknownDimensionRow(String schemaTable, String keyField, String versionField) {
+	@Override
+  public String getSQLInsertAutoIncUnknownDimensionRow(String schemaTable, String keyField, String versionField) {
 		return "insert into "+schemaTable+"("+keyField+", "+versionField+") values (1, 1)";		
 	}
 
@@ -416,6 +444,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
    * @param string
    * @return A string that is properly quoted for use in a SQL statement (insert, update, delete, etc)
    */
+  @Override
   public String quoteSQLString(String string) {
     string = string.replaceAll("'", "\\\\'"); 
     string = string.replaceAll("\\n", "\\\\n");
@@ -426,6 +455,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
   /**
    * @return true if the database is a MySQL variant, like MySQL 5.1, InfiniDB, InfoBright, and so on.
    */
+  @Override
   public boolean isMySQLVariant() {
     return true;
   }

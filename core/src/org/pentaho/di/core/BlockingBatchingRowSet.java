@@ -76,6 +76,7 @@ public class BlockingBatchingRowSet extends BaseRowSet implements Comparable<Row
     putIndex = getIndex = size;
   }
 
+  @Override
   public boolean putRow(RowMetaInterface rowMeta, Object[] rowData) {
 
     return putRowWait(rowMeta, rowData, Const.TIMEOUT_PUT_MILLIS, TimeUnit.MILLISECONDS);
@@ -84,6 +85,7 @@ public class BlockingBatchingRowSet extends BaseRowSet implements Comparable<Row
   /**
    * We need to wait until
    */
+  @Override
   public boolean putRowWait(RowMetaInterface rowMeta, Object[] rowData, long time, TimeUnit tu) {
     
     this.rowMeta = rowMeta;
@@ -121,6 +123,7 @@ public class BlockingBatchingRowSet extends BaseRowSet implements Comparable<Row
    * 
    * @see org.pentaho.di.core.RowSetInterface#getRow()
    */
+  @Override
   public Object[] getRow() {
     return getRowWait(Const.TIMEOUT_GET_MILLIS, TimeUnit.MILLISECONDS);
   }
@@ -130,11 +133,13 @@ public class BlockingBatchingRowSet extends BaseRowSet implements Comparable<Row
    * 
    * @see org.pentaho.di.core.RowSetInterface#getRowImmediate()
    */
+  @Override
   public Object[] getRowImmediate() {
 
     return getRow();
   }
 
+  @Override
   public Object[] getRowWait(long timeout, TimeUnit tu) {
     if (outputBuffer == null) {
         try {

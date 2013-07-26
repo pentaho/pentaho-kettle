@@ -30,7 +30,7 @@ import java.util.Map;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.version.BuildVersion;
 
@@ -70,6 +70,7 @@ public class Variables implements VariableSpace {
     properties.put(Const.INTERNAL_VARIABLE_KETTLE_BUILD_DATE, buildDate);
   }
 
+  @Override
   public void copyVariablesFrom(VariableSpace space) {
     if (space != null && this != space) {
       // If space is not null and this variable is not already
@@ -81,14 +82,17 @@ public class Variables implements VariableSpace {
     }
   }
 
+  @Override
   public VariableSpace getParentVariableSpace() {
     return parent;
   }
 
+  @Override
   public void setParentVariableSpace(VariableSpace parent) {
     this.parent = parent;
   }
 
+  @Override
   public String getVariable(String variableName, String defaultValue) {
     String var = properties.get(variableName);
     if (var == null)
@@ -96,20 +100,23 @@ public class Variables implements VariableSpace {
     return var;
   }
 
+  @Override
   public String getVariable(String variableName) {
     return properties.get(variableName);
   }
 
+  @Override
   public boolean getBooleanValueOfVariable(String variableName, boolean defaultValue) {
     if (!Const.isEmpty(variableName)) {
       String value = environmentSubstitute(variableName);
       if (!Const.isEmpty(value)) {
-        return ValueMeta.convertStringToBoolean(value);
+        return ValueMetaBase.convertStringToBoolean(value);
       }
     }
     return defaultValue;
   }
 
+  @Override
   public void initializeVariablesFrom(VariableSpace parent) {
     this.parent = parent;
 
@@ -128,14 +135,16 @@ public class Variables implements VariableSpace {
     initialized = true;
   }
 
+  @Override
   public String[] listVariables() {
     List<String> list = new ArrayList<String>();
     for (String name : properties.keySet()) {
       list.add(name);
     }
-    return (String[]) list.toArray(new String[list.size()]);
+    return list.toArray(new String[list.size()]);
   }
 
+  @Override
   public void setVariable(String variableName, String variableValue) {
     if (variableValue != null) {
       properties.put(variableName, variableValue);
@@ -144,6 +153,7 @@ public class Variables implements VariableSpace {
     }
   }
 
+  @Override
   public String environmentSubstitute(String aString) {
     if (aString == null || aString.length() == 0)
       return aString;
@@ -166,6 +176,7 @@ public class Variables implements VariableSpace {
    * @return the string with the substitution applied.
    * @throws KettleValueException In case there is a String conversion error
    */
+  @Override
   public String fieldSubstitute(String aString, RowMetaInterface rowMeta, Object[] rowData) throws KettleValueException {
     if (aString == null || aString.length() == 0)
       return aString;
@@ -173,6 +184,7 @@ public class Variables implements VariableSpace {
     return StringUtil.substituteField(aString, rowMeta, rowData);
   }
 
+  @Override
   public String[] environmentSubstitute(String string[]) {
     String retval[] = new String[string.length];
     for (int i = 0; i < string.length; i++) {
@@ -181,11 +193,13 @@ public class Variables implements VariableSpace {
     return retval;
   }
 
+  @Override
   public void shareVariablesWith(VariableSpace space) {
     // not implemented in here... done by pointing to the same VariableSpace
     // implementation
   }
 
+  @Override
   public void injectVariables(Map<String, String> prop) {
     if (initialized) {
       // variables are already initialized

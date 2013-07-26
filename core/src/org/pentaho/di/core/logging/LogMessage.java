@@ -76,7 +76,8 @@ public class LogMessage implements LogMessageInterface {
 		}
 	}
 
-	public String toString() {
+	@Override
+  public String toString() {
 		if (message==null) return subject;
 		if (arguments!=null && arguments.length>0) {
 			return subject + " - " + MessageFormat.format(message, arguments);
@@ -85,7 +86,8 @@ public class LogMessage implements LogMessageInterface {
 		}
 	}
 	
-	public LogLevel getLevel() {
+	@Override
+  public LogLevel getLevel() {
 		return level;
 	}
 	
@@ -96,7 +98,8 @@ public class LogMessage implements LogMessageInterface {
 	/**
 	 * @return the message
 	 */
-	public String getMessage() {
+	@Override
+  public String getMessage() {
 		return message;
 	}
 	
@@ -110,7 +113,8 @@ public class LogMessage implements LogMessageInterface {
 	/**
 	 * @return the subject
 	 */
-	public String getSubject() {
+	@Override
+  public String getSubject() {
 		return subject;
 	}
 
@@ -124,7 +128,8 @@ public class LogMessage implements LogMessageInterface {
 	/**
 	 * @return the logChannelId
 	 */
-	public String getLogChannelId() {
+	@Override
+  public String getLogChannelId() {
 		return logChannelId;
 	}
 
@@ -138,7 +143,8 @@ public class LogMessage implements LogMessageInterface {
 	/**
 	 * @return the arguments
 	 */
-	public Object[] getArguments() {
+	@Override
+  public Object[] getArguments() {
 		return arguments;
 	}
 
@@ -154,6 +160,7 @@ public class LogMessage implements LogMessageInterface {
         return level.isError();
     }
     
+    @Override
     public String getCopy() {
 		return copy;
 	}

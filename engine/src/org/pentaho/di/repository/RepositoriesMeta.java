@@ -98,7 +98,7 @@ public class RepositoriesMeta
 
 	public DatabaseMeta getDatabase(int i)
 	{
-		return (DatabaseMeta)databases.get(i);
+		return databases.get(i);
 	}
 	
 	public RepositoryMeta getRepository(int i)

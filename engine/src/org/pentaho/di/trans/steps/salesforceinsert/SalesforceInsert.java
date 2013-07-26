@@ -154,11 +154,11 @@ public class SalesforceInsert extends BaseStep implements StepInterface
 				sobjPass.setType(data.realModule);
 				
 				if(insertfields.size()>0) {
-					sobjPass.set_any((MessageElement[])insertfields.toArray(new MessageElement[insertfields.size()]));
+					sobjPass.set_any(insertfields.toArray(new MessageElement[insertfields.size()]));
 				}
 				if(fieldsToNull.size()>0) {
 					// Set Null to fields
-					sobjPass.setFieldsToNull((String[])fieldsToNull.toArray(new String[fieldsToNull.size()]));
+					sobjPass.setFieldsToNull(fieldsToNull.toArray(new String[fieldsToNull.size()]));
 				}
 				
 

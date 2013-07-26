@@ -751,6 +751,8 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
 						db.disconnect();
 					}
 					break;
+		    default:
+		      break;
 				}
 			}
 		}

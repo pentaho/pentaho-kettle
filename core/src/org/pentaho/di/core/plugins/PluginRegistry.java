@@ -151,7 +151,8 @@ public class PluginRegistry {
 		// Keep the list of plugins sorted by name...
 		//
 		Collections.sort(list, new Comparator<PluginInterface>() {
-			public int compare(PluginInterface p1, PluginInterface p2) {
+			@Override
+      public int compare(PluginInterface p1, PluginInterface p2) {
 				return p1.getName().compareToIgnoreCase(p2.getName()); 
 			}
 		});
@@ -185,7 +186,8 @@ public class PluginRegistry {
 				  final String[] fNaturalOrder = naturalOrder;
 					Collections.sort(categories, new Comparator<String>() {
 						
-						public int compare(String one, String two) {
+						@Override
+            public int compare(String one, String two) {
 							int idx1 = Const.indexOfString(one, fNaturalOrder);
 							int idx2 = Const.indexOfString(two, fNaturalOrder);
 							return idx1 - idx2;

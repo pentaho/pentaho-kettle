@@ -340,7 +340,7 @@ public class PreviewRowsDialog {
           else
             item = new TableItem(wFields.table, SWT.NONE);
 
-          Object[] row = (Object[]) buffer.get(i);
+          Object[] row = buffer.get(i);
 
           getDataForRow(item, row);
         }

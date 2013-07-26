@@ -229,6 +229,8 @@ public class JobEntryLogTable extends BaseLogTable implements Cloneable, LogTabl
 						    } 
 					        break;
 						case COPY_NR : value = new Long(jobEntryCopy.getNr()); break;
+            default:
+              break;
 						}
 					}
 

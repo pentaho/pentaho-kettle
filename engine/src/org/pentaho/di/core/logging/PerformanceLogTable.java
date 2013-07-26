@@ -229,6 +229,8 @@ public class PerformanceLogTable extends BaseLogTable implements Cloneable, LogT
 						case ERRORS: value = new Long(snapShot.getErrors()); break;
 						case INPUT_BUFFER_ROWS: value = new Long(snapShot.getInputBufferSize()); break;
 						case OUTPUT_BUFFER_ROWS: value = new Long(snapShot.getOutputBufferSize()); break;
+              default:
+                break;
 						}
 					}
 

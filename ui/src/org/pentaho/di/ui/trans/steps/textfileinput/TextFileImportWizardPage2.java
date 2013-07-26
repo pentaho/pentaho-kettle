@@ -706,7 +706,7 @@ public class TextFileImportWizardPage2 extends WizardPage
 		
 		for (int i=0;i<rows.size();i++)
 		{
-			String line = (String)rows.get(i);
+			String line = rows.get(i);
 	
             if (position<line.length())
             {

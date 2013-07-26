@@ -63,7 +63,8 @@ public class OverlayPropertyHandler implements PropertyHandler {
 		return (loadAltProps()||flag);
 	}
 
-	public String getProperty(String key) {
+	@Override
+  public String getProperty(String key) {
 		//System.out.println(properties.getProperty(key));
 		// go through linked list from front to back to find the property
 		String s = null;
@@ -79,7 +80,8 @@ public class OverlayPropertyHandler implements PropertyHandler {
 		return getInstance().getProperty(key);
 	}
 
-	public boolean loadProps(String filename) {
+	@Override
+  public boolean loadProps(String filename) {
 		try {
 			OverlayProperties ph = new OverlayProperties(filename);
 			propList.addFirst(ph);
@@ -90,7 +92,8 @@ public class OverlayPropertyHandler implements PropertyHandler {
 		}		
 	}
 
-	public String getProperty(String key, String defValue) {
+	@Override
+  public String getProperty(String key, String defValue) {
 		String s = getProperty(key);
 		if (s!=null) {
 			return s;
@@ -110,7 +113,8 @@ public class OverlayPropertyHandler implements PropertyHandler {
 		return url;
 	}
 
-	public boolean exists(String filename) {
+	@Override
+  public boolean exists(String filename) {
 		try {
 			return (getURL(filename)!=null);
 		} catch (MalformedURLException e) {

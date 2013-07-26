@@ -765,6 +765,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
               case TYPE_DISP_N_N:
                 rowSet.setThreadNameFromToCopy(thisStep.getName(), c, nextStep.getName(), c);
                 break;
+              default:
+                break;
             }
             rowsets.add(rowSet);
             if (log.isDetailed())
@@ -1347,6 +1349,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         // executor!
         //
         break;
+      default:
+        break;
 
     }
     
@@ -1719,7 +1723,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       rt.resumeRunning();
 
       // Cancel queries etc. by force...
-      StepInterface si = (StepInterface) rt;
+      StepInterface si = rt;
       try {
         si.stopRunning(sid.meta, sid.data);
       } catch (Exception e) {
@@ -3369,7 +3373,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       for (int i = 0; i < slaves.length; i++) {
         final int index = i;
 
-        final TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
+        final TransMeta slaveTrans = transSplitter.getSlaveTransMap().get(slaves[i]);
 
         if (executionConfiguration.isClusterPosting()) {
           Runnable runnable = new Runnable() {
@@ -3454,7 +3458,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           // Prepare the slaves
           // WG: Should these be threaded like the above initialization?
           for (int i = 0; i < slaves.length; i++) {
-            TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
+            TransMeta slaveTrans = transSplitter.getSlaveTransMap().get(slaves[i]);
             String carteObjectId = carteObjectMap.get(slaveTrans);
             String slaveReply = slaves[i].execService(PrepareExecutionTransServlet.CONTEXT_PATH + "/?name="
                 + URLEncoder.encode(slaveTrans.getName(), "UTF-8") + "&id=" + URLEncoder.encode(carteObjectId, "UTF-8")
@@ -3485,7 +3489,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           // Start the slaves
           // WG: Should these be threaded like the above initialization?
           for (int i = 0; i < slaves.length; i++) {
-            TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
+            TransMeta slaveTrans = transSplitter.getSlaveTransMap().get(slaves[i]);
             String carteObjectId = carteObjectMap.get(slaveTrans);
             String slaveReply = slaves[i].execService(StartExecutionTransServlet.CONTEXT_PATH + "/?name="
                 + URLEncoder.encode(slaveTrans.getName(), "UTF-8") + "&id=" + URLEncoder.encode(carteObjectId, "UTF-8")

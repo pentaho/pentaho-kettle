@@ -34,16 +34,19 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class KettleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
-	public int[] getAccessTypeList()
+	@Override
+  public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
 	}
 	
-	public String getDriverClass()
+	@Override
+  public String getDriverClass()
 	{
 	  return ThinDriver.class.getName(); // always JDBC!
 	}
 	
+  @Override
   public String getURL(String hostname, String port, String databaseName)
   {
     return ThinDriver.BASE_URL+hostname+":"+port+"/"+databaseName;
@@ -68,7 +71,8 @@ public class KettleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	 * Checks whether or not the command setFetchSize() is supported by the JDBC driver...
 	 * @return true is setFetchSize() is supported!
 	 */
-	public boolean isFetchSizeSupported()
+	@Override
+  public boolean isFetchSizeSupported()
 	{
 		return false;
 	}
@@ -81,7 +85,8 @@ public class KettleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	/**
 	 * @return true if the database supports bitmap indexes
 	 */
-	public boolean supportsBitmapIndex()
+	@Override
+  public boolean supportsBitmapIndex()
 	{
 		return false;
 	}
@@ -115,7 +120,8 @@ public class KettleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	 * @return true if Kettle can create a repository on this type  
 of database.
 	 */
-	public boolean supportsRepository()
+	@Override
+  public boolean supportsRepository()
 	{
 		return false;
 	}
@@ -125,7 +131,8 @@ of database.
 	 * 
 	 * @return true if the database supports retrieval of query metadata from a prepared statement.  False if the query needs to be executed first.
 	 */
-	public boolean supportsPreparedStatementMetadataRetrieval() {
+	@Override
+  public boolean supportsPreparedStatementMetadataRetrieval() {
 		return true;
 	}
 

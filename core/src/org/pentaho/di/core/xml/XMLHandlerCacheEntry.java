@@ -77,6 +77,7 @@ public class XMLHandlerCacheEntry
         this.tag = tag;
     }
 
+    @Override
     public boolean equals(Object object)
     {
         XMLHandlerCacheEntry entry = (XMLHandlerCacheEntry) object;
@@ -84,6 +85,7 @@ public class XMLHandlerCacheEntry
         return parentNode.equals(entry.getParentNode()) && tag.equals(entry.getTag());
     }
     
+    @Override
     public int hashCode()
     {
         return parentNode.hashCode() ^ tag.hashCode();

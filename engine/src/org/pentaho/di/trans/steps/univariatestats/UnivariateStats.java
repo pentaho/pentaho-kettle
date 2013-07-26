@@ -123,8 +123,7 @@ public class UnivariateStats extends BaseStep
                        null, null, this, repository, metaStore);
 
       // Set up data cache for calculating median/percentiles
-      m_dataCache = (ArrayList<Number>[])
-        new ArrayList[m_meta.getNumFieldsToProcess()];
+      m_dataCache = new ArrayList[m_meta.getNumFieldsToProcess()];
       
 
       // Initialize the step meta data

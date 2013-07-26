@@ -568,7 +568,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 				String[] prevStepFieldNames = prevFields.getFieldNames();
 				Arrays.sort(prevStepFieldNames);
 				for (int i = 0; i < fieldColumns.size(); i++) {
-					ColumnInfo colInfo = (ColumnInfo) fieldColumns.get(i);
+					ColumnInfo colInfo = fieldColumns.get(i);
 					colInfo.setComboValues(prevStepFieldNames);
 				}
 			}
@@ -598,7 +598,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
   								if (null != fieldNames) {
   									for (int i = 0; i < tableFieldColumns.size(); i++) 
                                       {
-  										ColumnInfo colInfo = (ColumnInfo) tableFieldColumns.get(i);
+  										ColumnInfo colInfo = tableFieldColumns.get(i);
   										colInfo.setComboValues(fieldNames);
   									}
   								}
@@ -608,7 +608,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
                           {
   							for (int i = 0; i < tableFieldColumns.size(); i++) 
                               {
-  								ColumnInfo colInfo = (ColumnInfo) tableFieldColumns.get(i);
+  								ColumnInfo colInfo = tableFieldColumns.get(i);
   								colInfo.setComboValues(new String[] {});
   							}
   							// ignore any errors here. drop downs will not be

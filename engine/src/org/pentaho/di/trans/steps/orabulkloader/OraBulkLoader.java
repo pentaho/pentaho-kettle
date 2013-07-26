@@ -315,6 +315,8 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 			    case ValueMetaInterface.TYPE_BINARY:
 			    	contents.append(" ENCLOSED BY '<startlob>' AND '<endlob>'");
 			    	break;
+        default:
+          break;
 			}
 		}
 		contents.append(")");		

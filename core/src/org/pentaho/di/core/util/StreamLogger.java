@@ -47,6 +47,7 @@ public class StreamLogger implements Runnable
         this.type = type;
     }
 
+    @Override
     public void run()
     {
         try

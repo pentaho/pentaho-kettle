@@ -152,6 +152,8 @@ public class SortRowsMetaInjection implements StepMetaInjectionInterface {
                       case SORT_ASCENDING:     sortAsc = "Y".equalsIgnoreCase(value); break;
                       case IGNORE_CASE:        sortCase = "Y".equalsIgnoreCase(value); break;
                       case PRESORTED:          sortPresorted = "Y".equalsIgnoreCase(value); break;
+                        default:
+                          break;
                       }
                     }
                   }

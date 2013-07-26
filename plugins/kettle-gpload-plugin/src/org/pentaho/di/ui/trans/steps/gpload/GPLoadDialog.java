@@ -531,7 +531,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
          wReturn.table.removeAll();
          wReturn.table.setItemCount(mappings.size());
          for (int i = 0; i < mappings.size(); i++) {
-            SourceToTargetMapping mapping = (SourceToTargetMapping) mappings
+            SourceToTargetMapping mapping = mappings
                   .get(i);
             TableItem item = wReturn.table.getItem(i);
             item.setText(2,
@@ -551,7 +551,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
          public void run() {
             // clear
             for (int i = 0; i < tableFieldColumns.size(); i++) {
-               ColumnInfo colInfo = (ColumnInfo) tableFieldColumns.get(i);
+               ColumnInfo colInfo = tableFieldColumns.get(i);
                colInfo.setComboValues(new String[] {});
             }
             if (!Const.isEmpty(wTable.getText())) {
@@ -569,7 +569,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
                         String[] fieldNames = r.getFieldNames();
                         if (null != fieldNames) {
                            for (int i = 0; i < tableFieldColumns.size(); i++) {
-                              ColumnInfo colInfo = (ColumnInfo) tableFieldColumns
+                              ColumnInfo colInfo = tableFieldColumns
                                     .get(i);
                               colInfo.setComboValues(fieldNames);
                            }
@@ -577,7 +577,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
                      }
                   } catch (Exception e) {
                      for (int i = 0; i < tableFieldColumns.size(); i++) {
-                        ColumnInfo colInfo = (ColumnInfo) tableFieldColumns
+                        ColumnInfo colInfo = tableFieldColumns
                               .get(i);
                         colInfo.setComboValues(new String[] {});
                      }
@@ -602,7 +602,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       Set<String> keySet = fields.keySet();
       List<String> entries = new ArrayList<String>(keySet);
 
-      String[] fieldNames = (String[]) entries.toArray(new String[entries
+      String[] fieldNames = entries.toArray(new String[entries
             .size()]);
       Const.sortStrings(fieldNames);
       // return fields

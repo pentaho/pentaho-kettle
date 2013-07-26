@@ -40,30 +40,36 @@ public class QueueRowSet extends BaseRowSet implements Comparable<RowSet>, RowSe
       buffer = new LinkedList<Object[]>();
     }
 
-	public Object[] getRow() {
+	@Override
+  public Object[] getRow() {
 		Object[] retRow = buffer.pollFirst();
 		return retRow;
 	}
 
-	public Object[] getRowImmediate() {
+	@Override
+  public Object[] getRowImmediate() {
 		return getRow();
 	}
 
-	public Object[] getRowWait(long timeout, TimeUnit tu) {
+	@Override
+  public Object[] getRowWait(long timeout, TimeUnit tu) {
 		return getRow();
 	}
 
-	public boolean putRow(RowMetaInterface rowMeta, Object[] rowData) {
+	@Override
+  public boolean putRow(RowMetaInterface rowMeta, Object[] rowData) {
 		this.rowMeta = rowMeta;
 		buffer.add(rowData);
 		return true;
 	}
 
-	public boolean putRowWait(RowMetaInterface rowMeta, Object[] rowData, long time, TimeUnit tu) {
+	@Override
+  public boolean putRowWait(RowMetaInterface rowMeta, Object[] rowData, long time, TimeUnit tu) {
 		return putRow(rowMeta, rowData);
 	}
 
-	public int size() {
+	@Override
+  public int size() {
 		return buffer.size();
 	}
 	

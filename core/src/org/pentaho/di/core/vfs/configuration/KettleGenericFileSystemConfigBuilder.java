@@ -48,6 +48,7 @@ public class KettleGenericFileSystemConfigBuilder extends FileSystemConfigBuilde
   private final static KettleGenericFileSystemConfigBuilder builder = new KettleGenericFileSystemConfigBuilder();
   private final static LogChannelInterface log = new LogChannel("cfgbuilder");
   
+  @Override
   public String parseParameterName(String parameter, String scheme) {
     String result = null;
     
@@ -103,6 +104,7 @@ public class KettleGenericFileSystemConfigBuilder extends FileSystemConfigBuilde
     return KettleGenericFileSystemConfigBuilder.class;
   }
   
+  @Override
   public void setParameter(FileSystemOptions opts, String name, String value, String fullParameterName, String vfsUrl) throws IOException {
     // Use the DelgatingFileSystemOptionsBuilder to insert generic parameters
     // This must be done to assure the correct VFS FileSystem drivers will process the parameters

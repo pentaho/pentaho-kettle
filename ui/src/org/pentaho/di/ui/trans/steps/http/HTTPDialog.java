@@ -846,7 +846,7 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
             List<Charset> values = new ArrayList<Charset>(Charset.availableCharsets().values());
             for (int i=0;i<values.size();i++)
             {
-                Charset charSet = (Charset)values.get(i);
+                Charset charSet = values.get(i);
                 wEncoding.add( charSet.displayName() );
             }
             
@@ -869,7 +869,7 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
         Set<String> keySet = fields.keySet();
         List<String> entries = new ArrayList<String>(keySet);
 
-        String fieldNames[] = (String[]) entries.toArray(new String[entries.size()]);
+        String fieldNames[] = entries.toArray(new String[entries.size()]);
 
         Const.sortStrings(fieldNames);
         colinf[0].setComboValues(fieldNames);

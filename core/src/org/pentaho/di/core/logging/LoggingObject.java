@@ -59,7 +59,8 @@ public class LoggingObject implements LoggingObjectInterface {
 		}
 	}
 	
-	public boolean equals(Object obj) {
+	@Override
+  public boolean equals(Object obj) {
 		if (!(obj instanceof LoggingObject)) return false;
 		if (obj == this) return true;
 		
@@ -189,7 +190,8 @@ public class LoggingObject implements LoggingObjectInterface {
 	/**
 	 * @return the name
 	 */
-	public String getObjectName() {
+	@Override
+  public String getObjectName() {
 		return objectName;
 	}
 	/**
@@ -201,7 +203,8 @@ public class LoggingObject implements LoggingObjectInterface {
 	/**
 	 * @return the repositoryDirectory
 	 */
-	public RepositoryDirectoryInterface getRepositoryDirectory() {
+	@Override
+  public RepositoryDirectoryInterface getRepositoryDirectory() {
 		return repositoryDirectory;
 	}
 	/**
@@ -213,7 +216,8 @@ public class LoggingObject implements LoggingObjectInterface {
 	/**
 	 * @return the filename
 	 */
-	public String getFilename() {
+	@Override
+  public String getFilename() {
 		return filename;
 	}
 	/**
@@ -225,7 +229,8 @@ public class LoggingObject implements LoggingObjectInterface {
 	/**
 	 * @return the objectId
 	 */
-	public ObjectId getObjectId() {
+	@Override
+  public ObjectId getObjectId() {
 		return objectId;
 	}
 	/**
@@ -238,7 +243,8 @@ public class LoggingObject implements LoggingObjectInterface {
 	/**
 	 * @return the objectRevision
 	 */
-	public ObjectRevision getObjectRevision() {
+	@Override
+  public ObjectRevision getObjectRevision() {
 		return objectRevision;
 	}
 
@@ -252,7 +258,8 @@ public class LoggingObject implements LoggingObjectInterface {
 	/**
 	 * @return the id
 	 */
-	public String getLogChannelId() {
+	@Override
+  public String getLogChannelId() {
 		return logChannelId;
 	}
 
@@ -266,7 +273,8 @@ public class LoggingObject implements LoggingObjectInterface {
 	/**
 	 * @return the parent
 	 */
-	public LoggingObjectInterface getParent() {
+	@Override
+  public LoggingObjectInterface getParent() {
 		return parent;
 	}
 
@@ -280,7 +288,8 @@ public class LoggingObject implements LoggingObjectInterface {
 	/**
 	 * @return the objectType
 	 */
-	public LoggingObjectType getObjectType() {
+	@Override
+  public LoggingObjectType getObjectType() {
 		return objectType;
 	}
 
@@ -294,7 +303,8 @@ public class LoggingObject implements LoggingObjectInterface {
 	/**
 	 * @return the copy
 	 */
-	public String getObjectCopy() {
+	@Override
+  public String getObjectCopy() {
 		return objectCopy;
 	}
 
@@ -305,6 +315,7 @@ public class LoggingObject implements LoggingObjectInterface {
 		this.objectCopy = objectCopy;
 	}
 
+  @Override
   public LogLevel getLogLevel() {
     return logLevel;
   }
@@ -316,6 +327,7 @@ public class LoggingObject implements LoggingObjectInterface {
   /**
    * @return the carteObjectId
    */
+  @Override
   public String getContainerObjectId() {
     return containerObjectId;
   }
@@ -330,6 +342,7 @@ public class LoggingObject implements LoggingObjectInterface {
   /**
    * @return the registrationDate
    */
+  @Override
   public Date getRegistrationDate() {
     return registrationDate;
   }
@@ -344,6 +357,7 @@ public class LoggingObject implements LoggingObjectInterface {
   /**
    * @return the gatheringMetrics
    */
+  @Override
   public boolean isGatheringMetrics() {
     return gatheringMetrics;
   }
@@ -351,6 +365,7 @@ public class LoggingObject implements LoggingObjectInterface {
   /**
    * @param gatheringMetrics the gatheringMetrics to set
    */
+  @Override
   public void setGatheringMetrics(boolean gatheringMetrics) {
     this.gatheringMetrics = gatheringMetrics;
   }
@@ -358,6 +373,7 @@ public class LoggingObject implements LoggingObjectInterface {
   /**
    * @return the forcingSeparateLogging
    */
+  @Override
   public boolean isForcingSeparateLogging() {
     return forcingSeparateLogging;
   }
@@ -365,6 +381,7 @@ public class LoggingObject implements LoggingObjectInterface {
   /**
    * @param forcingSeparateLogging the forcingSeparateLogging to set
    */
+  @Override
   public void setForcingSeparateLogging(boolean forcingSeparateLogging) {
     this.forcingSeparateLogging = forcingSeparateLogging;
   }

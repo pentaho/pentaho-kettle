@@ -85,12 +85,14 @@ public class NormaliserMetaInjection implements StepMetaInjectionInterface {
                 List<StepInjectionMetaEntry> entries = lookField.getDetails();
                 for (StepInjectionMetaEntry entry : entries) {
                   Entry metaEntry = Entry.findEntry(entry.getKey());
-                  if (metaEntry!=null) {
+                  if (metaEntry!=null) { 
                     String value = (String)entry.getValue();
                     switch(metaEntry) {
                     case NAME:               normaliserField.setName(value); break;
                     case VALUE:              normaliserField.setValue(value); break;
                     case NORMALISED:         normaliserField.setNorm(value); break;
+                    default:
+                      break;
                     }
                   }
                 }

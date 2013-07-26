@@ -34,23 +34,27 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class LucidDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
-	public int[] getAccessTypeList()
+	@Override
+  public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_JNDI };
 	}
 	
-	public int getDefaultDatabasePort()
+	@Override
+  public int getDefaultDatabasePort()
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE) return 8034;
 		return -1;
 	}
 
-	public String getDriverClass()
+	@Override
+  public String getDriverClass()
 	{
 	    return "org.luciddb.jdbc.LucidDbClientDriver";
 	
 	}
 
+    @Override
     public String getURL(String hostname, String port, String databaseName)
     {
 
@@ -61,11 +65,13 @@ public class LucidDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 			}
 	}
     
+    @Override
     public String getSQLTableExists(String tablename)
     {
         return getSQLQueryFields(tablename);
     }
     
+    @Override
     public String getSQLColumnExists(String columnname, String tablename)
     {
         return  getSQLQueryColumnFields(columnname, tablename);
@@ -86,7 +92,8 @@ public class LucidDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to add a column to the specified table
 	 */
-	public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
         // NOTE jvs 13-Dec-2008: This will be possible starting with LucidDB
         // v0.8.1, so might as well enable it now.
@@ -104,7 +111,8 @@ public class LucidDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to modify a column in the specified table
 	 */
-	public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		// This is not possible in LucidDB...
 		return null;
@@ -120,13 +128,15 @@ public class LucidDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to drop a column from the specified table
 	 */
-	public String getDropColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getDropColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		// This is not possible in LucidDB...
 		return null;
 	}
 
-	public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
+	@Override
+  public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
 	{
 		String retval="";
 		
@@ -224,7 +234,8 @@ public class LucidDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	/* (non-Javadoc)
 	 * @see org.pentaho.di.core.database.DatabaseInterface#getReservedWords()
 	 */
-	public String[] getReservedWords()
+	@Override
+  public String[] getReservedWords()
 	{
 		// Copied from : http://pub.eigenbase.org/wiki/FarragoSqlReservedWords
 		// 
@@ -271,23 +282,27 @@ public class LucidDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
         };
 	}
 
+    @Override
     public String[] getUsedLibraries()
     {
         return new String[] { "LucidDbClient.jar" };
     }
     
+    @Override
     public String getExtraOptionsHelpText()
     {
         return "http://pub.eigenbase.org/wiki/LucidDbDocs";
     }
 
     // LucidDB is not suitable for repository storage
-	public boolean supportsRepository()
+	@Override
+  public boolean supportsRepository()
 	{
 		return false;
 	}
     
-	public boolean useSchemaNameForTableList()
+	@Override
+  public boolean useSchemaNameForTableList()
 	{
         // This prevents the DB explorer from showing unqualified table names,
         // which is good, otherwise when it generates SQL to select from them,

@@ -298,6 +298,8 @@ public class JobGenerator {
         }
       }
       break;
+      default:
+        break;
     }
     ValueMetaInterface value = new ValueMeta(databaseMeta.quoteField(Const.NVL(phColumnName, columnName)), type);
     value.setLength(length, precision);
@@ -374,6 +376,8 @@ public class JobGenerator {
             TransMeta transMeta = generateTimeTransformation(databaseMeta, logicalTable);
             transMetas.add(transMeta);
           }
+          break;
+        default:
           break;
         }
       }

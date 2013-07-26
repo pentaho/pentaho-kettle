@@ -98,7 +98,8 @@ public abstract class BasePluginType implements PluginTypeInterface{
 	  return objectTypes;
 	}
 	
-	public void addObjectType(Class<?> clz, String xmlNodeName){
+	@Override
+  public void addObjectType(Class<?> clz, String xmlNodeName){
 	  objectTypes.put(clz, xmlNodeName);
 	}
 	
@@ -110,7 +111,8 @@ public abstract class BasePluginType implements PluginTypeInterface{
 	/**
 	 * Let's put in code here to search for the step plugins..
 	 */
-	public void searchPlugins() throws KettlePluginException {
+	@Override
+  public void searchPlugins() throws KettlePluginException {
 		registerNatives();
 		registerPluginJars();
 		registerXmlPlugins();
@@ -122,7 +124,8 @@ public abstract class BasePluginType implements PluginTypeInterface{
 	/**
 	 * @return the id
 	 */
-	public String getId() {
+	@Override
+  public String getId() {
 		return id;
 	}
 
@@ -136,7 +139,8 @@ public abstract class BasePluginType implements PluginTypeInterface{
 	/**
 	 * @return the name
 	 */
-	public String getName() {
+	@Override
+  public String getName() {
 		return name;
 	}
 
@@ -150,7 +154,8 @@ public abstract class BasePluginType implements PluginTypeInterface{
 	/**
 	 * @return the pluginFolders
 	 */
-	public List<PluginFolderInterface> getPluginFolders() {
+	@Override
+  public List<PluginFolderInterface> getPluginFolders() {
 		return pluginFolders;
 	}
 
@@ -268,11 +273,13 @@ public abstract class BasePluginType implements PluginTypeInterface{
 			FileObject[] files = folderObject.findFiles(
 				new FileSelector() {
 					
-					public boolean traverseDescendents(FileSelectInfo fileSelectInfo) throws Exception {
+					@Override
+          public boolean traverseDescendents(FileSelectInfo fileSelectInfo) throws Exception {
 						return true;
 					}
 					
-					public boolean includeFile(FileSelectInfo fileSelectInfo) throws Exception {
+					@Override
+          public boolean includeFile(FileSelectInfo fileSelectInfo) throws Exception {
 						return fileSelectInfo.getFile().toString().matches(regex);
 					}
 				}
@@ -300,7 +307,7 @@ public abstract class BasePluginType implements PluginTypeInterface{
    * @throws KettlePluginException
    */
   public void registerCustom(Class<?> clazz, String category, String id, String name, String description, String image) throws KettlePluginException {
-    Class<? extends PluginTypeInterface> pluginType = (Class<? extends PluginTypeInterface>)getClass();
+    Class<? extends PluginTypeInterface> pluginType = getClass();
     Map<Class<?>, String> classMap = new HashMap<Class<?>, String>();
     PluginMainClassType mainClassTypesAnnotation = pluginType.getAnnotation(PluginMainClassType.class);
     classMap.put(mainClassTypesAnnotation.value(), clazz.getName());
@@ -570,7 +577,8 @@ public abstract class BasePluginType implements PluginTypeInterface{
 	 * @param pluginFolder The plugin folder to use
 	 * @throws KettlePluginException
 	 */
-	public void handlePluginAnnotation(Class<?> clazz, java.lang.annotation.Annotation annotation, List<String> libraries, boolean nativePluginType, URL pluginFolder) throws KettlePluginException {
+	@Override
+  public void handlePluginAnnotation(Class<?> clazz, java.lang.annotation.Annotation annotation, List<String> libraries, boolean nativePluginType, URL pluginFolder) throws KettlePluginException {
       
 	    String idList = extractID(annotation);
 	    if (Const.isEmpty(idList)) {

@@ -232,7 +232,7 @@ public class SubjectDataBrowserDialog {
         item = new TableItem(wFields.table, SWT.NONE);
       }
 
-      Object[] rowData = (Object[]) buffer.get(i);
+      Object[] rowData = buffer.get(i);
 
       getDataForRow(item, rowMeta, rowData, i+1);
     }

@@ -84,6 +84,7 @@ public class LogChannel implements LogChannelInterface {
     return logChannelId;
   }
 
+  @Override
   public String getLogChannelId() {
     return logChannelId;
   }
@@ -129,66 +130,82 @@ public class LogChannel implements LogChannelInterface {
     println(traceMessage, channelLogLevel);
   }
 
+  @Override
   public void logMinimal(String s) {
     println(new LogMessage(s, logChannelId, LogLevel.MINIMAL), logLevel); 
   }
 
+  @Override
   public void logBasic(String s) {
     println(new LogMessage(s, logChannelId, LogLevel.BASIC), logLevel); 
   }
 
+  @Override
   public void logError(String s) {
     println(new LogMessage(s, logChannelId, LogLevel.ERROR), logLevel); 
   }
 
+  @Override
   public void logError(String s, Throwable e) {
     println(new LogMessage(s, logChannelId, LogLevel.ERROR), e, logLevel); 
   }
 
+  @Override
   public void logBasic(String s, Object... arguments) {
     println(new LogMessage(s, logChannelId, arguments, LogLevel.BASIC), logLevel);
   }
 
+  @Override
   public void logDetailed(String s, Object... arguments) {
     println(new LogMessage(s, logChannelId, arguments, LogLevel.DETAILED), logLevel);
   }
 
+  @Override
   public void logError(String s, Object... arguments) {
     println(new LogMessage(s, logChannelId, arguments, LogLevel.ERROR), logLevel);
   }
 
+  @Override
   public void logDetailed(String s) {
     println(new LogMessage(s, logChannelId, LogLevel.DETAILED), logLevel);
   }
 
+  @Override
   public void logDebug(String s) {
     println(new LogMessage(s, logChannelId, LogLevel.DEBUG), logLevel);
   }
 
+  @Override
   public void logDebug(String message, Object... arguments) {
     println(new LogMessage(message, logChannelId, arguments, LogLevel.DEBUG), logLevel);
   }
 
+  @Override
   public void logRowlevel(String s) {
     println(new LogMessage(s, logChannelId, LogLevel.ROWLEVEL), logLevel);
   }
 
+  @Override
   public void logMinimal(String message, Object... arguments) {
     println(new LogMessage(message, logChannelId, arguments, LogLevel.MINIMAL), logLevel);
   }
 
+  @Override
   public void logRowlevel(String message, Object... arguments) {
     println(new LogMessage(message, logChannelId, arguments, LogLevel.ROWLEVEL), logLevel);
   }
 
+  @Override
   public boolean isBasic() {
     return logLevel.isBasic();
   }
 
+  @Override
   public boolean isDebug() {
     return logLevel.isDebug();
   }
 
+  @Override
   public boolean isDetailed() {
     try {
       return logLevel.isDetailed();
@@ -198,18 +215,22 @@ public class LogChannel implements LogChannelInterface {
     }
   }
 
+  @Override
   public boolean isRowLevel() {
     return logLevel.isRowlevel();
   }
 
+  @Override
   public boolean isError() {
     return logLevel.isError();
   }
 
+  @Override
   public LogLevel getLogLevel() {
     return logLevel;
   }
 
+  @Override
   public void setLogLevel(LogLevel logLevel) {
     this.logLevel = logLevel;
   }
@@ -217,6 +238,7 @@ public class LogChannel implements LogChannelInterface {
   /**
    * @return the containerObjectId
    */
+  @Override
   public String getContainerObjectId() {
     return containerObjectId;
   }
@@ -224,6 +246,7 @@ public class LogChannel implements LogChannelInterface {
   /**
    * @param containerObjectId the containerObjectId to set
    */
+  @Override
   public void setContainerObjectId(String containerObjectId) {
     this.containerObjectId = containerObjectId;
   }
@@ -231,6 +254,7 @@ public class LogChannel implements LogChannelInterface {
   /**
    * @return the gatheringMetrics
    */
+  @Override
   public boolean isGatheringMetrics() {
     return gatheringMetrics;
   }
@@ -238,6 +262,7 @@ public class LogChannel implements LogChannelInterface {
   /**
    * @param gatheringMetrics the gatheringMetrics to set
    */
+  @Override
   public void setGatheringMetrics(boolean gatheringMetrics) {
     this.gatheringMetrics = gatheringMetrics;
   }
@@ -252,10 +277,12 @@ public class LogChannel implements LogChannelInterface {
     this.forcingSeparateLogging = forcingSeparateLogging;
   }
 
+  @Override
   public void snap(MetricsInterface metric, long... value) {
     snap(metric, null, value);
   }
 
+  @Override
   public void snap(MetricsInterface metric, String subject, long... value) {
     if (!isGatheringMetrics())
       return;
@@ -337,14 +364,18 @@ public class LogChannel implements LogChannelInterface {
         metricsList.add(snapshot);
       }
         break;
+      default:
+        break;
     }
 
   }
 
+  @Override
   public String getFilter() {
     return filter;
   }
 
+  @Override
   public void setFilter(String filter) {
     this.filter = filter;
   }

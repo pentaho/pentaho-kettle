@@ -1157,6 +1157,8 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
           case REPOSITORY_BY_REFERENCE:
             getByReferenceData(newJobMeta.getObjectId());
             break;
+          default:
+            break;
         }
         getParameters(newJobMeta);
       }
@@ -1375,6 +1377,8 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
         getByReferenceData(referenceObjectId);
       }
       break;
+    default:
+      break;
     }
     setRadioButtons();
 
@@ -1477,6 +1481,8 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
       jej.setDirectory(null);
       jej.setJobName(null);
       jej.setJobObjectId(referenceObjectId);
+      break;
+    default:
       break;
     }
 

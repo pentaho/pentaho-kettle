@@ -35,7 +35,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -253,7 +252,7 @@ public class JobDialog extends Dialog {
 
     shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN | SWT.APPLICATION_MODAL);
     props.setLook(shell);
-    shell.setImage((Image) GUIResource.getInstance().getImageJobGraph());
+    shell.setImage(GUIResource.getInstance().getImageJobGraph());
 
     lsMod = new ModifyListener() {
       public void modifyText(ModifyEvent e) {
@@ -1600,7 +1599,7 @@ public class JobDialog extends Dialog {
 
       String id = plugin.getIds()[0];
       if (id != null) {
-        shell.setImage((Image) GUIResource.getInstance().getImagesJobentries().get(id));
+        shell.setImage(GUIResource.getInstance().getImagesJobentries().get(id));
       }
     } catch (Throwable e) {
     }

@@ -511,7 +511,7 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface
 					Arrays.sort(prevStepFieldNames);
 	
 					for (int i = 0; i < fieldColumns.size(); i++) {
-						ColumnInfo colInfo = (ColumnInfo) fieldColumns.get(i);
+						ColumnInfo colInfo = fieldColumns.get(i);
 						if(colInfo!=null) colInfo.setComboValues(prevStepFieldNames);
 					}
 				}

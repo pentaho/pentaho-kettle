@@ -450,7 +450,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
 
     for (int i = 0; i < resultRows.size() && result.getNrErrors() == 0; i++)
     {
-      RowMetaAndData row = (RowMetaAndData) resultRows.get(i);
+      RowMetaAndData row = resultRows.get(i);
 
       OutputStream outputFile = null;
       OutputStream uploadStream = null;

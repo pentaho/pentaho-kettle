@@ -111,7 +111,7 @@ public class DynamicSQLRow extends BaseStep implements StepInterface
 				// read from Buffer
 				for (int p=0;p<data.previousrowbuffer.size();p++)
 				{
-					Object[] getBufferRow=(Object[])data.previousrowbuffer.get(p);
+					Object[] getBufferRow=data.previousrowbuffer.get(p);
 					for (int i=0;i<addMeta.size();i++) 
 					{
 						newRow[newIndex++] = getBufferRow[i];

@@ -336,6 +336,8 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
             case EXECUTING_USER: value = job.getExecutingUser(); break;
             case START_JOB_ENTRY: value = job.getStartJobEntryCopy()!=null ? job.getStartJobEntryCopy().getName() : null; break;
             case CLIENT: value = KettleClientEnvironment.getInstance().getClient()!= null ? KettleClientEnvironment.getInstance().getClient().toString() : "unknown"; break;
+              default:
+                break;
 						}
 					}
 

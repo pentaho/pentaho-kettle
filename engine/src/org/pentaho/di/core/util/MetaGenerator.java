@@ -95,6 +95,8 @@ public class MetaGenerator {
       case ValueMeta.TYPE_INTEGER:
         code.append("    "+field.getMemberName()+" = Const.toInt(XMLHandler.getTagValue(stepnode, \""+field.getFieldName()+"\"), -1);").append(Const.CR); 
         break;
+        default:
+          break;
       }
     }
     code.append("  }").append(Const.CR);
@@ -123,6 +125,8 @@ public class MetaGenerator {
       case ValueMeta.TYPE_INTEGER: 
         code.append("    "+field.getMemberName()+" = (int) rep.getStepAttributeInteger(id_step, \""+field.getFieldName()+"\");").append(Const.CR);
         break;
+        default:
+          break;
       }
     }
     code.append("  }").append(Const.CR);

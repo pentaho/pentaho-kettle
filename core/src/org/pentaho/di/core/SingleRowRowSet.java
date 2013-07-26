@@ -35,21 +35,25 @@ public class SingleRowRowSet extends BaseRowSet implements Comparable<RowSet>, R
 
 	private Object[] row;
 
-	public Object[] getRow() {
+	@Override
+  public Object[] getRow() {
 		Object[] retRow = row;
 		row = null;
 		return retRow;
 	}
 
-	public Object[] getRowImmediate() {
+	@Override
+  public Object[] getRowImmediate() {
 		return getRow();
 	}
 
-	public Object[] getRowWait(long timeout, TimeUnit tu) {
+	@Override
+  public Object[] getRowWait(long timeout, TimeUnit tu) {
 		return getRow();
 	}
 
-	public boolean putRow(RowMetaInterface rowMeta, Object[] rowData) {
+	@Override
+  public boolean putRow(RowMetaInterface rowMeta, Object[] rowData) {
 		this.rowMeta = rowMeta;
 		this.row = rowData;
 		return true;

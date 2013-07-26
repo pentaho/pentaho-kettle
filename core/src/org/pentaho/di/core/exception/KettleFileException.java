@@ -74,7 +74,8 @@ public class KettleFileException extends KettleException
 	/**
 	 * get the messages back to it's origin cause.
 	 */
-	public String getMessage()
+	@Override
+  public String getMessage()
 	{
 		String retval=Const.CR;
 		retval+=super.getMessage()+Const.CR;

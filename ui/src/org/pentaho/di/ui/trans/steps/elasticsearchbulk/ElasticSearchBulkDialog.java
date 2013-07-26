@@ -949,6 +949,8 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
           int numNodes = cluState.getNodes().size();
           showMessage(BaseMessages.getString(PKG, "ElasticSearchBulkDialog.TestCluster.TestOK", name, numNodes));
           break;
+        default:
+          break;
       }
     } catch (NoNodeAvailableException e){
       showError(BaseMessages.getString(PKG, "ElasticSearchBulkDialog.Error.NoNodesFound"));

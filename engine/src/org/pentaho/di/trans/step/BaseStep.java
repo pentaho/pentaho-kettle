@@ -1146,7 +1146,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
           if (rowDistribution!=null) {
             // Plugin defined row distribution!
             //
-            rowDistribution.distributeRow(rowMeta, row, (StepInterface)this);
+            rowDistribution.distributeRow(rowMeta, row, this);
             incrementLinesWritten();
           } else {
             // ROUND ROBIN DISTRIBUTION:
@@ -2299,6 +2299,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
           case Trans.TYPE_DISP_N_M:
             rowSet = trans.findRowSet(prevSteps[i].getName(), c, stepname, getCopy());
             break;
+          default:
+            break;
         }
         if (rowSet != null) {
           inputRowSets.add(rowSet);
@@ -2374,6 +2376,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
             break;
           case Trans.TYPE_DISP_N_M:
             rowSet = trans.findRowSet(stepname, getCopy(), nextSteps[i].getName(), c);
+            break;
+          default:
             break;
         }
         if (rowSet != null) {

@@ -52,7 +52,6 @@ import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
 
 
@@ -325,7 +324,7 @@ public class ExecSQLRowTest
             // Set the information of the injector.
                     
             String injectorPid = registry.getPluginId(StepPluginType.class, im);
-            StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
+            StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, im);
             transMeta.addStep(injectorStep);            
             
             // 
@@ -338,7 +337,7 @@ public class ExecSQLRowTest
             execsqlmeta.setSqlFieldName("SQL");
             
             String execSqlRowId = registry.getPluginId(StepPluginType.class, execsqlmeta);
-            StepMeta execSqlRowStep = new StepMeta(execSqlRowId, stepName, (StepMetaInterface) execsqlmeta);
+            StepMeta execSqlRowStep = new StepMeta(execSqlRowId, stepName, execsqlmeta);
             execSqlRowStep.setDescription("Deletes information from table [" + execsqlrow_testtable + "] on database [" + dbInfo + "]");
             transMeta.addStep(execSqlRowStep);
             
@@ -409,7 +408,7 @@ public class ExecSQLRowTest
 	        // Set the information of the injector.
 	                
 	        String injectorPid = registry.getPluginId(StepPluginType.class, im);
-	        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
+	        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, im);
 	        transMeta.addStep(injectorStep);            
 	        
 	        // 
@@ -422,7 +421,7 @@ public class ExecSQLRowTest
 	        execsqlmeta.setSqlFieldName("SQL");
 	        
 	        String execSqlRowId = registry.getPluginId(StepPluginType.class, execsqlmeta);
-	        StepMeta execSqlRowStep = new StepMeta(execSqlRowId, stepName, (StepMetaInterface) execsqlmeta);
+	        StepMeta execSqlRowStep = new StepMeta(execSqlRowId, stepName, execsqlmeta);
 	        execSqlRowStep.setDescription("Deletes information from table [" + execsqlrow_testtable + "] on database [" + dbInfo + "]");
 	        transMeta.addStep(execSqlRowStep);
 	        
@@ -493,7 +492,7 @@ public class ExecSQLRowTest
 	        // Set the information of the injector.
 	                
 	        String injectorPid = registry.getPluginId(StepPluginType.class, im);
-	        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
+	        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, im);
 	        transMeta.addStep(injectorStep);            
 	        
 	        // 
@@ -506,7 +505,7 @@ public class ExecSQLRowTest
 	        execsqlmeta.setSqlFieldName("SQL");
 	        
 	        String execSqlRowId = registry.getPluginId(StepPluginType.class, execsqlmeta);
-	        StepMeta execSqlRowStep = new StepMeta(execSqlRowId, stepName, (StepMetaInterface) execsqlmeta);
+	        StepMeta execSqlRowStep = new StepMeta(execSqlRowId, stepName, execsqlmeta);
 	        execSqlRowStep.setDescription("Deletes information from table [" + execsqlrow_testtable + "] on database [" + dbInfo + "]");
 	        transMeta.addStep(execSqlRowStep);
 	        
@@ -577,7 +576,7 @@ public class ExecSQLRowTest
 	        // Set the information of the injector.
 	                
 	        String injectorPid = registry.getPluginId(StepPluginType.class, im);
-	        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
+	        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, im);
 	        transMeta.addStep(injectorStep);            
 	        
 	        // 
@@ -590,7 +589,7 @@ public class ExecSQLRowTest
 	        execsqlmeta.setSqlFieldName("SQL");
 	        
 	        String execSqlRowId = registry.getPluginId(StepPluginType.class, execsqlmeta);
-	        StepMeta execSqlRowStep = new StepMeta(execSqlRowId, stepName, (StepMetaInterface) execsqlmeta);
+	        StepMeta execSqlRowStep = new StepMeta(execSqlRowId, stepName, execsqlmeta);
 	        execSqlRowStep.setDescription("Deletes information from table [" + execsqlrow_testtable + "] on database [" + dbInfo + "]");
 	        transMeta.addStep(execSqlRowStep);
 	        

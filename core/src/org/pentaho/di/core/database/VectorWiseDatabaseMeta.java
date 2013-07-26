@@ -35,6 +35,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 public class VectorWiseDatabaseMeta extends IngresDatabaseMeta implements DatabaseInterface
 {
     
+  @Override
   public String getURL(String hostname, String port, String databaseName) {
     if (getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC) {
       return "jdbc:odbc:" + databaseName;
@@ -57,7 +58,8 @@ public class VectorWiseDatabaseMeta extends IngresDatabaseMeta implements Databa
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to add a column to the specified table
 	 */
-	public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" ADD COLUMN "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
@@ -72,7 +74,8 @@ public class VectorWiseDatabaseMeta extends IngresDatabaseMeta implements Databa
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to modify a column in the specified table
 	 */
-	public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" ALTER COLUMN "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
@@ -87,12 +90,14 @@ public class VectorWiseDatabaseMeta extends IngresDatabaseMeta implements Databa
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to drop a column from the specified table
 	 */
-	public String getDropColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getDropColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" DROP COLUMN "+v.getName()+Const.CR;
 	}
 
-	public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
+	@Override
+  public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
 	{
 		String retval="";
 		
@@ -185,11 +190,13 @@ public class VectorWiseDatabaseMeta extends IngresDatabaseMeta implements Databa
      * @param tableName The table to be truncated.
      * @return The SQL statement to truncate a table: remove all rows from it without a transaction
      */
+    @Override
     public String getTruncateTableStatement(String tableName)
     {
         return "CALL VECTORWISE( COMBINE '"+tableName+" - "+tableName+"' )";
     }
 
+    @Override
     public String[] getUsedLibraries()
     {
         return new String[] { "iijdbc.jar" };

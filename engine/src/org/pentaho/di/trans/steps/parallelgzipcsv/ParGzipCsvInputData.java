@@ -133,7 +133,7 @@ public class ParGzipCsvInputData extends BaseStepData implements StepDataInterfa
 			if (byteBuffer.length==0) { // initial
 				newSize = bufferSize;
 			} else {
-				newSize = (int)((byteBuffer.length*3)/2); // increase by 50%
+				newSize = (byteBuffer.length*3)/2; // increase by 50%
 			}
 			byte[] newByteBuffer = new byte[newSize];
 			// Copy over the data into the new buffer.

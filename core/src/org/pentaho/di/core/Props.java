@@ -261,6 +261,7 @@ public class Props implements Cloneable
         init();
     }
     
+    @Override
     public String toString()
     {
         return STRING_USER_PREFERENCES;

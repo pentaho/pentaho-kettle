@@ -698,6 +698,8 @@ public class Support {
 
             case java.sql.Types.TIMESTAMP:
                 return "java.sql.Timestamp";
+          default:
+            break;
         }
 
         return "java.lang.Object";

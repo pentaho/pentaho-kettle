@@ -34,7 +34,8 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class H2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
-	public int[] getAccessTypeList()
+	@Override
+  public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
 	}
@@ -42,12 +43,14 @@ public class H2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfac
 	/**
 	 * @see DatabaseInterface#getNotFoundTK(boolean)
 	 */
-	public int getNotFoundTK(boolean use_autoinc)
+	@Override
+  public int getNotFoundTK(boolean use_autoinc)
 	{
 		return super.getNotFoundTK(use_autoinc);
 	}
 	
-	public String getDriverClass()
+	@Override
+  public String getDriverClass()
 	{
         if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE)
         {
@@ -60,11 +63,13 @@ public class H2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfac
 
 	}
     
-	public int getDefaultDatabasePort() {
+	@Override
+  public int getDefaultDatabasePort() {
     if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE) return 8082;
     return -1;
 	}
 	
+    @Override
     public String getURL(String hostname, String port, String databaseName)
     {
         if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE)
@@ -93,7 +98,8 @@ public class H2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfac
 	 * Checks whether or not the command setFetchSize() is supported by the JDBC driver...
 	 * @return true is setFetchSize() is supported!
 	 */
-	public boolean isFetchSizeSupported()
+	@Override
+  public boolean isFetchSizeSupported()
 	{
 		return true;
 	}
@@ -101,7 +107,8 @@ public class H2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfac
 	/**
 	 * @see DatabaseInterface#getSchemaTableCombination(java.lang.String, java.lang.String)
 	 */
-	@SuppressWarnings("deprecation")
+	@Override
+  @SuppressWarnings("deprecation")
   public String getSchemaTableCombination(String schema_name, String table_part)
 	{
 		return getBackwardsCompatibleSchemaTableCombination(schema_name, table_part);
@@ -109,7 +116,8 @@ public class H2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfac
 	/**
 	 * @return true if the database supports bitmap indexes
 	 */
-	public boolean supportsBitmapIndex()
+	@Override
+  public boolean supportsBitmapIndex()
 	{
 		return false;
 	}
@@ -117,21 +125,25 @@ public class H2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfac
 	/**
 	 * @return true if Kettle can create a repository on this type of database.
 	 */
-	public boolean supportsRepository()
+	@Override
+  public boolean supportsRepository()
 	{
 		return true;
 	}
     
+    @Override
     public boolean supportsAutoInc()
     {
         return true;
     }
     
+    @Override
     public boolean supportsGetBlob()
     {
         return true;
     }
     
+    @Override
     public boolean supportsSetCharacterStream()
     {
         return false;
@@ -149,7 +161,8 @@ public class H2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfac
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to add a column to the specified table
 	 */
-	public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" ADD "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
@@ -164,12 +177,14 @@ public class H2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfac
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to modify a column in the specified table
 	 */
-	public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" ALTER "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
 
-	public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
+	@Override
+  public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
 	{
 		String retval="";
 		
@@ -273,6 +288,7 @@ public class H2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfac
 		return retval;
 	}
     
+    @Override
     public String[] getReservedWords()
     {
         return new String[]
@@ -283,6 +299,7 @@ public class H2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfac
           };
     }
 
+    @Override
     public String[] getUsedLibraries()
     {
         return new String[] { "h2.jar" };
@@ -293,7 +310,8 @@ public class H2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfac
 	 * 
 	 * @return true if the database supports retrieval of query metadata from a prepared statement.  False if the query needs to be executed first.
 	 */
-	public boolean supportsPreparedStatementMetadataRetrieval() {
+	@Override
+  public boolean supportsPreparedStatementMetadataRetrieval() {
 		return false;
 	}
 

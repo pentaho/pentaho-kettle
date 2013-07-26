@@ -151,7 +151,9 @@ public class PentahoReportingOutputMetaInjection extends BaseStepMetaInjection i
                       String value = (String)entry.getValue();
                       switch(metaEntry) {
                       case PARAMETER_NAME: parameter = value; break;
-                      case FIELDNAME:      fieldname = value; break;                    
+                      case FIELDNAME:      fieldname = value; break;    
+                      default:
+                        break;
                       }
                     }
                   }
@@ -180,6 +182,8 @@ public class PentahoReportingOutputMetaInjection extends BaseStepMetaInjection i
           break;
         case OUTPUT_PROCESSOR_TYPE: 
           meta.setOutputProcessorType(ProcessorType.getProcessorTypeByCode((String)lookFields.getValue()));
+          break;
+        default:
           break;
         }
       }

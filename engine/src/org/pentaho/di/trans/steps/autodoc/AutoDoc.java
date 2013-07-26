@@ -241,6 +241,8 @@ public class AutoDoc extends BaseStep implements StepInterface
         // TransMeta
         outputRow[outputIndex++] = jobMeta;
         break;
+      default:
+        break;
 		  }
 		   
       // Name

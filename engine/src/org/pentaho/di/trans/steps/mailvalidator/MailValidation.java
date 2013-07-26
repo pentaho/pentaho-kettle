@@ -204,7 +204,7 @@ public class MailValidation {
 			BufferedWriter wtr = null;
 			Socket skt = null;
 			try {
-				String exhanger = (String) mxList.get(mx);
+				String exhanger = mxList.get(mx);
 				if (log.isDebug())
 					log.logDebug(className(), BaseMessages.getString(PKG, "MailValidator.TryingExchanger", exhanger));
 

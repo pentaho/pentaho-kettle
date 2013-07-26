@@ -115,7 +115,7 @@ public class JarfileGenerator
             commands.add("xf");
             commands.add("../"+libs[i]);
             
-            String[] cmd = (String[]) commands.toArray(new String[commands.size()]);
+            String[] cmd = commands.toArray(new String[commands.size()]);
             executeCommand(cmd, karDirectory);
         }
         
@@ -134,7 +134,7 @@ public class JarfileGenerator
             if (!directories[i].toUpperCase().equals("META-INF"))
             commands.add(directories[i]);
         }
-        String[] cmd = (String[]) commands.toArray(new String[commands.size()]);
+        String[] cmd = commands.toArray(new String[commands.size()]);
         executeCommand(cmd, karDirectory);
     }
 

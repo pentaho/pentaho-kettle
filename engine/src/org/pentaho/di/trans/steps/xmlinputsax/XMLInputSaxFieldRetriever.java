@@ -125,7 +125,7 @@ public class XMLInputSaxFieldRetriever extends DefaultHandler{
     {
     	for (int i=0; i<=count; i++)
     	{
-    		if(!((XMLInputSaxFieldPosition)pathToRootElement.get(i)).equals((XMLInputSaxFieldPosition)pathToRootElement.get(i)))
+    		if(!pathToRootElement.get(i).equals(pathToRootElement.get(i)))
     		{
     			return false;
     		}
@@ -188,7 +188,7 @@ public class XMLInputSaxFieldRetriever extends DefaultHandler{
 			    
 			    try
 			    {
-			    	el = (XMLInputSaxFieldPosition)pathToRootElement.get(counter);
+			    	el = pathToRootElement.get(counter);
 			    }
 			    catch(IndexOutOfBoundsException e)
 			    {
@@ -263,7 +263,7 @@ public class XMLInputSaxFieldRetriever extends DefaultHandler{
 			}
 		} catch (KettleValueException e) {
             log.logError(Const.getStackTracker(e));
-			throw new SAXException(_counter+","+counter+((XMLInputSaxFieldPosition)_pathToRootElement.get(_pathToRootElement.size()-1)).toString(),e);
+			throw new SAXException(_counter+","+counter+_pathToRootElement.get(_pathToRootElement.size()-1).toString(),e);
 			
 		}
     }

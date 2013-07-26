@@ -185,6 +185,8 @@ public class WriteToLog extends BaseStep implements StepInterface
       // Output nothing to log
       // Log level = NOTHING
       break;
+      default:
+        break;
     }
   }
 

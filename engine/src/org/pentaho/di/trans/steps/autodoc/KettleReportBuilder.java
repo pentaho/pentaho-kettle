@@ -409,6 +409,8 @@ public class KettleReportBuilder {
 		case CSV: 
 			CSVReportUtil.createCSV(report, targetFilename);
 			break;
+      default:
+        break;
 		}
 	}
 }

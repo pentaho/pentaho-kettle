@@ -37,7 +37,8 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {   
-	public int[] getAccessTypeList()
+	@Override
+  public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
 	}
@@ -45,7 +46,8 @@ public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	/**
 	 * @see org.pentaho.di.core.database.DatabaseInterface#getNotFoundTK(boolean)
 	 */
-	public int getNotFoundTK(boolean use_autoinc)
+	@Override
+  public int getNotFoundTK(boolean use_autoinc)
 	{
 		if ( supportsAutoInc() && use_autoinc)
 		{
@@ -54,7 +56,8 @@ public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 		return super.getNotFoundTK(use_autoinc);
 	}
 	
-	public String getDriverClass()
+	@Override
+  public String getDriverClass()
 	{
         if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE)
         {
@@ -68,6 +71,7 @@ public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	}
   
 	
+    @Override
     public String getURL(String hostname, String port, String databaseName)
     {
         if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE)
@@ -93,7 +97,8 @@ public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	 * Checks whether or not the command setFetchSize() is supported by the JDBC driver...
 	 * @return true is setFetchSize() is supported!
 	 */
-	public boolean isFetchSizeSupported()
+	@Override
+  public boolean isFetchSizeSupported()
 	{
 		return false;
 	}
@@ -101,7 +106,8 @@ public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	/**
 	 * @see org.pentaho.di.core.database.DatabaseInterface#getSchemaTableCombination(java.lang.String, java.lang.String)
 	 */
-	@SuppressWarnings("deprecation")
+	@Override
+  @SuppressWarnings("deprecation")
   public String getSchemaTableCombination(String schema_name, String table_part)
 	{
 		return getBackwardsCompatibleSchemaTableCombination(schema_name, table_part);
@@ -110,7 +116,8 @@ public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	/**
 	 * @return true if the database supports bitmap indexes
 	 */
-	public boolean supportsBitmapIndex()
+	@Override
+  public boolean supportsBitmapIndex()
 	{
 		return false;
 	}
@@ -118,7 +125,8 @@ public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	/**
 	 * @return true if Kettle can create a repository on this type of database.
 	 */
-	public boolean supportsRepository()
+	@Override
+  public boolean supportsRepository()
 	{
 		return true;
 	}
@@ -129,6 +137,7 @@ public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 		return "show table " + tablename;
 	} 
 	
+    @Override
     public String getSQLColumnExists(String columnname, String tablename)
     {
         return  "SELECT * FROM DBC.columns WHERE tablename =" + tablename + " AND columnname =" + columnname;
@@ -138,7 +147,8 @@ public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	 * @param tableName The table to be truncated.
 	 * @return The SQL statement to truncate a table: remove all rows from it without a transaction
 	 */
-	public String getTruncateTableStatement(String tableName)
+	@Override
+  public String getTruncateTableStatement(String tableName)
 	{
 	    return "DELETE FROM "+tableName;
 	}
@@ -156,7 +166,8 @@ public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to add a column to the specified table
 	 */
-	public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" ADD "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
@@ -171,12 +182,14 @@ public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to modify a column in the specified table
 	 */
-	public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" MODIFY "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
 
-	public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
+	@Override
+  public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
 	{
 		String retval="";
 		
@@ -262,27 +275,32 @@ public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 		return retval;
 	}
     
+    @Override
     public String getExtraOptionSeparator()
     {
         return ",";
     }
     
+    @Override
     public String getExtraOptionIndicator()
     {
         return "/";
     }
 
+    @Override
     public String getExtraOptionsHelpText()
     {
         return "http://www.info.ncr.com/eTeradata-BrowseBy-Results.cfm?pl=&PID=&title=%25&release=&kword=CJDBC&sbrn=7&nm=Teradata+Tools+and+Utilities+-+Java+Database+Connectivity+(JDBC)";
     }
 
+    @Override
     public String[] getUsedLibraries()
     {
         return new String[] { "terajdbc4.jar", "tdgssjava.jar" };
     }
     
-	public int getDefaultDatabasePort()
+	@Override
+  public int getDefaultDatabasePort()
 	{
 		return 1025;
 	}
@@ -291,6 +309,7 @@ public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	 * Overrides parent behavior to allow <code>getDatabasePortNumberString</code> value to override value of 
 	 * <code>DBS_PORT</code> extra option.
 	 */
+    @Override
     public Map<String, String> getExtraOptions()
     {
         Map<String,String> map = super.getExtraOptions();

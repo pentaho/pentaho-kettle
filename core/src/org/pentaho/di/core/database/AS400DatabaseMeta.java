@@ -33,12 +33,14 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  */
 public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
-	public int[] getAccessTypeList()
+	@Override
+  public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
 	}
 	
-	public String getDriverClass()
+	@Override
+  public String getDriverClass()
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
 		{
@@ -55,11 +57,13 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	 * This includes optional CLOB, Memo and Text fields. (the maximum!)
 	 * @return The maximum text field length for this database type. (mostly CLOB_LENGTH)
 	 */
-	public int getMaxTextFieldLength()
+	@Override
+  public int getMaxTextFieldLength()
 	{
 		return 65536;
 	}
     
+    @Override
     public String getURL(String hostname, String port, String database)
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
@@ -76,7 +80,8 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	 * @param tableName The table to be truncated.
 	 * @return The SQL statement to truncate a table: remove all rows from it without a transaction
 	 */
-	public String getTruncateTableStatement(String tableName)
+	@Override
+  public String getTruncateTableStatement(String tableName)
 	{
 	    return "DELETE FROM "+tableName;
 	}
@@ -91,7 +96,8 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to add a column to the specified table
 	 */
-	public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" ADD "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
@@ -106,12 +112,14 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to modify a column in the specified table
 	 */
-	public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" ALTER COLUMN "+v.getName()+" SET "+getFieldDefinition(v, tk, pk, use_autoinc, false, false);
 	}
 
-	public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
+	@Override
+  public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
 	{
 		String retval="";
 		
@@ -179,7 +187,8 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	/* (non-Javadoc)
 	 * @see DatabaseInterface#getReservedWords()
 	 */
-	public String[] getReservedWords()
+	@Override
+  public String[] getReservedWords()
 	{
 		return new String[]
 		{
@@ -236,6 +245,7 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
     /**
      * @return the required libraries (in lib) for this database connection.
      */
+    @Override
     public String[] getUsedLibraries()
     {
         return new String[] { "jt400.jar" };
@@ -245,6 +255,7 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
      * Most databases round number(7,2) 17.29999999 to 17.30, but some don't.
      * @return true if the database supports roundinf of floating point data on update/insert
      */
+    @Override
     public boolean supportsFloatRoundingOnUpdate()
     {
         return false;
@@ -255,7 +266,8 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	 * If this size is exceeded use a CLOB.
 	 * @return The maximum VARCHAR field length for this database type. (mostly identical to getMaxTextFieldLength() - CLOB_LENGTH)
 	 */
-	public int getMaxVARCHARLength()
+	@Override
+  public int getMaxVARCHARLength()
 	{
 		return 32672;
 	}
@@ -263,7 +275,8 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	/**
 	 * @return true if the database supports sequences
 	 */
-	public boolean supportsSequences()
+	@Override
+  public boolean supportsSequences()
 	{
 		return true;
 	}
@@ -273,6 +286,7 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
      * @param sequenceName The sequence to check
      * @return The SQL to get the name of the sequence back from the databases data dictionary
      */
+    @Override
     public String getSQLSequenceExists(String sequenceName)
     {
         return "SELECT * FROM SYSCAT.SEQUENCES WHERE SEQNAME = '"+sequenceName.toUpperCase()+"'";
@@ -283,6 +297,7 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
      * @param sequenceName The sequence to check
      * @return The current value of a database sequence
      */
+    @Override
     public String getSQLCurrentSequenceValue(String sequenceName)
     {
         return "SELECT PREVIOUS VALUE FOR "+sequenceName+" FROM SYSIBM.SYSDUMMY1";
@@ -293,6 +308,7 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
      * @param sequenceName The sequence name
      * @return the SQL to get the next value of a sequence. (Oracle only)
      */
+    @Override
     public String getSQLNextSequenceValue(String sequenceName)
     {
     	return "SELECT NEXT VALUE FOR "+sequenceName+" FROM SYSIBM.SYSDUMMY1";
@@ -302,7 +318,8 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	 * @return true if the database supports the NOMAXVALUE sequence option.
 	 * The default is false, AS/400 and DB2 support this. 
 	 */
-	public boolean supportsSequenceNoMaxValueOption() {
+	@Override
+  public boolean supportsSequenceNoMaxValueOption() {
 		return true;
 	}
 	

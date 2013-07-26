@@ -71,7 +71,8 @@ public class ValueMetaPluginType extends BasePluginType implements PluginTypeInt
 	/**
 	 * Scan & register internal value meta plugins
 	 */
-	protected void registerNatives() throws KettlePluginException {
+	@Override
+  protected void registerNatives() throws KettlePluginException {
 		// Scan the native steps...
 		//
 		String kettleValueMetaPluginsXmlFile = Const.XML_FILE_KETTLE_VALUEMETA_PLUGINS;
@@ -113,7 +114,8 @@ public class ValueMetaPluginType extends BasePluginType implements PluginTypeInt
 		}
 	}
 	
-	protected void registerXmlPlugins() throws KettlePluginException {
+	@Override
+  protected void registerXmlPlugins() throws KettlePluginException {
 		for (PluginFolderInterface folder : pluginFolders) {
 			
 			if (folder.isPluginXmlFolder()) {

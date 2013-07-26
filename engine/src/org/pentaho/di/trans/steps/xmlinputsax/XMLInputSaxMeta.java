@@ -693,7 +693,7 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface
     	{
     		if(definitionElement.get(i).equals(elementName))
     		{
-    			return (String)definitionAttribute.get(i);
+    			return definitionAttribute.get(i);
     		}
     	}
         
@@ -750,12 +750,12 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface
     
     public String getDefiningAttribute(int i)
     {
-    	return (String)definitionAttribute.get(i);
+    	return definitionAttribute.get(i);
     }
     
     public String getDefiningElement(int i)
     {
-    	return (String)definitionElement.get(i);
+    	return definitionElement.get(i);
     }
     
     public int getDefinitionLength()

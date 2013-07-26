@@ -169,7 +169,7 @@ public class YamlInput extends BaseStep implements StepInterface {
         return false;
       }
       // Get file to process from list
-      data.file = (FileObject) data.files.getFile(data.filenr);
+      data.file = data.files.getFile(data.filenr);
 
       // Move file pointer ahead!
       data.filenr++;

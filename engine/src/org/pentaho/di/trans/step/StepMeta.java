@@ -513,7 +513,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
   }
 
   public void setChanged() {
-    StepMetaInterface bsi = (StepMetaInterface) this.getStepMetaInterface();
+    StepMetaInterface bsi = this.getStepMetaInterface();
     if (bsi != null)
       bsi.setChanged();
   }
@@ -555,12 +555,12 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     this.terminator = stepMeta.terminator;
 
     if (stepMeta.stepPartitioningMeta != null) {
-      this.stepPartitioningMeta = (StepPartitioningMeta) stepMeta.stepPartitioningMeta.clone();
+      this.stepPartitioningMeta = stepMeta.stepPartitioningMeta.clone();
     } else {
       this.stepPartitioningMeta = null;
     }
     if (stepMeta.clusterSchema != null) {
-      this.clusterSchema = (ClusterSchema) stepMeta.clusterSchema.clone();
+      this.clusterSchema = stepMeta.clusterSchema.clone();
     } else {
       this.clusterSchema = null;
     }

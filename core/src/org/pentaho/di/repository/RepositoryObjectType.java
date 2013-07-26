@@ -49,7 +49,8 @@ public enum RepositoryObjectType {
 		this.extension = extension;
 	}
 	
-	public String toString() {
+	@Override
+  public String toString() {
 		return typeDescription;
 	}
 	

@@ -238,6 +238,7 @@ public class ByteArrayHashIndex {
          * The row is the same if the value is the same
          * The data types are the same so no error is made here.
          */
+        @Override
         public boolean equals(Object obj)
         {
         	ByteArrayHashIndexEntry e = (ByteArrayHashIndexEntry)obj;

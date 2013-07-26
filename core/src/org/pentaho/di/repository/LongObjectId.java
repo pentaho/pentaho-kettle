@@ -56,7 +56,8 @@ public class LongObjectId implements ObjectId, Comparable<LongObjectId> {
 		return Long.valueOf(id).hashCode();
 	}
 	
-	public int compareTo(LongObjectId o) {
+	@Override
+  public int compareTo(LongObjectId o) {
 		return Long.valueOf(id).compareTo(Long.valueOf(o.longValue()));
 	}
 	
@@ -68,7 +69,8 @@ public class LongObjectId implements ObjectId, Comparable<LongObjectId> {
 	/**
 	 * @return the id
 	 */
-	public String getId() {
+	@Override
+  public String getId() {
 		return Long.toString(id);
 	}
 	

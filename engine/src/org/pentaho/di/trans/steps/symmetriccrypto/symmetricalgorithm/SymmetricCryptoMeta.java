@@ -76,7 +76,7 @@ public class SymmetricCryptoMeta {
 	 */
 	public static final SymmetricCryptoInterface getSymmetricCryptoInterface(String cryptoname) 
 	throws CryptoException {
-		return (SymmetricCryptoInterface)findSymmetricCryptoInterface(cryptoname);
+		return findSymmetricCryptoInterface(cryptoname);
 		
 	}
 	/**

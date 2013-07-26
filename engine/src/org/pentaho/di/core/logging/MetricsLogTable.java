@@ -172,6 +172,8 @@ public class MetricsLogTable extends BaseLogTable implements Cloneable, LogTable
             case METRICS_SUBJECT: value = snapshot.getSubject(); break;
             case METRICS_TYPE: value = snapshot.getMetric().getType().name(); break;
             case METRICS_VALUE: value = snapshot.getValue(); break;
+              default:
+                break;
             }
           }
 

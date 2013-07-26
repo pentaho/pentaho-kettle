@@ -181,7 +181,8 @@ public class Condition implements Cloneable, XMLInterface
 	}
 
 
-	public Object clone()
+	@Override
+  public Object clone()
 	{
 		Condition retval = null;
 
@@ -532,6 +533,7 @@ public class Condition implements Cloneable, XMLInterface
             regex = regex.replace("?", ".");
             retval = Pattern.matches(regex, fieldMeta.getCompatibleString(field));
           }
+          break;
         default:
           break;
         }
@@ -716,7 +718,8 @@ public class Condition implements Cloneable, XMLInterface
 	    list.set(i, subCondition);
 	}
 
-	public String toString()
+	@Override
+  public String toString()
 	{
 		return toString(0, true, true);
 	}
@@ -797,7 +800,8 @@ public class Condition implements Cloneable, XMLInterface
 		return retval;
 	}
 	
-	public String getXML() throws KettleValueException
+	@Override
+  public String getXML() throws KettleValueException
 	{
 		return getXML(0);
 	}
@@ -906,7 +910,7 @@ public class Condition implements Cloneable, XMLInterface
 		int i=0;
 		while (keys.hasMoreElements())
 		{
-			retval[i] = (String)keys.nextElement();
+			retval[i] = keys.nextElement();
 			i++;
 		}
 		

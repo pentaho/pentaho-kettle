@@ -42,7 +42,6 @@ import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
 
@@ -293,7 +292,7 @@ public class SplitFieldToRowsTest extends TestCase {
         
         // Set the information of the injector.                
         String injectorPid = registry.getPluginId(StepPluginType.class, im);
-        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
+        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, im);
         transMeta.addStep(injectorStep);
 
         // Create a Split Field to Rows step
@@ -305,7 +304,7 @@ public class SplitFieldToRowsTest extends TestCase {
         splitFieldtoRowsMeta.setNewFieldname(NEW_FIELD_NAME);
         
         String splitFieldTotRowsPid = registry.getPluginId(StepPluginType.class, splitFieldtoRowsMeta);
-        StepMeta splitFieldToRows = new StepMeta(splitFieldTotRowsPid, splitfieldToRowsName, (StepMetaInterface)splitFieldtoRowsMeta);
+        StepMeta splitFieldToRows = new StepMeta(splitFieldTotRowsPid, splitfieldToRowsName, splitFieldtoRowsMeta);
         transMeta.addStep(splitFieldToRows);
         
         //  hop the injector to the split field to rows step
@@ -317,7 +316,7 @@ public class SplitFieldToRowsTest extends TestCase {
         DummyTransMeta dm = new DummyTransMeta();
 
         String dummyPid = registry.getPluginId(StepPluginType.class, dm);
-        StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, (StepMetaInterface)dm);
+        StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, dm);
         transMeta.addStep(dummyStep);
         
         TransHopMeta hop_SplitFieldToRows_Dummy = new TransHopMeta(splitFieldToRows, dummyStep);

@@ -39,12 +39,14 @@ import org.pentaho.di.core.variables.VariableSpace;
 
 public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
-	public int[] getAccessTypeList()
+	@Override
+  public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_OCI, DatabaseMeta.TYPE_ACCESS_JNDI };
 	}
 	
-	public int getDefaultDatabasePort()
+	@Override
+  public int getDefaultDatabasePort()
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE) return 1521;
 		return -1;
@@ -53,7 +55,8 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	/**
 	 * @return Whether or not the database can use auto increment type of fields (pk)
 	 */
-	public boolean supportsAutoInc()
+	@Override
+  public boolean supportsAutoInc()
 	{
 		return false;
 	}
@@ -61,7 +64,8 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	/**
 	 * @see org.pentaho.di.core.database.DatabaseInterface#getLimitClause(int)
 	 */
-	public String getLimitClause(int nrRows)
+	@Override
+  public String getLimitClause(int nrRows)
 	{
 		return " WHERE ROWNUM <= "+nrRows;
 	}
@@ -71,16 +75,19 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	 * @param tableName The name of the table to determine the layout for
 	 * @return The SQL to launch.
 	 */
-	public String getSQLQueryFields(String tableName)
+	@Override
+  public String getSQLQueryFields(String tableName)
 	{
 	    return "SELECT /*+FIRST_ROWS*/ * FROM "+tableName+" WHERE ROWNUM < 1";
 	}
 
+    @Override
     public String getSQLTableExists(String tablename)
     {
         return getSQLQueryFields(tablename);
     }
     
+    @Override
     public String getSQLColumnExists(String columnname, String tablename)
     {
         return  getSQLQueryColumnFields(columnname, tablename);
@@ -92,12 +99,14 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
 
     
+    @Override
     public boolean needsToLockAllTables()
     {
         return false;
     }
 	
-	public String getDriverClass()
+	@Override
+  public String getDriverClass()
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
 		{
@@ -110,6 +119,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	}
 
 	
+    @Override
     public String getURL(String hostname, String port, String databaseName) throws KettleDatabaseException
     {
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
@@ -163,6 +173,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
     /**
      * Oracle doesn't support options in the URL, we need to put these in a Properties object at connection time...
      */
+    @Override
     public boolean supportsOptionsInURL()
     {
         return false;
@@ -171,7 +182,8 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	/**
 	 * @return true if the database supports sequences
 	 */
-	public boolean supportsSequences()
+	@Override
+  public boolean supportsSequences()
 	{
 		return true;
 	}
@@ -181,6 +193,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
      * @param sequenceName The sequence to check
      * @return The SQL to get the name of the sequence back from the databases data dictionary
      */
+    @Override
     public String getSQLSequenceExists(String sequenceName)
     {
         return "SELECT * FROM USER_SEQUENCES WHERE SEQUENCE_NAME = '"+sequenceName.toUpperCase()+"'";
@@ -191,6 +204,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
      * @param sequenceName The sequence to check
      * @return The current value of a database sequence
      */
+    @Override
     public String getSQLCurrentSequenceValue(String sequenceName)
     {
         return "SELECT "+sequenceName+".currval FROM DUAL";
@@ -201,6 +215,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
      * @param sequenceName The sequence name
      * @return the SQL to get the next value of a sequence. (Oracle only)
      */
+    @Override
     public String getSQLNextSequenceValue(String sequenceName)
     {
         return "SELECT "+sequenceName+".nextval FROM dual";
@@ -210,7 +225,8 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	/**
 	 * @return true if we need to supply the schema-name to getTables in order to get a correct list of items.
 	 */
-	public boolean useSchemaNameForTableList()
+	@Override
+  public boolean useSchemaNameForTableList()
 	{
 		return true;
 	}
@@ -218,7 +234,8 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	/**
 	 * @return true if the database supports synonyms
 	 */
-	public boolean supportsSynonyms()
+	@Override
+  public boolean supportsSynonyms()
 	{
 		return true;
 	}
@@ -233,7 +250,8 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to add a column to the specified table
 	 */
-	public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" ADD ( "+getFieldDefinition(v, tk, pk, use_autoinc, true, false)+" ) ";
 	}
@@ -248,7 +266,8 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to drop a column from the specified table
 	 */
-	public String getDropColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getDropColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" DROP ( "+v.getName()+" ) "+Const.CR;
 	}
@@ -263,7 +282,8 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to modify a column in the specified table
 	 */
-	public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
         ValueMetaInterface tmpColumn = v.clone();
         String tmpName = v.getName();
@@ -307,7 +327,8 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
         return sql;
 	}
 
-	public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
+	@Override
+  public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
 	{
 		StringBuffer retval=new StringBuffer(128);
 		
@@ -382,7 +403,8 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	/* (non-Javadoc)
 	 * @see com.ibridge.kettle.core.database.DatabaseInterface#getReservedWords()
 	 */
-	public String[] getReservedWords()
+	@Override
+  public String[] getReservedWords()
 	{
 		return new String[] 
 	     {
@@ -403,11 +425,13 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	/**
 	 * @return The SQL on this database to get a list of stored procedures.
 	 */
-	public String getSQLListOfProcedures()
+	@Override
+  public String getSQLListOfProcedures()
 	{
 		return  "SELECT DISTINCT DECODE(package_name, NULL, '', package_name||'.')||object_name FROM user_arguments ORDER BY 1"; 
 	}
 
+    @Override
     public String getSQLLockTables(String tableNames[])
     {
         StringBuffer sql=new StringBuffer(128);
@@ -418,6 +442,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
         return sql.toString();
     }
     
+    @Override
     public String getSQLUnlockTables(String tableNames[])
     {
         return null; // commit handles the unlocking!
@@ -426,11 +451,13 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
     /**
      * @return extra help text on the supported options on the selected database platform.
      */
+    @Override
     public String getExtraOptionsHelpText()
     {
         return  "http://download.oracle.com/docs/cd/B19306_01/java.102/b14355/urls.htm#i1006362";
     }
 
+    @Override
     public String[] getUsedLibraries()
     {
         return new String[] { "ojdbc14.jar", "orai18n.jar" };
@@ -446,7 +473,8 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
      * @return true if the index exists, false if it doesn't.
      * @throws KettleException
      */
-	public boolean checkIndexExists(Database database, String schemaName, String tableName, String[] idx_fields) throws KettleDatabaseException  {
+	@Override
+  public boolean checkIndexExists(Database database, String schemaName, String tableName, String[] idx_fields) throws KettleDatabaseException  {
 		
         String tablename = database.getDatabaseMeta().getQuotedSchemaTableCombination(schemaName, tableName);
 
@@ -510,20 +538,23 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	 * 
 	 * @return true if the database supports retrieval of query metadata from a prepared statement.  False if the query needs to be executed first.
 	 */
-	public boolean supportsPreparedStatementMetadataRetrieval() {
+	@Override
+  public boolean supportsPreparedStatementMetadataRetrieval() {
 		return false;
 	}
 
 	/**
 	 * @return The maximum number of columns in a database, <=0 means: no known limit
 	 */
-	public int getMaxColumnsInIndex() {
+	@Override
+  public int getMaxColumnsInIndex() {
 		return 32;
 	}
 	/**
 	 * @return The SQL on this database to get a list of sequences.
 	 */
-	public String getSQLListOfSequences()
+	@Override
+  public String getSQLListOfSequences()
 	{
 		return  "SELECT SEQUENCE_NAME FROM all_sequences"; 
 	}
@@ -532,6 +563,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
    * @param string
    * @return A string that is properly quoted for use in an Oracle SQL statement (insert, update, delete, etc)
    */
+  @Override
   public String quoteSQLString(String string) {
     string = string.replaceAll("'", "''"); 
     string = string.replaceAll("\\n", "'||chr(13)||'");

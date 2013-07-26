@@ -82,23 +82,28 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface
 		this(null, (String)null);
 	}
 	
-	public List<RepositoryDirectoryInterface> getChildren() {
+	@Override
+  public List<RepositoryDirectoryInterface> getChildren() {
     return children;
   }
 
+  @Override
   public void setChildren(List<RepositoryDirectoryInterface> children) {
     this.children = children;
   }
 
+  @Override
   public List<RepositoryElementMetaInterface> getRepositoryObjects() {
     return repositoryObjects;
   }
 
+  @Override
   public void setRepositoryObjects(List<RepositoryElementMetaInterface> repositoryObjects) {
     this.repositoryObjects = repositoryObjects;
   }
   
   
+  @Override
   public void clear()
 	{
 		this.parent        = null;
@@ -110,7 +115,8 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface
 	 * Get the database ID in the repository for this object.
 	 * @return the database ID in the repository for this object.
 	 */
-	public ObjectId getObjectId()
+	@Override
+  public ObjectId getObjectId()
 	{
 		return id;
 	}
@@ -119,7 +125,8 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface
 	 * Set the database ID for this object in the repository.
 	 * @param id the database ID for this object in the repository.
 	 */
-	public void setObjectId(ObjectId id)
+	@Override
+  public void setObjectId(ObjectId id)
 	{
 		this.id = id;
 	}
@@ -129,7 +136,8 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface
 	 * 
 	 * @param parent The new parent of this directory.
 	 */
-	public void setParent(RepositoryDirectoryInterface parent)
+	@Override
+  public void setParent(RepositoryDirectoryInterface parent)
 	{
 		this.parent = parent;
 	}
@@ -138,7 +146,8 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface
 	 * get the parent directory for this directory.
 	 * @return The parent directory of null if this is the root directory. 
 	 */
-	public RepositoryDirectoryInterface getParent()
+	@Override
+  public RepositoryDirectoryInterface getParent()
 	{
 		return this.parent;
 	}
@@ -147,7 +156,8 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface
 	 * Set the directory name (rename)
 	 * @param directoryname The new directory name
 	 */
-	public void setName(String directoryname)
+	@Override
+  public void setName(String directoryname)
 	{
 		this.directoryname = directoryname;
 	}
@@ -156,7 +166,8 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface
 	 * Get the name of this directory...
 	 * @return the name of this directory
 	 */
-	public String getName()
+	@Override
+  public String getName()
 	{
 		if (directoryname==null) return DIRECTORY_SEPARATOR;
 		return directoryname;
@@ -166,7 +177,8 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface
 	 * Check whether or not this is the root of the directory trees. (default)
 	 * @return true if this is the root directory node.  False if it is not.
 	 */
-	public boolean isRoot()
+	@Override
+  public boolean isRoot()
 	{
 		return parent==null && directoryname==null;
 	}
@@ -176,7 +188,8 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface
 	 * 
 	 * @return The complete path to this directory.
 	 */
-	public String getPath()
+	@Override
+  public String getPath()
 	{
 		if (getParent()==null) // Root! 
 		{
@@ -200,7 +213,8 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface
 	 * 
 	 * @return The complete path to this directory.
 	 */
-	public String[] getPathArray()
+	@Override
+  public String[] getPathArray()
 	{
 		// First determine the depth of the tree...
 		int depth=1;
@@ -233,7 +247,8 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface
 	 * Add a subdirectory to this directory.
 	 * @param subdir The subdirectory to add.
 	 */
-	public void addSubdirectory(RepositoryDirectoryInterface subdir)
+	@Override
+  public void addSubdirectory(RepositoryDirectoryInterface subdir)
 	{
 		subdir.setParent(this);
 		children.add(subdir);
@@ -243,7 +258,8 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface
 	 * Counts the number of subdirectories in this directory.
 	 * @return The number of subdirectories
 	 */
-	public int getNrSubdirectories()
+	@Override
+  public int getNrSubdirectories()
 	{
 		return children.size();
 	}
@@ -253,7 +269,8 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface
 	 * @param i The subdirectory position
 	 * @return The subdirectory with on a certain position
 	 */
-	public RepositoryDirectory getSubdirectory(int i)
+	@Override
+  public RepositoryDirectory getSubdirectory(int i)
 	{
 		if (children==null) return null;
 		return (RepositoryDirectory)children.get(i);
@@ -264,7 +281,8 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface
 	 * @param path The path to the directory we're looking for.
 	 * @return The directory if one can be found, null if no directory was found.
 	 */
-	public RepositoryDirectory findDirectory(String path[])
+	@Override
+  public RepositoryDirectory findDirectory(String path[])
 	{ 
 	    // Is it root itself?
 	    if (isRoot() && path.length==1 && path[0].equalsIgnoreCase(DIRECTORY_SEPARATOR))
@@ -342,7 +360,8 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface
 	 * @param path The path to the directory
 	 * @return The directory if one was found, null if nothing was found.
 	 */
-	public RepositoryDirectory findDirectory(String path)
+	@Override
+  public RepositoryDirectory findDirectory(String path)
 	{
 		String newPath[] = Const.splitPath(path, DIRECTORY_SEPARATOR);
 		
@@ -367,7 +386,8 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface
 		return findDirectory(p);
 	}
 	
-	public RepositoryDirectory findChild(String name) {
+	@Override
+  public RepositoryDirectory findChild(String name) {
 		for (RepositoryDirectoryInterface child : children) {
 			if (child.getName().equalsIgnoreCase(name)) 
 			  return (RepositoryDirectory)child;
@@ -380,7 +400,8 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface
 	 * @param id_directory the directory ID to look for.
 	 * @return The RepositoryDirectory if the ID was found, null if nothing could be found.
 	 */
-	public RepositoryDirectory findDirectory(ObjectId id_directory)
+	@Override
+  public RepositoryDirectory findDirectory(ObjectId id_directory)
 	{
 		// Check for the root directory...
 		//
@@ -480,7 +501,8 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface
 	 * Get all the directory-id in this directory and the subdirectories.
 	 * @return an array of all the directory id's (this directory & subdirectories) 
 	 */
-	public ObjectId[] getDirectoryIDs()
+	@Override
+  public ObjectId[] getDirectoryIDs()
 	{
 		List<ObjectId> ids = new ArrayList<ObjectId>();
 		getDirectoryIDs(ids);
@@ -508,17 +530,20 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface
 	 * Find the root of the directory tree starting from this directory.
 	 * @return the root of the directory tree
 	 */
-	public RepositoryDirectoryInterface findRoot()
+	@Override
+  public RepositoryDirectoryInterface findRoot()
 	{
 		if (isRoot()) return this;
 		return getParent().findRoot();
 	}
 	
-	public String toString()
+	@Override
+  public String toString()
 	{
 		return getPath();
 	}
 
+    @Override
     public String getPathObjectCombination(String transName)
     {
         if (isRoot())
@@ -531,6 +556,7 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface
         }
     }
 
+  @Override
   public boolean isVisible()
   {
     return visible;

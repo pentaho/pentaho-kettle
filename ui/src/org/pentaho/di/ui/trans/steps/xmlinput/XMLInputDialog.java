@@ -1242,7 +1242,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		String baseName = "";
 		for (int p = 0; p < path.size(); p++)
 		{
-			XMLInputFieldPosition pos = (XMLInputFieldPosition) path.get(p);
+			XMLInputFieldPosition pos = path.get(p);
 			String elementName = pos.getName() + pos.getElementNr();
 			if (!elementName.startsWith("#"))
 			{
@@ -1337,7 +1337,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 			if (path.size() > 0)
 			{
 				int idxLast = path.size() - 1;
-				XMLInputFieldPosition last = (XMLInputFieldPosition) path.get(idxLast);
+				XMLInputFieldPosition last = path.get(idxLast);
 				path.remove(idxLast);
 
 				if (path.size() > 0)

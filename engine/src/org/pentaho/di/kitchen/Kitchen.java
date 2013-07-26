@@ -356,7 +356,7 @@ public class Kitchen {
       if (args.size() == 0) {
         job.setArguments(null);
       } else {
-        job.setArguments((String[]) args.toArray(new String[args.size()]));
+        job.setArguments(args.toArray(new String[args.size()]));
       }
       job.initializeVariablesFrom(null);
       job.setLogLevel(log.getLogLevel());

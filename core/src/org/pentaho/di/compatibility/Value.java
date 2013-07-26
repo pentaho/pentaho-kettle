@@ -345,7 +345,8 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		}
 	}
 
-	public Object clone()
+	@Override
+  public Object clone()
 	{
 		Value retval = null;
 		try
@@ -817,7 +818,8 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	 * Returns a padded to length String text representation of this Value
 	 * @return a padded to length String text representation of this Value
 	 */
-	public String toString()
+	@Override
+  public String toString()
 	{
 		return toString(true);
 	}
@@ -1757,13 +1759,16 @@ public class Value implements Cloneable, XMLInterface, Serializable
             {
                 return getBigNumber().compareTo(v.getBigNumber());
             }
+      default:
+        break;
 		}
 
 		// Still here?  Not possible!  But hey, give back 0, mkay?
 		return 0;
 	}
 
-	public boolean equals(Object v)
+	@Override
+  public boolean equals(Object v)
 	{
 		if (compare((Value)v)==0)
 			return true;
@@ -1841,7 +1846,8 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		return getDate() == date;
 	}
 
-	public int hashCode()
+	@Override
+  public int hashCode()
 	{
 		int hash=0; // name.hashCode(); -> Name shouldn't be part of hashCode()!
 		
@@ -3364,15 +3370,20 @@ public class Value implements Cloneable, XMLInterface, Serializable
 			// MONTHS
 			case 5: cal.set(Calendar.MONTH, 1);
 			// DAYS
+			// $FALL-THROUGH$
 			case 4: cal.set(Calendar.DAY_OF_MONTH, 1);
 			// HOURS 
+      // $FALL-THROUGH$
 			case 3: cal.set(Calendar.HOUR_OF_DAY, 0);
 			// MINUTES
+      // $FALL-THROUGH$
 			case 2: cal.set(Calendar.MINUTE, 0);
 			// SECONDS
+      // $FALL-THROUGH$
 			case 1: cal.set(Calendar.SECOND, 0);
-            // MILI-SECONDS
-            case 0: cal.set(Calendar.MILLISECOND, 0);  break;
+      // MILI-SECONDS
+      // $FALL-THROUGH$
+      case 0: cal.set(Calendar.MILLISECOND, 0);  break;
 			default:
 				throw new KettleValueException("Argument of TRUNC of date has to be between 0 and 5");
 			}
@@ -3627,7 +3638,8 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	 * Produce the XML representation of this value.
 	 * @return a String containing the XML to represent this Value.
 	 */
-	public String getXML()
+	@Override
+  public String getXML()
 	{
 		StringBuffer retval = new StringBuffer(128);
 		retval.append("<"+XML_TAG+">");
@@ -3806,6 +3818,8 @@ public class Value implements Cloneable, XMLInterface, Serializable
                 if (Const.isEmpty(getString()) && !Const.isEmpty(other.getString()))
                     setValue(other.getString());
                 break;
+          default:
+            break;
         }
     }
 }

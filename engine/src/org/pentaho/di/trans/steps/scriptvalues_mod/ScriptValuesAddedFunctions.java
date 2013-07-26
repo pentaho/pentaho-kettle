@@ -212,7 +212,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 	public static Object getTransformationName(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
 		try{
 			Object objTranName = Context.toString(actualObject.get("_TransformationName_", actualObject));
-			return (String)objTranName;
+			return objTranName;
 		}catch(Exception e){
 			throw Context.reportRuntimeError(e.toString());
 		}
@@ -273,12 +273,12 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				StepInterface scm = (StepInterface)Context.jsToJava(scmO, StepInterface.class);
 				String strType = Context.toString(ArgList[0]).toLowerCase();
 				
-				if(strType.equals("i")) return (double)scm.getLinesInput();
-				else if(strType.equals("o")) return (double)scm.getLinesOutput();
-				else if(strType.equals("r")) return (double)scm.getLinesRead();
-				else if(strType.equals("u")) return (double)scm.getLinesUpdated();
-				else if(strType.equals("w")) return (double)scm.getLinesWritten();
-                else if(strType.equals("e")) return (double)scm.getLinesRejected();
+				if(strType.equals("i")) return scm.getLinesInput();
+				else if(strType.equals("o")) return scm.getLinesOutput();
+				else if(strType.equals("r")) return scm.getLinesRead();
+				else if(strType.equals("u")) return scm.getLinesUpdated();
+				else if(strType.equals("w")) return scm.getLinesWritten();
+                else if(strType.equals("e")) return scm.getLinesRejected();
 				else return 0;
 			}catch(Exception e){
 				//throw Context.reportRuntimeError(e.toString());
@@ -533,7 +533,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 					if(strType.equals("y")){
 						return new Double(endDate.get(Calendar.YEAR) - startDate.get(Calendar.YEAR));
 					}else if(strType.equals("m")){
-						int iMonthsToAdd = (int)(endDate.get(Calendar.YEAR) - startDate.get(Calendar.YEAR)) * 12;
+						int iMonthsToAdd = (endDate.get(Calendar.YEAR) - startDate.get(Calendar.YEAR)) * 12;
 						return new Double((endDate.get(Calendar.MONTH) - startDate.get(Calendar.MONTH)) + iMonthsToAdd);
 					}else if(strType.equals("d")){
 						return new Double(((endL - startL) / 86400000));
@@ -1095,7 +1095,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 
 				// Setting the Subject and Content Type
 				msg.setSubject((String)ArgList[3]);
-				msg.setContent((String)ArgList[4], "text/plain");
+				msg.setContent(ArgList[4], "text/plain");
 				Transport.send(msg);
 			}catch(Exception e){
 				throw Context.reportRuntimeError("sendMail: "+e.toString() );
@@ -2175,15 +2175,20 @@ public static String getParentFoldername(Context actualContext, Scriptable actua
 				// MONTHS
 				case 5: cal.set(Calendar.MONTH, 1);
 				// DAYS
+				// $FALL-THROUGH$
 				case 4: cal.set(Calendar.DAY_OF_MONTH, 1);
 				// HOURS 
+        // $FALL-THROUGH$
 				case 3: cal.set(Calendar.HOUR_OF_DAY, 0);
 				// MINUTES
+        // $FALL-THROUGH$
 				case 2: cal.set(Calendar.MINUTE, 0);
 				// SECONDS
+        // $FALL-THROUGH$
 				case 1: cal.set(Calendar.SECOND, 0);
-	            // MILI-SECONDS
-	            case 0: cal.set(Calendar.MILLISECOND, 0);  break;
+        // MILI-SECONDS
+        // $FALL-THROUGH$
+        case 0: cal.set(Calendar.MILLISECOND, 0);  break;
 				default:
 					throw Context.reportRuntimeError("Argument of TRUNC of date has to be between 0 and 5");
 				}

@@ -136,7 +136,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 				throw new KettlePluginLoaderException(stype, "No valid step/plugin specified (jobPlugin=null) for " + stype);
 
 			// Get an empty JobEntry of the appropriate class...
-			entry = (JobEntryInterface) registry.loadClass(jobPlugin, JobEntryInterface.class);
+			entry = registry.loadClass(jobPlugin, JobEntryInterface.class);
 			if (entry != null)
 			{
 				// System.out.println("New JobEntryInterface built of type:

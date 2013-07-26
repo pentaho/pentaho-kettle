@@ -35,7 +35,6 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -113,7 +112,7 @@ public class ImportRulesDialog extends Dialog implements XulEventHandler {
   public boolean open() {
     
     shell = new Shell(parentShell, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
-    shell.setImage((Image) GUIResource.getInstance().getImageLogoSmall());
+    shell.setImage(GUIResource.getInstance().getImageLogoSmall());
     
     FormLayout formLayout = new FormLayout ();
     formLayout.marginWidth  = Const.FORM_MARGIN;

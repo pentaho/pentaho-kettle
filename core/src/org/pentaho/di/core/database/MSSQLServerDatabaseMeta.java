@@ -38,23 +38,27 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
-	public boolean supportsCatalogs() 
+	@Override
+  public boolean supportsCatalogs() 
 	{
 		return false;
 	}
 	
-	public int[] getAccessTypeList()
+	@Override
+  public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
 	}
 	
-	public int getDefaultDatabasePort()
+	@Override
+  public int getDefaultDatabasePort()
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE) return 1433;
 		return -1;
 	}
 
-	public String getDriverClass()
+	@Override
+  public String getDriverClass()
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
 		{
@@ -66,6 +70,7 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
 		}
 	}
     
+    @Override
     public String getURL(String hostname, String port, String databaseName)
     {
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
@@ -86,7 +91,8 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
 		}
 	}
 	
-	public String getSchemaTableCombination(String schema_name, String table_part)
+	@Override
+  public String getSchemaTableCombination(String schema_name, String table_part)
 	{
 		// Something special for MSSQL
 		//
@@ -103,7 +109,8 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
 	/**
 	 * @return true if the database supports bitmap indexes
 	 */
-	public boolean supportsBitmapIndex()
+	@Override
+  public boolean supportsBitmapIndex()
 	{
 		return false;
 	}
@@ -111,21 +118,25 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
 	/**
 	 * @return true if the database supports synonyms
 	 */
-	public boolean supportsSynonyms()
+	@Override
+  public boolean supportsSynonyms()
 	{
 		return false;
 	}
     
+    @Override
     public String getSQLQueryFields(String tableName)
     {
         return "SELECT TOP 1 * FROM "+tableName;
     }
     
+    @Override
     public String getSQLTableExists(String tablename)
     {
         return  getSQLQueryFields(tablename);
     }
     
+    @Override
     public String getSQLColumnExists(String columnname, String tablename)
     {
         return  getSQLQueryColumnFields(columnname, tablename);
@@ -141,6 +152,7 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
      *         null is returned in case locking is not supported on the target database.
      *         null is the default value
      */
+    @Override
     public String getSQLLockTables(String tableNames[])
     {
         StringBuffer sql=new StringBuffer(128);
@@ -161,7 +173,8 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to add a column to the specified table
 	 */
-	public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" ADD "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
@@ -176,7 +189,8 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to modify a column in the specified table
 	 */
-	public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" ALTER COLUMN "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
@@ -191,12 +205,14 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to drop a column from the specified table
 	 */
-	public String getDropColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getDropColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" DROP COLUMN "+v.getName()+Const.CR;
 	}
 
-	public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
+	@Override
+  public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
 	{
 		String retval="";
 		
@@ -308,7 +324,8 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
 	/* (non-Javadoc)
 	 * @see org.pentaho.di.core.database.DatabaseInterface#getReservedWords()
 	 */
-	public String[] getReservedWords()
+	@Override
+  public String[] getReservedWords()
 	{
 		return new String[]
 		{
@@ -372,11 +389,13 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
         };
 	}
 
+    @Override
     public String[] getUsedLibraries()
     {
         return new String[] { "jtds-1.2.5.jar" };
     }
     
+    @Override
     public String getExtraOptionsHelpText()
     {
         return "http://jtds.sourceforge.net/faq.html#urlFormat";
@@ -392,7 +411,8 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
      * @return true if the index exists, false if it doesn't.
      * @throws KettleException
      */
-	public boolean checkIndexExists(Database database, String schemaName, String tableName, String[] idx_fields) throws KettleDatabaseException  {
+	@Override
+  public boolean checkIndexExists(Database database, String schemaName, String tableName, String[] idx_fields) throws KettleDatabaseException  {
 		
         String tablename = database.getDatabaseMeta().getQuotedSchemaTableCombination(schemaName, tableName);
 
@@ -467,7 +487,8 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
 	 * @param versionField the version field
 	 * @return the SQL to insert the unknown record into the SCD.
 	 */
-	public String getSQLInsertAutoIncUnknownDimensionRow(String schemaTable, String keyField, String versionField) {
+	@Override
+  public String getSQLInsertAutoIncUnknownDimensionRow(String schemaTable, String keyField, String versionField) {
 		return "insert into "+schemaTable+"("+versionField+") values (1)";		
 	}
 	
@@ -476,6 +497,7 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
    * @param string
    * @return A string that is properly quoted for use in an Oracle SQL statement (insert, update, delete, etc)
    */
+  @Override
   public String quoteSQLString(String string) {
     string = string.replaceAll("'", "''"); 
     string = string.replaceAll("\\n", "'+char(13)+'");
@@ -483,6 +505,7 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
     return "'"+string+"'";
   }
   
+  @Override
   public Long getNextBatchIdUsingLockTables(DatabaseMeta dbm, Database ldb, String schemaName, String tableName, String fieldName) throws KettleDatabaseException {
     Long rtn = null;
     // Make sure we lock that table to avoid concurrency issues

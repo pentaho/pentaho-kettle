@@ -37,7 +37,8 @@ public class KingbaseESDatabaseMeta extends BaseDatabaseMeta implements Database
 	/**
 	 * @return The extra option separator in database URL for this platform
 	 */
-	public String getExtraOptionSeparator() 
+	@Override
+  public String getExtraOptionSeparator() 
 	{
 		return "&";
 	}
@@ -45,23 +46,27 @@ public class KingbaseESDatabaseMeta extends BaseDatabaseMeta implements Database
 	/**
 	 * @return This indicator separates the normal URL from the options
 	 */
-	public String getExtraOptionIndicator() 
+	@Override
+  public String getExtraOptionIndicator() 
 	{
 		return "?";
 	}
 
-	public int[] getAccessTypeList()
+	@Override
+  public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC };
 	}
 	
-	public int getDefaultDatabasePort()
+	@Override
+  public int getDefaultDatabasePort()
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE) return 54321;
 		return -1;
 	}
 
-	public String getDriverClass()
+	@Override
+  public String getDriverClass()
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
 		{
@@ -73,7 +78,8 @@ public class KingbaseESDatabaseMeta extends BaseDatabaseMeta implements Database
 		}
 	}
 
-	public String getURL(String hostname, String port, String databaseName)
+	@Override
+  public String getURL(String hostname, String port, String databaseName)
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
 		{
@@ -89,7 +95,8 @@ public class KingbaseESDatabaseMeta extends BaseDatabaseMeta implements Database
 	 * Checks whether or not the command setFetchSize() is supported by the JDBC driver...
 	 * @return true is setFetchSize() is supported!
 	 */
-	public boolean isFetchSizeSupported()
+	@Override
+  public boolean isFetchSizeSupported()
 	{
 		return true;
 	}
@@ -97,7 +104,8 @@ public class KingbaseESDatabaseMeta extends BaseDatabaseMeta implements Database
 	/**
 	 * @return true if the database supports bitmap indexes
 	 */
-	public boolean supportsBitmapIndex()
+	@Override
+  public boolean supportsBitmapIndex()
 	{
 		return false;
 	}
@@ -105,11 +113,13 @@ public class KingbaseESDatabaseMeta extends BaseDatabaseMeta implements Database
 	/**
 	 * @return true if the database supports synonyms
 	 */
-	public boolean supportsSynonyms()
+	@Override
+  public boolean supportsSynonyms()
 	{
 		return false;
 	}
     
+    @Override
     public boolean supportsSequences()
     {
         return true;
@@ -118,11 +128,13 @@ public class KingbaseESDatabaseMeta extends BaseDatabaseMeta implements Database
     /**
      * Kingbase only support the data type: serial, it is not a real autoInc 
      */
+    @Override
     public boolean supportsAutoInc()
     {
         return false;
     }
     
+    @Override
     public String getLimitClause(int nrRows)
     {
         return " limit "+nrRows;
@@ -133,6 +145,7 @@ public class KingbaseESDatabaseMeta extends BaseDatabaseMeta implements Database
      * @param sequenceName The sequence name
      * @return the SQL to get the next value of a sequence.
      */
+    @Override
     public String getSQLNextSequenceValue(String sequenceName)
     {
         return "SELECT nextval('"+sequenceName+"')";
@@ -143,6 +156,7 @@ public class KingbaseESDatabaseMeta extends BaseDatabaseMeta implements Database
      * @param sequenceName The sequence name
      * @return the SQL to get the next value of a sequence.
      */
+    @Override
     public String getSQLCurrentSequenceValue(String sequenceName)
     {
         return "SELECT currval('"+sequenceName+"')";
@@ -153,6 +167,7 @@ public class KingbaseESDatabaseMeta extends BaseDatabaseMeta implements Database
      * @param sequenceName The sequence to check
      * @return The SQL to get the name of the sequence back from the databases data dictionary
      */
+    @Override
     public String getSQLSequenceExists(String sequenceName)
     {
         return "SELECT relname AS sequence_name FROM sys_class WHERE relname = '"+sequenceName.toLowerCase()+"'";
@@ -168,7 +183,8 @@ public class KingbaseESDatabaseMeta extends BaseDatabaseMeta implements Database
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to add a column to the specified table
 	 */
-	public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" ADD COLUMN "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
@@ -183,7 +199,8 @@ public class KingbaseESDatabaseMeta extends BaseDatabaseMeta implements Database
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to drop a column from the specified table
 	 */
-	public String getDropColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getDropColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" DROP COLUMN "+v.getName()+Const.CR;
 	}
@@ -198,7 +215,8 @@ public class KingbaseESDatabaseMeta extends BaseDatabaseMeta implements Database
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to modify a column in the specified table
 	 */
-	public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		String retval="";
 		retval+="ALTER TABLE "+tablename+" DROP COLUMN "+v.getName()+Const.CR+";"+Const.CR;
@@ -206,7 +224,8 @@ public class KingbaseESDatabaseMeta extends BaseDatabaseMeta implements Database
 		return retval;
 	}
 
-	public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
+	@Override
+  public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
 	{
 		String retval="";
 		
@@ -306,7 +325,8 @@ public class KingbaseESDatabaseMeta extends BaseDatabaseMeta implements Database
 	/* (non-Javadoc)
 	 * @see com.kingbase.ketl.core.database.DatabaseInterface#getReservedWords()
 	 */
-	public String[] getReservedWords()
+	@Override
+  public String[] getReservedWords()
 	{
 		return new String[]
 		{
@@ -404,6 +424,7 @@ public class KingbaseESDatabaseMeta extends BaseDatabaseMeta implements Database
      * @param tableNames The names of the tables to lock
      * @return The SQL commands to lock database tables for write purposes.
      */
+    @Override
     public String getSQLLockTables(String tableNames[])
     {
         String sql="LOCK TABLE ";
@@ -421,6 +442,7 @@ public class KingbaseESDatabaseMeta extends BaseDatabaseMeta implements Database
      * @param tableName The name of the table to unlock
      * @return The SQL command to unlock a database table.
      */
+    @Override
     public String getSQLUnlockTables(String tableName[])
     {
         return null; // commit unlocks everything!
@@ -430,11 +452,13 @@ public class KingbaseESDatabaseMeta extends BaseDatabaseMeta implements Database
      * @return true if the database defaults to naming tables and fields in uppercase.
      * True for most databases except for stuborn stuff like Postgres ;-)
      */
+    @Override
     public boolean isDefaultingToUppercase()
     {
         return false;
     }
     
+    @Override
     public String[] getUsedLibraries()
     {
         return new String[] { "kingbasejdbc4.jar" };
@@ -444,6 +468,7 @@ public class KingbaseESDatabaseMeta extends BaseDatabaseMeta implements Database
      * @return true if the database supports timestamp to date conversion.
      * Kingbase doesn't support this!
      */
+    @Override
     public boolean supportsTimeStampToDateConversion()
     {
         return false;

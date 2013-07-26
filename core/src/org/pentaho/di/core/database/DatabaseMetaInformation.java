@@ -218,7 +218,7 @@ public class DatabaseMetaInformation
 				
         String catalogFilterKey = databaseMeta.getPluginId() + "." + FILTER_CATALOG_LIST; 
         if ( (connectionExtraOptions != null) && connectionExtraOptions.containsKey(catalogFilterKey) ) {
-          String catsFilterCommaList =  (String)connectionExtraOptions.get(catalogFilterKey);
+          String catsFilterCommaList =  connectionExtraOptions.get(catalogFilterKey);
           String[] catsFilterArray = catsFilterCommaList.split(","); 
           for (int i=0; i<catsFilterArray.length; i++) {
             catalogList.add(new Catalog(catsFilterArray[i].trim()));
@@ -293,7 +293,7 @@ public class DatabaseMetaInformation
 				{
 				  String schemaFilterKey = databaseMeta.getPluginId() + "." +FILTER_SCHEMA_LIST; 
 	        if ( (connectionExtraOptions != null) && connectionExtraOptions.containsKey(schemaFilterKey) ) {
-	          String schemasFilterCommaList =  (String)connectionExtraOptions.get(schemaFilterKey);
+	          String schemasFilterCommaList =  connectionExtraOptions.get(schemaFilterKey);
 	          String[] schemasFilterArray = schemasFilterCommaList.split(","); 
 	          for (int i=0; i<schemasFilterArray.length; i++) {
 	            schemaList.add(new Schema(schemasFilterArray[i].trim()));

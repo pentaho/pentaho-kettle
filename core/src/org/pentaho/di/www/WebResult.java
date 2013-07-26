@@ -78,6 +78,7 @@ public class WebResult
         return xml.toString();
     }
     
+    @Override
     public String toString()
     {
         return getXML();

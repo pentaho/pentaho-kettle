@@ -289,7 +289,7 @@ public class StepPerformanceSnapShotDialog extends Dialog {
 							else {
 								dataType = dataChoices[dataIndices[d]];
 							}
-							String xLabel = Integer.toString((int)Math.round(i*timeDifference/1000));
+							String xLabel = Integer.toString(Math.round(i*timeDifference/1000));
 							Double metric = null; 
 							switch(dataIndices[d]) {
 							case DATA_CHOICE_INPUT: 
@@ -316,6 +316,8 @@ public class StepPerformanceSnapShotDialog extends Dialog {
 							case DATA_CHOICE_OUTPUT_BUFFER_SIZE: 
 								metric = (double)snapShot.getOutputBufferSize();
 								break;
+                default:
+                  break;
 							}
 							if (metric!=null) {
 								dataset.addValue(metric, dataType, xLabel);

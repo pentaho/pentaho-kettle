@@ -272,7 +272,7 @@ public class SpoonDBDelegate extends SpoonDelegate
 		{
 			if (stats.size() > 0)
 			{
-				SQLStatementsDialog ssd = new SQLStatementsDialog(spoon.getShell(), (VariableSpace) jobMeta,
+				SQLStatementsDialog ssd = new SQLStatementsDialog(spoon.getShell(), jobMeta,
 						SWT.NONE, stats);
 				ssd.open();
 			} else

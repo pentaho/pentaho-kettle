@@ -76,6 +76,8 @@ public class ConfigurableStreamLogger implements Runnable {
               case DEBUG: log.logDebug(this.type, line); break;
               case ROWLEVEL: log.logRowlevel(this.type, line); break;
               case ERROR: log.logError(this.type, line); break; 
+              default: // NONE
+                break;
               }
             }
         }

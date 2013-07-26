@@ -55,100 +55,119 @@ public class ValueDate implements ValueInterface, Cloneable
         this.precision = -1;
 	}
 
-	public int getType()
+	@Override
+  public int getType()
 	{
 		return Value.VALUE_TYPE_DATE;
 	}
 
-	public String getTypeDesc()
+	@Override
+  public String getTypeDesc()
 	{
 		return "Date";
 	}
 
-	public String getString()
+	@Override
+  public String getString()
 	{
 		if (date==null) return null;
 		SimpleDateFormat df = new SimpleDateFormat(DATE_FORMAT);
 		return df.format(date);
 	}
 
-	public double getNumber()
+	@Override
+  public double getNumber()
 	{
 		if (date==null) return 0.0;
 		return date.getTime();
 	}
 
-	public Date getDate()
+	@Override
+  public Date getDate()
 	{
 		return date;
 	}
 
-	public boolean getBoolean()
+	@Override
+  public boolean getBoolean()
 	{
 		return false;
 	}
 
-	public long getInteger()
+	@Override
+  public long getInteger()
 	{
 		if (date==null) return 0L;
 		return date.getTime();
 	}
 	
-	public void    setString(String string)
+	@Override
+  public void    setString(String string)
 	{
 		this.date = Const.toDate(string, null);
 	}
 	
+    @Override
     public void setSerializable(Serializable ser) {
         
     }
     
-	public void    setNumber(double number)
+	@Override
+  public void    setNumber(double number)
 	{
 		this.date = new Date((long)number);
 	}
 	
-	public void    setDate(Date date)
+	@Override
+  public void    setDate(Date date)
 	{
 		this.date = date;
 	}
 	
-	public void    setBoolean(boolean bool)
+	@Override
+  public void    setBoolean(boolean bool)
 	{
 		this.date = null;
 	}
 	
-	public void    setInteger(long number)
+	@Override
+  public void    setInteger(long number)
 	{
 		this.date = new Date(number);
 	}
 
 	
-	public int getLength()
+	@Override
+  public int getLength()
 	{
 		return -1;
 	}
 	
-	public int getPrecision()
+	@Override
+  public int getPrecision()
 	{
 		return precision;
 	}
 	
-	public void setLength(int length, int precision)
+	@Override
+  public void setLength(int length, int precision)
 	{
         this.precision = precision;
 	}
 	
-	public void setLength(int length)
+	@Override
+  public void setLength(int length)
 	{
 	}
 	
-	public void setPrecision(int precision)
+	@Override
+  public void setPrecision(int precision)
 	{
         this.precision = precision;
 	}
 	
-	public Object clone()
+	@Override
+  public Object clone()
 	{
 		try
 		{
@@ -161,25 +180,30 @@ public class ValueDate implements ValueInterface, Cloneable
 		}
 	}
 
+    @Override
     public BigDecimal getBigNumber()
     {
         if (date==null) return BigDecimal.ZERO;
         return new BigDecimal(date.getTime());
     }
 
+    @Override
     public void setBigNumber(BigDecimal number)
     {
         setInteger(number.longValue());
     }
     
+    @Override
     public Serializable getSerializable() {
         return date;
     }
     
-	public byte[] getBytes() {
+	@Override
+  public byte[] getBytes() {
 		return null;
 	}
 
-	public void setBytes(byte[] b) {
+	@Override
+  public void setBytes(byte[] b) {
 	}
 }

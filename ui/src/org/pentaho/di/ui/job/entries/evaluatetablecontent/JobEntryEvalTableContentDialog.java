@@ -676,6 +676,8 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
 						db.disconnect();
 					}
 					break;
+        default:
+          break;
 				}
 			}
 		}

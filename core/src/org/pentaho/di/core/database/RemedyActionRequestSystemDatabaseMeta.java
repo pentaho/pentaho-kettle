@@ -34,7 +34,8 @@ package org.pentaho.di.core.database;
 
 public class RemedyActionRequestSystemDatabaseMeta extends GenericDatabaseMeta implements DatabaseInterface
 {
-	public int[] getAccessTypeList()
+	@Override
+  public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
 	}
@@ -42,16 +43,19 @@ public class RemedyActionRequestSystemDatabaseMeta extends GenericDatabaseMeta i
 	/**
 	 * @see DatabaseInterface#getNotFoundTK(boolean)
 	 */
-	public int getNotFoundTK(boolean use_autoinc)
+	@Override
+  public int getNotFoundTK(boolean use_autoinc)
 	{
 		return super.getNotFoundTK(use_autoinc);
 	}
 	
-	public String getDriverClass()
+	@Override
+  public String getDriverClass()
 	{
 		return "sun.jdbc.odbc.JdbcOdbcDriver"; // always ODBC!
 	}
 	
+    @Override
     public String getURL(String hostname, String port, String databaseName)
     {
     	return "jdbc:odbc:"+databaseName;
@@ -61,7 +65,8 @@ public class RemedyActionRequestSystemDatabaseMeta extends GenericDatabaseMeta i
 	 * Checks whether or not the command setFetchSize() is supported by the JDBC driver...
 	 * @return true is setFetchSize() is supported!
 	 */
-	public boolean isFetchSizeSupported()
+	@Override
+  public boolean isFetchSizeSupported()
 	{
 		return false;
 	}
@@ -69,7 +74,8 @@ public class RemedyActionRequestSystemDatabaseMeta extends GenericDatabaseMeta i
 	/**
 	 * @return true if the database supports bitmap indexes
 	 */
-	public boolean supportsBitmapIndex()
+	@Override
+  public boolean supportsBitmapIndex()
 	{
 		return false;
 	}
@@ -77,7 +83,8 @@ public class RemedyActionRequestSystemDatabaseMeta extends GenericDatabaseMeta i
 	/**
 	 * @return true if Kettle can create a repository on this type of database.
 	 */
-	public boolean supportsRepository()
+	@Override
+  public boolean supportsRepository()
 	{
 		return false;
 	}
@@ -85,7 +92,8 @@ public class RemedyActionRequestSystemDatabaseMeta extends GenericDatabaseMeta i
 	/**
 	 * @return true if this database needs a transaction to perform a query (auto-commit turned off).
 	 */
-	public boolean isRequiringTransactionsOnQueries()
+	@Override
+  public boolean isRequiringTransactionsOnQueries()
 	{
 		return false;
 	}

@@ -219,7 +219,7 @@ public class FuzzyMatch extends BaseStep implements StepInterface
 		
 		while (it.hasNext()){
 			// Get cached row data
-			Object[] cachedData = (Object[]) it.next(); 
+			Object[] cachedData = it.next(); 
 			// Key value is the first value
 			String cacheValue= (String) cachedData[0];
 
@@ -290,7 +290,7 @@ public class FuzzyMatch extends BaseStep implements StepInterface
 		
 		while (it.hasNext()){
 			// Get cached row data
-			Object[] cachedData = (Object[]) it.next(); 
+			Object[] cachedData = it.next(); 
 			// Key value is the first value
 			String cacheValue= (String) cachedData[0];
 			
@@ -351,7 +351,7 @@ public class FuzzyMatch extends BaseStep implements StepInterface
 		
 		while (it.hasNext()){
 			// Get cached row data
-			Object[] cachedData = (Object[]) it.next(); 
+			Object[] cachedData = it.next(); 
 			// Key value is the first value
 			String cacheValue= (String) cachedData[0];
 

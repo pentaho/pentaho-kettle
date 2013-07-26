@@ -305,7 +305,7 @@ public class ValueDataUtil {
       CheckedInputStream cis = null;
 
       // Computer CRC32 checksum
-      cis = new CheckedInputStream((FileInputStream) ((LocalFile) file).getInputStream(), new CRC32());
+      cis = new CheckedInputStream(((LocalFile) file).getInputStream(), new CRC32());
       byte[] buf = new byte[128];
       while (cis.read(buf) >= 0) {
       }
@@ -333,7 +333,7 @@ public class ValueDataUtil {
       CheckedInputStream cis = null;
 
       // Computer Adler-32 checksum
-      cis = new CheckedInputStream((FileInputStream) ((LocalFile) file).getInputStream(), new Adler32());
+      cis = new CheckedInputStream(((LocalFile) file).getInputStream(), new Adler32());
 
       byte[] buf = new byte[128];
       while (cis.read(buf) >= 0) {

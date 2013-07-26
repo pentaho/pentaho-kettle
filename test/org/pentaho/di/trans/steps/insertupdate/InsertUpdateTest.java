@@ -48,7 +48,6 @@ import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
 
 import junit.framework.TestCase;
@@ -194,7 +193,7 @@ public class InsertUpdateTest extends TestCase {
 
 		// Set the information of the injector.
 		String injectorPid = registry.getPluginId(StepPluginType.class, im);
-		StepMeta injectorStep = new StepMeta(injectorPid, injectorStepName, (StepMetaInterface) im);
+		StepMeta injectorStep = new StepMeta(injectorPid, injectorStepName, im);
 		transMeta.addStep(injectorStep);
 
 		// create the update step...
@@ -208,7 +207,7 @@ public class InsertUpdateTest extends TestCase {
 		insupd.setUpdate(new Boolean[] { true, false });
 
 		String fromid = registry.getPluginId(StepPluginType.class, insupd);
-		StepMeta updateStep = new StepMeta(fromid, updateStepName, (StepMetaInterface) insupd);
+		StepMeta updateStep = new StepMeta(fromid, updateStepName, insupd);
 		updateStep.setDescription("insert/update data in table [" + TARGET_TABLE + "] on database [" + dbInfo + "]");
 		transMeta.addStep(updateStep);
 

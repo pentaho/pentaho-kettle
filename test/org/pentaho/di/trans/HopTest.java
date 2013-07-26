@@ -39,7 +39,6 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
 
@@ -167,7 +166,7 @@ public class HopTest extends TestCase
         // Set the information of the injector.
                 
         String injectorPid = registry.getPluginId(StepPluginType.class, im);
-        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
+        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, im);
         transMeta.addStep(injectorStep);
 
         // 
@@ -177,7 +176,7 @@ public class HopTest extends TestCase
         DummyTransMeta dm = new DummyTransMeta();
 
         String dummyPid = registry.getPluginId(StepPluginType.class, dm);
-        StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, (StepMetaInterface)dm);
+        StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, dm);
         transMeta.addStep(dummyStep);                              
 
         TransHopMeta hi = new TransHopMeta(injectorStep, dummyStep);
@@ -193,7 +192,7 @@ public class HopTest extends TestCase
         DummyTransMeta dm1 = new DummyTransMeta();
 
         String dummyPid1 = registry.getPluginId(StepPluginType.class, dm1);
-        StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, (StepMetaInterface)dm1);
+        StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, dm1);
         transMeta.addStep(dummyStep1);                              
 
         TransHopMeta hop1 = new TransHopMeta(dummyStep, dummyStep1);
@@ -206,7 +205,7 @@ public class HopTest extends TestCase
         DummyTransMeta dm2 = new DummyTransMeta();
 
         String dummyPid2 = registry.getPluginId(StepPluginType.class, dm2);
-        StepMeta dummyStep2 = new StepMeta(dummyPid2, dummyStepname2, (StepMetaInterface)dm2);
+        StepMeta dummyStep2 = new StepMeta(dummyPid2, dummyStepname2, dm2);
         transMeta.addStep(dummyStep2);                              
 
         TransHopMeta hop2 = new TransHopMeta(dummyStep, dummyStep2);
@@ -272,7 +271,7 @@ public class HopTest extends TestCase
         // Set the information of the injector.
                 
         String injectorPid = registry.getPluginId(StepPluginType.class, im);
-        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
+        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, im);
         transMeta.addStep(injectorStep);
 
         // 
@@ -282,7 +281,7 @@ public class HopTest extends TestCase
         DummyTransMeta dm = new DummyTransMeta();
 
         String dummyPid = registry.getPluginId(StepPluginType.class, dm);
-        StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, (StepMetaInterface)dm);
+        StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, dm);
         transMeta.addStep(dummyStep);                              
 
         TransHopMeta hi = new TransHopMeta(injectorStep, dummyStep);
@@ -295,7 +294,7 @@ public class HopTest extends TestCase
         DummyTransMeta dm1 = new DummyTransMeta();
 
         String dummyPid1 = registry.getPluginId(StepPluginType.class, dm1);
-        StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, (StepMetaInterface)dm1);
+        StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, dm1);
         transMeta.addStep(dummyStep1);                              
 
         TransHopMeta hop1 = new TransHopMeta(dummyStep, dummyStep1);
@@ -308,7 +307,7 @@ public class HopTest extends TestCase
         DummyTransMeta dm2 = new DummyTransMeta();
 
         String dummyPid2 = registry.getPluginId(StepPluginType.class, dm2);
-        StepMeta dummyStep2 = new StepMeta(dummyPid2, dummyStepname2, (StepMetaInterface)dm2);
+        StepMeta dummyStep2 = new StepMeta(dummyPid2, dummyStepname2, dm2);
         transMeta.addStep(dummyStep2);                              
 
         TransHopMeta hop2 = new TransHopMeta(dummyStep, dummyStep2);
@@ -396,7 +395,7 @@ public class HopTest extends TestCase
         // Set the information of the injector.
                 
         String injectorPid = registry.getPluginId(StepPluginType.class, im);
-        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
+        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, im);
         transMeta.addStep(injectorStep);
 
         // 
@@ -406,7 +405,7 @@ public class HopTest extends TestCase
         DummyTransMeta dm = new DummyTransMeta();
 
         String dummyPid = registry.getPluginId(StepPluginType.class, dm);
-        StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, (StepMetaInterface)dm);
+        StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, dm);
         transMeta.addStep(dummyStep);                              
 
         TransHopMeta hi = new TransHopMeta(injectorStep, dummyStep);
@@ -419,7 +418,7 @@ public class HopTest extends TestCase
         DummyTransMeta dm1 = new DummyTransMeta();
 
         String dummyPid1 = registry.getPluginId(StepPluginType.class, dm1);
-        StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, (StepMetaInterface)dm1);
+        StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, dm1);
         transMeta.addStep(dummyStep1);                              
 
         TransHopMeta hop1 = new TransHopMeta(dummyStep, dummyStep1);
@@ -432,7 +431,7 @@ public class HopTest extends TestCase
         DummyTransMeta dm2 = new DummyTransMeta();
 
         String dummyPid2 = registry.getPluginId(StepPluginType.class, dm2);
-        StepMeta dummyStep2 = new StepMeta(dummyPid2, dummyStepname2, (StepMetaInterface)dm2);
+        StepMeta dummyStep2 = new StepMeta(dummyPid2, dummyStepname2, dm2);
         transMeta.addStep(dummyStep2);                              
 
         TransHopMeta hop2 = new TransHopMeta(dummyStep, dummyStep2);

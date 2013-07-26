@@ -54,6 +54,7 @@ public class KettleURLClassLoader extends URLClassLoader
         this.name = name;
     }
     
+    @Override
     public String toString()
     {
         return super.toString()+" : "+name;

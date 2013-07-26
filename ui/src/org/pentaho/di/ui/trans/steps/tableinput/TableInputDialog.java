@@ -603,6 +603,8 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 						db.disconnect();
 					}
 					break;
+          default:
+            break;
 				}
 			}
 		}

@@ -25,8 +25,6 @@ package org.pentaho.di.trans.steps.xbaseinput;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -120,6 +118,7 @@ public class XBase
               case DBFField.FIELD_TYPE_M: // Memo
                   debug="memo field";
 				  System.out.println("Field #"+i+" is a memo-field! ("+field.getName()+")");
+				      // $FALL-THROUGH$
               case DBFField.FIELD_TYPE_C: // Character
                   // case DBFField.FIELD_TYPE_P: // Picture
                   debug="character field";
@@ -186,7 +185,7 @@ public class XBase
 				{
 				case DBFField.FIELD_TYPE_M: // Memo
 					if (rowobj[i]!=null) {
-						r[i] = (String)rowobj[i];
+						r[i] = rowobj[i];
 					}
 					break;
 				case DBFField.FIELD_TYPE_C: // Character
@@ -206,7 +205,7 @@ public class XBase
 			    	try
 					{
 			    		if (rowobj[i]!=null) {
-			    			r[i] = (Double)rowobj[i];
+			    			r[i] = rowobj[i];
 			    		}
 					}
 			    	catch(NumberFormatException e)
@@ -228,10 +227,10 @@ public class XBase
 					}
 					break;
 				case DBFField.FIELD_TYPE_L:  // Logical
-					r[i] = (Boolean)rowobj[i]; 
+					r[i] = rowobj[i]; 
 					break; 
 				case DBFField.FIELD_TYPE_D:  // Date
-					r[i] = (Date)rowobj[i]; 
+					r[i] = rowobj[i]; 
 					break;
 				/*
 				case DBFField.FIELD_TYPE_P:  // Picture

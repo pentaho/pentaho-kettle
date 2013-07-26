@@ -158,7 +158,7 @@ public class LoadFileInput extends BaseStep implements StepInterface
 	            
 			    // Is this the last file?
 				data.last_file = ( data.filenr==data.files.nrOfFiles()-1);
-				data.file = (FileObject) data.files.getFile(data.filenr);
+				data.file = data.files.getFile(data.filenr);
 			}
 			
 			// Check if file is empty

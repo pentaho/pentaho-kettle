@@ -168,7 +168,7 @@ public class XMLInputSaxDataRetriever extends DefaultHandler
 			XMLInputSaxFieldPosition[] ret = new XMLInputSaxFieldPosition[s];
 			for (int i = 0; i < s; i++)
 			{
-				ret[i] = (XMLInputSaxFieldPosition) _pathToRootElement.get(i + pathToRootElement.size());
+				ret[i] = pathToRootElement.get(i + pathToRootElement.size());
 			}
 			return ret;
 		}
@@ -228,8 +228,8 @@ public class XMLInputSaxDataRetriever extends DefaultHandler
 	{
 		for (int i = 0; i <= count; i++)
 		{
-			if (!((XMLInputSaxFieldPosition) pathToRootElement.get(i))
-					.equals((XMLInputSaxFieldPosition) pathToRootElement.get(i)))
+			if (!pathToRootElement.get(i)
+					.equals(pathToRootElement.get(i)))
 			{
 				return false;
 			}
@@ -270,7 +270,7 @@ public class XMLInputSaxDataRetriever extends DefaultHandler
 		{
 			if (!rootFound)
 			{
-				XMLInputSaxFieldPosition el = (XMLInputSaxFieldPosition) pathToRootElement.get(counter);
+				XMLInputSaxFieldPosition el = pathToRootElement.get(counter);
 				if ((counter == _counter) && qName.equalsIgnoreCase(el.getName()))
 				{
 					if (el.getType() == XMLInputSaxFieldPosition.XML_ELEMENT_ATT)
@@ -392,7 +392,7 @@ public class XMLInputSaxDataRetriever extends DefaultHandler
 
 	private void setValueToRow(String value, int fieldnr) throws KettleValueException {
 		
-		XMLInputSaxField xmlInputField = (XMLInputSaxField) fields.get(fieldnr);
+		XMLInputSaxField xmlInputField = fields.get(fieldnr);
 
 		switch (xmlInputField.getTrimType())
 		{
@@ -439,7 +439,7 @@ public class XMLInputSaxDataRetriever extends DefaultHandler
 		{
 			if (!rowSet.isEmpty())
 			{
-				Object[] ret = (Object[]) rowSet.get(0);
+				Object[] ret = rowSet.get(0);
 				rowSet.remove(0);
 				return ret;
 			} else

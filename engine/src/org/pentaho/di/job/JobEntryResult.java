@@ -74,7 +74,7 @@ public class JobEntryResult implements Cloneable, Comparator<JobEntryResult>, Co
 		if (result!=null) 
     { 
       // lightClone doesn't bother cloning all the rows.
-      this.result = (Result) result.lightClone();
+      this.result = result.lightClone();
       this.result.setLogText(null); 
       // this.result.setRows(null);
     }
@@ -103,7 +103,7 @@ public class JobEntryResult implements Cloneable, Comparator<JobEntryResult>, Co
 			JobEntryResult jobEntryResult = (JobEntryResult)super.clone();
 			
 			if (getResult()!=null) 
-				jobEntryResult.setResult((Result)getResult().clone());
+				jobEntryResult.setResult(getResult().clone());
 			
 			return jobEntryResult;
 		}

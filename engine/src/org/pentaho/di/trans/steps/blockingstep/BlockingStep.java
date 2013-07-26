@@ -107,7 +107,7 @@ public class BlockingStep extends BaseStep implements StepInterface {
                 for (p=0;p<data.buffer.size();p++)
 				{
                     // Just write the data, nothing else
-                    rowMeta.writeData(dos, (Object[])data.buffer.get(p));
+                    rowMeta.writeData(dos, data.buffer.get(p));
 				}
 				// Close temp-file
 				dos.close();  // close data stream
@@ -140,7 +140,7 @@ public class BlockingStep extends BaseStep implements StepInterface {
 	
 			try
 			{
-				FileObject fileObject = (FileObject)data.files.get(0);
+				FileObject fileObject = data.files.get(0);
 				String filename = KettleVFS.getFilename(fileObject);
 				if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "BlockingStep.Log.Openfilename1")+filename+BaseMessages.getString(PKG, "BlockingStep.Log.Openfilename2"));
 				InputStream fi=KettleVFS.getInputStream(fileObject);
@@ -181,7 +181,7 @@ public class BlockingStep extends BaseStep implements StepInterface {
 		{
 			if (data.buffer.size()>0)
 			{
-				retval=(Object[])data.buffer.get(0);
+				retval=data.buffer.get(0);
 				data.buffer.remove(0);
 			}
 			else
@@ -197,14 +197,14 @@ public class BlockingStep extends BaseStep implements StepInterface {
             }
 			else
 			{		
-				retval=(Object[])data.rowbuffer.get(0);
+				retval=data.rowbuffer.get(0);
 		
 				data.rowbuffer.remove(0);
 				
 				// now get another 
-				FileObject    file = (FileObject)data.files.get(0);
-				DataInputStream di = (DataInputStream)data.dis.get(0); 
-				InputStream     fi = (InputStream)data.fis.get(0);
+				FileObject    file = data.files.get(0);
+				DataInputStream di = data.dis.get(0); 
+				InputStream     fi = data.fis.get(0);
 				GZIPInputStream gzfi = (meta.getCompress()) ? (GZIPInputStream)data.gzis.get(0) : null;
 
 				try

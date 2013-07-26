@@ -254,11 +254,11 @@ public class Janino extends BaseStep implements StepInterface
 	                case JaninoData.RETURN_TYPE_STRING  : value = formulaResult.toString(); break;
 	                case JaninoData.RETURN_TYPE_NUMBER  : value = new Double(((Number)formulaResult).doubleValue()); break;
 	                case JaninoData.RETURN_TYPE_INTEGER : value = new Long( ((Integer)formulaResult).intValue() ); break;
-	                case JaninoData.RETURN_TYPE_LONG : value = (Long)formulaResult; break;
-	                case JaninoData.RETURN_TYPE_DATE : value = (Date)formulaResult; break;
-	                case JaninoData.RETURN_TYPE_BIGDECIMAL : value = (BigDecimal)formulaResult; break;
-	                case JaninoData.RETURN_TYPE_BYTE_ARRAY : value = (byte[])formulaResult; break;
-	                case JaninoData.RETURN_TYPE_BOOLEAN : value = (Boolean)formulaResult; break;
+	                case JaninoData.RETURN_TYPE_LONG : value = formulaResult; break;
+	                case JaninoData.RETURN_TYPE_DATE : value = formulaResult; break;
+	                case JaninoData.RETURN_TYPE_BIGDECIMAL : value = formulaResult; break;
+	                case JaninoData.RETURN_TYPE_BYTE_ARRAY : value = formulaResult; break;
+	                case JaninoData.RETURN_TYPE_BOOLEAN : value = formulaResult; break;
 	                default: value = null;
 	                }
                 }

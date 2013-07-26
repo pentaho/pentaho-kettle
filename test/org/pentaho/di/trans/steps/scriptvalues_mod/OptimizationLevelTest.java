@@ -38,7 +38,6 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
 
@@ -154,7 +153,7 @@ public class OptimizationLevelTest {
 
       // Set the information of the injector.
       String injectorPid = registry.getPluginId(StepPluginType.class, im);
-      StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
+      StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, im);
       transMeta.addStep(injectorStep);
 
       // Create a javascript step
@@ -178,13 +177,13 @@ public class OptimizationLevelTest {
       
       // Create the step meta
       String javaScriptStepPid = registry.getPluginId(StepPluginType.class, scriptValuesMetaMod);
-      StepMeta javaScriptStep = new StepMeta(javaScriptStepPid, javaScriptStepname, (StepMetaInterface)scriptValuesMetaMod);
+      StepMeta javaScriptStep = new StepMeta(javaScriptStepPid, javaScriptStepname, scriptValuesMetaMod);
           
       // Create a dummy step
       String dummyStepname = "dummy step";  
       DummyTransMeta dm = new DummyTransMeta();
       String dummyPid = registry.getPluginId(StepPluginType.class, dm);
-      StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, (StepMetaInterface)dm);
+      StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, dm);
       transMeta.addStep(dummyStep);
 
       //  hop the steps that were created
@@ -205,7 +204,7 @@ public class OptimizationLevelTest {
       //  We get the row meta and data....
       Iterator<RowMetaAndData> it = inputList.iterator();
       if ( it.hasNext() ) {
-         RowMetaAndData rowMetaAndData = (RowMetaAndData)it.next();
+         RowMetaAndData rowMetaAndData = it.next();
          
          // .... and then call the scriptValuesMetaMod's check method
          scriptValuesMetaMod.check(remarks, transMeta, javaScriptStep, rowMetaAndData.getRowMeta(), input, output, null, transMeta, null, null);         

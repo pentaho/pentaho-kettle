@@ -209,7 +209,7 @@ public class SQLStatementsDialog extends Dialog
 	{
 		for (int i=0;i<stats.size();i++)
 		{
-			SQLStatement stat = (SQLStatement)stats.get(i);
+			SQLStatement stat = stats.get(i);
 			TableItem ti = wFields.table.getItem(i); 
 
 			String name         = stat.getStepname();
@@ -245,7 +245,7 @@ public class SQLStatementsDialog extends Dialog
 		
 		for (int i=0;i<idx.length;i++)
 		{
-			SQLStatement stat = (SQLStatement)stats.get(idx[i]);
+			SQLStatement stat = stats.get(idx[i]);
 			DatabaseMeta di = stat.getDatabase();
 			if (i > 0)
 			    sql.append("-------------------------------------------------------------------------------------------").append(Const.CR);
@@ -289,7 +289,7 @@ public class SQLStatementsDialog extends Dialog
 		int errors = 0;
 		for (int i=0;i<idx.length;i++)
 		{
-			SQLStatement stat = (SQLStatement)stats.get(idx[i]);
+			SQLStatement stat = stats.get(idx[i]);
 			if (stat.hasError()) errors++;
 		}
 		
@@ -297,7 +297,7 @@ public class SQLStatementsDialog extends Dialog
 		{
 			for (int i=0;i<idx.length;i++)
 			{
-				SQLStatement stat = (SQLStatement)stats.get(idx[i]);
+				SQLStatement stat = stats.get(idx[i]);
 				DatabaseMeta di = stat.getDatabase();
 				if (di!=null && !stat.hasError())
 				{

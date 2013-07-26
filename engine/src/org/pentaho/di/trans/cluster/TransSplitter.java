@@ -260,7 +260,7 @@ public class TransSplitter
      */
     private TransMeta getSlaveTransformation(ClusterSchema clusterSchema, SlaveServer slaveServer) throws KettleException
     {
-        TransMeta slave = (TransMeta) slaveTransMap.get(slaveServer);
+        TransMeta slave = slaveTransMap.get(slaveServer);
         if (slave==null)
         {
             slave = getOriginalCopy(true, clusterSchema, slaveServer);
@@ -299,7 +299,7 @@ public class TransSplitter
         // Copy the cluster schemas
         //
         for (ClusterSchema schema : originalTransformation.getClusterSchemas()) {
-            transMeta.getClusterSchemas().add((ClusterSchema) schema.clone());
+            transMeta.getClusterSchemas().add(schema.clone());
         }
         
         transMeta.setDatabases(originalTransformation.getDatabases());
@@ -1067,7 +1067,7 @@ public class TransSplitter
                                 int nrSlaves = clusterSchema.getSlaveServers().size();
                                 for (int s=0;s<nrSlaves;s++)
                                 {
-                                    SlaveServer sourceSlaveServer = (SlaveServer) clusterSchema.getSlaveServers().get(s);
+                                    SlaveServer sourceSlaveServer = clusterSchema.getSlaveServers().get(s);
                                     
                                     if (!sourceSlaveServer.isMaster())
                                     {
@@ -1454,7 +1454,7 @@ public class TransSplitter
                 {
                     slaveServerNr++;
                     if (slaveServerNr>=slaveServers.size()) slaveServerNr=0; // re-start
-                    slaveServer = (SlaveServer) slaveServers.get(slaveServerNr);
+                    slaveServer = slaveServers.get(slaveServerNr);
                 }
 
                 Map<PartitionSchema,List<String>> schemaPartitionsMap = slaveServerPartitionsMap.get(slaveServer);

@@ -124,7 +124,7 @@ public class FormulaEvaluator {
 			
 			LValue head = term.getHeadValue();
 			verifyLValue(head, messages);
-			LValue[] operands = (LValue[]) term.getOperands();
+			LValue[] operands = term.getOperands();
 			if (operands!=null) {
 				for (LValue operand : operands) {
 					verifyLValue(operand, messages);

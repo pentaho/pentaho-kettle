@@ -126,6 +126,8 @@ public class AccessInputMetaInjection implements StepMetaInjectionInterface {
                   case EXCLUDE_FILEMASK: fileLine.excludeMask = value; break;
                   case FILE_REQUIRED: fileLine.required= value; break;
                   case INCLUDE_SUBFOLDERS: fileLine.includeSubfolders= value; break;
+                  default:
+                    break;
                   }
                 }
               }
@@ -160,6 +162,8 @@ public class AccessInputMetaInjection implements StepMetaInjectionInterface {
                   case FIELD_GROUP: field.setGroupSymbol(value); break;
                   case FIELD_CURRENCY: field.setCurrencySymbol(value); break;
                   case FIELD_REPEAT: field.setRepeated("Y".equalsIgnoreCase(value)); break;
+                  default:
+                    break;
                   }
                 }
               }
@@ -188,6 +192,8 @@ public class AccessInputMetaInjection implements StepMetaInjectionInterface {
       case TABLENAME: meta.setTableName(lookValue); break;
       case INCLUDE_TABLENAME: meta.setIncludeTablename("Y".equalsIgnoreCase(lookValue)); break;
       case TABLENAME_FIELD: meta.setTableName(lookValue); break;
+      default:
+        break;
       }
     }
     

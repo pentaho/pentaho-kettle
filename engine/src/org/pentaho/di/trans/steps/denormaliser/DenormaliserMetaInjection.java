@@ -101,6 +101,8 @@ public class DenormaliserMetaInjection implements StepMetaInjectionInterface {
                     case TARGET_DECIMAL:     inputField.setTargetDecimalSymbol(value); break;
                     case TARGET_FORMAT:      inputField.setTargetFormat(value); break;
                     case TARGET_AGGREGATION: inputField.setTargetAggregationType(DenormaliserTargetField.getAggregationType(value)); break;
+                    default:
+                      break;
                     }
                   }
                 }

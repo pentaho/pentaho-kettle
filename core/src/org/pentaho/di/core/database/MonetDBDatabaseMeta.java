@@ -129,7 +129,8 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 		reservedWordAlt.add("USER");
 	}
 
-	public int[] getAccessTypeList()
+	@Override
+  public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
 	}
@@ -137,7 +138,8 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	/**
 	 * @see DatabaseInterface#getNotFoundTK(boolean)
 	 */
-	public int getNotFoundTK(boolean use_autoinc)
+	@Override
+  public int getNotFoundTK(boolean use_autoinc)
 	{
 		if ( supportsAutoInc() && use_autoinc)
 		{
@@ -146,7 +148,8 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 		return super.getNotFoundTK(use_autoinc);
 	}
 	
-	public String getDriverClass()
+	@Override
+  public String getDriverClass()
 	{
         if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE)
         {
@@ -159,6 +162,7 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
 	}
   
+    @Override
     public String getURL(String hostname, String port, String databaseName)
     {
         if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE)
@@ -177,7 +181,8 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	 * Checks whether or not the command setFetchSize() is supported by the JDBC driver...
 	 * @return true is setFetchSize() is supported!
 	 */
-	public boolean isFetchSizeSupported()
+	@Override
+  public boolean isFetchSizeSupported()
 	{
 		return false;
 	}
@@ -185,27 +190,32 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	/**
 	 * @return true if the database supports bitmap indexes
 	 */
-	public boolean supportsBitmapIndex()
+	@Override
+  public boolean supportsBitmapIndex()
 	{
 		return true;
 	}
 	
-	public boolean supportsAutoInc() {
+	@Override
+  public boolean supportsAutoInc() {
 		return true;
 	}
 	
-	public boolean supportsBatchUpdates() {
+	@Override
+  public boolean supportsBatchUpdates() {
 		return true;
 	}
 	
-	public boolean supportsSetMaxRows() {
+	@Override
+  public boolean supportsSetMaxRows() {
 		return true;
 	}
 	
 	/**
 	 * @return true if Kettle can create a repository on this type of database.
 	 */
-	public boolean supportsRepository()
+	@Override
+  public boolean supportsRepository()
 	{
 		return false;
 	}
@@ -214,7 +224,8 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	 * @param tableName The table to be truncated.
 	 * @return The SQL statement to truncate a table: remove all rows from it without a transaction
 	 */
-	public String getTruncateTableStatement(String tableName)
+	@Override
+  public String getTruncateTableStatement(String tableName)
 	{
 	    return "DELETE FROM "+tableName;
 	}
@@ -232,7 +243,8 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to add a column to the specified table
 	 */
-	public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" ADD "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
@@ -247,15 +259,18 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to modify a column in the specified table
 	 */
-	public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" MODIFY "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
 
+  @Override
   public String[] getReservedWords() {
      return reservedWordAlt.toArray(new String[]{});
   }
 
+  @Override
   public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr )
 	{
 		StringBuffer retval = new StringBuffer();
@@ -377,6 +392,7 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 		return retval.toString();
 	}
 
+    @Override
     public String[] getUsedLibraries()
     {
         return new String[] { "monetdb-jdbc-2.8.jar", };
@@ -398,6 +414,7 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
     return true;
   }
 
+  @Override
   public int getMaxVARCHARLength() {
     return MAX_VARCHAR_LENGTH;
   }

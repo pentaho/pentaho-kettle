@@ -88,6 +88,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
@@ -230,6 +231,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       log.logDetailed("New database connection defined");
   }
 
+  @Override
   public boolean equals(Object obj) {
     Database other = (Database) obj;
     return other.databaseMeta.equals(other.databaseMeta);
@@ -3050,6 +3052,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         if (!quote_opened && !dquote_opened)
           q++;
         break;
+      default:
+        break;
       }
     }
 
@@ -3253,6 +3257,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     return nextValue;
   }
 
+  @Override
   public String toString() {
     if (databaseMeta != null)
       return databaseMeta.getName();
@@ -3754,7 +3759,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       // System.out.println("Found "+procs.size()+" rows");
       String[] str = new String[procs.size()];
       for (int i = 0; i < procs.size(); i++) {
-        str[i] = ((Object[]) procs.get(i))[0].toString();
+        str[i] = procs.get(i)[0].toString();
       }
       return str;
     } else {
@@ -3765,7 +3770,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         List<Object[]> rows = getRows(rs, 0, null);
         String result[] = new String[rows.size()];
         for (int i = 0; i < rows.size(); i++) {
-          Object[] row = (Object[]) rows.get(i);
+          Object[] row = rows.get(i);
           String procCatalog = rowMeta.getString(row, "PROCEDURE_CAT", null);
           String procSchema = rowMeta.getString(row, "PROCEDURE_SCHEMA", null);
           String procName = rowMeta.getString(row, "PROCEDURE_NAME", "");
@@ -3909,60 +3914,73 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     this.copy = copy;
   }
 
+  @Override
   public void copyVariablesFrom(VariableSpace space) {
     variables.copyVariablesFrom(space);
   }
 
+  @Override
   public String environmentSubstitute(String aString) {
     return variables.environmentSubstitute(aString);
   }
 
+  @Override
   public String[] environmentSubstitute(String aString[]) {
     return variables.environmentSubstitute(aString);
   }
 
+  @Override
   public String fieldSubstitute(String aString, RowMetaInterface rowMeta, Object[] rowData) throws KettleValueException {
     return variables.fieldSubstitute(aString, rowMeta, rowData);
   }
 
+  @Override
   public VariableSpace getParentVariableSpace() {
     return variables.getParentVariableSpace();
   }
 
+  @Override
   public void setParentVariableSpace(VariableSpace parent) {
     variables.setParentVariableSpace(parent);
   }
 
+  @Override
   public String getVariable(String variableName, String defaultValue) {
     return variables.getVariable(variableName, defaultValue);
   }
 
+  @Override
   public String getVariable(String variableName) {
     return variables.getVariable(variableName);
   }
 
+  @Override
   public boolean getBooleanValueOfVariable(String variableName, boolean defaultValue) {
     if (!Const.isEmpty(variableName)) {
       String value = environmentSubstitute(variableName);
       if (!Const.isEmpty(value)) {
-        return ValueMeta.convertStringToBoolean(value);
+        return ValueMetaBase.convertStringToBoolean(value);
       }
     }
     return defaultValue;
   }
 
+  @Override
   public void initializeVariablesFrom(VariableSpace parent) {
     variables.initializeVariablesFrom(parent);
   }
 
+  @Override
   public String[] listVariables() {
     return variables.listVariables();
   }
 
+  @Override
   public void setVariable(String variableName, String variableValue) {
     variables.setVariable(variableName, variableValue);
   }
 
+  @Override
   public void shareVariablesWith(VariableSpace space) {
     variables = space;
 
@@ -3974,6 +3992,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       databaseMeta.shareVariablesWith(space);
   }
 
+  @Override
   public void injectVariables(Map<String, String> prop) {
     variables.injectVariables(prop);
   }
@@ -4023,6 +4042,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
             v = cstmt.getDate(pos);
           }
           break;
+        default:
+          break;
         }
         ret.addValue(vMeta, v);
         pos++;
@@ -4065,6 +4086,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
             } else {
               v = cstmt.getDate(pos + i);
             }
+            break;
+          default:
             break;
           }
           ret.addValue(vMeta, v);
@@ -4338,7 +4361,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         List<Object[]> seqs = getRows(sql, 0);
         String[] str = new String[seqs.size()];
         for (int i = 0; i < seqs.size(); i++) {
-          str[i] = ((Object[]) seqs.get(i))[0].toString();
+          str[i] = seqs.get(i)[0].toString();
         }
         return str;
       }
@@ -4348,42 +4371,52 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     return null;
   }
 
+  @Override
   public String getFilename() {
     return null;
   }
 
+  @Override
   public String getLogChannelId() {
     return log.getLogChannelId();
   }
 
+  @Override
   public String getObjectName() {
     return databaseMeta.getName();
   }
 
+  @Override
   public String getObjectCopy() {
     return null;
   }
 
+  @Override
   public ObjectId getObjectId() {
     return databaseMeta.getObjectId();
   }
 
+  @Override
   public ObjectRevision getObjectRevision() {
     return databaseMeta.getObjectRevision();
   }
 
+  @Override
   public LoggingObjectType getObjectType() {
     return LoggingObjectType.DATABASE;
   }
 
+  @Override
   public LoggingObjectInterface getParent() {
     return parentLoggingObject;
   }
 
+  @Override
   public RepositoryDirectory getRepositoryDirectory() {
     return null;
   }
 
+  @Override
   public LogLevel getLogLevel() {
     return logLevel;
   }
@@ -4396,6 +4429,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * @return the carteObjectId
    */
+  @Override
   public String getContainerObjectId() {
     return containerObjectId;
   }
@@ -4411,6 +4445,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Stub
    */
+  @Override
   public Date getRegistrationDate() {
     return null;
   }

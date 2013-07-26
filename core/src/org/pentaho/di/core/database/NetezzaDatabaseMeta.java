@@ -39,7 +39,8 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	/**
 	 * @return The extra option separator in database URL for this platform
 	 */
-	public String getExtraOptionSeparator() 
+	@Override
+  public String getExtraOptionSeparator() 
 	{
 		return "&";
 	}
@@ -47,23 +48,27 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	/**
 	 * @return This indicator separates the normal URL from the options
 	 */
-	public String getExtraOptionIndicator() 
+	@Override
+  public String getExtraOptionIndicator() 
 	{
 		return "?";
 	}
 		
-	public int[] getAccessTypeList()
+	@Override
+  public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
 	}
 	
-	public int getDefaultDatabasePort()
+	@Override
+  public int getDefaultDatabasePort()
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE) return 5480;
 		return -1;
 	}
 
-	public String getDriverClass()
+	@Override
+  public String getDriverClass()
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
 		{
@@ -75,6 +80,7 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 		}
 	}
   
+    @Override
     public String getURL(String hostname, String port, String databaseName)
     {
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
@@ -91,7 +97,8 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	 * Checks whether or not the command setFetchSize() is supported by the JDBC driver...
 	 * @return true is setFetchSize() is supported!
 	 */
-	public boolean isFetchSizeSupported()
+	@Override
+  public boolean isFetchSizeSupported()
 	{
 		return true;
 	}
@@ -99,7 +106,8 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	/**
 	 * @return true if the database supports bitmap indexes
 	 */
-	public boolean supportsBitmapIndex()
+	@Override
+  public boolean supportsBitmapIndex()
 	{
 		return false;
 	}
@@ -107,11 +115,13 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	/**
 	 * @return true if the database supports synonyms
 	 */
-	public boolean supportsSynonyms()
+	@Override
+  public boolean supportsSynonyms()
 	{
 		return false;
 	}
     
+    @Override
     public boolean supportsSequences()
     {
         return true;
@@ -120,27 +130,32 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
     /**
       * @return true if auto incremment is supported
       */
+    @Override
     public boolean supportsAutoInc()
     {
         return false;
     }
     
+    @Override
     public String getLimitClause(int nrRows)
     {
         return " limit " + nrRows;
     }
     
+    @Override
     public String getSQLQueryFields(String tableName)
     {
         return "SELECT * FROM "+tableName+getLimitClause(1);
     }
     
+    @Override
     public String getSQLTableExists(String tablename)
     {
         return getSQLQueryFields(tablename);
     }
     
 
+    @Override
     public String getSQLColumnExists(String columnname, String tablename)
      {
          return  getSQLQueryColumnFields(columnname, tablename);
@@ -155,6 +170,7 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
      * @param sequenceName The sequence name
      * @return the SQL to get the next value of a sequence.
      */
+    @Override
     public String getSQLNextSequenceValue(String sequenceName)
     {
         return "select nextval('" + sequenceName + "')";
@@ -165,6 +181,7 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
      * @param sequenceName The sequence name
      * @return the SQL to get the current value of a sequence.
      */
+    @Override
     public String getSQLCurrentSequenceValue(String sequenceName)
     {
         return "select last_value from " + sequenceName;
@@ -175,6 +192,7 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
      * @param sequenceName The sequence to check
      * @return The SQL to get the name of the sequence back from the databases data dictionary
      */
+    @Override
     public String getSQLSequenceExists(String sequenceName)
     {
         return "SELECT seqname AS sequence_name from _v_sequence where seqname = '" + sequenceName.toLowerCase() + "'";
@@ -191,7 +209,8 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to add a column to the specified table
 	 */
-	public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return null;
 	}
@@ -207,7 +226,8 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to drop a column from the specified table
 	 */
-	public String getDropColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getDropColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return null;
 	}
@@ -224,14 +244,16 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to modify a column in the specified table
 	 */
-	public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		String retval="";
 		retval+="ALTER TABLE "+tablename+" MODIFY COLUMN "+v.getName()+Const.CR+";"+Const.CR;
 		return retval;
 	}
 
-	public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
+	@Override
+  public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
 	{
 		String retval="";
 		
@@ -303,7 +325,8 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	/* (non-Javadoc)
 	 * @see org.pentaho.di.core.database.DatabaseInterface#getReservedWords()
 	 */
-	public String[] getReservedWords()
+	@Override
+  public String[] getReservedWords()
 	{
 		return new String[]
 		{
@@ -436,6 +459,7 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
      * @param tableNames The names of the tables to lock
      * @return The SQL commands to lock database tables for write purposes.
      */
+    @Override
     public String getSQLLockTables(String tableNames[])
     {
         return null; // Netezza does not support exclusive locking
@@ -445,6 +469,7 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
      * @param tableName The name of the table to unlock
      * @return The SQL command to unlock a database table.
      */
+    @Override
     public String getSQLUnlockTables(String tableName[])
     {
         return null; // commit unlocks everything!
@@ -454,6 +479,7 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
      * @return true if the database defaults to naming tables and fields in uppercase.
      * True for most databases except for stuborn stuff like Postgres ;-)
      */
+    @Override
     public boolean isDefaultingToUppercase()
     {
         return false;
@@ -462,11 +488,13 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
     /**
      * @return true if the database resultsets support getTimeStamp() to retrieve date-time. (Date)
      */
+    @Override
     public boolean supportsTimeStampToDateConversion()
     {
     	return false;
     }
 
+    @Override
     public String[] getUsedLibraries()
     {
         return new String[] { "nzjdbc.jar" };

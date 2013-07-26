@@ -37,7 +37,6 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
 import org.pentaho.di.trans.steps.sort.SortRowsMeta;
@@ -171,7 +170,7 @@ public class TestUtilities {
 
         // Set the information of the injector
         String injectorPid = pluginRegistry.getPluginId(StepPluginType.class, injectorMeta);
-        StepMeta injectorStep = new StepMeta(injectorPid, name, (StepMetaInterface)injectorMeta);
+        StepMeta injectorStep = new StepMeta(injectorPid, name, injectorMeta);
 
         return injectorStep;
     }
@@ -285,7 +284,7 @@ public class TestUtilities {
          sortRowsMeta.setDirectory(directory);
          
          String sortRowsStepPid = pluginRegistry.getPluginId(StepPluginType.class, sortRowsMeta);
-         StepMeta sortRowsStep = new StepMeta(sortRowsStepPid, name, (StepMetaInterface)sortRowsMeta);
+         StepMeta sortRowsStep = new StepMeta(sortRowsStepPid, name, sortRowsMeta);
          
          return sortRowsStep;
      }

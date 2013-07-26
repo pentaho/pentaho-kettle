@@ -1070,7 +1070,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 				// add the values to the grid...
 				for (int i = 0; i < fields.size(); i++)
 				{
-					XMLInputSaxField iF = (XMLInputSaxField) fields.get(i);
+					XMLInputSaxField iF = fields.get(i);
 					TableItem item = new TableItem(wFields.table, SWT.NONE);
 					item.setText(1, iF.getName());
 					item.setText(2, iF.getTypeDesc());

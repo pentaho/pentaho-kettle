@@ -1040,7 +1040,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       List<StringSearchResult> stringList = transMeta.getStringList(esd.isSearchingSteps(), esd.isSearchingDatabases(),
           esd.isSearchingNotes());
       for (int i = 0; i < stringList.size(); i++) {
-        StringSearchResult result = (StringSearchResult) stringList.get(i);
+        StringSearchResult result = stringList.get(i);
 
         boolean add = Const.isEmpty(filter);
         if (filter != null && result.getString().toUpperCase().indexOf(filter) >= 0)
@@ -1592,7 +1592,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public void addMenuLast() {
-    org.pentaho.ui.xul.dom.Document doc = (org.pentaho.ui.xul.dom.Document) mainSpoonContainer.getDocumentRoot();
+    org.pentaho.ui.xul.dom.Document doc = mainSpoonContainer.getDocumentRoot();
     JfaceMenupopup recentFilesPopup = (JfaceMenupopup) doc.getElementById("file-open-recent-popup");
 
     recentFilesPopup.removeChildren();
@@ -1648,9 +1648,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       }
       
       if (lastUsedFile.isTransformation()) {
-        ((JfaceMenuitem) miFileLast).setImage(GUIResource.getInstance().getImageTransGraph());
+        miFileLast.setImage(GUIResource.getInstance().getImageTransGraph());
       } else if (lastUsedFile.isJob()) {
-        ((JfaceMenuitem) miFileLast).setImage(GUIResource.getInstance().getImageJobGraph());
+        miFileLast.setImage(GUIResource.getInstance().getImageJobGraph());
       }
       miFileLast.setCommand("spoon.lastFileSelect('" + i + "')");
     }
@@ -1660,7 +1660,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     int idx = Integer.parseInt(id);
     List<LastUsedFile> lastUsedFiles = props.getLastUsedFiles();
-    final LastUsedFile lastUsedFile = (LastUsedFile) lastUsedFiles.get(idx);
+    final LastUsedFile lastUsedFile = lastUsedFiles.get(idx);
 
     // If the file comes from a repository and it's not the same as
     // the one we're connected to, ask for a username/password!
@@ -2152,7 +2152,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
         for (int j = 0; j < basesteps.size(); j++) {
           if (basesteps.get(j).getCategory().equalsIgnoreCase(basecat.get(i))) {
-            final Image stepimg = (Image) GUIResource.getInstance().getImagesStepsSmall()
+            final Image stepimg = GUIResource.getInstance().getImagesStepsSmall()
                 .get(basesteps.get(j).getIds()[0]);
             String pluginName = basesteps.get(j).getName();
             String pluginDescription = basesteps.get(j).getDescription();
@@ -2237,7 +2237,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         for (int j = 0; j < baseJobEntries.size(); j++) {
           if (!baseJobEntries.get(j).getIds()[0].equals("SPECIAL")) {
             if (baseJobEntries.get(j).getCategory().equalsIgnoreCase(baseCategories.get(i))) {
-              final Image jobEntryImage = (Image) GUIResource.getInstance().getImagesJobentriesSmall()
+              final Image jobEntryImage = GUIResource.getInstance().getImagesJobentriesSmall()
                   .get(baseJobEntries.get(j).getIds()[0]);
               String pluginName = Const.NVL(baseJobEntries.get(j).getName(), "");
               String pluginDescription = Const.NVL(baseJobEntries.get(j).getDescription(), "");
@@ -5252,11 +5252,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public boolean saveXMLFileToVfs() {
     TransMeta transMeta = getActiveTransformation();
     if (transMeta != null)
-      return saveXMLFileToVfs((EngineMetaInterface) transMeta);
+      return saveXMLFileToVfs(transMeta);
 
     JobMeta jobMeta = getActiveJob();
     if (jobMeta != null)
-      return saveXMLFileToVfs((EngineMetaInterface) jobMeta);
+      return saveXMLFileToVfs(jobMeta);
 
     return false;
   }
@@ -6851,7 +6851,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     List<Object[]> rows = new ArrayList<Object[]>();
     RowMetaInterface rowMeta = null;
     for (int i = 0; i < transGraph.getImpact().size(); i++) {
-      DatabaseImpact ii = (DatabaseImpact) transGraph.getImpact().get(i);
+      DatabaseImpact ii = transGraph.getImpact().get(i);
       RowMetaAndData row = ii.getRow();
       rowMeta = row.getRowMeta();
       rows.add(row.getData());
@@ -7013,7 +7013,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       try {
         List<DatabaseMeta> repDBs = rep.readDatabases();
         for (int i = 0; i < repDBs.size(); i++) {
-          DatabaseMeta databaseMeta = (DatabaseMeta) repDBs.get(i);
+          DatabaseMeta databaseMeta = repDBs.get(i);
           map.put(databaseMeta.getName(), databaseMeta);
         }
       } catch (Exception e) {
@@ -7670,6 +7670,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
               }
             }
             break;
+          default:
+            break;
         }
         StepMeta after = (StepMeta) stepMeta.clone();
         addUndoChange(transMeta, new StepMeta[] { before }, new StepMeta[] { after },
@@ -8191,6 +8193,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
             break;
           case Const.WARNING:
             flags |= SWT.ICON_WARNING;
+            break;
+          default:
             break;
         }
 

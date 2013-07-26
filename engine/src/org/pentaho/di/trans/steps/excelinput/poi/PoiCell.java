@@ -65,6 +65,8 @@ public class PoiCell implements KCell {
         } else {
           return KCellType.NUMBER_FORMULA;
         }
+        default:
+          break;
       }
     } 
     return null;

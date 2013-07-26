@@ -122,7 +122,7 @@ public class DBCache {
     } else {
       Enumeration<DBCacheEntry> keys = cache.keys();
       while (keys.hasMoreElements()) {
-        DBCacheEntry entry = (DBCacheEntry) keys.nextElement();
+        DBCacheEntry entry = keys.nextElement();
         if (entry.sameDB(dbname)) {
           // Same name: remove it!
           cache.remove(entry);

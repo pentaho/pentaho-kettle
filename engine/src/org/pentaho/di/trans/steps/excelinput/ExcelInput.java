@@ -139,7 +139,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 			if (KCellType.BOOLEAN == cellType ||
 				KCellType.BOOLEAN_FORMULA==cellType)
 			{
-				r[rowcolumn] = (Boolean)cell.getValue();
+				r[rowcolumn] = cell.getValue();
                 sourceMeta = data.valueMetaBoolean;
 			}
 			else
@@ -181,7 +181,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 						if (KCellType.NUMBER == cellType ||
 						    KCellType.NUMBER_FORMULA == cellType)
 						{
-                            r[rowcolumn] = (Double) cell.getValue();
+                            r[rowcolumn] = cell.getValue();
                             sourceMeta = data.valueMetaNumber;
 						}
 						else

@@ -278,6 +278,8 @@ public class SQLEditor
         
             break;
         case SWT.CANCEL: break;
+          default:
+            break;
         }
     }
 

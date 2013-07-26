@@ -36,7 +36,8 @@ public class UniVerseDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 {
 	private static final int MAX_VARCHAR_LENGTH = 65535;
 	
-	public int[] getAccessTypeList()
+	@Override
+  public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
 	}
@@ -44,7 +45,8 @@ public class UniVerseDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	/**
 	 * @see org.pentaho.di.core.database.DatabaseInterface#getNotFoundTK(boolean)
 	 */
-	public int getNotFoundTK(boolean use_autoinc)
+	@Override
+  public int getNotFoundTK(boolean use_autoinc)
 	{
 		if ( supportsAutoInc() && use_autoinc)
 		{
@@ -53,7 +55,8 @@ public class UniVerseDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 		return super.getNotFoundTK(use_autoinc);
 	}
 	
-	public String getDriverClass()
+	@Override
+  public String getDriverClass()
 	{
         if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE)
         {
@@ -66,6 +69,7 @@ public class UniVerseDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 
 	}
 	
+    @Override
     public String getURL(String hostname, String port, String databaseName)
     {
         if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE)
@@ -82,7 +86,8 @@ public class UniVerseDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	 * Checks whether or not the command setFetchSize() is supported by the JDBC driver...
 	 * @return true is setFetchSize() is supported!
 	 */
-	public boolean isFetchSizeSupported()
+	@Override
+  public boolean isFetchSizeSupported()
 	{
 		return false;
 	}
@@ -90,7 +95,8 @@ public class UniVerseDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	/**
 	 * @see org.pentaho.di.core.database.DatabaseInterface#getSchemaTableCombination(java.lang.String, java.lang.String)
 	 */
-	@SuppressWarnings("deprecation")
+	@Override
+  @SuppressWarnings("deprecation")
   public String getSchemaTableCombination(String schema_name, String table_part)
 	{
 		return getBackwardsCompatibleSchemaTableCombination(schema_name, table_part);
@@ -99,7 +105,8 @@ public class UniVerseDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	/**
 	 * @return true if the database supports bitmap indexes
 	 */
-	public boolean supportsBitmapIndex()
+	@Override
+  public boolean supportsBitmapIndex()
 	{
 		return false;
 	}
@@ -107,7 +114,8 @@ public class UniVerseDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	/**
 	 * @return true if Kettle can create a repository on this type of database.
 	 */
-	public boolean supportsRepository()
+	@Override
+  public boolean supportsRepository()
 	{
 		return false;
 	}
@@ -116,7 +124,8 @@ public class UniVerseDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	 * @param tableName The table to be truncated.
 	 * @return The SQL statement to truncate a table: remove all rows from it without a transaction
 	 */
-	public String getTruncateTableStatement(String tableName)
+	@Override
+  public String getTruncateTableStatement(String tableName)
 	{
 	    return "DELETE FROM "+tableName;
 	}
@@ -124,6 +133,7 @@ public class UniVerseDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
     /**
      * UniVerse doesn't even support timestamps.
      */
+    @Override
     public boolean supportsTimeStampToDateConversion()
     {
         return false;
@@ -141,7 +151,8 @@ public class UniVerseDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to add a column to the specified table
 	 */
-	public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" ADD "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
@@ -156,12 +167,14 @@ public class UniVerseDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to modify a column in the specified table
 	 */
-	public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" MODIFY "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
 
-	public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
+	@Override
+  public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
 	{
 		String retval="";
 		
@@ -225,6 +238,7 @@ public class UniVerseDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 		return retval;
 	}
     
+    @Override
     public String[] getReservedWords()
     {
         return new String[] 
@@ -249,6 +263,7 @@ public class UniVerseDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
         };
     }
 
+    @Override
     public String[] getUsedLibraries()
     {
         return new String[] { "unijdbc.jar", "asjava.zip" };
@@ -257,7 +272,8 @@ public class UniVerseDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	/**
 	 * @return true if the database supports newlines in a SQL statements.
 	 */
-	public boolean supportsNewLinesInSQL() {
+	@Override
+  public boolean supportsNewLinesInSQL() {
 		return true;
 	}
 

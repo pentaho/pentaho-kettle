@@ -905,6 +905,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 				case STEP_DATA_SERVICE:
 				  editProperties(transMeta, spoon, spoon.getRepository(), true, TransDialog.Tabs.EXTRA_TAB);
 				  break;
+          default:
+            break;
 				}
       } else {
         // A hop? --> enable/disable
@@ -944,7 +946,9 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       if (candidate != null && areaOwner!=null) {
     	  switch(areaOwner.getAreaType()) {
     	  case STEP_ICON : currentStep = (StepMeta) areaOwner.getOwner(); break; 
-    	  case STEP_INPUT_HOP_ICON : currentStep = (StepMeta) areaOwner.getParent(); break; 
+    	  case STEP_INPUT_HOP_ICON : currentStep = (StepMeta) areaOwner.getParent(); break;
+          default:
+            break; 
     	  }
     	  addCandidateAsHop(e.x, e.y);
     	  redraw();
@@ -1372,6 +1376,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       			tip=false;
       		}
   			break;
+          default:
+            break;
       	}
       }
       
@@ -1529,6 +1535,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 			candidate.getFromStep().getStepMetaInterface().handleStreamSelection(stream);
 			spoon.newHop(transMeta, candidate);
 			break;
+      default:
+        break;
 		
 		}
 		clearSettings();
@@ -2698,6 +2706,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         }
         tipImage = GUIResource.getInstance().getImageEdit();
         break;
+        default:
+          break;
 
 			}
 		}

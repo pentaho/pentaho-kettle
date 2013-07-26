@@ -34,12 +34,14 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class FirebirdDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
-	public int[] getAccessTypeList()
+	@Override
+  public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
 	}
 	
-	public int getDefaultDatabasePort()
+	@Override
+  public int getDefaultDatabasePort()
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE) return 3050;
 		return -1;
@@ -48,12 +50,14 @@ public class FirebirdDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	/**
 	 * @return Whether or not the database can use auto increment type of fields (pk)
 	 */
-	public boolean supportsAutoInc()
+	@Override
+  public boolean supportsAutoInc()
 	{
 		return false;
 	}
 	
-	public String getDriverClass()
+	@Override
+  public String getDriverClass()
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
 		{
@@ -65,6 +69,7 @@ public class FirebirdDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 		}
 	}
 
+    @Override
     public String getURL(String hostname, String port, String databaseName)
     {
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
@@ -80,7 +85,8 @@ public class FirebirdDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	/**
 	 * @return true if the database supports bitmap indexes
 	 */
-	public boolean supportsBitmapIndex()
+	@Override
+  public boolean supportsBitmapIndex()
 	{
 		return false;
 	}
@@ -88,7 +94,8 @@ public class FirebirdDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	/**
 	 * @return true if the database supports synonyms
 	 */
-	public boolean supportsSynonyms()
+	@Override
+  public boolean supportsSynonyms()
 	{
 		return false;
 	}
@@ -98,7 +105,8 @@ public class FirebirdDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	 * @return The SQL statement to truncate a table: remove all rows from it without a transaction
 	 * No such luck for firebird, I'm afraid.
 	 */
-	public String getTruncateTableStatement(String tableName)
+	@Override
+  public String getTruncateTableStatement(String tableName)
 	{
 	    return "DELETE FROM "+tableName;
 	}
@@ -112,7 +120,8 @@ public class FirebirdDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to add a column to the specified table
 	 */
-	public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" ADD "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
@@ -127,12 +136,14 @@ public class FirebirdDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to modify a column in the specified table
 	 */
-	public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" ALTER COLUMN "+v.getName()+" TYPE "+getFieldDefinition(v, tk, pk, use_autoinc, false, false);
 	}
 
-	public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
+	@Override
+  public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
 	{
 		String retval="";
 		
@@ -241,7 +252,8 @@ public class FirebirdDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 		return retval;
 	}
 
-	public String [] getReservedWords()
+	@Override
+  public String [] getReservedWords()
 	{
 		return new String[] {
 			"ABSOLUTE", "ACTION", "ACTIVE", "ADD", "ADMIN", "AFTER", "ALL", "ALLOCATE", "ALTER", "AND", "ANY",
@@ -325,6 +337,7 @@ public class FirebirdDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
     /**
      * @return The extra option separator in database URL for this platform. 
      */
+    @Override
     public String getExtraOptionSeparator()
     {
         return "&";
@@ -333,11 +346,13 @@ public class FirebirdDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
     /**
      * @return This indicator separates the normal URL from the options
      */
+    @Override
     public String getExtraOptionIndicator()
     {
         return "?";
     }
 
+    @Override
     public String[] getUsedLibraries()
     {
         return new String[] { "jaybird-full-2.1.0.jar" };

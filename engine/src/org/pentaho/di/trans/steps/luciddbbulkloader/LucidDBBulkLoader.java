@@ -454,6 +454,8 @@ public class LucidDBBulkLoader extends BaseStep implements StepInterface
 		    				data.fifoStream.write(valueMeta.getString(valueData).getBytes());
 		    			}
 		    			break;
+              default:
+                break;
 		    		}
 	    		}
 	    	}

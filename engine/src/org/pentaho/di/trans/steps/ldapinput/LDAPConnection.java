@@ -229,7 +229,7 @@ public class LDAPConnection {
       // Set the sort search?
       if (isSortingAttributes()) {
         // Create a sort control that sorts based on attributes
-        setSortingAttributesKeys((String[]) getSortingAttributes().toArray(new String[getSortingAttributes().size()]));
+        setSortingAttributesKeys(getSortingAttributes().toArray(new String[getSortingAttributes().size()]));
         ctlk = new SortControl(getSortingAttributesKeys(), Control.NONCRITICAL);
         nrCtl++;
         if (log.isDebug())
@@ -563,7 +563,7 @@ public class LDAPConnection {
     }
 
     try {
-      SearchResult searchResult = (SearchResult) getSearchResult().next();
+      SearchResult searchResult = getSearchResult().next();
       Attributes results = searchResult.getAttributes();
       results.put("dn", searchResult.getNameInNamespace());
       return results;
@@ -596,7 +596,7 @@ public class LDAPConnection {
   public static String extractBytesAndConvertToString(Attribute attr, boolean isSID) throws Exception {
     byte[] b;
     try {
-      b = (byte[]) (byte[]) attr.get();
+      b = (byte[]) attr.get();
     } catch (Exception e) {
       // Get bytes from String
       b = attr.get().toString().getBytes();

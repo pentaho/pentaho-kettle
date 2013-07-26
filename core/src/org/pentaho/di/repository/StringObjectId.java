@@ -55,7 +55,8 @@ public class StringObjectId implements ObjectId, Comparable<StringObjectId> {
 		return id.hashCode();
 	}
 	
-	public int compareTo(StringObjectId o) {
+	@Override
+  public int compareTo(StringObjectId o) {
 		return id.compareTo(o.id);
 	}
 	
@@ -67,7 +68,8 @@ public class StringObjectId implements ObjectId, Comparable<StringObjectId> {
 	/**
 	 * @return the id
 	 */
-	public String getId() {
+	@Override
+  public String getId() {
 		return id;
 	}
 }

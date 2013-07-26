@@ -282,7 +282,7 @@ public class PropsUI extends Props
 		int nr=1;
 		while (keys.hasMoreElements())
 		{
-			String name = (String)keys.nextElement();
+			String name = keys.nextElement();
 			properties.setProperty("ScreenName"+nr, name);
 			
 			WindowProperty winprop = screens.get(name);

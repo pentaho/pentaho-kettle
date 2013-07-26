@@ -702,6 +702,8 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
       executorJobMeta = repository.loadJob(referenceObjectId, null); // load the last version
       executorJobMeta.clearChanged();
       break;
+    default:
+      break;
 	  }
 	}
 	
@@ -754,6 +756,8 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
         referenceObjectId = jobExecutorMeta.getJobObjectId();
         wByReference.setText("");
         getByReferenceData(jobExecutorMeta.getJobObjectId());
+        break;
+      default:
         break;
     }
     setRadioButtons();
@@ -1581,6 +1585,8 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
       jobExecutorMeta.setJobName(null);
       jobExecutorMeta.setJobObjectId(referenceObjectId);
       break;
+    default:
+      break;
     }
 
 		// Load the information on the tabs, optionally do some
@@ -1702,6 +1708,8 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
             break;
           case REPOSITORY_BY_REFERENCE:
             getByReferenceData(newJobMeta.getObjectId());
+            break;
+          default:
             break;
         }
         getParametersFromJob(newJobMeta);

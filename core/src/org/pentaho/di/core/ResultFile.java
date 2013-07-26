@@ -91,7 +91,8 @@ public class ResultFile implements Cloneable
 		
 	}
 	
-	protected ResultFile clone() throws CloneNotSupportedException
+	@Override
+  protected ResultFile clone() throws CloneNotSupportedException
 	{
 		return (ResultFile) super.clone();
 	}

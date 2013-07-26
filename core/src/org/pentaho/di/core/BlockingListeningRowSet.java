@@ -62,6 +62,7 @@ public class BlockingListeningRowSet extends BaseRowSet implements Comparable<Ro
     /* (non-Javadoc)
 	 * @see org.pentaho.di.core.RowSetInterface#putRow(org.pentaho.di.core.row.RowMetaInterface, java.lang.Object[])
 	 */
+    @Override
     public boolean putRow(RowMetaInterface rowMeta, Object[] rowData)
     {
     	return putRowWait(rowMeta, rowData, 100, TimeUnit.NANOSECONDS);
@@ -70,6 +71,7 @@ public class BlockingListeningRowSet extends BaseRowSet implements Comparable<Ro
     /* (non-Javadoc)
 	 * @see org.pentaho.di.core.RowSetInterface#putRowWait(org.pentaho.di.core.row.RowMetaInterface, java.lang.Object[], long, java.util.concurrent.TimeUnit)
 	 */
+    @Override
     public boolean putRowWait(RowMetaInterface rowMeta, Object[] rowData, long time, TimeUnit tu) {
     	this.rowMeta = rowMeta;
     	try{
@@ -96,6 +98,7 @@ public class BlockingListeningRowSet extends BaseRowSet implements Comparable<Ro
     /* (non-Javadoc)
 	 * @see org.pentaho.di.core.RowSetInterface#getRow()
 	 */
+    @Override
     public Object[] getRow(){
         blocking.set(true);
     	Object[] row = getRowWait(100, TimeUnit.NANOSECONDS);
@@ -107,6 +110,7 @@ public class BlockingListeningRowSet extends BaseRowSet implements Comparable<Ro
     /* (non-Javadoc)
 	 * @see org.pentaho.di.core.RowSetInterface#getRowImmediate()
 	 */       
+    @Override
     public Object[] getRowImmediate(){
 
         blocking.set(true);
@@ -118,6 +122,7 @@ public class BlockingListeningRowSet extends BaseRowSet implements Comparable<Ro
     /* (non-Javadoc)
 	 * @see org.pentaho.di.core.RowSetInterface#getRowWait(long, java.util.concurrent.TimeUnit)
 	 */
+    @Override
     public Object[] getRowWait(long timeout, TimeUnit tu){
 
     	try{
@@ -140,6 +145,7 @@ public class BlockingListeningRowSet extends BaseRowSet implements Comparable<Ro
     /**
      * @return true if this row set is blocking.
      */
+    @Override
     public boolean isBlocking() {
       return blocking.get();
     }

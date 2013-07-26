@@ -361,6 +361,8 @@ public class SwingGC implements GCInterface {
       return imageBusy;
     case INJECT:
       return imageInject;
+      default:
+        break;
     }
     return null;
   }
@@ -487,6 +489,8 @@ public class SwingGC implements GCInterface {
       return darkGray;
     case LIGHTBLUE:
       return lightBlue;
+      default:
+        break;
     }
     return null;
   }
@@ -502,6 +506,8 @@ public class SwingGC implements GCInterface {
     case SMALL:
       gc.setFont(fontSmall);
       break;
+      default:
+        break;
     }
   }
 
@@ -558,7 +564,7 @@ public class SwingGC implements GCInterface {
     }
     int height = gc.getFontMetrics().getHeight() * lines.length;
 
-    return new Point((int) maxWidth, (int) height);
+    return new Point(maxWidth, height);
   }
 
   public void drawStepIcon(int x, int y, StepMeta stepMeta) {
@@ -566,7 +572,7 @@ public class SwingGC implements GCInterface {
     //
     gc.fillRect(x + xOffset, y + yOffset, iconsize, iconsize);
     String steptype = stepMeta.getStepID();
-    BufferedImage im = (BufferedImage) stepImages.get(steptype);
+    BufferedImage im = stepImages.get(steptype);
     if (im != null) // Draw the icon!
     {
       drawPixelatedImage(im, x + xOffset, y + xOffset);

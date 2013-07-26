@@ -302,6 +302,8 @@ public class LibFormulaEditor extends Dialog implements KeyListener {
     			case FormulaMessage.TYPE_STATIC_LOGICAL :
     				styles.add(new StyleRange(pos, length, blue, gray, SWT.BOLD | SWT.ITALIC)); 
     				break;
+    	    default:
+    	      break;
     			}
 			}
 		}

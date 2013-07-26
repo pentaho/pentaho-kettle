@@ -1184,7 +1184,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
     			int nr=col.size();
     			for (int i=0;i<nr ;i++)
     			{
-    				Column c = (Column)col.get(i);
+    				Column c = col.get(i);
 
     				ValueMetaInterface field = AccessInputMeta.getValueMeta(c);
     				if (field!=null && fields.indexOfValue(field.getName())<0) fields.addValueMeta(field);	
@@ -1563,7 +1563,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 					
 					// Get system tables
 
-					String[] tablenames = (String[]) settables.toArray(new String[settables.size()]);
+					String[] tablenames = settables.toArray(new String[settables.size()]);
 					Const.sortStrings(tablenames);
 					EnterSelectionDialog dialog = new EnterSelectionDialog(shell, tablenames, BaseMessages.getString(PKG, "AccessInputDialog.Dialog.SelectATable.Title"), BaseMessages.getString(PKG, "AccessInputDialog.Dialog.SelectATable.Message"));
 					String tablename = dialog.open();

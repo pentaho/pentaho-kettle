@@ -213,6 +213,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
     return dateTime;
   }
   
+  @Override
   public Object convertDataFromString(String pol, ValueMetaInterface convertMeta, String nullIf, String ifNull, int trim_type) throws KettleValueException {
     // null handling and conversion of value to null
     //
@@ -339,6 +340,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
    * @throws KettleValueException
    *           in case there is a data conversion error
    */
+  @Override
   public Object convertData(ValueMetaInterface meta2, Object data2) throws KettleValueException {
     switch(meta2.getType()) {
     case TYPE_STRING: return convertStringToTimestamp(meta2.getString(data2)); 

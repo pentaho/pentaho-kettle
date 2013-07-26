@@ -34,7 +34,7 @@ public class UniqueIdentifier {
      * @return The unique identifier as a <code>byte[]</code>.
      */
     public byte[] getBytes() {
-        return (byte [])bytes.clone();
+        return bytes.clone();
     }
 
     /**

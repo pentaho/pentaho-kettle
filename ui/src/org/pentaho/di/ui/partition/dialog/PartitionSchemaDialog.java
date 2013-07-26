@@ -32,7 +32,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -126,7 +125,7 @@ public class PartitionSchemaDialog extends Dialog
 		Shell parent = getParent();
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
  		props.setLook(shell);
-		shell.setImage((Image) GUIResource.getInstance().getImageFolderConnections());
+		shell.setImage(GUIResource.getInstance().getImageFolderConnections());
 		
 		lsMod = new ModifyListener() 
 		{
@@ -351,13 +350,13 @@ public class PartitionSchemaDialog extends Dialog
         
         for (int i=0;i<databases.size();i++)
         {
-            DatabaseMeta databaseMeta = (DatabaseMeta) databases.get(i); 
+            DatabaseMeta databaseMeta = databases.get(i); 
             if (databaseMeta.isPartitioned())
             {
                 partitionedDatabaseNames.add(databaseMeta.getName());
             }
         }
-        String dbNames[] = (String[]) partitionedDatabaseNames.toArray(new String[partitionedDatabaseNames.size()]);
+        String dbNames[] = partitionedDatabaseNames.toArray(new String[partitionedDatabaseNames.size()]);
         
         if (dbNames.length>0)
         {

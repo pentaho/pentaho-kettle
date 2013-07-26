@@ -90,7 +90,7 @@ public class CopyTableWizardPage1 extends WizardPage
  		props.setLook(wSourceDB);
 		for (int i=0;i<databases.size();i++)
 		{
-			DatabaseMeta dbInfo = (DatabaseMeta)databases.get(i);
+			DatabaseMeta dbInfo = databases.get(i);
 			wSourceDB.add(dbInfo.getName());
 		}
 		fdSourceDB = new FormData();
@@ -114,7 +114,7 @@ public class CopyTableWizardPage1 extends WizardPage
  		props.setLook(wTargetDB);
 		for (int i=0;i<databases.size();i++)
 		{
-			DatabaseMeta dbInfo = (DatabaseMeta)databases.get(i);
+			DatabaseMeta dbInfo = databases.get(i);
 			wTargetDB.add(dbInfo.getName());
 		}
 		fdTargetDB = new FormData();

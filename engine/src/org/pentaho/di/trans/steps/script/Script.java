@@ -369,6 +369,8 @@ public class Script extends BaseStep implements StepInterface {
 					stopAll();
 					bRC = false;
 					break;
+          default:
+            break;
 				}
 
 				// TODO: kick this "ERROR handling" junk out now that we have
@@ -509,7 +511,7 @@ public class Script extends BaseStep implements StepInterface {
 						}
 
 					case ValueMetaInterface.TYPE_BOOLEAN:
-						return (Boolean) result;
+						return result;
 
 					case ValueMetaInterface.TYPE_BIGNUMBER:
 						if (classType.equalsIgnoreCase("org.mozilla.javascript.Undefined")) {
@@ -660,6 +662,8 @@ public class Script extends BaseStep implements StepInterface {
 				case ScriptValuesScript.END_SCRIPT:
 					strEndScript = jsScripts[j].getScript();
 					break;
+          default:
+            break;
 				}
 			}
 			return true;

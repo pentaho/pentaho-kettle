@@ -41,7 +41,6 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 
 
@@ -251,7 +250,7 @@ public class CombinationLookupTest extends TestCase
             tii.setSQL(selectSQL);
 
             String fromstepid = registry.getPluginId(StepPluginType.class, tii);
-            StepMeta fromstep = new StepMeta(fromstepid, fromstepname, (StepMetaInterface) tii);
+            StepMeta fromstep = new StepMeta(fromstepid, fromstepname, tii);
             fromstep.setLocation(150, 100);
             fromstep.setDraw(true);
             fromstep.setDescription("Reads information from table [" + source_table + "] on database [" + lookupDBInfo + "]");
@@ -271,7 +270,7 @@ public class CombinationLookupTest extends TestCase
             clm.setDatabaseMeta(lookupDBInfo);
 
             String lookupstepid = registry.getPluginId(StepPluginType.class, clm);
-            StepMeta lookupstep = new StepMeta(lookupstepid, lookupstepname, (StepMetaInterface) clm);
+            StepMeta lookupstep = new StepMeta(lookupstepid, lookupstepname, clm);
             lookupstep.setDescription("Looks up information from table [lookup] on database [" + lookupDBInfo + "]");
             transMeta.addStep(lookupstep);                              
 

@@ -39,6 +39,8 @@ public class ThinUtil {
     case ValueMetaInterface.TYPE_NUMBER: return java.sql.Types.DOUBLE;
     case ValueMetaInterface.TYPE_BOOLEAN: return java.sql.Types.BOOLEAN;
     case ValueMetaInterface.TYPE_BINARY: return java.sql.Types.BLOB;
+      default:
+        break;
     }
     return java.sql.Types.VARCHAR;
   }
@@ -52,6 +54,8 @@ public class ThinUtil {
     case ValueMetaInterface.TYPE_BIGNUMBER: return "DECIMAL";
     case ValueMetaInterface.TYPE_BOOLEAN: return "BOOLEAN";
     case ValueMetaInterface.TYPE_BINARY: return "BLOB";
+      default:
+        break;
     }
     return null;
   }

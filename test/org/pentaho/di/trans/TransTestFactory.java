@@ -115,7 +115,7 @@ public class TransTestFactory
         Iterator<RowMetaAndData> it = inputList.iterator();
         while ( it.hasNext() )
         {
-        	RowMetaAndData rm = (RowMetaAndData)it.next();
+        	RowMetaAndData rm = it.next();
         	rp.putRow(rm.getRowMeta(), rm.getData());
         }   
         rp.finished();

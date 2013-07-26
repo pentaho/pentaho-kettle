@@ -42,7 +42,8 @@ public interface RepositoryElementInterface extends RepositoryObjectInterface {
    /**
     * Gets the name of the repository object.
     */
-	public String getName();
+	@Override
+  public String getName();
 	
 	/**
 	 * Sets the name of the repository object.
@@ -66,7 +67,8 @@ public interface RepositoryElementInterface extends RepositoryObjectInterface {
      * Gets the database ID in the repository for this object.
      * @return the database ID in the repository for this object
      */
-	public ObjectId getObjectId();
+	@Override
+  public ObjectId getObjectId();
 	
     /**
      * Sets the database ID in the repository for this object.

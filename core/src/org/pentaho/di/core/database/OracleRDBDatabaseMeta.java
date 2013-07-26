@@ -34,7 +34,8 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class OracleRDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
-	public int[] getAccessTypeList()
+	@Override
+  public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
 	}
@@ -42,7 +43,8 @@ public class OracleRDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
 	/**
 	 * @return Whether or not the database can use auto increment type of fields (pk)
 	 */
-	public boolean supportsAutoInc()
+	@Override
+  public boolean supportsAutoInc()
 	{
 		return false;
 	}
@@ -50,7 +52,8 @@ public class OracleRDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
 	/**
 	 * @see org.pentaho.di.core.database.DatabaseInterface#getLimitClause(int)
 	 */
-	public String getLimitClause(int nrRows)
+	@Override
+  public String getLimitClause(int nrRows)
 	{
 		return " WHERE ROWNUM <= "+nrRows;
 	}
@@ -60,13 +63,15 @@ public class OracleRDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
 	 * @param tableName The name of the table to determine the layout for
 	 * @return The SQL to launch.
 	 */
-	public String getSQLQueryFields(String tableName)
+	@Override
+  public String getSQLQueryFields(String tableName)
 	{
 	    return "SELECT /*+FIRST_ROWS*/ * FROM "+tableName+" WHERE ROWNUM < 1";
 	}
 
 	
-	public String getDriverClass()
+	@Override
+  public String getDriverClass()
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
 		{
@@ -78,6 +83,7 @@ public class OracleRDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
 		}
 	}
 
+    @Override
     public String getURL(String hostname, String port, String databaseName)
     {
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
@@ -94,6 +100,7 @@ public class OracleRDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
     /**
      * Oracle doesn't support options in the URL, we need to put these in a Properties object at connection time...
      */
+    @Override
     public boolean supportsOptionsInURL()
     {
         return false;
@@ -102,11 +109,13 @@ public class OracleRDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
 	/**
 	 * @return true if the database supports sequences
 	 */
-	public boolean supportsSequences()
+	@Override
+  public boolean supportsSequences()
 	{
 		return true;
 	}
     
+    @Override
     public boolean supportsRepository()
     {
         return false;
@@ -117,6 +126,7 @@ public class OracleRDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
      * @param sequenceName The sequence to check
      * @return The SQL to get the name of the sequence back from the databases data dictionary
      */
+    @Override
     public String getSQLSequenceExists(String sequenceName)
     {
         return "SELECT * FROM USER_SEQUENCES WHERE SEQUENCE_NAME = '"+sequenceName.toUpperCase()+"'";
@@ -127,6 +137,7 @@ public class OracleRDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
      * @param sequenceName The sequence to check
      * @return The current value of a database sequence
      */
+    @Override
     public String getSQLCurrentSequenceValue(String sequenceName)
     {
         return "SELECT "+sequenceName+".currval FROM DUAL";
@@ -137,6 +148,7 @@ public class OracleRDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
      * @param sequenceName The sequence name
      * @return the SQL to get the next value of a sequence. (Oracle only)
      */
+    @Override
     public String getSQLNextSequenceValue(String sequenceName)
     {
         return "SELECT "+sequenceName+".nextval FROM dual";
@@ -146,7 +158,8 @@ public class OracleRDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
 	/**
 	 * @return true if we need to supply the schema-name to getTables in order to get a correct list of items.
 	 */
-	public boolean useSchemaNameForTableList()
+	@Override
+  public boolean useSchemaNameForTableList()
 	{
 		return true;
 	}
@@ -154,7 +167,8 @@ public class OracleRDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
 	/**
 	 * @return true if the database supports synonyms
 	 */
-	public boolean supportsSynonyms()
+	@Override
+  public boolean supportsSynonyms()
 	{
 		return true;
 	}
@@ -169,7 +183,8 @@ public class OracleRDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to add a column to the specified table
 	 */
-	public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" ADD ( "+getFieldDefinition(v, tk, pk, use_autoinc, true, false)+" ) ";
 	}
@@ -184,7 +199,8 @@ public class OracleRDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to drop a column from the specified table
 	 */
-	public String getDropColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getDropColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" DROP ( "+v.getName()+" ) "+Const.CR;
 	}
@@ -199,12 +215,14 @@ public class OracleRDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to modify a column in the specified table
 	 */
-	public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" MODIFY ("+getFieldDefinition(v, tk, pk, use_autoinc, true, false)+" )";
 	}
 
-	public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
+	@Override
+  public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
 	{
 		StringBuffer retval=new StringBuffer(128);
 		
@@ -270,7 +288,8 @@ public class OracleRDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
 	/* (non-Javadoc)
 	 * @see com.ibridge.kettle.core.database.DatabaseInterface#getReservedWords()
 	 */
-	public String[] getReservedWords()
+	@Override
+  public String[] getReservedWords()
 	{
 		return new String[] 
 	     {
@@ -289,6 +308,7 @@ public class OracleRDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
 	}
 	
 
+    @Override
     public String getSQLLockTables(String tableNames[])
     {
         StringBuffer sql=new StringBuffer(128);
@@ -299,11 +319,13 @@ public class OracleRDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
         return sql.toString();
     }
     
+    @Override
     public String getSQLUnlockTables(String tableNames[])
     {
         return null; // commit handles the unlocking!
     }
 
+    @Override
     public String[] getUsedLibraries()
     {
         return new String[] { "rdbthin.jar" };

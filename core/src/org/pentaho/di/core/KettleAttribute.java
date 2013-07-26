@@ -51,6 +51,7 @@ public class KettleAttribute implements KettleAttributeInterface {
     this.parent = parent;
   }
 
+  @Override
   public String getKey() {
     return key;
   }
@@ -62,6 +63,7 @@ public class KettleAttribute implements KettleAttributeInterface {
   /**
    * @return the xmlCode
    */
+  @Override
   public String getXmlCode() {
     return xmlCode;
   }
@@ -76,6 +78,7 @@ public class KettleAttribute implements KettleAttributeInterface {
   /**
    * @return the repCode
    */
+  @Override
   public String getRepCode() {
     return repCode;
   }
@@ -90,6 +93,7 @@ public class KettleAttribute implements KettleAttributeInterface {
   /**
    * @return the description
    */
+  @Override
   public String getDescription() {
     return description;
   }
@@ -104,6 +108,7 @@ public class KettleAttribute implements KettleAttributeInterface {
   /**
    * @return the tooltip
    */
+  @Override
   public String getTooltip() {
     return tooltip;
   }
@@ -118,6 +123,7 @@ public class KettleAttribute implements KettleAttributeInterface {
   /**
    * @return the type
    */
+  @Override
   public int getType() {
     return type;
   }
@@ -132,6 +138,7 @@ public class KettleAttribute implements KettleAttributeInterface {
   /**
    * @return the parent
    */
+  @Override
   public KettleAttributeInterface getParent() {
     return parent;
   }

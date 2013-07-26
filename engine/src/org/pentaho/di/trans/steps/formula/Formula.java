@@ -212,11 +212,11 @@ public class Formula extends BaseStep implements StepInterface
                       break;
                     case FormulaData.RETURN_TYPE_NUMBER  : value = new Double(((Number)formulaResult).doubleValue()); break;
                     case FormulaData.RETURN_TYPE_INTEGER : value = new Long( ((Integer)formulaResult).intValue() ); break;
-                    case FormulaData.RETURN_TYPE_LONG : value = (Long)formulaResult; break;
-                    case FormulaData.RETURN_TYPE_DATE : value = (Date)formulaResult; break;
-                    case FormulaData.RETURN_TYPE_BIGDECIMAL : value = (BigDecimal)formulaResult; break;
-                    case FormulaData.RETURN_TYPE_BYTE_ARRAY : value = (byte[])formulaResult; break;
-                    case FormulaData.RETURN_TYPE_BOOLEAN : value = (Boolean)formulaResult; break;
+                    case FormulaData.RETURN_TYPE_LONG : value = formulaResult; break;
+                    case FormulaData.RETURN_TYPE_DATE : value = formulaResult; break;
+                    case FormulaData.RETURN_TYPE_BIGDECIMAL : value = formulaResult; break;
+                    case FormulaData.RETURN_TYPE_BYTE_ARRAY : value = formulaResult; break;
+                    case FormulaData.RETURN_TYPE_BOOLEAN : value = formulaResult; break;
                     default: value = null;
                     }
                     

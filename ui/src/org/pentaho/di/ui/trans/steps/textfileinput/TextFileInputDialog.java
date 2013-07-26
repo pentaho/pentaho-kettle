@@ -2454,7 +2454,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
             List<Charset> values = new ArrayList<Charset>(Charset.availableCharsets().values());
             for (int i=0;i<values.size();i++)
             {
-                Charset charSet = (Charset)values.get(i);
+                Charset charSet = values.get(i);
                 wEncoding.add( charSet.displayName() );
             }
             
@@ -2933,7 +2933,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                         String firstlines="";
                         for (int i=0;i<linesList.size();i++)
                         {
-                            firstlines+=(String)linesList.get(i)+Const.CR;
+                            firstlines+=linesList.get(i)+Const.CR;
                         }
                         EnterTextDialog etd = new EnterTextDialog(shell, BaseMessages.getString(PKG, "TextFileInputDialog.ContentOfFirstFile.DialogTitle"), (nrLines==0?BaseMessages.getString(PKG, "TextFileInputDialog.ContentOfFirstFile.AllLines.DialogMessage") : BaseMessages.getString(PKG, "TextFileInputDialog.ContentOfFirstFile.NLines.DialogMessage",""+nrLines)), firstlines, true);
                         etd.setReadOnly();
@@ -3168,7 +3168,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		int maxsize=0;
 		for (int i=0;i<rows.size();i++) 
 		{
-			int len = ((String)rows.get(i)).length();
+			int len = rows.get(i).length();
 			if (len>maxsize) maxsize=len;
 		}
 

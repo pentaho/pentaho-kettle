@@ -118,7 +118,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 	            
 	            if(meta.istablenameInField())	
 	            {
-		            data.insertStatement = (PreparedStatement) data.preparedStatements.get(data.realSchemaTable+"insert");
+		            data.insertStatement = data.preparedStatements.get(data.realSchemaTable+"insert");
 		            if (data.insertStatement==null)
 		            {
 		                String sql = data.db.getInsertStatement(data.realSchemaName,data.realTableName, data.insertRowMeta);
@@ -171,7 +171,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 		            if(meta.istablenameInField())	
 			        {
 						// Prepare Lookup statement
-						data.lookupStatement = (PreparedStatement) data.preparedStatements.get(data.realSchemaTable+"lookup");
+						data.lookupStatement = data.preparedStatements.get(data.realSchemaTable+"lookup");
 			            if (data.lookupStatement==null)
 			            {
 			                String sql = getLookupStatement(data.inputRowMeta);
@@ -237,7 +237,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 						
 					    if(meta.istablenameInField())	
 					    {
-							data.updateStatement = (PreparedStatement) data.preparedStatements.get(data.realSchemaTable+"update");
+							data.updateStatement = data.preparedStatements.get(data.realSchemaTable+"update");
 				            if(data.updateStatement==null)
 				            {
 				            	String sql =getUpdateStatement(data.inputRowMeta);
@@ -291,7 +291,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 					
 					if(meta.istablenameInField())
 					{
-				        data.deleteStatement = (PreparedStatement) data.preparedStatements.get(data.realSchemaTable+"delete");
+				        data.deleteStatement = data.preparedStatements.get(data.realSchemaTable+"delete");
 				        
 				        if(data.deleteStatement==null)
 				        {
@@ -510,7 +510,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
                 {
                     for (int i=0;i<data.batchBuffer.size();i++)
                     {
-                        Object[] rowb = (Object[]) data.batchBuffer.get(i);
+                        Object[] rowb = data.batchBuffer.get(i);
                         putRow(data.outputRowMeta, rowb);
                         incrementLinesOutput();
                     }
@@ -546,7 +546,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
             int errNr = 0;
             for (int i=0;i<updateCounts.length;i++)
             {
-                Object[] row = (Object[]) data.batchBuffer.get(i);
+                Object[] row = data.batchBuffer.get(i);
                 if (updateCounts[i]>0)
                 {
                     // send the error forward
@@ -573,7 +573,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
             // 
             for (int i=0;i<data.batchBuffer.size();i++)
             {
-                Object[] row = (Object[]) data.batchBuffer.get(i);
+                Object[] row = data.batchBuffer.get(i);
                 putError(data.outputRowMeta, row, 1L, errorMessage, null, "SUYNC003");
             }
         }
@@ -826,7 +826,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 				// Prepare Lookup statement
 				if(meta.isPerformLookup())
 				{
-					data.lookupStatement = (PreparedStatement) data.preparedStatements.get(data.realSchemaTable+"lookup");
+					data.lookupStatement = data.preparedStatements.get(data.realSchemaTable+"lookup");
 		            if (data.lookupStatement==null)
 		            {
 		                String sql = getLookupStatement(data.inputRowMeta);
@@ -839,7 +839,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 
 				
 				// Prepare Insert statement
-				data.insertStatement = (PreparedStatement) data.preparedStatements.get(data.realSchemaTable+"insert");
+				data.insertStatement = data.preparedStatements.get(data.realSchemaTable+"insert");
 	            if (data.insertStatement==null)
 	            {
 	                String sql = data.db.getInsertStatement(data.realSchemaName,data.realTableName, data.insertRowMeta);
@@ -852,7 +852,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 	            
 	            // Prepare Update Statement
 	        	
-				data.updateStatement = (PreparedStatement) data.preparedStatements.get(data.realSchemaTable+"update");
+				data.updateStatement = data.preparedStatements.get(data.realSchemaTable+"update");
 	            if(data.updateStatement==null)
 	            {
 	            	String sql =getUpdateStatement(data.inputRowMeta);
@@ -863,7 +863,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 	            }
 				
 				// Prepare delete statement
-	            data.deleteStatement = (PreparedStatement) data.preparedStatements.get(data.realSchemaTable+"delete");
+	            data.deleteStatement = data.preparedStatements.get(data.realSchemaTable+"delete");
 		        if(data.deleteStatement==null)
 		        {
 		        	String sql =getDeleteStatement(data.inputRowMeta);
@@ -987,7 +987,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 	            }
 	            for (int i=0;i<data.batchBuffer.size();i++)
 	            {
-	                Object[] row = (Object[]) data.batchBuffer.get(i);
+	                Object[] row = data.batchBuffer.get(i);
 	                putRow(data.outputRowMeta, row);
 	                incrementLinesOutput();
 	            }

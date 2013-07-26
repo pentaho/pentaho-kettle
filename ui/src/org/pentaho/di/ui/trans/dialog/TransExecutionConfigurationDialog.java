@@ -211,7 +211,7 @@ public class TransExecutionConfigurationDialog extends Dialog
         wRemoteHost.setLayoutData(fdRemoteHost);
         for (int i=0;i<transMeta.getSlaveServers().size();i++)
         {
-            SlaveServer slaveServer = (SlaveServer)transMeta.getSlaveServers().get(i);
+            SlaveServer slaveServer = transMeta.getSlaveServers().get(i);
             wRemoteHost.add(slaveServer.toString());
         }
         

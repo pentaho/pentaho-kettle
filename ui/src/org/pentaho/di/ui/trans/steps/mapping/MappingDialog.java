@@ -822,6 +822,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
       mappingTransMeta = repository.loadTransformation(referenceObjectId, null); // load the last version
       mappingTransMeta.clearChanged();
       break;
+      default:
+        break;
 	  }
 	}
 	
@@ -936,6 +938,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
           case REPOSITORY_BY_REFERENCE:
             getByReferenceData(newTransMeta.getObjectId());
             break;
+          default:
+            break;
         }
       }
     }
@@ -983,6 +987,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         referenceObjectId = mappingMeta.getTransObjectId();
         wByReference.setText("");
         getByReferenceData(referenceObjectId);
+        break;
+      default:
         break;
     }
     setRadioButtons();
@@ -1796,6 +1802,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
       mappingMeta.setTransName(null);
       mappingMeta.setTransObjectId(referenceObjectId);
       break;
+      default:
+        break;
     }
 
 		// Load the information on the tabs, optionally do some

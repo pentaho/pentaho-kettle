@@ -289,6 +289,7 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
               aggregate.agg[i] = (Long) value + 1;
             }
           }
+          break;
         case MemoryGroupByMeta.TYPE_GROUP_COUNT_ALL:
           if (!subjMeta.isNull(subj)) {
             aggregate.counts[i]++;
@@ -483,7 +484,6 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
             ag = Double.valueOf(Math.sqrt(sum));
             break;
           case MemoryGroupByMeta.TYPE_GROUP_CONCAT_COMMA:
-            ;
           case MemoryGroupByMeta.TYPE_GROUP_CONCAT_STRING:
             ag = ((StringBuilder) ag).toString();
             break;

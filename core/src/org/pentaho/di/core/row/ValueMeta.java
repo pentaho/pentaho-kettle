@@ -134,6 +134,7 @@ public class ValueMeta extends ValueMetaBase implements ValueMetaInterface {
   /**
    * @deprecated
    */
+  @Override
   @Deprecated
   public void setType(int type) {
     // TODO Auto-generated method stub

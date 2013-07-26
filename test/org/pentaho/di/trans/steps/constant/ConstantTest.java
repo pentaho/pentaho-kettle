@@ -43,7 +43,6 @@ import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
 
 
@@ -174,7 +173,7 @@ public class ConstantTest extends TestCase
         
         // Set the information of the row generator.                
         String rowGeneratorPid = registry.getPluginId(StepPluginType.class, rm);
-        StepMeta rowGeneratorStep = new StepMeta(rowGeneratorPid, rowGeneratorStepname, (StepMetaInterface)rm);
+        StepMeta rowGeneratorStep = new StepMeta(rowGeneratorPid, rowGeneratorStepname, rm);
         transMeta.addStep(rowGeneratorStep);
         
         //
@@ -281,7 +280,7 @@ public class ConstantTest extends TestCase
         cnst1.setEmptyString(setEmptystring);
 
         String addSeqPid1 = registry.getPluginId(StepPluginType.class, cnst1);
-        StepMeta addSeqStep1 = new StepMeta(addSeqPid1, constStepname1, (StepMetaInterface)cnst1);
+        StepMeta addSeqStep1 = new StepMeta(addSeqPid1, constStepname1, cnst1);
         transMeta.addStep(addSeqStep1);                              
 
         TransHopMeta hi1 = new TransHopMeta(rowGeneratorStep, addSeqStep1);

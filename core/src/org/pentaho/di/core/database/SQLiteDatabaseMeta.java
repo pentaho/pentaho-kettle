@@ -34,7 +34,8 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class SQLiteDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
-	public int[] getAccessTypeList()
+	@Override
+  public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
 	}
@@ -42,7 +43,8 @@ public class SQLiteDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	/**
 	 * @see org.pentaho.di.core.database.DatabaseInterface#getNotFoundTK(boolean)
 	 */
-	public int getNotFoundTK(boolean use_autoinc)
+	@Override
+  public int getNotFoundTK(boolean use_autoinc)
 	{
 		if ( supportsAutoInc() && use_autoinc)
 		{
@@ -51,7 +53,8 @@ public class SQLiteDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 		return super.getNotFoundTK(use_autoinc);
 	}
 	
-	public String getDriverClass()
+	@Override
+  public String getDriverClass()
 	{
         if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE)
         {
@@ -64,6 +67,7 @@ public class SQLiteDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
 	}
 	
+    @Override
     public String getURL(String hostname, String port, String databaseName)
     {
         if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE)
@@ -80,7 +84,8 @@ public class SQLiteDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	 * Checks whether or not the command setFetchSize() is supported by the JDBC driver...
 	 * @return true is setFetchSize() is supported!
 	 */
-	public boolean isFetchSizeSupported()
+	@Override
+  public boolean isFetchSizeSupported()
 	{
 		return false;
 	}
@@ -88,7 +93,8 @@ public class SQLiteDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	/**
 	 * @see org.pentaho.di.core.database.DatabaseInterface#getSchemaTableCombination(java.lang.String, java.lang.String)
 	 */
-	@SuppressWarnings("deprecation")
+	@Override
+  @SuppressWarnings("deprecation")
   public String getSchemaTableCombination(String schema_name, String table_part)
 	{
 		return getBackwardsCompatibleSchemaTableCombination(schema_name, table_part);
@@ -96,7 +102,8 @@ public class SQLiteDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	/**
 	 * @return true if the database supports bitmap indexes
 	 */
-	public boolean supportsBitmapIndex()
+	@Override
+  public boolean supportsBitmapIndex()
 	{
 		return false;
 	}
@@ -104,7 +111,8 @@ public class SQLiteDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	/**
 	 * @return true if Kettle can create a repository on this type of database.
 	 */
-	public boolean supportsRepository()
+	@Override
+  public boolean supportsRepository()
 	{
 		return false;
 	}
@@ -113,7 +121,8 @@ public class SQLiteDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	 * @param tableName The table to be truncated.
 	 * @return The SQL statement to truncate a table: remove all rows from it without a transaction
 	 */
-	public String getTruncateTableStatement(String tableName)
+	@Override
+  public String getTruncateTableStatement(String tableName)
 	{
 	    return "DELETE FROM "+tableName;
 	}
@@ -131,7 +140,8 @@ public class SQLiteDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to add a column to the specified table
 	 */
-	public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" ADD "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
@@ -146,12 +156,14 @@ public class SQLiteDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to modify a column in the specified table
 	 */
-	public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" MODIFY "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
 
-	public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
+	@Override
+  public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
 	{
 		String retval="";
 		
@@ -210,6 +222,7 @@ public class SQLiteDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 		return retval;
 	}
 
+    @Override
     public String[] getUsedLibraries()
     {
         return new String[] { "sqlite-jdbc-3.7.2.jar" };
@@ -219,6 +232,7 @@ public class SQLiteDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
      * @return true if the database supports error handling (the default). 
      *         Returns false for certain databases (SQLite) that invalidate a prepared statement or even the complete connection when an error occurs. 
      */
+    @Override
     public boolean supportsErrorHandling() {
       return false;
     }

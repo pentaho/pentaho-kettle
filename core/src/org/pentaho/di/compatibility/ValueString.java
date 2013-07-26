@@ -44,7 +44,8 @@ public class ValueString implements ValueInterface, Cloneable
 	private int length;
 	
 	private static final ThreadLocal<SimpleDateFormat>  LOCAL_SIMPLE_DATE_PARSER = new ThreadLocal<SimpleDateFormat>() {
-		protected SimpleDateFormat initialValue() {
+		@Override
+    protected SimpleDateFormat initialValue() {
 			return new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
      	}
     };
@@ -60,33 +61,38 @@ public class ValueString implements ValueInterface, Cloneable
 		length = -1;
 	}
 
-	public int getType()
+	@Override
+  public int getType()
 	{
 		return Value.VALUE_TYPE_STRING;
 	}
 
-	public String getTypeDesc()
+	@Override
+  public String getTypeDesc()
 	{
 		return "String";
 	}
 
-	public String getString()
+	@Override
+  public String getString()
 	{
 		return this.string;
 	}
 
-	public double getNumber()
+	@Override
+  public double getNumber()
 	{
 		return Const.toDouble( string, 0.0);
 	}
 
-	public Date getDate()
+	@Override
+  public Date getDate()
 	{
 	    if (string!=null)
 	    {
 			try
 			{
-				return ((SimpleDateFormat)LOCAL_SIMPLE_DATE_PARSER.get()).parse(string);
+				return LOCAL_SIMPLE_DATE_PARSER.get().parse(string);
 			}
 			catch(ParseException e)
 			{
@@ -95,66 +101,79 @@ public class ValueString implements ValueInterface, Cloneable
 	    return null;
 	}
 
-	public boolean getBoolean()
+	@Override
+  public boolean getBoolean()
 	{
 		return "Y".equalsIgnoreCase(string) || "TRUE".equalsIgnoreCase(string) || "YES".equalsIgnoreCase(string) || "1".equalsIgnoreCase(string);
 	}
 
-	public long getInteger()
+	@Override
+  public long getInteger()
 	{
 		return Const.toLong(Const.ltrim(string), 0L); // Remove the leading space to make "int to string to int" conversion possible.
 	}
 	
-	public void    setString(String string)
+	@Override
+  public void    setString(String string)
 	{
 		this.string = string;
 	}
 	
-	public void    setNumber(double number)
+	@Override
+  public void    setNumber(double number)
 	{
 		this.string = ""+number;
 	}
 	
-	public void    setDate(Date date)
+	@Override
+  public void    setDate(Date date)
 	{
-		this.string = ((SimpleDateFormat)LOCAL_SIMPLE_DATE_PARSER.get()).format(date);
+		this.string = LOCAL_SIMPLE_DATE_PARSER.get().format(date);
 	}
 	
-	public void    setBoolean(boolean bool)
+	@Override
+  public void    setBoolean(boolean bool)
 	{
 		this.string = bool?"Y":"N";
 	}
 	
-	public void    setInteger(long number)
+	@Override
+  public void    setInteger(long number)
 	{
 		this.string = ""+number;
 	}
 	
-	public int getLength()
+	@Override
+  public int getLength()
 	{
 		return length;
 	}
 	
-	public int getPrecision()
+	@Override
+  public int getPrecision()
 	{
 		return -1;
 	}
 	
-	public void setLength(int length, int precision)
+	@Override
+  public void setLength(int length, int precision)
 	{
 		this.length = length;
 	}
 	
-	public void setLength(int length)
+	@Override
+  public void setLength(int length)
 	{
 		this.length = length;
 	}
 	
-	public void setPrecision(int precision)
+	@Override
+  public void setPrecision(int precision)
 	{
 	}
 
-	public Object clone()
+	@Override
+  public Object clone()
 	{
 		try
 		{
@@ -167,6 +186,7 @@ public class ValueString implements ValueInterface, Cloneable
 		}
 	}
     
+    @Override
     public BigDecimal getBigNumber()
     {
         if (Const.isEmpty(string)) return null;
@@ -180,20 +200,24 @@ public class ValueString implements ValueInterface, Cloneable
         return new BigDecimal(string);
     }
     
+    @Override
     public void setBigNumber(BigDecimal number)
     {
         string = number.toString();
     }
     
+    @Override
     public Serializable getSerializable() {
         return string;
     }
 
+    @Override
     public void setSerializable(Serializable ser) {
         ser.toString();
     }
 
-	public byte[] getBytes() {
+	@Override
+  public byte[] getBytes() {
         if (string==null) return null;
         
         char arr[] = string.toCharArray();
@@ -207,7 +231,8 @@ public class ValueString implements ValueInterface, Cloneable
         return retByte;
 	}
 
-	public void setBytes(byte[] b) {
+	@Override
+  public void setBytes(byte[] b) {
 		try
 		{
             string = new String(b, "US-ASCII");

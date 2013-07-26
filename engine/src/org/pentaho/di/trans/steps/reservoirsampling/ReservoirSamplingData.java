@@ -161,7 +161,7 @@ public class ReservoirSamplingData extends BaseStepData
       double r = m_random.nextDouble();
       if (r < ((double)m_k / (double)m_currentRow)) {
         r = m_random.nextDouble();
-        int replace = (int)((double)m_k * r);
+        int replace = (int)(m_k * r);
         setElement(m_sample, replace, row);
       }
     }

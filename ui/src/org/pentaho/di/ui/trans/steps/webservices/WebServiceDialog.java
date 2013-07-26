@@ -298,7 +298,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         	
             for (int cpt = 0; cpt < wsdlOperation.getParameters().size(); cpt++)
             {
-                WsdlOpParameter param = (WsdlOpParameter) wsdlOperation.getParameters().get(cpt);
+                WsdlOpParameter param = wsdlOperation.getParameters().get(cpt);
                 if (param.isArray())
                 {
                     //setInFieldArgumentName(param.getName().getLocalPart());
@@ -309,7 +309,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                         {
                             for (Iterator<String> itrType = type.getElementNames().iterator(); itrType.hasNext();)
                             {
-                                String attributeName = (String) itrType.next();
+                                String attributeName = itrType.next();
                                 QName attributeType = type.getElementType(attributeName);
                                 if (!WebServiceMeta.XSD_NS_URI.equals(attributeType.getNamespaceURI()))
                                 {
@@ -382,7 +382,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                         {
                             for (Iterator<String> itrType = type.getElementNames().iterator(); itrType.hasNext();)
                             {
-                                String attributeName = (String) itrType.next();
+                                String attributeName = itrType.next();
                                 QName attributeType = type.getElementType(attributeName);
                                 if (!WebServiceMeta.XSD_NS_URI.equals(attributeType.getNamespaceURI()))
                                 {
@@ -762,7 +762,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
 
             for (Iterator<WebServiceField> itr = meta.getFieldsIn().iterator(); itr.hasNext();)
             {
-                WebServiceField field = (WebServiceField) itr.next();
+                WebServiceField field = itr.next();
                 TableItem vTableItem = new TableItem(fieldInTableView.table, SWT.NONE);
                 if (field.getName() != null)
                 {
@@ -782,7 +782,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
 
             for (Iterator<WebServiceField> itr = meta.getFieldsOut().iterator(); itr.hasNext();)
             {
-                WebServiceField field = (WebServiceField) itr.next();
+                WebServiceField field = itr.next();
                 TableItem vTableItem = new TableItem(fieldOutTableView.table, SWT.NONE);
                 if (field.getName() != null)
                 {
@@ -1461,7 +1461,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                 Arrays.sort(prevStepFieldNames);
                 // bPreviousFieldsLoaded = true;
                 for (int i = 0; i < fieldColumns.size(); i++) {
-                    ColumnInfo colInfo = (ColumnInfo) fieldColumns.get(i);
+                    ColumnInfo colInfo = fieldColumns.get(i);
                     colInfo.setComboValues(prevStepFieldNames);
                 }
             }

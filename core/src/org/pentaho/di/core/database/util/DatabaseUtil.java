@@ -51,6 +51,7 @@ public class DatabaseUtil implements DataSourceProviderInterface
    * Implementation of DatasourceProviderInterface.
    * 
    */
+  @Override
   public DataSource getNamedDataSource(String datasourceName) throws DataSourceNamingException {
     try {
       return DatabaseUtil.getDataSourceFromJndi(datasourceName);

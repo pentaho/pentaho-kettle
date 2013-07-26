@@ -56,51 +56,60 @@ public class ValueBigNumber implements ValueInterface, Cloneable
 		this.precision = -1;
 	}
 
-	public int getType()
+	@Override
+  public int getType()
 	{
 		return Value.VALUE_TYPE_BIGNUMBER;
 	}
     
+    @Override
     public Serializable getSerializable() {
         return number;
     }
 
-	public String getTypeDesc()
+	@Override
+  public String getTypeDesc()
 	{
 		return "BigNumber";
 	}
 
-	public String getString()
+	@Override
+  public String getString()
 	{
         if (number==null) return null;
 		return number.toString();
 	}
 
-	public double getNumber()
+	@Override
+  public double getNumber()
 	{
         if (number==null) return 0.0;
 		return this.number.doubleValue();
 	}
 
-	public Date getDate()
+	@Override
+  public Date getDate()
 	{
         if (number==null) return null;
 		return new Date(number.longValue());
 	}
 
-	public boolean getBoolean()
+	@Override
+  public boolean getBoolean()
 	{
         if (number==null) return false;
 		return number.longValue()!=0L;
 	}
 
-	public long getInteger()
+	@Override
+  public long getInteger()
 	{
         if (number==null) return 0L;
 		return number.longValue();
 	}
 	
-	public void    setString(String string)
+	@Override
+  public void    setString(String string)
 	{
 		try
         {
@@ -112,58 +121,69 @@ public class ValueBigNumber implements ValueInterface, Cloneable
         }
 	}
 	
-	public void    setNumber(double number)
+	@Override
+  public void    setNumber(double number)
 	{
 		this.number = BigDecimal.valueOf(number);
 	}
 	
-	public void    setDate(Date date)
+	@Override
+  public void    setDate(Date date)
 	{
 		this.number = new BigDecimal( date.getTime() );
 	}
 	
-	public void    setBoolean(boolean bool)
+	@Override
+  public void    setBoolean(boolean bool)
 	{
 		this.number = bool ? BigDecimal.ONE : BigDecimal.ZERO;
 	}
 	
-	public void    setInteger(long number)
+	@Override
+  public void    setInteger(long number)
 	{
 		this.number = new BigDecimal( number );
 	}
 
+    @Override
     public void setSerializable(Serializable ser) {
         
     }
 	
 	
-	public int getLength()
+	@Override
+  public int getLength()
 	{
 		return length;
 	}
 	
-	public int getPrecision()
+	@Override
+  public int getPrecision()
 	{
 		return precision;
 	}
 	
-	public void setLength(int length, int precision)
+	@Override
+  public void setLength(int length, int precision)
 	{
 		this.length = length;
 		this.precision = precision;
 	}
 	
-	public void setLength(int length)
+	@Override
+  public void setLength(int length)
 	{
 		this.length = length;
 	}
 	
-	public void setPrecision(int precision)
+	@Override
+  public void setPrecision(int precision)
 	{
 		this.precision = precision;
 	}
 	
-	public Object clone()
+	@Override
+  public Object clone()
 	{
 		try
 		{
@@ -176,20 +196,24 @@ public class ValueBigNumber implements ValueInterface, Cloneable
 		}
 	}
 
+    @Override
     public BigDecimal getBigNumber()
     {
         return number;
     }
 
+    @Override
     public void setBigNumber(BigDecimal number)
     {
         this.number = number;
     }
 
-	public byte[] getBytes() {
+	@Override
+  public byte[] getBytes() {
 		return null;
 	}
 
-	public void setBytes(byte[] b) {
+	@Override
+  public void setBytes(byte[] b) {
 	}
 }

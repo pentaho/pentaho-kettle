@@ -79,7 +79,8 @@ public class KettleVFS
     	// Install a shutdown hook to make sure that the file system manager is closed
     	// This will clean up temporary files in vfs_cache
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable(){
-        	public void run() {
+        	@Override
+          public void run() {
         	  if (fsm != null) {
         		  fsm.close();
         	  }
@@ -365,6 +366,7 @@ public class KettleVFS
     {
         return new Comparator<FileObject>()
         {
+            @Override
             public int compare(FileObject o1, FileObject o2)
             {
                 String filename1 = getFilename( o1);

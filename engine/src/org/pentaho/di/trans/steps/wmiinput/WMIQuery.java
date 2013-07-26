@@ -173,7 +173,7 @@ public class WMIQuery {
 	        Object[] arrayObj = (Object[])array.getArrayInstance();
 	       
             IJIDispatch wbemObject_dispatch = (IJIDispatch) narrowObject(((JIVariant)arrayObj[0]).getObjectAsComObject());
-            JIVariant variant2 = (JIVariant)(wbemObject_dispatch.callMethodA("GetObjectText_",new Object[]{new Integer(1)}))[0];
+            JIVariant variant2 = (wbemObject_dispatch.callMethodA("GetObjectText_",new Object[]{new Integer(1)}))[0];
        
             String props[] = variant2.getObjectAsString().getString().split("[\n\r(\r\n)\\n]");                  
             
@@ -268,7 +268,7 @@ public class WMIQuery {
 	        Object[] arrayObj = (Object[])array.getArrayInstance();
 	       
             IJIDispatch wbemObject_dispatch = (IJIDispatch) narrowObject(((JIVariant)arrayObj[0]).getObjectAsComObject());
-            JIVariant variant2 = (JIVariant)(wbemObject_dispatch.callMethodA("GetObjectText_",new Object[]{new Integer(1)}))[0];               
+            JIVariant variant2 = (wbemObject_dispatch.callMethodA("GetObjectText_",new Object[]{new Integer(1)}))[0];               
           
             return  getRowData(variant2.getObjectAsString().getString());
 

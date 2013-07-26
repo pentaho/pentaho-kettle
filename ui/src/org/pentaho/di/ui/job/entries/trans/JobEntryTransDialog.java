@@ -1178,6 +1178,8 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
           case REPOSITORY_BY_REFERENCE:
             getByReferenceData(newTransMeta.getObjectId());
             break;
+          default:
+            break;
         }
         getParameters(newTransMeta);
       }
@@ -1393,7 +1395,9 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
       if(rep != null) {
         getByReferenceData(jobEntry.getTransObjectId());
       }
-      break;   
+      break;
+    default:
+      break;
     }
     setRadioButtons();
 
@@ -1502,6 +1506,8 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
       jet.setDirectory(null);
       jet.setTransname(null);
       jet.setTransObjectId(referenceObjectId);
+      break;
+    default:
       break;
     }
 

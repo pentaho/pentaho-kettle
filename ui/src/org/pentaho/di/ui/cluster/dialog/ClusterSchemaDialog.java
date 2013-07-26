@@ -111,7 +111,7 @@ public class ClusterSchemaDialog extends Dialog
 	public ClusterSchemaDialog(Shell par, ClusterSchema clusterSchema, List<SlaveServer> slaveServers)
 	{
 		super(par, SWT.NONE);
-		this.clusterSchema=(ClusterSchema) clusterSchema.clone();
+		this.clusterSchema=clusterSchema.clone();
         this.originalSchema=clusterSchema;
         this.slaveServers = slaveServers;
                 

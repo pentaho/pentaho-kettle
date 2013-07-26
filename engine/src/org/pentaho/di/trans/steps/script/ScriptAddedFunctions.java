@@ -201,8 +201,8 @@ public class ScriptAddedFunctions {
 	  
 	public static Object getTransformationName(ScriptEngine actualContext, Bindings actualObject, Object[] ArgList, Object FunctionContext){
 		try{
-			Object objTranName = (String) actualObject.get("_TransformationName_");
-			return (String)objTranName;
+			Object objTranName = actualObject.get("_TransformationName_");
+			return objTranName;
 		}catch(Exception e){
 			throw new RuntimeException(e.toString());
 		}
@@ -263,12 +263,12 @@ public class ScriptAddedFunctions {
 				ScriptInterface scm = (ScriptInterface) scmO;
 				String strType = ((String) ArgList[0]).toLowerCase();
 				
-				if(strType.equals("i")) return (double)scm.getLinesInput();
-				else if(strType.equals("o")) return (double)scm.getLinesOutput();
-				else if(strType.equals("r")) return (double)scm.getLinesRead();
-				else if(strType.equals("u")) return (double)scm.getLinesUpdated();
-				else if(strType.equals("w")) return (double)scm.getLinesWritten();
-        else if(strType.equals("e")) return (double)scm.getLinesRejected();
+				if(strType.equals("i")) return scm.getLinesInput();
+				else if(strType.equals("o")) return scm.getLinesOutput();
+				else if(strType.equals("r")) return scm.getLinesRead();
+				else if(strType.equals("u")) return scm.getLinesUpdated();
+				else if(strType.equals("w")) return scm.getLinesWritten();
+        else if(strType.equals("e")) return scm.getLinesRejected();
 				else return 0;
 			}catch(Exception e){
 				//throw new RuntimeException(e.toString());
@@ -523,7 +523,7 @@ public class ScriptAddedFunctions {
 					if(strType.equals("y")){
 						return new Double(endDate.get(Calendar.YEAR) - startDate.get(Calendar.YEAR));
 					}else if(strType.equals("m")){
-						int iMonthsToAdd = (int)(endDate.get(Calendar.YEAR) - startDate.get(Calendar.YEAR)) * 12;
+						int iMonthsToAdd = (endDate.get(Calendar.YEAR) - startDate.get(Calendar.YEAR)) * 12;
 						return new Double((endDate.get(Calendar.MONTH) - startDate.get(Calendar.MONTH)) + iMonthsToAdd);
 					}else if(strType.equals("d")){
 						return new Double(((endL - startL) / 86400000));
@@ -590,7 +590,7 @@ public class ScriptAddedFunctions {
 				else if(isUndefined(ArgList, new int[]{0,1,2})) return undefinedValue;
 				java.util.Date dIn = (java.util.Date) ArgList[0];
 				String strType = ((String) ArgList[1]).toLowerCase();
-				int iValue = (int) (Integer) ArgList[2];
+				int iValue = (Integer) ArgList[2];
 				Calendar cal = Calendar.getInstance(); 
 				cal.setTime(dIn);
 				if(strType.equals("y")) cal.add(Calendar.YEAR, iValue);
@@ -622,7 +622,7 @@ public class ScriptAddedFunctions {
     			if(isNull(ArgList, new int[]{0,1})) return null;
 				else if(isUndefined(ArgList, new int[]{0,1})) return (String)undefinedValue;
     			String fillChar = (String) ArgList[0];
-    			int count = (int) (Integer) ArgList[1];
+    			int count = (Integer) ArgList[1];
     			if(fillChar.length()!=1){
     				throw new RuntimeException("Please provide a valid Char to the fillString");
     			}else{
@@ -703,7 +703,7 @@ public class ScriptAddedFunctions {
 	    		 else if(isUndefined(ArgList, new int[]{0,1,2})) return (String)undefinedValue;
 	    		 String valueToPad = (String) ArgList[0];
 	    		 String filler = (String) ArgList[1];
-	    		 int size = (int) (Integer) ArgList[2];
+	    		 int size = (Integer) ArgList[2];
 	    		 
 	    		 while (valueToPad.length() < size){
 	    			 valueToPad = filler + valueToPad;
@@ -723,7 +723,7 @@ public class ScriptAddedFunctions {
 	    		 else if(isUndefined(ArgList, new int[]{0,1,2})) return (String)undefinedValue;
 	    		 String valueToPad = (String) ArgList[0];
 	    		 String filler = (String) ArgList[1];
-	    		 int size = (int) (Integer) ArgList[2];
+	    		 int size = (Integer) ArgList[2];
 	    		 
 	    	        while (valueToPad.length() < size) {
 	    	            valueToPad = valueToPad+filler;
@@ -1085,7 +1085,7 @@ public class ScriptAddedFunctions {
 
 				// Setting the Subject and Content Type
 				msg.setSubject((String)ArgList[3]);
-				msg.setContent((String)ArgList[4], "text/plain");
+				msg.setContent(ArgList[4], "text/plain");
 				Transport.send(msg);
 			}catch(Exception e){
 				throw new RuntimeException("sendMail: "+e.toString() );
@@ -1439,7 +1439,7 @@ public class ScriptAddedFunctions {
 				InetAddress addr = InetAddress.getByName((String) ArgList[0]);
 				if(((String) ArgList[1]).equals("IP")) sRC = addr.getHostName();
 				else sRC = addr.getHostAddress();
-				if(sRC.equals((String) ArgList[0])) sRC="-";
+				if(sRC.equals(ArgList[0])) sRC="-";
 			}catch(Exception e){
 				sRC="-";
 			}
@@ -2146,16 +2146,21 @@ public static String getParentFoldername(ScriptEngine actualContext, Bindings ac
 				// MONTHS
 				case 5: cal.set(Calendar.MONTH, 1);
 				// DAYS
+				//$FALL-THROUGH$
 				case 4: cal.set(Calendar.DAY_OF_MONTH, 1);
 				// HOURS 
+        //$FALL-THROUGH$
 				case 3: cal.set(Calendar.HOUR_OF_DAY, 0);
 				// MINUTES
+        //$FALL-THROUGH$
 				case 2: cal.set(Calendar.MINUTE, 0);
 				// SECONDS
+        //$FALL-THROUGH$
 				case 1: cal.set(Calendar.SECOND, 0);
-	            // MILI-SECONDS
-	            case 0: cal.set(Calendar.MILLISECOND, 0);  break;
-				default:
+        // MILI-SECONDS
+        //$FALL-THROUGH$
+	      case 0: cal.set(Calendar.MILLISECOND, 0);  break;
+	      default:
 					throw new RuntimeException("Argument of TRUNC of date has to be between 0 and 5");
 				}
 				

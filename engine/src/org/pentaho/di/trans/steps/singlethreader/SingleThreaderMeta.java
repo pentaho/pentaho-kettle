@@ -325,6 +325,8 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
       // Read the last revision by reference...
       mappingTransMeta = rep.loadTransformation(mappingMeta.getTransObjectId(), null);
       break;
+      default:
+        break;
     }
     
     // Pass some important information to the mapping transformation metadata:

@@ -497,7 +497,7 @@ public class StepsMetricsDialog extends BaseStepDialog implements StepDialogInte
 				}
 			}
 		}
-		previousSteps = (String[]) entries.toArray(new String[entries.size()]);
+		previousSteps = entries.toArray(new String[entries.size()]);
 	}
 	private void get()
 	{

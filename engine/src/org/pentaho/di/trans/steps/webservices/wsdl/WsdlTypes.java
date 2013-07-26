@@ -161,7 +161,7 @@ public final class WsdlTypes implements Serializable {
         if (type.indexOf(':') > -1) {
             String prefix = type.substring(0, type.indexOf(':'));
             type = type.substring(type.indexOf(':') + 1);
-            return new QName((String) _prefixMappings.get(prefix), type);
+            return new QName(_prefixMappings.get(prefix), type);
         }
         else {
             return new QName(_targetNamespace, type);

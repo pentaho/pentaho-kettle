@@ -210,7 +210,7 @@ public class BlockUntilStepsFinishDialog extends BaseStepDialog implements StepD
 				}
 			}
 		}
-		previousSteps = (String[]) entries.toArray(new String[entries.size()]);
+		previousSteps = entries.toArray(new String[entries.size()]);
 	}
 	private void get()
 	{

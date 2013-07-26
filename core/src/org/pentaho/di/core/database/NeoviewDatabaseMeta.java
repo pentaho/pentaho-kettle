@@ -39,12 +39,14 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
-	public int[] getAccessTypeList()
+	@Override
+  public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI};
 	}
 	
-	public int getDefaultDatabasePort()
+	@Override
+  public int getDefaultDatabasePort()
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE) return 18650;
 		return -1;
@@ -53,7 +55,8 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	/**
 	 * @return Whether or not the database can use auto increment type of fields (pk)
 	 */
-	public boolean supportsAutoInc()
+	@Override
+  public boolean supportsAutoInc()
 	{
 		return false; // Neoview can support this but can not read it back
 	}
@@ -61,7 +64,8 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	/**
 	 * @see org.pentaho.di.core.database.DatabaseInterface#getLimitClause(int)
 	 */
-	public String getLimitClause(int nrRows)
+	@Override
+  public String getLimitClause(int nrRows)
 	{
 		// it is SELECT [FIRST N] * FROM xyz but this is not supported by the Database class
 		return "";
@@ -72,16 +76,19 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	 * @param tableName The name of the table to determine the layout for
 	 * @return The SQL to launch.
 	 */
-	public String getSQLQueryFields(String tableName)
+	@Override
+  public String getSQLQueryFields(String tableName)
 	{
 	    return "SELECT [FIRST 1] * FROM "+tableName;
 	}
 
+    @Override
     public String getSQLTableExists(String tablename)
     {
         return getSQLQueryFields(tablename);
     }
     
+    @Override
     public String getSQLColumnExists(String columnname, String tablename)
     {
         return  getSQLQueryColumnFields(columnname, tablename);
@@ -91,12 +98,14 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
         return "SELECT [FIRST 1] " + columnname + " FROM "+tableName;
     }
     
+    @Override
     public boolean needsToLockAllTables()
     {
         return false;
     }
 	
-	public String getDriverClass()
+	@Override
+  public String getDriverClass()
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
 		{
@@ -108,6 +117,7 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 		}
 	}
 	
+    @Override
     public String getURL(String hostname, String port, String databaseName) throws KettleDatabaseException
     {
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
@@ -133,6 +143,7 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
     /**
      * Neoview supports options in the URL.
      */
+    @Override
     public boolean supportsOptionsInURL()
     {
         return true;
@@ -141,7 +152,8 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	/**
 	 * @return true if we need to supply the schema-name to getTables in order to get a correct list of items.
 	 */
-	public boolean useSchemaNameForTableList()
+	@Override
+  public boolean useSchemaNameForTableList()
 	{
 		return true;
 	}
@@ -149,7 +161,8 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	/**
 	 * @return true if the database supports synonyms
 	 */
-	public boolean supportsSynonyms()
+	@Override
+  public boolean supportsSynonyms()
 	{
 		return true;
 	}
@@ -164,7 +177,8 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to add a column to the specified table
 	 */
-	public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" ADD ( "+getFieldDefinition(v, tk, pk, use_autoinc, true, false)+" ) ";
 	}
@@ -179,7 +193,8 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to drop a column from the specified table
 	 */
-	public String getDropColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getDropColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" DROP ( "+v.getName()+" ) "+Const.CR;
 	}
@@ -194,12 +209,14 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to modify a column in the specified table
 	 */
-	public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" MODIFY "+getFieldDefinition(v, tk, pk, use_autoinc, true, false); 
 	}
 
-	public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
+	@Override
+  public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
 	{
 		String retval="";
 		
@@ -289,7 +306,8 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	/* (non-Javadoc)
 	 * @see com.ibridge.kettle.core.database.DatabaseInterface#getReservedWords()
 	 */
-	public String[] getReservedWords()
+	@Override
+  public String[] getReservedWords()
 	{
 		return new String[] 
 	     {
@@ -324,6 +342,7 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 		 };
 	}
 	
+    @Override
     public String getSQLLockTables(String tableNames[])
     {
         StringBuffer sql=new StringBuffer(128);
@@ -334,6 +353,7 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
         return sql.toString();
     }
     
+    @Override
     public String getSQLUnlockTables(String tableNames[])
     {
         return null; // commit handles the unlocking!
@@ -342,33 +362,39 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
     /**
      * @return extra help text on the supported options on the selected database platform.
      */
+    @Override
     public String getExtraOptionsHelpText()
     {
         return  "http://docs.hp.com/en/busintellsol.html";
     }
 
+    @Override
     public String[] getUsedLibraries()
     {
         return new String[] { "hpt4jdbc.jar" };
     }
 
+    @Override
     public boolean supportsBitmapIndex()
     {
     	return false;
     }
 
-	public int getMaxVARCHARLength()
+	@Override
+  public int getMaxVARCHARLength()
 	{
 		return 4028;
 	}
 	
-	public boolean supportsRepository()
+	@Override
+  public boolean supportsRepository()
 	{
 		// not tested, yet: due to constraints on BLOB fields
 		return false;
 	}  
 
-	public String getTruncateTableStatement(String tableName)
+	@Override
+  public String getTruncateTableStatement(String tableName)
 	{
 	    return "DELETE FROM "+tableName;
 	}
@@ -383,6 +409,7 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
    * @return The correctly converted Kettle data type corresponding to the valueMeta description.
    * @throws KettleDatabaseException
    */
+  @Override
   public Object getValueFromResultSet(ResultSet rs, ValueMetaInterface val, int i) throws KettleDatabaseException {
     Object data = null;
     

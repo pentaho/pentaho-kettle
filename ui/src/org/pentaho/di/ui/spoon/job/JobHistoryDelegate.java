@@ -256,6 +256,8 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
                   }
                 }
                 break;
+              default:
+                break;
             }
             ValueMetaInterface valueMeta = new ValueMeta(field.getFieldName(), valueType, field.getLength(), -1);
             if (conversionMask!=null) valueMeta.setConversionMask(conversionMask);
@@ -576,6 +578,8 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
           case INITIAL:
             models[index].batchCount = 1;
             queryLimit = BATCH_SIZE;
+            break;
+          default:
             break;
         }
         database.setQueryLimit(queryLimit);

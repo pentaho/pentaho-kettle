@@ -98,7 +98,7 @@ public final class CharsetInfo {
                     CharsetInfo value = new CharsetInfo(tmp.getProperty(key));
 
                     // Ensure only one CharsetInfo instance exists per charset
-                    CharsetInfo prevInstance = (CharsetInfo) instances.get(
+                    CharsetInfo prevInstance = instances.get(
                             value.getCharset());
                     if (prevInstance != null) {
                         if (prevInstance.isWideChars() != value.isWideChars()) {
@@ -134,7 +134,7 @@ public final class CharsetInfo {
      * @return the associated <code>CharsetInfo</code>
      */
     public static CharsetInfo getCharset(String serverCharset) {
-        return (CharsetInfo) charsets.get(serverCharset.toUpperCase());
+        return charsets.get(serverCharset.toUpperCase());
     }
 
     /**
@@ -145,7 +145,7 @@ public final class CharsetInfo {
      * @return the associated <code>CharsetInfo</code>
      */
     public static CharsetInfo getCharsetForLCID(int lcid) {
-        return (CharsetInfo) lcidToCharsetMap.get(new Integer(lcid));
+        return lcidToCharsetMap.get(new Integer(lcid));
     }
 
     /**
@@ -172,13 +172,13 @@ public final class CharsetInfo {
 
         if (collation[4] != 0) {
             // The charset is determined by the sort order
-            charset = getCharsetForSortOrder((int) collation[4] & 0xFF);
+            charset = getCharsetForSortOrder(collation[4] & 0xFF);
         } else {
             // The charset is determined by the LCID
             charset = getCharsetForLCID(
-                    ((int) collation[2] & 0x0F) << 16
-                    | ((int) collation[1] & 0xFF) << 8
-                    | ((int) collation[0] & 0xFF));
+                    (collation[2] & 0x0F) << 16
+                    | (collation[1] & 0xFF) << 8
+                    | (collation[0] & 0xFF));
         }
 
         if (charset == null) {

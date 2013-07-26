@@ -45,7 +45,6 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.monetdbbulkloader.MonetDBBulkLoaderMeta;
@@ -87,7 +86,7 @@ public class MonetDBAgileMartDialog extends MonetDBBulkLoaderDialog implements S
 	
 	public MonetDBAgileMartDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
-		super(parent, (BaseStepMeta)in, transMeta, sname);
+		super(parent, in, transMeta, sname);
 		input = (MonetDBBulkLoaderMeta) in;
 	}
 

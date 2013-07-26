@@ -57,7 +57,8 @@ public class SimpleLoggingObject implements LoggingObjectInterface {
 	/**
 	 * @return the name
 	 */
-	public String getObjectName() {
+	@Override
+  public String getObjectName() {
 		return objectName;
 	}
 
@@ -72,7 +73,8 @@ public class SimpleLoggingObject implements LoggingObjectInterface {
 	/**
 	 * @return the objectType
 	 */
-	public LoggingObjectType getObjectType() {
+	@Override
+  public LoggingObjectType getObjectType() {
 		return objectType;
 	}
 
@@ -87,7 +89,8 @@ public class SimpleLoggingObject implements LoggingObjectInterface {
 	/**
 	 * @return the parent
 	 */
-	public LoggingObjectInterface getParent() {
+	@Override
+  public LoggingObjectInterface getParent() {
 		return parent;
 	}
 
@@ -99,30 +102,37 @@ public class SimpleLoggingObject implements LoggingObjectInterface {
 		this.parent = parent;
 	}
 
-	public String getFilename() {
+	@Override
+  public String getFilename() {
 		return null;
 	}
 
-	public String getLogChannelId() {
+	@Override
+  public String getLogChannelId() {
 		return null;
 	}
 
-	public String getObjectCopy() {
+	@Override
+  public String getObjectCopy() {
 		return null;
 	}
 
-	public ObjectId getObjectId() {
+	@Override
+  public ObjectId getObjectId() {
 		return null;
 	}
 
-	public ObjectRevision getObjectRevision() {
+	@Override
+  public ObjectRevision getObjectRevision() {
 		return null;
 	}
 
-	public RepositoryDirectory getRepositoryDirectory() {
+	@Override
+  public RepositoryDirectory getRepositoryDirectory() {
 		return null;
 	}
 
+  @Override
   public LogLevel getLogLevel() {
     return logLevel;
   }
@@ -131,6 +141,7 @@ public class SimpleLoggingObject implements LoggingObjectInterface {
     this.logLevel = logLevel;
   }
   
+  @Override
   public String getContainerObjectId() {
     return containerObjectId;
   }
@@ -142,6 +153,7 @@ public class SimpleLoggingObject implements LoggingObjectInterface {
   /**
    * @return the registrationDate
    */
+  @Override
   public Date getRegistrationDate() {
     return registrationDate;
   }
@@ -156,6 +168,7 @@ public class SimpleLoggingObject implements LoggingObjectInterface {
   /**
    * @return the gatheringMetrics
    */
+  @Override
   public boolean isGatheringMetrics() {
     return gatheringMetrics;
   }
@@ -163,6 +176,7 @@ public class SimpleLoggingObject implements LoggingObjectInterface {
   /**
    * @param gatheringMetrics the gatheringMetrics to set
    */
+  @Override
   public void setGatheringMetrics(boolean gatheringMetrics) {
     this.gatheringMetrics = gatheringMetrics;
   }
@@ -170,6 +184,7 @@ public class SimpleLoggingObject implements LoggingObjectInterface {
   /**
    * @return the forcingSeparateLogging
    */
+  @Override
   public boolean isForcingSeparateLogging() {
     return forcingSeparateLogging;
   }
@@ -177,6 +192,7 @@ public class SimpleLoggingObject implements LoggingObjectInterface {
   /**
    * @param forcingSeparateLogging the forcingSeparateLogging to set
    */
+  @Override
   public void setForcingSeparateLogging(boolean forcingSeparateLogging) {
     this.forcingSeparateLogging = forcingSeparateLogging;
   }

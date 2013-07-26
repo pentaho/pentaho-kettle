@@ -121,7 +121,7 @@ public class SyslogDefs {
 	}
 
 	static public int getPriority( String priority )throws SyslogException {
-		Integer result = (Integer) SyslogDefs.priHash.get( priority );
+		Integer result = SyslogDefs.priHash.get( priority );
 		
 		if ( result == null ){
 			throw new SyslogException (BaseMessages.getString(PKG, "JobEntrySyslog.UnknownPriotity", priority));
@@ -131,7 +131,7 @@ public class SyslogDefs {
 	}
 
 	static public int getFacility( String facility ) throws SyslogException {
-		Integer result = (Integer) SyslogDefs.facHash.get( facility );
+		Integer result = SyslogDefs.facHash.get( facility );
 
 		if ( result == null ) {
 			throw new SyslogException (BaseMessages.getString(PKG, "JobEntrySyslog.UnknownFacility", facility));

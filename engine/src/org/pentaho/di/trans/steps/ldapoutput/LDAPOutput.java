@@ -112,8 +112,8 @@ public class LDAPOutput extends BaseStep implements StepInterface
 					data.fieldStreamToUpdate = new int[data.nrfieldsToUpdate];
 					data.fieldsAttributeToUpdate = new String[data.nrfieldsToUpdate];
 					for(int i=0; i<fieldsToUpdateInStreaml.size(); i++) {
-						data.fieldStreamToUpdate[i] = (Integer)fieldsToUpdateInStreaml.get(i);
-						data.fieldsAttributeToUpdate[i] = (String)fieldsToUpdateAttributel.get(i);
+						data.fieldStreamToUpdate[i] = fieldsToUpdateInStreaml.get(i);
+						data.fieldsAttributeToUpdate[i] = fieldsToUpdateAttributel.get(i);
 					}
 				}
 				fieldsToUpdateInStreaml=null;

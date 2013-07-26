@@ -207,7 +207,7 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
 	    if (argFromPrevious && rows != null)  {
 	      // Copy the input row to the (command line) arguments
 	      for (int iteration = 0; iteration < rows.size() && !parentJob.isStopped(); iteration++) {
-	    	  resultRow = (RowMetaAndData) rows.get(iteration);
+	    	  resultRow = rows.get(iteration);
 	
 	    	 // Get values from previous result 
 	        String filefolder_previous = resultRow.getString(0, "");

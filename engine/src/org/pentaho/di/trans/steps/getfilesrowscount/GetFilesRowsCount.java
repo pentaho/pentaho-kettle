@@ -22,7 +22,6 @@
 
 package org.pentaho.di.trans.steps.getfilesrowscount;
 
-import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileType;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
@@ -204,7 +203,7 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 	            
 			    // Is this the last file?
 				data.last_file = ( data.filenr==data.files.nrOfFiles()-1);
-				data.file = (FileObject) data.files.getFile((int)data.filenr);
+				data.file = data.files.getFile((int)data.filenr);
 				
 
 			}else

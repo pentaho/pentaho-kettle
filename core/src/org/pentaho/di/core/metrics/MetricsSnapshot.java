@@ -119,6 +119,7 @@ public class MetricsSnapshot implements MetricsSnapshotInterface {
   /**
    * @return the date
    */
+  @Override
   public Date getDate() {
     return date;
   }
@@ -127,6 +128,7 @@ public class MetricsSnapshot implements MetricsSnapshotInterface {
    * @param date
    *          the date to set
    */
+  @Override
   public void setDate(Date date) {
     this.date = date;
   }
@@ -149,6 +151,7 @@ public class MetricsSnapshot implements MetricsSnapshotInterface {
   /**
    * @return the subject
    */
+  @Override
   public String getSubject() {
     return subject;
   }
@@ -164,6 +167,7 @@ public class MetricsSnapshot implements MetricsSnapshotInterface {
   /**
    * @return the value
    */
+  @Override
   public Long getValue() {
     return value;
   }
@@ -172,6 +176,7 @@ public class MetricsSnapshot implements MetricsSnapshotInterface {
    * @param value
    *          the value to set
    */
+  @Override
   public void setValue(Long value) {
     this.value = value;
   }
@@ -179,6 +184,7 @@ public class MetricsSnapshot implements MetricsSnapshotInterface {
   /**
    * @return the logChannelId
    */
+  @Override
   public String getLogChannelId() {
     return logChannelId;
   }
@@ -194,6 +200,7 @@ public class MetricsSnapshot implements MetricsSnapshotInterface {
   /**
    * @return the metric
    */
+  @Override
   public MetricsInterface getMetric() {
     return metric;
   }

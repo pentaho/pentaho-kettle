@@ -34,23 +34,27 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class CacheDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
-	public int[] getAccessTypeList()
+	@Override
+  public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
 	}
 	
-	public int getDefaultDatabasePort()
+	@Override
+  public int getDefaultDatabasePort()
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE) return 1972;
 		return -1;
 	}
 	
-	public boolean supportsSetCharacterStream()
+	@Override
+  public boolean supportsSetCharacterStream()
 	{
 		return false;
 	}
 	
-	public boolean isFetchSizeSupported() 
+	@Override
+  public boolean isFetchSizeSupported() 
 	{
 		return false;
 	}
@@ -58,12 +62,14 @@ public class CacheDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	/**
 	 * @return Whether or not the database can use auto increment type of fields (pk)
 	 */
-	public boolean supportsAutoInc()
+	@Override
+  public boolean supportsAutoInc()
 	{
 		return false;
 	}
 	
-	public String getDriverClass()
+	@Override
+  public String getDriverClass()
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
 		{
@@ -75,6 +81,7 @@ public class CacheDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 		}
 	}
 
+    @Override
     public String getURL(String hostname, String port, String databaseName)
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
@@ -97,7 +104,8 @@ public class CacheDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to add a column to the specified table
 	 */
-	public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" ADD COLUMN ( "+getFieldDefinition(v, tk, pk, use_autoinc, true, false)+" ) ";
 	}
@@ -112,7 +120,8 @@ public class CacheDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to drop a column from the specified table
 	 */
-	public String getDropColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getDropColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" DROP COLUMN "+v.getName()+Const.CR;
 	}
@@ -127,12 +136,14 @@ public class CacheDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to modify a column in the specified table
 	 */
-	public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return "ALTER TABLE "+tablename+" ALTER COLUMN "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
 
-	public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
+	@Override
+  public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
 	{
 		String retval="";
 		
@@ -192,6 +203,7 @@ public class CacheDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 		return retval;
 	}
 
+    @Override
     public String[] getUsedLibraries()
     {
         return new String[] { "CacheDB.jar" };    
@@ -200,14 +212,16 @@ public class CacheDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	/**
 	 * @return true if we need to append the PRIMARY KEY block in the create table block after the fields, required for Cache.
 	 */
-	public boolean requiresCreateTablePrimaryKeyAppend() {
+	@Override
+  public boolean requiresCreateTablePrimaryKeyAppend() {
 		return true;
 	}
 
 	/**
 	 * @return true if the database supports newlines in a SQL statements.
 	 */
-	public boolean supportsNewLinesInSQL() {
+	@Override
+  public boolean supportsNewLinesInSQL() {
 		return false;
 	}
 

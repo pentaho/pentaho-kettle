@@ -49,7 +49,7 @@ public class BaseMessages implements LAFChangeListener<MessageHandler> {
 	
 	private void init() {
 		//counting on LAFFactory to return a class conforming to @see MessageHandler
-		handler = (MessageHandler)LAFFactory.getHandler(clazz);
+		handler = LAFFactory.getHandler(clazz);
 	}
 	
 	public static BaseMessages getInstance() {
@@ -105,7 +105,8 @@ public class BaseMessages implements LAFChangeListener<MessageHandler> {
 		return getString(packageClass, key, strings);
 	}
 
-	public void notify(MessageHandler changedObject) {
+	@Override
+  public void notify(MessageHandler changedObject) {
 		handler = changedObject;
 	}
 }

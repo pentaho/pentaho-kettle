@@ -346,10 +346,11 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
                   logRowlevel(valueMeta.getBinary(valueData) + ":"
                       + valueMeta.getLength() + ":" + valueMeta.getTypeDesc());
                 entity.add(valueMeta.getBinary(valueData));
-    
-                default:
-                    // Unknown datatype - it's worth a try?!? ;)
-                    entity.add(r[i]);
+                break;
+              default:
+                // Unknown datatype - it's worth a try?!? ;)
+                entity.add(r[i]);
+                break;
                  
             }
         }

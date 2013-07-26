@@ -728,7 +728,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 			wReturn.table.removeAll();
 			wReturn.table.setItemCount(mappings.size());
 			for (int i = 0; i < mappings.size(); i++) {
-				SourceToTargetMapping mapping = (SourceToTargetMapping) mappings.get(i);
+				SourceToTargetMapping mapping = mappings.get(i);
 				TableItem item = wReturn.table.getItem(i);
 				item.setText(2, sourceFields.getValueMeta(mapping.getSourcePosition()).getName());
 				item.setText(1, targetFields.getValueMeta(mapping.getTargetPosition()).getName());
@@ -799,7 +799,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
         Set<String> keySet = fields.keySet();
         List<String> entries = new ArrayList<String>(keySet);
         
-        String[] fieldNames= (String[]) entries.toArray(new String[entries.size()]);
+        String[] fieldNames= entries.toArray(new String[entries.size()]);
         Const.sortStrings(fieldNames);
         // return fields
         ciReturn[1].setComboValues(fieldNames);
@@ -974,7 +974,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 			public void run() {
 				//clear
 				for (int i = 0; i < tableFieldColumns.size(); i++) {
-					ColumnInfo colInfo = (ColumnInfo) tableFieldColumns.get(i);
+					ColumnInfo colInfo = tableFieldColumns.get(i);
 					colInfo.setComboValues(new String[] {});
 				}
 				if (!Const.isEmpty(wTable.getText())) {
@@ -991,14 +991,14 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 								String[] fieldNames = r.getFieldNames();
 								if (null != fieldNames) {
 									for (int i = 0; i < tableFieldColumns.size(); i++) {
-										ColumnInfo colInfo = (ColumnInfo) tableFieldColumns.get(i);
+										ColumnInfo colInfo = tableFieldColumns.get(i);
 										colInfo.setComboValues(fieldNames);
 									}
 								}
 							}
 						} catch (Exception e) {
 							for (int i = 0; i < tableFieldColumns.size(); i++) {
-								ColumnInfo colInfo = (ColumnInfo) tableFieldColumns	.get(i);
+								ColumnInfo colInfo = tableFieldColumns	.get(i);
 								colInfo.setComboValues(new String[] {});
 							}
 							// ignore any errors here. drop downs will not be

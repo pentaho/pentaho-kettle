@@ -419,7 +419,7 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 				String[] prevStepFieldNames = prevFields.getFieldNames();
 				Arrays.sort(prevStepFieldNames);
 				for (int i = 0; i < inputFieldColumns.size(); i++) {
-					ColumnInfo colInfo = (ColumnInfo) outputFieldColumns.get(i);
+					ColumnInfo colInfo = outputFieldColumns.get(i);
 					colInfo.setComboValues(prevStepFieldNames);
 				}
 			}

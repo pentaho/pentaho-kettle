@@ -24,7 +24,6 @@ package org.pentaho.di.trans.steps.numberrange;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
-import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -67,7 +66,7 @@ public class NumberRange extends BaseStep implements StepInterface
 				first = false;
 	
 				numberRange = new NumberRangeSet(meta.getRules(), meta.getFallBackValue());
-				data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
+				data.outputRowMeta = getInputRowMeta().clone();
 				// Prepare output fields
 				meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
 	

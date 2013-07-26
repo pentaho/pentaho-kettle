@@ -62,6 +62,7 @@ public class BlockingRowSet extends BaseRowSet implements Comparable<RowSet>, Ro
     /* (non-Javadoc)
 	 * @see org.pentaho.di.core.RowSetInterface#putRow(org.pentaho.di.core.row.RowMetaInterface, java.lang.Object[])
 	 */
+    @Override
     public boolean putRow(RowMetaInterface rowMeta, Object[] rowData)
     {
     	return putRowWait(rowMeta, rowData, timeoutPut, TimeUnit.MILLISECONDS);
@@ -70,6 +71,7 @@ public class BlockingRowSet extends BaseRowSet implements Comparable<RowSet>, Ro
     /* (non-Javadoc)
 	 * @see org.pentaho.di.core.RowSetInterface#putRowWait(org.pentaho.di.core.row.RowMetaInterface, java.lang.Object[], long, java.util.concurrent.TimeUnit)
 	 */
+    @Override
     public boolean putRowWait(RowMetaInterface rowMeta, Object[] rowData, long time, TimeUnit tu) {
     	this.rowMeta = rowMeta;
     	try{
@@ -92,6 +94,7 @@ public class BlockingRowSet extends BaseRowSet implements Comparable<RowSet>, Ro
     /* (non-Javadoc)  System.getProperty("KETTLE_ROWSET_PUT_TIMEOUT")
 	 * @see org.pentaho.di.core.RowSetInterface#getRow()
 	 */
+    @Override
     public Object[] getRow(){
     	return getRowWait(timeoutGet, TimeUnit.MILLISECONDS);
     }
@@ -100,6 +103,7 @@ public class BlockingRowSet extends BaseRowSet implements Comparable<RowSet>, Ro
     /* (non-Javadoc)
 	 * @see org.pentaho.di.core.RowSetInterface#getRowImmediate()
 	 */       
+    @Override
     public Object[] getRowImmediate(){
 
     	return queArray.poll();	    	
@@ -108,6 +112,7 @@ public class BlockingRowSet extends BaseRowSet implements Comparable<RowSet>, Ro
     /* (non-Javadoc)
 	 * @see org.pentaho.di.core.RowSetInterface#getRowWait(long, java.util.concurrent.TimeUnit)
 	 */
+    @Override
     public Object[] getRowWait(long timeout, TimeUnit tu){
 
     	try{
@@ -118,6 +123,7 @@ public class BlockingRowSet extends BaseRowSet implements Comparable<RowSet>, Ro
     	}
     }
     
+    @Override
     public int size() {
     	return queArray.size();
     }

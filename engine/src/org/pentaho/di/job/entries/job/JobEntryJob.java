@@ -569,6 +569,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
           logDetailed("Loading job from repository by reference : [" + jobObjectId + "]");
         }
         break;
+      default:
+        break;
       }
 
       JobMeta jobMeta = getJobMeta(rep, this);
@@ -620,7 +622,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         }
         
         if (rows != null && execPerRow) {
-          resultRow = (RowMetaAndData) rows.get(iteration);
+          resultRow = rows.get(iteration);
         } else {
           resultRow = null;
         }

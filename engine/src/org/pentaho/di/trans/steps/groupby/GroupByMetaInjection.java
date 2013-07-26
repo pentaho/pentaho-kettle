@@ -162,6 +162,8 @@ public class GroupByMetaInjection implements StepMetaInjectionInterface {
                   String value = (String)entry.getValue();
                   switch(metaEntry) {
                   case GROUP_FIELDNAME: groupFieldname = value; break;
+                  default:
+                    break;
                   }
                 }
               }
@@ -192,6 +194,8 @@ public class GroupByMetaInjection implements StepMetaInjectionInterface {
                   case AGG_SUBJECT: aggSubject = value; break;
                   case AGG_TYPE: aggType= GroupByMeta.getType(value); break;
                   case AGG_VALUE: aggValue = value; break;
+                  default:
+                    break;
                   }
                 }
               }
@@ -210,6 +214,8 @@ public class GroupByMetaInjection implements StepMetaInjectionInterface {
       case GROUP_LINE_NUMBER_ENABLED: meta.setAddingLineNrInGroup("Y".equalsIgnoreCase(lookValue)); break;
       case GROUP_LINE_NUMBER_FIELDNAME: meta.setLineNrInGroupField(lookValue); break;
       case ALLWAYS_PASS_A_ROW: meta.setAlwaysGivingBackOneRow("Y".equalsIgnoreCase(lookValue)); break;
+      default:
+        break;
       }
     }
     

@@ -55,6 +55,7 @@ public class RowMetaAndData implements Cloneable
         this.data = data;
     }
     
+    @Override
     public RowMetaAndData clone()
     {
         RowMetaAndData c = new RowMetaAndData();
@@ -112,6 +113,7 @@ public class RowMetaAndData implements Cloneable
         this.rowMeta = rowMeta;
     }
 
+    @Override
     public int hashCode()
     {
         try
@@ -124,6 +126,7 @@ public class RowMetaAndData implements Cloneable
         }
     }
     
+    @Override
     public boolean equals(Object obj)
     {
         try

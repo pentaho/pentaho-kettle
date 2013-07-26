@@ -115,13 +115,6 @@ public abstract class UIRepositoryObject extends AbstractModelNode<UIRepositoryO
   static class RepositoryObjectComparator implements Comparator<UIRepositoryObject> {
 
     public int compare(UIRepositoryObject o1, UIRepositoryObject o2) {
-      if (!(o1 instanceof UIRepositoryObject)){
-        return -1;
-      }
-      if (!(o2 instanceof UIRepositoryObject)){
-        return -1;
-      }
-
       int cat1 = o1.getCategory();
       int cat2 = o2.getCategory();
       if (cat1 != cat2) {

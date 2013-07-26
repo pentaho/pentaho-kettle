@@ -176,6 +176,8 @@ public class SqlTransExecutor {
           serviceTransMeta.setParameterValue(mapping.getVariableName(), json);
         }
         break;
+        default:
+          break;
      }
     }
   }
@@ -200,6 +202,8 @@ public class SqlTransExecutor {
     case Condition.FUNC_NULL: sql.append("IS NULL"); break;
     case Condition.FUNC_NOT_NULL: sql.append("IS NOT NULL"); break;
     case Condition.FUNC_CONTAINS: sql.append("LIKE"); break;
+      default:
+        break;
     }
     sql.append(" ");
     sql.append(getAtomicConditionRightSql(atomicCondition));
@@ -286,6 +290,8 @@ public class SqlTransExecutor {
     case Condition.FUNC_NULL: sql.append("IS NULL"); sql.append(">"); sql.append("'").append(fieldName).append("' : \"\""); break;
     case Condition.FUNC_NOT_NULL: sql.append("'").append(fieldName).append("' : { '$ne' : ").append("\"\"").append(" }"); break;
     case Condition.FUNC_CONTAINS: sql.append("'").append(fieldName).append("' : { '$regex' : '.*").append(atomicCondition.getRightExactString()).append(".*', '$options' : 'i' }"); break;
+      default:
+        break;
     }
     
     return sql.toString();

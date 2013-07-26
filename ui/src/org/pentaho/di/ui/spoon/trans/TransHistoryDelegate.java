@@ -254,6 +254,8 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
                   }
                 }
                 break;
+              default:
+                break;
             }
             
             ValueMetaInterface valueMeta = new ValueMeta(field.getFieldName(), valueType, field.getLength(), -1);
@@ -483,6 +485,8 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
           case INITIAL:
             models[index].batchCount = 1;
             queryLimit = BATCH_SIZE;
+            break;
+          default:
             break;
         }
         database.setQueryLimit(queryLimit);

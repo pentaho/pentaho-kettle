@@ -140,22 +140,22 @@ public class ValueDataUtilTest extends TestCase
 
     public void testDateDiff_A_GT_B() {
     	Object daysDiff = calculate("2010-05-12", "2010-01-01", ValueMetaInterface.TYPE_DATE, CalculatorMetaFunction.CALC_DATE_DIFF);
-    	assertEquals(new Long(131), (Long)daysDiff);
+    	assertEquals(new Long(131), daysDiff);
     }
 
     public void testDateDiff_A_LT_B() {
     	Object daysDiff = calculate("2010-12-31", "2011-02-10", ValueMetaInterface.TYPE_DATE, CalculatorMetaFunction.CALC_DATE_DIFF);
-    	assertEquals(new Long(-41), (Long)daysDiff);
+    	assertEquals(new Long(-41), daysDiff);
     }
 
     public void testWorkingDaysDays_A_GT_B() {
     	Object daysDiff = calculate("2010-05-12", "2010-01-01", ValueMetaInterface.TYPE_DATE, CalculatorMetaFunction.CALC_DATE_WORKING_DIFF);
-    	assertEquals(new Long(93), (Long)daysDiff);
+    	assertEquals(new Long(93), daysDiff);
     }
 
     public void testWorkingDaysDays_A_LT_B() {
     	Object daysDiff = calculate("2010-12-31", "2011-02-10", ValueMetaInterface.TYPE_DATE, CalculatorMetaFunction.CALC_DATE_WORKING_DIFF);
-    	assertEquals(new Long(-29), (Long)daysDiff);
+    	assertEquals(new Long(-29), daysDiff);
     }
     
     public void testAdd() {

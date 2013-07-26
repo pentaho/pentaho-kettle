@@ -776,6 +776,8 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
       mappingTransMeta = repository.loadTransformation(referenceObjectId, null); // load the last version
       mappingTransMeta.clearChanged();
       break;
+      default:
+        break;
 	  }
 	  
 	  wInjectStep.setText(getInjectorStep(mappingTransMeta));
@@ -828,6 +830,8 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
         referenceObjectId = singleThreaderMeta.getTransObjectId();
         wByReference.setText("");
         getByReferenceData(referenceObjectId);
+        break;
+      default:
         break;
     }
     setRadioButtons();
@@ -920,6 +924,8 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
       meta.setTransName(null);
       meta.setTransObjectId(referenceObjectId);
       break;
+      default:
+        break;
     }
 
     meta.setBatchSize(wBatchSize.getText());
@@ -1084,6 +1090,8 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
             break;
           case REPOSITORY_BY_REFERENCE:
             getByReferenceData(newTransMeta.getObjectId());
+            break;
+          default:
             break;
         }
         

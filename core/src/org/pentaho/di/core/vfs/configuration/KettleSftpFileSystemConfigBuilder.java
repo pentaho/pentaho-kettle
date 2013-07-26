@@ -86,19 +86,19 @@ public class KettleSftpFileSystemConfigBuilder extends KettleGenericFileSystemCo
         if(!parameterContainsHost(fullParameterName) || fullParameterName.endsWith(file.getHostName())) {
           // Match special cases for parameter names
           if(name.equalsIgnoreCase("AuthKeyPassphrase")) { 
-            setParam(opts, UserInfo.class.getName(), new PentahoUserInfo((String)value));
+            setParam(opts, UserInfo.class.getName(), new PentahoUserInfo(value));
           } else if (name.equals("identity")) { 
             File[] identities = (File[])this.getParam(opts, "identities"); 
             
             if(identities == null) {
-              identities = new File[] {new File((String)value)};
+              identities = new File[] {new File(value)};
             } else {
               // Copy, in a Java 5 friendly manner, identities into a larger array 
               File[] temp = new File[identities.length + 1];
               System.arraycopy(identities, 0, temp, 0, identities.length);
               identities = temp;
               
-              identities[identities.length - 1] = new File((String)value);
+              identities[identities.length - 1] = new File(value);
             }
             setParam(opts, "identities", identities); 
           } else {
@@ -127,26 +127,32 @@ public class KettleSftpFileSystemConfigBuilder extends KettleGenericFileSystemCo
       this.passphrase = passphrase;
     }
     
+    @Override
     public String getPassphrase() {
       return passphrase; // Passphrase for the authentication key
     }
 
+    @Override
     public String getPassword() {
       return password; // Appears to be unused in this usage
     }
 
+    @Override
     public boolean promptPassphrase(String arg0) {
         return true;
     }
 
+    @Override
     public boolean promptPassword(String arg0) {
       return false;  
     }
 
+    @Override
     public boolean promptYesNo(String arg0) {
       return false;
     }
 
+    @Override
     public void showMessage(String arg0) {
     }
   };

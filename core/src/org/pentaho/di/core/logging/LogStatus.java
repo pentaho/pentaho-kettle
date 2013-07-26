@@ -48,7 +48,8 @@ public enum LogStatus {
 		return status;
 	}
 	
-	public String toString() {
+	@Override
+  public String toString() {
 		return status;
 	}
 	

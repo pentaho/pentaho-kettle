@@ -96,7 +96,7 @@ public class KettleDependencies
             }
         }
         
-        libraryFiles = Const.getDistinctStrings( (String[]) libraries.toArray(new String[libraries.size()]) );
+        libraryFiles = Const.getDistinctStrings( libraries.toArray(new String[libraries.size()]) );
     }
 
     /**

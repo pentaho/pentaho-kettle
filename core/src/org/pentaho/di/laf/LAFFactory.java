@@ -71,7 +71,7 @@ public class LAFFactory {
 	 */
 	public static <V extends Handler>V getHandler(Class<V> handler) {
 		LAFDelegate<V>l = getDelegate(handler);
-		return (V)l.getHandler();
+		return l.getHandler();
 	}
 	
 }

@@ -80,7 +80,7 @@ public class LAFDelegate<E extends Handler> {
 		E h = null;
 		try {
 			if (c.isAssignableFrom(handlerClass.getClass()));
-			h = (E)c.newInstance();
+			h = c.newInstance();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

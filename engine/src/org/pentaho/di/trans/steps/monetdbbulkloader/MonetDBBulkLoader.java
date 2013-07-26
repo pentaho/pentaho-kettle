@@ -373,6 +373,8 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
                 }
               }
               break;
+              default:
+                break;
             }
           } else {
             line.write(data.nullrepresentation);

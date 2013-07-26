@@ -39,12 +39,14 @@ public class SAPR3DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
     public static final String ATTRIBUTE_SAP_SYSTEM_NUMBER = "SAPSystemNumber";
     public static final String ATTRIBUTE_SAP_CLIENT = "SAPClient";
     
-	public int[] getAccessTypeList()
+	@Override
+  public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_PLUGIN };
 	}
 	
-	public int getDefaultDatabasePort()
+	@Override
+  public int getDefaultDatabasePort()
 	{
 		return -1;
 	}
@@ -52,16 +54,19 @@ public class SAPR3DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	/**
 	 * @return Whether or not the database can use auto increment type of fields (pk)
 	 */
-	public boolean supportsAutoInc()
+	@Override
+  public boolean supportsAutoInc()
 	{
 		return false;
 	}
 	
-	public String getDriverClass()
+	@Override
+  public String getDriverClass()
 	{
 			return null;
 	}
 
+    @Override
     public String getURL(String hostname, String port, String databaseName)
     {
 		return null;
@@ -70,7 +75,8 @@ public class SAPR3DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	/**
 	 * @return true if the database supports bitmap indexes
 	 */
-	public boolean supportsBitmapIndex()
+	@Override
+  public boolean supportsBitmapIndex()
 	{
 		return false;
 	}
@@ -78,7 +84,8 @@ public class SAPR3DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	/**
 	 * @return true if the database supports synonyms
 	 */
-	public boolean supportsSynonyms()
+	@Override
+  public boolean supportsSynonyms()
 	{
 		return false;
 	}
@@ -93,7 +100,8 @@ public class SAPR3DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to add a column to the specified table
 	 */
-	public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return null;
 	}
@@ -108,27 +116,32 @@ public class SAPR3DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to modify a column in the specified table
 	 */
-	public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	@Override
+  public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		return null;
 	}
 
-	public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
+	@Override
+  public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
 	{
 	    return null;
 	}
 	
-	public String [] getReservedWords()
+	@Override
+  public String [] getReservedWords()
 	{
 		return null;
 	}
     
+    @Override
     public String[] getUsedLibraries()
     {
         return new String[] { };
     }
     
-	public String getDatabaseFactoryName() {
+	@Override
+  public String getDatabaseFactoryName() {
 		return EnvUtil.getSystemProperty(Const.KETTLE_SAP_CONNECTION_FACTORY, Const.KETTLE_SAP_CONNECTION_FACTORY_DEFAULT_NAME);
 	}
 
@@ -136,7 +149,8 @@ public class SAPR3DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	 * @return true if this is a relational database you can explore.
 	 * Return false for SAP, PALO, etc.
 	 */
-	public boolean isExplorable() {
+	@Override
+  public boolean isExplorable() {
 		return false;
 	}
 

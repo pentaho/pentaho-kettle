@@ -54,7 +54,7 @@ public class LAFMessageHandler extends GlobalMessages {
     	if (GMinstance == null) {
     		GMinstance = new LAFMessageHandler();
     	}
-    	return (MessageHandler)GMinstance;
+    	return GMinstance;
     }
 	
 	protected void reinit() {
@@ -111,6 +111,7 @@ public class LAFMessageHandler extends GlobalMessages {
         return string; 
     }
     
+    @Override
     protected String calculateString(String packageName, String key, Object[] parameters, Class<?> resourceClass)
     {
         String string=null;        

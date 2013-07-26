@@ -62,7 +62,7 @@ public class UISupportRegistery {
   
   private IRepositoryExplorerUISupport contruct(Class<? extends IRepositoryExplorerUISupport> supportClass) throws UIObjectCreationException {
     try {
-      return  (IRepositoryExplorerUISupport) supportClass.newInstance();
+      return  supportClass.newInstance();
     } catch (Throwable th) {
       throw new UIObjectCreationException(th);
       

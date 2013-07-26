@@ -87,7 +87,7 @@ class ScriptHighlight implements LineStyleListener {
 
 	boolean inBlockComment(int start, int end) {
 		for (int i=0; i<blockComments.size(); i++) {
-			int[] offsets = (int[])blockComments.elementAt(i);
+			int[] offsets = blockComments.elementAt(i);
 			// start of comment in the line
 			if ((offsets[0] >= start) && (offsets[0] <= end)) return true;
 			// end of comment in the line
@@ -143,7 +143,7 @@ class ScriptHighlight implements LineStyleListener {
 				// do nothing
 			} else if ((token == WHITE) && (!styles.isEmpty())) {
 				int start = scanner.getStartOffset() + event.lineOffset;
-				lastStyle = (StyleRange)styles.lastElement();
+				lastStyle = styles.lastElement();
 				if (lastStyle.fontStyle != SWT.NORMAL) {
 					if (lastStyle.start + lastStyle.length == start) {
 						// have the white space take on the style before it to minimize font style
@@ -161,7 +161,7 @@ class ScriptHighlight implements LineStyleListener {
 					if (styles.isEmpty()) {
 						styles.addElement(style);
 					} else {
-						lastStyle = (StyleRange)styles.lastElement();
+						lastStyle = styles.lastElement();
 						if (lastStyle.similarTo(style) && (lastStyle.start + lastStyle.length == style.start)) {
 							lastStyle.length += style.length;
 						} else {
@@ -347,6 +347,8 @@ class ScriptHighlight implements LineStyleListener {
 						case '\\':
 							c= read();
 							break;
+              default:
+                break;
 					}
 				}
 
@@ -362,6 +364,8 @@ class ScriptHighlight implements LineStyleListener {
 						case '\\':
 							c= read();
 							break;
+              default:
+                break;
 						}
 					}	
 
@@ -387,9 +391,9 @@ class ScriptHighlight implements LineStyleListener {
 							c= read();
 						} while(Character.isJavaIdentifierPart((char)c));
 						unread(c);
-						Integer i= (Integer) fgKeys.get(fBuffer.toString());
+						Integer i= fgKeys.get(fBuffer.toString());
 						if (i != null) return i.intValue();
-						i= (Integer) kfKeys.get(fBuffer.toString());
+						i= kfKeys.get(fBuffer.toString());
 						if (i != null) return i.intValue();
 						return WORD;
 					}	

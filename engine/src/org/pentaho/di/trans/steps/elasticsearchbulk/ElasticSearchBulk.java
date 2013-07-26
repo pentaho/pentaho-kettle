@@ -209,7 +209,7 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
       requestBuilder.setOpType(this.opType);
 
       if(idFieldIndex != null){
-        requestBuilder.setId( (String) "" + row[idFieldIndex] );//"" just in case field isn't string
+        requestBuilder.setId( "" + row[idFieldIndex] );//"" just in case field isn't string
       }
       
       if (isJsonInsert) {

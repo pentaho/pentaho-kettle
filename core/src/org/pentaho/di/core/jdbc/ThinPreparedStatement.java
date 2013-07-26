@@ -109,6 +109,8 @@ public class ThinPreparedStatement extends ThinStatement implements PreparedStat
           boolean b = valueMeta.getBoolean(paramData[i]); 
           replacement = b ? "TRUE" : "FALSE";
           break;
+          default:
+            break;
         }
         if (replacement == null) {
           throw new KettleSQLException("Unhandled data type: "+valueMeta.getTypeDesc()+" replacing parameter "+(i+1));

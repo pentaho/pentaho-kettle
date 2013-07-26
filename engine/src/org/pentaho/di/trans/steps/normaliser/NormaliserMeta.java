@@ -263,8 +263,8 @@ public class NormaliserMeta extends BaseStepMeta implements StepMetaInterface
 		//
 		for (int i=0;i<norm_occ.size();i++)
 		{
-			String normname = (String)norm_occ.get(i);
-			String fieldname =(String)field_occ.get(i);
+			String normname = norm_occ.get(i);
+			String fieldname =field_occ.get(i);
 			ValueMetaInterface v = row.searchValueMeta(fieldname).clone();
 			v.setName(normname);
 			v.setOrigin(name);

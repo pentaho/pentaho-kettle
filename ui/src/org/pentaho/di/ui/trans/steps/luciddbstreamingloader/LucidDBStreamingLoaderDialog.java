@@ -1072,7 +1072,7 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
             myTb.table.removeAll();
             myTb.table.setItemCount(mappings.size());
             for (int i = 0; i < mappings.size(); i++) {
-                SourceToTargetMapping mapping = (SourceToTargetMapping) mappings.get(i);
+                SourceToTargetMapping mapping = mappings.get(i);
                 TableItem item = myTb.table.getItem(i);
                 item.setText(2, sourceFields.getValueMeta(
                     mapping.getSourcePosition()).getName());

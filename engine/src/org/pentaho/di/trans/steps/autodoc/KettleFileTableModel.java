@@ -165,7 +165,7 @@ public class KettleFileTableModel implements TableModel {
 		}
 		String logging="";
 		for (Iterator<LogTableInterface> iterator = logTables.iterator(); iterator.hasNext();) {
-			LogTableInterface logTableInterface = (LogTableInterface) iterator.next();
+			LogTableInterface logTableInterface = iterator.next();
 			if (logTableInterface.getDatabaseMeta()!=null && !Const.isEmpty(logTableInterface.getTableName())) {
 				if (logging.length()>0) logging+=", ";
 				logging+=logTableInterface.getTableName()+"@"+logTableInterface.getDatabaseMeta().getName();

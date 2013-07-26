@@ -404,7 +404,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
         Set<String> keySet = fields.keySet();
         List<String> entries = new ArrayList<String>(keySet);
         
-        String[] fieldNames= (String[]) entries.toArray(new String[entries.size()]);
+        String[] fieldNames= entries.toArray(new String[entries.size()]);
         Const.sortStrings(fieldNames);
         // Key fields
         ciKey[2].setComboValues(fieldNames);
@@ -462,7 +462,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 			public void run() {
 				//clear
 				for (int i = 0; i < tableFieldColumns.size(); i++) {
-					ColumnInfo colInfo = (ColumnInfo) tableFieldColumns.get(i);
+					ColumnInfo colInfo = tableFieldColumns.get(i);
 					colInfo.setComboValues(new String[] {});
 				}
 				if (!Const.isEmpty(wTable.getText())) {
@@ -479,14 +479,14 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 								String[] fieldNames = r.getFieldNames();
 								if (null != fieldNames) {
 									for (int i = 0; i < tableFieldColumns.size(); i++) {
-										ColumnInfo colInfo = (ColumnInfo) tableFieldColumns.get(i);
+										ColumnInfo colInfo = tableFieldColumns.get(i);
 										colInfo.setComboValues(fieldNames);
 									}
 								}
 							}
 						} catch (Exception e) {
 							for (int i = 0; i < tableFieldColumns.size(); i++) {
-								ColumnInfo colInfo = (ColumnInfo) tableFieldColumns	.get(i);
+								ColumnInfo colInfo = tableFieldColumns	.get(i);
 								colInfo.setComboValues(new String[] {});
 							}
 							// ignore any errors here. drop downs will not be

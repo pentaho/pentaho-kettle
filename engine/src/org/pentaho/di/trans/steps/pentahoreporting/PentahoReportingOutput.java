@@ -235,6 +235,8 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface
           break;
           
         case RTF: RTFReportUtil.createRTF(report, targetFilename); break;
+          default:
+            break;
         }
         
         ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(targetFilename, getTransMeta()), getTransMeta().getName(), getStepname());

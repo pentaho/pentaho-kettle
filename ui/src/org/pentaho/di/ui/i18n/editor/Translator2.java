@@ -247,7 +247,7 @@ public class Translator2 {
         }
         
         for (int i = 0; i < locales.length; i++) {
-          double donePct = 100 * (double) keyCounts[i] / (double) nrKeys;
+          double donePct = 100 * (double) keyCounts[i] / nrKeys;
           int missingKeys = nrKeys - keyCounts[i];
           String statusKeys = "# " + nrFormat.format(i + 1) + " : " + locales[i] + " : " + pctFormat.format(donePct)
               + "% " + BaseMessages.getString(PKG, "i18n.Log.CompleteKeys", keyCounts[i])

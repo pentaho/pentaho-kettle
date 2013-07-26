@@ -420,6 +420,6 @@ public class CharsetToolkit
 	public static Charset[] getAvailableCharsets()
 	{
 		Collection<Charset> collection = Charset.availableCharsets().values();
-		return (Charset[]) collection.toArray(new Charset[collection.size()]);
+		return collection.toArray(new Charset[collection.size()]);
 	}
 }

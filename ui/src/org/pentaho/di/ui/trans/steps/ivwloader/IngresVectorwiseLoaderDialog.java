@@ -126,7 +126,7 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
     shell = new Shell(getParent(), SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MIN | SWT.MAX);
     props.setLook(shell);
     
-    setShellImage(shell, (StepMetaInterface) input);
+    setShellImage(shell, input);
 
     changed = input.hasChanged();
 
@@ -647,7 +647,7 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
           wFields.table.removeAll();
           wFields.table.setItemCount(mappings.size());
           for (int i = 0; i < mappings.size(); i++) {
-              SourceToTargetMapping mapping = (SourceToTargetMapping) mappings.get(i);
+              SourceToTargetMapping mapping = mappings.get(i);
               TableItem item = wFields.table.getItem(i);
               item.setText(2, sourceFields.getValueMeta(mapping.getSourcePosition()).getName());
               item.setText(1, targetFields.getValueMeta(mapping.getTargetPosition()).getName());

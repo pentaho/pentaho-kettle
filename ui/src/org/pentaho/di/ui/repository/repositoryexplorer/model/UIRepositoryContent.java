@@ -80,7 +80,7 @@ public abstract class UIRepositoryContent extends UIRepositoryObject {
 
   // TODO: Remove references to the Kettle object RepositoryDirectory
   public RepositoryDirectory getRepositoryDirectory() {
-    return (RepositoryDirectory) uiParent.getDirectory();
+    return uiParent.getDirectory();
   }
 
   public RepositoryObjectType getRepositoryElementType() {

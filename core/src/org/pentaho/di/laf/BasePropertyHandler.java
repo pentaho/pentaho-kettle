@@ -46,7 +46,7 @@ public class BasePropertyHandler implements LAFChangeListener<PropertyHandler> {
 	
 	private void init() {
 		//counting on LAFFactory to return a class conforming to @see MessageHandler
-		handler = (PropertyHandler)LAFFactory.getHandler(clazz);
+		handler = LAFFactory.getHandler(clazz);
 	}
 	
 	public static BasePropertyHandler getInstance() {
@@ -86,7 +86,8 @@ public class BasePropertyHandler implements LAFChangeListener<PropertyHandler> {
 		return getInstanceHandler().getProperty(key, defValue);
 	}
 
-	public void notify(PropertyHandler changedObject) {
+	@Override
+  public void notify(PropertyHandler changedObject) {
 		handler = changedObject;
 	}
 

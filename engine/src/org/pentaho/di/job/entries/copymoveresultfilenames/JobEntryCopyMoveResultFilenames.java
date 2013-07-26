@@ -489,7 +489,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 							throw new Exception(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.Error.SuccessConditionbroken",""+NrErrors));	
 						}
 			      		
-			       	  ResultFile resultFile = (ResultFile) it.next();
+			       	  ResultFile resultFile = it.next();
 			          file = resultFile.getFile();
 			          if (file != null && file.exists())
 			          {

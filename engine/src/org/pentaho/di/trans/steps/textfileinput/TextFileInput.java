@@ -158,6 +158,8 @@ public class TextFileInput extends BaseStep implements StepInterface
         			}
         		}
                 break;
+            default:
+              break;
             }
 		}
 		catch(KettleFileException e)
@@ -996,7 +998,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 		/* Take the first line available in the buffer & remove the line from
 		   the buffer
 		*/
-		TextFileLine textLine = (TextFileLine) data.lineBuffer.get(0);
+		TextFileLine textLine = data.lineBuffer.get(0);
 		incrementLinesInput();
 		lineNumberInFile++;
 
@@ -1031,7 +1033,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 							String extra = "";
 							if (data.lineBuffer.size() > 0)
 							{
-								extra = ((TextFileLine) data.lineBuffer.get(0)).line;
+								extra = data.lineBuffer.get(0).line;
 								data.lineBuffer.remove(0);
 							}
 							textLine.line += extra;
@@ -1121,7 +1123,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 							String extra = "";
 							if (data.lineBuffer.size() > 0)
 							{
-								extra = ((TextFileLine) data.lineBuffer.get(0)).line;
+								extra = data.lineBuffer.get(0).line;
 								data.lineBuffer.remove(0);
 							}
 							textLine.line += extra;

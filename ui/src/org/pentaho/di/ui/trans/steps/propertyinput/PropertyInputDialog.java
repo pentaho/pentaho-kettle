@@ -1274,7 +1274,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
             ArrayList<Charset> values = new ArrayList<Charset>(Charset.availableCharsets().values());
             for (int i=0;i<values.size();i++)
             {
-                Charset charSet = (Charset)values.get(i);
+                Charset charSet = values.get(i);
                 wEncoding.add( charSet.displayName() );
             }
             

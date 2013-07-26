@@ -47,7 +47,6 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
 import org.pentaho.di.trans.steps.sort.SortRowsMeta;
@@ -298,7 +297,7 @@ public class UniqueRowsTest extends TestCase
         
         // Set the information of the injector.                
         String injectorPid = registry.getPluginId(StepPluginType.class, im);
-        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
+        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, im);
         transMeta.addStep(injectorStep);
 
         // 
@@ -310,7 +309,7 @@ public class UniqueRowsTest extends TestCase
         urm.setCaseInsensitive(new boolean[] {false});
 
         String uniqueRowsStepPid = registry.getPluginId(StepPluginType.class, urm);
-        StepMeta uniqueRowsStep = new StepMeta(uniqueRowsStepPid, uniqueRowsStepname, (StepMetaInterface)urm);
+        StepMeta uniqueRowsStep = new StepMeta(uniqueRowsStepPid, uniqueRowsStepname, urm);
         transMeta.addStep(uniqueRowsStep);            
 
         transMeta.addTransHop(new TransHopMeta(injectorStep, uniqueRowsStep));        
@@ -322,7 +321,7 @@ public class UniqueRowsTest extends TestCase
         DummyTransMeta dm = new DummyTransMeta();
 
         String dummyPid = registry.getPluginId(StepPluginType.class, dm);
-        StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, (StepMetaInterface)dm);
+        StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, dm);
         transMeta.addStep(dummyStep);                              
 
         transMeta.addTransHop(new TransHopMeta(uniqueRowsStep, dummyStep));        
@@ -373,7 +372,7 @@ public class UniqueRowsTest extends TestCase
         
         // Set the information of the injector.                
         String injectorPid = registry.getPluginId(StepPluginType.class, im);
-        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
+        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, im);
         transMeta.addStep(injectorStep);
 
         // 
@@ -385,7 +384,7 @@ public class UniqueRowsTest extends TestCase
         urm.setCaseInsensitive(new boolean[] {true});
 
         String uniqueRowsStepPid = registry.getPluginId(StepPluginType.class, urm);
-        StepMeta uniqueRowsStep = new StepMeta(uniqueRowsStepPid, uniqueRowsStepname, (StepMetaInterface)urm);
+        StepMeta uniqueRowsStep = new StepMeta(uniqueRowsStepPid, uniqueRowsStepname, urm);
         transMeta.addStep(uniqueRowsStep);            
 
         transMeta.addTransHop(new TransHopMeta(injectorStep, uniqueRowsStep));        
@@ -397,7 +396,7 @@ public class UniqueRowsTest extends TestCase
         DummyTransMeta dm = new DummyTransMeta();
 
         String dummyPid = registry.getPluginId(StepPluginType.class, dm);
-        StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, (StepMetaInterface)dm);
+        StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, dm);
         transMeta.addStep(dummyStep);                              
 
         transMeta.addTransHop(new TransHopMeta(uniqueRowsStep, dummyStep));        
@@ -448,7 +447,7 @@ public class UniqueRowsTest extends TestCase
         
         // Set the information of the injector.                
         String injectorPid = registry.getPluginId(StepPluginType.class, im);
-        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
+        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, im);
         transMeta.addStep(injectorStep);
 
         // 
@@ -464,7 +463,7 @@ public class UniqueRowsTest extends TestCase
         srm.setDirectory(".");
 
         String sortRowsStepPid = registry.getPluginId(StepPluginType.class, srm);
-        StepMeta sortRowsStep = new StepMeta(sortRowsStepPid, sortRowsStepname, (StepMetaInterface)srm);
+        StepMeta sortRowsStep = new StepMeta(sortRowsStepPid, sortRowsStepname, srm);
         transMeta.addStep(sortRowsStep);            
 
         transMeta.addTransHop(new TransHopMeta(injectorStep, sortRowsStep));        
@@ -478,7 +477,7 @@ public class UniqueRowsTest extends TestCase
         urm.setCaseInsensitive(new boolean[] {false});
 
         String uniqueRowsStepPid = registry.getPluginId(StepPluginType.class, urm);
-        StepMeta uniqueRowsStep = new StepMeta(uniqueRowsStepPid, uniqueRowsStepname, (StepMetaInterface)urm);
+        StepMeta uniqueRowsStep = new StepMeta(uniqueRowsStepPid, uniqueRowsStepname, urm);
         transMeta.addStep(uniqueRowsStep);            
 
         transMeta.addTransHop(new TransHopMeta(sortRowsStep, uniqueRowsStep));        
@@ -490,7 +489,7 @@ public class UniqueRowsTest extends TestCase
         DummyTransMeta dm = new DummyTransMeta();
 
         String dummyPid = registry.getPluginId(StepPluginType.class, dm);
-        StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, (StepMetaInterface)dm);
+        StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, dm);
         transMeta.addStep(dummyStep);                              
 
         transMeta.addTransHop(new TransHopMeta(uniqueRowsStep, dummyStep));        
@@ -541,7 +540,7 @@ public class UniqueRowsTest extends TestCase
         
         // Set the information of the injector.                
         String injectorPid = registry.getPluginId(StepPluginType.class, im);
-        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
+        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, im);
         transMeta.addStep(injectorStep);
 
         // 
@@ -557,7 +556,7 @@ public class UniqueRowsTest extends TestCase
         srm.setDirectory(".");
 
         String sortRowsStepPid = registry.getPluginId(StepPluginType.class, srm);
-        StepMeta sortRowsStep = new StepMeta(sortRowsStepPid, sortRowsStepname, (StepMetaInterface)srm);
+        StepMeta sortRowsStep = new StepMeta(sortRowsStepPid, sortRowsStepname, srm);
         transMeta.addStep(sortRowsStep);            
 
         transMeta.addTransHop(new TransHopMeta(injectorStep, sortRowsStep));        
@@ -571,7 +570,7 @@ public class UniqueRowsTest extends TestCase
         urm.setCaseInsensitive(new boolean[] {true});
 
         String uniqueRowsStepPid = registry.getPluginId(StepPluginType.class, urm);
-        StepMeta uniqueRowsStep = new StepMeta(uniqueRowsStepPid, uniqueRowsStepname, (StepMetaInterface)urm);
+        StepMeta uniqueRowsStep = new StepMeta(uniqueRowsStepPid, uniqueRowsStepname, urm);
         transMeta.addStep(uniqueRowsStep);            
 
         transMeta.addTransHop(new TransHopMeta(sortRowsStep, uniqueRowsStep));        
@@ -583,7 +582,7 @@ public class UniqueRowsTest extends TestCase
         DummyTransMeta dm = new DummyTransMeta();
 
         String dummyPid = registry.getPluginId(StepPluginType.class, dm);
-        StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, (StepMetaInterface)dm);
+        StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, dm);
         transMeta.addStep(dummyStep);                              
 
         transMeta.addTransHop(new TransHopMeta(uniqueRowsStep, dummyStep));        
@@ -634,7 +633,7 @@ public class UniqueRowsTest extends TestCase
         
         // Set the information of the injector.                
         String injectorPid = registry.getPluginId(StepPluginType.class, im);
-        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
+        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, im);
         transMeta.addStep(injectorStep);
 
         // 
@@ -650,7 +649,7 @@ public class UniqueRowsTest extends TestCase
         srm.setDirectory(".");
 
         String sortRowsStepPid = registry.getPluginId(StepPluginType.class, srm);
-        StepMeta sortRowsStep = new StepMeta(sortRowsStepPid, sortRowsStepname, (StepMetaInterface)srm);
+        StepMeta sortRowsStep = new StepMeta(sortRowsStepPid, sortRowsStepname, srm);
         transMeta.addStep(sortRowsStep);            
 
         transMeta.addTransHop(new TransHopMeta(injectorStep, sortRowsStep));        
@@ -664,7 +663,7 @@ public class UniqueRowsTest extends TestCase
         urm.setCaseInsensitive(new boolean[] {false});
 
         String uniqueRowsStepPid = registry.getPluginId(StepPluginType.class, urm);
-        StepMeta uniqueRowsStep = new StepMeta(uniqueRowsStepPid, uniqueRowsStepname, (StepMetaInterface)urm);
+        StepMeta uniqueRowsStep = new StepMeta(uniqueRowsStepPid, uniqueRowsStepname, urm);
         transMeta.addStep(uniqueRowsStep);            
 
         transMeta.addTransHop(new TransHopMeta(sortRowsStep, uniqueRowsStep));        
@@ -676,7 +675,7 @@ public class UniqueRowsTest extends TestCase
         DummyTransMeta dm = new DummyTransMeta();
 
         String dummyPid = registry.getPluginId(StepPluginType.class, dm);
-        StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, (StepMetaInterface)dm);
+        StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, dm);
         transMeta.addStep(dummyStep);                              
 
         transMeta.addTransHop(new TransHopMeta(uniqueRowsStep, dummyStep));        
@@ -727,7 +726,7 @@ public class UniqueRowsTest extends TestCase
         
         // Set the information of the injector.                
         String injectorPid = registry.getPluginId(StepPluginType.class, im);
-        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
+        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, im);
         transMeta.addStep(injectorStep);
 
         // 
@@ -743,7 +742,7 @@ public class UniqueRowsTest extends TestCase
         srm.setDirectory(".");
 
         String sortRowsStepPid = registry.getPluginId(StepPluginType.class, srm);
-        StepMeta sortRowsStep = new StepMeta(sortRowsStepPid, sortRowsStepname, (StepMetaInterface)srm);
+        StepMeta sortRowsStep = new StepMeta(sortRowsStepPid, sortRowsStepname, srm);
         transMeta.addStep(sortRowsStep);            
 
         transMeta.addTransHop(new TransHopMeta(injectorStep, sortRowsStep));        
@@ -757,7 +756,7 @@ public class UniqueRowsTest extends TestCase
         urm.setCaseInsensitive(new boolean[] {true});
 
         String uniqueRowsStepPid = registry.getPluginId(StepPluginType.class, urm);
-        StepMeta uniqueRowsStep = new StepMeta(uniqueRowsStepPid, uniqueRowsStepname, (StepMetaInterface)urm);
+        StepMeta uniqueRowsStep = new StepMeta(uniqueRowsStepPid, uniqueRowsStepname, urm);
         transMeta.addStep(uniqueRowsStep);            
 
         transMeta.addTransHop(new TransHopMeta(sortRowsStep, uniqueRowsStep));        
@@ -769,7 +768,7 @@ public class UniqueRowsTest extends TestCase
         DummyTransMeta dm = new DummyTransMeta();
 
         String dummyPid = registry.getPluginId(StepPluginType.class, dm);
-        StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, (StepMetaInterface)dm);
+        StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, dm);
         transMeta.addStep(dummyStep);                              
 
         transMeta.addTransHop(new TransHopMeta(uniqueRowsStep, dummyStep));        
@@ -821,7 +820,7 @@ public class UniqueRowsTest extends TestCase
         
         // Set the information of the injector.                
         String injectorPid = registry.getPluginId(StepPluginType.class, im);
-        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
+        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, im);
         transMeta.addStep(injectorStep);
 
         // 
@@ -834,7 +833,7 @@ public class UniqueRowsTest extends TestCase
         urm.setRejectDuplicateRow(true);
 
         String uniqueRowsStepPid = registry.getPluginId(StepPluginType.class, urm);
-        StepMeta uniqueRowsStep = new StepMeta(uniqueRowsStepPid, uniqueRowsStepname, (StepMetaInterface)urm);
+        StepMeta uniqueRowsStep = new StepMeta(uniqueRowsStepPid, uniqueRowsStepname, urm);
         uniqueRowsStep.setDistributes(false);
         transMeta.addStep(uniqueRowsStep);            
 
@@ -847,7 +846,7 @@ public class UniqueRowsTest extends TestCase
         DummyTransMeta dm1 = new DummyTransMeta();
 
         String dummyPid1 = registry.getPluginId(StepPluginType.class, dm1);
-        StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, (StepMetaInterface)dm1);
+        StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, dm1);
         transMeta.addStep(dummyStep1);                              
 
         transMeta.addTransHop(new TransHopMeta(uniqueRowsStep, dummyStep1));
@@ -859,7 +858,7 @@ public class UniqueRowsTest extends TestCase
         DummyTransMeta dm2 = new DummyTransMeta();
 
         String dummyPid2 = registry.getPluginId(StepPluginType.class, dm2);
-        StepMeta dummyStep2 = new StepMeta(dummyPid2, dummyStepname2, (StepMetaInterface)dm2);
+        StepMeta dummyStep2 = new StepMeta(dummyPid2, dummyStepname2, dm2);
         transMeta.addStep(dummyStep2);                              
 
         // Set up error (aka duplicates) handling info 

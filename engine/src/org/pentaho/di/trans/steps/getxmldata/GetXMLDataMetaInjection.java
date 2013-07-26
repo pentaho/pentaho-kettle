@@ -212,6 +212,8 @@ public class GetXMLDataMetaInjection extends BaseStepMetaInjection implements St
                       case FILE_EXCLUDE_MASK : excludeFileMask = value; break;
                       case FILE_REQUIRED : fileRequired = value; break;
                       case FILE_INCLUDE_SUBFOLDERS : includeSubFolders = value; break;
+                      default:
+                        break;
                       }
                     }
                   }
@@ -250,6 +252,8 @@ public class GetXMLDataMetaInjection extends BaseStepMetaInjection implements St
                       case INPUTFIELD_GROUPING : field.setGroupSymbol(value); break;
                       case INPUTFIELD_DECIMAL: field.setDecimalSymbol(value); break;
                       case INPUTFIELD_REPEAT: field.setRepeated("Y".equalsIgnoreCase(value)); break;
+                      default:
+                        break;
                       }
                     }
                   }
@@ -285,6 +289,8 @@ public class GetXMLDataMetaInjection extends BaseStepMetaInjection implements St
         case FILE_ROOT_URI_FIELDNAME : meta.setRootUriField(lookFieldsValue); break;
         case FILE_EXTENSION_FIELDNAME : meta.setExtensionField(lookFieldsValue); break;
         case FILE_SIZE_FIELDNAME : meta.setSizeField(lookFieldsValue); break;
+        default:
+          break;
         }
       }
     }

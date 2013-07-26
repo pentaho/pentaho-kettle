@@ -372,7 +372,7 @@ public class StreamLookup extends BaseStep implements StepInterface
                 int idx = Collections.binarySearch(data.list, keyValue, data.comparator);
                 if (idx<0) return null; // nothing found
                 
-                keyValue = (KeyValue)data.list.get(idx);
+                keyValue = data.list.get(idx);
                 return keyValue.getValue();
             }
             else
@@ -400,7 +400,7 @@ public class StreamLookup extends BaseStep implements StepInterface
         }
         else
         {
-            return (Object[])data.look.get(new RowMetaAndData(keyMeta, keyData));
+            return data.look.get(new RowMetaAndData(keyMeta, keyData));
         }
     }
     

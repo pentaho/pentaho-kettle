@@ -257,6 +257,8 @@ public class TextFileInputMetaInjection implements StepMetaInjectionInterface {
                   case EXCLUDE_FILEMASK: fileLine.excludeMask = value; break;
                   case FILE_REQUIRED: fileLine.required= value; break;
                   case INCLUDE_SUBFOLDERS: fileLine.includeSubfolders= value; break;
+                    default:
+                      break;
                   }
                 }
               }
@@ -294,6 +296,8 @@ public class TextFileInputMetaInjection implements StepMetaInjectionInterface {
                   case FIELD_REPEAT: field.setRepeated("Y".equalsIgnoreCase(value)); break;
                   case FIELD_NULL_STRING: field.setNullString(value); break;
                   case FIELD_IF_NULL: field.setIfNullValue(value); break;
+                    default:
+                      break;
                   }
                 }
               }
@@ -320,6 +324,8 @@ public class TextFileInputMetaInjection implements StepMetaInjectionInterface {
                   case FILTER_STRING: filterLine.setFilterString(value); break;
                   case FILTER_LAST_LINE: filterLine.setFilterLastLine("Y".equalsIgnoreCase(value)); break;
                   case FILTER_POSITIVE: filterLine.setFilterPositive("Y".equalsIgnoreCase(value)); break;
+                    default:
+                      break;
                   }
                 }
               }
@@ -380,6 +386,8 @@ public class TextFileInputMetaInjection implements StepMetaInjectionInterface {
       case LINE_NR_FILES_TARGET_DIR: meta.setLineNumberFilesDestinationDirectory(lookValue); break;
       case LINE_NR_FILES_EXTENTION: meta.setLineNumberFilesExtension(lookValue); break;
       case ERROR_LINES_SKIPPED: meta.setErrorLineSkipped("Y".equalsIgnoreCase(lookValue)); break;
+        default:
+          break;
       }
     }
     

@@ -623,6 +623,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
           logDetailed(BaseMessages.getString(PKG, "JobTrans.Log.OpeningTransByReference", transObjectId));
         }
         break;
+      default:
+        break;
     }
 
     // Load the transformation only once for the complete loop!

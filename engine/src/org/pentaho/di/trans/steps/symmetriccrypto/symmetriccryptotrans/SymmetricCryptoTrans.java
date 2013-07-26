@@ -139,7 +139,7 @@ public class SymmetricCryptoTrans extends BaseStep implements StepInterface
 						throw new KettleStepException(BaseMessages.getString(PKG, "SymmetricCryptoTrans.Exception.SecretKeyMissing"));	
 					}
 				}else {
-					realSecretKey=Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute((String)getInputRowMeta().getString(r, data.indexOfSecretkeyField)));
+					realSecretKey=Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute(getInputRowMeta().getString(r, data.indexOfSecretkeyField)));
 					if(Const.isEmpty((String) realSecretKey)) {
 						throw new KettleStepException(BaseMessages.getString(PKG, "SymmetricCryptoTrans.Exception.SecretKeyMissing"));	
 					}

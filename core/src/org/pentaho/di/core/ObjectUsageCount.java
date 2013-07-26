@@ -40,6 +40,7 @@ public class ObjectUsageCount implements Comparator<ObjectUsageCount>, Comparabl
         this.nrUses = nrUses;
     }
     
+    @Override
     public String toString()
     {
         return objectName+";"+nrUses;
@@ -52,11 +53,13 @@ public class ObjectUsageCount implements Comparator<ObjectUsageCount>, Comparabl
         return new ObjectUsageCount(string, 1);
     }
     
+    @Override
     public int compare(ObjectUsageCount count1, ObjectUsageCount count2)
     {
         return count1.compareTo(count2);
     }
     
+    @Override
     public int compareTo(ObjectUsageCount count)
     {
         return Integer.valueOf(count.getNrUses()).compareTo(Integer.valueOf(getNrUses()));

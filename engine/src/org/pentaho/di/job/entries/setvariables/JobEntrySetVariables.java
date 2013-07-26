@@ -300,6 +300,8 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
                     }  
                 }
                 break;
+            default:
+              break;
          }
           
           // ok we can process this line

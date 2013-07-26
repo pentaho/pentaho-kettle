@@ -300,7 +300,7 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
         List<Column> columns = table.getColumns();
         for (int i = 0; i < columns.size(); i++)
         {
-            Column column = (Column) columns.get(i);
+            Column column = columns.get(i);
             
             int valtype = ValueMetaInterface.TYPE_STRING;
             int length = -1;

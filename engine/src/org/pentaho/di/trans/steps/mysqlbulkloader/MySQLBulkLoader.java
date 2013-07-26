@@ -406,6 +406,8 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
 		    				}
 		    			}
 		    			break;
+              default:
+                break;
 		    		}
 	    		}
 	    	}

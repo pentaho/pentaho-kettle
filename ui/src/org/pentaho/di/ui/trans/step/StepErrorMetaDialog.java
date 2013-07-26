@@ -97,7 +97,7 @@ public class StepErrorMetaDialog extends Dialog
 	public StepErrorMetaDialog(Shell par, StepErrorMeta stepErrorMeta, TransMeta transMeta, List<StepMeta> targetSteps)
 	{
 		super(par, SWT.NONE);
-		this.stepErrorMeta=(StepErrorMeta)stepErrorMeta.clone();
+		this.stepErrorMeta=stepErrorMeta.clone();
         this.originalStepErrorMeta=stepErrorMeta;
         this.targetSteps = targetSteps;
         this.transMeta = transMeta;
@@ -188,7 +188,7 @@ public class StepErrorMetaDialog extends Dialog
         wTargetStep.setLayoutData(fdTargetStep);
         for (int i=0;i<targetSteps.size();i++)
         {
-            wTargetStep.add( ((StepMeta)targetSteps.get(i)).getName() );
+            wTargetStep.add( targetSteps.get(i).getName() );
         }
 
         // is the error handling enabled?
