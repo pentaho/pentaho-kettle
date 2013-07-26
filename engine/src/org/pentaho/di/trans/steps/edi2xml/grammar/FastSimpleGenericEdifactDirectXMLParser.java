@@ -89,10 +89,10 @@ public static class STAttrMap extends HashMap {
 
     		// resolve all RELEASE characters 
     		if (txt.indexOf("?") >= 0){
-    			txt = txt.replace((CharSequence)"?+","+");
-    			txt = txt.replace((CharSequence)"?:",":");
-    			txt = txt.replace((CharSequence)"?'","'");		
-    			txt = txt.replace((CharSequence)"??","?");		
+    			txt = txt.replace("?+","+");
+    			txt = txt.replace("?:",":");
+    			txt = txt.replace("?'","'");		
+    			txt = txt.replace("??","?");		
     		}
     		
     		// enocde XML entities
