@@ -153,7 +153,7 @@ public class TransExecutionConfigurationDialog extends Dialog
         
         
         gLocal = new Group(shell, SWT.SHADOW_ETCHED_IN);
-        gLocal.setText(BaseMessages.getString(PKG, "TransExecutionConfigurationDialog.LocalGroup.Label")); ;
+        gLocal.setText(BaseMessages.getString(PKG, "TransExecutionConfigurationDialog.LocalGroup.Label"));
         // The layout
         FormLayout localLayout = new FormLayout();
         localLayout.marginWidth  = Const.FORM_MARGIN;
@@ -282,7 +282,7 @@ public class TransExecutionConfigurationDialog extends Dialog
         //
         
         gDetails = new Group(shell, SWT.SHADOW_ETCHED_IN);
-        gDetails.setText(BaseMessages.getString(PKG, "TransExecutionConfigurationDialog.DetailsGroup.Label")); ;
+        gDetails.setText(BaseMessages.getString(PKG, "TransExecutionConfigurationDialog.DetailsGroup.Label"));
         // The layout
         FormLayout detailsLayout = new FormLayout();
         detailsLayout.marginWidth  = Const.FORM_MARGIN;

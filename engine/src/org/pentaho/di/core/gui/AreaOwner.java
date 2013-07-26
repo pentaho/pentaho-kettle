@@ -53,7 +53,7 @@ public class AreaOwner {
 		
 		CUSTOM,
  
-	};
+	}
 	
 	private Rectangle area;
 	private Object parent;

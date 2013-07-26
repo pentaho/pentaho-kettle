@@ -258,7 +258,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
 		// //////////////////////////////////////////////////
 		//
 		gJobGroup = new Group(shell, SWT.SHADOW_ETCHED_IN);
-		gJobGroup.setText(BaseMessages.getString(PKG, "JobExecutorDialog.JobGroup.Label")); ;
+		gJobGroup.setText(BaseMessages.getString(PKG, "JobExecutorDialog.JobGroup.Label"));
 		gJobGroup.setBackground(shell.getBackground()); // the default looks
 		// ugly
 		FormLayout transGroupLayout = new FormLayout();

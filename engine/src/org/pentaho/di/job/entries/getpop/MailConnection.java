@@ -107,7 +107,7 @@ public class MailConnection {
 	 * Contains the current message
 	 */
 	private Message message;
-	private SearchTerm searchTerm=null;;
+	private SearchTerm searchTerm=null;
 	
 	/**
 	 * Counts the number of message fetched

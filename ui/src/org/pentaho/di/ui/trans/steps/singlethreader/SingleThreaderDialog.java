@@ -205,7 +205,7 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
 		// //////////////////////////////////////////////////
 		//
 		gTransGroup = new Group(shell, SWT.SHADOW_ETCHED_IN);
-		gTransGroup.setText(BaseMessages.getString(PKG, "SingleThreaderDialog.TransGroup.Label")); ;
+		gTransGroup.setText(BaseMessages.getString(PKG, "SingleThreaderDialog.TransGroup.Label"));
 		gTransGroup.setBackground(shell.getBackground()); // the default looks
 		// ugly
 		FormLayout transGroupLayout = new FormLayout();
@@ -505,7 +505,7 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
     wBatchTime.setLayoutData(fdBatchTime);
     
     gParametersGroup = new Group(shell, SWT.SHADOW_ETCHED_IN);
-    gParametersGroup.setText(BaseMessages.getString(PKG, "SingleThreaderDialog.ParamGroup.Label")); ;
+    gParametersGroup.setText(BaseMessages.getString(PKG, "SingleThreaderDialog.ParamGroup.Label"));
     gParametersGroup.setBackground(shell.getBackground()); // the default looks ugly
     FormLayout paramGroupLayout = new FormLayout();
     paramGroupLayout.marginLeft = margin * 2;

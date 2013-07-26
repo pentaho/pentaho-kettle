@@ -287,7 +287,7 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
   						
   						BufferedReader buff = new BufferedReader(BIS);
   						String sLine = null;
-  						mySQL=Const.CR;;
+  						mySQL=Const.CR;
   
   						while((sLine=buff.readLine())!=null) 
   						{

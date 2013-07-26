@@ -274,7 +274,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
         // START CONNECTION GROUP
 
         wConnectionGroup = new Group(wFileComp, SWT.SHADOW_ETCHED_IN);
-        wConnectionGroup.setText(BaseMessages.getString(PKG, "SalesforceInputDialog.ConnectionGroup.Label")); ;
+        wConnectionGroup.setText(BaseMessages.getString(PKG, "SalesforceInputDialog.ConnectionGroup.Label"));
         FormLayout fconnLayout = new FormLayout();
         fconnLayout .marginWidth = 3;
         fconnLayout .marginHeight = 3;
@@ -349,7 +349,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
         // START SETTINGS GROUP
 
         wSettingsGroup = new Group(wFileComp, SWT.SHADOW_ETCHED_IN);
-        wSettingsGroup.setText(BaseMessages.getString(PKG, "SalesforceInputDialog.HttpAuthGroup.Label")); ;
+        wSettingsGroup.setText(BaseMessages.getString(PKG, "SalesforceInputDialog.HttpAuthGroup.Label"));
         FormLayout fsettingsLayout = new FormLayout();
         fsettingsLayout .marginWidth = 3;
         fsettingsLayout .marginHeight = 3;

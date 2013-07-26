@@ -271,7 +271,9 @@ public class ExcelOutput extends BaseStep implements StepInterface
          		try  {
          			parentfolder.close();
          		}
-         		catch ( Exception ex ) {};
+         		catch ( Exception ex ) {
+         		  // Ignore
+         		}
          	}
          }	
 		 return retval;
@@ -785,81 +787,88 @@ public class ExcelOutput extends BaseStep implements StepInterface
         data.ws=null;
         super.dispose(smi, sdi);
 	}
-    private void setFonts() throws Exception
-	{
-        // --- Set Header font
-        int headerFontSize=Const.toInt(environmentSubstitute(meta.getHeaderFontSize()), ExcelOutputMeta.DEFAULT_FONT_SIZE);
-        // Set font name
-        FontName headerFontName=ExcelFontMap.getFontName(meta.getHeaderFontName());
-        //Set UnderlineStyle
-        UnderlineStyle underline= ExcelFontMap.getUnderlineStyle(meta.getHeaderFontUnderline());
 
-        WritableFont writableHeaderFont=null;
-        if(meta.isHeaderFontBold())
-            writableHeaderFont= new WritableFont(headerFontName, headerFontSize, WritableFont.BOLD, 
-            		meta.isHeaderFontItalic(), underline);  
-        else
-        	writableHeaderFont= new WritableFont(headerFontName, headerFontSize, WritableFont.NO_BOLD, 
-        			meta.isHeaderFontItalic(), underline);  
-        
-        // Header font color
-        Colour fontHeaderColour=ExcelFontMap.getColour(meta.getHeaderFontColor(), Colour.BLACK);
-        if(!fontHeaderColour.equals(Colour.BLACK)) writableHeaderFont.setColour(fontHeaderColour);  
-    	data.headerCellFormat=new WritableCellFormat(writableHeaderFont);
-    	
-    	// Header background color
-    	if(meta.getHeaderBackGroundColor()!=ExcelOutputMeta.FONT_COLOR_NONE)
-    	data.headerCellFormat.setBackground(ExcelFontMap.getColour(meta.getHeaderBackGroundColor(),null));
-    	
-    	// Set alignment
-    	data.headerCellFormat=ExcelFontMap.getAlignment(meta.getHeaderAlignment(), data.headerCellFormat);
-    	data.headerCellFormat=ExcelFontMap.getOrientation(meta.getHeaderFontOrientation(), data.headerCellFormat);
-    	
-        // Do we need to put a image on the header
-        if(!Const.isEmpty(data.realHeaderImage))
-        {
-        	FileObject imageFile=null;
-        	try{
-        		imageFile=KettleVFS.getFileObject(data.realHeaderImage);
-        		if(!imageFile.exists()) 
-        			throw new KettleException(BaseMessages.getString(PKG, "ExcelInputLog.ImageFileNotExists",data.realHeaderImage));
-        		data.realHeaderImage=KettleVFS.getFilename(imageFile);
-        		// Put an image
-                Dimension m=ExcelFontMap.getImageDimension(data.realHeaderImage);
-                data.headerImageWidth=m.getWidth()*0.016;
-                data.headerImageHeight=m.getHeight()*0.0625;
+  private void setFonts() throws Exception {
+    // --- Set Header font
+    int headerFontSize = Const
+        .toInt(environmentSubstitute(meta.getHeaderFontSize()), ExcelOutputMeta.DEFAULT_FONT_SIZE);
+    // Set font name
+    FontName headerFontName = ExcelFontMap.getFontName(meta.getHeaderFontName());
+    //Set UnderlineStyle
+    UnderlineStyle underline = ExcelFontMap.getUnderlineStyle(meta.getHeaderFontUnderline());
 
-  	            byte[] imageData = new byte[(int)imageFile.getContent().getSize()];
-	            KettleVFS.getInputStream(imageFile).read(imageData);
+    WritableFont writableHeaderFont = null;
+    if (meta.isHeaderFontBold())
+      writableHeaderFont = new WritableFont(headerFontName, headerFontSize, WritableFont.BOLD,
+          meta.isHeaderFontItalic(), underline);
+    else
+      writableHeaderFont = new WritableFont(headerFontName, headerFontSize, WritableFont.NO_BOLD,
+          meta.isHeaderFontItalic(), underline);
 
-               data.headerImage = new WritableImage(0, 0, data.headerImageWidth, data.headerImageHeight, imageData);//imageFile.g.new File(data.realHeaderImage));
-               imageData=null;
-        	}catch(Exception e)
-        	{
-        		throw new KettleException (e);
-        	}finally
-        	{
-        		if(imageFile!=null) {try {imageFile.close();imageFile=null;}catch(Exception e){};}
-        	}
+    // Header font color
+    Colour fontHeaderColour = ExcelFontMap.getColour(meta.getHeaderFontColor(), Colour.BLACK);
+    if (!fontHeaderColour.equals(Colour.BLACK))
+      writableHeaderFont.setColour(fontHeaderColour);
+    data.headerCellFormat = new WritableCellFormat(writableHeaderFont);
+
+    // Header background color
+    if (meta.getHeaderBackGroundColor() != ExcelOutputMeta.FONT_COLOR_NONE)
+      data.headerCellFormat.setBackground(ExcelFontMap.getColour(meta.getHeaderBackGroundColor(), null));
+
+    // Set alignment
+    data.headerCellFormat = ExcelFontMap.getAlignment(meta.getHeaderAlignment(), data.headerCellFormat);
+    data.headerCellFormat = ExcelFontMap.getOrientation(meta.getHeaderFontOrientation(), data.headerCellFormat);
+
+    // Do we need to put a image on the header
+    if (!Const.isEmpty(data.realHeaderImage)) {
+      FileObject imageFile = null;
+      try {
+        imageFile = KettleVFS.getFileObject(data.realHeaderImage);
+        if (!imageFile.exists())
+          throw new KettleException(BaseMessages.getString(PKG, "ExcelInputLog.ImageFileNotExists",
+              data.realHeaderImage));
+        data.realHeaderImage = KettleVFS.getFilename(imageFile);
+        // Put an image
+        Dimension m = ExcelFontMap.getImageDimension(data.realHeaderImage);
+        data.headerImageWidth = m.getWidth() * 0.016;
+        data.headerImageHeight = m.getHeight() * 0.0625;
+
+        byte[] imageData = new byte[(int) imageFile.getContent().getSize()];
+        KettleVFS.getInputStream(imageFile).read(imageData);
+
+        data.headerImage = new WritableImage(0, 0, data.headerImageWidth, data.headerImageHeight, imageData);//imageFile.g.new File(data.realHeaderImage));
+        imageData = null;
+      } catch (Exception e) {
+        throw new KettleException(e);
+      } finally {
+        if (imageFile != null) {
+          try {
+            imageFile.close();
+            imageFile = null;
+          } catch (Exception e) {
+            // Ignore;
+          }
         }
-    	
-        
-        // --- Set rows font
-        // Set font size
-        int rowFontSize=Const.toInt(environmentSubstitute(meta.getRowFontSize()), ExcelOutputMeta.DEFAULT_FONT_SIZE);
-        // Set font name
-        FontName rowFontName=ExcelFontMap.getFontName(meta.getRowFontName());
+      }
+    }
 
-        data.writableFont = new WritableFont(rowFontName, rowFontSize, WritableFont.NO_BOLD, 
-        		false, UnderlineStyle.NO_UNDERLINE);
-        
-        // Row font color
-        Colour rowFontColour=ExcelFontMap.getColour(meta.getRowFontColor(), Colour.BLACK);
-        if(!fontHeaderColour.equals(Colour.BLACK)) data.writableFont.setColour(rowFontColour);
-        
-        // Set rows background color if needed
-		if(meta.getRowBackGroundColor()!=ExcelOutputMeta.FONT_COLOR_NONE)
-			data.rowFontBackgoundColour=ExcelFontMap.getColour(meta.getRowBackGroundColor(),null);
-		 
-	}
+    // --- Set rows font
+    // Set font size
+    int rowFontSize = Const.toInt(environmentSubstitute(meta.getRowFontSize()), ExcelOutputMeta.DEFAULT_FONT_SIZE);
+    // Set font name
+    FontName rowFontName = ExcelFontMap.getFontName(meta.getRowFontName());
+
+    data.writableFont = new WritableFont(rowFontName, rowFontSize, WritableFont.NO_BOLD, false,
+        UnderlineStyle.NO_UNDERLINE);
+
+    // Row font color
+    Colour rowFontColour = ExcelFontMap.getColour(meta.getRowFontColor(), Colour.BLACK);
+    if (!fontHeaderColour.equals(Colour.BLACK))
+      data.writableFont.setColour(rowFontColour);
+
+    // Set rows background color if needed
+    if (meta.getRowBackGroundColor() != ExcelOutputMeta.FONT_COLOR_NONE)
+      data.rowFontBackgoundColour = ExcelFontMap.getColour(meta.getRowBackGroundColor(), null);
+
+  }
 }

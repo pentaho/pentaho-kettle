@@ -83,7 +83,7 @@ public class DimensionTableDialog extends Dialog
 	private Text         wTableName;
 
 	private Label        wlTableDescription;
-	private Text         wTableDescription;;
+	private Text         wTableDescription;
 
 	private CCombo       wDimensionType;
 

@@ -111,12 +111,12 @@ public class CheckTransProgressDialog
                     IProgressMonitor monitor = pmd.getProgressMonitor();
                     while (pmd.getShell()==null || ( !pmd.getShell().isDisposed() && !monitor.isCanceled() ))
                     {
-                        try { Thread.sleep(250); } catch(InterruptedException e) { };
+                        try { Thread.sleep(250); } catch(InterruptedException e) { }
                     }
                     
                     if (monitor.isCanceled()) // Disconnect and see what happens!
                     {
-                        try { transMeta.cancelQueries(); } catch(Exception e) {};
+                        try { transMeta.cancelQueries(); } catch(Exception e) {}
                     }
                 }
             };

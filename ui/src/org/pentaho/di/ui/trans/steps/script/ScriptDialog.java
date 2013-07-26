@@ -218,7 +218,7 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 	
     private TreeItem itemWaitFieldsIn,itemWaitFieldsOut;
     
-    private RowMetaInterface  rowPrevStepFields;;
+    private RowMetaInterface  rowPrevStepFields;
     
     private RowGeneratorMeta genMeta;
 		

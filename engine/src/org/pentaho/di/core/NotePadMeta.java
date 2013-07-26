@@ -571,7 +571,7 @@ public class NotePadMeta implements Cloneable, XMLInterface, GUIPositionInterfac
 		
 		// border gray
 		this.bordercolorred=COLOR_RGB_DEFAULT_BORDER_RED;
-		this.bordercolorgreen=COLOR_RGB_DEFAULT_BORDER_GREEN;;
+		this.bordercolorgreen=COLOR_RGB_DEFAULT_BORDER_GREEN;
 		this.bordercolorblue=COLOR_RGB_DEFAULT_BORDER_BLUE;
 		
 		this.drawshadow=true;

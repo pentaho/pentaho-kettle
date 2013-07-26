@@ -242,6 +242,7 @@ public class BaseStepDialog extends Dialog {
         shell.setImage(GUIResource.getInstance().getImagesSteps().get(id));
       }
     } catch (Throwable e) {
+      // Ignore
     }
   }
 
@@ -1049,7 +1050,7 @@ public class BaseStepDialog extends Dialog {
 	             indexField=r.indexOfValue(selectedField);
 			 }
 			 // Select value if possible...
-			 if(indexField>-1) comboVar.select(indexField); else { if(selectedField!=null) comboVar.setText(selectedField);};
+			 if(indexField>-1) comboVar.select(indexField); else { if(selectedField!=null) comboVar.setText(selectedField);}
 		 }catch(KettleException ke){
 				new ErrorDialog(comboVar.getShell(),BaseMessages.getString(PKG, "BaseStepDialog.FailedToGetFieldsPrevious.DialogTitle"),
 						BaseMessages.getString(PKG, "BaseStepDialog.FailedToGetFieldsPrevious.DialogMessage"),ke);

@@ -248,7 +248,7 @@ public class MailInput extends BaseStep implements StepInterface
 						r[index]=StringUtils.join(message.getReplyTo(), ";");
 						break;
 					case MailInputField.COLUMN_RECIPIENTS:
-						r[index]=StringUtils.join(message.getAllRecipients(), ";");;
+						r[index]=StringUtils.join(message.getAllRecipients(), ";");
 						break;
 					case MailInputField.COLUMN_DESCRIPTION:
 						r[index]=message.getDescription();

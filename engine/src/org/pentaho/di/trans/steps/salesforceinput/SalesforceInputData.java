@@ -49,7 +49,7 @@ public class SalesforceInputData extends BaseStepData implements StepDataInterfa
 	public int nrRecords;
 	// We use this variable to query more
 	// we initialize it each time we call query more
-	public int recordIndex;;
+	public int recordIndex;
 	public SalesforceConnection connection;
 	public GregorianCalendar startCal;
 	public GregorianCalendar endCal;

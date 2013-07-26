@@ -55,36 +55,30 @@ public class DatabaseTest extends TestCase
           "</connection>",
     };	
 
-	public Database setupDatabase() throws Exception
-	{
-		Database database = null;
-		
-        KettleEnvironment.init();
+  public Database setupDatabase() throws Exception {
+    Database database = null;
 
-        try
-        {
-            //
-            // Create a new transformation...
-            //
-            TransMeta transMeta = new TransMeta();
-            transMeta.setName("transname");
+    KettleEnvironment.init();
 
-            // Add the database connections
-            for (int i=0;i<databasesXML.length;i++)
-            {
-                DatabaseMeta databaseMeta = new DatabaseMeta(databasesXML[i]);
-                transMeta.addDatabase(databaseMeta);
-            }
+    //
+    // Create a new transformation...
+    //
+    TransMeta transMeta = new TransMeta();
+    transMeta.setName("transname");
 
-            DatabaseMeta dbInfo = transMeta.findDatabase("db");
+    // Add the database connections
+    for (int i = 0; i < databasesXML.length; i++) {
+      DatabaseMeta databaseMeta = new DatabaseMeta(databasesXML[i]);
+      transMeta.addDatabase(databaseMeta);
+    }
 
-            database = new Database(transMeta, dbInfo);
-            database.connect();
-        }
-        finally { };
-        
-        return database;
-	}
+    DatabaseMeta dbInfo = transMeta.findDatabase("db");
+
+    database = new Database(transMeta, dbInfo);
+    database.connect();
+
+    return database;
+  }
     
 	public void testDatabaseCasing() throws Exception
 	{

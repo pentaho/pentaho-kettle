@@ -946,7 +946,7 @@ public class PluginRegistry {
       // All these plugin type interfaces are singletons...
       // So we should call a static getInstance() method...
       //
-      Method method = pluginTypeClass.getMethod("getInstance", new Class[0]);
+      Method method = pluginTypeClass.getMethod("getInstance", new Class<?>[0]);
       PluginTypeInterface pluginTypeInterface = (PluginTypeInterface) method.invoke(null, new Object[0]);
       
       return pluginTypeInterface;

@@ -259,7 +259,7 @@ public class XBase
     
     public boolean close()
     {
-        boolean retval = false;;
+        boolean retval = false;
         try
         {
             if (inputstream!=null) inputstream.close();

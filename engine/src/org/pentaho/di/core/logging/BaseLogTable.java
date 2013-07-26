@@ -51,7 +51,7 @@ public abstract class BaseLogTable {
 	public static String	PROP_LOG_TABLE_TIMEOUT_DAYS	= "_LOG_TABLE_TIMEOUT_IN_DAYS";
 
 	protected VariableSpace space;
-	protected HasDatabasesInterface databasesInterface;;
+	protected HasDatabasesInterface databasesInterface;
 	
 	protected String connectionName;
 	

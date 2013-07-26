@@ -675,7 +675,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
     // //////////////////////////////////////////////////
 
     gTechGroup = new Group(comp, SWT.SHADOW_ETCHED_IN);
-    gTechGroup.setText(BaseMessages.getString(PKG, "DimensionLookupDialog.TechGroup.Label")); ;
+    gTechGroup.setText(BaseMessages.getString(PKG, "DimensionLookupDialog.TechGroup.Label"));
     GridLayout gridLayout = new GridLayout(3, false);
     gTechGroup.setLayout(gridLayout);
     FormData fdTechGroup = new FormData();

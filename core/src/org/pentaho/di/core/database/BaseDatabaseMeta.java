@@ -1951,7 +1951,9 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
     } finally {
       try {
         stmt.close();
-      } catch (SQLException ignored){};
+      } catch (SQLException ignored){
+        // Ignored
+      }
     }
     return rtn;
   }

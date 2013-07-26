@@ -378,7 +378,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface
         allocate(nrheaders, nrparameters);
         for (i = 0; i < nrheaders; i++)
         {
-        	this.headerField[i] = "header" + i;; 
+        	this.headerField[i] = "header" + i; 
         	this.headerName[i] = "header"; 
         }
         for (i = 0; i < nrparameters; i++)

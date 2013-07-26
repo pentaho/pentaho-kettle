@@ -999,7 +999,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       wDoMapping = new Button(wFieldsComp, SWT.PUSH);
       wDoMapping.setText(BaseMessages.getString(PKG, "GPLoadDialog.EditMapping.Label")); 
       fdDoMapping = new FormData();
-      fdDoMapping.top = new FormAttachment(0, margin);;
+      fdDoMapping.top = new FormAttachment(0, margin);
       fdDoMapping.right = new FormAttachment(75, 0);
       wDoMapping.setLayoutData(fdDoMapping);
       

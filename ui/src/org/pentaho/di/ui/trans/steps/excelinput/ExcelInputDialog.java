@@ -526,7 +526,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         // Accepting filenames group
         // 
         gAccepting = new Group(wFileComp, SWT.SHADOW_ETCHED_IN);
-        gAccepting.setText(BaseMessages.getString(PKG, "ExcelInputDialog.AcceptingGroup.Label")); ;
+        gAccepting.setText(BaseMessages.getString(PKG, "ExcelInputDialog.AcceptingGroup.Label"));
         FormLayout acceptingLayout = new FormLayout();
         acceptingLayout.marginWidth  = 3;
         acceptingLayout.marginHeight = 3;

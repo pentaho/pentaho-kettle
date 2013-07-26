@@ -74,4 +74,4 @@ public class Catalog
 	{
 		this.items = items;
 	}
-};
+}

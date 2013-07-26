@@ -50,7 +50,7 @@ public class ConnectionPoolUtil
     {
         try
         {
-        	String name = dbMeta.getName()+Const.NVL(partitionId, "");;
+        	String name = dbMeta.getName()+Const.NVL(partitionId, "");
             return Const.indexOfString(name, pd.getPoolNames())>=0;
         } 
         catch (Exception e)

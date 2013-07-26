@@ -454,7 +454,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		);
 
 		gTechGroup = new Group(shell, SWT.SHADOW_ETCHED_IN);
-		gTechGroup.setText(BaseMessages.getString(PKG, "CombinationLookupDialog.TechGroup.Label")); ;
+		gTechGroup.setText(BaseMessages.getString(PKG, "CombinationLookupDialog.TechGroup.Label"));
 		GridLayout gridLayout = new GridLayout(3, false);
 		gTechGroup.setLayout(gridLayout);
 		fdTechGroup=new FormData();

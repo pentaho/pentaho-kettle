@@ -202,7 +202,7 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
         // 
         
         gAccepting = new Group(shell, SWT.SHADOW_ETCHED_IN);
-        gAccepting.setText(BaseMessages.getString(PKG, "XBaseInputDialog.AcceptingGroup.Label")); ;
+        gAccepting.setText(BaseMessages.getString(PKG, "XBaseInputDialog.AcceptingGroup.Label"));
         FormLayout acceptingLayout = new FormLayout();
         acceptingLayout.marginWidth  = 3;
         acceptingLayout.marginHeight = 3;

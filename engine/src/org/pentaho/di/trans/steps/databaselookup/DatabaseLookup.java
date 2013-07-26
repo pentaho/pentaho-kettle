@@ -422,7 +422,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
                 }
                 else
                 {
-                    data.nullif[i] = null;;
+                    data.nullif[i] = null;
                 }
             }
 

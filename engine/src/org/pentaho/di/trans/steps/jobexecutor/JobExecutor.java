@@ -409,7 +409,7 @@ public class JobExecutor extends BaseStep implements StepInterface
           if (!Const.isEmpty(meta.getGroupTime())) {
             data.groupTime = Const.toInt(environmentSubstitute(meta.getGroupTime()), -1);
           }
-          data.groupTimeStart = System.currentTimeMillis();;
+          data.groupTimeStart = System.currentTimeMillis();
 
           // Is there a grouping field set?
           //

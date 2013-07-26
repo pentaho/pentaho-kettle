@@ -60,7 +60,7 @@ public class Calculator extends BaseStep implements StepInterface
         public int indexA;
         public int indexB;
         public int indexC;
-    };    
+    }   
 
 	private CalculatorMeta meta;
 	private CalculatorData data;

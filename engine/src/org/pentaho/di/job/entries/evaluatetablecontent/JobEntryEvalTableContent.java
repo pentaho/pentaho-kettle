@@ -359,7 +359,7 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 							// ad rows to result
 							RowMetaInterface rowMeta =db.getQueryFields(countSQLStatement, false);
 							
-							List<RowMetaAndData> rows=new ArrayList<RowMetaAndData>();;
+							List<RowMetaAndData> rows=new ArrayList<RowMetaAndData>();
 							for(int i=0;i<ar.size();i++)
 							{
 								rows.add(new RowMetaAndData(rowMeta,ar.get(i)));

@@ -97,7 +97,7 @@ import org.w3c.dom.Node;
                   precision[]   = 0, 0, 0, 0<p>
 <p>                  
   DATUM;SALES1;SALES2;SALES3;SALES4<p>
-  20031031;;310,50;;150,23<p>
+  20031031;310,50;150,23<p>
 <p>      
 
 </CODE>

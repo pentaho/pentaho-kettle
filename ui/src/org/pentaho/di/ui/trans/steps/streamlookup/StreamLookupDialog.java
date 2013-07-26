@@ -402,7 +402,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
                         
                         // Something was changed in the row.
                         //
-                		final Map<String, Integer> fields = new HashMap<String, Integer>();;
+                		final Map<String, Integer> fields = new HashMap<String, Integer>();
                         
                         // Add the currentMeta fields...
                         fields.putAll(prevFields);

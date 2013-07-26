@@ -209,7 +209,7 @@ public class CheckResultDialog extends Dialog
 		show_successful_results=!show_successful_results;
 		
 		getData();
-	};
+	}
 
 
 	public void dispose()

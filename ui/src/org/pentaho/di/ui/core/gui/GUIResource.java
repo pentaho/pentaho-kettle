@@ -141,7 +141,7 @@ public class GUIResource {
   /* * * Images * * */
   private Map<String, Image> imagesSteps = new Hashtable<String, Image>();
 
-  private Map<String, Image> imagesStepsSmall = new Hashtable<String, Image>();;
+  private Map<String, Image> imagesStepsSmall = new Hashtable<String, Image>();
 
   private Map<String, Image> imagesJobentries;
 

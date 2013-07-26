@@ -328,7 +328,7 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
       int nr = 0;
 
       for (int i = 0; i < totalSteps; i++) {
-        StepInterface baseStep = transGraph.trans.getRunThread(i);;
+        StepInterface baseStep = transGraph.trans.getRunThread(i);
         
         // See if the step is selected & in need of display
         //

@@ -182,7 +182,7 @@ public class ExecProcess extends BaseStep implements StepInterface
 	   			p = data.runtime.exec(process);
 	   		}catch(Exception e){
 	   			errorMsg=e.getMessage();
-	   		};
+	   		}
    			if(p==null) {
    				processresult.setErrorStream(errorMsg);
    			}else{

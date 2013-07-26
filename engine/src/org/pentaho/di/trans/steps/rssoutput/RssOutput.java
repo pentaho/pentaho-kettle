@@ -649,7 +649,7 @@ public class RssOutput extends BaseStep implements StepInterface
 		try
 		{
 			// Specify Filename
-            String fileName=data.filename;;
+            String fileName=data.filename;
             
 			// Set channel ...
 			data.feed =new SyndFeedImpl();				 

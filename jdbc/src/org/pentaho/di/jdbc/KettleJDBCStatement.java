@@ -277,7 +277,7 @@ public class KettleJDBCStatement implements Statement {
 
 	private static void addMetadata(File file) throws KettleXMLException, KettleMissingPluginsException {
 		TransMeta tm = new TransMeta(file.getAbsolutePath());
-		log.debug(java.util.Arrays.toString(tm.getStepNames()));;
+		log.debug(java.util.Arrays.toString(tm.getStepNames()));
 		stepsMap.put(file.getName(),tm.getStepNames());
 	}
 

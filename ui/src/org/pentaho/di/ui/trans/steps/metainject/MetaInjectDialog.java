@@ -219,7 +219,7 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     // //////////////////////////////////////////////////
     //
     gTransGroup = new Group(shell, SWT.SHADOW_ETCHED_IN);
-    gTransGroup.setText(BaseMessages.getString(PKG, "MetaInjectDialog.TransGroup.Label")); ;
+    gTransGroup.setText(BaseMessages.getString(PKG, "MetaInjectDialog.TransGroup.Label"));
     gTransGroup.setBackground(shell.getBackground()); // the default looks
     // ugly
     FormLayout transGroupLayout = new FormLayout();

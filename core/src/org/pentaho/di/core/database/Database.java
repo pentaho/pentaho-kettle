@@ -4498,7 +4498,6 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       BufferedReader buff = new BufferedReader(bis);
       String sLine = null;
       String sql = Const.CR;
-      ;
 
       while ((sLine = buff.readLine()) != null) {
         if (Const.isEmpty(sLine)) {
@@ -4524,8 +4523,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         if (bis != null)
           bis.close();
       } catch (Exception e) {
+        // Ignore
       }
-      ;
     }
   }
 

@@ -732,7 +732,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 		wIfFileExists = new CCombo(wTarget, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
 		wIfFileExists.add(BaseMessages.getString(PKG, "JobExportRepository.Do_Nothing_IfFileExists.Label"));
 		wIfFileExists.add(BaseMessages.getString(PKG, "JobExportRepository.Overwrite_File_IfFileExists.Label"));
-		wIfFileExists.add(BaseMessages.getString(PKG, "JobExportRepository.Unique_Name_IfFileExists.Label"));;
+		wIfFileExists.add(BaseMessages.getString(PKG, "JobExportRepository.Unique_Name_IfFileExists.Label"));
 		wIfFileExists.add(BaseMessages.getString(PKG, "JobExportRepository.Fail_IfFileExists.Label"));
 		wIfFileExists.select(0); // +1: starts at -1
 

@@ -420,7 +420,7 @@ public class FTPSConnection implements FTPListener {
 			if(file!=null) {
 				try {
 					file.close();
-				}catch(Exception e) {};
+				}catch(Exception e) {}
 			}
 		}
 	}
@@ -519,7 +519,7 @@ public class FTPSConnection implements FTPListener {
 			if(currectDirectory!=null) {
 				try {
 					this.connection.changeDirectory(currectDirectory);
-				}catch(Exception e){};
+				}catch(Exception e){}
 			}
 		}
 		return retval;

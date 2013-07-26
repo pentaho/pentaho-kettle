@@ -602,7 +602,7 @@ public class Result implements Cloneable
         
         // The high level results...
         //
-        xml.append(XMLHandler.addTagValue("result", result));;
+        xml.append(XMLHandler.addTagValue("result", result));
         xml.append(XMLHandler.addTagValue("exit_status", exitStatus));
         xml.append(XMLHandler.addTagValue("is_stopped", stopped));
         xml.append(XMLHandler.addTagValue("log_channel_id", logChannelId));

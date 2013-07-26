@@ -184,7 +184,6 @@ public class ControlSpaceKeyAdapter extends KeyAdapter {
       
       shell.open();
     }
-    ;
   }
 
   private static final void applyChanges(Shell shell, List list, Control control, int position,

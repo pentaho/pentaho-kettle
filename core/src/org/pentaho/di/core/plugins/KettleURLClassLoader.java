@@ -197,7 +197,7 @@ public class KettleURLClassLoader extends URLClassLoader
         Vector<?> nativeLibArr = (Vector<?>) getFieldObject(ClassLoader.class, "nativeLibraries", this);
         for (Object lib : nativeLibArr) {
           try {
-            Method fMethod = lib.getClass().getDeclaredMethod("finalize", new Class[0]);
+            Method fMethod = lib.getClass().getDeclaredMethod("finalize", new Class<?>[0]);
             fMethod.setAccessible(true);
             fMethod.invoke(lib, new Object[0]);
           } catch (Exception e) {

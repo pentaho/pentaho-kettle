@@ -210,8 +210,8 @@ public class UserDialog extends Dialog
 					handleOK();	
 				}
 			};
-		wLogin.addSelectionListener(selAdapter);;
-		wPassword.addSelectionListener(selAdapter);;
+		wLogin.addSelectionListener(selAdapter);
+		wPassword.addSelectionListener(selAdapter);
 		
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );

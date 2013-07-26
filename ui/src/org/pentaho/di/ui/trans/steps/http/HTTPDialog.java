@@ -231,7 +231,7 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
         // START Settings GROUP
 
         Group gSettings = new Group(wGeneralComp, SWT.SHADOW_ETCHED_IN);
-        gSettings.setText(BaseMessages.getString(PKG, "HTTPDialog.SettingsGroup.Label")); ;
+        gSettings.setText(BaseMessages.getString(PKG, "HTTPDialog.SettingsGroup.Label"));
         FormLayout SettingsLayout = new FormLayout();
         SettingsLayout.marginWidth = 3;
         SettingsLayout.marginHeight = 3;
@@ -432,7 +432,7 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
         // START Output Fields GROUP
 
         Group gOutputFields = new Group(wGeneralComp, SWT.SHADOW_ETCHED_IN);
-        gOutputFields.setText(BaseMessages.getString(PKG, "HTTPDialog.OutputFieldsGroup.Label")); ;
+        gOutputFields.setText(BaseMessages.getString(PKG, "HTTPDialog.OutputFieldsGroup.Label"));
         FormLayout OutputFieldsLayout = new FormLayout();
         OutputFieldsLayout.marginWidth = 3;
         OutputFieldsLayout.marginHeight = 3;
@@ -510,7 +510,7 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
         // START HTTP AUTH GROUP
 
         Group gHttpAuth = new Group(wGeneralComp, SWT.SHADOW_ETCHED_IN);
-        gHttpAuth.setText(BaseMessages.getString(PKG, "HTTPDialog.HttpAuthGroup.Label")); ;
+        gHttpAuth.setText(BaseMessages.getString(PKG, "HTTPDialog.HttpAuthGroup.Label"));
         FormLayout httpAuthLayout = new FormLayout();
         httpAuthLayout.marginWidth = 3;
         httpAuthLayout.marginHeight = 3;
@@ -571,7 +571,7 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
         // START PROXY GROUP
 
         Group gProxy = new Group(wGeneralComp, SWT.SHADOW_ETCHED_IN);
-        gProxy.setText(BaseMessages.getString(PKG, "HTTPDialog.ProxyGroup.Label")); ;
+        gProxy.setText(BaseMessages.getString(PKG, "HTTPDialog.ProxyGroup.Label"));
         FormLayout proxyLayout = new FormLayout();
         proxyLayout.marginWidth = 3;
         proxyLayout.marginHeight = 3;

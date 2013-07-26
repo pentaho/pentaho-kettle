@@ -845,7 +845,7 @@ public class TransPainter extends BasePainter
         		ioMeta = showTargetStreamsStep.getStepMetaInterface().getStepIOMeta();
         		List<StreamInterface> targetStreams = ioMeta.getTargetStreams();
         		int targetsWidth=0;
-        		int targetsHeight=0;;
+        		int targetsHeight=0;
         		for (int i=0;i<targetStreams.size();i++) {
         			String description = targetStreams.get(i).getDescription(); 
         			Point extent = gc.textExtent(description);

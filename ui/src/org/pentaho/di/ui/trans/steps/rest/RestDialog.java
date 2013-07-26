@@ -265,7 +265,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
         // START Settings GROUP
 
         Group gSettings = new Group(wGeneralComp, SWT.SHADOW_ETCHED_IN);
-        gSettings.setText(BaseMessages.getString(PKG, "RestDialog.SettingsGroup.Label")); ;
+        gSettings.setText(BaseMessages.getString(PKG, "RestDialog.SettingsGroup.Label"));
         FormLayout SettingsLayout = new FormLayout();
         SettingsLayout.marginWidth = 3;
         SettingsLayout.marginHeight = 3;
@@ -533,7 +533,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
         // START Output Fields GROUP
 
         Group gOutputFields = new Group(wGeneralComp, SWT.SHADOW_ETCHED_IN);
-        gOutputFields.setText(BaseMessages.getString(PKG, "RestDialog.OutputFieldsGroup.Label")); ;
+        gOutputFields.setText(BaseMessages.getString(PKG, "RestDialog.OutputFieldsGroup.Label"));
         FormLayout OutputFieldsLayout = new FormLayout();
         OutputFieldsLayout.marginWidth = 3;
         OutputFieldsLayout.marginHeight = 3;
@@ -639,7 +639,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
         // START HTTP AUTH GROUP
 
         Group gHttpAuth = new Group(wAuthComp, SWT.SHADOW_ETCHED_IN);
-        gHttpAuth.setText(BaseMessages.getString(PKG, "RestDialog.HttpAuthGroup.Label")); ;
+        gHttpAuth.setText(BaseMessages.getString(PKG, "RestDialog.HttpAuthGroup.Label"));
         FormLayout httpAuthLayout = new FormLayout();
         httpAuthLayout.marginWidth = 3;
         httpAuthLayout.marginHeight = 3;
@@ -725,7 +725,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
         // START PROXY GROUP
 
         Group gProxy = new Group(wAuthComp, SWT.SHADOW_ETCHED_IN);
-        gProxy.setText(BaseMessages.getString(PKG, "RestDialog.ProxyGroup.Label")); ;
+        gProxy.setText(BaseMessages.getString(PKG, "RestDialog.ProxyGroup.Label"));
         FormLayout proxyLayout = new FormLayout();
         proxyLayout.marginWidth = 3;
         proxyLayout.marginHeight = 3;
@@ -811,7 +811,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
         // START SSLTrustStore GROUP
 
         Group gSSLTrustStore = new Group(wSSLComp, SWT.SHADOW_ETCHED_IN);
-        gSSLTrustStore.setText(BaseMessages.getString(PKG, "RestDialog.SSLTrustStoreGroup.Label")); ;
+        gSSLTrustStore.setText(BaseMessages.getString(PKG, "RestDialog.SSLTrustStoreGroup.Label"));
         FormLayout SSLTrustStoreLayout = new FormLayout();
         SSLTrustStoreLayout.marginWidth = 3;
         SSLTrustStoreLayout.marginHeight = 3;

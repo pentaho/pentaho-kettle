@@ -263,7 +263,7 @@ public class SimpleMappingDialog extends BaseStepDialog implements StepDialogInt
 		// //////////////////////////////////////////////////
 		//
 		gTransGroup = new Group(shell, SWT.SHADOW_ETCHED_IN);
-		gTransGroup.setText(BaseMessages.getString(PKG, "SimpleMappingDialog.TransGroup.Label")); ;
+		gTransGroup.setText(BaseMessages.getString(PKG, "SimpleMappingDialog.TransGroup.Label"));
 		gTransGroup.setBackground(shell.getBackground()); // the default looks
 		// ugly
 		FormLayout transGroupLayout = new FormLayout();

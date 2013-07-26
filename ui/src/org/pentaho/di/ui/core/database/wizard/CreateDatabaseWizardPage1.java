@@ -308,15 +308,15 @@ public class CreateDatabaseWizardPage1 extends WizardPage
 			nextPage = wiz.getPage("oci"); // OCI 
 			break;
 		case DatabaseMeta.TYPE_ACCESS_ODBC:
-			nextPage = wiz.getPage("odbc");; // ODBC 
+			nextPage = wiz.getPage("odbc"); // ODBC 
 			break;
 		case DatabaseMeta.TYPE_ACCESS_PLUGIN:
-			nextPage = wiz.getPage(databaseMeta.getPluginId());; // e.g. SAPR3
+			nextPage = wiz.getPage(databaseMeta.getPluginId()); // e.g. SAPR3
 			break;		
 		default: // Generic or Native
 			if(databaseMeta.getDatabaseInterface() instanceof GenericDatabaseMeta)
 			{	// Generic
-				nextPage = wiz.getPage("generic");; // generic 
+				nextPage = wiz.getPage("generic"); // generic 
 			} else { // Native
 				nextPage = wiz.getPage("jdbc"); 
 				if (nextPage!=null) 

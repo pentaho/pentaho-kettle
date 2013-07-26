@@ -96,7 +96,7 @@ public class Update extends BaseStep implements StepInterface
                 lookupIndex++;
 			}
 		}
-		RowMetaInterface returnRowMeta=null;;
+		RowMetaInterface returnRowMeta=null;
 		if(!meta.isSkipLookup())
 		{
 			data.db.setValues(data.lookupParameterRowMeta, lookupRow, data.prepStatementLookup);

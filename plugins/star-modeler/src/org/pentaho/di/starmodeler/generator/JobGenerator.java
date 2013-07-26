@@ -554,7 +554,7 @@ public class JobGenerator {
     
     // Find the technical key (if any defined)
     //
-    LogicalColumn keyColumn = ConceptUtil.findLogicalColumn(logicalTable, AttributeType.TECHNICAL_KEY);;
+    LogicalColumn keyColumn = ConceptUtil.findLogicalColumn(logicalTable, AttributeType.TECHNICAL_KEY);
     if (keyColumn!=null) {
       ValueMetaInterface keyValue = getValueForLogicalColumn(databaseMeta, keyColumn);
       meta.setKeyField(keyValue.getName());
@@ -645,7 +645,7 @@ public class JobGenerator {
     
     // Find the technical key (if any defined)
     //
-    LogicalColumn keyColumn = ConceptUtil.findLogicalColumn(logicalTable, AttributeType.TECHNICAL_KEY);;
+    LogicalColumn keyColumn = ConceptUtil.findLogicalColumn(logicalTable, AttributeType.TECHNICAL_KEY);
     if (keyColumn!=null) {
       ValueMetaInterface keyValue = getValueForLogicalColumn(databaseMeta, keyColumn);
       meta.setTechnicalKeyField(keyValue.getName());

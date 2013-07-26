@@ -260,7 +260,7 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
           files = filefolder.findFiles(new TextFileSelector(filefolder.toString(),realwilcard));
 
           if (isDetailed())
-            logDetailed( BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.TotalFilesToCheck", String.valueOf(files.length))); ;
+            logDetailed( BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.TotalFilesToCheck", String.valueOf(files.length)));
         } else {
           // It's a file
           if(isDetailed()) 

@@ -129,7 +129,7 @@ public class RssOutputData extends BaseStepData implements StepDataInterface
 		channeldescriptionvalue=null;
 		channellinkvalue=null;
 		
-		channelpubdatevalue=null;;
+		channelpubdatevalue=null;
 		channellanguagevalue=null;
 		channelcopyrightvalue=null;
 		channelauthorvalue=null;

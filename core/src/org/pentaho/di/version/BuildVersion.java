@@ -103,14 +103,18 @@ public class BuildVersion
 			Date d = sdf.parse(buildDate);
 			return d;
 			// ignore failure, retry using standard format
-		} catch (ParseException e) {};
+		} catch (ParseException e) {
+		  // Ignore
+		}
 		
 		sdf = new SimpleDateFormat(ValueMeta.DEFAULT_DATE_FORMAT_MASK);
 		try {
 			Date d = sdf.parse(buildDate);
 			return d;
 			// ignore failure and return null
-		} catch (ParseException e) {};
+		} catch (ParseException e) {
+		  // Ignore
+		}
 		
 		return null;
     	

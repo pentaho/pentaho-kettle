@@ -179,7 +179,7 @@ public class ChangeFileEncodingMeta extends BaseStepMeta implements StepMetaInte
         addsourceresultfilenames=false;
         addtargetresultfilenames=false;
         targetfilenamefield=null;
-        sourceencoding=	System.getProperty("file.encoding");;
+        sourceencoding=	System.getProperty("file.encoding");
         targetencoding=null;
         createparentfolder=false;
     }

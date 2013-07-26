@@ -51,7 +51,7 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
 	private int[] readRowIndex = new int[0];
 	private HashMap<String, Object> filterRowCache = new HashMap<String, Object>();
 	private final String SEPARATOR = "A|a";
-	private FieldCollection rowFields;;
+	private FieldCollection rowFields;
 
 	public OpenERPObjectOutput(StepMeta stepMeta,
 			StepDataInterface stepDataInterface, int copyNr,

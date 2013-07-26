@@ -84,6 +84,7 @@ public abstract class BaseStepXulDialog extends BaseStepGenericXulDialog {
  
   @Override
   public void clear() {
+    // Nothing to do
   }
   
   @Override
@@ -146,6 +147,7 @@ public abstract class BaseStepXulDialog extends BaseStepGenericXulDialog {
         getShell().setImage(GUIResource.getInstance().getImagesSteps().get(id));
       }
     } catch (Throwable e) {
+      // Ignore
     }
   }
 
@@ -373,7 +375,7 @@ public abstract class BaseStepXulDialog extends BaseStepGenericXulDialog {
           comboVar.setText(selectedField);
         }
       }
-      ;
+      
     } catch (KettleException ke) {
       new ErrorDialog(comboVar.getShell(),
           BaseMessages.getString(PKG, "BaseStepDialog.FailedToGetFieldsPrevious.DialogTitle"),

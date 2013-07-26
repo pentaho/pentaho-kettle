@@ -206,7 +206,7 @@ public class ConstTest extends TestCase
 		assertEquals(0, Const.splitString("", ";").length);
 		assertEquals(0, Const.splitString(null, ";").length);
 
-		String a[] = Const.splitString(";;", ";");
+		String a[] = Const.splitString(";", ";");
 		assertEquals(2, a.length);
 		assertEquals("", a[0]);
 		assertEquals("", a[1]);
@@ -225,7 +225,7 @@ public class ConstTest extends TestCase
 		assertEquals("c", a[2]);
 		assertEquals("d", a[3]);
 
-		a = Const.splitString("a;b;c;d;;", ";");
+		a = Const.splitString("a;b;c;d;", ";");
 		assertEquals(5, a.length);
 		assertEquals("a", a[0]);
 		assertEquals("b", a[1]);
@@ -255,7 +255,7 @@ public class ConstTest extends TestCase
 		assertEquals(0, Const.splitString("", ';').length);
 		assertEquals(0, Const.splitString(null, ';').length);
 
-		String a[] = Const.splitString(";;", ';');
+		String a[] = Const.splitString(";", ';');
 		assertEquals(2, a.length);
 		assertEquals("", a[0]);
 		assertEquals("", a[1]);
@@ -274,7 +274,7 @@ public class ConstTest extends TestCase
 		assertEquals("c", a[2]);
 		assertEquals("d", a[3]);
 
-		a = Const.splitString("a;b;c;d;;", ';');
+		a = Const.splitString("a;b;c;d;", ';');
 		assertEquals(5, a.length);
 		assertEquals("a", a[0]);
 		assertEquals("b", a[1]);

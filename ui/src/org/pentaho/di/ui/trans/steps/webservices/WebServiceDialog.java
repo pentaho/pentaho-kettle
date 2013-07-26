@@ -1196,7 +1196,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         // START HTTP AUTH GROUP
 
         Group gHttpAuth = new Group(compositeTabWebService, SWT.SHADOW_ETCHED_IN);
-        gHttpAuth.setText(BaseMessages.getString(PKG, "WebServicesDialog.HttpAuthGroup.Label")); ;
+        gHttpAuth.setText(BaseMessages.getString(PKG, "WebServicesDialog.HttpAuthGroup.Label"));
         FormLayout httpAuthLayout = new FormLayout();
         httpAuthLayout.marginWidth = 3;
         httpAuthLayout.marginHeight = 3;
@@ -1255,7 +1255,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         // START PROXY GROUP
 
         Group gProxy = new Group(compositeTabWebService, SWT.SHADOW_ETCHED_IN);
-        gProxy.setText(BaseMessages.getString(PKG, "WebServicesDialog.ProxyGroup.Label")); ;
+        gProxy.setText(BaseMessages.getString(PKG, "WebServicesDialog.ProxyGroup.Label"));
         FormLayout proxyLayout = new FormLayout();
         proxyLayout.marginWidth = 3;
         proxyLayout.marginHeight = 3;

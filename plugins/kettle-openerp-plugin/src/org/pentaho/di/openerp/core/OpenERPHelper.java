@@ -239,7 +239,7 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
 				newFieldMap = fieldMap.Clone();
 
 				newFieldMap.source_index = 1;
-				newFieldMap.target_model = field.getRelation();;
+				newFieldMap.target_model = field.getRelation();
 				newFieldMap.target_field = fieldName + "_name";
 				newFieldMap.target_field_label = field.getDescription() +"/Name";
 				newFieldMap.target_field_type = ValueMetaInterface.TYPE_STRING;

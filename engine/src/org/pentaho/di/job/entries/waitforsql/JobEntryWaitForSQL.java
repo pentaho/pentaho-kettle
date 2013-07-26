@@ -594,7 +594,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 			// ad rows to result
 			if(isAddRowsResult && iscustomSQL && ar!=null)
 			{
-				List<RowMetaAndData> rows=new ArrayList<RowMetaAndData>();;
+				List<RowMetaAndData> rows=new ArrayList<RowMetaAndData>();
 				for(int i=0;i<ar.size();i++)
 				{
 					rows.add(new RowMetaAndData(rowMeta,ar.get(i)));

@@ -224,7 +224,7 @@ public class DTDValidator {
 			    if ( xmlfile != null ) xmlfile.close();
 			    if ( DTDfile != null ) DTDfile.close();
 			    if(ba!=null) ba.close();	
-		    } catch ( IOException e ) {};			
+		    } catch ( IOException e ) {}			
 		}
 		return retval;
 	}

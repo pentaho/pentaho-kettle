@@ -1314,19 +1314,19 @@ public class DataHandler extends AbstractXulEventHandler {
     poolingDescription = (XulTextbox) document.getElementById("pooling-description");  
     poolingParameterDescriptionLabel = (XulLabel) document.getElementById("pool-parameter-description-label");  
     poolingDescriptionLabel = (XulLabel) document.getElementById("pooling-description-label");  
-    supportBooleanDataType = (XulCheckbox) document.getElementById("supports-boolean-data-type"); ;
-    supportTimestampDataType = (XulCheckbox) document.getElementById("supports-timestamp-data-type"); ;
-    quoteIdentifiersCheck = (XulCheckbox) document.getElementById("quote-identifiers-check"); ;
-    lowerCaseIdentifiersCheck = (XulCheckbox) document.getElementById("force-lower-case-check"); ;
-    upperCaseIdentifiersCheck = (XulCheckbox) document.getElementById("force-upper-case-check"); ;
-    preserveReservedCaseCheck = (XulCheckbox) document.getElementById("preserve-reserved-case"); ;
-    preferredSchemaName = (XulTextbox) document.getElementById("preferred-schema-name-text"); ;
-    sqlBox = (XulTextbox) document.getElementById("sql-text"); ;
-    useIntegratedSecurityCheck = (XulCheckbox) document.getElementById("use-integrated-security-check"); ;
-    acceptButton = (XulButton) document.getElementById("general-datasource-window_accept"); ;
-    cancelButton = (XulButton) document.getElementById("general-datasource-window_cancel"); ;
-    testButton = (XulButton) document.getElementById("test-button"); ;
-    noticeLabel = (XulLabel) document.getElementById("notice-label"); ;
+    supportBooleanDataType = (XulCheckbox) document.getElementById("supports-boolean-data-type");
+    supportTimestampDataType = (XulCheckbox) document.getElementById("supports-timestamp-data-type");
+    quoteIdentifiersCheck = (XulCheckbox) document.getElementById("quote-identifiers-check");
+    lowerCaseIdentifiersCheck = (XulCheckbox) document.getElementById("force-lower-case-check");
+    upperCaseIdentifiersCheck = (XulCheckbox) document.getElementById("force-upper-case-check");
+    preserveReservedCaseCheck = (XulCheckbox) document.getElementById("preserve-reserved-case");
+    preferredSchemaName = (XulTextbox) document.getElementById("preferred-schema-name-text");
+    sqlBox = (XulTextbox) document.getElementById("sql-text");
+    useIntegratedSecurityCheck = (XulCheckbox) document.getElementById("use-integrated-security-check");
+    acceptButton = (XulButton) document.getElementById("general-datasource-window_accept");
+    cancelButton = (XulButton) document.getElementById("general-datasource-window_cancel");
+    testButton = (XulButton) document.getElementById("test-button");
+    noticeLabel = (XulLabel) document.getElementById("notice-label");
     
     if (portNumberBox != null && serverInstanceBox != null) {
       if (Boolean.parseBoolean(serverInstanceBox.getAttributeValue("shouldDisablePortIfPopulated"))) {

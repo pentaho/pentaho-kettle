@@ -248,7 +248,9 @@ public class ChangeFileEncoding extends BaseStep implements StepInterface
     				buffWriter.close();
     			}
 	    		if(buffReader!=null) buffReader.close();
-    		}catch(Exception e) {};
+    		}catch(Exception e) {
+          // Ignore
+    		}
     	}
 
 
