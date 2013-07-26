@@ -75,6 +75,7 @@ public class EnterNumberDialog extends Dialog
     /**
      * @deprecated Use the CT without the <i>Props</i> parameter (at 2nd position)
      */
+    @Deprecated
     public EnterNumberDialog(Shell parent, PropsUI props, int samples, String shellText, String lineText)
     {
         super(parent, SWT.NONE);

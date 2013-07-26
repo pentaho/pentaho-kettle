@@ -108,10 +108,10 @@ public class EnterSelectionDialog extends Dialog
     /**
      * @deprecated Use CT without <i>props</i> parameter
      */
-    public EnterSelectionDialog(Shell parent, PropsUI props, String choices[], String shellText, String lineText)
-    {
-        this(parent, choices, shellText, lineText);
-        this.props=props;
+    @Deprecated
+    public EnterSelectionDialog(Shell parent, PropsUI props, String choices[], String shellText, String lineText) {
+      this(parent, choices, shellText, lineText);
+      this.props = props;
     }
     
     /**

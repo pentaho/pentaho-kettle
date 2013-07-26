@@ -797,6 +797,7 @@ public class RowMeta implements RowMetaInterface
      * @throws KettleValueException in case there is a data conversion error
      * @deprecated
      */
+    @Deprecated
     public int oldXORHashCode(Object[] rowData) throws KettleValueException
     {
         int hash = 0;

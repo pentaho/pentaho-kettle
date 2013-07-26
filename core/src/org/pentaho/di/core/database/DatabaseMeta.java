@@ -101,228 +101,266 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    * Indicates that the connections doesn't point to a type of database yet.
    * @deprecated
    */
+  @Deprecated
   public static final int TYPE_DATABASE_NONE = 0;
 
   /**
    * Connection to a MySQL database
    * @deprecated
    */
+  @Deprecated
   public static final int TYPE_DATABASE_MYSQL = 1;
 
   /**
    * Connection to an Oracle database
    * @deprecated
    */
+  @Deprecated
   public static final int TYPE_DATABASE_ORACLE = 2;
 
   /**
    * Connection to an AS/400 (IBM iSeries) DB400 database
    * @deprecated
    */
+  @Deprecated
   public static final int TYPE_DATABASE_AS400 = 3;
 
   /**
    * Connection to an Microsoft Access database
    * @deprecated
    */
+  @Deprecated
   public static final int TYPE_DATABASE_ACCESS = 4;
 
   /**
    * Connection to a Microsoft SQL Server database
    * @deprecated
    */
+  @Deprecated
   public static final int TYPE_DATABASE_MSSQL = 5;
 
   /**
    * Connection to an IBM DB2 database
    * @deprecated
    */
+  @Deprecated
   public static final int TYPE_DATABASE_DB2 = 6;
 
   /**
    * Connection to a PostgreSQL database
    * @deprecated
    */
+  @Deprecated
   public static final int TYPE_DATABASE_POSTGRES = 7;
 
   /**
    * Connection to an Intersystems Cache database
    * @deprecated
    */
+  @Deprecated
   public static final int TYPE_DATABASE_CACHE = 8;
 
   /**
    * Connection to an IBM Informix database
    * @deprecated
    */
+  @Deprecated
   public static final int TYPE_DATABASE_INFORMIX = 9;
 
   /**
    * Connection to a Sybase ASE database
    * @deprecated
    */
+  @Deprecated
   public static final int TYPE_DATABASE_SYBASE = 10;
 
   /**
    * Connection to a Gupta SQLBase database
    * @deprecated
    */
+  @Deprecated
   public static final int TYPE_DATABASE_GUPTA = 11;
 
   /**
    * Connection to a DBase III/IV/V database through JDBC
    * @deprecated
    */
+  @Deprecated
   public static final int TYPE_DATABASE_DBASE = 12;
 
   /**
    * Connection to a FireBird database
    * @deprecated
    */
+  @Deprecated
   public static final int TYPE_DATABASE_FIREBIRD = 13;
 
   /**
    * Connection to a SAP DB database
    * @deprecated
    */
+  @Deprecated
   public static final int TYPE_DATABASE_SAPDB = 14;
 
   /**
    * Connection to a Hypersonic java database
    * @deprecated
    */
+  @Deprecated
   public static final int TYPE_DATABASE_HYPERSONIC = 15;
 
   /**
    * Connection to a generic database
    * @deprecated
    */
+  @Deprecated
   public static final int TYPE_DATABASE_GENERIC = 16;
 
   /**
    * Connection to an SAP R/3 system
   * @deprecated
    */
+  @Deprecated
   public static final int TYPE_DATABASE_SAPR3 = 17;
 
   /**
    * Connection to an Ingress database
   * @deprecated
    */
+  @Deprecated
   public static final int TYPE_DATABASE_INGRES = 18;
 
   /**
    * Connection to a Borland Interbase database
   * @deprecated
    */
+  @Deprecated
   public static final int TYPE_DATABASE_INTERBASE = 19;
 
   /**
   * Connection to an ExtenDB database
   * @deprecated
   */
+  @Deprecated
   public static final int TYPE_DATABASE_EXTENDB = 20;
 
   /**
    * Connection to a Teradata database
   * @deprecated
    */
+  @Deprecated
   public static final int TYPE_DATABASE_TERADATA = 21;
 
   /**
    * Connection to an Oracle RDB database
   * @deprecated
    */
+  @Deprecated
   public static final int TYPE_DATABASE_ORACLE_RDB = 22;
 
   /**
    * Connection to an H2 database
   * @deprecated
    */
+  @Deprecated
   public static final int TYPE_DATABASE_H2 = 23;
 
   /**
    * Connection to a Netezza database
    * @deprecated
    */
+  @Deprecated
   public static final int TYPE_DATABASE_NETEZZA = 24;
 
   /**
    * Connection to an IBM UniVerse database
   * @deprecated
    */
+  @Deprecated
   public static final int TYPE_DATABASE_UNIVERSE = 25;
 
   /**
    * Connection to a SQLite database
   * @deprecated
    */
+  @Deprecated
   public static final int TYPE_DATABASE_SQLITE = 26;
 
   /**
    * Connection to an Apache Derby database
   * @deprecated
    */
+  @Deprecated
   public static final int TYPE_DATABASE_DERBY = 27;
 
   /**
    * Connection to a BMC Remedy Action Request System 
   * @deprecated
    */
+  @Deprecated
   public static final int TYPE_DATABASE_REMEDY_AR_SYSTEM = 28;
 
   /**
    * Connection to a Palo MOLAP Server
   * @deprecated
    */
+  @Deprecated
   public static final int TYPE_DATABASE_PALO = 29;
 
   /**
   * Connection to a SybaseIQ ASE database
   * @deprecated
   */
+  @Deprecated
   public static final int TYPE_DATABASE_SYBASEIQ = 30;
 
   /**
    * Connection to a Greenplum database
    * @deprecated
    */
+  @Deprecated
   public static final int TYPE_DATABASE_GREENPLUM = 31;
 
   /**
    * Connection to a MonetDB database
    * @deprecated
    */
+  @Deprecated
   public static final int TYPE_DATABASE_MONETDB = 32;
 
   /**
    * Connection to a KingbaseES database
    * @deprecated
    */
+  @Deprecated
   public static final int TYPE_DATABASE_KINGBASEES = 33;
 
   /**
    * Connection to a Vertica database
    * @deprecated
    */
+  @Deprecated
   public static final int TYPE_DATABASE_VERTICA = 34;
 
   /**
    * Connection to a Neoview database
    * @deprecated
    */
+  @Deprecated
   public static final int TYPE_DATABASE_NEOVIEW = 35;
 
   /**
    * Connection to a LucidDB database
    * @deprecated
    */
+  @Deprecated
   public static final int TYPE_DATABASE_LUCIDDB = 36;
 
   /**
    * Connection to an Infobright database
    * @deprecated
    */
+  @Deprecated
   public static final int TYPE_DATABASE_INFOBRIGHT = 37;
 
   /**
@@ -637,6 +675,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    * @return A short description of the type of database.
    * @deprecated This is actually the plugin ID
    */
+  @Deprecated
   public String getDatabaseTypeDesc() {
     return getPluginId();
   }
@@ -1047,6 +1086,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   * DatabaseMetaData.supportsTransactions() in stead of this.
   * @return true if the database supports transactions
   */
+  @Deprecated
   public boolean supportsTransactions() {
     return databaseInterface.supportsTransactions();
   }
@@ -1324,6 +1364,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    * @return
      * @deprecated please use getQuotedSchemaTableCombination()
    */
+  @Deprecated
   public String getSchemaTableCombination(String schemaName, String tableName) {
     return getQuotedSchemaTableCombination(schemaName, tableName);
   }

@@ -21,7 +21,6 @@ import java.util.Properties;
 import java.util.concurrent.Executor;
 
 import org.pentaho.di.cluster.HttpUtil;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.variables.Variables;
 
 public class ThinConnection implements Connection {

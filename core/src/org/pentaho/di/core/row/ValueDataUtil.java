@@ -57,6 +57,7 @@ public class ValueDataUtil {
   /**
    * @deprecated Use {@link Const#ltrim(String)} instead
    */
+  @Deprecated
   public static final String leftTrim(String string) {
     return Const.ltrim(string);
   }
@@ -64,6 +65,7 @@ public class ValueDataUtil {
   /**
    * @deprecated Use {@link Const#rtrim(String)} instead
    */
+  @Deprecated
   public static final String rightTrim(String string) {
     return Const.rtrim(string);
   }
@@ -75,6 +77,7 @@ public class ValueDataUtil {
    * @return true if the character is a space. false otherwise. 
    * @deprecated Use {@link Const#isSpace(char)} instead
    */
+  @Deprecated
   public static final boolean isSpace(char c) {
     return Const.isSpace(c);
   }
@@ -85,6 +88,7 @@ public class ValueDataUtil {
    * @return The trimmed string.
    * @deprecated Use {@link Const#trim(String)} instead
    */
+  @Deprecated
   public static final String trim(String string) {
     return Const.trim(string);
   }

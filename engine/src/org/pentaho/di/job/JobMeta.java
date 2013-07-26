@@ -1078,6 +1078,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
   * @throws KettleXMLException
   * @deprecated
   */
+  @Deprecated
   public void loadXML(Node jobnode, String fname, Repository rep, boolean ignoreRepositorySharedObjects,
       OverwritePrompter prompter) throws KettleXMLException {
     loadXML(jobnode, fname, rep, null, ignoreRepositorySharedObjects, prompter);

@@ -606,6 +606,7 @@ public class TextFileInput extends BaseStep implements StepInterface
     /**
      * @deprecated Use {@link #convertLineToRow(TextFileLine,InputFileMetaInterface,Object[],int,RowMetaInterface,RowMetaInterface,String,long, FileErrorHandler)} instead
      */
+    @Deprecated
     public static final Object[] convertLineToRow(LogChannelInterface log, TextFileLine textFileLine, InputFileMetaInterface info, RowMetaInterface outputRowMeta, RowMetaInterface convertRowMeta, String fname, long rowNr, 
         String delimiter, FileErrorHandler errorHandler,
     		boolean addShortFilename, boolean addExtension, boolean addPath, boolean addSize, boolean addIsHidden, boolean addLastModificationDate, boolean addUri, boolean addRootUri,

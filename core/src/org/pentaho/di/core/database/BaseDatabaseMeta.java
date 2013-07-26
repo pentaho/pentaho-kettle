@@ -698,6 +698,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
 	 * 
 	 * @deprecated we should phase this out in 5.0, but it's there to keep backwards compatibility in the 4.x releases.
 	 */
+  @Deprecated
 	public String getBackwardsCompatibleSchemaTableCombination(String schemaPart, String tablePart) {
       String schemaTable = "";
       if (schemaPart != null && (schemaPart.contains(getStartQuote()) || schemaPart.contains(getEndQuote()))) {
@@ -724,6 +725,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
      * 
      * @deprecated we should phase this out in 5.0, but it's there to keep backwards compatibility in the 4.x releases.
      */
+  @Deprecated
     public String getBackwardsCompatibleTable(String tablePart) {
       if (tablePart != null && tablePart.contains(getStartQuote()) || tablePart.contains(getEndQuote())) {
         return tablePart;

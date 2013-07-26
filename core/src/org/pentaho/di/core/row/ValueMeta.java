@@ -116,6 +116,7 @@ public class ValueMeta extends ValueMetaBase implements ValueMetaInterface {
    * @throws KettleEOFException
    * @deprecated
    */
+  @Deprecated
   public ValueMeta(DataInputStream inputStream) throws KettleFileException, KettleEOFException {
     super(inputStream);
   }
@@ -133,6 +134,7 @@ public class ValueMeta extends ValueMetaBase implements ValueMetaInterface {
   /**
    * @deprecated
    */
+  @Deprecated
   public void setType(int type) {
     // TODO Auto-generated method stub
     super.setType(type);

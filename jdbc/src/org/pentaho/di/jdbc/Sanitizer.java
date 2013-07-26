@@ -51,6 +51,7 @@ public class Sanitizer {
 	 * @param input
 	 * @return
 	 */
+  @Deprecated
 	static String replace2(String input) {
 		char[] data = input.toCharArray();
 
@@ -74,6 +75,7 @@ public class Sanitizer {
 	 * @param input
 	 * @return
 	 */
+  @Deprecated
 	public static String lowercase(String input) {
 
 		StringBuilder buff = new StringBuilder(input);

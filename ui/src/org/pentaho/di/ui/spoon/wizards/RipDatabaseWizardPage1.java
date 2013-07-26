@@ -54,6 +54,7 @@ public class RipDatabaseWizardPage1 extends WizardPage
 	private java.util.List<DatabaseMeta> databases;
 	
     /** @deprecated */
+    @Deprecated
     public RipDatabaseWizardPage1(String arg, PropsUI props, java.util.List<DatabaseMeta> databases)
     {
         this(arg, databases);

@@ -836,6 +836,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * Gets the plugin id.
    * @deprecated in favor of getPluginId()
    */
+  @Deprecated
   public String getTypeId() {
     return getPluginId();
   }
@@ -844,6 +845,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * Sets the plugin id.
    * @deprecated in favor of setPluginId()
    */
+  @Deprecated
   public void setTypeId(String typeId) {
     setPluginId(typeId);
   }

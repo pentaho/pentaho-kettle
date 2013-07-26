@@ -1587,6 +1587,7 @@ public class Const
 	 * @return The expanded string.
 	 * @deprecated use StringUtil.environmentSubstitute(): handles both Windows and unix conventions
 	 */
+  @Deprecated
 	public static final String replEnv(String string)
 	{
 		if (string == null)
@@ -1640,6 +1641,7 @@ public class Const
 	 * @return the array with the environment variables replaced.
 	 * @deprecated please use StringUtil.environmentSubstitute now.
 	 */
+  @Deprecated
 	public static final String[] replEnv(String string[])
 	{
 		String retval[] = new String[string.length];

@@ -168,6 +168,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
    * @deprecated use getFilename() instead
    * @return the filename
    */
+  @Deprecated
   public String getFileName() {
     return filename;
   }

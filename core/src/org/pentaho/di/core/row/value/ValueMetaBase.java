@@ -414,6 +414,7 @@ public class ValueMetaBase implements ValueMetaInterface {
    *          the type to set
    * @deprecated
    */
+  @Deprecated
   public void setType(int type) {
     this.type = type;
   }
@@ -421,6 +422,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   /**
    * @return the conversionMask
    */
+	@Deprecated
   public String getConversionMask() {
     return conversionMask;
   }
@@ -2549,6 +2551,7 @@ public class ValueMetaBase implements ValueMetaInterface {
    * @throws KettleEOFException
    * @deprecated in favor of a combination of {@link ValueMetaFactory}.createValueMeta() and the loadMetaData() method.
    */
+  @Deprecated
   public ValueMetaBase(DataInputStream inputStream) throws KettleFileException, KettleEOFException {
     this();
     try {

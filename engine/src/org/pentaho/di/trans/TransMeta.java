@@ -251,11 +251,13 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   /** The list of arguments to the transformation. 
    * @deprecated Moved to Trans 
    * */
+  @Deprecated
   protected String arguments[];
 
   /** A table of named counters. 
    * @deprecated Moved to Trans
    */
+  @Deprecated
   protected Hashtable<String, Counter> counters;
 
   /** Indicators for changes in steps, databases, hops, and notes. */
@@ -294,11 +296,13 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   /** The result rows.
    * @deprecated 
    * */
+  @Deprecated
   protected List<RowMetaAndData> resultRows;
 
   /** The result files.
    * @deprecated 
    * */
+  @Deprecated
   protected List<ResultFile> resultFiles;
   
   /** Whether the transformation is using unique connections. */
@@ -534,6 +538,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * @param arguments The arguments as Strings
    * @deprecated passing in arguments (a runtime argument) into the metadata is deprecated, pass it to Trans
    */
+  @Deprecated
   public TransMeta(String filename, String name, String arguments[]) {
     clear();
     setFilename(filename);
@@ -1434,6 +1439,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * @return The number of preceding steps.
    * @deprecated
    */
+  @Deprecated
   public int findNrPrevSteps(String stepname) {
     return findNrPrevSteps(findStep(stepname), false);
   }
@@ -1446,6 +1452,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * @return The number of preceding steps.
    * @deprecated
    */
+  @Deprecated
   public int findNrPrevSteps(String stepname, boolean info) {
     return findNrPrevSteps(findStep(stepname), info);
   }
@@ -1470,6 +1477,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * @return The preceding step found.
    * @deprecated
    */
+  @Deprecated
   public StepMeta findPrevStep(String stepname, int nr) {
     return findPrevStep(findStep(stepname), nr);
   }
@@ -1483,6 +1491,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * @return The step information
    * @deprecated
    */
+  @Deprecated
   public StepMeta findPrevStep(String stepname, int nr, boolean info) {
     return findPrevStep(findStep(stepname), nr, info);
   }
@@ -1508,6 +1517,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * @return The number of preceding steps
    * @deprecated please use method findPreviousSteps
    */
+  @Deprecated
   public int findNrPrevSteps(StepMeta stepMeta, boolean info) {
     int count = 0;
     int i;
@@ -1535,6 +1545,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * @return The preceding step information
    * @deprecated please use method findPreviousSteps
    */
+  @Deprecated
   public StepMeta findPrevStep(StepMeta stepMeta, int nr, boolean info) {
     int count = 0;
     int i;
@@ -1679,6 +1690,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * @return The number of succeeding steps.
    * @deprecated just get the next steps as an array
    */
+  @Deprecated
   public int findNrNextSteps(StepMeta stepMeta) {
     int count = 0;
     int i;
@@ -1699,6 +1711,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * @return The step found.
    * @deprecated just get the next steps as an array
    */
+  @Deprecated
   public StepMeta findNextStep(StepMeta stepMeta, int nr) {
     int count = 0;
     int i;
@@ -1767,6 +1780,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * @return an array of succeeding steps.
    * @deprecated use findNextSteps instead
    */
+  @Deprecated
   public StepMeta[] getNextSteps(StepMeta stepMeta) {
     List<StepMeta> nextSteps = new ArrayList<StepMeta>();
     for (int i = 0; i < nrTransHops(); i++) // Look at all the hops;
@@ -4821,6 +4835,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * @return a list containing the result rows.
    * @deprecated Moved to Trans to make this class stateless
    */
+  @Deprecated
   public List<RowMetaAndData> getResultRows() {
     return resultRows;
   }
@@ -4831,6 +4846,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * @param resultRows The list of result rows to set.
    * @deprecated Moved to Trans to make this class stateless
    */
+  @Deprecated
   public void setResultRows(List<RowMetaAndData> resultRows) {
     this.resultRows = resultRows;
   }
@@ -4872,6 +4888,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * @return an array of String arguments for the transformation
    * @deprecated moved to Trans
    */
+  @Deprecated
   public String[] getArguments() {
     return arguments;
   }
@@ -4882,6 +4899,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * @param arguments The arguments to set.
    * @deprecated moved to Trans
    */
+  @Deprecated
   public void setArguments(String[] arguments) {
     this.arguments = arguments;
   }
@@ -4892,6 +4910,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * @return a named table of counters.
    * @deprecated moved to Trans
    */
+  @Deprecated
   public Hashtable<String, Counter> getCounters() {
     return counters;
   }
@@ -4902,6 +4921,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * @param counters The counters to set.
    * @deprecated moved to Trans
    */
+  @Deprecated
   public void setCounters(Hashtable<String, Counter> counters) {
     this.counters = counters;
   }
@@ -5489,6 +5509,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * @return the previous Result.
    * @deprecated this was moved to Trans to keep the metadata stateless
    */
+  @Deprecated
   public Result getPreviousResult() {
     return previousResult;
   }
@@ -5499,6 +5520,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * @param previousResult The previous Result to set.
    * @deprecated this was moved to Trans to keep the metadata stateless
    */
+  @Deprecated
   public void setPreviousResult(Result previousResult) {
     this.previousResult = previousResult;
   }
@@ -5510,6 +5532,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * 
    * @deprecated this was moved to Trans to keep the metadata stateless
    */
+  @Deprecated
   public List<ResultFile> getResultFiles() {
     return resultFiles;
   }
@@ -5520,6 +5543,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * @param resultFiles The list of ResultFiles to set.
    * @deprecated this was moved to Trans to keep the metadata stateless
    */
+  @Deprecated
   public void setResultFiles(List<ResultFile> resultFiles) {
     this.resultFiles = resultFiles;
   }

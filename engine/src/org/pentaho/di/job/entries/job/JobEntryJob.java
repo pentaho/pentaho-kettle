@@ -155,6 +155,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
    * @deprecated use getFilename() instead.
    * @return the filename
    */
+  @Deprecated
   public String getFileName() {
     return filename;
   }

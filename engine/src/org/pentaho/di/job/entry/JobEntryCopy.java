@@ -121,6 +121,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 	 * @throws KettleXMLException
 	 * @deprecated
 	 */
+  @Deprecated
   public JobEntryCopy(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException {
     this(entrynode, databases, slaveServers, rep, null);
   }

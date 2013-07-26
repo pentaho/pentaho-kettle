@@ -74,6 +74,7 @@ public class EnterPasswordDialog extends Dialog
     /**
      * @deprecated Use CT without the <i>props</i> parameter (at 2nd position)
      */
+  @Deprecated
 	public EnterPasswordDialog(Shell parent, PropsUI props, String title, String message, String description)
 	{
 		super(parent, SWT.NONE);

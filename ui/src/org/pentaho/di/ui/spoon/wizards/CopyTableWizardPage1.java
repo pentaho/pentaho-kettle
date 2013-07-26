@@ -55,11 +55,11 @@ public class CopyTableWizardPage1 extends WizardPage
 	private PropsUI props;
 	private java.util.List<DatabaseMeta> databases;
 	
-    /** @deprecated */
-    public CopyTableWizardPage1(String arg, PropsUI props, java.util.List<DatabaseMeta> databases)
-    {
-        this(arg, databases);
-    }
+  /** @deprecated */
+	@Deprecated
+  public CopyTableWizardPage1(String arg, PropsUI props, java.util.List<DatabaseMeta> databases) {
+    this(arg, databases);
+  }
 
 	public CopyTableWizardPage1(String arg, java.util.List<DatabaseMeta> databases)
 	{

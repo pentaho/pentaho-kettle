@@ -374,24 +374,25 @@ public class KettleVFS
         };
     }
 
-    /**
-     * Get a FileInputStream for a local file.  Local files can be read with NIO.
-     * 
-     * @param fileObject
-     * @return a FileInputStream
-     * @throws IOException
-     * @deprecated because of API change in Apache VFS.  As a workaround use FileObject.getName().getPathDecoded();
-     * Then use a regular File() object to create a File Input stream.
-     */
-	public static FileInputStream getFileInputStream(FileObject fileObject) throws IOException {
-		
-		if (!(fileObject instanceof LocalFile)) {
-			// We can only use NIO on local files at the moment, so that's what we limit ourselves to.
-			//
-			throw new IOException(BaseMessages.getString(PKG, "FixedInput.Log.OnlyLocalFilesAreSupported"));
-		}
-				
-		return new FileInputStream( fileObject.getName().getPathDecoded() );
-	}
+  /**
+   * Get a FileInputStream for a local file.  Local files can be read with NIO.
+   * 
+   * @param fileObject
+   * @return a FileInputStream
+   * @throws IOException
+   * @deprecated because of API change in Apache VFS.  As a workaround use FileObject.getName().getPathDecoded();
+   * Then use a regular File() object to create a File Input stream.
+   */
+  @Deprecated
+  public static FileInputStream getFileInputStream(FileObject fileObject) throws IOException {
+
+    if (!(fileObject instanceof LocalFile)) {
+      // We can only use NIO on local files at the moment, so that's what we limit ourselves to.
+      //
+      throw new IOException(BaseMessages.getString(PKG, "FixedInput.Log.OnlyLocalFilesAreSupported"));
+    }
+
+    return new FileInputStream(fileObject.getName().getPathDecoded());
+  }
 
 }

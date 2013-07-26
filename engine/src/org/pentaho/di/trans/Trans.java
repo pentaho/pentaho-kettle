@@ -3175,6 +3175,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * @deprecated please use getTransactionId() instead
    * @return the thread name
    */
+  @Deprecated
   public String getThreadName() {
     return threadName;
   }
@@ -3184,6 +3185,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * @deprecated please use setTransactionId() instead
    * @param threadName the thread name
    */
+  @Deprecated
   public void setThreadName(String threadName) {
     this.threadName = threadName;
   }

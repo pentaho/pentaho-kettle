@@ -138,36 +138,43 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   /**  nr of lines read from previous step(s)
    * @deprecated please use the supplied getters, setters and increment/decrement methods 
    */
+  @Deprecated
   public long linesRead;
 
   /** nr of lines written to next step(s)
    * @deprecated please use the supplied getters, setters and increment/decrement methods 
    */
+  @Deprecated
   public long linesWritten;
 
   /** nr of lines read from file or database
    * @deprecated please use the supplied getters, setters and increment/decrement methods 
    */
+  @Deprecated
   public long linesInput;
 
   /** nr of lines written to file or database
    * @deprecated please use the supplied getters, setters and increment/decrement methods 
    */
+  @Deprecated
   public long linesOutput;
 
   /** nr of updates in a database table or file
    * @deprecated please use the supplied getters, setters and increment/decrement methods 
    */
+  @Deprecated
   public long linesUpdated;
 
   /** nr of lines skipped
    * @deprecated please use the supplied getters, setters and increment/decrement methods 
    */
+  @Deprecated
   public long linesSkipped;
 
   /** total sleep time in ns caused by an empty input buffer (previous step is slow)
    * @deprecated please use the supplied getters, setters and increment/decrement methods 
    */
+  @Deprecated
   public long linesRejected;
 
   private boolean distributed;
@@ -2890,6 +2897,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    *
    * @deprecated
    */
+  @Deprecated
   public void stopRunning() {
   }
 

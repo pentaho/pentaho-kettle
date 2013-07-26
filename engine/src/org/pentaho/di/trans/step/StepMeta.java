@@ -253,6 +253,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
   * @param counters A map with all defined counters.
   * @deprecated
   */
+  @Deprecated
   public StepMeta(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters)
       throws KettleXMLException, KettlePluginLoaderException {
     this(stepnode, databases, (IMetaStore) null);

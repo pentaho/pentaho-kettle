@@ -676,6 +676,7 @@ public class PropsUI extends Props
      * @deprecated
      * @return The background RGB color.
      */
+	  @Deprecated
     public RGB getBackupgroundRGB()
     {
         return getBackgroundRGB();

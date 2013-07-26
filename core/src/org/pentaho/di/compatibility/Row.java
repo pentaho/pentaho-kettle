@@ -154,6 +154,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable
      *
      * @deprecated
      */
+    @Deprecated
     public void add(Object obj)
     {
         list.add((Value)obj);
@@ -167,6 +168,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable
      *
      * @deprecated
      */
+    @Deprecated
     public Object get(int idx)
     {
         return list.get(idx);
@@ -179,6 +181,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable
      *
      * @deprecated
      */
+    @Deprecated
     public void remove(int idx)
     {
         list.remove(idx);

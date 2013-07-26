@@ -8,6 +8,7 @@ public class StringTools {
 	 * @deprecated
 	 * 
 	 */
+  @Deprecated
 	public static void removeToken(StringBuilder sb,String token) {
 		int index =sb.indexOf(token);
 		while(index!=-1)

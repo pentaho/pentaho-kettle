@@ -597,7 +597,18 @@ public class SqlTransExecutor {
    * @return the generated name;
    */
   public static String calculateTransname(SQL sql, boolean isService) {
-    StringBuilder sbsql = new StringBuilder(sql.getServiceName()+" - "+(isService?"Service":"SQL")+" - "+sql.getSqlString());
+    StringBuilder sbsql = new StringBuilder(sql.getServiceName());
+    sbsql.append(" - ");
+    if (isService) {
+      sbsql.append("Service");
+    } else {
+      sbsql.append("SQL");
+    }
+    sbsql.append(" - ");
+    sbsql.append(sql.getSqlString());
+    
+    // Get rid of newlines...
+    //
     for (int i=sbsql.length()-1;i>=0;i--)
     {
       if (sbsql.charAt(i)=='\n' || sbsql.charAt(i)=='\r') sbsql.setCharAt(i, ' ');

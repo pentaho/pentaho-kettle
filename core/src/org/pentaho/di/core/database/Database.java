@@ -167,6 +167,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    * @deprecated Please specify the parent object so that we can see which
    *             object is initiating a database connection
    */
+  @Deprecated
   public Database(DatabaseMeta databaseMeta) {
     this.parentLoggingObject = null;
     this.databaseMeta = databaseMeta;
@@ -1200,6 +1201,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    * @deprecated
    * @throws KettleDatabaseException
    */
+  @Deprecated
   public void clearInsertBatch() throws KettleDatabaseException {
     clearBatch(prepStatementInsert);
   }
@@ -1309,6 +1311,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    * @deprecated use emptyAndCommit() instead (pass in the number of rows left
    *             in the batch)
    */
+  @Deprecated
   public void insertFinished(PreparedStatement ps, boolean batch) throws KettleDatabaseException {
     try {
       if (ps != null) {

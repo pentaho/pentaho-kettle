@@ -459,6 +459,7 @@ public interface RowMetaInterface extends Cloneable
      * @throws KettleValueException in case there is a data conversion error
      * @deprecated
      */
+    @Deprecated
     public int oldXORHashCode(Object[] rowData) throws KettleValueException;
     
     /**

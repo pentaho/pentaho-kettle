@@ -304,6 +304,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    * @throws KettleException in case the required fields can't be determined
    * @deprecated
    */
+  @Deprecated
   public RowMetaInterface getRequiredFields() throws KettleException {
     return new RowMeta();
   }

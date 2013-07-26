@@ -34,6 +34,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
+import org.pentaho.di.repository.kdr.delegates.metastore.KDBRMetaStoreElementType;
 
 public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRepositoryBaseDelegate {
 
@@ -180,5 +181,26 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
     
     return idNamespace;
   }
-  
+ 
+  public ObjectId insertElementType(KDBRMetaStoreElementType type) throws KettleException {
+    ObjectId idType = repository.connectionDelegate.getNextID(
+        quoteTable(KettleDatabaseRepository.TABLE_R_ELEMENT_TYPE), 
+        quote(KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_ELEMENT_TYPE)
+      );
+    RowMetaAndData table = new RowMetaAndData();
+
+    table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_ELEMENT_TYPE, ValueMetaInterface.TYPE_INTEGER), idType);
+    table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_NAMESPACE, ValueMetaInterface.TYPE_INTEGER), type.getObjectId());
+    table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_ELEMENT_TYPE_NAME, ValueMetaInterface.TYPE_STRING), type.getName());
+    table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_ELEMENT_TYPE_DESCRIPTION, ValueMetaInterface.TYPE_STRING), type.getDescription());
+
+    repository.connectionDelegate.getDatabase().prepareInsert(table.getRowMeta(), KettleDatabaseRepository.TABLE_R_NAMESPACE);
+    repository.connectionDelegate.getDatabase().setValuesInsert(table);
+    repository.connectionDelegate.getDatabase().insertRow();
+    repository.connectionDelegate.getDatabase().closeInsert();
+    
+    if (log.isDebug()) log.logDebug("Saved element type ["+type.getName()+"]");
+    
+    return idType;
+  }
 }

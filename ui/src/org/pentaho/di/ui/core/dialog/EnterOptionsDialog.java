@@ -212,6 +212,7 @@ public class EnterOptionsDialog extends Dialog
 	/**
 	 * @deprecated Use CT without <i>props</i> parameter instead
 	 */
+  @Deprecated
 	public EnterOptionsDialog(Shell parent, PropsUI props)
 	{
 		super(parent, SWT.NONE);

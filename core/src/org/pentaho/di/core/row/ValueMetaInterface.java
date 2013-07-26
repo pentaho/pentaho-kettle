@@ -253,6 +253,7 @@ public interface ValueMetaInterface extends Cloneable
      * 
      * @deprecated This method is deprecated.  The same code is still used underneath.
      */
+    @Deprecated
     public void     setType(int type);
 
     /**
