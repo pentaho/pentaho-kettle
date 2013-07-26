@@ -59,7 +59,7 @@ public StringTemplateGroup getTemplateLib() {
 /** allows convenient multi-value initialization:
  *  "new STAttrMap().put(...).put(...)"
  */
-public static class STAttrMap extends HashMap {
+public static class STAttrMap extends HashMap<String,Object> {
   public STAttrMap put(String attrName, Object value) {
     super.put(attrName, value);
     return this;
@@ -82,7 +82,7 @@ public static class STAttrMap extends HashMap {
     	public static final String TAG_VALUE = "\t\t\t<value>";	
     	public static final String TAG_VALUE_END = "</value>\n";
     		
-    	public LinkedList tagIndexes = new LinkedList();
+    	public LinkedList<Object> tagIndexes = new LinkedList<Object>();
     		
     	// helper functions to sanitize incoming input
     	public String sanitizeText(String txt){
@@ -637,7 +637,7 @@ public static class STAttrMap extends HashMap {
 
     public static class tag_return extends ParserRuleReturnScope {
         public String name;
-        public List indexes;
+        public List<Object> indexes;
         public StringTemplate st;
         public Object getTemplate() { return st; }
         public String toString() { return st==null?null:st.toString(); }
@@ -651,7 +651,7 @@ public static class STAttrMap extends HashMap {
         retval.start = input.LT(1);
 
 
-        List list_i=null;
+        List<Object> list_i=null;
         FastSimpleGenericEdifactDirectXMLParser.tag_name_return tag_name3 =null;
 
         RuleReturnScope i = null;
@@ -693,7 +693,7 @@ public static class STAttrMap extends HashMap {
 
             	    state._fsp--;
 
-            	    if (list_i==null) list_i=new ArrayList();
+            	    if (list_i==null) list_i=new ArrayList<Object>();
             	    list_i.add(i.getTemplate());
 
 

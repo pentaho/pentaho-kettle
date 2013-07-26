@@ -205,7 +205,7 @@ public class BlockingStep extends BaseStep implements StepInterface {
 				FileObject    file = data.files.get(0);
 				DataInputStream di = data.dis.get(0); 
 				InputStream     fi = data.fis.get(0);
-				GZIPInputStream gzfi = (meta.getCompress()) ? (GZIPInputStream)data.gzis.get(0) : null;
+				GZIPInputStream gzfi = (meta.getCompress()) ? data.gzis.get(0) : null;
 
 				try
 				{

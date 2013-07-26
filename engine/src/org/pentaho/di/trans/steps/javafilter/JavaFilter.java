@@ -178,7 +178,7 @@ public class JavaFilter extends BaseStep implements StepInterface
                 data.expressionEvaluator = new ExpressionEvaluator();
                 data.expressionEvaluator.setParameters(parameterNames.toArray(new String[parameterNames.size()]), parameterTypes.toArray(new Class<?>[parameterTypes.size()]));
                 data.expressionEvaluator.setReturnType(Object.class);
-                data.expressionEvaluator.setThrownExceptions(new Class[] { Exception.class });
+                data.expressionEvaluator.setThrownExceptions(new Class<?>[] { Exception.class });
                 data.expressionEvaluator.cook(meta.getCondition());
 
                 // Also create the argument data structure once...

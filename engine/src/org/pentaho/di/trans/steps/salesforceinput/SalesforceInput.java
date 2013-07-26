@@ -251,7 +251,7 @@ public class SalesforceInput extends BaseStep implements StepInterface
 	        
 			RowMetaInterface irow = getInputRowMeta();
 			
-			data.previousRow = irow==null?outputRowData:(Object[])irow.cloneRow(outputRowData); // copy it to make
+			data.previousRow = irow==null?outputRowData:irow.cloneRow(outputRowData); // copy it to make
 		 }
 		 catch (Exception e) {
 			throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.Exception.CanNotReadFromSalesforce"), e);

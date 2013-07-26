@@ -257,7 +257,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 		        
 				RowMetaInterface irow = getInputRowMeta();
 				
-				data.previousRow = irow==null?outputRowData:(Object[])irow.cloneRow(outputRowData); // copy it to make
+				data.previousRow = irow==null?outputRowData:irow.cloneRow(outputRowData); // copy it to make
 				// surely the next step doesn't change it in between...
 				data.rownr++;
 				

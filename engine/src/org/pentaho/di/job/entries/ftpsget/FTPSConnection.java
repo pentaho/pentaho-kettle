@@ -446,7 +446,7 @@ public class FTPSConnection implements FTPListener {
 		}catch(Exception e) {
 			throw new KettleException(BaseMessages.getString(PKG, "JobFTPS.Error.RetrievingFilenames"), e);
 		}
-		return list==null?null:(String[]) list.toArray(new String[list.size()]);
+		return list==null?null:list.toArray(new String[list.size()]);
 	}
 	 /**
      * 

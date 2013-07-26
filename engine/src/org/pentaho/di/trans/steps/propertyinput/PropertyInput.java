@@ -334,7 +334,7 @@ public class PropertyInput extends BaseStep implements StepInterface
 				}
 				RowMetaInterface irow = getInputRowMeta();
 				
-				data.previousRow = irow==null?r:(Object[])irow.cloneRow(r); // copy it to make
+				data.previousRow = irow==null?r:irow.cloneRow(r); // copy it to make
 				// surely the next step doesn't change it in between...
 				
 				incrementLinesInput();

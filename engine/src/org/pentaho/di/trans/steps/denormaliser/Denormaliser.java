@@ -238,8 +238,8 @@ public class Denormaliser extends BaseStep implements StepInterface
                 Object sum  = data.sum[i];
                 if (count>0)
                 {
-                	if (sum instanceof Long) resultValue = (long)((Long)sum / count);
-                	else if (sum instanceof Double) resultValue = (double)((Double)sum / count);
+                	if (sum instanceof Long) resultValue = (Long)sum / count;
+                	else if (sum instanceof Double) resultValue = (Double)sum / count;
                 	else if (sum instanceof BigDecimal) resultValue = ((BigDecimal)sum).divide(new BigDecimal(count));
                 	else resultValue = null; // TODO: perhaps throw an exception here?<
                 }

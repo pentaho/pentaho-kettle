@@ -85,7 +85,7 @@ public class UnivariateStats extends BaseStep
    * @return a <code>boolean</code> value
    * @exception KettleException if an error occurs
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked"})
   public boolean processRow(StepMetaInterface smi, 
                             StepDataInterface sdi) 
     throws KettleException {

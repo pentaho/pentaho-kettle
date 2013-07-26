@@ -305,7 +305,7 @@ public class SortRows extends BaseStep implements StepInterface {
         FileObject file = data.files.get(smallest);
         DataInputStream di = data.dis.get(smallest);
         InputStream fi = data.fis.get(smallest);
-        GZIPInputStream gzfi = (data.compressFiles) ? (GZIPInputStream) data.gzis.get(smallest) : null;
+        GZIPInputStream gzfi = (data.compressFiles) ? data.gzis.get(smallest) : null;
 
         try {
           Object[] row2 = data.outputRowMeta.readData(di);

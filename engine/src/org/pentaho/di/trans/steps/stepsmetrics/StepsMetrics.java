@@ -146,13 +146,13 @@ public class StepsMetrics extends BaseStep implements StepInterface
 	    			  // output step metrics
 	    			  if(!Const.isEmpty(data.realstepnamefield)) rowData[index++]= step.getStepname();
 	    			  if(!Const.isEmpty(data.realstepidfield)) rowData[index++]= step.getStepID();
-	    			  if(!Const.isEmpty(data.realsteplinesinputfield)) rowData[index++]= (long) step.getLinesInput();
-	    			  if(!Const.isEmpty(data.realsteplinesoutputfield)) rowData[index++]= (long) step.getLinesOutput();
-	    			  if(!Const.isEmpty(data.realsteplinesreadfield)) rowData[index++]= (long) step.getLinesRead();
-	    			  if(!Const.isEmpty(data.realsteplinesupdatedfield)) rowData[index++]= (long) step.getLinesUpdated();
-	    			  if(!Const.isEmpty(data.realsteplineswrittentfield)) rowData[index++]= (long) step.getLinesWritten();
-	    			  if(!Const.isEmpty(data.realsteplineserrorsfield)) rowData[index++]= (long) step.getLinesRejected();  
-	      			  if(!Const.isEmpty(data.realstepsecondsfield)) rowData[index++]= (long) step.getRuntime();  
+	    			  if(!Const.isEmpty(data.realsteplinesinputfield)) rowData[index++]= step.getLinesInput();
+	    			  if(!Const.isEmpty(data.realsteplinesoutputfield)) rowData[index++]= step.getLinesOutput();
+	    			  if(!Const.isEmpty(data.realsteplinesreadfield)) rowData[index++]= step.getLinesRead();
+	    			  if(!Const.isEmpty(data.realsteplinesupdatedfield)) rowData[index++]= step.getLinesUpdated();
+	    			  if(!Const.isEmpty(data.realsteplineswrittentfield)) rowData[index++]= step.getLinesWritten();
+	    			  if(!Const.isEmpty(data.realsteplineserrorsfield)) rowData[index++]= step.getLinesRejected();  
+	      			  if(!Const.isEmpty(data.realstepsecondsfield)) rowData[index++]= step.getRuntime();  
 
 	    			  // Send row to the buffer
 	    			  putRow(data.outputRowMeta, rowData);

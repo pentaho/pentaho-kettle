@@ -174,7 +174,7 @@ public class Janino extends BaseStep implements StepInterface
                     	data.expressionEvaluators[m] = new ExpressionEvaluator();
                     	data.expressionEvaluators[m].setParameters(parameterNames.toArray(new String[parameterNames.size()]), parameterTypes.toArray(new Class<?>[parameterTypes.size()]));
                     	data.expressionEvaluators[m].setReturnType(Object.class);
-                    	data.expressionEvaluators[m].setThrownExceptions(new Class[] { Exception.class });
+                    	data.expressionEvaluators[m].setThrownExceptions(new Class<?>[] { Exception.class });
                     	data.expressionEvaluators[m].cook(fn.getFormula());
                     } else {
                     	throw new KettleException("Unable to find field name for formula ["+Const.NVL(fn.getFormula(), "")+"]");
