@@ -159,6 +159,7 @@ TYPICAL TARGET SEQUENCE
   <property name="javac.source" value="6" description="Provide source compatibility with specified release" />
   <property name="javac.target" value="6" description="Generate class files for specific VM version" />
   <property name="javac.maxmemory" value="256M" description="Max memory alloted to java compile" />
+  <property name="javac.xlint" value="-Xlint:all" />
 
   <!-- Third party Ant tasks and tools properties -->
   <property name="subfloor.resources.dir"
@@ -1161,6 +1162,7 @@ TYPICAL TARGET SEQUENCE
         <path refid="classpath" />
       </classpath>
       <src path="${src.dir}" />
+      <compilerarg value="${javac.xlint}" />
     </javac>
   </target>
 
