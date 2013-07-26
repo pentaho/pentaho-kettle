@@ -47,7 +47,6 @@ import org.pentaho.di.ui.repository.repositoryexplorer.model.UIDatabaseConnectio
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIDatabaseConnections;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIObjectCreationException;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIObjectRegistry;
-import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObject;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
