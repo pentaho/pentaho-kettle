@@ -79,7 +79,7 @@ public class LAFDelegate<E extends Handler> {
 	private E loadHandler(Class<E> c) {
 		E h = null;
 		try {
-			if (c.isAssignableFrom(handlerClass.getClass())) {
+			if (handlerClass.isAssignableFrom(c)) {
 			  h = c.newInstance();
 			}
 		} catch (Exception e) {
