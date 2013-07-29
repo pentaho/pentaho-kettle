@@ -74,7 +74,7 @@
     <dependency org="jfree"                            name="jcommon"              rev="1.0.16"          transitive="false"/>
     <dependency org="com.googlecode.json-simple"       name="json-simple"          rev="1.1"             transitive="false"/>
     <dependency org="jsonpath"                         name="jsonpath"             rev="1.0"             transitive="false"/>
-    <dependency org="com.sun.jersey.contribs"          name="jersey-apache-client" rev="1.14"            transitive="false"/>
+    <dependency org="com.sun.jersey.contribs"          name="jersey-apache-client" rev="1.16"            transitive="false"/>
     <dependency org="com.sun.jersey"                   name="jersey-bundle"        rev="1.16"            transitive="false"/>
     <dependency org="com.sun.jersey"                   name="jersey-client"        rev="1.16"            transitive="false"/>
     <dependency org="com.sun.jersey"                   name="jersey-core"          rev="1.16"            transitive="false"/>
