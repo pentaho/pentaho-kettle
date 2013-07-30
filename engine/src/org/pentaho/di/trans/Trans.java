@@ -2582,7 +2582,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     synchronized (map) {
       List<Database> databaseList = new ArrayList<Database>(map.getMap().values());
       for (Database database : databaseList) {
-        if (database.getConnectionGroup().equals(getThreadName())) {
+        if (database.getConnectionGroup().equals(getTransactionId())) {
           try {
             // This database connection belongs to this transformation.
             // Let's roll it back if there is an error...
