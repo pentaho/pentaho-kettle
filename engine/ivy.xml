@@ -48,7 +48,7 @@
     
     
     <!-- Third-party (external) dependencies -->
-    <dependency org="antlr"                            name="antlr"                rev="3.4-complete"    transitive="false"/>
+    <dependency org="org.antlr"                            name="antlr"                rev="3.4-complete"    transitive="false"/>
     <dependency org="ascsapjco3wrp"                    name="ascsapjco3wrp"        rev="20100529"        transitive="false"/>
     <dependency org="commons-validator"                name="commons-validator"    rev="1.3.1"           transitive="false"/>
     <dependency org="com.enterprisedt"                 name="edtftpj"              rev="2.1.0"           transitive="false"/>
