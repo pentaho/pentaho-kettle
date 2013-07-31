@@ -32,7 +32,6 @@
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-core" rev="${dependency.pentaho-reporting.revision}" changing="true" transitive="true"/>
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions" rev="${dependency.pentaho-reporting.revision}" changing="true"/>
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions-drill-down" rev="${dependency.pentaho-reporting.revision}" changing="true"/>
-    <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions-hibernate" rev="${dependency.pentaho-reporting.revision}" changing="true"/>
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions-kettle" rev="${dependency.pentaho-reporting.revision}" changing="true"/>
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions-mondrian" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions-olap4j" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
@@ -48,7 +47,7 @@
     
     
     <!-- Third-party (external) dependencies -->
-    <dependency org="org.antlr"                            name="antlr"                rev="3.4-complete"    transitive="false"/>
+    <dependency org="org.antlr"                        name="antlr"                rev="3.4-complete"    transitive="false"/>
     <dependency org="ascsapjco3wrp"                    name="ascsapjco3wrp"        rev="20100529"        transitive="false"/>
     <dependency org="commons-validator"                name="commons-validator"    rev="1.3.1"           transitive="false"/>
     <dependency org="com.enterprisedt"                 name="edtftpj"              rev="2.1.0"           transitive="false"/>
@@ -117,14 +116,14 @@
     <dependency org="org.hibernate"                    name="hibernate-core"       rev="3.6.9.Final"     transitive="false"/> 
     <dependency org="org.hibernate"                    name="hibernate-c3p0"       rev="3.6.9.Final"     transitive="false"/> 
     <dependency org="org.hibernate"                    name="hibernate-commons-annotations" rev="3.2.0.Final" transitive="false" />
-    <dependency org="org.hibernate"                    name="hibernate-ehcache" rev="3.6.9.Final" transitive="false" />
-    <dependency org="cglib"                            name="cglib"                rev="2.2"             transitive="false"/>
-    <dependency org="org.owasp.esapi"      name="esapi"                 rev="2.0.1"         transitive="false"/>
-    <dependency org="org.slf4j"           name="slf4j-api"     rev="1.6.4"   transitive="false"/>
-    <dependency org="org.slf4j"           name="slf4j-log4j12" rev="1.6.4"   transitive="false"/>
-    <dependency org="net.sourceforge.nekohtml" name="nekohtml" rev="1.9.15" transitive="false"/>
-    <dependency org="rhino"                 name="js"                  rev="1.7R3"            transitive="false"/>
-    <dependency org="javax.mail"            name="mail"                rev="1.4.7" transitive="false" />
+    <dependency org="org.hibernate"                    name="hibernate-ehcache"    rev="3.6.9.Final"     transitive="false" />
+    <dependency org="cglib"                            name="cglib-nodep"          rev="2.2"             transitive="false"/>
+    <dependency org="org.owasp.esapi"                  name="esapi"                rev="2.0.1"           transitive="false"/>
+    <dependency org="org.slf4j"                        name="slf4j-api"            rev="1.6.4"           transitive="false"/>
+    <dependency org="org.slf4j"                        name="slf4j-log4j12"        rev="1.6.4"           transitive="false"/>
+    <dependency org="net.sourceforge.nekohtml"         name="nekohtml"             rev="1.9.15"          transitive="false"/>
+    <dependency org="rhino"                            name="js"                   rev="1.7R3"           transitive="false"/>
+    <dependency org="javax.mail"                       name="mail"                 rev="1.4.7"           transitive="false" />
     
     <!-- OLAP4J is bringing in an older version of beanutils-core than is needed -->
     <dependency org="commons-beanutils"   name="commons-beanutils-core" rev="1.8.0"         transitive="false"/>
