@@ -90,6 +90,7 @@ public class SlaveServerConfig {
 	
 	private Repository repository;
 	private RepositoryMeta repositoryMeta;
+	private String repositoryId;
 	private String repositoryUsername;
 	private String repositoryPassword;
 	
@@ -233,16 +234,12 @@ public class SlaveServerConfig {
     }
     
     Node repositoryNode = XMLHandler.getSubNode(node, XML_TAG_REPOSITORY);
-    String repositoryId = XMLHandler.getTagValue(repositoryNode, "name");
+    repositoryId = XMLHandler.getTagValue(repositoryNode, "name");
     repositoryUsername = XMLHandler.getTagValue(repositoryNode, "username");
     repositoryPassword = XMLHandler.getTagValue(repositoryNode, "password");
-    if (!Const.isEmpty(repositoryId)) {
-      openRepository(repositoryId);
-    }
-
 	}
 	
-	private void openRepository(String repositoryId) throws KettleXMLException {
+	private void openRepository(String repositoryId) throws KettleException {
     try {
       
       RepositoriesMeta repositoriesMeta = new RepositoriesMeta();
@@ -263,8 +260,11 @@ public class SlaveServerConfig {
       if (repository.getMetaStore()!=null) {
         metaStore.addMetaStore(0, repository.getMetaStore());
       }
+      
+      LogChannel.GENERAL.logBasic("Connected to repository '"+repository.getName()+"'");
+      
     } catch(Exception e) {
-      throw new KettleXMLException(e);
+      throw new KettleException("Unable to open repository connection", e);
     }
   }
 
@@ -527,9 +527,14 @@ public class SlaveServerConfig {
   }
 
   /**
-   * @return the repository
+   * @return the repository, loaded lazily
    */
-  public Repository getRepository() {
+  public Repository getRepository() throws KettleException {
+    
+    if (!Const.isEmpty(repositoryId) && repository==null) {
+      openRepository(repositoryId);
+    }
+    
     return repository;
   }
 
@@ -538,20 +543,6 @@ public class SlaveServerConfig {
    */
   public void setRepository(Repository repository) {
     this.repository = repository;
-  }
-
-  /**
-   * @return the repositoryMeta
-   */
-  public RepositoryMeta getRepositoryMeta() {
-    return repositoryMeta;
-  }
-
-  /**
-   * @param repositoryMeta the repositoryMeta to set
-   */
-  public void setRepositoryMeta(RepositoryMeta repositoryMeta) {
-    this.repositoryMeta = repositoryMeta;
   }
 
   /**
@@ -596,6 +587,14 @@ public class SlaveServerConfig {
 
   public void setPasswordFile(String passwordFile) {
     this.passwordFile = passwordFile;
+  }
+
+  public String getRepositoryId() {
+    return repositoryId;
+  }
+
+  public void setRepositoryId(String repositoryId) {
+    this.repositoryId = repositoryId;
   }
   
   

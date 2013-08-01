@@ -228,6 +228,18 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
         }
         out.print("<tr> <td>" + BaseMessages.getString(PKG, "GetStatusServlet.Parameter.MaxObjectsAge") + 
             "</td> <td>" + maxObjAge + "</td> </tr>");
+
+        // The name of the specified repository
+        //
+        String repositoryName;
+        try { 
+          repositoryName = serverConfig.getRepository()!=null ? serverConfig.getRepository().getName() : "";
+        } catch(Exception e) {
+          repositoryName = Const.getStackTracker(e);
+        }
+        out.print("<tr> <td>" + BaseMessages.getString(PKG, "GetStatusServlet.Parameter.RepositoryName") + 
+            "</td> <td>" + repositoryName + "</td> </tr>");
+
         
         out.print("</table>");
         
