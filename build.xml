@@ -865,7 +865,7 @@
 	
 	<target name="assemble-no-plugins"
 	                  description="Calls assemble-no-plugins in assembly"
-	                  depends="install-antcontrib, build-all">
+	                  depends="install-antcontrib">
 	         <ant antfile="build.xml" dir="${assembly.dir}" inheritall="false" >
 	              <target name="clean" />
 	              <target name="init" />
