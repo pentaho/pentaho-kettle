@@ -235,10 +235,11 @@ public class GetXMLData extends BaseStep implements StepInterface
 		data.nodenr=0;
    }
    
-   @SuppressWarnings("unchecked")
    public void prepareNSMap(Element l) 
    {
-		for (Namespace ns : (List<Namespace>) l.declaredNamespaces()) 
+    @SuppressWarnings("unchecked")
+    List<Namespace> namespacesList = l.declaredNamespaces();
+    for (Namespace ns : namespacesList) 
 		{
 			if (ns.getPrefix().trim().length() == 0) 
 			{
@@ -261,7 +262,10 @@ public class GetXMLData extends BaseStep implements StepInterface
 				data.NAMESPACE.put(ns.getPrefix(), ns.getURI());
 			}
 		}
-		for (Element e : (List<Element>) l.elements()) {
+    
+    @SuppressWarnings("unchecked") 
+    List<Element> elementsList = l.elements();
+		for (Element e : elementsList) {
 			prepareNSMap(e);
 		}
 	}
