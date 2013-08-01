@@ -27,12 +27,17 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.logging.FileLoggingEventListener;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannel;
@@ -43,6 +48,7 @@ import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.di.core.util.ExecutorUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
@@ -57,6 +63,8 @@ import org.pentaho.di.resource.TopLevelResource;
 import org.pentaho.di.version.BuildVersion;
 import org.pentaho.metastore.stores.delegate.DelegatingMetaStore;
 
+import com.google.gdata.util.common.base.Pair;
+
 public class Kitchen {
   private static Class<?> PKG = Kitchen.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -65,8 +73,37 @@ public class Kitchen {
   private static FileLoggingEventListener fileAppender;
 
   public static void main(String[] a) throws Exception {
-    KettleEnvironment.init();
-    KettleClientEnvironment.getInstance().setClient(KettleClientEnvironment.ClientType.KITCHEN);
+    final ExecutorService executor = ExecutorUtil.getExecutor();
+    final RepositoryPluginType repositoryPluginType = RepositoryPluginType.getInstance();
+    
+    final Future<Pair<KettlePluginException, Future<KettleException>>> repositoryRegisterFuture = 
+        executor.submit(new Callable<Pair<KettlePluginException, Future<KettleException>>>() {
+
+      @Override
+      public Pair<KettlePluginException, Future<KettleException>> call() throws Exception {
+        PluginRegistry.addPluginType(repositoryPluginType);
+        try {
+          KettleClientEnvironment.init();
+        } catch (KettlePluginException e) {
+          return Pair.of(e, null);
+        }
+        
+        Future<KettleException> kettleEnvironmentInitFuture = executor.submit(new Callable<KettleException>() {
+
+          @Override
+          public KettleException call() throws Exception {
+            try {
+              KettleEnvironment.init();
+              KettleClientEnvironment.getInstance().setClient(KettleClientEnvironment.ClientType.KITCHEN);
+            } catch (KettleException e) {
+              return e;
+            }
+            return null;
+          }
+        });
+        return Pair.of(null, kettleEnvironmentInitFuture);
+      }
+    });
 
     List<String> args = new ArrayList<String>();
     for (int i = 0; i < a.length; i++) {
@@ -161,6 +198,13 @@ public class Kitchen {
       // overwrite the new by the old
       optionLogfile = optionLogfileOld;
     }
+
+    Pair<KettlePluginException, Future<KettleException>> repositoryRegisterResults = repositoryRegisterFuture.get();
+    KettlePluginException repositoryRegisterException = repositoryRegisterResults.getFirst();
+    if (repositoryRegisterException != null) {
+      throw repositoryRegisterException;
+    }
+    Future<KettleException> kettleInitFuture = repositoryRegisterResults.getSecond();
 
     if (!Const.isEmpty(optionLogfile)) {
       fileAppender = new FileLoggingEventListener(optionLogfile.toString(), true);
@@ -257,7 +301,7 @@ public class Kitchen {
               if (!Const.isEmpty(optionJobname)) {
                 if (log.isDebug())
                   log.logDebug(BaseMessages.getString(PKG, "Kitchen.Log.LoadingJobInfo"));
-
+                blockAndThrow(kettleInitFuture);
                 jobMeta = repository.loadJob(optionJobname.toString(), directory, null, null); // reads last version
                 if (log.isDebug())
                   log.logDebug(BaseMessages.getString(PKG, "Kitchen.Log.AllocateJob"));
@@ -294,6 +338,7 @@ public class Kitchen {
 
         // Try to load if from file anyway.
         if (!Const.isEmpty(optionFilename) && job == null) {
+          blockAndThrow(kettleInitFuture);
           jobMeta = new JobMeta(optionFilename.toString(), null, null);
           job = new Job(null, jobMeta);
         }
@@ -465,6 +510,19 @@ public class Kitchen {
 
     exitJVM(returnCode);
 
+  }
+  
+  private static <T extends Throwable> void blockAndThrow(Future<T> future) throws T {
+    try {
+      T e = future.get();
+      if (e != null) {
+        throw e;
+      }
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    } catch (ExecutionException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   /**
