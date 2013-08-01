@@ -882,7 +882,7 @@ public class Support {
      */
     public static Throwable linkException(Exception exception, Throwable cause) {
         Class<?> exceptionClass = exception.getClass();
-        Class<?>[] parameterTypes = new Class[] {Throwable.class};
+        Class<?>[] parameterTypes = new Class<?>[] {Throwable.class};
         Object[] arguments = new Object[] {cause};
 
         try {
