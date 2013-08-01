@@ -120,7 +120,7 @@ public class PluginFolder implements PluginFolderInterface {
 				  FileObject fileObject = fileSelectInfo.getFile();
 				  String folder = fileObject.getName().getBaseName();
 				  FileObject kettleIgnore = fileObject.getChild(".kettle-ignore");
-				  return kettleIgnore == null && (includeLibJars || !"lib".equals(folder));				  
+				  return  includeLibJars || (kettleIgnore == null && !"lib".equals(folder));				  
 				}
 				
 				@Override
