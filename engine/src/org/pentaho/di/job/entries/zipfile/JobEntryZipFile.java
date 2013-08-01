@@ -560,10 +560,12 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
                 String basePath = sourceFileOrFolder.getName().getPath();
                 if (isSourceDirectory) {
                   if (fullName.startsWith(basePath)) {
-                    relativeName = fullName.substring(basePath.length()+1);
+                    relativeName = fullName.substring(basePath.length() + 1);
                   } else {
-                    relativeName = fullName; 
+                    relativeName = fullName;
                   }
+                } else if (isfromprevious) {
+                  relativeName = fullName;
                 } else {
                   relativeName = fileList[i].getName().getBaseName();
                 }
