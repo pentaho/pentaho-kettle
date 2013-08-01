@@ -80,6 +80,7 @@
       <target name="resolve-dev" depends="install-ivy, resolve">
           <ivy:resolve file="${ivyfile}" conf="dev" />
 	      <ivy:retrieve conf="dev" pattern="${dev-lib.dir}/[module]-[revision](-[classifier]).[ext]" />
+		  <touch file="${dev-lib.dir}/.kettle-ignore"/>
 	  </target>
 	
   <target name="package" depends="stage" description="generate all the kettle plugin jars">
