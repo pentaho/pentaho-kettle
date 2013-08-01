@@ -1179,7 +1179,7 @@ public class KettleFileRepository extends AbstractRepository {
 	public void delUser(ObjectId id_user) throws KettleException { }
 	public ObjectId getUserID(String login) throws KettleException { return null; }
 	public ObjectId[] getUserIDs() throws KettleException { return new ObjectId[] {}; }
-	public IUser getUserInfo() { return new UserInfo(); }
+	public IUser getUserInfo() { return null; }
 	public String[] getUserLogins() throws KettleException { return new String[] {}; }
 
 	public UserInfo loadUserInfo(String login) throws KettleException { return null; }
