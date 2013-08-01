@@ -61,7 +61,7 @@ public class PluginRegistry {
 
   private static Class<?> PKG = PluginRegistry.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	private static PluginRegistry pluginRegistry;
+	private static final PluginRegistry pluginRegistry = new PluginRegistry();
 	
 	private Map<Class<? extends PluginTypeInterface>, List<PluginInterface>> pluginMap;
 	
@@ -90,10 +90,7 @@ public class PluginRegistry {
 	/**
 	 * @return The one and only PluginRegistry instance
 	 */
-	public synchronized static PluginRegistry getInstance() {
-		if (pluginRegistry==null) {
-			pluginRegistry=new PluginRegistry();
-		}
+	public static PluginRegistry getInstance() {
 		return pluginRegistry;
 	}
 	

@@ -117,18 +117,15 @@ public class PluginFolder implements PluginFolderInterface {
 			FileObject[] fileObjects = folderObject.findFiles(new FileSelector() {
 				@Override
         public boolean traverseDescendents(FileSelectInfo fileSelectInfo) throws Exception {
-				  String folder = fileSelectInfo.getFile().getName().getBaseName();
-				  return ( includeLibJars || !"lib".equals( folder ) ) &&
-				      // Avoid slow unit testing and slow loading...
-				      !"dev-lib".equalsIgnoreCase(folder) &&
-				      // Avoid looking into all the shims
-				      !"hadoop-configurations".equalsIgnoreCase(folder)
-				      ;				  
+				  FileObject fileObject = fileSelectInfo.getFile();
+				  String folder = fileObject.getName().getBaseName();
+				  FileObject kettleIgnore = fileObject.getChild(".kettle-ignore");
+				  return kettleIgnore == null && (includeLibJars || !"lib".equals(folder));				  
 				}
 				
 				@Override
         public boolean includeFile(FileSelectInfo fileSelectInfo) throws Exception {
-					return fileSelectInfo.getFile().toString().matches(".*\\.jar$");
+				  return fileSelectInfo.getFile().toString().endsWith(".jar");
 				}
 			});
 			
