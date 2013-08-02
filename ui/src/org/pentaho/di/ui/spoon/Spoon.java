@@ -591,17 +591,17 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
       CommandLineOption[] commandLineOptions = getCommandLineArgs(args);
 
-      initLogging(commandLineOptions);
+      KettleException registryException = pluginRegistryFuture.get();
+      if (registryException != null) {
+        throw registryException;
+      }
 
       PropsUI.init(display, Props.TYPE_PROPERTIES_SPOON);
 
       KettleLogStore.init(PropsUI.getInstance().getMaxNrLinesInLog(), PropsUI.getInstance()
           .getMaxLogLineTimeoutMinutes());
 
-      KettleException registryException = pluginRegistryFuture.get();
-      if (registryException != null) {
-        throw registryException;
-      }
+      initLogging(commandLineOptions);
       // remember...
 
       staticSpoon = new Spoon();
