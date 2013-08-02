@@ -35,7 +35,6 @@ import org.pentaho.di.core.plugins.PartitionerPluginType;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.plugins.StepPluginType;
-import org.pentaho.di.core.plugins.UDJCStepPluginType;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.Repository;
@@ -100,7 +99,6 @@ public class KettleEnvironment {
 			//
       PluginRegistry.addPluginType(RowDistributionPluginType.getInstance());
 			PluginRegistry.addPluginType(StepPluginType.getInstance());
-			PluginRegistry.addPluginType(UDJCStepPluginType.getInstance());
 			PluginRegistry.addPluginType(PartitionerPluginType.getInstance());
 			PluginRegistry.addPluginType(JobEntryPluginType.getInstance());
       PluginRegistry.addPluginType(LogTablePluginType.getInstance());
