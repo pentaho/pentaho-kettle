@@ -280,6 +280,7 @@ import org.pentaho.di.ui.spoon.delegates.SpoonDelegates;
 import org.pentaho.di.ui.spoon.dialog.AnalyseImpactProgressDialog;
 import org.pentaho.di.ui.spoon.dialog.CheckTransProgressDialog;
 import org.pentaho.di.ui.spoon.dialog.LogSettingsDialog;
+import org.pentaho.di.ui.spoon.dialog.MetaStoreExplorerDialog;
 import org.pentaho.di.ui.spoon.dialog.SaveProgressDialog;
 import org.pentaho.di.ui.spoon.dialog.TipsDialog;
 import org.pentaho.di.ui.spoon.job.JobGraph;
@@ -667,8 +668,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     this.addMenuBar();
     log = new LogChannel(APP_NAME);
     SpoonFactory.setSpoonInstance(this);
-    setRepository(rep);
-
+    
     // Load at least one local Pentaho metastore and add it to the delegating metastore
     //
     metaStore = new DelegatingMetaStore();
@@ -681,6 +681,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     } catch (MetaStoreException e) {
       new ErrorDialog(shell, "Error opening Pentaho Metastore", "Unable to open local Pentaho Metastore", e);
     }
+
+    setRepository(rep);
 
     props = PropsUI.getInstance();
     sharedObjectsFileMap = new Hashtable<String, SharedObjects>();
@@ -1923,6 +1925,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         if ((e.keyCode == 'w' && (e.stateMask & SWT.CONTROL) != 0)
             || (e.keyCode == SWT.F4 && (e.stateMask & SWT.CONTROL) != 0)) {
           closeFile();
+        }
+        
+        // CTRL-F5 : metastore explorer
+        //
+        if ( e.keyCode == SWT.F5 && (e.stateMask & SWT.CONTROL) != 0 ) {
+          new MetaStoreExplorerDialog(shell, metaStore).open();
         }
       }
     });
@@ -3432,19 +3440,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         }
         setRepository(repository);
 
-        // add a wrapper metastore to the delagation
-        //
-        try {
-          IMetaStore repositoryMetaStore = repository.getMetaStore();
-          if (repositoryMetaStore != null) {
-            metaStore.addMetaStore(0, repositoryMetaStore); // first priority for explicitly connected repositories.
-            metaStore.setActiveMetaStoreName(repositoryMetaStore.getName());
-          }
-        } catch (MetaStoreException e) {
-          new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.ErrorAddingRepositoryMetaStore.Title"),
-              BaseMessages.getString(PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Message"), e);
-        }
-
         JobMeta jobMetas[] = getLoadedJobs();
         for (int t = 0; t < jobMetas.length; t++) {
           JobMeta jobMeta = jobMetas[t];
@@ -3810,14 +3805,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public void closeRepository() {
     if (rep != null) {
-      IMetaStore repMetaStore = rep.getMetaStore();
       rep.disconnect();
-      if (repMetaStore != null) {
+      if (metaStore.getMetaStoreList().size()>1) {
         try {
-          metaStore.removeMetaStore(repMetaStore);
-          if (metaStore.getMetaStoreList().size() > 0) {
-            metaStore.setActiveMetaStoreName(metaStore.getMetaStoreList().get(0).getName());
-          }
+          metaStore.getMetaStoreList().remove(0);
+          metaStore.setActiveMetaStoreName(metaStore.getMetaStoreList().get(0).getName());
         } catch (MetaStoreException e) {
           new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.ErrorRemovingMetaStore.Title"),
               BaseMessages.getString(PKG, "Spoon.ErrorRemovingMetaStore.Message"), e);
@@ -8080,10 +8072,33 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public void setRepository(Repository rep) {
     this.rep = rep;
-    if (rep != null) {
-      this.capabilities = rep.getRepositoryMeta().getRepositoryCapabilities();
-
+    try {
+    
+      // Keep one metastore here...
+      //
+      if (metaStore.getMetaStoreList().size()>1) {
+        metaStore.getMetaStoreList().remove(0);
+        metaStore.setActiveMetaStoreName(metaStore.getMetaStoreList().get(0).getName());
+      }
+      
+      if (rep != null) {
+        this.capabilities = rep.getRepositoryMeta().getRepositoryCapabilities();
+  
+        // add a wrapper metastore to the delagation
+        //
+        IMetaStore repositoryMetaStore = rep.getMetaStore();
+        if (repositoryMetaStore != null) {
+          metaStore.addMetaStore(0, repositoryMetaStore); // first priority for explicitly connected repositories.
+          log.logBasic("Connected to metastore : " + repositoryMetaStore.getName() + ", added to delegating metastore");
+        } else {
+          log.logBasic("No metastore found in the repository : " + rep.getName() + ", connected? " + rep.isConnected());
+        }
+      }
+    } catch (MetaStoreException e) {
+      new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.ErrorAddingRepositoryMetaStore.Title"),
+          BaseMessages.getString(PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Message"), e);
     }
+
     // Registering the UI Support classes
     UISupportRegistery.getInstance().registerUISupport(RepositorySecurityProvider.class,
         BaseRepositoryExplorerUISupport.class);
