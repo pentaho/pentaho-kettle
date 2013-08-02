@@ -26,6 +26,7 @@ import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLDecoder;
@@ -950,5 +951,31 @@ public class PluginRegistry {
     } catch(Exception e) {
       throw new KettlePluginException("Unable to get instance of plugin type: "+pluginTypeClass.getName(), e);
     }
+  }
+  
+  public List<PluginInterface> findPluginsByFolder(URL folder) {
+    String path = folder.getPath();
+    try {
+      path = folder.toURI().normalize().getPath();
+    } catch (URISyntaxException e) {
+      log.logError(e.getLocalizedMessage(), e);
+    }
+    if (path.endsWith("/")) {
+      path = path.substring(0, path.length() - 1);
+    }
+    List<PluginInterface> result = new ArrayList<PluginInterface>();
+    for (List<PluginInterface> typeInterfaces : pluginMap.values()) {
+      for (PluginInterface plugin : typeInterfaces) {
+        URL pluginFolder = plugin.getPluginDirectory();
+        try {
+          if (pluginFolder != null && pluginFolder.toURI().normalize().getPath().startsWith(path)) {
+            result.add(plugin);
+          }
+        } catch (URISyntaxException e) {
+          log.logError(e.getLocalizedMessage(), e);
+        }
+      }
+    }
+    return result;
   }
 }

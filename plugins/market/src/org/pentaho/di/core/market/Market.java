@@ -32,6 +32,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -390,37 +391,37 @@ public class Market implements SpoonPluginInterface {
    * @param marketEntry
    * @throws KettleException
    */
-  public static void uninstall(final MarketEntry marketEntry, final ProgressMonitorDialog monitorDialog, boolean refresh) throws KettleException {
-    
+  public static void uninstall(final MarketEntry marketEntry, final ProgressMonitorDialog monitorDialog, boolean refresh)
+      throws KettleException {
+
     String parentFolderName = buildPluginsFolderPath(marketEntry);
     File pluginFolder = new File(parentFolderName + File.separator + marketEntry.getId());
-    LogChannel.GENERAL.logBasic("Uninstalling plugin in folder: "+pluginFolder.getAbsolutePath());
-    PluginInterface plugin = getPluginObject(marketEntry.getId());
-    
+    LogChannel.GENERAL.logBasic("Uninstalling plugin in folder: " + pluginFolder.getAbsolutePath());
+
     if (!pluginFolder.exists()) {
-      throw new KettleException("No plugin was found in the expected folder : "+pluginFolder.getAbsolutePath());
+      throw new KettleException("No plugin was found in the expected folder : " + pluginFolder.getAbsolutePath());
     }
-    
-    if(plugin != null) {
-      
-      pluginFolder = new File(plugin.getPluginDirectory().getFile());
-      parentFolderName = pluginFolder.getParent();
-    
-      // unload plugin
-      ClassLoader cl = PluginRegistry.getInstance().getClassLoader(plugin);
-      if (cl instanceof KettleURLClassLoader) {
-        ((KettleURLClassLoader)cl).closeClassLoader();
+
+    try {
+      for (PluginInterface plugin : PluginRegistry.getInstance().findPluginsByFolder(pluginFolder.toURI().toURL())) {
+        // unload plugin
+        ClassLoader cl = PluginRegistry.getInstance().getClassLoader(plugin);
+        if (cl instanceof KettleURLClassLoader) {
+          ((KettleURLClassLoader) cl).closeClassLoader();
+        }
+
+        // remove plugin from registry
+        PluginRegistry.getInstance().removePlugin(plugin.getPluginType(), plugin);
       }
-      
-      // remove plugin from registry
-      PluginRegistry.getInstance().removePlugin(plugin.getPluginType(), plugin);
+    } catch (MalformedURLException e1) {
+      LogChannel.GENERAL.logError(e1.getLocalizedMessage(), e1);
     }
-    
+
     // delete plugin folder
     deleteDirectory(pluginFolder);
 
-    if(refresh) {
-      if (!Display.getDefault().getThread().equals(Thread.currentThread()) ) {
+    if (refresh) {
+      if (!Display.getDefault().getThread().equals(Thread.currentThread())) {
         Spoon.getInstance().getDisplay().asyncExec(new Runnable() {
           public void run() {
             try {
