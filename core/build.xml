@@ -40,6 +40,12 @@
     
     <echo message="Revision set to r${revision}"/>
   </target>
+	
+  <target name="set-compile-info">
+  	<tstamp>
+  	  <format property="compile.timestamp" pattern="yyyy-MM-dd HH.mm.ss" />
+  	</tstamp>
+  </target>
 
   <!--=======================================================================
       generate.manifest
@@ -47,7 +53,7 @@
       Creates a new manifest file if one is not specified, or updates
       an existing manifest file if one is specified.
       ====================================================================-->
-  <target name="generate.manifest" depends="init,set-build.id,set-revision">
+  <target name="generate.manifest" depends="init,set-build.id,set-revision,set-compile-info">
     <delete file="${dist.manifest.file}" />
     <touch file="${dist.manifest.file}" />
     <copy file="${manifest.file}" tofile="${dist.manifest.file}" overwrite="true" failonerror="false" />
