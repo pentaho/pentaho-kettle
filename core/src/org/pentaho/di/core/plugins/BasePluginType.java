@@ -284,10 +284,11 @@ public abstract class BasePluginType implements PluginTypeInterface{
 					}
 				}
 			);
-			for (FileObject file : files) {
-				list.add(file);
+			if (files != null) {
+  			for (FileObject file : files) {
+  				list.add(file);
+  			}
 			}
-			
 		} catch(Exception e) {
 			// ignore this: unknown folder, insufficient permissions, etc
 		}

@@ -250,9 +250,11 @@ public class MarketplaceDialog extends Dialog {
                     }
                   }
                   if(upgradeButton != null) {
-                	  if (marketEntry.getInstalledVersion().compareTo(marketEntry.getVersion())<0 ) {
-                	      upgradeButton.setVisible(marketEntry.isInstalled());
-                  	  }
+                	  if (marketEntry.isInstalled() && marketEntry.getInstalledVersion().compareTo(marketEntry.getVersion())<0 ) {
+                	    upgradeButton.setVisible(true);
+                  	} else {
+                  	  upgradeButton.setVisible(false);
+                  	}
                   }
                 }
                 catch(KettleException ke) {
