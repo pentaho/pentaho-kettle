@@ -1,18 +1,4 @@
 /*
- * Copyright (c) 2010 Pentaho Corporation.  All rights reserved. 
- * This software was developed by Pentaho Corporation and is provided under the terms 
- * of the GNU Lesser General Public License, Version 2.1. You may not use 
- * this file except in compliance with the license. If you need a copy of the license, 
- * please go to http://www.gnu.org/licenses/lgpl-2.1.txt. The Original Code is Pentaho 
- * Data Integration.  The Initial Developer is Pentaho Corporation.
- *
- * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
- * the license for the specific language governing your rights and limitations.
- */
-package org.pentaho.di.ui.trans.steps.palo.dimoutput;
-
-/*
  *   This file is part of PaloKettlePlugin.
  *
  *   PaloKettlePlugin is free software: you can redistribute it and/or modify
@@ -27,10 +13,13 @@ package org.pentaho.di.ui.trans.steps.palo.dimoutput;
  *
  *   You should have received a copy of the GNU Lesser General Public License
  *   along with PaloKettlePlugin.  If not, see <http://www.gnu.org/licenses/>.
- *   
- *   Copyright 2008 Stratebi Business Solutions, S.L.
- *   Copyright 2011 De Bortoli Wines Pty Limited (Australia)
+ *
+ *   Portions Copyright 2008 Stratebi Business Solutions, S.L.
+ *   Portions Copyright 2011 De Bortoli Wines Pty Limited (Australia)
+ *   Portions Copyright 2011 - 2013 Pentaho Corporation
  */
+
+package org.pentaho.di.ui.trans.steps.palo.dimoutput;
 
 import java.util.ArrayList;
 import java.util.Collections;
