@@ -6,9 +6,10 @@ import java.util.List;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MenuDetectEvent;
 import org.eclipse.swt.events.MenuDetectListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -16,6 +17,8 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
@@ -24,10 +27,12 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.TreeMemory;
 import org.pentaho.di.ui.core.widget.TreeUtil;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.metastore.api.IMetaStore;
@@ -40,6 +45,8 @@ import org.pentaho.metastore.stores.delegate.DelegatingMetaStore;
 public class MetaStoreExplorerDialog {
   private static Class<?> PKG = MetaStoreExplorerDialog.class; // for i18n purposes, needed by Translator2
   
+  private static final String META_STORE_EXPLORER_DIALOG_TREE = "MetaStore explorer dialog tree";
+
   private static LogChannelInterface log = LogChannel.GENERAL;
 
   private IMetaStore metaStore;
@@ -132,12 +139,34 @@ public class MetaStoreExplorerDialog {
       
       @Override
       public void menuDetected(MenuDetectEvent event) {
-        TreeItem treeItem = tree.getItem(new Point(event.x, event.y));
+        if (tree.getSelectionCount()<1) return;
+        TreeItem treeItem = tree.getSelection()[0];
         if (treeItem!=null) {
-          log.logBasic("hit item : "+treeItem.getText());
+          String[] labels = ConstUI.getTreeStrings(treeItem);
+          int depth = ConstUI.getTreeLevel(treeItem);
+          if (depth==3) {
+            final String metaStoreName = labels[0];
+            final String namespace = labels[1];
+            final String elementTypeName = labels[2];
+            final String elementName = labels[3];
+            
+            Menu menu = new Menu(tree);
+            MenuItem removeItem = new MenuItem(menu, SWT.POP_UP);
+            removeItem.setText("Remove element");
+            removeItem.addSelectionListener(new SelectionAdapter() {
+              @Override
+              public void widgetSelected(SelectionEvent arg0) {
+                removeElement(metaStoreName, namespace, elementTypeName, elementName);
+              }
+            });
+            tree.setMenu(menu);
+            menu.setVisible(true);
+          }
         }
       }
     });
+    
+    TreeMemory.addTreeListener(tree, META_STORE_EXPLORER_DIALOG_TREE);
 
     try {
       refreshTree();
@@ -161,6 +190,41 @@ public class MetaStoreExplorerDialog {
     }
   }
 
+  private void removeElement(String metaStoreName, String namespace, String elementTypeName,
+      String elementName) {
+    
+    try {
+      IMetaStore metaStore = findMetaStore(metaStoreName);
+      if (metaStore==null) {
+        throw new MetaStoreException("Unable to find metastore '"+metaStoreName+"'");
+      }
+      IMetaStoreElementType elementType = metaStore.getElementTypeByName(namespace, elementTypeName);
+      if (elementType==null) {
+        throw new MetaStoreException("Unable to find element type '"+elementTypeName+"' from metastore '"+metaStoreName+"' in namespace '"+namespace+"'");
+      }
+      IMetaStoreElement element = metaStore.getElementByName(namespace, elementType, elementName);
+      if (element==null) {
+        throw new MetaStoreException("Unable to find element '"+elementName+"' of type '"+elementTypeName+"' from metastore '"+metaStoreName+"' in namespace '"+namespace+"'");
+      }
+      metaStore.deleteElement(namespace, elementType, element.getId());
+      
+      refreshTree();
+      
+    } catch(MetaStoreException e) {
+      new ErrorDialog(shell, "Error removing element", "There was an error removing the element '"+elementName+"' of type '"+elementTypeName+"' from metastore '"+metaStoreName+"' in namespace '"+namespace+"'", e);
+    }
+    
+  }
+  
+  private IMetaStore findMetaStore(String metaStoreName) throws MetaStoreException {
+    for (IMetaStore metaStore : metaStoreList) {
+      if (metaStore.getName()!=null && metaStore.getName().equals(metaStoreName)) {
+        return metaStore;
+      }
+    }
+    return null;
+  }
+  
   private void close() {
     props.setScreen(new WindowProperty(shell));
     shell.dispose();
@@ -219,6 +283,7 @@ public class MetaStoreExplorerDialog {
       }
     }
     TreeUtil.setOptimalWidthOnColumns(tree);
+    TreeMemory.setExpandedFromMemory(tree, META_STORE_EXPLORER_DIALOG_TREE);
   }
 
   private void addAttributesToTree(TreeItem parentItem, IMetaStoreAttribute parentAttribute) {
