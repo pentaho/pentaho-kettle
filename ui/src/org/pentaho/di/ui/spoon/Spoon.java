@@ -3403,8 +3403,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         fr.setRowDistribution(null);
       } else if (customDistribution) {
 
-        // TODO: ask the user for the row distribution method!
-        //
         RowDistributionInterface rowDistribution = getActiveTransGraph().askUserForCustomDistributionMethod();
 
         fr.setDistributes(true);
