@@ -113,6 +113,7 @@ public class Kitchen {
 
     DelegatingMetaStore metaStore = new DelegatingMetaStore();
     metaStore.addMetaStore(MetaStoreConst.openLocalPentahoMetaStore());
+    metaStore.setActiveMetaStoreName(metaStore.getName());
     
     RepositoryMeta repositoryMeta = null;
     Job job = null;

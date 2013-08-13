@@ -111,6 +111,7 @@ public class SlaveServerConfig {
     try {
       XmlMetaStore localStore = new XmlMetaStore(MetaStoreConst.getDefaultPentahoMetaStoreLocation());
       metaStore.addMetaStore(localStore);
+      metaStore.setActiveMetaStoreName(localStore.getName());
     } catch(MetaStoreException e) {
       throw new RuntimeException("Unable to open local Pentaho meta store", e);
     }

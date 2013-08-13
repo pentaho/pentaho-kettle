@@ -673,7 +673,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     //
     metaStore = new DelegatingMetaStore();
     try {
-      metaStore.addMetaStore(MetaStoreConst.openLocalPentahoMetaStore());
+      IMetaStore localMetaStore = MetaStoreConst.openLocalPentahoMetaStore();
+      metaStore.addMetaStore(localMetaStore);
+      metaStore.setActiveMetaStoreName(localMetaStore.getName());
       if (rep != null) {
         metaStore.addMetaStore(0, rep.getMetaStore());
         metaStore.setActiveMetaStoreName(rep.getMetaStore().getName());
