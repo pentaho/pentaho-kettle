@@ -259,6 +259,7 @@ public class SlaveServerConfig {
       //
       if (repository.getMetaStore()!=null) {
         metaStore.addMetaStore(0, repository.getMetaStore());
+        metaStore.setActiveMetaStoreName(repository.getMetaStore().getName());
       }
       
       LogChannel.GENERAL.logBasic("Connected to repository '"+repository.getName()+"'");

@@ -8089,6 +8089,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         IMetaStore repositoryMetaStore = rep.getMetaStore();
         if (repositoryMetaStore != null) {
           metaStore.addMetaStore(0, repositoryMetaStore); // first priority for explicitly connected repositories.
+          metaStore.setActiveMetaStoreName(repositoryMetaStore.getName());
           log.logBasic("Connected to metastore : " + repositoryMetaStore.getName() + ", added to delegating metastore");
         } else {
           log.logBasic("No metastore found in the repository : " + rep.getName() + ", connected? " + rep.isConnected());
