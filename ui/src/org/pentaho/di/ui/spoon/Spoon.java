@@ -224,12 +224,7 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.RowDistributionInterface;
-import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.trans.step.StepErrorMeta;
-import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.step.StepPartitioningMeta;
+import org.pentaho.di.trans.step.*;
 import org.pentaho.di.trans.steps.selectvalues.SelectValuesMeta;
 import org.pentaho.di.ui.cluster.dialog.ClusterSchemaDialog;
 import org.pentaho.di.ui.cluster.dialog.SlaveServerDialog;
@@ -3392,18 +3387,15 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       if (props.showCopyOrDistributeWarning() && !fr.getStepMetaInterface().excludeFromCopyDistributeVerification()) {
         MessageDialogWithToggle md = new MessageDialogWithToggle(shell, BaseMessages.getString(PKG, "System.Warning"),
             null, BaseMessages.getString(PKG, "Spoon.Dialog.CopyOrDistribute.Message", fr.getName(),
-                Integer.toString(nrNextSteps)), MessageDialog.WARNING, new String[] {
-                BaseMessages.getString(PKG, "Spoon.Dialog.CopyOrDistribute.Distribute"),
-                BaseMessages.getString(PKG, "Spoon.Dialog.CopyOrDistribute.CustomRowDistribution"),
-                BaseMessages.getString(PKG, "Spoon.Dialog.CopyOrDistribute.Copy"), }, 0, BaseMessages.getString(PKG,
+                Integer.toString(nrNextSteps)), MessageDialog.WARNING, getRowDistributionLabels(), 0, BaseMessages.getString(PKG,
                 "Spoon.Message.Warning.NotShowWarning"), !props.showCopyOrDistributeWarning());
         MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
         int idx = md.open();
         props.setShowCopyOrDistributeWarning(!md.getToggleState());
         props.saveProps();
 
-        distributes = (idx & 0xFF) == 0;
-        customDistribution = (idx & 0xFF) == 1;
+        distributes = idx == 256;
+        customDistribution = idx == 258;
       }
 
       if (distributes) {
@@ -3413,7 +3405,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
         // TODO: ask the user for the row distribution method!
         //
-        RowDistributionInterface rowDistribution = null;
+        RowDistributionInterface rowDistribution = getActiveTransGraph().askUserForCustomDistributionMethod();
 
         fr.setDistributes(true);
         fr.setRowDistribution(rowDistribution);
@@ -3425,6 +3417,16 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       refreshTree();
       refreshGraph();
     }
+  }
+
+  private String[] getRowDistributionLabels() {
+    ArrayList<String> labels = new ArrayList<String>();
+    labels.add(BaseMessages.getString(PKG, "Spoon.Dialog.CopyOrDistribute.Distribute"));
+    labels.add(BaseMessages.getString(PKG, "Spoon.Dialog.CopyOrDistribute.Copy"));
+    if(PluginRegistry.getInstance().getPlugins(RowDistributionPluginType.class).size() > 0) {
+      labels.add(BaseMessages.getString(PKG, "Spoon.Dialog.CopyOrDistribute.CustomRowDistribution"));
+    }
+    return labels.toArray(new String[labels.size()]);
   }
 
   public void newHop(TransMeta transMeta) {
