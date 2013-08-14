@@ -25,11 +25,7 @@ package org.pentaho.di.repository.filerep;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
@@ -278,8 +274,13 @@ public class KettleFileRepository extends AbstractRepository {
 	  // We always overwrite so no further changes necessary
 	  save(repositoryElement, versionComment, monitor, null, overwrite);
 	}
-	
-	public void save(RepositoryElementInterface repositoryElement, String versionComment, ProgressMonitorListener monitor, ObjectId parentId, boolean used) throws KettleException {
+
+  @Override
+  public void save(RepositoryElementInterface repositoryElement, String versionComment, Calendar versionDate, ProgressMonitorListener monitor, boolean overwrite) throws KettleException {
+    save(repositoryElement, versionComment, monitor, null, overwrite);
+  }
+
+  public void save(RepositoryElementInterface repositoryElement, String versionComment, ProgressMonitorListener monitor, ObjectId parentId, boolean used) throws KettleException {
 		try {
 			if (!(repositoryElement instanceof XMLInterface) && !(repositoryElement instanceof SharedObjectInterface)) {
 				throw new KettleException("Class ["+repositoryElement.getClass().getName()+"] needs to implement the XML Interface in order to save it to disk");

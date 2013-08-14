@@ -25,11 +25,7 @@ package org.pentaho.di.repository.kdr;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.codec.binary.Base64;
@@ -413,6 +409,11 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
     } finally {
       unlockRepository();
     }
+  }
+
+  @Override
+  public void save(RepositoryElementInterface repositoryElement, String versionComment, Calendar versionDate, ProgressMonitorListener monitor, boolean overwrite) throws KettleException {
+    save(repositoryElement, versionComment, monitor, null, false, overwrite);
   }
 
   // Condition

@@ -22,6 +22,7 @@
 
 package org.pentaho.di.repository;
 
+import java.util.Calendar;
 import java.util.List;
 
 import org.pentaho.di.cluster.ClusterSchema;
@@ -125,6 +126,19 @@ public interface Repository {
      * @throws KettleException Error saving the object to the repository
      */
     public void save(RepositoryElementInterface repositoryElement, String versionComment, ProgressMonitorListener monitor, boolean overwrite) throws KettleException;
+
+  /**
+   * Save the object to the repository with version comments as well as version dates. This form exists largely to support the importing of revisions, preserving their
+   * revision date.
+   *
+   * @param repositoryElement
+   * @param versionComment
+   * @param versionDate
+   * @param monitor
+   * @param overwrite
+   * @throws KettleException
+   */
+    public void save(RepositoryElementInterface repositoryElement, String versionComment, Calendar versionDate, ProgressMonitorListener monitor, boolean overwrite) throws KettleException;
   
     public RepositoryDirectoryInterface getDefaultSaveDirectory(RepositoryElementInterface repositoryElement) throws KettleException;
     
