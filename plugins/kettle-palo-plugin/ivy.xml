@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="pentaho-kettle" module="kettle-palo-plugin" revision="TRUNK-SNAPSHOT" status="integration" publication="20130405165010"/>
+  <info organisation="pentaho-kettle" module="kettle-palo-plugin" revision="${dependency.kettle.revision}" status="integration" publication="20130405165010"/>
 
   <configurations>
     <conf name="default"/>
@@ -15,10 +15,10 @@
   </publications>
 
   <dependencies defaultconf="dev->default">
-    <dependency org="pentaho-kettle" name="kettle-core" rev="TRUNK-SNAPSHOT" changing="true"/>  
-    <dependency org="pentaho-kettle" name="kettle-engine" rev="TRUNK-SNAPSHOT" changing="true"/>
-    <dependency org="pentaho-kettle" name="kettle-ui-swt" rev="TRUNK-SNAPSHOT" changing="true"/>
-    <dependency org="pentaho" name="pentaho-palo-core" rev="TRUNK-SNAPSHOT" conf="default->default" transitive="false"/>
+    <dependency org="pentaho-kettle" name="kettle-core" rev="${dependency.kettle.revision}" changing="true"/>  
+    <dependency org="pentaho-kettle" name="kettle-engine" rev="${dependency.kettle.revision}" changing="true"/>
+    <dependency org="pentaho-kettle" name="kettle-ui-swt" rev="${dependency.kettle.revision}" changing="true"/>
+    <dependency org="pentaho" name="pentaho-palo-core" rev="${dependency.kettle.revision}" conf="default->default" transitive="false"/>
     
     <!-- SWT it required to compile any version of any architecture will work -->
     <dependency org="org.eclipse.swt" name="swt-linux-x86_64" rev="3.6" transitive="false"/>

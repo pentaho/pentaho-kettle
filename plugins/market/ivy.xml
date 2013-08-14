@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="pentaho-kettle" module="market" revision="TRUNK-SNAPSHOT" status="integration" publication="20130405165027"/>
+  <info organisation="pentaho-kettle" module="market" revision="${dependency.kettle.revision}" status="integration" publication="20130405165027"/>
 
   <configurations>
     <conf name="default"/>
@@ -18,11 +18,11 @@
     <dependency org="commons-vfs" name="commons-vfs" rev="20091118-pentaho" transitive="false"/>
     <dependency org="org.apache.xmlgraphics" name="batik-xml" rev="1.7" transitive="false"/>
                 
-    <dependency org="pentaho-kettle" name="kettle-core" rev="TRUNK-SNAPSHOT" changing="true"/>  
-    <dependency org="pentaho-kettle" name="kettle-engine" rev="TRUNK-SNAPSHOT" changing="true"/>
-    <dependency org="pentaho-kettle" name="kettle-ui-swt" rev="TRUNK-SNAPSHOT" changing="true"/>
-    <dependency org="pentaho" name="pentaho-xul-core" rev="TRUNK-SNAPSHOT" changing="true"/>
-    <dependency org="pentaho" name="pentaho-xul-swt" rev="TRUNK-SNAPSHOT" changing="true"/>
+    <dependency org="pentaho-kettle" name="kettle-core" rev="${dependency.kettle.revision}" changing="true"/>  
+    <dependency org="pentaho-kettle" name="kettle-engine" rev="${dependency.kettle.revision}" changing="true"/>
+    <dependency org="pentaho-kettle" name="kettle-ui-swt" rev="${dependency.kettle.revision}" changing="true"/>
+    <dependency org="pentaho" name="pentaho-xul-core" rev="${dependency.kettle.revision}" changing="true"/>
+    <dependency org="pentaho" name="pentaho-xul-swt" rev="${dependency.kettle.revision}" changing="true"/>
     
     <dependency org="junit" name="junit" rev="4.7" transitive="false" conf="test->default"/>
   </dependencies>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="pentaho-kettle" module="kettle-openerp-plugin" revision="TRUNK-SNAPSHOT" status="integration" publication="20130529202646"/>
+  <info organisation="pentaho-kettle" module="kettle-openerp-plugin" revision="${dependency.kettle.revision}" status="integration" publication="20130529202646"/>
 
   <configurations>
     <conf name="default"/>
@@ -14,9 +14,9 @@
   </publications>
 
   <dependencies defaultconf="dev->default">
-    <dependency org="pentaho-kettle" name="kettle-core" rev="TRUNK-SNAPSHOT" changing="true"/>
-    <dependency org="pentaho-kettle" name="kettle-engine" rev="TRUNK-SNAPSHOT" changing="true"/>
-    <dependency org="pentaho-kettle" name="kettle-ui-swt" rev="TRUNK-SNAPSHOT" changing="true"/> 
+    <dependency org="pentaho-kettle" name="kettle-core" rev="${dependency.kettle.revision}" changing="true"/>
+    <dependency org="pentaho-kettle" name="kettle-engine" rev="${dependency.kettle.revision}" changing="true"/>
+    <dependency org="pentaho-kettle" name="kettle-ui-swt" rev="${dependency.kettle.revision}" changing="true"/> 
      
     <dependency org="org.apache.xmlrpc" name="xmlrpc-client" rev="3.1.3" conf="default->default">
       <exclude org="xml-apis" module="xml-apis"/>

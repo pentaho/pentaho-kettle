@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="pentaho-kettle" module="kettle-hl7-plugin" revision="TRUNK-SNAPSHOT" status="integration" publication="20130410203736"/>
+  <info organisation="pentaho-kettle" module="kettle-hl7-plugin" revision="${dependency.kettle.revision}" status="integration" publication="20130410203736"/>
 
   <configurations>
     <conf name="default"/>
@@ -14,9 +14,9 @@
   </publications>
 
   <dependencies defaultconf="default->default">
-    <dependency org="pentaho-kettle" name="kettle-core" rev="TRUNK-SNAPSHOT" conf="dev->default" changing="true"/>
-    <dependency org="pentaho-kettle" name="kettle-engine" rev="TRUNK-SNAPSHOT" conf="dev->default" changing="true"/>
-    <dependency org="pentaho-kettle" name="kettle-ui-swt" rev="TRUNK-SNAPSHOT" conf="dev->default" changing="true"/>  
+    <dependency org="pentaho-kettle" name="kettle-core" rev="${dependency.kettle.revision}" conf="dev->default" changing="true"/>
+    <dependency org="pentaho-kettle" name="kettle-engine" rev="${dependency.kettle.revision}" conf="dev->default" changing="true"/>
+    <dependency org="pentaho-kettle" name="kettle-ui-swt" rev="${dependency.kettle.revision}" conf="dev->default" changing="true"/>  
     
     <dependency org="ca.uhn.hapi" name="hapi" rev="1.1" transitive="false"/>
     <dependency org="ca.uhn.hapi" name="hapi-base" rev="1.1" transitive="false"/>
