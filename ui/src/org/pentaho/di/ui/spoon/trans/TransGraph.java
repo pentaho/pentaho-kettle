@@ -2399,8 +2399,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             {
               Action action = new Action("RoundRobinRowDistribution", Action.AS_CHECK_BOX) {
                 public void run() {
-                  stepMeta.setDistributes(true);
                   stepMeta.setRowDistribution(null); // default
+                  stepMeta.setDistributes(true);
                 }
               };       
               boolean selected = stepMeta.isDistributes() && stepMeta.getRowDistribution()==null; 

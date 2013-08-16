@@ -959,6 +959,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
   
   public void setRowDistribution(RowDistributionInterface rowDistribution) {
     this.rowDistribution = rowDistribution;
+    if (rowDistribution!=null) setDistributes(true);
     setChanged(true);
   }
 
