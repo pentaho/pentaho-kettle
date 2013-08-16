@@ -101,8 +101,7 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
   // File
   //
   private Button                            radioFilename;
-  private Button                            wbbFilenameVfs;
-  private Button                            wbbFilenameLocal;
+  private Button                            wbbFilename;
   private TextVar                           wFilename;
 
   // Repository by name
@@ -248,31 +247,17 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
       }
     });
 
-    wbbFilenameVfs = new Button(gTransGroup, SWT.PUSH | SWT.CENTER); // Browse
-    props.setLook(wbbFilenameVfs);
-    wbbFilenameVfs.setText(BaseMessages.getString(PKG, "System.Button.BrowseVfs"));
-    wbbFilenameVfs.setToolTipText(BaseMessages.getString(PKG, "System.Tooltip.BrowseVfs"));
-    FormData fdbFilenameVfs = new FormData();
-    fdbFilenameVfs.right = new FormAttachment(100, 0);
-    fdbFilenameVfs.top = new FormAttachment(radioFilename, margin);
-    wbbFilenameVfs.setLayoutData(fdbFilenameVfs);
-    wbbFilenameVfs.addSelectionListener(new SelectionAdapter() {
+    wbbFilename = new Button(gTransGroup, SWT.PUSH | SWT.CENTER); // Browse
+    props.setLook(wbbFilename);
+    wbbFilename.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
+    wbbFilename.setToolTipText(BaseMessages.getString(PKG, "System.Tooltip.Browse"));
+    FormData fdbFilename = new FormData();
+    fdbFilename.right = new FormAttachment(100, 0);
+    fdbFilename.top = new FormAttachment(radioFilename, margin);
+    wbbFilename.setLayoutData(fdbFilename);
+    wbbFilename.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
         selectFileTrans(true);
-      }
-    });
-
-    wbbFilenameLocal = new Button(gTransGroup, SWT.PUSH | SWT.CENTER); // Browse
-    props.setLook(wbbFilenameLocal);
-    wbbFilenameLocal.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
-    wbbFilenameLocal.setToolTipText(BaseMessages.getString(PKG, "System.Tooltip.Browse"));
-    FormData fdbFilenameLocal = new FormData();
-    fdbFilenameLocal.right = new FormAttachment(wbbFilenameVfs, -margin);
-    fdbFilenameLocal.top = new FormAttachment(radioFilename, margin);
-    wbbFilenameLocal.setLayoutData(fdbFilenameLocal);
-    wbbFilenameLocal.addSelectionListener(new SelectionAdapter() {
-      public void widgetSelected(SelectionEvent e) {
-        selectFileTrans(false);
       }
     });
 
@@ -281,8 +266,8 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     wFilename.addModifyListener(lsMod);
     FormData fdFilename = new FormData();
     fdFilename.left = new FormAttachment(0, 25);
-    fdFilename.right = new FormAttachment(wbbFilenameVfs, -margin);
-    fdFilename.top = new FormAttachment(wbbFilenameVfs, 0, SWT.CENTER);
+    fdFilename.right = new FormAttachment(wbbFilename, -margin);
+    fdFilename.top = new FormAttachment(wbbFilename, 0, SWT.CENTER);
     wFilename.setLayoutData(fdFilename);
     wFilename.addModifyListener(new ModifyListener() {
       public void modifyText(ModifyEvent e) {
@@ -301,7 +286,7 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     FormData fdRepRadio = new FormData();
     fdRepRadio.left = new FormAttachment(0, 0);
     fdRepRadio.right = new FormAttachment(100, 0);
-    fdRepRadio.top = new FormAttachment(wbbFilenameVfs, 2 * margin);
+    fdRepRadio.top = new FormAttachment(wbbFilename, 2 * margin);
     radioByName.setLayoutData(fdRepRadio);
     radioByName.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
@@ -709,7 +694,6 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     radioByName.setEnabled(repository != null);
     radioByReference.setEnabled(repository != null && supportsReferences);
     wFilename.setEnabled(radioFilename.getSelection());
-    wbbFilenameVfs.setEnabled(radioFilename.getSelection());
     wTransname.setEnabled(repository != null && radioByName.getSelection());
 
     wDirectory.setEnabled(repository != null && radioByName.getSelection());
