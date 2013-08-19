@@ -104,8 +104,6 @@
     <dependency org="org.hibernate"                    name="hibernate-ehcache"    rev="3.6.9.Final"     transitive="false" />
     <dependency org="cglib"                            name="cglib-nodep"          rev="2.2"             transitive="false"/>
     <dependency org="org.owasp.esapi"                  name="esapi"                rev="2.0.1"           transitive="false"/>
-    <dependency org="org.slf4j"                        name="slf4j-api"            rev="1.6.4"           transitive="false"/>
-    <dependency org="org.slf4j"                        name="slf4j-log4j12"        rev="1.6.4"           transitive="false"/>
     <dependency org="net.sourceforge.nekohtml"         name="nekohtml"             rev="1.9.15"          transitive="false"/>
     <dependency org="rhino"                            name="js"                   rev="1.7R3"           transitive="false"/>
     <dependency org="javax.mail"                       name="mail"                 rev="1.4.7"           transitive="false" />
