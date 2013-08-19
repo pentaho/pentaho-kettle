@@ -1967,7 +1967,8 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
       // SQL: get truncate table statement?
       r = new RowMetaAndData();
       r.addValue(par, ValueMetaInterface.TYPE_STRING, "SQL: truncate table");
-      r.addValue(val, ValueMetaInterface.TYPE_STRING, getTruncateTableStatement(null, "TABLE"));
+      String truncateStatement = getTruncateTableStatement(null, "TABLE");
+      r.addValue(val, ValueMetaInterface.TYPE_STRING, truncateStatement != null ? truncateStatement : "Not supported by this database type");
       list.add(r);
       // supports float rounding on update?
       r = new RowMetaAndData();

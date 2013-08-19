@@ -2860,7 +2860,9 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
   public void truncateTable(String tablename) throws KettleDatabaseException {
     if (Const.isEmpty(connectionGroup)) {
-      execStatement(databaseMeta.getTruncateTableStatement(null, tablename));
+      String truncateStatement = databaseMeta.getTruncateTableStatement(null, tablename);
+      if(truncateStatement == null) throw new KettleDatabaseException("Truncate table not supported by "+databaseMeta.getDatabaseInterface().getPluginName());
+      execStatement(truncateStatement);
     } else {
       execStatement("DELETE FROM " + databaseMeta.quoteField(tablename));
     }
@@ -2868,7 +2870,9 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
   public void truncateTable(String schema, String tablename) throws KettleDatabaseException {
     if (Const.isEmpty(connectionGroup)) {
-      execStatement(databaseMeta.getTruncateTableStatement(schema, tablename));
+      String truncateStatement = databaseMeta.getTruncateTableStatement(schema, tablename);
+      if(truncateStatement == null) throw new KettleDatabaseException("Truncate table not supported by "+databaseMeta.getDatabaseInterface().getPluginName());
+      execStatement(truncateStatement);
     } else {
       execStatement("DELETE FROM " + databaseMeta.getQuotedSchemaTableCombination(schema, tablename));
     }
@@ -4177,7 +4181,9 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    */
   public String getDDLTruncateTable(String schema, String tablename) throws KettleDatabaseException {
     if (Const.isEmpty(connectionGroup)) {
-      return (databaseMeta.getTruncateTableStatement(schema, tablename));
+      String truncateStatement = databaseMeta.getTruncateTableStatement(schema, tablename);
+      if(truncateStatement == null) throw new KettleDatabaseException("Truncate table not supported by "+databaseMeta.getDatabaseInterface().getPluginName());
+      return truncateStatement;
     } else {
       return ("DELETE FROM " + databaseMeta.getQuotedSchemaTableCombination(schema, tablename));
     }

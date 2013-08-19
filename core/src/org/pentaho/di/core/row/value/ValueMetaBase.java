@@ -4618,7 +4618,7 @@ public class ValueMetaBase implements ValueMetaInterface {
         }
         break;
       case ValueMetaInterface.TYPE_STRING:
-        if (getLength() < DatabaseMeta.CLOB_LENGTH) {
+        if (getLength() < databaseMeta.getMaxTextFieldLength()) {
           if (!isNull(data)) {
             preparedStatement.setString(index, getString(data));
           } else {

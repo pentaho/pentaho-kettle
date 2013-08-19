@@ -211,7 +211,10 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
     if (this.model.getTable() == null) {
       return;
     }
-    SQLEditor theSqlEditor = new SQLEditor(this.getDatabaseMeta(), this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), this.dbcache, "-- TRUNCATE TABLE " + getSchemaAndTable(this.model));
+    DatabaseMeta dm = this.model.getDatabaseMeta();
+    String message = dm.getTruncateTableStatement(this.model.getSchema(),this.model.getTable());
+    if(message == null) message = "Truncating tables is not supported by "+dm.getDatabaseInterface().getPluginName();
+    SQLEditor theSqlEditor = new SQLEditor(this.getDatabaseMeta(), this.dbExplorerDialog.getShell(), SWT.NONE, dm, this.dbcache, "-- " + message);
     theSqlEditor.open();
   }
 
