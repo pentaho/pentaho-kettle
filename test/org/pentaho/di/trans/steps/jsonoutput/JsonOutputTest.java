@@ -26,8 +26,6 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class was a "copy and modification" of Kettle's 
@@ -38,8 +36,6 @@ import org.slf4j.LoggerFactory;
  * and modifying code to handle "Compatibility Mode".
  */
 public class JsonOutputTest extends TestCase {
-
-  private transient Logger logger = LoggerFactory.getLogger(JsonOutputTest.class);
    
   private final static String EXPECTED_NON_COMPATIBILITY_JSON  = "{\"data\":[{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"}]}";
 
@@ -290,9 +286,7 @@ public class JsonOutputTest extends TestCase {
 
         // get the results and return it
         File outputFile = new File(jsonFileName + ".js");
-        logger.info("Reading JSON file {}", outputFile);
         String jsonStructure = FileUtils.readFileToString(outputFile);
-        logger.debug("JSON output => {}", jsonStructure);
         
         return jsonStructure;
     }
