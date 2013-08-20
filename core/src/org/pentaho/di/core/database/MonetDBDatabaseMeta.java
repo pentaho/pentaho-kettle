@@ -295,6 +295,7 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 		int type         = v.getType();
 		switch(type)
 		{
+		case ValueMetaInterface.TYPE_TIMESTAMP:
 		case ValueMetaInterface.TYPE_DATE   : retval.append("TIMESTAMP"); break;
 		case ValueMetaInterface.TYPE_BOOLEAN:
 			if (supportsBooleanDataType()) {

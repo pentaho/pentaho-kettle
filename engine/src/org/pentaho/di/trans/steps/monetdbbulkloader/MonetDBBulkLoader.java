@@ -300,6 +300,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
             //
 		    		// TODO: Check MonetDB API for true column types and help set or suggest the correct formatter pattern to the user.
             //
+            case ValueMetaInterface.TYPE_TIMESTAMP:
             case ValueMetaInterface.TYPE_DATE:
               // Keep the data format as indicated.
               if (valueMeta.isStorageBinaryString() && meta.getFieldFormatOk()[i]) {
