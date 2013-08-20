@@ -22,12 +22,12 @@ body, html {
 }
 
 h1.large {
-	font-size: 48px;
+	font-size: 58px;
 	color: #005ca7;
 	font-family: "Open Sans", sans-serif;
 	font-weight: 300;
 	width: 940px;
-	margin: 0px 0px 60px -2px;
+	margin: 0px 0px 30px -2px;
 }
 
 h2.large {
@@ -41,7 +41,7 @@ h2.large {
 
 .header-container {
 	width: 940px;
-	height: 235px;
+	height: 255px;
 	margin: 0px auto;
 	border: 1px #ccc solid;
 	border-top: 0px;
@@ -51,22 +51,26 @@ h2.large {
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	padding: 15px;
+	margin-bottom: 50px;
 }
 
 .header-container p {
-	width: 400px;
-	font-size: 14px;
+	width: 380px;
+	font-size: 16px;
 	float: left;
-	margin-top: 10px;
+	margin-top: 15px;
+	margin-left: 20px;
 	font-weight: 400;
-	color: #444;
+	color: #7c7c7c;
+	font-family: Arial, Helvetica, sans-serif;
 }
 
 .header-container > img {
 	float: left;
 	width: 350px;
-	margin-top: 10px;
+	margin-top: -2px;
 	margin-left: 120px;
+	margin-right: 38px;
 }
 
 .header-container .git-button,
@@ -164,8 +168,8 @@ h2.large {
 	border-bottom: 1px solid #ccc;
 	font-size: 20px;
 	font-weight: 300;
-	padding: 10px 15px;
-	height: 73px;
+	padding: 13px 15px;
+	height: 76px;
 	color: #005ca7;
 	line-height: 25px;
 	background-color: #fff;
@@ -176,6 +180,7 @@ h2.large {
 	transition: all 500ms;
 	-moz-transition: all 500ms;
 	-webkit-transition: all 500ms;
+	overflow: hidden;
 }
 
 .header-navigation-item:hover {
@@ -190,17 +195,29 @@ h2.large {
 
 .header-navigation-item:nth-child(1) {
 	border-left: 1px #ccc solid;
-	border-radius: 5px 0px 0px 0px;
+	border-radius: 0px 0px 0px 0px;
 }
 
 .header-navigation-item:nth-child(4) {
-	border-radius: 0px 5px 0px 0px;
+	border-radius: 0px 0px 0px 0px;
 }
 
 .header-navigation-item.selected {
-	border-bottom: 1px #fff solid;
-	background-position: 0px 0px;
-	opacity: 1;
+    background-position: 0 0;
+    border-bottom: 1px solid rgb(255, 255, 255);
+    opacity: 1;
+    position: relative;
+}
+
+.header-navigation-item.selected:after {
+    background-color: rgb(238, 202, 20);
+    content: "";
+    height: 8px;
+    left: 0px;
+    top: 0px;
+    position: absolute;
+    width: 234px;
+    background: linear-gradient(rgb(252, 215, 28), rgb(238, 202, 20));
 }
 
 /*CONTENT*/
@@ -213,19 +230,18 @@ h2.large {
 	font-weight: 300;
 	font-size: 32px;
 	color: #444;
-	margin: q0px 0px 5px; 
+	margin: 0px 0px 5px; 
 }
 
 .content h2 {
-	font-weight: 300;
+	font-weight: 400;
 	font-size: 24px;
-	color: #444;
+	color: #666;
 	margin: 0px 0px 22px;
 	text-align: left;
 }
 
-.content h2:after,
-h1.large:after {
+.content h2:after {
 	position: absolute;
 	height: 3px;
 	width: 100px;
@@ -240,27 +256,20 @@ h1.large:after {
     margin-top: 7px
 }
 
-h1.large:after {
-    margin-top: 20px;
-    margin-left: 3px;
-	width: 370px;
-	height: 12px;
-}
-
 .content a,
 .content a:link,
 .content a:visited {
-	font-size: 14px;
+	font-size: 16px;
 	line-height: 1.4;
 	font-weight: 400;
 	color: #005ca7;
-	text-decoration: underline;
 	margin: 0px 0px;
 }
 
 .content li > a,
 .content li > a:link,
 .content li > a:visited {
+	font-size: 14px;
 	padding-right: 16px;
 	text-decoration: none;
 }
@@ -286,6 +295,8 @@ h1.large:after {
 	position: absolute;
 	background-image: url(../img/arrow.png);
 	background-position: top 1px left;
+	margin-top: 3px;
+	margin-left: 3px;
 }
 
 .content span.description {
@@ -337,14 +348,15 @@ h1.large:after {
 }
 
 .content p {
-	font-size: 14px;
+	font-size: 16px;
+	font-family: Arial, Helvetica, sans-serif;
+	color: #7c7c7c;
 	padding: 0px;
 	margin: 0px;
 	text-align: left;
 	display: block;
 	margin-top: 0px;
 	line-height: 1.45;
-	color: #444;
     margin: 10px 0px;
     font-weight: 400;
 }
@@ -369,7 +381,8 @@ a.buy-pentaho:visited {
 	color: #fff;
 	text-decoration: none;
 	/*display: none;*/
-	margin-top: -107px;
+	margin-top: -152px;
+	margin-left: 20px;
 	float: left;
 	font-size: 16px;
 	position: relative;
@@ -418,8 +431,9 @@ a.buy-pentaho .buy-pentaho-logo {
 }
 
 #content-upgrade ul li {
-	font-size: 12px;
-	color: #444;
+	font-size: 16px;
+	font-family: Arial, Helvetica, sans-serif;
+	color: #7c7c7c;
 	list-style: none;
 	margin: 0px;
 	padding: 0px;
@@ -433,17 +447,18 @@ ul li {
 }
 
 ul {
-	font-size: 14px;
+	font-size: 16px;
+	font-family: Arial, Helvetica, sans-serif;
+	color: #7c7c7c;
     list-style: none;
     padding:0;
     margin:0;
-    color: #444;
     margin: 10px 0px;
 }
 
 li { 
-    padding-left: .8em; 
-    text-indent: -.7em;
+	padding-left: .65em;
+	text-indent: -.65em;
     margin: 8px 0px;
 }
 
@@ -619,13 +634,14 @@ hr {
 	background-image: url(../img/pdfIcon.png);
 	background-position: top 1px left;
 	margin-left: 5px;
+	margin-top: 3px;
 }
 
 /*CONTENT-EXTEND PENTAHO*/
 .buttonizeButtons {
 	border: none;
 	width: 402px;
-	border-radius: 5px 5px 0px 0px;
+	border-radius: 0px 0px 0px 0px;
 	margin: 15px auto -32px;
 	overflow: hidden;
 }
@@ -654,19 +670,21 @@ hr {
 	background-color: #f5f5f5;
 	margin: 0px;
 	line-height: 30px;
-	padding: 13px 0px;
+	padding: 8px 0px 4px;
 	font-size: 15px;
 	border: 1px solid #ddd;
 	border-bottom: none;
+	position: relative;
+	overflow: hidden;
 }
 
 .buttonizeButtons .buttonizeButton:first-child {
-	border-radius: 5px 0px 0px 0px;
+	border-radius: 0px 0px 0px 0px;
 	border-right: none;
 }
 
 .buttonizeButtons .buttonizeButton:last-child {
-	border-radius: 0px 5px 0px 0px;
+	border-radius: 0px 0px 0px 0px;
 	margin-left: -2px;
 }
 
@@ -684,6 +702,17 @@ hr {
 	border-bottom: 1px solid #f5f5f5;
 	z-index: 1000;
 	height: 32px;
+}
+
+.buttonizeButton.selected:after {
+    background-color: rgb(238, 202, 20);
+    content: "";
+    height: 5px;
+    left: 0px;
+    top: 0px;
+    position: absolute;
+    width: 200px;
+    background: linear-gradient(rgb(252, 215, 28), rgb(238, 202, 20));
 }
 
 .buttonizeContent{
