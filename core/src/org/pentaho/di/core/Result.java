@@ -689,15 +689,14 @@ public class Result implements Cloneable
     	// Let's also read back the result rows...
     	//
     	Node resultRowsNode = XMLHandler.getSubNode(node, XML_ROWS_TAG);
-    	int nrResultRows = XMLHandler.countNodes(resultFilesNode, RowMeta.XML_DATA_TAG);
-    	if (nrResultRows>0)
+    	List<Node> resultNodes = XMLHandler.getNodes(resultRowsNode, RowMeta.XML_DATA_TAG);
+    	if (!resultNodes.isEmpty())
     	{
     		// OK, get the metadata first...
     		//
     		RowMeta rowMeta = new RowMeta( XMLHandler.getSubNode(resultRowsNode, RowMeta.XML_META_TAG) );
-    		for (int i=0;i<nrResultRows;i++)
-    		{
-    			Object[] rowData = rowMeta.getRow(XMLHandler.getSubNodeByNr(resultRowsNode, RowMeta.XML_META_TAG, i));
+    		for (Node resultNode : resultNodes) {
+    			Object[] rowData = rowMeta.getRow(resultNode);
     			rows.add(new RowMetaAndData(rowMeta, rowData));
     		}
     	}

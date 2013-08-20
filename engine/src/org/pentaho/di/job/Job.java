@@ -207,6 +207,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
   private int maxJobEntriesLogged;
 
   private JobEntryCopy startJobEntryCopy;
+  private Result startJobEntryResult;
 
   private String executingServer;
 
@@ -267,6 +268,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     maxJobEntriesLogged = Const.toInt(EnvUtil.getSystemProperty(Const.KETTLE_MAX_JOB_ENTRIES_LOGGED), 1000);
 
     result = null;
+    startJobEntryCopy = null;
+    startJobEntryResult = null;
+    
     this.setDefaultLogCommitSize();
   }
 
@@ -470,16 +474,18 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         beginProcessing();
       }
 
+      Result res = null;
+
       if (startJobEntryCopy == null) {
         startpoint = jobMeta.findJobEntry(JobMeta.STRING_SPECIAL_START, 0, false);
       } else {
         startpoint = startJobEntryCopy;
+        res = startJobEntryResult;
       }
       if (startpoint == null) {
         throw new KettleJobException(BaseMessages.getString(PKG, "Job.Log.CounldNotFindStartingPoint"));
       }
 
-      Result res = null;
       JobEntryResult jerEnd = null;
 
       if (startpoint.isStart()) {
@@ -504,7 +510,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         jerEnd = new JobEntryResult(res, jes.getLogChannelId(), BaseMessages.getString(PKG, "Job.Comment.JobFinished"),
             BaseMessages.getString(PKG, "Job.Reason.Finished"), null, 0, null);
       } else {
-        res = execute(0, null, startpoint, null, BaseMessages.getString(PKG, "Job.Reason.Started"));
+        res = execute(0, res, startpoint, null, BaseMessages.getString(PKG, "Job.Reason.Started"));
         jerEnd = new JobEntryResult(res, startpoint.getEntry().getLogChannel().getLogChannelId(),
             BaseMessages.getString(PKG, "Job.Comment.JobFinished"), BaseMessages.getString(PKG, "Job.Reason.Finished"),
             null, 0, null);
@@ -612,7 +618,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
     // if we didn't have a previous result, create one, otherwise, copy the content...
     //
-    final Result result;
+    final Result newResult;
     Result prevResult = null;
     if (prev_result != null) {
       prevResult = prev_result.clone();
@@ -623,8 +629,12 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     JobExecutionExtension extension = new JobExecutionExtension(this, prevResult, jobEntryCopy, true);
     ExtensionPointHandler.callExtensionPoint(log, KettleExtensionPoint.JobBeforeJobEntryExecution.id, extension);
     
+    if (extension.result!=null) {
+      prevResult = extension.result;
+    }
+    
     if (!extension.executeEntry) {
-      result = prevResult = extension.result;
+      newResult = prevResult;
     } else {
       if (log.isDetailed())
         log.logDetailed("exec(" + nr + ", " + (prev_result != null ? prev_result.getNrErrors() : 0) + ", "
@@ -665,7 +675,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         }
       }
       log.snap(Metrics.METRIC_JOBENTRY_START, cloneJei.toString());
-      result = cloneJei.execute(prevResult, nr);
+      newResult = cloneJei.execute(prevResult, nr);
       log.snap(Metrics.METRIC_JOBENTRY_STOP, cloneJei.toString());
 
       final long end = System.currentTimeMillis();
@@ -679,27 +689,27 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       }
 
       if (cloneJei instanceof JobEntryTrans) {
-        String throughput = result.getReadWriteThroughput((int) ((end - start) / 1000));
+        String throughput = newResult.getReadWriteThroughput((int) ((end - start) / 1000));
         if (throughput != null) {
           log.logMinimal(throughput);
         }
       }
       for (JobEntryListener jobEntryListener : jobEntryListeners) {
-        jobEntryListener.afterExecution(this, jobEntryCopy, cloneJei, result);
+        jobEntryListener.afterExecution(this, jobEntryCopy, cloneJei, newResult);
       }
 
       Thread.currentThread().setContextClassLoader(cl);
-      addErrors((int) result.getNrErrors());
+      addErrors((int) newResult.getNrErrors());
 
       // Also capture the logging text after the execution...
       //
       LoggingBuffer loggingBuffer = KettleLogStore.getAppender();
       StringBuffer logTextBuffer = loggingBuffer.getBuffer(cloneJei.getLogChannel().getLogChannelId(), false);
-      result.setLogText(logTextBuffer.toString()+result.getLogText());
+      newResult.setLogText(logTextBuffer.toString()+newResult.getLogText());
 
       // Save this result as well...
       //
-      JobEntryResult jerAfter = new JobEntryResult(result, cloneJei.getLogChannel().getLogChannelId(),
+      JobEntryResult jerAfter = new JobEntryResult(newResult, cloneJei.getLogChannel().getLogChannelId(),
           BaseMessages.getString(PKG, "Job.Comment.JobFinished"), null, jobEntryCopy.getName(), jobEntryCopy.getNr(),
           environmentSubstitute(jobEntryCopy.getEntry().getFilename()));
       jobTracker.addJobTracker(new JobTracker(jobMeta, jerAfter));
@@ -746,7 +756,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       if (hi.isUnconditional()) {
         nextComment = BaseMessages.getString(PKG, "Job.Comment.FollowedUnconditional");
       } else {
-        if (result.getResult()) {
+        if (newResult.getResult()) {
           nextComment = BaseMessages.getString(PKG, "Job.Comment.FollowedSuccess");
         } else {
           nextComment = BaseMessages.getString(PKG, "Job.Comment.FollowedFailure");
@@ -758,7 +768,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       // If the start point was an evaluation and the link color is correct:
       // green or red, execute the next job entry...
       //
-      if (hi.isUnconditional() || (jobEntryCopy.evaluates() && (!(hi.getEvaluation() ^ result.getResult())))) {
+      if (hi.isUnconditional() || (jobEntryCopy.evaluates() && (!(hi.getEvaluation() ^ newResult.getResult())))) {
         // Start this next step!
         if (log.isBasic())
           log.logBasic(BaseMessages.getString(PKG, "Job.Log.StartingEntry", nextEntry.getName()));
@@ -767,7 +777,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         // However, set the number of errors back to 0 (if it should be reset)
         // When an evaluation is executed the errors e.g. should not be reset.
         if (nextEntry.resetErrorsBeforeExecution()) {
-          result.setNrErrors(0);
+          newResult.setNrErrors(0);
         }
 
         // Now execute!
@@ -780,7 +790,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
           Runnable runnable = new Runnable() {
             public void run() {
               try {
-                Result threadResult = execute(nr + 1, result, nextEntry, jobEntryCopy, nextComment);
+                Result threadResult = execute(nr + 1, newResult, nextEntry, jobEntryCopy, nextComment);
                 threadResults.add(threadResult);
               } catch (Throwable e) {
                 log.logError(Const.getStackTracker(e));
@@ -802,7 +812,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
           try {
             // Same as before: blocks until it's done
             //
-            res = execute(nr + 1, result, nextEntry, jobEntryCopy, nextComment);
+            res = execute(nr + 1, newResult, nextEntry, jobEntryCopy, nextComment);
           } catch (Throwable e) {
             log.logError(Const.getStackTracker(e));
             throw new KettleException(BaseMessages.getString(PKG, "Job.Log.UnexpectedError", nextEntry.toString()), e);
@@ -2157,5 +2167,13 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   public Map<String, Object> getExtensionDataMap() {
     return extensionDataMap;
+  }
+
+  public Result getStartJobEntryResult() {
+    return startJobEntryResult;
+  }
+
+  public void setStartJobEntryResult(Result startJobEntryResult) {
+    this.startJobEntryResult = startJobEntryResult;
   }
 }

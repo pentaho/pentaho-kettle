@@ -631,7 +631,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     // Throws an exception if it was not possible to load the transformation.  For example, the XML file doesn't exist or the repository is down.
     // Log the stack trace and return an error condition from this
     //
-    TransMeta transMeta = getTransMeta(rep, this);
+    TransMeta transMeta = getTransMeta(rep, metaStore, this);
 
     int iteration = 0;
     String args1[] = arguments;
@@ -1055,8 +1055,10 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
             result.clear(); // clear only the numbers, NOT the files or rows.
             result.add(newResult);
 
-            // Set the result rows too...
-            result.setRows(newResult.getRows());
+            // Set the result rows too, if any ...
+            if (!Const.isEmpty(newResult.getRows())) {
+              result.setRows(newResult.getRows());
+            }
 
             if (setLogfile) {
               ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_LOG, KettleVFS.getFileObject(realLogFilename,
