@@ -364,14 +364,8 @@ a.buy-pentaho,
 a.buy-pentaho:link,
 a.buy-pentaho:visited {
 	text-align: left;
-	padding: 10px 20px 10px 30px;
+	padding: 10px 22px;
 	text-shadow: 0 1px rgba(255,255,255,0.3);
-	background-color: #005ca7;
-	background-image: -webkit-gradient(linear,50% 0%,50% 100%,color-stop(0%,#247dc5),color-stop(100%,#015ea9));
-	background-image: -webkit-linear-gradient(#247dc5,#015ea9);
-	background-image: -moz-linear-gradient(#247dc5,#015ea9);
-	background-image: -o-linear-gradient(#247dc5,#015ea9);
-	background-image: linear-gradient(#247dc5,#015ea9);
 	color: #fff;
 	text-decoration: none;
 	/*display: none;*/
@@ -381,6 +375,17 @@ a.buy-pentaho:visited {
 	position: relative;
 	border-radius: 4px;
 	box-shadow: 0 0 5px rgba(0,0,0,0.3);
+
+	background: #247dc5; /* Old browsers */
+	background: -moz-linear-gradient(top,  #247dc5 0%, #015ea9 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#247dc5), color-stop(100%,#015ea9)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  #247dc5 0%,#015ea9 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  #247dc5 0%,#015ea9 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  #247dc5 0%,#015ea9 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  #247dc5 0%,#015ea9 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#247dc5', endColorstr='#015ea9',GradientType=0 ); /* IE6-9 */
+
+
 }
 
 a.buy-pentaho:hover,
