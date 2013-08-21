@@ -211,7 +211,11 @@ public class ThinResultSet implements ResultSet {
       Node resultNode = XMLHandler.getSubNode(doc, "transstatus", "result");
       Result result = new Result(resultNode);
       String loggingString64 = XMLHandler.getNodeValue(XMLHandler.getSubNode(doc, "transstatus", "logging_string"));
-      String log = HttpUtil.decodeBase64ZippedString(loggingString64);
+      String log="";
+      if (!Const.isEmpty(loggingString64)) {
+        String dataString64 = loggingString64.substring("<![CDATA[".length(), loggingString64.length() - "]]>".length());
+        log = HttpUtil.decodeBase64ZippedString(dataString64);
+      }
 
       // Check for errors
       //
