@@ -22,11 +22,14 @@
 
 package org.pentaho.di.resource;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
 import org.apache.commons.vfs.FileObject;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.KettleClientEnvironment;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.resource.ResourceNamingInterface.FileNamingType;
 import org.pentaho.di.trans.TransMeta;
@@ -37,7 +40,14 @@ import org.pentaho.di.trans.TransMeta;
  * For testing the ResourceNamingInterface.nameResource() methods.
  * 
  */
-public class NameResourceTest extends TestCase {
+public class NameResourceTest {
+  
+  @BeforeClass
+  public static void setupBeforeClass() throws KettleException {
+    if (!KettleClientEnvironment.isInitialized()) {
+      KettleClientEnvironment.init();
+    }
+  }
        
     /**
      * Test case for Unix style file name.
@@ -124,8 +134,6 @@ public class NameResourceTest extends TestCase {
      */
     private void testNamingResourceLegacyAndNew(String fileName, String extension, String fileMask) 
         throws Exception{
-
-        //KettleEnvironment.init();
 
         // Create a new transformation.
         TransMeta transMeta = new TransMeta(); 
