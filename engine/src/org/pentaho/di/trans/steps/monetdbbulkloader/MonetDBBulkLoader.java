@@ -615,28 +615,20 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
     MapiSocket mserver = new MapiSocket();
     mserver.setDatabase(db);
     mserver.setLanguage("sql");
-
-//    mserver.debug("mserver-instaview.debug.log");
-
-    try {
-
-      List<?> warnings = mserver.connect(host, port, user, password);
-      if(warnings != null) {
-        for (Object warning : warnings) {
-          if(log != null) {
-            log.logBasic("MonetDB connection warning: " + warning);
-          }
-        }
-      } else {
-        if (log != null) {
-          log.logDebug("Successful MapiSocket connection to MonetDB established.");
+    
+    List<?> warnings = mserver.connect(host, port, user, password);
+    if(warnings != null) {
+      for (Object warning : warnings) {
+        if(log != null) {
+          log.logBasic("MonetDB connection warning: " + warning);
         }
       }
-      return mserver;
-
-    } catch (Exception e) {
-      throw e;
+    } else {
+      if (log != null) {
+        log.logDebug("Successful MapiSocket connection to MonetDB established.");
+      }
     }
+    return mserver;
   }
 
   protected void executeSql(String query) throws Exception {
@@ -711,10 +703,10 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
         }
       }
 
-    } catch (Exception e) {
-      throw e;
     } finally {
-      mserver.close();
+      if (mserver != null) {
+        mserver.close();
+      }
     }
 
   }
