@@ -64,7 +64,9 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
 	
 	private static Class<?> PKG = TransMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 	
-	public static final String TRANS_ATTRIBUTE_PREFIX = "_ATTR_"+'\t';
+	private static final String TRANS_ATTRIBUTE_PREFIX_DELIMITER = "_";
+	
+	public static final String TRANS_ATTRIBUTE_PREFIX = "_ATTR_"+TRANS_ATTRIBUTE_PREFIX_DELIMITER;
 
 	public KettleDatabaseRepositoryTransDelegate(KettleDatabaseRepository repository) {
 		super(repository);
@@ -1297,7 +1299,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
         final String value = attributes.get(key);
         if (key!=null && value!=null) {
           repository.connectionDelegate.insertTransAttribute(transformationId, 0, 
-              TRANS_ATTRIBUTE_PREFIX+groupName+'\t'+value, 0, value);
+              TRANS_ATTRIBUTE_PREFIX+groupName+TRANS_ATTRIBUTE_PREFIX_DELIMITER+value, 0, value);
         }
       }
     }
@@ -1313,7 +1315,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
       String value = rowMeta.getString(attributeRow, KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_VALUE_STR, null);
       if (code!=null && value!=null) {
         code = code.substring(TRANS_ATTRIBUTE_PREFIX.length());
-        int tabIndex = code.indexOf('\t');
+        int tabIndex = code.indexOf(TRANS_ATTRIBUTE_PREFIX_DELIMITER);
         if (tabIndex>0) {
           String groupName = code.substring(0, tabIndex);
           String key = code.substring(tabIndex+1);

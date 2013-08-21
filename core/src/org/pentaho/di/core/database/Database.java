@@ -3288,7 +3288,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   public List<Object[]> getRows(String sql, int limit) throws KettleDatabaseException {
     return getRows(sql, limit, null);
   }
-
+  
   /**
    * Reads the result of an SQL query into an ArrayList
    * 
@@ -3304,9 +3304,36 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    *           if something goes wrong.
    */
   public List<Object[]> getRows(String sql, int limit, ProgressMonitorListener monitor) throws KettleDatabaseException {
+    
+    return getRows(sql, null, null, ResultSet.FETCH_FORWARD, false, limit, monitor);
+  }
+  
+  /**
+   * Reads the result of an SQL query into an ArrayList.
+   *
+   * @param sql 
+   *          The SQL to launch
+   * @param params 
+   *          The types of any parameters to be passed to the query
+   * @param data
+   *          The values of any parameters to be passed to the query
+   * @param fetch_mode 
+   *          The fetch mode for the query (ResultSet.FETCH_FORWARD, e.g.)
+   * @param lazyConversion 
+   *          Whether to perform lazy conversion of the values
+   * @param limit 
+   *          <=0 means unlimited, otherwise this specifies the maximum number
+   * of rows read.
+   * @param monitor 
+   *          The progress monitor to update while getting the rows.
+   * @return An ArrayList of rows.
+   * @throws KettleDatabaseException 
+   *          if something goes wrong.
+   */
+  public List<Object[]> getRows(String sql, RowMetaInterface params, Object[] data, int fetch_mode, boolean lazyConversion, int limit, ProgressMonitorListener monitor) throws KettleDatabaseException {
     if (monitor != null)
       monitor.setTaskName("Opening query...");
-    ResultSet rset = openQuery(sql);
+    ResultSet rset = openQuery(sql, params, data, fetch_mode, lazyConversion);
 
     return getRows(rset, limit, monitor);
   }

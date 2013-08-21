@@ -737,7 +737,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
     table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING), code);
     table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER), new Long(nr));
 
-    return database.getRows(sql, 0);
+    return database.getRows(sql, table.getRowMeta(), table.getData(), ResultSet.FETCH_FORWARD, false, 0, null);
   }
   
   public synchronized List<Object[]> getTransAttributesWithPrefix(ObjectId id_transformation, String codePrefix) throws KettleException {
@@ -747,8 +747,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 
     RowMetaAndData table = new RowMetaAndData();
     table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER), new LongObjectId(id_transformation));
-
-    return database.getRows(sql, 0);
+    return database.getRows(sql, table.getRowMeta(), table.getData(), ResultSet.FETCH_FORWARD, false, 0, null);
   }
 
   // JOB ATTRIBUTES: get
@@ -807,7 +806,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
     table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING), code);
     table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER), new Long(nr));
 
-    return database.getRows(sql, 0);
+    return database.getRows(sql, table.getRowMeta(), table.getData(), ResultSet.FETCH_FORWARD, false, 0, null);
   }
   
   public synchronized List<Object[]> getJobAttributesWithPrefix(ObjectId jobId, String codePrefix) throws KettleException {
@@ -818,7 +817,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
     RowMetaAndData table = new RowMetaAndData();
     table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_ID_JOB, ValueMetaInterface.TYPE_INTEGER), new LongObjectId(jobId));
 
-    return database.getRows(sql, 0);
+    return database.getRows(sql, table.getRowMeta(), table.getData(), ResultSet.FETCH_FORWARD, false, 0, null);
   }
 
   // JOBENTRY ATTRIBUTES: SAVE
@@ -983,7 +982,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
     table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOB, ValueMetaInterface.TYPE_INTEGER), new LongObjectId(jobId));
     table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER), new LongObjectId(jobEntryId));
 
-    return database.getRows(sql, 0);
+    return database.getRows(sql, table.getRowMeta(), table.getData(), ResultSet.FETCH_FORWARD, false, 0, null);
   }
 
   // ///////////////////////////////////////////////////////////////////////////////////
