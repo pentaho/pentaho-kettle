@@ -1199,6 +1199,11 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         // copy parent variables to this loaded variable space.
         //
         transMeta.copyVariablesFrom(this);
+        
+        // Pass repository and metastore references
+        //
+        transMeta.setRepository(rep);
+        transMeta.setMetaStore(metaStore);
       }
 
       return transMeta;

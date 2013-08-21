@@ -333,6 +333,7 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
     //
     mappingTransMeta.copyVariablesFrom(space);
     mappingTransMeta.setRepository(rep); 
+    mappingTransMeta.setMetaStore(metaStore);
     mappingTransMeta.setFilename(mappingTransMeta.getFilename());
     
     return mappingTransMeta;

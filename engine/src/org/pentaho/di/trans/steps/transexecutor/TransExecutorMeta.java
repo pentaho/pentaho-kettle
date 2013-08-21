@@ -621,6 +621,7 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
     //
     mappingTransMeta.copyVariablesFrom(space);
     mappingTransMeta.setRepository(rep);
+    mappingTransMeta.setMetaStore(metaStore);
     mappingTransMeta.setFilename(mappingTransMeta.getFilename());
 
     return mappingTransMeta;

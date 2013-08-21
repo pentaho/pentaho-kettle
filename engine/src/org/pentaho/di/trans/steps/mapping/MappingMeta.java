@@ -660,6 +660,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
     }      
     mappingTransMeta.copyVariablesFrom(space);
     mappingTransMeta.setRepository(rep); 
+    mappingTransMeta.setMetaStore(metaStore); 
     mappingTransMeta.setFilename(mappingTransMeta.getFilename());
     
     return mappingTransMeta;

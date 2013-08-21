@@ -576,10 +576,11 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
         break;
     }
     
- // Pass some important information to the mapping transformation metadata:
+    // Pass some important information to the mapping transformation metadata:
     //
     mappingJobMeta.copyVariablesFrom(space);
     mappingJobMeta.setRepository(rep); 
+    mappingJobMeta.setMetaStore(metaStore);
     mappingJobMeta.setFilename(mappingJobMeta.getFilename());
     
     return mappingJobMeta;

@@ -1138,10 +1138,12 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   }
   
   public JobMeta getJobMeta(Repository rep, IMetaStore metaStore, VariableSpace space) throws KettleException {
+    JobMeta jobMeta = null;
     try {
       switch(specificationMethod) {
       case FILENAME:
-        return new JobMeta((space != null ? space.environmentSubstitute(getFilename()) : getFilename()), rep, null);
+        jobMeta = new JobMeta((space != null ? space.environmentSubstitute(getFilename()) : getFilename()), rep, null);
+        break;
       case REPOSITORY_BY_NAME:
         if (rep != null) {
           String realDirectory = (space != null ? space.environmentSubstitute(getDirectory()) : getDirectory());
@@ -1149,7 +1151,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
           if (repositoryDirectory==null) {
             throw new KettleException("Unable to find repository directory ["+Const.NVL(realDirectory, "")+"]");
           }
-          return rep.loadJob((space != null ? space.environmentSubstitute(getJobName()) : getJobName()), repositoryDirectory, null, null); // reads
+          jobMeta = rep.loadJob((space != null ? space.environmentSubstitute(getJobName()) : getJobName()), repositoryDirectory, null, null); // reads
+          break;
         } else {
           throw new KettleException("Could not execute job specified in a repository since we're not connected to one");
         }
@@ -1157,13 +1160,21 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         if (rep != null) {
           // Load the last version...
           //
-          return rep.loadJob(jobObjectId, null);
+          jobMeta = rep.loadJob(jobObjectId, null);
+          break;
         } else {
           throw new KettleException("Could not execute job specified in a repository since we're not connected to one");
         }
       default: 
         throw new KettleException("The specified object location specification method '"+specificationMethod+"' is not yet supported in this job entry.");
       }
+      
+      if (jobMeta!=null) {
+        jobMeta.setRepository(rep);
+        jobMeta.setMetaStore(metaStore);
+      }
+      
+      return jobMeta;
     } catch (Exception e) {
       throw new KettleException("Unexpected error during job metadata load", e);
     }

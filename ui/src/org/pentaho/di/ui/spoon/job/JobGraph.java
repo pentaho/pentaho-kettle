@@ -2451,6 +2451,9 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
         throw new Exception(BaseMessages.getString(PKG, "JobGraph.Exception.NoValidTransSpecified"));
       }
       
+      launchTransMeta.setRepository(spoon.getRepository());
+      launchTransMeta.setMetaStore(spoon.getMetaStore());
+
       // Try to see if this transformation is already loaded in another tab...
       //
       TabMapEntry tabEntry = spoon.delegates.tabs.findTabForTransformation(launchTransMeta);
@@ -2545,6 +2548,9 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
         throw new Exception(BaseMessages.getString(PKG, "JobGraph.Exception.NoValidJobSpecified"));
       }
       
+      launchJobMeta.setRepository(spoon.getRepository());
+      launchJobMeta.setMetaStore(spoon.getMetaStore());
+
       // Try to see if this job is already loaded in another tab...
       //
       String tabName = spoon.delegates.tabs.makeTabName(launchJobMeta, true);
