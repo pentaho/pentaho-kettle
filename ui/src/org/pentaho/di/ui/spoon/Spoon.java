@@ -8688,6 +8688,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   protected void handleShellCloseEvent() {
     try {
       if (quitFile(true)) {
+        SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.SHUTDOWN);
         super.handleShellCloseEvent();
       }
     } catch(Exception e) {
