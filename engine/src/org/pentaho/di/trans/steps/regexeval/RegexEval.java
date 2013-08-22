@@ -147,55 +147,62 @@ public class RegexEval extends BaseStep implements StepInterface {
 
 		try {
 			// Get the Field value
-			String fieldValue = getInputRowMeta().getString(row, data.indexOfFieldToEvaluate);
-			if (fieldValue == null) {
+			String fieldValue;
+			boolean isMatch;
+			
+			if (getInputRowMeta().isNull(row, data.indexOfFieldToEvaluate)) {
 				fieldValue = "";
+				isMatch = false;
+			} else {
+			  fieldValue = getInputRowMeta().getString(row, data.indexOfFieldToEvaluate);
+    
+    		// Start search engine
+    		Matcher m = data.pattern.matcher(fieldValue);
+    		isMatch = m.matches();
+
+  			if (meta.isAllowCaptureGroupsFlagSet() && data.positions.length != m.groupCount()) {
+  				// Runtime exception case. The number of capture groups in the
+  				// regex doesn't match the number of fields.
+  				logError(BaseMessages.getString(PKG, "RegexEval.Log.ErrorCaptureGroupFieldsMismatch", String.valueOf(m.groupCount()), String.valueOf(data.positions.length)));
+  				throw new KettleStepException(BaseMessages.getString(PKG, "RegexEval.Exception.ErrorCaptureGroupFieldsMismatch", String.valueOf(m.groupCount()), String.valueOf(data.positions.length)));
+  			}
+
+  			for (int i = 0; i < data.positions.length; i++) {
+  				int index = data.positions[i];
+  				String value;
+  				if (isMatch) {
+  					value = m.group(i + 1);
+  				} else {
+  					value = null;
+  				}
+  
+  				// this part (or possibly the whole) of the regex didn't match
+  				// preserve the incoming data, but allow for "trim type", etc.
+  				if (value == null) {
+  					try {
+  						value = data.outputRowMeta.getString(outputRow, index);
+  					} catch (ArrayIndexOutOfBoundsException err) {
+  					}
+  				}
+  
+  				ValueMetaInterface valueMeta = data.outputRowMeta.getValueMeta(index);
+  				ValueMetaInterface conversionValueMeta = data.conversionRowMeta.getValueMeta(index);
+  				Object convertedValue = valueMeta.convertDataFromString(value, conversionValueMeta, meta.getFieldNullIf()[i], meta.getFieldIfNull()[i], meta.getFieldTrimType()[i]);
+  
+  				outputRow[index] = convertedValue;
+  			}
 			}
+			
+      if (data.indexOfResultField >= 0) {
+        outputRow[data.indexOfResultField] = isMatch;
+      }
 
-			// Start search engine
-			Matcher m = data.pattern.matcher(fieldValue);
-			boolean isMatch = m.matches();
-
-			if (meta.isAllowCaptureGroupsFlagSet() && data.positions.length != m.groupCount()) {
-				// Runtime exception case. The number of capture groups in the
-				// regex doesn't match the number of fields.
-				logError(BaseMessages.getString(PKG, "RegexEval.Log.ErrorCaptureGroupFieldsMismatch", String.valueOf(m.groupCount()), String.valueOf(data.positions.length)));
-				throw new KettleStepException(BaseMessages.getString(PKG, "RegexEval.Exception.ErrorCaptureGroupFieldsMismatch", String.valueOf(m.groupCount()), String.valueOf(data.positions.length)));
-			}
-
-			if (data.indexOfResultField >= 0) {
-				outputRow[data.indexOfResultField] = isMatch;
-			}
-
-			for (int i = 0; i < data.positions.length; i++) {
-				int index = data.positions[i];
-				String value;
-				if (isMatch) {
-					value = m.group(i + 1);
-				} else {
-					value = null;
-				}
-
-				// this part (or possibly the whole) of the regex didn't match
-				// preserve the incoming data, but allow for "trim type", etc.
-				if (value == null) {
-					try {
-						value = data.outputRowMeta.getString(outputRow, index);
-					} catch (ArrayIndexOutOfBoundsException err) {
-					}
-				}
-
-				ValueMetaInterface valueMeta = data.outputRowMeta.getValueMeta(index);
-				ValueMetaInterface conversionValueMeta = data.conversionRowMeta.getValueMeta(index);
-				Object convertedValue = valueMeta.convertDataFromString(value, conversionValueMeta, meta.getFieldNullIf()[i], meta.getFieldIfNull()[i], meta.getFieldTrimType()[i]);
-
-				outputRow[index] = convertedValue;
-			}
 			if (log.isRowLevel())
 				logRowlevel(BaseMessages.getString(PKG, "RegexEval.Log.ReadRow") + " " + getInputRowMeta().getString(row));
 
-			putRow(data.outputRowMeta, outputRow); // copy row to output
-													// rowset(s);
+			// copy row to output rowset(s);
+			//
+			putRow(data.outputRowMeta, outputRow);
 		} catch (KettleException e) {
 			boolean sendToErrorRow = false;
 			String errorMessage = null;
