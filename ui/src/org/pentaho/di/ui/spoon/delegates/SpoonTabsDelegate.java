@@ -28,6 +28,8 @@ import java.util.List;
 import org.apache.commons.vfs.FileObject;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.LocationListener;
+import org.eclipse.swt.browser.OpenWindowListener;
+import org.eclipse.swt.browser.WindowEvent;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.widgets.Composite;
 import org.pentaho.di.cluster.SlaveServer;
@@ -225,7 +227,18 @@ public class SpoonTabsDelegate extends SpoonDelegate
 			if (tabMapEntry == null)
 			{
 				CTabFolder cTabFolder = tabfolder.getSwtTabset();
-				SpoonBrowser browser = new SpoonBrowser(cTabFolder, spoon, urlString, isURL, true, listener);
+				final SpoonBrowser browser = new SpoonBrowser(cTabFolder, spoon, urlString, isURL, true, listener);
+
+	      browser.getBrowser().addOpenWindowListener(new OpenWindowListener() {
+	        
+	        @Override
+	        public void open(WindowEvent event) {
+	          if (event.required) {
+	            event.browser = browser.getBrowser(); 
+	          }
+	        }
+	      });
+	      
 				TabItem tabItem = new TabItem(tabfolder, name, name);
 				tabItem.setImage(GUIResource.getInstance().getImageLogoSmall());
 				tabItem.setControl(browser.getComposite());

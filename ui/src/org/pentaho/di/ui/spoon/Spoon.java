@@ -101,6 +101,7 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.printing.Printer;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -224,7 +225,13 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.*;
+import org.pentaho.di.trans.step.RowDistributionInterface;
+import org.pentaho.di.trans.step.RowDistributionPluginType;
+import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.step.StepErrorMeta;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.trans.steps.selectvalues.SelectValuesMeta;
 import org.pentaho.di.ui.cluster.dialog.ClusterSchemaDialog;
 import org.pentaho.di.ui.cluster.dialog.SlaveServerDialog;
@@ -436,10 +443,16 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   private static final String APPL_TITLE = APP_NAME;
 
   private static final String STRING_WELCOME_TAB_NAME = BaseMessages.getString(PKG, "Spoon.Title.STRING_WELCOME");
+  
+  private static final String STRING_DOCUMENT_TAB_NAME = BaseMessages.getString(PKG, "Spoon.Documentation");
 
   private static final String FILE_WELCOME_PAGE = Const.safeAppendDirectory(
       BasePropertyHandler.getProperty("documentationDirBase", "docs/"),
       BaseMessages.getString(PKG, "Spoon.Title.STRING_DOCUMENT_WELCOME")); // "docs/English/welcome/index.html";
+  
+  private static final String FILE_DOCUMENT_MAP = Const.safeAppendDirectory(
+      BasePropertyHandler.getProperty("documentationDirBase", "docs/"),
+      BaseMessages.getString(PKG, "Spoon.Title.STRING_DOCUMENT_MAP")); // "docs/English/welcome/index.html";
 
   private static final String UNDO_MENUITEM = "edit-undo";
 
@@ -1544,12 +1557,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     try {
       LocationListener listener = new LocationListener() {
         public void changing(LocationEvent event) {
-
-          //          System.out.println("Changing to: " + event.location);
-
-          // file:///home/matt/svn/kettle/trunk/docs/English/welcome/samples/transformations/
-          //
-          if (event.location.contains("samples/transformations") || event.location.contains("samples/jobs")
+          if (event.location.endsWith(".pdf")) {
+            Program.launch(event.location);
+            event.doit = false;
+          } else if (event.location.contains("samples/transformations") || event.location.contains("samples/jobs")
               || event.location.contains("samples/mapping")) {
             try {
               FileObject fileObject = KettleVFS.getFileObject(event.location);
@@ -1583,6 +1594,38 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         File file = new File(FILE_WELCOME_PAGE);
         if (file.exists()) {
           addSpoonBrowser(STRING_WELCOME_TAB_NAME, file.toURI().toURL().toString(), listener); // ./docs/English/tips/index.htm
+        }
+      }
+    } catch (MalformedURLException e1) {
+      log.logError(Const.getStackTracker(e1));
+    }
+  }
+  
+  public void showDocumentMap() {
+    try {
+      LocationListener listener = new LocationListener() {
+        public void changing(LocationEvent event) {
+          if (event.location.endsWith(".pdf")) {
+            Program.launch(event.location);
+            event.doit = false;
+          }
+        }
+
+        public void changed(LocationEvent event) {
+          System.out.println("Changed to: " + event.location);
+        }
+      };
+
+      // see if we are in webstart mode
+      String webstartRoot = System.getProperty("spoon.webstartroot");
+      if (webstartRoot != null) {
+        URL url = new URL(webstartRoot + '/' + FILE_DOCUMENT_MAP);
+        addSpoonBrowser(STRING_DOCUMENT_TAB_NAME, url.toString(), listener); // ./docs/English/tips/index.htm
+      } else {
+        // see if we can find the welcome file on the file system
+        File file = new File(FILE_DOCUMENT_MAP);
+        if (file.exists()) {
+          addSpoonBrowser(STRING_DOCUMENT_TAB_NAME, file.toURI().toURL().toString(), listener); // ./docs/English/tips/index.htm
         }
       }
     } catch (MalformedURLException e1) {
