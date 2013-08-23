@@ -72,12 +72,18 @@ public class KettleDatabaseRepositoryPartitionSchemaDelegate extends KettleDatab
 
 	public void savePartitionSchema(PartitionSchema partitionSchema, ObjectId id_transformation, boolean isUsedByTransformation, boolean overwrite) throws KettleException
 	{
+	  // Look up the ID again (import scenario!)
+	  //
+	  if (partitionSchema.getObjectId() == null) {
+	    partitionSchema.setObjectId(getPartitionSchemaID(partitionSchema.getName()));
+	  }
+	  
 	  if (partitionSchema.getObjectId() == null)
     {
       // New Slave Server
       partitionSchema.setObjectId(insertPartitionSchema(partitionSchema));
     } else {
-      ObjectId existingPartitionSchemaId = getPartitionSchemaID(partitionSchema.getName());
+      ObjectId existingPartitionSchemaId = partitionSchema.getObjectId();
       
       // If we received a partitionSchemaId and it is different from the partition schema we are working with...
       if(existingPartitionSchemaId != null && !partitionSchema.getObjectId().equals(existingPartitionSchemaId)) {
@@ -97,7 +103,7 @@ public class KettleDatabaseRepositoryPartitionSchemaDelegate extends KettleDatab
       }
 		}
         
-		// Save the cluster-partition relationships
+		// Save the partitionschema-partition relationships
 		//
 		for (int i=0;i<partitionSchema.getPartitionIDs().size();i++)
 		{

@@ -1299,7 +1299,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
         final String value = attributes.get(key);
         if (key!=null && value!=null) {
           repository.connectionDelegate.insertTransAttribute(transformationId, 0, 
-              TRANS_ATTRIBUTE_PREFIX+groupName+TRANS_ATTRIBUTE_PREFIX_DELIMITER+value, 0, value);
+              TRANS_ATTRIBUTE_PREFIX+groupName+TRANS_ATTRIBUTE_PREFIX_DELIMITER+key, 0, value);
         }
       }
     }

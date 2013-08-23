@@ -1420,7 +1420,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
     this.stepAttributesRowMeta = stepAttributesRowMeta;
   }
 
-  public synchronized ObjectId getIDWithValue(String tablename, String idfield, String lookupfield, String value) throws KettleException {
+  public synchronized LongObjectId getIDWithValue(String tablename, String idfield, String lookupfield, String value) throws KettleException {
     RowMetaAndData par = new RowMetaAndData();
     par.addValue(new ValueMeta("value", ValueMetaInterface.TYPE_STRING), value);
     RowMetaAndData result = getOneRow("SELECT " + idfield + " FROM " + tablename + " WHERE " + lookupfield + " = ?", par.getRowMeta(), par.getData());
@@ -1463,14 +1463,14 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
     return null;
   }
 
-  public synchronized ObjectId getIDWithValue(String tablename, String idfield, String lookupfield, String value, String lookupkey[], ObjectId key[]) throws KettleException {
+  public synchronized LongObjectId getIDWithValue(String tablename, String idfield, String lookupfield, String value, String lookupkey[], ObjectId key[]) throws KettleException {
     RowMetaAndData par = new RowMetaAndData();
     par.addValue(new ValueMeta(lookupfield, ValueMetaInterface.TYPE_STRING), value);
 
     String sql = "SELECT " + idfield + " FROM " + tablename + " WHERE " + lookupfield + " = ? ";
 
     for (int i = 0; i < lookupkey.length; i++) {
-      par.addValue(new ValueMeta(lookupkey[i], ValueMetaInterface.TYPE_STRING), new LongObjectId(key[i]));
+      par.addValue(new ValueMeta(lookupkey[i], ValueMetaInterface.TYPE_INTEGER), new LongObjectId(key[i]));
       sql += "AND " + lookupkey[i] + " = ? ";
     }
 
