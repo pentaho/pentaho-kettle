@@ -397,7 +397,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE_TYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE_CONTYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_HOST_NAME, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_DATABASE_NAME, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_DATABASE_NAME, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_LENGTH, 0));
 		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_PORT, ValueMetaInterface.TYPE_INTEGER, 7, 0));
 		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_USERNAME, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
 		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_PASSWORD, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
@@ -1931,7 +1931,7 @@ public class KettleDatabaseRepositoryCreationHelper {
     table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_ID_ELEMENT_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
     table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_ID_ELEMENT, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
     table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_ID_ELEMENT_ATTRIBUTE_PARENT, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-    table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_KEY, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_LENGTH, 0));
+    table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_KEY, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
     table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_VALUE, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_LENGTH, 0));
     sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_ID_ELEMENT_ATTRIBUTE, false);
 
