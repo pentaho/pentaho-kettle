@@ -29,6 +29,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -140,12 +141,16 @@ public class SalesforceInsert extends BaseStep implements StepInterface
 				
 				// Add fields to insert
 				for ( int i = 0; i < data.nrfields; i++) {
-					if(data.inputRowMeta.isNull(rowData, data.fieldnrs[i])) {
+				  ValueMetaInterface valueMeta = data.inputRowMeta.getValueMeta(data.fieldnrs[i]);
+				  Object object = rowData[data.fieldnrs[i]];
+				  
+					if (valueMeta.isNull(object)) {
 						// The value is null
 						// We need to keep track of this field
 						fieldsToNull.add(meta.getUpdateLookup()[i]);
 					} else {
-						insertfields.add(SalesforceConnection.createMessageElement( meta.getUpdateLookup()[i], rowData[data.fieldnrs[i]], meta.getUseExternalId()[i]));
+					  Object normalObject = valueMeta.convertToNormalStorageType(object);
+						insertfields.add(SalesforceConnection.createMessageElement( meta.getUpdateLookup()[i], normalObject, meta.getUseExternalId()[i]));
 					}
 				}	
 				
