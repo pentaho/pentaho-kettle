@@ -1,6 +1,11 @@
 package org.pentaho.di.core.row.value;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.EOFException;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.SocketTimeoutException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -14,6 +19,8 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleEOFException;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
@@ -448,4 +455,83 @@ public class ValueMetaTimestamp extends ValueMetaDate {
     }
     
   }
+  
+  @Override
+  public void writeData(DataOutputStream outputStream, Object object) throws KettleFileException {
+    try {
+      // Is the value NULL?
+      outputStream.writeBoolean(object == null);
+
+      if (object != null) // otherwise there is no point
+      {
+        switch (storageType) {
+        case STORAGE_TYPE_NORMAL:
+          // Handle Content -- only when not NULL
+          Timestamp timestamp = (Timestamp) object;
+          outputStream.writeLong(timestamp.getTime());
+          outputStream.writeInt(timestamp.getNanos());
+          break;
+
+        case STORAGE_TYPE_BINARY_STRING:
+          // Handle binary string content -- only when not NULL
+          // In this case, we opt not to convert anything at all for speed.
+          // That way, we can save on CPU power.
+          // Since the streams can be compressed, volume shouldn't be an issue
+          // at all.
+          //
+          writeBinaryString(outputStream, (byte[]) object);
+          break;
+
+        case STORAGE_TYPE_INDEXED:
+          writeInteger(outputStream, (Integer) object); // just an index
+          break;
+
+        default:
+          throw new KettleFileException(toString() + " : Unknown storage type " + getStorageType());
+        }
+      }
+    } catch (ClassCastException e) {
+      throw new RuntimeException(toString() + " : There was a data type error: the data type of "
+          + object.getClass().getName() + " object [" + object + "] does not correspond to value meta ["
+          + toStringMeta() + "]");
+    } catch (IOException e) {
+      throw new KettleFileException(toString() + " : Unable to write value timestamp data to output stream", e);
+    }
+  }
+  
+  @Override
+  public Object readData(DataInputStream inputStream) throws KettleFileException, KettleEOFException,
+      SocketTimeoutException {
+    try {
+      // Is the value NULL?
+      if (inputStream.readBoolean())
+        return null; // done
+
+      switch (storageType) {
+      case STORAGE_TYPE_NORMAL:
+        // Handle Content -- only when not NULL
+        long time = inputStream.readLong();
+        int nanos = inputStream.readInt();
+        Timestamp timestamp = new Timestamp(time);
+        timestamp.setNanos(nanos);
+        return timestamp;
+
+      case STORAGE_TYPE_BINARY_STRING:
+        return readBinaryString(inputStream);
+
+      case STORAGE_TYPE_INDEXED:
+        return readSmallInteger(inputStream); // just an index: 4-bytes should be enough.
+
+      default:
+        throw new KettleFileException(toString() + " : Unknown storage type " + getStorageType());
+      }
+    } catch (EOFException e) {
+      throw new KettleEOFException(e);
+    } catch (SocketTimeoutException e) {
+      throw e;
+    } catch (IOException e) {
+      throw new KettleFileException(toString() + " : Unable to read value timestamp data from input stream", e);
+    }
+  }
+
 }
