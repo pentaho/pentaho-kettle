@@ -156,6 +156,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
     this.notePadDelegate = new KettleDatabaseRepositoryNotePadDelegate(this);
     this.stepDelegate = new KettleDatabaseRepositoryStepDelegate(this);
     this.jobEntryDelegate = new KettleDatabaseRepositoryJobEntryDelegate(this);
+    this.metaStoreDelegate = new KettleDatabaseRepositoryMetaStoreDelegate(this);
     this.creationHelper = new KettleDatabaseRepositoryCreationHelper(this);
   }
 

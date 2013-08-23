@@ -125,14 +125,14 @@ public class KettleDatabaseRepositoryMetaStore implements IMetaStore {
 
   @Override
   public List<IMetaStoreElementType> getElementTypes(String namespace) throws MetaStoreException {
-    
-    return null;
+    // TODO - Implement this method. Returning an empty list (instead of null) for now.
+    return new ArrayList<IMetaStoreElementType>();
   }
 
   @Override
   public List<String> getElementTypeIds(String namespace) throws MetaStoreException {
-    // TODO Auto-generated method stub
-    return null;
+    // TODO - Implement this method. Returning an empty list (instead of null) for now.
+    return new ArrayList<String>();
   }
 
   @Override
@@ -182,14 +182,14 @@ public class KettleDatabaseRepositoryMetaStore implements IMetaStore {
   @Override
   public List<IMetaStoreElement> getElements(String namespace, IMetaStoreElementType elementType)
       throws MetaStoreException {
-    // TODO Auto-generated method stub
-    return null;
+    // TODO - Implement this method. Returning an empty list (instead of null) for now.
+    return new ArrayList<IMetaStoreElement>();
   }
 
   @Override
   public List<String> getElementIds(String namespace, IMetaStoreElementType elementType) throws MetaStoreException {
-    // TODO Auto-generated method stub
-    return null;
+    // TODO - Implement this method. Returning an empty list (instead of null) for now.
+    return new ArrayList<String>();
   }
 
   @Override
