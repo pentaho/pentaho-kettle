@@ -830,11 +830,13 @@ public class KettleFileRepository extends AbstractRepository {
       for (FileObject child : folder.getChildren()) {
         if (child.getType().equals(FileType.FOLDER)) {
           if (!child.isHidden() || !repositoryMeta.isHidingHiddenFiles()) {
-            RepositoryDirectory subDir = new RepositoryDirectory(dir, child.getName().getBaseName());
-            subDir.setObjectId(new StringObjectId(calcObjectId(subDir)));
-            dir.addSubdirectory(subDir);
-
-            loadRepositoryDirectoryTree(subDir);
+            if (!".meta".equals(child.getName().getBaseName())) {
+              RepositoryDirectory subDir = new RepositoryDirectory(dir, child.getName().getBaseName());
+              subDir.setObjectId(new StringObjectId(calcObjectId(subDir)));
+              dir.addSubdirectory(subDir);
+  
+              loadRepositoryDirectoryTree(subDir);
+            }
           }
         }
       }
