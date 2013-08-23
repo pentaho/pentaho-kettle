@@ -68,6 +68,7 @@ import org.pentaho.di.ui.util.ImageUtil;
  * 
  */
 public class GUIResource {
+  
   private static LogChannelInterface log = new LogChannel("GUIResource");
 
   private static GUIResource guiResource;
@@ -120,6 +121,8 @@ public class GUIResource {
   private ManagedColor colorCreamPentaho;
 
   private ManagedColor colorLightBlue;
+  
+  private ManagedColor colorCrystalTextPentaho;
 
   /* * * Fonts * * */
   private ManagedFont fontGraph;
@@ -343,6 +346,8 @@ public class GUIResource {
   private Image imageSpoonHigh;
   
   private Image imageHadoop;
+  
+  private Image imageDropHere;
 
   /**
    * GUIResource also contains the clipboard as it has to be allocated only
@@ -428,6 +433,8 @@ public class GUIResource {
     colorPentaho = new ManagedColor(display, 188, 198, 82);
     colorLightPentaho = new ManagedColor(display, 238, 248, 152);
     colorCreamPentaho = new ManagedColor(display, 248, 246, 231);
+    
+    colorCrystalTextPentaho = new ManagedColor(display, 61, 99, 128);
 
     // Load all images from files...
     loadFonts();
@@ -555,6 +562,7 @@ public class GUIResource {
       imageGantt.dispose();
       imageHelpWeb.dispose();
       imageHadoop.dispose();
+      imageDropHere.dispose();
 
       disposeImage(imageNoteSmall);
       disposeImage(imageColor);
@@ -817,7 +825,8 @@ public class GUIResource {
     imageGantt = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Gantt_image")); // , "ui/images/gantt.png
     imageHelpWeb = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("HelpWeb_image")); // , "ui/images/help_web.png
     imageHadoop = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Hadoop_image")); // , "ui/images/hadoop.png
-
+    imageDropHere = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("DropHere_image")); // , "ui/images/drop_here.png
+    
     imageEmpty16x16 = new Image(display, 16, 16);
 
     imageStartSmall = new Image(display, 16, 16);
@@ -1529,6 +1538,14 @@ public class GUIResource {
   public Color getColorCreamPentaho() {
     return colorCreamPentaho.getColor();
   }
+  
+  /**
+   * @return the default color of text in the Pentaho Crystal theme
+   */
+  public Color getColorCrystalTextPentaho() {
+    return colorCrystalTextPentaho.getColor();
+  }
+
 
   public void drawPentahoGradient(Display display, GC gc, Rectangle rect, boolean vertical) {
     if (!vertical) {
@@ -1918,6 +1935,14 @@ public class GUIResource {
 
   public Image getHadoop() {
     return imageHadoop;
+  }
+  
+  public void setImageDropHere(Image imageDropHere) {
+    this.imageDropHere = imageDropHere;
+  }
+
+  public Image getImageDropHere() {
+    return imageDropHere;
   }
 
 }
