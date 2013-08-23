@@ -64,8 +64,6 @@
     <dependency org="com.sun.jersey"                   name="jersey-core"          rev="1.16"            transitive="false"/>
     <dependency org="org.mortbay.jetty"                name="jetty-plus"           rev="6.1.21"          transitive="false"/>
     <dependency org="org.mortbay.jetty"                name="jetty-util"           rev="6.1.21"          transitive="false"/>
-    <dependency org="org.kohsuke.jinterop"             name="j-interop"            rev="2.0.8-kohsuke-1" transitive="false"/>
-    <dependency org="org.kohsuke.jinterop"             name="j-interopdeps"        rev="2.0.8-kohsuke-1" transitive="false"/>
     <dependency org="jexcelapi"                        name="jxl"                  rev="2.6.12"          transitive="false"/>     
     <dependency org="ldapjdk"                          name="ldapjdk"              rev="20000524"        transitive="false"/>
     <dependency org="monetdb"                          name="monetdb-jdbc"         rev="2.8"             transitive="false"/>
