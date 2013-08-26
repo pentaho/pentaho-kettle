@@ -54,10 +54,10 @@ public class MonetDBBulkLoaderData extends BaseStepData implements StepDataInter
   public BufferedMCLReader in;
   public BufferedMCLWriter out;
 
-  public byte[] quote;               // fieldEnclosure in MonetDBBulkLoaderMeta
-  public byte[] separator;   		   // fieldSeparator in MonetDBBulkLoaderMeta
-  public byte[] nullrepresentation;  // NULLrepresentation in MonetDBBulkLoaderMeta
-  public byte[] newline;             // receives value in the init(...) in MonetDBBulkLoader
+  public String quote;               // fieldEnclosure in MonetDBBulkLoaderMeta
+  public String separator;   		   // fieldSeparator in MonetDBBulkLoaderMeta
+  public String nullrepresentation;  // NULLrepresentation in MonetDBBulkLoaderMeta
+  public String newline;             // receives value in the init(...) in MonetDBBulkLoader
 
   public ValueMetaInterface monetDateMeta;
   public ValueMetaInterface monetNumberMeta;

@@ -21,7 +21,6 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.monetdbbulkloader;
 
-import java.io.ByteArrayOutputStream;
 import java.util.Date;
 import java.util.List;
 
@@ -235,19 +234,12 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 
     protected void addRowToBuffer(RowMetaInterface rowMeta, Object[] r) throws KettleException {
   
-      ByteArrayOutputStream line = new ByteArrayOutputStream(25000);
+      StringBuilder line = new StringBuilder();
   
       try {
-        // So, we have this output stream to which we can write CSV data to.
-	    	// Basically, what we need to do is write the binary data (from strings to it as part of this proof of concept)
-        //
-        // The data format required is essentially:
-        //
         for (int i = 0; i < data.keynrs.length; i++) {
           if (i > 0) {
-            // Write a separator
-            //
-            line.write(data.separator);
+            line.append(data.separator);
           }
   
           int index = data.keynrs[i];
@@ -260,10 +252,10 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
               String str = valueMeta.getString(valueData);
               if (str == null || str.equals(nullRep)) {
                 // don't quote our null representation
-                line.write(str.getBytes());
+                line.append(str);
                 break;
               }
-              line.write(data.quote);
+              line.append(data.quote);
               
               // escape any backslashes
               //
@@ -278,22 +270,22 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
                   // TODO log this event
                   str = str.substring(0, len);
                 }
-                line.write(str.getBytes(meta.getEncoding()));
+                line.append(str);
               } else {
-                line.write(str.getBytes(meta.getEncoding()));
+                line.append(str);
               }
 
-              line.write(data.quote);
+              line.append(data.quote);
               break;
             case ValueMetaInterface.TYPE_INTEGER:
               if (valueMeta.isStorageBinaryString() && meta.getFieldFormatOk()[i]) {
-                line.write((byte[]) valueData);
+                line.append(valueMeta.getString(valueData));
               } else {
                 Long value = valueMeta.getInteger(valueData);
                 if (value == null) {
-                  line.write(data.nullrepresentation);
+                  line.append(data.nullrepresentation);
                 } else {
-                  line.write(Long.toString(value).getBytes());
+                  line.append(Long.toString(value));
                 }
               }
               break;
@@ -304,7 +296,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
             case ValueMetaInterface.TYPE_DATE:
               // Keep the data format as indicated.
               if (valueMeta.isStorageBinaryString() && meta.getFieldFormatOk()[i]) {
-                line.write((byte[]) valueData);
+                line.append(valueMeta.getString(valueData));
               } else {
   
                 ValueMetaInterface colMeta = null;
@@ -314,7 +306,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
   
                 Date value = valueMeta.getDate(valueData);
                 if (value == null) {
-                  line.write(data.nullrepresentation);
+                  line.append(data.nullrepresentation);
                 } else {
   
                   // MonetDB makes a distinction between the acceptable incoming string formats for
@@ -325,52 +317,50 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
                   // TIMESTAMP - DATE and TIME put together (e.g., 2012-12-21  15:51:36)
   
                   if (colMeta != null && colMeta.getOriginalColumnTypeName().equalsIgnoreCase("date")) {
-                    line.write(data.monetDateMeta.getString(value).getBytes());
+                    line.append(data.monetDateMeta.getString(value));
                   } else if (colMeta != null && colMeta.getOriginalColumnTypeName().equalsIgnoreCase("time")) {
-                    line.write(data.monetTimeMeta.getString(value).getBytes());
+                    line.append(data.monetTimeMeta.getString(value));
                   } else {
                     // colMeta.getOriginalColumnTypeName().equalsIgnoreCase("timestamp")
-                    line.write(data.monetTimestampMeta.getString(value).getBytes());
+                    line.append(data.monetTimestampMeta.getString(value));
                   }
-  
                 }
-  
               }
               break;
             case ValueMetaInterface.TYPE_BOOLEAN: {
               Boolean value = valueMeta.getBoolean(valueData);
               if (value == null) {
-                line.write(data.nullrepresentation);
+                line.append(data.nullrepresentation);
               } else {
                 if (value.booleanValue()) {
-                  line.write("Y".getBytes());
+                  line.append("Y");
                 } else {
-                  line.write("N".getBytes());
+                  line.append("N");
                 }
               }
             }
               break;
             case ValueMetaInterface.TYPE_NUMBER:
               if (valueMeta.isStorageBinaryString() && meta.getFieldFormatOk()[i]) {
-                line.write((byte[]) valueData);
+                line.append(valueMeta.getString(valueData));
               } else {
                 Double value = valueMeta.getNumber(valueData);
                 if (value == null) {
-                  line.write(data.nullrepresentation);
+                  line.append(data.nullrepresentation);
                 } else {
-                  line.write(Double.toString(value).getBytes());
+                  line.append(Double.toString(value));
                 }
               }
               break;
             case ValueMetaInterface.TYPE_BIGNUMBER:
               if (valueMeta.isStorageBinaryString() && meta.getFieldFormatOk()[i]) {
-                line.write((byte[]) valueData);
+                line.append(valueMeta.getString(valueData));
               } else {
                 String value = valueMeta.getString(valueData);
                 if (value == null) {
-                  line.write(data.nullrepresentation);
+                  line.append(data.nullrepresentation);
                 } else {
-                  line.write(value.getBytes());
+                  line.append(value);
                 }
               }
               break;
@@ -378,13 +368,13 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
                 break;
             }
           } else {
-            line.write(data.nullrepresentation);
+            line.append(data.nullrepresentation);
           }
         }
   
         // finally write a newline
         //
-        line.write(data.newline);
+        line.append(data.newline);
   
 			  // Now that we have the line, grab the content and store it in the buffer...
         //
@@ -524,14 +514,14 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 
 		if (super.init(smi, sdi))
 		{			
-			data.quote = meta.getFieldEnclosure().getBytes();
-			data.separator = meta.getFieldSeparator().getBytes();
+			data.quote = meta.getFieldEnclosure();
+			data.separator = meta.getFieldSeparator();
 			if(meta.getNULLrepresentation() == null) {
-				data.nullrepresentation = new String().getBytes();
+				data.nullrepresentation = new String();
 			} else {
-				data.nullrepresentation = meta.getNULLrepresentation().getBytes();
+				data.nullrepresentation = meta.getNULLrepresentation();
 			}
-			data.newline = Const.CR.getBytes();
+			data.newline = Const.CR;
 
 			data.monetDateMeta = new ValueMeta("dateMeta", ValueMetaInterface.TYPE_DATE);
 			data.monetDateMeta.setConversionMask("yyyy/MM/dd");
