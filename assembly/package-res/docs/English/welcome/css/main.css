@@ -642,7 +642,7 @@ hr {
 	border: none;
 	width: 402px;
 	border-radius: 0px 0px 0px 0px;
-	margin: 15px auto -32px;
+	margin: 15px auto -33px;
 	overflow: hidden;
 }
 
@@ -655,7 +655,7 @@ hr {
 }
 
 .buttonizeButtons3 {
-	width: 603px;
+	width: 605px;
 }
 
 .buttonizeButtons4 {
@@ -676,6 +676,7 @@ hr {
 	border-bottom: none;
 	position: relative;
 	overflow: hidden;
+	height: 32px;
 }
 
 .buttonizeButtons .buttonizeButton:first-child {
@@ -701,7 +702,7 @@ hr {
 	color: #005ca7;
 	border-bottom: 1px solid #f5f5f5;
 	z-index: 1000;
-	height: 32px;
+	height: 31px;
 }
 
 .buttonizeButton.selected:after {

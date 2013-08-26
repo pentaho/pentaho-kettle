@@ -300,7 +300,7 @@ $(document).ready(function() {
 				var $a=$(this);
 				var href = $a.attr("href");
 				if(href.indexOf("http")==0){
-					console.log(href);
+					// console.log(href);
 					$a.attr("target","_self");
 				}
 
