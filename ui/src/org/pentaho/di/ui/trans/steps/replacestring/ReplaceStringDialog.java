@@ -383,7 +383,6 @@ public class ReplaceStringDialog extends BaseStepDialog implements StepDialogInt
 							// Only process strings
 							tableItem.setText(3, BaseMessages.getString(PKG, "System.Combo.No"));
 							tableItem.setText(6, BaseMessages.getString(PKG, "System.Combo.No"));
-							tableItem.setText(7, BaseMessages.getString(PKG, "System.Combo.No"));
 							tableItem.setText(8, BaseMessages.getString(PKG, "System.Combo.No"));
 							tableItem.setText(9, BaseMessages.getString(PKG, "System.Combo.No"));
 							return true;
