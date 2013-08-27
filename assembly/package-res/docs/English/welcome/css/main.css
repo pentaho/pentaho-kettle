@@ -159,8 +159,6 @@ h2.large {
 	left: 0px;
 	display: block;
 	box-sizing: border-box;
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
 	padding: 0px;
 	margin: 0px;
 	border-right: 1px #ccc solid;
@@ -177,10 +175,18 @@ h2.large {
 	background-position: 0px -75px;
 	background-repeat: repeat-x;
 	opacity: .75;
+
+	overflow: hidden;
+}
+
+.svg .header-navigation-item {
+
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+
 	transition: all 500ms;
 	-moz-transition: all 500ms;
 	-webkit-transition: all 500ms;
-	overflow: hidden;
 }
 
 .header-navigation-item:hover {
@@ -193,13 +199,13 @@ h2.large {
 	opacity: 1;
 }
 
-.header-navigation-item:nth-child(1) {
-	border-left: 1px #ccc solid;
+.header-navigation-item {
 	border-radius: 0px 0px 0px 0px;
 }
 
-.header-navigation-item:nth-child(4) {
+.header-navigation-item:first-child {
 	border-radius: 0px 0px 0px 0px;
+	border-left: 1px #ccc solid;
 }
 
 .header-navigation-item.selected {
@@ -224,6 +230,7 @@ h2.large {
 .content {
 	width: 940px;
 	margin: 0px auto;
+	display: block;
 }
 
 .content h1 {
@@ -253,7 +260,7 @@ h2.large {
     background-image: linear-gradient(#fcd71c,#eeca14);
     display: block;
     content: '';
-    margin-top: 7px
+    margin-top: 7px;
 }
 
 .content a,
@@ -359,6 +366,10 @@ h2.large {
 	line-height: 1.45;
     margin: 10px 0px;
     font-weight: 400;
+}
+
+.content-header {
+	height: 360px;
 }
 
 #content-engage,

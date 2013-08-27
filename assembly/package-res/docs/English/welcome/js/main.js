@@ -299,10 +299,8 @@ $(document).ready(function() {
 		$("a").each(function(){
 				var $a=$(this);
 				var href = $a.attr("href");
-				if(href.indexOf("http")==0){
-					// console.log(href);
-					$a.attr("target","_self");
-				}
+
+				$a.attr('target','_blank');
 
 				if(href.indexOf(".pdf")>0){
 					$a.addClass("pdfLink");
