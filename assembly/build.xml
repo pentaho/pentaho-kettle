@@ -59,6 +59,11 @@
       <replacefilter token="launcher.jar" value="pentaho-application-launcher-${dependency.launcher.revision}.jar"/>     
     </replace>
   	
+    <replace dir="${stage.dir}/${package.root.dir}">
+      <include name="*.bat"/>
+      <include name="*.sh"/>
+      <replacefilter token="@KETTLE_VERSION_STRING@" value="${dependency.kettle.revision}"/>     
+    </replace>
   </target>
 	
   <!--=======================================================================
