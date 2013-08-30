@@ -73,7 +73,7 @@ public class Const
   /**
    * Version number
    */
-  public static final String VERSION = "5.0.0-M1";
+  public static final String VERSION = "5.0.0-GA";
 
   /**
    * Copyright year 
@@ -866,7 +866,7 @@ public class Const
     /**
      * The release type of this compilation
      */
-    public static final ReleaseType RELEASE = ReleaseType.MILESTONE;
+    public static final ReleaseType RELEASE = ReleaseType.GA;
 
     /**
      * The system environment variable indicating where the alternative location for the Pentaho metastore folder is located.
