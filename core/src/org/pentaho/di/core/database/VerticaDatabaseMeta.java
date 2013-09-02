@@ -187,11 +187,6 @@ public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
         return " LIMIT "+nrRows;
     }
 
-    @Override
-    public int getMaxTextFieldLength()
-    {
-        return 0;
-    }
 
     @Override
     public int getMaxVARCHARLength()
