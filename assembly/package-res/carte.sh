@@ -14,9 +14,8 @@ cd -
 setPentahoEnv
 
 CLASSPATH=$BASEDIR
-CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-core-TRUNK-SNAPSHOT.jar
-CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-db-TRUNK-SNAPSHOT.jar
-CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-engine-TRUNK-SNAPSHOT.jar
+CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-core-@KETTLE_VERSION_STRING@.jar
+CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-engine-@KETTLE_VERSION_STRING@.jar
 
 # **************************************************
 # ** JDBC & other libraries used by Kettle:       **

@@ -23,6 +23,9 @@ $(document).ready(function() {
 				if(beforeOrAfter == "before"){
 					$(".content-area." + clazz + "  " + tag).prepend("<hr class='first'/>");
 				}
+				else if(beforeOrAfter == "beforeNotFirst") {
+					$(".content-area." + clazz + "  " + tag).prepend("<hr/>");					
+				}
 				else{
 					$(".content-area." + clazz + "  " + tag).append("<hr class='first'/>");
 				}
@@ -283,6 +286,7 @@ $(document).ready(function() {
 		highlightTag("highlightH2", "h2", false);
 		highlightTag("highlightH2WithHR", "h2", true);
 		highlightTag("highlightH2WithHRBefore", "h2", true,"before");
+		highlightTag("highlightH2WithHRAlternative", "h2", true,"beforeNotFirst");
 
 
 	}
