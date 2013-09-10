@@ -478,6 +478,7 @@ public class SalesforceConnection {
           if (object instanceof QueryResult) {
             return buildJsonQueryResult((QueryResult) object);
           }
+          return String.valueOf(object);
         } else {
           return element.getValue();
         }
