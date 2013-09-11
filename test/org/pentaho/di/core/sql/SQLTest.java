@@ -316,10 +316,68 @@ public class SQLTest extends TestCase {
     assertEquals("sales_amount",  selectFields.get(3).getField()); 
   }
   
+  /**
+   * Tests quoting in literal strings
+   * 
+   * @throws KettleSQLException
+   */
+  public void testSql13() throws KettleSQLException {
+    RowMetaInterface rowMeta = generateGettingStartedRowMeta();
+    
+    String sqlString = "SELECT * FROM \"GETTING_STARTED\" WHERE \"GETTING_STARTED\".\"CUSTOMERNAME\" = 'ANNA''S DECORATIONS, LTD'";
+    
+    SQL sql = new SQL(ThinUtil.stripNewlines(sqlString));
+    
+    assertEquals("GETTING_STARTED", sql.getServiceName());
+    sql.parse(rowMeta);  
+    
+    assertNotNull(sql.getWhereCondition());
+    assertEquals("CUSTOMERNAME", sql.getWhereCondition().getCondition().getLeftValuename());
+    assertEquals("ANNA'S DECORATIONS, LTD", sql.getWhereCondition().getCondition().getRightExactString());
+    
+  }
   
+  /**
+   * Tests empty literal strings
+   * 
+   * @throws KettleSQLException
+   */
+  public void testSql14() throws KettleSQLException {
+    RowMetaInterface rowMeta = generateGettingStartedRowMeta();
+    
+    String sqlString = "SELECT * FROM \"GETTING_STARTED\" WHERE \"GETTING_STARTED\".\"CUSTOMERNAME\" = ''";
+    
+    SQL sql = new SQL(ThinUtil.stripNewlines(sqlString));
+    
+    assertEquals("GETTING_STARTED", sql.getServiceName());
+    sql.parse(rowMeta);    
+    
+    assertNotNull(sql.getWhereCondition());
+    assertEquals("CUSTOMERNAME", sql.getWhereCondition().getCondition().getLeftValuename());
+    assertEquals("", sql.getWhereCondition().getCondition().getRightExactString());
+    
+  }
   
-  
-  
+  /**
+   * Tests crazy quoting in literal strings
+   * 
+   * @throws KettleSQLException
+   */
+  public void testSql15() throws KettleSQLException {
+    RowMetaInterface rowMeta = generateGettingStartedRowMeta();
+    
+    String sqlString = "SELECT * FROM \"GETTING_STARTED\" WHERE \"GETTING_STARTED\".\"CUSTOMERNAME\" = ''''''''''''";
+    
+    SQL sql = new SQL(ThinUtil.stripNewlines(sqlString));
+    
+    assertEquals("GETTING_STARTED", sql.getServiceName());
+    sql.parse(rowMeta);  
+    
+    assertNotNull(sql.getWhereCondition());
+    assertEquals("CUSTOMERNAME", sql.getWhereCondition().getCondition().getLeftValuename());
+    assertEquals("'''''", sql.getWhereCondition().getCondition().getRightExactString());
+    
+  }
   
   
   
@@ -362,6 +420,15 @@ public class SQLTest extends TestCase {
     rowMeta.addValueMeta(new ValueMeta("city", ValueMetaInterface.TYPE_INTEGER, 50));
     rowMeta.addValueMeta(new ValueMeta("state", ValueMetaInterface.TYPE_STRING, 2));
     rowMeta.addValueMeta(new ValueMeta("rows", ValueMetaInterface.TYPE_INTEGER, 1));
+    return rowMeta;
+  }
+  
+  public static RowMetaInterface generateGettingStartedRowMeta() {
+    RowMetaInterface rowMeta = new RowMeta();
+    rowMeta.addValueMeta(new ValueMeta("CUSTOMERNAME", ValueMetaInterface.TYPE_STRING, 50));
+    rowMeta.addValueMeta(new ValueMeta("MONTH_ID", ValueMetaInterface.TYPE_INTEGER, 4));
+    rowMeta.addValueMeta(new ValueMeta("YEAR_ID", ValueMetaInterface.TYPE_INTEGER, 2));
+    rowMeta.addValueMeta(new ValueMeta("STATE", ValueMetaInterface.TYPE_STRING, 30));
     return rowMeta;
   }
 }
