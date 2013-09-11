@@ -177,6 +177,11 @@ public class ThinUtil {
   public static ValueMetaAndData attemptStringValueExtraction(String string) {
     if (string.startsWith("'") && string.endsWith("'")) {
       String s = string.substring(1, string.length()-1);
+      
+      // Make sure to replace quoted '' occurrences.
+      //
+      s = s.replace("''", "'");
+      
       ValueMetaAndData value = new ValueMetaAndData();
       value.setValueMeta(new ValueMeta("Constant", ValueMetaInterface.TYPE_STRING));
       value.setValueData(s);
@@ -249,7 +254,7 @@ public class ThinUtil {
         if (count) {
           index = findNextBracket(sql, skipChar, nextChar, index);
         } else {
-          index = findNext(sql, nextChar, index);
+          index = findNext(sql, nextChar, index, true); // take escaping into account!
         }
         if (index>=sql.length()) break;
         c = sql.charAt(index);
@@ -260,9 +265,27 @@ public class ThinUtil {
   }
 
   public static int findNext(String sql, char nextChar, int index) throws KettleSQLException {
+    return findNext(sql, nextChar, index, false);
+  }
+    
+  
+  public static int findNext(String sql, char nextChar, int index, boolean escape) throws KettleSQLException {
     int quoteIndex=index;
-    index++;
-    while (index<sql.length() && sql.charAt(index)!=nextChar) index++;
+    
+    while (true) {
+
+      index++;
+      
+      if (index>=sql.length()) break;
+      boolean quoteMatch = sql.charAt(index)==nextChar;
+      if (quoteMatch) {
+        boolean escaped = escape && index+1<sql.length() && sql.charAt(index+1)==nextChar;
+        
+        if (quoteMatch && !escaped) break;
+        if (escaped) index++; // skip one more
+      }
+    }
+    
     if (index+1>sql.length()) {
       throw new KettleSQLException("No closing "+nextChar+" found, starting at location "+quoteIndex+" in : ["+sql+"]");
     }
