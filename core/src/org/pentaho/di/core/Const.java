@@ -1835,7 +1835,7 @@ public class Const
 	 *  
 	 * @param string The string to split
 	 * @param separator The separator used.
-	 * @param escape in case the separator can be escaped (\;)
+	 * @param escape in case the separator can be escaped (\;)  The escape characters are NOT removed!
 	 * @return the string split into an array of strings
 	 */
 	public static final String[] splitString(String string, char separator, boolean escape)
@@ -1859,7 +1859,7 @@ public class Const
 		{
 		  boolean found = string.charAt(i) == separator;
 		  if (found && escape && i>0) {
-		    found&=string.charAt(i)!='\\';
+		    found&=string.charAt(i-1)!='\\';
 		  }
 			if (found)
 			{

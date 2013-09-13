@@ -352,6 +352,29 @@ public class ConstTest extends TestCase
     assertEquals(result[1],"html and so is this html");
 	}
 	
+	 /**
+   * Test splitString with delimiter and enclosure
+   */
+  @Test
+  public void testSplitStringWithEscaping() {
+    String[] result = null;
+    
+    result = Const.splitString(null, null, null);
+    assertNull(result);
+    
+    result = Const.splitString("Hello, world", null, null);
+    assertNotNull(result);
+    assertEquals(result.length,1);
+    assertEquals(result[0],"Hello, world");
+    
+    result = Const.splitString("Hello\\, world,Hello\\, planet,Hello\\, 3rd rock", ',', true);
+    assertNotNull(result);
+    assertEquals(result.length,3);
+    assertEquals(result[0],"Hello\\, world");
+    assertEquals(result[1],"Hello\\, planet");
+    assertEquals(result[2],"Hello\\, 3rd rock");
+  }
+	
 	/**
 	 *  Test splitPath.
 	 */
