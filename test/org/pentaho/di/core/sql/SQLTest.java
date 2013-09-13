@@ -400,6 +400,26 @@ public class SQLTest extends TestCase {
     
   }
   
+  /**
+   * Tests semi-coluns and quoting in literal strings in IN clause
+   * 
+   * @throws KettleSQLException
+   */
+  public void testSql17() throws KettleSQLException {
+    RowMetaInterface rowMeta = generateGettingStartedRowMeta();
+    
+    String sqlString = "SELECT * FROM \"GETTING_STARTED\" WHERE \"GETTING_STARTED\".\"CUSTOMERNAME\" IN ('ANNA''S DECORATIONS; LTD', 'MEN ''R'' US RETAILERS; Ltd.' )";
+    
+    SQL sql = new SQL(ThinUtil.stripNewlines(sqlString));
+    
+    assertEquals("GETTING_STARTED", sql.getServiceName());
+    sql.parse(rowMeta);  
+    
+    assertNotNull(sql.getWhereCondition());
+    assertEquals("CUSTOMERNAME", sql.getWhereCondition().getCondition().getLeftValuename());
+    assertEquals("ANNA'S DECORATIONS\\; LTD;MEN 'R' US RETAILERS\\; Ltd.", sql.getWhereCondition().getCondition().getRightExactString());
+    
+  }
   
   public static RowMetaInterface generateTest2RowMeta() {
     RowMetaInterface rowMeta = new RowMeta();

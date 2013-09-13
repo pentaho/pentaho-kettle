@@ -270,6 +270,10 @@ public class SQLCondition {
         //
         part = part.replace("''", "'");
         
+        // Escape semi-colons
+        //
+        part = part.replace(";", "\\;");
+        
         valueString.append(part);
       }
       value = new ValueMetaAndData(new ValueMeta("constant-in-list", ValueMetaInterface.TYPE_STRING), valueString.toString());

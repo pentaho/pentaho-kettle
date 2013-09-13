@@ -800,4 +800,30 @@ public class SQLConditionTest extends TestCase {
     assertEquals("\"GETTING_STARTED\".\"CUSTOMERNAME\"", condition.getLeftValuename());
     assertEquals("ANNA'S DECORATIONS, LTD;MEN 'R' US RETAILERS, Ltd.", condition.getRightExactString());
   }
+  
+  /**
+   * Test IN-clause with escaped quoting and semi-colons in them.
+   * @throws KettleSQLException
+   */
+  public void testCondition30() throws KettleSQLException {
+    RowMetaInterface rowMeta = SQLTest.generateGettingStartedRowMeta();
+    
+    String fieldsClause= "CUSTOMERNAME";
+    String conditionClause = "CUSTOMERNAME IN (''';''', 'Toys ''R'' us' )";
+    
+    // Correctness of the next statement is tested in SQLFieldsTest
+    //
+    SQLFields fields = new SQLFields("Service", rowMeta, fieldsClause);
+
+    SQLCondition sqlCondition = new SQLCondition("Service", conditionClause, rowMeta, fields);
+    Condition condition = sqlCondition.getCondition();
+    
+    assertNotNull(condition);
+    assertFalse(condition.isEmpty());
+    assertTrue(condition.isAtomic());
+    assertEquals(Condition.FUNC_IN_LIST, condition.getFunction());
+    
+    assertEquals("CUSTOMERNAME", condition.getLeftValuename());
+    assertEquals("'\\;';Toys 'R' us", condition.getRightExactString());
+  }
 }

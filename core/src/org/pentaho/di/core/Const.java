@@ -1811,6 +1811,21 @@ public class Const
 
 		return list.toArray(new String[list.size()]);
 	}
+	
+	 /**
+   * Convert strings separated by a character into an array of strings.<p>
+   * <code>
+   Example: a;b;c;d    ==  new String[] { a, b, c, d }
+   * </code>
+   *  
+   * @param string The string to split
+   * @param separator The separator used.
+   * @return the string split into an array of strings
+   */
+  public static final String[] splitString(String string, char separator)
+  {
+    return splitString(string, separator);
+  }
 
 	/**
 	 * Convert strings separated by a character into an array of strings.<p>
@@ -1820,9 +1835,10 @@ public class Const
 	 *  
 	 * @param string The string to split
 	 * @param separator The separator used.
+	 * @param escape in case the separator can be escaped (\;)
 	 * @return the string split into an array of strings
 	 */
-	public static final String[] splitString(String string, char separator)
+	public static final String[] splitString(String string, char separator, boolean escape)
 	{
 		/*
 		 *           0123456
@@ -1841,7 +1857,11 @@ public class Const
 
 		for (int i = from; i < end; i += 1)
 		{
-			if (string.charAt(i) == separator)
+		  boolean found = string.charAt(i) == separator;
+		  if (found && escape && i>0) {
+		    found&=string.charAt(i)!='\\';
+		  }
+			if (found)
 			{
 				// OK, we found a separator, the string to add to the list
 				// is [from, i[

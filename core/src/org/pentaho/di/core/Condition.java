@@ -490,8 +490,13 @@ public class Condition implements Cloneable, XMLInterface
           retval = (!fieldMeta.isNull(field));
           break;
         case FUNC_IN_LIST:
-          if (inList==null || right_fieldnr>=0) { //performance reason: create the array first or again when it is against a field and not a constant
-            inList = Const.splitString(fieldMeta2.getString(field2), ';');
+          //performance reason: create the array first or again when it is against a field and not a constant
+          //
+          if (inList==null || right_fieldnr>=0) { 
+            inList = Const.splitString(fieldMeta2.getString(field2), ';', true);
+            for (int i=0;i<inList.length;i++) {
+              inList[i] = inList[i]==null ? null : inList[i].replace("\\", "");
+            }
             Arrays.sort(inList);
           }
           String searchString = fieldMeta.getCompatibleString(field);
