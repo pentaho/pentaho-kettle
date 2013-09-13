@@ -23,10 +23,13 @@
 package org.pentaho.di.trans.steps.excelinput.poi;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.provider.local.LocalFile;
+import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.poifs.filesystem.NPOIFSFileSystem;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.pentaho.di.core.exception.KettleException;
@@ -39,6 +42,10 @@ public class PoiWorkbook implements KWorkbook {
   private Workbook workbook;
   private String filename;
   private String encoding;
+  // for PDI-10251 we need direct access to streams
+  private InputStream internalIS;
+  private NPOIFSFileSystem npoifs;
+  private OPCPackage opcpkg;
   
   public PoiWorkbook(String filename, String encoding) throws KettleException {
     this.filename = filename;
@@ -50,9 +57,22 @@ public class PoiWorkbook implements KWorkbook {
         // This supposedly shaves off a little bit of memory usage by allowing POI to randomly access data in the file
         //
         String localFilename=KettleVFS.getFilename(fileObject);
-        workbook = org.apache.poi.ss.usermodel.WorkbookFactory.create(new File(localFilename));
+        File excelFile = new File(localFilename);
+        try {
+            npoifs = new NPOIFSFileSystem(excelFile);
+            workbook = org.apache.poi.ss.usermodel.WorkbookFactory.create(npoifs);
+          } catch(Exception ofe) {
+            try{
+              opcpkg = OPCPackage.open(excelFile);
+              workbook = org.apache.poi.ss.usermodel.WorkbookFactory.create(opcpkg);
+            }
+            catch(Exception ex){
+              workbook = org.apache.poi.ss.usermodel.WorkbookFactory.create(excelFile);
+            }
+          }        
       } else {
-        workbook = org.apache.poi.ss.usermodel.WorkbookFactory.create(KettleVFS.getInputStream(filename));
+      internalIS = KettleVFS.getInputStream(filename);
+        workbook = org.apache.poi.ss.usermodel.WorkbookFactory.create(internalIS);
       }
     } catch(Exception e) {
       throw new KettleException(e);
@@ -70,7 +90,18 @@ public class PoiWorkbook implements KWorkbook {
   }
   
   public void close() {
-    // not needed here
+  try{
+    if(internalIS != null){
+      internalIS.close();
+    }
+    if(npoifs != null){
+      npoifs.close();
+    }
+    if(opcpkg != null){
+      opcpkg.close();
+    }
+  }
+  catch(IOException ex){}
   }
   
   @Override
