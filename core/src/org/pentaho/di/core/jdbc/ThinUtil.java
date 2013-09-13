@@ -241,6 +241,8 @@ public class ThinUtil {
   }
   
   public static int skipChars(String sql, int index, char...skipChars) throws KettleSQLException {
+    if (index>=sql.length()) return index;
+    
     // Skip over double quotes and quotes
     char c = sql.charAt(index);
     boolean count=false;
@@ -254,7 +256,9 @@ public class ThinUtil {
         if (count) {
           index = findNextBracket(sql, skipChar, nextChar, index);
         } else {
-          index = findNext(sql, nextChar, index, true); // take escaping into account!
+          // Make sure to take escaping into account for single quotes
+          //
+          index = findNext(sql, nextChar, index, skipChar=='\''); 
         }
         if (index>=sql.length()) break;
         c = sql.charAt(index);
@@ -294,10 +298,15 @@ public class ThinUtil {
   }
   
   public static int findNextBracket(String sql, char skipChar, char nextChar, int index) throws KettleSQLException {
+    return findNextBracket(sql, skipChar, nextChar, index, false);
+  }
+  
+  public static int findNextBracket(String sql, char skipChar, char nextChar, int index, boolean escape) throws KettleSQLException {
     
     int counter=0;
     for (int i=index;i<sql.length();i++) {
       i=skipChars(sql, i, '\''); // skip quotes
+      if (i>=sql.length()) break;
       char c = sql.charAt(i);
       if (c==skipChar) counter++;
       if (c==nextChar) counter--;

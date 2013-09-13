@@ -777,5 +777,27 @@ public class SQLConditionTest extends TestCase {
     SQLCondition sqlCondition = new SQLCondition("Service", conditionClause, rowMeta, fields);
     Condition condition = sqlCondition.getCondition();
     assertNotNull(condition);
-  }  
+  }
+  
+  public void testCondition29() throws KettleSQLException {
+    RowMetaInterface rowMeta = SQLTest.generateGettingStartedRowMeta();
+    
+    String fieldsClause= "CUSTOMERNAME";
+    String conditionClause = "\"GETTING_STARTED\".\"CUSTOMERNAME\" IN ('ANNA''S DECORATIONS, LTD', 'MEN ''R'' US RETAILERS, Ltd.' )";
+    
+    // Correctness of the next statement is tested in SQLFieldsTest
+    //
+    SQLFields fields = new SQLFields("Service", rowMeta, fieldsClause);
+
+    SQLCondition sqlCondition = new SQLCondition("Service", conditionClause, rowMeta, fields);
+    Condition condition = sqlCondition.getCondition();
+    
+    assertNotNull(condition);
+    assertFalse(condition.isEmpty());
+    assertTrue(condition.isAtomic());
+    assertEquals(Condition.FUNC_IN_LIST, condition.getFunction());
+    
+    assertEquals("\"GETTING_STARTED\".\"CUSTOMERNAME\"", condition.getLeftValuename());
+    assertEquals("ANNA'S DECORATIONS, LTD;MEN 'R' US RETAILERS, Ltd.", condition.getRightExactString());
+  }
 }

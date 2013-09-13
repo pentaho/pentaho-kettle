@@ -254,16 +254,23 @@ public class SQLCondition {
       List<String> parts = ThinUtil.splitClause(partClause, ',', '\'');
       StringBuilder valueString = new StringBuilder();
       for (String part : parts) {
-        part = Const.trim(part);
         if (valueString.length()>0) {
           valueString.append(";");
         }
 
+        part = Const.trim(part);
+        
+        // Remove the quotes around the string...
+        //
         if (part.startsWith("'") && part.endsWith("'")) {
-          valueString.append(part.substring(1,part.length()-1));
-        } else {
-          valueString.append(part);
+          part = part.substring(1,part.length()-1);
         }
+        
+        // Undo escaping...
+        //
+        part = part.replace("''", "'");
+        
+        valueString.append(part);
       }
       value = new ValueMetaAndData(new ValueMeta("constant-in-list", ValueMetaInterface.TYPE_STRING), valueString.toString());
     } else {
