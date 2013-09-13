@@ -1824,7 +1824,7 @@ public class Const
    */
   public static final String[] splitString(String string, char separator)
   {
-    return splitString(string, separator);
+    return splitString(string, separator, false);
   }
 
 	/**
