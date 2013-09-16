@@ -1016,6 +1016,7 @@
 			<test todir="${junit}" name="org.pentaho.di.trans.steps.splitfieldtorows.SplitFieldToRowsTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.core.database.SequenceMetaTests" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.trans.steps.terafast.FastloadControlBuilderTest" haltonerror="false" />
+		    <test todir="${junit}" name="org.pentaho.di.trans.steps.csvinput.CsvInputDataTest" haltonerror="false" />
 		</junit>
 	</target>
 	
