@@ -220,6 +220,12 @@ public class SortRows extends BaseStep implements StepInterface {
 
     data.getBufferIndex = 0;
   }
+  
+  private DataInputStream getDataInputStream(GZIPInputStream gzipInputStream) {
+    DataInputStream result = new DataInputStream(gzipInputStream);
+    data.gzis.add(gzipInputStream);
+    return result;
+  }
 
   private Object[] getBuffer() throws KettleValueException {
     Object[] retval;
@@ -239,9 +245,7 @@ public class SortRows extends BaseStep implements StepInterface {
           DataInputStream di;
           data.fis.add(fi);
           if (data.compressFiles) {
-            GZIPInputStream gzfi = new GZIPInputStream(new BufferedInputStream(fi));
-            di = new DataInputStream(gzfi);
-            data.gzis.add(gzfi);
+            di = getDataInputStream(new GZIPInputStream(new BufferedInputStream(fi)));
           } else {
             di = new DataInputStream(new BufferedInputStream(fi, 50000));
           }
@@ -297,7 +301,6 @@ public class SortRows extends BaseStep implements StepInterface {
         FileObject file = (FileObject) data.files.get(smallest);
         DataInputStream di = (DataInputStream) data.dis.get(smallest);
         InputStream fi = (InputStream) data.fis.get(smallest);
-        GZIPInputStream gzfi = (data.compressFiles) ? (GZIPInputStream) data.gzis.get(smallest) : null;
 
         try {
           Object[] row2 = (Object[]) data.outputRowMeta.readData(di);
@@ -309,8 +312,8 @@ public class SortRows extends BaseStep implements StepInterface {
           } else {
             data.tempRows.add(index, extra);
           }
-        } catch (KettleFileException fe) // empty file or EOF mostly
-        {
+        } catch (KettleFileException fe) { // empty file or EOF mostly
+          GZIPInputStream gzfi = (data.compressFiles) ? (GZIPInputStream) data.gzis.get(smallest) : null;
           try {
             di.close();
             fi.close();
@@ -340,17 +343,7 @@ public class SortRows extends BaseStep implements StepInterface {
           }
 
         } catch (SocketTimeoutException e) {
-          // should never happen on local files
-          //
-          throw new KettleValueException(e); 
-        } finally {
-          if (gzfi!=null) {
-            try {
-             gzfi.close();
-            } catch(Exception e) {
-              throw new KettleValueException(e);
-            }
-          }
+          throw new KettleValueException(e); // should never happen on local files
         }
       }
     }
