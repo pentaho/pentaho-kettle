@@ -214,7 +214,7 @@ public class SplitFieldToRowsMeta extends BaseStepMeta implements StepMetaInterf
 			rep.saveStepAttribute(id_transformation, id_step, "rownum",          includeRowNumber);
 			rep.saveStepAttribute(id_transformation, id_step, "reset_rownumber",  resetRowNumber);
 			rep.saveStepAttribute(id_transformation, id_step, "rownum_field",    rowNumberField);
-			rep.saveStepAttribute(id_transformation, id_step, "delimiter_is_regex",    isDelimiterRegex);
+			rep.saveStepAttribute(id_transformation, id_step, 0, "delimiter_is_regex",    isDelimiterRegex);
 		}
 		catch(Exception e)
 		{

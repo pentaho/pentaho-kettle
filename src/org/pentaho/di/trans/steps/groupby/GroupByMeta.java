@@ -595,7 +595,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, "prefix",           prefix); //$NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "add_linenr",       addingLineNrInGroup); // $NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "linenr_fieldname", lineNrInGroupField); // $NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "give_back_row",    alwaysGivingBackOneRow); // $NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, 0, "give_back_row",    alwaysGivingBackOneRow); // $NON-NLS-1$
 
 			for (int i=0;i<groupField.length;i++)
 			{

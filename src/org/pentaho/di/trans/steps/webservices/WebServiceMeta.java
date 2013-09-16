@@ -402,7 +402,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         rep.saveStepAttribute(id_transformation, id_step, "httpPassword", getHttpPassword());
         rep.saveStepAttribute(id_transformation, id_step, "callStep", getCallStep());
         rep.saveStepAttribute(id_transformation, id_step, "passingInputData", isPassingInputData());
-        rep.saveStepAttribute(id_transformation, id_step, "compatible", isCompatible());
+        rep.saveStepAttribute(id_transformation, id_step, 0, "compatible", isCompatible());
         rep.saveStepAttribute(id_transformation, id_step, "repeating_element", getRepeatingElementName());
         rep.saveStepAttribute(id_transformation, id_step, "reply_as_string", isReturningReplyAsString());
 

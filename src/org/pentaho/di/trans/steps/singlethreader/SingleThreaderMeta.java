@@ -239,7 +239,7 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
       }
     }     
     
-    rep.saveStepAttribute(id_transformation, id_step, "pass_all_parameters", passingAllParameters);
+    rep.saveStepAttribute(id_transformation, id_step, 0, "pass_all_parameters", passingAllParameters);
   }
 
   public void setDefault() {
