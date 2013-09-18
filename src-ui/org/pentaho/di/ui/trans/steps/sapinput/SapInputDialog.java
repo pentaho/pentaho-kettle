@@ -240,11 +240,21 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 		fdbFunction.right  = new FormAttachment(100, 0);
 		fdbFunction.top    = new FormAttachment(lastControl, margin);
 		wbFunction.setLayoutData(fdbFunction);
-		wbFunction.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getFunction(); }});
+		wbFunction.addSelectionListener(new SelectionAdapter() {
+		  public void widgetSelected(SelectionEvent e) { 
+		    getFunction(); 
+		  }
+		});
 		
 		wFunction=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wFunction);
-		wFunction.addModifyListener(lsMod);
+		wFunction.addModifyListener(new ModifyListener() {
+      public void modifyText(ModifyEvent e) 
+      {
+        function = new SAPFunction(((Text)e.widget).getText());
+        input.setChanged();
+      }
+    });
 		FormData fdFunction = new FormData();
 		fdFunction.left   = new FormAttachment(middle, 0);
 		fdFunction.right  = new FormAttachment(wbFunction, -margin);
