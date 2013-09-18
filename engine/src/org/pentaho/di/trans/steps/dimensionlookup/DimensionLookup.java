@@ -1619,12 +1619,13 @@ public class DimensionLookup extends BaseStep implements StepInterface
     	if (!meta.isUpdate()) return;
     	    	
         DatabaseMeta databaseMeta = meta.getDatabaseMeta();
-
+        int start_tk = databaseMeta.getNotFoundTK(isAutoIncrement());
+        
         if (meta.isAutoIncrement()) {
         	// See if there are rows in the table
         	// If so, we can't insert the unknown row anymore...
         	//
-	        String sql = "SELECT count(*) FROM "+data.schemaTable;
+	        String sql = "SELECT count(*) FROM "+data.schemaTable+" WHERE "+databaseMeta.quoteField(meta.getKeyField())+" = "+start_tk;
 	        RowMetaAndData r = data.db.getOneRow(sql); 
 	        Long count = r.getRowMeta().getInteger(r.getData(), 0);
 	        if (count.longValue() != 0)
@@ -1633,8 +1634,6 @@ public class DimensionLookup extends BaseStep implements StepInterface
 	        }
         }
         
-        int start_tk = databaseMeta.getNotFoundTK(isAutoIncrement());
-                
         String sql = "SELECT count(*) FROM "+data.schemaTable+" WHERE "+databaseMeta.quoteField(meta.getKeyField())+" = "+start_tk;
         RowMetaAndData r = data.db.getOneRow(sql); 
         Long count = r.getRowMeta().getInteger(r.getData(), 0);
