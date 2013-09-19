@@ -1,6 +1,6 @@
-/* 
- * Copyright (c) 2009 kJube.  All rights reserved. 
- */
+/*
+* Copyright (c) 2009 kJube.  All rights reserved.
+*/
 
 package org.pentaho.di.ui.job.entries.hl7mllpack;
 
