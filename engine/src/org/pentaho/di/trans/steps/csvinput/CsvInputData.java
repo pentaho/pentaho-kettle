@@ -195,31 +195,17 @@ public class CsvInputData extends BaseStepData implements StepDataInterface
 
      @return the byte array with escaped enclosures escaped.
 	*/
-	public byte[] removeEscapedEnclosures(byte[] field, int nrEnclosuresFound) {
-		byte[] result = new byte[field.length-nrEnclosuresFound];
-		int resultIndex=0;
-		for (int i=0;i<field.length;i++)
-		{
-			if (field[i]==enclosure[0])
-			{
-				if (i+1<field.length && field[i+1]==enclosure[0])
-				{
-					// field[i]+field[i+1] is an escaped enclosure...
-					// so we ignore this one
-					// field[i+1] will be picked up on the next iteration.
-				}
-				else
-				{
-					// Not an escaped enclosure...
-					result[resultIndex++] = field[i];
-				}
-			}
-			else
-			{
-				result[resultIndex++] = field[i];
-			}
-		}
-		return result;
-	}
+  public byte[] removeEscapedEnclosures(byte[] field, int nrEnclosuresFound) {
+    byte[] result = new byte[field.length - nrEnclosuresFound];
+    int resultIndex = 0;
+    for (int i = 0; i < field.length; i++) {
+      result[resultIndex++] = field[i];
+      if (field[i] == enclosure[0] && i + 1 < field.length && field[i + 1] == enclosure[0]) {
+        //Skip the escaped enclosure after adding the first one
+        i++;
+      }
+    }
+    return result;
+  }
 
 }
