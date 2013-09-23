@@ -228,6 +228,12 @@ public class SortRows extends BaseStep implements StepInterface {
 
     data.getBufferIndex = 0;
   }
+  
+  private DataInputStream getDataInputStream(GZIPInputStream gzipInputStream) {
+    DataInputStream result = new DataInputStream(gzipInputStream);
+    data.gzis.add(gzipInputStream);
+    return result;
+  }
 
   private Object[] getBuffer() throws KettleValueException {
     Object[] retval;
@@ -247,9 +253,7 @@ public class SortRows extends BaseStep implements StepInterface {
           DataInputStream di;
           data.fis.add(fi);
           if (data.compressFiles) {
-            GZIPInputStream gzfi = new GZIPInputStream(new BufferedInputStream(fi));
-            di = new DataInputStream(gzfi);
-            data.gzis.add(gzfi);
+            di = getDataInputStream(new GZIPInputStream(new BufferedInputStream(fi)));
           } else {
             di = new DataInputStream(new BufferedInputStream(fi, 50000));
           }
@@ -305,7 +309,6 @@ public class SortRows extends BaseStep implements StepInterface {
         FileObject file = data.files.get(smallest);
         DataInputStream di = data.dis.get(smallest);
         InputStream fi = data.fis.get(smallest);
-        GZIPInputStream gzfi = (data.compressFiles) ? data.gzis.get(smallest) : null;
 
         try {
           Object[] row2 = data.outputRowMeta.readData(di);
@@ -317,8 +320,8 @@ public class SortRows extends BaseStep implements StepInterface {
           } else {
             data.tempRows.add(index, extra);
           }
-        } catch (KettleFileException fe) // empty file or EOF mostly
-        {
+        } catch (KettleFileException fe) {// empty file or EOF mostly
+          GZIPInputStream gzfi = (data.compressFiles) ? data.gzis.get(smallest) : null;
           try {
             di.close();
             fi.close();
@@ -346,18 +349,9 @@ public class SortRows extends BaseStep implements StepInterface {
             if (rtf.fileNumber > smallest)
               rtf.fileNumber--;
           }
-
         } catch (SocketTimeoutException e) {
           throw new KettleValueException(e); // should never happen on local files
-        } finally {
-        	if (gzfi!=null) {
-        		try {
-        			gzfi.close();
-        		} catch(Exception ex) {
-        			throw new KettleValueException(ex);
-        		}
-        	}
-        }
+        } 
       }
     }
     return retval;
