@@ -199,7 +199,7 @@ public class OlapInputMeta extends BaseStepMeta implements StepMetaInterface
 
             rep.saveStepAttribute(id_transformation, id_step, "url",              olap4jUrl);
             rep.saveStepAttribute(id_transformation, id_step, "username",         username);
-            rep.saveStepAttribute(id_transformation, id_step, "password",         mdx);
+            rep.saveStepAttribute(id_transformation, id_step, "password",         password);
             rep.saveStepAttribute(id_transformation, id_step, "catalog",            catalog);            
 			rep.saveStepAttribute(id_transformation, id_step, "mdx",              mdx);
             rep.saveStepAttribute(id_transformation, id_step, "variables_active", variableReplacementActive);
