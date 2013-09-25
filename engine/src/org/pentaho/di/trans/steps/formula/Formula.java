@@ -38,8 +38,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.reporting.libraries.formula.lvalues.LValue;
-import org.pentaho.reporting.libraries.formula.lvalues.TypeValuePair;
 import org.pentaho.reporting.libraries.formula.parser.FormulaParser;
 
 
@@ -123,14 +121,13 @@ public class Formula extends BaseStep implements StepInterface
         	
         	// Initialize parsers etc.  Only do it once.
         	//
-        	if (data.lValue==null) {
+        	if (data.formulas==null) {
                 // Create a set of LValues to put the parsed results in...
-                data.lValue = new LValue[meta.getFormula().length];
+                data.formulas = new org.pentaho.reporting.libraries.formula.Formula[meta.getFormula().length];
                 for (int i=0;i<meta.getFormula().length;i++) {
                     FormulaMetaFunction fn = meta.getFormula()[i];
                     if (!Const.isEmpty( fn.getFieldName())) {
-                        data.lValue[i] = data.parser.parse(meta.getFormula()[i].getFormula());
-                        data.lValue[i].initialize(data.context);
+                        data.formulas[i] = data.createFormula(meta.getFormula()[i].getFormula());
                     } else {
                     	throw new KettleException("Unable to find field name for formula ["+Const.NVL(fn.getFormula(), "")+"]");
                     }
@@ -142,17 +139,12 @@ public class Formula extends BaseStep implements StepInterface
                 FormulaMetaFunction fn = meta.getFormula()[i];
                 if (!Const.isEmpty( fn.getFieldName()))
                 {
-                    if (data.lValue[i]==null)
-                    {
-                        data.lValue[i] = data.parser.parse(meta.getFormula()[i].getFormula());
-                        data.lValue[i].initialize(data.context);
+                    if (data.formulas[i]==null) {
+                      data.formulas[i] = data.createFormula(meta.getFormula()[i].getFormula());
                     }
                     
-                    // Now compute the result.
-                    TypeValuePair result = data.lValue[i].evaluate();
-
                     Object value  = null;
-                    Object formulaResult = result.getValue();
+                    Object formulaResult = data.formulas[i].evaluate();
                     
                     // Calculate the return type on the first row...
                     //
