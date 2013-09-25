@@ -38,8 +38,9 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.reporting.libraries.formula.EvaluationException;
+import org.pentaho.reporting.libraries.formula.LibFormulaErrorValue;
 import org.pentaho.reporting.libraries.formula.lvalues.LValue;
-import org.pentaho.reporting.libraries.formula.lvalues.TypeValuePair;
 import org.pentaho.reporting.libraries.formula.parser.FormulaParser;
 
 
@@ -149,10 +150,16 @@ public class Formula extends BaseStep implements StepInterface
                     }
                     
                     // Now compute the result.
-                    TypeValuePair result = data.lValue[i].evaluate();
+                    Object formulaResult = null;
+                    try {
+                      formulaResult = data.lValue[i].evaluate().getValue();
+                    } catch (EvaluationException e) {
+                      if (e.getErrorValue() != LibFormulaErrorValue.ERROR_NA_VALUE) {
+                        throw e;
+                      }
+                    }
 
                     Object value  = null;
-                    Object formulaResult = result.getValue();
                     
                     // Calculate the return type on the first row...
                     //
