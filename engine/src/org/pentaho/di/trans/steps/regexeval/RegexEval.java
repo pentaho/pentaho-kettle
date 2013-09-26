@@ -140,10 +140,7 @@ public class RegexEval extends BaseStep implements StepInterface {
 
 		// reserve room
 		Object[] outputRow = RowDataUtil.allocateRowData(data.outputRowMeta.size());
-
-		for (int i = 0; i < row.length; i++) {
-			outputRow[i] = row[i];
-		}
+		System.arraycopy(row, 0, outputRow, 0, data.outputRowMeta.size());
 
 		try {
 			// Get the Field value

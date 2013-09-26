@@ -464,18 +464,22 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
         allocate(0);
     }
 
-  public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException {
+  public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface infos[], StepMeta nextSteps, VariableSpace space, Repository repositorys, IMetaStore metaStores) throws KettleStepException {
     try {
       if (!Const.isEmpty(resultfieldname)) {
         if (replacefields) {
           int replaceIndex = inputRowMeta.indexOfValue(resultfieldname);
           if (replaceIndex < 0) {
-            throw new KettleStepException(BaseMessages.getString(PKG, "RegexEvalMeta.Exception.ResultFieldToReplaceNotFound", resultfieldname));
+            ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(resultfieldname), ValueMeta.TYPE_BOOLEAN);
+            v.setOrigin(name);
+            inputRowMeta.addValueMeta(v);
+          } else {
+            ValueMetaInterface valueMeta = inputRowMeta.getValueMeta(replaceIndex);
+            ValueMetaInterface replaceMeta = ValueMetaFactory
+                .cloneValueMeta(valueMeta, ValueMetaInterface.TYPE_BOOLEAN);
+            replaceMeta.setOrigin(name);
+            inputRowMeta.setValueMeta(replaceIndex, replaceMeta);
           }
-          ValueMetaInterface valueMeta = inputRowMeta.getValueMeta(replaceIndex);
-          ValueMetaInterface replaceMeta = ValueMetaFactory.cloneValueMeta(valueMeta, ValueMetaInterface.TYPE_BOOLEAN);
-          replaceMeta.setOrigin(name);
-          inputRowMeta.setValueMeta(replaceIndex, replaceMeta);
         } else {
           ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(resultfieldname), ValueMeta.TYPE_BOOLEAN);
           v.setOrigin(name);
@@ -492,14 +496,14 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
           if (replacefields) {
             int replaceIndex = inputRowMeta.indexOfValue(fieldName[i]);
             if (replaceIndex < 0) {
-              throw new KettleStepException(BaseMessages.getString(PKG, "RegexEvalMeta.Exception.ResultFieldToReplaceNotFound", fieldName[i]));
+              inputRowMeta.addValueMeta(constructValueMeta(null, fieldName[i], i, name));
+            } else {
+              ValueMetaInterface valueMeta = inputRowMeta.getValueMeta(replaceIndex);
+              ValueMetaInterface replaceMeta = constructValueMeta(valueMeta, fieldName[i], i, name);
+              inputRowMeta.setValueMeta(replaceIndex, replaceMeta);
             }
-            ValueMetaInterface valueMeta = inputRowMeta.getValueMeta(replaceIndex);
-            ValueMetaInterface replaceMeta = constructValueMeta(valueMeta, fieldName[i], i, name);
-            inputRowMeta.setValueMeta(replaceIndex, replaceMeta);
           } else {
-            ValueMetaInterface valueMeta = constructValueMeta(null, fieldName[i], i, name);
-            inputRowMeta.addValueMeta(valueMeta);
+            inputRowMeta.addValueMeta(constructValueMeta(null, fieldName[i], i, name));
           }
         }
       }
