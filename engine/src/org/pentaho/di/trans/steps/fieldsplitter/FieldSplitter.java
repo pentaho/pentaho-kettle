@@ -116,7 +116,7 @@ public class FieldSplitter extends BaseStep implements StepInterface
 			// We have to add info.field.length variables!
 			for(int i=0; i < meta.getFieldName().length; i++)
 			{
-				String split = (i>= splits.length) ? null : splits[i];
+				String split = (splits == null || i>= splits.length) ? null : splits[i];
         
 				// Optionally remove the indicator			
 				if (split != null && meta.getFieldRemoveID()[i])
@@ -156,7 +156,7 @@ public class FieldSplitter extends BaseStep implements StepInterface
 			int prev=0;
 			for (int i=0;i<meta.getFieldName().length;i++)
 			{
-				String pol = (i>= splits.length) ? null : splits[i];
+				String pol = (splits == null || i>= splits.length) ? null : splits[i];
 				if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "FieldSplitter.Log.SplitFieldsInfo",pol,String.valueOf(prev)));  
 				prev+=(pol==null?0:pol.length()) + data.delimiter.length();
 				
