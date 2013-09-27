@@ -957,7 +957,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   @Override
   public boolean equals(Object obj) {
-    return getName().equals(((DatabaseMeta) obj).getName());
+    return obj instanceof DatabaseMeta && getName().equals(((DatabaseMeta) obj).getName());
   }
 
   public String getURL() throws KettleDatabaseException {

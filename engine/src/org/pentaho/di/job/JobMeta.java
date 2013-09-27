@@ -28,8 +28,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
@@ -704,6 +706,25 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
     return false;
   }
+  
+  private Set<DatabaseMeta> getUsedDatabaseMetas() {
+    Set<DatabaseMeta> databaseMetas = new HashSet<DatabaseMeta>();
+    for (JobEntryCopy jobEntryCopy : getJobCopies()) {
+      DatabaseMeta dbs[] = jobEntryCopy.getEntry().getUsedDatabaseConnections();
+      if (dbs != null) {
+        for (DatabaseMeta db : dbs) {
+          databaseMetas.add(db);
+        }
+      }
+    }
+
+    databaseMetas.add(jobLogTable.getDatabaseMeta());
+
+    for (LogTableInterface logTable : getExtraLogTables()) {
+      databaseMetas.add(logTable.getDatabaseMeta());
+    }
+    return databaseMetas;
+  }
 
   /**
    * This method asks all steps in the transformation whether or not the
@@ -716,19 +737,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
    * @return true if the connection is used in this transformation.
    */
   public boolean isDatabaseConnectionUsed(DatabaseMeta databaseMeta) {
-    for (int i = 0; i < nrJobEntries(); i++) {
-      JobEntryCopy jobEntry = getJobEntry(i);
-      DatabaseMeta dbs[] = jobEntry.getEntry().getUsedDatabaseConnections();
-      for (int d = 0; d < dbs.length; d++) {
-        if (dbs[d] != null && dbs[d].equals(databaseMeta))
-          return true;
-      }
-    }
-
-    if (jobLogTable.getDatabaseMeta() != null && jobLogTable.getDatabaseMeta().equals(databaseMeta))
-      return true;
-
-    return false;
+    return getUsedDatabaseMetas().contains(databaseMeta);
   }
 
   /* (non-Javadoc)
@@ -814,11 +823,12 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
     }
     retval.append("    ").append(XMLHandler.closeTag(XML_TAG_PARAMETERS)).append(Const.CR);
 
+    Set<DatabaseMeta> usedDatabaseMetas = getUsedDatabaseMetas();
     // Save the database connections...
     for (int i = 0; i < nrDatabases(); i++) {
       DatabaseMeta dbMeta = getDatabase(i);
       if (props != null && props.areOnlyUsedConnectionsSavedToXML()) {
-        if (isDatabaseConnectionUsed(dbMeta)) {
+        if (usedDatabaseMetas.contains(dbMeta)) {
           retval.append(dbMeta.getXML());
         }
       } else {
