@@ -253,12 +253,20 @@ public class ThinUtil {
   }
   
   public static String stripQuoteTableAlias(String field, String tableAliasPrefix) {
+    String result = stripTableAlias(field, tableAliasPrefix);
+    if (result.equals(field)) {
+      result = ThinUtil.stripQuotes(Const.trim(field), '"');
+    }
+    return result;
+  }
+  
+  public static String stripTableAlias(String field, String tableAliasPrefix) {
     if (field.toUpperCase().startsWith((tableAliasPrefix+".").toUpperCase())) {
       return ThinUtil.stripQuotes(field.substring(tableAliasPrefix.length()+1), '"');
     } else if (field.toUpperCase().startsWith(("\""+tableAliasPrefix+"\".").toUpperCase())) {
       return ThinUtil.stripQuotes(field.substring(tableAliasPrefix.length()+3), '"');
     } else {
-      return ThinUtil.stripQuotes(Const.trim(field), '"');
+      return field;
     }
   }
   
