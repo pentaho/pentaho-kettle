@@ -727,6 +727,15 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
     if (jobLogTable.getDatabaseMeta() != null && jobLogTable.getDatabaseMeta().equals(databaseMeta))
       return true;
+    
+    for (LogTableInterface logTableInterface : getExtraLogTables()) {
+      DatabaseMeta logMeta = logTableInterface.getDatabaseMeta();
+      if (logMeta != null) {
+        if (logMeta.equals(databaseMeta)) {
+          return true;
+        }
+      }
+    }
 
     return false;
   }
