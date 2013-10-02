@@ -68,12 +68,12 @@ public class SQLFields {
     //
     fields.clear();
     for (String string : strings) {
-      String fieldString = ThinUtil.stripQuoteTableAlias(Const.trim(string), tableAlias);
+      String fieldString = ThinUtil.stripTableAlias(Const.trim(string), tableAlias);
       if ("*".equals(fieldString)) {
         // Add all service fields  
         //
         for (ValueMetaInterface valueMeta : serviceFields.getValueMetaList()) {
-          fields.add(new SQLField(tableAlias, valueMeta.getName(), serviceFields, orderClause, selectFields));
+          fields.add(new SQLField(tableAlias, "\"" + valueMeta.getName() + "\"", serviceFields, orderClause, selectFields));
         }
       } else {
         fields.add(new SQLField(tableAlias, fieldString, serviceFields, orderClause, selectFields));
