@@ -114,9 +114,8 @@ public class LoggingRegistry
         for (int i = 0; i < cutCount; i++) {
           LoggingObjectInterface toRemove = all.get(i);
           this.map.remove(toRemove.getLogChannelId());
-
-          this.childrenMap.remove(toRemove.getLogChannelId());
         }
+        removeOrphans();
       }
       return logChannelId;
     }
@@ -214,6 +213,12 @@ public class LoggingRegistry
         this.map.remove(child);
       }
       this.map.remove(logChannelId);
+      removeOrphans();
     }
+  }
+  
+  public void removeOrphans() {
+    // Remove all orphaned children
+    this.childrenMap.keySet().retainAll(this.map.keySet());
   }
 }
