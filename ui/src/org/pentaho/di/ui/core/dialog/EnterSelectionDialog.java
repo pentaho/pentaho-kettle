@@ -373,7 +373,24 @@ public class EnterSelectionDialog extends Dialog
 					}
 				}
 			}
-            indices = wSelection.getSelectionIndices();
+			// We need to handle the indices properly. If a filter is applied, the wSelection will differ from choices
+			// So we have to get the current index from choices and store it in the indices
+      String[] selections = wSelection.getSelection();
+      boolean found = false;
+      indices = new int[selections.length];
+      for(int i=0;i<selections.length;i++) {
+        found = false;
+        for(int j=0;j<choices.length; j++) {
+          if(selections[i].equals(choices[j])) {
+            indices[i] = j;
+            found = true;
+            break;
+          }
+        }
+      }
+      if(!found) {
+        indices = wSelection.getSelectionIndices();
+      }
 		}
 		else
 		{
