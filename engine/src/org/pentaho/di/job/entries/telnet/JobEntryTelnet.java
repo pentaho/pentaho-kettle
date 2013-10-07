@@ -26,8 +26,6 @@ import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
 
-import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.util.List;
 
 import org.pentaho.di.cluster.SlaveServer;
@@ -38,6 +36,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.util.SocketUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -205,7 +204,7 @@ public class JobEntryTelnet extends JobEntryBase implements Cloneable, JobEntryI
 
         try {
    
-        	telnetHost(hostname, port, timeoutInt);
+        	SocketUtil.connectToHost(hostname, port, timeoutInt);
         	
          	if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobTelnet.OK.Label",hostname, port));
          	
@@ -226,20 +225,6 @@ public class JobEntryTelnet extends JobEntryBase implements Cloneable, JobEntryI
 		return true;
 	}
 	
-	private static void telnetHost(String host, int port, int timeout) throws KettleException {
-		Socket socket = new Socket();
-		try {
-    		InetSocketAddress is = new InetSocketAddress(host, port);
-    		if(timeout<0) socket.connect(is);
-    		else socket.connect(is,timeout);
-		}catch(Exception e){
-			throw new KettleException(e);
-		}finally {
-    		try {
-    			socket.close();
-    		}catch(Exception e){ /* Ignore */ }	
-		}
-	}
 	  public List<ResourceReference> getResourceDependencies(JobMeta jobMeta) {
 		    List<ResourceReference> references = super.getResourceDependencies(jobMeta);
 		    if (!Const.isEmpty(hostname)) {

@@ -22,8 +22,6 @@
 
 package org.pentaho.di.core.util;
 
-import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
@@ -37,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMetaInterface;
 
@@ -568,24 +565,4 @@ public class StringUtil {
 
     return variable;
   }
-
-  public static void telnetHost(String host, int port, int timeout) throws KettleException {
-    Socket socket = new Socket();
-    try {
-      InetSocketAddress is = new InetSocketAddress(host, port);
-      if (timeout < 0)
-        socket.connect(is);
-      else
-        socket.connect(is, timeout);
-    } catch (Exception e) {
-      throw new KettleException(e);
-    } finally {
-      try {
-        socket.close();
-      } catch (Exception e) {
-        // Ignore
-      }
-    }
-  }
-
 }

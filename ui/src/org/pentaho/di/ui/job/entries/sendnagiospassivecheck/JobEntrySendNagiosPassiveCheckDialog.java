@@ -45,7 +45,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.util.SocketUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.sendnagiospassivecheck.JobEntrySendNagiosPassiveCheck;
@@ -558,11 +558,8 @@ public class JobEntrySendNagiosPassiveCheckDialog extends JobEntryDialog impleme
     	int realConnectionTimeOut=Const.toInt(jobMeta.environmentSubstitute(wConnectionTimeOut.getText()), -1);
     	
     	try {
-    	
-    		StringUtil.telnetHost(hostname, nrPort, realConnectionTimeOut);
-    	
-    		if(!testOK) errMsg=BaseMessages.getString(PKG,"JobSendNagiosPassiveCheck.CanNotGetAddress",hostname);
-	    	
+    		SocketUtil.connectToHost(hostname, nrPort, realConnectionTimeOut);
+    		testOK = true;
     	}catch(Exception e) {
     		errMsg=e.getMessage();
     	}
