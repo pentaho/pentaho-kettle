@@ -90,7 +90,7 @@ import org.w3c.dom.Node;
 /**
  * SpoonSlave handles the display of the slave server information in a Spoon tab.
  * 
- * @see org.pentaho.di.spoon.Spoon
+ * @see org.pentaho.di.ui.spoon.Spoon
  * @author Matt
  * @since 12 nov 2006
  */
@@ -372,21 +372,8 @@ public class SpoonSlave extends Composite implements TabItemInterface {
 
     pack();
 
-    timer = new Timer("SpoonSlave: " + getMeta().getName());
-
-    timerTask = new TimerTask() {
-      public void run() {
-        if (display != null && !display.isDisposed()) {
-          display.asyncExec(new Runnable() {
-            public void run() {
-              refreshViewAndLog();
-            }
-          });
-        }
-      }
-    };
-
-    timer.schedule(timerTask, 0L, UPDATE_TIME_VIEW); // schedule to repeat a couple of times per second to get fast feedback
+    // Schedule view and log refresh every UPDATE_TIME_VIEW milliseconds
+    engageViewAndLogUpdateTimer();
 
     addDisposeListener(new DisposeListener() {
       public void widgetDisposed(DisposeEvent e) {
@@ -552,6 +539,7 @@ public class SpoonSlave extends Composite implements TabItemInterface {
       return;
 
     if (treeEntry.isTransformation()) {
+      // Transformation
       SlaveServerTransStatus transStatus = slaveServerStatus.findTransStatus(treeEntry.name, treeEntry.id);
       StringBuffer message = new StringBuffer();
       String errorDescription = transStatus.getErrorDescription();
@@ -567,12 +555,8 @@ public class SpoonSlave extends Composite implements TabItemInterface {
       wText.setText(message.toString());
       wText.setSelection(wText.getText().length());
       wText.showSelection();
-      // wText.setTopIndex(wText.getLineCount());
-    }
-
-    if (treeEntry.isJob()) {
-      // We clicked on a job line item
-      //
+    } else if (treeEntry.isJob()) {
+      // Job
       SlaveServerJobStatus jobStatus = slaveServerStatus.findJobStatus(treeEntry.name, treeEntry.id);
       StringBuffer message = new StringBuffer();
       String errorDescription = jobStatus.getErrorDescription();
@@ -597,12 +581,13 @@ public class SpoonSlave extends Composite implements TabItemInterface {
       return;
 
     if (treeEntry.isTransformation()) {
+      // Transformation
       SlaveServerTransStatus transStatus = slaveServerStatus.findTransStatus(treeEntry.name, treeEntry.id);
       if (transStatus != null) {
         if (!transStatus.isRunning()) {
           try {
             WebResult webResult = slaveServer.startTransformation(treeEntry.name, transStatus.getId());
-            if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK)) {
+            if (!WebResult.STRING_OK.equalsIgnoreCase(webResult.getResult())) {
               EnterTextDialog dialog = new EnterTextDialog(shell, BaseMessages.getString(PKG, "SpoonSlave.ErrorStartingTrans.Title"), BaseMessages.getString(
                   PKG, "SpoonSlave.ErrorStartingTrans.Message"), webResult.getMessage());
               dialog.setReadOnly();
@@ -614,15 +599,14 @@ public class SpoonSlave extends Composite implements TabItemInterface {
           }
         }
       }
-    }
-
-    if (treeEntry.isJob()) {
+    } else if (treeEntry.isJob()) {
+      // Job
       SlaveServerJobStatus jobStatus = slaveServerStatus.findJobStatus(treeEntry.name, treeEntry.id);
       if (jobStatus != null) {
         if (!jobStatus.isRunning()) {
           try {
             WebResult webResult = slaveServer.startJob(treeEntry.name, jobStatus.getId());
-            if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK)) {
+            if (!WebResult.STRING_OK.equalsIgnoreCase(webResult.getResult())) {
               EnterTextDialog dialog = new EnterTextDialog(shell, BaseMessages.getString(PKG, "SpoonSlave.ErrorStartingJob.Title"), BaseMessages.getString(PKG,
                   "SpoonSlave.ErrorStartingJob.Message"), webResult.getMessage());
               dialog.setReadOnly();
@@ -654,15 +638,14 @@ public class SpoonSlave extends Composite implements TabItemInterface {
     if (treeEntry == null)
       return;
 
-    // Transformations
-    //
     if (treeEntry.isTransformation()) {
+      // Transformation
       SlaveServerTransStatus transStatus = slaveServerStatus.findTransStatus(treeEntry.name, treeEntry.id);
       if (transStatus != null) {
         if (transStatus.isRunning() || transStatus.isPaused()) {
           try {
             WebResult webResult = slaveServer.stopTransformation(treeEntry.name, transStatus.getId());
-            if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK)) {
+            if (!WebResult.STRING_OK.equalsIgnoreCase(webResult.getResult())) {
               EnterTextDialog dialog = new EnterTextDialog(shell, BaseMessages.getString(PKG, "SpoonSlave.ErrorStoppingTrans.Title"), BaseMessages.getString(
                   PKG, "SpoonSlave.ErrorStoppingTrans.Message"), webResult.getMessage());
               dialog.setReadOnly();
@@ -674,17 +657,14 @@ public class SpoonSlave extends Composite implements TabItemInterface {
           }
         }
       }
-    }
-
-    // Jobs
-    //
-    if (treeEntry.isJob()) {
+    } else if (treeEntry.isJob()) {
+      // Job
       SlaveServerJobStatus jobStatus = slaveServerStatus.findJobStatus(treeEntry.name, treeEntry.id);
       if (jobStatus != null) {
         if (jobStatus.isRunning()) {
           try {
             WebResult webResult = slaveServer.stopJob(treeEntry.name, jobStatus.getId());
-            if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK)) {
+            if (!WebResult.STRING_OK.equalsIgnoreCase(webResult.getResult())) {
               EnterTextDialog dialog = new EnterTextDialog(shell, BaseMessages.getString(PKG, "SpoonSlave.ErrorStoppingJob.Title"), BaseMessages.getString(PKG,
                   "SpoonSlave.ErrorStoppingJob.Message"), webResult.getMessage());
               dialog.setReadOnly();
@@ -704,15 +684,18 @@ public class SpoonSlave extends Composite implements TabItemInterface {
     if (treeEntry == null)
       return;
 
-    // Transformations
-    //
     if (treeEntry.isTransformation()) {
+      // Transformation
       SlaveServerTransStatus transStatus = slaveServerStatus.findTransStatus(treeEntry.name, treeEntry.id);
       if (transStatus != null) {
         if (!transStatus.isRunning() && !transStatus.isPaused() && !transStatus.isStopped()) {
           try {
             WebResult webResult = slaveServer.removeTransformation(treeEntry.name, transStatus.getId());
-            if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK)) {
+            if (WebResult.STRING_OK.equalsIgnoreCase(webResult.getResult())) {
+              // Force refresh in order to give faster visual feedback and reengage the timer
+              wTree.deselectAll();
+              engageViewAndLogUpdateTimer();
+            } else {
               EnterTextDialog dialog = new EnterTextDialog(shell, BaseMessages.getString(PKG, "SpoonSlave.ErrorRemovingTrans.Title"), BaseMessages.getString(
                   PKG, "SpoonSlave.ErrorRemovingTrans.Message"), webResult.getMessage());
               dialog.setReadOnly();
@@ -724,9 +707,31 @@ public class SpoonSlave extends Composite implements TabItemInterface {
           }
         }
       }
-    }
+    } else if (treeEntry.isJob()) {
+      // Job
+      SlaveServerJobStatus jobStatus = slaveServerStatus.findJobStatus(treeEntry.name, treeEntry.id);
+      if (jobStatus != null) {
+        if (!jobStatus.isRunning()) {
+          try {
+            WebResult webResult = slaveServer.removeJob(treeEntry.name, jobStatus.getId());
 
-    // TODO: support for jobs
+            if (WebResult.STRING_OK.equalsIgnoreCase(webResult.getResult())) {
+              // Force refresh in order to give faster visual feedback and reengage the timer
+              wTree.deselectAll();
+              engageViewAndLogUpdateTimer();
+            } else {
+              EnterTextDialog dialog = new EnterTextDialog(shell, BaseMessages.getString(PKG, "SpoonSlave.ErrorRemovingJob.Title"), BaseMessages.getString(
+                  PKG, "SpoonSlave.ErrorRemovingJob.Message"), webResult.getMessage());
+              dialog.setReadOnly();
+              dialog.open();
+            }
+          } catch (Exception e) {
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "SpoonSlave.ErrorRemovingJob.Title"), BaseMessages.getString(PKG,
+                "SpoonSlave.ErrorRemovingJob.Message"), e);
+          }
+        }
+      }
+    }
   }
 
   protected void pause() {
@@ -734,12 +739,11 @@ public class SpoonSlave extends Composite implements TabItemInterface {
     if (treeEntry == null)
       return;
 
-    // Transformations
-    //
     if (treeEntry.isTransformation()) {
+      // Transformation
       try {
         WebResult webResult = slaveServer.pauseResumeTransformation(treeEntry.name, treeEntry.id);
-        if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK)) {
+        if (!WebResult.STRING_OK.equalsIgnoreCase(webResult.getResult())) {
           EnterTextDialog dialog = new EnterTextDialog(shell, BaseMessages.getString(PKG, "SpoonSlave.ErrorPausingOrResumingTrans.Title"),
               BaseMessages.getString(PKG, "SpoonSlave.ErrorPausingOrResumingTrans.Message"), webResult.getMessage());
           dialog.setReadOnly();
@@ -1001,7 +1005,6 @@ public class SpoonSlave extends Composite implements TabItemInterface {
       String[] path = ConstUI.getTreeStrings(treeItem);
 
       // Make sure we're positioned on a step
-      //
       if (path.length <= 2) {
         return;
       }
@@ -1051,5 +1054,32 @@ public class SpoonSlave extends Composite implements TabItemInterface {
 
   public ChangedWarningInterface getChangedWarning() {
     return null;
+  }
+
+  /**
+   * Cancels current timer task if any and schedules new one to be executed immediatelly and then every UPDATE_TIME_VIEW milliseconds.
+   */
+  private void engageViewAndLogUpdateTimer() {
+    if (timer == null) {
+      timer = new Timer("SpoonSlave: " + getMeta().getName());
+    }
+
+    if (timerTask != null) {
+      timerTask.cancel();
+    }
+
+    timerTask = new TimerTask() {
+      public void run() {
+        if (display != null && !display.isDisposed()) {
+          display.asyncExec(new Runnable() {
+            public void run() {
+              refreshViewAndLog();
+            }
+          });
+        }
+      }
+    };
+
+    timer.schedule(timerTask, 0L, UPDATE_TIME_VIEW);
   }
 }
