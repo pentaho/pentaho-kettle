@@ -2,6 +2,7 @@ bin/
 dist/
 js-lib/
 lib/
+libswt/
 test-lib/
 eclipse-bin/
 override.properties
@@ -19,3 +20,4 @@ build-res/module-scripts/
 *.war
 *.ear
 *.iml
+/*.launch
