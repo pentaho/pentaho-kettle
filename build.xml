@@ -1029,7 +1029,7 @@
 	    
 	  <target name="publish-local-plugin-task" depends="install-ivy">
 	    <ivy:resolve file="${pluginfolder}/ivy.xml" />
-	    <ivy:publish resolver="local" srcivypattern="${pluginfolder}/ivy.xml" pubrevision="${project.revision}" overwrite="true" forcedeliver="true">
+	    <ivy:publish resolver="local" pubrevision="${project.revision}" overwrite="true" forcedeliver="true">
 	      <artifacts pattern="${pluginfolder}/dist/[artifact]-[revision].[ext]" />
 	    </ivy:publish>
 	  </target>
