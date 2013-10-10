@@ -85,7 +85,7 @@ For Unix&#47;Linus users the jars will be automatically addded to the classpath.
     <data_tablespace/>
     <index_tablespace/>
     <attributes>
-      <attribute><code>CUSTOM_DRIVER_CLASS</code><attribute>org.gjt.mm.mysql.Driver</attribute></attribute>
+      <attribute><code>CUSTOM_DRIVER_CLASS</code><attribute>com.mysql.jdbc.Driver</attribute></attribute>
       <attribute><code>CUSTOM_URL</code><attribute>jdbc:mysql:&#47;&#47;localhost&#47;database</attribute></attribute>
       <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
       <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
