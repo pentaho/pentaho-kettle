@@ -196,12 +196,16 @@ public class TipsDialog extends Dialog
     private String getTip()
     {
         int tipnr = props.getTipNr();
-        String retval = Const.getTips()[tipnr];
+        String[] tips = Const.getTips();
+        if ( tipnr > tips.length - 1 ) {
+        return "";
+        }
+        String retval = tips[tipnr];
 
         tipnr++;
-        if (tipnr > Const.getTips().length - 1)
+        if ( tipnr > tips.length - 1 )
             tipnr = 0;
-        props.setTipNr(tipnr);
+        props.setTipNr( tipnr );
 
         return retval;
     }
