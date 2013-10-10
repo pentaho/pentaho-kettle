@@ -760,8 +760,8 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
       sourceFields = transMeta.getPrevStepFields( stepMeta );
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "GPBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString( PKG,
-          "GPBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
+         "GPBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString( PKG,
+           "GPBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
       return;
     }
     // refresh data
@@ -772,8 +772,8 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
       targetFields = stepMetaInterface.getRequiredFields( transMeta );
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "GPBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString( PKG,
-          "GPBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
+         "GPBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString( PKG,
+           "GPBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
       return;
     }
 
@@ -1005,17 +1005,13 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
     }
 
     String action = input.getLoadAction();
-    if ( GPBulkLoaderMeta.ACTION_APPEND.equals( action ) ) {
+    if ( GPBulkLoaderMeta.ACTION_INSERT.equals( action ) ) {
       wLoadAction.select( 0 );
-    } else if ( GPBulkLoaderMeta.ACTION_INSERT.equals( action ) ) {
-      wLoadAction.select( 1 );
-    } else if ( GPBulkLoaderMeta.ACTION_REPLACE.equals( action ) ) {
-      wLoadAction.select( 2 );
     } else if ( GPBulkLoaderMeta.ACTION_TRUNCATE.equals( action ) ) {
-      wLoadAction.select( 3 );
+      wLoadAction.select( 1 );
     } else {
       if ( log.isDebug() ) {
-        logDebug( "Internal error: load_action set to default 'append'" );
+        logDebug( "Internal error: load_action set to default 'insert'" );
       }
       wLoadAction.select( 0 );
     }
@@ -1185,7 +1181,8 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
       getInfo( info );
 
       String name = stepname; // new name might not yet be linked to other steps!
-      StepMeta stepMeta = new StepMeta( BaseMessages.getString( PKG, "GPBulkLoaderDialog.StepMeta.Title" ), name, info );
+      StepMeta stepMeta = new StepMeta( BaseMessages.getString( PKG,
+              "GPBulkLoaderDialog.StepMeta.Title" ), name, info );
       RowMetaInterface prev = transMeta.getPrevStepFields( stepname );
 
       SQLStatement sql = info.getSQLStatements( transMeta, stepMeta, prev, repository, metaStore );
