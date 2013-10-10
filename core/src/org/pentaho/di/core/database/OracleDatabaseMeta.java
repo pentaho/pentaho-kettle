@@ -196,7 +196,17 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
     @Override
     public String getSQLSequenceExists(String sequenceName)
     {
-        return "SELECT * FROM USER_SEQUENCES WHERE SEQUENCE_NAME = '"+sequenceName.toUpperCase()+"'";
+        int dotPos = sequenceName.indexOf('.');
+        String sql = "";
+        if (dotPos == -1) {
+            // if schema is not specified try to get sequence which belongs to current user
+            sql = "SELECT * FROM USER_SEQUENCES WHERE SEQUENCE_NAME = '"+sequenceName.toUpperCase()+"'";
+        } else {
+            String schemaName = sequenceName.substring(0, dotPos);
+            String seqName = sequenceName.substring(dotPos+1);
+            sql = "SELECT * FROM ALL_SEQUENCES WHERE SEQUENCE_NAME = '" + seqName.toUpperCase() + "' AND SEQUENCE_OWNER = '" + schemaName.toUpperCase() + "'";
+        }
+        return sql;
     }
     
     /**
