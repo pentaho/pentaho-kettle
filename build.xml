@@ -1429,5 +1429,95 @@
 			</sequential>
 		</for>
 	</target>
-
+	
+	<!-- ant test-global-localization -quiet -logger org.apache.tools.ant.XmlLogger -logfile PATH_TO/log.xml -->
+	<!-- TODO check files available -->
+	<target name="test-global-localization" depends="install-antcontrib">
+		<for list="${locales.folders}" param="prjMsgDir">
+			<sequential>
+				<antcall target="test-localizations-src">
+			  	    <param name="srcDirCurrent" value="@{prjMsgDir}"/>
+			  	</antcall>
+			</sequential>
+		</for>
+	</target>	
+	
+	<target name="test-localizations-src" depends="install-antcontrib">
+		<for param="msgDir">
+		  <path>
+		    <dirset dir="${srcDirCurrent}" includes="**/messages"/>
+		  </path>
+		  <sequential>
+		  		<antcallback target="-checkNoPropertiesFiles" return="fileset.empty">
+		  			<param name="msgDirCurrent" value="@{msgDir}"/>
+		  		</antcallback>
+		  		<echo message=" >>> ${fileset.empty}" />
+	  			<if>
+	  				<equals arg1="${fileset.empty}" arg2="" />
+	  				<then>
+	  					<echo message="No language properties files: @{msgDir}" />
+	  				</then>
+	  				<else>
+	  					<antcall target="checki18nPackage">
+				  			<param name="msgDirCurrent" value="@{msgDir}"/>
+				  		</antcall>
+				  		<antcall target="rsbCheck">
+					  	    <param name="msgDirCurrent" value="@{msgDir}"/>
+					  	</antcall>	
+	  				</else>
+	  			</if>	  	
+		  </sequential>
+		</for>
+	</target>
+	
+	<target name="-checkNoPropertiesFiles">
+		<fileset dir="${msgDirCurrent}" id="propfileset">
+			<include name="messages*.properties"/>
+		</fileset>	
+		<pathconvert refid="propfileset" property="fileset.empty" setonempty="true"/>
+	</target>	
+		  					
+	<target name="rsbCheck">
+		<echo message="${msgDirCurrent}" />
+		<taskdef classpath="${build-res}/lib/rscbundlecheck-1.31-bin.jar" resource="task.properties"/>
+			<resourceCheck failonerror="false">
+				<fileset dir="${msgDirCurrent}" />
+				<checks>
+					<include name="unicode check"/>
+					<include name="line end check"/>
+					<include name="empty key check"/>
+					<include name="duplicate key check"/>
+					<include name="empty value check"/>
+					<include name="invalid char check"/>
+					<include name="cross bundle check"/>
+				</checks>
+			</resourceCheck>
+	</target>
+		
+	<target name="checki18nPackage">
+		<for list="${locales.list}"
+					param="pref">
+			<sequential>
+				<antcall target="i18n.fileFound">
+					<param name="msgDirCurrent" value="${msgDirCurrent}"/>
+					<param name="langPref" value="@{pref}" />
+				</antcall>	
+			</sequential>
+		</for>
+	</target>
+	
+	<target name="i18n.fileFound">
+		<property name="localPath" value="${msgDirCurrent}\messages_${langPref}.properties" />
+		<condition property="file.notFound">
+		    <not>
+		      <available file="${localPath}"/>
+		    </not>
+		</condition>
+		<if>
+			<equals arg1="${file.notFound}" arg2="true" />
+			<then>
+				<echo message="Localization file is not found: ${localPath}" />
+			</then>
+		</if>
+	</target>
 </project>

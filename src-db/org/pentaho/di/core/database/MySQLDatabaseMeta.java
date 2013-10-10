@@ -94,7 +94,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 		}
 		else
 		{
-			return "org.gjt.mm.mysql.Driver";
+			return "com.mysql.jdbc.Driver";
 		}
 	}
     
