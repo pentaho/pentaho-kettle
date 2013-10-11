@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.core.jdbc;
 
@@ -27,29 +27,29 @@ import java.util.List;
 import org.pentaho.di.core.Const;
 
 public class FieldVariableMapping {
-  
+
   public enum MappingType {
     FIELDMAP, // Helper mapping to map output fields to SQL columns
     SQL_WHERE, // generates the where clause condition into a SQL condition.
     JSON_QUERY, // generates the JSON query (MongoDB mainly)
     ;
-    
-    public static MappingType getMappingType(String typeString) {
+
+    public static MappingType getMappingType( String typeString ) {
       try {
-        return valueOf(typeString);
-      } catch (Exception e) {
+        return valueOf( typeString );
+      } catch ( Exception e ) {
         return FIELDMAP;
       }
     }
   }
-  
+
   private String fieldName;
   private String targetName;
   private String variableName;
   private MappingType mappingType;
-  
+
   public FieldVariableMapping() {
-    mappingType=MappingType.FIELDMAP;
+    mappingType = MappingType.FIELDMAP;
   }
 
   /**
@@ -57,28 +57,31 @@ public class FieldVariableMapping {
    * @param variableName
    * @param mappingType
    */
-  public FieldVariableMapping(String fieldName, String targetName, String variableName, MappingType mappingType) {
+  public FieldVariableMapping( String fieldName, String targetName, String variableName, MappingType mappingType ) {
     this.fieldName = fieldName;
     this.targetName = targetName;
     this.variableName = variableName;
     this.mappingType = mappingType;
   }
-  
+
   /**
    * Find a field-variable mapping by field name, perform case insensitive comparison.
-   * @param mappings The list of mappings
-   * @param fieldName the name of the field to look for. 
+   * 
+   * @param mappings
+   *          The list of mappings
+   * @param fieldName
+   *          the name of the field to look for.
    * @return the field-variable mapping or null if nothing could be found.
    */
-  public static FieldVariableMapping findFieldVariableMappingByFieldName(List<FieldVariableMapping> mappings, String fieldName) {
-    for (FieldVariableMapping mapping : mappings) {
-      if (!Const.isEmpty(mapping.getFieldName()) && mapping.getFieldName().equalsIgnoreCase(fieldName)) {
+  public static FieldVariableMapping findFieldVariableMappingByFieldName( List<FieldVariableMapping> mappings,
+      String fieldName ) {
+    for ( FieldVariableMapping mapping : mappings ) {
+      if ( !Const.isEmpty( mapping.getFieldName() ) && mapping.getFieldName().equalsIgnoreCase( fieldName ) ) {
         return mapping;
       }
     }
     return null;
   }
-  
 
   /**
    * @return the fieldName
@@ -88,9 +91,10 @@ public class FieldVariableMapping {
   }
 
   /**
-   * @param fieldName the fieldName to set
+   * @param fieldName
+   *          the fieldName to set
    */
-  public void setFieldName(String fieldName) {
+  public void setFieldName( String fieldName ) {
     this.fieldName = fieldName;
   }
 
@@ -102,9 +106,10 @@ public class FieldVariableMapping {
   }
 
   /**
-   * @param variableName the variableName to set
+   * @param variableName
+   *          the variableName to set
    */
-  public void setVariableName(String variableName) {
+  public void setVariableName( String variableName ) {
     this.variableName = variableName;
   }
 
@@ -116,9 +121,10 @@ public class FieldVariableMapping {
   }
 
   /**
-   * @param mappingType the mappingType to set
+   * @param mappingType
+   *          the mappingType to set
    */
-  public void setMappingType(MappingType mappingType) {
+  public void setMappingType( MappingType mappingType ) {
     this.mappingType = mappingType;
   }
 
@@ -130,12 +136,11 @@ public class FieldVariableMapping {
   }
 
   /**
-   * @param targetName the targetName to set
+   * @param targetName
+   *          the targetName to set
    */
-  public void setTargetName(String targetName) {
+  public void setTargetName( String targetName ) {
     this.targetName = targetName;
   }
-  
-  
-  
+
 }

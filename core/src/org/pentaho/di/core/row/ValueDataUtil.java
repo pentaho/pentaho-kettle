@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.core.row;
 
@@ -58,238 +58,274 @@ public class ValueDataUtil {
    * @deprecated Use {@link Const#ltrim(String)} instead
    */
   @Deprecated
-  public static final String leftTrim(String string) {
-    return Const.ltrim(string);
+  public static final String leftTrim( String string ) {
+    return Const.ltrim( string );
   }
 
   /**
    * @deprecated Use {@link Const#rtrim(String)} instead
    */
   @Deprecated
-  public static final String rightTrim(String string) {
-    return Const.rtrim(string);
+  public static final String rightTrim( String string ) {
+    return Const.rtrim( string );
   }
 
   /**
-   * Determines whether or not a character is considered a space.
-   * A character is considered a space in Kettle if it is a space, a tab, a newline or a cariage return.
-   * @param c The character to verify if it is a space.
-   * @return true if the character is a space. false otherwise. 
+   * Determines whether or not a character is considered a space. A character is considered a space in Kettle if it is a
+   * space, a tab, a newline or a cariage return.
+   * 
+   * @param c
+   *          The character to verify if it is a space.
+   * @return true if the character is a space. false otherwise.
    * @deprecated Use {@link Const#isSpace(char)} instead
    */
   @Deprecated
-  public static final boolean isSpace(char c) {
-    return Const.isSpace(c);
+  public static final boolean isSpace( char c ) {
+    return Const.isSpace( c );
   }
 
   /**
    * Trims a string: removes the leading and trailing spaces of a String.
-   * @param string The string to trim
+   * 
+   * @param string
+   *          The string to trim
    * @return The trimmed string.
    * @deprecated Use {@link Const#trim(String)} instead
    */
   @Deprecated
-  public static final String trim(String string) {
-    return Const.trim(string);
+  public static final String trim( String string ) {
+    return Const.trim( string );
   }
 
-  /**Levenshtein distance (LD) is a measure of the similarity between two strings, 
-   * which we will refer to as the source string (s) and the target string (t). 
-   * The distance is the number of deletions, insertions, or substitutions required to transform s into t. 
+  /**
+   * Levenshtein distance (LD) is a measure of the similarity between two strings, which we will refer to as the source
+   * string (s) and the target string (t). The distance is the number of deletions, insertions, or substitutions
+   * required to transform s into t.
    */
-  public static Long getLevenshtein_Distance(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB,
-      Object dataB) {
-    if (dataA == null || dataB == null)
+  public static Long getLevenshtein_Distance( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB,
+      Object dataB ) {
+    if ( dataA == null || dataB == null ) {
       return null;
-    return new Long(StringUtils.getLevenshteinDistance(dataA.toString(), dataB.toString()));
+    }
+    return new Long( StringUtils.getLevenshteinDistance( dataA.toString(), dataB.toString() ) );
   }
 
-  /**DamerauLevenshtein distance is a measure of the similarity between two strings, 
-   * which we will refer to as the source string (s) and the target string (t). 
-   * The distance is the number of deletions, insertions, or substitutions required to transform s into t. 
+  /**
+   * DamerauLevenshtein distance is a measure of the similarity between two strings, which we will refer to as the
+   * source string (s) and the target string (t). The distance is the number of deletions, insertions, or substitutions
+   * required to transform s into t.
    */
-  public static Long getDamerauLevenshtein_Distance(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB,
-      Object dataB) {
-    if (dataA == null || dataB == null)
+  public static Long getDamerauLevenshtein_Distance( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB,
+      Object dataB ) {
+    if ( dataA == null || dataB == null ) {
       return null;
-    return new Long(Utils.getDamerauLevenshteinDistance(dataA.toString(), dataB.toString()));
+    }
+    return new Long( Utils.getDamerauLevenshteinDistance( dataA.toString(), dataB.toString() ) );
   }
 
-  /**NeedlemanWunsch distance is a measure of the similarity between two strings, 
-   * which we will refer to as the source string (s) and the target string (t). 
-   * The distance is the number of deletions, insertions, or substitutions required to transform s into t. 
+  /**
+   * NeedlemanWunsch distance is a measure of the similarity between two strings, which we will refer to as the source
+   * string (s) and the target string (t). The distance is the number of deletions, insertions, or substitutions
+   * required to transform s into t.
    */
-  public static Long getNeedlemanWunsch_Distance(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB,
-      Object dataB) {
-    if (dataA == null || dataB == null)
+  public static Long getNeedlemanWunsch_Distance( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB,
+      Object dataB ) {
+    if ( dataA == null || dataB == null ) {
       return null;
-    return new Long((int) new NeedlemanWunsch().score(dataA.toString(), dataB.toString()));
+    }
+    return new Long( (int) new NeedlemanWunsch().score( dataA.toString(), dataB.toString() ) );
   }
 
-  /**Jaro similitude is a measure of the similarity between two strings, 
-   * which we will refer to as the source string (s) and the target string (t).  
+  /**
+   * Jaro similitude is a measure of the similarity between two strings, which we will refer to as the source string (s)
+   * and the target string (t).
    */
-  public static Double getJaro_Similitude(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB) {
-    if (dataA == null || dataB == null)
+  public static Double getJaro_Similitude( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB,
+      Object dataB ) {
+    if ( dataA == null || dataB == null ) {
       return null;
-    return new Double(new Jaro().score(dataA.toString(), dataB.toString()));
+    }
+    return new Double( new Jaro().score( dataA.toString(), dataB.toString() ) );
   }
 
-  /**JaroWinkler similitude is a measure of the similarity between two strings, 
-   * which we will refer to as the source string (s) and the target string (t).  
+  /**
+   * JaroWinkler similitude is a measure of the similarity between two strings, which we will refer to as the source
+   * string (s) and the target string (t).
    */
-  public static Double getJaroWinkler_Similitude(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB,
-      Object dataB) {
-    if (dataA == null || dataB == null)
+  public static Double getJaroWinkler_Similitude( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB,
+      Object dataB ) {
+    if ( dataA == null || dataB == null ) {
       return null;
-    return new Double(new JaroWinkler().score(dataA.toString(), dataB.toString()));
+    }
+    return new Double( new JaroWinkler().score( dataA.toString(), dataB.toString() ) );
   }
 
-  public static String get_Metaphone(ValueMetaInterface metaA, Object dataA) {
-    if (dataA == null)
+  public static String get_Metaphone( ValueMetaInterface metaA, Object dataA ) {
+    if ( dataA == null ) {
       return null;
-    return (new Metaphone()).metaphone(dataA.toString());
+    }
+    return ( new Metaphone() ).metaphone( dataA.toString() );
   }
 
-  public static String get_Double_Metaphone(ValueMetaInterface metaA, Object dataA) {
-    if (dataA == null)
+  public static String get_Double_Metaphone( ValueMetaInterface metaA, Object dataA ) {
+    if ( dataA == null ) {
       return null;
-    return (new DoubleMetaphone()).doubleMetaphone(dataA.toString());
+    }
+    return ( new DoubleMetaphone() ).doubleMetaphone( dataA.toString() );
   }
 
-  public static String get_SoundEx(ValueMetaInterface metaA, Object dataA) {
-    if (dataA == null)
+  public static String get_SoundEx( ValueMetaInterface metaA, Object dataA ) {
+    if ( dataA == null ) {
       return null;
-    return (new Soundex()).encode(dataA.toString());
+    }
+    return ( new Soundex() ).encode( dataA.toString() );
   }
 
-  public static String get_RefinedSoundEx(ValueMetaInterface metaA, Object dataA) {
-    if (dataA == null)
+  public static String get_RefinedSoundEx( ValueMetaInterface metaA, Object dataA ) {
+    if ( dataA == null ) {
       return null;
-    return (new RefinedSoundex()).encode(dataA.toString());
+    }
+    return ( new RefinedSoundex() ).encode( dataA.toString() );
   }
 
-  public static String initCap(ValueMetaInterface metaA, Object dataA) {
-    if (dataA == null)
+  public static String initCap( ValueMetaInterface metaA, Object dataA ) {
+    if ( dataA == null ) {
       return null;
-    return Const.initCap(dataA.toString());
+    }
+    return Const.initCap( dataA.toString() );
   }
 
-  public static String upperCase(ValueMetaInterface metaA, Object dataA) {
-    if (dataA == null)
+  public static String upperCase( ValueMetaInterface metaA, Object dataA ) {
+    if ( dataA == null ) {
       return null;
+    }
     return dataA.toString().toUpperCase();
   }
 
-  public static String lowerCase(ValueMetaInterface metaA, Object dataA) {
-    if (dataA == null)
+  public static String lowerCase( ValueMetaInterface metaA, Object dataA ) {
+    if ( dataA == null ) {
       return null;
+    }
     return dataA.toString().toLowerCase();
   }
 
-  public static String escapeXML(ValueMetaInterface metaA, Object dataA) {
-    if (dataA == null)
+  public static String escapeXML( ValueMetaInterface metaA, Object dataA ) {
+    if ( dataA == null ) {
       return null;
-    return Const.escapeXML(dataA.toString());
+    }
+    return Const.escapeXML( dataA.toString() );
   }
 
-  public static String unEscapeXML(ValueMetaInterface metaA, Object dataA) {
-    if (dataA == null)
+  public static String unEscapeXML( ValueMetaInterface metaA, Object dataA ) {
+    if ( dataA == null ) {
       return null;
-    return Const.unEscapeXml(dataA.toString());
+    }
+    return Const.unEscapeXml( dataA.toString() );
   }
 
-  public static String escapeHTML(ValueMetaInterface metaA, Object dataA) {
-    if (dataA == null)
+  public static String escapeHTML( ValueMetaInterface metaA, Object dataA ) {
+    if ( dataA == null ) {
       return null;
-    return Const.escapeHtml(dataA.toString());
+    }
+    return Const.escapeHtml( dataA.toString() );
   }
 
-  public static String unEscapeHTML(ValueMetaInterface metaA, Object dataA) {
-    if (dataA == null)
+  public static String unEscapeHTML( ValueMetaInterface metaA, Object dataA ) {
+    if ( dataA == null ) {
       return null;
-    return Const.unEscapeHtml(dataA.toString());
+    }
+    return Const.unEscapeHtml( dataA.toString() );
   }
 
-  public static String escapeSQL(ValueMetaInterface metaA, Object dataA) {
-    if (dataA == null)
+  public static String escapeSQL( ValueMetaInterface metaA, Object dataA ) {
+    if ( dataA == null ) {
       return null;
-    return Const.escapeSQL(dataA.toString());
+    }
+    return Const.escapeSQL( dataA.toString() );
   }
 
-  public static String useCDATA(ValueMetaInterface metaA, Object dataA) {
-    if (dataA == null)
+  public static String useCDATA( ValueMetaInterface metaA, Object dataA ) {
+    if ( dataA == null ) {
       return null;
+    }
     return "<![CDATA[" + dataA.toString() + "]]>";
 
   }
 
-  public static String removeCR(ValueMetaInterface metaA, Object dataA) {
-    if (dataA == null)
+  public static String removeCR( ValueMetaInterface metaA, Object dataA ) {
+    if ( dataA == null ) {
       return null;
-    return Const.removeCR(dataA.toString());
+    }
+    return Const.removeCR( dataA.toString() );
   }
 
-  public static String removeLF(ValueMetaInterface metaA, Object dataA) {
-    if (dataA == null)
+  public static String removeLF( ValueMetaInterface metaA, Object dataA ) {
+    if ( dataA == null ) {
       return null;
-    return Const.removeLF(dataA.toString());
+    }
+    return Const.removeLF( dataA.toString() );
   }
 
-  public static String removeCRLF(ValueMetaInterface metaA, Object dataA) {
-    if (dataA == null)
+  public static String removeCRLF( ValueMetaInterface metaA, Object dataA ) {
+    if ( dataA == null ) {
       return null;
-    return Const.removeCRLF(dataA.toString());
+    }
+    return Const.removeCRLF( dataA.toString() );
   }
 
-  public static String removeTAB(ValueMetaInterface metaA, Object dataA) {
-    if (dataA == null)
+  public static String removeTAB( ValueMetaInterface metaA, Object dataA ) {
+    if ( dataA == null ) {
       return null;
-    return Const.removeTAB(dataA.toString());
+    }
+    return Const.removeTAB( dataA.toString() );
   }
 
-  public static String getDigits(ValueMetaInterface metaA, Object dataA) {
-    if (dataA == null)
+  public static String getDigits( ValueMetaInterface metaA, Object dataA ) {
+    if ( dataA == null ) {
       return null;
-    return Const.getDigitsOnly(dataA.toString());
+    }
+    return Const.getDigitsOnly( dataA.toString() );
   }
 
-  public static String removeDigits(ValueMetaInterface metaA, Object dataA) {
-    if (dataA == null)
+  public static String removeDigits( ValueMetaInterface metaA, Object dataA ) {
+    if ( dataA == null ) {
       return null;
-    return Const.removeDigits(dataA.toString());
+    }
+    return Const.removeDigits( dataA.toString() );
   }
 
-  public static long stringLen(ValueMetaInterface metaA, Object dataA) {
-    if (dataA == null)
+  public static long stringLen( ValueMetaInterface metaA, Object dataA ) {
+    if ( dataA == null ) {
       return 0;
+    }
     return dataA.toString().length();
   }
 
-  public static String createChecksum(ValueMetaInterface metaA, Object dataA, String type) {
+  public static String createChecksum( ValueMetaInterface metaA, Object dataA, String type ) {
     String md5Hash = null;
     FileInputStream in = null;
     try {
-      in = new FileInputStream(dataA.toString());
+      in = new FileInputStream( dataA.toString() );
       int bytes = in.available();
       byte[] buffer = new byte[bytes];
-      in.read(buffer);
+      in.read( buffer );
 
-      StringBuffer md5HashBuff = new StringBuffer(32);
-      byte[] b = MessageDigest.getInstance(type).digest(buffer);
+      StringBuffer md5HashBuff = new StringBuffer( 32 );
+      byte[] b = MessageDigest.getInstance( type ).digest( buffer );
       int len = b.length;
-      for (int x = 0; x < len; x++) {
-        md5HashBuff.append(String.format("%02x", b[x]));
+      for ( int x = 0; x < len; x++ ) {
+        md5HashBuff.append( String.format( "%02x", b[x] ) );
       }
 
       md5Hash = md5HashBuff.toString();
 
-    } catch (Exception e) {
+    } catch ( Exception e ) {
     } finally {
       try {
-        if (in != null)
+        if ( in != null ) {
           in.close();
-      } catch (Exception e) {
+        }
+      } catch ( Exception e ) {
         // Ignore
       }
     }
@@ -297,286 +333,305 @@ public class ValueDataUtil {
     return md5Hash;
   }
 
-  public static Long ChecksumCRC32(ValueMetaInterface metaA, Object dataA) {
+  public static Long ChecksumCRC32( ValueMetaInterface metaA, Object dataA ) {
     long checksum = 0;
     FileObject file = null;
     try {
-      file = KettleVFS.getFileObject(dataA.toString());
+      file = KettleVFS.getFileObject( dataA.toString() );
       CheckedInputStream cis = null;
 
       // Computer CRC32 checksum
-      cis = new CheckedInputStream(((LocalFile) file).getInputStream(), new CRC32());
+      cis = new CheckedInputStream( ( (LocalFile) file ).getInputStream(), new CRC32() );
       byte[] buf = new byte[128];
-      while (cis.read(buf) >= 0) {
+      while ( cis.read( buf ) >= 0 ) {
       }
 
       checksum = cis.getChecksum().getValue();
 
-    } catch (Exception e) {
+    } catch ( Exception e ) {
     } finally {
-      if (file != null)
+      if ( file != null ) {
         try {
           file.close();
           file = null;
-        } catch (Exception e) {
+        } catch ( Exception e ) {
           // Ignore
         }
+      }
     }
     return checksum;
   }
 
-  public static Long ChecksumAdler32(ValueMetaInterface metaA, Object dataA) {
+  public static Long ChecksumAdler32( ValueMetaInterface metaA, Object dataA ) {
     long checksum = 0;
     FileObject file = null;
     try {
-      file = KettleVFS.getFileObject(dataA.toString());
+      file = KettleVFS.getFileObject( dataA.toString() );
       CheckedInputStream cis = null;
 
       // Computer Adler-32 checksum
-      cis = new CheckedInputStream(((LocalFile) file).getInputStream(), new Adler32());
+      cis = new CheckedInputStream( ( (LocalFile) file ).getInputStream(), new Adler32() );
 
       byte[] buf = new byte[128];
-      while (cis.read(buf) >= 0) {
+      while ( cis.read( buf ) >= 0 ) {
       }
       checksum = cis.getChecksum().getValue();
 
-    } catch (Exception e) {
-      //throw new Exception(e);
+    } catch ( Exception e ) {
+      // throw new Exception(e);
     } finally {
-      if (file != null)
+      if ( file != null ) {
         try {
           file.close();
           file = null;
-        } catch (Exception e) {
+        } catch ( Exception e ) {
           // Ignore
         }
+      }
     }
     return checksum;
   }
 
-  public static Object plus(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB)
-      throws KettleValueException {
-    if (dataA == null || dataB == null)
+  public static Object plus( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB )
+    throws KettleValueException {
+    if ( dataA == null || dataB == null ) {
       return null;
+    }
 
-    switch (metaA.getType()) {
+    switch ( metaA.getType() ) {
       case ValueMetaInterface.TYPE_STRING:
-        return metaA.getString(dataA) + metaB.getString(dataB);
+        return metaA.getString( dataA ) + metaB.getString( dataB );
       case ValueMetaInterface.TYPE_NUMBER:
-        return new Double(metaA.getNumber(dataA).doubleValue() + metaB.getNumber(dataB).doubleValue());
+        return new Double( metaA.getNumber( dataA ).doubleValue() + metaB.getNumber( dataB ).doubleValue() );
       case ValueMetaInterface.TYPE_INTEGER:
-        return new Long(metaA.getInteger(dataA).longValue() + metaB.getInteger(dataB).longValue());
+        return new Long( metaA.getInteger( dataA ).longValue() + metaB.getInteger( dataB ).longValue() );
       case ValueMetaInterface.TYPE_BOOLEAN:
-        return Boolean.valueOf(metaA.getBoolean(dataA).booleanValue() || metaB.getBoolean(dataB).booleanValue());
+        return Boolean.valueOf( metaA.getBoolean( dataA ).booleanValue() || metaB.getBoolean( dataB ).booleanValue() );
       case ValueMetaInterface.TYPE_BIGNUMBER:
-        return metaA.getBigNumber(dataA).add(metaB.getBigNumber(dataB));
+        return metaA.getBigNumber( dataA ).add( metaB.getBigNumber( dataB ) );
 
       default:
-        throw new KettleValueException("The 'plus' function only works on numeric data and Strings.");
+        throw new KettleValueException( "The 'plus' function only works on numeric data and Strings." );
     }
   }
 
-  public static Object plus3(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB,
-      ValueMetaInterface metaC, Object dataC) throws KettleValueException {
-    if (dataA == null || dataB == null || dataC == null)
+  public static Object plus3( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB,
+      ValueMetaInterface metaC, Object dataC ) throws KettleValueException {
+    if ( dataA == null || dataB == null || dataC == null ) {
       return null;
+    }
 
-    switch (metaA.getType()) {
+    switch ( metaA.getType() ) {
       case ValueMetaInterface.TYPE_STRING:
-        return metaA.getString(dataA) + metaB.getString(dataB) + metaC.getString(dataC);
+        return metaA.getString( dataA ) + metaB.getString( dataB ) + metaC.getString( dataC );
       case ValueMetaInterface.TYPE_NUMBER:
-        return new Double(metaA.getNumber(dataA).doubleValue() + metaB.getNumber(dataB).doubleValue()
-            + metaC.getNumber(dataC).doubleValue());
+        return new Double( metaA.getNumber( dataA ).doubleValue() + metaB.getNumber( dataB ).doubleValue()
+            + metaC.getNumber( dataC ).doubleValue() );
       case ValueMetaInterface.TYPE_INTEGER:
-        return new Long(metaA.getInteger(dataA).longValue() + metaB.getInteger(dataB).longValue()
-            + metaC.getInteger(dataC).longValue());
+        return new Long( metaA.getInteger( dataA ).longValue() + metaB.getInteger( dataB ).longValue()
+            + metaC.getInteger( dataC ).longValue() );
       case ValueMetaInterface.TYPE_BOOLEAN:
-        return Boolean.valueOf(metaA.getBoolean(dataA).booleanValue() || metaB.getBoolean(dataB).booleanValue()
-            || metaB.getBoolean(dataC).booleanValue());
+        return Boolean.valueOf( metaA.getBoolean( dataA ).booleanValue() || metaB.getBoolean( dataB ).booleanValue()
+            || metaB.getBoolean( dataC ).booleanValue() );
       case ValueMetaInterface.TYPE_BIGNUMBER:
-        return metaA.getBigNumber(dataA).add(metaB.getBigNumber(dataB).add(metaC.getBigNumber(dataC)));
+        return metaA.getBigNumber( dataA ).add( metaB.getBigNumber( dataB ).add( metaC.getBigNumber( dataC ) ) );
 
       default:
-        throw new KettleValueException("The 'plus' function only works on numeric data and Strings.");
+        throw new KettleValueException( "The 'plus' function only works on numeric data and Strings." );
     }
   }
 
-  public static Object sum(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB)
-      throws KettleValueException {
-    if (dataA == null && dataB == null)
+  public static Object sum( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB )
+    throws KettleValueException {
+    if ( dataA == null && dataB == null ) {
       return null;
-    if (dataA == null && dataB != null)
-      return metaA.convertData(metaB, dataB);
-    if (dataA != null && dataB == null)
+    }
+    if ( dataA == null && dataB != null ) {
+      return metaA.convertData( metaB, dataB );
+    }
+    if ( dataA != null && dataB == null ) {
       return dataA;
+    }
 
-    return plus(metaA, dataA, metaB, dataB);
+    return plus( metaA, dataA, metaB, dataB );
   }
 
-  public static Object loadFileContentInBinary(ValueMetaInterface metaA, Object dataA) throws KettleValueException {
-    if (dataA == null)
+  public static Object loadFileContentInBinary( ValueMetaInterface metaA, Object dataA ) throws KettleValueException {
+    if ( dataA == null ) {
       return null;
+    }
 
     FileObject file = null;
     FileInputStream fis = null;
     try {
-      file = KettleVFS.getFileObject(dataA.toString());
-      fis = (FileInputStream) ((LocalFile) file).getInputStream();
+      file = KettleVFS.getFileObject( dataA.toString() );
+      fis = (FileInputStream) ( (LocalFile) file ).getInputStream();
       int fileSize = (int) file.getContent().getSize();
-      byte[] content = Const.createByteArray(fileSize);
-      fis.read(content, 0, fileSize);
+      byte[] content = Const.createByteArray( fileSize );
+      fis.read( content, 0, fileSize );
       return content;
-    } catch (Exception e) {
-      throw new KettleValueException(e);
+    } catch ( Exception e ) {
+      throw new KettleValueException( e );
     } finally {
       try {
-        if (fis != null)
+        if ( fis != null ) {
           fis.close();
+        }
         fis = null;
-        if (file != null)
+        if ( file != null ) {
           file.close();
+        }
         file = null;
-      } catch (Exception e) {
+      } catch ( Exception e ) {
         // Ignore
       }
     }
   }
 
-  public static Object minus(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB)
-      throws KettleValueException {
-    if (dataA == null || dataB == null)
+  public static Object minus( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB )
+    throws KettleValueException {
+    if ( dataA == null || dataB == null ) {
       return null;
+    }
 
-    switch (metaA.getType()) {
+    switch ( metaA.getType() ) {
       case ValueMetaInterface.TYPE_NUMBER:
-        return new Double(metaA.getNumber(dataA).doubleValue() - metaB.getNumber(dataB).doubleValue());
+        return new Double( metaA.getNumber( dataA ).doubleValue() - metaB.getNumber( dataB ).doubleValue() );
       case ValueMetaInterface.TYPE_INTEGER:
-        return new Long(metaA.getInteger(dataA).longValue() - metaB.getInteger(dataB).longValue());
+        return new Long( metaA.getInteger( dataA ).longValue() - metaB.getInteger( dataB ).longValue() );
       case ValueMetaInterface.TYPE_BIGNUMBER:
-        return metaA.getBigNumber(dataA).subtract(metaB.getBigNumber(dataB));
+        return metaA.getBigNumber( dataA ).subtract( metaB.getBigNumber( dataB ) );
       default:
-        return new Long(metaA.getInteger(dataA).longValue() - metaB.getInteger(dataB).longValue());
+        return new Long( metaA.getInteger( dataA ).longValue() - metaB.getInteger( dataB ).longValue() );
     }
   }
 
-  public static Object multiply(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB)
-      throws KettleValueException {
-    if (dataA == null || dataB == null)
+  public static Object multiply( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB )
+    throws KettleValueException {
+    if ( dataA == null || dataB == null ) {
       return null;
-
-    if ((metaB.isString() && metaA.isNumeric()) || (metaB.isNumeric() && metaA.isString())) {
-      return multiplyString(metaA, dataA, metaB, dataB);
     }
 
-    return multiplyNumeric(metaA, dataA, metaB, dataB);
+    if ( ( metaB.isString() && metaA.isNumeric() ) || ( metaB.isNumeric() && metaA.isString() ) ) {
+      return multiplyString( metaA, dataA, metaB, dataB );
+    }
+
+    return multiplyNumeric( metaA, dataA, metaB, dataB );
   }
 
-  protected static Object multiplyNumeric(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB)
-      throws KettleValueException {
-    switch (metaA.getType()) {
+  protected static Object multiplyNumeric( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB,
+      Object dataB ) throws KettleValueException {
+    switch ( metaA.getType() ) {
       case ValueMetaInterface.TYPE_NUMBER:
-        return multiplyDoubles(metaA.getNumber(dataA), metaB.getNumber(dataB));
+        return multiplyDoubles( metaA.getNumber( dataA ), metaB.getNumber( dataB ) );
       case ValueMetaInterface.TYPE_INTEGER:
-        return multiplyLongs(metaA.getInteger(dataA), metaB.getInteger(dataB));
+        return multiplyLongs( metaA.getInteger( dataA ), metaB.getInteger( dataB ) );
       case ValueMetaInterface.TYPE_BIGNUMBER:
-        return multiplyBigDecimals(metaA.getBigNumber(dataA), metaB.getBigNumber(dataB), null);
+        return multiplyBigDecimals( metaA.getBigNumber( dataA ), metaB.getBigNumber( dataB ), null );
 
       default:
         throw new KettleValueException(
-            "The 'multiply' function only works on numeric data optionally multiplying strings.");
+            "The 'multiply' function only works on numeric data optionally multiplying strings." );
     }
   }
 
-  public static Double multiplyDoubles(Double a, Double b) {
-    return new Double(a.doubleValue() * b.doubleValue());
+  public static Double multiplyDoubles( Double a, Double b ) {
+    return new Double( a.doubleValue() * b.doubleValue() );
   }
 
-  public static Long multiplyLongs(Long a, Long b) {
-    return new Long(a.longValue() * b.longValue());
+  public static Long multiplyLongs( Long a, Long b ) {
+    return new Long( a.longValue() * b.longValue() );
   }
 
-  public static BigDecimal multiplyBigDecimals(BigDecimal a, BigDecimal b, MathContext mc) {
-    if (mc == null)
+  public static BigDecimal multiplyBigDecimals( BigDecimal a, BigDecimal b, MathContext mc ) {
+    if ( mc == null ) {
       mc = MathContext.DECIMAL64;
-    return a.multiply(b, mc);
+    }
+    return a.multiply( b, mc );
   }
 
-  protected static Object multiplyString(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB)
+  protected static Object
+    multiplyString( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB )
       throws KettleValueException {
     StringBuffer s;
     String append = "";
     int n;
-    if (metaB.isString()) {
-      s = new StringBuffer(metaB.getString(dataB));
-      append = metaB.getString(dataB);
-      n = metaA.getInteger(dataA).intValue();
+    if ( metaB.isString() ) {
+      s = new StringBuffer( metaB.getString( dataB ) );
+      append = metaB.getString( dataB );
+      n = metaA.getInteger( dataA ).intValue();
     } else {
-      s = new StringBuffer(metaA.getString(dataA));
-      append = metaA.getString(dataA);
-      n = metaB.getInteger(dataB).intValue();
+      s = new StringBuffer( metaA.getString( dataA ) );
+      append = metaA.getString( dataA );
+      n = metaB.getInteger( dataB ).intValue();
     }
 
-    if (n == 0)
-      s.setLength(0);
-    else
-      for (int i = 1; i < n; i++)
-        s.append(append);
+    if ( n == 0 ) {
+      s.setLength( 0 );
+    } else {
+      for ( int i = 1; i < n; i++ ) {
+        s.append( append );
+      }
+    }
 
     return s.toString();
   }
 
-  public static Object divide(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB)
-      throws KettleValueException {
-    if (dataA == null || dataB == null)
+  public static Object divide( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB )
+    throws KettleValueException {
+    if ( dataA == null || dataB == null ) {
       return null;
+    }
 
-    switch (metaA.getType()) {
+    switch ( metaA.getType() ) {
       case ValueMetaInterface.TYPE_NUMBER:
-        return divideDoubles(metaA.getNumber(dataA), metaB.getNumber(dataB));
+        return divideDoubles( metaA.getNumber( dataA ), metaB.getNumber( dataB ) );
       case ValueMetaInterface.TYPE_INTEGER:
-        return divideLongs(metaA.getInteger(dataA), metaB.getInteger(dataB));
+        return divideLongs( metaA.getInteger( dataA ), metaB.getInteger( dataB ) );
       case ValueMetaInterface.TYPE_BIGNUMBER:
-        return divideBigDecimals(metaA.getBigNumber(dataA), metaB.getBigNumber(dataB), null);
+        return divideBigDecimals( metaA.getBigNumber( dataA ), metaB.getBigNumber( dataB ), null );
 
       default:
-        throw new KettleValueException("The 'divide' function only works on numeric data.");
+        throw new KettleValueException( "The 'divide' function only works on numeric data." );
     }
   }
 
-  public static Double divideDoubles(Double a, Double b) {
-    return new Double(a.doubleValue() / b.doubleValue());
+  public static Double divideDoubles( Double a, Double b ) {
+    return new Double( a.doubleValue() / b.doubleValue() );
   }
 
-  public static Long divideLongs(Long a, Long b) {
-    return new Long(a.longValue() / b.longValue());
+  public static Long divideLongs( Long a, Long b ) {
+    return new Long( a.longValue() / b.longValue() );
   }
 
-  public static BigDecimal divideBigDecimals(BigDecimal a, BigDecimal b, MathContext mc) {
-    if (mc == null)
+  public static BigDecimal divideBigDecimals( BigDecimal a, BigDecimal b, MathContext mc ) {
+    if ( mc == null ) {
       mc = MathContext.DECIMAL64;
-    return a.divide(b, mc);
+    }
+    return a.divide( b, mc );
   }
 
-  public static Object sqrt(ValueMetaInterface metaA, Object dataA) throws KettleValueException {
-    if (dataA == null)
+  public static Object sqrt( ValueMetaInterface metaA, Object dataA ) throws KettleValueException {
+    if ( dataA == null ) {
       return null;
+    }
 
-    switch (metaA.getType()) {
+    switch ( metaA.getType() ) {
       case ValueMetaInterface.TYPE_NUMBER:
-        return new Double(Math.sqrt(metaA.getNumber(dataA).doubleValue()));
+        return new Double( Math.sqrt( metaA.getNumber( dataA ).doubleValue() ) );
       case ValueMetaInterface.TYPE_INTEGER:
-        return new Long(Math.round(Math.sqrt(metaA.getNumber(dataA).doubleValue())));
+        return new Long( Math.round( Math.sqrt( metaA.getNumber( dataA ).doubleValue() ) ) );
       case ValueMetaInterface.TYPE_BIGNUMBER:
-        return BigDecimal.valueOf(Math.sqrt(metaA.getNumber(dataA).doubleValue()));
+        return BigDecimal.valueOf( Math.sqrt( metaA.getNumber( dataA ).doubleValue() ) );
 
       default:
-        throw new KettleValueException("The 'sqrt' function only works on numeric data.");
+        throw new KettleValueException( "The 'sqrt' function only works on numeric data." );
     }
   }
 
   /**
    * 100 * A / B
-   *  
+   * 
    * @param metaA
    * @param dataA
    * @param metaB
@@ -584,28 +639,29 @@ public class ValueDataUtil {
    * @return
    * @throws KettleValueException
    */
-  public static Object percent1(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB)
-      throws KettleValueException {
-    if (dataA == null || dataB == null)
+  public static Object percent1( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB )
+    throws KettleValueException {
+    if ( dataA == null || dataB == null ) {
       return null;
+    }
 
-    switch (metaA.getType()) {
+    switch ( metaA.getType() ) {
       case ValueMetaInterface.TYPE_NUMBER:
-        return divideDoubles(multiplyDoubles(100.0D, metaA.getNumber(dataA)), metaB.getNumber(dataB));
+        return divideDoubles( multiplyDoubles( 100.0D, metaA.getNumber( dataA ) ), metaB.getNumber( dataB ) );
       case ValueMetaInterface.TYPE_INTEGER:
-        return divideLongs(multiplyLongs(100L, metaA.getInteger(dataA)), metaB.getInteger(dataB));
+        return divideLongs( multiplyLongs( 100L, metaA.getInteger( dataA ) ), metaB.getInteger( dataB ) );
       case ValueMetaInterface.TYPE_BIGNUMBER:
-        return divideBigDecimals(multiplyBigDecimals(metaA.getBigNumber(dataA), new BigDecimal(100), null),
-            metaB.getBigNumber(dataB), null);
+        return divideBigDecimals( multiplyBigDecimals( metaA.getBigNumber( dataA ), new BigDecimal( 100 ), null ),
+            metaB.getBigNumber( dataB ), null );
 
       default:
-        throw new KettleValueException("The 'A/B in %' function only works on numeric data");
+        throw new KettleValueException( "The 'A/B in %' function only works on numeric data" );
     }
   }
 
   /**
    * A - ( A * B / 100 )
-   *  
+   * 
    * @param metaA
    * @param dataA
    * @param metaB
@@ -613,30 +669,31 @@ public class ValueDataUtil {
    * @return
    * @throws KettleValueException
    */
-  public static Object percent2(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB)
-      throws KettleValueException {
-    if (dataA == null || dataB == null)
+  public static Object percent2( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB )
+    throws KettleValueException {
+    if ( dataA == null || dataB == null ) {
       return null;
+    }
 
-    switch (metaA.getType()) {
+    switch ( metaA.getType() ) {
       case ValueMetaInterface.TYPE_NUMBER:
-        return new Double(metaA.getNumber(dataA).doubleValue()
-            - divideDoubles(multiplyDoubles(metaA.getNumber(dataA), metaB.getNumber(dataB)), 100.0D));
+        return new Double( metaA.getNumber( dataA ).doubleValue()
+            - divideDoubles( multiplyDoubles( metaA.getNumber( dataA ), metaB.getNumber( dataB ) ), 100.0D ) );
       case ValueMetaInterface.TYPE_INTEGER:
-        return new Long(metaA.getInteger(dataA).longValue()
-            - divideLongs(multiplyLongs(metaA.getInteger(dataA), metaB.getInteger(dataB)), 100L));
+        return new Long( metaA.getInteger( dataA ).longValue()
+            - divideLongs( multiplyLongs( metaA.getInteger( dataA ), metaB.getInteger( dataB ) ), 100L ) );
       case ValueMetaInterface.TYPE_BIGNUMBER:
-        return metaA.getBigNumber(dataA).subtract(
-            divideBigDecimals(metaA.getBigNumber(dataA),
-                multiplyBigDecimals(metaB.getBigNumber(dataB), new BigDecimal(100), null), null));
+        return metaA.getBigNumber( dataA ).subtract(
+            divideBigDecimals( metaA.getBigNumber( dataA ), multiplyBigDecimals( metaB.getBigNumber( dataB ),
+                new BigDecimal( 100 ), null ), null ) );
       default:
-        throw new KettleValueException("The 'A-B%' function only works on numeric data");
+        throw new KettleValueException( "The 'A-B%' function only works on numeric data" );
     }
   }
 
   /**
    * A + ( A * B / 100 )
-   *  
+   * 
    * @param metaA
    * @param dataA
    * @param metaB
@@ -644,30 +701,31 @@ public class ValueDataUtil {
    * @return
    * @throws KettleValueException
    */
-  public static Object percent3(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB)
-      throws KettleValueException {
-    if (dataA == null || dataB == null)
+  public static Object percent3( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB )
+    throws KettleValueException {
+    if ( dataA == null || dataB == null ) {
       return null;
+    }
 
-    switch (metaA.getType()) {
+    switch ( metaA.getType() ) {
       case ValueMetaInterface.TYPE_NUMBER:
-        return new Double(metaA.getNumber(dataA).doubleValue()
-            + divideDoubles(multiplyDoubles(metaA.getNumber(dataA), metaB.getNumber(dataB)), 100.0D));
+        return new Double( metaA.getNumber( dataA ).doubleValue()
+            + divideDoubles( multiplyDoubles( metaA.getNumber( dataA ), metaB.getNumber( dataB ) ), 100.0D ) );
       case ValueMetaInterface.TYPE_INTEGER:
-        return new Long(metaA.getInteger(dataA).longValue()
-            + divideLongs(multiplyLongs(metaA.getInteger(dataA), metaB.getInteger(dataB)), 100L));
+        return new Long( metaA.getInteger( dataA ).longValue()
+            + divideLongs( multiplyLongs( metaA.getInteger( dataA ), metaB.getInteger( dataB ) ), 100L ) );
       case ValueMetaInterface.TYPE_BIGNUMBER:
-        return metaA.getBigNumber(dataA).add(
-            divideBigDecimals(metaA.getBigNumber(dataA),
-                multiplyBigDecimals(metaB.getBigNumber(dataB), new BigDecimal(100), null), null));
+        return metaA.getBigNumber( dataA ).add(
+            divideBigDecimals( metaA.getBigNumber( dataA ), multiplyBigDecimals( metaB.getBigNumber( dataB ),
+                new BigDecimal( 100 ), null ), null ) );
       default:
-        throw new KettleValueException("The 'A+B%' function only works on numeric data");
+        throw new KettleValueException( "The 'A+B%' function only works on numeric data" );
     }
   }
 
   /**
    * A + B * C
-   *  
+   * 
    * @param metaA
    * @param dataA
    * @param metaB
@@ -675,344 +733,378 @@ public class ValueDataUtil {
    * @return
    * @throws KettleValueException
    */
-  public static Object combination1(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB,
-      ValueMetaInterface metaC, Object dataC) throws KettleValueException {
-    if (dataA == null || dataB == null || dataC == null)
+  public static Object combination1( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB,
+      ValueMetaInterface metaC, Object dataC ) throws KettleValueException {
+    if ( dataA == null || dataB == null || dataC == null ) {
       return null;
+    }
 
-    switch (metaA.getType()) {
+    switch ( metaA.getType() ) {
       case ValueMetaInterface.TYPE_NUMBER:
-        return new Double(metaA.getNumber(dataA).doubleValue()
-            + (metaB.getNumber(dataB).doubleValue() * metaC.getNumber(dataC).doubleValue()));
+        return new Double( metaA.getNumber( dataA ).doubleValue()
+            + ( metaB.getNumber( dataB ).doubleValue() * metaC.getNumber( dataC ).doubleValue() ) );
       case ValueMetaInterface.TYPE_INTEGER:
-        return new Long(metaA.getInteger(dataA).longValue()
-            + (metaB.getInteger(dataB).longValue() * metaC.getInteger(dataC).longValue()));
+        return new Long( metaA.getInteger( dataA ).longValue()
+            + ( metaB.getInteger( dataB ).longValue() * metaC.getInteger( dataC ).longValue() ) );
       case ValueMetaInterface.TYPE_BIGNUMBER:
-        return metaA.getBigNumber(dataA).add(
-            multiplyBigDecimals(metaB.getBigNumber(dataB), metaC.getBigNumber(dataC), null));
+        return metaA.getBigNumber( dataA ).add(
+            multiplyBigDecimals( metaB.getBigNumber( dataB ), metaC.getBigNumber( dataC ), null ) );
 
       default:
-        throw new KettleValueException("The 'combination1' function only works on numeric data");
+        throw new KettleValueException( "The 'combination1' function only works on numeric data" );
     }
   }
 
   /**
-  * SQRT( A*A + B*B )
-  *  
-  * @param metaA
-  * @param dataA
-  * @param metaB
-  * @param dataB
-  * @return
-  * @throws KettleValueException
-  */
-  public static Object combination2(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB)
-      throws KettleValueException {
-    if (dataA == null || dataB == null)
+   * SQRT( A*A + B*B )
+   * 
+   * @param metaA
+   * @param dataA
+   * @param metaB
+   * @param dataB
+   * @return
+   * @throws KettleValueException
+   */
+  public static Object combination2( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB )
+    throws KettleValueException {
+    if ( dataA == null || dataB == null ) {
       return null;
+    }
 
-    switch (metaA.getType()) {
+    switch ( metaA.getType() ) {
       case ValueMetaInterface.TYPE_NUMBER:
-        return new Double(Math.sqrt(metaA.getNumber(dataA).doubleValue() * metaA.getNumber(dataA).doubleValue()
-            + metaB.getNumber(dataB).doubleValue() * metaB.getNumber(dataB).doubleValue()));
+        return new Double( Math.sqrt( metaA.getNumber( dataA ).doubleValue() * metaA.getNumber( dataA ).doubleValue()
+            + metaB.getNumber( dataB ).doubleValue() * metaB.getNumber( dataB ).doubleValue() ) );
 
       case ValueMetaInterface.TYPE_INTEGER:
-        return new Long(Math.round(Math.sqrt(metaA.getInteger(dataA).longValue() * metaA.getInteger(dataA).longValue()
-            + metaB.getInteger(dataB).longValue() / metaB.getInteger(dataB).longValue())));
+        return new Long( Math.round( Math.sqrt( metaA.getInteger( dataA ).longValue()
+            * metaA.getInteger( dataA ).longValue() + metaB.getInteger( dataB ).longValue()
+            / metaB.getInteger( dataB ).longValue() ) ) );
 
       case ValueMetaInterface.TYPE_BIGNUMBER:
-        return BigDecimal.valueOf(Math.sqrt(metaA.getNumber(dataA).doubleValue() * metaA.getNumber(dataA).doubleValue()
-            + metaB.getNumber(dataB).doubleValue() * metaB.getNumber(dataB).doubleValue()));
+        return BigDecimal.valueOf( Math.sqrt( metaA.getNumber( dataA ).doubleValue()
+            * metaA.getNumber( dataA ).doubleValue() + metaB.getNumber( dataB ).doubleValue()
+            * metaB.getNumber( dataB ).doubleValue() ) );
 
       default:
-        throw new KettleValueException("The 'combination2' function only works on numeric data");
+        throw new KettleValueException( "The 'combination2' function only works on numeric data" );
     }
   }
 
   /**
    * Rounding with no decimal places (using default rounding method ROUND_HALF_EVEN)
    * 
-   * @param metaA Metadata of value to round
-   * @param dataA Value to round
+   * @param metaA
+   *          Metadata of value to round
+   * @param dataA
+   *          Value to round
    * @return The rounded value
    * @throws KettleValueException
    */
-  public static Object round(ValueMetaInterface metaA, Object dataA) throws KettleValueException {
-    if (dataA == null)
+  public static Object round( ValueMetaInterface metaA, Object dataA ) throws KettleValueException {
+    if ( dataA == null ) {
       return null;
+    }
 
-    switch (metaA.getType()) {
+    switch ( metaA.getType() ) {
       case ValueMetaInterface.TYPE_NUMBER:
-        return new Double(Math.round(metaA.getNumber(dataA).doubleValue()));
+        return new Double( Math.round( metaA.getNumber( dataA ).doubleValue() ) );
       case ValueMetaInterface.TYPE_INTEGER:
-        return metaA.getInteger(dataA);
+        return metaA.getInteger( dataA );
       case ValueMetaInterface.TYPE_BIGNUMBER:
-        return new BigDecimal(Math.round(metaA.getNumber(dataA).doubleValue()));
+        return new BigDecimal( Math.round( metaA.getNumber( dataA ).doubleValue() ) );
 
       default:
-        throw new KettleValueException("The 'round' function only works on numeric data");
+        throw new KettleValueException( "The 'round' function only works on numeric data" );
     }
   }
 
   /**
    * Rounding with no decimal places with a given rounding method
    * 
-   * @param metaA Metadata of value to round
-   * @param dataA Value to round
-   * @param roundingMode The mode for rounding, e.g. java.math.BigDecimal.ROUND_HALF_EVEN
+   * @param metaA
+   *          Metadata of value to round
+   * @param dataA
+   *          Value to round
+   * @param roundingMode
+   *          The mode for rounding, e.g. java.math.BigDecimal.ROUND_HALF_EVEN
    * @return The rounded value
    * @throws KettleValueException
    */
-  public static Object round(ValueMetaInterface metaA, Object dataA, int roundingMode) throws KettleValueException {
-    if (dataA == null)
+  public static Object round( ValueMetaInterface metaA, Object dataA, int roundingMode ) throws KettleValueException {
+    if ( dataA == null ) {
       return null;
+    }
 
-    switch (metaA.getType()) {
+    switch ( metaA.getType() ) {
       case ValueMetaInterface.TYPE_NUMBER:
-        return new Double(Const.round(metaA.getNumber(dataA).doubleValue(), 0, roundingMode));
+        return new Double( Const.round( metaA.getNumber( dataA ).doubleValue(), 0, roundingMode ) );
       case ValueMetaInterface.TYPE_INTEGER:
-        return metaA.getInteger(dataA);
+        return metaA.getInteger( dataA );
       case ValueMetaInterface.TYPE_BIGNUMBER:
         // Round it to 0 digits.
-        BigDecimal number = metaA.getBigNumber(dataA);
-        return number.setScale(0, roundingMode);
+        BigDecimal number = metaA.getBigNumber( dataA );
+        return number.setScale( 0, roundingMode );
       default:
-        throw new KettleValueException("The 'round' function only works on numeric data");
+        throw new KettleValueException( "The 'round' function only works on numeric data" );
     }
   }
 
   /**
    * Rounding with decimal places (using default rounding method ROUND_HALF_EVEN)
    * 
-   * @param metaA Metadata of value to round
-   * @param dataA Value to round
-   * @param metaB Metadata of decimal places
-   * @param dataB decimal places
+   * @param metaA
+   *          Metadata of value to round
+   * @param dataA
+   *          Value to round
+   * @param metaB
+   *          Metadata of decimal places
+   * @param dataB
+   *          decimal places
    * @return The rounded value
    * @throws KettleValueException
    */
-  public static Object round(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB)
-      throws KettleValueException {
-    return round(metaA, dataA, metaB, dataB, BigDecimal.ROUND_HALF_EVEN);
+  public static Object round( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB )
+    throws KettleValueException {
+    return round( metaA, dataA, metaB, dataB, BigDecimal.ROUND_HALF_EVEN );
   }
 
   /**
    * Rounding with decimal places with a given rounding method
-   *  
-   * @param metaA Metadata of value to round
-   * @param dataA Value to round
-   * @param metaB Metadata of decimal places
-   * @param dataB decimal places
-   * @param roundingMode roundingMode The mode for rounding, e.g. java.math.BigDecimal.ROUND_HALF_EVEN
+   * 
+   * @param metaA
+   *          Metadata of value to round
+   * @param dataA
+   *          Value to round
+   * @param metaB
+   *          Metadata of decimal places
+   * @param dataB
+   *          decimal places
+   * @param roundingMode
+   *          roundingMode The mode for rounding, e.g. java.math.BigDecimal.ROUND_HALF_EVEN
    * @return The rounded value
    * @throws KettleValueException
    */
-  public static Object round(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB,
-      int roundingMode) throws KettleValueException {
-    if (dataA == null || dataB == null)
+  public static Object round( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB,
+      int roundingMode ) throws KettleValueException {
+    if ( dataA == null || dataB == null ) {
       return null;
+    }
 
-    switch (metaA.getType()) {
+    switch ( metaA.getType() ) {
       case ValueMetaInterface.TYPE_NUMBER:
-        return new Double(Const.round(metaA.getNumber(dataA).doubleValue(), metaB.getInteger(dataB).intValue(),
-            roundingMode));
+        return new Double( Const.round( metaA.getNumber( dataA ).doubleValue(), metaB.getInteger( dataB ).intValue(),
+            roundingMode ) );
       case ValueMetaInterface.TYPE_INTEGER:
-        return metaA.getInteger(dataA);
+        return metaA.getInteger( dataA );
       case ValueMetaInterface.TYPE_BIGNUMBER:
 
         // Round it to the desired number of digits.
-        BigDecimal number = metaA.getBigNumber(dataA);
-        return number.setScale(metaB.getInteger(dataB).intValue(), roundingMode);
+        BigDecimal number = metaA.getBigNumber( dataA );
+        return number.setScale( metaB.getInteger( dataB ).intValue(), roundingMode );
 
       default:
-        throw new KettleValueException("The 'round' function only works on numeric data");
+        throw new KettleValueException( "The 'round' function only works on numeric data" );
     }
   }
 
-  public static Object ceil(ValueMetaInterface metaA, Object dataA) throws KettleValueException {
-    if (dataA == null)
+  public static Object ceil( ValueMetaInterface metaA, Object dataA ) throws KettleValueException {
+    if ( dataA == null ) {
       return null;
-    switch (metaA.getType()) {
+    }
+    switch ( metaA.getType() ) {
       case ValueMetaInterface.TYPE_NUMBER:
-        return new Double(Math.ceil(metaA.getNumber(dataA).doubleValue()));
+        return new Double( Math.ceil( metaA.getNumber( dataA ).doubleValue() ) );
       case ValueMetaInterface.TYPE_INTEGER:
-        return metaA.getInteger(dataA);
+        return metaA.getInteger( dataA );
       case ValueMetaInterface.TYPE_BIGNUMBER:
-        return new BigDecimal(Math.ceil(metaA.getNumber(dataA).doubleValue()));
+        return new BigDecimal( Math.ceil( metaA.getNumber( dataA ).doubleValue() ) );
 
       default:
-        throw new KettleValueException("The 'ceil' function only works on numeric data");
+        throw new KettleValueException( "The 'ceil' function only works on numeric data" );
     }
   }
 
-  public static Object floor(ValueMetaInterface metaA, Object dataA) throws KettleValueException {
-    if (dataA == null)
+  public static Object floor( ValueMetaInterface metaA, Object dataA ) throws KettleValueException {
+    if ( dataA == null ) {
       return null;
-    switch (metaA.getType()) {
+    }
+    switch ( metaA.getType() ) {
       case ValueMetaInterface.TYPE_NUMBER:
-        return new Double(Math.floor(metaA.getNumber(dataA).doubleValue()));
+        return new Double( Math.floor( metaA.getNumber( dataA ).doubleValue() ) );
       case ValueMetaInterface.TYPE_INTEGER:
-        return metaA.getInteger(dataA);
+        return metaA.getInteger( dataA );
       case ValueMetaInterface.TYPE_BIGNUMBER:
-        return new BigDecimal(Math.floor(metaA.getNumber(dataA).doubleValue()));
+        return new BigDecimal( Math.floor( metaA.getNumber( dataA ).doubleValue() ) );
 
       default:
-        throw new KettleValueException("The 'floor' function only works on numeric data");
+        throw new KettleValueException( "The 'floor' function only works on numeric data" );
     }
   }
 
-  public static Object abs(ValueMetaInterface metaA, Object dataA) throws KettleValueException {
-    if (dataA == null)
+  public static Object abs( ValueMetaInterface metaA, Object dataA ) throws KettleValueException {
+    if ( dataA == null ) {
       return null;
+    }
 
-    switch (metaA.getType()) {
+    switch ( metaA.getType() ) {
       case ValueMetaInterface.TYPE_NUMBER:
-        return new Double(Math.abs(metaA.getNumber(dataA).doubleValue()));
+        return new Double( Math.abs( metaA.getNumber( dataA ).doubleValue() ) );
       case ValueMetaInterface.TYPE_INTEGER:
-        return metaA.getInteger(Math.abs(metaA.getNumber(dataA).longValue()));
+        return metaA.getInteger( Math.abs( metaA.getNumber( dataA ).longValue() ) );
       case ValueMetaInterface.TYPE_BIGNUMBER:
-        return new BigDecimal(Math.abs(metaA.getNumber(dataA).doubleValue()));
+        return new BigDecimal( Math.abs( metaA.getNumber( dataA ).doubleValue() ) );
 
       default:
-        throw new KettleValueException("The 'abs' function only works on numeric data");
+        throw new KettleValueException( "The 'abs' function only works on numeric data" );
     }
   }
 
-  public static Object nvl(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB)
-      throws KettleValueException {
-    switch (metaA.getType()) {
+  public static Object nvl( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB )
+    throws KettleValueException {
+    switch ( metaA.getType() ) {
       case ValueMetaInterface.TYPE_STRING:
-        if (dataA == null)
-          return metaB.getString(dataB);
-        else
-          return metaA.getString(dataA);
+        if ( dataA == null ) {
+          return metaB.getString( dataB );
+        } else {
+          return metaA.getString( dataA );
+        }
 
       case ValueMetaInterface.TYPE_NUMBER:
-        if (dataA == null)
-          return metaB.getNumber(dataB);
-        else
-          return metaA.getNumber(dataA);
+        if ( dataA == null ) {
+          return metaB.getNumber( dataB );
+        } else {
+          return metaA.getNumber( dataA );
+        }
 
       case ValueMetaInterface.TYPE_INTEGER:
-        if (dataA == null)
-          return metaB.getInteger(dataB);
-        else
-          return metaA.getInteger(dataA);
+        if ( dataA == null ) {
+          return metaB.getInteger( dataB );
+        } else {
+          return metaA.getInteger( dataA );
+        }
 
       case ValueMetaInterface.TYPE_BIGNUMBER:
-        if (dataA == null)
-          return metaB.getBigNumber(dataB);
-        else
-          return metaA.getBigNumber(dataA);
+        if ( dataA == null ) {
+          return metaB.getBigNumber( dataB );
+        } else {
+          return metaA.getBigNumber( dataA );
+        }
 
       case ValueMetaInterface.TYPE_DATE:
-        if (dataA == null)
-          return metaB.getDate(dataB);
-        else
-          return metaA.getDate(dataA);
+        if ( dataA == null ) {
+          return metaB.getDate( dataB );
+        } else {
+          return metaA.getDate( dataA );
+        }
 
       case ValueMetaInterface.TYPE_BOOLEAN:
-        if (dataA == null)
-          return metaB.getBoolean(dataB);
-        else
-          return metaA.getBoolean(dataA);
+        if ( dataA == null ) {
+          return metaB.getBoolean( dataB );
+        } else {
+          return metaA.getBoolean( dataA );
+        }
 
       case ValueMetaInterface.TYPE_BINARY:
-        if (dataA == null)
-          return metaB.getBinary(dataB);
-        else
-          return metaA.getBinary(dataA);
+        if ( dataA == null ) {
+          return metaB.getBinary( dataB );
+        } else {
+          return metaA.getBinary( dataA );
+        }
 
       default:
-        if (dataA == null) {
-          return metaB.getNativeDataType(dataB);
+        if ( dataA == null ) {
+          return metaB.getNativeDataType( dataB );
         } else {
-          return metaA.getNativeDataType(dataA);
+          return metaA.getNativeDataType( dataA );
         }
     }
   }
 
-  public static Object removeTimeFromDate(ValueMetaInterface metaA, Object dataA) throws KettleValueException {
+  public static Object removeTimeFromDate( ValueMetaInterface metaA, Object dataA ) throws KettleValueException {
     Calendar cal = Calendar.getInstance();
-    Date date = metaA.getDate(dataA);
-    if (date != null) {
-      cal.setTime(date);
-      return Const.removeTimeFromDate(date);
+    Date date = metaA.getDate( dataA );
+    if ( date != null ) {
+      cal.setTime( date );
+      return Const.removeTimeFromDate( date );
     } else {
       return null;
     }
   }
 
-  public static Object addTimeToDate(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB,
-      ValueMetaInterface metaC, Object dataC) throws KettleValueException {
-    if (dataA == null)
+  public static Object addTimeToDate( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB,
+      ValueMetaInterface metaC, Object dataC ) throws KettleValueException {
+    if ( dataA == null ) {
       return null;
+    }
 
     try {
-      if (dataC == null)
-        return Const.addTimeToDate(metaA.getDate(dataA), metaB.getString(dataB), null);
-      else
-        return Const.addTimeToDate(metaA.getDate(dataA), metaB.getString(dataB), metaC.getString(dataC));
-    } catch (Exception e) {
-      throw new KettleValueException(e);
+      if ( dataC == null ) {
+        return Const.addTimeToDate( metaA.getDate( dataA ), metaB.getString( dataB ), null );
+      } else {
+        return Const.addTimeToDate( metaA.getDate( dataA ), metaB.getString( dataB ), metaC.getString( dataC ) );
+      }
+    } catch ( Exception e ) {
+      throw new KettleValueException( e );
     }
   }
 
-  public static Object addDays(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB)
-      throws KettleValueException {
+  public static Object addDays( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB )
+    throws KettleValueException {
 
     Calendar cal = Calendar.getInstance();
-    cal.setTime(metaA.getDate(dataA));
-    cal.add(Calendar.DAY_OF_YEAR, metaB.getInteger(dataB).intValue());
+    cal.setTime( metaA.getDate( dataA ) );
+    cal.add( Calendar.DAY_OF_YEAR, metaB.getInteger( dataB ).intValue() );
 
     return cal.getTime();
   }
 
-  public static Object addHours(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB)
-      throws KettleValueException {
+  public static Object addHours( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB )
+    throws KettleValueException {
 
     Calendar cal = Calendar.getInstance();
-    cal.setTime(metaA.getDate(dataA));
-    cal.add(Calendar.HOUR_OF_DAY, metaB.getInteger(dataB).intValue());
+    cal.setTime( metaA.getDate( dataA ) );
+    cal.add( Calendar.HOUR_OF_DAY, metaB.getInteger( dataB ).intValue() );
 
     return cal.getTime();
   }
 
-  public static Object addMinutes(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB)
-      throws KettleValueException {
+  public static Object addMinutes( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB )
+    throws KettleValueException {
 
     Calendar cal = Calendar.getInstance();
-    cal.setTime(metaA.getDate(dataA));
-    cal.add(Calendar.MINUTE, metaB.getInteger(dataB).intValue());
+    cal.setTime( metaA.getDate( dataA ) );
+    cal.add( Calendar.MINUTE, metaB.getInteger( dataB ).intValue() );
 
     return cal.getTime();
   }
 
-  public static Object addMonths(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB)
-      throws KettleValueException {
+  public static Object addMonths( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB )
+    throws KettleValueException {
 
-    if (dataA != null && dataB != null) {
+    if ( dataA != null && dataB != null ) {
       Calendar cal = Calendar.getInstance();
-      cal.setTime(metaA.getDate(dataA));
-      int year = cal.get(Calendar.YEAR);
-      int month = cal.get(Calendar.MONTH);
-      int day = cal.get(Calendar.DAY_OF_MONTH);
+      cal.setTime( metaA.getDate( dataA ) );
+      int year = cal.get( Calendar.YEAR );
+      int month = cal.get( Calendar.MONTH );
+      int day = cal.get( Calendar.DAY_OF_MONTH );
 
-      month += metaB.getInteger(dataB).intValue();
+      month += metaB.getInteger( dataB ).intValue();
 
-      int newyear = year + (int) Math.floor(month / 12);
+      int newyear = year + (int) Math.floor( month / 12 );
       int newmonth = month % 12;
 
-      cal.set(newyear, newmonth, 1);
-      int newday = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
-      if (newday < day)
-        cal.set(Calendar.DAY_OF_MONTH, newday);
-      else
-        cal.set(Calendar.DAY_OF_MONTH, day);
+      cal.set( newyear, newmonth, 1 );
+      int newday = cal.getActualMaximum( Calendar.DAY_OF_MONTH );
+      if ( newday < day ) {
+        cal.set( Calendar.DAY_OF_MONTH, newday );
+      } else {
+        cal.set( Calendar.DAY_OF_MONTH, day );
+      }
 
-      return (cal.getTime());
+      return ( cal.getTime() );
     } else {
-      throw new KettleValueException("Unable to add months with a null value");
+      throw new KettleValueException( "Unable to add months with a null value" );
     }
 
   }
@@ -1021,249 +1113,267 @@ public class ValueDataUtil {
    * Returns the number of days that have elapsed between dataA and dataB.
    * 
    * @param metaA
-   * @param dataA The "end date"
+   * @param dataA
+   *          The "end date"
    * @param metaB
-   * @param dataB The "start date"
-   * @param resultType The "result type" (ms, s, mn, h, d)
+   * @param dataB
+   *          The "start date"
+   * @param resultType
+   *          The "result type" (ms, s, mn, h, d)
    * @return Number of days
    * @throws KettleValueException
    */
 
-  public static Object DateDiff(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB,
-      String resultType) throws KettleValueException {
+  public static Object DateDiff( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB,
+      String resultType ) throws KettleValueException {
 
-    if (dataA != null && dataB != null) {
-      Date startDate = metaB.getDate(dataB);
-      Date endDate = metaA.getDate(dataA);
+    if ( dataA != null && dataB != null ) {
+      Date startDate = metaB.getDate( dataB );
+      Date endDate = metaA.getDate( dataA );
 
       Calendar stDateCal = Calendar.getInstance();
       Calendar endDateCal = Calendar.getInstance();
-      stDateCal.setTime(startDate);
-      endDateCal.setTime(endDate);
+      stDateCal.setTime( startDate );
+      endDateCal.setTime( endDate );
 
-      long endL = endDateCal.getTimeInMillis() + endDateCal.getTimeZone().getOffset(endDateCal.getTimeInMillis());
-      long startL = stDateCal.getTimeInMillis() + stDateCal.getTimeZone().getOffset(stDateCal.getTimeInMillis());
+      long endL = endDateCal.getTimeInMillis() + endDateCal.getTimeZone().getOffset( endDateCal.getTimeInMillis() );
+      long startL = stDateCal.getTimeInMillis() + stDateCal.getTimeZone().getOffset( stDateCal.getTimeInMillis() );
       long diff = endL - startL;
 
-      if (Const.isEmpty(resultType))
-        return new Long(diff / 86400000);
-      else if (resultType.equals("ms")) // millisecond
-        return new Long(diff);
-      else if (resultType.equals("s"))
-        return new Long(diff / 1000); // second
-      else if (resultType.equals("mn"))
-        return new Long(diff / 60000); // minute
-      else if (resultType.equals("h"))
-        return new Long(diff / 3600000); // hour
-      else if (resultType.equals("d"))
-        return new Long(diff / 86400000);
-      else {
-        throw new KettleValueException("Unknown result type option '" + resultType + "'");
+      if ( Const.isEmpty( resultType ) ) {
+        return new Long( diff / 86400000 );
+      } else if ( resultType.equals( "ms" ) ) {
+        return new Long( diff );
+      } else if ( resultType.equals( "s" ) ) {
+        return new Long( diff / 1000 ); // second
+      } else if ( resultType.equals( "mn" ) ) {
+        return new Long( diff / 60000 ); // minute
+      } else if ( resultType.equals( "h" ) ) {
+        return new Long( diff / 3600000 ); // hour
+      } else if ( resultType.equals( "d" ) ) {
+        return new Long( diff / 86400000 );
+      } else {
+        throw new KettleValueException( "Unknown result type option '" + resultType + "'" );
       }
     } else {
       return null;
     }
   }
 
-  public static Object DateWorkingDiff(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB)
-      throws KettleValueException {
-    if (dataA != null && dataB != null) {
-      Date fromDate = metaB.getDate(dataB);
-      Date toDate = metaA.getDate(dataA);
+  public static Object DateWorkingDiff( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB )
+    throws KettleValueException {
+    if ( dataA != null && dataB != null ) {
+      Date fromDate = metaB.getDate( dataB );
+      Date toDate = metaA.getDate( dataA );
       boolean singminus = false;
 
-      if (fromDate.after(toDate)) {
+      if ( fromDate.after( toDate ) ) {
         singminus = true;
         Date temp = fromDate;
         fromDate = toDate;
         toDate = temp;
       }
       Calendar calFrom = Calendar.getInstance();
-      calFrom.setTime(fromDate);
+      calFrom.setTime( fromDate );
       Calendar calTo = Calendar.getInstance();
-      calTo.setTime(toDate);
+      calTo.setTime( toDate );
       int iNoOfWorkingDays = 0;
       do {
-        if (calFrom.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY
-            && calFrom.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
+        if ( calFrom.get( Calendar.DAY_OF_WEEK ) != Calendar.SATURDAY
+            && calFrom.get( Calendar.DAY_OF_WEEK ) != Calendar.SUNDAY ) {
           iNoOfWorkingDays += 1;
         }
-        calFrom.add(Calendar.DATE, 1);
-      } while (calFrom.getTimeInMillis() < calTo.getTimeInMillis());
-      return new Long(singminus ? -iNoOfWorkingDays : iNoOfWorkingDays);
-    } else
+        calFrom.add( Calendar.DATE, 1 );
+      } while ( calFrom.getTimeInMillis() < calTo.getTimeInMillis() );
+      return new Long( singminus ? -iNoOfWorkingDays : iNoOfWorkingDays );
+    } else {
       return null;
+    }
   }
 
-  public static Object yearOfDate(ValueMetaInterface metaA, Object dataA) throws KettleValueException {
-    if (dataA == null)
-      return null;
-
-    Calendar calendar = Calendar.getInstance();
-    calendar.setTime(metaA.getDate(dataA));
-    return new Long(calendar.get(Calendar.YEAR));
-
-  }
-
-  public static Object monthOfDate(ValueMetaInterface metaA, Object dataA) throws KettleValueException {
-    if (dataA == null)
-      return null;
-
-    Calendar calendar = Calendar.getInstance();
-    calendar.setTime(metaA.getDate(dataA));
-    return new Long(calendar.get(Calendar.MONTH) + 1);
-
-  }
-
-  public static Object quarterOfDate(ValueMetaInterface metaA, Object dataA) throws KettleValueException {
-    if (dataA == null)
-      return null;
-
-    Calendar calendar = Calendar.getInstance();
-    calendar.setTime(metaA.getDate(dataA));
-    return new Long((calendar.get(Calendar.MONTH) + 3) / 3);
-  }
-
-  public static Object dayOfYear(ValueMetaInterface metaA, Object dataA) throws KettleValueException {
-    if (dataA == null)
-      return null;
-
-    Calendar calendar = Calendar.getInstance();
-    calendar.setTime(metaA.getDate(dataA));
-    return new Long(calendar.get(Calendar.DAY_OF_YEAR));
-  }
-
-  public static Object dayOfMonth(ValueMetaInterface metaA, Object dataA) throws KettleValueException {
-    if (dataA == null)
-      return null;
-
-    Calendar calendar = Calendar.getInstance();
-    calendar.setTime(metaA.getDate(dataA));
-    return new Long(calendar.get(Calendar.DAY_OF_MONTH));
-  }
-
-  public static Object hourOfDay(ValueMetaInterface metaA, Object dataA) throws KettleValueException {
-    if (dataA == null)
-      return null;
-
-    Calendar calendar = Calendar.getInstance();
-    calendar.setTime(metaA.getDate(dataA));
-    return new Long(calendar.get(Calendar.HOUR_OF_DAY));
-  }
-
-  public static Object minuteOfHour(ValueMetaInterface metaA, Object dataA) throws KettleValueException {
-    if (dataA == null)
-      return null;
-
-    Calendar calendar = Calendar.getInstance();
-    calendar.setTime(metaA.getDate(dataA));
-    return new Long(calendar.get(Calendar.MINUTE));
-  }
-
-  public static Object secondOfMinute(ValueMetaInterface metaA, Object dataA) throws KettleValueException {
-    if (dataA == null)
-      return null;
-
-    Calendar calendar = Calendar.getInstance();
-    calendar.setTime(metaA.getDate(dataA));
-    return new Long(calendar.get(Calendar.SECOND));
-  }
-
-  public static Object dayOfWeek(ValueMetaInterface metaA, Object dataA) throws KettleValueException {
-    if (dataA == null)
-      return null;
-
-    Calendar calendar = Calendar.getInstance();
-    calendar.setTime(metaA.getDate(dataA));
-    return new Long(calendar.get(Calendar.DAY_OF_WEEK));
-  }
-
-  public static Object weekOfYear(ValueMetaInterface metaA, Object dataA) throws KettleValueException {
-    if (dataA == null)
-      return null;
-
-    Calendar calendar = Calendar.getInstance();
-    calendar.setTime(metaA.getDate(dataA));
-    return new Long(calendar.get(Calendar.WEEK_OF_YEAR));
-  }
-
-  public static Object weekOfYearISO8601(ValueMetaInterface metaA, Object dataA) throws KettleValueException {
-    if (dataA == null)
-      return null;
-
-    Calendar calendar = Calendar.getInstance(Locale.ENGLISH);
-    calendar.setMinimalDaysInFirstWeek(4);
-    calendar.setFirstDayOfWeek(Calendar.MONDAY);
-    calendar.setTime(metaA.getDate(dataA));
-    return new Long(calendar.get(Calendar.WEEK_OF_YEAR));
-
-  }
-
-  public static Object yearOfDateISO8601(ValueMetaInterface metaA, Object dataA) throws KettleValueException {
-    if (dataA == null)
-      return null;
-
-    Calendar calendar = Calendar.getInstance(Locale.ENGLISH);
-    calendar.setMinimalDaysInFirstWeek(4);
-    calendar.setFirstDayOfWeek(Calendar.MONDAY);
-    calendar.setTime(metaA.getDate(dataA));
-
-    int week = calendar.get(Calendar.WEEK_OF_YEAR);
-    int month = calendar.get(Calendar.MONTH);
-    int year = calendar.get(Calendar.YEAR);
-
-    // fix up for the year taking into account ISO8601 weeks
-    if (week >= 52 && month == 0)
-      year--;
-    if (week <= 2 && month == 11)
-      year++;
-
-    return new Long(year);
-  }
-
-  /**
-   * Change a hexadecimal string into normal ASCII representation. E.g. if Value
-   * contains string "61" afterwards it would contain value "a". If the
-   * hexadecimal string is of odd length a leading zero will be used.
-   *
-   * Note that only the low byte of a character will be processed, this
-   * is for binary transformations.
-   *
-   * @return Value itself
-   * @throws KettleValueException  
-   */
-  public static String hexToByteDecode(ValueMetaInterface meta, Object data) throws KettleValueException {
-    if (meta.isNull(data)) {
+  public static Object yearOfDate( ValueMetaInterface metaA, Object dataA ) throws KettleValueException {
+    if ( dataA == null ) {
       return null;
     }
 
-    String hexString = meta.getString(data);
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime( metaA.getDate( dataA ) );
+    return new Long( calendar.get( Calendar.YEAR ) );
+
+  }
+
+  public static Object monthOfDate( ValueMetaInterface metaA, Object dataA ) throws KettleValueException {
+    if ( dataA == null ) {
+      return null;
+    }
+
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime( metaA.getDate( dataA ) );
+    return new Long( calendar.get( Calendar.MONTH ) + 1 );
+
+  }
+
+  public static Object quarterOfDate( ValueMetaInterface metaA, Object dataA ) throws KettleValueException {
+    if ( dataA == null ) {
+      return null;
+    }
+
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime( metaA.getDate( dataA ) );
+    return new Long( ( calendar.get( Calendar.MONTH ) + 3 ) / 3 );
+  }
+
+  public static Object dayOfYear( ValueMetaInterface metaA, Object dataA ) throws KettleValueException {
+    if ( dataA == null ) {
+      return null;
+    }
+
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime( metaA.getDate( dataA ) );
+    return new Long( calendar.get( Calendar.DAY_OF_YEAR ) );
+  }
+
+  public static Object dayOfMonth( ValueMetaInterface metaA, Object dataA ) throws KettleValueException {
+    if ( dataA == null ) {
+      return null;
+    }
+
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime( metaA.getDate( dataA ) );
+    return new Long( calendar.get( Calendar.DAY_OF_MONTH ) );
+  }
+
+  public static Object hourOfDay( ValueMetaInterface metaA, Object dataA ) throws KettleValueException {
+    if ( dataA == null ) {
+      return null;
+    }
+
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime( metaA.getDate( dataA ) );
+    return new Long( calendar.get( Calendar.HOUR_OF_DAY ) );
+  }
+
+  public static Object minuteOfHour( ValueMetaInterface metaA, Object dataA ) throws KettleValueException {
+    if ( dataA == null ) {
+      return null;
+    }
+
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime( metaA.getDate( dataA ) );
+    return new Long( calendar.get( Calendar.MINUTE ) );
+  }
+
+  public static Object secondOfMinute( ValueMetaInterface metaA, Object dataA ) throws KettleValueException {
+    if ( dataA == null ) {
+      return null;
+    }
+
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime( metaA.getDate( dataA ) );
+    return new Long( calendar.get( Calendar.SECOND ) );
+  }
+
+  public static Object dayOfWeek( ValueMetaInterface metaA, Object dataA ) throws KettleValueException {
+    if ( dataA == null ) {
+      return null;
+    }
+
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime( metaA.getDate( dataA ) );
+    return new Long( calendar.get( Calendar.DAY_OF_WEEK ) );
+  }
+
+  public static Object weekOfYear( ValueMetaInterface metaA, Object dataA ) throws KettleValueException {
+    if ( dataA == null ) {
+      return null;
+    }
+
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime( metaA.getDate( dataA ) );
+    return new Long( calendar.get( Calendar.WEEK_OF_YEAR ) );
+  }
+
+  public static Object weekOfYearISO8601( ValueMetaInterface metaA, Object dataA ) throws KettleValueException {
+    if ( dataA == null ) {
+      return null;
+    }
+
+    Calendar calendar = Calendar.getInstance( Locale.ENGLISH );
+    calendar.setMinimalDaysInFirstWeek( 4 );
+    calendar.setFirstDayOfWeek( Calendar.MONDAY );
+    calendar.setTime( metaA.getDate( dataA ) );
+    return new Long( calendar.get( Calendar.WEEK_OF_YEAR ) );
+
+  }
+
+  public static Object yearOfDateISO8601( ValueMetaInterface metaA, Object dataA ) throws KettleValueException {
+    if ( dataA == null ) {
+      return null;
+    }
+
+    Calendar calendar = Calendar.getInstance( Locale.ENGLISH );
+    calendar.setMinimalDaysInFirstWeek( 4 );
+    calendar.setFirstDayOfWeek( Calendar.MONDAY );
+    calendar.setTime( metaA.getDate( dataA ) );
+
+    int week = calendar.get( Calendar.WEEK_OF_YEAR );
+    int month = calendar.get( Calendar.MONTH );
+    int year = calendar.get( Calendar.YEAR );
+
+    // fix up for the year taking into account ISO8601 weeks
+    if ( week >= 52 && month == 0 ) {
+      year--;
+    }
+    if ( week <= 2 && month == 11 ) {
+      year++;
+    }
+
+    return new Long( year );
+  }
+
+  /**
+   * Change a hexadecimal string into normal ASCII representation. E.g. if Value contains string "61" afterwards it
+   * would contain value "a". If the hexadecimal string is of odd length a leading zero will be used.
+   * 
+   * Note that only the low byte of a character will be processed, this is for binary transformations.
+   * 
+   * @return Value itself
+   * @throws KettleValueException
+   */
+  public static String hexToByteDecode( ValueMetaInterface meta, Object data ) throws KettleValueException {
+    if ( meta.isNull( data ) ) {
+      return null;
+    }
+
+    String hexString = meta.getString( data );
 
     int len = hexString.length();
-    char chArray[] = new char[(len + 1) / 2];
+    char[] chArray = new char[( len + 1 ) / 2];
     boolean evenByte = true;
     int nextByte = 0;
 
     // we assume a leading 0 if the length is not even.
-    if ((len % 2) == 1)
+    if ( ( len % 2 ) == 1 ) {
       evenByte = false;
+    }
 
     int nibble;
     int i, j;
-    for (i = 0, j = 0; i < len; i++) {
-      char c = hexString.charAt(i);
+    for ( i = 0, j = 0; i < len; i++ ) {
+      char c = hexString.charAt( i );
 
-      if ((c >= '0') && (c <= '9'))
+      if ( ( c >= '0' ) && ( c <= '9' ) ) {
         nibble = c - '0';
-      else if ((c >= 'A') && (c <= 'F'))
+      } else if ( ( c >= 'A' ) && ( c <= 'F' ) ) {
         nibble = c - 'A' + 0x0A;
-      else if ((c >= 'a') && (c <= 'f'))
+      } else if ( ( c >= 'a' ) && ( c <= 'f' ) ) {
         nibble = c - 'a' + 0x0A;
-      else
-        throw new KettleValueException("invalid hex digit '" + c + "'.");
+      } else {
+        throw new KettleValueException( "invalid hex digit '" + c + "'." );
+      }
 
-      if (evenByte) {
-        nextByte = (nibble << 4);
+      if ( evenByte ) {
+        nextByte = ( nibble << 4 );
       } else {
         nextByte += nibble;
         chArray[j] = (char) nextByte;
@@ -1272,122 +1382,126 @@ public class ValueDataUtil {
 
       evenByte = !evenByte;
     }
-    return new String(chArray);
+    return new String( chArray );
   }
 
   /**
-   * Change a string into its hexadecimal representation. E.g. if Value
-   * contains string "a" afterwards it would contain value "0061".
+   * Change a string into its hexadecimal representation. E.g. if Value contains string "a" afterwards it would contain
+   * value "0061".
    * 
-   * Note that transformations happen in groups of 4 hex characters, so
-   * the value of a characters is always in the range 0-65535.
-   *  
-   * @return 
+   * Note that transformations happen in groups of 4 hex characters, so the value of a characters is always in the range
+   * 0-65535.
+   * 
+   * @return
    * @throws KettleValueException
    */
-  public static String byteToHexEncode(ValueMetaInterface metaA, Object dataA) throws KettleValueException {
-    if (dataA == null)
+  public static String byteToHexEncode( ValueMetaInterface metaA, Object dataA ) throws KettleValueException {
+    if ( dataA == null ) {
       return null;
+    }
 
-    final char hexDigits[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+    final char[] hexDigits = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
     // depending on the use case, this code might deliver the wrong values due to extra conversion with toCharArray
-    // see Checksum step and PDI-5190 "Add Checksum step gives incorrect results (MD5, CRC32, ADLER32, SHA-1 are affected)"
-    String hex = metaA.getString(dataA);
+    // see Checksum step and PDI-5190
+    // "Add Checksum step gives incorrect results (MD5, CRC32, ADLER32, SHA-1 are affected)"
+    String hex = metaA.getString( dataA );
 
     char[] s = hex.toCharArray();
-    StringBuffer hexString = new StringBuffer(2 * s.length);
+    StringBuffer hexString = new StringBuffer( 2 * s.length );
 
-    for (int i = 0; i < s.length; i++) {
-      hexString.append(hexDigits[(s[i] & 0x00F0) >> 4]); // hi nibble
-      hexString.append(hexDigits[s[i] & 0x000F]); // lo nibble
+    for ( int i = 0; i < s.length; i++ ) {
+      hexString.append( hexDigits[( s[i] & 0x00F0 ) >> 4] ); // hi nibble
+      hexString.append( hexDigits[s[i] & 0x000F] ); // lo nibble
     }
 
     return hexString.toString();
   }
 
   /**
-   * Change a string into its hexadecimal representation. E.g. if Value
-   * contains string "a" afterwards it would contain value "0061".
+   * Change a string into its hexadecimal representation. E.g. if Value contains string "a" afterwards it would contain
+   * value "0061".
    * 
-   * Note that transformations happen in groups of 4 hex characters, so
-   * the value of a characters is always in the range 0-65535.
-   *  
+   * Note that transformations happen in groups of 4 hex characters, so the value of a characters is always in the range
+   * 0-65535.
+   * 
    * @return A string with Hex code
-   * @throws KettleValueException In case of a data conversion problem.
+   * @throws KettleValueException
+   *           In case of a data conversion problem.
    */
-  public static String charToHexEncode(ValueMetaInterface meta, Object data) throws KettleValueException {
-    final char hexDigits[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+  public static String charToHexEncode( ValueMetaInterface meta, Object data ) throws KettleValueException {
+    final char[] hexDigits = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
-    if (meta.isNull(data)) {
+    if ( meta.isNull( data ) ) {
       return null;
     }
 
-    String hex = meta.getString(data);
+    String hex = meta.getString( data );
 
     char[] s = hex.toCharArray();
-    StringBuffer hexString = new StringBuffer(2 * s.length);
+    StringBuffer hexString = new StringBuffer( 2 * s.length );
 
-    for (int i = 0; i < s.length; i++) {
-      hexString.append(hexDigits[(s[i] & 0xF000) >> 12]); // hex 1
-      hexString.append(hexDigits[(s[i] & 0x0F00) >> 8]); // hex 2
-      hexString.append(hexDigits[(s[i] & 0x00F0) >> 4]); // hex 3
-      hexString.append(hexDigits[s[i] & 0x000F]); // hex 4
+    for ( int i = 0; i < s.length; i++ ) {
+      hexString.append( hexDigits[( s[i] & 0xF000 ) >> 12] ); // hex 1
+      hexString.append( hexDigits[( s[i] & 0x0F00 ) >> 8] ); // hex 2
+      hexString.append( hexDigits[( s[i] & 0x00F0 ) >> 4] ); // hex 3
+      hexString.append( hexDigits[s[i] & 0x000F] ); // hex 4
     }
 
     return hexString.toString();
   }
 
   /**
-   * Change a hexadecimal string into normal ASCII representation. E.g. if Value
-   * contains string "61" afterwards it would contain value "a". If the
-   * hexadecimal string is of a wrong length leading zeroes will be used.
-   *
-   * Note that transformations happen in groups of 4 hex characters, so
-   * the value of a characters is always in the range 0-65535.
-   *
-   * @return A hex-to-char decoded String 
-   * @throws KettleValueException  
+   * Change a hexadecimal string into normal ASCII representation. E.g. if Value contains string "61" afterwards it
+   * would contain value "a". If the hexadecimal string is of a wrong length leading zeroes will be used.
+   * 
+   * Note that transformations happen in groups of 4 hex characters, so the value of a characters is always in the range
+   * 0-65535.
+   * 
+   * @return A hex-to-char decoded String
+   * @throws KettleValueException
    */
-  public static String hexToCharDecode(ValueMetaInterface meta, Object data) throws KettleValueException {
-    if (meta.isNull(data)) {
+  public static String hexToCharDecode( ValueMetaInterface meta, Object data ) throws KettleValueException {
+    if ( meta.isNull( data ) ) {
       return null;
     }
 
-    String hexString = meta.getString(data);
+    String hexString = meta.getString( data );
 
     int len = hexString.length();
-    char chArray[] = new char[(len + 3) / 4];
+    char[] chArray = new char[( len + 3 ) / 4];
     int charNr;
     int nextChar = 0;
 
     // we assume a leading 0s if the length is not right.
-    charNr = (len % 4);
-    if (charNr == 0)
+    charNr = ( len % 4 );
+    if ( charNr == 0 ) {
       charNr = 4;
+    }
 
     int nibble;
     int i, j;
-    for (i = 0, j = 0; i < len; i++) {
-      char c = hexString.charAt(i);
+    for ( i = 0, j = 0; i < len; i++ ) {
+      char c = hexString.charAt( i );
 
-      if ((c >= '0') && (c <= '9'))
+      if ( ( c >= '0' ) && ( c <= '9' ) ) {
         nibble = c - '0';
-      else if ((c >= 'A') && (c <= 'F'))
+      } else if ( ( c >= 'A' ) && ( c <= 'F' ) ) {
         nibble = c - 'A' + 0x0A;
-      else if ((c >= 'a') && (c <= 'f'))
+      } else if ( ( c >= 'a' ) && ( c <= 'f' ) ) {
         nibble = c - 'a' + 0x0A;
-      else
-        throw new KettleValueException("invalid hex digit '" + c + "'.");
+      } else {
+        throw new KettleValueException( "invalid hex digit '" + c + "'." );
+      }
 
-      if (charNr == 4) {
-        nextChar = (nibble << 12);
+      if ( charNr == 4 ) {
+        nextChar = ( nibble << 12 );
         charNr--;
-      } else if (charNr == 3) {
-        nextChar += (nibble << 8);
+      } else if ( charNr == 3 ) {
+        nextChar += ( nibble << 8 );
         charNr--;
-      } else if (charNr == 2) {
-        nextChar += (nibble << 4);
+      } else if ( charNr == 2 ) {
+        nextChar += ( nibble << 4 );
         charNr--;
       } else // charNr == 1
       {
@@ -1398,56 +1512,68 @@ public class ValueDataUtil {
       }
     }
 
-    return new String(chArray);
+    return new String( chArray );
   }
 
   /**
-   * Right pad a string: adds spaces to a string until a certain length.
-   * If the length is smaller then the limit specified, the String is truncated.
-   * @param ret The string to pad
-   * @param limit The desired length of the padded string.
+   * Right pad a string: adds spaces to a string until a certain length. If the length is smaller then the limit
+   * specified, the String is truncated.
+   * 
+   * @param ret
+   *          The string to pad
+   * @param limit
+   *          The desired length of the padded string.
    * @return The padded String.
    */
-  public static final String rightPad(String ret, int limit) {
-    if (ret == null)
-      return rightPad(new StringBuffer(), limit);
-    else
-      return rightPad(new StringBuffer(ret), limit);
+  public static final String rightPad( String ret, int limit ) {
+    if ( ret == null ) {
+      return rightPad( new StringBuffer(), limit );
+    } else {
+      return rightPad( new StringBuffer( ret ), limit );
+    }
   }
 
   /**
-   * Right pad a StringBuffer: adds spaces to a string until a certain length.
-   * If the length is smaller then the limit specified, the String is truncated.
-   * @param ret The StringBuffer to pad
-   * @param limit The desired length of the padded string.
+   * Right pad a StringBuffer: adds spaces to a string until a certain length. If the length is smaller then the limit
+   * specified, the String is truncated.
+   * 
+   * @param ret
+   *          The StringBuffer to pad
+   * @param limit
+   *          The desired length of the padded string.
    * @return The padded String.
    */
-  public static final String rightPad(StringBuffer ret, int limit) {
+  public static final String rightPad( StringBuffer ret, int limit ) {
     int len = ret.length();
     int l;
 
-    if (len > limit) {
-      ret.setLength(limit);
+    if ( len > limit ) {
+      ret.setLength( limit );
     } else {
-      for (l = len; l < limit; l++)
-        ret.append(' ');
+      for ( l = len; l < limit; l++ ) {
+        ret.append( ' ' );
+      }
     }
     return ret.toString();
   }
 
   /**
    * Replace value occurances in a String with another value.
-   * @param string The original String.
-   * @param repl The text to replace
-   * @param with The new text bit
+   * 
+   * @param string
+   *          The original String.
+   * @param repl
+   *          The text to replace
+   * @param with
+   *          The new text bit
    * @return The resulting string with the text pieces replaced.
    */
-  public static final String replace(String string, String repl, String with) {
-    StringBuffer str = new StringBuffer(string);
-    for (int i = str.length() - 1; i >= 0; i--) {
-      if (str.substring(i).startsWith(repl)) {
-        str.delete(i, i + repl.length());
-        str.insert(i, with);
+  public static final String replace( String string, String repl, String with ) {
+    StringBuffer str = new StringBuffer( string );
+    for ( int i = str.length() - 1; i >= 0; i-- ) {
+      if ( str.substring( i ).startsWith( repl ) ) {
+        str.delete( i, i + repl.length() );
+        str.insert( i, with );
       }
     }
     return str.toString();
@@ -1456,20 +1582,23 @@ public class ValueDataUtil {
   /**
    * Alternate faster version of string replace using a stringbuffer as input.
    * 
-   * @param str The string where we want to replace in
-   * @param code The code to search for
-   * @param repl The replacement string for code
+   * @param str
+   *          The string where we want to replace in
+   * @param code
+   *          The code to search for
+   * @param repl
+   *          The replacement string for code
    */
-  public static void replaceBuffer(StringBuffer str, String code, String repl) {
+  public static void replaceBuffer( StringBuffer str, String code, String repl ) {
     int clength = code.length();
 
     int i = str.length() - clength;
 
-    while (i >= 0) {
-      String look = str.substring(i, i + clength);
-      if (look.equalsIgnoreCase(code)) // Look for a match!
+    while ( i >= 0 ) {
+      String look = str.substring( i, i + clength );
+      if ( look.equalsIgnoreCase( code ) ) // Look for a match!
       {
-        str.replace(i, i + clength, repl);
+        str.replace( i, i + clength, repl );
       }
       i--;
     }
@@ -1477,13 +1606,15 @@ public class ValueDataUtil {
 
   /**
    * Count the number of spaces to the left of a text. (leading)
-   * @param field The text to examine
+   * 
+   * @param field
+   *          The text to examine
    * @return The number of leading spaces found.
    */
-  public static final int nrSpacesBefore(String field) {
+  public static final int nrSpacesBefore( String field ) {
     int nr = 0;
     int len = field.length();
-    while (nr < len && field.charAt(nr) == ' ') {
+    while ( nr < len && field.charAt( nr ) == ' ' ) {
       nr++;
     }
     return nr;
@@ -1491,13 +1622,15 @@ public class ValueDataUtil {
 
   /**
    * Count the number of spaces to the right of a text. (trailing)
-   * @param field The text to examine
+   * 
+   * @param field
+   *          The text to examine
    * @return The number of trailing spaces found.
    */
-  public static final int nrSpacesAfter(String field) {
+  public static final int nrSpacesAfter( String field ) {
     int nr = 0;
     int len = field.length();
-    while (nr < len && field.charAt(field.length() - 1 - nr) == ' ') {
+    while ( nr < len && field.charAt( field.length() - 1 - nr ) == ' ' ) {
       nr++;
     }
     return nr;
@@ -1505,71 +1638,88 @@ public class ValueDataUtil {
 
   /**
    * Checks whether or not a String consists only of spaces.
-   * @param str The string to check
+   * 
+   * @param str
+   *          The string to check
    * @return true if the string has nothing but spaces.
    */
-  public static final boolean onlySpaces(String str) {
-    for (int i = 0; i < str.length(); i++)
-      if (!isSpace(str.charAt(i)))
+  public static final boolean onlySpaces( String str ) {
+    for ( int i = 0; i < str.length(); i++ ) {
+      if ( !isSpace( str.charAt( i ) ) ) {
         return false;
+      }
+    }
     return true;
   }
 
   /**
    * Checks an xml file is well formed.
-   * @param metaA The ValueMetaInterface 
-   *  @param dataA The value (filename) 
+   * 
+   * @param metaA
+   *          The ValueMetaInterface
+   * @param dataA
+   *          The value (filename)
    * @return true if the file is well formed.
    */
-  public static boolean isXMLFileWellFormed(ValueMetaInterface metaA, Object dataA) {
-    if (dataA == null)
+  public static boolean isXMLFileWellFormed( ValueMetaInterface metaA, Object dataA ) {
+    if ( dataA == null ) {
       return false;
+    }
     String filename = dataA.toString();
     FileObject file = null;
     try {
-      file = KettleVFS.getFileObject(filename);
-      return XMLCheck.isXMLFileWellFormed(file);
-    } catch (Exception e) {
+      file = KettleVFS.getFileObject( filename );
+      return XMLCheck.isXMLFileWellFormed( file );
+    } catch ( Exception e ) {
     } finally {
-      if (file != null)
+      if ( file != null ) {
         try {
           file.close();
-        } catch (Exception e) {
+        } catch ( Exception e ) {
           // Ignore
         }
+      }
     }
     return false;
   }
 
   /**
    * Checks an xml string is well formed.
-   * @param metaA The ValueMetaInterface 
-   *  @param dataA The value (filename) 
+   * 
+   * @param metaA
+   *          The ValueMetaInterface
+   * @param dataA
+   *          The value (filename)
    * @return true if the file is well formed.
    */
-  public static boolean isXMLWellFormed(ValueMetaInterface metaA, Object dataA) {
-    if (dataA == null)
+  public static boolean isXMLWellFormed( ValueMetaInterface metaA, Object dataA ) {
+    if ( dataA == null ) {
       return false;
+    }
     try {
-      return XMLCheck.isXMLWellFormed(new ByteArrayInputStream(metaA.getBinary(dataA)));
-    } catch (Exception e) {
+      return XMLCheck.isXMLWellFormed( new ByteArrayInputStream( metaA.getBinary( dataA ) ) );
+    } catch ( Exception e ) {
     }
     return false;
   }
 
   /**
    * Get file encoding.
-   * @param metaA The ValueMetaInterface 
-   * @param dataA The value (filename) 
+   * 
+   * @param metaA
+   *          The ValueMetaInterface
+   * @param dataA
+   *          The value (filename)
    * @return file encoding.
    */
-  public static String getFileEncoding(ValueMetaInterface metaA, Object dataA) throws KettleValueException {
-    if (dataA == null)
+  public static String getFileEncoding( ValueMetaInterface metaA, Object dataA ) throws KettleValueException {
+    if ( dataA == null ) {
       return null;
+    }
     try {
-      return CharsetToolkit.guessEncodingName(new File(metaA.getString(dataA)));
-    } catch (Exception e) {
-      throw new KettleValueException(e);
+      return CharsetToolkit.guessEncodingName( new File( metaA.getString( dataA ) ) );
+    } catch ( Exception e ) {
+      throw new KettleValueException( e );
     }
   }
 }

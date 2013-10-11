@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.cluster;
 
@@ -43,135 +43,132 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
 
 public class HttpUtil {
-  
-  public static String execService(VariableSpace space, String hostname, String port, String webAppName, String serviceAndArguments, String username, String password, String proxyHostname, String proxyPort, String nonProxyHosts) throws Exception
-  {
-      // Prepare HTTP get
-      // 
-      HttpClient client = SlaveConnectionManager.getInstance().createHttpClient();
-      addCredentials(client, space, hostname, port, webAppName, username, password);
-      addProxy(client, space, hostname, proxyHostname, proxyPort, nonProxyHosts);
-      String urlString = constructUrl(space, hostname, port, webAppName, serviceAndArguments);
-      HttpMethod method = new GetMethod(urlString);
-      
-      // Execute request
-      // 
-      InputStream inputStream=null;
-      BufferedInputStream bufferedInputStream=null;
 
-      try
-      {
-          int result = client.executeMethod(method);
-          if (result!=200) {
-            throw new KettleException("Response code "+result+" received while querying "+urlString);
-          }
-          
-          // the response
-          //
-          inputStream = method.getResponseBodyAsStream();
-          bufferedInputStream = new BufferedInputStream(inputStream, 1000);
-          
-          StringBuffer bodyBuffer = new StringBuffer();
-          int c;
-          while ( (c=bufferedInputStream.read())!=-1) bodyBuffer.append((char)c);
+  public static String execService( VariableSpace space, String hostname, String port, String webAppName,
+      String serviceAndArguments, String username, String password, String proxyHostname, String proxyPort,
+      String nonProxyHosts ) throws Exception {
+    // Prepare HTTP get
+    //
+    HttpClient client = SlaveConnectionManager.getInstance().createHttpClient();
+    addCredentials( client, space, hostname, port, webAppName, username, password );
+    addProxy( client, space, hostname, proxyHostname, proxyPort, nonProxyHosts );
+    String urlString = constructUrl( space, hostname, port, webAppName, serviceAndArguments );
+    HttpMethod method = new GetMethod( urlString );
 
-          String body = bodyBuffer.toString();
-          
-          return body;
+    // Execute request
+    //
+    InputStream inputStream = null;
+    BufferedInputStream bufferedInputStream = null;
+
+    try {
+      int result = client.executeMethod( method );
+      if ( result != 200 ) {
+        throw new KettleException( "Response code " + result + " received while querying " + urlString );
       }
-      finally
-      {
-        if (bufferedInputStream!=null) {
-          bufferedInputStream.close();
-        }
-        if (inputStream!=null) {
-          inputStream.close();
-        }
 
-          // Release current connection to the connection pool once you are done
-          method.releaseConnection();            
+      // the response
+      //
+      inputStream = method.getResponseBodyAsStream();
+      bufferedInputStream = new BufferedInputStream( inputStream, 1000 );
+
+      StringBuffer bodyBuffer = new StringBuffer();
+      int c;
+      while ( ( c = bufferedInputStream.read() ) != -1 ) {
+        bodyBuffer.append( (char) c );
       }
+
+      String body = bodyBuffer.toString();
+
+      return body;
+    } finally {
+      if ( bufferedInputStream != null ) {
+        bufferedInputStream.close();
+      }
+      if ( inputStream != null ) {
+        inputStream.close();
+      }
+
+      // Release current connection to the connection pool once you are done
+      method.releaseConnection();
+    }
 
   }
-  
-  public static String constructUrl(VariableSpace space, String hostname, String port, String webAppName, String serviceAndArguments) throws UnsupportedEncodingException
-  {
-      String realHostname = space.environmentSubstitute(hostname);
-      if (!StringUtils.isEmpty(webAppName)) {
-        serviceAndArguments = "/" + space.environmentSubstitute(webAppName) + serviceAndArguments;
-      }
-      String retval =  "http://"+realHostname+getPortSpecification(space, port)+serviceAndArguments;  
-      retval = Const.replace(retval, " ", "%20");   
-      return retval;
-  }
-  
-  public static String getPortSpecification(VariableSpace space, String port)
-  {
-      String realPort = space.environmentSubstitute(port);
-      String portSpec = ":"+realPort; 
-      if (Const.isEmpty(realPort) || port.equals("80")) 
-      {
-          portSpec=""; 
-      }
-      return portSpec;
+
+  public static String constructUrl( VariableSpace space, String hostname, String port, String webAppName,
+      String serviceAndArguments ) throws UnsupportedEncodingException {
+    String realHostname = space.environmentSubstitute( hostname );
+    if ( !StringUtils.isEmpty( webAppName ) ) {
+      serviceAndArguments = "/" + space.environmentSubstitute( webAppName ) + serviceAndArguments;
+    }
+    String retval = "http://" + realHostname + getPortSpecification( space, port ) + serviceAndArguments;
+    retval = Const.replace( retval, " ", "%20" );
+    return retval;
   }
 
-  public static void addProxy(HttpClient client, VariableSpace space, String hostname, String proxyHostname, String proxyPort, String nonProxyHosts)
-  {
-      String host = space.environmentSubstitute(hostname);
-      String phost = space.environmentSubstitute(proxyHostname);
-      String pport = space.environmentSubstitute(proxyPort);
-      String nonprox = space.environmentSubstitute(nonProxyHosts);
-      
-      
-      /** added by shingo.yamagami@ksk-sol.jp **/
-      if (!Const.isEmpty(phost) && !Const.isEmpty(pport)) 
-      {
-          // skip applying proxy if non-proxy host matches
-          if (!Const.isEmpty(nonprox) && !Const.isEmpty(host) && host.matches(nonprox))
-          {
-              return;
-          }
-          client.getHostConfiguration().setProxy(phost, Integer.parseInt(pport));
-      }
-      /** added by shingo.yamagami@ksk-sol.jp **/  
+  public static String getPortSpecification( VariableSpace space, String port ) {
+    String realPort = space.environmentSubstitute( port );
+    String portSpec = ":" + realPort;
+    if ( Const.isEmpty( realPort ) || port.equals( "80" ) ) {
+      portSpec = "";
+    }
+    return portSpec;
   }
 
+  public static void addProxy( HttpClient client, VariableSpace space, String hostname, String proxyHostname,
+      String proxyPort, String nonProxyHosts ) {
+    String host = space.environmentSubstitute( hostname );
+    String phost = space.environmentSubstitute( proxyHostname );
+    String pport = space.environmentSubstitute( proxyPort );
+    String nonprox = space.environmentSubstitute( nonProxyHosts );
 
-  public static void addCredentials(HttpClient client, VariableSpace space, String hostname, String port, String webAppName, String username, String password)
-  {
-    if (StringUtils.isEmpty(webAppName)) {
-      client.getState().setCredentials
-            (
-              new AuthScope(space.environmentSubstitute(hostname), Const.toInt(space.environmentSubstitute(port), 80), "Kettle"), 
-              new UsernamePasswordCredentials(space.environmentSubstitute(username), Encr.decryptPasswordOptionallyEncrypted(space.environmentSubstitute(password)))
-            );
-    } else {        
-      Credentials creds = new UsernamePasswordCredentials(space.environmentSubstitute(username), Encr.decryptPasswordOptionallyEncrypted(space.environmentSubstitute(password)));
-      client.getState().setCredentials(AuthScope.ANY, creds);
-      client.getParams().setAuthenticationPreemptive(true);      
+    /** added by shingo.yamagami@ksk-sol.jp **/
+    if ( !Const.isEmpty( phost ) && !Const.isEmpty( pport ) ) {
+      // skip applying proxy if non-proxy host matches
+      if ( !Const.isEmpty( nonprox ) && !Const.isEmpty( host ) && host.matches( nonprox ) ) {
+        return;
+      }
+      client.getHostConfiguration().setProxy( phost, Integer.parseInt( pport ) );
+    }
+    /** added by shingo.yamagami@ksk-sol.jp **/
+  }
+
+  public static void addCredentials( HttpClient client, VariableSpace space, String hostname, String port,
+      String webAppName, String username, String password ) {
+    if ( StringUtils.isEmpty( webAppName ) ) {
+      client.getState().setCredentials(
+          new AuthScope( space.environmentSubstitute( hostname ),
+              Const.toInt( space.environmentSubstitute( port ), 80 ), "Kettle" ),
+          new UsernamePasswordCredentials( space.environmentSubstitute( username ), Encr
+              .decryptPasswordOptionallyEncrypted( space.environmentSubstitute( password ) ) ) );
+    } else {
+      Credentials creds =
+          new UsernamePasswordCredentials( space.environmentSubstitute( username ), Encr
+              .decryptPasswordOptionallyEncrypted( space.environmentSubstitute( password ) ) );
+      client.getState().setCredentials( AuthScope.ANY, creds );
+      client.getParams().setAuthenticationPreemptive( true );
     }
   }
 
-  public static String decodeBase64ZippedString(String loggingString64) throws IOException {
+  public static String decodeBase64ZippedString( String loggingString64 ) throws IOException {
     byte[] bytes = new byte[] {};
-    if (loggingString64!=null) bytes = Base64.decodeBase64(loggingString64.getBytes());
-    if (bytes.length>0)
-    {
-        ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-        GZIPInputStream gzip = new GZIPInputStream(bais);
-        int c;
-        StringBuffer buffer = new StringBuffer();
-        while ( (c=gzip.read())!=-1) buffer.append((char)c);
-        gzip.close();
-        
-        return buffer.toString();
+    if ( loggingString64 != null ) {
+      bytes = Base64.decodeBase64( loggingString64.getBytes() );
     }
-    else
-    {
-        return "";
+    if ( bytes.length > 0 ) {
+      ByteArrayInputStream bais = new ByteArrayInputStream( bytes );
+      GZIPInputStream gzip = new GZIPInputStream( bais );
+      int c;
+      StringBuffer buffer = new StringBuffer();
+      while ( ( c = gzip.read() ) != -1 ) {
+        buffer.append( (char) c );
+      }
+      gzip.close();
+
+      return buffer.toString();
+    } else {
+      return "";
     }
 
   }
-  
+
 }

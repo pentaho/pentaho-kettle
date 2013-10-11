@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.core.row;
 
@@ -47,49 +47,51 @@ public class ValueMeta extends ValueMetaBase implements ValueMetaInterface {
   public static final String XML_META_TAG = "value-meta";
   public static final String XML_DATA_TAG = "value-data";
 
-  public static final boolean EMPTY_STRING_AND_NULL_ARE_DIFFERENT = convertStringToBoolean(Const.NVL(
-      System.getProperty(Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "N"), "N"));
+  public static final boolean EMPTY_STRING_AND_NULL_ARE_DIFFERENT = convertStringToBoolean( Const.NVL( System
+      .getProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "N" ), "N" ) );
 
   /**
    * The trim type codes
    */
-  public final static String trimTypeCode[] = { "none", "left", "right", "both" };
+  public static final String[] trimTypeCode = { "none", "left", "right", "both" };
 
   /**
    * The trim description
    */
-  public final static String trimTypeDesc[] = { BaseMessages.getString(PKG, "ValueMeta.TrimType.None"),
-      BaseMessages.getString(PKG, "ValueMeta.TrimType.Left"), BaseMessages.getString(PKG, "ValueMeta.TrimType.Right"),
-      BaseMessages.getString(PKG, "ValueMeta.TrimType.Both") };
+  public static final String[] trimTypeDesc =
+      { BaseMessages.getString( PKG, "ValueMeta.TrimType.None" ),
+        BaseMessages.getString( PKG, "ValueMeta.TrimType.Left" ),
+        BaseMessages.getString( PKG, "ValueMeta.TrimType.Right" ),
+        BaseMessages.getString( PKG, "ValueMeta.TrimType.Both" ) };
 
   public static final String[] SINGLE_BYTE_ENCODINGS = new String[] { "ISO8859_1", "Cp1252", "ASCII", "Cp037", "Cp273",
-      "Cp277", "Cp278", "Cp280", "Cp284", "Cp285", "Cp297", "Cp420", "Cp424", "Cp437", "Cp500", "Cp737", "Cp775",
-      "Cp850", "Cp852", "Cp855", "Cp856", "Cp857", "Cp858", "Cp860", "Cp861", "Cp862", "Cp863", "Cp865", "Cp866",
-      "Cp869", "Cp870", "Cp871", "Cp875", "Cp918", "Cp921", "Cp922", "Cp1140", "Cp1141", "Cp1142", "Cp1143", "Cp1144",
-      "Cp1145", "Cp1146", "Cp1147", "Cp1148", "Cp1149", "Cp1250", "Cp1251", "Cp1253", "Cp1254", "Cp1255", "Cp1257",
-      "ISO8859_2", "ISO8859_3", "ISO8859_5", "ISO8859_5", "ISO8859_6", "ISO8859_7", "ISO8859_8", "ISO8859_9",
-      "ISO8859_13", "ISO8859_15", "ISO8859_15_FDIS", "MacCentralEurope", "MacCroatian", "MacCyrillic", "MacDingbat",
-      "MacGreek", "MacHebrew", "MacIceland", "MacRoman", "MacRomania", "MacSymbol", "MacTurkish", "MacUkraine", };
+    "Cp277", "Cp278", "Cp280", "Cp284", "Cp285", "Cp297", "Cp420", "Cp424", "Cp437", "Cp500", "Cp737", "Cp775",
+    "Cp850", "Cp852", "Cp855", "Cp856", "Cp857", "Cp858", "Cp860", "Cp861", "Cp862", "Cp863", "Cp865", "Cp866",
+    "Cp869", "Cp870", "Cp871", "Cp875", "Cp918", "Cp921", "Cp922", "Cp1140", "Cp1141", "Cp1142", "Cp1143", "Cp1144",
+    "Cp1145", "Cp1146", "Cp1147", "Cp1148", "Cp1149", "Cp1250", "Cp1251", "Cp1253", "Cp1254", "Cp1255", "Cp1257",
+    "ISO8859_2", "ISO8859_3", "ISO8859_5", "ISO8859_5", "ISO8859_6", "ISO8859_7", "ISO8859_8", "ISO8859_9",
+    "ISO8859_13", "ISO8859_15", "ISO8859_15_FDIS", "MacCentralEurope", "MacCroatian", "MacCyrillic", "MacDingbat",
+    "MacGreek", "MacHebrew", "MacIceland", "MacRoman", "MacRomania", "MacSymbol", "MacTurkish", "MacUkraine", };
 
   public ValueMeta() {
-    this(null, ValueMetaInterface.TYPE_NONE, -1, -1);
+    this( null, ValueMetaInterface.TYPE_NONE, -1, -1 );
   }
 
-  public ValueMeta(String name) {
-    this(name, ValueMetaInterface.TYPE_NONE, -1, -1);
+  public ValueMeta( String name ) {
+    this( name, ValueMetaInterface.TYPE_NONE, -1, -1 );
   }
 
-  public ValueMeta(String name, int type) {
-    this(name, type, -1, -1);
+  public ValueMeta( String name, int type ) {
+    this( name, type, -1, -1 );
   }
 
-  public ValueMeta(String name, int type, int storageType) {
-    this(name, type, -1, -1);
+  public ValueMeta( String name, int type, int storageType ) {
+    this( name, type, -1, -1 );
     this.storageType = storageType;
     setDefaultConversionMask();
   }
 
-  public ValueMeta(String name, int type, int length, int precision) {
+  public ValueMeta( String name, int type, int length, int precision ) {
     this.name = name;
     this.type = type;
     this.length = length;
@@ -103,8 +105,9 @@ public class ValueMeta extends ValueMetaBase implements ValueMetaInterface {
     this.dateFormatTimeZone = TimeZone.getDefault();
     this.identicalFormat = true;
     this.bigNumberFormatting = true;
-    this.lenientStringToNumber = convertStringToBoolean(Const.NVL(
-        System.getProperty(Const.KETTLE_LENIENT_STRING_TO_NUMBER_CONVERSION, "N"), "N"));
+    this.lenientStringToNumber =
+        convertStringToBoolean( Const.NVL( System.getProperty( Const.KETTLE_LENIENT_STRING_TO_NUMBER_CONVERSION, "N" ),
+            "N" ) );
 
     super.determineSingleByteEncoding();
     setDefaultConversionMask();
@@ -117,28 +120,27 @@ public class ValueMeta extends ValueMetaBase implements ValueMetaInterface {
    * @deprecated
    */
   @Deprecated
-  public ValueMeta(DataInputStream inputStream) throws KettleFileException, KettleEOFException {
-    super(inputStream);
+  public ValueMeta( DataInputStream inputStream ) throws KettleFileException, KettleEOFException {
+    super( inputStream );
   }
-  
+
   /**
    * @param node
    * @throws KettleException
    * @Deprecated
    */
-  public ValueMeta(Node node) throws KettleException {
-    super(node);
+  public ValueMeta( Node node ) throws KettleException {
+    super( node );
   }
-
 
   /**
    * @deprecated
    */
   @Override
   @Deprecated
-  public void setType(int type) {
+  public void setType( int type ) {
     // TODO Auto-generated method stub
-    super.setType(type);
+    super.setType( type );
   }
 
 }
