@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.core.logging;
 
@@ -33,11 +33,11 @@ import org.pentaho.di.core.metrics.MetricsSnapshotType;
 
 public class LogChannel implements LogChannelInterface {
 
-  public static LogChannelInterface GENERAL = new LogChannel("General");
+  public static LogChannelInterface GENERAL = new LogChannel( "General" );
 
-  public static LogChannelInterface METADATA = new LogChannel("Metadata");
+  public static LogChannelInterface METADATA = new LogChannel( "Metadata" );
 
-  public static LogChannelInterface UI = new LogChannel("GUI");
+  public static LogChannelInterface UI = new LogChannel( "GUI" );
 
   private String logChannelId;
 
@@ -53,29 +53,29 @@ public class LogChannel implements LogChannelInterface {
 
   private String filter;
 
-  public LogChannel(Object subject) {
+  public LogChannel( Object subject ) {
     logLevel = DefaultLogLevel.getLogLevel();
-    logChannelId = LoggingRegistry.getInstance().registerLoggingSource(subject);
+    logChannelId = LoggingRegistry.getInstance().registerLoggingSource( subject );
   }
 
-  public LogChannel(Object subject, boolean gatheringMetrics) {
-    this(subject);
+  public LogChannel( Object subject, boolean gatheringMetrics ) {
+    this( subject );
     this.gatheringMetrics = gatheringMetrics;
   }
 
-  public LogChannel(Object subject, LoggingObjectInterface parentObject) {
-    if (parentObject != null) {
+  public LogChannel( Object subject, LoggingObjectInterface parentObject ) {
+    if ( parentObject != null ) {
       this.logLevel = parentObject.getLogLevel();
       this.containerObjectId = parentObject.getContainerObjectId();
     } else {
       this.logLevel = DefaultLogLevel.getLogLevel();
       this.containerObjectId = null;
     }
-    logChannelId = LoggingRegistry.getInstance().registerLoggingSource(subject);
+    logChannelId = LoggingRegistry.getInstance().registerLoggingSource( subject );
   }
 
-  public LogChannel(Object subject, LoggingObjectInterface parentObject, boolean gatheringMetrics) {
-    this(subject, parentObject);
+  public LogChannel( Object subject, LoggingObjectInterface parentObject, boolean gatheringMetrics ) {
+    this( subject, parentObject );
     this.gatheringMetrics = gatheringMetrics;
   }
 
@@ -94,105 +94,106 @@ public class LogChannel implements LogChannelInterface {
    * @param logMessage
    * @param channelLogLevel
    */
-  public void println(LogMessageInterface logMessage, LogLevel channelLogLevel) {
+  public void println( LogMessageInterface logMessage, LogLevel channelLogLevel ) {
     String subject = null;
 
     LogLevel logLevel = logMessage.getLevel();
 
-    if (!logLevel.isVisible(channelLogLevel)) {
+    if ( !logLevel.isVisible( channelLogLevel ) ) {
       return; // not for our eyes.
     }
 
-    if (subject == null)
+    if ( subject == null ) {
       subject = "Kettle";
+    }
 
     // Are the message filtered?
     //
-    if (!logLevel.isError() && !Const.isEmpty(filter)) {
-      if (subject.indexOf(filter) < 0 && logMessage.toString().indexOf(filter) < 0) {
+    if ( !logLevel.isError() && !Const.isEmpty( filter ) ) {
+      if ( subject.indexOf( filter ) < 0 && logMessage.toString().indexOf( filter ) < 0 ) {
         return; // "filter" not found in row: don't show!
       }
     }
 
     // Let's not keep everything...
     //
-    if (channelLogLevel.getLevel() >= logLevel.getLevel()) {
-      KettleLoggingEvent loggingEvent = new KettleLoggingEvent(logMessage, System.currentTimeMillis(), logLevel);
-      KettleLogStore.getAppender().addLogggingEvent(loggingEvent);
+    if ( channelLogLevel.getLevel() >= logLevel.getLevel() ) {
+      KettleLoggingEvent loggingEvent = new KettleLoggingEvent( logMessage, System.currentTimeMillis(), logLevel );
+      KettleLogStore.getAppender().addLogggingEvent( loggingEvent );
     }
   }
 
-  public void println(LogMessageInterface message, Throwable e, LogLevel channelLogLevel) {
-    println(message, channelLogLevel);
+  public void println( LogMessageInterface message, Throwable e, LogLevel channelLogLevel ) {
+    println( message, channelLogLevel );
 
-    String stackTrace = Const.getStackTracker(e);
-    LogMessage traceMessage = new LogMessage(stackTrace, message.getLogChannelId(), LogLevel.ERROR);
-    println(traceMessage, channelLogLevel);
+    String stackTrace = Const.getStackTracker( e );
+    LogMessage traceMessage = new LogMessage( stackTrace, message.getLogChannelId(), LogLevel.ERROR );
+    println( traceMessage, channelLogLevel );
   }
 
   @Override
-  public void logMinimal(String s) {
-    println(new LogMessage(s, logChannelId, LogLevel.MINIMAL), logLevel); 
+  public void logMinimal( String s ) {
+    println( new LogMessage( s, logChannelId, LogLevel.MINIMAL ), logLevel );
   }
 
   @Override
-  public void logBasic(String s) {
-    println(new LogMessage(s, logChannelId, LogLevel.BASIC), logLevel); 
+  public void logBasic( String s ) {
+    println( new LogMessage( s, logChannelId, LogLevel.BASIC ), logLevel );
   }
 
   @Override
-  public void logError(String s) {
-    println(new LogMessage(s, logChannelId, LogLevel.ERROR), logLevel); 
+  public void logError( String s ) {
+    println( new LogMessage( s, logChannelId, LogLevel.ERROR ), logLevel );
   }
 
   @Override
-  public void logError(String s, Throwable e) {
-    println(new LogMessage(s, logChannelId, LogLevel.ERROR), e, logLevel); 
+  public void logError( String s, Throwable e ) {
+    println( new LogMessage( s, logChannelId, LogLevel.ERROR ), e, logLevel );
   }
 
   @Override
-  public void logBasic(String s, Object... arguments) {
-    println(new LogMessage(s, logChannelId, arguments, LogLevel.BASIC), logLevel);
+  public void logBasic( String s, Object... arguments ) {
+    println( new LogMessage( s, logChannelId, arguments, LogLevel.BASIC ), logLevel );
   }
 
   @Override
-  public void logDetailed(String s, Object... arguments) {
-    println(new LogMessage(s, logChannelId, arguments, LogLevel.DETAILED), logLevel);
+  public void logDetailed( String s, Object... arguments ) {
+    println( new LogMessage( s, logChannelId, arguments, LogLevel.DETAILED ), logLevel );
   }
 
   @Override
-  public void logError(String s, Object... arguments) {
-    println(new LogMessage(s, logChannelId, arguments, LogLevel.ERROR), logLevel);
+  public void logError( String s, Object... arguments ) {
+    println( new LogMessage( s, logChannelId, arguments, LogLevel.ERROR ), logLevel );
   }
 
   @Override
-  public void logDetailed(String s) {
-    println(new LogMessage(s, logChannelId, LogLevel.DETAILED), logLevel);
+  public void logDetailed( String s ) {
+    println( new LogMessage( s, logChannelId, LogLevel.DETAILED ), logLevel );
   }
 
   @Override
-  public void logDebug(String s) {
-    println(new LogMessage(s, logChannelId, LogLevel.DEBUG), logLevel);
+  public void logDebug( String s ) {
+    println( new LogMessage( s, logChannelId, LogLevel.DEBUG ), logLevel );
   }
 
   @Override
-  public void logDebug(String message, Object... arguments) {
-    println(new LogMessage(message, logChannelId, arguments, LogLevel.DEBUG), logLevel);
+  public void logDebug( String message, Object... arguments ) {
+    println( new LogMessage( message, logChannelId, arguments, LogLevel.DEBUG ), logLevel );
   }
 
   @Override
-  public void logRowlevel(String s) {
-    println(new LogMessage(s, logChannelId, LogLevel.ROWLEVEL), logLevel);
+  public void logRowlevel( String s ) {
+    println( new LogMessage( s, logChannelId, LogLevel.ROWLEVEL ), logLevel );
   }
 
   @Override
-  public void logMinimal(String message, Object... arguments) {
-    println(new LogMessage(message, logChannelId, arguments, LogLevel.MINIMAL), logLevel);
+  public void logMinimal( String message, Object... arguments ) {
+    println( new LogMessage( message, logChannelId, arguments, LogLevel.MINIMAL ), logLevel );
   }
 
   @Override
-  public void logRowlevel(String message, Object... arguments) {
-    println(new LogMessage(message, logChannelId, arguments, LogLevel.ROWLEVEL), logLevel);
+  public void logRowlevel( String message, Object... arguments ) {
+    println( new LogMessage( message, logChannelId, arguments, LogLevel.ROWLEVEL ), logLevel );
   }
 
   @Override
@@ -209,8 +210,8 @@ public class LogChannel implements LogChannelInterface {
   public boolean isDetailed() {
     try {
       return logLevel.isDetailed();
-    } catch (NullPointerException ex) {
-      System.out.println("Oops!");
+    } catch ( NullPointerException ex ) {
+      System.out.println( "Oops!" );
       return false;
     }
   }
@@ -231,7 +232,7 @@ public class LogChannel implements LogChannelInterface {
   }
 
   @Override
-  public void setLogLevel(LogLevel logLevel) {
+  public void setLogLevel( LogLevel logLevel ) {
     this.logLevel = logLevel;
   }
 
@@ -244,10 +245,11 @@ public class LogChannel implements LogChannelInterface {
   }
 
   /**
-   * @param containerObjectId the containerObjectId to set
+   * @param containerObjectId
+   *          the containerObjectId to set
    */
   @Override
-  public void setContainerObjectId(String containerObjectId) {
+  public void setContainerObjectId( String containerObjectId ) {
     this.containerObjectId = containerObjectId;
   }
 
@@ -260,10 +262,11 @@ public class LogChannel implements LogChannelInterface {
   }
 
   /**
-   * @param gatheringMetrics the gatheringMetrics to set
+   * @param gatheringMetrics
+   *          the gatheringMetrics to set
    */
   @Override
-  public void setGatheringMetrics(boolean gatheringMetrics) {
+  public void setGatheringMetrics( boolean gatheringMetrics ) {
     this.gatheringMetrics = gatheringMetrics;
   }
 
@@ -273,96 +276,99 @@ public class LogChannel implements LogChannelInterface {
   }
 
   @Override
-  public void setForcingSeparateLogging(boolean forcingSeparateLogging) {
+  public void setForcingSeparateLogging( boolean forcingSeparateLogging ) {
     this.forcingSeparateLogging = forcingSeparateLogging;
   }
 
   @Override
-  public void snap(MetricsInterface metric, long... value) {
-    snap(metric, null, value);
+  public void snap( MetricsInterface metric, long... value ) {
+    snap( metric, null, value );
   }
 
   @Override
-  public void snap(MetricsInterface metric, String subject, long... value) {
-    if (!isGatheringMetrics())
+  public void snap( MetricsInterface metric, String subject, long... value ) {
+    if ( !isGatheringMetrics() ) {
       return;
+    }
 
-    String key = MetricsSnapshot.getKey(metric, subject);
-
-    switch (metric.getType()) {
-      case MAX: {
+    String key = MetricsSnapshot.getKey( metric, subject );
+    Map<String, MetricsSnapshotInterface> metricsMap = null;
+    MetricsSnapshotInterface snapshot = null;
+    Deque<MetricsSnapshotInterface> metricsList = null;
+    switch ( metric.getType() ) {
+      case MAX:
         // Calculate and store the maximum value for this metric
         //
-        if (value.length != 1)
+        if ( value.length != 1 ) {
           break; // ignore
+        }
 
-        Map<String, MetricsSnapshotInterface> metricsMap = metricsRegistry.getSnapshotMap(logChannelId);
-        MetricsSnapshotInterface snapshot = metricsMap.get(key);
-        if (snapshot != null) {
-          if (value[0] > snapshot.getValue()) {
-            snapshot.setValue(value[0]);
-            snapshot.setDate(new Date());
+        metricsMap = metricsRegistry.getSnapshotMap( logChannelId );
+        snapshot = metricsMap.get( key );
+        if ( snapshot != null ) {
+          if ( value[0] > snapshot.getValue() ) {
+            snapshot.setValue( value[0] );
+            snapshot.setDate( new Date() );
           }
         } else {
-          snapshot = new MetricsSnapshot(MetricsSnapshotType.MAX, metric, subject, value[0], logChannelId);
-          metricsMap.put(key, snapshot);
+          snapshot = new MetricsSnapshot( MetricsSnapshotType.MAX, metric, subject, value[0], logChannelId );
+          metricsMap.put( key, snapshot );
         }
-      }
+
         break;
-      case MIN: {
+      case MIN:
         // Calculate and store the minimum value for this metric
         //
-        if (value.length != 1)
+        if ( value.length != 1 ) {
           break; // ignore
+        }
 
-        Map<String, MetricsSnapshotInterface> metricsMap = metricsRegistry.getSnapshotMap(logChannelId);
-        MetricsSnapshotInterface snapshot = metricsMap.get(key);
-        if (snapshot != null) {
-          if (value[0] < snapshot.getValue()) {
-            snapshot.setValue(value[0]);
-            snapshot.setDate(new Date());
+        metricsMap = metricsRegistry.getSnapshotMap( logChannelId );
+        snapshot = metricsMap.get( key );
+        if ( snapshot != null ) {
+          if ( value[0] < snapshot.getValue() ) {
+            snapshot.setValue( value[0] );
+            snapshot.setDate( new Date() );
           }
         } else {
-          snapshot = new MetricsSnapshot(MetricsSnapshotType.MIN, metric, subject, value[0], logChannelId);
-          metricsMap.put(key, snapshot);
+          snapshot = new MetricsSnapshot( MetricsSnapshotType.MIN, metric, subject, value[0], logChannelId );
+          metricsMap.put( key, snapshot );
         }
-      }
+
         break;
-      case SUM: {
-        Map<String, MetricsSnapshotInterface> metricsMap = metricsRegistry.getSnapshotMap(logChannelId);
-        MetricsSnapshotInterface snapshot = metricsMap.get(key);
-        if (snapshot != null) {
-          snapshot.setValue(snapshot.getValue() + value[0]);
+      case SUM:
+        metricsMap = metricsRegistry.getSnapshotMap( logChannelId );
+        snapshot = metricsMap.get( key );
+        if ( snapshot != null ) {
+          snapshot.setValue( snapshot.getValue() + value[0] );
         } else {
-          snapshot = new MetricsSnapshot(MetricsSnapshotType.SUM, metric, subject, value[0], logChannelId);
-          metricsMap.put(key, snapshot);
+          snapshot = new MetricsSnapshot( MetricsSnapshotType.SUM, metric, subject, value[0], logChannelId );
+          metricsMap.put( key, snapshot );
         }
-      }
+
         break;
-      case COUNT: {
-        Map<String, MetricsSnapshotInterface> metricsMap = metricsRegistry.getSnapshotMap(logChannelId);
-        MetricsSnapshotInterface snapshot = metricsMap.get(key);
-        if (snapshot != null) {
-          snapshot.setValue(snapshot.getValue() + 1L);
+      case COUNT:
+        metricsMap = metricsRegistry.getSnapshotMap( logChannelId );
+        snapshot = metricsMap.get( key );
+        if ( snapshot != null ) {
+          snapshot.setValue( snapshot.getValue() + 1L );
         } else {
-          snapshot = new MetricsSnapshot(MetricsSnapshotType.COUNT, metric, subject, 1L, logChannelId);
-          metricsMap.put(key, snapshot);
+          snapshot = new MetricsSnapshot( MetricsSnapshotType.COUNT, metric, subject, 1L, logChannelId );
+          metricsMap.put( key, snapshot );
         }
-      }
+
         break;
-      case START: {
-        Deque<MetricsSnapshotInterface> metricsList = metricsRegistry.getSnapshotList(logChannelId);
-        MetricsSnapshotInterface snapshot = new MetricsSnapshot(MetricsSnapshotType.START, metric, subject, 1L,
-            logChannelId);
-        metricsList.add(snapshot);
-      }
+      case START:
+        metricsList = metricsRegistry.getSnapshotList( logChannelId );
+        snapshot = new MetricsSnapshot( MetricsSnapshotType.START, metric, subject, 1L, logChannelId );
+        metricsList.add( snapshot );
+
         break;
-      case STOP: {
-        Deque<MetricsSnapshotInterface> metricsList = metricsRegistry.getSnapshotList(logChannelId);
-        MetricsSnapshotInterface snapshot = new MetricsSnapshot(MetricsSnapshotType.STOP, metric, subject, 1L,
-            logChannelId);
-        metricsList.add(snapshot);
-      }
+      case STOP:
+        metricsList = metricsRegistry.getSnapshotList( logChannelId );
+        snapshot = new MetricsSnapshot( MetricsSnapshotType.STOP, metric, subject, 1L, logChannelId );
+        metricsList.add( snapshot );
+
         break;
       default:
         break;
@@ -376,7 +382,7 @@ public class LogChannel implements LogChannelInterface {
   }
 
   @Override
-  public void setFilter(String filter) {
+  public void setFilter( String filter ) {
     this.filter = filter;
   }
 }

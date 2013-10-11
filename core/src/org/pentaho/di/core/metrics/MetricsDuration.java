@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.core.metrics;
 
@@ -28,13 +28,13 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.StringUtil;
 
 public class MetricsDuration {
-  private Date   date;
-  private Date   endDate;
+  private Date date;
+  private Date endDate;
   private String description;
   private String subject;
   private String logChannelId;
-  private Long   duration;
-  private Long   count;
+  private Long duration;
+  private Long count;
 
   /**
    * @param date
@@ -43,10 +43,10 @@ public class MetricsDuration {
    * @param logChannelId
    * @param duration
    */
-  public MetricsDuration(Date date, String description, String subject, String logChannelId, Long duration) {
-    this(date, description, subject, logChannelId, duration, 1L);
+  public MetricsDuration( Date date, String description, String subject, String logChannelId, Long duration ) {
+    this( date, description, subject, logChannelId, duration, 1L );
   }
-  
+
   /**
    * @param date
    * @param description
@@ -54,23 +54,24 @@ public class MetricsDuration {
    * @param logChannelId
    * @param duration
    */
-  public MetricsDuration(Date date, String description, String subject, String logChannelId, Long duration, Long count) {
+  public MetricsDuration( Date date, String description, String subject, String logChannelId, Long duration, Long count ) {
     this.date = date;
     this.description = description;
     this.subject = subject;
     this.logChannelId = logChannelId;
     this.duration = duration;
     this.count = count;
-    this.endDate = new Date(date.getTime()+duration);
+    this.endDate = new Date( date.getTime() + duration );
   }
-  
 
   @Override
   public String toString() {
-    if (Const.isEmpty(subject)) {
-      return description + " @ " + StringUtil.getFormattedDateTime(date, true) + " : " + (duration == null ? "-" : duration.toString())+ ( count==null ? "" : " (x"+count+")" );
+    if ( Const.isEmpty( subject ) ) {
+      return description + " @ " + StringUtil.getFormattedDateTime( date, true ) + " : "
+          + ( duration == null ? "-" : duration.toString() ) + ( count == null ? "" : " (x" + count + ")" );
     } else {
-      return description + " / " + subject + " @ " + StringUtil.getFormattedDateTime(date, true) + " : " + (duration == null ? "-" : duration.toString()) + ( count==null ? "" : " (x"+count+")" );
+      return description + " / " + subject + " @ " + StringUtil.getFormattedDateTime( date, true ) + " : "
+          + ( duration == null ? "-" : duration.toString() ) + ( count == null ? "" : " (x" + count + ")" );
     }
   }
 
@@ -85,7 +86,7 @@ public class MetricsDuration {
    * @param date
    *          the date to set
    */
-  public void setDate(Date date) {
+  public void setDate( Date date ) {
     this.date = date;
   }
 
@@ -100,7 +101,7 @@ public class MetricsDuration {
    * @param description
    *          the description to set
    */
-  public void setDescription(String description) {
+  public void setDescription( String description ) {
     this.description = description;
   }
 
@@ -115,7 +116,7 @@ public class MetricsDuration {
    * @param duration
    *          the duration to set
    */
-  public void setDuration(Long duration) {
+  public void setDuration( Long duration ) {
     this.duration = duration;
   }
 
@@ -130,7 +131,7 @@ public class MetricsDuration {
    * @param subject
    *          the subject to set
    */
-  public void setSubject(String subject) {
+  public void setSubject( String subject ) {
     this.subject = subject;
   }
 
@@ -145,23 +146,23 @@ public class MetricsDuration {
    * @param logChannelId
    *          the logChannelId to set
    */
-  public void setLogChannelId(String logChannelId) {
+  public void setLogChannelId( String logChannelId ) {
     this.logChannelId = logChannelId;
   }
 
   public Long getCount() {
     return count;
   }
-  
-  public void setCount(Long count) {
+
+  public void setCount( Long count ) {
     this.count = count;
   }
-  
+
   public void incrementCount() {
-    if (count==null) {
-      count=Long.valueOf(1L);
+    if ( count == null ) {
+      count = Long.valueOf( 1L );
     } else {
-      count=Long.valueOf(count+1);
+      count = Long.valueOf( count + 1 );
     }
   }
 
@@ -173,9 +174,10 @@ public class MetricsDuration {
   }
 
   /**
-   * @param endDate the endDate to set
+   * @param endDate
+   *          the endDate to set
    */
-  public void setEndDate(Date endDate) {
+  public void setEndDate( Date endDate ) {
     this.endDate = endDate;
   }
 }

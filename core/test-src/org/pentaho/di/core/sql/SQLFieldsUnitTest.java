@@ -14,39 +14,39 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class SQLFieldsUnitTest {
   private RowMetaInterface serviceFields;
-  
+
   @Before
   public void setup() {
-    serviceFields = mock(RowMetaInterface.class);
+    serviceFields = mock( RowMetaInterface.class );
   }
-  
+
   @Test
   public void testParseWorksWithSpaces() throws KettleSQLException {
     String nospace = "nospace";
     String withSpaces = "with spaces";
-    ValueMetaInterface nospaceVmi = mock(ValueMetaInterface.class);
-    ValueMetaInterface spaceVmi = mock(ValueMetaInterface.class);
-    
-    when(serviceFields.searchValueMeta(nospace)).thenReturn(nospaceVmi);
-    when(serviceFields.searchValueMeta(withSpaces)).thenReturn(spaceVmi);
-    
-    new SQLFields("table", serviceFields, nospace + ", \"" + withSpaces + "\"");
+    ValueMetaInterface nospaceVmi = mock( ValueMetaInterface.class );
+    ValueMetaInterface spaceVmi = mock( ValueMetaInterface.class );
+
+    when( serviceFields.searchValueMeta( nospace ) ).thenReturn( nospaceVmi );
+    when( serviceFields.searchValueMeta( withSpaces ) ).thenReturn( spaceVmi );
+
+    new SQLFields( "table", serviceFields, nospace + ", \"" + withSpaces + "\"" );
   }
-  
+
   @Test
   public void testParseWorksWithSpacesStar() throws KettleSQLException {
     String nospace = "nospace";
     String withSpaces = "with spaces";
-    ValueMetaInterface nospaceVmi = mock(ValueMetaInterface.class);
-    ValueMetaInterface spaceVmi = mock(ValueMetaInterface.class);
-    
-    List<ValueMetaInterface> valueMetaList = Arrays.asList(nospaceVmi, spaceVmi);
-    when(serviceFields.getValueMetaList()).thenReturn(valueMetaList);
-    when(nospaceVmi.getName()).thenReturn(nospace);
-    when(spaceVmi.getName()).thenReturn(withSpaces);
-    when(serviceFields.searchValueMeta(nospace)).thenReturn(nospaceVmi);
-    when(serviceFields.searchValueMeta(withSpaces)).thenReturn(spaceVmi);
-    
-    new SQLFields("table", serviceFields, "*");
+    ValueMetaInterface nospaceVmi = mock( ValueMetaInterface.class );
+    ValueMetaInterface spaceVmi = mock( ValueMetaInterface.class );
+
+    List<ValueMetaInterface> valueMetaList = Arrays.asList( nospaceVmi, spaceVmi );
+    when( serviceFields.getValueMetaList() ).thenReturn( valueMetaList );
+    when( nospaceVmi.getName() ).thenReturn( nospace );
+    when( spaceVmi.getName() ).thenReturn( withSpaces );
+    when( serviceFields.searchValueMeta( nospace ) ).thenReturn( nospaceVmi );
+    when( serviceFields.searchValueMeta( withSpaces ) ).thenReturn( spaceVmi );
+
+    new SQLFields( "table", serviceFields, "*" );
   }
 }

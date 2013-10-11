@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.core.logging;
 
@@ -31,11 +31,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.EnvUtil;
 
-public class LoggingRegistry
-{
+public class LoggingRegistry {
   private static LoggingRegistry registry;
   private Map<String, LoggingObjectInterface> map;
   private Map<String, List<String>> childrenMap;
@@ -50,70 +50,79 @@ public class LoggingRegistry
     this.childrenMap = new ConcurrentHashMap<String, List<String>>();
 
     this.lastModificationTime = new Date();
-    this.maxSize = Const.toInt(EnvUtil.getSystemProperty("KETTLE_MAX_LOGGING_REGISTRY_SIZE"), DEFAULT_MAX_SIZE);
+    this.maxSize = Const.toInt( EnvUtil.getSystemProperty( "KETTLE_MAX_LOGGING_REGISTRY_SIZE" ), DEFAULT_MAX_SIZE );
   }
 
   public static LoggingRegistry getInstance() {
-    if (registry != null) {
+    if ( registry != null ) {
       return registry;
     }
     registry = new LoggingRegistry();
     return registry;
   }
 
-  public String registerLoggingSource(Object object)
-  {
-    synchronized (this.syncObject) {
+  public String registerLoggingSource( Object object ) {
+    synchronized ( this.syncObject ) {
 
-      this.maxSize = Const.toInt(EnvUtil.getSystemProperty("KETTLE_MAX_LOGGING_REGISTRY_SIZE"), 10000);
+      this.maxSize = Const.toInt( EnvUtil.getSystemProperty( "KETTLE_MAX_LOGGING_REGISTRY_SIZE" ), 10000 );
 
-      LoggingObject loggingSource = new LoggingObject(object);
+      LoggingObject loggingSource = new LoggingObject( object );
 
-      LoggingObjectInterface found = findExistingLoggingSource(loggingSource);
-      if ((found != null) && (found.getParent() != null))
-      {
+      LoggingObjectInterface found = findExistingLoggingSource( loggingSource );
+      if ( ( found != null ) && ( found.getParent() != null ) ) {
         return found.getLogChannelId();
       }
 
       String logChannelId = UUID.randomUUID().toString();
-      loggingSource.setLogChannelId(logChannelId);
+      loggingSource.setLogChannelId( logChannelId );
 
-      this.map.put(logChannelId, loggingSource);
+      this.map.put( logChannelId, loggingSource );
 
-      if (loggingSource.getParent() != null) {
+      if ( loggingSource.getParent() != null ) {
         String parentLogChannelId = loggingSource.getParent().getLogChannelId();
-        if (parentLogChannelId != null) {
-          List<String> parentChildren = this.childrenMap.get(parentLogChannelId);
-          if (parentChildren == null) {
+        if ( parentLogChannelId != null ) {
+          List<String> parentChildren = this.childrenMap.get( parentLogChannelId );
+          if ( parentChildren == null ) {
             parentChildren = new ArrayList<String>();
-            this.childrenMap.put(parentLogChannelId, parentChildren);
+            this.childrenMap.put( parentLogChannelId, parentChildren );
           }
-          parentChildren.add(logChannelId);
+          parentChildren.add( logChannelId );
         }
       }
 
       this.lastModificationTime = new Date();
-      loggingSource.setRegistrationDate(this.lastModificationTime);
+      loggingSource.setRegistrationDate( this.lastModificationTime );
 
-      if ((this.maxSize > 0) && (this.map.size() > this.maxSize))
-      {
-        List<LoggingObjectInterface> all = new ArrayList<LoggingObjectInterface>(this.map.values());
-        Collections.sort(all, new Comparator<LoggingObjectInterface>() {
+      if ( ( this.maxSize > 0 ) && ( this.map.size() > this.maxSize ) ) {
+        List<LoggingObjectInterface> all = new ArrayList<LoggingObjectInterface>( this.map.values() );
+        Collections.sort( all, new Comparator<LoggingObjectInterface>() {
           @Override
-          public int compare(LoggingObjectInterface o1, LoggingObjectInterface o2) {
-            if ((o1 == null) && (o2 != null)) return -1;
-            if ((o1 != null) && (o2 == null)) return 1;
-            if ((o1 == null) && (o2 == null)) return 0;
-            if (o1.getRegistrationDate() == null && o2.getRegistrationDate() != null) return -1; 
-            if (o1.getRegistrationDate() != null && o2.getRegistrationDate() == null) return 1; 
-            if (o1.getRegistrationDate() == null && o2.getRegistrationDate() == null) return 0;
-            return (o1.getRegistrationDate().compareTo(o2.getRegistrationDate()));
+          public int compare( LoggingObjectInterface o1, LoggingObjectInterface o2 ) {
+            if ( ( o1 == null ) && ( o2 != null ) ) {
+              return -1;
+            }
+            if ( ( o1 != null ) && ( o2 == null ) ) {
+              return 1;
+            }
+            if ( ( o1 == null ) && ( o2 == null ) ) {
+              return 0;
+            }
+            if ( o1.getRegistrationDate() == null && o2.getRegistrationDate() != null ) {
+              return -1;
+            }
+            if ( o1.getRegistrationDate() != null && o2.getRegistrationDate() == null ) {
+              return 1;
+            }
+            if ( o1.getRegistrationDate() == null && o2.getRegistrationDate() == null ) {
+              return 0;
+            }
+            return ( o1.getRegistrationDate().compareTo( o2.getRegistrationDate() ) );
           }
-        });
+        } );
         int cutCount = this.maxSize < 1000 ? this.maxSize : 1000;
-        for (int i = 0; i < cutCount; i++) {
-          LoggingObjectInterface toRemove = all.get(i);
-          this.map.remove(toRemove.getLogChannelId());
+        for ( int i = 0; i < cutCount; i++ ) {
+          LoggingObjectInterface toRemove = all.get( i );
+          this.map.remove( toRemove.getLogChannelId() );
         }
         removeOrphans();
       }
@@ -121,12 +130,10 @@ public class LoggingRegistry
     }
   }
 
-  public LoggingObjectInterface findExistingLoggingSource(LoggingObjectInterface loggingObject)
-  {
+  public LoggingObjectInterface findExistingLoggingSource( LoggingObjectInterface loggingObject ) {
     LoggingObjectInterface found = null;
-    for (LoggingObjectInterface verify : this.map.values())
-    {
-      if (loggingObject.equals(verify)) {
+    for ( LoggingObjectInterface verify : this.map.values() ) {
+      if ( loggingObject.equals( verify ) ) {
         found = verify;
         break;
       }
@@ -134,43 +141,40 @@ public class LoggingRegistry
     return found;
   }
 
-  public LoggingObjectInterface getLoggingObject(String logChannelId)
-  {
-    return this.map.get(logChannelId);
+  public LoggingObjectInterface getLoggingObject( String logChannelId ) {
+    return this.map.get( logChannelId );
   }
 
   public Map<String, LoggingObjectInterface> getMap() {
     return this.map;
   }
 
-  public List<String> getLogChannelChildren(String parentLogChannelId)
-  {
-    if (parentLogChannelId == null) {
+  public List<String> getLogChannelChildren( String parentLogChannelId ) {
+    if ( parentLogChannelId == null ) {
       return null;
     }
-    List<String> list = getLogChannelChildren(new ArrayList<String>(), parentLogChannelId);
-    list.add(parentLogChannelId);
+    List<String> list = getLogChannelChildren( new ArrayList<String>(), parentLogChannelId );
+    list.add( parentLogChannelId );
     return list;
   }
 
-  private List<String> getLogChannelChildren(List<String> children, String parentLogChannelId)
-  {
-    synchronized (this.syncObject) {
-      List<String> list = this.childrenMap.get(parentLogChannelId);
-      if (list == null) {
+  private List<String> getLogChannelChildren( List<String> children, String parentLogChannelId ) {
+    synchronized ( this.syncObject ) {
+      List<String> list = this.childrenMap.get( parentLogChannelId );
+      if ( list == null ) {
         // Don't do anything, just return the input.
         return children;
       }
 
       Iterator<String> kids = list.iterator();
-      while (kids.hasNext()) {
+      while ( kids.hasNext() ) {
         String logChannelId = kids.next();
 
         // Add the children recursively
-        getLogChannelChildren(children, logChannelId); 
+        getLogChannelChildren( children, logChannelId );
 
         // Also add the current parent
-        children.add(logChannelId);
+        children.add( logChannelId );
       }
     }
 
@@ -181,44 +185,42 @@ public class LoggingRegistry
     return this.lastModificationTime;
   }
 
-  public String dump(boolean includeGeneral) {
-    StringBuffer out = new StringBuffer(50000);
-    for (LoggingObjectInterface o : this.map.values()) {
-      if ((includeGeneral) || (!o.getObjectType().equals(LoggingObjectType.GENERAL)))
-      {
-        out.append(o.getContainerObjectId());
-        out.append("\t");
-        out.append(o.getLogChannelId());
-        out.append("\t");
-        out.append(o.getObjectType().name());
-        out.append("\t");
-        out.append(o.getObjectName());
-        out.append("\t");
-        out.append(o.getParent() != null ? o.getParent().getLogChannelId() : "-");
-        out.append("\t");
-        out.append(o.getParent() != null ? o.getParent().getObjectType().name() : "-");
-        out.append("\t");
-        out.append(o.getParent() != null ? o.getParent().getObjectName() : "-");
-        out.append("\n");
+  public String dump( boolean includeGeneral ) {
+    StringBuffer out = new StringBuffer( 50000 );
+    for ( LoggingObjectInterface o : this.map.values() ) {
+      if ( ( includeGeneral ) || ( !o.getObjectType().equals( LoggingObjectType.GENERAL ) ) ) {
+        out.append( o.getContainerObjectId() );
+        out.append( "\t" );
+        out.append( o.getLogChannelId() );
+        out.append( "\t" );
+        out.append( o.getObjectType().name() );
+        out.append( "\t" );
+        out.append( o.getObjectName() );
+        out.append( "\t" );
+        out.append( o.getParent() != null ? o.getParent().getLogChannelId() : "-" );
+        out.append( "\t" );
+        out.append( o.getParent() != null ? o.getParent().getObjectType().name() : "-" );
+        out.append( "\t" );
+        out.append( o.getParent() != null ? o.getParent().getObjectName() : "-" );
+        out.append( "\n" );
       }
     }
     return out.toString();
   }
 
-  public void removeIncludingChildren(String logChannelId)
-  {
-    synchronized (this.map) {
-      List<String> children = getLogChannelChildren(logChannelId);
-      for (String child : children) {
-        this.map.remove(child);
+  public void removeIncludingChildren( String logChannelId ) {
+    synchronized ( this.map ) {
+      List<String> children = getLogChannelChildren( logChannelId );
+      for ( String child : children ) {
+        this.map.remove( child );
       }
-      this.map.remove(logChannelId);
+      this.map.remove( logChannelId );
       removeOrphans();
     }
   }
-  
+
   public void removeOrphans() {
     // Remove all orphaned children
-    this.childrenMap.keySet().retainAll(this.map.keySet());
+    this.childrenMap.keySet().retainAll( this.map.keySet() );
   }
 }
