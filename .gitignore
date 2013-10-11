@@ -4,6 +4,7 @@ js-lib/
 lib/
 libswt/
 test-lib/
+dev-lib/
 eclipse-bin/
 override.properties
 testdata.log
@@ -12,7 +13,6 @@ testdata.script
 .classpath
 .project
 projects/
-plugins/
 build-res/dojo-*
 build-res/module-scripts/
 *.class
