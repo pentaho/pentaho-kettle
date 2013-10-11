@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.core.jdbc;
 
@@ -67,10 +67,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 public class ThinResultSet implements ResultSet {
-  
+
   private ThinStatement statement;
   private ThinConnection connection;
-  
+
   private DataInputStream dataInputStream;
   private RowMetaInterface rowMeta;
   private Object[] currentRow;
@@ -89,57 +89,64 @@ public class ThinResultSet implements ResultSet {
 
   private String sqlObjectId;
   private AtomicBoolean stopped;
-  
-  public ThinResultSet(ThinStatement statement, String urlString, String username, String password, String sql) throws SQLException {
+
+  public ThinResultSet( ThinStatement statement, String urlString, String username, String password, String sql )
+    throws SQLException {
     this.statement = statement;
     this.connection = (ThinConnection) statement.getConnection();
-    
+
     rowNumber = 0;
-    stopped = new AtomicBoolean(false);
-    
+    stopped = new AtomicBoolean( false );
+
     try {
-      
+
       HttpClient client = null;
-      
+
       try {
         client = SlaveConnectionManager.getInstance().createHttpClient();
-        
-        client.getHttpConnectionManager().getParams().setConnectionTimeout(0);
-        client.getHttpConnectionManager().getParams().setSoTimeout(0);
-        
-        HttpUtil.addCredentials(client, new Variables(), connection.getHostname(), connection.getPort(), connection.getWebAppName(), connection.getUsername(), connection.getPassword());
-        HttpUtil.addProxy(client, new Variables(), connection.getHostname(), connection.getProxyHostname(), connection.getProxyPort(), connection.getNonProxyHosts());
-        
-        method = new GetMethod(urlString);
 
-        method.setDoAuthentication(true);
-        method.addRequestHeader(new Header("Content-Type", "binary/jdbc"));
-        method.addRequestHeader(new Header("SQL", ThinUtil.stripNewlines(sql)));
-        method.addRequestHeader(new Header("MaxRows", Integer.toString(statement.getMaxRows())));
-        method.getParams().setParameter("http.socket.timeout", new Integer(0));
-        
-        for (String arg : connection.getArguments().keySet()) {
-          String value = connection.getArguments().get(arg);
-          method.addRequestHeader(new Header(arg, value));
+        client.getHttpConnectionManager().getParams().setConnectionTimeout( 0 );
+        client.getHttpConnectionManager().getParams().setSoTimeout( 0 );
+
+        HttpUtil.addCredentials( client, new Variables(), connection.getHostname(), connection.getPort(), connection
+            .getWebAppName(), connection.getUsername(), connection.getPassword() );
+        HttpUtil.addProxy( client, new Variables(), connection.getHostname(), connection.getProxyHostname(), connection
+            .getProxyPort(), connection.getNonProxyHosts() );
+
+        method = new GetMethod( urlString );
+
+        method.setDoAuthentication( true );
+        method.addRequestHeader( new Header( "Content-Type", "binary/jdbc" ) );
+        method.addRequestHeader( new Header( "SQL", ThinUtil.stripNewlines( sql ) ) );
+        method.addRequestHeader( new Header( "MaxRows", Integer.toString( statement.getMaxRows() ) ) );
+        method.getParams().setParameter( "http.socket.timeout", new Integer( 0 ) );
+
+        for ( String arg : connection.getArguments().keySet() ) {
+          String value = connection.getArguments().get( arg );
+          method.addRequestHeader( new Header( arg, value ) );
         }
-        
-        int result = client.executeMethod(method);
-        
-        if (result==500) {
-          String response = getErrorString(method.getResponseBodyAsStream());
-          throw new KettleException("Error 500 reading data from slave server, url='"+urlString+"', response: "+response);
-        } 
-        if (result==401) {
-          String response = getErrorString(method.getResponseBodyAsStream());
-          throw new KettleException("Access denied error 401 received while attempting to read data from server, url='"+urlString+"', response: "+response);
+
+        int result = client.executeMethod( method );
+
+        if ( result == 500 ) {
+          String response = getErrorString( method.getResponseBodyAsStream() );
+          throw new KettleException( "Error 500 reading data from slave server, url='" + urlString + "', response: "
+              + response );
         }
-        if (result!=200) {
-          String response = getErrorString(method.getResponseBodyAsStream());
-          throw new KettleException("Error received while attempting to read data from server, url='"+urlString+"', response: "+response);
+        if ( result == 401 ) {
+          String response = getErrorString( method.getResponseBodyAsStream() );
+          throw new KettleException(
+              "Access denied error 401 received while attempting to read data from server, url='" + urlString
+                  + "', response: " + response );
         }
-        
-        dataInputStream = new DataInputStream(method.getResponseBodyAsStream());
-         
+        if ( result != 200 ) {
+          String response = getErrorString( method.getResponseBodyAsStream() );
+          throw new KettleException( "Error received while attempting to read data from server, url='" + urlString
+              + "', response: " + response );
+        }
+
+        dataInputStream = new DataInputStream( method.getResponseBodyAsStream() );
+
         // Read the name of the service we're reading from
         //
         serviceName = dataInputStream.readUTF();
@@ -147,151 +154,158 @@ public class ThinResultSet implements ResultSet {
         // Get some information about what's going on on the slave server
         //
         serviceTransName = dataInputStream.readUTF();
-        serviceObjectId =  dataInputStream.readUTF();
+        serviceObjectId = dataInputStream.readUTF();
         sqlTransName = dataInputStream.readUTF();
-        sqlObjectId =  dataInputStream.readUTF();
-        
+        sqlObjectId = dataInputStream.readUTF();
+
         // Get the row metadata...
         //
-        rowMeta = new RowMeta(dataInputStream);
-      } catch(KettleEOFException eof) {
-         close();
+        rowMeta = new RowMeta( dataInputStream );
+      } catch ( KettleEOFException eof ) {
+        close();
       }
-    } catch(Exception e) {
-      throw new SQLException("Unable to get open query for SQL: "+sql+Const.CR+Const.getStackTracker(e), e);
-    } 
+    } catch ( Exception e ) {
+      throw new SQLException( "Unable to get open query for SQL: " + sql + Const.CR + Const.getStackTracker( e ), e );
+    }
   }
 
   public synchronized void cancel() throws SQLException {
-    
+
     // Kill the service transformation on the server...
     // Only ever try once.
     //
-    if (!stopped.get()) {
-      stopped.set(true);
+    if ( !stopped.get() ) {
+      stopped.set( true );
       try {
-        String reply = HttpUtil.execService(new Variables(), 
-            connection.getHostname(), connection.getPort(), connection.getWebAppName(), 
-            connection.getService()+"/stopTrans"+"/?name="+URLEncoder.encode(serviceTransName, "UTF-8")+"&id="+Const.NVL(serviceObjectId, "")+"&xml=Y",
-            connection.getUsername(), connection.getPassword(), 
-            connection.getProxyHostname(), connection.getProxyPort(), connection.getNonProxyHosts());
-        
-        WebResult webResult = new WebResult(XMLHandler.loadXMLString(reply, WebResult.XML_TAG));
-        if (!"OK".equals(webResult.getResult())) {
-          throw new SQLException("Cancel on remote server failed: "+webResult.getMessage());
+        String reply =
+            HttpUtil.execService( new Variables(), connection.getHostname(), connection.getPort(), connection
+                .getWebAppName(),
+                connection.getService() + "/stopTrans" + "/?name=" + URLEncoder.encode( serviceTransName, "UTF-8" )
+                    + "&id=" + Const.NVL( serviceObjectId, "" ) + "&xml=Y", connection.getUsername(), connection
+                    .getPassword(), connection.getProxyHostname(), connection.getProxyPort(), connection
+                    .getNonProxyHosts() );
+
+        WebResult webResult = new WebResult( XMLHandler.loadXMLString( reply, WebResult.XML_TAG ) );
+        if ( !"OK".equals( webResult.getResult() ) ) {
+          throw new SQLException( "Cancel on remote server failed: " + webResult.getMessage() );
         }
-        
-      } catch(Exception e) {
-        throw new SQLException("Couldn't cancel SQL query on slave server", e);
+
+      } catch ( Exception e ) {
+        throw new SQLException( "Couldn't cancel SQL query on slave server", e );
       }
     }
   }
 
-  private String getErrorString(InputStream inputStream) throws IOException {
+  private String getErrorString( InputStream inputStream ) throws IOException {
     StringBuffer bodyBuffer = new StringBuffer();
     int c;
-    while ( (c=inputStream.read())!=-1) bodyBuffer.append((char)c);
+    while ( ( c = inputStream.read() ) != -1 ) {
+      bodyBuffer.append( (char) c );
+    }
     return bodyBuffer.toString();
-    
+
   }
 
   @Override
-  public boolean absolute(int rowNr) throws SQLException {
-    if (rowNumber!=rowNr) {
-      throw new SQLException("Scrolleable resultsets are not supported");
+  public boolean absolute( int rowNr ) throws SQLException {
+    if ( rowNumber != rowNr ) {
+      throw new SQLException( "Scrolleable resultsets are not supported" );
     }
     return true;
   }
 
   @Override
   public void afterLast() throws SQLException {
-    throw new SQLException("Scrolleable resultsets are not supported");
+    throw new SQLException( "Scrolleable resultsets are not supported" );
   }
 
   @Override
   public void beforeFirst() throws SQLException {
-    throw new SQLException("Scrolleable resultsets are not supported");
+    throw new SQLException( "Scrolleable resultsets are not supported" );
   }
 
   @Override
   public void cancelRowUpdates() throws SQLException {
-    throw new SQLException("Scrolleable resultsets are not supported");
+    throw new SQLException( "Scrolleable resultsets are not supported" );
   }
 
   @Override
   public void clearWarnings() throws SQLException {
   }
-  
-  private void checkTransStatus(String transformationName, String transformationObjectId) throws SQLException {
+
+  private void checkTransStatus( String transformationName, String transformationObjectId ) throws SQLException {
     try {
-      String xml = HttpUtil.execService(new Variables(), 
-          connection.getHostname(), connection.getPort(), connection.getWebAppName(), 
-          connection.getService()+"/transStatus/?name="+URLEncoder.encode(transformationName, "UTF-8")+"&id="+Const.NVL(transformationObjectId, "")+"&xml=Y", 
-          connection.getUsername(), connection.getPassword(), connection.getProxyHostname(), connection.getProxyPort(), connection.getNonProxyHosts()
-        );
-      Document doc = XMLHandler.loadXMLString(xml);
-      Node resultNode = XMLHandler.getSubNode(doc, "transstatus", "result");
-      Result result = new Result(resultNode);
-      String loggingString64 = XMLHandler.getNodeValue(XMLHandler.getSubNode(doc, "transstatus", "logging_string"));
-      String log="";
-      if (!Const.isEmpty(loggingString64)) {
-        String dataString64 = loggingString64.substring("<![CDATA[".length(), loggingString64.length() - "]]>".length());
-        log = HttpUtil.decodeBase64ZippedString(dataString64);
+      String xml =
+          HttpUtil.execService( new Variables(), connection.getHostname(), connection.getPort(), connection
+              .getWebAppName(), connection.getService() + "/transStatus/?name="
+              + URLEncoder.encode( transformationName, "UTF-8" ) + "&id=" + Const.NVL( transformationObjectId, "" )
+              + "&xml=Y", connection.getUsername(), connection.getPassword(), connection.getProxyHostname(), connection
+              .getProxyPort(), connection.getNonProxyHosts() );
+      Document doc = XMLHandler.loadXMLString( xml );
+      Node resultNode = XMLHandler.getSubNode( doc, "transstatus", "result" );
+      Result result = new Result( resultNode );
+      String loggingString64 = XMLHandler.getNodeValue( XMLHandler.getSubNode( doc, "transstatus", "logging_string" ) );
+      String log = "";
+      if ( !Const.isEmpty( loggingString64 ) ) {
+        String dataString64 =
+            loggingString64.substring( "<![CDATA[".length(), loggingString64.length() - "]]>".length() );
+        log = HttpUtil.decodeBase64ZippedString( dataString64 );
       }
 
       // Check for errors
       //
-      if (!result.getResult() || result.getNrErrors()>0) {
-        throw new KettleException("The SQL query transformation failed with the following log text:"+Const.CR+log);
+      if ( !result.getResult() || result.getNrErrors() > 0 ) {
+        throw new KettleException( "The SQL query transformation failed with the following log text:" + Const.CR + log );
       }
 
       // See if the transformation was stopped remotely
       //
-      boolean stopped = "Stopped".equalsIgnoreCase(XMLHandler.getTagValue(doc, "transstatus", "status_desc"));
-      if (stopped) {
-        throw new KettleException("The SQL query transformation was stopped.  Logging text: "+Const.CR+log);
+      boolean stopped = "Stopped".equalsIgnoreCase( XMLHandler.getTagValue( doc, "transstatus", "status_desc" ) );
+      if ( stopped ) {
+        throw new KettleException( "The SQL query transformation was stopped.  Logging text: " + Const.CR + log );
       }
 
       // All OK, only log the remote logging text if requested.
       //
-      if (connection.isDebuggingRemoteLog()) {
-        LogChannel.GENERAL.logBasic(log); 
+      if ( connection.isDebuggingRemoteLog() ) {
+        LogChannel.GENERAL.logBasic( log );
       }
-      
-    } catch(Exception e) {
-      throw new SQLException("Couldn't validate correct execution of SQL query for transformation ["+transformationName+"]", e);
+
+    } catch ( Exception e ) {
+      throw new SQLException( "Couldn't validate correct execution of SQL query for transformation ["
+          + transformationName + "]", e );
     }
 
   }
 
   @Override
   public void close() throws SQLException {
-    
+
     // Before we close this connection, let's verify if we got all records...
     //
-    checkTransStatus(sqlTransName, sqlObjectId);
-    
+    checkTransStatus( sqlTransName, sqlObjectId );
+
     currentRow = null;
     dataInputStream = null;
-    if (method!=null) {
+    if ( method != null ) {
       method.releaseConnection();
     }
   }
 
   @Override
   public void deleteRow() throws SQLException {
-    throw new SQLException("Scrolleable resultsets are not supported");
+    throw new SQLException( "Scrolleable resultsets are not supported" );
   }
 
   @Override
-  public int findColumn(String column) throws SQLException {
-    return rowMeta.indexOfValue(column)+1;
+  public int findColumn( String column ) throws SQLException {
+    return rowMeta.indexOfValue( column ) + 1;
   }
 
   @Override
   public boolean first() throws SQLException {
-    if (rowNumber!=0) {
-      throw new SQLException("Scrolleable resultsets are not supported");
+    if ( rowNumber != 0 ) {
+      throw new SQLException( "Scrolleable resultsets are not supported" );
     }
     return true;
   }
@@ -305,7 +319,6 @@ public class ThinResultSet implements ResultSet {
   public String getCursorName() throws SQLException {
     return serviceName;
   }
-
 
   @Override
   public int getFetchDirection() throws SQLException {
@@ -324,7 +337,7 @@ public class ThinResultSet implements ResultSet {
 
   @Override
   public ResultSetMetaData getMetaData() throws SQLException {
-    return new ThinResultSetMetaData(serviceName, rowMeta);
+    return new ThinResultSetMetaData( serviceName, rowMeta );
   }
 
   @Override
@@ -349,37 +362,37 @@ public class ThinResultSet implements ResultSet {
 
   @Override
   public void insertRow() throws SQLException {
-    throw new SQLException("Updating resultsets are not supported");
+    throw new SQLException( "Updating resultsets are not supported" );
   }
 
   @Override
   public boolean isAfterLast() throws SQLException {
-    throw new SQLException("Scrolleable resultsets are not supported");
+    throw new SQLException( "Scrolleable resultsets are not supported" );
   }
 
   @Override
   public boolean isBeforeFirst() throws SQLException {
-    throw new SQLException("Scrolleable resultsets are not supported");
+    throw new SQLException( "Scrolleable resultsets are not supported" );
   }
 
   @Override
   public boolean isClosed() throws SQLException {
-    return dataInputStream==null && currentRow==null;
+    return dataInputStream == null && currentRow == null;
   }
 
   @Override
   public boolean isFirst() throws SQLException {
-    return rowNumber==0;
+    return rowNumber == 0;
   }
 
   @Override
   public boolean isLast() throws SQLException {
-    return currentRow!=null && dataInputStream==null;
+    return currentRow != null && dataInputStream == null;
   }
 
   @Override
   public boolean last() throws SQLException {
-    throw new SQLException("Scrolleable resultsets are not supported");
+    throw new SQLException( "Scrolleable resultsets are not supported" );
   }
 
   @Override
@@ -388,27 +401,29 @@ public class ThinResultSet implements ResultSet {
 
   @Override
   public void moveToInsertRow() throws SQLException {
-    throw new SQLException("Scrolleable resultsets are not supported");
+    throw new SQLException( "Scrolleable resultsets are not supported" );
   }
 
   @Override
   public boolean next() throws SQLException {
-    if (dataInputStream==null) return false;
-    
+    if ( dataInputStream == null ) {
+      return false;
+    }
+
     try {
-      currentRow = rowMeta.readData(dataInputStream);
+      currentRow = rowMeta.readData( dataInputStream );
       return true;
-    } catch(KettleEOFException e) {
+    } catch ( KettleEOFException e ) {
       dataInputStream = null;
       return false;
-    } catch(Exception e) {
-      throw new SQLException(e);
+    } catch ( Exception e ) {
+      throw new SQLException( e );
     }
   }
 
   @Override
   public boolean previous() throws SQLException {
-    throw new SQLException("Scrolleable resultsets are not supported");
+    throw new SQLException( "Scrolleable resultsets are not supported" );
   }
 
   @Override
@@ -416,9 +431,9 @@ public class ThinResultSet implements ResultSet {
   }
 
   @Override
-  public boolean relative(int rowNumber) throws SQLException {
-    if (this.rowNumber!=rowNumber) {
-      throw new SQLException("Scrolleable resultsets are not supported");
+  public boolean relative( int rowNumber ) throws SQLException {
+    if ( this.rowNumber != rowNumber ) {
+      throw new SQLException( "Scrolleable resultsets are not supported" );
     }
     return true;
   }
@@ -439,11 +454,11 @@ public class ThinResultSet implements ResultSet {
   }
 
   @Override
-  public void setFetchDirection(int direction) throws SQLException {
+  public void setFetchDirection( int direction ) throws SQLException {
   }
 
   @Override
-  public void setFetchSize(int direction) throws SQLException {
+  public void setFetchSize( int direction ) throws SQLException {
   }
 
   @Override
@@ -451,869 +466,846 @@ public class ThinResultSet implements ResultSet {
     return lastNull;
   }
 
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
   // Here are the getters...
-  
-  
+
   @Override
-  public Date getDate(int index) throws SQLException {
+  public Date getDate( int index ) throws SQLException {
     try {
-      java.util.Date date = rowMeta.getDate(currentRow, index-1);
-      if (date==null) {
-        lastNull=true;
+      java.util.Date date = rowMeta.getDate( currentRow, index - 1 );
+      if ( date == null ) {
+        lastNull = true;
         return null;
       }
-      lastNull=false;
-      return new Date(date.getTime());
-    } catch(Exception e) { 
-      throw new SQLException(e);
+      lastNull = false;
+      return new Date( date.getTime() );
+    } catch ( Exception e ) {
+      throw new SQLException( e );
     }
   }
 
   @Override
-  public Date getDate(String columnName) throws SQLException {
-    return getDate(rowMeta.indexOfValue(columnName));
+  public Date getDate( String columnName ) throws SQLException {
+    return getDate( rowMeta.indexOfValue( columnName ) );
   }
 
   @Override
-  public Date getDate(int index, Calendar calendar) throws SQLException {
-    return getDate(index);
+  public Date getDate( int index, Calendar calendar ) throws SQLException {
+    return getDate( index );
   }
 
   @Override
-  public Date getDate(String columnName, Calendar calendar) throws SQLException {
-    return getDate(rowMeta.indexOfValue(columnName));
+  public Date getDate( String columnName, Calendar calendar ) throws SQLException {
+    return getDate( rowMeta.indexOfValue( columnName ) );
   }
 
   @Override
-  public double getDouble(int index) throws SQLException {
+  public double getDouble( int index ) throws SQLException {
     try {
-      Double d = rowMeta.getNumber(currentRow, index-1);
-      if (d==null) {
-        lastNull=true;
+      Double d = rowMeta.getNumber( currentRow, index - 1 );
+      if ( d == null ) {
+        lastNull = true;
         return 0.0;
       }
-      lastNull=false;
+      lastNull = false;
       return d;
-    } catch(Exception e) { 
-      throw new SQLException(e);
+    } catch ( Exception e ) {
+      throw new SQLException( e );
     }
   }
 
   @Override
-  public double getDouble(String columnName) throws SQLException {
-    return getDouble(rowMeta.indexOfValue(columnName));
+  public double getDouble( String columnName ) throws SQLException {
+    return getDouble( rowMeta.indexOfValue( columnName ) );
   }
 
   @Override
-  public Array getArray(int arg0) throws SQLException {
-    throw new SQLException("Arrays are not supported");
+  public Array getArray( int arg0 ) throws SQLException {
+    throw new SQLException( "Arrays are not supported" );
   }
 
   @Override
-  public Array getArray(String arg0) throws SQLException {
-    throw new SQLException("Arrays are not supported");
+  public Array getArray( String arg0 ) throws SQLException {
+    throw new SQLException( "Arrays are not supported" );
   }
 
   @Override
-  public InputStream getAsciiStream(int arg0) throws SQLException {
-    throw new SQLException("ASCII streams are not supported");
+  public InputStream getAsciiStream( int arg0 ) throws SQLException {
+    throw new SQLException( "ASCII streams are not supported" );
   }
 
   @Override
-  public InputStream getAsciiStream(String arg0) throws SQLException {
-    throw new SQLException("ASCII streams are not supported");
+  public InputStream getAsciiStream( String arg0 ) throws SQLException {
+    throw new SQLException( "ASCII streams are not supported" );
   }
 
   @Override
-  public BigDecimal getBigDecimal(int index) throws SQLException {
+  public BigDecimal getBigDecimal( int index ) throws SQLException {
     try {
-      BigDecimal d = rowMeta.getBigNumber(currentRow, index-1);
-      if (d==null) {
-        lastNull=true;
+      BigDecimal d = rowMeta.getBigNumber( currentRow, index - 1 );
+      if ( d == null ) {
+        lastNull = true;
         return null;
       }
-      lastNull=false;
+      lastNull = false;
       return d;
-    } catch(Exception e) { 
-      throw new SQLException(e);
+    } catch ( Exception e ) {
+      throw new SQLException( e );
     }
   }
 
   @Override
-  public BigDecimal getBigDecimal(String columnName) throws SQLException {
-    return getBigDecimal(rowMeta.indexOfValue(columnName));
+  public BigDecimal getBigDecimal( String columnName ) throws SQLException {
+    return getBigDecimal( rowMeta.indexOfValue( columnName ) );
   }
 
   @Override
   @Deprecated
-  public BigDecimal getBigDecimal(int index, int arg1) throws SQLException {
-    return getBigDecimal(index);
+  public BigDecimal getBigDecimal( int index, int arg1 ) throws SQLException {
+    return getBigDecimal( index );
   }
 
   @Override
   @Deprecated
-  public BigDecimal getBigDecimal(String columnName, int arg1) throws SQLException {
-    return getBigDecimal(rowMeta.indexOfValue(columnName));
+  public BigDecimal getBigDecimal( String columnName, int arg1 ) throws SQLException {
+    return getBigDecimal( rowMeta.indexOfValue( columnName ) );
   }
 
   @Override
-  public InputStream getBinaryStream(int arg0) throws SQLException {
-    throw new SQLException("Binary streams are not supported");
+  public InputStream getBinaryStream( int arg0 ) throws SQLException {
+    throw new SQLException( "Binary streams are not supported" );
   }
 
   @Override
-  public InputStream getBinaryStream(String arg0) throws SQLException {
-    throw new SQLException("Binary streams are not supported");
+  public InputStream getBinaryStream( String arg0 ) throws SQLException {
+    throw new SQLException( "Binary streams are not supported" );
   }
 
   @Override
-  public Blob getBlob(int index) throws SQLException {
-    throw new SQLException("BLOBs are not supported");
+  public Blob getBlob( int index ) throws SQLException {
+    throw new SQLException( "BLOBs are not supported" );
   }
 
   @Override
-  public Blob getBlob(String arg0) throws SQLException {
-    throw new SQLException("BLOBs are not supported");
+  public Blob getBlob( String arg0 ) throws SQLException {
+    throw new SQLException( "BLOBs are not supported" );
   }
 
   @Override
-  public boolean getBoolean(int index) throws SQLException {
+  public boolean getBoolean( int index ) throws SQLException {
     try {
-      Boolean b = rowMeta.getBoolean(currentRow, index-1);
-      if (b==null) {
-        lastNull=true;
+      Boolean b = rowMeta.getBoolean( currentRow, index - 1 );
+      if ( b == null ) {
+        lastNull = true;
         return false;
       }
-      lastNull=false;
+      lastNull = false;
       return b;
-    } catch(Exception e) { 
-      throw new SQLException(e);
+    } catch ( Exception e ) {
+      throw new SQLException( e );
     }
   }
 
   @Override
-  public boolean getBoolean(String columnName) throws SQLException {
-    return getBoolean(rowMeta.indexOfValue(columnName));
+  public boolean getBoolean( String columnName ) throws SQLException {
+    return getBoolean( rowMeta.indexOfValue( columnName ) );
   }
 
   @Override
-  public byte getByte(int index) throws SQLException {
-    long l = getLong(index);
-    return (byte)l;
+  public byte getByte( int index ) throws SQLException {
+    long l = getLong( index );
+    return (byte) l;
   }
 
   @Override
-  public byte getByte(String columnName) throws SQLException {
-    return getByte(rowMeta.indexOfValue(columnName));
+  public byte getByte( String columnName ) throws SQLException {
+    return getByte( rowMeta.indexOfValue( columnName ) );
   }
 
   @Override
-  public byte[] getBytes(int index) throws SQLException {
+  public byte[] getBytes( int index ) throws SQLException {
     try {
-      byte[] binary = rowMeta.getBinary(currentRow, index-1);
-      if (binary==null) {
-        lastNull=true;
+      byte[] binary = rowMeta.getBinary( currentRow, index - 1 );
+      if ( binary == null ) {
+        lastNull = true;
         return null;
       }
-      lastNull=false;
+      lastNull = false;
       return binary;
-    } catch(Exception e) { 
-      throw new SQLException(e);
-    }  }
-
-  @Override
-  public byte[] getBytes(String columnName) throws SQLException {
-    return getBytes(rowMeta.indexOfValue(columnName));
+    } catch ( Exception e ) {
+      throw new SQLException( e );
+    }
   }
 
   @Override
-  public Reader getCharacterStream(int arg0) throws SQLException {
-    throw new SQLException("Character streams are not supported");
+  public byte[] getBytes( String columnName ) throws SQLException {
+    return getBytes( rowMeta.indexOfValue( columnName ) );
   }
 
   @Override
-  public Reader getCharacterStream(String arg0) throws SQLException {
-    throw new SQLException("Character streams are not supported");
+  public Reader getCharacterStream( int arg0 ) throws SQLException {
+    throw new SQLException( "Character streams are not supported" );
   }
 
   @Override
-  public Clob getClob(int arg0) throws SQLException {
-    throw new SQLException("CLOBs are not supported");
+  public Reader getCharacterStream( String arg0 ) throws SQLException {
+    throw new SQLException( "Character streams are not supported" );
   }
 
   @Override
-  public Clob getClob(String arg0) throws SQLException {
-    throw new SQLException("CLOBs are not supported");
+  public Clob getClob( int arg0 ) throws SQLException {
+    throw new SQLException( "CLOBs are not supported" );
   }
 
   @Override
-  public float getFloat(int index) throws SQLException {
-    double d = getDouble(index);
-    return (float)d;
+  public Clob getClob( String arg0 ) throws SQLException {
+    throw new SQLException( "CLOBs are not supported" );
   }
 
   @Override
-  public float getFloat(String columnName) throws SQLException {
-    double d = getDouble(columnName);
-    return (float)d;
+  public float getFloat( int index ) throws SQLException {
+    double d = getDouble( index );
+    return (float) d;
   }
 
   @Override
-  public int getInt(int index) throws SQLException {
-    long l = getLong(index);
-    return (int)l;
+  public float getFloat( String columnName ) throws SQLException {
+    double d = getDouble( columnName );
+    return (float) d;
   }
 
   @Override
-  public int getInt(String columnName) throws SQLException {
-    return getInt(rowMeta.indexOfValue(columnName));
+  public int getInt( int index ) throws SQLException {
+    long l = getLong( index );
+    return (int) l;
   }
 
   @Override
-  public long getLong(int index) throws SQLException {
+  public int getInt( String columnName ) throws SQLException {
+    return getInt( rowMeta.indexOfValue( columnName ) );
+  }
+
+  @Override
+  public long getLong( int index ) throws SQLException {
     try {
-      Long d = rowMeta.getInteger(currentRow, index-1);
-      if (d==null) {
-        lastNull=true;
+      Long d = rowMeta.getInteger( currentRow, index - 1 );
+      if ( d == null ) {
+        lastNull = true;
         return 0;
       }
-      lastNull=false;
+      lastNull = false;
       return d;
-    } catch(Exception e) { 
-      throw new SQLException(e);
+    } catch ( Exception e ) {
+      throw new SQLException( e );
     }
   }
 
   @Override
-  public long getLong(String columnName) throws SQLException {
-    return getLong(rowMeta.indexOfValue(columnName));
+  public long getLong( String columnName ) throws SQLException {
+    return getLong( rowMeta.indexOfValue( columnName ) );
   }
 
   @Override
-  public Reader getNCharacterStream(int arg0) throws SQLException {
-    throw new SQLException("NCharacter streams are not supported");
+  public Reader getNCharacterStream( int arg0 ) throws SQLException {
+    throw new SQLException( "NCharacter streams are not supported" );
   }
 
   @Override
-  public Reader getNCharacterStream(String arg0) throws SQLException {
-    throw new SQLException("NCharacter streams are not supported");
+  public Reader getNCharacterStream( String arg0 ) throws SQLException {
+    throw new SQLException( "NCharacter streams are not supported" );
   }
 
   @Override
-  public NClob getNClob(int arg0) throws SQLException {
-    throw new SQLException("NCLOBs are not supported");
+  public NClob getNClob( int arg0 ) throws SQLException {
+    throw new SQLException( "NCLOBs are not supported" );
   }
 
   @Override
-  public NClob getNClob(String arg0) throws SQLException {
-    throw new SQLException("NCLOBs are not supported");
+  public NClob getNClob( String arg0 ) throws SQLException {
+    throw new SQLException( "NCLOBs are not supported" );
   }
 
   @Override
-  public String getNString(int arg0) throws SQLException {
-    throw new SQLException("NStrings are not supported");
+  public String getNString( int arg0 ) throws SQLException {
+    throw new SQLException( "NStrings are not supported" );
   }
 
   @Override
-  public String getNString(String arg0) throws SQLException {
-    throw new SQLException("NStrings are not supported");
+  public String getNString( String arg0 ) throws SQLException {
+    throw new SQLException( "NStrings are not supported" );
   }
 
   @Override
-  public Object getObject(int index) throws SQLException {
-    return currentRow[index-1];
+  public Object getObject( int index ) throws SQLException {
+    return currentRow[index - 1];
   }
 
   @Override
-  public Object getObject(String columnName) throws SQLException {
-    return getObject(rowMeta.indexOfValue(columnName));
+  public Object getObject( String columnName ) throws SQLException {
+    return getObject( rowMeta.indexOfValue( columnName ) );
   }
 
   @Override
-  public Object getObject(int index, Map<String, Class<?>> arg1) throws SQLException {
-    return getObject(index);
+  public Object getObject( int index, Map<String, Class<?>> arg1 ) throws SQLException {
+    return getObject( index );
   }
 
   @Override
-  public Object getObject(String columnName, Map<String, Class<?>> arg1) throws SQLException {
-    return getObject(columnName);
+  public Object getObject( String columnName, Map<String, Class<?>> arg1 ) throws SQLException {
+    return getObject( columnName );
   }
 
   @Override
-  public Ref getRef(int arg0) throws SQLException {
-    throw new SQLException("Refs are not supported");
+  public Ref getRef( int arg0 ) throws SQLException {
+    throw new SQLException( "Refs are not supported" );
   }
 
   @Override
-  public Ref getRef(String arg0) throws SQLException {
-    throw new SQLException("Refs are not supported");
+  public Ref getRef( String arg0 ) throws SQLException {
+    throw new SQLException( "Refs are not supported" );
   }
 
   @Override
-  public RowId getRowId(int arg0) throws SQLException {
-    throw new SQLException("RowIDs are not supported");
+  public RowId getRowId( int arg0 ) throws SQLException {
+    throw new SQLException( "RowIDs are not supported" );
   }
 
   @Override
-  public RowId getRowId(String arg0) throws SQLException {
-    throw new SQLException("RowIDs are not supported");
+  public RowId getRowId( String arg0 ) throws SQLException {
+    throw new SQLException( "RowIDs are not supported" );
   }
 
   @Override
-  public SQLXML getSQLXML(int arg0) throws SQLException {
-    throw new SQLException("SQLXML is not supported");
+  public SQLXML getSQLXML( int arg0 ) throws SQLException {
+    throw new SQLException( "SQLXML is not supported" );
   }
 
   @Override
-  public SQLXML getSQLXML(String arg0) throws SQLException {
-    throw new SQLException("SQLXML is not supported");
+  public SQLXML getSQLXML( String arg0 ) throws SQLException {
+    throw new SQLException( "SQLXML is not supported" );
   }
 
   @Override
-  public short getShort(int index) throws SQLException {
-    long l = getLong(index);
-    return (short)l;
+  public short getShort( int index ) throws SQLException {
+    long l = getLong( index );
+    return (short) l;
   }
 
   @Override
-  public short getShort(String columnName) throws SQLException {
-    return getShort(rowMeta.indexOfValue(columnName));
+  public short getShort( String columnName ) throws SQLException {
+    return getShort( rowMeta.indexOfValue( columnName ) );
   }
 
   @Override
-  public String getString(int index) throws SQLException {
+  public String getString( int index ) throws SQLException {
     try {
-      String string = rowMeta.getString(currentRow, index-1);
-      if (string==null) {
-        lastNull=true;
+      String string = rowMeta.getString( currentRow, index - 1 );
+      if ( string == null ) {
+        lastNull = true;
         return null;
       }
-      lastNull=false;
+      lastNull = false;
       return string;
-    } catch(Exception e) { 
-      throw new SQLException(e);
+    } catch ( Exception e ) {
+      throw new SQLException( e );
     }
   }
 
   @Override
-  public String getString(String columnName) throws SQLException {
-    return getString(rowMeta.indexOfValue(columnName));
+  public String getString( String columnName ) throws SQLException {
+    return getString( rowMeta.indexOfValue( columnName ) );
   }
 
   @Override
-  public Time getTime(int arg0) throws SQLException {
-    throw new SQLException("Time is not supported");
+  public Time getTime( int arg0 ) throws SQLException {
+    throw new SQLException( "Time is not supported" );
   }
 
   @Override
-  public Time getTime(String arg0) throws SQLException {
-    throw new SQLException("Time is not supported");
+  public Time getTime( String arg0 ) throws SQLException {
+    throw new SQLException( "Time is not supported" );
   }
 
   @Override
-  public Time getTime(int arg0, Calendar arg1) throws SQLException {
-    throw new SQLException("Time is not supported");
+  public Time getTime( int arg0, Calendar arg1 ) throws SQLException {
+    throw new SQLException( "Time is not supported" );
   }
 
   @Override
-  public Time getTime(String arg0, Calendar arg1) throws SQLException {
-    throw new SQLException("Time is not supported");
+  public Time getTime( String arg0, Calendar arg1 ) throws SQLException {
+    throw new SQLException( "Time is not supported" );
   }
 
   @Override
-  public Timestamp getTimestamp(int index) throws SQLException {
-    java.util.Date date = getDate(index);
-    if (date==null) return null;
-    return new Timestamp(date.getTime());
+  public Timestamp getTimestamp( int index ) throws SQLException {
+    java.util.Date date = getDate( index );
+    if ( date == null ) {
+      return null;
+    }
+    return new Timestamp( date.getTime() );
   }
 
   @Override
-  public Timestamp getTimestamp(String columnName) throws SQLException {
-    return getTimestamp(rowMeta.indexOfValue(columnName));
+  public Timestamp getTimestamp( String columnName ) throws SQLException {
+    return getTimestamp( rowMeta.indexOfValue( columnName ) );
   }
 
   @Override
-  public Timestamp getTimestamp(int index, Calendar arg1) throws SQLException {
-    return getTimestamp(index);
+  public Timestamp getTimestamp( int index, Calendar arg1 ) throws SQLException {
+    return getTimestamp( index );
   }
 
   @Override
-  public Timestamp getTimestamp(String columnName, Calendar arg1) throws SQLException {
-    return getTimestamp(columnName);
+  public Timestamp getTimestamp( String columnName, Calendar arg1 ) throws SQLException {
+    return getTimestamp( columnName );
   }
 
   @Override
-  public URL getURL(int arg0) throws SQLException {
-    throw new SQLException("URLs are not supported");
+  public URL getURL( int arg0 ) throws SQLException {
+    throw new SQLException( "URLs are not supported" );
   }
 
   @Override
-  public URL getURL(String arg0) throws SQLException {
-    throw new SQLException("URLs are not supported");
-  }
-
-  @Override
-  @Deprecated
-  public InputStream getUnicodeStream(int arg0) throws SQLException {
-    throw new SQLException("Unicode streams are not supported");
+  public URL getURL( String arg0 ) throws SQLException {
+    throw new SQLException( "URLs are not supported" );
   }
 
   @Override
   @Deprecated
-  public InputStream getUnicodeStream(String arg0) throws SQLException {
-    throw new SQLException("Unicode streams are not supported");
+  public InputStream getUnicodeStream( int arg0 ) throws SQLException {
+    throw new SQLException( "Unicode streams are not supported" );
   }
 
+  @Override
+  @Deprecated
+  public InputStream getUnicodeStream( String arg0 ) throws SQLException {
+    throw new SQLException( "Unicode streams are not supported" );
+  }
 
-  
-  
-  
-  
-  
-  
-  
-  
-  
   // Update section below: all not supported...
-  
-  
+
   @Override
-  public void updateArray(int arg0, Array arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateArray( int arg0, Array arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateArray(String arg0, Array arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateArray( String arg0, Array arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateAsciiStream(int arg0, InputStream arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateAsciiStream( int arg0, InputStream arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateAsciiStream(String arg0, InputStream arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateAsciiStream( String arg0, InputStream arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateAsciiStream(int arg0, InputStream arg1, int arg2) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateAsciiStream( int arg0, InputStream arg1, int arg2 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateAsciiStream(String arg0, InputStream arg1, int arg2) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateAsciiStream( String arg0, InputStream arg1, int arg2 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateAsciiStream(int arg0, InputStream arg1, long arg2) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateAsciiStream( int arg0, InputStream arg1, long arg2 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateAsciiStream(String arg0, InputStream arg1, long arg2) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateAsciiStream( String arg0, InputStream arg1, long arg2 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateBigDecimal(int arg0, BigDecimal arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateBigDecimal( int arg0, BigDecimal arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateBigDecimal(String arg0, BigDecimal arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateBigDecimal( String arg0, BigDecimal arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateBinaryStream(int arg0, InputStream arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateBinaryStream( int arg0, InputStream arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateBinaryStream(String arg0, InputStream arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateBinaryStream( String arg0, InputStream arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateBinaryStream(int arg0, InputStream arg1, int arg2) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateBinaryStream( int arg0, InputStream arg1, int arg2 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateBinaryStream(String arg0, InputStream arg1, int arg2) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateBinaryStream( String arg0, InputStream arg1, int arg2 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateBinaryStream(int arg0, InputStream arg1, long arg2) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateBinaryStream( int arg0, InputStream arg1, long arg2 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateBinaryStream(String arg0, InputStream arg1, long arg2) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateBinaryStream( String arg0, InputStream arg1, long arg2 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateBlob(int arg0, Blob arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateBlob( int arg0, Blob arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateBlob(String arg0, Blob arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateBlob( String arg0, Blob arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateBlob(int arg0, InputStream arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateBlob( int arg0, InputStream arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateBlob(String arg0, InputStream arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateBlob( String arg0, InputStream arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateBlob(int arg0, InputStream arg1, long arg2) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateBlob( int arg0, InputStream arg1, long arg2 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateBlob(String arg0, InputStream arg1, long arg2) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateBlob( String arg0, InputStream arg1, long arg2 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateBoolean(int arg0, boolean arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateBoolean( int arg0, boolean arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateBoolean(String arg0, boolean arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateBoolean( String arg0, boolean arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateByte(int arg0, byte arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateByte( int arg0, byte arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateByte(String arg0, byte arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateByte( String arg0, byte arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateBytes(int arg0, byte[] arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateBytes( int arg0, byte[] arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateBytes(String arg0, byte[] arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateBytes( String arg0, byte[] arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateCharacterStream(int arg0, Reader arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateCharacterStream( int arg0, Reader arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateCharacterStream(String arg0, Reader arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateCharacterStream( String arg0, Reader arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateCharacterStream(int arg0, Reader arg1, int arg2) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateCharacterStream( int arg0, Reader arg1, int arg2 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateCharacterStream(String arg0, Reader arg1, int arg2) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateCharacterStream( String arg0, Reader arg1, int arg2 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateCharacterStream(int arg0, Reader arg1, long arg2) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateCharacterStream( int arg0, Reader arg1, long arg2 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateCharacterStream(String arg0, Reader arg1, long arg2) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateCharacterStream( String arg0, Reader arg1, long arg2 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateClob(int arg0, Clob arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateClob( int arg0, Clob arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateClob(String arg0, Clob arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateClob( String arg0, Clob arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateClob(int arg0, Reader arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateClob( int arg0, Reader arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateClob(String arg0, Reader arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateClob( String arg0, Reader arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateClob(int arg0, Reader arg1, long arg2) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateClob( int arg0, Reader arg1, long arg2 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateClob(String arg0, Reader arg1, long arg2) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateClob( String arg0, Reader arg1, long arg2 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateDate(int arg0, Date arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateDate( int arg0, Date arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateDate(String arg0, Date arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateDate( String arg0, Date arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateDouble(int arg0, double arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateDouble( int arg0, double arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateDouble(String arg0, double arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateDouble( String arg0, double arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateFloat(int arg0, float arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateFloat( int arg0, float arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateFloat(String arg0, float arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateFloat( String arg0, float arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateInt(int arg0, int arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateInt( int arg0, int arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateInt(String arg0, int arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateInt( String arg0, int arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateLong(int arg0, long arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateLong( int arg0, long arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateLong(String arg0, long arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateLong( String arg0, long arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateNCharacterStream(int arg0, Reader arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateNCharacterStream( int arg0, Reader arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateNCharacterStream(String arg0, Reader arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateNCharacterStream( String arg0, Reader arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateNCharacterStream(int arg0, Reader arg1, long arg2) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateNCharacterStream( int arg0, Reader arg1, long arg2 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateNCharacterStream(String arg0, Reader arg1, long arg2) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateNCharacterStream( String arg0, Reader arg1, long arg2 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateNClob(int arg0, NClob arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateNClob( int arg0, NClob arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateNClob(String arg0, NClob arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateNClob( String arg0, NClob arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateNClob(int arg0, Reader arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateNClob( int arg0, Reader arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateNClob(String arg0, Reader arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateNClob( String arg0, Reader arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateNClob(int arg0, Reader arg1, long arg2) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateNClob( int arg0, Reader arg1, long arg2 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateNClob(String arg0, Reader arg1, long arg2) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateNClob( String arg0, Reader arg1, long arg2 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateNString(int arg0, String arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateNString( int arg0, String arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateNString(String arg0, String arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateNString( String arg0, String arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateNull(int arg0) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateNull( int arg0 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateNull(String arg0) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateNull( String arg0 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateObject(int arg0, Object arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateObject( int arg0, Object arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateObject(String arg0, Object arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateObject( String arg0, Object arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateObject(int arg0, Object arg1, int arg2) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateObject( int arg0, Object arg1, int arg2 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateObject(String arg0, Object arg1, int arg2) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateObject( String arg0, Object arg1, int arg2 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateRef(int arg0, Ref arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateRef( int arg0, Ref arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateRef(String arg0, Ref arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateRef( String arg0, Ref arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
   public void updateRow() throws SQLException {
-    throw new SQLException("Updates are not supported");
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateRowId(int arg0, RowId arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateRowId( int arg0, RowId arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateRowId(String arg0, RowId arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateRowId( String arg0, RowId arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateSQLXML(int arg0, SQLXML arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateSQLXML( int arg0, SQLXML arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateSQLXML(String arg0, SQLXML arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateSQLXML( String arg0, SQLXML arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateShort(int arg0, short arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateShort( int arg0, short arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateShort(String arg0, short arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateShort( String arg0, short arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateString(int arg0, String arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateString( int arg0, String arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateString(String arg0, String arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateString( String arg0, String arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateTime(int arg0, Time arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateTime( int arg0, Time arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateTime(String arg0, Time arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateTime( String arg0, Time arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateTimestamp(int arg0, Timestamp arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
+  public void updateTimestamp( int arg0, Timestamp arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public void updateTimestamp(String arg0, Timestamp arg1) throws SQLException {
-    throw new SQLException("Updates are not supported");
-  }
-
-  
-  
-
-  @Override
-  public boolean isWrapperFor(Class<?> arg0) throws SQLException {
-    throw new SQLException("Wrapping not supperted");
+  public void updateTimestamp( String arg0, Timestamp arg1 ) throws SQLException {
+    throw new SQLException( "Updates are not supported" );
   }
 
   @Override
-  public <T> T unwrap(Class<T> arg0) throws SQLException {
-    throw new SQLException("Wrapping not supperted");
+  public boolean isWrapperFor( Class<?> arg0 ) throws SQLException {
+    throw new SQLException( "Wrapping not supperted" );
+  }
+
+  @Override
+  public <T> T unwrap( Class<T> arg0 ) throws SQLException {
+    throw new SQLException( "Wrapping not supperted" );
   }
 
   /**
@@ -1323,18 +1315,12 @@ public class ThinResultSet implements ResultSet {
     return serviceName;
   }
 
-
-
-
-
   /**
    * @return the serviceTransName
    */
   public String getServiceTransName() {
     return serviceTransName;
   }
-
-
 
   /**
    * @return the serviceObjectId
@@ -1343,16 +1329,12 @@ public class ThinResultSet implements ResultSet {
     return serviceObjectId;
   }
 
-
-
   /**
    * @return the sqlTransName
    */
   public String getSqlTransName() {
     return sqlTransName;
   }
-
-
 
   /**
    * @return the sqlObjectId
@@ -1361,11 +1343,11 @@ public class ThinResultSet implements ResultSet {
     return sqlObjectId;
   }
 
-  public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
-    throw new SQLException("Method not supported");
+  public <T> T getObject( int columnIndex, Class<T> type ) throws SQLException {
+    throw new SQLException( "Method not supported" );
   }
 
-  public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
-    throw new SQLException("Method not supported");
-  }  
+  public <T> T getObject( String columnLabel, Class<T> type ) throws SQLException {
+    throw new SQLException( "Method not supported" );
+  }
 }

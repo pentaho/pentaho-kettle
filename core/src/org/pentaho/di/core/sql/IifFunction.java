@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.core.sql;
 
@@ -33,15 +33,16 @@ public class IifFunction {
   private String conditionClause;
   private SQLCondition sqlCondition;
   private RowMetaInterface serviceFields;
-  
+
   private String trueValueString;
   private ValueMetaAndData trueValue;
   private boolean trueField;
   private String falseValueString;
   private ValueMetaAndData falseValue;
   private boolean falseField;
-  
-  public IifFunction(String tableAlias, String conditionClause, String trueValueString, String falseValueString, RowMetaInterface serviceFields) throws KettleSQLException {
+
+  public IifFunction( String tableAlias, String conditionClause, String trueValueString, String falseValueString,
+      RowMetaInterface serviceFields ) throws KettleSQLException {
     this.tableAlias = tableAlias;
     this.conditionClause = conditionClause;
     this.trueValueString = trueValueString;
@@ -49,50 +50,62 @@ public class IifFunction {
     this.serviceFields = serviceFields;
 
     // Parse the SQL
-    this.sqlCondition = new SQLCondition(tableAlias, conditionClause, serviceFields);
-    
+    this.sqlCondition = new SQLCondition( tableAlias, conditionClause, serviceFields );
+
     // rudimentary string, date, number, integer determination
     //
-    trueValue = extractValue(trueValueString, true);
-    falseValue = extractValue(falseValueString, false);    
+    trueValue = extractValue( trueValueString, true );
+    falseValue = extractValue( falseValueString, false );
   }
 
-  private ValueMetaAndData extractValue(String string, boolean trueIndicator) throws KettleSQLException {
-    if (Const.isEmpty(string)) {
+  private ValueMetaAndData extractValue( String string, boolean trueIndicator ) throws KettleSQLException {
+    if ( Const.isEmpty( string ) ) {
       return null;
     }
-    
-    ValueMetaAndData value = ThinUtil.attemptDateValueExtraction(string);
-    if (value!=null) return value;
-    
-    value = ThinUtil.attemptStringValueExtraction(string);
-    if (value!=null) return value;
-    
-    // See if it's a field...
-    //
-    int index = serviceFields.indexOfValue(string);
-    if (index>=0) {
-      if (trueIndicator) {
-        trueField=true;
-      } else {
-        falseField=true;
-      }
-      return new ValueMetaAndData(serviceFields.getValueMeta(index), null);
+
+    ValueMetaAndData value = ThinUtil.attemptDateValueExtraction( string );
+    if ( value != null ) {
+      return value;
     }
 
-    value = ThinUtil.attemptBooleanValueExtraction(string);
-    if (value!=null) return value;
+    value = ThinUtil.attemptStringValueExtraction( string );
+    if ( value != null ) {
+      return value;
+    }
 
-    value = ThinUtil.attemptIntegerValueExtraction(string);
-    if (value!=null) return value;
+    // See if it's a field...
+    //
+    int index = serviceFields.indexOfValue( string );
+    if ( index >= 0 ) {
+      if ( trueIndicator ) {
+        trueField = true;
+      } else {
+        falseField = true;
+      }
+      return new ValueMetaAndData( serviceFields.getValueMeta( index ), null );
+    }
 
-    value = ThinUtil.attemptNumberValueExtraction(string);
-    if (value!=null) return value;
+    value = ThinUtil.attemptBooleanValueExtraction( string );
+    if ( value != null ) {
+      return value;
+    }
 
-    value = ThinUtil.attemptBigNumberValueExtraction(string);
-    if (value!=null) return value;
+    value = ThinUtil.attemptIntegerValueExtraction( string );
+    if ( value != null ) {
+      return value;
+    }
 
-    throw new KettleSQLException("Unable to determine value data type for string: ["+string+"]");
+    value = ThinUtil.attemptNumberValueExtraction( string );
+    if ( value != null ) {
+      return value;
+    }
+
+    value = ThinUtil.attemptBigNumberValueExtraction( string );
+    if ( value != null ) {
+      return value;
+    }
+
+    throw new KettleSQLException( "Unable to determine value data type for string: [" + string + "]" );
   }
 
   /**
@@ -164,5 +177,5 @@ public class IifFunction {
   public String getTableAlias() {
     return tableAlias;
   }
-  
+
 }

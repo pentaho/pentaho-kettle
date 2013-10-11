@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.core.sql;
 
@@ -33,22 +33,22 @@ import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class SQLField {
-  private String             tableAlias;
-  private String             field;
-  private String             alias;
-  private SQLAggregation     aggregation;
+  private String tableAlias;
+  private String field;
+  private String alias;
+  private SQLAggregation aggregation;
   private ValueMetaInterface valueMeta;
-  private boolean            countStar;
-  private boolean            countDistinct;
-  private boolean            orderField;
-  private boolean            ascending;
-  private String             expression;
-  private SQLFields          selectFields;
-  private Object             valueData;
-  
+  private boolean countStar;
+  private boolean countDistinct;
+  private boolean orderField;
+  private boolean ascending;
+  private String expression;
+  private SQLFields selectFields;
+  private Object valueData;
+
   /** IIF function hack */
   private IifFunction iif;
-  
+
   /** To easily figure out to which index in the select this field belongs */
   private int fieldIndex;
 
@@ -58,7 +58,8 @@ public class SQLField {
    * @param aggregation
    * @param valueMeta
    */
-  public SQLField(String tableAlias, String field, String alias, SQLAggregation aggregation, ValueMetaInterface valueMeta) {
+  public SQLField( String tableAlias, String field, String alias, SQLAggregation aggregation,
+      ValueMetaInterface valueMeta ) {
     this.tableAlias = tableAlias;
     this.field = field;
     this.alias = alias;
@@ -66,126 +67,134 @@ public class SQLField {
     this.valueMeta = valueMeta;
   }
 
-  public SQLField(String tableAlias, String fieldClause, RowMetaInterface serviceFields) throws KettleSQLException {
-    this(tableAlias, fieldClause, serviceFields, false);
+  public SQLField( String tableAlias, String fieldClause, RowMetaInterface serviceFields ) throws KettleSQLException {
+    this( tableAlias, fieldClause, serviceFields, false );
   }
 
-  public SQLField(String tableAlias, String fieldClause, RowMetaInterface serviceFields, boolean orderField) throws KettleSQLException {
-    this(tableAlias, fieldClause, serviceFields, orderField, null);
+  public SQLField( String tableAlias, String fieldClause, RowMetaInterface serviceFields, boolean orderField )
+    throws KettleSQLException {
+    this( tableAlias, fieldClause, serviceFields, orderField, null );
   }
-  
-  public SQLField(String tableAlias, String fieldClause, RowMetaInterface serviceFields, boolean orderField, SQLFields selectFields) throws KettleSQLException {
+
+  public SQLField( String tableAlias, String fieldClause, RowMetaInterface serviceFields, boolean orderField,
+      SQLFields selectFields ) throws KettleSQLException {
     this.tableAlias = tableAlias;
     this.orderField = orderField;
     this.selectFields = selectFields;
-    
+
     // The field clause is in the form: <field or aggregate> [as] [alias]
     // Fields can be quoted with "
     //
-    List<String> strings = ThinUtil.splitClause(fieldClause, ' ', '"', '(');
-    
-    if (strings.size()==0) {
-      throw new KettleSQLException("Unable to find a valid field");
+    List<String> strings = ThinUtil.splitClause( fieldClause, ' ', '"', '(' );
+
+    if ( strings.size() == 0 ) {
+      throw new KettleSQLException( "Unable to find a valid field" );
     }
-    
-    if (strings.size()>=1) {
-      String value = strings.get(0);
-      field = ThinUtil.stripQuoteTableAlias(value, tableAlias);
+
+    if ( strings.size() >= 1 ) {
+      String value = strings.get( 0 );
+      field = ThinUtil.stripQuoteTableAlias( value, tableAlias );
       expression = field;
 
-    if (orderField) {
-      if (strings.size()>2) {
-        throw new KettleSQLException("Too many elements for an ORDER BY argument: ["+fieldClause+"]");
-      }
-      if (strings.size()==2) {
-        String ascDesc = strings.get(1);
-        if ("ASC".equalsIgnoreCase(ascDesc)) {
-          ascending=true; 
-        } else if ("DESC".equalsIgnoreCase(ascDesc)) { 
-          ascending=false;
+      if ( orderField ) {
+        if ( strings.size() > 2 ) {
+          throw new KettleSQLException( "Too many elements for an ORDER BY argument: [" + fieldClause + "]" );
+        }
+        if ( strings.size() == 2 ) {
+          String ascDesc = strings.get( 1 );
+          if ( "ASC".equalsIgnoreCase( ascDesc ) ) {
+            ascending = true;
+          } else if ( "DESC".equalsIgnoreCase( ascDesc ) ) {
+            ascending = false;
+          } else {
+            throw new KettleSQLException( "Unable to recognize sort order [" + ascDesc + "]" );
+          }
         } else {
-          throw new KettleSQLException("Unable to recognize sort order ["+ascDesc+"]");
+          ascending = true;
         }
       } else {
-        ascending=true;
-      }
-    } else {
-        
+
         // see if it's an aggregate like SUM( foo )
         //
-        for (SQLAggregation agg : SQLAggregation.values()) {
-          if (value.toUpperCase().startsWith(agg.getKeyWord()+"(")) {
+        for ( SQLAggregation agg : SQLAggregation.values() ) {
+          if ( value.toUpperCase().startsWith( agg.getKeyWord() + "(" ) ) {
             aggregation = agg;
             // also determine the field..;
             //
-            int openIndex = value.indexOf('(', agg.getKeyWord().length() );
-            if (openIndex<0) {
-              throw new KettleSQLException("No opening bracket found after keyword ["+aggregation.getKeyWord()+"] in clause ["+fieldClause+"]");
+            int openIndex = value.indexOf( '(', agg.getKeyWord().length() );
+            if ( openIndex < 0 ) {
+              throw new KettleSQLException( "No opening bracket found after keyword [" + aggregation.getKeyWord()
+                  + "] in clause [" + fieldClause + "]" );
             }
-            int closeIndex = value.indexOf(')', openIndex );
-            if (closeIndex<0) {
-              throw new KettleSQLException("No closing bracket found after keyword ["+aggregation.getKeyWord()+"]");
+            int closeIndex = value.indexOf( ')', openIndex );
+            if ( closeIndex < 0 ) {
+              throw new KettleSQLException( "No closing bracket found after keyword [" + aggregation.getKeyWord() + "]" );
             }
-            field = ThinUtil.stripQuotes(Const.trim( value.substring(openIndex+1, closeIndex)) , '"');
-            field = ThinUtil.stripQuoteTableAlias(field, tableAlias);
+            field = ThinUtil.stripQuotes( Const.trim( value.substring( openIndex + 1, closeIndex ) ), '"' );
+            field = ThinUtil.stripQuoteTableAlias( field, tableAlias );
             break;
           }
         }
-        
-        if (SQLAggregation.COUNT ==aggregation) {
-          
+
+        if ( SQLAggregation.COUNT == aggregation ) {
+
           // COUNT(*)
           //
-          if ("*".equals(field)) {
-            countStar=true;
+          if ( "*".equals( field ) ) {
+            countStar = true;
           }
-          
+
           // COUNT(DISTINCT foo)
           //
-          if (field.toUpperCase().startsWith("DISTINCT ")) {
-            int lastSpaceIndex = field.lastIndexOf(' ');
-            field = field.substring(lastSpaceIndex+1);
-            field = ThinUtil.stripQuoteTableAlias(field, tableAlias);
-            
-            countDistinct=true;
+          if ( field.toUpperCase().startsWith( "DISTINCT " ) ) {
+            int lastSpaceIndex = field.lastIndexOf( ' ' );
+            field = field.substring( lastSpaceIndex + 1 );
+            field = ThinUtil.stripQuoteTableAlias( field, tableAlias );
+
+            countDistinct = true;
           }
-          
-          alias = Const.NVL(alias, expression);
-          
+
+          alias = Const.NVL( alias, expression );
+
         }
 
-        if (strings.size()==2) {
-          alias = ThinUtil.stripQuotes(Const.trim(strings.get(1)), '"'); 
+        if ( strings.size() == 2 ) {
+          alias = ThinUtil.stripQuotes( Const.trim( strings.get( 1 ) ), '"' );
         }
         // Uses the "AS" word in between
-        if (strings.size()==3) { 
-          if (!"as".equalsIgnoreCase(strings.get(1))) {
-            throw new KettleSQLException("AS keyword expected between the field and the alias in field clause: ["+fieldClause+"]");
+        if ( strings.size() == 3 ) {
+          if ( !"as".equalsIgnoreCase( strings.get( 1 ) ) ) {
+            throw new KettleSQLException( "AS keyword expected between the field and the alias in field clause: ["
+                + fieldClause + "]" );
           }
-          alias = ThinUtil.stripQuotes(Const.trim(strings.get(2)), '"'); 
+          alias = ThinUtil.stripQuotes( Const.trim( strings.get( 2 ) ), '"' );
         }
       }
     }
-    
-    if (!countStar) {
-      if (orderField) {
+
+    if ( !countStar ) {
+      if ( orderField ) {
         // For order by fields we need to see what the expression was in the select clause
         //
-        for (SQLField selectField : selectFields.getFields()) {
-          if (selectField.getExpression().equalsIgnoreCase(field)) {
-            if (selectField.getAggregation()!=null) {
-              
-              switch(selectField.getAggregation()) {
-              case COUNT: valueMeta = new ValueMeta(field, ValueMetaInterface.TYPE_INTEGER, 15); break;
-              case MIN:
-              case MAX:
-              case AVG:
-              case SUM:   valueMeta = selectField.getValueMeta(); break;
+        for ( SQLField selectField : selectFields.getFields() ) {
+          if ( selectField.getExpression().equalsIgnoreCase( field ) ) {
+            if ( selectField.getAggregation() != null ) {
+
+              switch ( selectField.getAggregation() ) {
+                case COUNT:
+                  valueMeta = new ValueMeta( field, ValueMetaInterface.TYPE_INTEGER, 15 );
+                  break;
+                case MIN:
+                case MAX:
+                case AVG:
+                case SUM:
+                  valueMeta = selectField.getValueMeta();
+                  break;
                 default:
                   break;
               }
               alias = selectField.getAlias();
-              
+
             } else {
               // regular field but grab the new name if any, we need it during generation
               //
@@ -199,54 +208,57 @@ public class SQLField {
       // See if the field is a function...
       // TODO: make generic, for now keep it simple
       //
-      if (field.startsWith("IIF(")) {
-        String arguments = field.substring(4, field.length()-1); // skip the closing bracket too
-        List<String> argsList = ThinUtil.splitClause(arguments, ',', '\'', '(');
-        if (argsList.size()!=3) {
-          throw new KettleSQLException("The IIF function requires exactly 3 arguments");
+      if ( field.startsWith( "IIF(" ) ) {
+        String arguments = field.substring( 4, field.length() - 1 ); // skip the closing bracket too
+        List<String> argsList = ThinUtil.splitClause( arguments, ',', '\'', '(' );
+        if ( argsList.size() != 3 ) {
+          throw new KettleSQLException( "The IIF function requires exactly 3 arguments" );
         }
-        iif = new IifFunction(tableAlias, Const.trim(argsList.get(0)), Const.trim(argsList.get(1)), Const.trim(argsList.get(2)), serviceFields);
-        
-      } else if (field.toUpperCase().startsWith("CASE WHEN ") && field.toUpperCase().endsWith("END")) {
+        iif =
+            new IifFunction( tableAlias, Const.trim( argsList.get( 0 ) ), Const.trim( argsList.get( 1 ) ), Const
+                .trim( argsList.get( 2 ) ), serviceFields );
+
+      } else if ( field.toUpperCase().startsWith( "CASE WHEN " ) && field.toUpperCase().endsWith( "END" ) ) {
         // Same as IIF but with a different format.
         //
-        String condition = Const.trim(ThinUtil.findClause(field, "WHEN", "THEN"));
-        String trueClause = Const.trim(ThinUtil.findClause(field, "THEN", "ELSE"));
-        String falseClause = Const.trim(ThinUtil.findClause(field, "ELSE", "END"));
-        iif = new IifFunction(tableAlias, condition, trueClause, falseClause, serviceFields);
-        
+        String condition = Const.trim( ThinUtil.findClause( field, "WHEN", "THEN" ) );
+        String trueClause = Const.trim( ThinUtil.findClause( field, "THEN", "ELSE" ) );
+        String falseClause = Const.trim( ThinUtil.findClause( field, "ELSE", "END" ) );
+        iif = new IifFunction( tableAlias, condition, trueClause, falseClause, serviceFields );
+
       } else {
-        if (valueMeta==null) {
-          valueMeta = serviceFields.searchValueMeta(field);
-          if (orderField && selectFields!=null) {
+        if ( valueMeta == null ) {
+          valueMeta = serviceFields.searchValueMeta( field );
+          if ( orderField && selectFields != null ) {
             // See if this isn't an aliased select field that we're ordering on
             //
-            for (SQLField selectField : selectFields.getFields()) {
-              if (field.equalsIgnoreCase(selectField.getAlias())) {
+            for ( SQLField selectField : selectFields.getFields() ) {
+              if ( field.equalsIgnoreCase( selectField.getAlias() ) ) {
                 valueMeta = selectField.getValueMeta();
                 break;
               }
             }
           }
         }
-        
-        if (valueMeta==null) {
-          
+
+        if ( valueMeta == null ) {
+
           // OK, field is not a service field nor an aggregate, not IIF
           // See if it's a constant value...
           //
-          ValueMetaAndData vmad = ThinUtil.extractConstant(field);
-          if (vmad!=null) {
+          ValueMetaAndData vmad = ThinUtil.extractConstant( field );
+          if ( vmad != null ) {
             valueMeta = vmad.getValueMeta();
             valueData = vmad.getValueData();
           } else {
-            throw new KettleSQLException("The field with name ["+field+"] could not be found in the service output");
+            throw new KettleSQLException( "The field with name [" + field
+                + "] could not be found in the service output" );
           }
         }
       }
     }
-  }  
-  
+  }
+
   /**
    * @return the name
    */
@@ -258,7 +270,7 @@ public class SQLField {
    * @param name
    *          the name to set
    */
-  public void setName(String name) {
+  public void setName( String name ) {
     this.field = name;
   }
 
@@ -273,7 +285,7 @@ public class SQLField {
    * @param alias
    *          the alias to set
    */
-  public void setAlias(String alias) {
+  public void setAlias( String alias ) {
     this.alias = alias;
   }
 
@@ -288,7 +300,7 @@ public class SQLField {
    * @param aggregation
    *          the aggregation to set
    */
-  public void setAggregation(SQLAggregation aggregation) {
+  public void setAggregation( SQLAggregation aggregation ) {
     this.aggregation = aggregation;
   }
 
@@ -303,7 +315,7 @@ public class SQLField {
    * @param valueMeta
    *          the valueMeta to set
    */
-  public void setValueMeta(ValueMetaInterface valueMeta) {
+  public void setValueMeta( ValueMetaInterface valueMeta ) {
     this.valueMeta = valueMeta;
   }
 
@@ -315,9 +327,10 @@ public class SQLField {
   }
 
   /**
-   * @param field the field to set
+   * @param field
+   *          the field to set
    */
-  public void setField(String field) {
+  public void setField( String field ) {
     this.field = field;
   }
 
@@ -329,9 +342,10 @@ public class SQLField {
   }
 
   /**
-   * @param countStar the countStar to set
+   * @param countStar
+   *          the countStar to set
    */
-  public void setCountStar(boolean countStar) {
+  public void setCountStar( boolean countStar ) {
     this.countStar = countStar;
   }
 
@@ -343,9 +357,10 @@ public class SQLField {
   }
 
   /**
-   * @param countDistinct the countDistinct to set
+   * @param countDistinct
+   *          the countDistinct to set
    */
-  public void setCountDistinct(boolean countDistinct) {
+  public void setCountDistinct( boolean countDistinct ) {
     this.countDistinct = countDistinct;
   }
 
@@ -357,9 +372,10 @@ public class SQLField {
   }
 
   /**
-   * @param orderField the orderField to set
+   * @param orderField
+   *          the orderField to set
    */
-  public void setOrderField(boolean orderField) {
+  public void setOrderField( boolean orderField ) {
     this.orderField = orderField;
   }
 
@@ -371,9 +387,10 @@ public class SQLField {
   }
 
   /**
-   * @param ascending the ascending to set
+   * @param ascending
+   *          the ascending to set
    */
-  public void setAscending(boolean ascending) {
+  public void setAscending( boolean ascending ) {
     this.ascending = ascending;
   }
 
@@ -385,9 +402,10 @@ public class SQLField {
   }
 
   /**
-   * @param expression the expression to set
+   * @param expression
+   *          the expression to set
    */
-  public void setExpression(String expression) {
+  public void setExpression( String expression ) {
     this.expression = expression;
   }
 
@@ -399,9 +417,10 @@ public class SQLField {
   }
 
   /**
-   * @param selectFields the selectFields to set
+   * @param selectFields
+   *          the selectFields to set
    */
-  public void setSelectFields(SQLFields selectFields) {
+  public void setSelectFields( SQLFields selectFields ) {
     this.selectFields = selectFields;
   }
 
@@ -420,16 +439,18 @@ public class SQLField {
   }
 
   /**
-   * @param valueData the valueData to set
+   * @param valueData
+   *          the valueData to set
    */
-  public void setValueData(Object valueData) {
+  public void setValueData( Object valueData ) {
     this.valueData = valueData;
   }
 
   /**
-   * @param iif the iif to set
+   * @param iif
+   *          the iif to set
    */
-  public void setIif(IifFunction iif) {
+  public void setIif( IifFunction iif ) {
     this.iif = iif;
   }
 
@@ -441,9 +462,10 @@ public class SQLField {
   }
 
   /**
-   * @param tableAlias the tableAlias to set
+   * @param tableAlias
+   *          the tableAlias to set
    */
-  public void setTableAlias(String tableAlias) {
+  public void setTableAlias( String tableAlias ) {
     this.tableAlias = tableAlias;
   }
 
@@ -455,15 +477,16 @@ public class SQLField {
   }
 
   /**
-   * @param fieldIndex the fieldIndex to set
+   * @param fieldIndex
+   *          the fieldIndex to set
    */
-  public void setFieldIndex(int fieldIndex) {
+  public void setFieldIndex( int fieldIndex ) {
     this.fieldIndex = fieldIndex;
   }
 
-  public static SQLField searchSQLFieldByFieldOrAlias(List<SQLField> fields, String name) {
-    for (SQLField field : fields) {
-      if (name.equalsIgnoreCase(field.getField()) || name.equalsIgnoreCase(field.getAlias()) ) {
+  public static SQLField searchSQLFieldByFieldOrAlias( List<SQLField> fields, String name ) {
+    for ( SQLField field : fields ) {
+      if ( name.equalsIgnoreCase( field.getField() ) || name.equalsIgnoreCase( field.getAlias() ) ) {
         return field;
       }
     }
