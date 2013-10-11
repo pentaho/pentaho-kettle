@@ -522,7 +522,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
                     // make a copy to avoid renaming other value meta - PDI-9844
                     ValueMetaInterface copy = v.clone();
                     copy.setName(returnValueNewName[i]);
-					copy.setOrigin(name);
+				    copy.setOrigin(name);
 					row.addValueMeta(copy);
 				}
 			}
