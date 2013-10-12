@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.trans.steps.ivwloader;
 
@@ -35,69 +35,66 @@ import org.pentaho.di.trans.steps.ivwloader.IngresVectorwiseLoader.FifoOpener;
 
 /**
  * Stores data for the MySQL bulk load step.
- *
+ * 
  * @author Matt
- * @since  14-apr-2009
+ * @since 14-apr-2009
  */
-public class IngresVectorwiseLoaderData extends BaseStepData implements StepDataInterface
-{
-	public int    keynrs[];         // nr of keylookup -value in row...
-    
-	public StreamLogger errorLogger;
+public class IngresVectorwiseLoaderData extends BaseStepData implements StepDataInterface {
+  public int[] keynrs; // nr of keylookup -value in row...
 
-	public StreamLogger outputLogger;
+  public StreamLogger errorLogger;
 
-	public byte[] separator;
-	public byte[] newline;
+  public StreamLogger outputLogger;
 
-	public String schemaTable;
+  public byte[] separator;
+  public byte[] newline;
 
-	public String fifoFilename;
+  public String schemaTable;
 
-	public FileChannel fileChannel;
-	
-	public IngresVectorwiseLoader.SqlRunner sqlRunner;
+  public String fifoFilename;
 
-    public byte[] quote;
+  public FileChannel fileChannel;
 
-    public Process sqlProcess;
+  public IngresVectorwiseLoader.SqlRunner sqlRunner;
 
-    public OutputStream sqlOutputStream;
+  public byte[] quote;
 
-    public FifoOpener fifoOpener;
+  public Process sqlProcess;
 
-    public boolean isEncoding;
+  public OutputStream sqlOutputStream;
 
-    public String encoding;
+  public FifoOpener fifoOpener;
 
-    public ByteBuffer byteBuffer;
+  public boolean isEncoding;
 
-    public int bufferSize;
+  public String encoding;
 
-    public byte[] semicolon;
+  public ByteBuffer byteBuffer;
 
-    public byte[] doubleQuote;
+  public int bufferSize;
 
-    public RowMetaInterface bulkRowMeta;
+  public byte[] semicolon;
 
+  public byte[] doubleQuote;
 
-	/**
-	 *  Default constructor.
-	 */
-	public IngresVectorwiseLoaderData()
-	{
-		super();
-	}
-	
-    public byte[] getBytes(String str) {
-      if (isEncoding) {
-        try {
-          return str.getBytes(encoding);
-        } catch (UnsupportedEncodingException e) {
-          throw new RuntimeException(e);
-        }
-      } else {
-        return str.getBytes();
+  public RowMetaInterface bulkRowMeta;
+
+  /**
+   * Default constructor.
+   */
+  public IngresVectorwiseLoaderData() {
+    super();
+  }
+
+  public byte[] getBytes( String str ) {
+    if ( isEncoding ) {
+      try {
+        return str.getBytes( encoding );
+      } catch ( UnsupportedEncodingException e ) {
+        throw new RuntimeException( e );
       }
+    } else {
+      return str.getBytes();
     }
+  }
 }

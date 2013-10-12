@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.trans.steps.xmlinput;
 
@@ -44,331 +44,300 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * Read all sorts of text files, convert them to rows and writes these to one or
- * more output streams.
+ * Read all sorts of text files, convert them to rows and writes these to one or more output streams.
  * 
  * @author Matt
  * @since 4-apr-2003
  */
-public class XMLInput extends BaseStep implements StepInterface
-{
-	private static Class<?> PKG = XMLInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+public class XMLInput extends BaseStep implements StepInterface {
+  private static Class<?> PKG = XMLInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-	private XMLInputMeta meta;
+  private XMLInputMeta meta;
 
-	private XMLInputData data;
+  private XMLInputData data;
 
-	public XMLInput(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-			Trans trans)
-	{
-		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
-	}
+  public XMLInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+    super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
+  }
 
-	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
-	{
+  public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
 
-		if (first) // we just got started
-		{
-			first = false;
-			data.outputRowMeta = new RowMeta();
-			meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
-			
-			// For String to <type> conversions, we allocate a conversion meta data row as well...
-			//
-			data.convertRowMeta = data.outputRowMeta.cloneToType(ValueMetaInterface.TYPE_STRING);
-		}
+    if ( first ) // we just got started
+    {
+      first = false;
+      data.outputRowMeta = new RowMeta();
+      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
 
-		Object[] outputRowData = getRowFromXML();
-		if (outputRowData == null)
-		{
-			setOutputDone(); // signal end to receiver(s)
-			return false; // This is the end of this step.
-		}
+      // For String to <type> conversions, we allocate a conversion meta data row as well...
+      //
+      data.convertRowMeta = data.outputRowMeta.cloneToType( ValueMetaInterface.TYPE_STRING );
+    }
 
-		if (log.isRowLevel())
-			logRowlevel(BaseMessages.getString(PKG, "XMLInput.Log.ReadRow", outputRowData.toString()));
+    Object[] outputRowData = getRowFromXML();
+    if ( outputRowData == null ) {
+      setOutputDone(); // signal end to receiver(s)
+      return false; // This is the end of this step.
+    }
 
-		incrementLinesInput();
+    if ( log.isRowLevel() ) {
+      logRowlevel( BaseMessages.getString( PKG, "XMLInput.Log.ReadRow", outputRowData.toString() ) );
+    }
 
-		putRow(data.outputRowMeta, outputRowData);
+    incrementLinesInput();
 
-		// limit has been reached, stop now.
-		if (meta.getRowLimit() > 0 && data.rownr >= meta.getRowLimit()) 
-		{
-			setOutputDone();
-			return false;
-		}
+    putRow( data.outputRowMeta, outputRowData );
 
-		return true;
-	}
+    // limit has been reached, stop now.
+    if ( meta.getRowLimit() > 0 && data.rownr >= meta.getRowLimit() ) {
+      setOutputDone();
+      return false;
+    }
 
-	private Object[] getRowFromXML() throws KettleValueException
-	{
-		// finished reading the file, read the next file
+    return true;
+  }
 
-		while (data.itemPosition >= data.itemCount || data.file == null) 
-		{
-			data.file = null;
-			if (!openNextFile())
-			{
-				return null;
-			}
-		}
+  private Object[] getRowFromXML() throws KettleValueException {
+    // finished reading the file, read the next file
 
-		Object[] outputRowData = buildEmptyRow();
+    while ( data.itemPosition >= data.itemCount || data.file == null ) {
+      data.file = null;
+      if ( !openNextFile() ) {
+        return null;
+      }
+    }
 
-		// Get the item in the XML file...
+    Object[] outputRowData = buildEmptyRow();
 
-		// First get the appropriate node
+    // Get the item in the XML file...
 
-		Node itemNode;
-		if (meta.getInputPosition().length > 1)
-		{
-			itemNode = XMLHandler.getSubNodeByNr(data.section, data.itemElement, data.itemPosition);
-		} else
-		{
-			itemNode = data.section; // Only the root node, 1 element to read
-			// in the whole document.
-		}
-		data.itemPosition++;
+    // First get the appropriate node
 
-		// Read from the Node...
-		for (int i = 0; i < meta.getInputFields().length; i++)
-		{
-			Node node = itemNode;
+    Node itemNode;
+    if ( meta.getInputPosition().length > 1 ) {
+      itemNode = XMLHandler.getSubNodeByNr( data.section, data.itemElement, data.itemPosition );
+    } else {
+      itemNode = data.section; // Only the root node, 1 element to read
+      // in the whole document.
+    }
+    data.itemPosition++;
 
-			XMLInputField xmlInputField = meta.getInputFields()[i];
+    // Read from the Node...
+    for ( int i = 0; i < meta.getInputFields().length; i++ ) {
+      Node node = itemNode;
 
-			// This value will contain the value we're looking for...
-			//
-			String value = null;
+      XMLInputField xmlInputField = meta.getInputFields()[i];
 
-			for (int p = 0; (value == null) && node != null && p < xmlInputField.getFieldPosition().length; p++)
-			{
-				XMLInputFieldPosition pos = xmlInputField.getFieldPosition()[p];
+      // This value will contain the value we're looking for...
+      //
+      String value = null;
 
-				switch (pos.getType())
-				{
-				case XMLInputFieldPosition.XML_ELEMENT:
-				{
-					if (pos.getElementNr() <= 1)
-					{
-						Node subNode = XMLHandler.getSubNode(node, pos.getName());
-						if (subNode != null)
-						{
-							if (p == xmlInputField.getFieldPosition().length - 1) // last
-							// level
-							{
-								value = XMLHandler.getNodeValue(subNode);
-							}
-						} else
-						{
-							if (log.isDebug())
-								logDebug(BaseMessages.getString(PKG, "XMLInput.Log.UnableToFindPosition", pos
-										.toString(), node.toString()));
-						}
-						node = subNode;
-					} else
-					// Multiple possible values: get number
-					// pos.getElementNr()!
-					{
-						Node subNode = XMLHandler.getSubNodeByNr(node, pos.getName(), pos.getElementNr() - 1,
-								false);
-						if (subNode != null)
-						{
-							if (p == xmlInputField.getFieldPosition().length - 1) // last
-							// level
-							{
-								value = XMLHandler.getNodeValue(subNode);
-							}
-						} else
-						{
-							if (log.isDebug())
-								logDebug(BaseMessages.getString(PKG, "XMLInput.Log.UnableToFindPosition", pos
-										.toString(), node.toString()));
-						}
-						node = subNode;
-					}
-				}
-					break;
+      for ( int p = 0; ( value == null ) && node != null && p < xmlInputField.getFieldPosition().length; p++ ) {
+        XMLInputFieldPosition pos = xmlInputField.getFieldPosition()[p];
 
-				case XMLInputFieldPosition.XML_ATTRIBUTE:
-				{
-					value = XMLHandler.getTagAttribute(node, pos.getName());
-				}
-					break;
-				case XMLInputFieldPosition.XML_ROOT:
-				{
-					value = XMLHandler.getNodeValue(node);
-				}
-					break;
-				default:
-					break;
-				}
+        switch ( pos.getType() ) {
+          case XMLInputFieldPosition.XML_ELEMENT: {
+            if ( pos.getElementNr() <= 1 ) {
+              Node subNode = XMLHandler.getSubNode( node, pos.getName() );
+              if ( subNode != null ) {
+                if ( p == xmlInputField.getFieldPosition().length - 1 ) // last
+                // level
+                {
+                  value = XMLHandler.getNodeValue( subNode );
+                }
+              } else {
+                if ( log.isDebug() ) {
+                  logDebug( BaseMessages.getString( PKG, "XMLInput.Log.UnableToFindPosition", pos.toString(), node
+                      .toString() ) );
+                }
+              }
+              node = subNode;
+            } else
+            // Multiple possible values: get number
+            // pos.getElementNr()!
+            {
+              Node subNode = XMLHandler.getSubNodeByNr( node, pos.getName(), pos.getElementNr() - 1, false );
+              if ( subNode != null ) {
+                if ( p == xmlInputField.getFieldPosition().length - 1 ) // last
+                // level
+                {
+                  value = XMLHandler.getNodeValue( subNode );
+                }
+              } else {
+                if ( log.isDebug() ) {
+                  logDebug( BaseMessages.getString( PKG, "XMLInput.Log.UnableToFindPosition", pos.toString(), node
+                      .toString() ) );
+                }
+              }
+              node = subNode;
+            }
+          }
+            break;
 
-			}
+          case XMLInputFieldPosition.XML_ATTRIBUTE: {
+            value = XMLHandler.getTagAttribute( node, pos.getName() );
+          }
+            break;
+          case XMLInputFieldPosition.XML_ROOT: {
+            value = XMLHandler.getNodeValue( node );
+          }
+            break;
+          default:
+            break;
+        }
 
-			// OK, we have grabbed the string called value
-			// Trim it, convert it, ...
-			
-			// DO Trimming!
-			switch (xmlInputField.getTrimType())
-			{
-			case XMLInputField.TYPE_TRIM_LEFT:
-				value = Const.ltrim(value);
-				break;
-			case XMLInputField.TYPE_TRIM_RIGHT:
-				value = Const.rtrim(value);
-				break;
-			case XMLInputField.TYPE_TRIM_BOTH:
-				value = Const.trim(value);
-				break;
-			default:
-				break;
-			}
+      }
 
-			// System.out.println("after trim, field #"+i+" : "+v);
+      // OK, we have grabbed the string called value
+      // Trim it, convert it, ...
 
-			// DO CONVERSIONS...
-			//
-			ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta(i);
-			ValueMetaInterface sourceValueMeta = data.convertRowMeta.getValueMeta(i);
-			outputRowData[i] = targetValueMeta.convertData(sourceValueMeta, value);
+      // DO Trimming!
+      switch ( xmlInputField.getTrimType() ) {
+        case XMLInputField.TYPE_TRIM_LEFT:
+          value = Const.ltrim( value );
+          break;
+        case XMLInputField.TYPE_TRIM_RIGHT:
+          value = Const.rtrim( value );
+          break;
+        case XMLInputField.TYPE_TRIM_BOTH:
+          value = Const.trim( value );
+          break;
+        default:
+          break;
+      }
 
-			// Do we need to repeat this field if it is null?
-			if (meta.getInputFields()[i].isRepeated())
-			{
-				if (data.previousRow!=null && Const.isEmpty(value))
-				{
-					outputRowData[i] = data.previousRow[i];
-				}
-			}
-		} // End of loop over fields...
+      // System.out.println("after trim, field #"+i+" : "+v);
 
-		int outputIndex = meta.getInputFields().length;
-		
-		// See if we need to add the filename to the row...
-		if ( meta.includeFilename() && !Const.isEmpty(meta.getFilenameField()) ) {
-			outputRowData[outputIndex++] = KettleVFS.getFilename(data.file);
-		}
+      // DO CONVERSIONS...
+      //
+      ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta( i );
+      ValueMetaInterface sourceValueMeta = data.convertRowMeta.getValueMeta( i );
+      outputRowData[i] = targetValueMeta.convertData( sourceValueMeta, value );
 
-		// See if we need to add the row number to the row...
-		if (meta.includeRowNumber() && !Const.isEmpty(meta.getRowNumberField())) {
-			outputRowData[outputIndex++] = new Long(data.rownr);
-		}
+      // Do we need to repeat this field if it is null?
+      if ( meta.getInputFields()[i].isRepeated() ) {
+        if ( data.previousRow != null && Const.isEmpty( value ) ) {
+          outputRowData[i] = data.previousRow[i];
+        }
+      }
+    } // End of loop over fields...
 
-		RowMetaInterface irow = getInputRowMeta();
-		
-		data.previousRow = irow==null?outputRowData:(Object[])irow.cloneRow(outputRowData); // copy it to make
-		// surely the next step doesn't change it in between...
-		data.rownr++;
+    int outputIndex = meta.getInputFields().length;
 
-		// Throw away the information in the item?
-		NodeList nodeList = itemNode.getChildNodes();
-		for (int i = 0; i < nodeList.getLength(); i++) {
-			itemNode.removeChild(nodeList.item(i));
-		}
+    // See if we need to add the filename to the row...
+    if ( meta.includeFilename() && !Const.isEmpty( meta.getFilenameField() ) ) {
+      outputRowData[outputIndex++] = KettleVFS.getFilename( data.file );
+    }
 
-		return outputRowData;
-	}
+    // See if we need to add the row number to the row...
+    if ( meta.includeRowNumber() && !Const.isEmpty( meta.getRowNumberField() ) ) {
+      outputRowData[outputIndex++] = new Long( data.rownr );
+    }
 
-	/**
-	 * Build an empty row based on the meta-data...
-	 * 
-	 * @return
-	 */
-	private Object[] buildEmptyRow()
-	{
-		return RowDataUtil.allocateRowData(data.outputRowMeta.size());
-	}
+    RowMetaInterface irow = getInputRowMeta();
 
-	private boolean openNextFile()
-	{
-		try
-		{
-			if (data.filenr >= data.files.size()) // finished processing!
-			{
-				if (log.isDetailed())
-					logDetailed(BaseMessages.getString(PKG, "XMLInput.Log.FinishedProcessing"));
-				return false;
-			}
+    data.previousRow = irow == null ? outputRowData : (Object[]) irow.cloneRow( outputRowData ); // copy it to make
+    // surely the next step doesn't change it in between...
+    data.rownr++;
 
-			// Is this the last file?
-			data.last_file = (data.filenr == data.files.size() - 1);
-			data.file = data.files.get(data.filenr);
+    // Throw away the information in the item?
+    NodeList nodeList = itemNode.getChildNodes();
+    for ( int i = 0; i < nodeList.getLength(); i++ ) {
+      itemNode.removeChild( nodeList.item( i ) );
+    }
 
-			logBasic(BaseMessages.getString(PKG, "XMLInput.Log.OpeningFile", data.file.toString()));
+    return outputRowData;
+  }
 
-			// Move file pointer ahead!
-			data.filenr++;
-			
-			String baseURI = this.environmentSubstitute(meta.getFileBaseURI());
-			if (Const.isEmpty(baseURI)) {
-				baseURI = data.file.getParent().getName().getURI();
-			}
+  /**
+   * Build an empty row based on the meta-data...
+   * 
+   * @return
+   */
+  private Object[] buildEmptyRow() {
+    return RowDataUtil.allocateRowData( data.outputRowMeta.size() );
+  }
 
-			// Open the XML document
-			data.document = XMLHandler.loadXMLFile(data.file, baseURI, meta.isIgnoreEntities(), meta.isNamespaceAware());
+  private boolean openNextFile() {
+    try {
+      if ( data.filenr >= data.files.size() ) // finished processing!
+      {
+        if ( log.isDetailed() ) {
+          logDetailed( BaseMessages.getString( PKG, "XMLInput.Log.FinishedProcessing" ) );
+        }
+        return false;
+      }
 
-			// Add this to the result file names...
-			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta()
-					.getName(), getStepname());
-			resultFile.setComment("File was read by an XML input step");
-			addResultFile(resultFile);
+      // Is this the last file?
+      data.last_file = ( data.filenr == data.files.size() - 1 );
+      data.file = data.files.get( data.filenr );
 
-			if (log.isDetailed())
-				logDetailed(BaseMessages.getString(PKG, "XMLInput.Log.FileOpened", data.file.toString()));
+      logBasic( BaseMessages.getString( PKG, "XMLInput.Log.OpeningFile", data.file.toString() ) );
 
-			// Position in the file...
-			data.section = data.document;
+      // Move file pointer ahead!
+      data.filenr++;
 
-			for (int i = 0; i < meta.getInputPosition().length - 1; i++)
-			{
-				data.section = XMLHandler.getSubNode(data.section, meta.getInputPosition()[i]);
-			}
-			// Last element gets repeated: what's the name?
-			data.itemElement = meta.getInputPosition()[meta.getInputPosition().length - 1];
+      String baseURI = this.environmentSubstitute( meta.getFileBaseURI() );
+      if ( Const.isEmpty( baseURI ) ) {
+        baseURI = data.file.getParent().getName().getURI();
+      }
 
-			data.itemCount = XMLHandler.countNodes(data.section, data.itemElement);
-			data.itemPosition = meta.getNrRowsToSkip();
-		} catch (Exception e)
-		{
-			logError(BaseMessages.getString(PKG, "XMLInput.Log.UnableToOpenFile", "" + data.filenr, data.file
-					.toString(), e.toString()));
-			stopAll();
-			setErrors(1);
-			return false;
-		}
-		return true;
-	}
+      // Open the XML document
+      data.document = XMLHandler.loadXMLFile( data.file, baseURI, meta.isIgnoreEntities(), meta.isNamespaceAware() );
 
-	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
-	{
-		meta = (XMLInputMeta) smi;
-		data = (XMLInputData) sdi;
+      // Add this to the result file names...
+      ResultFile resultFile =
+          new ResultFile( ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname() );
+      resultFile.setComment( "File was read by an XML input step" );
+      addResultFile( resultFile );
 
-		if (super.init(smi, sdi))
-		{
-			data.files = meta.getFiles(this).getFiles();
-			if (data.files == null || data.files.size() == 0)
-			{
-				logError(BaseMessages.getString(PKG, "XMLInput.Log.NoFiles"));
-				return false;
-			}
+      if ( log.isDetailed() ) {
+        logDetailed( BaseMessages.getString( PKG, "XMLInput.Log.FileOpened", data.file.toString() ) );
+      }
 
-			data.rownr = 1L;
+      // Position in the file...
+      data.section = data.document;
 
-			return true;
-		}
-		return false;
-	}
+      for ( int i = 0; i < meta.getInputPosition().length - 1; i++ ) {
+        data.section = XMLHandler.getSubNode( data.section, meta.getInputPosition()[i] );
+      }
+      // Last element gets repeated: what's the name?
+      data.itemElement = meta.getInputPosition()[meta.getInputPosition().length - 1];
 
-	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
-	{
-		meta = (XMLInputMeta) smi;
-		data = (XMLInputData) sdi;
+      data.itemCount = XMLHandler.countNodes( data.section, data.itemElement );
+      data.itemPosition = meta.getNrRowsToSkip();
+    } catch ( Exception e ) {
+      logError( BaseMessages.getString( PKG, "XMLInput.Log.UnableToOpenFile", "" + data.filenr, data.file.toString(), e
+          .toString() ) );
+      stopAll();
+      setErrors( 1 );
+      return false;
+    }
+    return true;
+  }
 
-		super.dispose(smi, sdi);
-	}
+  public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
+    meta = (XMLInputMeta) smi;
+    data = (XMLInputData) sdi;
+
+    if ( super.init( smi, sdi ) ) {
+      data.files = meta.getFiles( this ).getFiles();
+      if ( data.files == null || data.files.size() == 0 ) {
+        logError( BaseMessages.getString( PKG, "XMLInput.Log.NoFiles" ) );
+        return false;
+      }
+
+      data.rownr = 1L;
+
+      return true;
+    }
+    return false;
+  }
+
+  public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
+    meta = (XMLInputMeta) smi;
+    data = (XMLInputData) sdi;
+
+    super.dispose( smi, sdi );
+  }
 
 }

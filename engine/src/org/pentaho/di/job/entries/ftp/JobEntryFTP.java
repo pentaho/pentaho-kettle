@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.job.entries.ftp;
 
@@ -75,14 +75,14 @@ import com.enterprisedt.net.ftp.FTPTransferType;
 
 /**
  * This defines an FTP job entry.
- *
+ * 
  * @author Matt
  * @since 05-11-2003
- *
+ * 
  */
 
 public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntryFTP.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  private static Class<?> PKG = JobEntryFTP.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
   private String serverName;
 
@@ -111,12 +111,12 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
   /**
    * Implicit encoding used before PDI v2.4.1
    */
-  static private String LEGACY_CONTROL_ENCODING = "US-ASCII";
+  private static String LEGACY_CONTROL_ENCODING = "US-ASCII";
 
   /**
    * Default encoding when making a new ftp job entry instance.
    */
-  static private String DEFAULT_CONTROL_ENCODING = "ISO-8859-1";
+  private static String DEFAULT_CONTROL_ENCODING = "ISO-8859-1";
 
   private boolean movefiles;
 
@@ -192,8 +192,8 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 
   static String FILE_SEPARATOR = "/";
 
-  public JobEntryFTP(String n) {
-    super(n, "");
+  public JobEntryFTP( String n ) {
+    super( n, "" );
     nr_limit = "10";
     port = "21";
     socksProxyPort = "1080";
@@ -211,12 +211,12 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
     isaddresult = true;
     createmovefolder = false;
 
-    setID(-1L);
-    setControlEncoding(DEFAULT_CONTROL_ENCODING);
+    setID( -1L );
+    setControlEncoding( DEFAULT_CONTROL_ENCODING );
   }
 
   public JobEntryFTP() {
-    this("");
+    this( "" );
   }
 
   public Object clone() {
@@ -225,240 +225,244 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer(128);
+    StringBuffer retval = new StringBuffer( 128 );
 
-    retval.append(super.getXML());
-    retval.append("      ").append(XMLHandler.addTagValue("port", port));
-    retval.append("      ").append(XMLHandler.addTagValue("servername", serverName));
-    retval.append("      ").append(XMLHandler.addTagValue("username", userName));
-    retval.append("      ").append(
-        XMLHandler.addTagValue("password", Encr.encryptPasswordIfNotUsingVariables(password)));
-    retval.append("      ").append(XMLHandler.addTagValue("ftpdirectory", ftpDirectory));
-    retval.append("      ").append(XMLHandler.addTagValue("targetdirectory", targetDirectory));
-    retval.append("      ").append(XMLHandler.addTagValue("wildcard", wildcard));
-    retval.append("      ").append(XMLHandler.addTagValue("binary", binaryMode));
-    retval.append("      ").append(XMLHandler.addTagValue("timeout", timeout));
-    retval.append("      ").append(XMLHandler.addTagValue("remove", remove));
-    retval.append("      ").append(XMLHandler.addTagValue("only_new", onlyGettingNewFiles));
-    retval.append("      ").append(XMLHandler.addTagValue("active", activeConnection));
-    retval.append("      ").append(XMLHandler.addTagValue("control_encoding", controlEncoding));
-    retval.append("      ").append(XMLHandler.addTagValue("movefiles", movefiles));
-    retval.append("      ").append(XMLHandler.addTagValue("movetodirectory", movetodirectory));
+    retval.append( super.getXML() );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "port", port ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "servername", serverName ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "username", userName ) );
+    retval.append( "      " ).append(
+        XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( password ) ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "ftpdirectory", ftpDirectory ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "targetdirectory", targetDirectory ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "wildcard", wildcard ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "binary", binaryMode ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "timeout", timeout ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "remove", remove ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "only_new", onlyGettingNewFiles ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "active", activeConnection ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "control_encoding", controlEncoding ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "movefiles", movefiles ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "movetodirectory", movetodirectory ) );
 
-    retval.append("      ").append(XMLHandler.addTagValue("adddate", adddate));
-    retval.append("      ").append(XMLHandler.addTagValue("addtime", addtime));
-    retval.append("      ").append(XMLHandler.addTagValue("SpecifyFormat", SpecifyFormat));
-    retval.append("      ").append(XMLHandler.addTagValue("date_time_format", date_time_format));
-    retval.append("      ").append(XMLHandler.addTagValue("AddDateBeforeExtension", AddDateBeforeExtension));
-    retval.append("      ").append(XMLHandler.addTagValue("isaddresult", isaddresult));
-    retval.append("      ").append(XMLHandler.addTagValue("createmovefolder", createmovefolder));
+    retval.append( "      " ).append( XMLHandler.addTagValue( "adddate", adddate ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "addtime", addtime ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "SpecifyFormat", SpecifyFormat ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "date_time_format", date_time_format ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "AddDateBeforeExtension", AddDateBeforeExtension ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "isaddresult", isaddresult ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "createmovefolder", createmovefolder ) );
 
-    retval.append("      ").append(XMLHandler.addTagValue("proxy_host", proxyHost));  
-    retval.append("      ").append(XMLHandler.addTagValue("proxy_port", proxyPort));  
-    retval.append("      ").append(XMLHandler.addTagValue("proxy_username", proxyUsername));  
-    retval
-        .append("      ").append(XMLHandler.addTagValue("proxy_password", Encr.encryptPasswordIfNotUsingVariables(proxyPassword)));  
-    retval.append("      ").append(XMLHandler.addTagValue("socksproxy_host", socksProxyHost));  
-    retval.append("      ").append(XMLHandler.addTagValue("socksproxy_port", socksProxyPort));  
-    retval.append("      ").append(XMLHandler.addTagValue("socksproxy_username", socksProxyUsername));  
-    retval
-        .append("      ").append(XMLHandler.addTagValue("socksproxy_password", Encr.encryptPasswordIfNotUsingVariables(socksProxyPassword)));  
+    retval.append( "      " ).append( XMLHandler.addTagValue( "proxy_host", proxyHost ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "proxy_port", proxyPort ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "proxy_username", proxyUsername ) );
+    retval.append( "      " ).append(
+        XMLHandler.addTagValue( "proxy_password", Encr.encryptPasswordIfNotUsingVariables( proxyPassword ) ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "socksproxy_host", socksProxyHost ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "socksproxy_port", socksProxyPort ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "socksproxy_username", socksProxyUsername ) );
+    retval.append( "      " ).append(
+        XMLHandler.addTagValue( "socksproxy_password", Encr.encryptPasswordIfNotUsingVariables( socksProxyPassword ) ) );
 
-    retval.append("      ").append(XMLHandler.addTagValue("ifFileExists", SifFileExists));
+    retval.append( "      " ).append( XMLHandler.addTagValue( "ifFileExists", SifFileExists ) );
 
-    retval.append("      ").append(XMLHandler.addTagValue("nr_limit", nr_limit));
-    retval.append("      ").append(XMLHandler.addTagValue("success_condition", success_condition));
+    retval.append( "      " ).append( XMLHandler.addTagValue( "nr_limit", nr_limit ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "success_condition", success_condition ) );
 
     return retval.toString();
   }
 
-  public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep, IMetaStore metaStore)
-      throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
+      IMetaStore metaStore ) throws KettleXMLException {
     try {
-      super.loadXML(entrynode, databases, slaveServers);
-      port = XMLHandler.getTagValue(entrynode, "port");
-      serverName = XMLHandler.getTagValue(entrynode, "servername");
-      userName = XMLHandler.getTagValue(entrynode, "username");
-      password = Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(entrynode, "password"));
-      ftpDirectory = XMLHandler.getTagValue(entrynode, "ftpdirectory");
-      targetDirectory = XMLHandler.getTagValue(entrynode, "targetdirectory");
-      wildcard = XMLHandler.getTagValue(entrynode, "wildcard");
-      binaryMode = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "binary"));
-      timeout = Const.toInt(XMLHandler.getTagValue(entrynode, "timeout"), 10000);
-      remove = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "remove"));
-      onlyGettingNewFiles = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "only_new"));
-      activeConnection = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "active"));
-      controlEncoding = XMLHandler.getTagValue(entrynode, "control_encoding");
-      if (controlEncoding == null) {
+      super.loadXML( entrynode, databases, slaveServers );
+      port = XMLHandler.getTagValue( entrynode, "port" );
+      serverName = XMLHandler.getTagValue( entrynode, "servername" );
+      userName = XMLHandler.getTagValue( entrynode, "username" );
+      password = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( entrynode, "password" ) );
+      ftpDirectory = XMLHandler.getTagValue( entrynode, "ftpdirectory" );
+      targetDirectory = XMLHandler.getTagValue( entrynode, "targetdirectory" );
+      wildcard = XMLHandler.getTagValue( entrynode, "wildcard" );
+      binaryMode = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "binary" ) );
+      timeout = Const.toInt( XMLHandler.getTagValue( entrynode, "timeout" ), 10000 );
+      remove = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "remove" ) );
+      onlyGettingNewFiles = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "only_new" ) );
+      activeConnection = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "active" ) );
+      controlEncoding = XMLHandler.getTagValue( entrynode, "control_encoding" );
+      if ( controlEncoding == null ) {
         // if we couldn't retrieve an encoding, assume it's an old instance and
         // put in the the encoding used before v 2.4.0
         controlEncoding = LEGACY_CONTROL_ENCODING;
       }
-      movefiles = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "movefiles"));
-      movetodirectory = XMLHandler.getTagValue(entrynode, "movetodirectory");
+      movefiles = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "movefiles" ) );
+      movetodirectory = XMLHandler.getTagValue( entrynode, "movetodirectory" );
 
-      adddate = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "adddate"));
-      addtime = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "addtime"));
-      SpecifyFormat = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "SpecifyFormat"));
-      date_time_format = XMLHandler.getTagValue(entrynode, "date_time_format");
-      AddDateBeforeExtension = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "AddDateBeforeExtension"));
+      adddate = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "adddate" ) );
+      addtime = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "addtime" ) );
+      SpecifyFormat = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "SpecifyFormat" ) );
+      date_time_format = XMLHandler.getTagValue( entrynode, "date_time_format" );
+      AddDateBeforeExtension = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "AddDateBeforeExtension" ) );
 
-      String addresult = XMLHandler.getTagValue(entrynode, "isaddresult");
+      String addresult = XMLHandler.getTagValue( entrynode, "isaddresult" );
 
-      if (Const.isEmpty(addresult))
+      if ( Const.isEmpty( addresult ) ) {
         isaddresult = true;
-      else
-        isaddresult = "Y".equalsIgnoreCase(addresult);
+      } else {
+        isaddresult = "Y".equalsIgnoreCase( addresult );
+      }
 
-      createmovefolder = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "createmovefolder"));
+      createmovefolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "createmovefolder" ) );
 
-      proxyHost = XMLHandler.getTagValue(entrynode, "proxy_host"); 
-      proxyPort = XMLHandler.getTagValue(entrynode, "proxy_port"); 
-      proxyUsername = XMLHandler.getTagValue(entrynode, "proxy_username"); 
-      proxyPassword = Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(entrynode, "proxy_password")); 
-      socksProxyHost = XMLHandler.getTagValue(entrynode, "socksproxy_host"); 
-      socksProxyPort = XMLHandler.getTagValue(entrynode, "socksproxy_port"); 
-      socksProxyUsername = XMLHandler.getTagValue(entrynode, "socksproxy_username"); 
-      socksProxyPassword = Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(entrynode,
-          "socksproxy_password"));      
-      SifFileExists = XMLHandler.getTagValue(entrynode, "ifFileExists");
-      if (Const.isEmpty(SifFileExists)) {
+      proxyHost = XMLHandler.getTagValue( entrynode, "proxy_host" );
+      proxyPort = XMLHandler.getTagValue( entrynode, "proxy_port" );
+      proxyUsername = XMLHandler.getTagValue( entrynode, "proxy_username" );
+      proxyPassword = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( entrynode, "proxy_password" ) );
+      socksProxyHost = XMLHandler.getTagValue( entrynode, "socksproxy_host" );
+      socksProxyPort = XMLHandler.getTagValue( entrynode, "socksproxy_port" );
+      socksProxyUsername = XMLHandler.getTagValue( entrynode, "socksproxy_username" );
+      socksProxyPassword =
+          Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( entrynode, "socksproxy_password" ) );
+      SifFileExists = XMLHandler.getTagValue( entrynode, "ifFileExists" );
+      if ( Const.isEmpty( SifFileExists ) ) {
         ifFileExists = ifFileExistsSkip;
       } else {
-        if (SifFileExists.equals(SifFileExistsCreateUniq))
+        if ( SifFileExists.equals( SifFileExistsCreateUniq ) ) {
           ifFileExists = ifFileExistsCreateUniq;
-        else if (SifFileExists.equals(SifFileExistsFail))
+        } else if ( SifFileExists.equals( SifFileExistsFail ) ) {
           ifFileExists = ifFileExistsFail;
-        else
+        } else {
           ifFileExists = ifFileExistsSkip;
+        }
 
       }
-      nr_limit = XMLHandler.getTagValue(entrynode, "nr_limit");
-      success_condition = Const.NVL(XMLHandler.getTagValue(entrynode, "success_condition"), SUCCESS_IF_NO_ERRORS);
+      nr_limit = XMLHandler.getTagValue( entrynode, "nr_limit" );
+      success_condition = Const.NVL( XMLHandler.getTagValue( entrynode, "success_condition" ), SUCCESS_IF_NO_ERRORS );
 
-    } catch (KettleXMLException xe) {
-      throw new KettleXMLException("Unable to load job entry of type 'ftp' from XML node", xe);
+    } catch ( KettleXMLException xe ) {
+      throw new KettleXMLException( "Unable to load job entry of type 'ftp' from XML node", xe );
     }
   }
 
-  public void loadRep(Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
-      throws KettleException {
+  public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
+      List<SlaveServer> slaveServers ) throws KettleException {
     try {
-      port = rep.getJobEntryAttributeString(id_jobentry, "port");
-      serverName = rep.getJobEntryAttributeString(id_jobentry, "servername");
-      userName = rep.getJobEntryAttributeString(id_jobentry, "username");
-      password = Encr.decryptPasswordOptionallyEncrypted(rep.getJobEntryAttributeString(id_jobentry, "password"));
-      ftpDirectory = rep.getJobEntryAttributeString(id_jobentry, "ftpdirectory");
-      targetDirectory = rep.getJobEntryAttributeString(id_jobentry, "targetdirectory");
-      wildcard = rep.getJobEntryAttributeString(id_jobentry, "wildcard");
-      binaryMode = rep.getJobEntryAttributeBoolean(id_jobentry, "binary");
-      timeout = (int) rep.getJobEntryAttributeInteger(id_jobentry, "timeout");
-      remove = rep.getJobEntryAttributeBoolean(id_jobentry, "remove");
-      onlyGettingNewFiles = rep.getJobEntryAttributeBoolean(id_jobentry, "only_new");
-      activeConnection = rep.getJobEntryAttributeBoolean(id_jobentry, "active");
-      controlEncoding = rep.getJobEntryAttributeString(id_jobentry, "control_encoding");
-      if (controlEncoding == null) {
+      port = rep.getJobEntryAttributeString( id_jobentry, "port" );
+      serverName = rep.getJobEntryAttributeString( id_jobentry, "servername" );
+      userName = rep.getJobEntryAttributeString( id_jobentry, "username" );
+      password = Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "password" ) );
+      ftpDirectory = rep.getJobEntryAttributeString( id_jobentry, "ftpdirectory" );
+      targetDirectory = rep.getJobEntryAttributeString( id_jobentry, "targetdirectory" );
+      wildcard = rep.getJobEntryAttributeString( id_jobentry, "wildcard" );
+      binaryMode = rep.getJobEntryAttributeBoolean( id_jobentry, "binary" );
+      timeout = (int) rep.getJobEntryAttributeInteger( id_jobentry, "timeout" );
+      remove = rep.getJobEntryAttributeBoolean( id_jobentry, "remove" );
+      onlyGettingNewFiles = rep.getJobEntryAttributeBoolean( id_jobentry, "only_new" );
+      activeConnection = rep.getJobEntryAttributeBoolean( id_jobentry, "active" );
+      controlEncoding = rep.getJobEntryAttributeString( id_jobentry, "control_encoding" );
+      if ( controlEncoding == null ) {
         // if we couldn't retrieve an encoding, assume it's an old instance and
         // put in the the encoding used before v 2.4.0
         controlEncoding = LEGACY_CONTROL_ENCODING;
       }
 
-      movefiles = rep.getJobEntryAttributeBoolean(id_jobentry, "movefiles");
-      movetodirectory = rep.getJobEntryAttributeString(id_jobentry, "movetodirectory");
+      movefiles = rep.getJobEntryAttributeBoolean( id_jobentry, "movefiles" );
+      movetodirectory = rep.getJobEntryAttributeString( id_jobentry, "movetodirectory" );
 
-      adddate = rep.getJobEntryAttributeBoolean(id_jobentry, "adddate");
-      addtime = rep.getJobEntryAttributeBoolean(id_jobentry, "adddate");
-      SpecifyFormat = rep.getJobEntryAttributeBoolean(id_jobentry, "SpecifyFormat");
-      date_time_format = rep.getJobEntryAttributeString(id_jobentry, "date_time_format");
-      AddDateBeforeExtension = rep.getJobEntryAttributeBoolean(id_jobentry, "AddDateBeforeExtension");
+      adddate = rep.getJobEntryAttributeBoolean( id_jobentry, "adddate" );
+      addtime = rep.getJobEntryAttributeBoolean( id_jobentry, "adddate" );
+      SpecifyFormat = rep.getJobEntryAttributeBoolean( id_jobentry, "SpecifyFormat" );
+      date_time_format = rep.getJobEntryAttributeString( id_jobentry, "date_time_format" );
+      AddDateBeforeExtension = rep.getJobEntryAttributeBoolean( id_jobentry, "AddDateBeforeExtension" );
 
-      String addToResult = rep.getStepAttributeString(id_jobentry, "add_to_result_filenames");
-      if (Const.isEmpty(addToResult))
+      String addToResult = rep.getStepAttributeString( id_jobentry, "add_to_result_filenames" );
+      if ( Const.isEmpty( addToResult ) ) {
         isaddresult = true;
-      else
-        isaddresult = rep.getStepAttributeBoolean(id_jobentry, "add_to_result_filenames");
+      } else {
+        isaddresult = rep.getStepAttributeBoolean( id_jobentry, "add_to_result_filenames" );
+      }
 
-      createmovefolder = rep.getJobEntryAttributeBoolean(id_jobentry, "createmovefolder");
+      createmovefolder = rep.getJobEntryAttributeBoolean( id_jobentry, "createmovefolder" );
 
-      proxyHost = rep.getJobEntryAttributeString(id_jobentry, "proxy_host"); 
-      proxyPort = rep.getJobEntryAttributeString(id_jobentry, "proxy_port"); 
-      proxyUsername = rep.getJobEntryAttributeString(id_jobentry, "proxy_username"); 
-      proxyPassword = Encr.decryptPasswordOptionallyEncrypted(rep.getJobEntryAttributeString(id_jobentry,
-          "proxy_password")); 
-      socksProxyHost = rep.getJobEntryAttributeString(id_jobentry, "socksproxy_host"); 
-      socksProxyPort = rep.getJobEntryAttributeString(id_jobentry, "socksproxy_port"); 
-      socksProxyUsername = rep.getJobEntryAttributeString(id_jobentry, "socksproxy_username"); 
-      socksProxyPassword = Encr.decryptPasswordOptionallyEncrypted(rep.getJobEntryAttributeString(id_jobentry,
-          "socksproxy_password")); 
-      SifFileExists = rep.getJobEntryAttributeString(id_jobentry, "ifFileExists");
-      if (Const.isEmpty(SifFileExists)) {
+      proxyHost = rep.getJobEntryAttributeString( id_jobentry, "proxy_host" );
+      proxyPort = rep.getJobEntryAttributeString( id_jobentry, "proxy_port" );
+      proxyUsername = rep.getJobEntryAttributeString( id_jobentry, "proxy_username" );
+      proxyPassword =
+          Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "proxy_password" ) );
+      socksProxyHost = rep.getJobEntryAttributeString( id_jobentry, "socksproxy_host" );
+      socksProxyPort = rep.getJobEntryAttributeString( id_jobentry, "socksproxy_port" );
+      socksProxyUsername = rep.getJobEntryAttributeString( id_jobentry, "socksproxy_username" );
+      socksProxyPassword =
+          Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "socksproxy_password" ) );
+      SifFileExists = rep.getJobEntryAttributeString( id_jobentry, "ifFileExists" );
+      if ( Const.isEmpty( SifFileExists ) ) {
         ifFileExists = ifFileExistsSkip;
       } else {
-        if (SifFileExists.equals(SifFileExistsCreateUniq))
+        if ( SifFileExists.equals( SifFileExistsCreateUniq ) ) {
           ifFileExists = ifFileExistsCreateUniq;
-        else if (SifFileExists.equals(SifFileExistsFail))
+        } else if ( SifFileExists.equals( SifFileExistsFail ) ) {
           ifFileExists = ifFileExistsFail;
-        else
+        } else {
           ifFileExists = ifFileExistsSkip;
+        }
       }
-      nr_limit = rep.getJobEntryAttributeString(id_jobentry, "nr_limit");
-      success_condition = Const.NVL(rep.getJobEntryAttributeString(id_jobentry, "success_condition"),
-          SUCCESS_IF_NO_ERRORS);
+      nr_limit = rep.getJobEntryAttributeString( id_jobentry, "nr_limit" );
+      success_condition =
+          Const.NVL( rep.getJobEntryAttributeString( id_jobentry, "success_condition" ), SUCCESS_IF_NO_ERRORS );
 
-    } catch (KettleException dbe) {
-      throw new KettleException("Unable to load job entry of type 'ftp' from the repository for id_jobentry="
-          + id_jobentry, dbe);
+    } catch ( KettleException dbe ) {
+      throw new KettleException( "Unable to load job entry of type 'ftp' from the repository for id_jobentry="
+          + id_jobentry, dbe );
     }
   }
 
-  public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_job) throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_job ) throws KettleException {
     try {
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "port", port);
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "servername", serverName);
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "username", userName);
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "password", Encr.encryptPasswordIfNotUsingVariables(password));
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "ftpdirectory", ftpDirectory);
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "targetdirectory", targetDirectory);
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "wildcard", wildcard);
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "binary", binaryMode);
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "timeout", timeout);
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "remove", remove);
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "only_new", onlyGettingNewFiles);
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "active", activeConnection);
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "control_encoding", controlEncoding);
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "port", port );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "servername", serverName );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "username", userName );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "password", Encr.encryptPasswordIfNotUsingVariables( password ) );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "ftpdirectory", ftpDirectory );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "targetdirectory", targetDirectory );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "wildcard", wildcard );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "binary", binaryMode );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "timeout", timeout );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "remove", remove );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "only_new", onlyGettingNewFiles );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "active", activeConnection );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "control_encoding", controlEncoding );
 
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "movefiles", movefiles);
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "movetodirectory", movetodirectory);
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "movefiles", movefiles );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "movetodirectory", movetodirectory );
 
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "addtime", addtime);
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "adddate", adddate);
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "SpecifyFormat", SpecifyFormat);
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "date_time_format", date_time_format);
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "addtime", addtime );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "adddate", adddate );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "SpecifyFormat", SpecifyFormat );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "date_time_format", date_time_format );
 
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "AddDateBeforeExtension", AddDateBeforeExtension);
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "isaddresult", isaddresult);
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "createmovefolder", createmovefolder);
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "AddDateBeforeExtension", AddDateBeforeExtension );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "isaddresult", isaddresult );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "createmovefolder", createmovefolder );
 
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_host", proxyHost); 
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_port", proxyPort); 
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_username", proxyUsername); 
-      rep.saveJobEntryAttribute(id_job, getObjectId(),
-          "proxy_password", Encr.encryptPasswordIfNotUsingVariables(proxyPassword)); 
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "socksproxy_host", socksProxyHost); 
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "socksproxy_port", socksProxyPort); 
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "socksproxy_username", socksProxyUsername); 
-      rep.saveJobEntryAttribute(id_job, getObjectId(),
-          "socksproxy_password", Encr.encryptPasswordIfNotUsingVariables(socksProxyPassword)); 
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "ifFileExists", SifFileExists);
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "proxy_host", proxyHost );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "proxy_port", proxyPort );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "proxy_username", proxyUsername );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "proxy_password", Encr
+          .encryptPasswordIfNotUsingVariables( proxyPassword ) );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "socksproxy_host", socksProxyHost );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "socksproxy_port", socksProxyPort );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "socksproxy_username", socksProxyUsername );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "socksproxy_password", Encr
+          .encryptPasswordIfNotUsingVariables( socksProxyPassword ) );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "ifFileExists", SifFileExists );
 
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "nr_limit", nr_limit);
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "success_condition", success_condition);
-    } catch (KettleDatabaseException dbe) {
-      throw new KettleException("Unable to save job entry of type 'ftp' to the repository for id_job=" + id_job, dbe);
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "nr_limit", nr_limit );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "success_condition", success_condition );
+    } catch ( KettleDatabaseException dbe ) {
+      throw new KettleException( "Unable to save job entry of type 'ftp' to the repository for id_job=" + id_job, dbe );
     }
   }
 
-  public void setLimit(String nr_limitin) {
+  public void setLimit( String nr_limitin ) {
     this.nr_limit = nr_limitin;
   }
 
@@ -466,7 +470,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
     return nr_limit;
   }
 
-  public void setSuccessCondition(String success_condition) {
+  public void setSuccessCondition( String success_condition ) {
     this.success_condition = success_condition;
   }
 
@@ -474,7 +478,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
     return success_condition;
   }
 
-  public void setCreateMoveFolder(boolean createmovefolderin) {
+  public void setCreateMoveFolder( boolean createmovefolderin ) {
     this.createmovefolder = createmovefolderin;
   }
 
@@ -482,7 +486,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
     return createmovefolder;
   }
 
-  public void setAddDateBeforeExtension(boolean AddDateBeforeExtension) {
+  public void setAddDateBeforeExtension( boolean AddDateBeforeExtension ) {
     this.AddDateBeforeExtension = AddDateBeforeExtension;
   }
 
@@ -490,7 +494,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
     return AddDateBeforeExtension;
   }
 
-  public void setAddToResult(boolean isaddresultin) {
+  public void setAddToResult( boolean isaddresultin ) {
     this.isaddresult = isaddresultin;
   }
 
@@ -498,7 +502,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
     return isaddresult;
   }
 
-  public void setDateInFilename(boolean adddate) {
+  public void setDateInFilename( boolean adddate ) {
     this.adddate = adddate;
   }
 
@@ -506,7 +510,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
     return adddate;
   }
 
-  public void setTimeInFilename(boolean addtime) {
+  public void setTimeInFilename( boolean addtime ) {
     this.addtime = addtime;
   }
 
@@ -518,7 +522,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
     return SpecifyFormat;
   }
 
-  public void setSpecifyFormat(boolean SpecifyFormat) {
+  public void setSpecifyFormat( boolean SpecifyFormat ) {
     this.SpecifyFormat = SpecifyFormat;
   }
 
@@ -526,7 +530,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
     return date_time_format;
   }
 
-  public void setDateTimeFormat(String date_time_format) {
+  public void setDateTimeFormat( String date_time_format ) {
     this.date_time_format = date_time_format;
   }
 
@@ -538,9 +542,10 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   /**
-   * @param movefilesin The movefiles to set.
+   * @param movefilesin
+   *          The movefiles to set.
    */
-  public void setMoveFiles(boolean movefilesin) {
+  public void setMoveFiles( boolean movefilesin ) {
     this.movefiles = movefilesin;
   }
 
@@ -552,9 +557,10 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   /**
-   * @param movetoin The movetodirectory to set.
+   * @param movetoin
+   *          The movetodirectory to set.
    */
-  public void setMoveToDirectory(String movetoin) {
+  public void setMoveToDirectory( String movetoin ) {
     this.movetodirectory = movetoin;
   }
 
@@ -566,9 +572,10 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   /**
-   * @param binaryMode The binaryMode to set.
+   * @param binaryMode
+   *          The binaryMode to set.
    */
-  public void setBinaryMode(boolean binaryMode) {
+  public void setBinaryMode( boolean binaryMode ) {
     this.binaryMode = binaryMode;
   }
 
@@ -580,9 +587,10 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   /**
-   * @param directory The directory to set.
+   * @param directory
+   *          The directory to set.
    */
-  public void setFtpDirectory(String directory) {
+  public void setFtpDirectory( String directory ) {
     this.ftpDirectory = directory;
   }
 
@@ -594,9 +602,10 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   /**
-   * @param password The password to set.
+   * @param password
+   *          The password to set.
    */
-  public void setPassword(String password) {
+  public void setPassword( String password ) {
     this.password = password;
   }
 
@@ -608,9 +617,10 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   /**
-   * @param serverName The serverName to set.
+   * @param serverName
+   *          The serverName to set.
    */
-  public void setServerName(String serverName) {
+  public void setServerName( String serverName ) {
     this.serverName = serverName;
   }
 
@@ -622,9 +632,10 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   /**
-   * @param port The port to set.
+   * @param port
+   *          The port to set.
    */
-  public void setPort(String port) {
+  public void setPort( String port ) {
     this.port = port;
   }
 
@@ -636,9 +647,10 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   /**
-   * @param userName The userName to set.
+   * @param userName
+   *          The userName to set.
    */
-  public void setUserName(String userName) {
+  public void setUserName( String userName ) {
     this.userName = userName;
   }
 
@@ -650,9 +662,10 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   /**
-   * @param wildcard The wildcard to set.
+   * @param wildcard
+   *          The wildcard to set.
    */
-  public void setWildcard(String wildcard) {
+  public void setWildcard( String wildcard ) {
     this.wildcard = wildcard;
   }
 
@@ -664,16 +677,18 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   /**
-   * @param targetDirectory The targetDirectory to set.
+   * @param targetDirectory
+   *          The targetDirectory to set.
    */
-  public void setTargetDirectory(String targetDirectory) {
+  public void setTargetDirectory( String targetDirectory ) {
     this.targetDirectory = targetDirectory;
   }
 
   /**
-   * @param timeout The timeout to set.
+   * @param timeout
+   *          The timeout to set.
    */
-  public void setTimeout(int timeout) {
+  public void setTimeout( int timeout ) {
     this.timeout = timeout;
   }
 
@@ -685,9 +700,10 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   /**
-   * @param remove The remove to set.
+   * @param remove
+   *          The remove to set.
    */
-  public void setRemove(boolean remove) {
+  public void setRemove( boolean remove ) {
     this.remove = remove;
   }
 
@@ -706,9 +722,10 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   /**
-   * @param onlyGettingNewFiles The onlyGettingNewFiles to set.
+   * @param onlyGettingNewFiles
+   *          The onlyGettingNewFiles to set.
    */
-  public void setOnlyGettingNewFiles(boolean onlyGettingNewFilesin) {
+  public void setOnlyGettingNewFiles( boolean onlyGettingNewFilesin ) {
     this.onlyGettingNewFiles = onlyGettingNewFilesin;
   }
 
@@ -722,13 +739,13 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   /**
-   *  Set the encoding to be used for ftp'ing. This determines how
-   *  names are translated in dir e.g. It does impact the contents
-   *  of the files being ftp'ed.
-   *  
-   *  @param encoding The encoding to be used.
+   * Set the encoding to be used for ftp'ing. This determines how names are translated in dir e.g. It does impact the
+   * contents of the files being ftp'ed.
+   * 
+   * @param encoding
+   *          The encoding to be used.
    */
-  public void setControlEncoding(String encoding) {
+  public void setControlEncoding( String encoding ) {
     this.controlEncoding = encoding;
   }
 
@@ -740,16 +757,18 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   /**
-   * @param proxyHost The hostname of the proxy.
+   * @param proxyHost
+   *          The hostname of the proxy.
    */
-  public void setProxyHost(String proxyHost) {
+  public void setProxyHost( String proxyHost ) {
     this.proxyHost = proxyHost;
   }
 
   /**
-   * @param proxyPassword The password which is used to authenticate at the socks proxy.
+   * @param proxyPassword
+   *          The password which is used to authenticate at the socks proxy.
    */
-  public void setProxyPassword(String proxyPassword) {
+  public void setProxyPassword( String proxyPassword ) {
     this.proxyPassword = proxyPassword;
   }
 
@@ -761,9 +780,10 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   /**
-   * @param proxyPassword The password which is used to authenticate at the proxy.
+   * @param proxyPassword
+   *          The password which is used to authenticate at the proxy.
    */
-  public void setSocksProxyPassword(String socksProxyPassword) {
+  public void setSocksProxyPassword( String socksProxyPassword ) {
     this.socksProxyPassword = socksProxyPassword;
   }
 
@@ -775,9 +795,10 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   /**
-   * @param proxyPort The port of the ftp-proxy. 
+   * @param proxyPort
+   *          The port of the ftp-proxy.
    */
-  public void setProxyPort(String proxyPort) {
+  public void setProxyPort( String proxyPort ) {
     this.proxyPort = proxyPort;
   }
 
@@ -796,9 +817,10 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   /**
-   * @param proxyUsername The username which is used to authenticate at the proxy.
+   * @param proxyUsername
+   *          The username which is used to authenticate at the proxy.
    */
-  public void setProxyUsername(String proxyUsername) {
+  public void setProxyUsername( String proxyUsername ) {
     this.proxyUsername = proxyUsername;
   }
 
@@ -810,17 +832,19 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   /**
-   * @param proxyUsername The username which is used to authenticate at the socks proxy.
+   * @param proxyUsername
+   *          The username which is used to authenticate at the socks proxy.
    */
-  public void setSocksProxyUsername(String socksPoxyUsername) {
+  public void setSocksProxyUsername( String socksPoxyUsername ) {
     this.socksProxyUsername = socksPoxyUsername;
   }
 
   /**
    * 
-   * @param socksProxyHost The host name of the socks proxy host
+   * @param socksProxyHost
+   *          The host name of the socks proxy host
    */
-  public void setSocksProxyHost(String socksProxyHost) {
+  public void setSocksProxyHost( String socksProxyHost ) {
     this.socksProxyHost = socksProxyHost;
   }
 
@@ -832,9 +856,10 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   /**
-   * @param socksProxyPort The port number the socks proxy host is using
+   * @param socksProxyPort
+   *          The port number the socks proxy host is using
    */
-  public void setSocksProxyPort(String socksProxyPort) {
+  public void setSocksProxyPort( String socksProxyPort ) {
     this.socksProxyPort = socksProxyPort;
   }
 
@@ -845,29 +870,30 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
     return this.socksProxyPort;
   }
 
-  public Result execute(Result previousResult, int nr) {
-    log.logBasic(BaseMessages.getString(PKG, "JobEntryFTP.Started", serverName)); 
+  public Result execute( Result previousResult, int nr ) {
+    log.logBasic( BaseMessages.getString( PKG, "JobEntryFTP.Started", serverName ) );
 
     Result result = previousResult;
-    result.setNrErrors(1);
-    result.setResult(false);
+    result.setNrErrors( 1 );
+    result.setResult( false );
     NrErrors = 0;
     NrfilesRetrieved = 0;
     successConditionBroken = false;
     boolean exitjobentry = false;
-    limitFiles = Const.toInt(environmentSubstitute(getLimit()), 10);
+    limitFiles = Const.toInt( environmentSubstitute( getLimit() ), 10 );
 
     // Here let's put some controls before stating the job
-    if (movefiles) {
-      if (Const.isEmpty(movetodirectory)) {
-        logError(BaseMessages.getString(PKG, "JobEntryFTP.MoveToFolderEmpty"));
+    if ( movefiles ) {
+      if ( Const.isEmpty( movetodirectory ) ) {
+        logError( BaseMessages.getString( PKG, "JobEntryFTP.MoveToFolderEmpty" ) );
         return result;
       }
 
     }
 
-    if (isDetailed())
-      logDetailed(BaseMessages.getString(PKG, "JobEntryFTP.Start")); 
+    if ( isDetailed() ) {
+      logDetailed( BaseMessages.getString( PKG, "JobEntryFTP.Start" ) );
+    }
 
     FTPClient ftpclient = null;
     String realMoveToFolder = null;
@@ -875,336 +901,367 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
     try {
       // Create ftp client to host:port ...
       ftpclient = new FTPClient();
-      String realServername = environmentSubstitute(serverName);
-      String realServerPort = environmentSubstitute(port);
-      ftpclient.setRemoteAddr(InetAddress.getByName(realServername));
-      if (!Const.isEmpty(realServerPort)) {
-        ftpclient.setRemotePort(Const.toInt(realServerPort, 21));
+      String realServername = environmentSubstitute( serverName );
+      String realServerPort = environmentSubstitute( port );
+      ftpclient.setRemoteAddr( InetAddress.getByName( realServername ) );
+      if ( !Const.isEmpty( realServerPort ) ) {
+        ftpclient.setRemotePort( Const.toInt( realServerPort, 21 ) );
       }
 
-      if (!Const.isEmpty(proxyHost)) {
-        String realProxy_host = environmentSubstitute(proxyHost);
-        ftpclient.setRemoteAddr(InetAddress.getByName(realProxy_host));
-        if (isDetailed())
-          logDetailed(BaseMessages.getString(PKG, "JobEntryFTP.OpenedProxyConnectionOn", realProxy_host));
+      if ( !Const.isEmpty( proxyHost ) ) {
+        String realProxy_host = environmentSubstitute( proxyHost );
+        ftpclient.setRemoteAddr( InetAddress.getByName( realProxy_host ) );
+        if ( isDetailed() ) {
+          logDetailed( BaseMessages.getString( PKG, "JobEntryFTP.OpenedProxyConnectionOn", realProxy_host ) );
+        }
 
-        // FIXME: Proper default port for proxy    	  
-        int port = Const.toInt(environmentSubstitute(proxyPort), 21);
-        if (port != 0) {
-          ftpclient.setRemotePort(port);
+        // FIXME: Proper default port for proxy
+        int port = Const.toInt( environmentSubstitute( proxyPort ), 21 );
+        if ( port != 0 ) {
+          ftpclient.setRemotePort( port );
         }
       } else {
-        ftpclient.setRemoteAddr(InetAddress.getByName(realServername));
+        ftpclient.setRemoteAddr( InetAddress.getByName( realServername ) );
 
-        if (isDetailed())
-          logDetailed(BaseMessages.getString(PKG, "JobEntryFTP.OpenedConnectionTo", realServername));
+        if ( isDetailed() ) {
+          logDetailed( BaseMessages.getString( PKG, "JobEntryFTP.OpenedConnectionTo", realServername ) );
+        }
       }
 
       // set activeConnection connectmode ...
-      if (activeConnection) {
-        ftpclient.setConnectMode(FTPConnectMode.ACTIVE);
-        if (isDetailed())
-          logDetailed(BaseMessages.getString(PKG, "JobEntryFTP.SetActive")); 
+      if ( activeConnection ) {
+        ftpclient.setConnectMode( FTPConnectMode.ACTIVE );
+        if ( isDetailed() ) {
+          logDetailed( BaseMessages.getString( PKG, "JobEntryFTP.SetActive" ) );
+        }
       } else {
-        ftpclient.setConnectMode(FTPConnectMode.PASV);
-        if (isDetailed())
-          logDetailed(BaseMessages.getString(PKG, "JobEntryFTP.SetPassive")); 
+        ftpclient.setConnectMode( FTPConnectMode.PASV );
+        if ( isDetailed() ) {
+          logDetailed( BaseMessages.getString( PKG, "JobEntryFTP.SetPassive" ) );
+        }
       }
 
       // Set the timeout
-      ftpclient.setTimeout(timeout);
-      if (isDetailed())
-        logDetailed(BaseMessages.getString(PKG, "JobEntryFTP.SetTimeout", String.valueOf(timeout))); 
+      ftpclient.setTimeout( timeout );
+      if ( isDetailed() ) {
+        logDetailed( BaseMessages.getString( PKG, "JobEntryFTP.SetTimeout", String.valueOf( timeout ) ) );
+      }
 
-      ftpclient.setControlEncoding(controlEncoding);
-      if (isDetailed())
-        logDetailed(BaseMessages.getString(PKG, "JobEntryFTP.SetEncoding", controlEncoding)); 
+      ftpclient.setControlEncoding( controlEncoding );
+      if ( isDetailed() ) {
+        logDetailed( BaseMessages.getString( PKG, "JobEntryFTP.SetEncoding", controlEncoding ) );
+      }
 
-      //  If socks proxy server was provided
-      if (!Const.isEmpty(socksProxyHost)) {
-        if (!Const.isEmpty(socksProxyPort)) {
-          FTPClient.initSOCKS(environmentSubstitute(socksProxyPort), environmentSubstitute(socksProxyHost));
+      // If socks proxy server was provided
+      if ( !Const.isEmpty( socksProxyHost ) ) {
+        if ( !Const.isEmpty( socksProxyPort ) ) {
+          FTPClient.initSOCKS( environmentSubstitute( socksProxyPort ), environmentSubstitute( socksProxyHost ) );
         } else {
-          throw new FTPException(BaseMessages.getString(PKG, "JobEntryFTP.SocksProxy.PortMissingException",
-              environmentSubstitute(socksProxyHost), getName()));
+          throw new FTPException( BaseMessages.getString( PKG, "JobEntryFTP.SocksProxy.PortMissingException",
+              environmentSubstitute( socksProxyHost ), getName() ) );
         }
-        //  then if we have authentication information
-        if (!Const.isEmpty(socksProxyUsername) && !Const.isEmpty(socksProxyPassword)) {
-          FTPClient.initSOCKSAuthentication(environmentSubstitute(socksProxyUsername),
-              environmentSubstitute(socksProxyPassword));
-        } else if (!Const.isEmpty(socksProxyUsername) && Const.isEmpty(socksProxyPassword)
-            || Const.isEmpty(socksProxyUsername) && !Const.isEmpty(socksProxyPassword)) {
-          //  we have a username without a password or vica versa
-          throw new FTPException(BaseMessages.getString(PKG, "JobEntryFTP.SocksProxy.IncompleteCredentials",
-              environmentSubstitute(socksProxyHost), getName()));
+        // then if we have authentication information
+        if ( !Const.isEmpty( socksProxyUsername ) && !Const.isEmpty( socksProxyPassword ) ) {
+          FTPClient.initSOCKSAuthentication( environmentSubstitute( socksProxyUsername ),
+              environmentSubstitute( socksProxyPassword ) );
+        } else if ( !Const.isEmpty( socksProxyUsername ) && Const.isEmpty( socksProxyPassword )
+            || Const.isEmpty( socksProxyUsername ) && !Const.isEmpty( socksProxyPassword ) ) {
+          // we have a username without a password or vica versa
+          throw new FTPException( BaseMessages.getString( PKG, "JobEntryFTP.SocksProxy.IncompleteCredentials",
+              environmentSubstitute( socksProxyHost ), getName() ) );
         }
       }
 
       // login to ftp host ...
       ftpclient.connect();
 
-      String realUsername = environmentSubstitute(userName) + (!Const.isEmpty(proxyHost) ? "@" + realServername : "")
-          + (!Const.isEmpty(proxyUsername) ? " " + environmentSubstitute(proxyUsername) : "");
+      String realUsername =
+          environmentSubstitute( userName ) + ( !Const.isEmpty( proxyHost ) ? "@" + realServername : "" )
+              + ( !Const.isEmpty( proxyUsername ) ? " " + environmentSubstitute( proxyUsername ) : "" );
 
-      String realPassword = Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute(password))
-          + (!Const.isEmpty(proxyPassword) ? " "
-              + Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute(proxyPassword)) : "");
+      String realPassword =
+          Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( password ) )
+              + ( !Const.isEmpty( proxyPassword ) ? " "
+                  + Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( proxyPassword ) ) : "" );
 
-      ftpclient.login(realUsername, realPassword);
-      //  Remove password from logging, you don't know where it ends up.
-      if (isDetailed())
-        logDetailed(BaseMessages.getString(PKG, "JobEntryFTP.LoggedIn", realUsername)); 
-
-      // Fix for PDI-2534 - add auxilliary FTP File List parsers to the ftpclient object.
-      this.hookInOtherParsers(ftpclient);
-
-      // move to spool dir ...
-      if (!Const.isEmpty(ftpDirectory)) {
-        String realFtpDirectory = environmentSubstitute(ftpDirectory);
-        realFtpDirectory = normalizePath(realFtpDirectory);
-        ftpclient.chdir(realFtpDirectory);
-        if (isDetailed())
-          logDetailed(BaseMessages.getString(PKG, "JobEntryFTP.ChangedDir", realFtpDirectory)); 
+      ftpclient.login( realUsername, realPassword );
+      // Remove password from logging, you don't know where it ends up.
+      if ( isDetailed() ) {
+        logDetailed( BaseMessages.getString( PKG, "JobEntryFTP.LoggedIn", realUsername ) );
       }
 
-      //Create move to folder if necessary
-      if (movefiles && !Const.isEmpty(movetodirectory)) {
-        realMoveToFolder = environmentSubstitute(movetodirectory);
-        realMoveToFolder = normalizePath(realMoveToFolder);
+      // Fix for PDI-2534 - add auxilliary FTP File List parsers to the ftpclient object.
+      this.hookInOtherParsers( ftpclient );
+
+      // move to spool dir ...
+      if ( !Const.isEmpty( ftpDirectory ) ) {
+        String realFtpDirectory = environmentSubstitute( ftpDirectory );
+        realFtpDirectory = normalizePath( realFtpDirectory );
+        ftpclient.chdir( realFtpDirectory );
+        if ( isDetailed() ) {
+          logDetailed( BaseMessages.getString( PKG, "JobEntryFTP.ChangedDir", realFtpDirectory ) );
+        }
+      }
+
+      // Create move to folder if necessary
+      if ( movefiles && !Const.isEmpty( movetodirectory ) ) {
+        realMoveToFolder = environmentSubstitute( movetodirectory );
+        realMoveToFolder = normalizePath( realMoveToFolder );
         // Folder exists?
         boolean folderExist = true;
-        if (isDetailed())
-          logDetailed(BaseMessages.getString(PKG, "JobEntryFTP.CheckMoveToFolder", realMoveToFolder));
+        if ( isDetailed() ) {
+          logDetailed( BaseMessages.getString( PKG, "JobEntryFTP.CheckMoveToFolder", realMoveToFolder ) );
+        }
         String originalLocation = ftpclient.pwd();
         try {
           // does not work for folders, see PDI-2567: folderExist=ftpclient.exists(realMoveToFolder);
           // try switching to the 'move to' folder.
-          ftpclient.chdir(realMoveToFolder);
+          ftpclient.chdir( realMoveToFolder );
           // Switch back to the previous location.
-          if (isDetailed())
-            logDetailed(BaseMessages.getString(PKG, "JobEntryFTP.CheckMoveToFolderSwitchBack", originalLocation));
-          ftpclient.chdir(originalLocation);
-        } catch (Exception e) {
+          if ( isDetailed() ) {
+            logDetailed( BaseMessages.getString( PKG, "JobEntryFTP.CheckMoveToFolderSwitchBack", originalLocation ) );
+          }
+          ftpclient.chdir( originalLocation );
+        } catch ( Exception e ) {
           folderExist = false;
           // Assume folder does not exist !!
         }
 
-        if (!folderExist) {
-          if (createmovefolder) {
-            ftpclient.mkdir(realMoveToFolder);
-            if (isDetailed())
-              logDetailed(BaseMessages.getString(PKG, "JobEntryFTP.MoveToFolderCreated", realMoveToFolder));
+        if ( !folderExist ) {
+          if ( createmovefolder ) {
+            ftpclient.mkdir( realMoveToFolder );
+            if ( isDetailed() ) {
+              logDetailed( BaseMessages.getString( PKG, "JobEntryFTP.MoveToFolderCreated", realMoveToFolder ) );
+            }
           } else {
-            logError(BaseMessages.getString(PKG, "JobEntryFTP.MoveToFolderNotExist"));
+            logError( BaseMessages.getString( PKG, "JobEntryFTP.MoveToFolderNotExist" ) );
             exitjobentry = true;
             NrErrors++;
           }
         }
       }
 
-      if (!exitjobentry) {
+      if ( !exitjobentry ) {
         // Get all the files in the current directory...
-        FTPFile[] ftpFiles = ftpclient.dirDetails(null);
+        FTPFile[] ftpFiles = ftpclient.dirDetails( null );
 
-        //if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryFTP.FoundNFiles", String.valueOf(filelist.length))); 
-        if (isDetailed())
-          logDetailed(BaseMessages.getString(PKG, "JobEntryFTP.FoundNFiles", String.valueOf(ftpFiles.length))); 
+        // if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryFTP.FoundNFiles",
+        // String.valueOf(filelist.length)));
+        if ( isDetailed() ) {
+          logDetailed( BaseMessages.getString( PKG, "JobEntryFTP.FoundNFiles", String.valueOf( ftpFiles.length ) ) );
+        }
 
         // set transfertype ...
-        if (binaryMode) {
-          ftpclient.setType(FTPTransferType.BINARY);
-          if (isDetailed())
-            logDetailed(BaseMessages.getString(PKG, "JobEntryFTP.SetBinary")); 
+        if ( binaryMode ) {
+          ftpclient.setType( FTPTransferType.BINARY );
+          if ( isDetailed() ) {
+            logDetailed( BaseMessages.getString( PKG, "JobEntryFTP.SetBinary" ) );
+          }
         } else {
-          ftpclient.setType(FTPTransferType.ASCII);
-          if (isDetailed())
-            logDetailed(BaseMessages.getString(PKG, "JobEntryFTP.SetAscii")); 
+          ftpclient.setType( FTPTransferType.ASCII );
+          if ( isDetailed() ) {
+            logDetailed( BaseMessages.getString( PKG, "JobEntryFTP.SetAscii" ) );
+          }
         }
 
         // Some FTP servers return a message saying no files found as a string in the filenlist
         // e.g. Solaris 8
         // CHECK THIS !!!
 
-        if (ftpFiles.length == 1) {
-          String translatedWildcard = environmentSubstitute(wildcard);
-          if (!Const.isEmpty(translatedWildcard)) {
-            if (ftpFiles[0].getName().startsWith(translatedWildcard)) {
-              throw new FTPException(ftpFiles[0].getName());
+        if ( ftpFiles.length == 1 ) {
+          String translatedWildcard = environmentSubstitute( wildcard );
+          if ( !Const.isEmpty( translatedWildcard ) ) {
+            if ( ftpFiles[0].getName().startsWith( translatedWildcard ) ) {
+              throw new FTPException( ftpFiles[0].getName() );
             }
           }
         }
 
         Pattern pattern = null;
-        if (!Const.isEmpty(wildcard)) {
-          String realWildcard = environmentSubstitute(wildcard);
-          pattern = Pattern.compile(realWildcard);
+        if ( !Const.isEmpty( wildcard ) ) {
+          String realWildcard = environmentSubstitute( wildcard );
+          pattern = Pattern.compile( realWildcard );
         }
 
-        if (!getSuccessCondition().equals(SUCCESS_IF_NO_ERRORS))
-          limitFiles = Const.toInt(environmentSubstitute(getLimit()), 10);
+        if ( !getSuccessCondition().equals( SUCCESS_IF_NO_ERRORS ) ) {
+          limitFiles = Const.toInt( environmentSubstitute( getLimit() ), 10 );
+        }
 
         // Get the files in the list...
-        for (FTPFile ftpFile : ftpFiles) {
+        for ( FTPFile ftpFile : ftpFiles ) {
 
-          if (parentJob.isStopped()) {
+          if ( parentJob.isStopped() ) {
             exitjobentry = true;
-            throw new Exception(BaseMessages.getString(PKG, "JobEntryFTP.JobStopped"));
+            throw new Exception( BaseMessages.getString( PKG, "JobEntryFTP.JobStopped" ) );
           }
 
-          if (successConditionBroken) {
-            throw new Exception(BaseMessages.getString(PKG, "JobEntryFTP.SuccesConditionBroken", "" + NrErrors));
+          if ( successConditionBroken ) {
+            throw new Exception( BaseMessages.getString( PKG, "JobEntryFTP.SuccesConditionBroken", "" + NrErrors ) );
           }
 
           boolean getIt = true;
 
           String filename = ftpFile.getName();
-          if (isDebug())
-            logDebug(BaseMessages.getString(PKG, "JobEntryFTP.AnalysingFile", filename));
+          if ( isDebug() ) {
+            logDebug( BaseMessages.getString( PKG, "JobEntryFTP.AnalysingFile", filename ) );
+          }
 
           // We get only files
-          if (ftpFile.isDir()) {
+          if ( ftpFile.isDir() ) {
             // not a file..so let's skip it!
             getIt = false;
-            if (isDebug())
-              logDebug(BaseMessages.getString(PKG, "JobEntryFTP.SkippingNotAFile", filename));
+            if ( isDebug() ) {
+              logDebug( BaseMessages.getString( PKG, "JobEntryFTP.SkippingNotAFile", filename ) );
+            }
           }
-          if (getIt) {
+          if ( getIt ) {
             try {
               // See if the file matches the regular expression!
-              if (pattern != null) {
-                Matcher matcher = pattern.matcher(filename);
+              if ( pattern != null ) {
+                Matcher matcher = pattern.matcher( filename );
                 getIt = matcher.matches();
               }
-              if (getIt)
-                downloadFile(ftpclient, filename, realMoveToFolder, parentJob, result);
-            } catch (Exception e) {
+              if ( getIt ) {
+                downloadFile( ftpclient, filename, realMoveToFolder, parentJob, result );
+              }
+            } catch ( Exception e ) {
               // Update errors number
               updateErrors();
-              logError(BaseMessages.getString(PKG, "JobFTP.UnexpectedError", e.toString()));
+              logError( BaseMessages.getString( PKG, "JobFTP.UnexpectedError", e.toString() ) );
             }
           }
         } // end for
       }
-    } catch (Exception e) {
-      if (!successConditionBroken && !exitjobentry)
+    } catch ( Exception e ) {
+      if ( !successConditionBroken && !exitjobentry ) {
         updateErrors();
-      logError(BaseMessages.getString(PKG, "JobEntryFTP.ErrorGetting", e.getMessage())); 
+      }
+      logError( BaseMessages.getString( PKG, "JobEntryFTP.ErrorGetting", e.getMessage() ) );
     } finally {
-      if (ftpclient != null) {
+      if ( ftpclient != null ) {
         try {
           ftpclient.quit();
-        } catch (Exception e) {
-          logError(BaseMessages.getString(PKG, "JobEntryFTP.ErrorQuitting", e.getMessage())); 
+        } catch ( Exception e ) {
+          logError( BaseMessages.getString( PKG, "JobEntryFTP.ErrorQuitting", e.getMessage() ) );
         }
       }
       FTPClient.clearSOCKS();
     }
 
-    result.setNrErrors(NrErrors);
-    result.setNrFilesRetrieved(NrfilesRetrieved);
-    if (getSuccessStatus())
-      result.setResult(true);
-    if (exitjobentry)
-      result.setResult(false);
+    result.setNrErrors( NrErrors );
+    result.setNrFilesRetrieved( NrfilesRetrieved );
+    if ( getSuccessStatus() ) {
+      result.setResult( true );
+    }
+    if ( exitjobentry ) {
+      result.setResult( false );
+    }
     displayResults();
     return result;
   }
 
-  private void downloadFile(FTPClient ftpclient, String filename, String realMoveToFolder, Job parentJob, Result result)
+  private void
+    downloadFile( FTPClient ftpclient, String filename, String realMoveToFolder, Job parentJob, Result result )
       throws Exception {
     String localFilename = filename;
-    targetFilename = returnTargetFilename(localFilename);
+    targetFilename = returnTargetFilename( localFilename );
 
-    if ((!onlyGettingNewFiles) || (onlyGettingNewFiles && needsDownload(targetFilename))) {
-      if (isDetailed())
-        logDetailed(BaseMessages.getString(PKG,
-            "JobEntryFTP.GettingFile", filename, environmentSubstitute(targetDirectory))); 
-      ftpclient.get(targetFilename, filename);
+    if ( ( !onlyGettingNewFiles ) || ( onlyGettingNewFiles && needsDownload( targetFilename ) ) ) {
+      if ( isDetailed() ) {
+        logDetailed( BaseMessages.getString( PKG, "JobEntryFTP.GettingFile", filename,
+            environmentSubstitute( targetDirectory ) ) );
+      }
+      ftpclient.get( targetFilename, filename );
 
       // Update retrieved files
       updateRetrievedFiles();
-      if (isDetailed())
-        logDetailed(BaseMessages.getString(PKG, "JobEntryFTP.GotFile", filename)); 
+      if ( isDetailed() ) {
+        logDetailed( BaseMessages.getString( PKG, "JobEntryFTP.GotFile", filename ) );
+      }
 
       // Add filename to result filenames
-      addFilenameToResultFilenames(result, parentJob, targetFilename);
+      addFilenameToResultFilenames( result, parentJob, targetFilename );
 
       // Delete the file if this is needed!
-      if (remove) {
-        ftpclient.delete(filename);
-        if (isDetailed())
-          if (isDetailed())
-            logDetailed(BaseMessages.getString(PKG, "JobEntryFTP.DeletedFile", filename)); 
+      if ( remove ) {
+        ftpclient.delete( filename );
+        if ( isDetailed() ) {
+          if ( isDetailed() ) {
+            logDetailed( BaseMessages.getString( PKG, "JobEntryFTP.DeletedFile", filename ) );
+          }
+        }
       } else {
-        if (movefiles) {
+        if ( movefiles ) {
           // Try to move file to destination folder ...
-          ftpclient.rename(filename, realMoveToFolder + FILE_SEPARATOR + filename);
+          ftpclient.rename( filename, realMoveToFolder + FILE_SEPARATOR + filename );
 
-          if (isDetailed())
-            logDetailed(BaseMessages.getString(PKG, "JobEntryFTP.MovedFile", filename, realMoveToFolder));
+          if ( isDetailed() ) {
+            logDetailed( BaseMessages.getString( PKG, "JobEntryFTP.MovedFile", filename, realMoveToFolder ) );
+          }
         }
       }
     }
   }
 
   /**
-  * normalize / to \ and remove trailing slashes from a path
-  * 
-  * @param path
-  * @return normalized path
-  * @throws Exception
-  */
-  public String normalizePath(String path) throws Exception {
+   * normalize / to \ and remove trailing slashes from a path
+   * 
+   * @param path
+   * @return normalized path
+   * @throws Exception
+   */
+  public String normalizePath( String path ) throws Exception {
 
-    String normalizedPath = path.replaceAll("\\\\", FILE_SEPARATOR);
-    while (normalizedPath.endsWith("\\") || normalizedPath.endsWith(FILE_SEPARATOR)) {
-      normalizedPath = normalizedPath.substring(0, normalizedPath.length() - 1);
+    String normalizedPath = path.replaceAll( "\\\\", FILE_SEPARATOR );
+    while ( normalizedPath.endsWith( "\\" ) || normalizedPath.endsWith( FILE_SEPARATOR ) ) {
+      normalizedPath = normalizedPath.substring( 0, normalizedPath.length() - 1 );
     }
 
     return normalizedPath;
   }
 
-  private void addFilenameToResultFilenames(Result result, Job parentJob, String filename) throws KettleException {
-    if (isaddresult) {
+  private void addFilenameToResultFilenames( Result result, Job parentJob, String filename ) throws KettleException {
+    if ( isaddresult ) {
       FileObject targetFile = null;
       try {
-        targetFile = KettleVFS.getFileObject(filename, this);
+        targetFile = KettleVFS.getFileObject( filename, this );
 
         // Add to the result files...
-        ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, targetFile, parentJob.getJobname(),
-            toString());
-        resultFile.setComment(BaseMessages.getString(PKG, "JobEntryFTP.Downloaded", serverName)); 
-        result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
+        ResultFile resultFile =
+            new ResultFile( ResultFile.FILE_TYPE_GENERAL, targetFile, parentJob.getJobname(), toString() );
+        resultFile.setComment( BaseMessages.getString( PKG, "JobEntryFTP.Downloaded", serverName ) );
+        result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
 
-        if (isDetailed())
-          logDetailed(BaseMessages.getString(PKG, "JobEntryFTP.FileAddedToResult", filename)); 
-      } catch (Exception e) {
-        throw new KettleException(e);
+        if ( isDetailed() ) {
+          logDetailed( BaseMessages.getString( PKG, "JobEntryFTP.FileAddedToResult", filename ) );
+        }
+      } catch ( Exception e ) {
+        throw new KettleException( e );
       } finally {
         try {
           targetFile.close();
           targetFile = null;
-        } catch (Exception e) {
+        } catch ( Exception e ) {
         }
       }
     }
   }
 
   private void displayResults() {
-    if (isDetailed()) {
-      logDetailed("=======================================");
-      logDetailed(BaseMessages.getString(PKG, "JobEntryFTP.Log.Info.FilesInError", "" + NrErrors));
-      logDetailed(BaseMessages.getString(PKG, "JobEntryFTP.Log.Info.FilesRetrieved", "" + NrfilesRetrieved));
-      logDetailed("=======================================");
+    if ( isDetailed() ) {
+      logDetailed( "=======================================" );
+      logDetailed( BaseMessages.getString( PKG, "JobEntryFTP.Log.Info.FilesInError", "" + NrErrors ) );
+      logDetailed( BaseMessages.getString( PKG, "JobEntryFTP.Log.Info.FilesRetrieved", "" + NrfilesRetrieved ) );
+      logDetailed( "=======================================" );
     }
   }
 
   private boolean getSuccessStatus() {
     boolean retval = false;
 
-    if ((NrErrors == 0 && getSuccessCondition().equals(SUCCESS_IF_NO_ERRORS))
-        || (NrfilesRetrieved >= limitFiles && getSuccessCondition().equals(SUCCESS_IF_AT_LEAST_X_FILES_DOWNLOADED))
-        || (NrErrors <= limitFiles && getSuccessCondition().equals(SUCCESS_IF_ERRORS_LESS))) {
+    if ( ( NrErrors == 0 && getSuccessCondition().equals( SUCCESS_IF_NO_ERRORS ) )
+        || ( NrfilesRetrieved >= limitFiles && getSuccessCondition().equals( SUCCESS_IF_AT_LEAST_X_FILES_DOWNLOADED ) )
+        || ( NrErrors <= limitFiles && getSuccessCondition().equals( SUCCESS_IF_ERRORS_LESS ) ) ) {
       retval = true;
     }
 
@@ -1213,7 +1270,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 
   private void updateErrors() {
     NrErrors++;
-    if (checkIfSuccessConditionBroken()) {
+    if ( checkIfSuccessConditionBroken() ) {
       // Success condition was broken
       successConditionBroken = true;
     }
@@ -1221,8 +1278,8 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 
   private boolean checkIfSuccessConditionBroken() {
     boolean retval = false;
-    if ((NrErrors > 0 && getSuccessCondition().equals(SUCCESS_IF_NO_ERRORS))
-        || (NrErrors >= limitFiles && getSuccessCondition().equals(SUCCESS_IF_ERRORS_LESS))) {
+    if ( ( NrErrors > 0 && getSuccessCondition().equals( SUCCESS_IF_NO_ERRORS ) )
+        || ( NrErrors >= limitFiles && getSuccessCondition().equals( SUCCESS_IF_ERRORS_LESS ) ) ) {
       retval = true;
     }
     return retval;
@@ -1233,51 +1290,56 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   /**
-   * @param string the filename from the FTP server
+   * @param string
+   *          the filename from the FTP server
    * 
    * @return the calculated target filename
    */
-  private String returnTargetFilename(String filename) {
+  private String returnTargetFilename( String filename ) {
     String retval = null;
     // Replace possible environment variables...
-    if (filename != null)
+    if ( filename != null ) {
       retval = filename;
-    else
+    } else {
       return null;
+    }
 
     int lenstring = retval.length();
-    int lastindexOfDot = retval.lastIndexOf(".");
-    if (lastindexOfDot == -1)
+    int lastindexOfDot = retval.lastIndexOf( "." );
+    if ( lastindexOfDot == -1 ) {
       lastindexOfDot = lenstring;
+    }
 
-    if (isAddDateBeforeExtension())
-      retval = retval.substring(0, lastindexOfDot);
+    if ( isAddDateBeforeExtension() ) {
+      retval = retval.substring( 0, lastindexOfDot );
+    }
 
     SimpleDateFormat daf = new SimpleDateFormat();
     Date now = new Date();
 
-    if (SpecifyFormat && !Const.isEmpty(date_time_format)) {
-      daf.applyPattern(date_time_format);
-      String dt = daf.format(now);
+    if ( SpecifyFormat && !Const.isEmpty( date_time_format ) ) {
+      daf.applyPattern( date_time_format );
+      String dt = daf.format( now );
       retval += dt;
     } else {
-      if (adddate) {
-        daf.applyPattern("yyyyMMdd");
-        String d = daf.format(now);
+      if ( adddate ) {
+        daf.applyPattern( "yyyyMMdd" );
+        String d = daf.format( now );
         retval += "_" + d;
       }
-      if (addtime) {
-        daf.applyPattern("HHmmssSSS");
-        String t = daf.format(now);
+      if ( addtime ) {
+        daf.applyPattern( "HHmmssSSS" );
+        String t = daf.format( now );
         retval += "_" + t;
       }
     }
 
-    if (isAddDateBeforeExtension())
-      retval += retval.substring(lastindexOfDot, lenstring);
+    if ( isAddDateBeforeExtension() ) {
+      retval += retval.substring( lastindexOfDot, lenstring );
+    }
 
-    // Add foldername to filename		
-    retval = environmentSubstitute(targetDirectory) + Const.FILE_SEPARATOR + retval;
+    // Add foldername to filename
+    retval = environmentSubstitute( targetDirectory ) + Const.FILE_SEPARATOR + retval;
     return retval;
   }
 
@@ -1286,47 +1348,53 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   /**
-   * See if the filename on the FTP server needs downloading.
-   * The default is to check the presence of the file in the target directory.
-   * If you need other functionality, extend this class and build it into a plugin.
+   * See if the filename on the FTP server needs downloading. The default is to check the presence of the file in the
+   * target directory. If you need other functionality, extend this class and build it into a plugin.
    * 
-   * @param filename The local filename to check
-   * @param remoteFileSize The size of the remote file
+   * @param filename
+   *          The local filename to check
+   * @param remoteFileSize
+   *          The size of the remote file
    * @return true if the file needs downloading
    */
-  protected boolean needsDownload(String filename) {
+  protected boolean needsDownload( String filename ) {
     boolean retval = false;
 
-    File file = new File(filename);
+    File file = new File( filename );
 
-    if (!file.exists()) {
+    if ( !file.exists() ) {
       // Local file not exists!
-      if (isDebug())
-        logDebug(BaseMessages.getString(PKG, "JobEntryFTP.LocalFileNotExists"), filename);
+      if ( isDebug() ) {
+        logDebug( BaseMessages.getString( PKG, "JobEntryFTP.LocalFileNotExists" ), filename );
+      }
       return true;
     } else {
 
       // Local file exists!
-      if (ifFileExists == ifFileExistsCreateUniq) {
-        if (isDebug())
-          logDebug(toString(), BaseMessages.getString(PKG, "JobEntryFTP.LocalFileExists"), filename);
-        // Create file with unique name
+      if ( ifFileExists == ifFileExistsCreateUniq ) {
+        if ( isDebug() ) {
+          logDebug( toString(), BaseMessages.getString( PKG, "JobEntryFTP.LocalFileExists" ), filename );
+          // Create file with unique name
+        }
 
         int lenstring = targetFilename.length();
-        int lastindexOfDot = targetFilename.lastIndexOf('.');
-        if (lastindexOfDot == -1)
+        int lastindexOfDot = targetFilename.lastIndexOf( '.' );
+        if ( lastindexOfDot == -1 ) {
           lastindexOfDot = lenstring;
+        }
 
-        targetFilename = targetFilename.substring(0, lastindexOfDot) + StringUtil.getFormattedDateTimeNow(true)
-            + targetFilename.substring(lastindexOfDot, lenstring);
+        targetFilename =
+            targetFilename.substring( 0, lastindexOfDot ) + StringUtil.getFormattedDateTimeNow( true )
+                + targetFilename.substring( lastindexOfDot, lenstring );
 
         return true;
-      } else if (ifFileExists == ifFileExistsFail) {
-        log.logError(BaseMessages.getString(PKG, "JobEntryFTP.LocalFileExists"), filename);
+      } else if ( ifFileExists == ifFileExistsFail ) {
+        log.logError( BaseMessages.getString( PKG, "JobEntryFTP.LocalFileExists" ), filename );
         updateErrors();
       } else {
-        if (isDebug())
-          logDebug(toString(), BaseMessages.getString(PKG, "JobEntryFTP.LocalFileExists"), filename);
+        if ( isDebug() ) {
+          logDebug( toString(), BaseMessages.getString( PKG, "JobEntryFTP.LocalFileExists" ), filename );
+        }
       }
     }
 
@@ -1341,86 +1409,88 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   /**
-   * @param activeConnection the activeConnection to set
+   * @param activeConnection
+   *          the activeConnection to set
    */
-  public void setActiveConnection(boolean passive) {
+  public void setActiveConnection( boolean passive ) {
     this.activeConnection = passive;
   }
 
-  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore) {
-    andValidator().validate(this, "serverName", remarks, putValidators(notBlankValidator())); 
-    andValidator()
-        .validate(this, "targetDirectory", remarks, putValidators(notBlankValidator(), fileExistsValidator())); 
-    andValidator().validate(this, "userName", remarks, putValidators(notBlankValidator())); 
-    andValidator().validate(this, "password", remarks, putValidators(notNullValidator())); 
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
+      IMetaStore metaStore ) {
+    andValidator().validate( this, "serverName", remarks, putValidators( notBlankValidator() ) );
+    andValidator().validate( this, "targetDirectory", remarks,
+        putValidators( notBlankValidator(), fileExistsValidator() ) );
+    andValidator().validate( this, "userName", remarks, putValidators( notBlankValidator() ) );
+    andValidator().validate( this, "password", remarks, putValidators( notNullValidator() ) );
   }
 
-  public List<ResourceReference> getResourceDependencies(JobMeta jobMeta) {
-    List<ResourceReference> references = super.getResourceDependencies(jobMeta);
-    if (!Const.isEmpty(serverName)) {
-      String realServername = jobMeta.environmentSubstitute(serverName);
-      ResourceReference reference = new ResourceReference(this);
-      reference.getEntries().add(new ResourceEntry(realServername, ResourceType.SERVER));
-      references.add(reference);
+  public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {
+    List<ResourceReference> references = super.getResourceDependencies( jobMeta );
+    if ( !Const.isEmpty( serverName ) ) {
+      String realServername = jobMeta.environmentSubstitute( serverName );
+      ResourceReference reference = new ResourceReference( this );
+      reference.getEntries().add( new ResourceEntry( realServername, ResourceType.SERVER ) );
+      references.add( reference );
     }
     return references;
   }
 
   /**
-   * Hook in known parsers, and then those that have been specified in the variable
-   * ftp.file.parser.class.names
+   * Hook in known parsers, and then those that have been specified in the variable ftp.file.parser.class.names
+   * 
    * @param ftpClient
    * @throws FTPException
    * @throws IOException
    */
-  protected void hookInOtherParsers(FTPClient ftpClient) throws FTPException, IOException {
-    if (log.isDebug()) {
-      logDebug(BaseMessages.getString(PKG, "JobEntryFTP.DEBUG.Hooking.Parsers"));
+  protected void hookInOtherParsers( FTPClient ftpClient ) throws FTPException, IOException {
+    if ( log.isDebug() ) {
+      logDebug( BaseMessages.getString( PKG, "JobEntryFTP.DEBUG.Hooking.Parsers" ) );
     }
     String system = ftpClient.system();
-    MVSFileParser parser = new MVSFileParser(log);
-    if (log.isDebug()) {
-      logDebug(BaseMessages.getString(PKG, "JobEntryFTP.DEBUG.Created.MVS.Parser"));
+    MVSFileParser parser = new MVSFileParser( log );
+    if ( log.isDebug() ) {
+      logDebug( BaseMessages.getString( PKG, "JobEntryFTP.DEBUG.Created.MVS.Parser" ) );
     }
-    FTPFileFactory factory = new FTPFileFactory(system);
-    if (log.isDebug()) {
-      logDebug(BaseMessages.getString(PKG, "JobEntryFTP.DEBUG.Created.Factory"));
+    FTPFileFactory factory = new FTPFileFactory( system );
+    if ( log.isDebug() ) {
+      logDebug( BaseMessages.getString( PKG, "JobEntryFTP.DEBUG.Created.Factory" ) );
     }
-    factory.addParser(parser);
-    ftpClient.setFTPFileFactory(factory);
-    if (log.isDebug()) {
-      logDebug(BaseMessages.getString(PKG, "JobEntryFTP.DEBUG.Get.Variable.Space"));
+    factory.addParser( parser );
+    ftpClient.setFTPFileFactory( factory );
+    if ( log.isDebug() ) {
+      logDebug( BaseMessages.getString( PKG, "JobEntryFTP.DEBUG.Get.Variable.Space" ) );
     }
     VariableSpace vs = this.getVariables();
-    if (vs != null) {
-      if (log.isDebug()) {
-        logDebug(BaseMessages.getString(PKG, "JobEntryFTP.DEBUG.Getting.Other.Parsers"));
+    if ( vs != null ) {
+      if ( log.isDebug() ) {
+        logDebug( BaseMessages.getString( PKG, "JobEntryFTP.DEBUG.Getting.Other.Parsers" ) );
       }
-      String otherParserNames = vs.getVariable("ftp.file.parser.class.names");
-      if (otherParserNames != null) {
-        if (log.isDebug()) {
-          logDebug(BaseMessages.getString(PKG, "JobEntryFTP.DEBUG.Creating.Parsers"));
+      String otherParserNames = vs.getVariable( "ftp.file.parser.class.names" );
+      if ( otherParserNames != null ) {
+        if ( log.isDebug() ) {
+          logDebug( BaseMessages.getString( PKG, "JobEntryFTP.DEBUG.Creating.Parsers" ) );
         }
-        String[] parserClasses = otherParserNames.split("|");
+        String[] parserClasses = otherParserNames.split( "|" );
         String cName = null;
         Class<?> clazz = null;
         Object parserInstance = null;
-        for (int i = 0; i < parserClasses.length; i++) {
+        for ( int i = 0; i < parserClasses.length; i++ ) {
           cName = parserClasses[i].trim();
-          if (cName.length() > 0) {
+          if ( cName.length() > 0 ) {
             try {
-              clazz = Class.forName(cName);
+              clazz = Class.forName( cName );
               parserInstance = clazz.newInstance();
-              if (parserInstance instanceof FTPFileParser) {
-                if (log.isDetailed()) {
-                  logDetailed(BaseMessages.getString(PKG, "JobEntryFTP.DEBUG.Created.Other.Parser", cName));
+              if ( parserInstance instanceof FTPFileParser ) {
+                if ( log.isDetailed() ) {
+                  logDetailed( BaseMessages.getString( PKG, "JobEntryFTP.DEBUG.Created.Other.Parser", cName ) );
                 }
-                factory.addParser((FTPFileParser) parserInstance);
+                factory.addParser( (FTPFileParser) parserInstance );
               }
-            } catch (Exception ignored) {
-              if (log.isDebug()) {
+            } catch ( Exception ignored ) {
+              if ( log.isDebug() ) {
                 ignored.printStackTrace();
-                logError(BaseMessages.getString(PKG, "JobEntryFTP.ERROR.Creating.Parser", cName));
+                logError( BaseMessages.getString( PKG, "JobEntryFTP.ERROR.Creating.Parser", cName ) );
               }
             }
           }

@@ -1,27 +1,26 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.trans.steps.randomccnumber;
-
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -36,7 +35,6 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
-
 /**
  * Generate random credit card number.
  * 
@@ -44,121 +42,126 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * @since 01-4-2010
  */
 public class RandomCCNumberGenerator extends BaseStep implements StepInterface {
-	private static Class<?> PKG = RandomCCNumberGeneratorMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  private static Class<?> PKG = RandomCCNumberGeneratorMeta.class; // for i18n purposes, needed by Translator2!!
+                                                                   // $NON-NLS-1$
 
-	private RandomCCNumberGeneratorMeta meta;
+  private RandomCCNumberGeneratorMeta meta;
 
-	private RandomCCNumberGeneratorData data;
+  private RandomCCNumberGeneratorData data;
 
-	public RandomCCNumberGenerator(StepMeta stepMeta, StepDataInterface stepDataInterface,
-			int copyNr, TransMeta transMeta, Trans trans) {
-		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
-	}
-	
-	/**
-	 * Build an empty row based on the meta-data...
-	 * 
-	 * @return
-	 */
+  public RandomCCNumberGenerator( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+      TransMeta transMeta, Trans trans ) {
+    super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
+  }
 
-	private Object[] buildEmptyRow()
-	{
-        Object[] rowData = RowDataUtil.allocateRowData(data.outputRowMeta.size());
- 
-		 return rowData;
-	}
+  /**
+   * Build an empty row based on the meta-data...
+   * 
+   * @return
+   */
 
-	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException {
-		
-		if (first) {
-			first = false;
-			data.outputRowMeta = new RowMeta();
-			meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
-		}
-		for(int i=0; i< data.cardTypes.length && !isStopped(); i++) {
-			
-			// Return card numbers
-			String[] cardNumber = RandomCreditCardNumberGenerator.GenerateCreditCardNumbers(data.cardTypes[i], data.cardLen[i],  data.cardSize[i]);
-			
-			for(int j=0; j<cardNumber.length && !isStopped(); j++) {
-				// Create a new row
-				Object[] row = buildEmptyRow();
-				incrementLinesRead();
+  private Object[] buildEmptyRow() {
+    Object[] rowData = RowDataUtil.allocateRowData( data.outputRowMeta.size() );
 
-				int index=0;
-				// add card number
-				row[index++]=cardNumber[j];
-			
-				if(data.addCardTypeOutput) {
-					// add card type
-					row[index++]=meta.getFieldCCType()[i];
-				}
+    return rowData;
+  }
 
-				if(data.addCardLengthOutput) {
-					// add card len
-					row[index++]= new Long(data.cardLen[i]);
-				}
-				if (isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "RandomCCNumberGenerator.Log.ValueReturned",data.outputRowMeta.getString(row)));
-				
-				putRow(data.outputRowMeta, row); 
-			}
-		}
+  public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
 
-		setOutputDone();
-		return false;
-	}
+    if ( first ) {
+      first = false;
+      data.outputRowMeta = new RowMeta();
+      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+    }
+    for ( int i = 0; i < data.cardTypes.length && !isStopped(); i++ ) {
 
-	public boolean init(StepMetaInterface smi, StepDataInterface sdi) {
-		meta = (RandomCCNumberGeneratorMeta) smi;
-		data = (RandomCCNumberGeneratorData) sdi;
+      // Return card numbers
+      String[] cardNumber =
+          RandomCreditCardNumberGenerator.GenerateCreditCardNumbers( data.cardTypes[i], data.cardLen[i],
+              data.cardSize[i] );
 
-		if (super.init(smi, sdi)) {
-			// Add init code here.
-			
-			if(meta.getFieldCCType()==null) {
-				logError(BaseMessages.getString(PKG, "RandomCCNumberGenerator.Log.NoFieldSpecified"));
-				return false;
-			}
-			if(meta.getFieldCCType().length==0) {
-				logError(BaseMessages.getString(PKG, "RandomCCNumberGenerator.Log.NoFieldSpecified"));
-				return false;
-			}	
-			
-			if(Const.isEmpty(meta.getCardNumberFieldName())) {
-				logError(BaseMessages.getString(PKG, "RandomCCNumberGenerator.Log.CardNumberFieldMissing"));
-				return false;
-			}
-			
-			data.cardTypes = new int[meta.getFieldCCType().length];
-			data.cardLen = new int[meta.getFieldCCType().length];
-			data.cardSize = new int[meta.getFieldCCType().length];
-			
-			for(int i=0; i<meta.getFieldCCType().length; i++) {
-				data.cardTypes[i] = RandomCreditCardNumberGenerator.getCardType(meta.getFieldCCType()[i]);
-				String len= environmentSubstitute(meta.getFieldCCLength()[i]);
-				data.cardLen[i] = Const.toInt(len, -1);
-				if(data.cardLen[i]<0) {
-					logError(BaseMessages.getString(PKG, "RandomCCNumberGenerator.Log.WrongLength", len, String.valueOf(i)));
-					return false;
-				}
-				String size= environmentSubstitute(meta.getFieldCCSize()[i]);
-				data.cardSize[i] = Const.toInt(size, -1);
-				if(data.cardSize[i]<0) {
-					logError(BaseMessages.getString(PKG, "RandomCCNumberGenerator.Log.WrongSize", size, String.valueOf(i)));
-					return false;
-				}
-			}
-		
-			data.addCardTypeOutput= !Const.isEmpty(meta.getCardTypeFieldName());
-			data.addCardLengthOutput= !Const.isEmpty(meta.getCardLengthFieldName());
-			
-			return true;
-		}
-		return false;
-	}
+      for ( int j = 0; j < cardNumber.length && !isStopped(); j++ ) {
+        // Create a new row
+        Object[] row = buildEmptyRow();
+        incrementLinesRead();
 
-	public void dispose(StepMetaInterface smi, StepDataInterface sdi) {
-		super.dispose(smi, sdi);
-	}
+        int index = 0;
+        // add card number
+        row[index++] = cardNumber[j];
+
+        if ( data.addCardTypeOutput ) {
+          // add card type
+          row[index++] = meta.getFieldCCType()[i];
+        }
+
+        if ( data.addCardLengthOutput ) {
+          // add card len
+          row[index++] = new Long( data.cardLen[i] );
+        }
+        if ( isRowLevel() ) {
+          logRowlevel( BaseMessages.getString( PKG, "RandomCCNumberGenerator.Log.ValueReturned", data.outputRowMeta
+              .getString( row ) ) );
+        }
+
+        putRow( data.outputRowMeta, row );
+      }
+    }
+
+    setOutputDone();
+    return false;
+  }
+
+  public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
+    meta = (RandomCCNumberGeneratorMeta) smi;
+    data = (RandomCCNumberGeneratorData) sdi;
+
+    if ( super.init( smi, sdi ) ) {
+      // Add init code here.
+
+      if ( meta.getFieldCCType() == null ) {
+        logError( BaseMessages.getString( PKG, "RandomCCNumberGenerator.Log.NoFieldSpecified" ) );
+        return false;
+      }
+      if ( meta.getFieldCCType().length == 0 ) {
+        logError( BaseMessages.getString( PKG, "RandomCCNumberGenerator.Log.NoFieldSpecified" ) );
+        return false;
+      }
+
+      if ( Const.isEmpty( meta.getCardNumberFieldName() ) ) {
+        logError( BaseMessages.getString( PKG, "RandomCCNumberGenerator.Log.CardNumberFieldMissing" ) );
+        return false;
+      }
+
+      data.cardTypes = new int[meta.getFieldCCType().length];
+      data.cardLen = new int[meta.getFieldCCType().length];
+      data.cardSize = new int[meta.getFieldCCType().length];
+
+      for ( int i = 0; i < meta.getFieldCCType().length; i++ ) {
+        data.cardTypes[i] = RandomCreditCardNumberGenerator.getCardType( meta.getFieldCCType()[i] );
+        String len = environmentSubstitute( meta.getFieldCCLength()[i] );
+        data.cardLen[i] = Const.toInt( len, -1 );
+        if ( data.cardLen[i] < 0 ) {
+          logError( BaseMessages.getString( PKG, "RandomCCNumberGenerator.Log.WrongLength", len, String.valueOf( i ) ) );
+          return false;
+        }
+        String size = environmentSubstitute( meta.getFieldCCSize()[i] );
+        data.cardSize[i] = Const.toInt( size, -1 );
+        if ( data.cardSize[i] < 0 ) {
+          logError( BaseMessages.getString( PKG, "RandomCCNumberGenerator.Log.WrongSize", size, String.valueOf( i ) ) );
+          return false;
+        }
+      }
+
+      data.addCardTypeOutput = !Const.isEmpty( meta.getCardTypeFieldName() );
+      data.addCardLengthOutput = !Const.isEmpty( meta.getCardLengthFieldName() );
+
+      return true;
+    }
+    return false;
+  }
+
+  public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
+    super.dispose( smi, sdi );
+  }
 
 }

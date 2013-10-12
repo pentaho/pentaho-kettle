@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.repository;
 
@@ -29,57 +29,57 @@ import org.pentaho.di.core.exception.KettleException;
 import org.w3c.dom.Node;
 
 public interface RepositoryMeta {
-	
-	public static final String XML_TAG = "repository";
 
-	public abstract String getDialogClassName();
+  public static final String XML_TAG = "repository";
 
-	public abstract String getRevisionBrowserDialogClassName();
+  public abstract String getDialogClassName();
 
-	public abstract void loadXML(Node repnode, List<DatabaseMeta> databases) throws KettleException;
+  public abstract String getRevisionBrowserDialogClassName();
 
-	public abstract String getXML();
+  public abstract void loadXML( Node repnode, List<DatabaseMeta> databases ) throws KettleException;
 
-	/**
-	 * @return the id
-	 */
-	public abstract String getId();
+  public abstract String getXML();
 
-	/**
-	 * @param id
-	 *            the id to set
-	 */
-	public abstract void setId(String id);
+  /**
+   * @return the id
+   */
+  public abstract String getId();
 
-	/**
-	 * @return the name
-	 */
-	public abstract String getName();
+  /**
+   * @param id
+   *          the id to set
+   */
+  public abstract void setId( String id );
 
-	/**
-	 * @param name
-	 *            the name to set
-	 */
-	public abstract void setName(String name);
+  /**
+   * @return the name
+   */
+  public abstract String getName();
 
-	/**
-	 * @return the description
-	 */
-	public abstract String getDescription();
+  /**
+   * @param name
+   *          the name to set
+   */
+  public abstract void setName( String name );
 
-	/**
-	 * @param description
-	 *            the description to set
-	 */
-	public abstract void setDescription(String description);
-	
-	
-	/**
-	 * Describes the capabilities of the repository 
-	 * @return The repository capabilities object
-	 */
-	public RepositoryCapabilities getRepositoryCapabilities();
+  /**
+   * @return the description
+   */
+  public abstract String getDescription();
 
-	public RepositoryMeta clone();
+  /**
+   * @param description
+   *          the description to set
+   */
+  public abstract void setDescription( String description );
+
+  /**
+   * Describes the capabilities of the repository
+   * 
+   * @return The repository capabilities object
+   */
+  public RepositoryCapabilities getRepositoryCapabilities();
+
+  public RepositoryMeta clone();
 
 }

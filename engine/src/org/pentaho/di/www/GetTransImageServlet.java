@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.www;
 
@@ -50,79 +50,80 @@ public class GetTransImageServlet extends BaseHttpServlet implements CartePlugin
   private static Class<?> PKG = GetTransImageServlet.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
   public static final String CONTEXT_PATH = "/kettle/transImage";
-  
-  public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    if (isJettyMode() && !request.getContextPath().startsWith(CONTEXT_PATH)) {
+
+  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+    if ( isJettyMode() && !request.getContextPath().startsWith( CONTEXT_PATH ) ) {
       return;
     }
 
-    if (log.isDebug())
-      logDebug(BaseMessages.getString(PKG, "GetTransImageServlet.Log.TransImageRequested"));
+    if ( log.isDebug() ) {
+      logDebug( BaseMessages.getString( PKG, "GetTransImageServlet.Log.TransImageRequested" ) );
+    }
 
-    String transName = request.getParameter("name");
-    String id = request.getParameter("id");
+    String transName = request.getParameter( "name" );
+    String id = request.getParameter( "id" );
 
     // ID is optional...
     //
     Trans trans;
     CarteObjectEntry entry;
-    if (Const.isEmpty(id)) {
+    if ( Const.isEmpty( id ) ) {
       // get the first transformation that matches...
       //
-      entry = getTransformationMap().getFirstCarteObjectEntry(transName);
-      if (entry==null) {
+      entry = getTransformationMap().getFirstCarteObjectEntry( transName );
+      if ( entry == null ) {
         trans = null;
       } else {
         id = entry.getId();
-        trans = getTransformationMap().getTransformation(entry);
+        trans = getTransformationMap().getTransformation( entry );
       }
     } else {
       // Take the ID into account!
       //
-      entry = new CarteObjectEntry(transName, id);
-      trans = getTransformationMap().getTransformation(entry);
+      entry = new CarteObjectEntry( transName, id );
+      trans = getTransformationMap().getTransformation( entry );
     }
-    
+
     try {
-      if (trans != null) {
-  
-        response.setStatus(HttpServletResponse.SC_OK);
-  
-        response.setCharacterEncoding("UTF-8");
-        response.setContentType("image/png");
-        
-  
+      if ( trans != null ) {
+
+        response.setStatus( HttpServletResponse.SC_OK );
+
+        response.setCharacterEncoding( "UTF-8" );
+        response.setContentType( "image/png" );
+
         // Generate xform image
         //
-        BufferedImage image = generateTransformationImage(trans.getTransMeta());
+        BufferedImage image = generateTransformationImage( trans.getTransMeta() );
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         try {
-          ImageIO.write(image, "png", os);
+          ImageIO.write( image, "png", os );
         } finally {
           os.flush();
         }
-        response.setContentLength(os.size());
-        
+        response.setContentLength( os.size() );
+
         OutputStream out = response.getOutputStream();
-        out.write(os.toByteArray());
-        
+        out.write( os.toByteArray() );
+
       }
-    } catch( Exception e) {
+    } catch ( Exception e ) {
       e.printStackTrace();
     }
   }
 
-  private BufferedImage generateTransformationImage(TransMeta transMeta) throws Exception {
+  private BufferedImage generateTransformationImage( TransMeta transMeta ) throws Exception {
     float magnification = 1.0f;
     Point maximum = transMeta.getMaximum();
-    maximum.multiply(magnification);
-    
-    SwingGC gc = new SwingGC(null, maximum, 32, 0, 0);
-    TransPainter transPainter = new TransPainter(gc, transMeta, maximum, null, null, 
-        null, null, null, new ArrayList<AreaOwner>(), new ArrayList<StepMeta>(), 32, 1, 0, 0, true, "Arial", 10);
-    transPainter.setMagnification(magnification);
+    maximum.multiply( magnification );
+
+    SwingGC gc = new SwingGC( null, maximum, 32, 0, 0 );
+    TransPainter transPainter =
+        new TransPainter( gc, transMeta, maximum, null, null, null, null, null, new ArrayList<AreaOwner>(),
+            new ArrayList<StepMeta>(), 32, 1, 0, 0, true, "Arial", 10 );
+    transPainter.setMagnification( magnification );
     transPainter.buildTransformationImage();
-    
+
     BufferedImage image = (BufferedImage) gc.getImage();
 
     return image;
@@ -135,7 +136,7 @@ public class GetTransImageServlet extends BaseHttpServlet implements CartePlugin
   public String getService() {
     return CONTEXT_PATH + " (" + toString() + ")";
   }
-  
+
   public String getContextPath() {
     return CONTEXT_PATH;
   }

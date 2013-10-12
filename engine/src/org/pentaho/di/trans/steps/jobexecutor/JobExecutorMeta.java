@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.trans.steps.jobexecutor;
 
@@ -82,28 +82,31 @@ import org.w3c.dom.Node;
  */
 
 public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, HasRepositoryInterface {
-  private static Class<?>                   PKG = JobExecutorMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
-  private String                            jobName;
-  private String                            fileName;
-  private String                            directoryPath;
-  private ObjectId                          jobObjectId;
+  private static Class<?> PKG = JobExecutorMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private String jobName;
+  private String fileName;
+  private String directoryPath;
+  private ObjectId jobObjectId;
   private ObjectLocationSpecificationMethod specificationMethod;
 
   /** The number of input rows that are sent as result rows to the job in one go, defaults to "1" */
   private String groupSize;
-  
+
   /** Optional name of a field to group rows together that are sent together to the job as result rows (empty default) */
   private String groupField;
-  
-  /** Optional time in ms that is spent waiting and accumulating rows before they are given to the job as result rows (empty default, "0") */
-  private String groupTime;
-  
-  private JobExecutorParameters                 parameters;
 
-  private String   executionResultTargetStep;
+  /**
+   * Optional time in ms that is spent waiting and accumulating rows before they are given to the job as result rows
+   * (empty default, "0")
+   */
+  private String groupTime;
+
+  private JobExecutorParameters parameters;
+
+  private String executionResultTargetStep;
   private StepMeta executionResultTargetStepMeta;
 
-  /** The optional name of the output field that will contain the execution time of the job in (Integer in ms) */ 
+  /** The optional name of the output field that will contain the execution time of the job in (Integer in ms) */
   private String executionTimeField;
 
   /** The optional name of the output field that will contain the execution result (Boolean) */
@@ -117,16 +120,16 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
 
   /** The optional name of the output field that will contain the number of rows written (Integer) */
   private String executionLinesWrittenField;
-  
+
   /** The optional name of the output field that will contain the number of rows input (Integer) */
   private String executionLinesInputField;
-  
+
   /** The optional name of the output field that will contain the number of rows output (Integer) */
   private String executionLinesOutputField;
-  
+
   /** The optional name of the output field that will contain the number of rows rejected (Integer) */
   private String executionLinesRejectedField;
-  
+
   /** The optional name of the output field that will contain the number of rows updated (Integer) */
   private String executionLinesUpdatedField;
 
@@ -136,7 +139,9 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   /** The optional name of the output field that will contain the number of files retrieved (Integer) */
   private String executionFilesRetrievedField;
 
-  /** The optional name of the output field that will contain the exit status of the last executed shell script (Integer) */
+  /**
+   * The optional name of the output field that will contain the exit status of the last executed shell script (Integer)
+   */
   private String executionExitStatusField;
 
   /** The optional name of the output field that will contain the log text of the job execution (String) */
@@ -146,23 +151,23 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   private String executionLogChannelIdField;
 
   /** The optional step to send the result rows to */
-  private String   resultRowsTargetStep;
+  private String resultRowsTargetStep;
   private StepMeta resultRowsTargetStepMeta;
   private String[] resultRowsField;
-  private int[]    resultRowsType;
-  private int[]    resultRowsLength;
-  private int[]    resultRowsPrecision;
-  
+  private int[] resultRowsType;
+  private int[] resultRowsLength;
+  private int[] resultRowsPrecision;
+
   /** The optional step to send the result files to */
-  private String  resultFilesTargetStep;
+  private String resultFilesTargetStep;
   private StepMeta resultFilesTargetStepMeta;
-  private String  resultFilesFileNameField;
-  
+  private String resultFilesFileNameField;
+
   /**
-   * This repository object is injected from the outside at runtime or at design
-   * time. It comes from either Spoon or Trans
+   * This repository object is injected from the outside at runtime or at design time. It comes from either Spoon or
+   * Trans
    */
-  private Repository                        repository;
+  private Repository repository;
   private IMetaStore metaStore;
 
   public JobExecutorMeta() {
@@ -172,332 +177,360 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
     resultRowsField = new String[0];
   }
 
-
   public Object clone() {
     Object retval = super.clone();
     return retval;
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer(300);
+    StringBuffer retval = new StringBuffer( 300 );
 
-    retval.append("    ").append(XMLHandler.addTagValue("specification_method", specificationMethod == null ? null : specificationMethod.getCode()));
-    retval.append("    ").append(XMLHandler.addTagValue("job_object_id", jobObjectId == null ? null : jobObjectId.toString()));
-    // Export a little bit of extra information regarding the reference since it doesn't really matter outside the same repository.
+    retval.append( "    " ).append(
+        XMLHandler.addTagValue( "specification_method", specificationMethod == null ? null : specificationMethod
+            .getCode() ) );
+    retval.append( "    " ).append(
+        XMLHandler.addTagValue( "job_object_id", jobObjectId == null ? null : jobObjectId.toString() ) );
+    // Export a little bit of extra information regarding the reference since it doesn't really matter outside the same
+    // repository.
     //
-    if (repository!=null && jobObjectId!=null) {
+    if ( repository != null && jobObjectId != null ) {
       try {
-        RepositoryObject objectInformation = repository.getObjectInformation(jobObjectId, RepositoryObjectType.TRANSFORMATION);
-        if (objectInformation!=null) {
+        RepositoryObject objectInformation =
+            repository.getObjectInformation( jobObjectId, RepositoryObjectType.TRANSFORMATION );
+        if ( objectInformation != null ) {
           jobName = objectInformation.getName();
           directoryPath = objectInformation.getRepositoryDirectory().getPath();
         }
-      } catch(KettleException e) {
-        // Ignore object reference problems.  It simply means that the reference is no longer valid.
+      } catch ( KettleException e ) {
+        // Ignore object reference problems. It simply means that the reference is no longer valid.
       }
     }
-    retval.append("    ").append(XMLHandler.addTagValue("job_name", jobName)); 
-    retval.append("    ").append(XMLHandler.addTagValue("filename", fileName)); 
-    retval.append("    ").append(XMLHandler.addTagValue("directory_path", directoryPath)); 
+    retval.append( "    " ).append( XMLHandler.addTagValue( "job_name", jobName ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "filename", fileName ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "directory_path", directoryPath ) );
 
-    retval.append("    ").append(XMLHandler.addTagValue("group_size", groupSize)); 
-    retval.append("    ").append(XMLHandler.addTagValue("group_field", groupField)); 
-    retval.append("    ").append(XMLHandler.addTagValue("group_time", groupTime)); 
+    retval.append( "    " ).append( XMLHandler.addTagValue( "group_size", groupSize ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "group_field", groupField ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "group_time", groupTime ) );
 
     // Add the mapping parameters too
     //
-    retval.append("      ").append(parameters.getXML()).append(Const.CR); 
+    retval.append( "      " ).append( parameters.getXML() ).append( Const.CR );
 
     // The output side...
     //
-    retval.append("    ").append(XMLHandler.addTagValue("execution_result_target_step", executionResultTargetStepMeta==null ? null : executionResultTargetStepMeta.getName()));  
-    retval.append("    ").append(XMLHandler.addTagValue("execution_time_field", executionTimeField));  
-    retval.append("    ").append(XMLHandler.addTagValue("execution_result_field", executionResultField));  
-    retval.append("    ").append(XMLHandler.addTagValue("execution_errors_field", executionNrErrorsField));  
-    retval.append("    ").append(XMLHandler.addTagValue("execution_lines_read_field", executionLinesReadField));  
-    retval.append("    ").append(XMLHandler.addTagValue("execution_lines_written_field", executionLinesWrittenField));  
-    retval.append("    ").append(XMLHandler.addTagValue("execution_lines_input_field", executionLinesInputField));  
-    retval.append("    ").append(XMLHandler.addTagValue("execution_lines_output_field", executionLinesOutputField));  
-    retval.append("    ").append(XMLHandler.addTagValue("execution_lines_rejected_field", executionLinesRejectedField));  
-    retval.append("    ").append(XMLHandler.addTagValue("execution_lines_updated_field", executionLinesUpdatedField));  
-    retval.append("    ").append(XMLHandler.addTagValue("execution_lines_deleted_field", executionLinesDeletedField));  
-    retval.append("    ").append(XMLHandler.addTagValue("execution_files_retrieved_field", executionFilesRetrievedField));  
-    retval.append("    ").append(XMLHandler.addTagValue("execution_exit_status_field", executionExitStatusField));  
-    retval.append("    ").append(XMLHandler.addTagValue("execution_log_text_field", executionLogTextField));  
-    retval.append("    ").append(XMLHandler.addTagValue("execution_log_channelid_field", executionLogChannelIdField));  
-    
-    retval.append("    ").append(XMLHandler.addTagValue("result_rows_target_step", resultRowsTargetStepMeta==null ? null : resultRowsTargetStepMeta.getName()));  
-    for (int i=0;i<resultRowsField.length;i++) {
-      retval.append("      ").append(XMLHandler.openTag("result_rows_field"));
-      retval.append(XMLHandler.addTagValue("name", resultRowsField[i], false)); 
-      retval.append(XMLHandler.addTagValue("type", ValueMeta.getTypeDesc(resultRowsType[i]), false)); 
-      retval.append(XMLHandler.addTagValue("length", resultRowsLength[i], false)); 
-      retval.append(XMLHandler.addTagValue("precision", resultRowsPrecision[i], false)); 
-      retval.append(XMLHandler.closeTag("result_rows_field")).append(Const.CR);
+    retval.append( "    " ).append(
+        XMLHandler.addTagValue( "execution_result_target_step", executionResultTargetStepMeta == null ? null
+            : executionResultTargetStepMeta.getName() ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "execution_time_field", executionTimeField ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "execution_result_field", executionResultField ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "execution_errors_field", executionNrErrorsField ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "execution_lines_read_field", executionLinesReadField ) );
+    retval.append( "    " ).append(
+        XMLHandler.addTagValue( "execution_lines_written_field", executionLinesWrittenField ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "execution_lines_input_field", executionLinesInputField ) );
+    retval.append( "    " )
+        .append( XMLHandler.addTagValue( "execution_lines_output_field", executionLinesOutputField ) );
+    retval.append( "    " ).append(
+        XMLHandler.addTagValue( "execution_lines_rejected_field", executionLinesRejectedField ) );
+    retval.append( "    " ).append(
+        XMLHandler.addTagValue( "execution_lines_updated_field", executionLinesUpdatedField ) );
+    retval.append( "    " ).append(
+        XMLHandler.addTagValue( "execution_lines_deleted_field", executionLinesDeletedField ) );
+    retval.append( "    " ).append(
+        XMLHandler.addTagValue( "execution_files_retrieved_field", executionFilesRetrievedField ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "execution_exit_status_field", executionExitStatusField ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "execution_log_text_field", executionLogTextField ) );
+    retval.append( "    " ).append(
+        XMLHandler.addTagValue( "execution_log_channelid_field", executionLogChannelIdField ) );
+
+    retval.append( "    " ).append(
+        XMLHandler.addTagValue( "result_rows_target_step", resultRowsTargetStepMeta == null ? null
+            : resultRowsTargetStepMeta.getName() ) );
+    for ( int i = 0; i < resultRowsField.length; i++ ) {
+      retval.append( "      " ).append( XMLHandler.openTag( "result_rows_field" ) );
+      retval.append( XMLHandler.addTagValue( "name", resultRowsField[i], false ) );
+      retval.append( XMLHandler.addTagValue( "type", ValueMeta.getTypeDesc( resultRowsType[i] ), false ) );
+      retval.append( XMLHandler.addTagValue( "length", resultRowsLength[i], false ) );
+      retval.append( XMLHandler.addTagValue( "precision", resultRowsPrecision[i], false ) );
+      retval.append( XMLHandler.closeTag( "result_rows_field" ) ).append( Const.CR );
     }
-      
-    retval.append("    ").append(XMLHandler.addTagValue("result_files_target_step", resultFilesTargetStepMeta==null ? null : resultFilesTargetStepMeta.getName()));  
-    retval.append("    ").append(XMLHandler.addTagValue("result_files_file_name_field", resultFilesFileNameField));  
-    
+
+    retval.append( "    " ).append(
+        XMLHandler.addTagValue( "result_files_target_step", resultFilesTargetStepMeta == null ? null
+            : resultFilesTargetStepMeta.getName() ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "result_files_file_name_field", resultFilesFileNameField ) );
+
     return retval.toString();
   }
-  
-  public void loadXML(Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore) throws KettleXMLException {
+
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     try {
-      String method = XMLHandler.getTagValue(stepnode, "specification_method");
-      specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode(method);
-      String jobId = XMLHandler.getTagValue(stepnode, "job_object_id");
-      jobObjectId = Const.isEmpty(jobId) ? null : new StringObjectId(jobId);
+      String method = XMLHandler.getTagValue( stepnode, "specification_method" );
+      specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode( method );
+      String jobId = XMLHandler.getTagValue( stepnode, "job_object_id" );
+      jobObjectId = Const.isEmpty( jobId ) ? null : new StringObjectId( jobId );
 
-      jobName = XMLHandler.getTagValue(stepnode, "job_name"); 
-      fileName = XMLHandler.getTagValue(stepnode, "filename"); 
-      directoryPath = XMLHandler.getTagValue(stepnode, "directory_path"); 
+      jobName = XMLHandler.getTagValue( stepnode, "job_name" );
+      fileName = XMLHandler.getTagValue( stepnode, "filename" );
+      directoryPath = XMLHandler.getTagValue( stepnode, "directory_path" );
 
-      groupSize = XMLHandler.getTagValue(stepnode, "group_size"); 
-      groupField = XMLHandler.getTagValue(stepnode, "group_field"); 
-      groupTime = XMLHandler.getTagValue(stepnode, "group_time"); 
+      groupSize = XMLHandler.getTagValue( stepnode, "group_size" );
+      groupField = XMLHandler.getTagValue( stepnode, "group_field" );
+      groupTime = XMLHandler.getTagValue( stepnode, "group_time" );
 
       // Load the mapping parameters too..
       //
-      Node mappingParametersNode = XMLHandler.getSubNode(stepnode, JobExecutorParameters.XML_TAG);
-      parameters = new JobExecutorParameters(mappingParametersNode);
+      Node mappingParametersNode = XMLHandler.getSubNode( stepnode, JobExecutorParameters.XML_TAG );
+      parameters = new JobExecutorParameters( mappingParametersNode );
 
       // The output side...
       //
-      executionResultTargetStep = XMLHandler.getTagValue(stepnode, "execution_result_target_step"); 
-      executionTimeField = XMLHandler.getTagValue(stepnode, "execution_time_field"); 
-      executionResultField = XMLHandler.getTagValue(stepnode, "execution_result_field"); 
-      executionNrErrorsField = XMLHandler.getTagValue(stepnode, "execution_errors_field"); 
-      executionLinesReadField = XMLHandler.getTagValue(stepnode, "execution_lines_read_field"); 
-      executionLinesWrittenField = XMLHandler.getTagValue(stepnode, "execution_lines_written_field"); 
-      executionLinesInputField = XMLHandler.getTagValue(stepnode, "execution_lines_input_field"); 
-      executionLinesOutputField = XMLHandler.getTagValue(stepnode, "execution_lines_output_field"); 
-      executionLinesRejectedField = XMLHandler.getTagValue(stepnode, "execution_lines_rejected_field"); 
-      executionLinesUpdatedField = XMLHandler.getTagValue(stepnode, "execution_lines_updated_field"); 
-      executionLinesDeletedField = XMLHandler.getTagValue(stepnode, "execution_lines_deleted_field"); 
-      executionFilesRetrievedField = XMLHandler.getTagValue(stepnode, "execution_files_retrieved_field"); 
-      executionExitStatusField = XMLHandler.getTagValue(stepnode, "execution_exit_status_field"); 
-      executionLogTextField = XMLHandler.getTagValue(stepnode, "execution_log_text_field"); 
-      executionLogChannelIdField = XMLHandler.getTagValue(stepnode, "execution_log_channelid_field"); 
-      
-      resultRowsTargetStep = XMLHandler.getTagValue(stepnode, "result_rows_target_step"); 
+      executionResultTargetStep = XMLHandler.getTagValue( stepnode, "execution_result_target_step" );
+      executionTimeField = XMLHandler.getTagValue( stepnode, "execution_time_field" );
+      executionResultField = XMLHandler.getTagValue( stepnode, "execution_result_field" );
+      executionNrErrorsField = XMLHandler.getTagValue( stepnode, "execution_errors_field" );
+      executionLinesReadField = XMLHandler.getTagValue( stepnode, "execution_lines_read_field" );
+      executionLinesWrittenField = XMLHandler.getTagValue( stepnode, "execution_lines_written_field" );
+      executionLinesInputField = XMLHandler.getTagValue( stepnode, "execution_lines_input_field" );
+      executionLinesOutputField = XMLHandler.getTagValue( stepnode, "execution_lines_output_field" );
+      executionLinesRejectedField = XMLHandler.getTagValue( stepnode, "execution_lines_rejected_field" );
+      executionLinesUpdatedField = XMLHandler.getTagValue( stepnode, "execution_lines_updated_field" );
+      executionLinesDeletedField = XMLHandler.getTagValue( stepnode, "execution_lines_deleted_field" );
+      executionFilesRetrievedField = XMLHandler.getTagValue( stepnode, "execution_files_retrieved_field" );
+      executionExitStatusField = XMLHandler.getTagValue( stepnode, "execution_exit_status_field" );
+      executionLogTextField = XMLHandler.getTagValue( stepnode, "execution_log_text_field" );
+      executionLogChannelIdField = XMLHandler.getTagValue( stepnode, "execution_log_channelid_field" );
 
-      int nrFields = XMLHandler.countNodes(stepnode, "result_rows_field");
-      resultRowsField     = new String[nrFields];
-      resultRowsType      = new int[nrFields];
-      resultRowsLength    = new int[nrFields];
+      resultRowsTargetStep = XMLHandler.getTagValue( stepnode, "result_rows_target_step" );
+
+      int nrFields = XMLHandler.countNodes( stepnode, "result_rows_field" );
+      resultRowsField = new String[nrFields];
+      resultRowsType = new int[nrFields];
+      resultRowsLength = new int[nrFields];
       resultRowsPrecision = new int[nrFields];
-                                    
-      for (int i=0;i<nrFields;i++) {
-        
-        Node fieldNode = XMLHandler.getSubNodeByNr(stepnode, "result_rows_field", i);
 
-        resultRowsField[i] = XMLHandler.getTagValue(fieldNode, "name"); 
-        resultRowsType[i] = ValueMeta.getType(XMLHandler.getTagValue(fieldNode, "type")); 
-        resultRowsLength[i] = Const.toInt(XMLHandler.getTagValue(fieldNode, "length"), -1); 
-        resultRowsPrecision[i] = Const.toInt(XMLHandler.getTagValue(fieldNode, "precision"), -1); 
+      for ( int i = 0; i < nrFields; i++ ) {
+
+        Node fieldNode = XMLHandler.getSubNodeByNr( stepnode, "result_rows_field", i );
+
+        resultRowsField[i] = XMLHandler.getTagValue( fieldNode, "name" );
+        resultRowsType[i] = ValueMeta.getType( XMLHandler.getTagValue( fieldNode, "type" ) );
+        resultRowsLength[i] = Const.toInt( XMLHandler.getTagValue( fieldNode, "length" ), -1 );
+        resultRowsPrecision[i] = Const.toInt( XMLHandler.getTagValue( fieldNode, "precision" ), -1 );
       }
-        
-      resultFilesTargetStep = XMLHandler.getTagValue(stepnode, "result_files_target_step"); 
-      resultFilesFileNameField = XMLHandler.getTagValue(stepnode, "result_files_file_name_field"); 
-    } catch (Exception e) {
-      throw new KettleXMLException(BaseMessages.getString(PKG, "JobExecutorMeta.Exception.ErrorLoadingJobExecutorDetailsFromXML"), e); 
+
+      resultFilesTargetStep = XMLHandler.getTagValue( stepnode, "result_files_target_step" );
+      resultFilesFileNameField = XMLHandler.getTagValue( stepnode, "result_files_file_name_field" );
+    } catch ( Exception e ) {
+      throw new KettleXMLException( BaseMessages.getString( PKG,
+          "JobExecutorMeta.Exception.ErrorLoadingJobExecutorDetailsFromXML" ), e );
     }
   }
 
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
+    throws KettleException {
+    String method = rep.getStepAttributeString( id_step, "specification_method" );
+    specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode( method );
+    String jobId = rep.getStepAttributeString( id_step, "job_object_id" );
+    jobObjectId = Const.isEmpty( jobId ) ? null : new StringObjectId( jobId );
+    jobName = rep.getStepAttributeString( id_step, "job_name" );
+    fileName = rep.getStepAttributeString( id_step, "filename" );
+    directoryPath = rep.getStepAttributeString( id_step, "directory_path" );
 
-  public void readRep(Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases) throws KettleException {
-    String method = rep.getStepAttributeString(id_step, "specification_method");
-    specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode(method);
-    String jobId = rep.getStepAttributeString(id_step, "job_object_id");
-    jobObjectId = Const.isEmpty(jobId) ? null : new StringObjectId(jobId);
-    jobName = rep.getStepAttributeString(id_step, "job_name"); 
-    fileName = rep.getStepAttributeString(id_step, "filename"); 
-    directoryPath = rep.getStepAttributeString(id_step, "directory_path"); 
+    groupSize = rep.getStepAttributeString( id_step, "group_size" );
+    groupField = rep.getStepAttributeString( id_step, "group_field" );
+    groupTime = rep.getStepAttributeString( id_step, "group_time" );
 
-    groupSize = rep.getStepAttributeString(id_step, "group_size"); 
-    groupField = rep.getStepAttributeString(id_step, "group_field"); 
-    groupTime = rep.getStepAttributeString(id_step, "group_time"); 
+    parameters = new JobExecutorParameters( rep, id_step );
 
-    parameters = new JobExecutorParameters(rep, id_step);
-    
-    executionResultTargetStep = rep.getStepAttributeString(id_step, "execution_result_target_step"); 
-    executionTimeField = rep.getStepAttributeString(id_step, "execution_time_field"); 
-    executionNrErrorsField = rep.getStepAttributeString(id_step, "execution_result_field"); 
-    executionLinesReadField = rep.getStepAttributeString(id_step, "execution_errors_field"); 
-    executionLinesWrittenField = rep.getStepAttributeString(id_step, "execution_lines_written_field"); 
-    executionLinesInputField = rep.getStepAttributeString(id_step, "execution_lines_input_field"); 
-    executionLinesOutputField = rep.getStepAttributeString(id_step, "execution_lines_output_field"); 
-    executionLinesRejectedField = rep.getStepAttributeString(id_step, "execution_lines_rejected_field"); 
-    executionLinesUpdatedField = rep.getStepAttributeString(id_step, "execution_lines_updated_field"); 
-    executionLinesDeletedField = rep.getStepAttributeString(id_step, "execution_lines_deleted_field"); 
-    executionFilesRetrievedField = rep.getStepAttributeString(id_step, "execution_files_retrieved_field"); 
-    executionExitStatusField = rep.getStepAttributeString(id_step, "execution_exit_status_field"); 
-    executionLogTextField = rep.getStepAttributeString(id_step, "execution_log_text_field"); 
-    executionLogChannelIdField = rep.getStepAttributeString(id_step, "execution_log_channelid_field"); 
+    executionResultTargetStep = rep.getStepAttributeString( id_step, "execution_result_target_step" );
+    executionTimeField = rep.getStepAttributeString( id_step, "execution_time_field" );
+    executionNrErrorsField = rep.getStepAttributeString( id_step, "execution_result_field" );
+    executionLinesReadField = rep.getStepAttributeString( id_step, "execution_errors_field" );
+    executionLinesWrittenField = rep.getStepAttributeString( id_step, "execution_lines_written_field" );
+    executionLinesInputField = rep.getStepAttributeString( id_step, "execution_lines_input_field" );
+    executionLinesOutputField = rep.getStepAttributeString( id_step, "execution_lines_output_field" );
+    executionLinesRejectedField = rep.getStepAttributeString( id_step, "execution_lines_rejected_field" );
+    executionLinesUpdatedField = rep.getStepAttributeString( id_step, "execution_lines_updated_field" );
+    executionLinesDeletedField = rep.getStepAttributeString( id_step, "execution_lines_deleted_field" );
+    executionFilesRetrievedField = rep.getStepAttributeString( id_step, "execution_files_retrieved_field" );
+    executionExitStatusField = rep.getStepAttributeString( id_step, "execution_exit_status_field" );
+    executionLogTextField = rep.getStepAttributeString( id_step, "execution_log_text_field" );
+    executionLogChannelIdField = rep.getStepAttributeString( id_step, "execution_log_channelid_field" );
 
-    resultRowsTargetStep = rep.getStepAttributeString(id_step, "result_rows_target_step"); 
-    int nrFields = rep.countNrStepAttributes(id_step, "result_rows_field");
-    resultRowsField     = new String[nrFields];
-    resultRowsType      = new int[nrFields];
-    resultRowsLength    = new int[nrFields];
+    resultRowsTargetStep = rep.getStepAttributeString( id_step, "result_rows_target_step" );
+    int nrFields = rep.countNrStepAttributes( id_step, "result_rows_field" );
+    resultRowsField = new String[nrFields];
+    resultRowsType = new int[nrFields];
+    resultRowsLength = new int[nrFields];
     resultRowsPrecision = new int[nrFields];
-    
-    for (int i=0;i<nrFields;i++) {
-      resultRowsField[i] = rep.getStepAttributeString(id_step, i, "result_rows_field");
-      resultRowsType[i] = ValueMeta.getType(rep.getStepAttributeString(id_step, i, "result_rows_type"));
-      resultRowsLength[i] = (int)rep.getStepAttributeInteger(id_step, i, "result_rows_length");
-      resultRowsPrecision[i] = (int)rep.getStepAttributeInteger(id_step, i, "result_rows_precision");
+
+    for ( int i = 0; i < nrFields; i++ ) {
+      resultRowsField[i] = rep.getStepAttributeString( id_step, i, "result_rows_field" );
+      resultRowsType[i] = ValueMeta.getType( rep.getStepAttributeString( id_step, i, "result_rows_type" ) );
+      resultRowsLength[i] = (int) rep.getStepAttributeInteger( id_step, i, "result_rows_length" );
+      resultRowsPrecision[i] = (int) rep.getStepAttributeInteger( id_step, i, "result_rows_precision" );
     }
-    
-    resultFilesTargetStep = rep.getStepAttributeString(id_step, "result_files_target_step"); 
-    resultFilesFileNameField = rep.getStepAttributeString(id_step, "result_files_file_name_field"); 
+
+    resultFilesTargetStep = rep.getStepAttributeString( id_step, "result_files_target_step" );
+    resultFilesFileNameField = rep.getStepAttributeString( id_step, "result_files_file_name_field" );
   }
 
-  public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step) throws KettleException {
-    rep.saveStepAttribute(id_transformation, id_step, "specification_method", specificationMethod==null ? null : specificationMethod.getCode());
-    rep.saveStepAttribute(id_transformation, id_step, "job_object_id", jobObjectId==null ? null : jobObjectId.toString());
-    rep.saveStepAttribute(id_transformation, id_step, "filename", fileName); 
-    rep.saveStepAttribute(id_transformation, id_step, "job_name", jobName); 
-    rep.saveStepAttribute(id_transformation, id_step, "directory_path", directoryPath); 
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
+    throws KettleException {
+    rep.saveStepAttribute( id_transformation, id_step, "specification_method", specificationMethod == null ? null
+        : specificationMethod.getCode() );
+    rep.saveStepAttribute( id_transformation, id_step, "job_object_id", jobObjectId == null ? null : jobObjectId
+        .toString() );
+    rep.saveStepAttribute( id_transformation, id_step, "filename", fileName );
+    rep.saveStepAttribute( id_transformation, id_step, "job_name", jobName );
+    rep.saveStepAttribute( id_transformation, id_step, "directory_path", directoryPath );
 
-    rep.saveStepAttribute(id_transformation, id_step, "group_size", groupSize); 
-    rep.saveStepAttribute(id_transformation, id_step, "group_field", groupField); 
-    rep.saveStepAttribute(id_transformation, id_step, "group_time", groupTime); 
+    rep.saveStepAttribute( id_transformation, id_step, "group_size", groupSize );
+    rep.saveStepAttribute( id_transformation, id_step, "group_field", groupField );
+    rep.saveStepAttribute( id_transformation, id_step, "group_time", groupTime );
 
     // save the mapping parameters too
     //
-    parameters.saveRep(rep, metaStore, id_transformation, id_step);
-    
+    parameters.saveRep( rep, metaStore, id_transformation, id_step );
+
     // The output side...
     //
-    rep.saveStepAttribute(id_transformation, id_step, "execution_result_target_step", executionResultTargetStepMeta==null ? null : executionResultTargetStepMeta.getName()); 
-    rep.saveStepAttribute(id_transformation, id_step, "execution_time_field", executionTimeField); 
-    rep.saveStepAttribute(id_transformation, id_step, "execution_result_field", executionResultField); 
-    rep.saveStepAttribute(id_transformation, id_step, "execution_errors_field", executionNrErrorsField); 
-    rep.saveStepAttribute(id_transformation, id_step, "execution_lines_read_field", executionLinesReadField); 
-    rep.saveStepAttribute(id_transformation, id_step, "execution_lines_written_field", executionLinesWrittenField); 
-    rep.saveStepAttribute(id_transformation, id_step, "execution_lines_input_field", executionLinesInputField); 
-    rep.saveStepAttribute(id_transformation, id_step, "execution_lines_output_field", executionLinesOutputField); 
-    rep.saveStepAttribute(id_transformation, id_step, "execution_lines_rejected_field", executionLinesRejectedField); 
-    rep.saveStepAttribute(id_transformation, id_step, "execution_lines_updated_field", executionLinesUpdatedField); 
-    rep.saveStepAttribute(id_transformation, id_step, "execution_lines_deleted_field", executionLinesDeletedField); 
-    rep.saveStepAttribute(id_transformation, id_step, "execution_files_retrieved_field", executionFilesRetrievedField); 
-    rep.saveStepAttribute(id_transformation, id_step, "execution_exit_status_field", executionExitStatusField); 
-    rep.saveStepAttribute(id_transformation, id_step, "execution_log_text_field", executionLogTextField); 
-    rep.saveStepAttribute(id_transformation, id_step, "execution_log_channelid_field", executionLogChannelIdField); 
+    rep.saveStepAttribute( id_transformation, id_step, "execution_result_target_step",
+        executionResultTargetStepMeta == null ? null : executionResultTargetStepMeta.getName() );
+    rep.saveStepAttribute( id_transformation, id_step, "execution_time_field", executionTimeField );
+    rep.saveStepAttribute( id_transformation, id_step, "execution_result_field", executionResultField );
+    rep.saveStepAttribute( id_transformation, id_step, "execution_errors_field", executionNrErrorsField );
+    rep.saveStepAttribute( id_transformation, id_step, "execution_lines_read_field", executionLinesReadField );
+    rep.saveStepAttribute( id_transformation, id_step, "execution_lines_written_field", executionLinesWrittenField );
+    rep.saveStepAttribute( id_transformation, id_step, "execution_lines_input_field", executionLinesInputField );
+    rep.saveStepAttribute( id_transformation, id_step, "execution_lines_output_field", executionLinesOutputField );
+    rep.saveStepAttribute( id_transformation, id_step, "execution_lines_rejected_field", executionLinesRejectedField );
+    rep.saveStepAttribute( id_transformation, id_step, "execution_lines_updated_field", executionLinesUpdatedField );
+    rep.saveStepAttribute( id_transformation, id_step, "execution_lines_deleted_field", executionLinesDeletedField );
+    rep.saveStepAttribute( id_transformation, id_step, "execution_files_retrieved_field", executionFilesRetrievedField );
+    rep.saveStepAttribute( id_transformation, id_step, "execution_exit_status_field", executionExitStatusField );
+    rep.saveStepAttribute( id_transformation, id_step, "execution_log_text_field", executionLogTextField );
+    rep.saveStepAttribute( id_transformation, id_step, "execution_log_channelid_field", executionLogChannelIdField );
 
-    rep.saveStepAttribute(id_transformation, id_step, "result_rows_target_step", resultRowsTargetStepMeta==null ? null : resultRowsTargetStepMeta.getName()); 
+    rep.saveStepAttribute( id_transformation, id_step, "result_rows_target_step", resultRowsTargetStepMeta == null
+        ? null : resultRowsTargetStepMeta.getName() );
 
-    for (int i=0;i<resultRowsField.length;i++) {
-      rep.saveStepAttribute(id_transformation, id_step, i, "result_rows_field_name", resultRowsField[i]);
-      rep.saveStepAttribute(id_transformation, id_step, i, "result_rows_field_type", ValueMeta.getTypeDesc(resultRowsType[i]));
-      rep.saveStepAttribute(id_transformation, id_step, i, "result_rows_field_length", resultRowsLength[i]);
-      rep.saveStepAttribute(id_transformation, id_step, i, "result_rows_field_precision", resultRowsPrecision[i]);
+    for ( int i = 0; i < resultRowsField.length; i++ ) {
+      rep.saveStepAttribute( id_transformation, id_step, i, "result_rows_field_name", resultRowsField[i] );
+      rep.saveStepAttribute( id_transformation, id_step, i, "result_rows_field_type", ValueMeta
+          .getTypeDesc( resultRowsType[i] ) );
+      rep.saveStepAttribute( id_transformation, id_step, i, "result_rows_field_length", resultRowsLength[i] );
+      rep.saveStepAttribute( id_transformation, id_step, i, "result_rows_field_precision", resultRowsPrecision[i] );
     }
 
-    rep.saveStepAttribute(id_transformation, id_step, "result_files_target_step", resultFilesTargetStepMeta==null ? null : resultFilesTargetStepMeta.getName()); 
-    rep.saveStepAttribute(id_transformation, id_step, "result_files_file_name_field", resultFilesFileNameField); 
+    rep.saveStepAttribute( id_transformation, id_step, "result_files_target_step", resultFilesTargetStepMeta == null
+        ? null : resultFilesTargetStepMeta.getName() );
+    rep.saveStepAttribute( id_transformation, id_step, "result_files_file_name_field", resultFilesFileNameField );
   }
 
   public void setDefault() {
     specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
     parameters = new JobExecutorParameters();
-    parameters.setInheritingAllVariables(true);
-    
+    parameters.setInheritingAllVariables( true );
+
     groupSize = "1";
     groupField = "";
     groupTime = "";
-    
-    executionTimeField = "ExecutionTime";  
-    executionResultField = "ExecutionResult";  
-    executionNrErrorsField = "ExecutionNrErrors";  
-    executionLinesReadField = "ExecutionLinesRead"; 
-    executionLinesWrittenField = "ExecutionLinesWritten"; 
-    executionLinesInputField = "ExecutionLinesInput";  
-    executionLinesOutputField = "ExecutionLinesOutput"; 
-    executionLinesRejectedField = "ExecutionLinesRejected"; 
-    executionLinesUpdatedField = "ExecutionLinesUpdated"; 
-    executionLinesDeletedField = "ExecutionLinesDeleted"; 
-    executionFilesRetrievedField = "ExecutionFilesRetrieved"; 
-    executionExitStatusField = "ExecutionExitStatus"; 
-    executionLogTextField = "ExecutionLogText"; 
-    executionLogChannelIdField = "ExecutionLogChannelId"; 
-    
+
+    executionTimeField = "ExecutionTime";
+    executionResultField = "ExecutionResult";
+    executionNrErrorsField = "ExecutionNrErrors";
+    executionLinesReadField = "ExecutionLinesRead";
+    executionLinesWrittenField = "ExecutionLinesWritten";
+    executionLinesInputField = "ExecutionLinesInput";
+    executionLinesOutputField = "ExecutionLinesOutput";
+    executionLinesRejectedField = "ExecutionLinesRejected";
+    executionLinesUpdatedField = "ExecutionLinesUpdated";
+    executionLinesDeletedField = "ExecutionLinesDeleted";
+    executionFilesRetrievedField = "ExecutionFilesRetrieved";
+    executionExitStatusField = "ExecutionExitStatus";
+    executionLogTextField = "ExecutionLogText";
+    executionLogChannelIdField = "ExecutionLogChannelId";
+
     resultFilesFileNameField = "FileName";
   }
 
-  public void getFields(RowMetaInterface row, String origin, RowMetaInterface info[], StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException {
-    
+  public void getFields( RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
+      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+
     row.clear();
 
-    if (nextStep!=null && resultRowsTargetStepMeta!=null && nextStep.equals(resultRowsTargetStepMeta)) {
-      for (int i=0;i<resultRowsField.length;i++) {
-        ValueMetaInterface value = new ValueMeta(resultRowsField[i], resultRowsType[i], resultRowsLength[i], resultRowsPrecision[i]);
-        row.addValueMeta(value);
+    if ( nextStep != null && resultRowsTargetStepMeta != null && nextStep.equals( resultRowsTargetStepMeta ) ) {
+      for ( int i = 0; i < resultRowsField.length; i++ ) {
+        ValueMetaInterface value =
+            new ValueMeta( resultRowsField[i], resultRowsType[i], resultRowsLength[i], resultRowsPrecision[i] );
+        row.addValueMeta( value );
       }
-    } else if (nextStep!=null && resultFilesTargetStepMeta!=null && nextStep.equals(resultFilesTargetStepMeta)) {
-      if (!Const.isEmpty(resultFilesFileNameField)) {
-        ValueMetaInterface value = new ValueMeta("filename", ValueMeta.TYPE_STRING, 255, 0);
-        row.addValueMeta(value);
+    } else if ( nextStep != null && resultFilesTargetStepMeta != null && nextStep.equals( resultFilesTargetStepMeta ) ) {
+      if ( !Const.isEmpty( resultFilesFileNameField ) ) {
+        ValueMetaInterface value = new ValueMeta( "filename", ValueMeta.TYPE_STRING, 255, 0 );
+        row.addValueMeta( value );
       }
-    } else if (nextStep!=null && executionResultTargetStepMeta!=null && nextStep.equals(executionResultTargetStepMeta)) {
-      if (!Const.isEmpty(executionTimeField)) {
-        ValueMetaInterface value = new ValueMeta(executionTimeField, ValueMeta.TYPE_INTEGER, 15, 0);
-        row.addValueMeta(value);
+    } else if ( nextStep != null && executionResultTargetStepMeta != null
+        && nextStep.equals( executionResultTargetStepMeta ) ) {
+      if ( !Const.isEmpty( executionTimeField ) ) {
+        ValueMetaInterface value = new ValueMeta( executionTimeField, ValueMeta.TYPE_INTEGER, 15, 0 );
+        row.addValueMeta( value );
       }
-      if (!Const.isEmpty(executionResultField)) {
-        ValueMetaInterface value = new ValueMeta(executionResultField, ValueMeta.TYPE_BOOLEAN);
-        row.addValueMeta(value);
+      if ( !Const.isEmpty( executionResultField ) ) {
+        ValueMetaInterface value = new ValueMeta( executionResultField, ValueMeta.TYPE_BOOLEAN );
+        row.addValueMeta( value );
       }
-      if (!Const.isEmpty(executionNrErrorsField)) {
-        ValueMetaInterface value = new ValueMeta(executionNrErrorsField, ValueMeta.TYPE_INTEGER, 9, 0);
-        row.addValueMeta(value);
+      if ( !Const.isEmpty( executionNrErrorsField ) ) {
+        ValueMetaInterface value = new ValueMeta( executionNrErrorsField, ValueMeta.TYPE_INTEGER, 9, 0 );
+        row.addValueMeta( value );
       }
-      if (!Const.isEmpty(executionLinesReadField)) {
-        ValueMetaInterface value = new ValueMeta(executionLinesReadField, ValueMeta.TYPE_INTEGER, 9, 0);
-        row.addValueMeta(value);
+      if ( !Const.isEmpty( executionLinesReadField ) ) {
+        ValueMetaInterface value = new ValueMeta( executionLinesReadField, ValueMeta.TYPE_INTEGER, 9, 0 );
+        row.addValueMeta( value );
       }
-      if (!Const.isEmpty(executionLinesWrittenField)) {
-        ValueMetaInterface value = new ValueMeta(executionLinesWrittenField, ValueMeta.TYPE_INTEGER, 9, 0);
-        row.addValueMeta(value);
+      if ( !Const.isEmpty( executionLinesWrittenField ) ) {
+        ValueMetaInterface value = new ValueMeta( executionLinesWrittenField, ValueMeta.TYPE_INTEGER, 9, 0 );
+        row.addValueMeta( value );
       }
-      if (!Const.isEmpty(executionLinesInputField)) {
-        ValueMetaInterface value = new ValueMeta(executionLinesInputField, ValueMeta.TYPE_INTEGER, 9, 0);
-        row.addValueMeta(value);
+      if ( !Const.isEmpty( executionLinesInputField ) ) {
+        ValueMetaInterface value = new ValueMeta( executionLinesInputField, ValueMeta.TYPE_INTEGER, 9, 0 );
+        row.addValueMeta( value );
       }
-      if (!Const.isEmpty(executionLinesOutputField)) {
-        ValueMetaInterface value = new ValueMeta(executionLinesOutputField, ValueMeta.TYPE_INTEGER, 9, 0);
-        row.addValueMeta(value);
+      if ( !Const.isEmpty( executionLinesOutputField ) ) {
+        ValueMetaInterface value = new ValueMeta( executionLinesOutputField, ValueMeta.TYPE_INTEGER, 9, 0 );
+        row.addValueMeta( value );
       }
-      if (!Const.isEmpty(executionLinesRejectedField)) {
-        ValueMetaInterface value = new ValueMeta(executionLinesRejectedField, ValueMeta.TYPE_INTEGER, 9, 0);
-        row.addValueMeta(value);
+      if ( !Const.isEmpty( executionLinesRejectedField ) ) {
+        ValueMetaInterface value = new ValueMeta( executionLinesRejectedField, ValueMeta.TYPE_INTEGER, 9, 0 );
+        row.addValueMeta( value );
       }
-      if (!Const.isEmpty(executionLinesUpdatedField)) {
-        ValueMetaInterface value = new ValueMeta(executionLinesUpdatedField, ValueMeta.TYPE_INTEGER, 9, 0);
-        row.addValueMeta(value);
+      if ( !Const.isEmpty( executionLinesUpdatedField ) ) {
+        ValueMetaInterface value = new ValueMeta( executionLinesUpdatedField, ValueMeta.TYPE_INTEGER, 9, 0 );
+        row.addValueMeta( value );
       }
-      if (!Const.isEmpty(executionLinesDeletedField)) {
-        ValueMetaInterface value = new ValueMeta(executionLinesDeletedField, ValueMeta.TYPE_INTEGER, 9, 0);
-        row.addValueMeta(value);
+      if ( !Const.isEmpty( executionLinesDeletedField ) ) {
+        ValueMetaInterface value = new ValueMeta( executionLinesDeletedField, ValueMeta.TYPE_INTEGER, 9, 0 );
+        row.addValueMeta( value );
       }
-      if (!Const.isEmpty(executionFilesRetrievedField)) {
-        ValueMetaInterface value = new ValueMeta(executionFilesRetrievedField, ValueMeta.TYPE_INTEGER, 9, 0);
-        row.addValueMeta(value);
+      if ( !Const.isEmpty( executionFilesRetrievedField ) ) {
+        ValueMetaInterface value = new ValueMeta( executionFilesRetrievedField, ValueMeta.TYPE_INTEGER, 9, 0 );
+        row.addValueMeta( value );
       }
-      if (!Const.isEmpty(executionExitStatusField)) {
-        ValueMetaInterface value = new ValueMeta(executionExitStatusField, ValueMeta.TYPE_INTEGER, 3, 0);
-        row.addValueMeta(value);
+      if ( !Const.isEmpty( executionExitStatusField ) ) {
+        ValueMetaInterface value = new ValueMeta( executionExitStatusField, ValueMeta.TYPE_INTEGER, 3, 0 );
+        row.addValueMeta( value );
       }
-      if (!Const.isEmpty(executionLogTextField)) {
-        ValueMetaInterface value = new ValueMeta(executionLogTextField, ValueMeta.TYPE_STRING);
-        value.setLargeTextField(true);
-        row.addValueMeta(value);
+      if ( !Const.isEmpty( executionLogTextField ) ) {
+        ValueMetaInterface value = new ValueMeta( executionLogTextField, ValueMeta.TYPE_STRING );
+        value.setLargeTextField( true );
+        row.addValueMeta( value );
       }
-      if (!Const.isEmpty(executionLogChannelIdField)) {
-        ValueMetaInterface value = new ValueMeta(executionLogChannelIdField, ValueMeta.TYPE_STRING, 50, 0);
-        row.addValueMeta(value);
+      if ( !Const.isEmpty( executionLogChannelIdField ) ) {
+        ValueMetaInterface value = new ValueMeta( executionLogChannelIdField, ValueMeta.TYPE_STRING, 50, 0 );
+        row.addValueMeta( value );
       }
     }
   }
@@ -512,166 +545,191 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
 
     List<String> targetSteps = new ArrayList<String>();
 
-    if (!Const.isEmpty(resultFilesTargetStep)) {
-      targetSteps.add(resultFilesTargetStep);
+    if ( !Const.isEmpty( resultFilesTargetStep ) ) {
+      targetSteps.add( resultFilesTargetStep );
     }
-    if (!Const.isEmpty(resultRowsTargetStep)) {
-      targetSteps.add(resultRowsTargetStep);
+    if ( !Const.isEmpty( resultRowsTargetStep ) ) {
+      targetSteps.add( resultRowsTargetStep );
     }
-    
-    if (targetSteps.isEmpty())
+
+    if ( targetSteps.isEmpty() ) {
       return null;
+    }
 
-    return targetSteps.toArray(new String[targetSteps.size()]);
+    return targetSteps.toArray( new String[targetSteps.size()] );
   }
 
-  public synchronized static final JobMeta loadJobMeta(JobExecutorMeta executorMeta, Repository rep, VariableSpace space) throws KettleException {
-    return loadJobMeta(executorMeta, rep, null, space);
+  public static final synchronized JobMeta loadJobMeta( JobExecutorMeta executorMeta, Repository rep,
+      VariableSpace space ) throws KettleException {
+    return loadJobMeta( executorMeta, rep, null, space );
   }
-  
-  public synchronized static final JobMeta loadJobMeta(JobExecutorMeta executorMeta, Repository rep, IMetaStore metaStore, VariableSpace space) throws KettleException {
+
+  public static final synchronized JobMeta loadJobMeta( JobExecutorMeta executorMeta, Repository rep,
+      IMetaStore metaStore, VariableSpace space ) throws KettleException {
     JobMeta mappingJobMeta = null;
-    
-    switch(executorMeta.getSpecificationMethod()) {
-    case FILENAME:
-      String realFilename = space.environmentSubstitute(executorMeta.getFileName());
-      try {
-        // OK, load the meta-data from file...
-        //
-        // Don't set internal variables: they belong to the parent thread!
-        //
-        mappingJobMeta = new JobMeta(space, realFilename, rep, metaStore, null); 
-        LogChannel.GENERAL.logDetailed("Loading job from repository", "Job was loaded from XML file [" + realFilename + "]");
-      } catch (Exception e) {
-        throw new KettleException(BaseMessages.getString(PKG, "JobExecutorMeta.Exception.UnableToLoadJob"), e);
-      }
-      break;
-      
-    case REPOSITORY_BY_NAME:
-      String realJobname = space.environmentSubstitute(executorMeta.getJobName());
-      String realDirectory = space.environmentSubstitute(executorMeta.getDirectoryPath());
-      
-      if (!Const.isEmpty(realJobname) && !Const.isEmpty(realDirectory) && rep != null) {
-        RepositoryDirectoryInterface repdir = rep.findDirectory(realDirectory);
-        if (repdir != null) {
-          try {
-            // reads the last revision in the repository...
-            //
-            mappingJobMeta = rep.loadJob(realJobname, repdir, null, null); // TODO: FIXME: should we also pass an external MetaStore into the repository?
-            LogChannel.GENERAL.logDetailed("Loading job from repository", "Executor job [" + realJobname + "] was loaded from the repository");
-          } catch (Exception e) {
-            throw new KettleException("Unable to load job [" + realJobname + "]", e);
-          }
-        } else {
-          throw new KettleException(BaseMessages.getString(PKG, "JobExecutorMeta.Exception.UnableToLoadJob", realJobname) + realDirectory);  
+
+    switch ( executorMeta.getSpecificationMethod() ) {
+      case FILENAME:
+        String realFilename = space.environmentSubstitute( executorMeta.getFileName() );
+        try {
+          // OK, load the meta-data from file...
+          //
+          // Don't set internal variables: they belong to the parent thread!
+          //
+          mappingJobMeta = new JobMeta( space, realFilename, rep, metaStore, null );
+          LogChannel.GENERAL.logDetailed( "Loading job from repository", "Job was loaded from XML file ["
+              + realFilename + "]" );
+        } catch ( Exception e ) {
+          throw new KettleException( BaseMessages.getString( PKG, "JobExecutorMeta.Exception.UnableToLoadJob" ), e );
         }
-      }
-      break;
-      
-    case REPOSITORY_BY_REFERENCE:
-      // Read the last revision by reference...
-      mappingJobMeta = rep.loadJob(executorMeta.getJobObjectId(), null);
-      break;
+        break;
+
+      case REPOSITORY_BY_NAME:
+        String realJobname = space.environmentSubstitute( executorMeta.getJobName() );
+        String realDirectory = space.environmentSubstitute( executorMeta.getDirectoryPath() );
+
+        if ( !Const.isEmpty( realJobname ) && !Const.isEmpty( realDirectory ) && rep != null ) {
+          RepositoryDirectoryInterface repdir = rep.findDirectory( realDirectory );
+          if ( repdir != null ) {
+            try {
+              // reads the last revision in the repository...
+              //
+              mappingJobMeta = rep.loadJob( realJobname, repdir, null, null ); // TODO: FIXME: should we also pass an
+                                                                               // external MetaStore into the
+                                                                               // repository?
+              LogChannel.GENERAL.logDetailed( "Loading job from repository", "Executor job [" + realJobname
+                  + "] was loaded from the repository" );
+            } catch ( Exception e ) {
+              throw new KettleException( "Unable to load job [" + realJobname + "]", e );
+            }
+          } else {
+            throw new KettleException( BaseMessages.getString( PKG, "JobExecutorMeta.Exception.UnableToLoadJob",
+                realJobname )
+                + realDirectory );
+          }
+        }
+        break;
+
+      case REPOSITORY_BY_REFERENCE:
+        // Read the last revision by reference...
+        mappingJobMeta = rep.loadJob( executorMeta.getJobObjectId(), null );
+        break;
       default:
         break;
     }
-    
+
     // Pass some important information to the mapping transformation metadata:
     //
-    mappingJobMeta.copyVariablesFrom(space);
-    mappingJobMeta.setRepository(rep); 
-    mappingJobMeta.setMetaStore(metaStore);
-    mappingJobMeta.setFilename(mappingJobMeta.getFilename());
-    
+    mappingJobMeta.copyVariablesFrom( space );
+    mappingJobMeta.setRepository( rep );
+    mappingJobMeta.setMetaStore( metaStore );
+    mappingJobMeta.setFilename( mappingJobMeta.getFilename() );
+
     return mappingJobMeta;
   }
 
-  public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
+      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
+      IMetaStore metaStore ) {
     CheckResult cr;
-    if (prev == null || prev.size() == 0) {
-      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "JobExecutorMeta.CheckResult.NotReceivingAnyFields"), stepMeta); 
-      remarks.add(cr);
+    if ( prev == null || prev.size() == 0 ) {
+      cr =
+          new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
+              "JobExecutorMeta.CheckResult.NotReceivingAnyFields" ), stepMeta );
+      remarks.add( cr );
     } else {
-      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "JobExecutorMeta.CheckResult.StepReceivingFields", prev.size() + ""), stepMeta);  
-      remarks.add(cr);
+      cr =
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
+              "JobExecutorMeta.CheckResult.StepReceivingFields", prev.size() + "" ), stepMeta );
+      remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
-    if (input.length > 0) {
-      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "JobExecutorMeta.CheckResult.StepReceivingFieldsFromOtherSteps"), stepMeta); 
-      remarks.add(cr);
+    if ( input.length > 0 ) {
+      cr =
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
+              "JobExecutorMeta.CheckResult.StepReceivingFieldsFromOtherSteps" ), stepMeta );
+      remarks.add( cr );
     } else {
-      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "JobExecutorMeta.CheckResult.NoInputReceived"), stepMeta); 
-      remarks.add(cr);
+      cr =
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
+              "JobExecutorMeta.CheckResult.NoInputReceived" ), stepMeta );
+      remarks.add( cr );
     }
   }
 
-  public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr, Trans trans) {
-    return new JobExecutor(stepMeta, stepDataInterface, cnr, tr, trans);
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
+      Trans trans ) {
+    return new JobExecutor( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
   @Override
-  public List<ResourceReference> getResourceDependencies(TransMeta transMeta, StepMeta stepInfo) {
-    List<ResourceReference> references = new ArrayList<ResourceReference>(5);
-    String realFilename = transMeta.environmentSubstitute(fileName);
-    String realTransname = transMeta.environmentSubstitute(jobName);
-    ResourceReference reference = new ResourceReference(stepInfo);
-    references.add(reference);
+  public List<ResourceReference> getResourceDependencies( TransMeta transMeta, StepMeta stepInfo ) {
+    List<ResourceReference> references = new ArrayList<ResourceReference>( 5 );
+    String realFilename = transMeta.environmentSubstitute( fileName );
+    String realTransname = transMeta.environmentSubstitute( jobName );
+    ResourceReference reference = new ResourceReference( stepInfo );
+    references.add( reference );
 
-    if (!Const.isEmpty(realFilename)) {
+    if ( !Const.isEmpty( realFilename ) ) {
       // Add the filename to the references, including a reference to this step
       // meta data.
       //
-      reference.getEntries().add(new ResourceEntry(realFilename, ResourceType.ACTIONFILE));
-    } else if (!Const.isEmpty(realTransname)) {
+      reference.getEntries().add( new ResourceEntry( realFilename, ResourceType.ACTIONFILE ) );
+    } else if ( !Const.isEmpty( realTransname ) ) {
       // Add the filename to the references, including a reference to this step
       // meta data.
       //
-      reference.getEntries().add(new ResourceEntry(realTransname, ResourceType.ACTIONFILE));
-      references.add(reference);
+      reference.getEntries().add( new ResourceEntry( realTransname, ResourceType.ACTIONFILE ) );
+      references.add( reference );
     }
     return references;
   }
 
   @Override
-  public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore) throws KettleException {
+  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
+      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
+    throws KettleException {
     try {
       // Try to load the transformation from repository or file.
       // Modify this recursively too...
-      // 
+      //
       // NOTE: there is no need to clone this step because the caller is
       // responsible for this.
       //
       // First load the executor job metadata...
       //
-      JobMeta executorJobMeta = loadJobMeta(this, repository, space);
+      JobMeta executorJobMeta = loadJobMeta( this, repository, space );
 
       // Also go down into the mapping transformation and export the files
       // there. (mapping recursively down)
       //
-      String proposedNewFilename = executorJobMeta.exportResources(executorJobMeta, definitions, resourceNamingInterface, repository, metaStore);
+      String proposedNewFilename =
+          executorJobMeta
+              .exportResources( executorJobMeta, definitions, resourceNamingInterface, repository, metaStore );
 
       // To get a relative path to it, we inject
       // ${Internal.Transformation.Filename.Directory}
       //
-      String newFilename = "${" + Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY + "}/" + proposedNewFilename;
+      String newFilename =
+          "${" + Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY + "}/" + proposedNewFilename;
 
       // Set the correct filename inside the XML.
       //
-      executorJobMeta.setFilename(newFilename);
+      executorJobMeta.setFilename( newFilename );
 
       // exports always reside in the root directory, in case we want to turn
       // this into a file repository...
       //
-      executorJobMeta.setRepositoryDirectory(new RepositoryDirectory());
+      executorJobMeta.setRepositoryDirectory( new RepositoryDirectory() );
 
       // change it in the job entry
       //
       fileName = newFilename;
 
       return proposedNewFilename;
-    } catch (Exception e) {
-      throw new KettleException(BaseMessages.getString(PKG, "JobExecutorMeta.Exception.UnableToLoadJob", fileName)); 
+    } catch ( Exception e ) {
+      throw new KettleException( BaseMessages.getString( PKG, "JobExecutorMeta.Exception.UnableToLoadJob", fileName ) );
     }
   }
 
@@ -681,42 +739,49 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
 
   @Override
   public StepIOMetaInterface getStepIOMeta() {
-    if (ioMeta == null) {
+    if ( ioMeta == null ) {
 
-      ioMeta = new StepIOMeta(true, true, true, false, true, false);
-      
-      ioMeta.addStream(new Stream(StreamType.TARGET, executionResultTargetStepMeta, BaseMessages.getString(PKG,
-      "JobExecutorMeta.ResultStream.Description"), StreamIcon.TARGET, null));
-      ioMeta.addStream(new Stream(StreamType.TARGET, resultRowsTargetStepMeta, BaseMessages.getString(PKG,
-      "JobExecutorMeta.ResultRowsStream.Description"), StreamIcon.TARGET, null));
-      ioMeta.addStream(new Stream(StreamType.TARGET, resultFilesTargetStepMeta, BaseMessages.getString(PKG,
-      "JobExecutorMeta.ResultFilesStream.Description"), StreamIcon.TARGET, null));
+      ioMeta = new StepIOMeta( true, true, true, false, true, false );
+
+      ioMeta.addStream( new Stream( StreamType.TARGET, executionResultTargetStepMeta, BaseMessages.getString( PKG,
+          "JobExecutorMeta.ResultStream.Description" ), StreamIcon.TARGET, null ) );
+      ioMeta.addStream( new Stream( StreamType.TARGET, resultRowsTargetStepMeta, BaseMessages.getString( PKG,
+          "JobExecutorMeta.ResultRowsStream.Description" ), StreamIcon.TARGET, null ) );
+      ioMeta.addStream( new Stream( StreamType.TARGET, resultFilesTargetStepMeta, BaseMessages.getString( PKG,
+          "JobExecutorMeta.ResultFilesStream.Description" ), StreamIcon.TARGET, null ) );
     }
     return ioMeta;
   }
-  
+
   /**
    * When an optional stream is selected, this method is called to handled the ETL metadata implications of that.
-   * @param stream The optional stream to handle.
+   * 
+   * @param stream
+   *          The optional stream to handle.
    */
-  public void handleStreamSelection(StreamInterface stream) {
+  public void handleStreamSelection( StreamInterface stream ) {
     // This step targets another step.
     // Make sure that we don't specify the same step for more than 1 target...
     //
     List<StreamInterface> targets = getStepIOMeta().getTargetStreams();
-    int index = targets.indexOf(stream);
-    StepMeta step = targets.get(index).getStepMeta();
-    switch(index) {
-    case 0: setExecutionResultTargetStepMeta(step); break; 
-    case 1: setResultRowsTargetStepMeta(step); break; 
-    case 2: setResultFilesTargetStepMeta(step); break; 
-    default:
-      break;
+    int index = targets.indexOf( stream );
+    StepMeta step = targets.get( index ).getStepMeta();
+    switch ( index ) {
+      case 0:
+        setExecutionResultTargetStepMeta( step );
+        break;
+      case 1:
+        setResultRowsTargetStepMeta( step );
+        break;
+      case 2:
+        setResultFilesTargetStepMeta( step );
+        break;
+      default:
+        break;
     }
-    
+
   }
 
-  
   /**
    * Remove the cached {@link StepIOMeta} so it is recreated when it is next accessed.
    */
@@ -724,27 +789,28 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   @Override
-  public void searchInfoAndTargetSteps(List<StepMeta> steps) {
-    executionResultTargetStepMeta = StepMeta.findStep(steps, executionResultTargetStep);
-    resultRowsTargetStepMeta = StepMeta.findStep(steps, resultRowsTargetStep);
-    resultFilesTargetStepMeta = StepMeta.findStep(steps, resultFilesTargetStep);
+  public void searchInfoAndTargetSteps( List<StepMeta> steps ) {
+    executionResultTargetStepMeta = StepMeta.findStep( steps, executionResultTargetStep );
+    resultRowsTargetStepMeta = StepMeta.findStep( steps, resultRowsTargetStep );
+    resultFilesTargetStepMeta = StepMeta.findStep( steps, resultFilesTargetStep );
   }
-  
+
   public TransformationType[] getSupportedTransformationTypes() {
     return new TransformationType[] { TransformationType.Normal, };
   }
-  
+
   @Override
   public boolean hasRepositoryReferences() {
-    return specificationMethod==ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE;
+    return specificationMethod == ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE;
   }
-  
+
   @Override
-  public void lookupRepositoryReferences(Repository repository) throws KettleException {
+  public void lookupRepositoryReferences( Repository repository ) throws KettleException {
     // The correct reference is stored in the trans name and directory attributes...
     //
-    RepositoryDirectoryInterface repositoryDirectoryInterface = RepositoryImportLocation.getRepositoryImportLocation().findDirectory(directoryPath);
-    jobObjectId = repository.getTransformationID(jobName, repositoryDirectoryInterface);
+    RepositoryDirectoryInterface repositoryDirectoryInterface =
+        RepositoryImportLocation.getRepositoryImportLocation().findDirectory( directoryPath );
+    jobObjectId = repository.getTransformationID( jobName, repositoryDirectoryInterface );
   }
 
   /**
@@ -758,7 +824,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
    * @param directoryPath
    *          the directoryPath to set
    */
-  public void setDirectoryPath(String directoryPath) {
+  public void setDirectoryPath( String directoryPath ) {
     this.directoryPath = directoryPath;
   }
 
@@ -773,10 +839,9 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
    * @param fileName
    *          the fileName to set
    */
-  public void setFileName(String fileName) {
+  public void setFileName( String fileName ) {
     this.fileName = fileName;
   }
-
 
   /**
    * @return the mappingParameters
@@ -789,7 +854,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
    * @param mappingParameters
    *          the mappingParameters to set
    */
-  public void setMappingParameters(JobExecutorParameters mappingParameters) {
+  public void setMappingParameters( JobExecutorParameters mappingParameters ) {
     this.parameters = mappingParameters;
   }
 
@@ -804,7 +869,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
    * @param repository
    *          the repository to set
    */
-  public void setRepository(Repository repository) {
+  public void setRepository( Repository repository ) {
     this.repository = repository;
   }
 
@@ -819,7 +884,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
    * @param specificationMethod
    *          the specificationMethod to set
    */
-  public void setSpecificationMethod(ObjectLocationSpecificationMethod specificationMethod) {
+  public void setSpecificationMethod( ObjectLocationSpecificationMethod specificationMethod ) {
     this.specificationMethod = specificationMethod;
   }
 
@@ -831,9 +896,10 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   /**
-   * @param jobName the jobName to set
+   * @param jobName
+   *          the jobName to set
    */
-  public void setJobName(String jobName) {
+  public void setJobName( String jobName ) {
     this.jobName = jobName;
   }
 
@@ -845,9 +911,10 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   /**
-   * @param jobObjectId the jobObjectId to set
+   * @param jobObjectId
+   *          the jobObjectId to set
    */
-  public void setJobObjectId(ObjectId jobObjectId) {
+  public void setJobObjectId( ObjectId jobObjectId ) {
     this.jobObjectId = jobObjectId;
   }
 
@@ -859,9 +926,10 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   /**
-   * @param parameters the parameters to set
+   * @param parameters
+   *          the parameters to set
    */
-  public void setParameters(JobExecutorParameters parameters) {
+  public void setParameters( JobExecutorParameters parameters ) {
     this.parameters = parameters;
   }
 
@@ -873,9 +941,10 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   /**
-   * @param executionTimeField the executionTimeField to set
+   * @param executionTimeField
+   *          the executionTimeField to set
    */
-  public void setExecutionTimeField(String executionTimeField) {
+  public void setExecutionTimeField( String executionTimeField ) {
     this.executionTimeField = executionTimeField;
   }
 
@@ -887,9 +956,10 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   /**
-   * @param executionResultField the executionResultField to set
+   * @param executionResultField
+   *          the executionResultField to set
    */
-  public void setExecutionResultField(String executionResultField) {
+  public void setExecutionResultField( String executionResultField ) {
     this.executionResultField = executionResultField;
   }
 
@@ -901,9 +971,10 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   /**
-   * @param executionNrErrorsField the executionNrErrorsField to set
+   * @param executionNrErrorsField
+   *          the executionNrErrorsField to set
    */
-  public void setExecutionNrErrorsField(String executionNrErrorsField) {
+  public void setExecutionNrErrorsField( String executionNrErrorsField ) {
     this.executionNrErrorsField = executionNrErrorsField;
   }
 
@@ -915,9 +986,10 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   /**
-   * @param executionLinesReadField the executionLinesReadField to set
+   * @param executionLinesReadField
+   *          the executionLinesReadField to set
    */
-  public void setExecutionLinesReadField(String executionLinesReadField) {
+  public void setExecutionLinesReadField( String executionLinesReadField ) {
     this.executionLinesReadField = executionLinesReadField;
   }
 
@@ -929,9 +1001,10 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   /**
-   * @param executionLinesWrittenField the executionLinesWrittenField to set
+   * @param executionLinesWrittenField
+   *          the executionLinesWrittenField to set
    */
-  public void setExecutionLinesWrittenField(String executionLinesWrittenField) {
+  public void setExecutionLinesWrittenField( String executionLinesWrittenField ) {
     this.executionLinesWrittenField = executionLinesWrittenField;
   }
 
@@ -943,9 +1016,10 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   /**
-   * @param executionLinesInputField the executionLinesInputField to set
+   * @param executionLinesInputField
+   *          the executionLinesInputField to set
    */
-  public void setExecutionLinesInputField(String executionLinesInputField) {
+  public void setExecutionLinesInputField( String executionLinesInputField ) {
     this.executionLinesInputField = executionLinesInputField;
   }
 
@@ -957,9 +1031,10 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   /**
-   * @param executionLinesOutputField the executionLinesOutputField to set
+   * @param executionLinesOutputField
+   *          the executionLinesOutputField to set
    */
-  public void setExecutionLinesOutputField(String executionLinesOutputField) {
+  public void setExecutionLinesOutputField( String executionLinesOutputField ) {
     this.executionLinesOutputField = executionLinesOutputField;
   }
 
@@ -971,9 +1046,10 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   /**
-   * @param executionLinesRejectedField the executionLinesRejectedField to set
+   * @param executionLinesRejectedField
+   *          the executionLinesRejectedField to set
    */
-  public void setExecutionLinesRejectedField(String executionLinesRejectedField) {
+  public void setExecutionLinesRejectedField( String executionLinesRejectedField ) {
     this.executionLinesRejectedField = executionLinesRejectedField;
   }
 
@@ -985,9 +1061,10 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   /**
-   * @param executionLinesUpdatedField the executionLinesUpdatedField to set
+   * @param executionLinesUpdatedField
+   *          the executionLinesUpdatedField to set
    */
-  public void setExecutionLinesUpdatedField(String executionLinesUpdatedField) {
+  public void setExecutionLinesUpdatedField( String executionLinesUpdatedField ) {
     this.executionLinesUpdatedField = executionLinesUpdatedField;
   }
 
@@ -999,9 +1076,10 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   /**
-   * @param executionLinesDeletedField the executionLinesDeletedField to set
+   * @param executionLinesDeletedField
+   *          the executionLinesDeletedField to set
    */
-  public void setExecutionLinesDeletedField(String executionLinesDeletedField) {
+  public void setExecutionLinesDeletedField( String executionLinesDeletedField ) {
     this.executionLinesDeletedField = executionLinesDeletedField;
   }
 
@@ -1013,9 +1091,10 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   /**
-   * @param executionFilesRetrievedField the executionFilesRetrievedField to set
+   * @param executionFilesRetrievedField
+   *          the executionFilesRetrievedField to set
    */
-  public void setExecutionFilesRetrievedField(String executionFilesRetrievedField) {
+  public void setExecutionFilesRetrievedField( String executionFilesRetrievedField ) {
     this.executionFilesRetrievedField = executionFilesRetrievedField;
   }
 
@@ -1027,9 +1106,10 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   /**
-   * @param executionExitStatusField the executionExitStatusField to set
+   * @param executionExitStatusField
+   *          the executionExitStatusField to set
    */
-  public void setExecutionExitStatusField(String executionExitStatusField) {
+  public void setExecutionExitStatusField( String executionExitStatusField ) {
     this.executionExitStatusField = executionExitStatusField;
   }
 
@@ -1041,9 +1121,10 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   /**
-   * @param executionLogTextField the executionLogTextField to set
+   * @param executionLogTextField
+   *          the executionLogTextField to set
    */
-  public void setExecutionLogTextField(String executionLogTextField) {
+  public void setExecutionLogTextField( String executionLogTextField ) {
     this.executionLogTextField = executionLogTextField;
   }
 
@@ -1055,9 +1136,10 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   /**
-   * @param executionLogChannelIdField the executionLogChannelIdField to set
+   * @param executionLogChannelIdField
+   *          the executionLogChannelIdField to set
    */
-  public void setExecutionLogChannelIdField(String executionLogChannelIdField) {
+  public void setExecutionLogChannelIdField( String executionLogChannelIdField ) {
     this.executionLogChannelIdField = executionLogChannelIdField;
   }
 
@@ -1069,9 +1151,10 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   /**
-   * @param resultRowsTargetStep the resultRowsTargetStep to set
+   * @param resultRowsTargetStep
+   *          the resultRowsTargetStep to set
    */
-  public void setResultRowsTargetStep(String resultRowsTargetStep) {
+  public void setResultRowsTargetStep( String resultRowsTargetStep ) {
     this.resultRowsTargetStep = resultRowsTargetStep;
   }
 
@@ -1083,9 +1166,10 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   /**
-   * @param resultRowsField the resultRowsField to set
+   * @param resultRowsField
+   *          the resultRowsField to set
    */
-  public void setResultRowsField(String[] resultRowsField) {
+  public void setResultRowsField( String[] resultRowsField ) {
     this.resultRowsField = resultRowsField;
   }
 
@@ -1097,9 +1181,10 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   /**
-   * @param resultRowsType the resultRowsType to set
+   * @param resultRowsType
+   *          the resultRowsType to set
    */
-  public void setResultRowsType(int[] resultRowsType) {
+  public void setResultRowsType( int[] resultRowsType ) {
     this.resultRowsType = resultRowsType;
   }
 
@@ -1111,9 +1196,10 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   /**
-   * @param resultRowsLength the resultRowsLength to set
+   * @param resultRowsLength
+   *          the resultRowsLength to set
    */
-  public void setResultRowsLength(int[] resultRowsLength) {
+  public void setResultRowsLength( int[] resultRowsLength ) {
     this.resultRowsLength = resultRowsLength;
   }
 
@@ -1125,9 +1211,10 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   /**
-   * @param resultRowsPrecision the resultRowsPrecision to set
+   * @param resultRowsPrecision
+   *          the resultRowsPrecision to set
    */
-  public void setResultRowsPrecision(int[] resultRowsPrecision) {
+  public void setResultRowsPrecision( int[] resultRowsPrecision ) {
     this.resultRowsPrecision = resultRowsPrecision;
   }
 
@@ -1139,9 +1226,10 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   /**
-   * @param resultFilesTargetStep the resultFilesTargetStep to set
+   * @param resultFilesTargetStep
+   *          the resultFilesTargetStep to set
    */
-  public void setResultFilesTargetStep(String resultFilesTargetStep) {
+  public void setResultFilesTargetStep( String resultFilesTargetStep ) {
     this.resultFilesTargetStep = resultFilesTargetStep;
   }
 
@@ -1153,9 +1241,10 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   /**
-   * @param resultRowsTargetStepMeta the resultRowsTargetStepMeta to set
+   * @param resultRowsTargetStepMeta
+   *          the resultRowsTargetStepMeta to set
    */
-  public void setResultRowsTargetStepMeta(StepMeta resultRowsTargetStepMeta) {
+  public void setResultRowsTargetStepMeta( StepMeta resultRowsTargetStepMeta ) {
     this.resultRowsTargetStepMeta = resultRowsTargetStepMeta;
   }
 
@@ -1167,9 +1256,10 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   /**
-   * @param resultFilesTargetStepMeta the resultFilesTargetStepMeta to set
+   * @param resultFilesTargetStepMeta
+   *          the resultFilesTargetStepMeta to set
    */
-  public void setResultFilesTargetStepMeta(StepMeta resultFilesTargetStepMeta) {
+  public void setResultFilesTargetStepMeta( StepMeta resultFilesTargetStepMeta ) {
     this.resultFilesTargetStepMeta = resultFilesTargetStepMeta;
   }
 
@@ -1181,9 +1271,10 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   /**
-   * @param groupSize the groupSize to set
+   * @param groupSize
+   *          the groupSize to set
    */
-  public void setGroupSize(String groupSize) {
+  public void setGroupSize( String groupSize ) {
     this.groupSize = groupSize;
   }
 
@@ -1195,9 +1286,10 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   /**
-   * @param groupField the groupField to set
+   * @param groupField
+   *          the groupField to set
    */
-  public void setGroupField(String groupField) {
+  public void setGroupField( String groupField ) {
     this.groupField = groupField;
   }
 
@@ -1209,17 +1301,17 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   /**
-   * @param groupTime the groupTime to set
+   * @param groupTime
+   *          the groupTime to set
    */
-  public void setGroupTime(String groupTime) {
+  public void setGroupTime( String groupTime ) {
     this.groupTime = groupTime;
   }
-  
+
   @Override
   public boolean excludeFromCopyDistributeVerification() {
     return true;
   }
-
 
   /**
    * @return the executionResultTargetStep
@@ -1228,14 +1320,13 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
     return executionResultTargetStep;
   }
 
-
   /**
-   * @param executionResultTargetStep the executionResultTargetStep to set
+   * @param executionResultTargetStep
+   *          the executionResultTargetStep to set
    */
-  public void setExecutionResultTargetStep(String executionResultTargetStep) {
+  public void setExecutionResultTargetStep( String executionResultTargetStep ) {
     this.executionResultTargetStep = executionResultTargetStep;
   }
-
 
   /**
    * @return the executionResultTargetStepMeta
@@ -1244,14 +1335,13 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
     return executionResultTargetStepMeta;
   }
 
-
   /**
-   * @param executionResultTargetStepMeta the executionResultTargetStepMeta to set
+   * @param executionResultTargetStepMeta
+   *          the executionResultTargetStepMeta to set
    */
-  public void setExecutionResultTargetStepMeta(StepMeta executionResultTargetStepMeta) {
+  public void setExecutionResultTargetStepMeta( StepMeta executionResultTargetStepMeta ) {
     this.executionResultTargetStepMeta = executionResultTargetStepMeta;
   }
-
 
   /**
    * @return the resultFilesFileNameField
@@ -1260,23 +1350,24 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
     return resultFilesFileNameField;
   }
 
-
   /**
-   * @param resultFilesFileNameField the resultFilesFileNameField to set
+   * @param resultFilesFileNameField
+   *          the resultFilesFileNameField to set
    */
-  public void setResultFilesFileNameField(String resultFilesFileNameField) {
+  public void setResultFilesFileNameField( String resultFilesFileNameField ) {
     this.resultFilesFileNameField = resultFilesFileNameField;
   }
-  
+
   /**
-   * @return The objects referenced in the step, like a mapping, a transformation, a job, ... 
+   * @return The objects referenced in the step, like a mapping, a transformation, a job, ...
    */
   public String[] getReferencedObjectDescriptions() {
-    return new String[] { BaseMessages.getString(PKG, "JobExecutorMeta.ReferencedObject.Description"), };
+    return new String[] { BaseMessages.getString( PKG, "JobExecutorMeta.ReferencedObject.Description" ), };
   }
-  
+
   private boolean isJobDefined() {
-    return !Const.isEmpty(fileName) || jobObjectId!=null || (!Const.isEmpty(this.directoryPath) && !Const.isEmpty(jobName));
+    return !Const.isEmpty( fileName ) || jobObjectId != null
+        || ( !Const.isEmpty( this.directoryPath ) && !Const.isEmpty( jobName ) );
   }
 
   public boolean[] isReferencedObjectEnabled() {
@@ -1285,24 +1376,29 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
 
   /**
    * Load the referenced object
-   * @param index the object index to load
-   * @param rep the repository
-   * @param metaStore the metaStore
-   * @param space the variable space to use
+   * 
+   * @param index
+   *          the object index to load
+   * @param rep
+   *          the repository
+   * @param metaStore
+   *          the metaStore
+   * @param space
+   *          the variable space to use
    * @return the referenced object once loaded
    * @throws KettleException
    */
-  public Object loadReferencedObject(int index, Repository rep, IMetaStore metaStore, VariableSpace space) throws KettleException {
-    return loadJobMeta(this, rep, metaStore, space);
+  public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space )
+    throws KettleException {
+    return loadJobMeta( this, rep, metaStore, space );
   }
 
-
-  public void setMetaStore(IMetaStore metaStore) {
+  public void setMetaStore( IMetaStore metaStore ) {
     this.metaStore = metaStore;
   }
-  
+
   public IMetaStore getMetaStore() {
     return metaStore;
   }
-  
+
 }

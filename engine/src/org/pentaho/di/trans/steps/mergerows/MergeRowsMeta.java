@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.trans.steps.mergerows;
 
@@ -61,324 +61,295 @@ import org.w3c.dom.Node;
  *
  */
 
-public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
-{
-	private static Class<?> PKG = MergeRowsMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface {
+  private static Class<?> PKG = MergeRowsMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-    private String flagField;
+  private String flagField;
 
-    private String   keyFields[];
-    private String   valueFields[];
+  private String[] keyFields;
+  private String[] valueFields;
 
-	/**
-     * @return Returns the keyFields.
-     */
-    public String[] getKeyFields()
-    {
-        return keyFields;
+  /**
+   * @return Returns the keyFields.
+   */
+  public String[] getKeyFields() {
+    return keyFields;
+  }
+
+  /**
+   * @param keyFields
+   *          The keyFields to set.
+   */
+  public void setKeyFields( String[] keyFields ) {
+    this.keyFields = keyFields;
+  }
+
+  /**
+   * @return Returns the valueFields.
+   */
+  public String[] getValueFields() {
+    return valueFields;
+  }
+
+  /**
+   * @param valueFields
+   *          The valueFields to set.
+   */
+  public void setValueFields( String[] valueFields ) {
+    this.valueFields = valueFields;
+  }
+
+  public MergeRowsMeta() {
+    super(); // allocate BaseStepMeta
+  }
+
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+    readData( stepnode );
+  }
+
+  /**
+   * @return Returns the flagField.
+   */
+  public String getFlagField() {
+    return flagField;
+  }
+
+  /**
+   * @param flagField
+   *          The flagField to set.
+   */
+  public void setFlagField( String flagField ) {
+    this.flagField = flagField;
+  }
+
+  public void allocate( int nrKeys, int nrValues ) {
+    keyFields = new String[nrKeys];
+    valueFields = new String[nrValues];
+  }
+
+  public Object clone() {
+    MergeRowsMeta retval = (MergeRowsMeta) super.clone();
+
+    return retval;
+  }
+
+  public String getXML() {
+    StringBuffer retval = new StringBuffer();
+
+    retval.append( "    <keys>" + Const.CR );
+    for ( int i = 0; i < keyFields.length; i++ ) {
+      retval.append( "      " + XMLHandler.addTagValue( "key", keyFields[i] ) );
     }
+    retval.append( "    </keys>" + Const.CR );
 
-    /**
-     * @param keyFields The keyFields to set.
-     */
-    public void setKeyFields(String[] keyFields)
-    {
-        this.keyFields = keyFields;
+    retval.append( "    <values>" + Const.CR );
+    for ( int i = 0; i < valueFields.length; i++ ) {
+      retval.append( "      " + XMLHandler.addTagValue( "value", valueFields[i] ) );
     }
+    retval.append( "    </values>" + Const.CR );
 
-    /**
-     * @return Returns the valueFields.
-     */
-    public String[] getValueFields()
-    {
-        return valueFields;
+    retval.append( XMLHandler.addTagValue( "flag_field", flagField ) );
+
+    List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
+    retval.append( XMLHandler.addTagValue( "reference", infoStreams.get( 0 ).getStepname() ) );
+    retval.append( XMLHandler.addTagValue( "compare", infoStreams.get( 1 ).getStepname() ) );
+    retval.append( "    <compare>" + Const.CR );
+
+    retval.append( "    </compare>" + Const.CR );
+
+    return retval.toString();
+  }
+
+  private void readData( Node stepnode ) throws KettleXMLException {
+    try {
+
+      Node keysnode = XMLHandler.getSubNode( stepnode, "keys" );
+      Node valuesnode = XMLHandler.getSubNode( stepnode, "values" );
+
+      int nrKeys = XMLHandler.countNodes( keysnode, "key" );
+      int nrValues = XMLHandler.countNodes( valuesnode, "value" );
+
+      allocate( nrKeys, nrValues );
+
+      for ( int i = 0; i < nrKeys; i++ ) {
+        Node keynode = XMLHandler.getSubNodeByNr( keysnode, "key", i );
+        keyFields[i] = XMLHandler.getNodeValue( keynode );
+      }
+
+      for ( int i = 0; i < nrValues; i++ ) {
+        Node valuenode = XMLHandler.getSubNodeByNr( valuesnode, "value", i );
+        valueFields[i] = XMLHandler.getNodeValue( valuenode );
+      }
+
+      flagField = XMLHandler.getTagValue( stepnode, "flag_field" );
+
+      List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
+      StreamInterface referenceStream = infoStreams.get( 0 );
+      StreamInterface compareStream = infoStreams.get( 1 );
+
+      compareStream.setSubject( XMLHandler.getTagValue( stepnode, "compare" ) );
+      referenceStream.setSubject( XMLHandler.getTagValue( stepnode, "reference" ) );
+    } catch ( Exception e ) {
+      throw new KettleXMLException( BaseMessages.getString( PKG, "MergeRowsMeta.Exception.UnableToLoadStepInfo" ), e );
     }
+  }
 
-    /**
-     * @param valueFields The valueFields to set.
-     */
-    public void setValueFields(String[] valueFields)
-    {
-        this.valueFields = valueFields;
+  public void setDefault() {
+    flagField = "flagfield";
+    allocate( 0, 0 );
+  }
+
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
+    throws KettleException {
+    try {
+      int nrKeys = rep.countNrStepAttributes( id_step, "key_field" );
+      int nrValues = rep.countNrStepAttributes( id_step, "value_field" );
+
+      allocate( nrKeys, nrValues );
+
+      for ( int i = 0; i < nrKeys; i++ ) {
+        keyFields[i] = rep.getStepAttributeString( id_step, i, "key_field" );
+      }
+      for ( int i = 0; i < nrValues; i++ ) {
+        valueFields[i] = rep.getStepAttributeString( id_step, i, "value_field" );
+      }
+
+      flagField = rep.getStepAttributeString( id_step, "flag_field" );
+
+      List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
+      StreamInterface referenceStream = infoStreams.get( 0 );
+      StreamInterface compareStream = infoStreams.get( 1 );
+
+      referenceStream.setSubject( rep.getStepAttributeString( id_step, "reference" ) );
+      compareStream.setSubject( rep.getStepAttributeString( id_step, "compare" ) );
+    } catch ( Exception e ) {
+      throw new KettleException(
+          BaseMessages.getString( PKG, "MergeRowsMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
+  }
 
-    public MergeRowsMeta()
-	{
-		super(); // allocate BaseStepMeta
-	}
-	
-	public void loadXML(Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore)
-		throws KettleXMLException
-	{
-		readData(stepnode);
-	}
-
-    /**
-     * @return Returns the flagField.
-     */
-    public String getFlagField()
-    {
-        return flagField;
+  @Override
+  public void searchInfoAndTargetSteps( List<StepMeta> steps ) {
+    for ( StreamInterface stream : getStepIOMeta().getInfoStreams() ) {
+      stream.setStepMeta( StepMeta.findStep( steps, (String) stream.getSubject() ) );
     }
+  }
 
-    /**
-     * @param flagField The flagField to set.
-     */
-    public void setFlagField(String flagField)
-    {
-        this.flagField = flagField;
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
+    throws KettleException {
+    try {
+      for ( int i = 0; i < keyFields.length; i++ ) {
+        rep.saveStepAttribute( id_transformation, id_step, i, "key_field", keyFields[i] );
+      }
+
+      for ( int i = 0; i < valueFields.length; i++ ) {
+        rep.saveStepAttribute( id_transformation, id_step, i, "value_field", valueFields[i] );
+      }
+
+      rep.saveStepAttribute( id_transformation, id_step, "flag_field", flagField );
+
+      List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
+      StreamInterface referenceStream = infoStreams.get( 0 );
+      StreamInterface compareStream = infoStreams.get( 1 );
+
+      rep.saveStepAttribute( id_transformation, id_step, "reference", referenceStream.getStepname() );
+      rep.saveStepAttribute( id_transformation, id_step, "compare", compareStream.getStepname() );
+    } catch ( Exception e ) {
+      throw new KettleException( BaseMessages.getString( PKG, "MergeRowsMeta.Exception.UnableToSaveStepInfo" )
+          + id_step, e );
     }
+  }
 
-	public void allocate(int nrKeys, int nrValues)
-	{
-        keyFields = new String[nrKeys];
-        valueFields = new String[nrValues];
-	}
+  public boolean chosesTargetSteps() {
+    return false;
+  }
 
-	public Object clone()
-	{
-		MergeRowsMeta retval = (MergeRowsMeta)super.clone();
+  public String[] getTargetSteps() {
+    return null;
+  }
 
-        return retval;
-	}
-	
-	public String getXML()
-	{
-        StringBuffer retval = new StringBuffer();
-
-        retval.append("    <keys>"+Const.CR); 
-        for (int i=0;i<keyFields.length;i++)
-        {
-            retval.append("      "+XMLHandler.addTagValue("key", keyFields[i]));  
+  public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
+      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    // We don't have any input fields here in "r" as they are all info fields.
+    // So we just merge in the info fields.
+    //
+    if ( info != null ) {
+      boolean found = false;
+      for ( int i = 0; i < info.length && !found; i++ ) {
+        if ( info[i] != null ) {
+          r.mergeRowMeta( info[i] );
+          found = true;
         }
-        retval.append("    </keys>"+Const.CR); 
-        
-        retval.append("    <values>"+Const.CR); 
-        for (int i=0;i<valueFields.length;i++)
-        {
-            retval.append("      "+XMLHandler.addTagValue("value", valueFields[i]));  
-        }
-        retval.append("    </values>"+Const.CR); 
-
-        retval.append(XMLHandler.addTagValue("flag_field", flagField));         
-
-        List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
-		retval.append(XMLHandler.addTagValue("reference", infoStreams.get(0).getStepname()));		 
-		retval.append(XMLHandler.addTagValue("compare", infoStreams.get(1).getStepname()));		 
-		retval.append("    <compare>"+Const.CR); 
-				
-		retval.append("    </compare>"+Const.CR); 
-
-		return retval.toString();
-	}
-
-	private void readData(Node stepnode)
-		throws KettleXMLException
-	{
-		try
-		{ 
-            
-            Node keysnode   = XMLHandler.getSubNode(stepnode, "keys"); 
-            Node valuesnode = XMLHandler.getSubNode(stepnode, "values"); 
-            
-		    int nrKeys   = XMLHandler.countNodes(keysnode, "key"); 
-            int nrValues = XMLHandler.countNodes(valuesnode, "value"); 
-            
-            allocate(nrKeys, nrValues);
-            
-            for (int i=0;i<nrKeys;i++) 
-            {
-                Node keynode = XMLHandler.getSubNodeByNr(keysnode, "key", i); 
-                keyFields[i] = XMLHandler.getNodeValue(keynode);
-            }
-            
-            for (int i=0;i<nrValues;i++) 
-            {
-                Node valuenode = XMLHandler.getSubNodeByNr(valuesnode, "value", i); 
-                valueFields[i] = XMLHandler.getNodeValue(valuenode);
-            }
-            
-            flagField = XMLHandler.getTagValue(stepnode, "flag_field"); 
-            
-            List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
-            StreamInterface referenceStream = infoStreams.get(0);
-            StreamInterface compareStream = infoStreams.get(1);
-
-			compareStream.setSubject( XMLHandler.getTagValue(stepnode, "compare") ); 
-			referenceStream.setSubject( XMLHandler.getTagValue(stepnode, "reference") ); 
-		}
-		catch(Exception e)
-		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "MergeRowsMeta.Exception.UnableToLoadStepInfo"), e); 
-		}
-	}
-	
-	public void setDefault()
-	{
-        flagField = "flagfield";
-        allocate(0,0);
-	}
-
-	public void readRep(Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases) throws KettleException
-	{
-		try
-		{
-            int nrKeys = rep.countNrStepAttributes(id_step, "key_field"); 
-            int nrValues = rep.countNrStepAttributes(id_step, "value_field"); 
-            
-			allocate(nrKeys, nrValues);
-            
-            for (int i=0;i<nrKeys;i++)
-            {
-                keyFields[i] = rep.getStepAttributeString(id_step, i, "key_field"); 
-            }
-            for (int i=0;i<nrValues;i++)
-            {
-                valueFields[i] = rep.getStepAttributeString(id_step, i, "value_field"); 
-            }
-
-            flagField  =   rep.getStepAttributeString (id_step, "flag_field");  
-
-            List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
-            StreamInterface referenceStream = infoStreams.get(0);
-            StreamInterface compareStream = infoStreams.get(1);
-
-			referenceStream.setSubject( rep.getStepAttributeString (id_step, "reference") );  
-			compareStream.setSubject( rep.getStepAttributeString (id_step, "compare") );  
-		}
-		catch(Exception e)
-		{
-			throw new KettleException(BaseMessages.getString(PKG, "MergeRowsMeta.Exception.UnexpectedErrorReadingStepInfo"), e); 
-		}
-	}
-
-	@Override
-	public void searchInfoAndTargetSteps(List<StepMeta> steps) {
-		for (StreamInterface stream : getStepIOMeta().getInfoStreams()) {
-			stream.setStepMeta( StepMeta.findStep(steps, (String)stream.getSubject()) );
-		}
-	}
-	
-	public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step) throws KettleException
-	{
-		try
-		{
-            for (int i=0;i<keyFields.length;i++)
-            {
-                rep.saveStepAttribute(id_transformation, id_step, i, "key_field", keyFields[i]); 
-            }
-
-            for (int i=0;i<valueFields.length;i++)
-            {
-                rep.saveStepAttribute(id_transformation, id_step, i, "value_field", valueFields[i]); 
-            }
-
-            rep.saveStepAttribute(id_transformation, id_step, "flag_field", flagField); 
-
-            List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
-            StreamInterface referenceStream = infoStreams.get(0);
-            StreamInterface compareStream = infoStreams.get(1);
-
-			rep.saveStepAttribute(id_transformation, id_step, "reference", referenceStream.getStepname()); 
-			rep.saveStepAttribute(id_transformation, id_step, "compare", compareStream.getStepname()); 
-		}
-		catch(Exception e)
-		{
-			throw new KettleException(BaseMessages.getString(PKG, "MergeRowsMeta.Exception.UnableToSaveStepInfo")+id_step, e); 
-		}
-	}
-	
-	public boolean chosesTargetSteps()
-	{
-	    return false;
-	}
-
-	public String[] getTargetSteps()
-	{
-	    return null;
-	}
-    
-    public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
-    {
-        // We don't have any input fields here in "r" as they are all info fields.
-        // So we just merge in the info fields.
-        //
-        if (info!=null)
-        {
-            boolean found=false;
-            for (int i=0;i<info.length && !found;i++) 
-            {
-                if (info[i]!=null)
-                {
-                    r.mergeRowMeta(info[i]);
-                    found=true;
-                }
-            }
-        }
-        
-        if (Const.isEmpty(flagField)) throw new KettleStepException(BaseMessages.getString(PKG, "MergeRowsMeta.Exception.FlagFieldNotSpecified"));
-        ValueMetaInterface flagFieldValue = new ValueMeta(flagField, ValueMetaInterface.TYPE_STRING);
-        flagFieldValue.setOrigin(name);
-        r.addValueMeta(flagFieldValue);
-
+      }
     }
 
-    public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
-	{
-		CheckResult cr;
-		
-        List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
-        StreamInterface referenceStream = infoStreams.get(0);
-        StreamInterface compareStream = infoStreams.get(1);
+    if ( Const.isEmpty( flagField ) ) {
+      throw new KettleStepException( BaseMessages.getString( PKG, "MergeRowsMeta.Exception.FlagFieldNotSpecified" ) );
+    }
+    ValueMetaInterface flagFieldValue = new ValueMeta( flagField, ValueMetaInterface.TYPE_STRING );
+    flagFieldValue.setOrigin( name );
+    r.addValueMeta( flagFieldValue );
 
-		if (referenceStream.getStepname()!=null && compareStream.getStepname()!=null)
-		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MergeRowsMeta.CheckResult.SourceStepsOK"), stepMeta);
-			remarks.add(cr);
-		}
-		else
-		if (referenceStream.getStepname()==null && compareStream.getStepname()==null)
-		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "MergeRowsMeta.CheckResult.SourceStepsMissing"), stepMeta);
-			remarks.add(cr);
-		}
-		else
-		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "MergeRowsMeta.CheckResult.OneSourceStepMissing"), stepMeta);
-			remarks.add(cr);
-		}
-	}
-	
-	public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface,  int cnr, TransMeta tr, Trans trans)
-	{
-		return new MergeRows(stepMeta, stepDataInterface, cnr, tr, trans);
-	}
+  }
 
-	public StepDataInterface getStepData()
-	{
-		return new MergeRowsData();
-	}
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
+      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
+      IMetaStore metaStore ) {
+    CheckResult cr;
 
-	/**
-     * Returns the Input/Output metadata for this step.
-     */
-    public StepIOMetaInterface getStepIOMeta() {
-    	if (ioMeta==null) {
+    List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
+    StreamInterface referenceStream = infoStreams.get( 0 );
+    StreamInterface compareStream = infoStreams.get( 1 );
 
-    		ioMeta = new StepIOMeta(true, true, false, false, false, false);
-    	
-	    	ioMeta.addStream( new Stream(StreamType.INFO, null, BaseMessages.getString(PKG, "MergeRowsMeta.InfoStream.FirstStream.Description"), StreamIcon.INFO, null) );
-	    	ioMeta.addStream( new Stream(StreamType.INFO, null, BaseMessages.getString(PKG, "MergeRowsMeta.InfoStream.SecondStream.Description"), StreamIcon.INFO, null) );
-    	}
-    	
-    	return ioMeta;
+    if ( referenceStream.getStepname() != null && compareStream.getStepname() != null ) {
+      cr =
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
+              "MergeRowsMeta.CheckResult.SourceStepsOK" ), stepMeta );
+      remarks.add( cr );
+    } else if ( referenceStream.getStepname() == null && compareStream.getStepname() == null ) {
+      cr =
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
+              "MergeRowsMeta.CheckResult.SourceStepsMissing" ), stepMeta );
+      remarks.add( cr );
+    } else {
+      cr =
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
+              "MergeRowsMeta.CheckResult.OneSourceStepMissing" ), stepMeta );
+      remarks.add( cr );
+    }
+  }
+
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
+      Trans trans ) {
+    return new MergeRows( stepMeta, stepDataInterface, cnr, tr, trans );
+  }
+
+  public StepDataInterface getStepData() {
+    return new MergeRowsData();
+  }
+
+  /**
+   * Returns the Input/Output metadata for this step.
+   */
+  public StepIOMetaInterface getStepIOMeta() {
+    if ( ioMeta == null ) {
+
+      ioMeta = new StepIOMeta( true, true, false, false, false, false );
+
+      ioMeta.addStream( new Stream( StreamType.INFO, null, BaseMessages.getString( PKG,
+          "MergeRowsMeta.InfoStream.FirstStream.Description" ), StreamIcon.INFO, null ) );
+      ioMeta.addStream( new Stream( StreamType.INFO, null, BaseMessages.getString( PKG,
+          "MergeRowsMeta.InfoStream.SecondStream.Description" ), StreamIcon.INFO, null ) );
     }
 
-    public void resetStepIoMeta() {
-    }
-    
-    public TransformationType[] getSupportedTransformationTypes() {
-      return new TransformationType[] { TransformationType.Normal, };
-    }
+    return ioMeta;
+  }
+
+  public void resetStepIoMeta() {
+  }
+
+  public TransformationType[] getSupportedTransformationTypes() {
+    return new TransformationType[] { TransformationType.Normal, };
+  }
 
 }

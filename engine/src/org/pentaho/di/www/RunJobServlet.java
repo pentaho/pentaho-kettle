@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.www;
 
@@ -49,155 +49,155 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 
 public class RunJobServlet extends BaseHttpServlet implements CartePluginInterface {
 
-  private static final long  serialVersionUID = 1192413943669836775L;
+  private static final long serialVersionUID = 1192413943669836775L;
 
-  private static Class<?>    PKG              = RunJobServlet.class; // i18n
+  private static Class<?> PKG = RunJobServlet.class; // i18n
 
-  public static final String CONTEXT_PATH     = "/kettle/runJob";
+  public static final String CONTEXT_PATH = "/kettle/runJob";
 
   public RunJobServlet() {
   }
 
-  public RunJobServlet(JobMap jobMap) {
-    super(jobMap);
+  public RunJobServlet( JobMap jobMap ) {
+    super( jobMap );
   }
 
-  public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    if (isJettyMode() && !request.getContextPath().startsWith(CONTEXT_PATH)) {
+  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+    if ( isJettyMode() && !request.getContextPath().startsWith( CONTEXT_PATH ) ) {
       return;
     }
 
-    if (log.isDebug())
-      logDebug(BaseMessages.getString(PKG, "RunJobServlet.Log.RunJobRequested"));
+    if ( log.isDebug() ) {
+      logDebug( BaseMessages.getString( PKG, "RunJobServlet.Log.RunJobRequested" ) );
+    }
 
     // Options taken from PAN
     //
     String[] knownOptions = new String[] { "job", "level", };
 
-    String transOption = request.getParameter("job");
-    String levelOption = request.getParameter("level");
+    String transOption = request.getParameter( "job" );
+    String levelOption = request.getParameter( "level" );
 
-    response.setStatus(HttpServletResponse.SC_OK);
+    response.setStatus( HttpServletResponse.SC_OK );
 
     PrintWriter out = response.getWriter();
 
     try {
 
       final Repository repository = transformationMap.getSlaveServerConfig().getRepository();
-      final JobMeta jobMeta = loadJob(repository, transOption);
+      final JobMeta jobMeta = loadJob( repository, transOption );
 
       // Set the servlet parameters as variables in the transformation
       //
       String[] parameters = jobMeta.listParameters();
       Enumeration<?> parameterNames = request.getParameterNames();
-      while (parameterNames.hasMoreElements()) {
+      while ( parameterNames.hasMoreElements() ) {
         String parameter = (String) parameterNames.nextElement();
-        String[] values = request.getParameterValues(parameter);
+        String[] values = request.getParameterValues( parameter );
 
         // Ignore the known options. set the rest as variables
         //
-        if (Const.indexOfString(parameter, knownOptions) < 0) {
+        if ( Const.indexOfString( parameter, knownOptions ) < 0 ) {
           // If it's a trans parameter, set it, otherwise simply set the
           // variable
           //
-          if (Const.indexOfString(parameter, parameters) < 0) {
-            jobMeta.setVariable(parameter, values[0]);
+          if ( Const.indexOfString( parameter, parameters ) < 0 ) {
+            jobMeta.setVariable( parameter, values[0] );
           } else {
-            jobMeta.setParameterValue(parameter, values[0]);
+            jobMeta.setParameterValue( parameter, values[0] );
           }
         }
       }
 
       JobExecutionConfiguration jobExecutionConfiguration = new JobExecutionConfiguration();
-      LogLevel logLevel = LogLevel.getLogLevelForCode(levelOption);
-      jobExecutionConfiguration.setLogLevel(logLevel);
-      JobConfiguration jobConfiguration = new JobConfiguration(jobMeta, jobExecutionConfiguration);
+      LogLevel logLevel = LogLevel.getLogLevelForCode( levelOption );
+      jobExecutionConfiguration.setLogLevel( logLevel );
+      JobConfiguration jobConfiguration = new JobConfiguration( jobMeta, jobExecutionConfiguration );
 
       String carteObjectId = UUID.randomUUID().toString();
-      SimpleLoggingObject servletLoggingObject = new SimpleLoggingObject(CONTEXT_PATH, LoggingObjectType.CARTE, null);
-      servletLoggingObject.setContainerObjectId(carteObjectId);
-      servletLoggingObject.setLogLevel(logLevel);
+      SimpleLoggingObject servletLoggingObject = new SimpleLoggingObject( CONTEXT_PATH, LoggingObjectType.CARTE, null );
+      servletLoggingObject.setContainerObjectId( carteObjectId );
+      servletLoggingObject.setLogLevel( logLevel );
 
       // Create the transformation and store in the list...
       //
-      final Job job = new Job(repository, jobMeta, servletLoggingObject);
+      final Job job = new Job( repository, jobMeta, servletLoggingObject );
 
       // Setting variables
       //
-      job.initializeVariablesFrom(null);
-      job.getJobMeta().setInternalKettleVariables(job);
-      job.injectVariables(jobConfiguration.getJobExecutionConfiguration().getVariables());
+      job.initializeVariablesFrom( null );
+      job.getJobMeta().setInternalKettleVariables( job );
+      job.injectVariables( jobConfiguration.getJobExecutionConfiguration().getVariables() );
 
       // Also copy the parameters over...
       //
-      job.copyParametersFrom(jobMeta);
+      job.copyParametersFrom( jobMeta );
       job.clearParameters();
       /*
-       * String[] parameterNames = job.listParameters(); for (int idx = 0; idx <
-       * parameterNames.length; idx++) { // Grab the parameter value set in the
-       * job entry // String thisValue =
-       * jobExecutionConfiguration.getParams().get(parameterNames[idx]); if
-       * (!Const.isEmpty(thisValue)) { // Set the value as specified by the user
-       * in the job entry // jobMeta.setParameterValue(parameterNames[idx],
-       * thisValue); } }
+       * String[] parameterNames = job.listParameters(); for (int idx = 0; idx < parameterNames.length; idx++) { // Grab
+       * the parameter value set in the job entry // String thisValue =
+       * jobExecutionConfiguration.getParams().get(parameterNames[idx]); if (!Const.isEmpty(thisValue)) { // Set the
+       * value as specified by the user in the job entry // jobMeta.setParameterValue(parameterNames[idx], thisValue); }
+       * }
        */
       jobMeta.activateParameters();
 
-      job.setSocketRepository(getSocketRepository());
+      job.setSocketRepository( getSocketRepository() );
 
-      getJobMap().addJob(job.getJobname(), carteObjectId, job, jobConfiguration);
+      getJobMap().addJob( job.getJobname(), carteObjectId, job, jobConfiguration );
 
       // DO NOT disconnect from the shared repository connection when the job finishes.
       //
       String message = "Job '" + job.getJobname() + "' was added to the list with id " + carteObjectId;
-      logBasic(message);
+      logBasic( message );
 
       //
       try {
         // Execute the transformation...
         //
         job.start();
-        
-        WebResult webResult = new WebResult(WebResult.STRING_OK, "Job started", carteObjectId);
-        out.println(webResult.getXML());
+
+        WebResult webResult = new WebResult( WebResult.STRING_OK, "Job started", carteObjectId );
+        out.println( webResult.getXML() );
         out.flush();
 
-      } catch (Exception executionException) {
-        String logging = KettleLogStore.getAppender().getBuffer(job.getLogChannelId(), false).toString();
-        throw new KettleException("Error executing Job: " + logging, executionException);
+      } catch ( Exception executionException ) {
+        String logging = KettleLogStore.getAppender().getBuffer( job.getLogChannelId(), false ).toString();
+        throw new KettleException( "Error executing Job: " + logging, executionException );
       }
-    } catch (Exception ex) {
+    } catch ( Exception ex ) {
 
-      out.println(new WebResult(WebResult.STRING_ERROR, BaseMessages.getString(PKG, "RunJobServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker(ex))));
+      out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString( PKG,
+          "RunJobServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker( ex ) ) ) );
     }
   }
 
-  private JobMeta loadJob(Repository repository, String job) throws KettleException {
+  private JobMeta loadJob( Repository repository, String job ) throws KettleException {
 
-    if (repository == null) {
-      throw new KettleException("Repository required.");
+    if ( repository == null ) {
+      throw new KettleException( "Repository required." );
     } else {
 
-      synchronized(repository) {
+      synchronized ( repository ) {
         // With a repository we need to load it from /foo/bar/Transformation
         // We need to extract the folder name from the path in front of the
         // name...
         //
         String directoryPath;
         String name;
-        int lastSlash = job.lastIndexOf(RepositoryDirectory.DIRECTORY_SEPARATOR);
-        if (lastSlash < 0) {
+        int lastSlash = job.lastIndexOf( RepositoryDirectory.DIRECTORY_SEPARATOR );
+        if ( lastSlash < 0 ) {
           directoryPath = "/";
           name = job;
         } else {
-          directoryPath = job.substring(0, lastSlash);
-          name = job.substring(lastSlash + 1);
+          directoryPath = job.substring( 0, lastSlash );
+          name = job.substring( lastSlash + 1 );
         }
-        RepositoryDirectoryInterface directory = repository.loadRepositoryDirectoryTree().findDirectory(directoryPath);
-  
-        ObjectId jobID = repository.getJobId(name, directory);
-  
-        JobMeta transJob = repository.loadJob(jobID, null);
+        RepositoryDirectoryInterface directory = repository.loadRepositoryDirectoryTree().findDirectory( directoryPath );
+
+        ObjectId jobID = repository.getJobId( name, directory );
+
+        JobMeta transJob = repository.loadJob( jobID, null );
         return transJob;
       }
     }
@@ -210,7 +210,7 @@ public class RunJobServlet extends BaseHttpServlet implements CartePluginInterfa
   public String getService() {
     return CONTEXT_PATH + " (" + toString() + ")";
   }
-  
+
   @Override
   public String getContextPath() {
     return CONTEXT_PATH;

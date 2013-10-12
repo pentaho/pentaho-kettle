@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.trans.steps.reservoirsampling;
 
@@ -49,13 +49,11 @@ import org.w3c.dom.Node;
 
 /**
  * Contains the meta data for the ReservoirSampling step.
- *
+ * 
  * @author Mark Hall (mhall{[at]}pentaho.org)
  * @version 1.0
  */
-public class ReservoirSamplingMeta
-  extends BaseStepMeta
-  implements StepMetaInterface {
+public class ReservoirSamplingMeta extends BaseStepMeta implements StepMetaInterface {
 
   public static final String XML_TAG = "reservoir_sampling";
 
@@ -74,7 +72,7 @@ public class ReservoirSamplingMeta
 
   /**
    * Get the sample size to generate.
-   *
+   * 
    * @return the sample size
    */
   public String getSampleSize() {
@@ -83,16 +81,17 @@ public class ReservoirSamplingMeta
 
   /**
    * Set the size of the sample to generate
-   *
-   * @param sampleS the size of the sample
+   * 
+   * @param sampleS
+   *          the size of the sample
    */
-  public void setSampleSize(String sampleS) {
+  public void setSampleSize( String sampleS ) {
     m_sampleSize = sampleS;
   }
 
   /**
    * Get the random seed
-   *
+   * 
    * @return the random seed
    */
   public String getSeed() {
@@ -100,46 +99,45 @@ public class ReservoirSamplingMeta
   }
 
   /**
-   * Set the seed value for the random number
-   * generator
-   *
-   * @param seed the seed value
+   * Set the seed value for the random number generator
+   * 
+   * @param seed
+   *          the seed value
    */
-  public void setSeed(String seed) {
+  public void setSeed( String seed ) {
     m_randomSeed = seed;
   }
 
   /**
    * Return the XML describing this (configured) step
-   *
+   * 
    * @return a <code>String</code> containing the XML
    */
   public String getXML() {
-    StringBuffer retval = new StringBuffer(100);
+    StringBuffer retval = new StringBuffer( 100 );
 
-    retval.append("<" + XML_TAG + ">");
-    
-    retval.append(XMLHandler.addTagValue("sample_size",
-                                         m_sampleSize));
-    retval.append(XMLHandler.addTagValue("seed",
-                                         m_randomSeed));
-    retval.append("</" + XML_TAG + ">");
+    retval.append( "<" + XML_TAG + ">" );
+
+    retval.append( XMLHandler.addTagValue( "sample_size", m_sampleSize ) );
+    retval.append( XMLHandler.addTagValue( "seed", m_randomSeed ) );
+    retval.append( "</" + XML_TAG + ">" );
 
     return retval.toString();
   }
 
   /**
    * Check for equality
-   *
-   * @param obj an <code>Object</code> to compare with
+   * 
+   * @param obj
+   *          an <code>Object</code> to compare with
    * @return true if equal to the supplied object
    */
-  public boolean equals(Object obj) {       
-    if (obj != null && (obj.getClass().equals(this.getClass()))) {
-      ReservoirSamplingMeta m = (ReservoirSamplingMeta)obj;
-      return (getXML() == m.getXML());
+  public boolean equals( Object obj ) {
+    if ( obj != null && ( obj.getClass().equals( this.getClass() ) ) ) {
+      ReservoirSamplingMeta m = (ReservoirSamplingMeta) obj;
+      return ( getXML() == m.getXML() );
     }
-    
+
     return false;
   }
 
@@ -153,7 +151,7 @@ public class ReservoirSamplingMeta
 
   /**
    * Clone this step's meta data
-   *
+   * 
    * @return the cloned meta data
    */
   public Object clone() {
@@ -162,133 +160,121 @@ public class ReservoirSamplingMeta
   }
 
   /**
-   * Loads the meta data for this (configured) step
-   * from XML.
-   *
-   * @param stepnode the step to load
-   * @exception KettleXMLException if an error occurs
+   * Loads the meta data for this (configured) step from XML.
+   * 
+   * @param stepnode
+   *          the step to load
+   * @exception KettleXMLException
+   *              if an error occurs
    */
-  public void loadXML(Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
 
-    int nrSteps = 
-      XMLHandler.countNodes(stepnode, XML_TAG);
+    int nrSteps = XMLHandler.countNodes( stepnode, XML_TAG );
 
-    if (nrSteps > 0) {
-      Node reservoirnode = 
-        XMLHandler.getSubNodeByNr(stepnode, XML_TAG, 0); 
+    if ( nrSteps > 0 ) {
+      Node reservoirnode = XMLHandler.getSubNodeByNr( stepnode, XML_TAG, 0 );
 
-      m_sampleSize = XMLHandler.getTagValue(reservoirnode, "sample_size");
-      m_randomSeed = XMLHandler.getTagValue(reservoirnode, "seed");
-      
+      m_sampleSize = XMLHandler.getTagValue( reservoirnode, "sample_size" );
+      m_randomSeed = XMLHandler.getTagValue( reservoirnode, "seed" );
+
     }
   }
 
   /**
    * Read this step's configuration from a repository
-   *
-   * @param rep the repository to access
-   * @param metaStore the MetaStore to read from
-   * @param id_step the id for this step
-   * @exception KettleException if an error occurs
+   * 
+   * @param rep
+   *          the repository to access
+   * @param metaStore
+   *          the MetaStore to read from
+   * @param id_step
+   *          the id for this step
+   * @exception KettleException
+   *              if an error occurs
    */
-  public void readRep(Repository rep, IMetaStore metaStore,
-                      ObjectId id_step, 
-                      List<DatabaseMeta> databases, 
-                      Map<String, Counter> counters) 
-    throws KettleException {
-    
-    m_sampleSize = rep.getStepAttributeString(id_step, 0, "sample_size");
-    m_randomSeed =  rep.getStepAttributeString(id_step, 0, "seed");
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases,
+      Map<String, Counter> counters ) throws KettleException {
+
+    m_sampleSize = rep.getStepAttributeString( id_step, 0, "sample_size" );
+    m_randomSeed = rep.getStepAttributeString( id_step, 0, "seed" );
   }
 
   /**
    * Save this step's meta data to a repository
-   *
-   * @param rep the repository to save to
-   * @param id_transformation transformation id
-   * @param id_step step id
-   * @exception KettleException if an error occurs
+   * 
+   * @param rep
+   *          the repository to save to
+   * @param id_transformation
+   *          transformation id
+   * @param id_step
+   *          step id
+   * @exception KettleException
+   *              if an error occurs
    */
-  public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step) throws KettleException {
-    
-    rep.saveStepAttribute(id_transformation, id_step, 0, "sample_size", m_sampleSize);
-    rep.saveStepAttribute(id_transformation, id_step, 0, "seed", m_randomSeed);
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
+    throws KettleException {
+
+    rep.saveStepAttribute( id_transformation, id_step, 0, "sample_size", m_sampleSize );
+    rep.saveStepAttribute( id_transformation, id_step, 0, "seed", m_randomSeed );
   }
 
-  public void getFields(RowMetaInterface row, 
-                        String origin, 
-                        RowMetaInterface[] info, 
-                        StepMeta nextStep, 
-                        VariableSpace space, 
-                        Repository repository, 
-                        IMetaStore metaStore) 
-    throws KettleStepException {
-    
+  public void getFields( RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
+      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+
     // nothing to do, as no fields are added/deleted
   }
 
-  public void check(List<CheckResultInterface> remarks, 
-                    TransMeta transmeta,
-                    StepMeta stepMeta, 
-                    RowMetaInterface prev, 
-                    String[] input, 
-                    String[] output,
-                    RowMetaInterface info, 
-                    VariableSpace space,
-                    Repository repository, 
-                    IMetaStore metaStore) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transmeta, StepMeta stepMeta, RowMetaInterface prev,
+      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
+      IMetaStore metaStore ) {
 
     CheckResult cr;
 
-    if ((prev == null) || (prev.size() == 0)) {
-      cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING,
-          "Not receiving any fields from previous steps!", stepMeta);
-      remarks.add(cr);
+    if ( ( prev == null ) || ( prev.size() == 0 ) ) {
+      cr = new CheckResult( CheckResult.TYPE_RESULT_WARNING, "Not receiving any fields from previous steps!", stepMeta );
+      remarks.add( cr );
     } else {
-      cr = new CheckResult(CheckResult.TYPE_RESULT_OK,
-          "Step is connected to previous one, receiving " + prev.size() +
-          " fields", stepMeta);
-      remarks.add(cr);
+      cr =
+          new CheckResult( CheckResult.TYPE_RESULT_OK, "Step is connected to previous one, receiving " + prev.size()
+              + " fields", stepMeta );
+      remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
-    if (input.length > 0) {
-      cr = new CheckResult(CheckResult.TYPE_RESULT_OK,
-          "Step is receiving info from other steps.", stepMeta);
-      remarks.add(cr);
+    if ( input.length > 0 ) {
+      cr = new CheckResult( CheckResult.TYPE_RESULT_OK, "Step is receiving info from other steps.", stepMeta );
+      remarks.add( cr );
     } else {
-      cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR,
-          "No input received from other steps!", stepMeta);
-      remarks.add(cr);
+      cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, "No input received from other steps!", stepMeta );
+      remarks.add( cr );
     }
   }
 
-   /**
+  /**
    * Get the executing step, needed by Trans to launch a step.
-   *
-   * @param stepMeta the step info
-   * @param stepDataInterface the step data interface linked 
-   * to this step. Here the step can store temporary data, 
-   * database connections, etc.
-   * @param cnr the copy number to get.
-   * @param tr the transformation info.
-   * @param trans the launching transformation
+   * 
+   * @param stepMeta
+   *          the step info
+   * @param stepDataInterface
+   *          the step data interface linked to this step. Here the step can store temporary data, database connections,
+   *          etc.
+   * @param cnr
+   *          the copy number to get.
+   * @param tr
+   *          the transformation info.
+   * @param trans
+   *          the launching transformation
    * @return a <code>StepInterface</code> value
    */
-  public StepInterface getStep(StepMeta stepMeta, 
-                               StepDataInterface stepDataInterface, 
-                               int cnr, 
-                               TransMeta tr, 
-                               Trans trans) {
-    return new ReservoirSampling(stepMeta, stepDataInterface, cnr, tr, trans);
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
+      Trans trans ) {
+    return new ReservoirSampling( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
   /**
-   * Get a new instance of the appropriate data class. This 
-   * data class implements the StepDataInterface. It basically 
-   * contains the persisting data that needs to live on, even 
-   * if a worker thread is terminated.
-   *
+   * Get a new instance of the appropriate data class. This data class implements the StepDataInterface. It basically
+   * contains the persisting data that needs to live on, even if a worker thread is terminated.
+   * 
    * @return a <code>StepDataInterface</code> value
    */
   public StepDataInterface getStepData() {

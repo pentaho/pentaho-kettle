@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.www;
 
@@ -46,109 +46,112 @@ public class PauseTransServlet extends BaseHttpServlet implements CartePluginInt
   public PauseTransServlet() {
   }
 
-  public PauseTransServlet(TransformationMap transformationMap) {
-    super(transformationMap);
+  public PauseTransServlet( TransformationMap transformationMap ) {
+    super( transformationMap );
   }
 
-  public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    if (isJettyMode() && !request.getContextPath().startsWith(CONTEXT_PATH)) {
+  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+    if ( isJettyMode() && !request.getContextPath().startsWith( CONTEXT_PATH ) ) {
       return;
     }
 
-    if (log.isDebug())
-      logDebug(BaseMessages.getString(PKG, "PauseTransServlet.PauseOfTransRequested"));
+    if ( log.isDebug() ) {
+      logDebug( BaseMessages.getString( PKG, "PauseTransServlet.PauseOfTransRequested" ) );
+    }
 
-    String transName = request.getParameter("name");
-    String id = request.getParameter("id");
-    boolean useXML = "Y".equalsIgnoreCase(request.getParameter("xml"));
-    
-    response.setCharacterEncoding("UTF-8");
-    
+    String transName = request.getParameter( "name" );
+    String id = request.getParameter( "id" );
+    boolean useXML = "Y".equalsIgnoreCase( request.getParameter( "xml" ) );
+
+    response.setCharacterEncoding( "UTF-8" );
+
     PrintWriter out = response.getWriter();
     try {
-      if (useXML) {
-        response.setContentType("text/xml");
-        response.setCharacterEncoding(Const.XML_ENCODING);
-        out.print(XMLHandler.getXMLHeader(Const.XML_ENCODING));
+      if ( useXML ) {
+        response.setContentType( "text/xml" );
+        response.setCharacterEncoding( Const.XML_ENCODING );
+        out.print( XMLHandler.getXMLHeader( Const.XML_ENCODING ) );
       } else {
-        
-        response.setContentType("text/html;charset=UTF-8");
-        out.println("<HTML>");
-        out.println("<HEAD>");
-        out.println("<TITLE>" + BaseMessages.getString(PKG, "PauseTransServlet.PauseTrans") + "</TITLE>");
-        out.println("<META http-equiv=\"Refresh\" content=\"2;url=" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name="
-            + URLEncoder.encode(transName, "UTF-8") + "&id="+URLEncoder.encode(id, "UTF-8")+"\">");
-        out.println("<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">");
-        out.println("</HEAD>");
-        out.println("<BODY>");
+
+        response.setContentType( "text/html;charset=UTF-8" );
+        out.println( "<HTML>" );
+        out.println( "<HEAD>" );
+        out.println( "<TITLE>" + BaseMessages.getString( PKG, "PauseTransServlet.PauseTrans" ) + "</TITLE>" );
+        out.println( "<META http-equiv=\"Refresh\" content=\"2;url="
+            + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
+            + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">" );
+        out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
+        out.println( "</HEAD>" );
+        out.println( "<BODY>" );
       }
 
       // ID is optional...
       //
       Trans trans;
       CarteObjectEntry entry;
-      if (Const.isEmpty(id)) {
-      	// get the first transformation that matches...
-      	//
-      	entry = getTransformationMap().getFirstCarteObjectEntry(transName);
-      	if (entry==null) {
-      		trans = null;
-      	} else {
-      		id = entry.getId();
-      		trans = getTransformationMap().getTransformation(entry);
-      	}
+      if ( Const.isEmpty( id ) ) {
+        // get the first transformation that matches...
+        //
+        entry = getTransformationMap().getFirstCarteObjectEntry( transName );
+        if ( entry == null ) {
+          trans = null;
+        } else {
+          id = entry.getId();
+          trans = getTransformationMap().getTransformation( entry );
+        }
       } else {
-      	// Take the ID into account!
-      	//
-      	entry = new CarteObjectEntry(transName, id);
-      	trans = getTransformationMap().getTransformation(entry);
+        // Take the ID into account!
+        //
+        entry = new CarteObjectEntry( transName, id );
+        trans = getTransformationMap().getTransformation( entry );
       }
 
       Encoder encoder = ESAPI.encoder();
-      
-      if (trans != null) {
+
+      if ( trans != null ) {
         String message;
-        if (trans.isPaused()) {
+        if ( trans.isPaused() ) {
           trans.resumeRunning();
-          message = BaseMessages.getString(PKG, "PauseTransServlet.TransResumeRequested", transName);
+          message = BaseMessages.getString( PKG, "PauseTransServlet.TransResumeRequested", transName );
         } else {
           trans.pauseRunning();
-          message = BaseMessages.getString(PKG, "PauseTransServlet.TransPauseRequested", transName);
+          message = BaseMessages.getString( PKG, "PauseTransServlet.TransPauseRequested", transName );
         }
 
-        if (useXML) {
-          out.println(new WebResult(WebResult.STRING_OK, message).getXML());
+        if ( useXML ) {
+          out.println( new WebResult( WebResult.STRING_OK, message ).getXML() );
         } else {
-          out.println("<H1>" + encoder.encodeForHTML(message) + "</H1>");
-          out.println("<a href=\"" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "&id="+URLEncoder.encode(id, "UTF-8")+"\">"
-              + BaseMessages.getString(PKG, "TransStatusServlet.BackToTransStatusPage") + "</a><p>");
+          out.println( "<H1>" + encoder.encodeForHTML( message ) + "</H1>" );
+          out.println( "<a href=\"" + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
+              + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">"
+              + BaseMessages.getString( PKG, "TransStatusServlet.BackToTransStatusPage" ) + "</a><p>" );
         }
       } else {
-        String message = BaseMessages.getString(PKG, "PauseTransServlet.CanNotFindTrans", transName);
+        String message = BaseMessages.getString( PKG, "PauseTransServlet.CanNotFindTrans", transName );
 
-        if (useXML) {
-          out.println(new WebResult(WebResult.STRING_ERROR, message).getXML());
+        if ( useXML ) {
+          out.println( new WebResult( WebResult.STRING_ERROR, message ).getXML() );
         } else {
-          out.println("<H1>" + encoder.encodeForHTML(message) + "</H1>");
-          out.println("<a href=\"" + convertContextPath(GetStatusServlet.CONTEXT_PATH) + "\">"
-              + BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage") + "</a><p>");
+          out.println( "<H1>" + encoder.encodeForHTML( message ) + "</H1>" );
+          out.println( "<a href=\"" + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
+              + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
         }
       }
-    } catch (Exception ex) {
-      if (useXML) {
-        out.println(new WebResult(WebResult.STRING_ERROR, Const.getStackTracker(ex)).getXML());
+    } catch ( Exception ex ) {
+      if ( useXML ) {
+        out.println( new WebResult( WebResult.STRING_ERROR, Const.getStackTracker( ex ) ).getXML() );
       } else {
-        out.println("<p>");
-        out.println("<pre>");
-        out.println(Const.getStackTracker(ex));
-        out.println("</pre>");
+        out.println( "<p>" );
+        out.println( "<pre>" );
+        out.println( Const.getStackTracker( ex ) );
+        out.println( "</pre>" );
       }
     }
 
-    if (!useXML) {
-      out.println("<p>");
-      out.println("</BODY>");
-      out.println("</HTML>");
+    if ( !useXML ) {
+      out.println( "<p>" );
+      out.println( "</BODY>" );
+      out.println( "</HTML>" );
     }
   }
 
@@ -159,7 +162,7 @@ public class PauseTransServlet extends BaseHttpServlet implements CartePluginInt
   public String getService() {
     return CONTEXT_PATH + " (" + toString() + ")";
   }
-  
+
   public String getContextPath() {
     return CONTEXT_PATH;
   }

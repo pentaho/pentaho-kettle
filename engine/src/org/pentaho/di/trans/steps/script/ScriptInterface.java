@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.trans.steps.script;
 
@@ -37,75 +37,74 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * 
  * @author Sven Boden
  */
-public interface ScriptInterface extends StepInterface
-{
-	boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException;
+public interface ScriptInterface extends StepInterface {
+  boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException;
 
-	void addRowListener(RowListener rowListener);
+  void addRowListener( RowListener rowListener );
 
-	void dispose(StepMetaInterface sii, StepDataInterface sdi);
+  void dispose( StepMetaInterface sii, StepDataInterface sdi );
 
-	long getErrors();
+  long getErrors();
 
-	List<RowSet> getInputRowSets();
+  List<RowSet> getInputRowSets();
 
-	long getLinesInput();
+  long getLinesInput();
 
-	long getLinesOutput();
+  long getLinesOutput();
 
-	long getLinesRead();
+  long getLinesRead();
 
-	long getLinesUpdated();
+  long getLinesUpdated();
 
-	long getLinesWritten();
-	
-	long getLinesRejected();
+  long getLinesWritten();
 
-	List<RowSet> getOutputRowSets();
+  long getLinesRejected();
 
-	String getPartitionID();
+  List<RowSet> getOutputRowSets();
 
-	Object[] getRow() throws KettleException;
+  String getPartitionID();
 
-	List<RowListener> getRowListeners();
+  Object[] getRow() throws KettleException;
 
-	String getStepID();
+  List<RowListener> getRowListeners();
 
-	String getStepname();
+  String getStepID();
 
-	boolean init(StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface);
+  String getStepname();
 
-	boolean isAlive();
+  boolean init( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface );
 
-	boolean isPartitioned();
+  boolean isAlive();
 
-	boolean isStopped();
+  boolean isPartitioned();
 
-	void markStart();
+  boolean isStopped();
 
-	void markStop();
+  void markStart();
 
-	void putRow(RowMetaInterface rowMeta, Object[] row) throws KettleException;
+  void markStop();
 
-	void removeRowListener(RowListener rowListener);
+  void putRow( RowMetaInterface rowMeta, Object[] row ) throws KettleException;
 
-	void run();
+  void removeRowListener( RowListener rowListener );
 
-	void setErrors(long errors);
+  void run();
 
-	void setOutputDone();
+  void setErrors( long errors );
 
-	void setPartitionID(String partitionID);
+  void setOutputDone();
 
-	void start();
+  void setPartitionID( String partitionID );
 
-	void stopAll();
+  void start();
 
-	void stopRunning(StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface) throws KettleException;
+  void stopAll();
 
-	void cleanup();
+  void stopRunning( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface ) throws KettleException;
 
-	void pauseRunning();
+  void cleanup();
 
-	void resumeRunning();
+  void pauseRunning();
+
+  void resumeRunning();
 }

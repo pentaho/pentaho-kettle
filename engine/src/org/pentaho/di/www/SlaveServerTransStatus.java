@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.www;
 
@@ -68,7 +68,7 @@ public class SlaveServerTransStatus {
    * @param transName
    * @param statusDescription
    */
-  public SlaveServerTransStatus(String transName, String id, String statusDescription) {
+  public SlaveServerTransStatus( String transName, String id, String statusDescription ) {
     this();
     this.transName = transName;
     this.id = id;
@@ -78,65 +78,65 @@ public class SlaveServerTransStatus {
   public String getXML() throws KettleException {
     StringBuffer xml = new StringBuffer();
 
-    xml.append("<" + XML_TAG + ">").append(Const.CR);
-    xml.append(XMLHandler.addTagValue("transname", transName));
-    xml.append(XMLHandler.addTagValue("id", id));
-    xml.append(XMLHandler.addTagValue("status_desc", statusDescription));
-    xml.append(XMLHandler.addTagValue("error_desc", errorDescription));
-    xml.append(XMLHandler.addTagValue("paused", paused));
+    xml.append( "<" + XML_TAG + ">" ).append( Const.CR );
+    xml.append( XMLHandler.addTagValue( "transname", transName ) );
+    xml.append( XMLHandler.addTagValue( "id", id ) );
+    xml.append( XMLHandler.addTagValue( "status_desc", statusDescription ) );
+    xml.append( XMLHandler.addTagValue( "error_desc", errorDescription ) );
+    xml.append( XMLHandler.addTagValue( "paused", paused ) );
 
-    xml.append("  <stepstatuslist>").append(Const.CR);
-    for (int i = 0; i < stepStatusList.size(); i++) {
-      StepStatus stepStatus = stepStatusList.get(i);
-      xml.append("    ").append(stepStatus.getXML()).append(Const.CR);
+    xml.append( "  <stepstatuslist>" ).append( Const.CR );
+    for ( int i = 0; i < stepStatusList.size(); i++ ) {
+      StepStatus stepStatus = stepStatusList.get( i );
+      xml.append( "    " ).append( stepStatus.getXML() ).append( Const.CR );
     }
-    xml.append("  </stepstatuslist>").append(Const.CR);
+    xml.append( "  </stepstatuslist>" ).append( Const.CR );
 
-    xml.append(XMLHandler.addTagValue("first_log_line_nr", firstLoggingLineNr));
-    xml.append(XMLHandler.addTagValue("last_log_line_nr", lastLoggingLineNr));
+    xml.append( XMLHandler.addTagValue( "first_log_line_nr", firstLoggingLineNr ) );
+    xml.append( XMLHandler.addTagValue( "last_log_line_nr", lastLoggingLineNr ) );
 
-    if (result != null) {
+    if ( result != null ) {
       String resultXML = result.getXML();
-      xml.append(resultXML);
+      xml.append( resultXML );
     }
 
-    xml.append(XMLHandler.addTagValue("logging_string", XMLHandler.buildCDATA(loggingString)));
+    xml.append( XMLHandler.addTagValue( "logging_string", XMLHandler.buildCDATA( loggingString ) ) );
 
-    xml.append("</" + XML_TAG + ">");
+    xml.append( "</" + XML_TAG + ">" );
 
     return xml.toString();
   }
 
-  public SlaveServerTransStatus(Node transStatusNode) throws KettleException {
+  public SlaveServerTransStatus( Node transStatusNode ) throws KettleException {
     this();
-    id = XMLHandler.getTagValue(transStatusNode, "id");
-    transName = XMLHandler.getTagValue(transStatusNode, "transname");
-    statusDescription = XMLHandler.getTagValue(transStatusNode, "status_desc");
-    errorDescription = XMLHandler.getTagValue(transStatusNode, "error_desc");
-    paused = "Y".equalsIgnoreCase(XMLHandler.getTagValue(transStatusNode, "paused"));
+    id = XMLHandler.getTagValue( transStatusNode, "id" );
+    transName = XMLHandler.getTagValue( transStatusNode, "transname" );
+    statusDescription = XMLHandler.getTagValue( transStatusNode, "status_desc" );
+    errorDescription = XMLHandler.getTagValue( transStatusNode, "error_desc" );
+    paused = "Y".equalsIgnoreCase( XMLHandler.getTagValue( transStatusNode, "paused" ) );
 
-    Node statusListNode = XMLHandler.getSubNode(transStatusNode, "stepstatuslist");
-    int nr = XMLHandler.countNodes(statusListNode, StepStatus.XML_TAG);
-    for (int i = 0; i < nr; i++) {
-      Node stepStatusNode = XMLHandler.getSubNodeByNr(statusListNode, StepStatus.XML_TAG, i);
-      StepStatus stepStatus = new StepStatus(stepStatusNode);
-      stepStatusList.add(stepStatus);
+    Node statusListNode = XMLHandler.getSubNode( transStatusNode, "stepstatuslist" );
+    int nr = XMLHandler.countNodes( statusListNode, StepStatus.XML_TAG );
+    for ( int i = 0; i < nr; i++ ) {
+      Node stepStatusNode = XMLHandler.getSubNodeByNr( statusListNode, StepStatus.XML_TAG, i );
+      StepStatus stepStatus = new StepStatus( stepStatusNode );
+      stepStatusList.add( stepStatus );
     }
 
-    firstLoggingLineNr = Const.toInt(XMLHandler.getTagValue(transStatusNode, "first_log_line_nr"), 0);
-    lastLoggingLineNr = Const.toInt(XMLHandler.getTagValue(transStatusNode, "last_log_line_nr"), 0);
+    firstLoggingLineNr = Const.toInt( XMLHandler.getTagValue( transStatusNode, "first_log_line_nr" ), 0 );
+    lastLoggingLineNr = Const.toInt( XMLHandler.getTagValue( transStatusNode, "last_log_line_nr" ), 0 );
 
-    String loggingString64 = XMLHandler.getTagValue(transStatusNode, "logging_string");
+    String loggingString64 = XMLHandler.getTagValue( transStatusNode, "logging_string" );
 
-    if (!Const.isEmpty(loggingString64)) {
+    if ( !Const.isEmpty( loggingString64 ) ) {
       // This is a CDATA block with a Base64 encoded GZIP compressed stream of data.
       //
-      String dataString64 = loggingString64.substring("<![CDATA[".length(), loggingString64.length() - "]]>".length());
+      String dataString64 = loggingString64.substring( "<![CDATA[".length(), loggingString64.length() - "]]>".length() );
       try {
-        loggingString = HttpUtil.decodeBase64ZippedString(dataString64);
-      } catch (IOException e) {
-        loggingString = "Unable to decode logging from remote server : " + e.toString() + Const.CR
-            + Const.getStackTracker(e);
+        loggingString = HttpUtil.decodeBase64ZippedString( dataString64 );
+      } catch ( IOException e ) {
+        loggingString =
+            "Unable to decode logging from remote server : " + e.toString() + Const.CR + Const.getStackTracker( e );
       }
     } else {
       loggingString = "";
@@ -144,20 +144,20 @@ public class SlaveServerTransStatus {
 
     // get the result object, if there is any...
     //
-    Node resultNode = XMLHandler.getSubNode(transStatusNode, Result.XML_TAG);
-    if (resultNode != null) {
+    Node resultNode = XMLHandler.getSubNode( transStatusNode, Result.XML_TAG );
+    if ( resultNode != null ) {
       try {
-        result = new Result(resultNode);
-      } catch (KettleException e) {
-        loggingString += "Unable to serialize result object as XML" + Const.CR + Const.getStackTracker(e) + Const.CR;
+        result = new Result( resultNode );
+      } catch ( KettleException e ) {
+        loggingString += "Unable to serialize result object as XML" + Const.CR + Const.getStackTracker( e ) + Const.CR;
       }
-      result.setLogText(loggingString);
+      result.setLogText( loggingString );
     }
   }
 
-  public static SlaveServerTransStatus fromXML(String xml) throws KettleException {
-    Document document = XMLHandler.loadXMLString(xml);
-    SlaveServerTransStatus status = new SlaveServerTransStatus(XMLHandler.getSubNode(document, XML_TAG));
+  public static SlaveServerTransStatus fromXML( String xml ) throws KettleException {
+    Document document = XMLHandler.loadXMLString( xml );
+    SlaveServerTransStatus status = new SlaveServerTransStatus( XMLHandler.getSubNode( document, XML_TAG ) );
     return status;
   }
 
@@ -169,9 +169,10 @@ public class SlaveServerTransStatus {
   }
 
   /**
-   * @param statusDescription the statusDescription to set
+   * @param statusDescription
+   *          the statusDescription to set
    */
-  public void setStatusDescription(String statusDescription) {
+  public void setStatusDescription( String statusDescription ) {
     this.statusDescription = statusDescription;
   }
 
@@ -183,9 +184,10 @@ public class SlaveServerTransStatus {
   }
 
   /**
-   * @param transName the transName to set
+   * @param transName
+   *          the transName to set
    */
-  public void setTransName(String transName) {
+  public void setTransName( String transName ) {
     this.transName = transName;
   }
 
@@ -197,9 +199,10 @@ public class SlaveServerTransStatus {
   }
 
   /**
-   * @param errorDescription the errorDescription to set
+   * @param errorDescription
+   *          the errorDescription to set
    */
-  public void setErrorDescription(String errorDescription) {
+  public void setErrorDescription( String errorDescription ) {
     this.errorDescription = errorDescription;
   }
 
@@ -211,9 +214,10 @@ public class SlaveServerTransStatus {
   }
 
   /**
-   * @param stepStatusList the stepStatusList to set
+   * @param stepStatusList
+   *          the stepStatusList to set
    */
-  public void setStepStatusList(List<StepStatus> stepStatusList) {
+  public void setStepStatusList( List<StepStatus> stepStatusList ) {
     this.stepStatusList = stepStatusList;
   }
 
@@ -225,63 +229,69 @@ public class SlaveServerTransStatus {
   }
 
   /**
-   * @param loggingString the loggingString to set
+   * @param loggingString
+   *          the loggingString to set
    */
-  public void setLoggingString(String loggingString) {
+  public void setLoggingString( String loggingString ) {
     this.loggingString = loggingString;
   }
 
   public boolean isRunning() {
-    return getStatusDescription().equalsIgnoreCase(Trans.STRING_RUNNING)
-        || getStatusDescription().equalsIgnoreCase(Trans.STRING_INITIALIZING);
+    return getStatusDescription().equalsIgnoreCase( Trans.STRING_RUNNING )
+        || getStatusDescription().equalsIgnoreCase( Trans.STRING_INITIALIZING );
   }
 
   public boolean isStopped() {
-    return getStatusDescription().equalsIgnoreCase(Trans.STRING_STOPPED);
+    return getStatusDescription().equalsIgnoreCase( Trans.STRING_STOPPED );
   }
 
   public boolean isWaiting() {
-    return getStatusDescription().equalsIgnoreCase(Trans.STRING_WAITING);
+    return getStatusDescription().equalsIgnoreCase( Trans.STRING_WAITING );
   }
 
   public long getNrStepErrors() {
     long errors = 0L;
-    for (int i = 0; i < stepStatusList.size(); i++) {
-      StepStatus stepStatus = stepStatusList.get(i);
+    for ( int i = 0; i < stepStatusList.size(); i++ ) {
+      StepStatus stepStatus = stepStatusList.get( i );
       errors += stepStatus.getErrors();
     }
     return errors;
   }
 
-  public Result getResult(TransMeta transMeta) {
+  public Result getResult( TransMeta transMeta ) {
     Result result = new Result();
 
-    for (StepStatus stepStatus : stepStatusList) {
+    for ( StepStatus stepStatus : stepStatusList ) {
 
-      result.setNrErrors(result.getNrErrors() + stepStatus.getErrors() + (result.isStopped() ? 1 : 0)); // If the remote trans is stopped, count as an error
+      result.setNrErrors( result.getNrErrors() + stepStatus.getErrors() + ( result.isStopped() ? 1 : 0 ) ); // If the
+                                                                                                            // remote
+                                                                                                            // trans is
+                                                                                                            // stopped,
+                                                                                                            // count as
+                                                                                                            // an error
 
-      if (stepStatus.getStepname().equals(transMeta.getTransLogTable().getStepnameRead())) {
-        result.increaseLinesRead(stepStatus.getLinesRead());
+      if ( stepStatus.getStepname().equals( transMeta.getTransLogTable().getStepnameRead() ) ) {
+        result.increaseLinesRead( stepStatus.getLinesRead() );
       }
-      if (stepStatus.getStepname().equals(transMeta.getTransLogTable().getStepnameInput())) {
-        result.increaseLinesInput(stepStatus.getLinesInput());
+      if ( stepStatus.getStepname().equals( transMeta.getTransLogTable().getStepnameInput() ) ) {
+        result.increaseLinesInput( stepStatus.getLinesInput() );
       }
-      if (stepStatus.getStepname().equals(transMeta.getTransLogTable().getStepnameWritten())) {
-        result.increaseLinesWritten(stepStatus.getLinesWritten());
+      if ( stepStatus.getStepname().equals( transMeta.getTransLogTable().getStepnameWritten() ) ) {
+        result.increaseLinesWritten( stepStatus.getLinesWritten() );
       }
-      if (stepStatus.getStepname().equals(transMeta.getTransLogTable().getStepnameOutput())) {
-        result.increaseLinesOutput(stepStatus.getLinesOutput());
+      if ( stepStatus.getStepname().equals( transMeta.getTransLogTable().getStepnameOutput() ) ) {
+        result.increaseLinesOutput( stepStatus.getLinesOutput() );
       }
-      if (stepStatus.getStepname().equals(transMeta.getTransLogTable().getStepnameUpdated())) {
-        result.increaseLinesUpdated(stepStatus.getLinesUpdated());
+      if ( stepStatus.getStepname().equals( transMeta.getTransLogTable().getStepnameUpdated() ) ) {
+        result.increaseLinesUpdated( stepStatus.getLinesUpdated() );
       }
-      if (stepStatus.getStepname().equals(transMeta.getTransLogTable().getStepnameRejected())) {
-        result.increaseLinesRejected(stepStatus.getLinesRejected());
+      if ( stepStatus.getStepname().equals( transMeta.getTransLogTable().getStepnameRejected() ) ) {
+        result.increaseLinesRejected( stepStatus.getLinesRejected() );
       }
 
-      if (stepStatus.isStopped()) {
-        result.setStopped(true);
-        result.setResult(false);
+      if ( stepStatus.isStopped() ) {
+        result.setStopped( true );
+        result.setResult( false );
       }
     }
 
@@ -296,9 +306,10 @@ public class SlaveServerTransStatus {
   }
 
   /**
-   * @param result the result to set
+   * @param result
+   *          the result to set
    */
-  public void setResult(Result result) {
+  public void setResult( Result result ) {
     this.result = result;
   }
 
@@ -310,9 +321,10 @@ public class SlaveServerTransStatus {
   }
 
   /**
-   * @param paused the paused to set
+   * @param paused
+   *          the paused to set
    */
-  public void setPaused(boolean paused) {
+  public void setPaused( boolean paused ) {
     this.paused = paused;
   }
 
@@ -324,9 +336,10 @@ public class SlaveServerTransStatus {
   }
 
   /**
-   * @param lastLoggingLineNr the lastLoggingLineNr to set
+   * @param lastLoggingLineNr
+   *          the lastLoggingLineNr to set
    */
-  public void setLastLoggingLineNr(int lastLoggingLineNr) {
+  public void setLastLoggingLineNr( int lastLoggingLineNr ) {
     this.lastLoggingLineNr = lastLoggingLineNr;
   }
 
@@ -338,9 +351,10 @@ public class SlaveServerTransStatus {
   }
 
   /**
-   * @param firstLoggingLineNr the firstLoggingLineNr to set
+   * @param firstLoggingLineNr
+   *          the firstLoggingLineNr to set
    */
-  public void setFirstLoggingLineNr(int firstLoggingLineNr) {
+  public void setFirstLoggingLineNr( int firstLoggingLineNr ) {
     this.firstLoggingLineNr = firstLoggingLineNr;
   }
 
@@ -352,9 +366,10 @@ public class SlaveServerTransStatus {
   }
 
   /**
-   * @param id the id to set
+   * @param id
+   *          the id to set
    */
-  public void setId(String id) {
+  public void setId( String id ) {
     this.id = id;
   }
 }

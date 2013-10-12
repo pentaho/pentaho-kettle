@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.trans.steps.xmlinputsax;
 
@@ -36,176 +36,161 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
- * Read all sorts of text files, convert them to rows and writes these to one or
- * more output streams.
+ * Read all sorts of text files, convert them to rows and writes these to one or more output streams.
  * 
  * @author Matt
  * @since 4-apr-2003
  */
-public class XMLInputSax extends BaseStep implements StepInterface
-{
-	private XMLInputSaxMeta meta;
+public class XMLInputSax extends BaseStep implements StepInterface {
+  private XMLInputSaxMeta meta;
 
-	private XMLInputSaxData data;
+  private XMLInputSaxData data;
 
-	public XMLInputSax(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
-			TransMeta transMeta, Trans trans)
-	{
-		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
-	}
+  public XMLInputSax( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+      Trans trans ) {
+    super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
+  }
 
-	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
-	{
-		if (first)
-		{
-			first=false;
-			
-			data.outputRowMeta = new RowMeta();
-			meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
-			
-			// For String to <type> conversions, we allocate a conversion meta data row as well...
-			//
-			data.convertRowMeta = data.outputRowMeta.cloneToType(ValueMetaInterface.TYPE_STRING);
-		}
+  public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
+    if ( first ) {
+      first = false;
 
-		Object[] outputRowData = getRowFromXML();
-		if (outputRowData==null)
-		{
-			setOutputDone(); // signal end to receiver(s)
-			return false; // This is the end of this step.
-		}
+      data.outputRowMeta = new RowMeta();
+      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
 
-		if (log.isRowLevel()) logRowlevel("Read row: " + data.outputRowMeta.getString(outputRowData));
-		
-		putRow(data.outputRowMeta, outputRowData);
+      // For String to <type> conversions, we allocate a conversion meta data row as well...
+      //
+      data.convertRowMeta = data.outputRowMeta.cloneToType( ValueMetaInterface.TYPE_STRING );
+    }
 
-		// limit has been reached: stop now.
-		//
-		if (meta.getRowLimit() > 0 && data.rownr >= meta.getRowLimit()) {
-			setOutputDone();
-			return false;
-		}
+    Object[] outputRowData = getRowFromXML();
+    if ( outputRowData == null ) {
+      setOutputDone(); // signal end to receiver(s)
+      return false; // This is the end of this step.
+    }
 
-		return true;
-	}
+    if ( log.isRowLevel() ) {
+      logRowlevel( "Read row: " + data.outputRowMeta.getString( outputRowData ) );
+    }
 
-	private Object[] getRowFromXML() throws KettleValueException
-	{
-		// finished reading the file, read the next file!
-		//
-		if (data.document == null) {
-			data.filename = null;
-		}  else if (!data.document.hasNext())
-		{
-			data.filename = null;
-		}
+    putRow( data.outputRowMeta, outputRowData );
 
-		// First, see if we need to open a new file
-		if (data.filename == null)
-		{
-			if (!openNextFile())
-			{
-				return null;
-			}
-		}
+    // limit has been reached: stop now.
+    //
+    if ( meta.getRowLimit() > 0 && data.rownr >= meta.getRowLimit() ) {
+      setOutputDone();
+      return false;
+    }
 
-		Object[] outputRowData = data.document.getNext();
-		int outputIndex = meta.getInputFields().length;
+    return true;
+  }
 
-		// Node itemNode = XMLHandler.getSubNodeByNr(data.section,
-		// data.itemElement, data.itemPosition);
-		// data.itemPosition++;
+  private Object[] getRowFromXML() throws KettleValueException {
+    // finished reading the file, read the next file!
+    //
+    if ( data.document == null ) {
+      data.filename = null;
+    } else if ( !data.document.hasNext() ) {
+      data.filename = null;
+    }
 
-		// See if we need to add the filename to the row...
-		//
-		if (meta.includeFilename() && !Const.isEmpty(meta.getFilenameField()))
-		{
-			outputRowData[outputIndex++] = data.filename;
-		}
+    // First, see if we need to open a new file
+    if ( data.filename == null ) {
+      if ( !openNextFile() ) {
+        return null;
+      }
+    }
 
-		// See if we need to add the row number to the row...
-		if (meta.includeRowNumber() && !Const.isEmpty(meta.getRowNumberField()))
-		{
-			outputRowData[outputIndex] = new Long(data.rownr);
-		}
+    Object[] outputRowData = data.document.getNext();
+    int outputIndex = meta.getInputFields().length;
 
-		data.rownr++;
+    // Node itemNode = XMLHandler.getSubNodeByNr(data.section,
+    // data.itemElement, data.itemPosition);
+    // data.itemPosition++;
 
-		return outputRowData;
-	}
+    // See if we need to add the filename to the row...
+    //
+    if ( meta.includeFilename() && !Const.isEmpty( meta.getFilenameField() ) ) {
+      outputRowData[outputIndex++] = data.filename;
+    }
 
-	private boolean openNextFile()
-	{
-		try
-		{
-			if (data.filenr >= data.files.length) // finished processing!
-			{
-				if(log.isDetailed()) logDetailed("Finished processing files.");
-				return false;
-			}
+    // See if we need to add the row number to the row...
+    if ( meta.includeRowNumber() && !Const.isEmpty( meta.getRowNumberField() ) ) {
+      outputRowData[outputIndex] = new Long( data.rownr );
+    }
 
-			// Is this the last file?
-			data.last_file = (data.filenr == data.files.length - 1);
-			data.filename = environmentSubstitute(data.files[data.filenr]);
+    data.rownr++;
 
-			if(log.isBasic()) logBasic("Opening file: " + data.filename);
+    return outputRowData;
+  }
 
-			// Move file pointer ahead!
-			data.filenr++;
+  private boolean openNextFile() {
+    try {
+      if ( data.filenr >= data.files.length ) // finished processing!
+      {
+        if ( log.isDetailed() ) {
+          logDetailed( "Finished processing files." );
+        }
+        return false;
+      }
 
-			// Open the XML document
-			data.document = new XMLInputSaxDataRetriever(log, data.filename, meta, data);
-			data.document.runExample();
+      // Is this the last file?
+      data.last_file = ( data.filenr == data.files.length - 1 );
+      data.filename = environmentSubstitute( data.files[data.filenr] );
 
-		} catch (Exception e)
-		{
-			logError("Couldn't open file #" + data.filenr + " : " + data.filename, e);
-			stopAll();
-			setErrors(1);
-			return false;
-		}
-		return true;
-	}
+      if ( log.isBasic() ) {
+        logBasic( "Opening file: " + data.filename );
+      }
 
-	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
-	{
-		meta = (XMLInputSaxMeta) smi;
-		data = (XMLInputSaxData) sdi;
+      // Move file pointer ahead!
+      data.filenr++;
 
-		if (super.init(smi, sdi))
-		{
-			data.files = meta.getFilePaths(getTransMeta());
-			if (data.files == null || data.files.length == 0)
-			{
-				logError("No file(s) specified! Stop processing.");
-				return false;
-			}
-			
-			if (meta.getInputPosition().length == 0)
-			{
-			    logError("No location specified! Stop processing.");
-			    return false;
-			}
+      // Open the XML document
+      data.document = new XMLInputSaxDataRetriever( log, data.filename, meta, data );
+      data.document.runExample();
 
-            if (meta.getInputFields().length == 0)
-            {
-                logError("No fields specified! Stop processing.");
-                return false;
-            }
+    } catch ( Exception e ) {
+      logError( "Couldn't open file #" + data.filenr + " : " + data.filename, e );
+      stopAll();
+      setErrors( 1 );
+      return false;
+    }
+    return true;
+  }
 
-			data.rownr = 1L;
+  public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
+    meta = (XMLInputSaxMeta) smi;
+    data = (XMLInputSaxData) sdi;
 
-			return true;
-		}
-		return false;
-	}
+    if ( super.init( smi, sdi ) ) {
+      data.files = meta.getFilePaths( getTransMeta() );
+      if ( data.files == null || data.files.length == 0 ) {
+        logError( "No file(s) specified! Stop processing." );
+        return false;
+      }
 
-	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
-	{
-		meta = (XMLInputSaxMeta) smi;
-		data = (XMLInputSaxData) sdi;
+      if ( meta.getInputPosition().length == 0 ) {
+        logError( "No location specified! Stop processing." );
+        return false;
+      }
 
-		super.dispose(smi, sdi);
-	}
+      if ( meta.getInputFields().length == 0 ) {
+        logError( "No fields specified! Stop processing." );
+        return false;
+      }
+
+      data.rownr = 1L;
+
+      return true;
+    }
+    return false;
+  }
+
+  public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
+    meta = (XMLInputSaxMeta) smi;
+    data = (XMLInputSaxData) sdi;
+
+    super.dispose( smi, sdi );
+  }
 
 }

@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.trans.steps.elasticsearchbulk;
 
@@ -58,20 +58,21 @@ import org.w3c.dom.Node;
 public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInterface {
 
   private static Class<?> PKG = ElasticSearchBulkMeta.class; // for i18n purposes
-/**
- * Serialization aids
- */
+
+  /**
+   * Serialization aids
+   */
   private static class Dom {
-    static final String TAG_GENERAL="general";
-    
+    static final String TAG_GENERAL = "general";
+
     static final String TAG_INDEX = "index";
     static final String TAG_TYPE = "type";
     static final String TAG_IS_JSON = "isJson";
     static final String TAG_JSON_FIELD = "jsonField";
-    
+
     static final String TAG_ID_IN_FIELD = "idField";
     static final String TAG_OVERWRITE_IF_EXISTS = "overwriteIfExists";
-    
+
     static final String TAG_ID_OUT_FIELD = "idOutputField";
     static final String TAG_USE_OUTPUT = "useOutput";
     static final String TAG_STOP_ON_ERROR = "stopOnError";
@@ -84,18 +85,17 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
 
     static final String TAG_NAME = "columnName";
     static final String TAG_TARGET = "targetName";
-    
+
     static final String TAG_SERVERS = "servers";
     static final String TAG_SERVER = "server";
     static final String TAG_SERVER_ADDRESS = "address";
     static final String TAG_SERVER_PORT = "port";
-    
-    
+
     public static final String TAG_SETTINGS = "settings";
     public static final String TAG_SETTING = "setting";
     public static final String TAG_SETTING_NAME = "name";
     public static final String TAG_SETTING_VALUE = "value";
-    
+
     static final String INDENT = "  ";
   }
 
@@ -104,15 +104,15 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
   public static final TimeUnit DEFAULT_TIMEOUT_UNIT = TimeUnit.SECONDS;
   public static final int DEFAULT_PORT = 9300;
 
-  /////////////
+  // ///////////
   // FIELDS //
-  ///////////
+  // /////////
 
   private String index = null;
   private String type = null;
   private boolean isJsonInsert = false;
   private String jsonField = null;
-  
+
   private String idInField = null;
   private boolean overWriteIfSameId = false;
   private String idOutField = null;
@@ -124,35 +124,34 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
   private TimeUnit timeoutUnit;
   private List<InetSocketTransportAddress> servers = new ArrayList<InetSocketTransportAddress>();
 
-
   /** fields to use in json generation */
   private Map<String, String> fields = new HashMap<String, String>();
   private Map<String, String> settings = new HashMap<String, String>();
 
-  //////////////////////
+  // ////////////////////
   // GETTERS/SETTERS //
-  ////////////////////
+  // //////////////////
   public String getJsonField() {
     return jsonField;
   }
 
-  public void setJsonField(String jsonField) {
-    this.jsonField = StringUtils.isBlank(jsonField) ? null : jsonField;
+  public void setJsonField( String jsonField ) {
+    this.jsonField = StringUtils.isBlank( jsonField ) ? null : jsonField;
   }
 
   public String getIdOutField() {
     return idOutField;
   }
 
-  public void setIdOutField(String idField) {
-    this.idOutField = StringUtils.isBlank(idField) ? null : idField;
+  public void setIdOutField( String idField ) {
+    this.idOutField = StringUtils.isBlank( idField ) ? null : idField;
   }
 
   public boolean isJsonInsert() {
     return isJsonInsert;
   }
 
-  public void setJsonInsert(boolean isJsonInsert) {
+  public void setJsonInsert( boolean isJsonInsert ) {
     this.isJsonInsert = isJsonInsert;
   }
 
@@ -160,7 +159,7 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
     return index;
   }
 
-  public void setIndex(String index) {
+  public void setIndex( String index ) {
     this.index = index;
   }
 
@@ -168,19 +167,19 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
     return type;
   }
 
-  public void setType(String type) {
+  public void setType( String type ) {
     this.type = type;
   }
 
-  public void setIdInField(String idInField) {
+  public void setIdInField( String idInField ) {
     this.idInField = idInField;
   }
 
   public String getIdInField() {
     return idInField;
   }
-  
-  public void setOverWriteIfSameId(boolean overWriteIfSameId) {
+
+  public void setOverWriteIfSameId( boolean overWriteIfSameId ) {
     this.overWriteIfSameId = overWriteIfSameId;
   }
 
@@ -192,7 +191,7 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
     return useOutput;
   }
 
-  public void setUseOutput(boolean value) {
+  public void setUseOutput( boolean value ) {
     useOutput = value;
   }
 
@@ -200,7 +199,7 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
     return stopOnError;
   }
 
-  public void setStopOnError(boolean stopOnError) {
+  public void setStopOnError( boolean stopOnError ) {
     this.stopOnError = stopOnError;
   }
 
@@ -208,7 +207,7 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
     return fields;
   }
 
-  public void setFields(Map<String, String> fields) {
+  public void setFields( Map<String, String> fields ) {
     this.fields = fields;
   }
 
@@ -216,41 +215,45 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
     this.fields.clear();
   }
 
-  public void addField(String inputName, String nameInJson) {
-    this.fields.put(inputName, StringUtils.isBlank(nameInJson) ? inputName : nameInJson);
+  public void addField( String inputName, String nameInJson ) {
+    this.fields.put( inputName, StringUtils.isBlank( nameInJson ) ? inputName : nameInJson );
   }
 
   public InetSocketTransportAddress[] getServers() {
-    return servers.toArray(new InetSocketTransportAddress[servers.size()]);
-  }
-  
-  public void clearServers(){
-    servers.clear();
-  }
-  
-  public void addServer(String addr, int port){
-    servers.add(new InetSocketTransportAddress(addr, port));
+    return servers.toArray( new InetSocketTransportAddress[servers.size()] );
   }
 
-  public Map<String, String> getSettings(){
+  public void clearServers() {
+    servers.clear();
+  }
+
+  public void addServer( String addr, int port ) {
+    servers.add( new InetSocketTransportAddress( addr, port ) );
+  }
+
+  public Map<String, String> getSettings() {
     return this.settings;
   }
-  public void setSettings(Map<String, String> settings){
+
+  public void setSettings( Map<String, String> settings ) {
     this.settings = settings;
   }
-  public void clearSettings(){
+
+  public void clearSettings() {
     settings.clear();
   }
-  public void addSetting(String property, String value){
-    if(StringUtils.isNotBlank(property)) settings.put(property, value);
+
+  public void addSetting( String property, String value ) {
+    if ( StringUtils.isNotBlank( property ) ) {
+      settings.put( property, value );
+    }
   }
-  
 
   /**
    * @param batch
    *          size.
    */
-  public void setBatchSize(String value) {
+  public void setBatchSize( String value ) {
     this.batchSize = value;
   }
 
@@ -261,8 +264,8 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
     return this.batchSize;
   }
 
-  public int getBatchSizeInt(VariableSpace vars) {
-    return Const.toInt(vars.environmentSubstitute(this.batchSize), DEFAULT_BATCH_SIZE);
+  public int getBatchSizeInt( VariableSpace vars ) {
+    return Const.toInt( vars.environmentSubstitute( this.batchSize ), DEFAULT_BATCH_SIZE );
   }
 
   /**
@@ -276,7 +279,7 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
    * @param TimeOut
    *          The TimeOut to set.
    */
-  public void setTimeOut(String TimeOut) {
+  public void setTimeOut( String TimeOut ) {
     this.timeout = TimeOut;
   }
 
@@ -284,13 +287,13 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
     return timeoutUnit != null ? timeoutUnit : DEFAULT_TIMEOUT_UNIT;
   }
 
-  public void setTimeoutUnit(TimeUnit timeoutUnit) {
+  public void setTimeoutUnit( TimeUnit timeoutUnit ) {
     this.timeoutUnit = timeoutUnit;
   }
 
-  //////////////////
+  // ////////////////
   // CONSTRUCTOR //
-  ////////////////
+  // //////////////
 
   public ElasticSearchBulkMeta() {
     super(); // allocate BaseStepMeta
@@ -307,7 +310,7 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
     timeoutUnit = DEFAULT_TIMEOUT_UNIT;
     index = "twitter";
     type = "tweet";
-    
+
     isJsonInsert = false;
     jsonField = null;
     idOutField = null;
@@ -316,95 +319,97 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
   }
 
   /* This function adds meta data to the rows being pushed out */
-  public void getFields(RowMetaInterface r, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException {
-     if(StringUtils.isNotBlank(this.getIdOutField()) ){ 
-       ValueMetaInterface valueMeta = new ValueMeta(space.environmentSubstitute(this.getIdOutField()), ValueMetaInterface.TYPE_STRING);
-       valueMeta.setOrigin(name);
-       //add if doesn't exist
-       if(!r.exists(valueMeta)){
-         r.addValueMeta(valueMeta);  
-       }
-     }
-  }
-
-  public void loadXML(Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore) throws KettleXMLException {
-    try {
-      
-      Node general = XMLHandler.getSubNode(stepnode, Dom.TAG_GENERAL);
-
-      batchSize = XMLHandler.getTagValue(general, Dom.TAG_BATCH_SIZE);
-      timeout = XMLHandler.getTagValue(general, Dom.TAG_TIMEOUT);
-      String timeoutStr = XMLHandler.getTagValue(general, Dom.TAG_TIMEOUT_UNIT);
-      try {
-        timeoutUnit = TimeUnit.valueOf(timeoutStr);
-      } catch (Exception e) {
-        timeoutUnit = DEFAULT_TIMEOUT_UNIT;
+  public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
+      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    if ( StringUtils.isNotBlank( this.getIdOutField() ) ) {
+      ValueMetaInterface valueMeta =
+          new ValueMeta( space.environmentSubstitute( this.getIdOutField() ), ValueMetaInterface.TYPE_STRING );
+      valueMeta.setOrigin( name );
+      // add if doesn't exist
+      if ( !r.exists( valueMeta ) ) {
+        r.addValueMeta( valueMeta );
       }
-      
-      setIndex(XMLHandler.getTagValue(general, Dom.TAG_INDEX));
-      setType(XMLHandler.getTagValue(general, Dom.TAG_TYPE));
-
-      setJsonInsert(parseBool(XMLHandler.getTagValue(general, Dom.TAG_IS_JSON)));
-      setJsonField(XMLHandler.getTagValue(general, Dom.TAG_JSON_FIELD));
-      setIdInField(XMLHandler.getTagValue(general, Dom.TAG_ID_IN_FIELD));
-      setOverWriteIfSameId(parseBool(XMLHandler.getTagValue(general, Dom.TAG_OVERWRITE_IF_EXISTS)));
-      
-      setIdOutField(XMLHandler.getTagValue(general, Dom.TAG_ID_OUT_FIELD));
-      setUseOutput(parseBool(XMLHandler.getTagValue(general, Dom.TAG_USE_OUTPUT)));
-      setStopOnError(parseBool(XMLHandler.getTagValue(general, Dom.TAG_STOP_ON_ERROR)));
-
-      //Fields
-      Node fields = XMLHandler.getSubNode(stepnode, Dom.TAG_FIELDS);
-      int nrFields = XMLHandler.countNodes(fields, Dom.TAG_FIELD);
-      this.clearFields();
-      for (int i = 0; i < nrFields; i++) {
-        Node fNode = XMLHandler.getSubNodeByNr(fields, Dom.TAG_FIELD, i);
-
-        String colName = XMLHandler.getTagValue(fNode, Dom.TAG_NAME);
-        String targetName = XMLHandler.getTagValue(fNode, Dom.TAG_TARGET);
-
-        this.addField(colName, targetName);
-      }
-      
-      //Servers
-      Node servers = XMLHandler.getSubNode(stepnode, Dom.TAG_SERVERS);
-      int nrServers =XMLHandler.countNodes(servers, Dom.TAG_SERVER); 
-      this.clearServers();
-      for(int i = 0; i < nrServers; i++){
-        Node sNode = XMLHandler.getSubNodeByNr(servers, Dom.TAG_SERVER, i);
-        
-        String addr = XMLHandler.getTagValue(sNode, Dom.TAG_SERVER_ADDRESS);
-        String portStr = XMLHandler.getTagValue(sNode, Dom.TAG_SERVER_PORT);
-        
-        int port = DEFAULT_PORT;
-        try{
-          port = Integer.parseInt(portStr);
-        } catch (NumberFormatException nfe){
-          //use default
-        }
-        this.addServer(addr, port);
-      }
-      
-      //Settings
-      Node settings = XMLHandler.getSubNode(stepnode, Dom.TAG_SETTINGS);
-      int nrSettings = XMLHandler.countNodes(settings, Dom.TAG_SETTING);
-      this.clearSettings();
-      for (int i = 0; i < nrSettings; i++) {
-        Node sNode = XMLHandler.getSubNodeByNr(settings, Dom.TAG_SETTING, i);
-
-        String name = XMLHandler.getTagValue(sNode, Dom.TAG_SETTING_NAME);
-        String value = XMLHandler.getTagValue(sNode, Dom.TAG_SETTING_VALUE);
-
-        this.addSetting(name, value);
-      }
-      
-    } catch (Exception e) {
-      throw new KettleXMLException("Unable to load step info from XML", e);
     }
   }
-  
-  private static boolean parseBool(String val){
-    return "Y".equals(val);
+
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+    try {
+
+      Node general = XMLHandler.getSubNode( stepnode, Dom.TAG_GENERAL );
+
+      batchSize = XMLHandler.getTagValue( general, Dom.TAG_BATCH_SIZE );
+      timeout = XMLHandler.getTagValue( general, Dom.TAG_TIMEOUT );
+      String timeoutStr = XMLHandler.getTagValue( general, Dom.TAG_TIMEOUT_UNIT );
+      try {
+        timeoutUnit = TimeUnit.valueOf( timeoutStr );
+      } catch ( Exception e ) {
+        timeoutUnit = DEFAULT_TIMEOUT_UNIT;
+      }
+
+      setIndex( XMLHandler.getTagValue( general, Dom.TAG_INDEX ) );
+      setType( XMLHandler.getTagValue( general, Dom.TAG_TYPE ) );
+
+      setJsonInsert( parseBool( XMLHandler.getTagValue( general, Dom.TAG_IS_JSON ) ) );
+      setJsonField( XMLHandler.getTagValue( general, Dom.TAG_JSON_FIELD ) );
+      setIdInField( XMLHandler.getTagValue( general, Dom.TAG_ID_IN_FIELD ) );
+      setOverWriteIfSameId( parseBool( XMLHandler.getTagValue( general, Dom.TAG_OVERWRITE_IF_EXISTS ) ) );
+
+      setIdOutField( XMLHandler.getTagValue( general, Dom.TAG_ID_OUT_FIELD ) );
+      setUseOutput( parseBool( XMLHandler.getTagValue( general, Dom.TAG_USE_OUTPUT ) ) );
+      setStopOnError( parseBool( XMLHandler.getTagValue( general, Dom.TAG_STOP_ON_ERROR ) ) );
+
+      // Fields
+      Node fields = XMLHandler.getSubNode( stepnode, Dom.TAG_FIELDS );
+      int nrFields = XMLHandler.countNodes( fields, Dom.TAG_FIELD );
+      this.clearFields();
+      for ( int i = 0; i < nrFields; i++ ) {
+        Node fNode = XMLHandler.getSubNodeByNr( fields, Dom.TAG_FIELD, i );
+
+        String colName = XMLHandler.getTagValue( fNode, Dom.TAG_NAME );
+        String targetName = XMLHandler.getTagValue( fNode, Dom.TAG_TARGET );
+
+        this.addField( colName, targetName );
+      }
+
+      // Servers
+      Node servers = XMLHandler.getSubNode( stepnode, Dom.TAG_SERVERS );
+      int nrServers = XMLHandler.countNodes( servers, Dom.TAG_SERVER );
+      this.clearServers();
+      for ( int i = 0; i < nrServers; i++ ) {
+        Node sNode = XMLHandler.getSubNodeByNr( servers, Dom.TAG_SERVER, i );
+
+        String addr = XMLHandler.getTagValue( sNode, Dom.TAG_SERVER_ADDRESS );
+        String portStr = XMLHandler.getTagValue( sNode, Dom.TAG_SERVER_PORT );
+
+        int port = DEFAULT_PORT;
+        try {
+          port = Integer.parseInt( portStr );
+        } catch ( NumberFormatException nfe ) {
+          // use default
+        }
+        this.addServer( addr, port );
+      }
+
+      // Settings
+      Node settings = XMLHandler.getSubNode( stepnode, Dom.TAG_SETTINGS );
+      int nrSettings = XMLHandler.countNodes( settings, Dom.TAG_SETTING );
+      this.clearSettings();
+      for ( int i = 0; i < nrSettings; i++ ) {
+        Node sNode = XMLHandler.getSubNodeByNr( settings, Dom.TAG_SETTING, i );
+
+        String name = XMLHandler.getTagValue( sNode, Dom.TAG_SETTING_NAME );
+        String value = XMLHandler.getTagValue( sNode, Dom.TAG_SETTING_VALUE );
+
+        this.addSetting( name, value );
+      }
+
+    } catch ( Exception e ) {
+      throw new KettleXMLException( "Unable to load step info from XML", e );
+    }
+  }
+
+  private static boolean parseBool( String val ) {
+    return "Y".equals( val );
   }
 
   public String getXML() {
@@ -412,78 +417,84 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
     Indentation indent = new Indentation();
 
     indent.incr().incr();
-    
+
     // General
-    retval.append(indent.toString()).append(XMLHandler.openTag(Dom.TAG_GENERAL)).append(Const.CR);
+    retval.append( indent.toString() ).append( XMLHandler.openTag( Dom.TAG_GENERAL ) ).append( Const.CR );
     indent.incr();
-    
-    retval.append(indent.toString() + XMLHandler.addTagValue(Dom.TAG_INDEX, getIndex()));
-    retval.append(indent.toString() + XMLHandler.addTagValue(Dom.TAG_TYPE, getType()));
 
-    retval.append(indent.toString() + XMLHandler.addTagValue(Dom.TAG_BATCH_SIZE, batchSize));
-    retval.append(indent.toString() + XMLHandler.addTagValue(Dom.TAG_TIMEOUT, timeout));
-    retval.append(indent.toString()).append(XMLHandler.addTagValue(Dom.TAG_TIMEOUT_UNIT, timeoutUnit.toString()));
+    retval.append( indent.toString() + XMLHandler.addTagValue( Dom.TAG_INDEX, getIndex() ) );
+    retval.append( indent.toString() + XMLHandler.addTagValue( Dom.TAG_TYPE, getType() ) );
 
-    retval.append(indent.toString() + XMLHandler.addTagValue(Dom.TAG_IS_JSON, isJsonInsert()));
-    if (getJsonField() != null) retval.append(indent.toString() + XMLHandler.addTagValue(Dom.TAG_JSON_FIELD, getJsonField()));
-    if (getIdOutField() != null) retval.append(indent.toString() + XMLHandler.addTagValue(Dom.TAG_ID_OUT_FIELD, getIdOutField()));
+    retval.append( indent.toString() + XMLHandler.addTagValue( Dom.TAG_BATCH_SIZE, batchSize ) );
+    retval.append( indent.toString() + XMLHandler.addTagValue( Dom.TAG_TIMEOUT, timeout ) );
+    retval.append( indent.toString() ).append( XMLHandler.addTagValue( Dom.TAG_TIMEOUT_UNIT, timeoutUnit.toString() ) );
 
-    if(getIdInField() != null) retval.append(indent.toString() + XMLHandler.addTagValue(Dom.TAG_ID_IN_FIELD, getIdInField()));
-    
-    retval.append(indent.toString() + XMLHandler.addTagValue(Dom.TAG_OVERWRITE_IF_EXISTS, isOverWriteIfSameId()));
-    
-    retval.append(indent.toString() + XMLHandler.addTagValue(Dom.TAG_USE_OUTPUT, useOutput));
-    retval.append(indent.toString() + XMLHandler.addTagValue(Dom.TAG_STOP_ON_ERROR, stopOnError));
+    retval.append( indent.toString() + XMLHandler.addTagValue( Dom.TAG_IS_JSON, isJsonInsert() ) );
+    if ( getJsonField() != null ) {
+      retval.append( indent.toString() + XMLHandler.addTagValue( Dom.TAG_JSON_FIELD, getJsonField() ) );
+    }
+    if ( getIdOutField() != null ) {
+      retval.append( indent.toString() + XMLHandler.addTagValue( Dom.TAG_ID_OUT_FIELD, getIdOutField() ) );
+    }
+
+    if ( getIdInField() != null ) {
+      retval.append( indent.toString() + XMLHandler.addTagValue( Dom.TAG_ID_IN_FIELD, getIdInField() ) );
+    }
+
+    retval.append( indent.toString() + XMLHandler.addTagValue( Dom.TAG_OVERWRITE_IF_EXISTS, isOverWriteIfSameId() ) );
+
+    retval.append( indent.toString() + XMLHandler.addTagValue( Dom.TAG_USE_OUTPUT, useOutput ) );
+    retval.append( indent.toString() + XMLHandler.addTagValue( Dom.TAG_STOP_ON_ERROR, stopOnError ) );
 
     indent.decr();
-    retval.append(indent.toString()).append(XMLHandler.closeTag(Dom.TAG_GENERAL)).append(Const.CR);
-    
+    retval.append( indent.toString() ).append( XMLHandler.closeTag( Dom.TAG_GENERAL ) ).append( Const.CR );
+
     // Fields
-    retval.append(indent.toString()).append(XMLHandler.openTag(Dom.TAG_FIELDS)).append(Const.CR);
+    retval.append( indent.toString() ).append( XMLHandler.openTag( Dom.TAG_FIELDS ) ).append( Const.CR );
     indent.incr();
-    for (String colName : this.getFields().keySet()) {
-      String targetName = this.getFields().get(colName);
-      retval.append(indent.toString()).append(XMLHandler.openTag(Dom.TAG_FIELD)).append(Const.CR);
+    for ( String colName : this.getFields().keySet() ) {
+      String targetName = this.getFields().get( colName );
+      retval.append( indent.toString() ).append( XMLHandler.openTag( Dom.TAG_FIELD ) ).append( Const.CR );
       indent.incr();
-      retval.append(indent.toString()).append(XMLHandler.addTagValue(Dom.TAG_NAME, colName));
-      retval.append(indent.toString()).append(XMLHandler.addTagValue(Dom.TAG_TARGET, targetName));
+      retval.append( indent.toString() ).append( XMLHandler.addTagValue( Dom.TAG_NAME, colName ) );
+      retval.append( indent.toString() ).append( XMLHandler.addTagValue( Dom.TAG_TARGET, targetName ) );
       indent.decr();
-      retval.append(indent.toString()).append(XMLHandler.closeTag(Dom.TAG_FIELD)).append(Const.CR);
+      retval.append( indent.toString() ).append( XMLHandler.closeTag( Dom.TAG_FIELD ) ).append( Const.CR );
     }
     indent.decr();
-    retval.append(indent.toString()).append(XMLHandler.closeTag(Dom.TAG_FIELDS)).append(Const.CR);
-    
+    retval.append( indent.toString() ).append( XMLHandler.closeTag( Dom.TAG_FIELDS ) ).append( Const.CR );
+
     // Servers
-    retval.append(indent.toString()).append(XMLHandler.openTag(Dom.TAG_SERVERS)).append(Const.CR);
+    retval.append( indent.toString() ).append( XMLHandler.openTag( Dom.TAG_SERVERS ) ).append( Const.CR );
     indent.incr();
-    for (InetSocketTransportAddress istAddr : this.getServers()) {
+    for ( InetSocketTransportAddress istAddr : this.getServers() ) {
       String address = istAddr.address().getAddress().getHostAddress();
-      int port = istAddr.address().getPort(); 
-      retval.append(indent.toString()).append(XMLHandler.openTag(Dom.TAG_SERVER)).append(Const.CR);
+      int port = istAddr.address().getPort();
+      retval.append( indent.toString() ).append( XMLHandler.openTag( Dom.TAG_SERVER ) ).append( Const.CR );
       indent.incr();
-      retval.append(indent.toString()).append(XMLHandler.addTagValue(Dom.TAG_SERVER_ADDRESS, address));
-      retval.append(indent.toString()).append(XMLHandler.addTagValue(Dom.TAG_SERVER_PORT, port));
+      retval.append( indent.toString() ).append( XMLHandler.addTagValue( Dom.TAG_SERVER_ADDRESS, address ) );
+      retval.append( indent.toString() ).append( XMLHandler.addTagValue( Dom.TAG_SERVER_PORT, port ) );
       indent.decr();
-      retval.append(indent.toString()).append(XMLHandler.closeTag(Dom.TAG_SERVER)).append(Const.CR);
+      retval.append( indent.toString() ).append( XMLHandler.closeTag( Dom.TAG_SERVER ) ).append( Const.CR );
     }
     indent.decr();
-    retval.append(indent.toString()).append(XMLHandler.closeTag(Dom.TAG_SERVERS)).append(Const.CR);
-    
+    retval.append( indent.toString() ).append( XMLHandler.closeTag( Dom.TAG_SERVERS ) ).append( Const.CR );
+
     // Settings
-    retval.append(indent.toString()).append(XMLHandler.openTag(Dom.TAG_SETTINGS)).append(Const.CR);
+    retval.append( indent.toString() ).append( XMLHandler.openTag( Dom.TAG_SETTINGS ) ).append( Const.CR );
     indent.incr();
-    for (String settingName : this.getSettings().keySet()) {
-      String settingValue = this.getSettings().get(settingName);
-      retval.append(indent.toString()).append(XMLHandler.openTag(Dom.TAG_SETTING)).append(Const.CR);
+    for ( String settingName : this.getSettings().keySet() ) {
+      String settingValue = this.getSettings().get( settingName );
+      retval.append( indent.toString() ).append( XMLHandler.openTag( Dom.TAG_SETTING ) ).append( Const.CR );
       indent.incr();
-      retval.append(indent.toString()).append(XMLHandler.addTagValue(Dom.TAG_SETTING_NAME, settingName));
-      retval.append(indent.toString()).append(XMLHandler.addTagValue(Dom.TAG_SETTING_VALUE, settingValue));
+      retval.append( indent.toString() ).append( XMLHandler.addTagValue( Dom.TAG_SETTING_NAME, settingName ) );
+      retval.append( indent.toString() ).append( XMLHandler.addTagValue( Dom.TAG_SETTING_VALUE, settingValue ) );
       indent.decr();
-      retval.append(indent.toString()).append(XMLHandler.closeTag(Dom.TAG_SETTING)).append(Const.CR);
+      retval.append( indent.toString() ).append( XMLHandler.closeTag( Dom.TAG_SETTING ) ).append( Const.CR );
     }
     indent.decr();
-    retval.append(indent.toString()).append(XMLHandler.closeTag(Dom.TAG_SETTINGS)).append(Const.CR);
-    
+    retval.append( indent.toString() ).append( XMLHandler.closeTag( Dom.TAG_SETTINGS ) ).append( Const.CR );
+
     return retval.toString();
   }
 
@@ -500,8 +511,8 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
     }
 
     public Indentation decr() {
-      if (--indentLevel >= 0) {
-        indent = indent.substring(0, indent.length() - indentUnit.length());
+      if ( --indentLevel >= 0 ) {
+        indent = indent.substring( 0, indent.length() - indentUnit.length() );
       }
       return this;
     }
@@ -511,184 +522,194 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
     }
 
   }
-  
-  private static String joinRepAttr(String...args){
-    return StringUtils.join(args, "_");
+
+  private static String joinRepAttr( String... args ) {
+    return StringUtils.join( args, "_" );
   }
 
-  public void readRep(Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases) throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
+    throws KettleException {
     try {
 
-      setIndex(rep.getStepAttributeString(id_step, joinRepAttr(Dom.TAG_GENERAL,Dom.TAG_INDEX)));
-      setType(rep.getStepAttributeString(id_step, joinRepAttr(Dom.TAG_GENERAL,Dom.TAG_TYPE)));
-      
-      setBatchSize(rep.getStepAttributeString(id_step, joinRepAttr(Dom.TAG_GENERAL,Dom.TAG_BATCH_SIZE)));
-      setTimeOut(rep.getStepAttributeString(id_step, joinRepAttr(Dom.TAG_GENERAL,Dom.TAG_TIMEOUT)));
-      String timeoutStr = rep.getStepAttributeString(id_step, joinRepAttr(Dom.TAG_GENERAL,Dom.TAG_TIMEOUT_UNIT));
+      setIndex( rep.getStepAttributeString( id_step, joinRepAttr( Dom.TAG_GENERAL, Dom.TAG_INDEX ) ) );
+      setType( rep.getStepAttributeString( id_step, joinRepAttr( Dom.TAG_GENERAL, Dom.TAG_TYPE ) ) );
+
+      setBatchSize( rep.getStepAttributeString( id_step, joinRepAttr( Dom.TAG_GENERAL, Dom.TAG_BATCH_SIZE ) ) );
+      setTimeOut( rep.getStepAttributeString( id_step, joinRepAttr( Dom.TAG_GENERAL, Dom.TAG_TIMEOUT ) ) );
+      String timeoutStr = rep.getStepAttributeString( id_step, joinRepAttr( Dom.TAG_GENERAL, Dom.TAG_TIMEOUT_UNIT ) );
       try {
-        timeoutUnit = TimeUnit.valueOf(timeoutStr);
-      } catch (Exception e) {
+        timeoutUnit = TimeUnit.valueOf( timeoutStr );
+      } catch ( Exception e ) {
         timeoutUnit = DEFAULT_TIMEOUT_UNIT;
       }
-      
-      setJsonInsert(rep.getStepAttributeBoolean(id_step, joinRepAttr(Dom.TAG_GENERAL,Dom.TAG_IS_JSON)));
-      setJsonField((rep.getStepAttributeString(id_step, joinRepAttr(Dom.TAG_GENERAL,Dom.TAG_JSON_FIELD))));
-      
-      setIdInField((rep.getStepAttributeString(id_step, joinRepAttr(Dom.TAG_GENERAL,Dom.TAG_ID_IN_FIELD))));
-      setOverWriteIfSameId(rep.getStepAttributeBoolean(id_step, joinRepAttr(Dom.TAG_GENERAL,Dom.TAG_OVERWRITE_IF_EXISTS)));
-      
-      setIdOutField((rep.getStepAttributeString(id_step, joinRepAttr(Dom.TAG_GENERAL,Dom.TAG_ID_OUT_FIELD))));
 
-      setUseOutput(rep.getStepAttributeBoolean(id_step, joinRepAttr(Dom.TAG_GENERAL,Dom.TAG_USE_OUTPUT)));
-      setStopOnError(rep.getStepAttributeBoolean(id_step, joinRepAttr(Dom.TAG_GENERAL,Dom.TAG_STOP_ON_ERROR)));
+      setJsonInsert( rep.getStepAttributeBoolean( id_step, joinRepAttr( Dom.TAG_GENERAL, Dom.TAG_IS_JSON ) ) );
+      setJsonField( ( rep.getStepAttributeString( id_step, joinRepAttr( Dom.TAG_GENERAL, Dom.TAG_JSON_FIELD ) ) ) );
 
-      //Fields
+      setIdInField( ( rep.getStepAttributeString( id_step, joinRepAttr( Dom.TAG_GENERAL, Dom.TAG_ID_IN_FIELD ) ) ) );
+      setOverWriteIfSameId( rep.getStepAttributeBoolean( id_step, joinRepAttr( Dom.TAG_GENERAL,
+          Dom.TAG_OVERWRITE_IF_EXISTS ) ) );
+
+      setIdOutField( ( rep.getStepAttributeString( id_step, joinRepAttr( Dom.TAG_GENERAL, Dom.TAG_ID_OUT_FIELD ) ) ) );
+
+      setUseOutput( rep.getStepAttributeBoolean( id_step, joinRepAttr( Dom.TAG_GENERAL, Dom.TAG_USE_OUTPUT ) ) );
+      setStopOnError( rep.getStepAttributeBoolean( id_step, joinRepAttr( Dom.TAG_GENERAL, Dom.TAG_STOP_ON_ERROR ) ) );
+
+      // Fields
       clearFields();
-      int fieldsNr = rep.countNrStepAttributes(id_step, joinRepAttr(Dom.TAG_FIELD,Dom.TAG_NAME));
-      for(int i = 0; i < fieldsNr; i++){
-        String name = rep.getStepAttributeString(id_step, i, joinRepAttr(Dom.TAG_FIELD,Dom.TAG_NAME));
-        String target = rep.getStepAttributeString(id_step, i, joinRepAttr(Dom.TAG_FIELD,Dom.TAG_TARGET));
-        addField(name, target);
+      int fieldsNr = rep.countNrStepAttributes( id_step, joinRepAttr( Dom.TAG_FIELD, Dom.TAG_NAME ) );
+      for ( int i = 0; i < fieldsNr; i++ ) {
+        String name = rep.getStepAttributeString( id_step, i, joinRepAttr( Dom.TAG_FIELD, Dom.TAG_NAME ) );
+        String target = rep.getStepAttributeString( id_step, i, joinRepAttr( Dom.TAG_FIELD, Dom.TAG_TARGET ) );
+        addField( name, target );
       }
-      
-      //Servers
+
+      // Servers
       clearServers();
-      int serversNr = rep.countNrStepAttributes(id_step, joinRepAttr(Dom.TAG_SERVER, Dom.TAG_SERVER_ADDRESS));
-      for(int i = 0; i < serversNr; i++){
-        String addr = rep.getStepAttributeString(id_step, i, joinRepAttr(Dom.TAG_SERVER,Dom.TAG_SERVER_ADDRESS));
-        int port = (int) rep.getStepAttributeInteger(id_step, i, joinRepAttr(Dom.TAG_SERVER,Dom.TAG_SERVER_PORT));
-        addServer(addr, port);
+      int serversNr = rep.countNrStepAttributes( id_step, joinRepAttr( Dom.TAG_SERVER, Dom.TAG_SERVER_ADDRESS ) );
+      for ( int i = 0; i < serversNr; i++ ) {
+        String addr = rep.getStepAttributeString( id_step, i, joinRepAttr( Dom.TAG_SERVER, Dom.TAG_SERVER_ADDRESS ) );
+        int port = (int) rep.getStepAttributeInteger( id_step, i, joinRepAttr( Dom.TAG_SERVER, Dom.TAG_SERVER_PORT ) );
+        addServer( addr, port );
       }
-      
-      //Settings
+
+      // Settings
       clearSettings();
-      int settingsNr = rep.countNrStepAttributes(id_step, joinRepAttr(Dom.TAG_SETTING, Dom.TAG_SETTING_NAME));
-      for(int i=0;i<settingsNr;i++){
-        String name = rep.getStepAttributeString(id_step, i, joinRepAttr(Dom.TAG_SETTING,Dom.TAG_SETTING_NAME));
-        String value = rep.getStepAttributeString(id_step, i, joinRepAttr(Dom.TAG_SETTING,Dom.TAG_SETTING_VALUE));
-        addSetting(name, value);
+      int settingsNr = rep.countNrStepAttributes( id_step, joinRepAttr( Dom.TAG_SETTING, Dom.TAG_SETTING_NAME ) );
+      for ( int i = 0; i < settingsNr; i++ ) {
+        String name = rep.getStepAttributeString( id_step, i, joinRepAttr( Dom.TAG_SETTING, Dom.TAG_SETTING_NAME ) );
+        String value = rep.getStepAttributeString( id_step, i, joinRepAttr( Dom.TAG_SETTING, Dom.TAG_SETTING_VALUE ) );
+        addSetting( name, value );
       }
 
-    } catch (Exception e) {
-      throw new KettleException(BaseMessages.getString(PKG, "ElasticSearchBulkMeta.Exception.ErrorReadingRepository"), e);
+    } catch ( Exception e ) {
+      throw new KettleException(
+          BaseMessages.getString( PKG, "ElasticSearchBulkMeta.Exception.ErrorReadingRepository" ), e );
     }
   }
 
-  public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step) throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
+    throws KettleException {
     try {
-      
-      rep.saveStepAttribute(id_transformation, id_step, joinRepAttr(Dom.TAG_GENERAL,Dom.TAG_INDEX), getIndex());
-      rep.saveStepAttribute(id_transformation, id_step, joinRepAttr(Dom.TAG_GENERAL,Dom.TAG_TYPE), getType());
-      
-      rep.saveStepAttribute(id_transformation, id_step, joinRepAttr(Dom.TAG_GENERAL,Dom.TAG_BATCH_SIZE), batchSize);
-      rep.saveStepAttribute(id_transformation, id_step, joinRepAttr(Dom.TAG_GENERAL,Dom.TAG_TIMEOUT), getTimeOut());
-      rep.saveStepAttribute(id_transformation, id_step, joinRepAttr(Dom.TAG_GENERAL,Dom.TAG_TIMEOUT_UNIT), getTimeoutUnit().toString());
 
-      rep.saveStepAttribute(id_transformation, id_step, joinRepAttr(Dom.TAG_GENERAL,Dom.TAG_IS_JSON), isJsonInsert());
-      rep.saveStepAttribute(id_transformation, id_step, joinRepAttr(Dom.TAG_GENERAL,Dom.TAG_JSON_FIELD), getJsonField());
-      
-      rep.saveStepAttribute(id_transformation, id_step, joinRepAttr(Dom.TAG_GENERAL,Dom.TAG_ID_IN_FIELD), getIdInField());
-      rep.saveStepAttribute(id_transformation, id_step, joinRepAttr(Dom.TAG_GENERAL,Dom.TAG_OVERWRITE_IF_EXISTS), isOverWriteIfSameId());
-      
-      rep.saveStepAttribute(id_transformation, id_step, joinRepAttr(Dom.TAG_GENERAL,Dom.TAG_ID_OUT_FIELD), getIdOutField());
+      rep.saveStepAttribute( id_transformation, id_step, joinRepAttr( Dom.TAG_GENERAL, Dom.TAG_INDEX ), getIndex() );
+      rep.saveStepAttribute( id_transformation, id_step, joinRepAttr( Dom.TAG_GENERAL, Dom.TAG_TYPE ), getType() );
 
-      rep.saveStepAttribute(id_transformation, id_step, joinRepAttr(Dom.TAG_GENERAL,Dom.TAG_USE_OUTPUT), isUseOutput());
-      rep.saveStepAttribute(id_transformation, id_step, joinRepAttr(Dom.TAG_GENERAL,Dom.TAG_STOP_ON_ERROR), isStopOnError());
+      rep.saveStepAttribute( id_transformation, id_step, joinRepAttr( Dom.TAG_GENERAL, Dom.TAG_BATCH_SIZE ), batchSize );
+      rep.saveStepAttribute( id_transformation, id_step, joinRepAttr( Dom.TAG_GENERAL, Dom.TAG_TIMEOUT ), getTimeOut() );
+      rep.saveStepAttribute( id_transformation, id_step, joinRepAttr( Dom.TAG_GENERAL, Dom.TAG_TIMEOUT_UNIT ),
+          getTimeoutUnit().toString() );
 
-      //Fields
-      String[] fieldNames = getFields().keySet().toArray(new String[getFields().keySet().size()]);
-      for(int i=0; i<fieldNames.length; i++){
-        rep.saveStepAttribute(id_transformation, id_step, i, joinRepAttr(Dom.TAG_FIELD,Dom.TAG_NAME) , fieldNames[i]);
-        rep.saveStepAttribute(id_transformation, id_step, i, joinRepAttr(Dom.TAG_FIELD,Dom.TAG_TARGET) , getFields().get(fieldNames[i]));
+      rep.saveStepAttribute( id_transformation, id_step, joinRepAttr( Dom.TAG_GENERAL, Dom.TAG_IS_JSON ),
+          isJsonInsert() );
+      rep.saveStepAttribute( id_transformation, id_step, joinRepAttr( Dom.TAG_GENERAL, Dom.TAG_JSON_FIELD ),
+          getJsonField() );
+
+      rep.saveStepAttribute( id_transformation, id_step, joinRepAttr( Dom.TAG_GENERAL, Dom.TAG_ID_IN_FIELD ),
+          getIdInField() );
+      rep.saveStepAttribute( id_transformation, id_step, joinRepAttr( Dom.TAG_GENERAL, Dom.TAG_OVERWRITE_IF_EXISTS ),
+          isOverWriteIfSameId() );
+
+      rep.saveStepAttribute( id_transformation, id_step, joinRepAttr( Dom.TAG_GENERAL, Dom.TAG_ID_OUT_FIELD ),
+          getIdOutField() );
+
+      rep.saveStepAttribute( id_transformation, id_step, joinRepAttr( Dom.TAG_GENERAL, Dom.TAG_USE_OUTPUT ),
+          isUseOutput() );
+      rep.saveStepAttribute( id_transformation, id_step, joinRepAttr( Dom.TAG_GENERAL, Dom.TAG_STOP_ON_ERROR ),
+          isStopOnError() );
+
+      // Fields
+      String[] fieldNames = getFields().keySet().toArray( new String[getFields().keySet().size()] );
+      for ( int i = 0; i < fieldNames.length; i++ ) {
+        rep.saveStepAttribute( id_transformation, id_step, i, joinRepAttr( Dom.TAG_FIELD, Dom.TAG_NAME ), fieldNames[i] );
+        rep.saveStepAttribute( id_transformation, id_step, i, joinRepAttr( Dom.TAG_FIELD, Dom.TAG_TARGET ), getFields()
+            .get( fieldNames[i] ) );
       }
 
-      //Servers
-      for(int i=0; i< getServers().length; i++){
-        rep.saveStepAttribute(id_transformation, id_step, i, joinRepAttr(Dom.TAG_SERVER,Dom.TAG_SERVER_ADDRESS) , getServers()[i].address().getAddress().getHostAddress());
-        rep.saveStepAttribute(id_transformation, id_step, i, joinRepAttr(Dom.TAG_SERVER,Dom.TAG_SERVER_PORT) , getServers()[i].address().getPort());
+      // Servers
+      for ( int i = 0; i < getServers().length; i++ ) {
+        rep.saveStepAttribute( id_transformation, id_step, i, joinRepAttr( Dom.TAG_SERVER, Dom.TAG_SERVER_ADDRESS ),
+            getServers()[i].address().getAddress().getHostAddress() );
+        rep.saveStepAttribute( id_transformation, id_step, i, joinRepAttr( Dom.TAG_SERVER, Dom.TAG_SERVER_PORT ),
+            getServers()[i].address().getPort() );
       }
-      
-      //Settings
-      String[] settingNames = getSettings().keySet().toArray(new String[getSettings().keySet().size()]);
-      for(int i=0; i<settingNames.length; i++){
-        rep.saveStepAttribute(id_transformation, id_step, i, joinRepAttr(Dom.TAG_SETTING,Dom.TAG_SETTING_NAME) , settingNames[i]);
-        rep.saveStepAttribute(id_transformation, id_step, i, joinRepAttr(Dom.TAG_SETTING,Dom.TAG_SETTING_VALUE) , getSettings().get(settingNames[i]));
+
+      // Settings
+      String[] settingNames = getSettings().keySet().toArray( new String[getSettings().keySet().size()] );
+      for ( int i = 0; i < settingNames.length; i++ ) {
+        rep.saveStepAttribute( id_transformation, id_step, i, joinRepAttr( Dom.TAG_SETTING, Dom.TAG_SETTING_NAME ),
+            settingNames[i] );
+        rep.saveStepAttribute( id_transformation, id_step, i, joinRepAttr( Dom.TAG_SETTING, Dom.TAG_SETTING_VALUE ),
+            getSettings().get( settingNames[i] ) );
       }
-      
-    } catch (Exception e) {
-      throw new KettleException(BaseMessages.getString(PKG, "ElasticSearchBulkMeta.Exception.ErrorSavingToRepository", "" + id_step), e);
+
+    } catch ( Exception e ) {
+      throw new KettleException( BaseMessages.getString( PKG,
+          "ElasticSearchBulkMeta.Exception.ErrorSavingToRepository", "" + id_step ), e );
     }
   }
 
-  public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore) {
-    
-    checkBasicRequiredFields(remarks, stepMeta);
-    
-    checkInputFields(remarks, prev, stepMeta);
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
+      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
+      IMetaStore metaStore ) {
+
+    checkBasicRequiredFields( remarks, stepMeta );
+
+    checkInputFields( remarks, prev, stepMeta );
 
   }
-  
-  private void checkBasicRequiredFields(List<CheckResultInterface> remarks, StepMeta stepMeta) {
-    checkRequiredString(remarks, stepMeta, getIndex(), BaseMessages.getString(PKG, "ElasticSearchBulkDialog.Index.Label"));
-    checkRequiredString(remarks, stepMeta, getType(), BaseMessages.getString(PKG, "ElasticSearchBulkDialog.Type.Label"));
-    checkRequiredString(remarks, stepMeta, getBatchSize(), BaseMessages.getString(PKG, "ElasticSearchBulkDialog.BatchSize.Label"));
+
+  private void checkBasicRequiredFields( List<CheckResultInterface> remarks, StepMeta stepMeta ) {
+    checkRequiredString( remarks, stepMeta, getIndex(), BaseMessages.getString( PKG,
+        "ElasticSearchBulkDialog.Index.Label" ) );
+    checkRequiredString( remarks, stepMeta, getType(), BaseMessages.getString( PKG,
+        "ElasticSearchBulkDialog.Type.Label" ) );
+    checkRequiredString( remarks, stepMeta, getBatchSize(), BaseMessages.getString( PKG,
+        "ElasticSearchBulkDialog.BatchSize.Label" ) );
   }
-  
-  private void checkRequiredString(List<CheckResultInterface> remarks, StepMeta stepMeta, String value, String fieldName){
-    if(StringUtils.isBlank(value)){
-      remarks.add(
-          new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, 
-              BaseMessages.getString(PKG, "ElasticSearchBulkMeta.CheckResult.MissingRequired", fieldName),
-              stepMeta));  
+
+  private void checkRequiredString( List<CheckResultInterface> remarks, StepMeta stepMeta, String value,
+      String fieldName ) {
+    if ( StringUtils.isBlank( value ) ) {
+      remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
+          "ElasticSearchBulkMeta.CheckResult.MissingRequired", fieldName ), stepMeta ) );
+    } else {
+      remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
+          "ElasticSearchBulkMeta.CheckResult.RequiredOK", fieldName, value ), stepMeta ) );
     }
-    else {
-      remarks.add(
-          new CheckResult(CheckResultInterface.TYPE_RESULT_OK,
-              BaseMessages.getString(PKG, "ElasticSearchBulkMeta.CheckResult.RequiredOK", fieldName, value),
-              stepMeta));
-    }
   }
 
-  private void checkInputFields(List<CheckResultInterface> remarks, RowMetaInterface prev, StepMeta stepMeta){
+  private void checkInputFields( List<CheckResultInterface> remarks, RowMetaInterface prev, StepMeta stepMeta ) {
 
-    if (prev != null && prev.size() > 0) {
-      if (isJsonInsert()) {//JSON
-        if (StringUtils.isBlank(getJsonField())) {//jsonField not set
-          String jsonFieldLabel = BaseMessages.getString(PKG,"ElasticSearchBulkDialog.JsonField.Label");
-          String isJsonLabel = BaseMessages.getString(PKG, "ElasticSearchBulkDialog.IsJson.Label"); 
-          remarks.add(
-            new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, 
-                BaseMessages.getString(PKG, "ElasticSearchBulkMeta.CheckResult.MissingRequiredDependent", jsonFieldLabel, isJsonLabel), stepMeta));
+    if ( prev != null && prev.size() > 0 ) {
+      if ( isJsonInsert() ) {// JSON
+        if ( StringUtils.isBlank( getJsonField() ) ) {// jsonField not set
+          String jsonFieldLabel = BaseMessages.getString( PKG, "ElasticSearchBulkDialog.JsonField.Label" );
+          String isJsonLabel = BaseMessages.getString( PKG, "ElasticSearchBulkDialog.IsJson.Label" );
+          remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
+              "ElasticSearchBulkMeta.CheckResult.MissingRequiredDependent", jsonFieldLabel, isJsonLabel ), stepMeta ) );
+        } else if ( prev.indexOfValue( getJsonField() ) < 0 ) {// jsonField not in input
+          remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
+              "ElasticSearchBulkMeta.CheckResult.MissingInput", getJsonField() ), stepMeta ) );
         }
-        else if (prev.indexOfValue(getJsonField()) < 0){//jsonField not in input
-          remarks.add(
-            new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, 
-                BaseMessages.getString(PKG, "ElasticSearchBulkMeta.CheckResult.MissingInput", getJsonField()), 
-                stepMeta));
-        }
-      } else {//not JSON
-        for (String fieldName : getFields().keySet()) {
-          if (prev.indexOfValue(fieldName) < 0) {//fields not found
-            remarks.add(
-              new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, 
-                  BaseMessages.getString(PKG, "ElasticSearchBulkMeta.CheckResult.MissingInput", fieldName), 
-                  stepMeta));
+      } else {// not JSON
+        for ( String fieldName : getFields().keySet() ) {
+          if ( prev.indexOfValue( fieldName ) < 0 ) {// fields not found
+            remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
+                "ElasticSearchBulkMeta.CheckResult.MissingInput", fieldName ), stepMeta ) );
           }
         }
       }
+    } else {// no input
+      remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
+          "ElasticSearchBulkMeta.CheckResult.NoInput" ), stepMeta ) );
     }
-    else{//no input
-      remarks.add(
-          new CheckResult(
-              CheckResultInterface.TYPE_RESULT_ERROR,
-              BaseMessages.getString(PKG, "ElasticSearchBulkMeta.CheckResult.NoInput"), 
-              stepMeta));
-    }
-    
+
   }
 
-  public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta, Trans trans) {
-    return new ElasticSearchBulk(stepMeta, stepDataInterface, cnr, transMeta, trans);
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
+      Trans trans ) {
+    return new ElasticSearchBulk( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
   public StepDataInterface getStepData() {
