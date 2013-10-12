@@ -22,38 +22,14 @@
 
 package org.pentaho.di.ui.trans.steps.gpbulkloader;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
-import org.eclipse.swt.events.FocusAdapter;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.ShellAdapter;
-import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.*;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.SourceToTargetMapping;
@@ -79,6 +55,9 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
+
+import java.util.*;
+import java.util.List;
 
 
 /**
@@ -1020,18 +999,20 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
     }
 
     String action = input.getLoadAction();
-    if (GPBulkLoaderMeta.ACTION_APPEND.equals(action)) {
-      wLoadAction.select(0);
-    } else if (GPBulkLoaderMeta.ACTION_INSERT.equals(action)) {
-      wLoadAction.select(1);
-    } else if (GPBulkLoaderMeta.ACTION_REPLACE.equals(action)) {
-      wLoadAction.select(2);
-    } else if (GPBulkLoaderMeta.ACTION_TRUNCATE.equals(action)) {
-      wLoadAction.select(3);
+    /*
+     * if (GPBulkLoaderMeta.ACTION_APPEND.equals(action)) { wLoadAction.select(0); } else
+     */
+    if ( GPBulkLoaderMeta.ACTION_INSERT.equals( action ) ) {
+      wLoadAction.select( 0 );
+    } /*
+       * else if (GPBulkLoaderMeta.ACTION_REPLACE.equals(action)) { wLoadAction.select(2); }
+       */
+    else if ( GPBulkLoaderMeta.ACTION_TRUNCATE.equals( action ) ) {
+      wLoadAction.select( 1 );
     } else {
-      if (log.isDebug())
-        logDebug("Internal error: load_action set to default 'append'"); 
-      wLoadAction.select(0);
+      if ( log.isDebug() )
+        logDebug( "Internal error: load_action set to default 'insert'" );
+      wLoadAction.select( 0 );
     }
 
     wReturn.setRowNums();
