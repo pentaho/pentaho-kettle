@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.trans.steps.pentahoreporting;
 
@@ -60,31 +60,20 @@ import org.w3c.dom.Node;
 /**
  * 
  */
-@Step(
-    id = "PentahoReportingOutput", 
-    image = "org/pentaho/reporting/images/JFR.png", 
-    description = "PentahoReportingOutput.Description", 
-    name = "PentahoReportingOutput.Name", 
-    categoryDescription = "PentahoReportingOutput.Category", 
-    i18nPackageName = "org.pentaho.reporting.plugin"
-)
+@Step( id = "PentahoReportingOutput", image = "org/pentaho/reporting/images/JFR.png",
+    description = "PentahoReportingOutput.Description", name = "PentahoReportingOutput.Name",
+    categoryDescription = "PentahoReportingOutput.Category", i18nPackageName = "org.pentaho.reporting.plugin" )
 public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = PentahoReportingOutput.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  private static Class<?> PKG = PentahoReportingOutput.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
   public enum ProcessorType {
-    PDF("PDF", "PDF"), 
-    PagedHTML("PagedHtml", "Paged HTML"), 
-    StreamingHTML("StreamingHtml", "Streaming HTML"), 
-    CSV("CSV", "CSV"), 
-    Excel("Excel", "Excel"),
-    Excel_2007("Excel 2007", "Excel 2007"),
-    RTF("RTF", "RTF"),
-    ;
+    PDF( "PDF", "PDF" ), PagedHTML( "PagedHtml", "Paged HTML" ), StreamingHTML( "StreamingHtml", "Streaming HTML" ), CSV(
+        "CSV", "CSV" ), Excel( "Excel", "Excel" ), Excel_2007( "Excel 2007", "Excel 2007" ), RTF( "RTF", "RTF" ), ;
 
     private String code;
     private String description;
 
-    private ProcessorType(String code, String description) {
+    private ProcessorType( String code, String description ) {
       this.code = code;
       this.description = description;
     }
@@ -96,41 +85,41 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
     public String getDescription() {
       return description;
     }
-    
+
     public static String[] getDescriptions() {
       String[] desc = new String[values().length];
-      for (int i=0;i<values().length;i++) {
+      for ( int i = 0; i < values().length; i++ ) {
         desc[i] = values()[i].getDescription();
       }
       return desc;
     }
 
-    public static ProcessorType getProcessorTypeByCode(String code) {
-      for (ProcessorType type : values()) {
-        if (type.getCode().equals(code))
+    public static ProcessorType getProcessorTypeByCode( String code ) {
+      for ( ProcessorType type : values() ) {
+        if ( type.getCode().equals( code ) ) {
           return type;
+        }
       }
       return null;
     }
   }
- 
+
   public static final String XML_TAG_PARAMETERS = "parameters";
   public static final String XML_TAG_PARAMETER = "parameter";
-  
 
-  private String              inputFileField;
-  private String              outputFileField;
+  private String inputFileField;
+  private String outputFileField;
   private Map<String, String> parameterFieldMap;
 
-  private ProcessorType       outputProcessorType;
+  private ProcessorType outputProcessorType;
 
   public PentahoReportingOutputMeta() {
     super(); // allocate BaseStepMeta
     parameterFieldMap = new HashMap<String, String>();
   }
 
-  public void loadXML(Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore) throws KettleXMLException {
-    readData(stepnode);
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+    readData( stepnode );
   }
 
   public Object clone() {
@@ -139,24 +128,25 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
     return retval;
   }
 
-  private void readData(Node stepnode) throws KettleXMLException {
+  private void readData( Node stepnode ) throws KettleXMLException {
     try {
-      inputFileField = XMLHandler.getTagValue(stepnode, "input_file_field");
-      outputFileField = XMLHandler.getTagValue(stepnode, "output_file_field");
+      inputFileField = XMLHandler.getTagValue( stepnode, "input_file_field" );
+      outputFileField = XMLHandler.getTagValue( stepnode, "output_file_field" );
       parameterFieldMap = new HashMap<String, String>();
-      Node parsNode = XMLHandler.getSubNode(stepnode, XML_TAG_PARAMETERS);
-      List<Node> nodes = XMLHandler.getNodes(parsNode, XML_TAG_PARAMETER);
-      for (Node node : nodes) {
-        String parameter = XMLHandler.getTagValue(node, "name");
-        String fieldname = XMLHandler.getTagValue(node, "field");
-        if (!Const.isEmpty(parameter) && !Const.isEmpty(fieldname)) {
-          parameterFieldMap.put(parameter, fieldname);
+      Node parsNode = XMLHandler.getSubNode( stepnode, XML_TAG_PARAMETERS );
+      List<Node> nodes = XMLHandler.getNodes( parsNode, XML_TAG_PARAMETER );
+      for ( Node node : nodes ) {
+        String parameter = XMLHandler.getTagValue( node, "name" );
+        String fieldname = XMLHandler.getTagValue( node, "field" );
+        if ( !Const.isEmpty( parameter ) && !Const.isEmpty( fieldname ) ) {
+          parameterFieldMap.put( parameter, fieldname );
         }
       }
-      
-      outputProcessorType = ProcessorType.getProcessorTypeByCode(XMLHandler.getTagValue(stepnode, "processor_type")); 
-    } catch (Exception e) {
-      throw new KettleXMLException(BaseMessages.getString(PKG, "PentahoReportingOutputMeta.Exception.UnableToLoadStepInfo"), e); 
+
+      outputProcessorType = ProcessorType.getProcessorTypeByCode( XMLHandler.getTagValue( stepnode, "processor_type" ) );
+    } catch ( Exception e ) {
+      throw new KettleXMLException( BaseMessages.getString( PKG,
+          "PentahoReportingOutputMeta.Exception.UnableToLoadStepInfo" ), e );
     }
   }
 
@@ -167,84 +157,97 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
   public String getXML() {
     StringBuffer retval = new StringBuffer();
 
-    retval.append("  " + XMLHandler.addTagValue("input_file_field", inputFileField));  
-    retval.append("  " + XMLHandler.addTagValue("output_file_field", outputFileField));  
+    retval.append( "  " + XMLHandler.addTagValue( "input_file_field", inputFileField ) );
+    retval.append( "  " + XMLHandler.addTagValue( "output_file_field", outputFileField ) );
 
-    retval.append("  " + XMLHandler.openTag(XML_TAG_PARAMETERS));  
+    retval.append( "  " + XMLHandler.openTag( XML_TAG_PARAMETERS ) );
     List<String> parameters = new ArrayList<String>();
-    parameters.addAll(parameterFieldMap.keySet());
-    Collections.sort(parameters);
-    for (String name : parameters) {
-      String field = parameterFieldMap.get(name);
-      retval.append("   " + XMLHandler.openTag(XML_TAG_PARAMETER));  
-      retval.append("   " + XMLHandler.addTagValue("name", name, false));  
-      retval.append("   " + XMLHandler.addTagValue("field", field, false));  
-      retval.append("   " + XMLHandler.closeTag(XML_TAG_PARAMETER)).append(Const.CR);  
+    parameters.addAll( parameterFieldMap.keySet() );
+    Collections.sort( parameters );
+    for ( String name : parameters ) {
+      String field = parameterFieldMap.get( name );
+      retval.append( "   " + XMLHandler.openTag( XML_TAG_PARAMETER ) );
+      retval.append( "   " + XMLHandler.addTagValue( "name", name, false ) );
+      retval.append( "   " + XMLHandler.addTagValue( "field", field, false ) );
+      retval.append( "   " + XMLHandler.closeTag( XML_TAG_PARAMETER ) ).append( Const.CR );
     }
-    retval.append("  " + XMLHandler.closeTag(XML_TAG_PARAMETERS));  
+    retval.append( "  " + XMLHandler.closeTag( XML_TAG_PARAMETERS ) );
 
-    retval.append("    " + XMLHandler.addTagValue("processor_type", outputProcessorType.getCode())); 
+    retval.append( "    " + XMLHandler.addTagValue( "processor_type", outputProcessorType.getCode() ) );
 
     return retval.toString();
   }
 
-  public void readRep(Repository rep, IMetaStore metaStore, ObjectId idStep, List<DatabaseMeta> databases) throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId idStep, List<DatabaseMeta> databases )
+    throws KettleException {
     try {
-      inputFileField = rep.getStepAttributeString(idStep, "file_input_field"); 
-      outputFileField = rep.getStepAttributeString(idStep, "file_output_field"); 
-      
+      inputFileField = rep.getStepAttributeString( idStep, "file_input_field" );
+      outputFileField = rep.getStepAttributeString( idStep, "file_output_field" );
+
       parameterFieldMap = new HashMap<String, String>();
-      int nrParameters = rep.countNrStepAttributes(idStep, "parameter_name");
-      for (int i=0;i<nrParameters;i++) {
-        String parameter = rep.getStepAttributeString(idStep, i, "parameter_name");
-        String fieldname = rep.getStepAttributeString(idStep, i, "parameter_field");
-        if (!Const.isEmpty(parameter) && !Const.isEmpty(fieldname)) {
-          parameterFieldMap.put(parameter, fieldname);
+      int nrParameters = rep.countNrStepAttributes( idStep, "parameter_name" );
+      for ( int i = 0; i < nrParameters; i++ ) {
+        String parameter = rep.getStepAttributeString( idStep, i, "parameter_name" );
+        String fieldname = rep.getStepAttributeString( idStep, i, "parameter_field" );
+        if ( !Const.isEmpty( parameter ) && !Const.isEmpty( fieldname ) ) {
+          parameterFieldMap.put( parameter, fieldname );
         }
       }
-      
-      outputProcessorType = ProcessorType.getProcessorTypeByCode( rep.getStepAttributeString(idStep, "processor_type") ); 
-    } catch (Exception e) {
-      throw new KettleException(BaseMessages.getString(PKG, "PentahoReportingOutputMeta.Exception.UnexpectedErrorInReadingStepInfo"), e); 
+
+      outputProcessorType =
+          ProcessorType.getProcessorTypeByCode( rep.getStepAttributeString( idStep, "processor_type" ) );
+    } catch ( Exception e ) {
+      throw new KettleException( BaseMessages.getString( PKG,
+          "PentahoReportingOutputMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
     }
   }
 
-  public void saveRep(Repository rep, IMetaStore metaStore, ObjectId idTransformation, ObjectId idStep) throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId idTransformation, ObjectId idStep )
+    throws KettleException {
     try {
-      rep.saveStepAttribute(idTransformation, idStep, "file_input_field", inputFileField); 
-      rep.saveStepAttribute(idTransformation, idStep, "file_output_field", outputFileField); 
+      rep.saveStepAttribute( idTransformation, idStep, "file_input_field", inputFileField );
+      rep.saveStepAttribute( idTransformation, idStep, "file_output_field", outputFileField );
 
-      List<String> pars = new ArrayList<String>(parameterFieldMap.keySet());
-      Collections.sort(pars);
-      for (int i=0;i<pars.size();i++) {
-        String parameter = pars.get(i);
-        String fieldname = parameterFieldMap.get(parameter);
-        rep.saveStepAttribute(idTransformation, idStep, i, "parameter_name", parameter);
-        rep.saveStepAttribute(idTransformation, idStep, i, "parameter_field", fieldname);
+      List<String> pars = new ArrayList<String>( parameterFieldMap.keySet() );
+      Collections.sort( pars );
+      for ( int i = 0; i < pars.size(); i++ ) {
+        String parameter = pars.get( i );
+        String fieldname = parameterFieldMap.get( parameter );
+        rep.saveStepAttribute( idTransformation, idStep, i, "parameter_name", parameter );
+        rep.saveStepAttribute( idTransformation, idStep, i, "parameter_field", fieldname );
       }
 
-      rep.saveStepAttribute(idTransformation, idStep, "processor_type", outputProcessorType.getCode()); 
-      
-    } catch (Exception e) {
-      throw new KettleException(BaseMessages.getString(PKG, "PentahoReportingOutputMeta.Exception.UnableToSaveStepInfo") + idStep, e); 
+      rep.saveStepAttribute( idTransformation, idStep, "processor_type", outputProcessorType.getCode() );
+
+    } catch ( Exception e ) {
+      throw new KettleException( BaseMessages.getString( PKG,
+          "PentahoReportingOutputMeta.Exception.UnableToSaveStepInfo" )
+          + idStep, e );
     }
   }
 
-  public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
+      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
+      IMetaStore metaStore ) {
     CheckResult cr;
 
     // Check output fields
-    if (prev != null && prev.size() > 0) {
-      cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "PentahoReportingOutputMeta.CheckResult.ReceivingFields", String.valueOf(prev.size())), stepMeta);  
-      remarks.add(cr);
+    if ( prev != null && prev.size() > 0 ) {
+      cr =
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
+              "PentahoReportingOutputMeta.CheckResult.ReceivingFields", String.valueOf( prev.size() ) ), stepMeta );
+      remarks.add( cr );
     }
 
-    cr = new CheckResult(CheckResult.TYPE_RESULT_COMMENT, BaseMessages.getString(PKG, "PentahoReportingOutputMeta.CheckResult.FileSpecificationsNotChecked"), stepMeta); 
-    remarks.add(cr);
+    cr =
+        new CheckResult( CheckResult.TYPE_RESULT_COMMENT, BaseMessages.getString( PKG,
+            "PentahoReportingOutputMeta.CheckResult.FileSpecificationsNotChecked" ), stepMeta );
+    remarks.add( cr );
   }
 
-  public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta, Trans trans) {
-    return new PentahoReportingOutput(stepMeta, stepDataInterface, cnr, transMeta, trans);
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
+      Trans trans ) {
+    return new PentahoReportingOutput( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
   public StepDataInterface getStepData() {
@@ -259,9 +262,10 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
   }
 
   /**
-   * @param inputFileField the inputFileField to set
+   * @param inputFileField
+   *          the inputFileField to set
    */
-  public void setInputFileField(String inputFileField) {
+  public void setInputFileField( String inputFileField ) {
     this.inputFileField = inputFileField;
   }
 
@@ -273,9 +277,10 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
   }
 
   /**
-   * @param outputFileField the outputFileField to set
+   * @param outputFileField
+   *          the outputFileField to set
    */
-  public void setOutputFileField(String outputFileField) {
+  public void setOutputFileField( String outputFileField ) {
     this.outputFileField = outputFileField;
   }
 
@@ -287,9 +292,10 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
   }
 
   /**
-   * @param parameterFieldMap the parameterFieldMap to set
+   * @param parameterFieldMap
+   *          the parameterFieldMap to set
    */
-  public void setParameterFieldMap(Map<String, String> parameterFieldMap) {
+  public void setParameterFieldMap( Map<String, String> parameterFieldMap ) {
     this.parameterFieldMap = parameterFieldMap;
   }
 
@@ -301,14 +307,15 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
   }
 
   /**
-   * @param outputProcessorType the outputProcessorType to set
+   * @param outputProcessorType
+   *          the outputProcessorType to set
    */
-  public void setOutputProcessorType(ProcessorType outputProcessorType) {
+  public void setOutputProcessorType( ProcessorType outputProcessorType ) {
     this.outputProcessorType = outputProcessorType;
   }
-  
+
   @Override
   public StepMetaInjectionInterface getStepMetaInjectionInterface() {
-    return new PentahoReportingOutputMetaInjection(this);
+    return new PentahoReportingOutputMetaInjection( this );
   }
 }

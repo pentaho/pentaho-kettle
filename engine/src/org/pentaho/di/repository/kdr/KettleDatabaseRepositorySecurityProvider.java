@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.repository.kdr;
 
@@ -51,12 +51,12 @@ public class KettleDatabaseRepositorySecurityProvider extends BaseRepositorySecu
   private KettleDatabaseRepositoryConnectionDelegate connectionDelegate;
 
   /**
-   * @param repository 
+   * @param repository
    * @param userInfo
    */
-  public KettleDatabaseRepositorySecurityProvider(KettleDatabaseRepository repository, RepositoryMeta repositoryMeta,
-      IUser userInfo) {
-    super(repositoryMeta, userInfo);
+  public KettleDatabaseRepositorySecurityProvider( KettleDatabaseRepository repository, RepositoryMeta repositoryMeta,
+      IUser userInfo ) {
+    super( repositoryMeta, userInfo );
     this.repository = repository;
     this.capabilities = repositoryMeta.getRepositoryCapabilities();
 
@@ -85,63 +85,66 @@ public class KettleDatabaseRepositorySecurityProvider extends BaseRepositorySecu
 
   // UserInfo
 
-  public IUser loadUserInfo(String login) throws KettleException {
-    return userDelegate.loadUserInfo(new UserInfo(), login);
+  public IUser loadUserInfo( String login ) throws KettleException {
+    return userDelegate.loadUserInfo( new UserInfo(), login );
   }
 
-  public void saveUserInfo(IUser userInfo) throws KettleException {
-    userDelegate.saveUserInfo(userInfo);
+  public void saveUserInfo( IUser userInfo ) throws KettleException {
+    userDelegate.saveUserInfo( userInfo );
   }
 
-  public void validateAction(RepositoryOperation... operations) throws KettleException, KettleSecurityException {
+  public void validateAction( RepositoryOperation... operations ) throws KettleException, KettleSecurityException {
 
   }
-  public synchronized void delUser(ObjectId id_user) throws KettleException {
-    repository.connectionDelegate.performDelete("DELETE FROM " + repository.quoteTable(KettleDatabaseRepository.TABLE_R_USER) + 
-        " WHERE " + repository.quote(KettleDatabaseRepository.FIELD_USER_ID_USER) + " = ? ", id_user);
+
+  public synchronized void delUser( ObjectId id_user ) throws KettleException {
+    repository.connectionDelegate.performDelete( "DELETE FROM "
+        + repository.quoteTable( KettleDatabaseRepository.TABLE_R_USER ) + " WHERE "
+        + repository.quote( KettleDatabaseRepository.FIELD_USER_ID_USER ) + " = ? ", id_user );
   }
 
-  public synchronized ObjectId getUserID(String login) throws KettleException {
-    return userDelegate.getUserID(login);
+  public synchronized ObjectId getUserID( String login ) throws KettleException {
+    return userDelegate.getUserID( login );
   }
 
   public ObjectId[] getUserIDs() throws KettleException {
-    return connectionDelegate.getIDs("SELECT " + repository.quote(KettleDatabaseRepository.FIELD_USER_ID_USER)
-        + " FROM " + repository.quoteTable(KettleDatabaseRepository.TABLE_R_USER));
+    return connectionDelegate.getIDs( "SELECT " + repository.quote( KettleDatabaseRepository.FIELD_USER_ID_USER )
+        + " FROM " + repository.quoteTable( KettleDatabaseRepository.TABLE_R_USER ) );
   }
 
   public synchronized String[] getUserLogins() throws KettleException {
-    String loginField = repository.quote(KettleDatabaseRepository.FIELD_USER_LOGIN);
-    return connectionDelegate.getStrings("SELECT " + loginField + " FROM "
-        + repository.quoteTable(KettleDatabaseRepository.TABLE_R_USER) + " ORDER BY " + loginField);
+    String loginField = repository.quote( KettleDatabaseRepository.FIELD_USER_LOGIN );
+    return connectionDelegate.getStrings( "SELECT " + loginField + " FROM "
+        + repository.quoteTable( KettleDatabaseRepository.TABLE_R_USER ) + " ORDER BY " + loginField );
   }
 
-  public synchronized void renameUser(ObjectId id_user, String newname) throws KettleException {
-    userDelegate.renameUser(id_user, newname);
+  public synchronized void renameUser( ObjectId id_user, String newname ) throws KettleException {
+    userDelegate.renameUser( id_user, newname );
   }
 
-  public void deleteUsers(List<IUser> users) throws KettleException {
+  public void deleteUsers( List<IUser> users ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
   public List<IUser> getUsers() throws KettleException {
     String[] userLogins = getUserLogins();
     List<IUser> users = new ArrayList<IUser>();
-    for(String userLogin:userLogins) {
-      users.add(loadUserInfo(userLogin));
+    for ( String userLogin : userLogins ) {
+      users.add( loadUserInfo( userLogin ) );
     }
     return users;
   }
 
-  public void setUsers(List<IUser> users) throws KettleException {
+  public void setUsers( List<IUser> users ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public void delUser(String name) throws KettleException {
-    delUser(getUserID(name));
+  public void delUser( String name ) throws KettleException {
+    delUser( getUserID( name ) );
   }
-  public void updateUser(IUser user) throws KettleException {
-    userDelegate.saveUserInfo(user);
+
+  public void updateUser( IUser user ) throws KettleException {
+    userDelegate.saveUserInfo( user );
   }
 
   public IUser constructUser() throws KettleException {

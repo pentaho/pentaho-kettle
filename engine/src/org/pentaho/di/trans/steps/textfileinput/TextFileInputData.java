@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.trans.steps.textfileinput;
 
@@ -45,125 +45,123 @@ import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
  * @author Matt
  * @since 22-jan-2005
  */
-public class TextFileInputData extends BaseStepData implements
-		StepDataInterface {
-	
-	public List<TextFileLine> lineBuffer;
+public class TextFileInputData extends BaseStepData implements StepDataInterface {
 
-	public Object[] previous_row;
+  public List<TextFileLine> lineBuffer;
 
-	public int nr_repeats;
+  public Object[] previous_row;
 
-	public int nrLinesOnPage;
+  public int nr_repeats;
 
-	public FileInputList files;
-	
-	public HashMap<FileObject, Object[]> passThruFields;
-	
-	public Object[] currentPassThruFieldsRow;
-	
-	public int nrPassThruFields;
+  public int nrLinesOnPage;
 
-	public boolean isLastFile;
+  public FileInputList files;
 
-	public String filename;
-	
-	public int lineInFile;
-	
-	public FileObject file;
+  public HashMap<FileObject, Object[]> passThruFields;
 
-	public int filenr;
+  public Object[] currentPassThruFieldsRow;
 
-	public InputStream fr;
+  public int nrPassThruFields;
 
-	public ZipInputStream zi;
+  public boolean isLastFile;
 
-	public GZIPInputStream gzi;
-	
-	public InputStream sis;
+  public String filename;
 
-	public InputStreamReader isr;
+  public int lineInFile;
 
-	public boolean doneReading;
+  public FileObject file;
 
-	public int headerLinesRead;
+  public int filenr;
 
-	public int footerLinesRead;
+  public InputStream fr;
 
-	public int pageLinesRead;
+  public ZipInputStream zi;
 
-	public boolean doneWithHeader;
+  public GZIPInputStream gzi;
 
-	public FileErrorHandler dataErrorLineHandler;
+  public InputStream sis;
 
-	public FilePlayList filePlayList;
-	
-	public TextFileFilterProcessor filterProcessor;
+  public InputStreamReader isr;
 
-    public RowMetaInterface outputRowMeta;
+  public boolean doneReading;
 
-    public StringBuilder lineStringBuilder;
+  public int headerLinesRead;
 
-    public int fileFormatType;
+  public int footerLinesRead;
 
-    public int fileType;
+  public int pageLinesRead;
 
-    public RowMetaInterface convertRowMeta;
+  public boolean doneWithHeader;
 
-	public RowSet rowSet;
-	
-	/**
-	 * The separator (delimiter)
-	 */
-	public String separator;
+  public FileErrorHandler dataErrorLineHandler;
 
-	public String enclosure;
-	
-	public String escapeCharacter;
+  public FilePlayList filePlayList;
 
-	
-	public boolean addShortFilename;
-	public boolean addExtension;
-	public boolean addPath;
-	public boolean addSize;
-	public boolean addIsHidden;
-	public boolean addLastModificationDate;
-	public boolean addUri;
-	public boolean addRootUri;
-	
-	public String shortFilename;
-	public String path;	
-	public String extension;	
-	public boolean hidden;	
-	public Date lastModificationDateTime;	
-	public String uriName;	
-	public String rootUriName;	
-	public long size;
+  public TextFileFilterProcessor filterProcessor;
 
-    public EncodingType encodingType;
-    
-    public Map<String, Boolean> rejectedFiles;
-    
-	/**
+  public RowMetaInterface outputRowMeta;
+
+  public StringBuilder lineStringBuilder;
+
+  public int fileFormatType;
+
+  public int fileType;
+
+  public RowMetaInterface convertRowMeta;
+
+  public RowSet rowSet;
+
+  /**
+   * The separator (delimiter)
+   */
+  public String separator;
+
+  public String enclosure;
+
+  public String escapeCharacter;
+
+  public boolean addShortFilename;
+  public boolean addExtension;
+  public boolean addPath;
+  public boolean addSize;
+  public boolean addIsHidden;
+  public boolean addLastModificationDate;
+  public boolean addUri;
+  public boolean addRootUri;
+
+  public String shortFilename;
+  public String path;
+  public String extension;
+  public boolean hidden;
+  public Date lastModificationDateTime;
+  public String uriName;
+  public String rootUriName;
+  public long size;
+
+  public EncodingType encodingType;
+
+  public Map<String, Boolean> rejectedFiles;
+
+  /**
 	 * 
 	 */
-	public TextFileInputData() {
-		super();
+  public TextFileInputData() {
+    super();
 
-		lineBuffer = new ArrayList<TextFileLine>();
+    lineBuffer = new ArrayList<TextFileLine>();
 
-		nr_repeats = 0;
-		previous_row = null;
-		filenr = 0;
+    nr_repeats = 0;
+    previous_row = null;
+    filenr = 0;
 
-		nrLinesOnPage = 0;
+    nrLinesOnPage = 0;
 
-		fr = null;
-		zi = null;
-		
-		filterProcessor = null;
-        lineStringBuilder = new StringBuilder(256);
-        
-        rejectedFiles = new HashMap<String, Boolean>();
-	}
+    fr = null;
+    zi = null;
+
+    filterProcessor = null;
+    lineStringBuilder = new StringBuilder( 256 );
+
+    rejectedFiles = new HashMap<String, Boolean>();
+  }
 }

@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.trans.steps.writetolog;
 
@@ -47,330 +47,295 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-
 /*
  * Created on 30-06-2008
  *
  */
 
+public class WriteToLogMeta extends BaseStepMeta implements StepMetaInterface {
+  private static Class<?> PKG = WriteToLogMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-public class WriteToLogMeta extends BaseStepMeta implements StepMetaInterface
-{
-	private static Class<?> PKG = WriteToLogMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  /** by which fields to display? */
+  private String[] fieldName;
 
-    /** by which fields to display? */
-    private String  fieldName[];
-	
-    public static String logLevelCodes[] = 
-	{			
-		"log_level_nothing",
-		"log_level_error",
-		"log_level_minimal",
-		"log_level_basic",
-		"log_level_detailed",
-		"log_level_debug",
-		"log_level_rowlevel"
-	};
-    
-    private boolean displayHeader;
-    
-    private boolean limitRows;
-    
-    private int limitRowsNumber;
-    
-    private String logmessage;
-    
-    private String loglevel;
-    
-	public WriteToLogMeta()
-	{
-		super(); // allocate BaseStepMeta
-	}
+  public static String[] logLevelCodes = { "log_level_nothing", "log_level_error", "log_level_minimal",
+    "log_level_basic", "log_level_detailed", "log_level_debug", "log_level_rowlevel" };
 
-	public void setLogLevel(int i)
-	{
-		loglevel=logLevelCodes[i];
-	}
+  private boolean displayHeader;
 
-	public LogLevel getLogLevelByDesc()
-	{
-		if(loglevel==null) return LogLevel.BASIC;
-		LogLevel retval;
-		if(loglevel.equals(logLevelCodes[0]))
-			retval=LogLevel.NOTHING;
-		else if(loglevel.equals(logLevelCodes[1]))
-			retval=LogLevel.ERROR;
-		else if(loglevel.equals(logLevelCodes[2]))
-			retval=LogLevel.MINIMAL;
-		else if(loglevel.equals(logLevelCodes[3]))
-			retval=LogLevel.BASIC;
-		else if(loglevel.equals(logLevelCodes[4]))
-			retval=LogLevel.DETAILED;
-		else if(loglevel.equals(logLevelCodes[5]))
-			retval=LogLevel.DEBUG;
-		else
-			retval=LogLevel.ROWLEVEL;
-		return retval;
-	}
-	public void loadXML(Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore)
-	throws KettleXMLException
-	{
-		readData(stepnode);
-	}
+  private boolean limitRows;
 
-	public Object clone()
-	{	
-        WriteToLogMeta retval = (WriteToLogMeta) super.clone();
+  private int limitRowsNumber;
 
-        int nrfields = fieldName.length;
+  private String logmessage;
 
-        retval.allocate(nrfields);
+  private String loglevel;
 
-        for (int i = 0; i < nrfields; i++)
-        {
-            retval.fieldName[i] = fieldName[i];
-        }
-		return retval;
-	}
-	   public void allocate(int nrfields)
-	    {
-	        fieldName = new String[nrfields]; 
-	    }
-    /**
-     * @return Returns the fieldName.
-     */
-    public String[] getFieldName()
-    {
-        return fieldName;
+  public WriteToLogMeta() {
+    super(); // allocate BaseStepMeta
+  }
+
+  public void setLogLevel( int i ) {
+    loglevel = logLevelCodes[i];
+  }
+
+  public LogLevel getLogLevelByDesc() {
+    if ( loglevel == null ) {
+      return LogLevel.BASIC;
     }
-    /**
-     * @param fieldName The fieldName to set.
-     */
-    public void setFieldName(String[] fieldName)
-    {
-        this.fieldName = fieldName;
+    LogLevel retval;
+    if ( loglevel.equals( logLevelCodes[0] ) ) {
+      retval = LogLevel.NOTHING;
+    } else if ( loglevel.equals( logLevelCodes[1] ) ) {
+      retval = LogLevel.ERROR;
+    } else if ( loglevel.equals( logLevelCodes[2] ) ) {
+      retval = LogLevel.MINIMAL;
+    } else if ( loglevel.equals( logLevelCodes[3] ) ) {
+      retval = LogLevel.BASIC;
+    } else if ( loglevel.equals( logLevelCodes[4] ) ) {
+      retval = LogLevel.DETAILED;
+    } else if ( loglevel.equals( logLevelCodes[5] ) ) {
+      retval = LogLevel.DEBUG;
+    } else {
+      retval = LogLevel.ROWLEVEL;
     }
-    public boolean isdisplayHeader()
-    {
-    	return displayHeader;
+    return retval;
+  }
+
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+    readData( stepnode );
+  }
+
+  public Object clone() {
+    WriteToLogMeta retval = (WriteToLogMeta) super.clone();
+
+    int nrfields = fieldName.length;
+
+    retval.allocate( nrfields );
+
+    for ( int i = 0; i < nrfields; i++ ) {
+      retval.fieldName[i] = fieldName[i];
     }
-    public void setdisplayHeader(boolean displayheader)
-    {
-    	this.displayHeader=displayheader;
+    return retval;
+  }
+
+  public void allocate( int nrfields ) {
+    fieldName = new String[nrfields];
+  }
+
+  /**
+   * @return Returns the fieldName.
+   */
+  public String[] getFieldName() {
+    return fieldName;
+  }
+
+  /**
+   * @param fieldName
+   *          The fieldName to set.
+   */
+  public void setFieldName( String[] fieldName ) {
+    this.fieldName = fieldName;
+  }
+
+  public boolean isdisplayHeader() {
+    return displayHeader;
+  }
+
+  public void setdisplayHeader( boolean displayheader ) {
+    this.displayHeader = displayheader;
+  }
+
+  public boolean isLimitRows() {
+    return limitRows;
+  }
+
+  public void setLimitRows( boolean limitRows ) {
+    this.limitRows = limitRows;
+  }
+
+  public int getLimitRowsNumber() {
+    return limitRowsNumber;
+  }
+
+  public void setLimitRowsNumber( int limitRowsNumber ) {
+    this.limitRowsNumber = limitRowsNumber;
+  }
+
+  public String getLogMessage() {
+    if ( logmessage == null ) {
+      logmessage = "";
     }
-    
-     public boolean isLimitRows() {
-        return limitRows;
-    }
+    return logmessage;
+  }
 
-    public void setLimitRows(boolean limitRows) {
-        this.limitRows = limitRows;
-    }
+  public void setLogMessage( String s ) {
+    logmessage = s;
+  }
 
-    public int getLimitRowsNumber() {
-        return limitRowsNumber;
-    }
+  private void readData( Node stepnode ) throws KettleXMLException {
+    try {
+      loglevel = XMLHandler.getTagValue( stepnode, "loglevel" );
+      displayHeader = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "displayHeader" ) );
 
-    public void setLimitRowsNumber(int limitRowsNumber) {
-        this.limitRowsNumber = limitRowsNumber;
-    }
-    
-	public String getLogMessage()
-	{
-		if (logmessage == null)
-		{
-			logmessage="";
-		}
-		return logmessage;
-	}
-	public void setLogMessage(String s)
-	{
-		logmessage=s;
-	}
+      limitRows = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "limitRows" ) );
+      String limitRowsNumberString = XMLHandler.getTagValue( stepnode, "limitRowsNumber" );
+      limitRowsNumber = Const.toInt( limitRowsNumberString, 5 );
 
-    
-	private void readData(Node stepnode)  throws KettleXMLException
-	{
-	  try
-	    {
-		  loglevel = XMLHandler.getTagValue(stepnode, "loglevel");
-		  displayHeader = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "displayHeader"));
-		  
-                  limitRows = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "limitRows"));
-                  String limitRowsNumberString = XMLHandler.getTagValue(stepnode, "limitRowsNumber");
-                  limitRowsNumber = Const.toInt(limitRowsNumberString, 5);
+      logmessage = XMLHandler.getTagValue( stepnode, "logmessage" );
 
-                  
-		  logmessage = XMLHandler.getTagValue(stepnode, "logmessage");
-		  
-		  Node fields = XMLHandler.getSubNode(stepnode, "fields");
-          int nrfields = XMLHandler.countNodes(fields, "field");
+      Node fields = XMLHandler.getSubNode( stepnode, "fields" );
+      int nrfields = XMLHandler.countNodes( fields, "field" );
 
-          allocate(nrfields);
+      allocate( nrfields );
 
-          for (int i = 0; i < nrfields; i++)
-          {
-              Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i);
-              fieldName[i] = XMLHandler.getTagValue(fnode, "name");
-          }
-	    }
-      catch (Exception e)
-      {
-          throw new KettleXMLException("Unable to load step info from XML", e);
+      for ( int i = 0; i < nrfields; i++ ) {
+        Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
+        fieldName[i] = XMLHandler.getTagValue( fnode, "name" );
       }
-	}
-   public String getXML()
-    {
-        StringBuffer retval = new StringBuffer();
-        retval.append("      " + XMLHandler.addTagValue("loglevel", loglevel));
-        retval.append("      " + XMLHandler.addTagValue("displayHeader", displayHeader));
-        retval.append("      " + XMLHandler.addTagValue("limitRows", limitRows));
-        retval.append("      " + XMLHandler.addTagValue("limitRowsNumber", limitRowsNumber));
-        
-        retval.append("      " + XMLHandler.addTagValue("logmessage", logmessage));
-        
-        retval.append("    <fields>" + Const.CR);
-        for (int i = 0; i < fieldName.length; i++)
-        {
-            retval.append("      <field>" + Const.CR);
-            retval.append("        " + XMLHandler.addTagValue("name", fieldName[i]));
-            retval.append("        </field>" + Const.CR);
-        }
-        retval.append("      </fields>" + Const.CR);
-
-        return retval.toString();
+    } catch ( Exception e ) {
+      throw new KettleXMLException( "Unable to load step info from XML", e );
     }
-	public void setDefault()
-	{
-		loglevel=logLevelCodes[3];
-		displayHeader=true;
-		logmessage = "";
-		
-        int nrfields = 0;
+  }
 
-        allocate(nrfields);
+  public String getXML() {
+    StringBuffer retval = new StringBuffer();
+    retval.append( "      " + XMLHandler.addTagValue( "loglevel", loglevel ) );
+    retval.append( "      " + XMLHandler.addTagValue( "displayHeader", displayHeader ) );
+    retval.append( "      " + XMLHandler.addTagValue( "limitRows", limitRows ) );
+    retval.append( "      " + XMLHandler.addTagValue( "limitRowsNumber", limitRowsNumber ) );
 
-        for (int i = 0; i < nrfields; i++)
-        {
-            fieldName[i] = "field" + i;
+    retval.append( "      " + XMLHandler.addTagValue( "logmessage", logmessage ) );
+
+    retval.append( "    <fields>" + Const.CR );
+    for ( int i = 0; i < fieldName.length; i++ ) {
+      retval.append( "      <field>" + Const.CR );
+      retval.append( "        " + XMLHandler.addTagValue( "name", fieldName[i] ) );
+      retval.append( "        </field>" + Const.CR );
+    }
+    retval.append( "      </fields>" + Const.CR );
+
+    return retval.toString();
+  }
+
+  public void setDefault() {
+    loglevel = logLevelCodes[3];
+    displayHeader = true;
+    logmessage = "";
+
+    int nrfields = 0;
+
+    allocate( nrfields );
+
+    for ( int i = 0; i < nrfields; i++ ) {
+      fieldName[i] = "field" + i;
+    }
+  }
+
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
+    throws KettleException {
+    try {
+      loglevel = rep.getStepAttributeString( id_step, "loglevel" );
+      displayHeader = rep.getStepAttributeBoolean( id_step, "displayHeader" );
+
+      logmessage = rep.getStepAttributeString( id_step, "logmessage" );
+
+      int nrfields = rep.countNrStepAttributes( id_step, "field_name" );
+
+      allocate( nrfields );
+
+      for ( int i = 0; i < nrfields; i++ ) {
+        fieldName[i] = rep.getStepAttributeString( id_step, i, "field_name" );
+      }
+    } catch ( Exception e ) {
+      throw new KettleException( "Unexpected error reading step information from the repository", e );
+    }
+  }
+
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
+    throws KettleException {
+    try {
+      rep.saveStepAttribute( id_transformation, id_step, "loglevel", loglevel );
+      rep.saveStepAttribute( id_transformation, id_step, "displayHeader", displayHeader );
+
+      rep.saveStepAttribute( id_transformation, id_step, "logmessage", logmessage );
+
+      for ( int i = 0; i < fieldName.length; i++ ) {
+        rep.saveStepAttribute( id_transformation, id_step, i, "field_name", fieldName[i] );
+      }
+    } catch ( Exception e ) {
+      throw new KettleException( "Unable to save step information to the repository for id_step=" + id_step, e );
+    }
+  }
+
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
+      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
+      IMetaStore metaStore ) {
+    CheckResult cr;
+    if ( prev == null || prev.size() == 0 ) {
+      cr =
+          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
+              "WriteToLogMeta.CheckResult.NotReceivingFields" ), stepMeta );
+      remarks.add( cr );
+    } else {
+      cr =
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
+              "WriteToLogMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
+      remarks.add( cr );
+
+      String error_message = "";
+      boolean error_found = false;
+
+      // Starting from selected fields in ...
+      for ( int i = 0; i < fieldName.length; i++ ) {
+        int idx = prev.indexOfValue( fieldName[i] );
+        if ( idx < 0 ) {
+          error_message += "\t\t" + fieldName[i] + Const.CR;
+          error_found = true;
         }
-	}
+      }
+      if ( error_found ) {
+        error_message = BaseMessages.getString( PKG, "WriteToLogMeta.CheckResult.FieldsFound", error_message );
 
-	public void readRep(Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases)
-	throws KettleException
-	{
-	        try
-	        {
-	        	loglevel = rep.getStepAttributeString(id_step, "loglevel");
-	        	displayHeader = rep.getStepAttributeBoolean(id_step, "displayHeader");
-	        	
-	        	logmessage = rep.getStepAttributeString(id_step, "logmessage");
-	        	
-	            int nrfields = rep.countNrStepAttributes(id_step, "field_name");
+        cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
+        remarks.add( cr );
+      } else {
+        if ( fieldName.length > 0 ) {
+          cr =
+              new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
+                  "WriteToLogMeta.CheckResult.AllFieldsFound" ), stepMeta );
+          remarks.add( cr );
+        } else {
+          cr =
+              new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
+                  "WriteToLogMeta.CheckResult.NoFieldsEntered" ), stepMeta );
+          remarks.add( cr );
+        }
+      }
 
-	            allocate(nrfields);
+    }
 
-	            for (int i = 0; i < nrfields; i++)
-	            {
-	                fieldName[i] = rep.getStepAttributeString(id_step, i, "field_name");
-	            }
-	        }
-	        catch (Exception e)
-	        {
-	            throw new KettleException("Unexpected error reading step information from the repository", e);
-	        }
-	    }
-	
-	    public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step) throws KettleException
-	    {
-	        try
-	        {
-	        	rep.saveStepAttribute(id_transformation, id_step, "loglevel", loglevel);
-	        	rep.saveStepAttribute(id_transformation, id_step, "displayHeader", displayHeader);
-	        	
-	        	rep.saveStepAttribute(id_transformation, id_step, "logmessage", logmessage);
-	        	
-	            for (int i = 0; i < fieldName.length; i++)
-	            {
-	                rep.saveStepAttribute(id_transformation, id_step, i, "field_name", fieldName[i]);
-	            }
-	        }
-	        catch (Exception e)
-	        {
-	            throw new KettleException("Unable to save step information to the repository for id_step=" + id_step, e);
-	        }
-	    }
-	
-	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
-	{
-		CheckResult cr;
-		if (prev==null || prev.size()==0)
-		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "WriteToLogMeta.CheckResult.NotReceivingFields"), stepMeta); 
-			remarks.add(cr);
-		}
-		else
-		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "WriteToLogMeta.CheckResult.StepRecevingData",prev.size()+""), stepMeta);  
-			remarks.add(cr);
-			
-			String error_message = "";
-	        boolean error_found = false;
+    // See if we have input streams leading to this step!
+    if ( input.length > 0 ) {
+      cr =
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
+              "WriteToLogMeta.CheckResult.StepRecevingData2" ), stepMeta );
+      remarks.add( cr );
+    } else {
+      cr =
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
+              "WriteToLogMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
+      remarks.add( cr );
+    }
+  }
 
-            // Starting from selected fields in ...
-            for (int i = 0; i < fieldName.length; i++)
-            {
-                int idx = prev.indexOfValue(fieldName[i]);
-                if (idx < 0)
-                {
-                    error_message += "\t\t" + fieldName[i] + Const.CR;
-                    error_found = true;
-                }
-            }
-            if (error_found)
-            {
-                error_message = BaseMessages.getString(PKG, "WriteToLogMeta.CheckResult.FieldsFound", error_message);
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
+      Trans trans ) {
+    return new WriteToLog( stepMeta, stepDataInterface, cnr, tr, trans );
+  }
 
-                cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
-                remarks.add(cr);
-            }
-            else
-            {
-                if (fieldName.length > 0)
-                {
-                    cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "WriteToLogMeta.CheckResult.AllFieldsFound"), stepMeta);
-                    remarks.add(cr);
-                }
-                else
-                {
-                    cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "WriteToLogMeta.CheckResult.NoFieldsEntered"), stepMeta);
-                    remarks.add(cr);
-                }
-            }
-
-		}
-		
-		// See if we have input streams leading to this step!
-		if (input.length>0)
-		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "WriteToLogMeta.CheckResult.StepRecevingData2"), stepMeta); 
-			remarks.add(cr);
-		}
-		else
-		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "WriteToLogMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepMeta); 
-			remarks.add(cr);
-		}
-	}
-	public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr, Trans trans)
-	{
-		return new WriteToLog(stepMeta, stepDataInterface, cnr, tr, trans);
-	}
-	
-	public StepDataInterface getStepData()
-	{
-		return new WriteToLogData();
-	}
-
+  public StepDataInterface getStepData() {
+    return new WriteToLogData();
+  }
 
 }

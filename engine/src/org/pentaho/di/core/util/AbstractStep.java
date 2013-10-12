@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.core.util;
 
@@ -34,48 +34,47 @@ import org.pentaho.di.trans.step.StepMeta;
  */
 public abstract class AbstractStep extends BaseStep {
 
-    /**
-     * Constant for unexpected error.
-     */
-    public static final String UNEXPECTED_ERROR = "Unexpected error";
-    
-    public static final long DEFAULT_ERROR_CODE = 1L;
+  /**
+   * Constant for unexpected error.
+   */
+  public static final String UNEXPECTED_ERROR = "Unexpected error";
 
-    /**
-     * Constructor.
-     * 
-     * @param stepMeta
-     *            the stepMeta.
-     * @param stepDataInterface
-     *            the stepDataInterface.
-     * @param copyNr
-     *            the copyNr.
-     * @param transMeta
-     *            the transMeta.
-     * @param trans
-     *            the transaction.
-     */
-    public AbstractStep(final StepMeta stepMeta, final StepDataInterface stepDataInterface, final int copyNr,
-            final TransMeta transMeta, final Trans trans) {
-        super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
-    }
+  public static final long DEFAULT_ERROR_CODE = 1L;
 
-    /**
-     * Log exception.
-     * 
-     * @param exception
-     *            exception to log.
-     */
-    public void logUnexpectedError(final Throwable exception) {
-        this.logError(UNEXPECTED_ERROR, exception);
-    }
-    
-    /**
-     * Set default error code.
-     */
-    public void setDefaultError() {
-        this.setErrors(DEFAULT_ERROR_CODE);
-    }
-    
+  /**
+   * Constructor.
+   * 
+   * @param stepMeta
+   *          the stepMeta.
+   * @param stepDataInterface
+   *          the stepDataInterface.
+   * @param copyNr
+   *          the copyNr.
+   * @param transMeta
+   *          the transMeta.
+   * @param trans
+   *          the transaction.
+   */
+  public AbstractStep( final StepMeta stepMeta, final StepDataInterface stepDataInterface, final int copyNr,
+      final TransMeta transMeta, final Trans trans ) {
+    super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
+  }
+
+  /**
+   * Log exception.
+   * 
+   * @param exception
+   *          exception to log.
+   */
+  public void logUnexpectedError( final Throwable exception ) {
+    this.logError( UNEXPECTED_ERROR, exception );
+  }
+
+  /**
+   * Set default error code.
+   */
+  public void setDefaultError() {
+    this.setErrors( DEFAULT_ERROR_CODE );
+  }
 
 }

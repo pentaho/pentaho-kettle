@@ -1,27 +1,26 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.job.entries.xsdvalidator;
-
 
 import static org.pentaho.di.job.entry.validator.AbstractFileValidator.putVariableSpace;
 import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
@@ -65,263 +64,217 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
-
 /**
  * This defines a 'xsdvalidator' job entry.
- *
+ * 
  * @author Samatar Hassan
  * @since 30-04-2007
- *
+ * 
  */
-public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, JobEntryInterface
-{
-	private static Class<?> PKG = JobEntryXSDValidator.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, JobEntryInterface {
+  private static Class<?> PKG = JobEntryXSDValidator.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-	private String xmlfilename;
-	private String xsdfilename;
+  private String xmlfilename;
+  private String xsdfilename;
 
+  public JobEntryXSDValidator( String n ) {
+    super( n, "" );
+    xmlfilename = null;
+    xsdfilename = null;
 
+    setID( -1L );
+  }
 
-	public JobEntryXSDValidator(String n)
-	{
-		super(n, "");
-     	xmlfilename=null;
-     	xsdfilename=null;
+  public JobEntryXSDValidator() {
+    this( "" );
+  }
 
-		setID(-1L);
-	}
+  public Object clone() {
+    JobEntryXSDValidator je = (JobEntryXSDValidator) super.clone();
+    return je;
+  }
 
-	public JobEntryXSDValidator()
-	{
-		this("");
-	}
+  public String getXML() {
+    StringBuffer retval = new StringBuffer( 50 );
 
-    public Object clone()
+    retval.append( super.getXML() );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "xmlfilename", xmlfilename ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "xsdfilename", xsdfilename ) );
+
+    return retval.toString();
+  }
+
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
+      IMetaStore metaStore ) throws KettleXMLException {
+    try {
+      super.loadXML( entrynode, databases, slaveServers );
+      xmlfilename = XMLHandler.getTagValue( entrynode, "xmlfilename" );
+      xsdfilename = XMLHandler.getTagValue( entrynode, "xsdfilename" );
+
+    } catch ( KettleXMLException xe ) {
+      throw new KettleXMLException( "Unable to load job entry of type 'xsdvalidator' from XML node", xe );
+    }
+  }
+
+  public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
+      List<SlaveServer> slaveServers ) throws KettleException {
+    try {
+      xmlfilename = rep.getJobEntryAttributeString( id_jobentry, "xmlfilename" );
+      xsdfilename = rep.getJobEntryAttributeString( id_jobentry, "xsdfilename" );
+    } catch ( KettleException dbe ) {
+      throw new KettleException( "Unable to load job entry of type 'xsdvalidator' from the repository for id_jobentry="
+          + id_jobentry, dbe );
+    }
+  }
+
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_job ) throws KettleException {
+    try {
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "xmlfilename", xmlfilename );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "xsdfilename", xsdfilename );
+
+    } catch ( KettleDatabaseException dbe ) {
+      throw new KettleException( "Unable to save job entry of type 'xsdvalidator' to the repository for id_job="
+          + id_job, dbe );
+    }
+  }
+
+  public String getRealxmlfilename() {
+    return environmentSubstitute( getxmlFilename() );
+  }
+
+  public String getRealxsdfilename() {
+    return environmentSubstitute( getxsdFilename() );
+  }
+
+  public Result execute( Result previousResult, int nr ) {
+    Result result = previousResult;
+    result.setResult( false );
+
+    String realxmlfilename = getRealxmlfilename();
+    String realxsdfilename = getRealxsdfilename();
+
+    FileObject xmlfile = null;
+    FileObject xsdfile = null;
+
+    try
+
     {
-        JobEntryXSDValidator je = (JobEntryXSDValidator)super.clone();
-        return je;
+
+      if ( xmlfilename != null && xsdfilename != null ) {
+        xmlfile = KettleVFS.getFileObject( realxmlfilename, this );
+        xsdfile = KettleVFS.getFileObject( realxsdfilename, this );
+
+        if ( xmlfile.exists() && xsdfile.exists() ) {
+
+          SchemaFactory factorytXSDValidator_1 = SchemaFactory.newInstance( "http://www.w3.org/2001/XMLSchema" );
+
+          // Get XSD File
+          File XSDFile = new File( KettleVFS.getFilename( xsdfile ) );
+          Schema SchematXSD = factorytXSDValidator_1.newSchema( XSDFile );
+
+          Validator XSDValidator = SchematXSD.newValidator();
+
+          // Get XML File
+          File xmlfiletXSDValidator_1 = new File( KettleVFS.getFilename( xmlfile ) );
+
+          Source sourcetXSDValidator_1 = new StreamSource( xmlfiletXSDValidator_1 );
+
+          XSDValidator.validate( sourcetXSDValidator_1 );
+
+          // Everything is OK
+          result.setResult( true );
+
+        } else {
+
+          if ( !xmlfile.exists() ) {
+            logError( BaseMessages.getString( PKG, "JobEntryXSDValidator.FileDoesNotExist1.Label" ) + realxmlfilename
+                + BaseMessages.getString( PKG, "JobEntryXSDValidator.FileDoesNotExist2.Label" ) );
+          }
+          if ( !xsdfile.exists() ) {
+            logError( BaseMessages.getString( PKG, "JobEntryXSDValidator.FileDoesNotExist1.Label" ) + realxsdfilename
+                + BaseMessages.getString( PKG, "JobEntryXSDValidator.FileDoesNotExist2.Label" ) );
+          }
+          result.setResult( false );
+          result.setNrErrors( 1 );
+        }
+
+      } else {
+        logError( BaseMessages.getString( PKG, "JobEntryXSDValidator.AllFilesNotNull.Label" ) );
+        result.setResult( false );
+        result.setNrErrors( 1 );
+      }
+
     }
 
-	public String getXML()
-	{
-        StringBuffer retval = new StringBuffer(50);
+    catch ( SAXException ex ) {
+      logError( "Error :" + ex.getMessage() );
+    } catch ( Exception e ) {
 
-		retval.append(super.getXML());
-		retval.append("      ").append(XMLHandler.addTagValue("xmlfilename", xmlfilename));
-		retval.append("      ").append(XMLHandler.addTagValue("xsdfilename", xsdfilename));
+      logError( BaseMessages.getString( PKG, "JobEntryXSDValidator.ErrorXSDValidator.Label" )
+          + BaseMessages.getString( PKG, "JobEntryXSDValidator.ErrorXML1.Label" ) + realxmlfilename
+          + BaseMessages.getString( PKG, "JobEntryXSDValidator.ErrorXML2.Label" )
+          + BaseMessages.getString( PKG, "JobEntryXSDValidator.ErrorXSD1.Label" ) + realxsdfilename
+          + BaseMessages.getString( PKG, "JobEntryXSDValidator.ErrorXSD2.Label" ) + e.getMessage() );
+      result.setResult( false );
+      result.setNrErrors( 1 );
+    } finally {
+      try {
+        if ( xmlfile != null ) {
+          xmlfile.close();
+        }
 
-		return retval.toString();
-	}
+        if ( xsdfile != null ) {
+          xsdfile.close();
+        }
 
-	public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep, IMetaStore metaStore)
-		throws KettleXMLException
-	{
-		try
-		{
-			super.loadXML(entrynode, databases, slaveServers);
-			xmlfilename = XMLHandler.getTagValue(entrynode, "xmlfilename");
-			xsdfilename = XMLHandler.getTagValue(entrynode, "xsdfilename");
-
-
-		}
-		catch(KettleXMLException xe)
-		{
-			throw new KettleXMLException("Unable to load job entry of type 'xsdvalidator' from XML node", xe);
-		}
-	}
-
-	public void loadRep(Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
-	{
-		try
-		{
-			xmlfilename = rep.getJobEntryAttributeString(id_jobentry, "xmlfilename");
-			xsdfilename = rep.getJobEntryAttributeString(id_jobentry, "xsdfilename");
-		}
-		catch(KettleException dbe)
-		{
-			throw new KettleException("Unable to load job entry of type 'xsdvalidator' from the repository for id_jobentry="+id_jobentry, dbe);
-		}
-	}
-
-	public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_job) throws KettleException
-	{
-		try
-		{
-			rep.saveJobEntryAttribute(id_job, getObjectId(), "xmlfilename", xmlfilename);
-			rep.saveJobEntryAttribute(id_job, getObjectId(), "xsdfilename", xsdfilename);
-
-		}
-		catch(KettleDatabaseException dbe)
-		{
-			throw new KettleException("Unable to save job entry of type 'xsdvalidator' to the repository for id_job="+id_job, dbe);
-		}
-	}
-
-    public String getRealxmlfilename()
-    {
-        return environmentSubstitute(getxmlFilename());
+      } catch ( IOException e ) {
+      }
     }
 
+    return result;
+  }
 
+  public boolean evaluates() {
+    return true;
+  }
 
-    public String getRealxsdfilename()
-    {
-        return environmentSubstitute(getxsdFilename());
-    }
+  public void setxmlFilename( String filename ) {
+    this.xmlfilename = filename;
+  }
 
-	public Result execute(Result previousResult, int nr)
-	{
-		Result result = previousResult;
-		result.setResult( false );
+  public String getxmlFilename() {
+    return xmlfilename;
+  }
 
-		String realxmlfilename = getRealxmlfilename();
-		String realxsdfilename = getRealxsdfilename();
+  public void setxsdFilename( String filename ) {
+    this.xsdfilename = filename;
+  }
 
+  public String getxsdFilename() {
+    return xsdfilename;
+  }
 
-		FileObject xmlfile = null;
-		FileObject xsdfile = null;
-
-		try
-
-		{
-
-			if (xmlfilename!=null && xsdfilename!=null)
-			{
-				xmlfile = KettleVFS.getFileObject(realxmlfilename, this);
-				xsdfile = KettleVFS.getFileObject(realxsdfilename, this);
-
-				if ( xmlfile.exists() && xsdfile.exists() )
-				{
-
-					SchemaFactory factorytXSDValidator_1 = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
-
-					// Get XSD File
-					File XSDFile = new File(KettleVFS.getFilename(xsdfile));
-					Schema SchematXSD = factorytXSDValidator_1.newSchema(XSDFile);
-
-					Validator XSDValidator = SchematXSD.newValidator();
-
-					// Get XML File
-					File xmlfiletXSDValidator_1 = new File(	KettleVFS.getFilename(xmlfile));
-
-					Source sourcetXSDValidator_1 = new StreamSource(xmlfiletXSDValidator_1);
-
-
-					XSDValidator.validate(sourcetXSDValidator_1);
-
-
-					// Everything is OK
-					result.setResult( true );
-
-				}
-				else
-				{
-
-					if(	!xmlfile.exists())
-					{
-						logError( BaseMessages.getString(PKG, "JobEntryXSDValidator.FileDoesNotExist1.Label") +
-							realxmlfilename +  BaseMessages.getString(PKG, "JobEntryXSDValidator.FileDoesNotExist2.Label"));
-					}
-					if(!xsdfile.exists())
-					{
-						logError( BaseMessages.getString(PKG, "JobEntryXSDValidator.FileDoesNotExist1.Label") +
-							realxsdfilename +  BaseMessages.getString(PKG, "JobEntryXSDValidator.FileDoesNotExist2.Label"));
-					}
-					result.setResult( false );
-					result.setNrErrors(1);
-				}
-
-			}
-			else
-			{
-				logError( BaseMessages.getString(PKG, "JobEntryXSDValidator.AllFilesNotNull.Label"));
-				result.setResult( false );
-				result.setNrErrors(1);
-			}
-
-
-
-		}
-
-		catch (SAXException ex) {
-			logError("Error :" + ex.getMessage());
-		}
-		catch ( Exception e )
-		{
-
-			logError(BaseMessages.getString(PKG, "JobEntryXSDValidator.ErrorXSDValidator.Label") +
-				BaseMessages.getString(PKG, "JobEntryXSDValidator.ErrorXML1.Label") + realxmlfilename +
-				BaseMessages.getString(PKG, "JobEntryXSDValidator.ErrorXML2.Label") +
-				BaseMessages.getString(PKG, "JobEntryXSDValidator.ErrorXSD1.Label") + realxsdfilename +
-				BaseMessages.getString(PKG, "JobEntryXSDValidator.ErrorXSD2.Label") + e.getMessage());
-			result.setResult( false );
-			result.setNrErrors(1);
-		}
-		finally
-		{
-			try
-			{
-			    if ( xmlfile != null )
-			    	xmlfile.close();
-
-			    if ( xsdfile != null )
-			    	xsdfile.close();
-
-		    }
-			catch ( IOException e ) { }
-		}
-
-
-		return result;
-	}
-
-	public boolean evaluates()
-	{
-		return true;
-	}
-
-	public void setxmlFilename(String filename)
-	{
-		this.xmlfilename = filename;
-	}
-
-	public String getxmlFilename()
-	{
-		return xmlfilename;
-	}
-
-
-	public void setxsdFilename(String filename)
-	{
-		this.xsdfilename = filename;
-	}
-
-	public String getxsdFilename()
-	{
-		return xsdfilename;
-	}
-
-  public List<ResourceReference> getResourceDependencies(JobMeta jobMeta) {
-    List<ResourceReference> references = super.getResourceDependencies(jobMeta);
-    if ( (!Const.isEmpty(xsdfilename)) && (!Const.isEmpty(xmlfilename)) ) {
-      String realXmlFileName = jobMeta.environmentSubstitute(xmlfilename);
-      String realXsdFileName = jobMeta.environmentSubstitute(xsdfilename);
-      ResourceReference reference = new ResourceReference(this);
-      reference.getEntries().add( new ResourceEntry(realXmlFileName, ResourceType.FILE));
-      reference.getEntries().add( new ResourceEntry(realXsdFileName, ResourceType.FILE));
-      references.add(reference);
+  public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {
+    List<ResourceReference> references = super.getResourceDependencies( jobMeta );
+    if ( ( !Const.isEmpty( xsdfilename ) ) && ( !Const.isEmpty( xmlfilename ) ) ) {
+      String realXmlFileName = jobMeta.environmentSubstitute( xmlfilename );
+      String realXsdFileName = jobMeta.environmentSubstitute( xsdfilename );
+      ResourceReference reference = new ResourceReference( this );
+      reference.getEntries().add( new ResourceEntry( realXmlFileName, ResourceType.FILE ) );
+      reference.getEntries().add( new ResourceEntry( realXsdFileName, ResourceType.FILE ) );
+      references.add( reference );
     }
     return references;
   }
 
   @Override
-  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore)
-  {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
+      IMetaStore metaStore ) {
     ValidatorContext ctx = new ValidatorContext();
-    putVariableSpace(ctx, getVariables());
-    putValidators(ctx, notBlankValidator(), fileExistsValidator());
-    andValidator().validate(this, "xsdFilename", remarks, ctx);
-    andValidator().validate(this, "xmlFilename", remarks, ctx);
+    putVariableSpace( ctx, getVariables() );
+    putValidators( ctx, notBlankValidator(), fileExistsValidator() );
+    andValidator().validate( this, "xsdFilename", remarks, ctx );
+    andValidator().validate( this, "xmlFilename", remarks, ctx );
   }
 
 }

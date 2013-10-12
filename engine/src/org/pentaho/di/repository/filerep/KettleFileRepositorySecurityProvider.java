@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.repository.filerep;
 
@@ -34,94 +34,110 @@ import org.pentaho.di.repository.UserInfo;
 
 public class KettleFileRepositorySecurityProvider implements RepositorySecurityProvider {
 
-	private RepositoryMeta	repositoryMeta;
-	private RepositoryCapabilities	capabilities;
+  private RepositoryMeta repositoryMeta;
+  private RepositoryCapabilities capabilities;
 
-	public KettleFileRepositorySecurityProvider(RepositoryMeta repositoryMeta) {
-		this.repositoryMeta = repositoryMeta;
-		this.capabilities = repositoryMeta.getRepositoryCapabilities();
-	}
-	
-	public UserInfo getUserInfo() {
-		return null;
-	}
+  public KettleFileRepositorySecurityProvider( RepositoryMeta repositoryMeta ) {
+    this.repositoryMeta = repositoryMeta;
+    this.capabilities = repositoryMeta.getRepositoryCapabilities();
+  }
 
-	public RepositoryMeta getRepositoryMeta() {
-		return repositoryMeta;
-	}
+  public UserInfo getUserInfo() {
+    return null;
+  }
 
-	public void validateAction(RepositoryOperation...operations) throws KettleException, KettleSecurityException {
+  public RepositoryMeta getRepositoryMeta() {
+    return repositoryMeta;
+  }
 
-		for (RepositoryOperation operation : operations) {
-			switch(operation) {
-			case READ_TRANSFORMATION :
-				break;
-			case MODIFY_TRANSFORMATION : 
-				if (capabilities.isReadOnly()) throw new KettleException(operation+" : repository is read-only");
-				break;
-			case DELETE_TRANSFORMATION : 
-				if (capabilities.isReadOnly()) throw new KettleException(operation+" : repository is read-only");
-				break;
-			case EXECUTE_TRANSFORMATION : 
-				break;
-			case LOCK_TRANSFORMATION : 
-				break;
-			
-			case READ_JOB :
-				break;
-			case MODIFY_JOB :
-				if (capabilities.isReadOnly()) throw new KettleException(operation+" : repository is read-only");
-				break;
-			case DELETE_JOB :
-				if (capabilities.isReadOnly()) throw new KettleException(operation+" : repository is read-only");
-				break;
-			case EXECUTE_JOB :
-				break;
-			case LOCK_JOB :
-				break;
-			
-			case MODIFY_DATABASE :
-				if (capabilities.isReadOnly()) throw new KettleException(operation+" : repository is read-only");
-				break;
-			case DELETE_DATABASE :
-				if (capabilities.isReadOnly()) throw new KettleException(operation+" : repository is read-only");
-				break;
-			case EXPLORE_DATABASE :
-				break;
+  public void validateAction( RepositoryOperation... operations ) throws KettleException, KettleSecurityException {
 
-			case MODIFY_SLAVE_SERVER:
-			case MODIFY_CLUSTER_SCHEMA:
-			case MODIFY_PARTITION_SCHEMA:
-				if (capabilities.isReadOnly()) throw new KettleException(operation+" : repository is read-only");
-				break;
-			case DELETE_SLAVE_SERVER:
-			case DELETE_CLUSTER_SCHEMA:
-			case DELETE_PARTITION_SCHEMA:
-				if (capabilities.isReadOnly()) throw new KettleException(operation+" : repository is read-only");
-				break;
+    for ( RepositoryOperation operation : operations ) {
+      switch ( operation ) {
+        case READ_TRANSFORMATION:
+          break;
+        case MODIFY_TRANSFORMATION:
+          if ( capabilities.isReadOnly() ) {
+            throw new KettleException( operation + " : repository is read-only" );
+          }
+          break;
+        case DELETE_TRANSFORMATION:
+          if ( capabilities.isReadOnly() ) {
+            throw new KettleException( operation + " : repository is read-only" );
+          }
+          break;
+        case EXECUTE_TRANSFORMATION:
+          break;
+        case LOCK_TRANSFORMATION:
+          break;
 
-			default:
-				throw new KettleException("Operation ["+operation+"] is unknown to the security handler.");
-				
-			}
-		}
-	}
+        case READ_JOB:
+          break;
+        case MODIFY_JOB:
+          if ( capabilities.isReadOnly() ) {
+            throw new KettleException( operation + " : repository is read-only" );
+          }
+          break;
+        case DELETE_JOB:
+          if ( capabilities.isReadOnly() ) {
+            throw new KettleException( operation + " : repository is read-only" );
+          }
+          break;
+        case EXECUTE_JOB:
+          break;
+        case LOCK_JOB:
+          break;
 
-	public boolean isReadOnly() {
-		return capabilities.isReadOnly();
-	}
-	
-	public boolean isLockingPossible() {
-		return capabilities.supportsLocking();
-	}
-	
-	public boolean allowsVersionComments() {
-		return false;
-	}
-	
-	public boolean isVersionCommentMandatory() {
-		return false;
-	}
+        case MODIFY_DATABASE:
+          if ( capabilities.isReadOnly() ) {
+            throw new KettleException( operation + " : repository is read-only" );
+          }
+          break;
+        case DELETE_DATABASE:
+          if ( capabilities.isReadOnly() ) {
+            throw new KettleException( operation + " : repository is read-only" );
+          }
+          break;
+        case EXPLORE_DATABASE:
+          break;
+
+        case MODIFY_SLAVE_SERVER:
+        case MODIFY_CLUSTER_SCHEMA:
+        case MODIFY_PARTITION_SCHEMA:
+          if ( capabilities.isReadOnly() ) {
+            throw new KettleException( operation + " : repository is read-only" );
+          }
+          break;
+        case DELETE_SLAVE_SERVER:
+        case DELETE_CLUSTER_SCHEMA:
+        case DELETE_PARTITION_SCHEMA:
+          if ( capabilities.isReadOnly() ) {
+            throw new KettleException( operation + " : repository is read-only" );
+          }
+          break;
+
+        default:
+          throw new KettleException( "Operation [" + operation + "] is unknown to the security handler." );
+
+      }
+    }
+  }
+
+  public boolean isReadOnly() {
+    return capabilities.isReadOnly();
+  }
+
+  public boolean isLockingPossible() {
+    return capabilities.supportsLocking();
+  }
+
+  public boolean allowsVersionComments() {
+    return false;
+  }
+
+  public boolean isVersionCommentMandatory() {
+    return false;
+  }
 
   public List<String> getAllRoles() throws KettleException {
     throw new UnsupportedOperationException();

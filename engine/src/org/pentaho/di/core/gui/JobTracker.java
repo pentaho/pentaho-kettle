@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.core.gui;
 
@@ -43,36 +43,39 @@ public class JobTracker {
   private List<JobTracker> jobTrackers;
 
   /** If the jobTrackers list is empty, then this is the result */
-  private JobEntryResult   result;
+  private JobEntryResult result;
 
   /** The parent job tracker, null if this is the root */
-  private JobTracker       parentJobTracker;
+  private JobTracker parentJobTracker;
 
-  private String           jobName;
+  private String jobName;
 
-  private String           jobFilename;
+  private String jobFilename;
 
-  private int              maxChildren;
+  private int maxChildren;
 
   /**
-  * @param jobMeta the job metadata to keep track of (with maximum 5000 children)
-  */
-  public JobTracker(JobMeta jobMeta) {
-    if (jobMeta != null) {
+   * @param jobMeta
+   *          the job metadata to keep track of (with maximum 5000 children)
+   */
+  public JobTracker( JobMeta jobMeta ) {
+    if ( jobMeta != null ) {
       this.jobName = jobMeta.getName();
       this.jobFilename = jobMeta.getFilename();
     }
 
     jobTrackers = new LinkedList<JobTracker>();
-    maxChildren = Const.toInt(EnvUtil.getSystemProperty(Const.KETTLE_MAX_JOB_TRACKER_SIZE), 5000);
+    maxChildren = Const.toInt( EnvUtil.getSystemProperty( Const.KETTLE_MAX_JOB_TRACKER_SIZE ), 5000 );
   }
 
   /**
-   * @param jobMeta The job metadata to track
-   * @param maxChildren The maximum number of children to keep track of (1000 is the default)
+   * @param jobMeta
+   *          The job metadata to track
+   * @param maxChildren
+   *          The maximum number of children to keep track of (1000 is the default)
    */
-  public JobTracker(JobMeta jobMeta, int maxChildren) {
-    if (jobMeta != null) {
+  public JobTracker( JobMeta jobMeta, int maxChildren ) {
+    if ( jobMeta != null ) {
       this.jobName = jobMeta.getName();
       this.jobFilename = jobMeta.getFilename();
     }
@@ -84,37 +87,42 @@ public class JobTracker {
   /**
    * Creates a jobtracker with a single result (maxChildren children are kept)
    * 
-   * @param jobMeta the job metadata to keep track of
-   * @param result the job entry result to track.
+   * @param jobMeta
+   *          the job metadata to keep track of
+   * @param result
+   *          the job entry result to track.
    */
-  public JobTracker(JobMeta jobMeta, JobEntryResult result) {
-    this(jobMeta);
+  public JobTracker( JobMeta jobMeta, JobEntryResult result ) {
+    this( jobMeta );
     this.result = result;
   }
 
   /**
    * Creates a jobtracker with a single result
    * 
-   * @param jobMeta the job metadata to keep track of
-   * @param maxChildren The maximum number of children to keep track of
-   * @param result the job entry result to track.
+   * @param jobMeta
+   *          the job metadata to keep track of
+   * @param maxChildren
+   *          The maximum number of children to keep track of
+   * @param result
+   *          the job entry result to track.
    */
-  public JobTracker(JobMeta jobMeta, int maxChildren, JobEntryResult result) {
-    this(jobMeta, maxChildren);
+  public JobTracker( JobMeta jobMeta, int maxChildren, JobEntryResult result ) {
+    this( jobMeta, maxChildren );
     this.result = result;
   }
 
-  public void addJobTracker(JobTracker jobTracker) {
-    synchronized(this) {
-      jobTrackers.add(jobTracker);
-      if (jobTrackers.size()>maxChildren+50) {
-        jobTrackers = jobTrackers.subList(50, jobTrackers.size());
+  public void addJobTracker( JobTracker jobTracker ) {
+    synchronized ( this ) {
+      jobTrackers.add( jobTracker );
+      if ( jobTrackers.size() > maxChildren + 50 ) {
+        jobTrackers = jobTrackers.subList( 50, jobTrackers.size() );
       }
     }
   }
 
-  public JobTracker getJobTracker(int i) {
-    return jobTrackers.get(i);
+  public JobTracker getJobTracker( int i ) {
+    return jobTrackers.get( i );
   }
 
   public int nrJobTrackers() {
@@ -132,7 +140,7 @@ public class JobTracker {
    * @param jobTrackers
    *          The jobTrackers to set.
    */
-  public void setJobTrackers(List<JobTracker> jobTrackers) {
+  public void setJobTrackers( List<JobTracker> jobTrackers ) {
     this.jobTrackers = jobTrackers;
   }
 
@@ -147,7 +155,7 @@ public class JobTracker {
    * @param result
    *          The result to set.
    */
-  public void setJobEntryResult(JobEntryResult result) {
+  public void setJobEntryResult( JobEntryResult result ) {
     this.result = result;
   }
 
@@ -163,12 +171,13 @@ public class JobTracker {
    *          The entry to search the job tracker for
    * @return The JobTracker of null if none could be found...
    */
-  public JobTracker findJobTracker(JobEntryCopy jobEntryCopy) {
-    for (int i = jobTrackers.size() - 1; i >= 0; i--) {
-      JobTracker tracker = getJobTracker(i);
+  public JobTracker findJobTracker( JobEntryCopy jobEntryCopy ) {
+    for ( int i = jobTrackers.size() - 1; i >= 0; i-- ) {
+      JobTracker tracker = getJobTracker( i );
       JobEntryResult result = tracker.getJobEntryResult();
-      if (result != null) {
-        if (jobEntryCopy.getName() != null && jobEntryCopy.getName().equals(result.getJobEntryName()) && jobEntryCopy.getNr() == result.getJobEntryNr()) {
+      if ( result != null ) {
+        if ( jobEntryCopy.getName() != null && jobEntryCopy.getName().equals( result.getJobEntryName() )
+            && jobEntryCopy.getNr() == result.getJobEntryNr() ) {
           return tracker;
         }
       }
@@ -187,15 +196,15 @@ public class JobTracker {
    * @param parentJobTracker
    *          The parentJobTracker to set.
    */
-  public void setParentJobTracker(JobTracker parentJobTracker) {
+  public void setParentJobTracker( JobTracker parentJobTracker ) {
     this.parentJobTracker = parentJobTracker;
   }
 
   public int getTotalNumberOfItems() {
     int total = 1; // 1 = this one
 
-    for (int i = 0; i < nrJobTrackers(); i++) {
-      total += getJobTracker(i).getTotalNumberOfItems();
+    for ( int i = 0; i < nrJobTrackers(); i++ ) {
+      total += getJobTracker( i ).getTotalNumberOfItems();
     }
 
     return total;
@@ -212,7 +221,7 @@ public class JobTracker {
    * @param jobFilename
    *          the jobFilename to set
    */
-  public void setJobFilename(String jobFilename) {
+  public void setJobFilename( String jobFilename ) {
     this.jobFilename = jobFilename;
   }
 
@@ -227,7 +236,7 @@ public class JobTracker {
    * @param jobName
    *          the jobName to set
    */
-  public void setJobName(String jobName) {
+  public void setJobName( String jobName ) {
     this.jobName = jobName;
   }
 
@@ -242,7 +251,7 @@ public class JobTracker {
    * @param maxChildren
    *          the maxChildren to set
    */
-  public void setMaxChildren(int maxChildren) {
+  public void setMaxChildren( int maxChildren ) {
     this.maxChildren = maxChildren;
   }
 }

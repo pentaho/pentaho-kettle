@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.trans.steps.sasinput;
 
@@ -34,22 +34,22 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 /**
- * This defines a selected list of fields from the input files including 
- *  
+ * This defines a selected list of fields from the input files including
+ * 
  * @author matt
  * @since 10-OCT-2011
  */
 public class SasInputField implements XMLInterface, Cloneable {
   private String name;
   private String rename;
-  private int    type;
-  private int    length;
-  private int    precision;
+  private int type;
+  private int length;
+  private int precision;
   private String conversionMask;
   private String decimalSymbol;
   private String groupingSymbol;
   private int trimType;
-  
+
   /**
    * @param name
    * @param rename
@@ -59,7 +59,8 @@ public class SasInputField implements XMLInterface, Cloneable {
    * @param groupingSymbol
    * @param trimType
    */
-  public SasInputField(String name, String rename, int type, String conversionMask, String decimalSymbol, String groupingSymbol, int trimType) {
+  public SasInputField( String name, String rename, int type, String conversionMask, String decimalSymbol,
+      String groupingSymbol, int trimType ) {
     this.name = name;
     this.rename = rename;
     this.type = type;
@@ -68,154 +69,175 @@ public class SasInputField implements XMLInterface, Cloneable {
     this.groupingSymbol = groupingSymbol;
     this.trimType = trimType;
   }
-  
+
   public SasInputField() {
   }
-  
+
   @Override
   protected SasInputField clone() {
     try {
-      return (SasInputField)super.clone();
-    } catch(CloneNotSupportedException e) {
-      throw new RuntimeException(e);
+      return (SasInputField) super.clone();
+    } catch ( CloneNotSupportedException e ) {
+      throw new RuntimeException( e );
     }
   }
 
   @Override
   public String getXML() {
-    StringBuffer retval=new StringBuffer();
-    
-    retval.append("    " + XMLHandler.addTagValue("name", name));
-    retval.append("    " + XMLHandler.addTagValue("rename", rename));
-    retval.append("    " + XMLHandler.addTagValue("type", ValueMeta.getTypeDesc(type)));
-    retval.append("    " + XMLHandler.addTagValue("length", length));
-    retval.append("    " + XMLHandler.addTagValue("precision", precision));
-    retval.append("    " + XMLHandler.addTagValue("conversion_mask", conversionMask));
-    retval.append("    " + XMLHandler.addTagValue("decimal", decimalSymbol));
-    retval.append("    " + XMLHandler.addTagValue("grouping", groupingSymbol));
-    retval.append("    " + XMLHandler.addTagValue("trim_type", ValueMeta.getTrimTypeCode(trimType)));
+    StringBuffer retval = new StringBuffer();
+
+    retval.append( "    " + XMLHandler.addTagValue( "name", name ) );
+    retval.append( "    " + XMLHandler.addTagValue( "rename", rename ) );
+    retval.append( "    " + XMLHandler.addTagValue( "type", ValueMeta.getTypeDesc( type ) ) );
+    retval.append( "    " + XMLHandler.addTagValue( "length", length ) );
+    retval.append( "    " + XMLHandler.addTagValue( "precision", precision ) );
+    retval.append( "    " + XMLHandler.addTagValue( "conversion_mask", conversionMask ) );
+    retval.append( "    " + XMLHandler.addTagValue( "decimal", decimalSymbol ) );
+    retval.append( "    " + XMLHandler.addTagValue( "grouping", groupingSymbol ) );
+    retval.append( "    " + XMLHandler.addTagValue( "trim_type", ValueMeta.getTrimTypeCode( trimType ) ) );
 
     return retval.toString();
   }
-  
-  public void saveRep(Repository rep, IMetaStore metaStore, ObjectId transformationId, ObjectId stepId, int fieldNr) throws KettleException {
-    rep.saveStepAttribute(transformationId, stepId, fieldNr, "field_name", name);
-    rep.saveStepAttribute(transformationId, stepId, fieldNr, "field_rename", rename);
-    rep.saveStepAttribute(transformationId, stepId, fieldNr, "field_type", ValueMeta.getTypeDesc(type));
-    rep.saveStepAttribute(transformationId, stepId, fieldNr, "field_length", length);
-    rep.saveStepAttribute(transformationId, stepId, fieldNr, "field_precision", precision);
-    rep.saveStepAttribute(transformationId, stepId, fieldNr, "field_conversion_mask", conversionMask);
-    rep.saveStepAttribute(transformationId, stepId, fieldNr, "field_decimal", decimalSymbol);
-    rep.saveStepAttribute(transformationId, stepId, fieldNr, "field_grouping", groupingSymbol);
-    rep.saveStepAttribute(transformationId, stepId, fieldNr, "field_trim_type", ValueMeta.getTrimTypeCode(trimType));
+
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId transformationId, ObjectId stepId, int fieldNr )
+    throws KettleException {
+    rep.saveStepAttribute( transformationId, stepId, fieldNr, "field_name", name );
+    rep.saveStepAttribute( transformationId, stepId, fieldNr, "field_rename", rename );
+    rep.saveStepAttribute( transformationId, stepId, fieldNr, "field_type", ValueMeta.getTypeDesc( type ) );
+    rep.saveStepAttribute( transformationId, stepId, fieldNr, "field_length", length );
+    rep.saveStepAttribute( transformationId, stepId, fieldNr, "field_precision", precision );
+    rep.saveStepAttribute( transformationId, stepId, fieldNr, "field_conversion_mask", conversionMask );
+    rep.saveStepAttribute( transformationId, stepId, fieldNr, "field_decimal", decimalSymbol );
+    rep.saveStepAttribute( transformationId, stepId, fieldNr, "field_grouping", groupingSymbol );
+    rep.saveStepAttribute( transformationId, stepId, fieldNr, "field_trim_type", ValueMeta.getTrimTypeCode( trimType ) );
   }
-  
-  public SasInputField(Repository rep, ObjectId stepId, int fieldNr) throws KettleException {
-    name = rep.getStepAttributeString(stepId, fieldNr, "field_name");
-    rename = rep.getStepAttributeString(stepId, fieldNr, "field_rename");
-    type = ValueMeta.getType(rep.getStepAttributeString(stepId, fieldNr, "field_type"));
-    length = (int)rep.getStepAttributeInteger(stepId, fieldNr, "field_length");
-    precision = (int)rep.getStepAttributeInteger(stepId, fieldNr, "field_precision");
-    conversionMask = rep.getStepAttributeString(stepId, fieldNr, "field_conversion_mask");
-    decimalSymbol = rep.getStepAttributeString(stepId, fieldNr, "field_decimal");
-    groupingSymbol = rep.getStepAttributeString(stepId, fieldNr, "field_grouping");
-    trimType = ValueMeta.getTrimTypeByCode(rep.getStepAttributeString(stepId, fieldNr, "field_trim_type"));
+
+  public SasInputField( Repository rep, ObjectId stepId, int fieldNr ) throws KettleException {
+    name = rep.getStepAttributeString( stepId, fieldNr, "field_name" );
+    rename = rep.getStepAttributeString( stepId, fieldNr, "field_rename" );
+    type = ValueMeta.getType( rep.getStepAttributeString( stepId, fieldNr, "field_type" ) );
+    length = (int) rep.getStepAttributeInteger( stepId, fieldNr, "field_length" );
+    precision = (int) rep.getStepAttributeInteger( stepId, fieldNr, "field_precision" );
+    conversionMask = rep.getStepAttributeString( stepId, fieldNr, "field_conversion_mask" );
+    decimalSymbol = rep.getStepAttributeString( stepId, fieldNr, "field_decimal" );
+    groupingSymbol = rep.getStepAttributeString( stepId, fieldNr, "field_grouping" );
+    trimType = ValueMeta.getTrimTypeByCode( rep.getStepAttributeString( stepId, fieldNr, "field_trim_type" ) );
   }
-  
-  public SasInputField(Node node) throws KettleXMLException {
-    name = XMLHandler.getTagValue(node, "name"); 
-    rename = XMLHandler.getTagValue(node, "rename"); 
-    type = ValueMeta.getType(XMLHandler.getTagValue(node, "type")); 
-    length = Const.toInt(XMLHandler.getTagValue(node, "length") , -1);  
-    precision = Const.toInt(XMLHandler.getTagValue(node, "precision") , -1);  
-    conversionMask = XMLHandler.getTagValue(node, "conversion_mask"); 
-    decimalSymbol= XMLHandler.getTagValue(node, "decimal"); 
-    groupingSymbol = XMLHandler.getTagValue(node, "grouping"); 
-    trimType = ValueMeta.getTrimTypeByCode(XMLHandler.getTagValue(node, "trim_type")); 
+
+  public SasInputField( Node node ) throws KettleXMLException {
+    name = XMLHandler.getTagValue( node, "name" );
+    rename = XMLHandler.getTagValue( node, "rename" );
+    type = ValueMeta.getType( XMLHandler.getTagValue( node, "type" ) );
+    length = Const.toInt( XMLHandler.getTagValue( node, "length" ), -1 );
+    precision = Const.toInt( XMLHandler.getTagValue( node, "precision" ), -1 );
+    conversionMask = XMLHandler.getTagValue( node, "conversion_mask" );
+    decimalSymbol = XMLHandler.getTagValue( node, "decimal" );
+    groupingSymbol = XMLHandler.getTagValue( node, "grouping" );
+    trimType = ValueMeta.getTrimTypeByCode( XMLHandler.getTagValue( node, "trim_type" ) );
   }
-  
+
   /**
    * @return the name
    */
   public String getName() {
     return name;
   }
+
   /**
-   * @param name the name to set
+   * @param name
+   *          the name to set
    */
-  public void setName(String name) {
+  public void setName( String name ) {
     this.name = name;
   }
+
   /**
    * @return the rename
    */
   public String getRename() {
     return rename;
   }
+
   /**
-   * @param rename the rename to set
+   * @param rename
+   *          the rename to set
    */
-  public void setRename(String rename) {
+  public void setRename( String rename ) {
     this.rename = rename;
   }
+
   /**
    * @return the type
    */
   public int getType() {
     return type;
   }
+
   /**
-   * @param type the type to set
+   * @param type
+   *          the type to set
    */
-  public void setType(int type) {
+  public void setType( int type ) {
     this.type = type;
   }
+
   /**
    * @return the conversionMask
    */
   public String getConversionMask() {
     return conversionMask;
   }
+
   /**
-   * @param conversionMask the conversionMask to set
+   * @param conversionMask
+   *          the conversionMask to set
    */
-  public void setConversionMask(String conversionMask) {
+  public void setConversionMask( String conversionMask ) {
     this.conversionMask = conversionMask;
   }
+
   /**
    * @return the decimalSymbol
    */
   public String getDecimalSymbol() {
     return decimalSymbol;
   }
+
   /**
-   * @param decimalSymbol the decimalSymbol to set
+   * @param decimalSymbol
+   *          the decimalSymbol to set
    */
-  public void setDecimalSymbol(String decimalSymbol) {
+  public void setDecimalSymbol( String decimalSymbol ) {
     this.decimalSymbol = decimalSymbol;
   }
+
   /**
    * @return the groupingSymbol
    */
   public String getGroupingSymbol() {
     return groupingSymbol;
   }
+
   /**
-   * @param groupingSymbol the groupingSymbol to set
+   * @param groupingSymbol
+   *          the groupingSymbol to set
    */
-  public void setGroupingSymbol(String groupingSymbol) {
+  public void setGroupingSymbol( String groupingSymbol ) {
     this.groupingSymbol = groupingSymbol;
   }
+
   /**
    * @return the trimType
    */
   public int getTrimType() {
     return trimType;
   }
+
   /**
-   * @param trimType the trimType to set
+   * @param trimType
+   *          the trimType to set
    */
-  public void setTrimType(int trimType) {
+  public void setTrimType( int trimType ) {
     this.trimType = trimType;
   }
 
@@ -227,9 +249,10 @@ public class SasInputField implements XMLInterface, Cloneable {
   }
 
   /**
-   * @param precision the precision to set
+   * @param precision
+   *          the precision to set
    */
-  public void setPrecision(int precision) {
+  public void setPrecision( int precision ) {
     this.precision = precision;
   }
 
@@ -241,13 +264,14 @@ public class SasInputField implements XMLInterface, Cloneable {
   }
 
   /**
-   * @param length the length to set
+   * @param length
+   *          the length to set
    */
-  public void setLength(int length) {
+  public void setLength( int length ) {
     this.length = length;
   }
 
   public String getTrimTypeDesc() {
-    return ValueMeta.getTrimTypeDesc(trimType);
+    return ValueMeta.getTrimTypeDesc( trimType );
   }
 }

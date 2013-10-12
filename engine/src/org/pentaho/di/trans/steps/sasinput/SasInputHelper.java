@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.trans.steps.sasinput;
 
@@ -43,47 +43,47 @@ import org.pentaho.di.core.row.value.ValueMetaFactory;
  */
 public class SasInputHelper {
 
-  private String                  filename;
-  private RowMetaInterface        rowMeta;
+  private String filename;
+  private RowMetaInterface rowMeta;
 
-  private SasReader               sasReader;
+  private SasReader sasReader;
 
   /**
    * @param filename
    *          The SAS7BAT filename
    */
-  public SasInputHelper(final String filename) throws KettleException {
+  public SasInputHelper( final String filename ) throws KettleException {
     this.filename = filename;
 
-    sasReader = new SasReader(new File(filename));
+    sasReader = new SasReader( new File( filename ) );
 
     // Determine the row layout of the file ...
     //
     try {
       rowMeta = new RowMeta();
-      sasReader.read(new SasReaderCallback() {
-        public void column(int index, String name, String label, SasColumnType type, int length) {
+      sasReader.read( new SasReaderCallback() {
+        public void column( int index, String name, String label, SasColumnType type, int length ) {
           int kettleType = ValueMetaInterface.TYPE_NONE;
           int kettleLength;
-          switch (type) {
-          case CHARACTER:
-            kettleType = ValueMetaInterface.TYPE_STRING;
-            kettleLength = length;
-            break;
-          case NUMERIC:
-            kettleType = ValueMetaInterface.TYPE_NUMBER;
-            kettleLength=-1;
-            break;
-          default:
-            throw new RuntimeException("Unhandled SAS data type encountered: " + type);
+          switch ( type ) {
+            case CHARACTER:
+              kettleType = ValueMetaInterface.TYPE_STRING;
+              kettleLength = length;
+              break;
+            case NUMERIC:
+              kettleType = ValueMetaInterface.TYPE_NUMBER;
+              kettleLength = -1;
+              break;
+            default:
+              throw new RuntimeException( "Unhandled SAS data type encountered: " + type );
           }
           try {
-            ValueMetaInterface valueMeta = ValueMetaFactory.createValueMeta(name, kettleType);
-            valueMeta.setLength(kettleLength);
-            valueMeta.setComments(label);
-            rowMeta.addValueMeta(valueMeta);
-          } catch(Exception e) {
-            throw new SasReaderException("Unable to create new value meta type", e);
+            ValueMetaInterface valueMeta = ValueMetaFactory.createValueMeta( name, kettleType );
+            valueMeta.setLength( kettleLength );
+            valueMeta.setComments( label );
+            rowMeta.addValueMeta( valueMeta );
+          } catch ( Exception e ) {
+            throw new SasReaderException( "Unable to create new value meta type", e );
           }
         }
 
@@ -91,14 +91,13 @@ public class SasInputHelper {
           return false;
         }
 
-        public boolean row(int rowNumber, Object[] rowData) {
+        public boolean row( int rowNumber, Object[] rowData ) {
           return true;
         }
-      });
-    } catch (Exception e) {
-      throw new KettleException("Unable to determine the layout of SAS7BAT file '"+filename+"'", e);
+      } );
+    } catch ( Exception e ) {
+      throw new KettleException( "Unable to determine the layout of SAS7BAT file '" + filename + "'", e );
     }
-
 
   }
 
@@ -106,7 +105,7 @@ public class SasInputHelper {
   public String toString() {
     return filename;
   }
-  
+
   /**
    * @return the filename
    */
@@ -119,5 +118,5 @@ public class SasInputHelper {
    */
   public RowMetaInterface getRowMeta() {
     return rowMeta;
-  }  
+  }
 }

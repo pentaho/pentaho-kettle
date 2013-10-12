@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.trans.steps.tableagilemart;
 
@@ -36,20 +36,21 @@ import org.pentaho.metadata.registry.util.RegistryUtil;
 
 public class AgileMartUtil {
 
-	public void updateMetadata( ProvidesDatabaseConnectionInformation dpci, long rowCount ) {
-		// try to update the metadata registry
+  public void updateMetadata( ProvidesDatabaseConnectionInformation dpci, long rowCount ) {
+    // try to update the metadata registry
 
-		RegistryFactory factory = RegistryFactory.getInstance();
+    RegistryFactory factory = RegistryFactory.getInstance();
     IMetadataRegistry registry = factory.getMetadataRegistry();
 
     // PDI-8908 - NPE in MonetDB Bulk Loader step
-    if( registry == null ) {
+    if ( registry == null ) {
       try {
         registry = new OrderedFileRegistry();
-        ((OrderedFileRegistry) registry).setFilePath(org.pentaho.di.core.Const.getKettleDirectory() + File.separator + "registry.xml"); 
-        factory.setMetadataRegistry(registry);
+        ( (OrderedFileRegistry) registry ).setFilePath( org.pentaho.di.core.Const.getKettleDirectory() + File.separator
+            + "registry.xml" );
+        factory.setMetadataRegistry( registry );
         registry.init();
-      } catch (Exception e) {
+      } catch ( Exception e ) {
         e.printStackTrace();
       }
     }
@@ -58,29 +59,34 @@ public class AgileMartUtil {
     String databaseName = dpci.getDatabaseMeta().getName();
     String schemaName = dpci.getSchemaName();
     String tableName = dpci.getTableName();
-    Entity entity = util.getTableEntity(databaseName.toLowerCase(), (schemaName==null) ? null : schemaName.toLowerCase(), tableName.toLowerCase(), false);
-    if( entity != null ) {
-    System.out.println("Util.updateMetadata writing "+util.generateTableId(dpci.getDatabaseMeta().getName(), dpci.getSchemaName(), dpci.getTableName())+" rowCount="+rowCount);
-      if( rowCount == -1 ) {
+    Entity entity =
+        util.getTableEntity( databaseName.toLowerCase(), ( schemaName == null ) ? null : schemaName.toLowerCase(),
+            tableName.toLowerCase(), false );
+    if ( entity != null ) {
+      System.out.println( "Util.updateMetadata writing "
+          + util.generateTableId( dpci.getDatabaseMeta().getName(), dpci.getSchemaName(), dpci.getTableName() )
+          + " rowCount=" + rowCount );
+      if ( rowCount == -1 ) {
         // the table has been emptied
-        util.setAttribute(entity, "rowcount", 0);
+        util.setAttribute( entity, "rowcount", 0 );
       } else {
         // add an offset
-        util.updateAttribute(entity, "rowcount", rowCount);
+        util.updateAttribute( entity, "rowcount", rowCount );
       }
       DateFormat fmt = new SimpleDateFormat();
       Date now = new Date();
-      util.setAttribute(entity, "lastupdate", fmt.format(now));
-      util.setAttribute(entity, "lastupdatetick", now.getTime());
+      util.setAttribute( entity, "lastupdate", fmt.format( now ) );
+      util.setAttribute( entity, "lastupdatetick", now.getTime() );
     } else {
-    System.out.println("Util.updateMetadata failed writing "+util.generateTableId(dpci.getDatabaseMeta().getName(), dpci.getSchemaName(), dpci.getTableName()));
+      System.out.println( "Util.updateMetadata failed writing "
+          + util.generateTableId( dpci.getDatabaseMeta().getName(), dpci.getSchemaName(), dpci.getTableName() ) );
 
     }
     try {
-    registry.commit();
-    } catch (Exception e) {
+      registry.commit();
+    } catch ( Exception e ) {
       // no biggie
     }
   }
-	
+
 }

@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.trans.steps.singlethreader;
 
@@ -40,15 +40,15 @@ import org.pentaho.di.trans.step.StepMeta;
  */
 public class SingleThreaderData extends BaseStepData implements StepDataInterface {
   public SingleThreadedTransExecutor executor;
-  public Trans                       mappingTrans;
+  public Trans mappingTrans;
 
-  public int                         batchSize;
+  public int batchSize;
 
-  public TransMeta                   mappingTransMeta;
+  public TransMeta mappingTransMeta;
 
-  public RowMetaInterface            outputRowMeta;
+  public RowMetaInterface outputRowMeta;
   public RowProducer rowProducer;
-  
+
   public int batchCount;
   public int batchTime;
   public long startTime;
@@ -56,8 +56,7 @@ public class SingleThreaderData extends BaseStepData implements StepDataInterfac
   public StepMeta retrieveStepMeta;
   public List<Object[]> errorBuffer;
   public int lastLogLine;
-  
-  
+
   /**
 	 * 
 	 */
