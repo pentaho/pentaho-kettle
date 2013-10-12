@@ -1,19 +1,19 @@
 /*
-* This program is free software; you can redistribute it and/or modify it under the
-* terms of the GNU Lesser General Public License, version 2 as published by the Free Software
-* Foundation.
-*
-* You should have received a copy of the GNU Lesser General Public License along with this
-* program; if not, you can obtain a copy at http://www.gnu.org/licenses/lgpl-2.0.html
-* or from the Free Software Foundation, Inc.,
-* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-* See the GNU Lesser General Public License for more details.
-*
-* Copyright 2008 Bayon Technologies, Inc.  All rights reserved.
-*/
+ * This program is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License, version 2 as published by the Free Software
+ * Foundation.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with this
+ * program; if not, you can obtain a copy at http://www.gnu.org/licenses/lgpl-2.0.html
+ * or from the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * Copyright 2008 Bayon Technologies, Inc.  All rights reserved.
+ */
 
 package org.pentaho.di.jdbc;
 
@@ -28,188 +28,186 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.i18n.BaseMessages;
 
 public class KettleJDBCResultSetMetaData implements ResultSetMetaData {
-  
-  private static Class<?> PKG = KettleDriver.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	// private List<RowMetaAndData> rowAndDatas;
-	private ColInfo[] columns;
-	private transient final Log log = LogFactory.getLog(KettleJDBCResultSetMetaData.class);
+  private static Class<?> PKG = KettleDriver.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-	public ColInfo[] getColumns() {
-		return columns;
-	}
+  // private List<RowMetaAndData> rowAndDatas;
+  private ColInfo[] columns;
+  private final transient Log log = LogFactory.getLog( KettleJDBCResultSetMetaData.class );
 
-	public void setColumns(ColInfo[] columns) {
-		this.columns = columns;
-	}
+  public ColInfo[] getColumns() {
+    return columns;
+  }
 
-	private int columnCount = 0;
-	private boolean useLOBs = false;
+  public void setColumns( ColInfo[] columns ) {
+    this.columns = columns;
+  }
 
-	public KettleJDBCResultSetMetaData() {
+  private int columnCount = 0;
+  private boolean useLOBs = false;
 
-	}
+  public KettleJDBCResultSetMetaData() {
 
-	public KettleJDBCResultSetMetaData(ColInfo[] columns, int columnCount,
-			boolean useLOBs) {
-		this.columns = columns;
-		this.columnCount = columnCount;
-		this.useLOBs = useLOBs;
-	}
+  }
 
-	public KettleJDBCResultSetMetaData(List<RowMetaAndData> rowAndDatas, String columnStr) {
-		// this.rowAndDatas = rowAndDatas;
-		if (rowAndDatas != null && rowAndDatas.size() > 0) {
-			RowMetaAndData row = rowAndDatas.get(0);
-			RowMeta rm = (RowMeta) row.getRowMeta();
-			if (columnStr.indexOf("*") != -1) {
+  public KettleJDBCResultSetMetaData( ColInfo[] columns, int columnCount, boolean useLOBs ) {
+    this.columns = columns;
+    this.columnCount = columnCount;
+    this.useLOBs = useLOBs;
+  }
 
-				this.columns = KettleHelper.convert(rm);
-//				this.columnCount = row.getRowMeta().size();
-			} else {
-				this.columns = KettleHelper.convert(rm,columnStr);
-				
+  public KettleJDBCResultSetMetaData( List<RowMetaAndData> rowAndDatas, String columnStr ) {
+    // this.rowAndDatas = rowAndDatas;
+    if ( rowAndDatas != null && rowAndDatas.size() > 0 ) {
+      RowMetaAndData row = rowAndDatas.get( 0 );
+      RowMeta rm = (RowMeta) row.getRowMeta();
+      if ( columnStr.indexOf( "*" ) != -1 ) {
 
-			}
-			this.columnCount = this.columns.length;
-		}
-		log.debug("KettleJDBCResultSetMetaData:" + rowAndDatas);
-	}
+        this.columns = KettleHelper.convert( rm );
+        // this.columnCount = row.getRowMeta().size();
+      } else {
+        this.columns = KettleHelper.convert( rm, columnStr );
 
-	public String getCatalogName(int column) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+      }
+      this.columnCount = this.columns.length;
+    }
+    log.debug( "KettleJDBCResultSetMetaData:" + rowAndDatas );
+  }
 
-	public String getColumnClassName(int column) throws SQLException {
-		String c = Support.getClassName(getColumnType(column));
+  public String getCatalogName( int column ) throws SQLException {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
-		if (!useLOBs) {
-			if ("java.sql.Clob".equals(c)) {
-				return "java.lang.String";
-			}
+  public String getColumnClassName( int column ) throws SQLException {
+    String c = Support.getClassName( getColumnType( column ) );
 
-			if ("java.sql.Blob".equals(c)) {
-				return "[B";
-			}
-		}
+    if ( !useLOBs ) {
+      if ( "java.sql.Clob".equals( c ) ) {
+        return "java.lang.String";
+      }
 
-		return c;
-	}
+      if ( "java.sql.Blob".equals( c ) ) {
+        return "[B";
+      }
+    }
 
-	public int getColumnCount() throws SQLException {
-		log.debug("columnCount=" + columnCount);
-		return this.columnCount;
-	}
+    return c;
+  }
 
-	public int getColumnDisplaySize(int column) throws SQLException {
-		log.debug("getColumnDisplaySize");
-		return 0;
-	}
+  public int getColumnCount() throws SQLException {
+    log.debug( "columnCount=" + columnCount );
+    return this.columnCount;
+  }
 
-	public String getColumnLabel(int column) throws SQLException {
-		log.debug("getColumnLabel");
-		return getColumn(column).name;
-	}
+  public int getColumnDisplaySize( int column ) throws SQLException {
+    log.debug( "getColumnDisplaySize" );
+    return 0;
+  }
 
-	public String getColumnName(int column) throws SQLException {
-		return getColumn(column).realName;
-	}
+  public String getColumnLabel( int column ) throws SQLException {
+    log.debug( "getColumnLabel" );
+    return getColumn( column ).name;
+  }
 
-	public int getColumnType(int column) throws SQLException {
-		if (useLOBs) {
-			return getColumn(column).jdbcType;
-		} else {
-			return Support.convertLOBType(getColumn(column).jdbcType);
-		}
-	}
+  public String getColumnName( int column ) throws SQLException {
+    return getColumn( column ).realName;
+  }
 
-	public String getColumnTypeName(int column) throws SQLException {
-		return getColumn(column).sqlType;
-	}
+  public int getColumnType( int column ) throws SQLException {
+    if ( useLOBs ) {
+      return getColumn( column ).jdbcType;
+    } else {
+      return Support.convertLOBType( getColumn( column ).jdbcType );
+    }
+  }
 
-	public int getPrecision(int column) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+  public String getColumnTypeName( int column ) throws SQLException {
+    return getColumn( column ).sqlType;
+  }
 
-	public int getScale(int column) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+  public int getPrecision( int column ) throws SQLException {
+    // TODO Auto-generated method stub
+    return 0;
+  }
 
-	public String getSchemaName(int column) throws SQLException {
-		log.debug("getSchemaName");
-		return null;
-	}
+  public int getScale( int column ) throws SQLException {
+    // TODO Auto-generated method stub
+    return 0;
+  }
 
-	public String getTableName(int column) throws SQLException {
-		ColInfo col = getColumn(column);
+  public String getSchemaName( int column ) throws SQLException {
+    log.debug( "getSchemaName" );
+    return null;
+  }
 
-		return (col.tableName == null) ? "" : col.tableName;
-	}
+  public String getTableName( int column ) throws SQLException {
+    ColInfo col = getColumn( column );
 
-	public boolean isAutoIncrement(int column) throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    return ( col.tableName == null ) ? "" : col.tableName;
+  }
 
-	ColInfo getColumn(int column) throws SQLException {
-		if (column < 1 || column > columnCount) {
-			throw new SQLException(BaseMessages.getString(PKG, "error.resultset.colindex",
-					Integer.toString(column)), "07009");
-		}
-		log.debug("getColumn");
-		return columns[column - 1];
-	}
-
-	public boolean isCaseSensitive(int column) throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public boolean isCurrency(int column) throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public boolean isDefinitelyWritable(int column) throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public int isNullable(int column) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public boolean isReadOnly(int column) throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public boolean isSearchable(int column) throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public boolean isSigned(int column) throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public boolean isWritable(int column) throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-  public boolean isWrapperFor(Class<?> iface) throws SQLException {
+  public boolean isAutoIncrement( int column ) throws SQLException {
     // TODO Auto-generated method stub
     return false;
   }
 
-  public <T> T unwrap(Class<T> iface) throws SQLException {
+  ColInfo getColumn( int column ) throws SQLException {
+    if ( column < 1 || column > columnCount ) {
+      throw new SQLException( BaseMessages.getString( PKG, "error.resultset.colindex", Integer.toString( column ) ),
+          "07009" );
+    }
+    log.debug( "getColumn" );
+    return columns[column - 1];
+  }
+
+  public boolean isCaseSensitive( int column ) throws SQLException {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  public boolean isCurrency( int column ) throws SQLException {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  public boolean isDefinitelyWritable( int column ) throws SQLException {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  public int isNullable( int column ) throws SQLException {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  public boolean isReadOnly( int column ) throws SQLException {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  public boolean isSearchable( int column ) throws SQLException {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  public boolean isSigned( int column ) throws SQLException {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  public boolean isWritable( int column ) throws SQLException {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  public boolean isWrapperFor( Class<?> iface ) throws SQLException {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  public <T> T unwrap( Class<T> iface ) throws SQLException {
     // TODO Auto-generated method stub
     return null;
-  }	
+  }
 }
