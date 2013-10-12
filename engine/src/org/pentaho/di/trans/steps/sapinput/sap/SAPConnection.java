@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.trans.steps.sapinput.sap;
 
@@ -48,42 +48,45 @@ import org.pentaho.di.trans.steps.sapinput.sap.impl.SAPRowIterator;
 
 public interface SAPConnection {
 
-	/**
-	 * Open a connection to SAP ERP Note: method for init()
-	 * 
-	 * 
-	 * @param sapConnection
-	 *            The SAP Connection to use, needs to be of type SAP ERP
-	 * @throws SAPException
-	 *             in case something went wrong during the connection phase.
-	 */
-	void open(DatabaseMeta sapConnection) throws SAPException;
-	void open(SAPConnectionParams params) throws SAPException;
+  /**
+   * Open a connection to SAP ERP Note: method for init()
+   * 
+   * 
+   * @param sapConnection
+   *          The SAP Connection to use, needs to be of type SAP ERP
+   * @throws SAPException
+   *           in case something went wrong during the connection phase.
+   */
+  void open( DatabaseMeta sapConnection ) throws SAPException;
 
-	/**
-	 * Close the connection
-	 */
-	void close();
+  void open( SAPConnectionParams params ) throws SAPException;
 
-	/////////////////////
-	// methods for UI
-	/////////////////////
-	
-	Collection<SAPFunction> getFunctions(String query) throws SAPException;
+  /**
+   * Close the connection
+   */
+  void close();
 
-	SAPFunction getFunction(String name) throws SAPException;
+  // ///////////////////
+  // methods for UI
+  // ///////////////////
 
-	SAPFunctionSignature getFunctionSignature(SAPFunction function) throws SAPException;
+  Collection<SAPFunction> getFunctions( String query ) throws SAPException;
 
-	/////////////////////
-	// methods for data
-	/////////////////////
+  SAPFunction getFunction( String name ) throws SAPException;
 
-	// use this for possibly large amounts of data
-	SAPRowIterator executeFunctionCursored(SAPFunction function,
-			Collection<SAPField> input, Collection<SAPField> output) throws SAPException;
+  SAPFunctionSignature getFunctionSignature( SAPFunction function ) throws SAPException;
 
-	// use this for small amounts of data (e.g. for testcases)
-	SAPResultSet executeFunctionUncursored(SAPFunction function,
-			Collection<SAPField> input, Collection<SAPField> output) throws SAPException;
+  // ///////////////////
+  // methods for data
+  // ///////////////////
+
+  // use this for possibly large amounts of data
+  SAPRowIterator
+    executeFunctionCursored( SAPFunction function, Collection<SAPField> input, Collection<SAPField> output )
+      throws SAPException;
+
+  // use this for small amounts of data (e.g. for testcases)
+  SAPResultSet
+    executeFunctionUncursored( SAPFunction function, Collection<SAPField> input, Collection<SAPField> output )
+      throws SAPException;
 }

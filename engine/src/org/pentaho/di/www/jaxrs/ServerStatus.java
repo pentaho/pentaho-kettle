@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.www.jaxrs;
 
@@ -75,48 +75,48 @@ public class ServerStatus {
     long allThreadsCpuTime = 0L;
 
     long[] threadIds = threadMXBean.getAllThreadIds();
-    for (int i = 0; i < threadIds.length; i++) {
-      allThreadsCpuTime += threadMXBean.getThreadCpuTime(threadIds[i]);
+    for ( int i = 0; i < threadIds.length; i++ ) {
+      allThreadsCpuTime += threadMXBean.getThreadCpuTime( threadIds[i] );
     }
 
     long uptime = runtimeMXBean.getUptime();
 
-    setCpuCores(cores);
-    setCpuProcessTime(allThreadsCpuTime);
-    setUptime(uptime);
-    setThreadCount(threadCount);
-    setLoadAvg(loadAvg);
-    setOsName(osName);
-    setOsVersion(osVersion);
-    setOsArchitecture(osArch);
-    setMemoryFree(freeMemory);
-    setMemoryTotal(totalMemory);
+    setCpuCores( cores );
+    setCpuProcessTime( allThreadsCpuTime );
+    setUptime( uptime );
+    setThreadCount( threadCount );
+    setLoadAvg( loadAvg );
+    setOsName( osName );
+    setOsVersion( osVersion );
+    setOsArchitecture( osArch );
+    setMemoryFree( freeMemory );
+    setMemoryTotal( totalMemory );
   }
 
-  public ServerStatus(String statusDescription) {
+  public ServerStatus( String statusDescription ) {
     this();
     this.statusDescription = statusDescription;
   }
 
-  public ServerStatus(Node statusNode) throws KettleException {
+  public ServerStatus( Node statusNode ) throws KettleException {
     this();
-    statusDescription = XMLHandler.getTagValue(statusNode, "statusdesc");
+    statusDescription = XMLHandler.getTagValue( statusNode, "statusdesc" );
 
-    memoryFree = Const.toLong(XMLHandler.getTagValue(statusNode, "memory_free"), -1L);
-    memoryTotal = Const.toLong(XMLHandler.getTagValue(statusNode, "memory_total"), -1L);
+    memoryFree = Const.toLong( XMLHandler.getTagValue( statusNode, "memory_free" ), -1L );
+    memoryTotal = Const.toLong( XMLHandler.getTagValue( statusNode, "memory_total" ), -1L );
 
-    String cpuCoresStr = XMLHandler.getTagValue(statusNode, "cpu_cores");
-    cpuCores = Const.toInt(cpuCoresStr, -1);
-    String cpuProcessTimeStr = XMLHandler.getTagValue(statusNode, "cpu_process_time");
-    cpuProcessTime = Const.isEmpty(cpuProcessTimeStr) ? 0L : Long.valueOf(cpuProcessTimeStr);
+    String cpuCoresStr = XMLHandler.getTagValue( statusNode, "cpu_cores" );
+    cpuCores = Const.toInt( cpuCoresStr, -1 );
+    String cpuProcessTimeStr = XMLHandler.getTagValue( statusNode, "cpu_process_time" );
+    cpuProcessTime = Const.isEmpty( cpuProcessTimeStr ) ? 0L : Long.valueOf( cpuProcessTimeStr );
 
-    uptime = Const.toLong(XMLHandler.getTagValue(statusNode, "uptime"), -1);
-    threadCount = Const.toInt(XMLHandler.getTagValue(statusNode, "thread_count"), -1);
-    loadAvg = Const.toDouble(XMLHandler.getTagValue(statusNode, "load_avg"), -1.0);
+    uptime = Const.toLong( XMLHandler.getTagValue( statusNode, "uptime" ), -1 );
+    threadCount = Const.toInt( XMLHandler.getTagValue( statusNode, "thread_count" ), -1 );
+    loadAvg = Const.toDouble( XMLHandler.getTagValue( statusNode, "load_avg" ), -1.0 );
 
-    osName = XMLHandler.getTagValue(statusNode, "os_name");
-    osVersion = XMLHandler.getTagValue(statusNode, "os_version");
-    osArchitecture = XMLHandler.getTagValue(statusNode, "os_arch");
+    osName = XMLHandler.getTagValue( statusNode, "os_name" );
+    osVersion = XMLHandler.getTagValue( statusNode, "os_version" );
+    osArchitecture = XMLHandler.getTagValue( statusNode, "os_arch" );
   }
 
   /**
@@ -130,7 +130,7 @@ public class ServerStatus {
    * @param statusDescription
    *          the statusDescription to set
    */
-  public void setStatusDescription(String statusDescription) {
+  public void setStatusDescription( String statusDescription ) {
     this.statusDescription = statusDescription;
   }
 
@@ -145,7 +145,7 @@ public class ServerStatus {
    * @param errorDescription
    *          the errorDescription to set
    */
-  public void setErrorDescription(String errorDescription) {
+  public void setErrorDescription( String errorDescription ) {
     this.errorDescription = errorDescription;
   }
 
@@ -160,7 +160,7 @@ public class ServerStatus {
    * @param memoryFree
    *          the memoryFree to set
    */
-  public void setMemoryFree(long memoryFree) {
+  public void setMemoryFree( long memoryFree ) {
     this.memoryFree = memoryFree;
   }
 
@@ -175,7 +175,7 @@ public class ServerStatus {
    * @param memoryTotal
    *          the memoryTotal to set
    */
-  public void setMemoryTotal(long memoryTotal) {
+  public void setMemoryTotal( long memoryTotal ) {
     this.memoryTotal = memoryTotal;
   }
 
@@ -190,7 +190,7 @@ public class ServerStatus {
    * @param cpuCores
    *          the cpuCores to set
    */
-  public void setCpuCores(int cpuCores) {
+  public void setCpuCores( int cpuCores ) {
     this.cpuCores = cpuCores;
   }
 
@@ -205,11 +205,11 @@ public class ServerStatus {
    * @param cpuProcessTime
    *          the cpuProcessTime to set
    */
-  public void setCpuProcessTime(long cpuProcessTime) {
+  public void setCpuProcessTime( long cpuProcessTime ) {
     this.cpuProcessTime = cpuProcessTime;
   }
 
-  public void setUptime(long uptime) {
+  public void setUptime( long uptime ) {
     this.uptime = uptime;
   }
 
@@ -217,7 +217,7 @@ public class ServerStatus {
     return uptime;
   }
 
-  public void setThreadCount(int threadCount) {
+  public void setThreadCount( int threadCount ) {
     this.threadCount = threadCount;
   }
 
@@ -225,7 +225,7 @@ public class ServerStatus {
     return threadCount;
   }
 
-  public void setLoadAvg(double loadAvg) {
+  public void setLoadAvg( double loadAvg ) {
     this.loadAvg = loadAvg;
   }
 
@@ -233,7 +233,7 @@ public class ServerStatus {
     return loadAvg;
   }
 
-  public void setOsName(String osName) {
+  public void setOsName( String osName ) {
     this.osName = osName;
   }
 
@@ -241,7 +241,7 @@ public class ServerStatus {
     return osName;
   }
 
-  public void setOsVersion(String osVersion) {
+  public void setOsVersion( String osVersion ) {
     this.osVersion = osVersion;
   }
 
@@ -249,7 +249,7 @@ public class ServerStatus {
     return osVersion;
   }
 
-  public void setOsArchitecture(String osArch) {
+  public void setOsArchitecture( String osArch ) {
     this.osArchitecture = osArch;
   }
 

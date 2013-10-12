@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.trans.steps.rowgenerator;
 
@@ -57,7 +57,7 @@ import org.w3c.dom.Node;
  * Created on 4-apr-2003
  */
 public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = RowGeneratorMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  private static Class<?> PKG = RowGeneratorMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
   private boolean neverEnding;
 
@@ -69,36 +69,36 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface 
 
   private String rowLimit;
 
-  private String currency[];
+  private String[] currency;
 
-  private String decimal[];
+  private String[] decimal;
 
-  private String group[];
+  private String[] group;
 
-  private String value[];
+  private String[] value;
 
-  private String fieldName[];
+  private String[] fieldName;
 
-  private String fieldType[];
+  private String[] fieldType;
 
-  private String fieldFormat[];
+  private String[] fieldFormat;
 
-  private int fieldLength[];
+  private int[] fieldLength;
 
-  private int fieldPrecision[];
+  private int[] fieldPrecision;
 
   /** Flag : set empty string **/
-  private boolean setEmptyString[];
+  private boolean[] setEmptyString;
 
   public RowGeneratorMeta() {
     super(); // allocate BaseStepMeta
   }
 
-  public void loadXML(Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore) throws KettleXMLException {
-    readData(stepnode);
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+    readData( stepnode );
   }
 
-  public void allocate(int nrfields) {
+  public void allocate( int nrfields ) {
     fieldName = new String[nrfields];
     fieldType = new String[nrfields];
     fieldFormat = new String[nrfields];
@@ -116,9 +116,9 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface 
 
     int nrfields = fieldName.length;
 
-    retval.allocate(nrfields);
+    retval.allocate( nrfields );
 
-    for (int i = 0; i < nrfields; i++) {
+    for ( int i = 0; i < nrfields; i++ ) {
       retval.fieldName[i] = fieldName[i];
       retval.fieldType[i] = fieldType[i];
       retval.fieldFormat[i] = fieldFormat[i];
@@ -134,63 +134,63 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface 
     return retval;
   }
 
-  private void readData(Node stepnode) throws KettleXMLException {
+  private void readData( Node stepnode ) throws KettleXMLException {
     try {
-      Node fields = XMLHandler.getSubNode(stepnode, "fields");
-      int nrfields = XMLHandler.countNodes(fields, "field");
+      Node fields = XMLHandler.getSubNode( stepnode, "fields" );
+      int nrfields = XMLHandler.countNodes( fields, "field" );
 
-      allocate(nrfields);
+      allocate( nrfields );
 
       String slength, sprecision;
 
-      for (int i = 0; i < nrfields; i++) {
-        Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i);
+      for ( int i = 0; i < nrfields; i++ ) {
+        Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
 
-        fieldName[i] = XMLHandler.getTagValue(fnode, "name");
-        fieldType[i] = XMLHandler.getTagValue(fnode, "type");
-        fieldFormat[i] = XMLHandler.getTagValue(fnode, "format");
-        currency[i] = XMLHandler.getTagValue(fnode, "currency");
-        decimal[i] = XMLHandler.getTagValue(fnode, "decimal");
-        group[i] = XMLHandler.getTagValue(fnode, "group");
-        value[i] = XMLHandler.getTagValue(fnode, "nullif");
-        slength = XMLHandler.getTagValue(fnode, "length");
-        sprecision = XMLHandler.getTagValue(fnode, "precision");
+        fieldName[i] = XMLHandler.getTagValue( fnode, "name" );
+        fieldType[i] = XMLHandler.getTagValue( fnode, "type" );
+        fieldFormat[i] = XMLHandler.getTagValue( fnode, "format" );
+        currency[i] = XMLHandler.getTagValue( fnode, "currency" );
+        decimal[i] = XMLHandler.getTagValue( fnode, "decimal" );
+        group[i] = XMLHandler.getTagValue( fnode, "group" );
+        value[i] = XMLHandler.getTagValue( fnode, "nullif" );
+        slength = XMLHandler.getTagValue( fnode, "length" );
+        sprecision = XMLHandler.getTagValue( fnode, "precision" );
 
-        fieldLength[i] = Const.toInt(slength, -1);
-        fieldPrecision[i] = Const.toInt(sprecision, -1);
-        String emptyString = XMLHandler.getTagValue(fnode, "set_empty_string");
-        setEmptyString[i] = !Const.isEmpty(emptyString) && "Y".equalsIgnoreCase(emptyString);
+        fieldLength[i] = Const.toInt( slength, -1 );
+        fieldPrecision[i] = Const.toInt( sprecision, -1 );
+        String emptyString = XMLHandler.getTagValue( fnode, "set_empty_string" );
+        setEmptyString[i] = !Const.isEmpty( emptyString ) && "Y".equalsIgnoreCase( emptyString );
       }
 
       // Is there a limit on the number of rows we process?
-      rowLimit = XMLHandler.getTagValue(stepnode, "limit");
+      rowLimit = XMLHandler.getTagValue( stepnode, "limit" );
 
-      neverEnding = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "never_ending"));
-      intervalInMs = XMLHandler.getTagValue(stepnode, "interval_in_ms");
-      rowTimeField = XMLHandler.getTagValue(stepnode, "row_time_field");
-      lastTimeField = XMLHandler.getTagValue(stepnode, "last_time_field");
+      neverEnding = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "never_ending" ) );
+      intervalInMs = XMLHandler.getTagValue( stepnode, "interval_in_ms" );
+      rowTimeField = XMLHandler.getTagValue( stepnode, "row_time_field" );
+      lastTimeField = XMLHandler.getTagValue( stepnode, "last_time_field" );
 
-    } catch (Exception e) {
-      throw new KettleXMLException("Unable to load step info from XML", e);
+    } catch ( Exception e ) {
+      throw new KettleXMLException( "Unable to load step info from XML", e );
     }
   }
 
   public void setDefault() {
     int i, nrfields = 0;
 
-    allocate(nrfields);
+    allocate( nrfields );
 
     DecimalFormat decimalFormat = new DecimalFormat();
 
-    for (i = 0; i < nrfields; i++) {
+    for ( i = 0; i < nrfields; i++ ) {
       fieldName[i] = "field" + i;
       fieldType[i] = "Number";
       fieldFormat[i] = "\u00A40,000,000.00;\u00A4-0,000,000.00";
       fieldLength[i] = 9;
       fieldPrecision[i] = 2;
       currency[i] = decimalFormat.getDecimalFormatSymbols().getCurrencySymbol();
-      decimal[i] = new String(new char[] { decimalFormat.getDecimalFormatSymbols().getDecimalSeparator() });
-      group[i] = new String(new char[] { decimalFormat.getDecimalFormatSymbols().getGroupingSeparator() });
+      decimal[i] = new String( new char[] { decimalFormat.getDecimalFormatSymbols().getDecimalSeparator() } );
+      group[i] = new String( new char[] { decimalFormat.getDecimalFormatSymbols().getGroupingSeparator() } );
       value[i] = "-";
       setEmptyString[i] = false;
     }
@@ -202,164 +202,170 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface 
     lastTimeField = "FiveSecondsAgo";
   }
 
-  public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException {
+  public void getFields( RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
+      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     try {
       List<CheckResultInterface> remarks = new ArrayList<CheckResultInterface>();
-      RowMetaAndData rowMetaAndData = RowGenerator.buildRow(this, remarks, origin);
-      if (!remarks.isEmpty()) {
+      RowMetaAndData rowMetaAndData = RowGenerator.buildRow( this, remarks, origin );
+      if ( !remarks.isEmpty() ) {
         StringBuffer stringRemarks = new StringBuffer();
-        for (CheckResultInterface remark : remarks) {
-          stringRemarks.append(remark.toString()).append(Const.CR);
+        for ( CheckResultInterface remark : remarks ) {
+          stringRemarks.append( remark.toString() ).append( Const.CR );
         }
-        throw new KettleStepException(stringRemarks.toString());
+        throw new KettleStepException( stringRemarks.toString() );
       }
 
-      for (ValueMetaInterface valueMeta : rowMetaAndData.getRowMeta().getValueMetaList()) {
-        valueMeta.setOrigin(origin);
+      for ( ValueMetaInterface valueMeta : rowMetaAndData.getRowMeta().getValueMetaList() ) {
+        valueMeta.setOrigin( origin );
       }
 
-      row.mergeRowMeta(rowMetaAndData.getRowMeta());
-    } catch (Exception e) {
-      throw new KettleStepException(e);
+      row.mergeRowMeta( rowMetaAndData.getRowMeta() );
+    } catch ( Exception e ) {
+      throw new KettleStepException( e );
     }
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer(300);
+    StringBuffer retval = new StringBuffer( 300 );
 
-    retval.append("    <fields>").append(Const.CR);
-    for (int i = 0; i < fieldName.length; i++) {
-      if (fieldName[i] != null && fieldName[i].length() != 0) {
-        retval.append("      <field>").append(Const.CR);
-        retval.append("        ").append(XMLHandler.addTagValue("name", fieldName[i]));
-        retval.append("        ").append(XMLHandler.addTagValue("type", fieldType[i]));
-        retval.append("        ").append(XMLHandler.addTagValue("format", fieldFormat[i]));
-        retval.append("        ").append(XMLHandler.addTagValue("currency", currency[i]));
-        retval.append("        ").append(XMLHandler.addTagValue("decimal", decimal[i]));
-        retval.append("        ").append(XMLHandler.addTagValue("group", group[i]));
-        retval.append("        ").append(XMLHandler.addTagValue("nullif", value[i]));
-        retval.append("        ").append(XMLHandler.addTagValue("length", fieldLength[i]));
-        retval.append("        ").append(XMLHandler.addTagValue("precision", fieldPrecision[i]));
-        retval.append("        ").append(XMLHandler.addTagValue("set_empty_string", setEmptyString[i]));
-        retval.append("      </field>").append(Const.CR);
+    retval.append( "    <fields>" ).append( Const.CR );
+    for ( int i = 0; i < fieldName.length; i++ ) {
+      if ( fieldName[i] != null && fieldName[i].length() != 0 ) {
+        retval.append( "      <field>" ).append( Const.CR );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "name", fieldName[i] ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "type", fieldType[i] ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "format", fieldFormat[i] ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "currency", currency[i] ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "decimal", decimal[i] ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "group", group[i] ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "nullif", value[i] ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "length", fieldLength[i] ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "precision", fieldPrecision[i] ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "set_empty_string", setEmptyString[i] ) );
+        retval.append( "      </field>" ).append( Const.CR );
       }
     }
-    retval.append("    </fields>").append(Const.CR);
-    retval.append("    ").append(XMLHandler.addTagValue("limit", rowLimit));
-    retval.append("    ").append(XMLHandler.addTagValue("never_ending", neverEnding?"Y":"N"));
-    retval.append("    ").append(XMLHandler.addTagValue("interval_in_ms", intervalInMs));
-    retval.append("    ").append(XMLHandler.addTagValue("row_time_field", rowTimeField));
-    retval.append("    ").append(XMLHandler.addTagValue("last_time_field", lastTimeField));
+    retval.append( "    </fields>" ).append( Const.CR );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "limit", rowLimit ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "never_ending", neverEnding ? "Y" : "N" ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "interval_in_ms", intervalInMs ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "row_time_field", rowTimeField ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "last_time_field", lastTimeField ) );
 
     return retval.toString();
   }
 
-  public void readRep(Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases)
-      throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
+    throws KettleException {
     try {
-      int nrfields = rep.countNrStepAttributes(id_step, "field_name");
+      int nrfields = rep.countNrStepAttributes( id_step, "field_name" );
 
-      allocate(nrfields);
+      allocate( nrfields );
 
-      for (int i = 0; i < nrfields; i++) {
-        fieldName[i] = rep.getStepAttributeString(id_step, i, "field_name");
-        fieldType[i] = rep.getStepAttributeString(id_step, i, "field_type");
+      for ( int i = 0; i < nrfields; i++ ) {
+        fieldName[i] = rep.getStepAttributeString( id_step, i, "field_name" );
+        fieldType[i] = rep.getStepAttributeString( id_step, i, "field_type" );
 
-        fieldFormat[i] = rep.getStepAttributeString(id_step, i, "field_format");
-        currency[i] = rep.getStepAttributeString(id_step, i, "field_currency");
-        decimal[i] = rep.getStepAttributeString(id_step, i, "field_decimal");
-        group[i] = rep.getStepAttributeString(id_step, i, "field_group");
-        value[i] = rep.getStepAttributeString(id_step, i, "field_nullif");
-        fieldLength[i] = (int) rep.getStepAttributeInteger(id_step, i, "field_length");
-        fieldPrecision[i] = (int) rep.getStepAttributeInteger(id_step, i, "field_precision");
-        setEmptyString[i] = rep.getStepAttributeBoolean(id_step, i, "set_empty_string", false);
+        fieldFormat[i] = rep.getStepAttributeString( id_step, i, "field_format" );
+        currency[i] = rep.getStepAttributeString( id_step, i, "field_currency" );
+        decimal[i] = rep.getStepAttributeString( id_step, i, "field_decimal" );
+        group[i] = rep.getStepAttributeString( id_step, i, "field_group" );
+        value[i] = rep.getStepAttributeString( id_step, i, "field_nullif" );
+        fieldLength[i] = (int) rep.getStepAttributeInteger( id_step, i, "field_length" );
+        fieldPrecision[i] = (int) rep.getStepAttributeInteger( id_step, i, "field_precision" );
+        setEmptyString[i] = rep.getStepAttributeBoolean( id_step, i, "set_empty_string", false );
       }
 
-      long longLimit = rep.getStepAttributeInteger(id_step, "limit");
-      if (longLimit <= 0) {
-        rowLimit = rep.getStepAttributeString(id_step, "limit");
+      long longLimit = rep.getStepAttributeInteger( id_step, "limit" );
+      if ( longLimit <= 0 ) {
+        rowLimit = rep.getStepAttributeString( id_step, "limit" );
       } else {
-        rowLimit = Long.toString(longLimit);
+        rowLimit = Long.toString( longLimit );
       }
-      
-      neverEnding = rep.getStepAttributeBoolean(id_step, "never_ending");
-      intervalInMs = rep.getStepAttributeString(id_step, "interval_in_ms");
-      rowTimeField = rep.getStepAttributeString(id_step, "row_time_field");
-      lastTimeField = rep.getStepAttributeString(id_step, "last_time_field");
-    } catch (Exception e) {
-      throw new KettleException("Unexpected error reading step information from the repository", e);
+
+      neverEnding = rep.getStepAttributeBoolean( id_step, "never_ending" );
+      intervalInMs = rep.getStepAttributeString( id_step, "interval_in_ms" );
+      rowTimeField = rep.getStepAttributeString( id_step, "row_time_field" );
+      lastTimeField = rep.getStepAttributeString( id_step, "last_time_field" );
+    } catch ( Exception e ) {
+      throw new KettleException( "Unexpected error reading step information from the repository", e );
     }
   }
 
-  public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step)
-      throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
+    throws KettleException {
     try {
-      for (int i = 0; i < fieldName.length; i++) {
-        if (fieldName[i] != null && fieldName[i].length() != 0) {
-          rep.saveStepAttribute(id_transformation, id_step, i, "field_name", fieldName[i]);
-          rep.saveStepAttribute(id_transformation, id_step, i, "field_type", fieldType[i]);
-          rep.saveStepAttribute(id_transformation, id_step, i, "field_format", fieldFormat[i]);
-          rep.saveStepAttribute(id_transformation, id_step, i, "field_currency", currency[i]);
-          rep.saveStepAttribute(id_transformation, id_step, i, "field_decimal", decimal[i]);
-          rep.saveStepAttribute(id_transformation, id_step, i, "field_group", group[i]);
-          rep.saveStepAttribute(id_transformation, id_step, i, "field_nullif", value[i]);
-          rep.saveStepAttribute(id_transformation, id_step, i, "field_length", fieldLength[i]);
-          rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", fieldPrecision[i]);
-          rep.saveStepAttribute(id_transformation, id_step, i, "set_empty_string", setEmptyString[i]);
+      for ( int i = 0; i < fieldName.length; i++ ) {
+        if ( fieldName[i] != null && fieldName[i].length() != 0 ) {
+          rep.saveStepAttribute( id_transformation, id_step, i, "field_name", fieldName[i] );
+          rep.saveStepAttribute( id_transformation, id_step, i, "field_type", fieldType[i] );
+          rep.saveStepAttribute( id_transformation, id_step, i, "field_format", fieldFormat[i] );
+          rep.saveStepAttribute( id_transformation, id_step, i, "field_currency", currency[i] );
+          rep.saveStepAttribute( id_transformation, id_step, i, "field_decimal", decimal[i] );
+          rep.saveStepAttribute( id_transformation, id_step, i, "field_group", group[i] );
+          rep.saveStepAttribute( id_transformation, id_step, i, "field_nullif", value[i] );
+          rep.saveStepAttribute( id_transformation, id_step, i, "field_length", fieldLength[i] );
+          rep.saveStepAttribute( id_transformation, id_step, i, "field_precision", fieldPrecision[i] );
+          rep.saveStepAttribute( id_transformation, id_step, i, "set_empty_string", setEmptyString[i] );
         }
       }
 
-      rep.saveStepAttribute(id_transformation, id_step, "limit", rowLimit);
-      rep.saveStepAttribute(id_transformation, id_step, "never_ending", neverEnding);
-      rep.saveStepAttribute(id_transformation, id_step, "interval_in_ms", intervalInMs);
-      rep.saveStepAttribute(id_transformation, id_step, "row_time_field", rowTimeField);
-      rep.saveStepAttribute(id_transformation, id_step, "last_time_field", lastTimeField);
-    } catch (Exception e) {
-      throw new KettleException("Unable to save step information to the repository for id_step=" + id_step, e);
+      rep.saveStepAttribute( id_transformation, id_step, "limit", rowLimit );
+      rep.saveStepAttribute( id_transformation, id_step, "never_ending", neverEnding );
+      rep.saveStepAttribute( id_transformation, id_step, "interval_in_ms", intervalInMs );
+      rep.saveStepAttribute( id_transformation, id_step, "row_time_field", rowTimeField );
+      rep.saveStepAttribute( id_transformation, id_step, "last_time_field", lastTimeField );
+    } catch ( Exception e ) {
+      throw new KettleException( "Unable to save step information to the repository for id_step=" + id_step, e );
     }
   }
 
-  public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
+      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
+      IMetaStore metaStore ) {
     CheckResult cr;
-    if (prev != null && prev.size() > 0) {
-      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG,
-          "RowGeneratorMeta.CheckResult.NoInputStreamsError"), stepMeta);
-      remarks.add(cr);
+    if ( prev != null && prev.size() > 0 ) {
+      cr =
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
+              "RowGeneratorMeta.CheckResult.NoInputStreamsError" ), stepMeta );
+      remarks.add( cr );
     } else {
-      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG,
-          "RowGeneratorMeta.CheckResult.NoInputStreamOk"), stepMeta);
-      remarks.add(cr);
+      cr =
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
+              "RowGeneratorMeta.CheckResult.NoInputStreamOk" ), stepMeta );
+      remarks.add( cr );
 
-      String strLimit = transMeta.environmentSubstitute(rowLimit);
-      if (Const.toLong(strLimit, -1L) <= 0) {
-        cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(PKG,
-            "RowGeneratorMeta.CheckResult.WarnNoRows"), stepMeta);
-        remarks.add(cr);
+      String strLimit = transMeta.environmentSubstitute( rowLimit );
+      if ( Const.toLong( strLimit, -1L ) <= 0 ) {
+        cr =
+            new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
+                "RowGeneratorMeta.CheckResult.WarnNoRows" ), stepMeta );
+        remarks.add( cr );
       } else {
-        cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG,
-            "RowGeneratorMeta.CheckResult.WillReturnRows", strLimit), stepMeta);
-        remarks.add(cr);
+        cr =
+            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
+                "RowGeneratorMeta.CheckResult.WillReturnRows", strLimit ), stepMeta );
+        remarks.add( cr );
       }
     }
 
     // See if we have input streams leading to this step!
-    if (input.length > 0) {
-      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG,
-          "RowGeneratorMeta.CheckResult.NoInputError"), stepMeta);
-      remarks.add(cr);
+    if ( input.length > 0 ) {
+      cr =
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
+              "RowGeneratorMeta.CheckResult.NoInputError" ), stepMeta );
+      remarks.add( cr );
     } else {
-      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG,
-          "RowGeneratorMeta.CheckResult.NoInputOk"), stepMeta);
-      remarks.add(cr);
+      cr =
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
+              "RowGeneratorMeta.CheckResult.NoInputOk" ), stepMeta );
+      remarks.add( cr );
     }
   }
 
-  public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans) {
-    return new RowGenerator(stepMeta, stepDataInterface, cnr, transMeta, trans);
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
+      Trans trans ) {
+    return new RowGenerator( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
   public StepDataInterface getStepData() {
@@ -367,18 +373,17 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   /**
-     * Returns the Input/Output metadata for this step.
-     * The generator step only produces output, does not accept input!
-     */
+   * Returns the Input/Output metadata for this step. The generator step only produces output, does not accept input!
+   */
   public StepIOMetaInterface getStepIOMeta() {
-    return new StepIOMeta(false, true, false, false, false, false);
+    return new StepIOMeta( false, true, false, false, false, false );
   }
 
   public boolean isNeverEnding() {
     return neverEnding;
   }
 
-  public void setNeverEnding(boolean neverEnding) {
+  public void setNeverEnding( boolean neverEnding ) {
     this.neverEnding = neverEnding;
   }
 
@@ -386,7 +391,7 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface 
     return intervalInMs;
   }
 
-  public void setIntervalInMs(String intervalInMs) {
+  public void setIntervalInMs( String intervalInMs ) {
     this.intervalInMs = intervalInMs;
   }
 
@@ -394,7 +399,7 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface 
     return rowTimeField;
   }
 
-  public void setRowTimeField(String rowTimeField) {
+  public void setRowTimeField( String rowTimeField ) {
     this.rowTimeField = rowTimeField;
   }
 
@@ -402,7 +407,7 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface 
     return lastTimeField;
   }
 
-  public void setLastTimeField(String lastTimeField) {
+  public void setLastTimeField( String lastTimeField ) {
     this.lastTimeField = lastTimeField;
   }
 
@@ -410,7 +415,7 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface 
     return setEmptyString;
   }
 
-  public void setSetEmptyString(boolean[] setEmptyString) {
+  public void setSetEmptyString( boolean[] setEmptyString ) {
     this.setEmptyString = setEmptyString;
   }
 
@@ -422,9 +427,10 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   /**
-   * @param currency The currency to set.
+   * @param currency
+   *          The currency to set.
    */
-  public void setCurrency(String[] currency) {
+  public void setCurrency( String[] currency ) {
     this.currency = currency;
   }
 
@@ -436,9 +442,10 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   /**
-   * @param decimal The decimal to set.
+   * @param decimal
+   *          The decimal to set.
    */
-  public void setDecimal(String[] decimal) {
+  public void setDecimal( String[] decimal ) {
     this.decimal = decimal;
   }
 
@@ -450,9 +457,10 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   /**
-   * @param fieldFormat The fieldFormat to set.
+   * @param fieldFormat
+   *          The fieldFormat to set.
    */
-  public void setFieldFormat(String[] fieldFormat) {
+  public void setFieldFormat( String[] fieldFormat ) {
     this.fieldFormat = fieldFormat;
   }
 
@@ -464,9 +472,10 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   /**
-   * @param fieldLength The fieldLength to set.
+   * @param fieldLength
+   *          The fieldLength to set.
    */
-  public void setFieldLength(int[] fieldLength) {
+  public void setFieldLength( int[] fieldLength ) {
     this.fieldLength = fieldLength;
   }
 
@@ -478,9 +487,10 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   /**
-   * @param fieldName The fieldName to set.
+   * @param fieldName
+   *          The fieldName to set.
    */
-  public void setFieldName(String[] fieldName) {
+  public void setFieldName( String[] fieldName ) {
     this.fieldName = fieldName;
   }
 
@@ -492,9 +502,10 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   /**
-   * @param fieldPrecision The fieldPrecision to set.
+   * @param fieldPrecision
+   *          The fieldPrecision to set.
    */
-  public void setFieldPrecision(int[] fieldPrecision) {
+  public void setFieldPrecision( int[] fieldPrecision ) {
     this.fieldPrecision = fieldPrecision;
   }
 
@@ -506,9 +517,10 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   /**
-   * @param fieldType The fieldType to set.
+   * @param fieldType
+   *          The fieldType to set.
    */
-  public void setFieldType(String[] fieldType) {
+  public void setFieldType( String[] fieldType ) {
     this.fieldType = fieldType;
   }
 
@@ -520,9 +532,10 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   /**
-   * @param group The group to set.
+   * @param group
+   *          The group to set.
    */
-  public void setGroup(String[] group) {
+  public void setGroup( String[] group ) {
     this.group = group;
   }
 
@@ -534,9 +547,10 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   /**
-   * @param setEmptyString the setEmptyString to set
+   * @param setEmptyString
+   *          the setEmptyString to set
    */
-  public void setEmptyString(boolean[] setEmptyString) {
+  public void setEmptyString( boolean[] setEmptyString ) {
     this.setEmptyString = setEmptyString;
   }
 
@@ -548,9 +562,10 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   /**
-   * @param rowLimit The rowLimit to set.
+   * @param rowLimit
+   *          The rowLimit to set.
    */
-  public void setRowLimit(String rowLimit) {
+  public void setRowLimit( String rowLimit ) {
     this.rowLimit = rowLimit;
   }
 
@@ -562,9 +577,10 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   /**
-   * @param value The value to set.
+   * @param value
+   *          The value to set.
    */
-  public void setValue(String[] value) {
+  public void setValue( String[] value ) {
     this.value = value;
   }
 

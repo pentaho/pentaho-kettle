@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.trans.steps.rules;
 
@@ -28,7 +28,7 @@ import java.util.Map;
 /**
  * 
  * @author cboyden
- *
+ * 
  */
 
 public class Rules {
@@ -39,18 +39,18 @@ public class Rules {
     private Boolean external;
 
     public Row() {
-      this(new Hashtable<String, Object>(), false);
+      this( new Hashtable<String, Object>(), false );
     }
 
-    public Row(Map<String, Object> row) {
-      this(row, false);
+    public Row( Map<String, Object> row ) {
+      this( row, false );
     }
 
-    public Row(boolean external) {
-      this(new Hashtable<String, Object>(), external);
+    public Row( boolean external ) {
+      this( new Hashtable<String, Object>(), external );
     }
 
-    public Row(Map<String, Object> row, boolean external) {
+    public Row( Map<String, Object> row, boolean external ) {
       this.row = row;
       this.external = external;
     }
@@ -63,8 +63,8 @@ public class Rules {
       return external;
     }
 
-    public void addColumn(String columnName, Object value) {
-      row.put(columnName, value);
+    public void addColumn( String columnName, Object value ) {
+      row.put( columnName, value );
     }
   }
 
@@ -81,7 +81,7 @@ public class Rules {
       this.external = false;
     }
 
-    public Column(Boolean external) {
+    public Column( Boolean external ) {
       this.external = external;
     }
 
@@ -89,7 +89,7 @@ public class Rules {
       return name;
     }
 
-    public void setName(String name) {
+    public void setName( String name ) {
       this.name = name;
     }
 
@@ -97,7 +97,7 @@ public class Rules {
       return type;
     }
 
-    public void setType(String type) {
+    public void setType( String type ) {
       this.type = type;
     }
 
@@ -105,11 +105,11 @@ public class Rules {
       return payload;
     }
 
-    public void setPayload(Object payload) {
+    public void setPayload( Object payload ) {
       this.payload = payload;
     }
 
-    public void setExternalSource(Boolean external) {
+    public void setExternalSource( Boolean external ) {
       this.external = external;
     }
 

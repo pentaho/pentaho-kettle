@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.trans.steps.textfileoutput;
 
@@ -44,82 +44,80 @@ import org.pentaho.di.trans.step.StepDataInterface;
  * @author Matt
  * @since 22-jan-2005
  */
-public class TextFileOutputData extends BaseStepData implements StepDataInterface
-{
-	public int splitnr;
+public class TextFileOutputData extends BaseStepData implements StepDataInterface {
+  public int splitnr;
 
-	public int fieldnrs[];
+  public int[] fieldnrs;
 
-	public NumberFormat nf;
-	public DecimalFormat df;
-	public DecimalFormatSymbols dfs;
-	
-	public SimpleDateFormat daf;
-	public DateFormatSymbols dafs;
+  public NumberFormat nf;
+  public DecimalFormat df;
+  public DecimalFormatSymbols dfs;
 
-	public ZipOutputStream zip;
-	public GZIPOutputStream gzip;
-    
-    public OutputStream writer;
+  public SimpleDateFormat daf;
+  public DateFormatSymbols dafs;
 
-    public DecimalFormat        defaultDecimalFormat;
-    public DecimalFormatSymbols defaultDecimalFormatSymbols;
+  public ZipOutputStream zip;
+  public GZIPOutputStream gzip;
 
-    public SimpleDateFormat  defaultDateFormat;
-    public DateFormatSymbols defaultDateFormatSymbols;
+  public OutputStream writer;
 
-    public Process cmdProc;
+  public DecimalFormat defaultDecimalFormat;
+  public DecimalFormatSymbols defaultDecimalFormatSymbols;
 
-    public OutputStream fos;
+  public SimpleDateFormat defaultDateFormat;
+  public DateFormatSymbols defaultDateFormatSymbols;
 
-    public RowMetaInterface outputRowMeta;
+  public Process cmdProc;
 
-	public byte[] binarySeparator;
-	public byte[] binaryEnclosure;
-	public byte[] binaryNewline;
+  public OutputStream fos;
 
-	public boolean hasEncoding;
+  public RowMetaInterface outputRowMeta;
 
-	public byte[] binaryNullValue[];
-	
-	public boolean oneFileOpened;
+  public byte[] binarySeparator;
+  public byte[] binaryEnclosure;
+  public byte[] binaryNewline;
 
-	public List<String> previouslyOpenedFiles;
-	
-	public int  fileNameFieldIndex;
+  public boolean hasEncoding;
 
-	public ValueMetaInterface fileNameMeta;
-	
-	public Map<String,OutputStream> fileWriterMap;
+  public byte[][] binaryNullValue;
 
-	public String fileName;
+  public boolean oneFileOpened;
 
-    /**
+  public List<String> previouslyOpenedFiles;
+
+  public int fileNameFieldIndex;
+
+  public ValueMetaInterface fileNameMeta;
+
+  public Map<String, OutputStream> fileWriterMap;
+
+  public String fileName;
+
+  /**
 	 * 
 	 */
-	public TextFileOutputData()
-	{
-		super();
-		
-		nf = NumberFormat.getInstance();
-		df = (DecimalFormat)nf;
-		dfs=new DecimalFormatSymbols();
+  public TextFileOutputData() {
+    super();
 
-		daf = new SimpleDateFormat();
-		dafs= new DateFormatSymbols();
-        
-        defaultDecimalFormat = (DecimalFormat)NumberFormat.getInstance();
-        defaultDecimalFormatSymbols =  new DecimalFormatSymbols();
+    nf = NumberFormat.getInstance();
+    df = (DecimalFormat) nf;
+    dfs = new DecimalFormatSymbols();
 
-        defaultDateFormat = new SimpleDateFormat();
-        defaultDateFormatSymbols = new DateFormatSymbols();
-        
-        previouslyOpenedFiles = new ArrayList<String>();
-        fileNameFieldIndex = -1;
+    daf = new SimpleDateFormat();
+    dafs = new DateFormatSymbols();
 
-        cmdProc = null;
-        oneFileOpened=false;
-        
-        fileWriterMap = new HashMap<String,OutputStream>();
-	}
+    defaultDecimalFormat = (DecimalFormat) NumberFormat.getInstance();
+    defaultDecimalFormatSymbols = new DecimalFormatSymbols();
+
+    defaultDateFormat = new SimpleDateFormat();
+    defaultDateFormatSymbols = new DateFormatSymbols();
+
+    previouslyOpenedFiles = new ArrayList<String>();
+    fileNameFieldIndex = -1;
+
+    cmdProc = null;
+    oneFileOpened = false;
+
+    fileWriterMap = new HashMap<String, OutputStream>();
+  }
 }

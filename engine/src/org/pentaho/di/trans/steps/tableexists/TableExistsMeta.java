@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.trans.steps.tableexists;
 
@@ -55,255 +55,222 @@ import org.w3c.dom.Node;
  * 
  */
 
-public class TableExistsMeta extends BaseStepMeta implements StepMetaInterface
-{
-	private static Class<?> PKG = TableExistsMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+public class TableExistsMeta extends BaseStepMeta implements StepMetaInterface {
+  private static Class<?> PKG = TableExistsMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-    /** database connection */
-    private DatabaseMeta database;
+  /** database connection */
+  private DatabaseMeta database;
 
-    /** dynamuc tablename */
-    private String       tablenamefield;
+  /** dynamuc tablename */
+  private String tablenamefield;
 
+  /** function result: new value name */
+  private String resultfieldname;
 
-    /** function result: new value name */
-    private String       resultfieldname;
-    
-    private String schemaname;
+  private String schemaname;
 
+  public TableExistsMeta() {
+    super(); // allocate BaseStepMeta
+  }
 
-    public TableExistsMeta()
-    {
-        super(); // allocate BaseStepMeta
+  /**
+   * @return Returns the database.
+   */
+  public DatabaseMeta getDatabase() {
+    return database;
+  }
+
+  /**
+   * @param database
+   *          The database to set.
+   */
+  public void setDatabase( DatabaseMeta database ) {
+    this.database = database;
+  }
+
+  /**
+   * @return Returns the tablenamefield.
+   */
+  public String getDynamicTablenameField() {
+    return tablenamefield;
+  }
+
+  /**
+   * @param tablenamefield
+   *          The tablenamefield to set.
+   */
+  public void setDynamicTablenameField( String tablenamefield ) {
+    this.tablenamefield = tablenamefield;
+  }
+
+  /**
+   * @return Returns the resultName.
+   */
+  public String getResultFieldName() {
+    return resultfieldname;
+  }
+
+  /**
+   * @param resultfieldname
+   *          The resultfieldname to set.
+   */
+  public void setResultFieldName( String resultfieldname ) {
+    this.resultfieldname = resultfieldname;
+  }
+
+  public String getSchemaname() {
+    return schemaname;
+  }
+
+  public void setSchemaname( String schemaname ) {
+    this.schemaname = schemaname;
+  }
+
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+    readData( stepnode, databases );
+  }
+
+  public Object clone() {
+    TableExistsMeta retval = (TableExistsMeta) super.clone();
+
+    return retval;
+  }
+
+  public void setDefault() {
+    database = null;
+    schemaname = null;
+    resultfieldname = "result";
+  }
+
+  public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
+      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    // Output field (String)
+    if ( !Const.isEmpty( resultfieldname ) ) {
+      ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( resultfieldname ), ValueMeta.TYPE_BOOLEAN );
+      v.setOrigin( name );
+      inputRowMeta.addValueMeta( v );
     }
-  
-    /**
-     * @return Returns the database.
-     */
-    public DatabaseMeta getDatabase()
-    {
-        return database;
+  }
+
+  public String getXML() {
+    StringBuffer retval = new StringBuffer();
+
+    retval.append( "    " + XMLHandler.addTagValue( "connection", database == null ? "" : database.getName() ) ); //$NON-NLS-3$
+    retval.append( "    " + XMLHandler.addTagValue( "tablenamefield", tablenamefield ) );
+    retval.append( "    " + XMLHandler.addTagValue( "resultfieldname", resultfieldname ) );
+    retval.append( "    " + XMLHandler.addTagValue( "schemaname", schemaname ) );
+
+    return retval.toString();
+  }
+
+  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+    try {
+      String con = XMLHandler.getTagValue( stepnode, "connection" );
+      database = DatabaseMeta.findDatabase( databases, con );
+      tablenamefield = XMLHandler.getTagValue( stepnode, "tablenamefield" );
+      resultfieldname = XMLHandler.getTagValue( stepnode, "resultfieldname" );
+      schemaname = XMLHandler.getTagValue( stepnode, "schemaname" );
+
+    } catch ( Exception e ) {
+      throw new KettleXMLException( BaseMessages.getString( PKG, "TableExistsMeta.Exception.UnableToReadStepInfo" ), e );
     }
+  }
 
-    /**
-     * @param database The database to set.
-     */
-    public void setDatabase(DatabaseMeta database)
-    {
-        this.database = database;
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
+    throws KettleException {
+    try {
+      database = rep.loadDatabaseMetaFromStepAttribute( id_step, "id_connection", databases );
+      tablenamefield = rep.getStepAttributeString( id_step, "tablenamefield" );
+      schemaname = rep.getStepAttributeString( id_step, "schemaname" );
+
+      resultfieldname = rep.getStepAttributeString( id_step, "resultfieldname" );
+    } catch ( Exception e ) {
+      throw new KettleException( BaseMessages.getString( PKG,
+          "TableExistsMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
+  }
 
-    /**
-     * @return Returns the tablenamefield.
-     */
-    public String getDynamicTablenameField()
-    {
-        return tablenamefield;
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
+    throws KettleException {
+    try {
+      rep.saveDatabaseMetaStepAttribute( id_transformation, id_step, "id_connection", database );
+      rep.saveStepAttribute( id_transformation, id_step, "tablenamefield", tablenamefield );
+      rep.saveStepAttribute( id_transformation, id_step, "schemaname", schemaname );
+
+      rep.saveStepAttribute( id_transformation, id_step, "resultfieldname", resultfieldname );
+
+      // Also, save the step-database relationship!
+      if ( database != null ) {
+        rep.insertStepDatabase( id_transformation, id_step, database.getObjectId() );
+      }
+    } catch ( Exception e ) {
+      throw new KettleException( BaseMessages.getString( PKG, "TableExistsMeta.Exception.UnableToSaveStepInfo" )
+          + id_step, e );
     }
+  }
 
-    /**
-     * @param tablenamefield The tablenamefield to set.
-     */
-    public void setDynamicTablenameField(String tablenamefield)
-    {
-        this.tablenamefield = tablenamefield;
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
+      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
+      IMetaStore metaStore ) {
+    CheckResult cr;
+    String error_message = "";
+
+    if ( database == null ) {
+      error_message = BaseMessages.getString( PKG, "TableExistsMeta.CheckResult.InvalidConnection" );
+      cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
+      remarks.add( cr );
     }
-
-    /**
-     * @return Returns the resultName.
-     */
-    public String getResultFieldName()
-    {
-        return resultfieldname;
+    if ( Const.isEmpty( resultfieldname ) ) {
+      error_message = BaseMessages.getString( PKG, "TableExistsMeta.CheckResult.ResultFieldMissing" );
+      cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
+      remarks.add( cr );
+    } else {
+      error_message = BaseMessages.getString( PKG, "TableExistsMeta.CheckResult.ResultFieldOK" );
+      cr = new CheckResult( CheckResult.TYPE_RESULT_OK, error_message, stepMeta );
+      remarks.add( cr );
     }
-
-    /**
-     * @param resultfieldname The resultfieldname to set.
-     */
-    public void setResultFieldName(String resultfieldname)
-    {
-        this.resultfieldname = resultfieldname;
+    if ( Const.isEmpty( tablenamefield ) ) {
+      error_message = BaseMessages.getString( PKG, "TableExistsMeta.CheckResult.TableFieldMissing" );
+      cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
+      remarks.add( cr );
+    } else {
+      error_message = BaseMessages.getString( PKG, "TableExistsMeta.CheckResult.TableFieldOK" );
+      cr = new CheckResult( CheckResult.TYPE_RESULT_OK, error_message, stepMeta );
+      remarks.add( cr );
     }
-
-    
-    public String getSchemaname()
-    {
-    	return schemaname;
-    }
-
-    public void setSchemaname(String schemaname)
-    {
-    	this.schemaname=schemaname;
-    }
-	public void loadXML(Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore)
-	throws KettleXMLException
-	{
-		readData(stepnode, databases);
-	}
- 
-
-    public Object clone()
-    {
-        TableExistsMeta retval = (TableExistsMeta) super.clone();
-       
-        return retval;
-    }
-
-    public void setDefault()
-    {
-        database = null;
-        schemaname=null;
-        resultfieldname = "result"; 
-    }
-	
-	public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException
-	{    	
-        // Output field (String)
-		 if (!Const.isEmpty(resultfieldname))
-	     {
-			 ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(resultfieldname), ValueMeta.TYPE_BOOLEAN);
-			 v.setOrigin(name);
-			 inputRowMeta.addValueMeta(v);
-	     }
-    }
-
-    public String getXML()
-    {
-        StringBuffer retval = new StringBuffer();
-
-        retval.append("    " + XMLHandler.addTagValue("connection", database == null ? "" : database.getName()));   //$NON-NLS-3$
-        retval.append("    " + XMLHandler.addTagValue("tablenamefield", tablenamefield));  
-        retval.append("    " + XMLHandler.addTagValue("resultfieldname", resultfieldname));  
-        retval.append("    " + XMLHandler.addTagValue("schemaname", schemaname));
-        
-        return retval.toString();
-    }
-
-    private void readData(Node stepnode, List<? extends SharedObjectInterface> databases)
-	throws KettleXMLException
-	{
-	try
-	{
-            String con = XMLHandler.getTagValue(stepnode, "connection"); 
-            database = DatabaseMeta.findDatabase(databases, con);
-            tablenamefield = XMLHandler.getTagValue(stepnode, "tablenamefield"); 
-            resultfieldname = XMLHandler.getTagValue(stepnode, "resultfieldname");
-            schemaname = XMLHandler.getTagValue(stepnode, "schemaname");
-            
-        }
-        catch (Exception e)
-        {
-            throw new KettleXMLException(BaseMessages.getString(PKG, "TableExistsMeta.Exception.UnableToReadStepInfo"), e); 
-        }
-    }
-
-    public void readRep(Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases) throws KettleException
-	{
-    	try
-    	{
-			database = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);  
-            tablenamefield = rep.getStepAttributeString(id_step, "tablenamefield"); 
-            schemaname = rep.getStepAttributeString(id_step, "schemaname");
-            
-            resultfieldname = rep.getStepAttributeString(id_step, "resultfieldname"); 
-        }
-        catch (Exception e)
-        {
-            throw new KettleException(BaseMessages.getString(PKG, "TableExistsMeta.Exception.UnexpectedErrorReadingStepInfo"), e); 
-        }
-    }
-
-    public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step) throws KettleException
-    {
-        try
-        {
-			rep.saveDatabaseMetaStepAttribute(id_transformation, id_step, "id_connection", database);
-            rep.saveStepAttribute(id_transformation, id_step, "tablenamefield", tablenamefield); 
-            rep.saveStepAttribute(id_transformation, id_step, "schemaname", schemaname);
-            
-            rep.saveStepAttribute(id_transformation, id_step, "resultfieldname", resultfieldname); 
-
-            // Also, save the step-database relationship!
-            if (database != null) rep.insertStepDatabase(id_transformation, id_step, database.getObjectId());
-        }
-        catch (Exception e)
-        {
-            throw new KettleException(BaseMessages.getString(PKG, "TableExistsMeta.Exception.UnableToSaveStepInfo") + id_step, e); 
-        }
-    }
-
-	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore)
-	{
-        CheckResult cr;
-        String error_message = ""; 
-
-        if (database == null)
-        {
-            error_message = BaseMessages.getString(PKG, "TableExistsMeta.CheckResult.InvalidConnection"); 
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
-            remarks.add(cr);
-        }
-        if (Const.isEmpty(resultfieldname))
-        {
-            error_message = BaseMessages.getString(PKG, "TableExistsMeta.CheckResult.ResultFieldMissing"); 
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
-            remarks.add(cr);
-        }
-        else
-        {
-            error_message = BaseMessages.getString(PKG, "TableExistsMeta.CheckResult.ResultFieldOK"); 
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
-            remarks.add(cr);
-        }
-        if (Const.isEmpty(tablenamefield))
-        {
-            error_message = BaseMessages.getString(PKG, "TableExistsMeta.CheckResult.TableFieldMissing"); 
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
-            remarks.add(cr);
-        }
-        else
-        {
-            error_message = BaseMessages.getString(PKG, "TableExistsMeta.CheckResult.TableFieldOK"); 
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
-            remarks.add(cr);
-        }
-        // See if we have input streams leading to this step!
-        if (input.length > 0)
-        {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "TableExistsMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); 
-            remarks.add(cr);
-        }
-        else
-        {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "TableExistsMeta.CheckResult.NoInpuReceived"), stepMeta); 
-            remarks.add(cr);
-        }
-
+    // See if we have input streams leading to this step!
+    if ( input.length > 0 ) {
+      cr =
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
+              "TableExistsMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
+      remarks.add( cr );
+    } else {
+      cr =
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
+              "TableExistsMeta.CheckResult.NoInpuReceived" ), stepMeta );
+      remarks.add( cr );
     }
 
-    public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta, Trans trans)
-    {
-        return new TableExists(stepMeta, stepDataInterface, cnr, transMeta, trans);
-    }
+  }
 
-    public StepDataInterface getStepData()
-    {
-        return new TableExistsData();
-    }
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
+      Trans trans ) {
+    return new TableExists( stepMeta, stepDataInterface, cnr, transMeta, trans );
+  }
 
-    public DatabaseMeta[] getUsedDatabaseConnections()
-    {
-        if (database != null)
-        {
-            return new DatabaseMeta[] { database };
-        }
-        else
-        {
-            return super.getUsedDatabaseConnections();
-        }
+  public StepDataInterface getStepData() {
+    return new TableExistsData();
+  }
+
+  public DatabaseMeta[] getUsedDatabaseConnections() {
+    if ( database != null ) {
+      return new DatabaseMeta[] { database };
+    } else {
+      return super.getUsedDatabaseConnections();
     }
-    public boolean supportsErrorHandling()
-    {
-        return true;
-    }
+  }
+
+  public boolean supportsErrorHandling() {
+    return true;
+  }
 }

@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.trans.step;
 
@@ -47,59 +47,57 @@ import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.www.SocketRepository;
 import org.w3c.dom.Node;
 
-
 /**
  * Defines and handles communication to and from remote steps.
- *  
- *  TODO: add compression as a parameter/option
- *	TODO add buffer size as a parameter
- *
+ * 
+ * TODO: add compression as a parameter/option TODO add buffer size as a parameter
+ * 
  * @author Matt
- *
+ * 
  */
 public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteStep> {
 
-	public static final String XML_TAG = "remotestep";
+  public static final String XML_TAG = "remotestep";
 
-	private static final long TIMEOUT_IN_SECONDS = 30;
-	
-	/** The target or source slave server with which we're exchanging data */
-	private String targetSlaveServerName;
-	
-	/** The target or source host name */
-	private String hostname;
-	
-	/** The remote host name */
-	private String remoteHostname;
+  private static final long TIMEOUT_IN_SECONDS = 30;
 
-	/** The target or source port number for the data socket */
-	private String port;
-	
-	private ServerSocket serverSocket;
-	private Socket socket;
-	
-	private DataOutputStream outputStream;
+  /** The target or source slave server with which we're exchanging data */
+  private String targetSlaveServerName;
 
-    public AtomicBoolean stopped = new AtomicBoolean(false);
+  /** The target or source host name */
+  private String hostname;
 
-	private BaseStep baseStep;
+  /** The remote host name */
+  private String remoteHostname;
 
-	private DataInputStream inputStream;
+  /** The target or source port number for the data socket */
+  private String port;
 
-	private String sourceStep;
-	
-	private int sourceStepCopyNr;
+  private ServerSocket serverSocket;
+  private Socket socket;
 
-	private String targetStep;
-	
-	private int targetStepCopyNr;
-	
-	private int bufferSize;
-	private boolean compressingStreams;
-	
-	private GZIPOutputStream gzipOutputStream;
+  private DataOutputStream outputStream;
 
-	private String	sourceSlaveServerName;
+  public AtomicBoolean stopped = new AtomicBoolean( false );
+
+  private BaseStep baseStep;
+
+  private DataInputStream inputStream;
+
+  private String sourceStep;
+
+  private int sourceStepCopyNr;
+
+  private String targetStep;
+
+  private int targetStepCopyNr;
+
+  private int bufferSize;
+  private boolean compressingStreams;
+
+  private GZIPOutputStream gzipOutputStream;
+
+  private String sourceSlaveServerName;
 
   private GZIPInputStream gzipInputStream;
 
@@ -121,370 +119,375 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
    * @param targetSlaveServerName
    * @param bufferSize
    * @param compressingStreams
-   * @param rowMeta The expected row layout to pass through this step. (input or output)
+   * @param rowMeta
+   *          The expected row layout to pass through this step. (input or output)
    */
-	public RemoteStep(String hostname, String remoteHostname, String port, String sourceStep, int sourceStepCopyNr, 
-	    String targetStep, int targetStepCopyNr, 
-	    String sourceSlaveServerName, String targetSlaveServerName, int bufferSize, boolean compressingStreams,
-	    RowMetaInterface rowMeta) {
-		super();
-		this.hostname = hostname;
-		this.remoteHostname = remoteHostname;
-		this.port = port;
-		this.sourceStep = sourceStep;
-		this.sourceStepCopyNr = sourceStepCopyNr;
-		this.targetStep = targetStep;
-		this.targetStepCopyNr = targetStepCopyNr;
-		this.bufferSize = bufferSize;
-		this.compressingStreams = compressingStreams;
-		
-		this.sourceSlaveServerName = sourceSlaveServerName;
-		this.targetSlaveServerName = targetSlaveServerName;
-		
-		this.rowMeta = rowMeta;
-		
-		if (sourceStep.equals(targetStep) && sourceStepCopyNr==targetStepCopyNr) {
-			throw new RuntimeException("The source and target step/copy can't be the same for a remote step definition.");
-		}
-	}
-	
-	@Override
-	public Object clone() {
-		try {
-			return super.clone();
-		}
-		catch(CloneNotSupportedException e) {
-			return null;
-		}
-	}
-	
-	public String getXML() {
-		StringBuffer xml = new StringBuffer();
-		xml.append(XMLHandler.openTag(XML_TAG));
-		
-		xml.append(XMLHandler.addTagValue("hostname", hostname, false));
-		xml.append(XMLHandler.addTagValue("remote_hostname", remoteHostname, false));
-		xml.append(XMLHandler.addTagValue("port", port, false));
-		xml.append(XMLHandler.addTagValue("buffer_size", bufferSize, false));
-		xml.append(XMLHandler.addTagValue("compressed_streams", compressingStreams, false));
+  public RemoteStep( String hostname, String remoteHostname, String port, String sourceStep, int sourceStepCopyNr,
+      String targetStep, int targetStepCopyNr, String sourceSlaveServerName, String targetSlaveServerName,
+      int bufferSize, boolean compressingStreams, RowMetaInterface rowMeta ) {
+    super();
+    this.hostname = hostname;
+    this.remoteHostname = remoteHostname;
+    this.port = port;
+    this.sourceStep = sourceStep;
+    this.sourceStepCopyNr = sourceStepCopyNr;
+    this.targetStep = targetStep;
+    this.targetStepCopyNr = targetStepCopyNr;
+    this.bufferSize = bufferSize;
+    this.compressingStreams = compressingStreams;
 
-		xml.append(XMLHandler.addTagValue("source_step_name", sourceStep, false));
-		xml.append(XMLHandler.addTagValue("source_step_copy", sourceStepCopyNr, false));
-		xml.append(XMLHandler.addTagValue("target_step_name", targetStep, false));
-		xml.append(XMLHandler.addTagValue("target_step_copy", targetStepCopyNr, false));
+    this.sourceSlaveServerName = sourceSlaveServerName;
+    this.targetSlaveServerName = targetSlaveServerName;
 
-		xml.append(XMLHandler.addTagValue("source_slave_server_name", sourceSlaveServerName, false));
-		xml.append(XMLHandler.addTagValue("target_slave_server_name", targetSlaveServerName, false));
+    this.rowMeta = rowMeta;
 
-		if (rowMeta!=null) {
-		  try {
-		    xml.append(rowMeta.getMetaXML());
-		  } catch(IOException e) {
-		    throw new RuntimeException("Unexpected error encountered, probably encoding/decoding base64 data", e);
-		  }
-		}
-		 		
-		xml.append(XMLHandler.closeTag(XML_TAG));
-		return xml.toString();
-	}
-	
-	public RemoteStep(Node node) throws KettleException {
-		
-		hostname = XMLHandler.getTagValue(node, "hostname");
-		remoteHostname = XMLHandler.getTagValue(node, "remote_hostname");
-		port     = XMLHandler.getTagValue(node, "port");
-		bufferSize = Integer.parseInt(XMLHandler.getTagValue(node, "buffer_size"));
-		compressingStreams = "Y".equalsIgnoreCase( XMLHandler.getTagValue(node, "compressed_streams") );
+    if ( sourceStep.equals( targetStep ) && sourceStepCopyNr == targetStepCopyNr ) {
+      throw new RuntimeException( "The source and target step/copy can't be the same for a remote step definition." );
+    }
+  }
 
-		sourceStep       = XMLHandler.getTagValue(node, "source_step_name");
-		sourceStepCopyNr = Integer.parseInt(XMLHandler.getTagValue(node, "source_step_copy"));
-		targetStep       = XMLHandler.getTagValue(node, "target_step_name");
-		targetStepCopyNr = Integer.parseInt(XMLHandler.getTagValue(node, "target_step_copy"));
-		
-		sourceSlaveServerName = XMLHandler.getTagValue(node, "source_slave_server_name");
-		targetSlaveServerName = XMLHandler.getTagValue(node, "target_slave_server_name");
-		
-		Node rowMetaNode = XMLHandler.getSubNode(node, RowMeta.XML_META_TAG);
-		if (rowMetaNode==null) {
-		  rowMeta = new RowMeta();
-		} else {
-		  rowMeta = new RowMeta(rowMetaNode);
-		}
-	}
-	
-	@Override
-	public String toString() {
-		return hostname+":"+port+" ("+sourceSlaveServerName+"/"+sourceStep+"."+sourceStepCopyNr+" --> "+targetSlaveServerName+"/"+targetStep+"."+targetStepCopyNr+")"; // "  -  "+sourceStep+"."+sourceStepCopyNr+" --> "+targetStep+"."+targetStepCopyNr+")";
-	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		return toString().equalsIgnoreCase(obj.toString());
-	}
+  @Override
+  public Object clone() {
+    try {
+      return super.clone();
+    } catch ( CloneNotSupportedException e ) {
+      return null;
+    }
+  }
 
-	public int compareTo(RemoteStep remoteStep) {
-		return toString().compareTo(remoteStep.toString());
-	}	
-	
-	/**
-	 * @return the host name
-	 */
-	public String getHostname() {
-		return hostname;
-	}
+  public String getXML() {
+    StringBuffer xml = new StringBuffer();
+    xml.append( XMLHandler.openTag( XML_TAG ) );
 
-	/**
-	 * @param hostname the host name to set
-	 */
-	public void setHostname(String hostname) {
-		this.hostname = hostname;
-	}
+    xml.append( XMLHandler.addTagValue( "hostname", hostname, false ) );
+    xml.append( XMLHandler.addTagValue( "remote_hostname", remoteHostname, false ) );
+    xml.append( XMLHandler.addTagValue( "port", port, false ) );
+    xml.append( XMLHandler.addTagValue( "buffer_size", bufferSize, false ) );
+    xml.append( XMLHandler.addTagValue( "compressed_streams", compressingStreams, false ) );
 
-	/**int
-	 * @return the port
-	 */
-	public String getPort() {
-		return port;
-	}
+    xml.append( XMLHandler.addTagValue( "source_step_name", sourceStep, false ) );
+    xml.append( XMLHandler.addTagValue( "source_step_copy", sourceStepCopyNr, false ) );
+    xml.append( XMLHandler.addTagValue( "target_step_name", targetStep, false ) );
+    xml.append( XMLHandler.addTagValue( "target_step_copy", targetStepCopyNr, false ) );
 
-	/**
-	 * @param port the port to set
-	 */
-	public void setPort(String port) {
-		this.port = port;
-	}
+    xml.append( XMLHandler.addTagValue( "source_slave_server_name", sourceSlaveServerName, false ) );
+    xml.append( XMLHandler.addTagValue( "target_slave_server_name", targetSlaveServerName, false ) );
 
-	public synchronized void openServerSocket(BaseStep baseStep) throws IOException {
-		this.baseStep = baseStep;
-		int portNumber = Integer.parseInt( baseStep.environmentSubstitute(port) );
-		
-		SocketRepository socketRepository = baseStep.getSocketRepository();
-		serverSocket = socketRepository.openServerSocket(portNumber, baseStep.getTransMeta().getName()+" - "+baseStep.toString());
-		
-		// Add this socket to the steps server socket list
-		// That way, the socket can be closed during transformation cleanup
-		// That is called when the cluster has finished processing.
-		//
-		baseStep.getServerSockets().add(serverSocket);
-	}
+    if ( rowMeta != null ) {
+      try {
+        xml.append( rowMeta.getMetaXML() );
+      } catch ( IOException e ) {
+        throw new RuntimeException( "Unexpected error encountered, probably encoding/decoding base64 data", e );
+      }
+    }
 
-	/**
-	 * @return the serverSocket that is created by the open server socket method.
-	 */
-	public ServerSocket getServerSocket() {
-		return serverSocket;
-	}
+    xml.append( XMLHandler.closeTag( XML_TAG ) );
+    return xml.toString();
+  }
 
-	/**
-	 * @return the socket
-	 */
-	public Socket getSocket() {
-		return socket;
-	}
+  public RemoteStep( Node node ) throws KettleException {
 
-	/**
-	 * @param socket the socket to set
-	 */
-	public void setSocket(Socket socket) {
-		this.socket = socket;
-	}
-	
-	/**
-	 * Open a socket for writing.
-	 * 
-	 * @return the RowSet created that will accept the rows for the remote step
-	 * @throws IOException
-	 */
-	public synchronized BlockingRowSet openWriterSocket() throws IOException {
+    hostname = XMLHandler.getTagValue( node, "hostname" );
+    remoteHostname = XMLHandler.getTagValue( node, "remote_hostname" );
+    port = XMLHandler.getTagValue( node, "port" );
+    bufferSize = Integer.parseInt( XMLHandler.getTagValue( node, "buffer_size" ) );
+    compressingStreams = "Y".equalsIgnoreCase( XMLHandler.getTagValue( node, "compressed_streams" ) );
 
-		// Create an output row set: to be added to BaseStep.outputRowSets
-		//
-		final BlockingRowSet rowSet = new BlockingRowSet(baseStep.getTransMeta().getSizeRowset());
-		
-		// Set the details for the source and target step as well as the target slave server.
-		// This will help us determine the pre-calculated partition nr later in the game. (putRow())
-		//
-		rowSet.setThreadNameFromToCopy(sourceStep, sourceStepCopyNr, targetStep, targetStepCopyNr);  
-		rowSet.setRemoteSlaveServerName(targetSlaveServerName);
-		
-		// Start a thread that will read out the output row set and send the data over the wire...
-		// This will make everything else transparent, copying, distributing, including partitioning, etc.
-		//
-		Runnable runnable = new Runnable() {
-		
+    sourceStep = XMLHandler.getTagValue( node, "source_step_name" );
+    sourceStepCopyNr = Integer.parseInt( XMLHandler.getTagValue( node, "source_step_copy" ) );
+    targetStep = XMLHandler.getTagValue( node, "target_step_name" );
+    targetStepCopyNr = Integer.parseInt( XMLHandler.getTagValue( node, "target_step_copy" ) );
+
+    sourceSlaveServerName = XMLHandler.getTagValue( node, "source_slave_server_name" );
+    targetSlaveServerName = XMLHandler.getTagValue( node, "target_slave_server_name" );
+
+    Node rowMetaNode = XMLHandler.getSubNode( node, RowMeta.XML_META_TAG );
+    if ( rowMetaNode == null ) {
+      rowMeta = new RowMeta();
+    } else {
+      rowMeta = new RowMeta( rowMetaNode );
+    }
+  }
+
+  @Override
+  public String toString() {
+    return hostname + ":" + port + " (" + sourceSlaveServerName + "/" + sourceStep + "." + sourceStepCopyNr + " --> "
+        + targetSlaveServerName + "/" + targetStep + "." + targetStepCopyNr + ")"; // "  -  "+sourceStep+"."+sourceStepCopyNr+" --> "+targetStep+"."+targetStepCopyNr+")";
+  }
+
+  @Override
+  public boolean equals( Object obj ) {
+    return toString().equalsIgnoreCase( obj.toString() );
+  }
+
+  public int compareTo( RemoteStep remoteStep ) {
+    return toString().compareTo( remoteStep.toString() );
+  }
+
+  /**
+   * @return the host name
+   */
+  public String getHostname() {
+    return hostname;
+  }
+
+  /**
+   * @param hostname
+   *          the host name to set
+   */
+  public void setHostname( String hostname ) {
+    this.hostname = hostname;
+  }
+
+  /**
+   * int
+   * 
+   * @return the port
+   */
+  public String getPort() {
+    return port;
+  }
+
+  /**
+   * @param port
+   *          the port to set
+   */
+  public void setPort( String port ) {
+    this.port = port;
+  }
+
+  public synchronized void openServerSocket( BaseStep baseStep ) throws IOException {
+    this.baseStep = baseStep;
+    int portNumber = Integer.parseInt( baseStep.environmentSubstitute( port ) );
+
+    SocketRepository socketRepository = baseStep.getSocketRepository();
+    serverSocket =
+        socketRepository.openServerSocket( portNumber, baseStep.getTransMeta().getName() + " - " + baseStep.toString() );
+
+    // Add this socket to the steps server socket list
+    // That way, the socket can be closed during transformation cleanup
+    // That is called when the cluster has finished processing.
+    //
+    baseStep.getServerSockets().add( serverSocket );
+  }
+
+  /**
+   * @return the serverSocket that is created by the open server socket method.
+   */
+  public ServerSocket getServerSocket() {
+    return serverSocket;
+  }
+
+  /**
+   * @return the socket
+   */
+  public Socket getSocket() {
+    return socket;
+  }
+
+  /**
+   * @param socket
+   *          the socket to set
+   */
+  public void setSocket( Socket socket ) {
+    this.socket = socket;
+  }
+
+  /**
+   * Open a socket for writing.
+   * 
+   * @return the RowSet created that will accept the rows for the remote step
+   * @throws IOException
+   */
+  public synchronized BlockingRowSet openWriterSocket() throws IOException {
+
+    // Create an output row set: to be added to BaseStep.outputRowSets
+    //
+    final BlockingRowSet rowSet = new BlockingRowSet( baseStep.getTransMeta().getSizeRowset() );
+
+    // Set the details for the source and target step as well as the target slave server.
+    // This will help us determine the pre-calculated partition nr later in the game. (putRow())
+    //
+    rowSet.setThreadNameFromToCopy( sourceStep, sourceStepCopyNr, targetStep, targetStepCopyNr );
+    rowSet.setRemoteSlaveServerName( targetSlaveServerName );
+
+    // Start a thread that will read out the output row set and send the data over the wire...
+    // This will make everything else transparent, copying, distributing, including partitioning, etc.
+    //
+    Runnable runnable = new Runnable() {
+
       public void run() {
-				try {
-					// Accept the socket, create a connection
-					// This blocks until something comes through...
-					//
-					socket = serverSocket.accept();
-					
-					// Create the output stream...
-          if (compressingStreams) {
-            gzipOutputStream = new GZIPOutputStream(socket.getOutputStream(), 50000);
-            bufferedOutputStream = new BufferedOutputStream(gzipOutputStream, bufferSize);
+        try {
+          // Accept the socket, create a connection
+          // This blocks until something comes through...
+          //
+          socket = serverSocket.accept();
+
+          // Create the output stream...
+          if ( compressingStreams ) {
+            gzipOutputStream = new GZIPOutputStream( socket.getOutputStream(), 50000 );
+            bufferedOutputStream = new BufferedOutputStream( gzipOutputStream, bufferSize );
           } else {
-            bufferedOutputStream = new BufferedOutputStream(socket.getOutputStream(), bufferSize);
+            bufferedOutputStream = new BufferedOutputStream( socket.getOutputStream(), bufferSize );
           }
-          outputStream = new DataOutputStream(bufferedOutputStream);
-					
-					baseStep.logBasic("Server socket accepted for port ["+ port +"], reading from server "+targetSlaveServerName);
+          outputStream = new DataOutputStream( bufferedOutputStream );
 
-					// get a row of data...
-					//
-					Object[] rowData = baseStep.getRowFrom(rowSet); 
-					if (rowData!=null) {
-						rowSet.getRowMeta().writeMeta(outputStream);
-					}
-					
-					// Send that row to the remote step
-					//
-					while (rowData!=null && !baseStep.isStopped()) {
-						// It's too confusing to count these twice, so decrement
-						baseStep.decrementLinesRead();
-						baseStep.decrementLinesWritten(); 
-						
-						// Write the row to the remote step via the output stream....
-						//
-						rowSet.getRowMeta().writeData(outputStream, rowData);
-						baseStep.incrementLinesOutput();
+          baseStep.logBasic( "Server socket accepted for port [" + port + "], reading from server "
+              + targetSlaveServerName );
 
-						if (baseStep.log.isDebug()) baseStep.logDebug("Sent row to port "+port+" : "+rowSet.getRowMeta().getString(rowData));
-						rowData = baseStep.getRowFrom(rowSet);
-					}
-					
-					if (compressingStreams) {
-						outputStream.flush();
-						gzipOutputStream.finish();
-					}
-					else {
-						outputStream.flush();
-					}
-					
-				} catch (Exception e) {
-					baseStep.logError("Error writing to remote step", e);
-					baseStep.setErrors(1);
-					baseStep.stopAll();
-				}
-				finally {
-				  try {
-				    socket.shutdownOutput();
-				  } catch(Exception e) {
-				    baseStep.logError("Error shutting down output channel on the server socket of remote step", e);
-				    baseStep.setErrors(1L);
-				    baseStep.stopAll();
-				  }
-				  try {
-  				  if (outputStream!=null) {outputStream.flush();
-    				  outputStream.close();
-    				  bufferedOutputStream.close();
-    				  if (gzipOutputStream!=null) {
-    				    gzipOutputStream.close();
-    				  }
-  				  }
-				  } catch(Exception e) {
-				    baseStep.logError("Error shutting down output streams on the server socket of remote step", e);
-            baseStep.setErrors(1L);
+          // get a row of data...
+          //
+          Object[] rowData = baseStep.getRowFrom( rowSet );
+          if ( rowData != null ) {
+            rowSet.getRowMeta().writeMeta( outputStream );
+          }
+
+          // Send that row to the remote step
+          //
+          while ( rowData != null && !baseStep.isStopped() ) {
+            // It's too confusing to count these twice, so decrement
+            baseStep.decrementLinesRead();
+            baseStep.decrementLinesWritten();
+
+            // Write the row to the remote step via the output stream....
+            //
+            rowSet.getRowMeta().writeData( outputStream, rowData );
+            baseStep.incrementLinesOutput();
+
+            if ( baseStep.log.isDebug() ) {
+              baseStep.logDebug( "Sent row to port " + port + " : " + rowSet.getRowMeta().getString( rowData ) );
+            }
+            rowData = baseStep.getRowFrom( rowSet );
+          }
+
+          if ( compressingStreams ) {
+            outputStream.flush();
+            gzipOutputStream.finish();
+          } else {
+            outputStream.flush();
+          }
+
+        } catch ( Exception e ) {
+          baseStep.logError( "Error writing to remote step", e );
+          baseStep.setErrors( 1 );
+          baseStep.stopAll();
+        } finally {
+          try {
+            socket.shutdownOutput();
+          } catch ( Exception e ) {
+            baseStep.logError( "Error shutting down output channel on the server socket of remote step", e );
+            baseStep.setErrors( 1L );
             baseStep.stopAll();
-				  }
-          outputStream=null;
-          bufferedOutputStream=null;
-          gzipOutputStream=null;
-          
-				  //
-					// Now we can't close the server socket.
-					// This would immediately kill all the remaining data on the client side.
-					// The close of the server socket will happen when all the transformation in the cluster have finished.
-					// Then Trans.cleanup() will be called.
-				}
-			}
-		};
-		
-		// Fire this off in the in a separate thread...
-		//
-		new Thread(runnable).start();
-		
-		// Return the rowSet to be added to the output row set of baseStep 
-		//
-		return rowSet;
-	}
-	
-	/**
-	 * Close left-over sockets, streams and so on.
-	 */
-	public void cleanup() {
-	  if (socket!=null && socket.isConnected() && !socket.isClosed()) {
-  	  try {
-        if (socket!=null && !socket.isOutputShutdown()) {
+          }
+          try {
+            if ( outputStream != null ) {
+              outputStream.flush();
+              outputStream.close();
+              bufferedOutputStream.close();
+              if ( gzipOutputStream != null ) {
+                gzipOutputStream.close();
+              }
+            }
+          } catch ( Exception e ) {
+            baseStep.logError( "Error shutting down output streams on the server socket of remote step", e );
+            baseStep.setErrors( 1L );
+            baseStep.stopAll();
+          }
+          outputStream = null;
+          bufferedOutputStream = null;
+          gzipOutputStream = null;
+
+          //
+          // Now we can't close the server socket.
+          // This would immediately kill all the remaining data on the client side.
+          // The close of the server socket will happen when all the transformation in the cluster have finished.
+          // Then Trans.cleanup() will be called.
+        }
+      }
+    };
+
+    // Fire this off in the in a separate thread...
+    //
+    new Thread( runnable ).start();
+
+    // Return the rowSet to be added to the output row set of baseStep
+    //
+    return rowSet;
+  }
+
+  /**
+   * Close left-over sockets, streams and so on.
+   */
+  public void cleanup() {
+    if ( socket != null && socket.isConnected() && !socket.isClosed() ) {
+      try {
+        if ( socket != null && !socket.isOutputShutdown() ) {
           socket.shutdownOutput();
         }
-        if (socket!=null && !socket.isInputShutdown()) {
+        if ( socket != null && !socket.isInputShutdown() ) {
           socket.shutdownInput();
         }
-        if (socket!=null && !socket.isClosed()) {
+        if ( socket != null && !socket.isClosed() ) {
           socket.close();
         }
-        
-        if (bufferedInputStream!=null) {
+
+        if ( bufferedInputStream != null ) {
           bufferedInputStream.close();
-          bufferedInputStream=null;
+          bufferedInputStream = null;
         }
-        if (gzipInputStream!=null) {
+        if ( gzipInputStream != null ) {
           gzipInputStream.close();
-          gzipInputStream=null;
+          gzipInputStream = null;
         }
-        if (inputStream!=null) {
+        if ( inputStream != null ) {
           inputStream.close();
-          inputStream=null;
+          inputStream = null;
         }
-        if (gzipOutputStream!=null) {
+        if ( gzipOutputStream != null ) {
           gzipOutputStream.close();
-          gzipOutputStream=null;
+          gzipOutputStream = null;
         }
-        if (bufferedOutputStream!=null) {
+        if ( bufferedOutputStream != null ) {
           bufferedOutputStream.close();
-          bufferedOutputStream=null;
+          bufferedOutputStream = null;
         }
-        if (outputStream!=null) {
+        if ( outputStream != null ) {
           outputStream.close();
-          outputStream=null;
+          outputStream = null;
         }
-  	  } catch(Exception e) {
-  	    baseStep.logError("Error closing socket", e);
-  	  }
-	  }
-	}
-		
-	private Object[] getRowOfData(RowMetaInterface rowMeta) throws KettleFileException
-	{
-		Object[] rowData = null;
+      } catch ( Exception e ) {
+        baseStep.logError( "Error closing socket", e );
+      }
+    }
+  }
 
-		while (!baseStep.isStopped() && rowData==null) {
-			try {
-				rowData = rowMeta.readData(inputStream);
-			}
-			catch(SocketTimeoutException e)
-			{
-				rowData = null; // try again.
-			}
-		}
+  private Object[] getRowOfData( RowMetaInterface rowMeta ) throws KettleFileException {
+    Object[] rowData = null;
 
-		return rowData;
-	}
-	
-  public synchronized BlockingRowSet openReaderSocket(final BaseStep baseStep) throws IOException, KettleException {
+    while ( !baseStep.isStopped() && rowData == null ) {
+      try {
+        rowData = rowMeta.readData( inputStream );
+      } catch ( SocketTimeoutException e ) {
+        rowData = null; // try again.
+      }
+    }
+
+    return rowData;
+  }
+
+  public synchronized BlockingRowSet openReaderSocket( final BaseStep baseStep ) throws IOException, KettleException {
     this.baseStep = baseStep;
 
-    final BlockingRowSet rowSet = new BlockingRowSet(baseStep.getTransMeta().getSizeRowset());
+    final BlockingRowSet rowSet = new BlockingRowSet( baseStep.getTransMeta().getSizeRowset() );
 
     // Make sure we handle the case with multiple step copies running on a
     // slave...
     //
-    rowSet.setThreadNameFromToCopy(sourceStep, sourceStepCopyNr, targetStep, targetStepCopyNr);
-    rowSet.setRemoteSlaveServerName(targetSlaveServerName);
+    rowSet.setThreadNameFromToCopy( sourceStep, sourceStepCopyNr, targetStep, targetStepCopyNr );
+    rowSet.setRemoteSlaveServerName( targetSlaveServerName );
 
-    final int portNumber = Integer.parseInt(baseStep.environmentSubstitute(port));
-    final String realHostname = baseStep.environmentSubstitute(hostname);
+    final int portNumber = Integer.parseInt( baseStep.environmentSubstitute( port ) );
+    final String realHostname = baseStep.environmentSubstitute( hostname );
 
     // Connect to the server socket (started during BaseStep.init())
     // Because the accept() call on the server socket can be called after we
@@ -496,64 +499,71 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
     KettleException lastException = null;
 
     // // timeout with retry until connected
-    while (!connected && (TIMEOUT_IN_SECONDS > (System.currentTimeMillis() - startTime) / 1000) && !baseStep.isStopped()) {
+    while ( !connected && ( TIMEOUT_IN_SECONDS > ( System.currentTimeMillis() - startTime ) / 1000 )
+        && !baseStep.isStopped() ) {
       try {
         socket = new Socket();
-        socket.setReuseAddress(true);
+        socket.setReuseAddress( true );
 
-        baseStep.logDetailed("Step variable MASTER_HOST : [" + baseStep.getVariable("MASTER_HOST") + "]");
-        baseStep.logDetailed("Opening client (reader) socket to server [" + Const.NVL(realHostname, "") + ":" + port + "]");
-        socket.connect(new InetSocketAddress(realHostname, portNumber), 5000);
+        baseStep.logDetailed( "Step variable MASTER_HOST : [" + baseStep.getVariable( "MASTER_HOST" ) + "]" );
+        baseStep.logDetailed( "Opening client (reader) socket to server [" + Const.NVL( realHostname, "" ) + ":" + port
+            + "]" );
+        socket.connect( new InetSocketAddress( realHostname, portNumber ), 5000 );
 
         connected = true;
 
-        if (compressingStreams) {
-          gzipInputStream = new GZIPInputStream(socket.getInputStream());
-          bufferedInputStream = new BufferedInputStream(gzipInputStream, bufferSize);
+        if ( compressingStreams ) {
+          gzipInputStream = new GZIPInputStream( socket.getInputStream() );
+          bufferedInputStream = new BufferedInputStream( gzipInputStream, bufferSize );
         } else {
-          bufferedInputStream = new BufferedInputStream(socket.getInputStream(), bufferSize);
+          bufferedInputStream = new BufferedInputStream( socket.getInputStream(), bufferSize );
         }
-        inputStream = new DataInputStream(bufferedInputStream);
+        inputStream = new DataInputStream( bufferedInputStream );
 
         lastException = null;
-      } catch (Exception e) {
-        lastException = new KettleException("Unable to open socket to server " + realHostname + " port " + portNumber, e);
+      } catch ( Exception e ) {
+        lastException =
+            new KettleException( "Unable to open socket to server " + realHostname + " port " + portNumber, e );
       }
-      if (lastException != null) 
-      {
+      if ( lastException != null ) {
         // Sleep for a while
         try {
-          Thread.sleep(250);
-        } catch (InterruptedException e) {
-          if (socket != null) {
+          Thread.sleep( 250 );
+        } catch ( InterruptedException e ) {
+          if ( socket != null ) {
             socket.shutdownInput();
             socket.shutdownOutput();
             socket.close();
-            baseStep.logDetailed("Closed connection to server socket to read rows from remote step on server " + realHostname + " port " + portNumber + " - Local port=" + socket.getLocalPort());
+            baseStep.logDetailed( "Closed connection to server socket to read rows from remote step on server "
+                + realHostname + " port " + portNumber + " - Local port=" + socket.getLocalPort() );
           }
 
-          throw new KettleException("Interrupted while trying to connect to server socket: " + e.toString());
+          throw new KettleException( "Interrupted while trying to connect to server socket: " + e.toString() );
         }
       }
     }
 
     // See if all was OK...
-    if (lastException != null) {
+    if ( lastException != null ) {
 
-      baseStep.logError("Error initialising step: " + lastException.toString());
-      if (socket != null) {
+      baseStep.logError( "Error initialising step: " + lastException.toString() );
+      if ( socket != null ) {
         socket.shutdownInput();
         socket.shutdownOutput();
         socket.close();
-        baseStep.logDetailed("Closed connection to server socket to read rows from remote step on server " + realHostname + " port " + portNumber + " - Local port=" + socket.getLocalPort());
+        baseStep.logDetailed( "Closed connection to server socket to read rows from remote step on server "
+            + realHostname + " port " + portNumber + " - Local port=" + socket.getLocalPort() );
       }
       throw lastException;
     } else {
-      if (inputStream == null)
-        throw new KettleException("Unable to connect to the SocketWriter in the " + TIMEOUT_IN_SECONDS + "s timeout period.");
+      if ( inputStream == null ) {
+        throw new KettleException( "Unable to connect to the SocketWriter in the " + TIMEOUT_IN_SECONDS
+            + "s timeout period." );
+      }
     }
 
-    baseStep.logDetailed("Opened connection to server socket to read rows from remote step on server " + realHostname + " port " + portNumber + " - Local port=" + socket.getLocalPort());
+    baseStep.logDetailed( "Opened connection to server socket to read rows from remote step on server " + realHostname
+        + " port " + portNumber + " - Local port=" + socket.getLocalPort() );
 
     // Create a thread to take care of the reading from the client socket.
     // The rows read will be put in a RowSet buffer.
@@ -568,93 +578,96 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
           // First read the row meta data from the socket...
           //
           RowMetaInterface rowMeta = null;
-          while (!baseStep.isStopped() && rowMeta == null) {
+          while ( !baseStep.isStopped() && rowMeta == null ) {
             try {
-              rowMeta = new RowMeta(inputStream);
-            } catch (SocketTimeoutException e) {
+              rowMeta = new RowMeta( inputStream );
+            } catch ( SocketTimeoutException e ) {
               rowMeta = null;
             }
           }
 
-          if (rowMeta == null) {
+          if ( rowMeta == null ) {
             throw new KettleEOFException(); // leave now.
           }
 
           // And a first row of data...
           //
-          Object[] rowData = getRowOfData(rowMeta);
+          Object[] rowData = getRowOfData( rowMeta );
 
           // Now get the data itself, row by row...
           //
-          while (rowData != null && !baseStep.isStopped()) {
+          while ( rowData != null && !baseStep.isStopped() ) {
             baseStep.incrementLinesInput();
             baseStep.decrementLinesRead();
 
-            if (baseStep.log.isDebug())
-              baseStep.logDebug("Received row from remote step: " + rowMeta.getString(rowData));
+            if ( baseStep.log.isDebug() ) {
+              baseStep.logDebug( "Received row from remote step: " + rowMeta.getString( rowData ) );
+            }
 
-            baseStep.putRowTo(rowMeta, rowData, rowSet);
+            baseStep.putRowTo( rowMeta, rowData, rowSet );
             baseStep.decrementLinesWritten();
-            rowData = getRowOfData(rowMeta);
+            rowData = getRowOfData( rowMeta );
           }
-        } catch (KettleEOFException e) {
+        } catch ( KettleEOFException e ) {
           // Nothing, we're simply done reading...
           //
-          if (baseStep.log.isDebug())
-            baseStep.logDebug("Finished reading from remote step on server " + hostname + " port " + portNumber);
+          if ( baseStep.log.isDebug() ) {
+            baseStep.logDebug( "Finished reading from remote step on server " + hostname + " port " + portNumber );
+          }
 
-        } catch (Exception e) {
-          baseStep.logError("Error reading from client socket to remote step", e);
-          baseStep.setErrors(1);
+        } catch ( Exception e ) {
+          baseStep.logError( "Error reading from client socket to remote step", e );
+          baseStep.setErrors( 1 );
           baseStep.stopAll();
         } finally {
           // Close the input socket
-          if (socket != null && !socket.isClosed() && !socket.isInputShutdown()) {
+          if ( socket != null && !socket.isClosed() && !socket.isInputShutdown() ) {
             try {
               socket.shutdownInput();
-            } catch (Exception e) {
-              baseStep.logError("Error shutting down input channel on client socket connection to remote step", e);
+            } catch ( Exception e ) {
+              baseStep.logError( "Error shutting down input channel on client socket connection to remote step", e );
             }
           }
-          if (socket!=null && !socket.isClosed() && !socket.isOutputShutdown()) {
+          if ( socket != null && !socket.isClosed() && !socket.isOutputShutdown() ) {
             try {
               socket.shutdownOutput();
-            } catch (Exception e) {
-              baseStep.logError("Error shutting down output channel on client socket connection to remote step", e);
+            } catch ( Exception e ) {
+              baseStep.logError( "Error shutting down output channel on client socket connection to remote step", e );
             }
           }
-          if (socket!=null && !socket.isClosed()) {
+          if ( socket != null && !socket.isClosed() ) {
             try {
               socket.close();
-            } catch (Exception e) {
-              baseStep.logError("Error shutting down client socket connection to remote step", e);
+            } catch ( Exception e ) {
+              baseStep.logError( "Error shutting down client socket connection to remote step", e );
             }
           }
-          if (inputStream!=null) {
+          if ( inputStream != null ) {
             try {
               inputStream.close();
-            } catch (Exception e) {
-              baseStep.logError("Error closing input stream on socket connection to remote step", e);
+            } catch ( Exception e ) {
+              baseStep.logError( "Error closing input stream on socket connection to remote step", e );
             }
-            inputStream=null;
+            inputStream = null;
           }
-          if (bufferedInputStream!=null) {
+          if ( bufferedInputStream != null ) {
             try {
               bufferedInputStream.close();
-            } catch (Exception e) {
-              baseStep.logError("Error closing input stream on socket connection to remote step", e);
+            } catch ( Exception e ) {
+              baseStep.logError( "Error closing input stream on socket connection to remote step", e );
             }
           }
-          bufferedInputStream=null;
-          if (gzipInputStream!=null) {
+          bufferedInputStream = null;
+          if ( gzipInputStream != null ) {
             try {
               gzipInputStream.close();
-            } catch (Exception e) {
-              baseStep.logError("Error closing input stream on socket connection to remote step", e);
+            } catch ( Exception e ) {
+              baseStep.logError( "Error closing input stream on socket connection to remote step", e );
             }
           }
-          gzipInputStream=null;
-          baseStep.logDetailed("Closed connection to server socket to read rows from remote step on server " + realHostname + " port " + portNumber + " - Local port=" + socket.getLocalPort());
+          gzipInputStream = null;
+          baseStep.logDetailed( "Closed connection to server socket to read rows from remote step on server "
+              + realHostname + " port " + portNumber + " - Local port=" + socket.getLocalPort() );
         }
 
         // signal baseStep that nothing else comes from this step.
@@ -662,159 +675,168 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
         rowSet.setDone();
       }
     };
-    new Thread(runnable).start();
+    new Thread( runnable ).start();
 
     return rowSet;
   }
 
-	/**
-	 * @return the sourceStep
-	 */
-	public String getSourceStep() {
-		return sourceStep;
-	}
+  /**
+   * @return the sourceStep
+   */
+  public String getSourceStep() {
+    return sourceStep;
+  }
 
-	/**
-	 * @param sourceStep the sourceStep to set
-	 */
-	public void setSourceStep(String sourceStep) {
-		this.sourceStep = sourceStep;
-	}
+  /**
+   * @param sourceStep
+   *          the sourceStep to set
+   */
+  public void setSourceStep( String sourceStep ) {
+    this.sourceStep = sourceStep;
+  }
 
-	/**
-	 * @return the targetStep
-	 */
-	public String getTargetStep() {
-		return targetStep;
-	}
+  /**
+   * @return the targetStep
+   */
+  public String getTargetStep() {
+    return targetStep;
+  }
 
-	/**
-	 * @param targetStep the targetStep to set
-	 */
-	public void setTargetStep(String targetStep) {
-		this.targetStep = targetStep;
-	}
+  /**
+   * @param targetStep
+   *          the targetStep to set
+   */
+  public void setTargetStep( String targetStep ) {
+    this.targetStep = targetStep;
+  }
 
-	/**
-	 * @return the targetSlaveServerName
-	 */
-	public String getTargetSlaveServerName() {
-		return targetSlaveServerName;
-	}
+  /**
+   * @return the targetSlaveServerName
+   */
+  public String getTargetSlaveServerName() {
+    return targetSlaveServerName;
+  }
 
-	/**
-	 * @param targetSlaveServerName the targetSlaveServerName to set
-	 */
-	public void setTargetSlaveServerName(String targetSlaveServerName) {
-		this.targetSlaveServerName = targetSlaveServerName;
-	}
+  /**
+   * @param targetSlaveServerName
+   *          the targetSlaveServerName to set
+   */
+  public void setTargetSlaveServerName( String targetSlaveServerName ) {
+    this.targetSlaveServerName = targetSlaveServerName;
+  }
 
-	/**
-	 * @return the sourceStepCopyNr
-	 */
-	public int getSourceStepCopyNr() {
-		return sourceStepCopyNr;
-	}
+  /**
+   * @return the sourceStepCopyNr
+   */
+  public int getSourceStepCopyNr() {
+    return sourceStepCopyNr;
+  }
 
-	/**
-	 * @param sourceStepCopyNr the sourceStepCopyNr to set
-	 */
-	public void setSourceStepCopyNr(int sourceStepCopyNr) {
-		this.sourceStepCopyNr = sourceStepCopyNr;
-	}
+  /**
+   * @param sourceStepCopyNr
+   *          the sourceStepCopyNr to set
+   */
+  public void setSourceStepCopyNr( int sourceStepCopyNr ) {
+    this.sourceStepCopyNr = sourceStepCopyNr;
+  }
 
-	/**
-	 * @return the targetStepCopyNr
-	 */
-	public int getTargetStepCopyNr() {
-		return targetStepCopyNr;
-	}
+  /**
+   * @return the targetStepCopyNr
+   */
+  public int getTargetStepCopyNr() {
+    return targetStepCopyNr;
+  }
 
-	/**
-	 * @param targetStepCopyNr the targetStepCopyNr to set
-	 */
-	public void setTargetStepCopyNr(int targetStepCopyNr) {
-		this.targetStepCopyNr = targetStepCopyNr;
-	}
+  /**
+   * @param targetStepCopyNr
+   *          the targetStepCopyNr to set
+   */
+  public void setTargetStepCopyNr( int targetStepCopyNr ) {
+    this.targetStepCopyNr = targetStepCopyNr;
+  }
 
-	/**
-	 * @return the bufferSize
-	 */
-	public int getBufferSize() {
-		return bufferSize;
-	}
+  /**
+   * @return the bufferSize
+   */
+  public int getBufferSize() {
+    return bufferSize;
+  }
 
-	/**
-	 * @param bufferSize the bufferSize to set
-	 */
-	public void setBufferSize(int bufferSize) {
-		this.bufferSize = bufferSize;
-	}
+  /**
+   * @param bufferSize
+   *          the bufferSize to set
+   */
+  public void setBufferSize( int bufferSize ) {
+    this.bufferSize = bufferSize;
+  }
 
-	/**
-	 * @return the compressingStreams
-	 */
-	public boolean isCompressingStreams() {
-		return compressingStreams;
-	}
+  /**
+   * @return the compressingStreams
+   */
+  public boolean isCompressingStreams() {
+    return compressingStreams;
+  }
 
-	/**
-	 * @param compressingStreams the compressingStreams to set
-	 */
-	public void setCompressingStreams(boolean compressingStreams) {
-		this.compressingStreams = compressingStreams;
-	}
+  /**
+   * @param compressingStreams
+   *          the compressingStreams to set
+   */
+  public void setCompressingStreams( boolean compressingStreams ) {
+    this.compressingStreams = compressingStreams;
+  }
 
-	/**
-	 * @return the remoteHostname
-	 */
-	public String getRemoteHostname() {
-		return remoteHostname;
-	}
+  /**
+   * @return the remoteHostname
+   */
+  public String getRemoteHostname() {
+    return remoteHostname;
+  }
 
-	/**
-	 * @param remoteHostname the remoteHostname to set
-	 */
-	public void setRemoteHostname(String remoteHostname) {
-		this.remoteHostname = remoteHostname;
-	}
+  /**
+   * @param remoteHostname
+   *          the remoteHostname to set
+   */
+  public void setRemoteHostname( String remoteHostname ) {
+    this.remoteHostname = remoteHostname;
+  }
 
-	/**
-	 * @return the sourceSlaveServer name
-	 */
-	public String getSourceSlaveServerName() {
-		return sourceSlaveServerName;
-	}
+  /**
+   * @return the sourceSlaveServer name
+   */
+  public String getSourceSlaveServerName() {
+    return sourceSlaveServerName;
+  }
 
-	/**
-	 * @param sourceSlaveServername the sourceSlaveServerName to set
-	 */
-	public void setSourceSlaveServerName(String sourceSlaveServerName) {
-		this.sourceSlaveServerName = sourceSlaveServerName;
-	}
+  /**
+   * @param sourceSlaveServername
+   *          the sourceSlaveServerName to set
+   */
+  public void setSourceSlaveServerName( String sourceSlaveServerName ) {
+    this.sourceSlaveServerName = sourceSlaveServerName;
+  }
 
-	@Override
-	protected void finalize() throws Throwable {
-		try {
-			if (socket!=null) {
-				socket.shutdownInput();
-				socket.shutdownOutput();
-				socket.close();
-			}
-			if (serverSocket!=null) {
-				serverSocket.close();
-			}
-		} catch (IOException e) {
-		} finally {
-			super.finalize();
-		}
-	}
+  @Override
+  protected void finalize() throws Throwable {
+    try {
+      if ( socket != null ) {
+        socket.shutdownInput();
+        socket.shutdownOutput();
+        socket.close();
+      }
+      if ( serverSocket != null ) {
+        serverSocket.close();
+      }
+    } catch ( IOException e ) {
+    } finally {
+      super.finalize();
+    }
+  }
 
   public RowMetaInterface getRowMeta() {
     return rowMeta;
   }
-  
-  public void setRowMeta(RowMetaInterface rowMeta) {
+
+  public void setRowMeta( RowMetaInterface rowMeta ) {
     this.rowMeta = rowMeta;
   }
 }

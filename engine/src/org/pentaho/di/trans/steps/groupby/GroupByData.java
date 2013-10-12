@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.trans.steps.groupby;
 
@@ -36,76 +36,72 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
-
 /**
  * @author Matt
  * @since 24-jan-2005
- *
+ * 
  */
-public class GroupByData extends BaseStepData implements StepDataInterface
-{
-	public Object previous[];
-	
-	public RowMetaInterface aggMeta;
-	public Object  agg[];
-	public RowMetaInterface groupMeta;
-	public RowMetaInterface groupAggMeta; // for speed: groupMeta+aggMeta
-	public int  groupnrs[];
-	public int  subjectnrs[];
-	public long counts[];
-  
-	public Set<Object> distinctObjs[];
+public class GroupByData extends BaseStepData implements StepDataInterface {
+  public Object[] previous;
 
-    public ArrayList<Object[]> bufferList;
+  public RowMetaInterface aggMeta;
+  public Object[] agg;
+  public RowMetaInterface groupMeta;
+  public RowMetaInterface groupAggMeta; // for speed: groupMeta+aggMeta
+  public int[] groupnrs;
+  public int[] subjectnrs;
+  public long[] counts;
 
-    public File tempFile;
+  public Set<Object>[] distinctObjs;
 
-    public FileOutputStream fos;
+  public ArrayList<Object[]> bufferList;
 
-    public DataOutputStream dos;
+  public File tempFile;
 
-    public int rowsOnFile;
+  public FileOutputStream fos;
 
-    public boolean firstRead;
+  public DataOutputStream dos;
 
-    public FileInputStream fis;
-    public DataInputStream dis;
+  public int rowsOnFile;
 
-    public Object groupResult[];
+  public boolean firstRead;
 
-    public boolean hasOutput;
-    
-    
-    public RowMetaInterface inputRowMeta;
-    public RowMetaInterface outputRowMeta;
+  public FileInputStream fis;
+  public DataInputStream dis;
 
-	public List<Integer> cumulativeSumSourceIndexes;
-	public List<Integer> cumulativeSumTargetIndexes;
-	
-	public List<Integer> cumulativeAvgSourceIndexes;
-	public List<Integer> cumulativeAvgTargetIndexes;
+  public Object[] groupResult;
 
-	public Object[] previousSums;
+  public boolean hasOutput;
 
-	public Object[] previousAvgSum;
+  public RowMetaInterface inputRowMeta;
+  public RowMetaInterface outputRowMeta;
 
-	public long[] previousAvgCount;
+  public List<Integer> cumulativeSumSourceIndexes;
+  public List<Integer> cumulativeSumTargetIndexes;
 
-	public ValueMetaInterface valueMetaInteger;
-	public ValueMetaInterface valueMetaNumber;
+  public List<Integer> cumulativeAvgSourceIndexes;
+  public List<Integer> cumulativeAvgTargetIndexes;
 
-	public double[] mean;
-	
-	public boolean newBatch;
-    
-	/**
+  public Object[] previousSums;
+
+  public Object[] previousAvgSum;
+
+  public long[] previousAvgCount;
+
+  public ValueMetaInterface valueMetaInteger;
+  public ValueMetaInterface valueMetaNumber;
+
+  public double[] mean;
+
+  public boolean newBatch;
+
+  /**
 	 * 
 	 */
-	public GroupByData()
-	{
-		super();
+  public GroupByData() {
+    super();
 
-		previous=null;
-	}
+    previous = null;
+  }
 
 }

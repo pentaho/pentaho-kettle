@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.trans.steps.getrepositorynames;
 
@@ -53,34 +53,32 @@ public class GetRepositoryNamesMeta extends BaseStepMeta implements StepMetaInte
   private static Class<?> PKG = GetRepositoryNamesMeta.class; // i18n!
 
   /** Array of directories */
-  private String          directory[];
+  private String[] directory;
 
   /** Name wild card (regular expression) */
-  private String          nameMask[];
+  private String[] nameMask;
 
   /** Name Wild card to exclude (regular expression) */
-  private String          excludeNameMask[];
+  private String[] excludeNameMask;
 
   /**
-   * Array of boolean values as string, indicating if we need to fetch sub
-   * folders.
+   * Array of boolean values as string, indicating if we need to fetch sub folders.
    */
-  private boolean includeSubFolders[];
+  private boolean[] includeSubFolders;
 
   /** Filter indicating object type filter */
-  private ObjectTypeSelection      objectTypeSelection;
-
+  private ObjectTypeSelection objectTypeSelection;
 
   /** Flag indicating that a row number field should be included in the output */
-  private boolean         includeRowNumber;
+  private boolean includeRowNumber;
 
   /** The name of the field in the output containing the row number */
-  private String          rowNumberField;
+  private String rowNumberField;
 
   public GetRepositoryNamesMeta() {
     super(); // allocate BaseStepMeta
-    
-    objectTypeSelection=ObjectTypeSelection.All;
+
+    objectTypeSelection = ObjectTypeSelection.All;
   }
 
   /**
@@ -90,16 +88,14 @@ public class GetRepositoryNamesMeta extends BaseStepMeta implements StepMetaInte
     return rowNumberField;
   }
 
-
-
   public Object clone() {
     GetRepositoryNamesMeta retval = (GetRepositoryNamesMeta) super.clone();
 
     int nrfiles = directory.length;
 
-    retval.allocate(nrfiles);
+    retval.allocate( nrfiles );
 
-    for (int i = 0; i < nrfiles; i++) {
+    for ( int i = 0; i < nrfiles; i++ ) {
       retval.directory[i] = directory[i];
       retval.nameMask[i] = nameMask[i];
       retval.excludeNameMask[i] = excludeNameMask[i];
@@ -109,7 +105,7 @@ public class GetRepositoryNamesMeta extends BaseStepMeta implements StepMetaInte
     return retval;
   }
 
-  public void allocate(int nrfiles) {
+  public void allocate( int nrfiles ) {
     directory = new String[nrfiles];
     nameMask = new String[nrfiles];
     excludeNameMask = new String[nrfiles];
@@ -122,9 +118,9 @@ public class GetRepositoryNamesMeta extends BaseStepMeta implements StepMetaInte
     rowNumberField = "rownr";
 
     int nrfiles = 1;
-    allocate(nrfiles);
+    allocate( nrfiles );
 
-    for (int i = 0; i < nrfiles; i++) {
+    for ( int i = 0; i < nrfiles; i++ ) {
       directory[i] = "/";
       nameMask[i] = ".*";
       excludeNameMask[i] = "";
@@ -132,163 +128,168 @@ public class GetRepositoryNamesMeta extends BaseStepMeta implements StepMetaInte
     }
   }
 
-  public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException {
+  public void getFields( RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
+      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     // the directory and name of the object
     //
-    ValueMetaInterface object = new ValueMeta("object", ValueMeta.TYPE_STRING);
-    object.setLength(500);
-    object.setPrecision(-1);
-    object.setOrigin(origin);
-    row.addValueMeta(object);
+    ValueMetaInterface object = new ValueMeta( "object", ValueMeta.TYPE_STRING );
+    object.setLength( 500 );
+    object.setPrecision( -1 );
+    object.setOrigin( origin );
+    row.addValueMeta( object );
 
     // the directory
     //
-    ValueMetaInterface directory = new ValueMeta("directory", ValueMeta.TYPE_STRING);
-    directory.setLength(500);
-    directory.setPrecision(-1);
-    directory.setOrigin(origin);
-    row.addValueMeta(directory);
+    ValueMetaInterface directory = new ValueMeta( "directory", ValueMeta.TYPE_STRING );
+    directory.setLength( 500 );
+    directory.setPrecision( -1 );
+    directory.setOrigin( origin );
+    row.addValueMeta( directory );
 
     // the name
     //
-    ValueMetaInterface name = new ValueMeta("name", ValueMeta.TYPE_STRING);
-    name.setLength(500);
-    name.setPrecision(-1);
-    name.setOrigin(origin);
-    row.addValueMeta(name);
+    ValueMetaInterface name = new ValueMeta( "name", ValueMeta.TYPE_STRING );
+    name.setLength( 500 );
+    name.setPrecision( -1 );
+    name.setOrigin( origin );
+    row.addValueMeta( name );
 
     // the object type
     //
-    ValueMetaInterface objectType = new ValueMeta("object_type", ValueMeta.TYPE_STRING);
-    objectType.setLength(500);
-    objectType.setPrecision(-1);
-    objectType.setOrigin(origin);
-    row.addValueMeta(objectType);
+    ValueMetaInterface objectType = new ValueMeta( "object_type", ValueMeta.TYPE_STRING );
+    objectType.setLength( 500 );
+    objectType.setPrecision( -1 );
+    objectType.setOrigin( origin );
+    row.addValueMeta( objectType );
 
     // object_id
     //
-    ValueMetaInterface objectId = new ValueMeta("object_id", ValueMeta.TYPE_STRING);
-    object.setLength(500);
-    object.setPrecision(-1);
-    objectId.setOrigin(origin);
-    row.addValueMeta(objectId);
+    ValueMetaInterface objectId = new ValueMeta( "object_id", ValueMeta.TYPE_STRING );
+    object.setLength( 500 );
+    object.setPrecision( -1 );
+    objectId.setOrigin( origin );
+    row.addValueMeta( objectId );
 
     // modified by
     //
-    ValueMetaInterface modifiedBy = new ValueMeta("modified_by", ValueMeta.TYPE_STRING);
-    object.setLength(500);
-    object.setPrecision(-1);
-    modifiedBy.setOrigin(origin);
-    row.addValueMeta(modifiedBy);
+    ValueMetaInterface modifiedBy = new ValueMeta( "modified_by", ValueMeta.TYPE_STRING );
+    object.setLength( 500 );
+    object.setPrecision( -1 );
+    modifiedBy.setOrigin( origin );
+    row.addValueMeta( modifiedBy );
 
     // modified date
     //
-    ValueMetaInterface modifiedDate = new ValueMeta("modified_date", ValueMeta.TYPE_DATE);
-    modifiedDate.setOrigin(origin);
-    row.addValueMeta(modifiedDate);
-    
+    ValueMetaInterface modifiedDate = new ValueMeta( "modified_date", ValueMeta.TYPE_DATE );
+    modifiedDate.setOrigin( origin );
+    row.addValueMeta( modifiedDate );
+
     // description
     //
-    ValueMetaInterface description = new ValueMeta("description", ValueMeta.TYPE_STRING);
-    description.setLength(500);
-    description.setPrecision(-1);
-    description.setOrigin(origin);
-    row.addValueMeta(description);
-    
-    if (includeRowNumber) {
-      ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(rowNumberField), ValueMeta.TYPE_INTEGER);
-      v.setLength(ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0);
-      v.setOrigin(origin);
-      row.addValueMeta(v);
+    ValueMetaInterface description = new ValueMeta( "description", ValueMeta.TYPE_STRING );
+    description.setLength( 500 );
+    description.setPrecision( -1 );
+    description.setOrigin( origin );
+    row.addValueMeta( description );
+
+    if ( includeRowNumber ) {
+      ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( rowNumberField ), ValueMeta.TYPE_INTEGER );
+      v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
+      v.setOrigin( origin );
+      row.addValueMeta( v );
     }
 
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer(300);
+    StringBuffer retval = new StringBuffer( 300 );
 
-    retval.append("    ").append(XMLHandler.addTagValue("object_type", objectTypeSelection.toString()));
-    retval.append("    ").append(XMLHandler.addTagValue("rownum", includeRowNumber));
-    retval.append("    ").append(XMLHandler.addTagValue("rownum_field", rowNumberField));
+    retval.append( "    " ).append( XMLHandler.addTagValue( "object_type", objectTypeSelection.toString() ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "rownum", includeRowNumber ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "rownum_field", rowNumberField ) );
 
-    retval.append("    <file>").append(Const.CR);
+    retval.append( "    <file>" ).append( Const.CR );
 
-    for (int i = 0; i < directory.length; i++) {
-      retval.append("      ").append(XMLHandler.addTagValue("directory", directory[i]));
-      retval.append("      ").append(XMLHandler.addTagValue("name_mask", nameMask[i]));
-      retval.append("      ").append(XMLHandler.addTagValue("exclude_name_mask", excludeNameMask[i]));
-      retval.append("      ").append(XMLHandler.addTagValue("include_subfolders", includeSubFolders[i]));
+    for ( int i = 0; i < directory.length; i++ ) {
+      retval.append( "      " ).append( XMLHandler.addTagValue( "directory", directory[i] ) );
+      retval.append( "      " ).append( XMLHandler.addTagValue( "name_mask", nameMask[i] ) );
+      retval.append( "      " ).append( XMLHandler.addTagValue( "exclude_name_mask", excludeNameMask[i] ) );
+      retval.append( "      " ).append( XMLHandler.addTagValue( "include_subfolders", includeSubFolders[i] ) );
     }
-    retval.append("    </file>").append(Const.CR);
+    retval.append( "    </file>" ).append( Const.CR );
 
     return retval.toString();
   }
 
-  public void loadXML(Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     try {
 
-      includeRowNumber = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "rownum"));
-      rowNumberField = XMLHandler.getTagValue(stepnode, "rownum_field");
+      includeRowNumber = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "rownum" ) );
+      rowNumberField = XMLHandler.getTagValue( stepnode, "rownum_field" );
 
-      Node filenode = XMLHandler.getSubNode(stepnode, "file");
-      int nrfiles = XMLHandler.countNodes(filenode, "directory");
+      Node filenode = XMLHandler.getSubNode( stepnode, "file" );
+      int nrfiles = XMLHandler.countNodes( filenode, "directory" );
 
-      allocate(nrfiles);
+      allocate( nrfiles );
 
-      for (int i = 0; i < nrfiles; i++) {
-        Node filenamenode = XMLHandler.getSubNodeByNr(filenode, "directory", i);
-        Node filemasknode = XMLHandler.getSubNodeByNr(filenode, "name_mask", i);
-        Node excludefilemasknode = XMLHandler.getSubNodeByNr(filenode, "exclude_name_mask", i);
-        Node includeSubFoldersnode = XMLHandler.getSubNodeByNr(filenode, "include_subfolders", i);
-        directory[i] = XMLHandler.getNodeValue(filenamenode);
-        nameMask[i] = XMLHandler.getNodeValue(filemasknode);
-        excludeNameMask[i] = XMLHandler.getNodeValue(excludefilemasknode);
-        includeSubFolders[i] = "Y".equalsIgnoreCase( XMLHandler.getNodeValue(includeSubFoldersnode) );
+      for ( int i = 0; i < nrfiles; i++ ) {
+        Node filenamenode = XMLHandler.getSubNodeByNr( filenode, "directory", i );
+        Node filemasknode = XMLHandler.getSubNodeByNr( filenode, "name_mask", i );
+        Node excludefilemasknode = XMLHandler.getSubNodeByNr( filenode, "exclude_name_mask", i );
+        Node includeSubFoldersnode = XMLHandler.getSubNodeByNr( filenode, "include_subfolders", i );
+        directory[i] = XMLHandler.getNodeValue( filenamenode );
+        nameMask[i] = XMLHandler.getNodeValue( filemasknode );
+        excludeNameMask[i] = XMLHandler.getNodeValue( excludefilemasknode );
+        includeSubFolders[i] = "Y".equalsIgnoreCase( XMLHandler.getNodeValue( includeSubFoldersnode ) );
       }
-    } catch (Exception e) {
-      throw new KettleXMLException("Unable to load step info from XML", e);
+    } catch ( Exception e ) {
+      throw new KettleXMLException( "Unable to load step info from XML", e );
     }
   }
 
-  public void readRep(Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases) throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
+    throws KettleException {
     try {
-      int nrfiles = rep.countNrStepAttributes(id_step, "directory");
-      String objectTypeString = rep.getStepAttributeString(id_step, "object_type");
-      if (objectTypeSelection!=null) {
-        objectTypeSelection = ObjectTypeSelection.valueOf(objectTypeString);
-      } 
-      if (objectTypeSelection==null) objectTypeSelection=ObjectTypeSelection.All;
-      includeRowNumber = rep.getStepAttributeBoolean(id_step, "rownum");
-      rowNumberField = rep.getStepAttributeString(id_step, "rownum_field");
-      
-      allocate(nrfiles);
-
-      for (int i = 0; i < nrfiles; i++) {
-        directory[i] = rep.getStepAttributeString(id_step, i, "directory");
-        nameMask[i] = rep.getStepAttributeString(id_step, i, "name_mask");
-        excludeNameMask[i] = rep.getStepAttributeString(id_step, i, "exclude_name_mask");
-        includeSubFolders[i] = rep.getStepAttributeBoolean(id_step, i, "include_subfolders");
+      int nrfiles = rep.countNrStepAttributes( id_step, "directory" );
+      String objectTypeString = rep.getStepAttributeString( id_step, "object_type" );
+      if ( objectTypeSelection != null ) {
+        objectTypeSelection = ObjectTypeSelection.valueOf( objectTypeString );
       }
-    } catch (Exception e) {
-      throw new KettleException("Unexpected error reading step information from the repository", e);
+      if ( objectTypeSelection == null ) {
+        objectTypeSelection = ObjectTypeSelection.All;
+      }
+      includeRowNumber = rep.getStepAttributeBoolean( id_step, "rownum" );
+      rowNumberField = rep.getStepAttributeString( id_step, "rownum_field" );
+
+      allocate( nrfiles );
+
+      for ( int i = 0; i < nrfiles; i++ ) {
+        directory[i] = rep.getStepAttributeString( id_step, i, "directory" );
+        nameMask[i] = rep.getStepAttributeString( id_step, i, "name_mask" );
+        excludeNameMask[i] = rep.getStepAttributeString( id_step, i, "exclude_name_mask" );
+        includeSubFolders[i] = rep.getStepAttributeBoolean( id_step, i, "include_subfolders" );
+      }
+    } catch ( Exception e ) {
+      throw new KettleException( "Unexpected error reading step information from the repository", e );
     }
   }
 
-  public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step) throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
+    throws KettleException {
     try {
-      rep.saveStepAttribute(id_transformation, id_step, "object_type", objectTypeSelection.toString());
-      rep.saveStepAttribute(id_transformation, id_step, "rownum", includeRowNumber);
-      rep.saveStepAttribute(id_transformation, id_step, "rownum_field", rowNumberField);
+      rep.saveStepAttribute( id_transformation, id_step, "object_type", objectTypeSelection.toString() );
+      rep.saveStepAttribute( id_transformation, id_step, "rownum", includeRowNumber );
+      rep.saveStepAttribute( id_transformation, id_step, "rownum_field", rowNumberField );
 
-      for (int i = 0; i < directory.length; i++) {
-        rep.saveStepAttribute(id_transformation, id_step, i, "directory", directory[i]);
-        rep.saveStepAttribute(id_transformation, id_step, i, "name_mask", nameMask[i]);
-        rep.saveStepAttribute(id_transformation, id_step, i, "exclude_name_mask", excludeNameMask[i]);
-        rep.saveStepAttribute(id_transformation, id_step, i, "include_subfolders", includeSubFolders[i]);
+      for ( int i = 0; i < directory.length; i++ ) {
+        rep.saveStepAttribute( id_transformation, id_step, i, "directory", directory[i] );
+        rep.saveStepAttribute( id_transformation, id_step, i, "name_mask", nameMask[i] );
+        rep.saveStepAttribute( id_transformation, id_step, i, "exclude_name_mask", excludeNameMask[i] );
+        rep.saveStepAttribute( id_transformation, id_step, i, "include_subfolders", includeSubFolders[i] );
       }
-    } catch (Exception e) {
-      throw new KettleException("Unable to save step information to the repository for id_step=" + id_step, e);
+    } catch ( Exception e ) {
+      throw new KettleException( "Unable to save step information to the repository for id_step=" + id_step, e );
     }
   }
 
@@ -296,19 +297,26 @@ public class GetRepositoryNamesMeta extends BaseStepMeta implements StepMetaInte
     return includeSubFolders;
   }
 
-  public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
+      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
+      IMetaStore metaStore ) {
     CheckResult cr;
 
-    if (input.length > 0) {
-      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "GetRepositoryNamesMeta.CheckResult.NoInputError"), stepMeta);
+    if ( input.length > 0 ) {
+      cr =
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
+              "GetRepositoryNamesMeta.CheckResult.NoInputError" ), stepMeta );
     } else {
-      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "GetRepositoryNamesMeta.CheckResult.NoInputOk"), stepMeta);
+      cr =
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
+              "GetRepositoryNamesMeta.CheckResult.NoInputOk" ), stepMeta );
     }
-    remarks.add(cr);
+    remarks.add( cr );
   }
 
-  public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta, Trans trans) {
-    return new GetRepositoryNames(stepMeta, stepDataInterface, cnr, transMeta, trans);
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
+      Trans trans ) {
+    return new GetRepositoryNames( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
   public StepDataInterface getStepData() {
@@ -323,23 +331,26 @@ public class GetRepositoryNamesMeta extends BaseStepMeta implements StepMetaInte
   }
 
   /**
-   * @param includeRowNumber the includeRowNumber to set
+   * @param includeRowNumber
+   *          the includeRowNumber to set
    */
-  public void setIncludeRowNumber(boolean includeRowNumber) {
+  public void setIncludeRowNumber( boolean includeRowNumber ) {
     this.includeRowNumber = includeRowNumber;
   }
 
   /**
-   * @param includeSubFolders the includeSubFolders to set
+   * @param includeSubFolders
+   *          the includeSubFolders to set
    */
-  public void setIncludeSubFolders(boolean[] includeSubFolders) {
+  public void setIncludeSubFolders( boolean[] includeSubFolders ) {
     this.includeSubFolders = includeSubFolders;
   }
 
   /**
-   * @param rowNumberField the rowNumberField to set
+   * @param rowNumberField
+   *          the rowNumberField to set
    */
-  public void setRowNumberField(String rowNumberField) {
+  public void setRowNumberField( String rowNumberField ) {
     this.rowNumberField = rowNumberField;
   }
 
@@ -351,9 +362,10 @@ public class GetRepositoryNamesMeta extends BaseStepMeta implements StepMetaInte
   }
 
   /**
-   * @param objectTypeSelection the objectTypeSelection to set
+   * @param objectTypeSelection
+   *          the objectTypeSelection to set
    */
-  public void setObjectTypeSelection(ObjectTypeSelection objectTypeSelection) {
+  public void setObjectTypeSelection( ObjectTypeSelection objectTypeSelection ) {
     this.objectTypeSelection = objectTypeSelection;
   }
 
@@ -365,9 +377,10 @@ public class GetRepositoryNamesMeta extends BaseStepMeta implements StepMetaInte
   }
 
   /**
-   * @param directory the directory to set
+   * @param directory
+   *          the directory to set
    */
-  public void setDirectory(String[] directory) {
+  public void setDirectory( String[] directory ) {
     this.directory = directory;
   }
 
@@ -379,9 +392,10 @@ public class GetRepositoryNamesMeta extends BaseStepMeta implements StepMetaInte
   }
 
   /**
-   * @param nameMask the nameMask to set
+   * @param nameMask
+   *          the nameMask to set
    */
-  public void setNameMask(String[] nameMask) {
+  public void setNameMask( String[] nameMask ) {
     this.nameMask = nameMask;
   }
 
@@ -393,9 +407,10 @@ public class GetRepositoryNamesMeta extends BaseStepMeta implements StepMetaInte
   }
 
   /**
-   * @param excludeNameMask the excludeNameMask to set
+   * @param excludeNameMask
+   *          the excludeNameMask to set
    */
-  public void setExcludeNameMask(String[] excludeNameMask) {
+  public void setExcludeNameMask( String[] excludeNameMask ) {
     this.excludeNameMask = excludeNameMask;
   }
 }

@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.repository.kdr.delegates.metastore;
 
@@ -34,27 +34,27 @@ public class KDBRMetaStoreAttribute implements IMetaStoreAttribute {
 
   protected KettleDatabaseRepositoryMetaStoreDelegate delegate;
   private LongObjectId objectId;
-  
+
   private String id;
   private Object value;
-  
+
   private List<IMetaStoreAttribute> children;
 
-  public KDBRMetaStoreAttribute(KettleDatabaseRepositoryMetaStoreDelegate delegate) {
+  public KDBRMetaStoreAttribute( KettleDatabaseRepositoryMetaStoreDelegate delegate ) {
     this.children = new ArrayList<IMetaStoreAttribute>();
     this.delegate = delegate;
   }
 
-  public KDBRMetaStoreAttribute(KettleDatabaseRepositoryMetaStoreDelegate delegate, String id, Object value) {
-    this(delegate);
+  public KDBRMetaStoreAttribute( KettleDatabaseRepositoryMetaStoreDelegate delegate, String id, Object value ) {
+    this( delegate );
     this.id = id;
     this.value = value;
   }
 
-  public void setObjectId(LongObjectId objectId) {
+  public void setObjectId( LongObjectId objectId ) {
     this.objectId = objectId;
   }
-  
+
   public LongObjectId getObjectId() {
     return objectId;
   }
@@ -63,7 +63,7 @@ public class KDBRMetaStoreAttribute implements IMetaStoreAttribute {
     return delegate;
   }
 
-  public void setDelegate(KettleDatabaseRepositoryMetaStoreDelegate delegate) {
+  public void setDelegate( KettleDatabaseRepositoryMetaStoreDelegate delegate ) {
     this.delegate = delegate;
   }
 
@@ -71,7 +71,7 @@ public class KDBRMetaStoreAttribute implements IMetaStoreAttribute {
     return id;
   }
 
-  public void setId(String id) {
+  public void setId( String id ) {
     this.id = id;
   }
 
@@ -79,7 +79,7 @@ public class KDBRMetaStoreAttribute implements IMetaStoreAttribute {
     return value;
   }
 
-  public void setValue(Object value) {
+  public void setValue( Object value ) {
     this.value = value;
   }
 
@@ -87,44 +87,43 @@ public class KDBRMetaStoreAttribute implements IMetaStoreAttribute {
     return children;
   }
 
-  public void setChildren(List<IMetaStoreAttribute> children) {
+  public void setChildren( List<IMetaStoreAttribute> children ) {
     this.children = children;
   }
 
   @Override
-  public void addChild(IMetaStoreAttribute attribute) {
-    children.add(attribute);
+  public void addChild( IMetaStoreAttribute attribute ) {
+    children.add( attribute );
   }
-  
+
   @Override
   public void clearChildren() {
     children.clear();
   }
-  
+
   @Override
-  public void deleteChild(String attributeId) {
+  public void deleteChild( String attributeId ) {
     Iterator<IMetaStoreAttribute> iterator = children.iterator();
-    while (iterator.hasNext()) {
+    while ( iterator.hasNext() ) {
       IMetaStoreAttribute attribute = iterator.next();
-      if (attribute.getId().equals(attributeId)) {
+      if ( attribute.getId().equals( attributeId ) ) {
         iterator.remove();
         return;
       }
     }
   }
-  
+
   @Override
-  public IMetaStoreAttribute getChild(String id) {
+  public IMetaStoreAttribute getChild( String id ) {
     Iterator<IMetaStoreAttribute> iterator = children.iterator();
-    while (iterator.hasNext()) {
+    while ( iterator.hasNext() ) {
       IMetaStoreAttribute attribute = iterator.next();
-      if (attribute.getId().equals(id)) {
+      if ( attribute.getId().equals( id ) ) {
         return attribute;
       }
     }
-    
+
     return null;
   }
-
 
 }

@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.trans.steps.rules;
 
@@ -58,7 +58,7 @@ public class RulesAccumulatorData extends BaseStepData implements StepDataInterf
   private List<Object[]> results;
 
   private String ruleString;
-  
+
   private List<Row> rowList = new ArrayList<Row>();
   private List<Row> resultList = new ArrayList<Row>();
 
@@ -66,7 +66,7 @@ public class RulesAccumulatorData extends BaseStepData implements StepDataInterf
     return ruleString;
   }
 
-  public void setRuleString(String ruleString) {
+  public void setRuleString( String ruleString ) {
     this.ruleString = ruleString;
   }
 
@@ -74,13 +74,13 @@ public class RulesAccumulatorData extends BaseStepData implements StepDataInterf
     return ruleFilePath;
   }
 
-  public void setRuleFilePath(String ruleFilePath) {
+  public void setRuleFilePath( String ruleFilePath ) {
     this.ruleFilePath = ruleFilePath;
   }
 
   private String ruleFilePath;
 
-  public void setOutputRowMeta(RowMetaInterface outputRowMeta) {
+  public void setOutputRowMeta( RowMetaInterface outputRowMeta ) {
     this.outputRowMeta = outputRowMeta;
   }
 
@@ -90,79 +90,80 @@ public class RulesAccumulatorData extends BaseStepData implements StepDataInterf
 
   public void initializeRules() {
     Resource ruleSet = null;
-    if (ruleString != null) {
-      ruleSet = ResourceFactory.newReaderResource(new StringReader(ruleString));
+    if ( ruleString != null ) {
+      ruleSet = ResourceFactory.newReaderResource( new StringReader( ruleString ) );
     } else {
-      ruleSet = ResourceFactory.newFileResource(ruleFilePath);
+      ruleSet = ResourceFactory.newFileResource( ruleFilePath );
     }
     kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-    kbuilder.add(ruleSet, ResourceType.DRL);
+    kbuilder.add( ruleSet, ResourceType.DRL );
 
-    if (kbuilder.hasErrors()) {
-      System.out.println(kbuilder.getErrors().toString());
-      throw new RuntimeException(BaseMessages.getString(PKG, "RulesData.Error.CompileDRL")); 
+    if ( kbuilder.hasErrors() ) {
+      System.out.println( kbuilder.getErrors().toString() );
+      throw new RuntimeException( BaseMessages.getString( PKG, "RulesData.Error.CompileDRL" ) );
     }
 
     Collection<KnowledgePackage> pkgs = kbuilder.getKnowledgePackages();
 
     kbase = KnowledgeBaseFactory.newKnowledgeBase();
     // Cache the knowledge base as its creation is intensive
-    kbase.addKnowledgePackages(pkgs);
+    kbase.addKnowledgePackages( pkgs );
   }
 
-  public void initializeInput(RowMetaInterface _inputRowMeta) {
-    if (_inputRowMeta == null) {
-      BaseMessages.getString(PKG, "RulesData.InitializeColumns.InputRowMetaIsNull"); 
+  public void initializeInput( RowMetaInterface _inputRowMeta ) {
+    if ( _inputRowMeta == null ) {
+      BaseMessages.getString( PKG, "RulesData.InitializeColumns.InputRowMetaIsNull" );
       return;
     }
 
     this.inputRowMeta = _inputRowMeta;
   }
 
-  public void loadRow(Object[] r) throws Exception {
+  public void loadRow( Object[] r ) throws Exception {
     // Store rows for processing
     Map<String, Object> columns = new Hashtable<String, Object>();
-    for(String field : inputRowMeta.getFieldNames()) {
-      columns.put(field, r[inputRowMeta.indexOfValue(field)]);
+    for ( String field : inputRowMeta.getFieldNames() ) {
+      columns.put( field, r[inputRowMeta.indexOfValue( field )] );
     }
-    
-    rowList.add(new Row(columns, true));
+
+    rowList.add( new Row( columns, true ) );
   }
-  
+
   public List<Row> getResultRows() {
     return resultList;
   }
 
   public void execute() throws Exception {
-    if(kbase != null) {
+    if ( kbase != null ) {
       StatefulKnowledgeSession session = kbase.newStatefulKnowledgeSession();
-      
-      for(Row row : rowList) {
-        session.insert(row);
+
+      for ( Row row : rowList ) {
+        session.insert( row );
       }
-  
+
       session.fireAllRules();
-  
-      Collection<Object> oList = session.getObjects(new ObjectFilter() {
+
+      Collection<Object> oList = session.getObjects( new ObjectFilter() {
         @Override
-        public boolean accept(Object o) {
-          if(o instanceof Row && !((Row)o).isExternalSource()) {
+        public boolean accept( Object o ) {
+          if ( o instanceof Row && !( (Row) o ).isExternalSource() ) {
             return true;
           }
           return false;
         }
-      });
-      
-      for(Object o : oList) {
-        resultList.add((Row)o);
+      } );
+
+      for ( Object o : oList ) {
+        resultList.add( (Row) o );
       }
-  
+
       session.dispose();
     }
   }
 
   /**
    * Get the list of rows generated by the Rules execution
+   * 
    * @return List of rows generated
    */
   public List<Object[]> fetchResults() {

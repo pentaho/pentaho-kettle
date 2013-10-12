@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.www;
 
@@ -44,82 +44,81 @@ public class RegisterSlaveServlet extends BaseHttpServlet implements CartePlugin
   public RegisterSlaveServlet() {
   }
 
-  public RegisterSlaveServlet(List<SlaveServerDetection> detections) {
-    super(detections);
-  }
-  
-  public RegisterSlaveServlet(List<SlaveServerDetection> detections, boolean isJetty) {
-    super(detections, isJetty);
+  public RegisterSlaveServlet( List<SlaveServerDetection> detections ) {
+    super( detections );
   }
 
-  public void doGet(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
-    if (isJettyMode() && !request.getRequestURI().startsWith(CONTEXT_PATH)) {
+  public RegisterSlaveServlet( List<SlaveServerDetection> detections, boolean isJetty ) {
+    super( detections, isJetty );
+  }
+
+  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+    if ( isJettyMode() && !request.getRequestURI().startsWith( CONTEXT_PATH ) ) {
       return;
     }
 
-    if (log.isDebug())
-      logDebug("Slave Server registration requested");
+    if ( log.isDebug() ) {
+      logDebug( "Slave Server registration requested" );
+    }
 
     PrintWriter out = response.getWriter();
     BufferedReader in = request.getReader();
-    if (log.isDetailed())
-      logDetailed("Encoding: " + request.getCharacterEncoding());
+    if ( log.isDetailed() ) {
+      logDetailed( "Encoding: " + request.getCharacterEncoding() );
+    }
 
     // We always use XML to reply here...
     //
-    response.setContentType("text/xml");
-    out.print(XMLHandler.getXMLHeader());
-    response.setStatus(HttpServletResponse.SC_OK);
+    response.setContentType( "text/xml" );
+    out.print( XMLHandler.getXMLHeader() );
+    response.setStatus( HttpServletResponse.SC_OK );
 
     try {
       // First read the slave server information in memory from the request
       //
-      StringBuilder xml = new StringBuilder(request.getContentLength());
+      StringBuilder xml = new StringBuilder( request.getContentLength() );
       int c;
-      while ((c = in.read()) != -1) {
-        xml.append((char) c);
+      while ( ( c = in.read() ) != -1 ) {
+        xml.append( (char) c );
       }
 
       // Parse the XML, create a transformation configuration
       //
-      Document document = XMLHandler.loadXMLString(xml.toString());
-      Node node = XMLHandler.getSubNode(document, SlaveServerDetection.XML_TAG);
-      SlaveServerDetection slaveServerDetection = new SlaveServerDetection(node);
+      Document document = XMLHandler.loadXMLString( xml.toString() );
+      Node node = XMLHandler.getSubNode( document, SlaveServerDetection.XML_TAG );
+      SlaveServerDetection slaveServerDetection = new SlaveServerDetection( node );
 
       // See if this slave server is already in our list...
       //
       String message;
-      int index = getDetections().indexOf(slaveServerDetection);
-      if (index < 0) {
-        getDetections().add(slaveServerDetection);
-        message = "Slave server detection '"
-            + slaveServerDetection.getSlaveServer().getName()
-            + "' was replaced in the list.";
+      int index = getDetections().indexOf( slaveServerDetection );
+      if ( index < 0 ) {
+        getDetections().add( slaveServerDetection );
+        message =
+            "Slave server detection '" + slaveServerDetection.getSlaveServer().getName()
+                + "' was replaced in the list.";
       } else {
         // replace the data in the old one...
         //
-        SlaveServerDetection old = getDetections().get(index);
-        old.setSlaveServer(slaveServerDetection.getSlaveServer());
-        old.setActive(slaveServerDetection.isActive());
+        SlaveServerDetection old = getDetections().get( index );
+        old.setSlaveServer( slaveServerDetection.getSlaveServer() );
+        old.setActive( slaveServerDetection.isActive() );
 
         // Note: in case it's not the slave server itself doing the sending, it
         // might be possible for it to be inactive...
         //
-        if (old.isActive()) {
-          old.setLastActiveDate(slaveServerDetection.getLastActiveDate());
+        if ( old.isActive() ) {
+          old.setLastActiveDate( slaveServerDetection.getLastActiveDate() );
         } else {
-          old.setLastInactiveDate(slaveServerDetection.getLastInactiveDate());
+          old.setLastInactiveDate( slaveServerDetection.getLastInactiveDate() );
         }
-        message = "Slave server detection '"
-            + slaveServerDetection.getSlaveServer().getName()
-            + "' was added to the list.";
+        message =
+            "Slave server detection '" + slaveServerDetection.getSlaveServer().getName() + "' was added to the list.";
       }
 
-      out.println(new WebResult(WebResult.STRING_OK, message));
-    } catch (Exception ex) {
-      out.println(new WebResult(WebResult.STRING_ERROR, Const
-          .getStackTracker(ex)));
+      out.println( new WebResult( WebResult.STRING_OK, message ) );
+    } catch ( Exception ex ) {
+      out.println( new WebResult( WebResult.STRING_ERROR, Const.getStackTracker( ex ) ) );
     }
 
   }
@@ -131,7 +130,7 @@ public class RegisterSlaveServlet extends BaseHttpServlet implements CartePlugin
   public String getService() {
     return CONTEXT_PATH + " (" + toString() + ")";
   }
-  
+
   public String getContextPath() {
     return CONTEXT_PATH;
   }

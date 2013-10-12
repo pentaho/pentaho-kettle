@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.trans.steps.xmloutput;
 
@@ -29,14 +29,14 @@ import org.pentaho.di.core.row.ValueMeta;
  * 
  * @author Matt
  * @since 14-jan-2006
- *
+ * 
  */
 public class XMLField implements Cloneable {
-  
+
   public enum ContentType {
     Element, Attribute,
   }
-  
+
   private String fieldName;
 
   private String elementName;
@@ -56,11 +56,11 @@ public class XMLField implements Cloneable {
   private String groupingSymbol;
 
   private String nullString;
-  
+
   private ContentType contentType;
 
-  public XMLField(ContentType contentType, String fieldName, String elementName, int type, String format, int length, int precision,
-      String currencySymbol, String decimalSymbol, String groupSymbol, String nullString) {
+  public XMLField( ContentType contentType, String fieldName, String elementName, int type, String format, int length,
+      int precision, String currencySymbol, String decimalSymbol, String groupSymbol, String nullString ) {
     this.contentType = contentType;
     this.fieldName = fieldName;
     this.elementName = elementName;
@@ -78,23 +78,23 @@ public class XMLField implements Cloneable {
     contentType = ContentType.Element;
   }
 
-  public int compare(Object obj) {
+  public int compare( Object obj ) {
     XMLField field = (XMLField) obj;
 
-    return fieldName.compareTo(field.getFieldName());
+    return fieldName.compareTo( field.getFieldName() );
   }
 
-  public boolean equal(Object obj) {
+  public boolean equal( Object obj ) {
     XMLField field = (XMLField) obj;
 
-    return fieldName.equals(field.getFieldName());
+    return fieldName.equals( field.getFieldName() );
   }
 
   public Object clone() {
     try {
       Object retval = super.clone();
       return retval;
-    } catch (CloneNotSupportedException e) {
+    } catch ( CloneNotSupportedException e ) {
       return null;
     }
   }
@@ -103,7 +103,7 @@ public class XMLField implements Cloneable {
     return length;
   }
 
-  public void setLength(int length) {
+  public void setLength( int length ) {
     this.length = length;
   }
 
@@ -111,7 +111,7 @@ public class XMLField implements Cloneable {
     return fieldName;
   }
 
-  public void setFieldName(String fieldname) {
+  public void setFieldName( String fieldname ) {
     this.fieldName = fieldname;
   }
 
@@ -120,22 +120,22 @@ public class XMLField implements Cloneable {
   }
 
   public String getTypeDesc() {
-    return ValueMeta.getTypeDesc(type);
+    return ValueMeta.getTypeDesc( type );
   }
 
-  public void setType(int type) {
+  public void setType( int type ) {
     this.type = type;
   }
 
-  public void setType(String typeDesc) {
-    this.type = ValueMeta.getType(typeDesc);
+  public void setType( String typeDesc ) {
+    this.type = ValueMeta.getType( typeDesc );
   }
 
   public String getFormat() {
     return format;
   }
 
-  public void setFormat(String format) {
+  public void setFormat( String format ) {
     this.format = format;
   }
 
@@ -143,7 +143,7 @@ public class XMLField implements Cloneable {
     return groupingSymbol;
   }
 
-  public void setGroupingSymbol(String group_symbol) {
+  public void setGroupingSymbol( String group_symbol ) {
     this.groupingSymbol = group_symbol;
   }
 
@@ -151,7 +151,7 @@ public class XMLField implements Cloneable {
     return decimalSymbol;
   }
 
-  public void setDecimalSymbol(String decimal_symbol) {
+  public void setDecimalSymbol( String decimal_symbol ) {
     this.decimalSymbol = decimal_symbol;
   }
 
@@ -159,7 +159,7 @@ public class XMLField implements Cloneable {
     return currencySymbol;
   }
 
-  public void setCurrencySymbol(String currency_symbol) {
+  public void setCurrencySymbol( String currency_symbol ) {
     this.currencySymbol = currency_symbol;
   }
 
@@ -167,7 +167,7 @@ public class XMLField implements Cloneable {
     return precision;
   }
 
-  public void setPrecision(int precision) {
+  public void setPrecision( int precision ) {
     this.precision = precision;
   }
 
@@ -175,7 +175,7 @@ public class XMLField implements Cloneable {
     return nullString;
   }
 
-  public void setNullString(String null_string) {
+  public void setNullString( String null_string ) {
     this.nullString = null_string;
   }
 
@@ -191,9 +191,10 @@ public class XMLField implements Cloneable {
   }
 
   /**
-   * @param elementName The elementName to set.
+   * @param elementName
+   *          The elementName to set.
    */
-  public void setElementName(String elementName) {
+  public void setElementName( String elementName ) {
     this.elementName = elementName;
   }
 
@@ -205,9 +206,10 @@ public class XMLField implements Cloneable {
   }
 
   /**
-   * @param contentType the contentType to set
+   * @param contentType
+   *          the contentType to set
    */
-  public void setContentType(ContentType contentType) {
+  public void setContentType( ContentType contentType ) {
     this.contentType = contentType;
   }
 }

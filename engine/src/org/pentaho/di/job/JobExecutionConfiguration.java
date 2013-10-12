@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.job;
 
@@ -100,7 +100,7 @@ public class JobExecutionConfiguration implements Cloneable {
     params = new HashMap<String, String>();
     variables = new HashMap<String, String>();
     extensionOptions = new HashMap<String, String>();
-    
+
     logLevel = LogLevel.BASIC;
 
     clearingLog = true;
@@ -111,20 +111,20 @@ public class JobExecutionConfiguration implements Cloneable {
       JobExecutionConfiguration configuration = (JobExecutionConfiguration) super.clone();
 
       configuration.params = new HashMap<String, String>();
-      configuration.params.putAll(params);
+      configuration.params.putAll( params );
 
       configuration.arguments = new HashMap<String, String>();
-      configuration.arguments.putAll(arguments);
+      configuration.arguments.putAll( arguments );
 
       configuration.variables = new HashMap<String, String>();
-      configuration.variables.putAll(variables);
+      configuration.variables.putAll( variables );
 
-      if (previousResult != null) {
+      if ( previousResult != null ) {
         configuration.previousResult = previousResult.clone();
       }
 
       return configuration;
-    } catch (CloneNotSupportedException e) {
+    } catch ( CloneNotSupportedException e ) {
       return null;
     }
   }
@@ -137,16 +137,18 @@ public class JobExecutionConfiguration implements Cloneable {
   }
 
   /**
-   * @param arguments the arguments to set
+   * @param arguments
+   *          the arguments to set
    */
-  public void setArguments(Map<String, String> arguments) {
+  public void setArguments( Map<String, String> arguments ) {
     this.arguments = arguments;
   }
 
   /**
-   * @param params the parameters to set
+   * @param params
+   *          the parameters to set
    */
-  public void setParams(Map<String, String> params) {
+  public void setParams( Map<String, String> params ) {
     this.params = params;
   }
 
@@ -158,13 +160,14 @@ public class JobExecutionConfiguration implements Cloneable {
   }
 
   /**
-   * @param arguments the arguments to set
+   * @param arguments
+   *          the arguments to set
    */
-  public void setArgumentStrings(String[] arguments) {
+  public void setArgumentStrings( String[] arguments ) {
     this.arguments = new HashMap<String, String>();
-    if (arguments != null) {
-      for (int i = 0; i < arguments.length; i++) {
-        this.arguments.put("arg " + (i + 1), arguments[i]);
+    if ( arguments != null ) {
+      for ( int i = 0; i < arguments.length; i++ ) {
+        this.arguments.put( "arg " + ( i + 1 ), arguments[i] );
       }
     }
   }
@@ -177,18 +180,19 @@ public class JobExecutionConfiguration implements Cloneable {
   }
 
   /**
-   * @param variables the variables to set
+   * @param variables
+   *          the variables to set
    */
-  public void setVariables(Map<String, String> variables) {
+  public void setVariables( Map<String, String> variables ) {
     this.variables = variables;
   }
 
-  public void setVariables(VariableSpace space) {
+  public void setVariables( VariableSpace space ) {
     this.variables = new HashMap<String, String>();
 
-    for (String name : space.listVariables()) {
-      String value = space.getVariable(name);
-      this.variables.put(name, value);
+    for ( String name : space.listVariables() ) {
+      String value = space.getVariable( name );
+      this.variables.put( name, value );
     }
   }
 
@@ -200,9 +204,10 @@ public class JobExecutionConfiguration implements Cloneable {
   }
 
   /**
-   * @param remoteExecution the remoteExecution to set
+   * @param remoteExecution
+   *          the remoteExecution to set
    */
-  public void setExecutingRemotely(boolean remoteExecution) {
+  public void setExecutingRemotely( boolean remoteExecution ) {
     this.executingRemotely = remoteExecution;
   }
 
@@ -214,9 +219,10 @@ public class JobExecutionConfiguration implements Cloneable {
   }
 
   /**
-   * @param localExecution the localExecution to set
+   * @param localExecution
+   *          the localExecution to set
    */
-  public void setExecutingLocally(boolean localExecution) {
+  public void setExecutingLocally( boolean localExecution ) {
     this.executingLocally = localExecution;
   }
 
@@ -228,33 +234,34 @@ public class JobExecutionConfiguration implements Cloneable {
   }
 
   /**
-   * @param remoteServer the remoteServer to set
+   * @param remoteServer
+   *          the remoteServer to set
    */
-  public void setRemoteServer(SlaveServer remoteServer) {
+  public void setRemoteServer( SlaveServer remoteServer ) {
     this.remoteServer = remoteServer;
   }
 
-  public void getUsedVariables(JobMeta jobMeta) {
+  public void getUsedVariables( JobMeta jobMeta ) {
     Properties sp = new Properties();
     VariableSpace space = Variables.getADefaultVariableSpace();
 
-    String keys[] = space.listVariables();
-    for (int i = 0; i < keys.length; i++) {
-      sp.put(keys[i], space.getVariable(keys[i]));
+    String[] keys = space.listVariables();
+    for ( int i = 0; i < keys.length; i++ ) {
+      sp.put( keys[i], space.getVariable( keys[i] ) );
     }
 
     List<String> vars = jobMeta.getUsedVariables();
-    if (vars != null && vars.size() > 0) {
+    if ( vars != null && vars.size() > 0 ) {
       HashMap<String, String> newVariables = new HashMap<String, String>();
 
-      for (int i = 0; i < vars.size(); i++) {
-        String varname = vars.get(i);
-        if (!varname.startsWith(Const.INTERNAL_VARIABLE_PREFIX)) {
-          newVariables.put(varname, Const.NVL(variables.get(varname), sp.getProperty(varname, "")));
+      for ( int i = 0; i < vars.size(); i++ ) {
+        String varname = vars.get( i );
+        if ( !varname.startsWith( Const.INTERNAL_VARIABLE_PREFIX ) ) {
+          newVariables.put( varname, Const.NVL( variables.get( varname ), sp.getProperty( varname, "" ) ) );
         }
       }
       // variables.clear();
-      variables.putAll(newVariables);
+      variables.putAll( newVariables );
     }
   }
 
@@ -266,9 +273,10 @@ public class JobExecutionConfiguration implements Cloneable {
   }
 
   /**
-   * @param replayDate the replayDate to set
+   * @param replayDate
+   *          the replayDate to set
    */
-  public void setReplayDate(Date replayDate) {
+  public void setReplayDate( Date replayDate ) {
     this.replayDate = replayDate;
   }
 
@@ -280,9 +288,10 @@ public class JobExecutionConfiguration implements Cloneable {
   }
 
   /**
-   * @param usingSafeMode the usingSafeMode to set
+   * @param usingSafeMode
+   *          the usingSafeMode to set
    */
-  public void setSafeModeEnabled(boolean usingSafeMode) {
+  public void setSafeModeEnabled( boolean usingSafeMode ) {
     this.safeModeEnabled = usingSafeMode;
   }
 
@@ -294,204 +303,206 @@ public class JobExecutionConfiguration implements Cloneable {
   }
 
   /**
-   * @param logLevel the logLevel to set
+   * @param logLevel
+   *          the logLevel to set
    */
-  public void setLogLevel(LogLevel logLevel) {
+  public void setLogLevel( LogLevel logLevel ) {
     this.logLevel = logLevel;
   }
 
   public String getXML() throws IOException {
-    StringBuffer xml = new StringBuffer(160);
+    StringBuffer xml = new StringBuffer( 160 );
 
-    xml.append("  <" + XML_TAG + ">").append(Const.CR);
+    xml.append( "  <" + XML_TAG + ">" ).append( Const.CR );
 
-    xml.append("    ").append(XMLHandler.addTagValue("exec_local", executingLocally));
+    xml.append( "    " ).append( XMLHandler.addTagValue( "exec_local", executingLocally ) );
 
-    xml.append("    ").append(XMLHandler.addTagValue("exec_remote", executingRemotely));
-    if (remoteServer != null) {
-      xml.append("    ").append(remoteServer.getXML()).append(Const.CR);
+    xml.append( "    " ).append( XMLHandler.addTagValue( "exec_remote", executingRemotely ) );
+    if ( remoteServer != null ) {
+      xml.append( "    " ).append( remoteServer.getXML() ).append( Const.CR );
     }
-    xml.append("    ").append(XMLHandler.addTagValue("pass_export", passingExport));
+    xml.append( "    " ).append( XMLHandler.addTagValue( "pass_export", passingExport ) );
 
     // Serialize the parameters...
     //
-    xml.append("    <parameters>").append(Const.CR);
-    List<String> paramNames = new ArrayList<String>(params.keySet());
-    Collections.sort(paramNames);
-    for (String name : paramNames) {
-      String value = params.get(name);
-      xml.append("    <parameter>");
-      xml.append(XMLHandler.addTagValue("name", name, false));
-      xml.append(XMLHandler.addTagValue("value", value, false));
-      xml.append("</parameter>").append(Const.CR);
+    xml.append( "    <parameters>" ).append( Const.CR );
+    List<String> paramNames = new ArrayList<String>( params.keySet() );
+    Collections.sort( paramNames );
+    for ( String name : paramNames ) {
+      String value = params.get( name );
+      xml.append( "    <parameter>" );
+      xml.append( XMLHandler.addTagValue( "name", name, false ) );
+      xml.append( XMLHandler.addTagValue( "value", value, false ) );
+      xml.append( "</parameter>" ).append( Const.CR );
     }
-    xml.append("    </parameters>").append(Const.CR);
+    xml.append( "    </parameters>" ).append( Const.CR );
 
     // Serialize the variables...
     //
-    xml.append("    <variables>").append(Const.CR);
-    List<String> variableNames = new ArrayList<String>(variables.keySet());
-    Collections.sort(variableNames);
-    for (String name : variableNames) {
-      String value = variables.get(name);
-      xml.append("    <variable>");
-      xml.append(XMLHandler.addTagValue("name", name, false));
-      xml.append(XMLHandler.addTagValue("value", value, false));
-      xml.append("</variable>").append(Const.CR);
+    xml.append( "    <variables>" ).append( Const.CR );
+    List<String> variableNames = new ArrayList<String>( variables.keySet() );
+    Collections.sort( variableNames );
+    for ( String name : variableNames ) {
+      String value = variables.get( name );
+      xml.append( "    <variable>" );
+      xml.append( XMLHandler.addTagValue( "name", name, false ) );
+      xml.append( XMLHandler.addTagValue( "value", value, false ) );
+      xml.append( "</variable>" ).append( Const.CR );
     }
-    xml.append("    </variables>").append(Const.CR);
+    xml.append( "    </variables>" ).append( Const.CR );
 
     // Serialize the variables...
     //
-    xml.append("    <arguments>").append(Const.CR);
-    List<String> argumentNames = new ArrayList<String>(arguments.keySet());
-    Collections.sort(argumentNames);
-    for (String name : argumentNames) {
-      String value = arguments.get(name);
-      xml.append("    <argument>");
-      xml.append(XMLHandler.addTagValue("name", name, false));
-      xml.append(XMLHandler.addTagValue("value", value, false));
-      xml.append("</argument>").append(Const.CR);
+    xml.append( "    <arguments>" ).append( Const.CR );
+    List<String> argumentNames = new ArrayList<String>( arguments.keySet() );
+    Collections.sort( argumentNames );
+    for ( String name : argumentNames ) {
+      String value = arguments.get( name );
+      xml.append( "    <argument>" );
+      xml.append( XMLHandler.addTagValue( "name", name, false ) );
+      xml.append( XMLHandler.addTagValue( "value", value, false ) );
+      xml.append( "</argument>" ).append( Const.CR );
     }
-    xml.append("    </arguments>").append(Const.CR);
+    xml.append( "    </arguments>" ).append( Const.CR );
 
-    xml.append("    ").append(XMLHandler.addTagValue("replay_date", replayDate));
-    xml.append("    ").append(XMLHandler.addTagValue("safe_mode", safeModeEnabled));
-    xml.append("    ").append(XMLHandler.addTagValue("log_level", logLevel.getCode()));
-    xml.append("    ").append(XMLHandler.addTagValue("clear_log", clearingLog));
+    xml.append( "    " ).append( XMLHandler.addTagValue( "replay_date", replayDate ) );
+    xml.append( "    " ).append( XMLHandler.addTagValue( "safe_mode", safeModeEnabled ) );
+    xml.append( "    " ).append( XMLHandler.addTagValue( "log_level", logLevel.getCode() ) );
+    xml.append( "    " ).append( XMLHandler.addTagValue( "clear_log", clearingLog ) );
 
-    xml.append("    ").append(XMLHandler.addTagValue("start_copy_name", startCopyName));
-    xml.append("    ").append(XMLHandler.addTagValue("start_copy_nr", startCopyNr));
+    xml.append( "    " ).append( XMLHandler.addTagValue( "start_copy_name", startCopyName ) );
+    xml.append( "    " ).append( XMLHandler.addTagValue( "start_copy_nr", startCopyNr ) );
 
-    xml.append("    ").append(XMLHandler.addTagValue("gather_metrics", gatheringMetrics));
-    xml.append("    ").append(XMLHandler.addTagValue("expand_remote_job", expandingRemoteJob));
+    xml.append( "    " ).append( XMLHandler.addTagValue( "gather_metrics", gatheringMetrics ) );
+    xml.append( "    " ).append( XMLHandler.addTagValue( "expand_remote_job", expandingRemoteJob ) );
 
     // The source rows...
     //
-    if (previousResult != null) {
-      xml.append(previousResult.getXML());
+    if ( previousResult != null ) {
+      xml.append( previousResult.getXML() );
     }
 
     // Send the repository name and user to the remote site...
     //
-    if (repository != null) {
-      xml.append(XMLHandler.openTag("repository"));
-      xml.append(XMLHandler.addTagValue("name", repository.getName()));
+    if ( repository != null ) {
+      xml.append( XMLHandler.openTag( "repository" ) );
+      xml.append( XMLHandler.addTagValue( "name", repository.getName() ) );
       // File base repositories doesn't have user info
-      if (repository.getUserInfo() != null) {
-        xml.append(XMLHandler.addTagValue("login", repository.getUserInfo().getLogin()));
-        xml.append(XMLHandler.addTagValue("password", Encr.encryptPassword(repository.getUserInfo().getPassword())));
+      if ( repository.getUserInfo() != null ) {
+        xml.append( XMLHandler.addTagValue( "login", repository.getUserInfo().getLogin() ) );
+        xml.append( XMLHandler.addTagValue( "password", Encr.encryptPassword( repository.getUserInfo().getPassword() ) ) );
       }
-      xml.append(XMLHandler.closeTag("repository"));
+      xml.append( XMLHandler.closeTag( "repository" ) );
     }
 
-    xml.append("</" + XML_TAG + ">").append(Const.CR);
+    xml.append( "</" + XML_TAG + ">" ).append( Const.CR );
     return xml.toString();
   }
 
-  public JobExecutionConfiguration(Node trecNode) throws KettleException {
+  public JobExecutionConfiguration( Node trecNode ) throws KettleException {
     this();
 
-    executingLocally = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "exec_local"));
+    executingLocally = "Y".equalsIgnoreCase( XMLHandler.getTagValue( trecNode, "exec_local" ) );
 
-    executingRemotely = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "exec_remote"));
-    Node remoteHostNode = XMLHandler.getSubNode(trecNode, SlaveServer.XML_TAG);
-    if (remoteHostNode != null) {
-      remoteServer = new SlaveServer(remoteHostNode);
+    executingRemotely = "Y".equalsIgnoreCase( XMLHandler.getTagValue( trecNode, "exec_remote" ) );
+    Node remoteHostNode = XMLHandler.getSubNode( trecNode, SlaveServer.XML_TAG );
+    if ( remoteHostNode != null ) {
+      remoteServer = new SlaveServer( remoteHostNode );
     }
-    passingExport = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "pass_export"));
-    expandingRemoteJob = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "expand_remote_job"));
+    passingExport = "Y".equalsIgnoreCase( XMLHandler.getTagValue( trecNode, "pass_export" ) );
+    expandingRemoteJob = "Y".equalsIgnoreCase( XMLHandler.getTagValue( trecNode, "expand_remote_job" ) );
 
     // Read the variables...
     //
-    Node varsNode = XMLHandler.getSubNode(trecNode, "variables");
-    int nrVariables = XMLHandler.countNodes(varsNode, "variable");
-    for (int i = 0; i < nrVariables; i++) {
-      Node argNode = XMLHandler.getSubNodeByNr(varsNode, "variable", i);
-      String name = XMLHandler.getTagValue(argNode, "name");
-      String value = XMLHandler.getTagValue(argNode, "value");
-      if (!Const.isEmpty(name) && !Const.isEmpty(value)) {
-        variables.put(name, value);
+    Node varsNode = XMLHandler.getSubNode( trecNode, "variables" );
+    int nrVariables = XMLHandler.countNodes( varsNode, "variable" );
+    for ( int i = 0; i < nrVariables; i++ ) {
+      Node argNode = XMLHandler.getSubNodeByNr( varsNode, "variable", i );
+      String name = XMLHandler.getTagValue( argNode, "name" );
+      String value = XMLHandler.getTagValue( argNode, "value" );
+      if ( !Const.isEmpty( name ) && !Const.isEmpty( value ) ) {
+        variables.put( name, value );
       }
     }
 
     // Read the arguments...
     //
-    Node argsNode = XMLHandler.getSubNode(trecNode, "arguments");
-    int nrArguments = XMLHandler.countNodes(argsNode, "argument");
-    for (int i = 0; i < nrArguments; i++) {
-      Node argNode = XMLHandler.getSubNodeByNr(argsNode, "argument", i);
-      String name = XMLHandler.getTagValue(argNode, "name");
-      String value = XMLHandler.getTagValue(argNode, "value");
-      if (!Const.isEmpty(name) && !Const.isEmpty(value)) {
-        arguments.put(name, value);
+    Node argsNode = XMLHandler.getSubNode( trecNode, "arguments" );
+    int nrArguments = XMLHandler.countNodes( argsNode, "argument" );
+    for ( int i = 0; i < nrArguments; i++ ) {
+      Node argNode = XMLHandler.getSubNodeByNr( argsNode, "argument", i );
+      String name = XMLHandler.getTagValue( argNode, "name" );
+      String value = XMLHandler.getTagValue( argNode, "value" );
+      if ( !Const.isEmpty( name ) && !Const.isEmpty( value ) ) {
+        arguments.put( name, value );
       }
     }
 
     // Read the parameters...
     //
-    Node parmsNode = XMLHandler.getSubNode(trecNode, "parameters");
-    int nrParams = XMLHandler.countNodes(parmsNode, "parameter");
-    for (int i = 0; i < nrParams; i++) {
-      Node parmNode = XMLHandler.getSubNodeByNr(parmsNode, "parameter", i);
-      String name = XMLHandler.getTagValue(parmNode, "name");
-      String value = XMLHandler.getTagValue(parmNode, "value");
-      if (!Const.isEmpty(name)) {
-        params.put(name, value);
+    Node parmsNode = XMLHandler.getSubNode( trecNode, "parameters" );
+    int nrParams = XMLHandler.countNodes( parmsNode, "parameter" );
+    for ( int i = 0; i < nrParams; i++ ) {
+      Node parmNode = XMLHandler.getSubNodeByNr( parmsNode, "parameter", i );
+      String name = XMLHandler.getTagValue( parmNode, "name" );
+      String value = XMLHandler.getTagValue( parmNode, "value" );
+      if ( !Const.isEmpty( name ) ) {
+        params.put( name, value );
       }
     }
 
-    replayDate = XMLHandler.stringToDate(XMLHandler.getTagValue(trecNode, "replay_date"));
-    safeModeEnabled = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "safe_mode"));
-    logLevel = LogLevel.getLogLevelForCode(XMLHandler.getTagValue(trecNode, "log_level"));
-    clearingLog = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "clear_log"));
+    replayDate = XMLHandler.stringToDate( XMLHandler.getTagValue( trecNode, "replay_date" ) );
+    safeModeEnabled = "Y".equalsIgnoreCase( XMLHandler.getTagValue( trecNode, "safe_mode" ) );
+    logLevel = LogLevel.getLogLevelForCode( XMLHandler.getTagValue( trecNode, "log_level" ) );
+    clearingLog = "Y".equalsIgnoreCase( XMLHandler.getTagValue( trecNode, "clear_log" ) );
 
-    startCopyName = XMLHandler.getTagValue(trecNode, "start_copy_name");
-    startCopyNr = Const.toInt(XMLHandler.getTagValue(trecNode, "start_copy_nr"), 0);
+    startCopyName = XMLHandler.getTagValue( trecNode, "start_copy_name" );
+    startCopyNr = Const.toInt( XMLHandler.getTagValue( trecNode, "start_copy_nr" ), 0 );
 
-    gatheringMetrics = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "gather_metrics"));
-    
-    Node resultNode = XMLHandler.getSubNode(trecNode, Result.XML_TAG);
-    if (resultNode != null) {
+    gatheringMetrics = "Y".equalsIgnoreCase( XMLHandler.getTagValue( trecNode, "gather_metrics" ) );
+
+    Node resultNode = XMLHandler.getSubNode( trecNode, Result.XML_TAG );
+    if ( resultNode != null ) {
       try {
-        previousResult = new Result(resultNode);
-      } catch (KettleException e) {
-        throw new KettleException("Unable to hydrate previous result", e);
+        previousResult = new Result( resultNode );
+      } catch ( KettleException e ) {
+        throw new KettleException( "Unable to hydrate previous result", e );
       }
     }
 
     // Try to get a handle to the repository from here...
     //
-    Node repNode = XMLHandler.getSubNode(trecNode, "repository");
-    if (repNode != null) {
-      String repositoryName = XMLHandler.getTagValue(repNode, "name");
-      String username = XMLHandler.getTagValue(repNode, "login");
-      String password = Encr.decryptPassword(XMLHandler.getTagValue(repNode, "password"));
+    Node repNode = XMLHandler.getSubNode( trecNode, "repository" );
+    if ( repNode != null ) {
+      String repositoryName = XMLHandler.getTagValue( repNode, "name" );
+      String username = XMLHandler.getTagValue( repNode, "login" );
+      String password = Encr.decryptPassword( XMLHandler.getTagValue( repNode, "password" ) );
 
       // Verify that the repository exists on the slave server...
       //
       RepositoriesMeta repositoriesMeta = new RepositoriesMeta();
       try {
         repositoriesMeta.readData();
-      } catch (Exception e) {
-        throw new KettleException("Unable to get a list of repositories to locate repository '" + repositoryName + "'");
+      } catch ( Exception e ) {
+        throw new KettleException( "Unable to get a list of repositories to locate repository '" + repositoryName + "'" );
       }
-      RepositoryMeta repositoryMeta = repositoriesMeta.findRepository(repositoryName);
-      if (repositoryMeta == null) {
-        log.logBasic("I couldn't find the repository with name '" + repositoryName + "'");
+      RepositoryMeta repositoryMeta = repositoriesMeta.findRepository( repositoryName );
+      if ( repositoryMeta == null ) {
+        log.logBasic( "I couldn't find the repository with name '" + repositoryName + "'" );
         return;
       }
 
-      //        	Repository rep = (Repository) PluginRegistry.getInstance().loadClass(RepositoryPluginType.class, repositoryMeta, PluginClassType.MainClassType);
+      // Repository rep = (Repository) PluginRegistry.getInstance().loadClass(RepositoryPluginType.class,
+      // repositoryMeta, PluginClassType.MainClassType);
 
-      Repository rep = PluginRegistry.getInstance().loadClass(RepositoryPluginType.class, repositoryMeta,
-          Repository.class);
-      rep.init(repositoryMeta);
+      Repository rep =
+          PluginRegistry.getInstance().loadClass( RepositoryPluginType.class, repositoryMeta, Repository.class );
+      rep.init( repositoryMeta );
 
       try {
-        rep.connect(username, password);
-      } catch (Exception e) {
-        log.logBasic("Unable to connect to the repository with name '" + repositoryName + "'");
+        rep.connect( username, password );
+      } catch ( Exception e ) {
+        log.logBasic( "Unable to connect to the repository with name '" + repositoryName + "'" );
         return;
       }
 
@@ -503,15 +514,16 @@ public class JobExecutionConfiguration implements Cloneable {
   }
 
   public String[] getArgumentStrings() {
-    if (arguments == null || arguments.size() == 0)
+    if ( arguments == null || arguments.size() == 0 ) {
       return null;
+    }
 
-    String[] argNames = arguments.keySet().toArray(new String[arguments.size()]);
-    Arrays.sort(argNames);
+    String[] argNames = arguments.keySet().toArray( new String[arguments.size()] );
+    Arrays.sort( argNames );
 
     String[] values = new String[argNames.length];
-    for (int i = 0; i < argNames.length; i++) {
-      values[i] = arguments.get(argNames[i]);
+    for ( int i = 0; i < argNames.length; i++ ) {
+      values[i] = arguments.get( argNames[i] );
     }
 
     return values;
@@ -525,9 +537,10 @@ public class JobExecutionConfiguration implements Cloneable {
   }
 
   /**
-   * @param previousResult the previousResult to set
+   * @param previousResult
+   *          the previousResult to set
    */
-  public void setPreviousResult(Result previousResult) {
+  public void setPreviousResult( Result previousResult ) {
     this.previousResult = previousResult;
   }
 
@@ -539,9 +552,10 @@ public class JobExecutionConfiguration implements Cloneable {
   }
 
   /**
-   * @param repository the repository to set
+   * @param repository
+   *          the repository to set
    */
-  public void setRepository(Repository repository) {
+  public void setRepository( Repository repository ) {
     this.repository = repository;
   }
 
@@ -553,9 +567,10 @@ public class JobExecutionConfiguration implements Cloneable {
   }
 
   /**
-   * @param clearingLog the clearingLog to set
+   * @param clearingLog
+   *          the clearingLog to set
    */
-  public void setClearingLog(boolean clearingLog) {
+  public void setClearingLog( boolean clearingLog ) {
     this.clearingLog = clearingLog;
   }
 
@@ -567,9 +582,10 @@ public class JobExecutionConfiguration implements Cloneable {
   }
 
   /**
-   * @param passingExport the passingExport to set
+   * @param passingExport
+   *          the passingExport to set
    */
-  public void setPassingExport(boolean passingExport) {
+  public void setPassingExport( boolean passingExport ) {
     this.passingExport = passingExport;
   }
 
@@ -581,9 +597,10 @@ public class JobExecutionConfiguration implements Cloneable {
   }
 
   /**
-   * @param startCopyName the startCopyName to set
+   * @param startCopyName
+   *          the startCopyName to set
    */
-  public void setStartCopyName(String startCopyName) {
+  public void setStartCopyName( String startCopyName ) {
     this.startCopyName = startCopyName;
   }
 
@@ -595,9 +612,10 @@ public class JobExecutionConfiguration implements Cloneable {
   }
 
   /**
-   * @param startCopyNr the startCopyNr to set
+   * @param startCopyNr
+   *          the startCopyNr to set
    */
-  public void setStartCopyNr(int startCopyNr) {
+  public void setStartCopyNr( int startCopyNr ) {
     this.startCopyNr = startCopyNr;
   }
 
@@ -609,13 +627,14 @@ public class JobExecutionConfiguration implements Cloneable {
   }
 
   /**
-   * @param gatheringMetrics the gatheringMetrics to set
+   * @param gatheringMetrics
+   *          the gatheringMetrics to set
    */
-  public void setGatheringMetrics(boolean gatheringMetrics) {
+  public void setGatheringMetrics( boolean gatheringMetrics ) {
     this.gatheringMetrics = gatheringMetrics;
   }
 
-  public void setExpandingRemoteJob(boolean expandingRemoteJob) {
+  public void setExpandingRemoteJob( boolean expandingRemoteJob ) {
     this.expandingRemoteJob = expandingRemoteJob;
   }
 
@@ -627,7 +646,7 @@ public class JobExecutionConfiguration implements Cloneable {
     return extensionOptions;
   }
 
-  public void setExtensionOptions(Map<String, String> extensionOptions) {
+  public void setExtensionOptions( Map<String, String> extensionOptions ) {
     this.extensionOptions = extensionOptions;
   }
 }

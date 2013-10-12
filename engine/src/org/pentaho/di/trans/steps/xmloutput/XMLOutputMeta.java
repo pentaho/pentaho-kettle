@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.trans.steps.xmloutput;
 
@@ -65,7 +65,7 @@ import org.w3c.dom.Node;
  * 
  */
 public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = XMLOutputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  private static Class<?> PKG = XMLOutputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
   /** The base name of the output file */
   private String fileName;
@@ -74,11 +74,10 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
   private String extension;
 
   /** Whether to push the output into the output of a servlet with the executeTrans Carte/DI-Server servlet */
-  private  boolean servletOutput;
+  private boolean servletOutput;
 
   /**
-   * if this value is larger then 0, the text file is split up into parts of
-   * this number of lines
+   * if this value is larger then 0, the text file is split up into parts of this number of lines
    */
   private int splitEvery;
 
@@ -95,14 +94,12 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
   private boolean zipped;
 
   /**
-   * The encoding to use for reading: null or empty string means system
-   * default encoding
+   * The encoding to use for reading: null or empty string means system default encoding
    */
   private String encoding;
 
   /**
-   * The name space for the XML document: null or empty string means no 
-   * xmlns is written 
+   * The name space for the XML document: null or empty string means no xmlns is written
    */
   private String nameSpace;
 
@@ -118,12 +115,12 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
   /* THE FIELD SPECIFICATIONS ... */
 
   /** The output fields */
-  private XMLField outputFields[];
+  private XMLField[] outputFields;
 
-  /** Flag : Do not open new file when transformation start  */
+  /** Flag : Do not open new file when transformation start */
   private boolean doNotOpenNewFileInit;
 
-  /** Omit null elements from xml output*/
+  /** Omit null elements from xml output */
   private boolean omitNullValues;
 
   private boolean SpecifyFormat;
@@ -143,9 +140,9 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * @param dateInFilename
-   *            The dateInFilename to set.
+   *          The dateInFilename to set.
    */
-  public void setDateInFilename(boolean dateInFilename) {
+  public void setDateInFilename( boolean dateInFilename ) {
     this.dateInFilename = dateInFilename;
   }
 
@@ -158,9 +155,9 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * @param extension
-   *            The extension to set.
+   *          The extension to set.
    */
-  public void setExtension(String extension) {
+  public void setExtension( String extension ) {
     this.extension = extension;
   }
 
@@ -172,9 +169,10 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param doNotOpenNewFileInit The "do not open new file at init" flag to set.
+   * @param doNotOpenNewFileInit
+   *          The "do not open new file at init" flag to set.
    */
-  public void setDoNotOpenNewFileInit(boolean doNotOpenNewFileInit) {
+  public void setDoNotOpenNewFileInit( boolean doNotOpenNewFileInit ) {
     this.doNotOpenNewFileInit = doNotOpenNewFileInit;
   }
 
@@ -187,9 +185,9 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * @param fileName
-   *            The fileName to set.
+   *          The fileName to set.
    */
-  public void setFileName(String fileName) {
+  public void setFileName( String fileName ) {
     this.fileName = fileName;
   }
 
@@ -202,9 +200,9 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * @param splitEvery
-   *            The splitEvery to set.
+   *          The splitEvery to set.
    */
-  public void setSplitEvery(int splitEvery) {
+  public void setSplitEvery( int splitEvery ) {
     this.splitEvery = splitEvery;
   }
 
@@ -217,9 +215,9 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * @param stepNrInFilename
-   *            The stepNrInFilename to set.
+   *          The stepNrInFilename to set.
    */
-  public void setStepNrInFilename(boolean stepNrInFilename) {
+  public void setStepNrInFilename( boolean stepNrInFilename ) {
     this.stepNrInFilename = stepNrInFilename;
   }
 
@@ -232,9 +230,9 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * @param timeInFilename
-   *            The timeInFilename to set.
+   *          The timeInFilename to set.
    */
-  public void setTimeInFilename(boolean timeInFilename) {
+  public void setTimeInFilename( boolean timeInFilename ) {
     this.timeInFilename = timeInFilename;
   }
 
@@ -246,9 +244,10 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param addtoresultfilenamesin The addtoresultfilenames to set.
+   * @param addtoresultfilenamesin
+   *          The addtoresultfilenames to set.
    */
-  public void setAddToResultFiles(boolean addtoresultfilenamesin) {
+  public void setAddToResultFiles( boolean addtoresultfilenamesin ) {
     this.addToResultFilenames = addtoresultfilenamesin;
   }
 
@@ -256,7 +255,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
     return SpecifyFormat;
   }
 
-  public void setSpecifyFormat(boolean SpecifyFormat) {
+  public void setSpecifyFormat( boolean SpecifyFormat ) {
     this.SpecifyFormat = SpecifyFormat;
   }
 
@@ -264,7 +263,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
     return date_time_format;
   }
 
-  public void setDateTimeFormat(String date_time_format) {
+  public void setDateTimeFormat( String date_time_format ) {
     this.date_time_format = date_time_format;
   }
 
@@ -277,9 +276,9 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * @param zipped
-   *            The zipped to set.
+   *          The zipped to set.
    */
-  public void setZipped(boolean zipped) {
+  public void setZipped( boolean zipped ) {
     this.zipped = zipped;
   }
 
@@ -292,18 +291,17 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * @param outputFields
-   *            The outputFields to set.
+   *          The outputFields to set.
    */
-  public void setOutputFields(XMLField[] outputFields) {
+  public void setOutputFields( XMLField[] outputFields ) {
     this.outputFields = outputFields;
   }
 
-  public void loadXML(Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore)
-      throws KettleXMLException {
-    readData(stepnode);
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+    readData( stepnode );
   }
 
-  public void allocate(int nrfields) {
+  public void allocate( int nrfields ) {
     outputFields = new XMLField[nrfields];
   }
 
@@ -311,75 +309,78 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
     XMLOutputMeta retval = (XMLOutputMeta) super.clone();
     int nrfields = outputFields.length;
 
-    retval.allocate(nrfields);
+    retval.allocate( nrfields );
 
-    for (int i = 0; i < nrfields; i++) {
+    for ( int i = 0; i < nrfields; i++ ) {
       retval.outputFields[i] = (XMLField) outputFields[i].clone();
     }
 
     return retval;
   }
 
-  private void readData(Node stepnode) throws KettleXMLException {
+  private void readData( Node stepnode ) throws KettleXMLException {
     try {
-      encoding = XMLHandler.getTagValue(stepnode, "encoding");
-      nameSpace = XMLHandler.getTagValue(stepnode, "name_space");
-      mainElement = XMLHandler.getTagValue(stepnode, "xml_main_element");
-      repeatElement = XMLHandler.getTagValue(stepnode, "xml_repeat_element");
+      encoding = XMLHandler.getTagValue( stepnode, "encoding" );
+      nameSpace = XMLHandler.getTagValue( stepnode, "name_space" );
+      mainElement = XMLHandler.getTagValue( stepnode, "xml_main_element" );
+      repeatElement = XMLHandler.getTagValue( stepnode, "xml_repeat_element" );
 
-      fileName = XMLHandler.getTagValue(stepnode, "file", "name");
-      extension = XMLHandler.getTagValue(stepnode, "file", "extention");
-      servletOutput         = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "servlet_output"));
+      fileName = XMLHandler.getTagValue( stepnode, "file", "name" );
+      extension = XMLHandler.getTagValue( stepnode, "file", "extention" );
+      servletOutput = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "servlet_output" ) );
 
-      doNotOpenNewFileInit = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "do_not_open_newfile_init"));
-      stepNrInFilename = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "split"));
-      dateInFilename = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_date"));
-      timeInFilename = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_time"));
-      SpecifyFormat = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "SpecifyFormat"));
-      omitNullValues = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "omit_null_values"));
-      date_time_format = XMLHandler.getTagValue(stepnode, "file", "date_time_format");
+      doNotOpenNewFileInit =
+          "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "do_not_open_newfile_init" ) );
+      stepNrInFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "split" ) );
+      dateInFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "add_date" ) );
+      timeInFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "add_time" ) );
+      SpecifyFormat = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "SpecifyFormat" ) );
+      omitNullValues = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "omit_null_values" ) );
+      date_time_format = XMLHandler.getTagValue( stepnode, "file", "date_time_format" );
 
-      addToResultFilenames = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_to_result_filenames"));
+      addToResultFilenames =
+          "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "add_to_result_filenames" ) );
 
-      zipped = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "zipped"));
-      splitEvery = Const.toInt(XMLHandler.getTagValue(stepnode, "file", "splitevery"), 0);
+      zipped = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "zipped" ) );
+      splitEvery = Const.toInt( XMLHandler.getTagValue( stepnode, "file", "splitevery" ), 0 );
 
-      Node fields = XMLHandler.getSubNode(stepnode, "fields");
-      int nrfields = XMLHandler.countNodes(fields, "field");
+      Node fields = XMLHandler.getSubNode( stepnode, "fields" );
+      int nrfields = XMLHandler.countNodes( fields, "field" );
 
-      allocate(nrfields);
+      allocate( nrfields );
 
-      for (int i = 0; i < nrfields; i++) {
-        Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i);
+      for ( int i = 0; i < nrfields; i++ ) {
+        Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
 
         outputFields[i] = new XMLField();
-        String contentTypeString = Const.NVL(XMLHandler.getTagValue(fnode, "content_type"), ContentType.Element.name());
-        outputFields[i].setContentType(ContentType.valueOf(contentTypeString));
-        String fieldName = XMLHandler.getTagValue(fnode, "name");
-        outputFields[i].setFieldName(fieldName);
-        String elementName = XMLHandler.getTagValue(fnode, "element");
-        outputFields[i].setElementName(elementName == null ? "" : elementName);
-        outputFields[i].setType(XMLHandler.getTagValue(fnode, "type"));
-        outputFields[i].setFormat(XMLHandler.getTagValue(fnode, "format"));
-        outputFields[i].setCurrencySymbol(XMLHandler.getTagValue(fnode, "currency"));
-        outputFields[i].setDecimalSymbol(XMLHandler.getTagValue(fnode, "decimal"));
-        outputFields[i].setGroupingSymbol(XMLHandler.getTagValue(fnode, "group"));
-        outputFields[i].setNullString(XMLHandler.getTagValue(fnode, "nullif"));
-        outputFields[i].setLength(Const.toInt(XMLHandler.getTagValue(fnode, "length"), -1));
-        outputFields[i].setPrecision(Const.toInt(XMLHandler.getTagValue(fnode, "precision"), -1));
+        String contentTypeString =
+            Const.NVL( XMLHandler.getTagValue( fnode, "content_type" ), ContentType.Element.name() );
+        outputFields[i].setContentType( ContentType.valueOf( contentTypeString ) );
+        String fieldName = XMLHandler.getTagValue( fnode, "name" );
+        outputFields[i].setFieldName( fieldName );
+        String elementName = XMLHandler.getTagValue( fnode, "element" );
+        outputFields[i].setElementName( elementName == null ? "" : elementName );
+        outputFields[i].setType( XMLHandler.getTagValue( fnode, "type" ) );
+        outputFields[i].setFormat( XMLHandler.getTagValue( fnode, "format" ) );
+        outputFields[i].setCurrencySymbol( XMLHandler.getTagValue( fnode, "currency" ) );
+        outputFields[i].setDecimalSymbol( XMLHandler.getTagValue( fnode, "decimal" ) );
+        outputFields[i].setGroupingSymbol( XMLHandler.getTagValue( fnode, "group" ) );
+        outputFields[i].setNullString( XMLHandler.getTagValue( fnode, "nullif" ) );
+        outputFields[i].setLength( Const.toInt( XMLHandler.getTagValue( fnode, "length" ), -1 ) );
+        outputFields[i].setPrecision( Const.toInt( XMLHandler.getTagValue( fnode, "precision" ), -1 ) );
       }
-    } catch (Exception e) {
-      throw new KettleXMLException("Unable to load step info from XML", e);
+    } catch ( Exception e ) {
+      throw new KettleXMLException( "Unable to load step info from XML", e );
     }
   }
 
-  public String getNewLine(String fformat) {
-    String nl = System.getProperty("line.separator");
+  public String getNewLine( String fformat ) {
+    String nl = System.getProperty( "line.separator" );
 
-    if (fformat != null) {
-      if (fformat.equalsIgnoreCase("DOS")) {
+    if ( fformat != null ) {
+      if ( fformat.equalsIgnoreCase( "DOS" ) ) {
         nl = "\r\n";
-      } else if (fformat.equalsIgnoreCase("UNIX")) {
+      } else if ( fformat.equalsIgnoreCase( "UNIX" ) ) {
         nl = "\n";
       }
     }
@@ -407,317 +408,331 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
 
     int nrfields = 0;
 
-    allocate(nrfields);
+    allocate( nrfields );
 
-    for (int i = 0; i < nrfields; i++) {
+    for ( int i = 0; i < nrfields; i++ ) {
       outputFields[i] = new XMLField();
-      outputFields[i].setContentType(ContentType.Element);
-      outputFields[i].setFieldName("field" + i);
-      outputFields[i].setElementName("field" + i);
-      outputFields[i].setType("Number");
-      outputFields[i].setFormat(" 0,000,000.00;-0,000,000.00");
-      outputFields[i].setCurrencySymbol("");
-      outputFields[i].setDecimalSymbol(",");
-      outputFields[i].setGroupingSymbol(".");
-      outputFields[i].setNullString("");
-      outputFields[i].setLength(-1);
-      outputFields[i].setPrecision(-1);
+      outputFields[i].setContentType( ContentType.Element );
+      outputFields[i].setFieldName( "field" + i );
+      outputFields[i].setElementName( "field" + i );
+      outputFields[i].setType( "Number" );
+      outputFields[i].setFormat( " 0,000,000.00;-0,000,000.00" );
+      outputFields[i].setCurrencySymbol( "" );
+      outputFields[i].setDecimalSymbol( "," );
+      outputFields[i].setGroupingSymbol( "." );
+      outputFields[i].setNullString( "" );
+      outputFields[i].setLength( -1 );
+      outputFields[i].setPrecision( -1 );
     }
   }
 
-  public String[] getFiles(VariableSpace space) {
+  public String[] getFiles( VariableSpace space ) {
     int copies = 1;
     int splits = 1;
 
-    if (stepNrInFilename) {
+    if ( stepNrInFilename ) {
       copies = 3;
     }
 
-    if (splitEvery != 0) {
+    if ( splitEvery != 0 ) {
       splits = 3;
     }
 
     int nr = copies * splits;
-    if (nr > 1)
+    if ( nr > 1 ) {
       nr++;
+    }
 
-    String retval[] = new String[nr];
+    String[] retval = new String[nr];
 
     int i = 0;
-    for (int copy = 0; copy < copies; copy++) {
-      for (int split = 0; split < splits; split++) {
-        retval[i] = buildFilename(space, copy, split, false);
+    for ( int copy = 0; copy < copies; copy++ ) {
+      for ( int split = 0; split < splits; split++ ) {
+        retval[i] = buildFilename( space, copy, split, false );
         i++;
       }
     }
-    if (i < nr) {
+    if ( i < nr ) {
       retval[i] = "...";
     }
 
     return retval;
   }
 
-  public String buildFilename(VariableSpace space, int stepnr, int splitnr, boolean ziparchive) {
+  public String buildFilename( VariableSpace space, int stepnr, int splitnr, boolean ziparchive ) {
     SimpleDateFormat daf = new SimpleDateFormat();
-    DecimalFormat df = new DecimalFormat("00000");
+    DecimalFormat df = new DecimalFormat( "00000" );
 
     // Replace possible environment variables...
-    String retval = space.environmentSubstitute(fileName);
-    String realextension = space.environmentSubstitute(extension);
+    String retval = space.environmentSubstitute( fileName );
+    String realextension = space.environmentSubstitute( extension );
 
     Date now = new Date();
 
-    if (SpecifyFormat && !Const.isEmpty(date_time_format)) {
-      daf.applyPattern(date_time_format);
-      String dt = daf.format(now);
+    if ( SpecifyFormat && !Const.isEmpty( date_time_format ) ) {
+      daf.applyPattern( date_time_format );
+      String dt = daf.format( now );
       retval += dt;
     } else {
-      if (dateInFilename) {
-        daf.applyPattern("yyyyMMdd");
-        String d = daf.format(now);
+      if ( dateInFilename ) {
+        daf.applyPattern( "yyyyMMdd" );
+        String d = daf.format( now );
         retval += "_" + d;
       }
-      if (timeInFilename) {
-        daf.applyPattern("HHmmss");
-        String t = daf.format(now);
+      if ( timeInFilename ) {
+        daf.applyPattern( "HHmmss" );
+        String t = daf.format( now );
         retval += "_" + t;
       }
     }
 
-    if (stepNrInFilename) {
+    if ( stepNrInFilename ) {
       retval += "_" + stepnr;
     }
-    if (splitEvery > 0) {
-      retval += "_" + df.format(splitnr + 1);
+    if ( splitEvery > 0 ) {
+      retval += "_" + df.format( splitnr + 1 );
     }
 
-    if (zipped) {
-      if (ziparchive) {
+    if ( zipped ) {
+      if ( ziparchive ) {
         retval += ".zip";
       } else {
-        if (realextension != null && realextension.length() != 0) {
+        if ( realextension != null && realextension.length() != 0 ) {
           retval += "." + realextension;
         }
       }
     } else {
-      if (realextension != null && realextension.length() != 0) {
+      if ( realextension != null && realextension.length() != 0 ) {
         retval += "." + realextension;
       }
     }
     return retval;
   }
 
-  public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore) {
+  public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
+      VariableSpace space, Repository repository, IMetaStore metaStore ) {
 
     // No values are added to the row in this type of step
     // However, in case of Fixed length records,
     // the field precisions and lengths are altered!
 
-    for (int i = 0; i < outputFields.length; i++) {
+    for ( int i = 0; i < outputFields.length; i++ ) {
       XMLField field = outputFields[i];
-      ValueMetaInterface v = row.searchValueMeta(field.getFieldName());
-      if (v != null) {
-        v.setLength(field.getLength(), field.getPrecision());
+      ValueMetaInterface v = row.searchValueMeta( field.getFieldName() );
+      if ( v != null ) {
+        v.setLength( field.getLength(), field.getPrecision() );
       }
     }
 
   }
-  
-  public RowMetaInterface getRequiredFields(VariableSpace space) throws KettleException {
+
+  public RowMetaInterface getRequiredFields( VariableSpace space ) throws KettleException {
     RowMeta row = new RowMeta();
-    for (int i = 0; i < outputFields.length; i++) {
+    for ( int i = 0; i < outputFields.length; i++ ) {
       XMLField field = outputFields[i];
-      row.addValueMeta(new ValueMeta(field.getFieldName(), field.getType(), field.getLength(), field.getPrecision()));
+      row.addValueMeta( new ValueMeta( field.getFieldName(), field.getType(), field.getLength(), field.getPrecision() ) );
     }
     return row;
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer(600);
+    StringBuffer retval = new StringBuffer( 600 );
 
-    retval.append("    ").append(XMLHandler.addTagValue("encoding", encoding));
-    retval.append("    ").append(XMLHandler.addTagValue("name_space", nameSpace));
-    retval.append("    ").append(XMLHandler.addTagValue("xml_main_element", mainElement));
-    retval.append("    ").append(XMLHandler.addTagValue("xml_repeat_element", repeatElement));
+    retval.append( "    " ).append( XMLHandler.addTagValue( "encoding", encoding ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "name_space", nameSpace ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "xml_main_element", mainElement ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "xml_repeat_element", repeatElement ) );
 
-    retval.append("    <file>").append(Const.CR);
-    retval.append("      ").append(XMLHandler.addTagValue("name", fileName));
-    retval.append("      ").append(XMLHandler.addTagValue("extention", extension));
-    retval.append("      ").append(XMLHandler.addTagValue("servlet_output", servletOutput));
+    retval.append( "    <file>" ).append( Const.CR );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "name", fileName ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "extention", extension ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "servlet_output", servletOutput ) );
 
-    retval.append("      ").append(XMLHandler.addTagValue("do_not_open_newfile_init", doNotOpenNewFileInit));
-    retval.append("      ").append(XMLHandler.addTagValue("split", stepNrInFilename));
-    retval.append("      ").append(XMLHandler.addTagValue("add_date", dateInFilename));
-    retval.append("      ").append(XMLHandler.addTagValue("add_time", timeInFilename));
-    retval.append("      ").append(XMLHandler.addTagValue("SpecifyFormat", SpecifyFormat));
-    retval.append("      ").append(XMLHandler.addTagValue("omit_null_values", omitNullValues));
-    retval.append("      ").append(XMLHandler.addTagValue("date_time_format", date_time_format));
-    retval.append("      ").append(XMLHandler.addTagValue("add_to_result_filenames", addToResultFilenames));
-    retval.append("      ").append(XMLHandler.addTagValue("zipped", zipped));
-    retval.append("      ").append(XMLHandler.addTagValue("splitevery", splitEvery));
-    retval.append("    </file>").append(Const.CR);
-    retval.append("    <fields>").append(Const.CR);
-    for (int i = 0; i < outputFields.length; i++) {
+    retval.append( "      " ).append( XMLHandler.addTagValue( "do_not_open_newfile_init", doNotOpenNewFileInit ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "split", stepNrInFilename ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "add_date", dateInFilename ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "add_time", timeInFilename ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "SpecifyFormat", SpecifyFormat ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "omit_null_values", omitNullValues ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "date_time_format", date_time_format ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "add_to_result_filenames", addToResultFilenames ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "zipped", zipped ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "splitevery", splitEvery ) );
+    retval.append( "    </file>" ).append( Const.CR );
+    retval.append( "    <fields>" ).append( Const.CR );
+    for ( int i = 0; i < outputFields.length; i++ ) {
       XMLField field = outputFields[i];
 
-      if (field.getFieldName() != null && field.getFieldName().length() != 0) {
-        retval.append("      <field>").append(Const.CR);
-        retval.append("        ").append(XMLHandler.addTagValue("content_type", field.getContentType().name()));
-        retval.append("        ").append(XMLHandler.addTagValue("name", field.getFieldName()));
-        retval.append("        ").append(XMLHandler.addTagValue("element", field.getElementName()));
-        retval.append("        ").append(XMLHandler.addTagValue("type", field.getTypeDesc()));
-        retval.append("        ").append(XMLHandler.addTagValue("format", field.getFormat()));
-        retval.append("        ").append(XMLHandler.addTagValue("currency", field.getCurrencySymbol()));
-        retval.append("        ").append(XMLHandler.addTagValue("decimal", field.getDecimalSymbol()));
-        retval.append("        ").append(XMLHandler.addTagValue("group", field.getGroupingSymbol()));
-        retval.append("        ").append(XMLHandler.addTagValue("nullif", field.getNullString()));
-        retval.append("        ").append(XMLHandler.addTagValue("length", field.getLength()));
-        retval.append("        ").append(XMLHandler.addTagValue("precision", field.getPrecision()));
-        retval.append("      </field>").append(Const.CR);
+      if ( field.getFieldName() != null && field.getFieldName().length() != 0 ) {
+        retval.append( "      <field>" ).append( Const.CR );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "content_type", field.getContentType().name() ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "name", field.getFieldName() ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "element", field.getElementName() ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "type", field.getTypeDesc() ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "format", field.getFormat() ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "currency", field.getCurrencySymbol() ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "decimal", field.getDecimalSymbol() ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "group", field.getGroupingSymbol() ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "nullif", field.getNullString() ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "length", field.getLength() ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "precision", field.getPrecision() ) );
+        retval.append( "      </field>" ).append( Const.CR );
       }
     }
-    retval.append("    </fields>").append(Const.CR);
+    retval.append( "    </fields>" ).append( Const.CR );
 
     return retval.toString();
   }
 
-  public void readRep(Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases)
-      throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
+    throws KettleException {
     try {
-      encoding = rep.getStepAttributeString(id_step, "encoding");
-      nameSpace = rep.getStepAttributeString(id_step, "name_space");
-      mainElement = rep.getStepAttributeString(id_step, "xml_main_element");
-      repeatElement = rep.getStepAttributeString(id_step, "xml_repeat_element");
+      encoding = rep.getStepAttributeString( id_step, "encoding" );
+      nameSpace = rep.getStepAttributeString( id_step, "name_space" );
+      mainElement = rep.getStepAttributeString( id_step, "xml_main_element" );
+      repeatElement = rep.getStepAttributeString( id_step, "xml_repeat_element" );
 
-      fileName = rep.getStepAttributeString(id_step, "file_name");
-      extension = rep.getStepAttributeString(id_step, "file_extention");
-      servletOutput =      rep.getStepAttributeBoolean (id_step, "file_servlet_output");  
+      fileName = rep.getStepAttributeString( id_step, "file_name" );
+      extension = rep.getStepAttributeString( id_step, "file_extention" );
+      servletOutput = rep.getStepAttributeBoolean( id_step, "file_servlet_output" );
 
-      doNotOpenNewFileInit = rep.getStepAttributeBoolean(id_step, "do_not_open_newfile_init");
-      splitEvery = (int) rep.getStepAttributeInteger(id_step, "file_split");
-      stepNrInFilename = rep.getStepAttributeBoolean(id_step, "file_add_stepnr");
-      dateInFilename = rep.getStepAttributeBoolean(id_step, "file_add_date");
-      timeInFilename = rep.getStepAttributeBoolean(id_step, "file_add_time");
-      SpecifyFormat = rep.getStepAttributeBoolean(id_step, "SpecifyFormat");
-      omitNullValues = rep.getStepAttributeBoolean(id_step, "omit_null_values");
-      date_time_format = rep.getStepAttributeString(id_step, "date_time_format");
+      doNotOpenNewFileInit = rep.getStepAttributeBoolean( id_step, "do_not_open_newfile_init" );
+      splitEvery = (int) rep.getStepAttributeInteger( id_step, "file_split" );
+      stepNrInFilename = rep.getStepAttributeBoolean( id_step, "file_add_stepnr" );
+      dateInFilename = rep.getStepAttributeBoolean( id_step, "file_add_date" );
+      timeInFilename = rep.getStepAttributeBoolean( id_step, "file_add_time" );
+      SpecifyFormat = rep.getStepAttributeBoolean( id_step, "SpecifyFormat" );
+      omitNullValues = rep.getStepAttributeBoolean( id_step, "omit_null_values" );
+      date_time_format = rep.getStepAttributeString( id_step, "date_time_format" );
 
-      addToResultFilenames = rep.getStepAttributeBoolean(id_step, "add_to_result_filenames");
-      zipped = rep.getStepAttributeBoolean(id_step, "file_zipped");
+      addToResultFilenames = rep.getStepAttributeBoolean( id_step, "add_to_result_filenames" );
+      zipped = rep.getStepAttributeBoolean( id_step, "file_zipped" );
 
-      int nrfields = rep.countNrStepAttributes(id_step, "field_name");
+      int nrfields = rep.countNrStepAttributes( id_step, "field_name" );
 
-      allocate(nrfields);
+      allocate( nrfields );
 
-      for (int i = 0; i < nrfields; i++) {
+      for ( int i = 0; i < nrfields; i++ ) {
         outputFields[i] = new XMLField();
 
-        outputFields[i].setContentType(ContentType.valueOf(Const.NVL(rep.getStepAttributeString(id_step, i, "field_content_type"), ContentType.Element.name())));
-        outputFields[i].setFieldName(rep.getStepAttributeString(id_step, i, "field_name"));
-        outputFields[i].setElementName(rep.getStepAttributeString(id_step, i, "field_element"));
-        outputFields[i].setType(rep.getStepAttributeString(id_step, i, "field_type"));
-        outputFields[i].setFormat(rep.getStepAttributeString(id_step, i, "field_format"));
-        outputFields[i].setCurrencySymbol(rep.getStepAttributeString(id_step, i, "field_currency"));
-        outputFields[i].setDecimalSymbol(rep.getStepAttributeString(id_step, i, "field_decimal"));
-        outputFields[i].setGroupingSymbol(rep.getStepAttributeString(id_step, i, "field_group"));
-        outputFields[i].setNullString(rep.getStepAttributeString(id_step, i, "field_nullif"));
-        outputFields[i].setLength((int) rep.getStepAttributeInteger(id_step, i, "field_length"));
-        outputFields[i].setPrecision((int) rep.getStepAttributeInteger(id_step, i, "field_precision"));
+        outputFields[i].setContentType( ContentType.valueOf( Const.NVL( rep.getStepAttributeString( id_step, i,
+            "field_content_type" ), ContentType.Element.name() ) ) );
+        outputFields[i].setFieldName( rep.getStepAttributeString( id_step, i, "field_name" ) );
+        outputFields[i].setElementName( rep.getStepAttributeString( id_step, i, "field_element" ) );
+        outputFields[i].setType( rep.getStepAttributeString( id_step, i, "field_type" ) );
+        outputFields[i].setFormat( rep.getStepAttributeString( id_step, i, "field_format" ) );
+        outputFields[i].setCurrencySymbol( rep.getStepAttributeString( id_step, i, "field_currency" ) );
+        outputFields[i].setDecimalSymbol( rep.getStepAttributeString( id_step, i, "field_decimal" ) );
+        outputFields[i].setGroupingSymbol( rep.getStepAttributeString( id_step, i, "field_group" ) );
+        outputFields[i].setNullString( rep.getStepAttributeString( id_step, i, "field_nullif" ) );
+        outputFields[i].setLength( (int) rep.getStepAttributeInteger( id_step, i, "field_length" ) );
+        outputFields[i].setPrecision( (int) rep.getStepAttributeInteger( id_step, i, "field_precision" ) );
       }
-    } catch (Exception e) {
-      throw new KettleException("Unexpected error reading step information from the repository", e);
+    } catch ( Exception e ) {
+      throw new KettleException( "Unexpected error reading step information from the repository", e );
     }
   }
 
-  public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step) throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
+    throws KettleException {
     try {
-      rep.saveStepAttribute(id_transformation, id_step, "encoding", encoding);
-      rep.saveStepAttribute(id_transformation, id_step, "name_space", nameSpace);
-      rep.saveStepAttribute(id_transformation, id_step, "xml_main_element", mainElement);
-      rep.saveStepAttribute(id_transformation, id_step, "xml_repeat_element", repeatElement);
-      rep.saveStepAttribute(id_transformation, id_step, "file_name", fileName);
-      rep.saveStepAttribute(id_transformation, id_step, "file_extention", extension);
-      rep.saveStepAttribute(id_transformation, id_step, "file_servlet_output",  servletOutput);
+      rep.saveStepAttribute( id_transformation, id_step, "encoding", encoding );
+      rep.saveStepAttribute( id_transformation, id_step, "name_space", nameSpace );
+      rep.saveStepAttribute( id_transformation, id_step, "xml_main_element", mainElement );
+      rep.saveStepAttribute( id_transformation, id_step, "xml_repeat_element", repeatElement );
+      rep.saveStepAttribute( id_transformation, id_step, "file_name", fileName );
+      rep.saveStepAttribute( id_transformation, id_step, "file_extention", extension );
+      rep.saveStepAttribute( id_transformation, id_step, "file_servlet_output", servletOutput );
 
-      rep.saveStepAttribute(id_transformation, id_step, "do_not_open_newfile_init", doNotOpenNewFileInit);
-      rep.saveStepAttribute(id_transformation, id_step, "file_split", splitEvery);
-      rep.saveStepAttribute(id_transformation, id_step, "file_add_stepnr", stepNrInFilename);
-      rep.saveStepAttribute(id_transformation, id_step, "file_add_date", dateInFilename);
-      rep.saveStepAttribute(id_transformation, id_step, "file_add_time", timeInFilename);
-      rep.saveStepAttribute(id_transformation, id_step, "SpecifyFormat", SpecifyFormat);
-      rep.saveStepAttribute(id_transformation, id_step, "omit_null_values", omitNullValues);
-      rep.saveStepAttribute(id_transformation, id_step, "date_time_format", date_time_format);
+      rep.saveStepAttribute( id_transformation, id_step, "do_not_open_newfile_init", doNotOpenNewFileInit );
+      rep.saveStepAttribute( id_transformation, id_step, "file_split", splitEvery );
+      rep.saveStepAttribute( id_transformation, id_step, "file_add_stepnr", stepNrInFilename );
+      rep.saveStepAttribute( id_transformation, id_step, "file_add_date", dateInFilename );
+      rep.saveStepAttribute( id_transformation, id_step, "file_add_time", timeInFilename );
+      rep.saveStepAttribute( id_transformation, id_step, "SpecifyFormat", SpecifyFormat );
+      rep.saveStepAttribute( id_transformation, id_step, "omit_null_values", omitNullValues );
+      rep.saveStepAttribute( id_transformation, id_step, "date_time_format", date_time_format );
 
-      rep.saveStepAttribute(id_transformation, id_step, "add_to_result_filenames", addToResultFilenames);
-      rep.saveStepAttribute(id_transformation, id_step, "file_zipped", zipped);
+      rep.saveStepAttribute( id_transformation, id_step, "add_to_result_filenames", addToResultFilenames );
+      rep.saveStepAttribute( id_transformation, id_step, "file_zipped", zipped );
 
-      for (int i = 0; i < outputFields.length; i++) {
+      for ( int i = 0; i < outputFields.length; i++ ) {
         XMLField field = outputFields[i];
 
-        rep.saveStepAttribute(id_transformation, id_step, i, "field_content_type", field.getContentType().name());
-        rep.saveStepAttribute(id_transformation, id_step, i, "field_name", field.getFieldName());
-        rep.saveStepAttribute(id_transformation, id_step, i, "field_element", field.getElementName());
-        rep.saveStepAttribute(id_transformation, id_step, i, "field_type", field.getTypeDesc());
-        rep.saveStepAttribute(id_transformation, id_step, i, "field_format", field.getFormat());
-        rep.saveStepAttribute(id_transformation, id_step, i, "field_currency", field.getCurrencySymbol());
-        rep.saveStepAttribute(id_transformation, id_step, i, "field_decimal", field.getDecimalSymbol());
-        rep.saveStepAttribute(id_transformation, id_step, i, "field_group", field.getGroupingSymbol());
-        rep.saveStepAttribute(id_transformation, id_step, i, "field_nullif", field.getNullString());
-        rep.saveStepAttribute(id_transformation, id_step, i, "field_length", field.getLength());
-        rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", field.getPrecision());
+        rep.saveStepAttribute( id_transformation, id_step, i, "field_content_type", field.getContentType().name() );
+        rep.saveStepAttribute( id_transformation, id_step, i, "field_name", field.getFieldName() );
+        rep.saveStepAttribute( id_transformation, id_step, i, "field_element", field.getElementName() );
+        rep.saveStepAttribute( id_transformation, id_step, i, "field_type", field.getTypeDesc() );
+        rep.saveStepAttribute( id_transformation, id_step, i, "field_format", field.getFormat() );
+        rep.saveStepAttribute( id_transformation, id_step, i, "field_currency", field.getCurrencySymbol() );
+        rep.saveStepAttribute( id_transformation, id_step, i, "field_decimal", field.getDecimalSymbol() );
+        rep.saveStepAttribute( id_transformation, id_step, i, "field_group", field.getGroupingSymbol() );
+        rep.saveStepAttribute( id_transformation, id_step, i, "field_nullif", field.getNullString() );
+        rep.saveStepAttribute( id_transformation, id_step, i, "field_length", field.getLength() );
+        rep.saveStepAttribute( id_transformation, id_step, i, "field_precision", field.getPrecision() );
       }
-    } catch (Exception e) {
-      throw new KettleException("Unable to save step information to the repository for id_step=" + id_step, e);
+    } catch ( Exception e ) {
+      throw new KettleException( "Unable to save step information to the repository for id_step=" + id_step, e );
     }
   }
 
-  public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev,
-      String input[], String output[], RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev,
+      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
+      IMetaStore metaStore ) {
     CheckResult cr;
 
     // Check output fields
-    if (prev != null && prev.size() > 0) {
-      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XMLOutputMeta.CheckResult.FieldsReceived", "" + prev.size()), stepinfo);
-      remarks.add(cr);
+    if ( prev != null && prev.size() > 0 ) {
+      cr =
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
+              "XMLOutputMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepinfo );
+      remarks.add( cr );
 
       String error_message = "";
       boolean error_found = false;
 
       // Starting from selected fields in ...
-      for (int i = 0; i < outputFields.length; i++) {
-        int idx = prev.indexOfValue(outputFields[i].getFieldName());
-        if (idx < 0) {
+      for ( int i = 0; i < outputFields.length; i++ ) {
+        int idx = prev.indexOfValue( outputFields[i].getFieldName() );
+        if ( idx < 0 ) {
           error_message += "\t\t" + outputFields[i].getFieldName() + Const.CR;
           error_found = true;
         }
       }
-      if (error_found) {
-        error_message = BaseMessages.getString(PKG, "XMLOutputMeta.CheckResult.FieldsNotFound", error_message);
-        cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
-        remarks.add(cr);
+      if ( error_found ) {
+        error_message = BaseMessages.getString( PKG, "XMLOutputMeta.CheckResult.FieldsNotFound", error_message );
+        cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo );
+        remarks.add( cr );
       } else {
-        cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XMLOutputMeta.CheckResult.AllFieldsFound"), stepinfo);
-        remarks.add(cr);
+        cr =
+            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
+                "XMLOutputMeta.CheckResult.AllFieldsFound" ), stepinfo );
+        remarks.add( cr );
       }
     }
 
     // See if we have input streams leading to this step!
-    if (input.length > 0) {
-      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "XMLOutputMeta.CheckResult.ExpectedInputOk"), stepinfo);
-      remarks.add(cr);
+    if ( input.length > 0 ) {
+      cr =
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
+              "XMLOutputMeta.CheckResult.ExpectedInputOk" ), stepinfo );
+      remarks.add( cr );
     } else {
-      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "XMLOutputMeta.CheckResult.ExpectedInputError"), stepinfo);
-      remarks.add(cr);
+      cr =
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
+              "XMLOutputMeta.CheckResult.ExpectedInputError" ), stepinfo );
+      remarks.add( cr );
     }
 
-    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_COMMENT, BaseMessages.getString(PKG, "XMLOutputMeta.CheckResult.FilesNotChecked"), stepinfo);
-    remarks.add(cr);
+    cr =
+        new CheckResult( CheckResultInterface.TYPE_RESULT_COMMENT, BaseMessages.getString( PKG,
+            "XMLOutputMeta.CheckResult.FilesNotChecked" ), stepinfo );
+    remarks.add( cr );
   }
 
-  public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans) {
-    return new XMLOutput(stepMeta, stepDataInterface, cnr, transMeta, trans);
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
+      Trans trans ) {
+    return new XMLOutput( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
   public StepDataInterface getStepData() {
@@ -728,7 +743,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
     return encoding;
   }
 
-  public void setEncoding(String encoding) {
+  public void setEncoding( String encoding ) {
     this.encoding = encoding;
   }
 
@@ -741,9 +756,9 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * @param mainElement
-   *            The mainElement to set.
+   *          The mainElement to set.
    */
-  public void setMainElement(String mainElement) {
+  public void setMainElement( String mainElement ) {
     this.mainElement = mainElement;
   }
 
@@ -756,9 +771,9 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * @param repeatElement
-   *            The repeatElement to set.
+   *          The repeatElement to set.
    */
-  public void setRepeatElement(String repeatElement) {
+  public void setRepeatElement( String repeatElement ) {
     this.repeatElement = repeatElement;
   }
 
@@ -771,13 +786,13 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * @param nameSpace
-   *            The nameSpace to set.
+   *          The nameSpace to set.
    */
-  public void setNameSpace(String nameSpace) {
+  public void setNameSpace( String nameSpace ) {
     this.nameSpace = nameSpace;
   }
 
-  public void setOmitNullValues(boolean omitNullValues) {
+  public void setOmitNullValues( boolean omitNullValues ) {
 
     this.omitNullValues = omitNullValues;
 
@@ -788,40 +803,45 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
     return omitNullValues;
 
   }
-  
+
   public boolean isServletOutput() {
     return servletOutput;
   }
-  
-  public void setServletOutput(boolean servletOutput) {
+
+  public void setServletOutput( boolean servletOutput ) {
     this.servletOutput = servletOutput;
   }
 
   /**
-   * Since the exported transformation that runs this will reside in a ZIP file, we can't reference files relatively.
-   * So what this does is turn the name of the base path into an absolute path.
-   *
-   * @param space the variable space to use 
+   * Since the exported transformation that runs this will reside in a ZIP file, we can't reference files relatively. So
+   * what this does is turn the name of the base path into an absolute path.
+   * 
+   * @param space
+   *          the variable space to use
    * @param definitions
    * @param resourceNamingInterface
-   * @param repository The repository to optionally load other resources from (to be converted to XML)
-   * @param metaStore the metaStore in which non-kettle metadata could reside. 
+   * @param repository
+   *          The repository to optionally load other resources from (to be converted to XML)
+   * @param metaStore
+   *          the metaStore in which non-kettle metadata could reside.
    * 
    * @return the filename of the exported resource
    */
-  public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore) throws KettleException {
+  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
+      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
+    throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...
-      // 
-      if (!Const.isEmpty(fileName)) {
-        FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(fileName), space);
-        fileName = resourceNamingInterface.nameResource(fileObject, space, true);
+      //
+      if ( !Const.isEmpty( fileName ) ) {
+        FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( fileName ), space );
+        fileName = resourceNamingInterface.nameResource( fileObject, space, true );
       }
 
       return null;
-    } catch (Exception e) {
-      throw new KettleException(e); 
+    } catch ( Exception e ) {
+      throw new KettleException( e );
     }
   }
 

@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.job.entries.deletefolders;
 
@@ -62,44 +62,42 @@ import org.w3c.dom.Node;
 
 /**
  * This defines a 'delete folders' job entry.
- *
+ * 
  * @author Samatar Hassan
  * @since 13-05-2008
  */
 public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntryDeleteFolders.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  private static Class<?> PKG = JobEntryDeleteFolders.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
   public boolean argFromPrevious;
 
-  public String arguments[];
-  
+  public String[] arguments;
+
   private String success_condition;
-  public  String SUCCESS_IF_AT_LEAST_X_FOLDERS_DELETED="success_when_at_least";
-  public  String SUCCESS_IF_ERRORS_LESS="success_if_errors_less";
-  public  String SUCCESS_IF_NO_ERRORS="success_if_no_errors";
-  
+  public String SUCCESS_IF_AT_LEAST_X_FOLDERS_DELETED = "success_when_at_least";
+  public String SUCCESS_IF_ERRORS_LESS = "success_if_errors_less";
+  public String SUCCESS_IF_NO_ERRORS = "success_if_no_errors";
+
   private String limit_folders;
-  
-	
-	int NrErrors=0;
-	int NrSuccess=0;
-	boolean successConditionBroken=false;
-	boolean successConditionBrokenExit=false;
-	int limitFolders=0;
 
+  int NrErrors = 0;
+  int NrSuccess = 0;
+  boolean successConditionBroken = false;
+  boolean successConditionBrokenExit = false;
+  int limitFolders = 0;
 
-  public JobEntryDeleteFolders(String n) {
-    super(n, ""); 
+  public JobEntryDeleteFolders( String n ) {
+    super( n, "" );
     argFromPrevious = false;
     arguments = null;
 
-    success_condition=SUCCESS_IF_NO_ERRORS;
-    limit_folders="10";
-    setID(-1L);
+    success_condition = SUCCESS_IF_NO_ERRORS;
+    limit_folders = "10";
+    setID( -1L );
   }
 
   public JobEntryDeleteFolders() {
-    this(""); 
+    this( "" );
   }
 
   public Object clone() {
@@ -108,233 +106,243 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer(300);
+    StringBuffer retval = new StringBuffer( 300 );
 
-    retval.append(super.getXML());
-    retval.append("      ").append(XMLHandler.addTagValue("arg_from_previous", argFromPrevious));  
-    retval.append("      ").append(XMLHandler.addTagValue("success_condition", success_condition));  
-	retval.append("      ").append(XMLHandler.addTagValue("limit_folders", limit_folders));
-	
-    retval.append("      <fields>").append(Const.CR); 
-    if (arguments != null) {
-      for (int i = 0; i < arguments.length; i++) {
-        retval.append("        <field>").append(Const.CR); 
-        retval.append("          ").append(XMLHandler.addTagValue("name", arguments[i]));  
-        retval.append("        </field>").append(Const.CR); 
+    retval.append( super.getXML() );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "arg_from_previous", argFromPrevious ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "success_condition", success_condition ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "limit_folders", limit_folders ) );
+
+    retval.append( "      <fields>" ).append( Const.CR );
+    if ( arguments != null ) {
+      for ( int i = 0; i < arguments.length; i++ ) {
+        retval.append( "        <field>" ).append( Const.CR );
+        retval.append( "          " ).append( XMLHandler.addTagValue( "name", arguments[i] ) );
+        retval.append( "        </field>" ).append( Const.CR );
       }
     }
-    retval.append("      </fields>").append(Const.CR); 
+    retval.append( "      </fields>" ).append( Const.CR );
 
     return retval.toString();
   }
 
-  public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep, IMetaStore metaStore) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
+      IMetaStore metaStore ) throws KettleXMLException {
     try {
-      super.loadXML(entrynode, databases, slaveServers);
-      argFromPrevious = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "arg_from_previous"));  
-      success_condition          = XMLHandler.getTagValue(entrynode, "success_condition");
-      limit_folders          = XMLHandler.getTagValue(entrynode, "limit_folders");
-      
-      Node fields = XMLHandler.getSubNode(entrynode, "fields"); 
+      super.loadXML( entrynode, databases, slaveServers );
+      argFromPrevious = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "arg_from_previous" ) );
+      success_condition = XMLHandler.getTagValue( entrynode, "success_condition" );
+      limit_folders = XMLHandler.getTagValue( entrynode, "limit_folders" );
+
+      Node fields = XMLHandler.getSubNode( entrynode, "fields" );
 
       // How many field arguments?
-      int nrFields = XMLHandler.countNodes(fields, "field"); 
+      int nrFields = XMLHandler.countNodes( fields, "field" );
       arguments = new String[nrFields];
 
       // Read them all...
-      for (int i = 0; i < nrFields; i++) {
-        Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); 
+      for ( int i = 0; i < nrFields; i++ ) {
+        Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
 
-        arguments[i] = XMLHandler.getTagValue(fnode, "name"); 
+        arguments[i] = XMLHandler.getTagValue( fnode, "name" );
       }
-    } catch (KettleXMLException xe) {
-      throw new KettleXMLException(BaseMessages.getString(PKG, "JobEntryDeleteFolders.UnableToLoadFromXml"), xe); 
+    } catch ( KettleXMLException xe ) {
+      throw new KettleXMLException( BaseMessages.getString( PKG, "JobEntryDeleteFolders.UnableToLoadFromXml" ), xe );
     }
   }
 
-  public void loadRep(Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
+  public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
+      List<SlaveServer> slaveServers ) throws KettleException {
     try {
-      argFromPrevious = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous"); 
-      limit_folders  = rep.getJobEntryAttributeString(id_jobentry, "limit_folders");
-		success_condition  = rep.getJobEntryAttributeString(id_jobentry, "success_condition");
+      argFromPrevious = rep.getJobEntryAttributeBoolean( id_jobentry, "arg_from_previous" );
+      limit_folders = rep.getJobEntryAttributeString( id_jobentry, "limit_folders" );
+      success_condition = rep.getJobEntryAttributeString( id_jobentry, "success_condition" );
 
       // How many arguments?
-      int argnr = rep.countNrJobEntryAttributes(id_jobentry, "name"); 
+      int argnr = rep.countNrJobEntryAttributes( id_jobentry, "name" );
       arguments = new String[argnr];
 
       // Read them all...
-      for (int a = 0; a < argnr; a++) {
-        arguments[a] = rep.getJobEntryAttributeString(id_jobentry, a, "name"); 
+      for ( int a = 0; a < argnr; a++ ) {
+        arguments[a] = rep.getJobEntryAttributeString( id_jobentry, a, "name" );
       }
-    } catch (KettleException dbe) {
-      throw new KettleException(BaseMessages.getString(PKG, "JobEntryDeleteFolders.UnableToLoadFromRepo", String.valueOf(id_jobentry)), dbe); 
+    } catch ( KettleException dbe ) {
+      throw new KettleException( BaseMessages.getString( PKG, "JobEntryDeleteFolders.UnableToLoadFromRepo", String
+          .valueOf( id_jobentry ) ), dbe );
     }
   }
 
-  public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_job) throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_job ) throws KettleException {
     try {
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "arg_from_previous", argFromPrevious); 
-	  rep.saveJobEntryAttribute(id_job, getObjectId(), "limit_folders",      limit_folders);
-	  rep.saveJobEntryAttribute(id_job, getObjectId(), "success_condition",      success_condition);
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "arg_from_previous", argFromPrevious );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "limit_folders", limit_folders );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "success_condition", success_condition );
 
       // save the arguments...
-      if (arguments != null) {
-        for (int i = 0; i < arguments.length; i++) {
-          rep.saveJobEntryAttribute(id_job, getObjectId(), i, "name", arguments[i]); 
+      if ( arguments != null ) {
+        for ( int i = 0; i < arguments.length; i++ ) {
+          rep.saveJobEntryAttribute( id_job, getObjectId(), i, "name", arguments[i] );
         }
       }
-    } catch (KettleDatabaseException dbe) {
-      throw new KettleException(
-          BaseMessages.getString(PKG, "JobEntryDeleteFolders.UnableToSaveToRepo", String.valueOf(id_job)), dbe); 
+    } catch ( KettleDatabaseException dbe ) {
+      throw new KettleException( BaseMessages.getString( PKG, "JobEntryDeleteFolders.UnableToSaveToRepo", String
+          .valueOf( id_job ) ), dbe );
     }
   }
 
-  public Result execute(Result result, int nr) throws KettleException {
+  public Result execute( Result result, int nr ) throws KettleException {
     List<RowMetaAndData> rows = result.getRows();
     RowMetaAndData resultRow = null;
 
-    result.setNrErrors(1);
-    result.setResult(false);
-    
-	NrErrors=0;
-	NrSuccess=0;
-	successConditionBroken=false;
-	successConditionBrokenExit=false;
-	limitFolders=Const.toInt(environmentSubstitute(getLimitFolders()),10);
+    result.setNrErrors( 1 );
+    result.setResult( false );
 
+    NrErrors = 0;
+    NrSuccess = 0;
+    successConditionBroken = false;
+    successConditionBrokenExit = false;
+    limitFolders = Const.toInt( environmentSubstitute( getLimitFolders() ), 10 );
 
-    if (argFromPrevious) {
-      if(log.isDetailed())	
-    	  logDetailed(BaseMessages.getString(PKG, "JobEntryDeleteFolders.FoundPreviousRows", String.valueOf((rows != null ? rows.size() : 0)))); 
+    if ( argFromPrevious ) {
+      if ( log.isDetailed() ) {
+        logDetailed( BaseMessages.getString( PKG, "JobEntryDeleteFolders.FoundPreviousRows", String
+            .valueOf( ( rows != null ? rows.size() : 0 ) ) ) );
+      }
     }
 
-    if (argFromPrevious && rows != null){
-      for (int iteration = 0; iteration < rows.size() && !parentJob.isStopped(); iteration++) {
-		if(successConditionBroken){
-			logError(BaseMessages.getString(PKG, "JobEntryDeleteFolders.Error.SuccessConditionbroken",""+NrErrors));
-			result.setNrErrors(NrErrors);
-			result.setNrLinesDeleted(NrSuccess);
-			return result;
-		}
-    	resultRow = rows.get(iteration);
-        String args_previous = resultRow.getString(0, null);
-        if(!Const.isEmpty(args_previous)){
-	        if(deleteFolder(args_previous)){
-	        	updateSuccess();
-	        }else {
-	        	updateErrors();	
-	        }
-        }else{
-        	// empty filename !
-        	logError(BaseMessages.getString(PKG, "JobEntryDeleteFolders.Error.EmptyLine"));
+    if ( argFromPrevious && rows != null ) {
+      for ( int iteration = 0; iteration < rows.size() && !parentJob.isStopped(); iteration++ ) {
+        if ( successConditionBroken ) {
+          logError( BaseMessages.getString( PKG, "JobEntryDeleteFolders.Error.SuccessConditionbroken", "" + NrErrors ) );
+          result.setNrErrors( NrErrors );
+          result.setNrLinesDeleted( NrSuccess );
+          return result;
+        }
+        resultRow = rows.get( iteration );
+        String args_previous = resultRow.getString( 0, null );
+        if ( !Const.isEmpty( args_previous ) ) {
+          if ( deleteFolder( args_previous ) ) {
+            updateSuccess();
+          } else {
+            updateErrors();
+          }
+        } else {
+          // empty filename !
+          logError( BaseMessages.getString( PKG, "JobEntryDeleteFolders.Error.EmptyLine" ) );
         }
       }
-    } else if (arguments != null) {
-      for (int i = 0; i < arguments.length && !parentJob.isStopped(); i++) {
-  		if(successConditionBroken)
-		{
-			logError(BaseMessages.getString(PKG, "JobEntryDeleteFolders.Error.SuccessConditionbroken",""+NrErrors));
-			result.setNrErrors(NrErrors);
-			result.setNrLinesDeleted(NrSuccess);
-			return result;
-		}
-  		String realfilename=environmentSubstitute(arguments[i]);
-	    if(!Const.isEmpty(realfilename))
-	    {
-    	  if(deleteFolder(realfilename)){
-          	updateSuccess();
-          }else {
-        	  updateErrors();
-          }  
-	    }else{
-         // empty filename !
-         logError(BaseMessages.getString(PKG, "JobEntryDeleteFolders.Error.EmptyLine"));
-	   }
+    } else if ( arguments != null ) {
+      for ( int i = 0; i < arguments.length && !parentJob.isStopped(); i++ ) {
+        if ( successConditionBroken ) {
+          logError( BaseMessages.getString( PKG, "JobEntryDeleteFolders.Error.SuccessConditionbroken", "" + NrErrors ) );
+          result.setNrErrors( NrErrors );
+          result.setNrLinesDeleted( NrSuccess );
+          return result;
+        }
+        String realfilename = environmentSubstitute( arguments[i] );
+        if ( !Const.isEmpty( realfilename ) ) {
+          if ( deleteFolder( realfilename ) ) {
+            updateSuccess();
+          } else {
+            updateErrors();
+          }
+        } else {
+          // empty filename !
+          logError( BaseMessages.getString( PKG, "JobEntryDeleteFolders.Error.EmptyLine" ) );
+        }
       }
     }
-   
-	if(log.isDetailed()){
-		logDetailed("=======================================");
-		logDetailed(BaseMessages.getString(PKG, "JobEntryDeleteFolders.Log.Info.NrError","" + NrErrors));
-		logDetailed(BaseMessages.getString(PKG, "JobEntryDeleteFolders.Log.Info.NrDeletedFolders","" + NrSuccess));
-		logDetailed("=======================================");
-	}
-    
-	result.setNrErrors(NrErrors);
-	result.setNrLinesDeleted(NrSuccess);
-	if(getSuccessStatus())	result.setResult(true);
-	
+
+    if ( log.isDetailed() ) {
+      logDetailed( "=======================================" );
+      logDetailed( BaseMessages.getString( PKG, "JobEntryDeleteFolders.Log.Info.NrError", "" + NrErrors ) );
+      logDetailed( BaseMessages.getString( PKG, "JobEntryDeleteFolders.Log.Info.NrDeletedFolders", "" + NrSuccess ) );
+      logDetailed( "=======================================" );
+    }
+
+    result.setNrErrors( NrErrors );
+    result.setNrLinesDeleted( NrSuccess );
+    if ( getSuccessStatus() ) {
+      result.setResult( true );
+    }
+
     return result;
   }
-	private void updateErrors()
-	{
-		NrErrors++;
-		if(checkIfSuccessConditionBroken()){
-			// Success condition was broken
-			successConditionBroken=true;
-		}
-	}
-	private boolean checkIfSuccessConditionBroken()
-	{
-		boolean retval=false;
-		if ((NrErrors>0 && getSuccessCondition().equals(SUCCESS_IF_NO_ERRORS))
-				|| (NrErrors>=limitFolders && getSuccessCondition().equals(SUCCESS_IF_ERRORS_LESS))){
-			retval=true;	
-		}
-		return retval;
-	}
-	private void updateSuccess()
-	{
-		NrSuccess++;
-	}
-	private boolean getSuccessStatus()
-	{
-		boolean retval=false;
-		
-		if ((NrErrors==0 && getSuccessCondition().equals(SUCCESS_IF_NO_ERRORS))
-				|| (NrSuccess>=limitFolders && getSuccessCondition().equals(SUCCESS_IF_AT_LEAST_X_FOLDERS_DELETED))
-				|| (NrErrors<=limitFolders && getSuccessCondition().equals(SUCCESS_IF_ERRORS_LESS))){
-				retval=true;	
-			}
-		
-		return retval;
-	}
-  private boolean deleteFolder(String foldername) {
+
+  private void updateErrors() {
+    NrErrors++;
+    if ( checkIfSuccessConditionBroken() ) {
+      // Success condition was broken
+      successConditionBroken = true;
+    }
+  }
+
+  private boolean checkIfSuccessConditionBroken() {
+    boolean retval = false;
+    if ( ( NrErrors > 0 && getSuccessCondition().equals( SUCCESS_IF_NO_ERRORS ) )
+        || ( NrErrors >= limitFolders && getSuccessCondition().equals( SUCCESS_IF_ERRORS_LESS ) ) ) {
+      retval = true;
+    }
+    return retval;
+  }
+
+  private void updateSuccess() {
+    NrSuccess++;
+  }
+
+  private boolean getSuccessStatus() {
+    boolean retval = false;
+
+    if ( ( NrErrors == 0 && getSuccessCondition().equals( SUCCESS_IF_NO_ERRORS ) )
+        || ( NrSuccess >= limitFolders && getSuccessCondition().equals( SUCCESS_IF_AT_LEAST_X_FOLDERS_DELETED ) )
+        || ( NrErrors <= limitFolders && getSuccessCondition().equals( SUCCESS_IF_ERRORS_LESS ) ) ) {
+      retval = true;
+    }
+
+    return retval;
+  }
+
+  private boolean deleteFolder( String foldername ) {
     boolean rcode = false;
     FileObject filefolder = null;
 
     try {
-      filefolder = KettleVFS.getFileObject(foldername, this);
+      filefolder = KettleVFS.getFileObject( foldername, this );
 
-      if (filefolder.exists()) {
+      if ( filefolder.exists() ) {
         // the file or folder exists
-        if (filefolder.getType() == FileType.FOLDER) {
+        if ( filefolder.getType() == FileType.FOLDER ) {
           // It's a folder
-          if (log.isDetailed())
-            logDetailed(BaseMessages.getString(PKG, "JobEntryDeleteFolders.ProcessingFolder", foldername)); 
+          if ( log.isDetailed() ) {
+            logDetailed( BaseMessages.getString( PKG, "JobEntryDeleteFolders.ProcessingFolder", foldername ) );
+          }
           // Delete Files
-          int Nr = filefolder.delete(new TextFileSelector());
+          int Nr = filefolder.delete( new TextFileSelector() );
 
-          if (log.isDetailed())
-            logDetailed(BaseMessages.getString(PKG, "JobEntryDeleteFolders.TotalDeleted", foldername,String.valueOf(Nr))); 
+          if ( log.isDetailed() ) {
+            logDetailed( BaseMessages.getString( PKG, "JobEntryDeleteFolders.TotalDeleted", foldername, String
+                .valueOf( Nr ) ) );
+          }
           rcode = true;
         } else {
-        	// Error...This file is not a folder!
-        	logError(BaseMessages.getString(PKG, "JobEntryDeleteFolders.Error.NotFolder"));
+          // Error...This file is not a folder!
+          logError( BaseMessages.getString( PKG, "JobEntryDeleteFolders.Error.NotFolder" ) );
         }
       } else {
         // File already deleted, no reason to try to delete it
-    	  if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "JobEntryDeleteFolders.FolderAlreadyDeleted", foldername)); 
+        if ( log.isBasic() ) {
+          logBasic( BaseMessages.getString( PKG, "JobEntryDeleteFolders.FolderAlreadyDeleted", foldername ) );
+        }
         rcode = true;
       }
-    } catch (Exception e) {
-      logError(BaseMessages.getString(PKG, "JobEntryDeleteFolders.CouldNotDelete", foldername, e.getMessage()), e); 
+    } catch ( Exception e ) {
+      logError( BaseMessages.getString( PKG, "JobEntryDeleteFolders.CouldNotDelete", foldername, e.getMessage() ), e );
     } finally {
-      if (filefolder != null) {
+      if ( filefolder != null ) {
         try {
           filefolder.close();
-          filefolder=null;
-        } catch (IOException ex) {
+          filefolder = null;
+        } catch ( IOException ex ) {
           // Ignore
         }
       }
@@ -343,87 +351,79 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
     return rcode;
   }
 
+  private class TextFileSelector implements FileSelector {
+    public boolean includeFile( FileSelectInfo info ) {
+      return true;
+    }
 
-	private class TextFileSelector implements FileSelector 
-	{	
-		public boolean includeFile(FileSelectInfo info) {
-			return true;
-		}
+    public boolean traverseDescendents( FileSelectInfo info ) {
+      return true;
+    }
+  }
 
-		public boolean traverseDescendents(FileSelectInfo info)	{
-			return true;
-		}
-	}
-  
+  public void setPrevious( boolean argFromPrevious ) {
+    this.argFromPrevious = argFromPrevious;
+  }
 
-  public void setPrevious(boolean argFromPrevious) {
-	    this.argFromPrevious = argFromPrevious;
-	  }
-
-  
-  
   public boolean evaluates() {
     return true;
   }
 
-  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository, IMetaStore metaStore) {
-    boolean res = andValidator().validate(this, "arguments", remarks, putValidators(notNullValidator())); 
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
+      IMetaStore metaStore ) {
+    boolean res = andValidator().validate( this, "arguments", remarks, putValidators( notNullValidator() ) );
 
-    if (res == false) {
+    if ( res == false ) {
       return;
     }
 
     ValidatorContext ctx = new ValidatorContext();
-    putVariableSpace(ctx, getVariables());
-    putValidators(ctx, notNullValidator(), fileExistsValidator());
+    putVariableSpace( ctx, getVariables() );
+    putValidators( ctx, notNullValidator(), fileExistsValidator() );
 
-    for (int i = 0; i < arguments.length; i++) {
-      andValidator().validate(this, "arguments[" + i + "]", remarks, ctx);  
+    for ( int i = 0; i < arguments.length; i++ ) {
+      andValidator().validate( this, "arguments[" + i + "]", remarks, ctx );
     }
   }
 
-  public List<ResourceReference> getResourceDependencies(JobMeta jobMeta) {
-    List<ResourceReference> references = super.getResourceDependencies(jobMeta);
-    if (arguments != null) {
+  public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {
+    List<ResourceReference> references = super.getResourceDependencies( jobMeta );
+    if ( arguments != null ) {
       ResourceReference reference = null;
-      for (int i=0; i<arguments.length; i++) {
-        String filename = jobMeta.environmentSubstitute(arguments[i]);
-        if (reference == null) {
-          reference = new ResourceReference(this);
-          references.add(reference);
+      for ( int i = 0; i < arguments.length; i++ ) {
+        String filename = jobMeta.environmentSubstitute( arguments[i] );
+        if ( reference == null ) {
+          reference = new ResourceReference( this );
+          references.add( reference );
         }
-        reference.getEntries().add( new ResourceEntry(filename, ResourceType.FILE));
-     }
+        reference.getEntries().add( new ResourceEntry( filename, ResourceType.FILE ) );
+      }
     }
     return references;
   }
 
-  public boolean isArgFromPrevious()
-  {
+  public boolean isArgFromPrevious() {
     return argFromPrevious;
   }
 
-  public String[] getArguments()
-  {
+  public String[] getArguments() {
     return arguments;
   }
 
-	public void setSuccessCondition(String success_condition)
-	{
-		this.success_condition=success_condition;
-	}
-	public String getSuccessCondition()
-	{
-		return success_condition;
-	}
-	public void setLimitFolders(String limit_folders)
-	{
-		this.limit_folders=limit_folders;
-	}
-	
-	public String getLimitFolders()
-	{
-		return limit_folders;
-	}
+  public void setSuccessCondition( String success_condition ) {
+    this.success_condition = success_condition;
+  }
+
+  public String getSuccessCondition() {
+    return success_condition;
+  }
+
+  public void setLimitFolders( String limit_folders ) {
+    this.limit_folders = limit_folders;
+  }
+
+  public String getLimitFolders() {
+    return limit_folders;
+  }
 
 }

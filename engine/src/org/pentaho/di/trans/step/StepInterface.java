@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.trans.step;
 
@@ -42,9 +42,9 @@ import org.pentaho.metastore.api.IMetaStore;
  * The interface that any transformation step or plugin needs to implement.
  * 
  * Created on 12-AUG-2004
- *
+ * 
  * @author Matt
- *
+ * 
  */
 
 public interface StepInterface extends VariableSpace, HasLogChannelInterface {
@@ -54,17 +54,22 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
   public Trans getTrans();
 
   /**
-   * Perform the equivalent of processing one row.  Typically this means reading a row from input (getRow()) and passing a row to output (putRow)).
+   * Perform the equivalent of processing one row. Typically this means reading a row from input (getRow()) and passing
+   * a row to output (putRow)).
    * 
-   * @param smi The steps metadata to work with
-   * @param sdi The steps temporary working data to work with (database connections, result sets, caches, temporary variables, etc.)
+   * @param smi
+   *          The steps metadata to work with
+   * @param sdi
+   *          The steps temporary working data to work with (database connections, result sets, caches, temporary
+   *          variables, etc.)
    * @return false if no more rows can be processed or an error occurred.
    * @throws KettleException
    */
-  public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException;
+  public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException;
 
   /**
-   * This method checks if the step is capable of processing at least one row.<p>
+   * This method checks if the step is capable of processing at least one row.
+   * <p>
    * For example, if a step has no input records but needs at least one to function, it will return false.
    * 
    * @return true if the step can process a row.
@@ -74,39 +79,47 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
 
   /**
    * Initialize and do work where other steps need to wait for...
-   * @param stepMetaInterface The metadata to work with
-   * @param stepDataInterface The data to initialize
+   * 
+   * @param stepMetaInterface
+   *          The metadata to work with
+   * @param stepDataInterface
+   *          The data to initialize
    */
-  public boolean init(StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface);
+  public boolean init( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface );
 
   /**
-   * Dispose of this step: close files, empty logs, etc. 
-   * @param sii The metadata to work with
-   * @param sdi The data to dispose of
-
+   * Dispose of this step: close files, empty logs, etc.
+   * 
+   * @param sii
+   *          The metadata to work with
+   * @param sdi
+   *          The data to dispose of
    */
-  public void dispose(StepMetaInterface sii, StepDataInterface sdi);
+  public void dispose( StepMetaInterface sii, StepDataInterface sdi );
 
   /**
-   * Mark the start time of the step. 
-   *
+   * Mark the start time of the step.
+   * 
    */
   public void markStart();
 
   /**
-   * Mark the end time of the step. 
-   *
+   * Mark the end time of the step.
+   * 
    */
   public void markStop();
 
   /**
    * Stop running operations...
-     * @param stepMetaInterface The metadata that might be needed by the step to stop running.
-   * @param stepDataInterface The interface to the step data containing the connections, resultsets, open files, etc.  
-   *
+   * 
+   * @param stepMetaInterface
+   *          The metadata that might be needed by the step to stop running.
+   * @param stepDataInterface
+   *          The interface to the step data containing the connections, resultsets, open files, etc.
+   * 
    */
-  public void stopRunning(StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface)
-      throws KettleException;
+  public void stopRunning( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface )
+    throws KettleException;
 
   /**
    * @return true if the step is running after having been initialized
@@ -115,9 +128,11 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
 
   /**
    * Flag the step as running or not
-   * @param running the running flag to set
+   * 
+   * @param running
+   *          the running flag to set
    */
-  public void setRunning(boolean running);
+  public void setRunning( boolean running );
 
   /**
    * @return True if the step is marked as stopped. Execution should stop immediate.
@@ -125,9 +140,10 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
   public boolean isStopped();
 
   /**
-   * @param stopped true if the step needs to be stopped
+   * @param stopped
+   *          true if the step needs to be stopped
    */
-  public void setStopped(boolean stopped);
+  public void setStopped( boolean stopped );
 
   /**
    * @return True if the step is paused
@@ -135,7 +151,7 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
   public boolean isPaused();
 
   /**
-   * Flags all rowsets as stopped/completed/finished. 
+   * Flags all rowsets as stopped/completed/finished.
    */
   public void stopAll();
 
@@ -151,6 +167,7 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
 
   /**
    * Get the name of the step.
+   * 
    * @return the name of the step
    */
   public String getStepname();
@@ -167,19 +184,22 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
 
   /**
    * Get the number of errors
+   * 
    * @return the number of errors
    */
   public long getErrors();
 
   /**
    * Sets the number of errors
-   * @param errors the number of errors to set
+   * 
+   * @param errors
+   *          the number of errors to set
    */
-  public void setErrors(long errors);
+  public void setErrors( long errors );
 
   /**
-     * @return Returns the linesInput.
-     */
+   * @return Returns the linesInput.
+   */
   public long getLinesInput();
 
   /**
@@ -203,9 +223,10 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
   public long getLinesUpdated();
 
   /**
-   * @param linesRejected steps the lines rejected by error handling.
+   * @param linesRejected
+   *          steps the lines rejected by error handling.
    */
-  public void setLinesRejected(long linesRejected);
+  public void setLinesRejected( long linesRejected );
 
   /**
    * @return Returns the lines rejected by error handling.
@@ -214,9 +235,11 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
 
   /**
    * Put a row on the destination rowsets.
-   * @param row The row to send to the destinations steps
+   * 
+   * @param row
+   *          The row to send to the destinations steps
    */
-  public void putRow(RowMetaInterface row, Object data[]) throws KettleException;
+  public void putRow( RowMetaInterface row, Object[] data ) throws KettleException;
 
   /**
    * @return a row from the source step(s).
@@ -229,16 +252,21 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
   public void setOutputDone();
 
   /**
-   * Add a rowlistener to the step allowing you to inspect (or manipulate, be careful) the rows coming in or exiting the step.
-   * @param rowListener the rowlistener to add
+   * Add a rowlistener to the step allowing you to inspect (or manipulate, be careful) the rows coming in or exiting the
+   * step.
+   * 
+   * @param rowListener
+   *          the rowlistener to add
    */
-  public void addRowListener(RowListener rowListener);
+  public void addRowListener( RowListener rowListener );
 
   /**
    * Remove a rowlistener from this step.
-   * @param rowListener the rowlistener to remove
+   * 
+   * @param rowListener
+   *          the rowlistener to remove
    */
-  public void removeRowListener(RowListener rowListener);
+  public void removeRowListener( RowListener rowListener );
 
   /**
    * @return a list of the installed RowListeners
@@ -261,9 +289,10 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
   public boolean isPartitioned();
 
   /**
-   * @param partitionID the partitionID to set
+   * @param partitionID
+   *          the partitionID to set
    */
-  public void setPartitionID(String partitionID);
+  public void setPartitionID( String partitionID );
 
   /**
    * @return the steps partition ID
@@ -280,15 +309,18 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
    * <br>
    * <b>!!! A plugin implementing this method should make sure to also call <i>super.initBeforeStart();</i> !!!</b>
    * 
-   * @throws KettleStepException In case there is an error
+   * @throws KettleStepException
+   *           In case there is an error
    */
   public void initBeforeStart() throws KettleStepException;
 
   /**
-   * Attach a step listener to be notified when a step arrives in a certain state. (finished) 
-   * @param stepListener The listener to add to the step
+   * Attach a step listener to be notified when a step arrives in a certain state. (finished)
+   * 
+   * @param stepListener
+   *          The listener to add to the step
    */
-  public void addStepListener(StepListener stepListener);
+  public void addStepListener( StepListener stepListener );
 
   /**
    * @return true if the thread is a special mapping step
@@ -296,7 +328,7 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
   public boolean isMapping();
 
   /**
-   * @return The metadata for this step 
+   * @return The metadata for this step
    */
   public StepMeta getStepMeta();
 
@@ -306,9 +338,10 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
   public LogChannelInterface getLogChannel();
 
   /**
-   * @param usingThreadPriorityManagment set to true to actively manage priorities of step threads
+   * @param usingThreadPriorityManagment
+   *          set to true to actively manage priorities of step threads
    */
-  public void setUsingThreadPriorityManagment(boolean usingThreadPriorityManagment);
+  public void setUsingThreadPriorityManagment( boolean usingThreadPriorityManagment );
 
   /**
    * @return true if we are actively managing priorities of step threads
@@ -326,7 +359,7 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
   public int rowsetOutputSize();
 
   /**
-   * @return The number of "processed" lines of a step.  Well, a representable metric for that anyway.
+   * @return The number of "processed" lines of a step. Well, a representable metric for that anyway.
    */
   public long getProcessed();
 
@@ -351,38 +384,45 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
   public void identifyErrorOutput();
 
   /**
-   * @param partitioned true if this step is partitioned
+   * @param partitioned
+   *          true if this step is partitioned
    */
-  public void setPartitioned(boolean partitioned);
+  public void setPartitioned( boolean partitioned );
 
   /**
-   * @param partitioningMethodNone The repartitioning method
+   * @param partitioningMethodNone
+   *          The repartitioning method
    */
-  public void setRepartitioning(int partitioningMethod);
+  public void setRepartitioning( int partitioningMethod );
 
   /**
-   * Calling this method will alert the step that we finished passing a batch of records to the step.
-   * Specifically for steps like "Sort Rows" it means that the buffered rows can be sorted and passed on. 
-   * @throws KettleException In case an error occurs during the processing of the batch of rows.
+   * Calling this method will alert the step that we finished passing a batch of records to the step. Specifically for
+   * steps like "Sort Rows" it means that the buffered rows can be sorted and passed on.
+   * 
+   * @throws KettleException
+   *           In case an error occurs during the processing of the batch of rows.
    */
   public void batchComplete() throws KettleException;
-  
+
   /**
-   * Pass along the metastore to use when loading external elements at runtime. 
-   * @param metaStore The metastore to use
+   * Pass along the metastore to use when loading external elements at runtime.
+   * 
+   * @param metaStore
+   *          The metastore to use
    */
-  public void setMetaStore(IMetaStore metaStore);
-  
+  public void setMetaStore( IMetaStore metaStore );
+
   /**
    * @return The metastore that the step uses to load external elements from.
    */
   public IMetaStore getMetaStore();
-  
+
   /**
-   * @param repository The repository used by the step to load and reference Kettle objects with at runtime
+   * @param repository
+   *          The repository used by the step to load and reference Kettle objects with at runtime
    */
-  public void setRepository(Repository repository);
-    
+  public void setRepository( Repository repository );
+
   /**
    * @return The repository used by the step to load and reference Kettle objects with at runtime
    */
@@ -392,20 +432,22 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
    * @return the index of the active (current) output row set
    */
   public int getCurrentOutputRowSetNr();
-  
+
   /**
-   * @param index Sets the index of the active (current) output row set to use.
+   * @param index
+   *          Sets the index of the active (current) output row set to use.
    */
-  public void setCurrentOutputRowSetNr(int index);
-  
+  public void setCurrentOutputRowSetNr( int index );
+
   /**
    * @return the index of the active (current) input row set
    */
   public int getCurrentInputRowSetNr();
-  
+
   /**
-   * @param index Sets the index of the active (current) input row set to use.
+   * @param index
+   *          Sets the index of the active (current) input row set to use.
    */
-  public void setCurrentInputRowSetNr(int index);
+  public void setCurrentInputRowSetNr( int index );
 
 }
