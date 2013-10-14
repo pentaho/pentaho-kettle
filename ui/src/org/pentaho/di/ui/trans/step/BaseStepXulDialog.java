@@ -293,7 +293,7 @@ public abstract class BaseStepXulDialog extends BaseStepGenericXulDialog {
       //
       Shell shell = ( (TableViewer) tableView.getManagedObject() ).getTable().getShell();
       MessageDialog md =
-          new MessageDialog( shell, BaseMessages.getString( PKG, "BaseStepDialog.GetFieldsChoice.Title" ),// "Warning!"
+          new MessageDialog( shell, BaseMessages.getString( PKG, "BaseStepDialog.GetFieldsChoice.Title" ), // "Warning!"
               null, BaseMessages.getString( PKG,
                   "BaseStepDialog.GetFieldsChoice.Message", "" + keys.size(), "" + row.size() ), //$NON-NLS-3$
               MessageDialog.WARNING, new String[] { BaseMessages.getString( PKG, "BaseStepDialog.AddNew" ),
@@ -451,7 +451,7 @@ public abstract class BaseStepXulDialog extends BaseStepGenericXulDialog {
       //
       Shell shell = ( (TableViewer) tableView.getManagedObject() ).getTable().getShell();
       MessageDialog md =
-          new MessageDialog( shell, BaseMessages.getString( PKG, "BaseStepDialog.GetFieldsChoice.Title" ),// "Warning!"
+          new MessageDialog( shell, BaseMessages.getString( PKG, "BaseStepDialog.GetFieldsChoice.Title" ), // "Warning!"
               null, BaseMessages.getString( PKG,
                   "BaseStepDialog.GetFieldsChoice.Message", "" + keys.size(), "" + row.size() ), //$NON-NLS-3$
               MessageDialog.WARNING, new String[] { BaseMessages.getString( PKG, "BaseStepDialog.AddNew" ),

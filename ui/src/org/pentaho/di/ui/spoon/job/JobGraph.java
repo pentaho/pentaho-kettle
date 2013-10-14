@@ -655,34 +655,29 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
       if ( areaOwner != null ) {
         switch ( areaOwner.getAreaType() ) {
           case JOB_ENTRY_MINI_ICON_OUTPUT:
-          // Click on the output icon means: start of drag
-          // Action: We show the input icons on the other steps...
-          //
-          {
+            // Click on the output icon means: start of drag
+            // Action: We show the input icons on the other steps...
+            //
             selectedEntry = null;
             startHopEntry = (JobEntryCopy) areaOwner.getOwner();
             // stopEntryMouseOverDelayTimer(startHopEntry);
-          }
             break;
 
           case JOB_ENTRY_MINI_ICON_INPUT:
-          // Click on the input icon means: start to a new hop
-          // In this case, we set the end hop step...
-          //
-          {
+            // Click on the input icon means: start to a new hop
+            // In this case, we set the end hop step...
+            //
             selectedEntry = null;
             startHopEntry = null;
             endHopEntry = (JobEntryCopy) areaOwner.getOwner();
             // stopEntryMouseOverDelayTimer(endHopEntry);
-          }
             break;
 
-          case JOB_ENTRY_MINI_ICON_EDIT: {
+          case JOB_ENTRY_MINI_ICON_EDIT:
             clearSettings();
             currentEntry = (JobEntryCopy) areaOwner.getOwner();
             stopEntryMouseOverDelayTimer( currentEntry );
             editEntry( currentEntry );
-          }
             break;
 
           case JOB_ENTRY_MINI_ICON_CONTEXT:
@@ -699,9 +694,9 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
               addCandidateAsHop();
             }
 
-            // SHIFT CLICK is start of drag to create a new hop
-            //
             else if ( e.button == 2 || ( e.button == 1 && shift ) ) {
+              // SHIFT CLICK is start of drag to create a new hop
+              //
               startHopEntry = jobEntryCopy;
             } else {
               selectedEntries = jobMeta.getSelectedEntries();
@@ -1002,18 +997,15 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     //
     AreaOwner areaOwner = getVisibleAreaOwner( real.x, real.y );
     if ( areaOwner != null ) {
+      JobEntryCopy jobEntryCopy = null;
       switch ( areaOwner.getAreaType() ) {
-        case JOB_ENTRY_ICON: {
-          JobEntryCopy jobEntryCopy = (JobEntryCopy) areaOwner.getOwner();
+        case JOB_ENTRY_ICON:
+          jobEntryCopy = (JobEntryCopy) areaOwner.getOwner();
           resetDelayTimer( jobEntryCopy );
-        }
           break;
-
         case MINI_ICONS_BALLOON: // Give the timer a bit more time
-        {
-          JobEntryCopy jobEntryCopy = (JobEntryCopy) areaOwner.getOwner();
+          jobEntryCopy = (JobEntryCopy) areaOwner.getOwner();
           resetDelayTimer( jobEntryCopy );
-        }
           break;
         default:
           break;
@@ -1250,8 +1242,8 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     boolean ok = true;
     if ( jobMeta.findJobHop( newHop.getFromEntry(), newHop.getToEntry(), true ) != null ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-      mb.setMessage( BaseMessages.getString( PKG, "JobGraph.Dialog.HopExists.Message" ) );// "This hop already exists!"
-      mb.setText( BaseMessages.getString( PKG, "JobGraph.Dialog.HopExists.Title" ) );// Error!
+      mb.setMessage( BaseMessages.getString( PKG, "JobGraph.Dialog.HopExists.Message" ) ); // "This hop already exists!"
+      mb.setText( BaseMessages.getString( PKG, "JobGraph.Dialog.HopExists.Title" ) ); // Error!
       mb.open();
       ok = false;
     }

@@ -116,7 +116,7 @@ public class CheckBoxVar extends Composite {
     if ( !Const.isEmpty( variableName ) ) {
       wText.setText( variableName );
     } else {
-      wText.setText( "" );// $NON-NLS-1$
+      wText.setText( "" ); // $NON-NLS-1$
     }
   }
 
