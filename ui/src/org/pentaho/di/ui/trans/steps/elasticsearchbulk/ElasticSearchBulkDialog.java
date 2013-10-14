@@ -875,7 +875,7 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
       toModel( tempMeta );
 
       ImmutableSettings.Builder settingsBuilder = ImmutableSettings.settingsBuilder();
-      settingsBuilder.put( ImmutableSettings.Builder.EMPTY_SETTINGS );// keep default classloader
+      settingsBuilder.put( ImmutableSettings.Builder.EMPTY_SETTINGS ); // keep default classloader
       settingsBuilder.put( tempMeta.getSettings() );
       Settings settings = settingsBuilder.build();
 

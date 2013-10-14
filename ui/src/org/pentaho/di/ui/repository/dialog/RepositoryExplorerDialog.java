@@ -728,28 +728,29 @@ public class RepositoryExplorerDialog extends Dialog {
 
     if ( level > 1 ) {
       int cat = getItemCategory( ti );
+      String[] realpath;
       switch ( cat ) {
         case ITEM_CATEGORY_JOB:
-        case ITEM_CATEGORY_TRANSFORMATION: {
+        case ITEM_CATEGORY_TRANSFORMATION:
           // The first 3 levels of text[] don't belong to the path to this transformation!
-          String[] realpath = new String[level - 2];
+          realpath = new String[level - 2];
           for ( int i = 0; i < realpath.length; i++ ) {
             realpath[i] = path[i + 2];
           }
 
           repdir = directoryTree.findDirectory( realpath );
-        }
+
           break;
         case ITEM_CATEGORY_JOB_DIRECTORY:
-        case ITEM_CATEGORY_TRANSFORMATION_DIRECTORY: {
+        case ITEM_CATEGORY_TRANSFORMATION_DIRECTORY:
           // The first 3 levels of text[] don't belong to the path to this transformation!
-          String[] realpath = new String[level - 1];
+          realpath = new String[level - 1];
           for ( int i = 0; i < realpath.length; i++ ) {
             realpath[i] = path[i + 2];
           }
 
           repdir = directoryTree.findDirectory( realpath );
-        }
+
           break;
         default:
           break;
