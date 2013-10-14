@@ -26,7 +26,6 @@ import java.sql.ResultSet;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -374,7 +373,7 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
    * @param tableName
    * @param idxFields
    * @return true if the index exists, false if it doesn't.
-   * @throws KettleException
+   * @throws KettleDatabaseException
    */
   @Override
   public boolean checkIndexExists( Database database, String schemaName, String tableName, String[] idx_fields )

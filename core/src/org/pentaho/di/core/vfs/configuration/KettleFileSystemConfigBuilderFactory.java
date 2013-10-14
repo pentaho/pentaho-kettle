@@ -25,7 +25,6 @@ package org.pentaho.di.core.vfs.configuration;
 import java.io.IOException;
 import java.lang.reflect.Method;
 
-import org.apache.commons.vfs.FileSystemConfigBuilder;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
@@ -44,7 +43,7 @@ public class KettleFileSystemConfigBuilderFactory {
    * This factory returns a FileSystemConfigBuilder. Custom FileSystemConfigBuilders can be created by implementing the
    * {@link IKettleFileSystemConfigBuilder} or overriding the {@link KettleGenericFileSystemConfigBuilder}
    * 
-   * @see FileSystemConfigBuilder
+   * @see org.apache.commons.vfs.FileSystemConfigBuilder
    * 
    * @param varSpace
    *          A Kettle variable space for resolving VFS config parameters

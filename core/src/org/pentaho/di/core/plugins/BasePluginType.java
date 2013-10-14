@@ -262,9 +262,10 @@ public abstract class BasePluginType implements PluginTypeInterface {
               Set<String> impls = annotationDB.getAnnotationIndex().get( annotationClassName );
               if ( impls != null ) {
 
-                for ( String fil : impls )
+                for ( String fil : impls ) {
                   classFiles.add( new JarFileAnnotationPlugin( fil, fileObject.getURL(), fileObject.getParent()
                       .getURL() ) );
+                }
               }
             }
 
@@ -328,16 +329,15 @@ public abstract class BasePluginType implements PluginTypeInterface {
    *          the image for the plugin
    * @throws KettlePluginException
    */
-  public void
-    registerCustom( Class<?> clazz, String category, String id, String name, String description, String image )
-      throws KettlePluginException {
+  public void registerCustom( Class<?> clazz, String cat, String id, String name, String desc, String image )
+    throws KettlePluginException {
     Class<? extends PluginTypeInterface> pluginType = getClass();
     Map<Class<?>, String> classMap = new HashMap<Class<?>, String>();
     PluginMainClassType mainClassTypesAnnotation = pluginType.getAnnotation( PluginMainClassType.class );
     classMap.put( mainClassTypesAnnotation.value(), clazz.getName() );
     PluginInterface stepPlugin =
-        new Plugin( new String[] { id }, pluginType, mainClassTypesAnnotation.value(), category, name, description,
-            image, false, false, classMap, new ArrayList<String>(), null, null, null, null, null );
+        new Plugin( new String[] { id }, pluginType, mainClassTypesAnnotation.value(), cat, name, desc, image, false,
+            false, classMap, new ArrayList<String>(), null, null, null, null, null );
     registry.registerPlugin( pluginType, stepPlugin );
   }
 
@@ -374,8 +374,8 @@ public abstract class BasePluginType implements PluginTypeInterface {
       Map<String, String> localizedCategories = readPluginLocale( pluginNode, "localized_category", "category" );
       category = getAlternativeTranslation( category, localizedCategories );
 
-      Map<String, String> localizedDescriptions = readPluginLocale( pluginNode, "localized_description", "description" );
-      description = getAlternativeTranslation( description, localizedDescriptions );
+      Map<String, String> localDescriptions = readPluginLocale( pluginNode, "localized_description", "description" );
+      description = getAlternativeTranslation( description, localDescriptions );
 
       Map<String, String> localizedTooltips = readPluginLocale( pluginNode, "localized_tooltip", "tooltip" );
       tooltip = getAlternativeTranslation( tooltip, localizedTooltips );

@@ -324,9 +324,9 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
         // Try to find the connection for the group
         Database lookup = map.getDatabase( group, partitionId, this );
-        if ( lookup == null ) // We already opened this connection for the
-                              // partition & database in this group
-        {
+        if ( lookup == null ) {
+          // We already opened this connection for the
+          // partition & database in this group
           // Do a normal connect and then store this database object for later
           // re-use.
           normalConnect( partitionId );
@@ -587,8 +587,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       if ( !Const.isEmpty( connectionGroup ) ) {
         return;
       } else {
-        if ( !isAutoCommit() ) // Do we really still need this commit??
-        {
+        if ( !isAutoCommit() ) {
+          // Do we really still need this commit??
           commit();
         }
       }
@@ -849,9 +849,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     pstmt = null;
   }
 
-  public void closePreparedStatement( PreparedStatement ps ) throws KettleDatabaseException
-
-  {
+  public void closePreparedStatement( PreparedStatement ps ) throws KettleDatabaseException {
     if ( ps != null ) {
       try {
         ps.close();
@@ -861,9 +859,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     }
   }
 
-  public void closeInsert() throws KettleDatabaseException
-
-  {
+  public void closeInsert() throws KettleDatabaseException {
     if ( prepStatementInsert != null ) {
       try {
         prepStatementInsert.close();
@@ -1488,7 +1484,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     Result result = new Result();
 
     // Deleting all the single-line and multi-line comments from the string
-    String all = SqlCommentScrubber.removeComments( script );// scrubDoubleHyphenComments(script);
+    String all = SqlCommentScrubber.removeComments( script ); // scrubDoubleHyphenComments(script);
 
     String[] statements = all.split( ";" );
     String stat;
@@ -1538,8 +1534,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
               }
             }
           }
-        } else // any kind of statement
-        {
+        } else {
+          // any kind of statement
           if ( log.isDetailed() ) {
             log.logDetailed( "launch DDL statement: " + Const.CR + sql );
           }
@@ -1884,7 +1880,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     return databaseMeta.getDatabaseInterface().checkIndexExists( this, schemaName, tableName, idx_fields );
   }
 
-  public String getCreateIndexStatement( String tablename, String indexname, String idx_fields[], boolean tk,
+  public String getCreateIndexStatement( String tablename, String indexname, String[] idx_fields, boolean tk,
       boolean unique, boolean bitmap, boolean semi_colon ) {
     return getCreateIndexStatement( null, tablename, indexname, idx_fields, tk, unique, bitmap, semi_colon );
   }
@@ -2003,8 +1999,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         return fields;
       }
     }
-    if ( connection == null )
-     {
+    if ( connection == null ) {
       return null; // Cache test without connect.
     }
 
@@ -2670,8 +2665,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       throw new KettleDatabaseException( "Error looking up row in database", ex );
     } finally {
       try {
-        if ( res != null )
-         {
+        if ( res != null ) {
           res.close(); // close resultset!
         }
       } catch ( SQLException e ) {
@@ -2685,8 +2679,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   public DatabaseMetaData getDatabaseMetaData() throws KettleDatabaseException {
     try {
       log.snap( Metrics.METRIC_DATABASE_GET_DBMETA_START, databaseMeta.getName() );
-      if ( dbmd == null )
-       {
+      if ( dbmd == null ) {
         dbmd = connection.getMetaData(); // Only get the metadata once!
       }
     } catch ( Exception e ) {

@@ -133,12 +133,10 @@ public class KettleURLClassLoader extends URLClassLoader {
 
         byte[] newretval = new byte[retval.length + a];
 
-        for ( int i = 0; i < retval.length; i++ )
-         {
+        for ( int i = 0; i < retval.length; i++ ) {
           newretval[i] = retval[i]; // old part
         }
-        for ( int i = 0; i < a; i++ )
-         {
+        for ( int i = 0; i < a; i++ ) {
           newretval[retval.length + i] = buffer[i]; // new part
         }
 

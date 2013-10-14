@@ -2286,8 +2286,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    */
   public String verifyAndModifyDatabaseName( List<DatabaseMeta> databases, String oldname ) {
     String name = getName();
-    if ( name.equalsIgnoreCase( oldname ) )
-     {
+    if ( name.equalsIgnoreCase( oldname ) ) {
       return name; // nothing to see here: move along!
     }
 

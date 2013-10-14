@@ -151,9 +151,9 @@ public class SortedFileOutputStream extends FileOutputStream {
     }
 
     Collections.sort( lines );
-    for ( String line : lines )
+    for ( String line : lines ) {
       super.write( line.getBytes() );
-
+    }
     super.flush();
     super.close();
   }

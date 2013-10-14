@@ -73,8 +73,7 @@ public class DerbyDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
         }
         url += "/" + databaseName;
         return url;
-      } else // Simple format: jdbc:derby:<dbname>
-      {
+      } else { // Simple format: jdbc:derby:<dbname>
         return "jdbc:derby:" + databaseName;
       }
     } else {

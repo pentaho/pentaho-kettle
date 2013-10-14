@@ -467,7 +467,9 @@ public class Const {
   /** Is this transformation running clustered, on the master? */
   public static final String INTERNAL_VARIABLE_CLUSTER_MASTER = INTERNAL_VARIABLE_PREFIX + ".Cluster.Master";
 
-  /** The internal clustered run ID, unique across a clustered execution, important while doing parallel clustered runs */
+  /**
+   * The internal clustered run ID, unique across a clustered execution, important while doing parallel clustered runs
+   */
   public static final String INTERNAL_VARIABLE_CLUSTER_RUN_ID = INTERNAL_VARIABLE_PREFIX + ".Cluster.Run.ID";
 
   /** The size of the cluster : number of slaves */
@@ -1186,8 +1188,8 @@ public class Const {
 
     while ( i >= 0 ) {
       String look = str.substring( i, i + clength );
-      if ( look.equalsIgnoreCase( code ) ) // Look for a match!
-      {
+      // Look for a match!
+      if ( look.equalsIgnoreCase( code ) ) {
         str.replace( i, i + clength, repl );
       }
       i--;
@@ -1333,7 +1335,7 @@ public class Const {
         }
       }
     } catch ( SocketException e ) {
-
+      return lastHostname;
     }
 
     return lastHostname;
@@ -1392,7 +1394,8 @@ public class Const {
     String mac = "none";
     String os = getOS();
     String s = "";
-
+    @SuppressWarnings( "unused" )
+    Boolean errorOccured = false;
     // System.out.println("os = "+os+", ip="+ip);
 
     if ( os.equalsIgnoreCase( "Windows NT" ) || os.equalsIgnoreCase( "Windows 2000" )
@@ -1417,7 +1420,7 @@ public class Const {
         }
         stdInput.close();
       } catch ( Exception e ) {
-
+        errorOccured = true;
       }
     } else if ( os.equalsIgnoreCase( "Linux" ) ) {
       try {
@@ -1436,6 +1439,7 @@ public class Const {
         }
         stdInput.close();
       } catch ( Exception e ) {
+        errorOccured = true;
 
       }
     } else if ( os.equalsIgnoreCase( "Solaris" ) ) {
@@ -1455,6 +1459,7 @@ public class Const {
         }
         stdInput.close();
       } catch ( Exception e ) {
+        errorOccured = true;
 
       }
     } else if ( os.equalsIgnoreCase( "HP-UX" ) ) {
@@ -1474,10 +1479,11 @@ public class Const {
         }
         stdInput.close();
       } catch ( Exception e ) {
+        errorOccured = true;
 
       }
     }
-
+    // should do something if we got an error processing!
     return Const.trim( mac );
   }
 
@@ -1620,9 +1626,8 @@ public class Const {
           }
         }
 
-      } else
-      // We found the start, but NOT the ending %% without closing %%
-      {
+      } else {
+        // We found the start, but NOT the ending %% without closing %%
         to = idx;
       }
 
@@ -1788,8 +1793,8 @@ public class Const {
    * Convert strings separated by a string into an array of strings.
    * <p>
    * <code>
-	 Example: a;b;c;d    ==>  new String[] { a, b, c, d }
-	 * </code>
+  Example: a;b;c;d    ==>    new String[] { a, b, c, d }
+   * </code>
    * 
    * <p>
    * <b>NOTE: this differs from String.split() in a way that the built-in method uses regular expressions and this one
@@ -1855,8 +1860,8 @@ public class Const {
    * Convert strings separated by a character into an array of strings.
    * <p>
    * <code>
-	 Example: a;b;c;d    ==  new String[] { a, b, c, d }
-	 * </code>
+    Example: a;b;c;d    ==  new String[] { a, b, c, d }
+   * </code>
    * 
    * @param string
    *          The string to split
@@ -2109,6 +2114,7 @@ public class Const {
     try {
       stringWriter.close();
     } catch ( IOException ioe ) {
+
     } // is this really required?
     return string;
   }

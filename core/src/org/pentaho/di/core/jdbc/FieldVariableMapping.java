@@ -31,8 +31,7 @@ public class FieldVariableMapping {
   public enum MappingType {
     FIELDMAP, // Helper mapping to map output fields to SQL columns
     SQL_WHERE, // generates the where clause condition into a SQL condition.
-    JSON_QUERY, // generates the JSON query (MongoDB mainly)
-    ;
+    JSON_QUERY; // generates the JSON query (MongoDB mainly)
 
     public static MappingType getMappingType( String typeString ) {
       try {

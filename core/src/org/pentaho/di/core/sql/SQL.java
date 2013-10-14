@@ -132,8 +132,12 @@ public class SQL {
       }
     }
     if ( parts.size() > 3 ) {
-      throw new KettleSQLException( "Found " + parts.size()
-          + " parts for the FROM clause when only a table name and optionally an alias is supported: " + serviceClause );
+      StringBuilder builder = new StringBuilder();
+      builder.append( "Found " );
+      builder.append( parts.size() );
+      builder.append( " parts for the FROM clause when only a table name and optionally an alias is supported: " );
+      builder.append( serviceClause );
+      throw new KettleSQLException( builder.toString() );
     }
 
     serviceAlias = Const.NVL( serviceAlias, serviceName );
