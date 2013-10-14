@@ -208,9 +208,8 @@ public class DerbyDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
                 retval += "SMALLINT";
               }
             }
-          }
-          // Floating point values...
-          else {
+          } else {
+            // Floating point values...
             if ( length > 18 ) {
               retval += "DECIMAL(" + length;
               if ( precision > 0 ) {

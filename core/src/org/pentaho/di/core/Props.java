@@ -463,8 +463,8 @@ public class Props implements Cloneable {
     Enumeration<Object> keys = properties.keys();
     while ( keys.hasMoreElements() ) {
       String key = (String) keys.nextElement();
-      if ( key.startsWith( STRING_CUSTOM_PARAMETER ) ) // Clear this one
-      {
+      if ( key.startsWith( STRING_CUSTOM_PARAMETER ) ) {
+        // Clear this one
         properties.remove( key );
       }
     }

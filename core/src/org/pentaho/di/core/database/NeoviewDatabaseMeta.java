@@ -260,9 +260,8 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
             } else {
               retval += "INTEGER";
             }
-          }
-          // Floating point values...
-          else {
+          } else {
+            // Floating point values...
             // A double-precision floating-point number is accurate to approximately 15 decimal places.
             // +/- 2.2250738585072014e-308 through +/-1.7976931348623157e+308; stored in 8 byte
             // NUMERIC values are stored in less bytes, so we try to use them instead of a FLOAT:
@@ -286,8 +285,7 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
             retval += "VARCHAR(" + length + ")";
           } else if ( length <= 4036 ) {
             retval += "CHAR(" + length + ")"; // squeezing 8 bytes ;-)
-          }
-          else {
+          } else {
             retval += "CLOB"; // before we go to CLOB
           }
         } else {

@@ -147,9 +147,9 @@ public class StringUtil {
           // first for
           // speed
           if ( another > -1 ) {
-            if ( recursion > 50 ) // for safety: avoid recursive
-            // endless loops with stack overflow
-            {
+            // for safety: avoid recursive
+            if ( recursion > 50 ) {
+              // endless loops with stack overflow
               throw new RuntimeException( "Endless loop detected for substitution of variable: " + (String) value );
             }
             value = substitute( (String) value, variablesValues, open, close, ++recursion );
