@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.ui.trans.step;
 
@@ -57,14 +57,13 @@ import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 
 /**
- * User: gmoran
- * Date: Jan 28, 2013
+ * User: gmoran Date: Jan 28, 2013
  */
 public abstract class BaseStepGenericXulDialog extends AbstractXulEventHandler implements StepDialogInterface {
-  // private static Class<?> PKG = StepInterface.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  // private static Class<?> PKG = StepInterface.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-  public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject("Step dialog",
-      LoggingObjectType.STEPDIALOG, null);
+  public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject( "Step dialog",
+      LoggingObjectType.STEPDIALOG, null );
 
   protected static VariableSpace variables = new Variables();
 
@@ -83,7 +82,7 @@ public abstract class BaseStepGenericXulDialog extends AbstractXulEventHandler i
   protected BaseStepMeta baseStepMeta;
 
   protected Repository repository;
-  
+
   protected IMetaStore metaStore;
 
   protected StepMeta stepMeta;
@@ -100,13 +99,14 @@ public abstract class BaseStepGenericXulDialog extends AbstractXulEventHandler i
 
   protected BindingFactory bf;
 
-  public BaseStepGenericXulDialog( String xulFile, Object parent, BaseStepMeta baseStepMeta, TransMeta transMeta, String stepname ) {
+  public BaseStepGenericXulDialog( String xulFile, Object parent, BaseStepMeta baseStepMeta, TransMeta transMeta,
+      String stepname ) {
 
-    this.log = new LogChannel(baseStepMeta);
+    this.log = new LogChannel( baseStepMeta );
     this.transMeta = transMeta;
     this.stepname = stepname;
-    if (transMeta != null){
-      this.stepMeta = transMeta.findStep(stepname);
+    if ( transMeta != null ) {
+      this.stepMeta = transMeta.findStep( stepname );
     }
     this.baseStepMeta = baseStepMeta;
     this.xulFile = xulFile;
@@ -114,121 +114,124 @@ public abstract class BaseStepGenericXulDialog extends AbstractXulEventHandler i
 
     try {
       initializeXul();
-    } catch (Exception e) {
+    } catch ( Exception e ) {
       e.printStackTrace();
-      log.logError("Error initializing ("+stepname+") step dialog", e);
-      throw new IllegalStateException("Cannot load dialog due to error in initialization", e);
+      log.logError( "Error initializing (" + stepname + ") step dialog", e );
+      throw new IllegalStateException( "Cannot load dialog due to error in initialization", e );
     }
   }
 
   /**
-   * The implementors of this method should call the sibling method initializeXul(XulLoder, BindingFactory, XulRunner, parent) with the 
-   * desired Xul implementation classes - SWT or Swing. 
+   * The implementors of this method should call the sibling method initializeXul(XulLoder, BindingFactory, XulRunner,
+   * parent) with the desired Xul implementation classes - SWT or Swing.
    * 
    * @throws XulException
    */
   protected abstract void initializeXul() throws XulException;
-  
-  protected void initializeXul(XulLoader loader, BindingFactory bindingFactory, XulRunner runner, Object parent) throws XulException {
+
+  protected void initializeXul( XulLoader loader, BindingFactory bindingFactory, XulRunner runner, Object parent )
+    throws XulException {
     bf = bindingFactory;
     this.runner = runner;
-    loader.registerClassLoader(getClass().getClassLoader());
-    loader.setSettingsManager(getSettingsManager());
-    loader.setOuterContext(parent);
-    container = loader.loadXul( xulFile, getResourceBundle());
-    bf.setDocument(container.getDocumentRoot());
-    
-    for(XulEventHandler h : getEventHandlers()){
-      container.addEventHandler(h); 
+    loader.registerClassLoader( getClass().getClassLoader() );
+    loader.setSettingsManager( getSettingsManager() );
+    loader.setOuterContext( parent );
+    container = loader.loadXul( xulFile, getResourceBundle() );
+    bf.setDocument( container.getDocumentRoot() );
+
+    for ( XulEventHandler h : getEventHandlers() ) {
+      container.addEventHandler( h );
     }
 
-    this.runner.addContainer(container);
+    this.runner.addContainer( container );
 
     // try and get the dialog
     xulDialog = (XulDialog) container.getDocumentRoot().getRootElement();
     runner.initialize();
   }
-  
+
   public abstract XulSettingsManager getSettingsManager();
+
   public abstract ResourceBundle getResourceBundle();
-  
+
   /**
-   * Reset this dialog and its controls to a default state. 
+   * Reset this dialog and its controls to a default state.
    */
   public abstract void clear();
-  
-  protected BindingFactory getBindingFactory(){
+
+  protected BindingFactory getBindingFactory() {
     return bf;
   }
 
-  protected List<XulEventHandler> getEventHandlers(){
-    return Collections.singletonList((XulEventHandler) this);
+  protected List<XulEventHandler> getEventHandlers() {
+    return Collections.singletonList( (XulEventHandler) this );
   }
 
-  public String getName(){
+  public String getName() {
     return "handler";
   }
 
-  public String open(){
+  public String open() {
     xulDialog.show();
     return stepname;
   }
 
-  public void close(){
+  public void close() {
     xulDialog.hide();
   }
-  
-  // This is the only way to get the proper component parented to 
-  // message boxes for proper display/disposal. The creator of this dialog 
+
+  // This is the only way to get the proper component parented to
+  // message boxes for proper display/disposal. The creator of this dialog
   // should set this modal parent before attempting to call any messages.
-  
+
   Object modalParent = null;
-  public void setModalParent(Object p){
+
+  public void setModalParent( Object p ) {
     modalParent = p;
   }
-  
-  public void showMessage(final String message, final String title){
-    
+
+  public void showMessage( final String message, final String title ) {
+
     try {
-      
-      final XulMessageBox msg = (XulMessageBox) document.createElement("messagebox");
-      msg.setModalParent(modalParent);
-      msg.setTitle(title);
-      msg.setMessage(message);
+
+      final XulMessageBox msg = (XulMessageBox) document.createElement( "messagebox" );
+      msg.setModalParent( modalParent );
+      msg.setTitle( title );
+      msg.setMessage( message );
       msg.open();
-    
-    } catch (XulException e) {
-      log.logError("Error displaying message: {0}", message);
+
+    } catch ( XulException e ) {
+      log.logError( "Error displaying message: {0}", message );
     }
-    
+
   }
 
-  public int showClearDataMessage(){
+  public int showClearDataMessage() {
     String message = "There already is data entered.\nHow do you want to add the data that were found?";
     String title = "Question";
-    Object[] buttons = new Object[]{"Add new","Add all","Clear and add all","Cancel"};
-    
-    return showPromptMessage(message, title, buttons);
+    Object[] buttons = new Object[] { "Add new", "Add all", "Clear and add all", "Cancel" };
+
+    return showPromptMessage( message, title, buttons );
   }
 
-  public int showPromptMessage(final String message, final String title){
-    
-    return showPromptMessage(message, title, new Object[]{"OK", "Cancel"});
+  public int showPromptMessage( final String message, final String title ) {
+
+    return showPromptMessage( message, title, new Object[] { "OK", "Cancel" } );
   }
 
-  public int showPromptMessage(final String message, final String title, Object[] buttons){
-    
+  public int showPromptMessage( final String message, final String title, Object[] buttons ) {
+
     try {
-      
-      final XulMessageBox msg = (XulMessageBox) document.createElement("messagebox");
-      msg.setModalParent(modalParent);
-      msg.setTitle(title);
-      msg.setMessage(message);
-      msg.setButtons(buttons);
+
+      final XulMessageBox msg = (XulMessageBox) document.createElement( "messagebox" );
+      msg.setModalParent( modalParent );
+      msg.setTitle( title );
+      msg.setMessage( message );
+      msg.setButtons( buttons );
       return msg.open();
-    
-    } catch (XulException e) {
-      log.logError("Error displaying message: {0}", message);
+
+    } catch ( XulException e ) {
+      log.logError( "Error displaying message: {0}", message );
     }
     return -1;
   }
@@ -240,29 +243,28 @@ public abstract class BaseStepGenericXulDialog extends AbstractXulEventHandler i
   protected abstract Class<?> getClassForMessages();
 
   public abstract void dispose();
-  
+
   public abstract boolean validate();
-  
-  
+
   public void addDatabases( XulMenuList<?> wConnection ) {
-    addDatabases(wConnection, null);
+    addDatabases( wConnection, null );
   }
 
-  @SuppressWarnings({ "rawtypes", "unchecked" })
+  @SuppressWarnings( { "rawtypes", "unchecked" } )
   public void addDatabases( XulMenuList wConnection, Class<? extends DatabaseInterface> databaseType ) {
     List<String> databases = new ArrayList<String>();
-    for (int i = 0; i < transMeta.nrDatabases(); i++) {
-      DatabaseMeta ci = transMeta.getDatabase(i);
-      if (databaseType == null || ci.getDatabaseInterface().getClass().equals(databaseType)) {
-        databases.add(ci.getName());
+    for ( int i = 0; i < transMeta.nrDatabases(); i++ ) {
+      DatabaseMeta ci = transMeta.getDatabase( i );
+      if ( databaseType == null || ci.getDatabaseInterface().getClass().equals( databaseType ) ) {
+        databases.add( ci.getName() );
       }
     }
-    wConnection.setElements(databases);
+    wConnection.setElements( databases );
   }
 
-  @SuppressWarnings({ "unchecked", "rawtypes" })
+  @SuppressWarnings( { "unchecked", "rawtypes" } )
   public void selectDatabase( XulMenuList wConnection, String name ) {
-    wConnection.setSelectedItem(wConnection);
+    wConnection.setSelectedItem( wConnection );
   }
 
   public Repository getRepository() {
@@ -290,62 +292,63 @@ public abstract class BaseStepGenericXulDialog extends AbstractXulEventHandler i
   }
 
   public void logMinimal( String message ) {
-    log.logMinimal(message);
+    log.logMinimal( message );
   }
 
   public void logMinimal( String message, Object... arguments ) {
-    log.logMinimal(message, arguments);
+    log.logMinimal( message, arguments );
   }
 
   public void logBasic( String message ) {
-    log.logBasic(message);
+    log.logBasic( message );
   }
 
   public void logBasic( String message, Object... arguments ) {
-    log.logBasic(message, arguments);
+    log.logBasic( message, arguments );
   }
 
   public void logDetailed( String message ) {
-    log.logDetailed(message);
+    log.logDetailed( message );
   }
 
   public void logDetailed( String message, Object... arguments ) {
-    log.logDetailed(message, arguments);
+    log.logDetailed( message, arguments );
   }
 
   public void logDebug( String message ) {
-    log.logDebug(message);
+    log.logDebug( message );
   }
 
   public void logDebug( String message, Object... arguments ) {
-    log.logDebug(message, arguments);
+    log.logDebug( message, arguments );
   }
 
   public void logRowlevel( String message ) {
-    log.logRowlevel(message);
+    log.logRowlevel( message );
   }
 
   public void logRowlevel( String message, Object... arguments ) {
-    log.logRowlevel(message, arguments);
+    log.logRowlevel( message, arguments );
   }
 
   public void logError( String message ) {
-    log.logError(message);
+    log.logError( message );
   }
+
   public void logError( String message, Throwable e ) {
 
-    log.logError(message, e);
+    log.logError( message, e );
   }
 
   public void logError( String message, Object... arguments ) {
-    log.logError(message, arguments);
+    log.logError( message, arguments );
   }
 
   public IMetaStore getMetaStore() {
     return metaStore;
   }
 
-  public void setMetaStore(IMetaStore metaStore) {
+  public void setMetaStore( IMetaStore metaStore ) {
     this.metaStore = metaStore;
   }
 

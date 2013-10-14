@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.ui.spoon.trans;
 
@@ -76,9 +76,9 @@ import org.pentaho.ui.xul.containers.XulToolbar;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 
 public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandler {
-  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-  private static final String XUL_FILE_TRANS_GRID_TOOLBAR = "ui/trans-history-toolbar.xul"; 
+  private static final String XUL_FILE_TRANS_GRID_TOOLBAR = "ui/trans-history-toolbar.xul";
 
   private TransGraph transGraph;
 
@@ -103,28 +103,30 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
   private XulToolbarbutton fetchAllButton;
 
   private TransHistoryModel[] models;
-  
-  private enum Mode { INITIAL, NEXT_BATCH, ALL }
+
+  private enum Mode {
+    INITIAL, NEXT_BATCH, ALL
+  }
 
   /**
    * @param spoon
    * @param transGraph
    */
-  public TransHistoryDelegate(Spoon spoon, TransGraph transGraph) {
-    super(spoon);
+  public TransHistoryDelegate( Spoon spoon, TransGraph transGraph ) {
+    super( spoon );
     this.transGraph = transGraph;
   }
 
   public void addTransHistory() {
     // First, see if we need to add the extra view...
     //
-    if (transGraph.extraViewComposite == null || transGraph.extraViewComposite.isDisposed()) {
+    if ( transGraph.extraViewComposite == null || transGraph.extraViewComposite.isDisposed() ) {
       transGraph.addExtraView();
     } else {
-      if (transHistoryTab != null && !transHistoryTab.isDisposed()) {
+      if ( transHistoryTab != null && !transHistoryTab.isDisposed() ) {
         // just set this one active and get out...
         //
-        transGraph.extraViewTabFolder.setSelection(transHistoryTab);
+        transGraph.extraViewTabFolder.setSelection( transHistoryTab );
         return;
       }
     }
@@ -133,48 +135,48 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
 
     // Add a transLogTab : display the logging...
     //
-    transHistoryTab = new CTabItem(transGraph.extraViewTabFolder, SWT.NONE);
-    transHistoryTab.setImage(GUIResource.getInstance().getImageShowHistory());
-    transHistoryTab.setText(BaseMessages.getString(PKG, "Spoon.TransGraph.HistoryTab.Name")); 
+    transHistoryTab = new CTabItem( transGraph.extraViewTabFolder, SWT.NONE );
+    transHistoryTab.setImage( GUIResource.getInstance().getImageShowHistory() );
+    transHistoryTab.setText( BaseMessages.getString( PKG, "Spoon.TransGraph.HistoryTab.Name" ) );
 
     // Create a composite, slam everything on there like it was in the history tab.
     //
-    transHistoryComposite = new Composite(transGraph.extraViewTabFolder, SWT.NONE);
-    transHistoryComposite.setLayout(new FormLayout());
-    spoon.props.setLook(transHistoryComposite);
+    transHistoryComposite = new Composite( transGraph.extraViewTabFolder, SWT.NONE );
+    transHistoryComposite.setLayout( new FormLayout() );
+    spoon.props.setLook( transHistoryComposite );
 
     addToolBar();
 
     Control toolbarControl = (Control) toolbar.getManagedObject();
-    
-    toolbarControl.setLayoutData(new FormData());
+
+    toolbarControl.setLayoutData( new FormData() );
     FormData fd = new FormData();
-    fd.left = new FormAttachment(0, 0); // First one in the left top corner
-    fd.top = new FormAttachment(0, 0);
-    fd.right = new FormAttachment(100, 0);
-    toolbarControl.setLayoutData(fd);
-    
-    toolbarControl.setParent(transHistoryComposite);
-    
+    fd.left = new FormAttachment( 0, 0 ); // First one in the left top corner
+    fd.top = new FormAttachment( 0, 0 );
+    fd.right = new FormAttachment( 100, 0 );
+    toolbarControl.setLayoutData( fd );
+
+    toolbarControl.setParent( transHistoryComposite );
+
     addLogTableTabs();
-    tabFolder.setSelection(0);
-    
-    tabFolder.addSelectionListener(new SelectionListener() {
+    tabFolder.setSelection( 0 );
+
+    tabFolder.addSelectionListener( new SelectionListener() {
       @Override
-      public void widgetSelected(SelectionEvent arg0) {
-        setMoreRows(true);
+      public void widgetSelected( SelectionEvent arg0 ) {
+        setMoreRows( true );
       }
-      
+
       @Override
-      public void widgetDefaultSelected(SelectionEvent arg0) {
+      public void widgetDefaultSelected( SelectionEvent arg0 ) {
       }
-    });
+    } );
 
     transHistoryComposite.pack();
-    transHistoryTab.setControl(transHistoryComposite);
-    transGraph.extraViewTabFolder.setSelection(transHistoryTab);
+    transHistoryTab.setControl( transHistoryComposite );
+    transGraph.extraViewTabFolder.setSelection( transHistoryTab );
 
-    if (!Props.getInstance().disableInitialExecutionHistory()) {
+    if ( !Props.getInstance().disableInitialExecutionHistory() ) {
       refreshAllHistory();
     }
   }
@@ -182,72 +184,72 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
   private void addLogTableTabs() {
 
     models = new TransHistoryModel[4];
-    for (int i = 0; i < models.length; i++) {
+    for ( int i = 0; i < models.length; i++ ) {
       models[i] = new TransHistoryModel();
-      models[i].logTable = transMeta.getLogTables().get(i);
+      models[i].logTable = transMeta.getLogTables().get( i );
     }
 
-    columns = new ArrayList<ColumnInfo[]>(models.length);
-    wFields = new ArrayList<TableView>(models.length);
-    wText = new ArrayList<Text>(models.length);
+    columns = new ArrayList<ColumnInfo[]>( models.length );
+    wFields = new ArrayList<TableView>( models.length );
+    wText = new ArrayList<Text>( models.length );
 
     // Create a nested tab folder in the tab item, on the history composite...
     //
-    tabFolder = new CTabFolder(transHistoryComposite, SWT.MULTI);
-    spoon.props.setLook(tabFolder, Props.WIDGET_STYLE_TAB);
+    tabFolder = new CTabFolder( transHistoryComposite, SWT.MULTI );
+    spoon.props.setLook( tabFolder, Props.WIDGET_STYLE_TAB );
 
-    for (TransHistoryModel model : models) {
+    for ( TransHistoryModel model : models ) {
       LogTableInterface logTable = model.logTable;
-      CTabItem tabItem = new CTabItem(tabFolder, SWT.NONE);
+      CTabItem tabItem = new CTabItem( tabFolder, SWT.NONE );
       // tabItem.setImage(GUIResource.getInstance().getImageShowHistory());
-      tabItem.setText(logTable.getLogTableType());
+      tabItem.setText( logTable.getLogTableType() );
 
-      Composite logTableComposite = new Composite(tabFolder, SWT.NONE);
-      logTableComposite.setLayout(new FormLayout());
-      spoon.props.setLook(logTableComposite);
+      Composite logTableComposite = new Composite( tabFolder, SWT.NONE );
+      logTableComposite.setLayout( new FormLayout() );
+      spoon.props.setLook( logTableComposite );
 
-      tabItem.setControl(logTableComposite);
+      tabItem.setControl( logTableComposite );
 
-      SashForm sash = new SashForm(logTableComposite, SWT.VERTICAL);
-      sash.setLayout(new FillLayout());
+      SashForm sash = new SashForm( logTableComposite, SWT.VERTICAL );
+      sash.setLayout( new FillLayout() );
       FormData fdSash = new FormData();
-      fdSash.left = new FormAttachment(0, 0); // First one in the left top corner
-      fdSash.top = new FormAttachment(0, 0);
-      fdSash.right = new FormAttachment(100, 0);
-      fdSash.bottom = new FormAttachment(100, 0);
-      sash.setLayoutData(fdSash);
+      fdSash.left = new FormAttachment( 0, 0 ); // First one in the left top corner
+      fdSash.top = new FormAttachment( 0, 0 );
+      fdSash.right = new FormAttachment( 100, 0 );
+      fdSash.bottom = new FormAttachment( 100, 0 );
+      sash.setLayoutData( fdSash );
 
       List<ColumnInfo> columnList = new ArrayList<ColumnInfo>();
       List<LogTableField> fields = new ArrayList<LogTableField>();
 
-      for (LogTableField field : logTable.getFields()) {
-        if (field.isEnabled() && field.isVisible()) {
-          fields.add(field);
-          if (!field.isLogField()) {
-            ColumnInfo column = new ColumnInfo(field.getName(), ColumnInfo.COLUMN_TYPE_TEXT, false, true);
+      for ( LogTableField field : logTable.getFields() ) {
+        if ( field.isEnabled() && field.isVisible() ) {
+          fields.add( field );
+          if ( !field.isLogField() ) {
+            ColumnInfo column = new ColumnInfo( field.getName(), ColumnInfo.COLUMN_TYPE_TEXT, false, true );
             int valueType = field.getDataType();
             String conversionMask = null;
-            
-            switch (field.getDataType()) {
+
+            switch ( field.getDataType() ) {
               case ValueMetaInterface.TYPE_INTEGER:
                 conversionMask = "###,###,##0";
-                column.setAllignement(SWT.RIGHT);
+                column.setAllignement( SWT.RIGHT );
                 break;
               case ValueMetaInterface.TYPE_DATE:
                 conversionMask = "yyyy/MM/dd HH:mm:ss";
-                column.setAllignement(SWT.CENTER);
+                column.setAllignement( SWT.CENTER );
                 break;
               case ValueMetaInterface.TYPE_NUMBER:
                 conversionMask = " ###,###,##0.00;-###,###,##0.00";
-                column.setAllignement(SWT.RIGHT);
+                column.setAllignement( SWT.RIGHT );
                 break;
               case ValueMetaInterface.TYPE_STRING:
-                column.setAllignement(SWT.LEFT);
+                column.setAllignement( SWT.LEFT );
                 break;
               case ValueMetaInterface.TYPE_BOOLEAN:
-                DatabaseMeta databaseMeta = logTable.getDatabaseMeta(); 
-                if (databaseMeta!=null) {
-                  if (!databaseMeta.supportsBooleanDataType()) {
+                DatabaseMeta databaseMeta = logTable.getDatabaseMeta();
+                if ( databaseMeta != null ) {
+                  if ( !databaseMeta.supportsBooleanDataType() ) {
                     // Boolean gets converted to String!
                     //
                     valueType = ValueMetaInterface.TYPE_STRING;
@@ -257,60 +259,62 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
               default:
                 break;
             }
-            
-            ValueMetaInterface valueMeta = new ValueMeta(field.getFieldName(), valueType, field.getLength(), -1);
-            if (conversionMask!=null) {
-              valueMeta.setConversionMask(conversionMask);
+
+            ValueMetaInterface valueMeta = new ValueMeta( field.getFieldName(), valueType, field.getLength(), -1 );
+            if ( conversionMask != null ) {
+              valueMeta.setConversionMask( conversionMask );
             }
-            column.setValueMeta(valueMeta);
-            columnList.add(column);
+            column.setValueMeta( valueMeta );
+            columnList.add( column );
           }
         }
       }
       model.logTableFields = fields;
 
       final int FieldsRows = 1;
-      ColumnInfo[] colinf = columnList.toArray(new ColumnInfo[columnList.size()]);
-      columns.add(colinf); // keep for later
+      ColumnInfo[] colinf = columnList.toArray( new ColumnInfo[columnList.size()] );
+      columns.add( colinf ); // keep for later
 
-      TableView tableView = new TableView(transGraph.getManagedObject(), sash, SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE, colinf, FieldsRows, true, // readonly!
-          null, spoon.props);
-      wFields.add(tableView);
+      TableView tableView =
+          new TableView( transGraph.getManagedObject(), sash, SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE, colinf,
+              FieldsRows, true, // readonly!
+              null, spoon.props );
+      wFields.add( tableView );
 
-      tableView.table.addSelectionListener(new SelectionAdapter() {
-        public void widgetSelected(SelectionEvent arg0) {
+      tableView.table.addSelectionListener( new SelectionAdapter() {
+        public void widgetSelected( SelectionEvent arg0 ) {
           showLogEntry();
         }
-      });
+      } );
 
-      if (logTable.getLogField() != null) {
+      if ( logTable.getLogField() != null ) {
 
-        Text text = new Text(sash, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL | SWT.READ_ONLY);
-        spoon.props.setLook(text);
-        text.setVisible(true);
-        wText.add(text);
+        Text text = new Text( sash, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL | SWT.READ_ONLY );
+        spoon.props.setLook( text );
+        text.setVisible( true );
+        wText.add( text );
 
         FormData fdText = new FormData();
-        fdText.left = new FormAttachment(0, 0);
-        fdText.top = new FormAttachment(0, 0);
-        fdText.right = new FormAttachment(100, 0);
-        fdText.bottom = new FormAttachment(100, 0);
-        text.setLayoutData(fdText);
+        fdText.left = new FormAttachment( 0, 0 );
+        fdText.top = new FormAttachment( 0, 0 );
+        fdText.right = new FormAttachment( 100, 0 );
+        fdText.bottom = new FormAttachment( 100, 0 );
+        text.setLayoutData( fdText );
 
-        sash.setWeights(new int[] { 70, 30, });
+        sash.setWeights( new int[] { 70, 30, } );
       } else {
-        wText.add(null);
-        sash.setWeights(new int[] { 100, });
+        wText.add( null );
+        sash.setWeights( new int[] { 100, } );
       }
 
     }
 
     FormData fdTabFolder = new FormData();
-    fdTabFolder.left = new FormAttachment(0, 0); // First one in the left top corner
-    fdTabFolder.top = new FormAttachment((Control) toolbar.getManagedObject(), 0);
-    fdTabFolder.right = new FormAttachment(100, 0);
-    fdTabFolder.bottom = new FormAttachment(100, 0);
-    tabFolder.setLayoutData(fdTabFolder);
+    fdTabFolder.left = new FormAttachment( 0, 0 ); // First one in the left top corner
+    fdTabFolder.top = new FormAttachment( (Control) toolbar.getManagedObject(), 0 );
+    fdTabFolder.right = new FormAttachment( 100, 0 );
+    fdTabFolder.bottom = new FormAttachment( 100, 0 );
+    tabFolder.setLayoutData( fdTabFolder );
 
   }
 
@@ -318,21 +322,24 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
 
     try {
       XulLoader loader = new KettleXulLoader();
-      loader.setSettingsManager(XulSpoonSettingsManager.getInstance());
-      ResourceBundle bundle = new XulSpoonResourceBundle(Spoon.class);
-      XulDomContainer xulDomContainer = loader.loadXul(XUL_FILE_TRANS_GRID_TOOLBAR, bundle);
-      xulDomContainer.addEventHandler(this);
-      toolbar = (XulToolbar) xulDomContainer.getDocumentRoot().getElementById("nav-toolbar"); 
+      loader.setSettingsManager( XulSpoonSettingsManager.getInstance() );
+      ResourceBundle bundle = new XulSpoonResourceBundle( Spoon.class );
+      XulDomContainer xulDomContainer = loader.loadXul( XUL_FILE_TRANS_GRID_TOOLBAR, bundle );
+      xulDomContainer.addEventHandler( this );
+      toolbar = (XulToolbar) xulDomContainer.getDocumentRoot().getElementById( "nav-toolbar" );
 
-      refreshButton = (XulToolbarbutton) xulDomContainer.getDocumentRoot().getElementById("refresh-history"); 
-      fetchNextBatchButton = (XulToolbarbutton) xulDomContainer.getDocumentRoot().getElementById("fetch-next-batch-history"); 
-      fetchAllButton = (XulToolbarbutton) xulDomContainer.getDocumentRoot().getElementById("fetch-all-history"); 
-      
+      refreshButton = (XulToolbarbutton) xulDomContainer.getDocumentRoot().getElementById( "refresh-history" );
+      fetchNextBatchButton =
+          (XulToolbarbutton) xulDomContainer.getDocumentRoot().getElementById( "fetch-next-batch-history" );
+      fetchAllButton = (XulToolbarbutton) xulDomContainer.getDocumentRoot().getElementById( "fetch-all-history" );
+
       ToolBar swtToolBar = (ToolBar) toolbar.getManagedObject();
-      swtToolBar.layout(true, true);
-    } catch (Throwable t) {
-      log.logError(Const.getStackTracker(t));
-      new ErrorDialog(transHistoryComposite.getShell(), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR), new Exception(t));  
+      swtToolBar.layout( true, true );
+    } catch ( Throwable t ) {
+      log.logError( Const.getStackTracker( t ) );
+      new ErrorDialog( transHistoryComposite.getShell(), BaseMessages.getString( PKG,
+          "Spoon.Exception.ErrorReadingXULFile.Title" ), BaseMessages.getString( PKG,
+          "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR ), new Exception( t ) );
     }
   }
 
@@ -340,40 +347,42 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
    * Public for XUL.
    */
   public void clearLogTable() {
-    clearLogTable(tabFolder.getSelectionIndex());
+    clearLogTable( tabFolder.getSelectionIndex() );
   }
 
   /**
    * User requested to clear the log table.<br>
    * Better ask confirmation
    */
-  private void clearLogTable(int index) {
+  private void clearLogTable( int index ) {
 
     LogTableInterface logTable = models[index].logTable;
 
-    if (logTable.isDefined()) {
+    if ( logTable.isDefined() ) {
       String schemaTable = logTable.getQuotedSchemaTableCombination();
       DatabaseMeta databaseMeta = logTable.getDatabaseMeta();
 
-      MessageBox mb = new MessageBox(transGraph.getShell(), SWT.YES | SWT.NO | SWT.ICON_QUESTION);
-      mb.setMessage(BaseMessages.getString(PKG, "TransGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Message", schemaTable)); // Nothing found that matches your criteria 
-      mb.setText(BaseMessages.getString(PKG, "TransGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Title")); // Sorry! 
-      if (mb.open() == SWT.YES) {
-        Database database = new Database(loggingObject, databaseMeta);
+      MessageBox mb = new MessageBox( transGraph.getShell(), SWT.YES | SWT.NO | SWT.ICON_QUESTION );
+      mb.setMessage( BaseMessages.getString( PKG, "TransGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Message",
+          schemaTable ) ); // Nothing found that matches your criteria
+      mb.setText( BaseMessages.getString( PKG, "TransGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Title" ) ); // Sorry!
+      if ( mb.open() == SWT.YES ) {
+        Database database = new Database( loggingObject, databaseMeta );
         try {
           database.connect();
-          database.truncateTable(schemaTable);
-        } catch (Exception e) {
-          new ErrorDialog(transGraph.getShell(), BaseMessages.getString(PKG, "TransGraph.Dialog.ErrorClearningLoggingTable.Title"), 
-              BaseMessages.getString(PKG, "TransGraph.Dialog.ErrorClearningLoggingTable.Message"), e); 
+          database.truncateTable( schemaTable );
+        } catch ( Exception e ) {
+          new ErrorDialog( transGraph.getShell(), BaseMessages.getString( PKG,
+              "TransGraph.Dialog.ErrorClearningLoggingTable.Title" ), BaseMessages.getString( PKG,
+              "TransGraph.Dialog.ErrorClearningLoggingTable.Message" ), e );
         } finally {
-          if (database != null) {
+          if ( database != null ) {
             database.disconnect();
           }
 
           refreshHistory();
-          if (wText.get(index) != null) {
-            wText.get(index).setText(""); 
+          if ( wText.get( index ) != null ) {
+            wText.get( index ).setText( "" );
           }
         }
       }
@@ -385,95 +394,93 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
    */
   public void replayHistory() {
     int tabIndex = tabFolder.getSelectionIndex();
-    int idx = wFields.get(tabIndex).getSelectionIndex();
-    if (idx >= 0) {
-      String fields[] = wFields.get(tabIndex).getItem(idx);
+    int idx = wFields.get( tabIndex ).getSelectionIndex();
+    if ( idx >= 0 ) {
+      String[] fields = wFields.get( tabIndex ).getItem( idx );
       String dateString = fields[13];
-      Date replayDate = XMLHandler.stringToDate(dateString);
-      spoon.executeTransformation(transGraph.getManagedObject(), true, false, false, false, false, replayDate, false, spoon.getTransExecutionConfiguration().getLogLevel());
+      Date replayDate = XMLHandler.stringToDate( dateString );
+      spoon.executeTransformation( transGraph.getManagedObject(), true, false, false, false, false, replayDate, false,
+          spoon.getTransExecutionConfiguration().getLogLevel() );
     }
   }
 
   /**
-   * Public for XUL. 
+   * Public for XUL.
    */
   public void refreshHistory() {
     int tabIndex = tabFolder.getSelectionIndex();
-    refreshHistory(tabIndex);
+    refreshHistory( tabIndex );
   }
-  
+
   private void refreshAllHistory() {
-    for (int i = 0; i < models.length; i++) {
-      refreshHistory(i);
+    for ( int i = 0; i < models.length; i++ ) {
+      refreshHistory( i );
     }
   }
-  
+
   /**
    * Background thread refreshes history data
    */
-  private void refreshHistory(final int index) {
-    new Thread(new Runnable() {
+  private void refreshHistory( final int index ) {
+    new Thread( new Runnable() {
       public void run() {
 
-              // do gui stuff here
-              spoon.getDisplay().syncExec(new Runnable() {
-                public void run() {
-                  setQueryInProgress(true);
-                }
-               });
+        // do gui stuff here
+        spoon.getDisplay().syncExec( new Runnable() {
+          public void run() {
+            setQueryInProgress( true );
+          }
+        } );
 
-              
-              final boolean moreRows = getHistoryData(index, Mode.INITIAL);
-              
-              
-           // do gui stuff here
-              spoon.getDisplay().syncExec(new Runnable() {
-                public void run() {
-                  displayHistoryData(index);
-                  setQueryInProgress(false);
-                  setMoreRows(moreRows);
-                }
-               });
-            
-          
-        
+        final boolean moreRows = getHistoryData( index, Mode.INITIAL );
+
+        // do gui stuff here
+        spoon.getDisplay().syncExec( new Runnable() {
+          public void run() {
+            displayHistoryData( index );
+            setQueryInProgress( false );
+            setMoreRows( moreRows );
+          }
+        } );
+
       }
-    }).start();
+    } ).start();
   }
-  
-  private void setMoreRows(final boolean moreRows) {
-    fetchNextBatchButton.setDisabled(!moreRows);
+
+  private void setMoreRows( final boolean moreRows ) {
+    fetchNextBatchButton.setDisabled( !moreRows );
   }
-  
+
   /**
    * Don't allow more queries until this one finishes.
+   * 
    * @param inProgress
    */
-  private void setQueryInProgress(final boolean inProgress) {
-    refreshButton.setDisabled(inProgress);
-    fetchNextBatchButton.setDisabled(inProgress);
-    fetchAllButton.setDisabled(inProgress);
+  private void setQueryInProgress( final boolean inProgress ) {
+    refreshButton.setDisabled( inProgress );
+    fetchNextBatchButton.setDisabled( inProgress );
+    fetchAllButton.setDisabled( inProgress );
   }
-  
-  private boolean getHistoryData(final int index, final Mode mode) {
+
+  private boolean getHistoryData( final int index, final Mode mode ) {
     final int BATCH_SIZE = Props.getInstance().getLinesInHistoryFetchSize();
     boolean moreRows = false;
     LogTableInterface logTable = models[index].logTable;
     // See if there is a transformation loaded that has a connection table specified.
-    // 
-    if (transMeta != null && !Const.isEmpty(transMeta.getName()) && logTable.isDefined()) {
+    //
+    if ( transMeta != null && !Const.isEmpty( transMeta.getName() ) && logTable.isDefined() ) {
       Database database = null;
       try {
         DatabaseMeta logConnection = logTable.getDatabaseMeta();
-        
+
         // open a connection
-        database = new Database(loggingObject, logConnection);
-        database.shareVariablesWith(transMeta);
+        database = new Database( loggingObject, logConnection );
+        database.shareVariablesWith( transMeta );
         database.connect();
 
         int queryLimit = 0;
-        
-        switch (mode) {
+
+        switch ( mode ) {
           case ALL:
             models[index].batchCount = 0;
             queryLimit = Props.getInstance().getMaxNrLinesInHistory();
@@ -489,23 +496,24 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
           default:
             break;
         }
-        database.setQueryLimit(queryLimit);
-        
+        database.setQueryLimit( queryLimit );
+
         // First, we get the information out of the database table...
         //
         String schemaTable = logTable.getQuotedSchemaTableCombination();
 
-        String sql = "SELECT "; 
+        String sql = "SELECT ";
         boolean first = true;
-        for (LogTableField field : logTable.getFields()) {
-          if (field.isEnabled() && field.isVisible()) {
-            if (!first)
-              sql += ", "; 
+        for ( LogTableField field : logTable.getFields() ) {
+          if ( field.isEnabled() && field.isVisible() ) {
+            if ( !first ) {
+              sql += ", ";
+            }
             first = false;
-            sql += logConnection.quoteField(field.getFieldName());
+            sql += logConnection.quoteField( field.getFieldName() );
           }
         }
-        sql += " FROM " + schemaTable; 
+        sql += " FROM " + schemaTable;
 
         RowMetaAndData params = new RowMetaAndData();
 
@@ -513,49 +521,51 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
         //
         LogTableField nameField = logTable.getNameField();
         LogTableField keyField = logTable.getKeyField();
-        
-        if (nameField != null) {
-          if (transMeta.isUsingAClusterSchema()) {
-              sql += " WHERE " + logConnection.quoteField(nameField.getFieldName()) + " LIKE ?";  
-              params.addValue(new ValueMeta("transname_literal", ValueMetaInterface.TYPE_STRING), transMeta.getName()); 
-  
-              sql += " OR    " + logConnection.quoteField(nameField.getFieldName()) + " LIKE ?";  
-              params.addValue(new ValueMeta("transname_cluster", ValueMetaInterface.TYPE_STRING), transMeta.getName() + " (%");  
+
+        if ( nameField != null ) {
+          if ( transMeta.isUsingAClusterSchema() ) {
+            sql += " WHERE " + logConnection.quoteField( nameField.getFieldName() ) + " LIKE ?";
+            params.addValue( new ValueMeta( "transname_literal", ValueMetaInterface.TYPE_STRING ), transMeta.getName() );
+
+            sql += " OR    " + logConnection.quoteField( nameField.getFieldName() ) + " LIKE ?";
+            params.addValue( new ValueMeta( "transname_cluster", ValueMetaInterface.TYPE_STRING ), transMeta.getName()
+                + " (%" );
           } else {
-            sql += " WHERE " + logConnection.quoteField(nameField.getFieldName()) + " = ?";  
-            params.addValue(new ValueMeta("transname_literal", ValueMetaInterface.TYPE_STRING), transMeta.getName()); 
-            
+            sql += " WHERE " + logConnection.quoteField( nameField.getFieldName() ) + " = ?";
+            params.addValue( new ValueMeta( "transname_literal", ValueMetaInterface.TYPE_STRING ), transMeta.getName() );
+
           }
         }
-        
-        if (keyField != null && keyField.isEnabled()) {
-          sql += " ORDER BY " + logConnection.quoteField(keyField.getFieldName()) + " DESC"; 
+
+        if ( keyField != null && keyField.isEnabled() ) {
+          sql += " ORDER BY " + logConnection.quoteField( keyField.getFieldName() ) + " DESC";
         }
 
-        ResultSet resultSet = database.openQuery(sql, params.getRowMeta(), params.getData());
+        ResultSet resultSet = database.openQuery( sql, params.getRowMeta(), params.getData() );
 
         List<Object[]> rows = new ArrayList<Object[]>();
-        Object[] rowData = database.getRow(resultSet);
+        Object[] rowData = database.getRow( resultSet );
         int rowsFetched = 1;
-        while (rowData != null) {
-          rows.add(rowData);
-          rowData = database.getRow(resultSet);
+        while ( rowData != null ) {
+          rows.add( rowData );
+          rowData = database.getRow( resultSet );
           rowsFetched++;
         }
-        
-        if (rowsFetched >= queryLimit) {
+
+        if ( rowsFetched >= queryLimit ) {
           moreRows = true;
         }
-        
-        database.closeQuery(resultSet);
+
+        database.closeQuery( resultSet );
 
         models[index].rows = rows;
-      } catch (Exception e) {
-        LogChannel.GENERAL.logError("Unable to get rows of data from logging table "+models[index].logTable, e); 
+      } catch ( Exception e ) {
+        LogChannel.GENERAL.logError( "Unable to get rows of data from logging table " + models[index].logTable, e );
         models[index].rows = new ArrayList<Object[]>();
       } finally {
-        if (database != null)
+        if ( database != null ) {
           database.disconnect();
+        }
       }
     } else {
       models[index].rows = new ArrayList<Object[]>();
@@ -563,42 +573,42 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
     return moreRows;
   }
 
-  private void displayHistoryData(final int index) {
+  private void displayHistoryData( final int index ) {
     LogTableInterface logTable = models[index].logTable;
     List<Object[]> rows = models[index].rows;
-    
-    ColumnInfo[] colinf = columns.get(index);
+
+    ColumnInfo[] colinf = columns.get( index );
 
     // Now, we're going to display the data in the table view
     //
-    if (index>=wFields.size() || wFields.get(index).isDisposed()) {
+    if ( index >= wFields.size() || wFields.get( index ).isDisposed() ) {
       return;
     }
 
-    int selectionIndex = wFields.get(index).getSelectionIndex();
+    int selectionIndex = wFields.get( index ).getSelectionIndex();
 
-    wFields.get(index).table.clearAll();
+    wFields.get( index ).table.clearAll();
 
-    if (rows != null && rows.size() > 0) {
+    if ( rows != null && rows.size() > 0 ) {
       // OK, now that we have a series of rows, we can add them to the table view...
-      // 
-      for (int i = 0; i < rows.size(); i++) {
-        Object[] rowData = rows.get(i);
+      //
+      for ( int i = 0; i < rows.size(); i++ ) {
+        Object[] rowData = rows.get( i );
 
-        TableItem item = new TableItem(wFields.get(index).table, SWT.NONE);
+        TableItem item = new TableItem( wFields.get( index ).table, SWT.NONE );
 
-        for (int c = 0; c < colinf.length; c++) {
+        for ( int c = 0; c < colinf.length; c++ ) {
 
           ColumnInfo column = colinf[c];
 
           ValueMetaInterface valueMeta = column.getValueMeta();
           String string = null;
           try {
-            string = valueMeta.getString(rowData[c]);
-          } catch (KettleValueException e) {
-            log.logError("history data conversion issue", e); 
+            string = valueMeta.getString( rowData[c] );
+          } catch ( KettleValueException e ) {
+            log.logError( "history data conversion issue", e );
           }
-          item.setText(c + 1, Const.NVL(string, "")); 
+          item.setText( c + 1, Const.NVL( string, "" ) );
         }
 
         // Add some color
@@ -607,45 +617,46 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
         LogStatus status = null;
 
         LogTableField errorsField = logTable.getErrorsField();
-        if (errorsField != null) {
-          int index1 = models[index].logTableFields.indexOf(errorsField);
+        if ( errorsField != null ) {
+          int index1 = models[index].logTableFields.indexOf( errorsField );
           try {
-            errors = colinf[index1].getValueMeta().getInteger(rowData[index1]);
-          } catch (KettleValueException e) {
-            log.logError("history data conversion issue", e); 
+            errors = colinf[index1].getValueMeta().getInteger( rowData[index1] );
+          } catch ( KettleValueException e ) {
+            log.logError( "history data conversion issue", e );
           }
         }
         LogTableField statusField = logTable.getStatusField();
-        if (statusField != null) {
-          int index1 = models[index].logTableFields.indexOf(statusField);
+        if ( statusField != null ) {
+          int index1 = models[index].logTableFields.indexOf( statusField );
           String statusString = null;
           try {
-            statusString = colinf[index1].getValueMeta().getString(rowData[index1]);
-          } catch (KettleValueException e) {
-            log.logError("history data conversion issue", e); 
+            statusString = colinf[index1].getValueMeta().getString( rowData[index1] );
+          } catch ( KettleValueException e ) {
+            log.logError( "history data conversion issue", e );
           }
-          if (statusString != null) {
-            status = LogStatus.findStatus(statusString);
+          if ( statusString != null ) {
+            status = LogStatus.findStatus( statusString );
           }
         }
 
-        if (errors != null && errors.longValue() > 0L) {
-          item.setBackground(GUIResource.getInstance().getColorRed());
-        } else if (status != null && LogStatus.STOP.equals(status)) {
-          item.setBackground(GUIResource.getInstance().getColorYellow());
+        if ( errors != null && errors.longValue() > 0L ) {
+          item.setBackground( GUIResource.getInstance().getColorRed() );
+        } else if ( status != null && LogStatus.STOP.equals( status ) ) {
+          item.setBackground( GUIResource.getInstance().getColorYellow() );
         }
       }
 
-      wFields.get(index).removeEmptyRows();
-      wFields.get(index).setRowNums();
-      wFields.get(index).optWidth(true);
+      wFields.get( index ).removeEmptyRows();
+      wFields.get( index ).setRowNums();
+      wFields.get( index ).optWidth( true );
     } else {
-      wFields.get(index).clearAll(false);
-      // new TableItem(wFields.get(tabIndex).table, SWT.NONE); // Give it an item to prevent errors on various platforms.
+      wFields.get( index ).clearAll( false );
+      // new TableItem(wFields.get(tabIndex).table, SWT.NONE); // Give it an item to prevent errors on various
+      // platforms.
     }
 
-    if (selectionIndex >= 0 && selectionIndex < wFields.get(index).getItemCount()) {
-      wFields.get(index).table.select(selectionIndex);
+    if ( selectionIndex >= 0 && selectionIndex < wFields.get( index ).getItemCount() ) {
+      wFields.get( index ).table.select( selectionIndex );
       showLogEntry();
     }
   }
@@ -655,44 +666,45 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
     LogTableInterface logTable = models[tabIndex].logTable;
     List<LogTableField> fields = models[tabIndex].logTableFields;
 
-    Text text = wText.get(tabIndex);
+    Text text = wText.get( tabIndex );
 
-    if (text == null || text.isDisposed())
+    if ( text == null || text.isDisposed() ) {
       return;
+    }
 
     List<Object[]> list = models[tabIndex].rows;
 
-    if (list == null || list.size() == 0) {
+    if ( list == null || list.size() == 0 ) {
       String message;
-      if (logTable.isDefined()) {
-        message = BaseMessages.getString(PKG, "TransHistory.PleaseRefresh.Message"); 
+      if ( logTable.isDefined() ) {
+        message = BaseMessages.getString( PKG, "TransHistory.PleaseRefresh.Message" );
       } else {
-        message = BaseMessages.getString(PKG, "TransHistory.HistoryConfiguration.Message"); 
+        message = BaseMessages.getString( PKG, "TransHistory.HistoryConfiguration.Message" );
       }
-      text.setText(message);
+      text.setText( message );
       return;
     }
 
     // grab the selected line in the table:
-    int nr = wFields.get(tabIndex).table.getSelectionIndex();
-    if (nr >= 0 && list != null && nr < list.size()) {
+    int nr = wFields.get( tabIndex ).table.getSelectionIndex();
+    if ( nr >= 0 && list != null && nr < list.size() ) {
       // OK, grab this one from the buffer...
-      Object[] row = list.get(nr);
+      Object[] row = list.get( nr );
 
       // What is the name of the log field?
       //
       LogTableField logField = models[tabIndex].logTable.getLogField();
-      if (logField != null) {
-        int index = fields.indexOf(logField);
-        if (index>=0) {
+      if ( logField != null ) {
+        int index = fields.indexOf( logField );
+        if ( index >= 0 ) {
           String logText = row[index].toString();
-  
-          text.setText(Const.NVL(logText, "")); 
-  
-          text.setSelection(text.getText().length());
+
+          text.setText( Const.NVL( logText, "" ) );
+
+          text.setSelection( text.getText().length() );
           text.showSelection();
         } else {
-          text.setText(BaseMessages.getString(PKG, "TransHistory.HistoryConfiguration.NoLoggingFieldDefined")); 
+          text.setText( BaseMessages.getString( PKG, "TransHistory.HistoryConfiguration.NoLoggingFieldDefined" ) );
         }
       }
     }
@@ -705,122 +717,126 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
     return transHistoryTab;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getData()
    */
   public Object getData() {
     return null;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getName()
    */
   public String getName() {
-    return "transhistory"; 
+    return "transhistory";
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getXulDomContainer()
    */
   public XulDomContainer getXulDomContainer() {
     return null;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setData(java.lang.Object)
    */
-  public void setData(Object data) {
+  public void setData( Object data ) {
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setName(java.lang.String)
    */
-  public void setName(String name) {
+  public void setName( String name ) {
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setXulDomContainer(org.pentaho.ui.xul.XulDomContainer)
    */
-  public void setXulDomContainer(XulDomContainer xulDomContainer) {
+  public void setXulDomContainer( XulDomContainer xulDomContainer ) {
   }
-  
+
   /**
    * XUL event: fetches next x records for current log table.
    */
   public void fetchNextBatch() {
     int tabIndex = tabFolder.getSelectionIndex();
-    fetchNextBatch(tabIndex);
+    fetchNextBatch( tabIndex );
   }
-  
-  private void fetchNextBatch(final int index) {
-    new Thread(new Runnable() {
+
+  private void fetchNextBatch( final int index ) {
+    new Thread( new Runnable() {
       public void run() {
 
-              // do gui stuff here
-              spoon.getDisplay().syncExec(new Runnable() {
-                public void run() {
-                  setQueryInProgress(true);
-                }
-               });
+        // do gui stuff here
+        spoon.getDisplay().syncExec( new Runnable() {
+          public void run() {
+            setQueryInProgress( true );
+          }
+        } );
 
-              
-              final boolean moreRows = getHistoryData(index, Mode.NEXT_BATCH);
-              
-              
-           // do gui stuff here
-              spoon.getDisplay().syncExec(new Runnable() {
-                public void run() {
-                  displayHistoryData(index);
-                  setQueryInProgress(false);
-                  setMoreRows(moreRows);
-                }
-               });
-            
-          
-        
+        final boolean moreRows = getHistoryData( index, Mode.NEXT_BATCH );
+
+        // do gui stuff here
+        spoon.getDisplay().syncExec( new Runnable() {
+          public void run() {
+            displayHistoryData( index );
+            setQueryInProgress( false );
+            setMoreRows( moreRows );
+          }
+        } );
+
       }
-    }).start();
+    } ).start();
 
   }
-  
+
   /**
    * XUL event: loads all load records for current log table.
    */
   public void fetchAll() {
     int tabIndex = tabFolder.getSelectionIndex();
-    fetchAll(tabIndex);
+    fetchAll( tabIndex );
   }
-  
-  private void fetchAll(final int index) {
-    new Thread(new Runnable() {
+
+  private void fetchAll( final int index ) {
+    new Thread( new Runnable() {
       public void run() {
 
-              // do gui stuff here
-              spoon.getDisplay().syncExec(new Runnable() {
-                public void run() {
-                  setQueryInProgress(true);
-                }
-               });
+        // do gui stuff here
+        spoon.getDisplay().syncExec( new Runnable() {
+          public void run() {
+            setQueryInProgress( true );
+          }
+        } );
 
-              
-              final boolean moreRows = getHistoryData(index, Mode.ALL);
-              
-              
-           // do gui stuff here
-              spoon.getDisplay().syncExec(new Runnable() {
-                public void run() {
-                  displayHistoryData(index);
-                  setQueryInProgress(false);
-                  setMoreRows(moreRows);
-                }
-               });
-            
-          
-        
+        final boolean moreRows = getHistoryData( index, Mode.ALL );
+
+        // do gui stuff here
+        spoon.getDisplay().syncExec( new Runnable() {
+          public void run() {
+            displayHistoryData( index );
+            setQueryInProgress( false );
+            setMoreRows( moreRows );
+          }
+        } );
+
       }
-    }).start();
+    } ).start();
   }
-  
+
   private static class TransHistoryModel {
     public List<LogTableField> logTableFields;
     public List<Object[]> rows;

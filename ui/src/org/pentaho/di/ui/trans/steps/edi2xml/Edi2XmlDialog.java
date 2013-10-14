@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.ui.trans.steps.edi2xml;
 
@@ -53,192 +53,193 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class Edi2XmlDialog extends BaseStepDialog implements StepDialogInterface {
 
-	private static Class<?> PKG = Edi2XmlMeta.class; // for i18n purposes
+  private static Class<?> PKG = Edi2XmlMeta.class; // for i18n purposes
 
-	private Edi2XmlMeta input;
+  private Edi2XmlMeta input;
 
-	// output field name
-	private Label wlXmlField;
-	private TextVar wXmlField;
-	private FormData fdlXmlField, fdXmlField;
+  // output field name
+  private Label wlXmlField;
+  private TextVar wXmlField;
+  private FormData fdlXmlField, fdXmlField;
 
-	private ComboVar wEdiField;
+  private ComboVar wEdiField;
 
-	public Edi2XmlDialog(Shell parent, Object in, TransMeta transMeta, String sname) {
-		super(parent, (BaseStepMeta) in, transMeta, sname);
-		input = (Edi2XmlMeta) in;
-	}
+  public Edi2XmlDialog( Shell parent, Object in, TransMeta transMeta, String sname ) {
+    super( parent, (BaseStepMeta) in, transMeta, sname );
+    input = (Edi2XmlMeta) in;
+  }
 
-	public String open() {
-		Shell parent = getParent();
-		Display display = parent.getDisplay();
+  public String open() {
+    Shell parent = getParent();
+    Display display = parent.getDisplay();
 
-		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MIN | SWT.MAX);
-		props.setLook(shell);
-		setShellImage(shell, input);
+    shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MIN | SWT.MAX );
+    props.setLook( shell );
+    setShellImage( shell, input );
 
-		ModifyListener lsMod = new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				input.setChanged();
-			}
-		};
-		changed = input.hasChanged();
+    ModifyListener lsMod = new ModifyListener() {
+      public void modifyText( ModifyEvent e ) {
+        input.setChanged();
+      }
+    };
+    changed = input.hasChanged();
 
-		FormLayout formLayout = new FormLayout();
-		formLayout.marginWidth = Const.FORM_MARGIN;
-		formLayout.marginHeight = Const.FORM_MARGIN;
+    FormLayout formLayout = new FormLayout();
+    formLayout.marginWidth = Const.FORM_MARGIN;
+    formLayout.marginHeight = Const.FORM_MARGIN;
 
-		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "Edi2Xml.Shell.Title"));
+    shell.setLayout( formLayout );
+    shell.setText( BaseMessages.getString( PKG, "Edi2Xml.Shell.Title" ) );
 
-		int middle = props.getMiddlePct();
-		int margin = Const.MARGIN;
+    int middle = props.getMiddlePct();
+    int margin = Const.MARGIN;
 
-		// Stepname line
-		wlStepname = new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "System.Label.StepName"));
-		props.setLook(wlStepname);
-		fdlStepname = new FormData();
-		fdlStepname.left = new FormAttachment(0, 0);
-		fdlStepname.right = new FormAttachment(middle, -margin);
-		fdlStepname.top = new FormAttachment(0, margin);
-		wlStepname.setLayoutData(fdlStepname);
+    // Stepname line
+    wlStepname = new Label( shell, SWT.RIGHT );
+    wlStepname.setText( BaseMessages.getString( PKG, "System.Label.StepName" ) );
+    props.setLook( wlStepname );
+    fdlStepname = new FormData();
+    fdlStepname.left = new FormAttachment( 0, 0 );
+    fdlStepname.right = new FormAttachment( middle, -margin );
+    fdlStepname.top = new FormAttachment( 0, margin );
+    wlStepname.setLayoutData( fdlStepname );
 
-		wStepname = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wStepname.setText(stepname);
-		props.setLook(wStepname);
-		wStepname.addModifyListener(lsMod);
-		fdStepname = new FormData();
-		fdStepname.left = new FormAttachment(middle, 0);
-		fdStepname.top = new FormAttachment(0, margin);
-		fdStepname.right = new FormAttachment(100, 0);
-		wStepname.setLayoutData(fdStepname);
+    wStepname = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wStepname.setText( stepname );
+    props.setLook( wStepname );
+    wStepname.addModifyListener( lsMod );
+    fdStepname = new FormData();
+    fdStepname.left = new FormAttachment( middle, 0 );
+    fdStepname.top = new FormAttachment( 0, margin );
+    fdStepname.right = new FormAttachment( 100, 0 );
+    wStepname.setLayoutData( fdStepname );
 
-		// edifact field line
-		Label wlEdiField = new Label(shell, SWT.RIGHT);
-		wlEdiField.setText(BaseMessages.getString(PKG, "Edi2Xml.InputField.Label")); 
-		props.setLook(wlEdiField);
-		FormData fdlEdiField = new FormData();
-		fdlEdiField.left = new FormAttachment(0, 0);
-		fdlEdiField.right = new FormAttachment(middle, -margin);
-		fdlEdiField.top = new FormAttachment(wStepname, margin);
-		wlEdiField.setLayoutData(fdlEdiField);
+    // edifact field line
+    Label wlEdiField = new Label( shell, SWT.RIGHT );
+    wlEdiField.setText( BaseMessages.getString( PKG, "Edi2Xml.InputField.Label" ) );
+    props.setLook( wlEdiField );
+    FormData fdlEdiField = new FormData();
+    fdlEdiField.left = new FormAttachment( 0, 0 );
+    fdlEdiField.right = new FormAttachment( middle, -margin );
+    fdlEdiField.top = new FormAttachment( wStepname, margin );
+    wlEdiField.setLayoutData( fdlEdiField );
 
-		wEdiField = new ComboVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wEdiField.setToolTipText(BaseMessages.getString(PKG, "Edi2Xml.InputField.Tooltip"));
-		props.setLook(wEdiField);
-		wEdiField.addModifyListener(lsMod);
-		FormData fdEdiField = new FormData();
-		fdEdiField.left = new FormAttachment(middle, 0);
-		fdEdiField.top = new FormAttachment(wStepname, margin);
-		fdEdiField.right = new FormAttachment(100, 0);
-		wEdiField.setLayoutData(fdEdiField);
-		wEdiField.addFocusListener(new FocusListener() {
-			public void focusLost(org.eclipse.swt.events.FocusEvent e) {
-			}
+    wEdiField = new ComboVar( transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wEdiField.setToolTipText( BaseMessages.getString( PKG, "Edi2Xml.InputField.Tooltip" ) );
+    props.setLook( wEdiField );
+    wEdiField.addModifyListener( lsMod );
+    FormData fdEdiField = new FormData();
+    fdEdiField.left = new FormAttachment( middle, 0 );
+    fdEdiField.top = new FormAttachment( wStepname, margin );
+    fdEdiField.right = new FormAttachment( 100, 0 );
+    wEdiField.setLayoutData( fdEdiField );
+    wEdiField.addFocusListener( new FocusListener() {
+      public void focusLost( org.eclipse.swt.events.FocusEvent e ) {
+      }
 
-			public void focusGained(org.eclipse.swt.events.FocusEvent e) {
-				Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
-				shell.setCursor(busy);
-				BaseStepDialog.getFieldsFromPrevious(wEdiField, transMeta, stepMeta);
-				shell.setCursor(null);
-				busy.dispose();
-			}
-		});
+      public void focusGained( org.eclipse.swt.events.FocusEvent e ) {
+        Cursor busy = new Cursor( shell.getDisplay(), SWT.CURSOR_WAIT );
+        shell.setCursor( busy );
+        BaseStepDialog.getFieldsFromPrevious( wEdiField, transMeta, stepMeta );
+        shell.setCursor( null );
+        busy.dispose();
+      }
+    } );
 
-		// xml output field value
-		wlXmlField = new Label(shell, SWT.RIGHT);
-		wlXmlField.setText(BaseMessages.getString(PKG, "Edi2Xml.OutputField.Label"));
-		props.setLook(wlXmlField);
-		fdlXmlField = new FormData();
-		fdlXmlField.left = new FormAttachment(0, 0);
-		fdlXmlField.right = new FormAttachment(middle, -margin);
-		fdlXmlField.top = new FormAttachment(wEdiField, margin);
-		wlXmlField.setLayoutData(fdlXmlField);
+    // xml output field value
+    wlXmlField = new Label( shell, SWT.RIGHT );
+    wlXmlField.setText( BaseMessages.getString( PKG, "Edi2Xml.OutputField.Label" ) );
+    props.setLook( wlXmlField );
+    fdlXmlField = new FormData();
+    fdlXmlField.left = new FormAttachment( 0, 0 );
+    fdlXmlField.right = new FormAttachment( middle, -margin );
+    fdlXmlField.top = new FormAttachment( wEdiField, margin );
+    wlXmlField.setLayoutData( fdlXmlField );
 
-		wXmlField = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		props.setLook(wXmlField);
-		wXmlField.setToolTipText(BaseMessages.getString(PKG, "Edi2Xml.OutputField.Tooltip"));
-		wXmlField.addModifyListener(lsMod);
-		fdXmlField = new FormData();
-		fdXmlField.left = new FormAttachment(middle, 0);
-		fdXmlField.right = new FormAttachment(100, 0);
-		fdXmlField.top = new FormAttachment(wEdiField, margin);
-		wXmlField.setLayoutData(fdXmlField);
+    wXmlField = new TextVar( transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wXmlField );
+    wXmlField.setToolTipText( BaseMessages.getString( PKG, "Edi2Xml.OutputField.Tooltip" ) );
+    wXmlField.addModifyListener( lsMod );
+    fdXmlField = new FormData();
+    fdXmlField.left = new FormAttachment( middle, 0 );
+    fdXmlField.right = new FormAttachment( 100, 0 );
+    fdXmlField.top = new FormAttachment( wEdiField, margin );
+    wXmlField.setLayoutData( fdXmlField );
 
-		// OK and cancel buttons
-		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
-		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
+    // OK and cancel buttons
+    wOK = new Button( shell, SWT.PUSH );
+    wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
+    wCancel = new Button( shell, SWT.PUSH );
+    wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
 
-		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wXmlField);
+    BaseStepDialog.positionBottomButtons( shell, new Button[] { wOK, wCancel }, margin, wXmlField );
 
-		// Add listeners
-		lsCancel = new Listener() {
-			public void handleEvent(Event e) {
-				cancel();
-			}
-		};
-		lsOK = new Listener() {
-			public void handleEvent(Event e) {
-				ok();
-			}
-		};
+    // Add listeners
+    lsCancel = new Listener() {
+      public void handleEvent( Event e ) {
+        cancel();
+      }
+    };
+    lsOK = new Listener() {
+      public void handleEvent( Event e ) {
+        ok();
+      }
+    };
 
-		wCancel.addListener(SWT.Selection, lsCancel);
-		wOK.addListener(SWT.Selection, lsOK);
+    wCancel.addListener( SWT.Selection, lsCancel );
+    wOK.addListener( SWT.Selection, lsOK );
 
-		lsDef = new SelectionAdapter() {
-			public void widgetDefaultSelected(SelectionEvent e) {
-				ok();
-			}
-		};
+    lsDef = new SelectionAdapter() {
+      public void widgetDefaultSelected( SelectionEvent e ) {
+        ok();
+      }
+    };
 
-		wStepname.addSelectionListener(lsDef);
-		wXmlField.addSelectionListener(lsDef);
+    wStepname.addSelectionListener( lsDef );
+    wXmlField.addSelectionListener( lsDef );
 
-		// Detect X or ALT-F4 or something that kills this window...
-		shell.addShellListener(new ShellAdapter() {
-			public void shellClosed(ShellEvent e) {
-				cancel();
-			}
-		});
+    // Detect X or ALT-F4 or something that kills this window...
+    shell.addShellListener( new ShellAdapter() {
+      public void shellClosed( ShellEvent e ) {
+        cancel();
+      }
+    } );
 
-		// Set the shell size, based upon previous time...
-		setSize();
+    // Set the shell size, based upon previous time...
+    setSize();
 
-		getData();
-		input.setChanged(changed);
+    getData();
+    input.setChanged( changed );
 
-		shell.open();
-		while (!shell.isDisposed()) {
-			if (!display.readAndDispatch())
-				display.sleep();
-		}
-		return stepname;
-	}
+    shell.open();
+    while ( !shell.isDisposed() ) {
+      if ( !display.readAndDispatch() ) {
+        display.sleep();
+      }
+    }
+    return stepname;
+  }
 
   // Read data and place it in the dialog
   public void getData() {
-    wXmlField.setText(Const.NVL(input.getOutputField(), ""));
-    wEdiField.setText(Const.NVL(input.getInputField(), ""));
+    wXmlField.setText( Const.NVL( input.getOutputField(), "" ) );
+    wEdiField.setText( Const.NVL( input.getInputField(), "" ) );
 
     wStepname.selectAll();
     wStepname.setFocus();
   }
 
-	private void cancel() {
-		stepname = null;
-		input.setChanged(changed);
-		dispose();
-	}
+  private void cancel() {
+    stepname = null;
+    input.setChanged( changed );
+    dispose();
+  }
 
-	// let the plugin know about the entered data
-	private void ok() {
-		stepname = wStepname.getText(); // return value
-		input.setOutputField(wXmlField.getText());
-		input.setInputField(wEdiField.getText());
-		dispose();
-	}
+  // let the plugin know about the entered data
+  private void ok() {
+    stepname = wStepname.getText(); // return value
+    input.setOutputField( wXmlField.getText() );
+    input.setInputField( wEdiField.getText() );
+    dispose();
+  }
 }

@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.ui.spoon;
 
@@ -41,84 +41,89 @@ import org.w3c.dom.Node;
 
 public class TransFileListener implements FileListener {
 
-  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-  public boolean open(Node transNode, String fname, boolean importfile) throws KettleMissingPluginsException {
+  public boolean open( Node transNode, String fname, boolean importfile ) throws KettleMissingPluginsException {
     final Spoon spoon = Spoon.getInstance();
     final PropsUI props = PropsUI.getInstance();
     try {
       TransMeta transMeta = new TransMeta();
-      transMeta.loadXML(transNode, fname, spoon.getMetaStore(), spoon.getRepository(), true, new Variables(), new OverwritePrompter() {
+      transMeta.loadXML( transNode, fname, spoon.getMetaStore(), spoon.getRepository(), true, new Variables(),
+          new OverwritePrompter() {
 
-        public boolean overwritePrompt(String message, String rememberText, String rememberPropertyName) {
-          MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
-          Object res[] = spoon.messageDialogWithToggle(BaseMessages.getString(PKG, "System.Button.Yes"), null, message,
-              Const.WARNING, new String[] { BaseMessages.getString(PKG, "System.Button.Yes"),  
-                  BaseMessages.getString(PKG, "System.Button.No") },
-              1, rememberText, !props.askAboutReplacingDatabaseConnections());
-          int idx = ((Integer) res[0]).intValue();
-          boolean toggleState = ((Boolean) res[1]).booleanValue();
-          props.setAskAboutReplacingDatabaseConnections(!toggleState);
+            public boolean overwritePrompt( String message, String rememberText, String rememberPropertyName ) {
+              MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
+              Object[] res =
+                  spoon.messageDialogWithToggle( BaseMessages.getString( PKG, "System.Button.Yes" ), null, message,
+                      Const.WARNING, new String[] { BaseMessages.getString( PKG, "System.Button.Yes" ),
+                        BaseMessages.getString( PKG, "System.Button.No" ) }, 1, rememberText, !props
+                          .askAboutReplacingDatabaseConnections() );
+              int idx = ( (Integer) res[0] ).intValue();
+              boolean toggleState = ( (Boolean) res[1] ).booleanValue();
+              props.setAskAboutReplacingDatabaseConnections( !toggleState );
 
-          return ((idx & 0xFF) == 0); // Yes means: overwrite
-        }
+              return ( ( idx & 0xFF ) == 0 ); // Yes means: overwrite
+            }
 
-      });
-      transMeta.setRepositoryDirectory(spoon.getDefaultSaveLocation(transMeta));
-      transMeta.setRepository(spoon.getRepository());
-      transMeta.setMetaStore(spoon.getMetaStore());
-      spoon.setTransMetaVariables(transMeta);
-      spoon.getProperties().addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION, fname, null, false, null);
+          } );
+      transMeta.setRepositoryDirectory( spoon.getDefaultSaveLocation( transMeta ) );
+      transMeta.setRepository( spoon.getRepository() );
+      transMeta.setMetaStore( spoon.getMetaStore() );
+      spoon.setTransMetaVariables( transMeta );
+      spoon.getProperties().addLastFile( LastUsedFile.FILE_TYPE_TRANSFORMATION, fname, null, false, null );
       spoon.addMenuLast();
-      if (!importfile)
+      if ( !importfile ) {
         transMeta.clearChanged();
-      transMeta.setFilename(fname);
-      spoon.addTransGraph(transMeta);
-      spoon.sharedObjectsFileMap.put(transMeta.getSharedObjects().getFilename(), transMeta.getSharedObjects());
+      }
+      transMeta.setFilename( fname );
+      spoon.addTransGraph( transMeta );
+      spoon.sharedObjectsFileMap.put( transMeta.getSharedObjects().getFilename(), transMeta.getSharedObjects() );
 
-      SpoonPerspectiveManager.getInstance().activatePerspective(MainSpoonPerspective.class);
+      SpoonPerspectiveManager.getInstance().activatePerspective( MainSpoonPerspective.class );
       spoon.refreshTree();
       return true;
 
-    } catch(KettleMissingPluginsException e) {
-      throw e;      
-    } catch (KettleException e) {
-      new ErrorDialog(spoon.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorOpening.Title"),
-          BaseMessages.getString(PKG, "Spoon.Dialog.ErrorOpening.Message") + fname, e);
+    } catch ( KettleMissingPluginsException e ) {
+      throw e;
+    } catch ( KettleException e ) {
+      new ErrorDialog( spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.ErrorOpening.Title" ), BaseMessages
+          .getString( PKG, "Spoon.Dialog.ErrorOpening.Message" )
+          + fname, e );
     }
     return false;
   }
 
-  public boolean save(EngineMetaInterface meta, String fname, boolean export) {
+  public boolean save( EngineMetaInterface meta, String fname, boolean export ) {
     Spoon spoon = Spoon.getInstance();
     EngineMetaInterface lmeta;
-    if (export) {
-      lmeta = (TransMeta) ((TransMeta) meta).realClone(false);
-    } else
+    if ( export ) {
+      lmeta = (TransMeta) ( (TransMeta) meta ).realClone( false );
+    } else {
       lmeta = meta;
-    return spoon.saveMeta(lmeta, fname);
+    }
+    return spoon.saveMeta( lmeta, fname );
   }
 
-  public void syncMetaName(EngineMetaInterface meta, String name) {
-    ((TransMeta) meta).setName(name);
+  public void syncMetaName( EngineMetaInterface meta, String name ) {
+    ( (TransMeta) meta ).setName( name );
   }
 
-  public boolean accepts(String fileName) {
-    if (fileName == null || fileName.indexOf('.') == -1) {
+  public boolean accepts( String fileName ) {
+    if ( fileName == null || fileName.indexOf( '.' ) == -1 ) {
       return false;
     }
-    String extension = fileName.substring(fileName.lastIndexOf('.') + 1);
-    return extension.equals("ktr");
+    String extension = fileName.substring( fileName.lastIndexOf( '.' ) + 1 );
+    return extension.equals( "ktr" );
   }
 
-  public boolean acceptsXml(String nodeName) {
-    if (nodeName.equals("transformation")) {
+  public boolean acceptsXml( String nodeName ) {
+    if ( nodeName.equals( "transformation" ) ) {
       return true;
     }
     return false;
   }
 
-  public String[] getFileTypeDisplayNames(Locale locale) {
+  public String[] getFileTypeDisplayNames( Locale locale ) {
     return new String[] { "Transformations", "XML" };
   }
 

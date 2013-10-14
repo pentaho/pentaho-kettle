@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.ui.i18n;
 
@@ -26,8 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Contains the definition of which elements to scan in which XML files in which
- * folder
+ * Contains the definition of which elements to scan in which XML files in which folder
  * 
  * @author matt
  * 
@@ -46,8 +45,8 @@ public class SourceCrawlerXMLFolder {
    * @param wildcard
    * @param elements
    */
-  public SourceCrawlerXMLFolder(String folder, String wildcard, String keyPrefix,
-      List<SourceCrawlerXMLElement> elements, List<SourceCrawlerPackageException> packageExceptions) {
+  public SourceCrawlerXMLFolder( String folder, String wildcard, String keyPrefix,
+      List<SourceCrawlerXMLElement> elements, List<SourceCrawlerPackageException> packageExceptions ) {
     this.folder = folder;
     this.wildcard = wildcard;
     this.keyPrefix = keyPrefix;
@@ -59,9 +58,9 @@ public class SourceCrawlerXMLFolder {
    * @param folder
    * @param wildcard
    */
-  public SourceCrawlerXMLFolder(String folder, String wildcard, String keyPrefix) {
-    this(folder, wildcard, keyPrefix, new ArrayList<SourceCrawlerXMLElement>(),
-        new ArrayList<SourceCrawlerPackageException>());
+  public SourceCrawlerXMLFolder( String folder, String wildcard, String keyPrefix ) {
+    this( folder, wildcard, keyPrefix, new ArrayList<SourceCrawlerXMLElement>(),
+        new ArrayList<SourceCrawlerPackageException>() );
   }
 
   /**
@@ -75,7 +74,7 @@ public class SourceCrawlerXMLFolder {
    * @param folder
    *          the folder to set
    */
-  public void setFolder(String folder) {
+  public void setFolder( String folder ) {
     this.folder = folder;
   }
 
@@ -90,7 +89,7 @@ public class SourceCrawlerXMLFolder {
    * @param wildcard
    *          the wildcard to set
    */
-  public void setWildcard(String wildcard) {
+  public void setWildcard( String wildcard ) {
     this.wildcard = wildcard;
   }
 
@@ -105,7 +104,7 @@ public class SourceCrawlerXMLFolder {
    * @param elements
    *          the elements to set
    */
-  public void setElements(List<SourceCrawlerXMLElement> elements) {
+  public void setElements( List<SourceCrawlerXMLElement> elements ) {
     this.elements = elements;
   }
 
@@ -120,7 +119,7 @@ public class SourceCrawlerXMLFolder {
    * @param defaultPackage
    *          the defaultPackage to set
    */
-  public void setDefaultPackage(String defaultPackage) {
+  public void setDefaultPackage( String defaultPackage ) {
     this.defaultPackage = defaultPackage;
   }
 
@@ -135,7 +134,7 @@ public class SourceCrawlerXMLFolder {
    * @param packageExceptions
    *          the packageExceptions to set
    */
-  public void setPackageExceptions(List<SourceCrawlerPackageException> packageExceptions) {
+  public void setPackageExceptions( List<SourceCrawlerPackageException> packageExceptions ) {
     this.packageExceptions = packageExceptions;
   }
 
@@ -150,11 +149,11 @@ public class SourceCrawlerXMLFolder {
    * @param keyPrefix
    *          the keyPrefix to set
    */
-  public void setKeyPrefix(String keyPrefix) {
+  public void setKeyPrefix( String keyPrefix ) {
     this.keyPrefix = keyPrefix;
   }
 
-  public void setDefaultSourceFolder(String defaultSourceFolder) {
+  public void setDefaultSourceFolder( String defaultSourceFolder ) {
     this.defaultSourceFolder = defaultSourceFolder;
   }
 

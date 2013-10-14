@@ -1,26 +1,27 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.ui.repository.dialog;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -50,277 +51,267 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
+public class UserDialog extends Dialog {
+  private static Class<?> PKG = RepositoryDialogInterface.class; // for i18n purposes, needed by Translator2!!
+                                                                 // $NON-NLS-1$
 
+  private Shell shell;
+  private Label wlLogin, wlPassword, wlUsername, wlDescription;
+  private Text wLogin, wPassword, wUsername, wDescription;
 
-public class UserDialog extends Dialog 
-{
-	private static Class<?> PKG = RepositoryDialogInterface.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  private Button wOK, wCancel;
 
-	private Shell     shell;
-	private Label     wlLogin, wlPassword, wlUsername, wlDescription;
-	private Text      wLogin, wPassword, wUsername, wDescription;
-	
-	private Button    wOK, wCancel;
-	
-	private PropsUI      props;
-	private IUser   userinfo;
-	
-	private boolean    newUser = false;
+  private PropsUI props;
+  private IUser userinfo;
 
-	private RepositorySecurityManager	securityManager;
-	// private Repository  repository;
-   
-	/**
-     * This dialog grabs a UserMeta structure, valid for the specified repository.
-     */
-	public UserDialog(Shell parent, int style, Repository repository, IUser userInfo)
-	{
-		super(parent, style);
-		this.securityManager = repository.getSecurityManager();
-		// this.repository = repository;
-		this.userinfo=userInfo;
+  private boolean newUser = false;
 
-		this.props=PropsUI.getInstance();
-	}
-	
-	public IUser open() 
-	{
-		Shell parent = getParent();
-		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
- 		props.setLook(shell);
-		shell.setImage(GUIResource.getInstance().getImageUser());
-		
-		int middle = props.getMiddlePct();
-		int margin = Const.MARGIN;
+  private RepositorySecurityManager securityManager;
 
-		FormLayout formLayout = new FormLayout ();
-		formLayout.marginWidth  = Const.FORM_MARGIN;
-		formLayout.marginHeight = Const.FORM_MARGIN;
-		
-		shell.setText(BaseMessages.getString(PKG, "UserDialog.Dialog.Main.Title")); 
-		shell.setLayout (formLayout);
- 		
-		// Username
-		wlLogin = new Label(shell, SWT.RIGHT ); 
-		wlLogin.setText(BaseMessages.getString(PKG, "UserDialog.Label.Login"));  
- 		props.setLook(wlLogin);
-		FormData fdlLogin = new FormData();
-		fdlLogin.left = new FormAttachment(0,0); 
-		fdlLogin.right= new FormAttachment(middle, -margin);
-		fdlLogin.top  = new FormAttachment(0, margin);
-		wlLogin.setLayoutData(fdlLogin);
-		wLogin = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
- 		props.setLook(wLogin);
-		FormData fdLogin  = new FormData();
-		fdLogin.left = new FormAttachment(middle, 0); 
-		fdLogin.right= new FormAttachment(100, 0);
-		fdLogin.top  = new FormAttachment(0, margin);
-		wLogin.setLayoutData(fdLogin);
-		
-		// Password
-		wlPassword = new Label(shell, SWT.RIGHT ); 
-		wlPassword.setText(BaseMessages.getString(PKG, "UserDialog.Label.Password"));  
- 		props.setLook(wlPassword);
-		FormData fdlPassword = new FormData();
-		fdlPassword.left = new FormAttachment(0,0);
-		fdlPassword.right= new FormAttachment(middle, -margin);
-		fdlPassword.top  = new FormAttachment(wLogin, margin);
-		wlPassword.setLayoutData(fdlPassword);
-		wPassword = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
- 		props.setLook(wPassword);
-		wPassword.setEchoChar('*');
-		FormData fdPassword  = new FormData();
-		fdPassword.left = new FormAttachment(middle, 0); 
-		fdPassword.right= new FormAttachment(100, 0);
-		fdPassword.top  = new FormAttachment(wLogin, margin);
-		wPassword.setLayoutData(fdPassword);
+  // private Repository repository;
 
-		// Username
-		wlUsername = new Label(shell, SWT.RIGHT ); 
-		wlUsername.setText(BaseMessages.getString(PKG, "UserDialog.Label.FullName"));  
- 		props.setLook(wlUsername);
-		FormData fdlUsername = new FormData();
-		fdlUsername.left = new FormAttachment(0,0);
-		fdlUsername.right= new FormAttachment(middle, -margin);
-		fdlUsername.top  = new FormAttachment(wPassword, margin);
-		wlUsername.setLayoutData(fdlUsername);
-		wUsername = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
- 		props.setLook(wUsername);
-		FormData fdUsername  = new FormData();
-		fdUsername.left = new FormAttachment(middle, 0); 
-		fdUsername.right= new FormAttachment(100, 0);
-		fdUsername.top  = new FormAttachment(wPassword, margin);
-		wUsername.setLayoutData(fdUsername);
+  /**
+   * This dialog grabs a UserMeta structure, valid for the specified repository.
+   */
+  public UserDialog( Shell parent, int style, Repository repository, IUser userInfo ) {
+    super( parent, style );
+    this.securityManager = repository.getSecurityManager();
+    // this.repository = repository;
+    this.userinfo = userInfo;
 
-		// Description
-		wlDescription = new Label(shell, SWT.RIGHT ); 
-		wlDescription.setText(BaseMessages.getString(PKG, "UserDialog.Label.Description"));  
- 		props.setLook(wlDescription);
-		FormData fdlDescription = new FormData();
-		fdlDescription.left = new FormAttachment(0,0);
-		fdlDescription.right= new FormAttachment(middle, -margin);
-		fdlDescription.top  = new FormAttachment(wUsername, margin);
-		wlDescription.setLayoutData(fdlDescription);
-		wDescription = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
- 		props.setLook(wDescription);
-		FormData fdDescription  = new FormData();
-		fdDescription.left = new FormAttachment(middle, 0); 
-		fdDescription.right= new FormAttachment(100, 0);
-		fdDescription.top  = new FormAttachment(wUsername, margin);
-		wDescription.setLayoutData(fdDescription);
+    this.props = PropsUI.getInstance();
+  }
 
-		// Buttons
-		wOK     = new Button(shell, SWT.PUSH); 
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
-		wCancel = new Button(shell, SWT.PUSH); 
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
-		
-		FormData fdOK        = new FormData();
-		FormData fdCancel    = new FormData();
+  public IUser open() {
+    Shell parent = getParent();
+    shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
+    props.setLook( shell );
+    shell.setImage( GUIResource.getInstance().getImageUser() );
 
-		fdOK.left    = new FormAttachment(45, 0); 
-		fdOK.top  = new FormAttachment(wDescription, 30);
-		wOK.setLayoutData(fdOK);
+    int middle = props.getMiddlePct();
+    int margin = Const.MARGIN;
 
-		fdCancel.left    = new FormAttachment(wOK, margin); 
-		fdCancel.top     = new FormAttachment(wDescription, 30);
-		wCancel.setLayoutData(fdCancel);
-		
-		// Add listeners
-		wCancel.addListener(SWT.Selection, new Listener ()
-			{
-				public void handleEvent (Event e) 
-				{
-					cancel();
-				}
-			}
-		);
-		wOK.addListener(SWT.Selection, new Listener ()
-			{
-				public void handleEvent (Event e) 
-				{
-					handleOK();
-				}
-			}
-		);
-		SelectionAdapter selAdapter=new SelectionAdapter()
-			{
-				public void widgetDefaultSelected(SelectionEvent e)
-				{
-					handleOK();	
-				}
-			};
-		wLogin.addSelectionListener(selAdapter);
-		wPassword.addSelectionListener(selAdapter);
-		
-		// Detect X or ALT-F4 or something that kills this window...
-		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
-		
-		getData();
+    FormLayout formLayout = new FormLayout();
+    formLayout.marginWidth = Const.FORM_MARGIN;
+    formLayout.marginHeight = Const.FORM_MARGIN;
 
-		BaseStepDialog.setSize(shell);
-		
-		if ( userinfo.getObjectId() == null )
-		{
-		    setNewUser(true);  
-		}
+    shell.setText( BaseMessages.getString( PKG, "UserDialog.Dialog.Main.Title" ) );
+    shell.setLayout( formLayout );
 
-		shell.open();
-		Display display = parent.getDisplay();
-		while (!shell.isDisposed()) {
-			if (!display.readAndDispatch()) display.sleep();
-		}
-		return userinfo;
-	}
-	
-	public void dispose()
-	{
-		props.setScreen(new WindowProperty(shell));
-		shell.dispose();
-	}
-	
-	public void getData()
-	{
-		if (userinfo.getLogin()!=null) wLogin.setText(userinfo.getLogin());
-		if (userinfo.getPassword()!=null) wPassword.setText(userinfo.getPassword());
-		if (userinfo.getUsername()!=null) wUsername.setText(userinfo.getUsername());
-		if (userinfo.getDescription()!=null) wDescription.setText(userinfo.getDescription());
-		//WANTED: Add enabled option from UserInfo here!!!!
+    // Username
+    wlLogin = new Label( shell, SWT.RIGHT );
+    wlLogin.setText( BaseMessages.getString( PKG, "UserDialog.Label.Login" ) );
+    props.setLook( wlLogin );
+    FormData fdlLogin = new FormData();
+    fdlLogin.left = new FormAttachment( 0, 0 );
+    fdlLogin.right = new FormAttachment( middle, -margin );
+    fdlLogin.top = new FormAttachment( 0, margin );
+    wlLogin.setLayoutData( fdlLogin );
+    wLogin = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wLogin );
+    FormData fdLogin = new FormData();
+    fdLogin.left = new FormAttachment( middle, 0 );
+    fdLogin.right = new FormAttachment( 100, 0 );
+    fdLogin.top = new FormAttachment( 0, margin );
+    wLogin.setLayoutData( fdLogin );
 
-	}
+    // Password
+    wlPassword = new Label( shell, SWT.RIGHT );
+    wlPassword.setText( BaseMessages.getString( PKG, "UserDialog.Label.Password" ) );
+    props.setLook( wlPassword );
+    FormData fdlPassword = new FormData();
+    fdlPassword.left = new FormAttachment( 0, 0 );
+    fdlPassword.right = new FormAttachment( middle, -margin );
+    fdlPassword.top = new FormAttachment( wLogin, margin );
+    wlPassword.setLayoutData( fdlPassword );
+    wPassword = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wPassword );
+    wPassword.setEchoChar( '*' );
+    FormData fdPassword = new FormData();
+    fdPassword.left = new FormAttachment( middle, 0 );
+    fdPassword.right = new FormAttachment( 100, 0 );
+    fdPassword.top = new FormAttachment( wLogin, margin );
+    wPassword.setLayoutData( fdPassword );
 
-	private void cancel()
-	{
-		userinfo = null;
-		dispose();
-	}
-	
-	public void handleOK()
-	{
-		try
-		{
-			String login = wLogin.getText();
-			
-			if ( login == null || login.length() == 0 )
-			{
-				MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-				mb.setMessage(BaseMessages.getString(PKG, "UserDialog.Dialog.User.New.EmptyLogin.Message")); 
-				mb.setText(BaseMessages.getString(PKG, "UserDialog.Dialog.User.New.EmptyLogin.Title")); 
-				mb.open();
-				
-				// don't dispose
-				return;			
-			}
-			
-		    if ( isNewUser() )
-		    {
-		    	ObjectId id = securityManager.getUserID(login);
-		    	if ( id != null )
-		    	{
-					MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-					mb.setMessage(BaseMessages.getString(PKG, "UserDialog.Dialog.User.New.AlreadyExists.Message")); 
-					mb.setText(BaseMessages.getString(PKG, "UserDialog.Dialog.User.New.AlreadyExists.Title")); 
-					mb.open();
-					
-					// don't dispose
-					return;
-		    	}
-		    }						    	
+    // Username
+    wlUsername = new Label( shell, SWT.RIGHT );
+    wlUsername.setText( BaseMessages.getString( PKG, "UserDialog.Label.FullName" ) );
+    props.setLook( wlUsername );
+    FormData fdlUsername = new FormData();
+    fdlUsername.left = new FormAttachment( 0, 0 );
+    fdlUsername.right = new FormAttachment( middle, -margin );
+    fdlUsername.top = new FormAttachment( wPassword, margin );
+    wlUsername.setLayoutData( fdlUsername );
+    wUsername = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wUsername );
+    FormData fdUsername = new FormData();
+    fdUsername.left = new FormAttachment( middle, 0 );
+    fdUsername.right = new FormAttachment( 100, 0 );
+    fdUsername.top = new FormAttachment( wPassword, margin );
+    wUsername.setLayoutData( fdUsername );
 
-			userinfo.setLogin(login);
-			userinfo.setPassword(wPassword.getText());
-			userinfo.setUsername(wUsername.getText());
-			userinfo.setDescription(wDescription.getText());
-			securityManager.saveUserInfo(userinfo);
-	
-			dispose();
-		}
-		catch(KettleException e)
-		{
-			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(BaseMessages.getString(PKG, "UserDialog.Dialog.UnexpectedError.Message")+e.getMessage()); 
-			mb.setText(BaseMessages.getString(PKG, "UserDialog.Dialog.UnexpectedError.Title")); 
-			mb.open(); 
-		}
-	}
-	
-	/**
-	 * Set the flag this dialog is opened to create a new user
-	 * 
-	 * @param flag 
-	 */
-	private void setNewUser(boolean flag)
-	{
-		newUser = flag;
-	}
-	
-	/**
-	 * Get the flag whether this dialog is for a new user or not.
-	 * 
-	 * @return true when used for a new user else false
-	 */
-	private boolean isNewUser()
-	{
-		return newUser;
-	}
+    // Description
+    wlDescription = new Label( shell, SWT.RIGHT );
+    wlDescription.setText( BaseMessages.getString( PKG, "UserDialog.Label.Description" ) );
+    props.setLook( wlDescription );
+    FormData fdlDescription = new FormData();
+    fdlDescription.left = new FormAttachment( 0, 0 );
+    fdlDescription.right = new FormAttachment( middle, -margin );
+    fdlDescription.top = new FormAttachment( wUsername, margin );
+    wlDescription.setLayoutData( fdlDescription );
+    wDescription = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wDescription );
+    FormData fdDescription = new FormData();
+    fdDescription.left = new FormAttachment( middle, 0 );
+    fdDescription.right = new FormAttachment( 100, 0 );
+    fdDescription.top = new FormAttachment( wUsername, margin );
+    wDescription.setLayoutData( fdDescription );
+
+    // Buttons
+    wOK = new Button( shell, SWT.PUSH );
+    wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
+    wCancel = new Button( shell, SWT.PUSH );
+    wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
+
+    FormData fdOK = new FormData();
+    FormData fdCancel = new FormData();
+
+    fdOK.left = new FormAttachment( 45, 0 );
+    fdOK.top = new FormAttachment( wDescription, 30 );
+    wOK.setLayoutData( fdOK );
+
+    fdCancel.left = new FormAttachment( wOK, margin );
+    fdCancel.top = new FormAttachment( wDescription, 30 );
+    wCancel.setLayoutData( fdCancel );
+
+    // Add listeners
+    wCancel.addListener( SWT.Selection, new Listener() {
+      public void handleEvent( Event e ) {
+        cancel();
+      }
+    } );
+    wOK.addListener( SWT.Selection, new Listener() {
+      public void handleEvent( Event e ) {
+        handleOK();
+      }
+    } );
+    SelectionAdapter selAdapter = new SelectionAdapter() {
+      public void widgetDefaultSelected( SelectionEvent e ) {
+        handleOK();
+      }
+    };
+    wLogin.addSelectionListener( selAdapter );
+    wPassword.addSelectionListener( selAdapter );
+
+    // Detect X or ALT-F4 or something that kills this window...
+    shell.addShellListener( new ShellAdapter() {
+      public void shellClosed( ShellEvent e ) {
+        cancel();
+      }
+    } );
+
+    getData();
+
+    BaseStepDialog.setSize( shell );
+
+    if ( userinfo.getObjectId() == null ) {
+      setNewUser( true );
+    }
+
+    shell.open();
+    Display display = parent.getDisplay();
+    while ( !shell.isDisposed() ) {
+      if ( !display.readAndDispatch() ) {
+        display.sleep();
+      }
+    }
+    return userinfo;
+  }
+
+  public void dispose() {
+    props.setScreen( new WindowProperty( shell ) );
+    shell.dispose();
+  }
+
+  public void getData() {
+    if ( userinfo.getLogin() != null ) {
+      wLogin.setText( userinfo.getLogin() );
+    }
+    if ( userinfo.getPassword() != null ) {
+      wPassword.setText( userinfo.getPassword() );
+    }
+    if ( userinfo.getUsername() != null ) {
+      wUsername.setText( userinfo.getUsername() );
+    }
+    if ( userinfo.getDescription() != null ) {
+      wDescription.setText( userinfo.getDescription() );
+      // WANTED: Add enabled option from UserInfo here!!!!
+    }
+
+  }
+
+  private void cancel() {
+    userinfo = null;
+    dispose();
+  }
+
+  public void handleOK() {
+    try {
+      String login = wLogin.getText();
+
+      if ( login == null || login.length() == 0 ) {
+        MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
+        mb.setMessage( BaseMessages.getString( PKG, "UserDialog.Dialog.User.New.EmptyLogin.Message" ) );
+        mb.setText( BaseMessages.getString( PKG, "UserDialog.Dialog.User.New.EmptyLogin.Title" ) );
+        mb.open();
+
+        // don't dispose
+        return;
+      }
+
+      if ( isNewUser() ) {
+        ObjectId id = securityManager.getUserID( login );
+        if ( id != null ) {
+          MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
+          mb.setMessage( BaseMessages.getString( PKG, "UserDialog.Dialog.User.New.AlreadyExists.Message" ) );
+          mb.setText( BaseMessages.getString( PKG, "UserDialog.Dialog.User.New.AlreadyExists.Title" ) );
+          mb.open();
+
+          // don't dispose
+          return;
+        }
+      }
+
+      userinfo.setLogin( login );
+      userinfo.setPassword( wPassword.getText() );
+      userinfo.setUsername( wUsername.getText() );
+      userinfo.setDescription( wDescription.getText() );
+      securityManager.saveUserInfo( userinfo );
+
+      dispose();
+    } catch ( KettleException e ) {
+      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
+      mb.setMessage( BaseMessages.getString( PKG, "UserDialog.Dialog.UnexpectedError.Message" ) + e.getMessage() );
+      mb.setText( BaseMessages.getString( PKG, "UserDialog.Dialog.UnexpectedError.Title" ) );
+      mb.open();
+    }
+  }
+
+  /**
+   * Set the flag this dialog is opened to create a new user
+   * 
+   * @param flag
+   */
+  private void setNewUser( boolean flag ) {
+    newUser = flag;
+  }
+
+  /**
+   * Get the flag whether this dialog is for a new user or not.
+   * 
+   * @return true when used for a new user else false
+   */
+  private boolean isNewUser() {
+    return newUser;
+  }
 }
