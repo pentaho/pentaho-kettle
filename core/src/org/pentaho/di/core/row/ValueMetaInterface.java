@@ -134,7 +134,7 @@ import org.w3c.dom.Node;
  * the set of possible values in getIndex()/setIndex().
  * </Table>
  */
-public interface ValueMetaInterface {
+public interface ValueMetaInterface extends Cloneable {
   /** Value type indicating that the value has no type set */
   public static final int TYPE_NONE = 0;
 
