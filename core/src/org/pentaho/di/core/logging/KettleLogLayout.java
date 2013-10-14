@@ -99,8 +99,7 @@ public class KettleLogLayout {
         }
 
         line.append( parts[i] );
-        if ( i < parts.length - 1 )
-         {
+        if ( i < parts.length - 1 ) {
           line.append( Const.CR ); // put the CR's back in there!
         }
       }

@@ -376,8 +376,7 @@ public class ThinUtil {
         if ( quoteMatch && !escaped ) {
           break;
         }
-        if ( escaped )
-         {
+        if ( escaped ) {
           index++; // skip one more
         }
       }

@@ -32,5 +32,5 @@ import java.lang.annotation.Target;
 public @interface PluginExtraClassTypes {
   Class<?>[] classTypes();
 
-  String[] xmlNodeNames() default {};
+  String[] xmlNodeNames() default { "" };
 }

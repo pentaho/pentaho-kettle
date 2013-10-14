@@ -134,8 +134,8 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
         // by default we assume a SID
         return "jdbc:oracle:thin:@" + hostname + ":" + port + ":" + databaseName;
       }
-    } else // OCI
-    {
+    } else {
+      // OCI
       // Let's see if we have an database name
       if ( databaseName != null && databaseName.length() > 0 ) {
         // Has the user specified hostname & port number?
@@ -395,9 +395,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
         }
         break;
       case ValueMetaInterface.TYPE_BINARY: // the BLOB can contain binary data.
-      {
         retval.append( "BLOB" );
-      }
         break;
       default:
         retval.append( " UNKNOWN" );

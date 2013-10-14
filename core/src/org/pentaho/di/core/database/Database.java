@@ -3065,9 +3065,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
         par.addValueMeta( val );
       }
-    }
-    // Oops: probably the database or JDBC doesn't support it.
-    catch ( AbstractMethodError e ) {
+    } catch ( AbstractMethodError e ) {
+      // Oops: probably the database or JDBC doesn't support it.
       return null;
     } catch ( SQLException e ) {
       return null;
@@ -3514,12 +3513,13 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     List<String> res = new ArrayList<String>();
     for ( String schema : tableMap.keySet() ) {
       Collection<String> tables = tableMap.get( schema );
-      for ( String table : tables )
+      for ( String table : tables ) {
         if ( includeSchema ) {
           res.add( databaseMeta.getQuotedSchemaTableCombination( schema, table ) );
         } else {
           res.add( table );
         }
+      }
     }
     return res.toArray( new String[res.size()] );
   }
@@ -3607,12 +3607,13 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     List<String> res = new ArrayList<String>();
     for ( String schema : viewMap.keySet() ) {
       Collection<String> views = viewMap.get( schema );
-      for ( String view : views )
+      for ( String view : views ) {
         if ( includeSchema ) {
           res.add( databaseMeta.getQuotedSchemaTableCombination( schema, view ) );
         } else {
           res.add( view );
         }
+      }
     }
     return res.toArray( new String[res.size()] );
   }
@@ -3705,12 +3706,13 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     List<String> res = new ArrayList<String>();
     for ( String schema : synonymMap.keySet() ) {
       Collection<String> synonyms = synonymMap.get( schema );
-      for ( String synonym : synonyms )
+      for ( String synonym : synonyms ) {
         if ( includeSchema ) {
           res.add( databaseMeta.getQuotedSchemaTableCombination( schema, synonym ) );
         } else {
           res.add( synonym );
         }
+      }
     }
     return res.toArray( new String[res.size()] );
   }

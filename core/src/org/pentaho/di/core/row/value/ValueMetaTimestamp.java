@@ -114,8 +114,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
   }
 
   public Timestamp getTimestamp( Object object ) throws KettleValueException {
-    if ( object == null ) // NULL
-    {
+    if ( object == null ) {
       return null;
     }
     switch ( type ) {
@@ -508,8 +507,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
       // Is the value NULL?
       outputStream.writeBoolean( object == null );
 
-      if ( object != null ) // otherwise there is no point
-      {
+      if ( object != null ) {
         switch ( storageType ) {
           case STORAGE_TYPE_NORMAL:
             // Handle Content -- only when not NULL

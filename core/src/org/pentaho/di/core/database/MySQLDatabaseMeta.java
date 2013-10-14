@@ -255,9 +255,8 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
             } else {
               retval += "INT";
             }
-          }
-          // Floating point values...
-          else {
+          } else {
+            // Floating point values...
             if ( length > 15 ) {
               retval += "DECIMAL(" + length;
               if ( precision > 0 ) {
