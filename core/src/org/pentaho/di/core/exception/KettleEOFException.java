@@ -94,7 +94,7 @@ public class KettleEOFException extends KettleFileException {
         StackTraceElement[] ste = cause.getStackTrace();
         for ( int i = ste.length - 1; i >= 0; i-- ) {
           retval +=
-              "	at " + ste[i].getClassName() + "." + ste[i].getMethodName() + " (" + ste[i].getFileName() + ":"
+              " at " + ste[i].getClassName() + "." + ste[i].getMethodName() + " (" + ste[i].getFileName() + ":"
                   + ste[i].getLineNumber() + ")" + Const.CR;
         }
       }

@@ -402,8 +402,7 @@ public class Condition implements Cloneable, XMLInterface {
           // throw new
           // KettleException("Unable to find field ["+left_valuename+"] in the input row!");
           // }
-        }
-        else {
+        } else {
           return false; // no fields to evaluate
         }
 
@@ -592,10 +591,11 @@ public class Condition implements Cloneable, XMLInterface {
       current.setNegated( isNegated() );
       setNegated( false );
       list.add( current );
-    } else
-    // Set default operator if not on first position...
-    if ( isComposite() && list.size() > 0 && cb.getOperator() == OPERATOR_NONE ) {
-      cb.setOperator( OPERATOR_AND );
+    } else {
+      // Set default operator if not on first position...
+      if ( isComposite() && list.size() > 0 && cb.getOperator() == OPERATOR_NONE ) {
+        cb.setOperator( OPERATOR_AND );
+      }
     }
     list.add( cb );
   }
@@ -609,10 +609,11 @@ public class Condition implements Cloneable, XMLInterface {
       current.setNegated( isNegated() );
       setNegated( false );
       list.add( current );
-    } else
-    // Set default operator if not on first position...
-    if ( isComposite() && idx > 0 && cb.getOperator() == OPERATOR_NONE ) {
-      cb.setOperator( OPERATOR_AND );
+    } else {
+      // Set default operator if not on first position...
+      if ( isComposite() && idx > 0 && cb.getOperator() == OPERATOR_NONE ) {
+        cb.setOperator( OPERATOR_AND );
+      }
     }
     list.add( idx, cb );
   }
@@ -834,8 +835,8 @@ public class Condition implements Cloneable, XMLInterface {
 
       Node conditions = XMLHandler.getSubNode( condnode, "conditions" );
       int nrconditions = XMLHandler.countNodes( conditions, "condition" );
-      if ( nrconditions == 0 ) // ATOMIC!
-      {
+      if ( nrconditions == 0 ) {
+        // ATOMIC!
         setLeftValuename( XMLHandler.getTagValue( condnode, "leftvalue" ) );
         setFunction( getFunction( XMLHandler.getTagValue( condnode, "function" ) ) );
         setRightValuename( XMLHandler.getTagValue( condnode, "rightvalue" ) );

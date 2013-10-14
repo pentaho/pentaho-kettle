@@ -264,9 +264,8 @@ public class FileInputList {
           }
           log.logError( Const.getStackTracker( e ) );
         }
-      } else
-      // A normal file...
-      {
+      } else { // A normal file...
+
         try {
           FileObject fileObject = KettleVFS.getFileObject( onefile, space );
           if ( fileObject.exists() ) {

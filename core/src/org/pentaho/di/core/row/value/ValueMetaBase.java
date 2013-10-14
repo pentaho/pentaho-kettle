@@ -1324,8 +1324,11 @@ public class ValueMetaBase implements ValueMetaInterface {
               string = convertDateToCompatibleString( (Date) convertBinaryStringToNativeType( (byte[]) object ) );
               break;
             case STORAGE_TYPE_INDEXED:
-              string =
-                  object == null ? null : convertDateToCompatibleString( (Date) index[( (Integer) object ).intValue()] );
+              if ( object == null ) {
+                string = null;
+              } else {
+                string = convertDateToCompatibleString( (Date) index[( (Integer) object ).intValue()] );
+              }
               break;
             default:
               throw new KettleValueException( toString() + " : Unknown storage type " + storageType + " specified." );
@@ -3953,14 +3956,14 @@ public class ValueMetaBase implements ValueMetaInterface {
               identicalFormat = false;
             } else if ( getPrecision() != storageMetadata.getPrecision() ) {
               identicalFormat = false;
-            } else
-            // For the same reasons as above, if the conversion mask, the
-            // decimal or the grouping symbol changes
-            // we need to convert from the binary strings to the target data
-            // type and then back to a string in the required format.
-            //
-            if ( ( getConversionMask() != null && getConversionMask().equals( storageMetadata.getConversionMask() ) || ( getConversionMask() == null && storageMetadata
+            } else if ( ( getConversionMask() != null
+                && getConversionMask().equals( storageMetadata.getConversionMask() ) || ( getConversionMask() == null && storageMetadata
                 .getConversionMask() == null ) ) ) {
+              // For the same reasons as above, if the conversion mask, the
+              // decimal or the grouping symbol changes
+              // we need to convert from the binary strings to the target data
+              // type and then back to a string in the required format.
+              //
               if ( ( getGroupingSymbol() != null && getGroupingSymbol().equals( storageMetadata.getGroupingSymbol() ) )
                   || ( getConversionMask() == null && storageMetadata.getConversionMask() == null ) ) {
                 if ( ( getDecimalFormat( false ) != null && getDecimalFormat( false ).equals(

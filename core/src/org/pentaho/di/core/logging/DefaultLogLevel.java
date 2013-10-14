@@ -47,7 +47,8 @@ public class DefaultLogLevel {
    * @return The default log level for this application
    */
   public static LogLevel getLogLevel() {
-    return getInstance().logLevel;
+    DefaultLogLevel instance = getInstance();
+    return instance.logLevel;
   }
 
   /**
@@ -55,7 +56,8 @@ public class DefaultLogLevel {
    *          Set the default log level for this application
    */
   public static void setLogLevel( LogLevel logLevel ) {
-    getInstance().logLevel = logLevel;
+    DefaultLogLevel instance = getInstance();
+    instance.logLevel = logLevel;
   }
 
 }

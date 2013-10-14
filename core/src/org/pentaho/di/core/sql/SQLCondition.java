@@ -97,8 +97,7 @@ public class SQLCondition {
     int index = startIndex;
     while ( index < clause.length() ) {
       index = ThinUtil.skipChars( clause, index, '\'', '(' );
-      if ( index + string.length() > clause.length() )
-       {
+      if ( index + string.length() > clause.length() ) {
         return -1; // done.
       }
       if ( clause.substring( index ).toUpperCase().startsWith( string.toUpperCase() ) ) {

@@ -55,10 +55,11 @@ public class LifeEventInfo {
   }
 
   public boolean hasHint( Hint h ) {
-    for ( Hint hint : hints )
+    for ( Hint hint : hints ) {
       if ( hint == h ) {
         return true;
       }
+    }
 
     return false;
   }

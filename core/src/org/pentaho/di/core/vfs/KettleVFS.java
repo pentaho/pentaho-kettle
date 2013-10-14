@@ -305,19 +305,15 @@ public class KettleVFS {
   public static String getFilename( FileObject fileObject ) {
     FileName fileName = fileObject.getName();
     String root = fileName.getRootURI();
-    if ( !root.startsWith( "file:" ) )
-     {
+    if ( !root.startsWith( "file:" ) ) {
       return fileName.getURI(); // nothing we can do about non-normal files.
     }
-    if ( root.startsWith( "file:////" ) )
-     {
+    if ( root.startsWith( "file:////" ) ) {
       return fileName.getURI(); // we'll see 4 forward slashes for a windows/smb network share
     }
-    if ( root.endsWith( ":/" ) ) // Windows
-    {
+    if ( root.endsWith( ":/" ) ) { // Windows
       root = root.substring( 8, 10 );
-    } else // *nix & OSX
-    {
+    } else { // *nix & OSX
       root = "";
     }
     String fileString = root + fileName.getPath();

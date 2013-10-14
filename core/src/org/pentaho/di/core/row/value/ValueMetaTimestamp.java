@@ -322,34 +322,32 @@ public class ValueMetaTimestamp extends ValueMetaDate {
     }
 
     // Trimming
+    StringBuffer strpol;
     switch ( trim_type ) {
-      case ValueMetaInterface.TRIM_TYPE_LEFT: {
-        StringBuffer strpol = new StringBuffer( pol );
+      case ValueMetaInterface.TRIM_TYPE_LEFT:
+        strpol = new StringBuffer( pol );
         while ( strpol.length() > 0 && strpol.charAt( 0 ) == ' ' ) {
           strpol.deleteCharAt( 0 );
         }
         pol = strpol.toString();
-      }
+
         break;
-      case ValueMetaInterface.TRIM_TYPE_RIGHT: {
-        StringBuffer strpol = new StringBuffer( pol );
+      case ValueMetaInterface.TRIM_TYPE_RIGHT:
+        strpol = new StringBuffer( pol );
         while ( strpol.length() > 0 && strpol.charAt( strpol.length() - 1 ) == ' ' ) {
           strpol.deleteCharAt( strpol.length() - 1 );
         }
         pol = strpol.toString();
-      }
         break;
       case ValueMetaInterface.TRIM_TYPE_BOTH:
-        StringBuffer strpol = new StringBuffer( pol );
-        {
-          while ( strpol.length() > 0 && strpol.charAt( 0 ) == ' ' ) {
-            strpol.deleteCharAt( 0 );
-          }
-          while ( strpol.length() > 0 && strpol.charAt( strpol.length() - 1 ) == ' ' ) {
-            strpol.deleteCharAt( strpol.length() - 1 );
-          }
-          pol = strpol.toString();
+        strpol = new StringBuffer( pol );
+        while ( strpol.length() > 0 && strpol.charAt( 0 ) == ' ' ) {
+          strpol.deleteCharAt( 0 );
         }
+        while ( strpol.length() > 0 && strpol.charAt( strpol.length() - 1 ) == ' ' ) {
+          strpol.deleteCharAt( strpol.length() - 1 );
+        }
+        pol = strpol.toString();
         break;
       default:
         break;
@@ -552,8 +550,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
     SocketTimeoutException {
     try {
       // Is the value NULL?
-      if ( inputStream.readBoolean() )
-       {
+      if ( inputStream.readBoolean() ) {
         return null; // done
       }
 

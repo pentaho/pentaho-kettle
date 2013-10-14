@@ -46,8 +46,7 @@ public class ByteArrayHashIndex {
 
     // Find a suitable capacity being a factor of 2:
     int factor2Size = 1;
-    while ( factor2Size < size )
-     {
+    while ( factor2Size < size ) {
       factor2Size <<= 1; // Multiply by 2
     }
 

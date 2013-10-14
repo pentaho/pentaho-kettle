@@ -30,7 +30,7 @@ package org.pentaho.di.core.logging;
  */
 public enum LogStatus {
 
-  START( "start" ), END( "end" ), STOP( "stop" ), ERROR( "error" ), RUNNING( "running" ), PAUSED( "paused" ), ;
+  START( "start" ), END( "end" ), STOP( "stop" ), ERROR( "error" ), RUNNING( "running" ), PAUSED( "paused" );
 
   private String status;
 

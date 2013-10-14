@@ -42,7 +42,7 @@ public class ThinStatement implements Statement {
     this( connection );
   }
 
-  public ThinStatement( ThinConnection connection, int resultSetType, int resultSetConcurrency, int resultSetHoldability ) {
+  public ThinStatement( ThinConnection connection, int rsType, int rsConcurrency, int rsHoldability ) {
     this( connection );
   }
 

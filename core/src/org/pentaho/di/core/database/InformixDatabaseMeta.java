@@ -195,8 +195,7 @@ public class InformixDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
         } else {
           if ( ( length < 0 && precision < 0 ) || precision > 0 || length > 9 ) {
             retval += "FLOAT";
-          } else // Precision == 0 && length<=9
-          {
+          } else { // Precision == 0 && length<=9
             retval += "INTEGER";
           }
         }
