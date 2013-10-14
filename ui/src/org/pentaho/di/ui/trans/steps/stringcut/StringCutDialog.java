@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.ui.trans.steps.stringcut;
 
@@ -63,306 +63,304 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
-
 public class StringCutDialog extends BaseStepDialog implements StepDialogInterface {
-	
-	private static Class<?> PKG = StringCutMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	private Label wlKey;
+  private static Class<?> PKG = StringCutMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-	private TableView wFields;
+  private Label wlKey;
 
-	private FormData fdlKey, fdKey;
+  private TableView wFields;
 
-	private StringCutMeta input;
-	
-    private Map<String, Integer> inputFields;
-    
-    private ColumnInfo[] ciKey;
+  private FormData fdlKey, fdKey;
 
-	public StringCutDialog(Shell parent, Object in, TransMeta tr, String sname) {
-		super(parent, (BaseStepMeta) in, tr, sname);
-		input = (StringCutMeta) in;
-        inputFields =new HashMap<String, Integer>();
-	}
+  private StringCutMeta input;
 
-	public String open() {
-		Shell parent = getParent();
-		Display display = parent.getDisplay();
+  private Map<String, Integer> inputFields;
 
-		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX
-				| SWT.MIN);
-		props.setLook(shell);
-		setShellImage(shell, input);
+  private ColumnInfo[] ciKey;
 
-		ModifyListener lsMod = new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				input.setChanged();
-			}
-		};
-		changed = input.hasChanged();
+  public StringCutDialog( Shell parent, Object in, TransMeta tr, String sname ) {
+    super( parent, (BaseStepMeta) in, tr, sname );
+    input = (StringCutMeta) in;
+    inputFields = new HashMap<String, Integer>();
+  }
 
-		FormLayout formLayout = new FormLayout();
-		formLayout.marginWidth = Const.FORM_MARGIN;
-		formLayout.marginHeight = Const.FORM_MARGIN;
+  public String open() {
+    Shell parent = getParent();
+    Display display = parent.getDisplay();
 
-		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "StringCutDialog.Shell.Title")); 
+    shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
+    props.setLook( shell );
+    setShellImage( shell, input );
 
-		int middle = props.getMiddlePct();
-		int margin = Const.MARGIN;
+    ModifyListener lsMod = new ModifyListener() {
+      public void modifyText( ModifyEvent e ) {
+        input.setChanged();
+      }
+    };
+    changed = input.hasChanged();
 
-		// Stepname line
-		wlStepname = new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "StringCutDialog.Stepname.Label")); 
-		props.setLook(wlStepname);
-		fdlStepname = new FormData();
-		fdlStepname.left = new FormAttachment(0, 0);
-		fdlStepname.right = new FormAttachment(middle, -margin);
-		fdlStepname.top = new FormAttachment(0, margin);
-		wlStepname.setLayoutData(fdlStepname);
-		wStepname = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wStepname.setText(stepname);
-		props.setLook(wStepname);
-		wStepname.addModifyListener(lsMod);
-		fdStepname = new FormData();
-		fdStepname.left = new FormAttachment(middle, 0);
-		fdStepname.top = new FormAttachment(0, margin);
-		fdStepname.right = new FormAttachment(100, 0);
-		wStepname.setLayoutData(fdStepname);
-		
+    FormLayout formLayout = new FormLayout();
+    formLayout.marginWidth = Const.FORM_MARGIN;
+    formLayout.marginHeight = Const.FORM_MARGIN;
 
-		wlKey = new Label(shell, SWT.NONE);
-		wlKey.setText(BaseMessages.getString(PKG, "StringCutDialog.Fields.Label")); 
-		props.setLook(wlKey);
-		fdlKey = new FormData();
-		fdlKey.left = new FormAttachment(0, 0);
-		fdlKey.top = new FormAttachment(wStepname, 2*margin);
-		wlKey.setLayoutData(fdlKey);
-		
-	   
-		int nrFieldCols = 4;
-		int nrFieldRows = (input.getFieldInStream() != null ? input.getFieldInStream().length : 1);
+    shell.setLayout( formLayout );
+    shell.setText( BaseMessages.getString( PKG, "StringCutDialog.Shell.Title" ) );
 
-		ciKey = new ColumnInfo[nrFieldCols];
-		ciKey[0] = new ColumnInfo(
-				BaseMessages.getString(PKG, "StringCutDialog.ColumnInfo.InStreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); 
-		ciKey[1] = new ColumnInfo(
-				BaseMessages.getString(PKG, "StringCutDialog.ColumnInfo.OutStreamField"), ColumnInfo.COLUMN_TYPE_TEXT, false); 
-		ciKey[2] = new ColumnInfo(
-				BaseMessages.getString(PKG, "StringCutDialog.ColumnInfo.CutFrom"), ColumnInfo.COLUMN_TYPE_TEXT, false); 
-		ciKey[3] = new ColumnInfo(
-				BaseMessages.getString(PKG, "StringCutDialog.ColumnInfo.CutTo"), ColumnInfo.COLUMN_TYPE_TEXT, false); 
+    int middle = props.getMiddlePct();
+    int margin = Const.MARGIN;
 
-		
-		
-		ciKey[2].setUsingVariables(true);
-		ciKey[1].setToolTip(BaseMessages.getString(PKG, "StringCutDialog.ColumnInfo.OutStreamField.Tooltip"));
-		ciKey[3].setUsingVariables(true);
+    // Stepname line
+    wlStepname = new Label( shell, SWT.RIGHT );
+    wlStepname.setText( BaseMessages.getString( PKG, "StringCutDialog.Stepname.Label" ) );
+    props.setLook( wlStepname );
+    fdlStepname = new FormData();
+    fdlStepname.left = new FormAttachment( 0, 0 );
+    fdlStepname.right = new FormAttachment( middle, -margin );
+    fdlStepname.top = new FormAttachment( 0, margin );
+    wlStepname.setLayoutData( fdlStepname );
+    wStepname = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wStepname.setText( stepname );
+    props.setLook( wStepname );
+    wStepname.addModifyListener( lsMod );
+    fdStepname = new FormData();
+    fdStepname.left = new FormAttachment( middle, 0 );
+    fdStepname.top = new FormAttachment( 0, margin );
+    fdStepname.right = new FormAttachment( 100, 0 );
+    wStepname.setLayoutData( fdStepname );
 
-		
-		wFields = new TableView(transMeta,shell, SWT.BORDER
-				| SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-				ciKey, nrFieldRows, lsMod, props);
+    wlKey = new Label( shell, SWT.NONE );
+    wlKey.setText( BaseMessages.getString( PKG, "StringCutDialog.Fields.Label" ) );
+    props.setLook( wlKey );
+    fdlKey = new FormData();
+    fdlKey.left = new FormAttachment( 0, 0 );
+    fdlKey.top = new FormAttachment( wStepname, 2 * margin );
+    wlKey.setLayoutData( fdlKey );
 
-		fdKey = new FormData();
-		fdKey.left = new FormAttachment(0, 0);
-		fdKey.top = new FormAttachment(wlKey, margin);
-		fdKey.right = new FormAttachment(100, -margin);
-		fdKey.bottom = new FormAttachment(100, -30);
-		wFields.setLayoutData(fdKey);
-		
-		  // 
-        // Search the fields in the background
-        //
-        final Runnable runnable = new Runnable()
-        {
-            public void run()
-            {
-                StepMeta stepMeta = transMeta.findStep(stepname);
-                if (stepMeta!=null)
-                {
-                    try
-                    {
-                    	RowMetaInterface row = transMeta.getPrevStepFields(stepMeta);
-                        
-                        // Remember these fields...
-                        for (int i=0;i<row.size();i++)
-                        {
-                        	inputFields.put(row.getValueMeta(i).getName(), new Integer(i));
-                        }
-                        
-                        setComboBoxes();
-                    }
-                    catch(KettleException e)
-                    {
-                    	logError("It was not possible to get the fields from the previous step(s).");
-                    }
-                }
+    int nrFieldCols = 4;
+    int nrFieldRows = ( input.getFieldInStream() != null ? input.getFieldInStream().length : 1 );
+
+    ciKey = new ColumnInfo[nrFieldCols];
+    ciKey[0] =
+        new ColumnInfo( BaseMessages.getString( PKG, "StringCutDialog.ColumnInfo.InStreamField" ),
+            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+    ciKey[1] =
+        new ColumnInfo( BaseMessages.getString( PKG, "StringCutDialog.ColumnInfo.OutStreamField" ),
+            ColumnInfo.COLUMN_TYPE_TEXT, false );
+    ciKey[2] =
+        new ColumnInfo( BaseMessages.getString( PKG, "StringCutDialog.ColumnInfo.CutFrom" ),
+            ColumnInfo.COLUMN_TYPE_TEXT, false );
+    ciKey[3] =
+        new ColumnInfo( BaseMessages.getString( PKG, "StringCutDialog.ColumnInfo.CutTo" ), ColumnInfo.COLUMN_TYPE_TEXT,
+            false );
+
+    ciKey[2].setUsingVariables( true );
+    ciKey[1].setToolTip( BaseMessages.getString( PKG, "StringCutDialog.ColumnInfo.OutStreamField.Tooltip" ) );
+    ciKey[3].setUsingVariables( true );
+
+    wFields =
+        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
+            ciKey, nrFieldRows, lsMod, props );
+
+    fdKey = new FormData();
+    fdKey.left = new FormAttachment( 0, 0 );
+    fdKey.top = new FormAttachment( wlKey, margin );
+    fdKey.right = new FormAttachment( 100, -margin );
+    fdKey.bottom = new FormAttachment( 100, -30 );
+    wFields.setLayoutData( fdKey );
+
+    //
+    // Search the fields in the background
+    //
+    final Runnable runnable = new Runnable() {
+      public void run() {
+        StepMeta stepMeta = transMeta.findStep( stepname );
+        if ( stepMeta != null ) {
+          try {
+            RowMetaInterface row = transMeta.getPrevStepFields( stepMeta );
+
+            // Remember these fields...
+            for ( int i = 0; i < row.size(); i++ ) {
+              inputFields.put( row.getValueMeta( i ).getName(), new Integer( i ) );
             }
-        };
-        new Thread(runnable).start();
-      
-		
-		// THE BUTTONS
-		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
-		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
-		wGet = new Button(shell, SWT.PUSH);
-		wGet.setText(BaseMessages.getString(PKG, "StringCutDialog.GetFields.Button")); 
-		fdGet = new FormData();
-		fdGet.right = new FormAttachment(100, 0);
-		fdGet.top = new FormAttachment(wStepname, 3*middle);
-		wGet.setLayoutData(fdGet);
-		
-		setButtonPositions(new Button[] { wOK, wGet, wCancel }, margin, null);
+            setComboBoxes();
+          } catch ( KettleException e ) {
+            logError( "It was not possible to get the fields from the previous step(s)." );
+          }
+        }
+      }
+    };
+    new Thread( runnable ).start();
 
-		// Add listeners
-		lsOK = new Listener() {
-			public void handleEvent(Event e) {
-				ok();
-			}
-		};
-		lsGet = new Listener() {
-			public void handleEvent(Event e) {
-				get();
-			}
-		};
-		lsCancel = new Listener() {
-			public void handleEvent(Event e) {
-				cancel();
-			}
-		};
+    // THE BUTTONS
+    wOK = new Button( shell, SWT.PUSH );
+    wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
+    wCancel = new Button( shell, SWT.PUSH );
+    wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
 
+    wGet = new Button( shell, SWT.PUSH );
+    wGet.setText( BaseMessages.getString( PKG, "StringCutDialog.GetFields.Button" ) );
+    fdGet = new FormData();
+    fdGet.right = new FormAttachment( 100, 0 );
+    fdGet.top = new FormAttachment( wStepname, 3 * middle );
+    wGet.setLayoutData( fdGet );
 
-		wOK.addListener(SWT.Selection, lsOK);
-		wGet.addListener(SWT.Selection, lsGet);
-		wCancel.addListener(SWT.Selection, lsCancel);
+    setButtonPositions( new Button[] { wOK, wGet, wCancel }, margin, null );
 
-		lsDef = new SelectionAdapter() {
-			public void widgetDefaultSelected(SelectionEvent e) {
-				ok();
-			}
-		};
+    // Add listeners
+    lsOK = new Listener() {
+      public void handleEvent( Event e ) {
+        ok();
+      }
+    };
+    lsGet = new Listener() {
+      public void handleEvent( Event e ) {
+        get();
+      }
+    };
+    lsCancel = new Listener() {
+      public void handleEvent( Event e ) {
+        cancel();
+      }
+    };
 
-		wStepname.addSelectionListener(lsDef);
+    wOK.addListener( SWT.Selection, lsOK );
+    wGet.addListener( SWT.Selection, lsGet );
+    wCancel.addListener( SWT.Selection, lsCancel );
 
-		// Detect X or ALT-F4 or something that kills this window...
-		shell.addShellListener(new ShellAdapter() {
-			public void shellClosed(ShellEvent e) {
-				cancel();
-			}
-		});
+    lsDef = new SelectionAdapter() {
+      public void widgetDefaultSelected( SelectionEvent e ) {
+        ok();
+      }
+    };
 
-		// Set the shell size, based upon previous time...
-		setSize();
+    wStepname.addSelectionListener( lsDef );
 
-		getData();
-		input.setChanged(changed);
+    // Detect X or ALT-F4 or something that kills this window...
+    shell.addShellListener( new ShellAdapter() {
+      public void shellClosed( ShellEvent e ) {
+        cancel();
+      }
+    } );
 
-		shell.open();
-		while (!shell.isDisposed()) {
-			if (!display.readAndDispatch())
-				display.sleep();
-		}
-		return stepname;
-	}
-	protected void setComboBoxes()
-    {
-        // Something was changed in the row.
-        //
-        final Map<String, Integer> fields = new HashMap<String, Integer>();
-        
-        // Add the currentMeta fields...
-        fields.putAll(inputFields);
-        
-        Set<String> keySet = fields.keySet();
-        List<String> entries = new ArrayList<String>(keySet);
-        
-        String fieldNames[] = entries.toArray(new String[entries.size()]);
+    // Set the shell size, based upon previous time...
+    setSize();
 
-        Const.sortStrings(fieldNames);
-        ciKey[0].setComboValues(fieldNames);
+    getData();
+    input.setChanged( changed );
+
+    shell.open();
+    while ( !shell.isDisposed() ) {
+      if ( !display.readAndDispatch() ) {
+        display.sleep();
+      }
     }
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData() {
-		if (input.getFieldInStream() != null) {
-			for (int i = 0; i < input.getFieldInStream().length; i++) {
-				TableItem item = wFields.table.getItem(i);
-				if (input.getFieldInStream()[i] != null) item.setText(1, input.getFieldInStream()[i]);
-				if (input.getFieldOutStream()[i] != null) item.setText(2, input.getFieldOutStream()[i]);
-				if (input.getCutFrom()[i] != null) item.setText(3, input.getCutFrom()[i]);
-				if (input.getCutTo()[i] != null) item.setText(4, input.getCutTo()[i]);
-			}
-		}
+    return stepname;
+  }
 
-		wFields.setRowNums();
-		wFields.optWidth(true);
+  protected void setComboBoxes() {
+    // Something was changed in the row.
+    //
+    final Map<String, Integer> fields = new HashMap<String, Integer>();
 
-		wStepname.selectAll();
-		wStepname.setFocus();
-	}
+    // Add the currentMeta fields...
+    fields.putAll( inputFields );
 
-	private void cancel() {
-		stepname = null;
-		input.setChanged(changed);
-		dispose();
-	}
+    Set<String> keySet = fields.keySet();
+    List<String> entries = new ArrayList<String>( keySet );
 
-	
-	private void getInfo(StringCutMeta inf) {
-		int nrkeys = wFields.nrNonEmpty();
+    String[] fieldNames = entries.toArray( new String[entries.size()] );
 
-		inf.allocate(nrkeys);
-		if(log.isDebug())
-			logDebug(BaseMessages.getString(PKG, "StringCutDialog.Log.FoundFields", String.valueOf(nrkeys)));  
-		for (int i = 0; i < nrkeys; i++) {
-			TableItem item = wFields.getNonEmpty(i);
-			inf.getFieldInStream()[i] = item.getText(1);
-			inf.getFieldOutStream()[i] = item.getText(2);
-			inf.getCutFrom()[i] = item.getText(3);
-			inf.getCutTo()[i] = item.getText(4);
-		}
+    Const.sortStrings( fieldNames );
+    ciKey[0].setComboValues( fieldNames );
+  }
 
-		stepname = wStepname.getText(); // return value
-	}
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if ( input.getFieldInStream() != null ) {
+      for ( int i = 0; i < input.getFieldInStream().length; i++ ) {
+        TableItem item = wFields.table.getItem( i );
+        if ( input.getFieldInStream()[i] != null ) {
+          item.setText( 1, input.getFieldInStream()[i] );
+        }
+        if ( input.getFieldOutStream()[i] != null ) {
+          item.setText( 2, input.getFieldOutStream()[i] );
+        }
+        if ( input.getCutFrom()[i] != null ) {
+          item.setText( 3, input.getCutFrom()[i] );
+        }
+        if ( input.getCutTo()[i] != null ) {
+          item.setText( 4, input.getCutTo()[i] );
+        }
+      }
+    }
 
-	private void ok() {
-		if (Const.isEmpty(wStepname.getText()))
-			return;
+    wFields.setRowNums();
+    wFields.optWidth( true );
 
-		// Get the information for the dialog into the input structure.
-		getInfo(input);
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
 
-		dispose();
-	}
+  private void cancel() {
+    stepname = null;
+    input.setChanged( changed );
+    dispose();
+  }
 
+  private void getInfo( StringCutMeta inf ) {
+    int nrkeys = wFields.nrNonEmpty();
 
-	private void get() {
-		try {
-			RowMetaInterface r = transMeta.getPrevStepFields(stepname);
-			if (r != null) {
-				TableItemInsertListener listener = new TableItemInsertListener() {
-					public boolean tableItemInserted(TableItem tableItem, ValueMetaInterface v) {
-						if (v.getType() == ValueMeta.TYPE_STRING) {
-							// Only process strings
-							return true;
-						} else {
-							return false;
-						}
-					}
-				};
+    inf.allocate( nrkeys );
+    if ( log.isDebug() ) {
+      logDebug( BaseMessages.getString( PKG, "StringCutDialog.Log.FoundFields", String.valueOf( nrkeys ) ) );
+    }
+    for ( int i = 0; i < nrkeys; i++ ) {
+      TableItem item = wFields.getNonEmpty( i );
+      inf.getFieldInStream()[i] = item.getText( 1 );
+      inf.getFieldOutStream()[i] = item.getText( 2 );
+      inf.getCutFrom()[i] = item.getText( 3 );
+      inf.getCutTo()[i] = item.getText( 4 );
+    }
 
-				BaseStepDialog.getFieldsFromPrevious(r, wFields, 1, new int[] { 1 }, new int[] {}, -1, -1, listener);
+    stepname = wStepname.getText(); // return value
+  }
 
-			}
-		} catch (KettleException ke) {
-			new ErrorDialog(
-					shell,BaseMessages.getString(PKG, "StringCutDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "StringCutDialog.FailedToGetFields.DialogMessage"), ke);  
-		}
-	}
+  private void ok() {
+    if ( Const.isEmpty( wStepname.getText() ) ) {
+      return;
+    }
+
+    // Get the information for the dialog into the input structure.
+    getInfo( input );
+
+    dispose();
+  }
+
+  private void get() {
+    try {
+      RowMetaInterface r = transMeta.getPrevStepFields( stepname );
+      if ( r != null ) {
+        TableItemInsertListener listener = new TableItemInsertListener() {
+          public boolean tableItemInserted( TableItem tableItem, ValueMetaInterface v ) {
+            if ( v.getType() == ValueMeta.TYPE_STRING ) {
+              // Only process strings
+              return true;
+            } else {
+              return false;
+            }
+          }
+        };
+
+        BaseStepDialog.getFieldsFromPrevious( r, wFields, 1, new int[] { 1 }, new int[] {}, -1, -1, listener );
+
+      }
+    } catch ( KettleException ke ) {
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "StringCutDialog.FailedToGetFields.DialogTitle" ),
+          BaseMessages.getString( PKG, "StringCutDialog.FailedToGetFields.DialogMessage" ), ke );
+    }
+  }
 }

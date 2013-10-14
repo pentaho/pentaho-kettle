@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.ui.job.entries.folderisempty;
 
@@ -54,341 +54,327 @@ import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
-
 /**
  * This dialog allows you to edit the Create Folder job entry settings.
- *
+ * 
  * @author Sven/Samatar
- * @since  17-10-2007
+ * @since 17-10-2007
  */
-public class JobEntryFolderIsEmptyDialog extends JobEntryDialog implements JobEntryDialogInterface
-{
-	private static Class<?> PKG = JobEntryFolderIsEmpty.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+public class JobEntryFolderIsEmptyDialog extends JobEntryDialog implements JobEntryDialogInterface {
+  private static Class<?> PKG = JobEntryFolderIsEmpty.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-	private Label        wlName;
-	private Text         wName;
-    private FormData     fdlName, fdName;
+  private Label wlName;
+  private Text wName;
+  private FormData fdlName, fdName;
 
-	private Label        wlFoldername;
-	private Button       wbFoldername;
-	private TextVar      wFoldername;
-	private FormData     fdlFoldername, fdbFoldername, fdFoldername;
-	
-    private Label        wlIncludeSubFolders;
-    private Button       wIncludeSubFolders;
-    private FormData     fdlIncludeSubFolders, fdIncludeSubFolders;
-	
-    private Label        wlSpecifyWildcard;
-    private Button       wSpecifyWildcard;
-    private FormData     fdlSpecifyWildcard, fdSpecifyWildcard;
-    
-	private Label        wlWildcard;
-	private TextVar      wWildcard;
-	private FormData     fdlWildcard, fdWildcard;    
+  private Label wlFoldername;
+  private Button wbFoldername;
+  private TextVar wFoldername;
+  private FormData fdlFoldername, fdbFoldername, fdFoldername;
 
-	private Button wOK, wCancel;
-	private Listener lsOK, lsCancel;
+  private Label wlIncludeSubFolders;
+  private Button wIncludeSubFolders;
+  private FormData fdlIncludeSubFolders, fdIncludeSubFolders;
 
-	private JobEntryFolderIsEmpty jobEntry;
-	private Shell       	shell;
+  private Label wlSpecifyWildcard;
+  private Button wSpecifyWildcard;
+  private FormData fdlSpecifyWildcard, fdSpecifyWildcard;
 
-	private SelectionAdapter lsDef;
+  private Label wlWildcard;
+  private TextVar wWildcard;
+  private FormData fdlWildcard, fdWildcard;
 
-	private boolean changed;
+  private Button wOK, wCancel;
+  private Listener lsOK, lsCancel;
 
+  private JobEntryFolderIsEmpty jobEntry;
+  private Shell shell;
 
- 	public JobEntryFolderIsEmptyDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep,
-				JobMeta jobMeta)
-	{
-		super(parent, jobEntryInt, rep, jobMeta);
-		jobEntry = (JobEntryFolderIsEmpty) jobEntryInt;
-		if (this.jobEntry.getName() == null)
-			this.jobEntry.setName(BaseMessages.getString(PKG, "JobFolderIsEmpty.Name.Default")); 
-	}
+  private SelectionAdapter lsDef;
 
-	public JobEntryInterface open()
-	{
-		Shell parent = getParent();
-		Display display = parent.getDisplay();
+  private boolean changed;
 
-        shell = new Shell(parent, props.getJobsDialogStyle());
-        props.setLook(shell);
-        JobDialog.setShellImage(shell, jobEntry);
+  public JobEntryFolderIsEmptyDialog( Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta ) {
+    super( parent, jobEntryInt, rep, jobMeta );
+    jobEntry = (JobEntryFolderIsEmpty) jobEntryInt;
+    if ( this.jobEntry.getName() == null ) {
+      this.jobEntry.setName( BaseMessages.getString( PKG, "JobFolderIsEmpty.Name.Default" ) );
+    }
+  }
 
-		ModifyListener lsMod = new ModifyListener()
-		{
-			public void modifyText(ModifyEvent e)
-			{
-				jobEntry.setChanged();
-			}
-		};
-		changed = jobEntry.hasChanged();
+  public JobEntryInterface open() {
+    Shell parent = getParent();
+    Display display = parent.getDisplay();
 
-		FormLayout formLayout = new FormLayout ();
-		formLayout.marginWidth  = Const.FORM_MARGIN;
-		formLayout.marginHeight = Const.FORM_MARGIN;
+    shell = new Shell( parent, props.getJobsDialogStyle() );
+    props.setLook( shell );
+    JobDialog.setShellImage( shell, jobEntry );
 
-		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "JobFolderIsEmpty.Title"));
+    ModifyListener lsMod = new ModifyListener() {
+      public void modifyText( ModifyEvent e ) {
+        jobEntry.setChanged();
+      }
+    };
+    changed = jobEntry.hasChanged();
 
-		int middle = props.getMiddlePct();
-		int margin = Const.MARGIN;
+    FormLayout formLayout = new FormLayout();
+    formLayout.marginWidth = Const.FORM_MARGIN;
+    formLayout.marginHeight = Const.FORM_MARGIN;
 
-		// Foldername line
-		wlName=new Label(shell, SWT.RIGHT);
-		wlName.setText(BaseMessages.getString(PKG, "JobFolderIsEmpty.Name.Label"));
- 		props.setLook(wlName);
-		fdlName=new FormData();
-		fdlName.left = new FormAttachment(0, 0);
-		fdlName.right= new FormAttachment(middle, -margin);
-		fdlName.top  = new FormAttachment(0, margin);
-		wlName.setLayoutData(fdlName);
-		wName=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wName);
-		wName.addModifyListener(lsMod);
-		fdName=new FormData();
-		fdName.left = new FormAttachment(middle, 0);
-		fdName.top  = new FormAttachment(0, margin);
-		fdName.right= new FormAttachment(100, 0);
-		wName.setLayoutData(fdName);
+    shell.setLayout( formLayout );
+    shell.setText( BaseMessages.getString( PKG, "JobFolderIsEmpty.Title" ) );
 
-		// Foldername line
-		wlFoldername=new Label(shell, SWT.RIGHT);
-		wlFoldername.setText(BaseMessages.getString(PKG, "JobFolderIsEmpty.Foldername.Label"));
- 		props.setLook(wlFoldername);
-		fdlFoldername=new FormData();
-		fdlFoldername.left = new FormAttachment(0, 0);
-		fdlFoldername.top  = new FormAttachment(wName, margin);
-		fdlFoldername.right= new FormAttachment(middle, -margin);
-		wlFoldername.setLayoutData(fdlFoldername);
+    int middle = props.getMiddlePct();
+    int margin = Const.MARGIN;
 
-		wbFoldername=new Button(shell, SWT.PUSH| SWT.CENTER);
- 		props.setLook(wbFoldername);
-		wbFoldername.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
-		fdbFoldername=new FormData();
-		fdbFoldername.right= new FormAttachment(100, 0);
-		fdbFoldername.top  = new FormAttachment(wName, 0);
-		wbFoldername.setLayoutData(fdbFoldername);
+    // Foldername line
+    wlName = new Label( shell, SWT.RIGHT );
+    wlName.setText( BaseMessages.getString( PKG, "JobFolderIsEmpty.Name.Label" ) );
+    props.setLook( wlName );
+    fdlName = new FormData();
+    fdlName.left = new FormAttachment( 0, 0 );
+    fdlName.right = new FormAttachment( middle, -margin );
+    fdlName.top = new FormAttachment( 0, margin );
+    wlName.setLayoutData( fdlName );
+    wName = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wName );
+    wName.addModifyListener( lsMod );
+    fdName = new FormData();
+    fdName.left = new FormAttachment( middle, 0 );
+    fdName.top = new FormAttachment( 0, margin );
+    fdName.right = new FormAttachment( 100, 0 );
+    wName.setLayoutData( fdName );
 
-		wFoldername=new TextVar(jobMeta,shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wFoldername);
-		wFoldername.addModifyListener(lsMod);
-		fdFoldername=new FormData();
-		fdFoldername.left = new FormAttachment(middle, 0);
-		fdFoldername.top  = new FormAttachment(wName, margin);
-		fdFoldername.right= new FormAttachment(wbFoldername, -margin);
-		wFoldername.setLayoutData(fdFoldername);
-		
-		// Include sub folders?
-        wlIncludeSubFolders = new Label(shell, SWT.RIGHT);
-        wlIncludeSubFolders.setText(BaseMessages.getString(PKG, "JobFolderIsEmpty.IncludeSubFolders.Label"));
-        props.setLook(wlIncludeSubFolders);
-        fdlIncludeSubFolders = new FormData();
-        fdlIncludeSubFolders.left = new FormAttachment(0, 0);
-        fdlIncludeSubFolders.top = new FormAttachment(wFoldername, margin);
-        fdlIncludeSubFolders.right = new FormAttachment(middle, -margin);
-        wlIncludeSubFolders.setLayoutData(fdlIncludeSubFolders);
-        wIncludeSubFolders = new Button(shell, SWT.CHECK);
-        props.setLook(wIncludeSubFolders);
-        wIncludeSubFolders.setToolTipText(BaseMessages.getString(PKG, "JobFolderIsEmpty.IncludeSubFolders.Tooltip"));
-        fdIncludeSubFolders = new FormData();
-        fdIncludeSubFolders.left = new FormAttachment(middle, 0);
-        fdIncludeSubFolders.top = new FormAttachment(wFoldername, margin);
-        fdIncludeSubFolders.right = new FormAttachment(100, 0);
-        wIncludeSubFolders.setLayoutData(fdIncludeSubFolders);
-        wIncludeSubFolders.addSelectionListener(new SelectionAdapter()
-        {
-            public void widgetSelected(SelectionEvent e)
-            {
-                jobEntry.setChanged();
-            }
-        });
-	
-        // Specify wildcard?
-        wlSpecifyWildcard = new Label(shell, SWT.RIGHT);
-        wlSpecifyWildcard.setText(BaseMessages.getString(PKG, "JobFolderIsEmpty.SpecifyWildcard.Label"));
-        props.setLook(wlSpecifyWildcard);
-        fdlSpecifyWildcard = new FormData();
-        fdlSpecifyWildcard.left = new FormAttachment(0, 0);
-        fdlSpecifyWildcard.top = new FormAttachment(wIncludeSubFolders, margin);
-        fdlSpecifyWildcard.right = new FormAttachment(middle, -margin);
-        wlSpecifyWildcard.setLayoutData(fdlSpecifyWildcard);
-        wSpecifyWildcard = new Button(shell, SWT.CHECK);
-        props.setLook(wSpecifyWildcard);
-        wSpecifyWildcard.setToolTipText(BaseMessages.getString(PKG, "JobFolderIsEmpty.SpecifyWildcard.Tooltip"));
-        fdSpecifyWildcard = new FormData();
-        fdSpecifyWildcard.left = new FormAttachment(middle, 0);
-        fdSpecifyWildcard.top = new FormAttachment(wIncludeSubFolders, margin);
-        fdSpecifyWildcard.right = new FormAttachment(100, 0);
-        wSpecifyWildcard.setLayoutData(fdSpecifyWildcard);
-        wSpecifyWildcard.addSelectionListener(new SelectionAdapter()
-        {
-            public void widgetSelected(SelectionEvent e)
-            {
-                jobEntry.setChanged();
-                CheckLimitSearch();
-            }
-        });
-        
+    // Foldername line
+    wlFoldername = new Label( shell, SWT.RIGHT );
+    wlFoldername.setText( BaseMessages.getString( PKG, "JobFolderIsEmpty.Foldername.Label" ) );
+    props.setLook( wlFoldername );
+    fdlFoldername = new FormData();
+    fdlFoldername.left = new FormAttachment( 0, 0 );
+    fdlFoldername.top = new FormAttachment( wName, margin );
+    fdlFoldername.right = new FormAttachment( middle, -margin );
+    wlFoldername.setLayoutData( fdlFoldername );
 
-        
-		// Wildcard line
-		wlWildcard=new Label(shell, SWT.RIGHT);
-		wlWildcard.setText(BaseMessages.getString(PKG, "JobFolderIsEmpty.Wildcard.Label"));
- 		props.setLook(wlWildcard);
-		fdlWildcard=new FormData();
-		fdlWildcard.left = new FormAttachment(0, 0);
-		fdlWildcard.top  = new FormAttachment(wSpecifyWildcard, margin);
-		fdlWildcard.right= new FormAttachment(middle, -margin);
-		wlWildcard.setLayoutData(fdlWildcard);
-		wWildcard=new TextVar(jobMeta,shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wWildcard);
-		wWildcard.addModifyListener(lsMod);
-		fdWildcard=new FormData();
-		fdWildcard.left = new FormAttachment(middle, 0);
-		fdWildcard.top  = new FormAttachment(wSpecifyWildcard, margin);
-		fdWildcard.right= new FormAttachment(100, -margin);
-		wWildcard.setLayoutData(fdWildcard);
-		
-		// Whenever something changes, set the tooltip to the expanded version:
-		wFoldername.addModifyListener(new ModifyListener()
-			{
-				public void modifyText(ModifyEvent e)
-				{
-					wFoldername.setToolTipText(jobMeta.environmentSubstitute( wFoldername.getText() ) );
-				}
-			}
-		);
-		// Whenever something changes, set the tooltip to the expanded version:
-		wWildcard.addModifyListener(new ModifyListener()
-			{
-				public void modifyText(ModifyEvent e)
-				{
-					wWildcard.setToolTipText(jobMeta.environmentSubstitute( wWildcard.getText() ) );
-				}
-			}
-		);
+    wbFoldername = new Button( shell, SWT.PUSH | SWT.CENTER );
+    props.setLook( wbFoldername );
+    wbFoldername.setText( BaseMessages.getString( PKG, "System.Button.Browse" ) );
+    fdbFoldername = new FormData();
+    fdbFoldername.right = new FormAttachment( 100, 0 );
+    fdbFoldername.top = new FormAttachment( wName, 0 );
+    wbFoldername.setLayoutData( fdbFoldername );
 
-		wbFoldername.addSelectionListener
-		(
-			new SelectionAdapter()
-			{
-				public void widgetSelected(SelectionEvent e)
-				{
-					DirectoryDialog dialog = new DirectoryDialog(shell, SWT.OPEN);
-					if (wFoldername.getText()!=null)
-					{
-						dialog.setFilterPath(jobMeta.environmentSubstitute(wFoldername.getText()) );
-					}
-				
-					String dir=dialog.open();
-					if(dir!=null)
-					{
-						wFoldername.setText(dir);
-					}
-				}
-			}
-		);
+    wFoldername = new TextVar( jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wFoldername );
+    wFoldername.addModifyListener( lsMod );
+    fdFoldername = new FormData();
+    fdFoldername.left = new FormAttachment( middle, 0 );
+    fdFoldername.top = new FormAttachment( wName, margin );
+    fdFoldername.right = new FormAttachment( wbFoldername, -margin );
+    wFoldername.setLayoutData( fdFoldername );
 
-      
-		
-        wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
-        wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
-        
-		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wWildcard);
+    // Include sub folders?
+    wlIncludeSubFolders = new Label( shell, SWT.RIGHT );
+    wlIncludeSubFolders.setText( BaseMessages.getString( PKG, "JobFolderIsEmpty.IncludeSubFolders.Label" ) );
+    props.setLook( wlIncludeSubFolders );
+    fdlIncludeSubFolders = new FormData();
+    fdlIncludeSubFolders.left = new FormAttachment( 0, 0 );
+    fdlIncludeSubFolders.top = new FormAttachment( wFoldername, margin );
+    fdlIncludeSubFolders.right = new FormAttachment( middle, -margin );
+    wlIncludeSubFolders.setLayoutData( fdlIncludeSubFolders );
+    wIncludeSubFolders = new Button( shell, SWT.CHECK );
+    props.setLook( wIncludeSubFolders );
+    wIncludeSubFolders.setToolTipText( BaseMessages.getString( PKG, "JobFolderIsEmpty.IncludeSubFolders.Tooltip" ) );
+    fdIncludeSubFolders = new FormData();
+    fdIncludeSubFolders.left = new FormAttachment( middle, 0 );
+    fdIncludeSubFolders.top = new FormAttachment( wFoldername, margin );
+    fdIncludeSubFolders.right = new FormAttachment( 100, 0 );
+    wIncludeSubFolders.setLayoutData( fdIncludeSubFolders );
+    wIncludeSubFolders.addSelectionListener( new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent e ) {
+        jobEntry.setChanged();
+      }
+    } );
 
-		// Add listeners
-		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
-		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
+    // Specify wildcard?
+    wlSpecifyWildcard = new Label( shell, SWT.RIGHT );
+    wlSpecifyWildcard.setText( BaseMessages.getString( PKG, "JobFolderIsEmpty.SpecifyWildcard.Label" ) );
+    props.setLook( wlSpecifyWildcard );
+    fdlSpecifyWildcard = new FormData();
+    fdlSpecifyWildcard.left = new FormAttachment( 0, 0 );
+    fdlSpecifyWildcard.top = new FormAttachment( wIncludeSubFolders, margin );
+    fdlSpecifyWildcard.right = new FormAttachment( middle, -margin );
+    wlSpecifyWildcard.setLayoutData( fdlSpecifyWildcard );
+    wSpecifyWildcard = new Button( shell, SWT.CHECK );
+    props.setLook( wSpecifyWildcard );
+    wSpecifyWildcard.setToolTipText( BaseMessages.getString( PKG, "JobFolderIsEmpty.SpecifyWildcard.Tooltip" ) );
+    fdSpecifyWildcard = new FormData();
+    fdSpecifyWildcard.left = new FormAttachment( middle, 0 );
+    fdSpecifyWildcard.top = new FormAttachment( wIncludeSubFolders, margin );
+    fdSpecifyWildcard.right = new FormAttachment( 100, 0 );
+    wSpecifyWildcard.setLayoutData( fdSpecifyWildcard );
+    wSpecifyWildcard.addSelectionListener( new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent e ) {
+        jobEntry.setChanged();
+        CheckLimitSearch();
+      }
+    } );
 
-		wCancel.addListener(SWT.Selection, lsCancel);
-		wOK.addListener    (SWT.Selection, lsOK    );
+    // Wildcard line
+    wlWildcard = new Label( shell, SWT.RIGHT );
+    wlWildcard.setText( BaseMessages.getString( PKG, "JobFolderIsEmpty.Wildcard.Label" ) );
+    props.setLook( wlWildcard );
+    fdlWildcard = new FormData();
+    fdlWildcard.left = new FormAttachment( 0, 0 );
+    fdlWildcard.top = new FormAttachment( wSpecifyWildcard, margin );
+    fdlWildcard.right = new FormAttachment( middle, -margin );
+    wlWildcard.setLayoutData( fdlWildcard );
+    wWildcard = new TextVar( jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wWildcard );
+    wWildcard.addModifyListener( lsMod );
+    fdWildcard = new FormData();
+    fdWildcard.left = new FormAttachment( middle, 0 );
+    fdWildcard.top = new FormAttachment( wSpecifyWildcard, margin );
+    fdWildcard.right = new FormAttachment( 100, -margin );
+    wWildcard.setLayoutData( fdWildcard );
 
-		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
+    // Whenever something changes, set the tooltip to the expanded version:
+    wFoldername.addModifyListener( new ModifyListener() {
+      public void modifyText( ModifyEvent e ) {
+        wFoldername.setToolTipText( jobMeta.environmentSubstitute( wFoldername.getText() ) );
+      }
+    } );
+    // Whenever something changes, set the tooltip to the expanded version:
+    wWildcard.addModifyListener( new ModifyListener() {
+      public void modifyText( ModifyEvent e ) {
+        wWildcard.setToolTipText( jobMeta.environmentSubstitute( wWildcard.getText() ) );
+      }
+    } );
 
-		wName.addSelectionListener( lsDef );
-		wFoldername.addSelectionListener( lsDef );
+    wbFoldername.addSelectionListener( new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent e ) {
+        DirectoryDialog dialog = new DirectoryDialog( shell, SWT.OPEN );
+        if ( wFoldername.getText() != null ) {
+          dialog.setFilterPath( jobMeta.environmentSubstitute( wFoldername.getText() ) );
+        }
 
-		// Detect X or ALT-F4 or something that kills this window...
-		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
+        String dir = dialog.open();
+        if ( dir != null ) {
+          wFoldername.setText( dir );
+        }
+      }
+    } );
 
-		getData();
-		CheckLimitSearch();
+    wOK = new Button( shell, SWT.PUSH );
+    wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
+    wCancel = new Button( shell, SWT.PUSH );
+    wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
 
-		BaseStepDialog.setSize(shell);
+    BaseStepDialog.positionBottomButtons( shell, new Button[] { wOK, wCancel }, margin, wWildcard );
 
-		shell.open();
-		while (!shell.isDisposed())
-		{
-				if (!display.readAndDispatch()) display.sleep();
-		}
-		return jobEntry;
-	}
+    // Add listeners
+    lsCancel = new Listener() {
+      public void handleEvent( Event e ) {
+        cancel();
+      }
+    };
+    lsOK = new Listener() {
+      public void handleEvent( Event e ) {
+        ok();
+      }
+    };
 
-	public void dispose()
-	{
-		WindowProperty winprop = new WindowProperty(shell);
-		props.setScreen(winprop);
-		shell.dispose();
-	}
-	private void CheckLimitSearch()
-	{
-		wlWildcard.setEnabled(wSpecifyWildcard.getSelection());
-		wWildcard.setEnabled(wSpecifyWildcard.getSelection());
-	}
+    wCancel.addListener( SWT.Selection, lsCancel );
+    wOK.addListener( SWT.Selection, lsOK );
+
+    lsDef = new SelectionAdapter() {
+      public void widgetDefaultSelected( SelectionEvent e ) {
+        ok();
+      }
+    };
+
+    wName.addSelectionListener( lsDef );
+    wFoldername.addSelectionListener( lsDef );
+
+    // Detect X or ALT-F4 or something that kills this window...
+    shell.addShellListener( new ShellAdapter() {
+      public void shellClosed( ShellEvent e ) {
+        cancel();
+      }
+    } );
+
+    getData();
+    CheckLimitSearch();
+
+    BaseStepDialog.setSize( shell );
+
+    shell.open();
+    while ( !shell.isDisposed() ) {
+      if ( !display.readAndDispatch() ) {
+        display.sleep();
+      }
+    }
+    return jobEntry;
+  }
+
+  public void dispose() {
+    WindowProperty winprop = new WindowProperty( shell );
+    props.setScreen( winprop );
+    shell.dispose();
+  }
+
+  private void CheckLimitSearch() {
+    wlWildcard.setEnabled( wSpecifyWildcard.getSelection() );
+    wWildcard.setEnabled( wSpecifyWildcard.getSelection() );
+  }
 
   /**
    * Copy information from the meta-data input to the dialog fields.
    */
   public void getData() {
-    if (jobEntry.getName() != null)
-      wName.setText(jobEntry.getName());
-    if (jobEntry.getFoldername() != null)
-      wFoldername.setText(jobEntry.getFoldername());
-    wIncludeSubFolders.setSelection(jobEntry.isIncludeSubFolders());
-    wSpecifyWildcard.setSelection(jobEntry.isSpecifyWildcard());
-    if (jobEntry.getWildcard() != null)
-      wWildcard.setText(jobEntry.getWildcard());
+    if ( jobEntry.getName() != null ) {
+      wName.setText( jobEntry.getName() );
+    }
+    if ( jobEntry.getFoldername() != null ) {
+      wFoldername.setText( jobEntry.getFoldername() );
+    }
+    wIncludeSubFolders.setSelection( jobEntry.isIncludeSubFolders() );
+    wSpecifyWildcard.setSelection( jobEntry.isSpecifyWildcard() );
+    if ( jobEntry.getWildcard() != null ) {
+      wWildcard.setText( jobEntry.getWildcard() );
+    }
 
     wName.selectAll();
     wName.setFocus();
   }
 
-	private void cancel()
-	{
-		jobEntry.setChanged(changed);
-		jobEntry=null;
-		dispose();
-	}
+  private void cancel() {
+    jobEntry.setChanged( changed );
+    jobEntry = null;
+    dispose();
+  }
 
-	private void ok()
-	{
- 	   if(Const.isEmpty(wName.getText())) 
-       {
-			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
-			mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
-			mb.open(); 
-			return;
-       }
-		jobEntry.setName(wName.getText());
-		jobEntry.setFoldername(wFoldername.getText());
-		jobEntry.setIncludeSubFolders(wIncludeSubFolders.getSelection());
-		jobEntry.setSpecifyWildcard(wSpecifyWildcard.getSelection());
-		jobEntry.setWildcard(wWildcard.getText());
-		
-		dispose();
-	}
+  private void ok() {
+    if ( Const.isEmpty( wName.getText() ) ) {
+      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
+      mb.setText( BaseMessages.getString( PKG, "System.StepJobEntryNameMissing.Title" ) );
+      mb.setMessage( BaseMessages.getString( PKG, "System.JobEntryNameMissing.Msg" ) );
+      mb.open();
+      return;
+    }
+    jobEntry.setName( wName.getText() );
+    jobEntry.setFoldername( wFoldername.getText() );
+    jobEntry.setIncludeSubFolders( wIncludeSubFolders.getSelection() );
+    jobEntry.setSpecifyWildcard( wSpecifyWildcard.getSelection() );
+    jobEntry.setWildcard( wWildcard.getText() );
 
-	public boolean evaluates()
-	{
-		return true;
-	}
+    dispose();
+  }
 
-	public boolean isUnconditional()
-	{
-		return false;
-	}
+  public boolean evaluates() {
+    return true;
+  }
+
+  public boolean isUnconditional() {
+    return false;
+  }
 }

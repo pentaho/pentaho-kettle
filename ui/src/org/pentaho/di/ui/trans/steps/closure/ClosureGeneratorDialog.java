@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.ui.trans.steps.closure;
 
@@ -51,279 +51,281 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.closure.ClosureGeneratorMeta;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
-public class ClosureGeneratorDialog extends BaseStepDialog implements StepDialogInterface
-{
-	private static Class<?> PKG = ClosureGeneratorMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+public class ClosureGeneratorDialog extends BaseStepDialog implements StepDialogInterface {
+  private static Class<?> PKG = ClosureGeneratorMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-	private Label        wlRootZero;
-	private Button       wRootZero;
-	private FormData     fdlRootZero, fdRootZero;
+  private Label wlRootZero;
+  private Button wRootZero;
+  private FormData fdlRootZero, fdRootZero;
 
-	private Label        wlParent;
-	private CCombo       wParent;
-	private FormData     fdlParent, fdParent;
+  private Label wlParent;
+  private CCombo wParent;
+  private FormData fdlParent, fdParent;
 
-	private Label        wlChild;
-	private CCombo       wChild;
-	private FormData     fdlChild, fdChild;
+  private Label wlChild;
+  private CCombo wChild;
+  private FormData fdlChild, fdChild;
 
-	private Label        wlDistance;
-	private Text         wDistance;
-	private FormData     fdlDistance, fdDistance;
+  private Label wlDistance;
+  private Text wDistance;
+  private FormData fdlDistance, fdDistance;
 
-	private ClosureGeneratorMeta input;
-	
-	private RowMetaInterface inputFields;
+  private ClosureGeneratorMeta input;
 
-	public ClosureGeneratorDialog(Shell parent, Object in, TransMeta transMeta, String sname)
-	{
-		super(parent, (BaseStepMeta)in, transMeta, sname);
-		input=(ClosureGeneratorMeta)in;
-	}
+  private RowMetaInterface inputFields;
 
-	public String open()
-	{
-		Shell parent = getParent();
-		Display display = parent.getDisplay();
+  public ClosureGeneratorDialog( Shell parent, Object in, TransMeta transMeta, String sname ) {
+    super( parent, (BaseStepMeta) in, transMeta, sname );
+    input = (ClosureGeneratorMeta) in;
+  }
 
-		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
- 		props.setLook(shell);
-        setShellImage(shell, input);
+  public String open() {
+    Shell parent = getParent();
+    Display display = parent.getDisplay();
 
-		ModifyListener lsMod = new ModifyListener() 
-		{
-			public void modifyText(ModifyEvent e) 
-			{
-				input.setChanged();
-			}
-		};
-		changed = input.hasChanged();
+    shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
+    props.setLook( shell );
+    setShellImage( shell, input );
 
-		FormLayout formLayout = new FormLayout ();
-		formLayout.marginWidth  = Const.FORM_MARGIN;
-		formLayout.marginHeight = Const.FORM_MARGIN;
+    ModifyListener lsMod = new ModifyListener() {
+      public void modifyText( ModifyEvent e ) {
+        input.setChanged();
+      }
+    };
+    changed = input.hasChanged();
 
-		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "ClosureGeneratorDialog.Shell.Title")); 
-		
-		int middle = props.getMiddlePct();
-		int margin = Const.MARGIN;
+    FormLayout formLayout = new FormLayout();
+    formLayout.marginWidth = Const.FORM_MARGIN;
+    formLayout.marginHeight = Const.FORM_MARGIN;
 
-        // Stepname line
-		//
-		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "ClosureGeneratorDialog.StepName")); 
- 		props.setLook(wlStepname);
-		fdlStepname=new FormData();
-		fdlStepname.left = new FormAttachment(0, 0);
-		fdlStepname.right= new FormAttachment(middle, -margin);
-		fdlStepname.top  = new FormAttachment(0, margin);
-		wlStepname.setLayoutData(fdlStepname);
-		wStepname=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wStepname.setText(stepname);
- 		props.setLook(wStepname);
-		wStepname.addModifyListener(lsMod);
-		fdStepname=new FormData();
-		fdStepname.left = new FormAttachment(middle, 0);
-		fdStepname.top  = new FormAttachment(0, margin);
-		fdStepname.right= new FormAttachment(100, 0);
-		wStepname.setLayoutData(fdStepname);
+    shell.setLayout( formLayout );
+    shell.setText( BaseMessages.getString( PKG, "ClosureGeneratorDialog.Shell.Title" ) );
 
-		// Parent ...
-		//
-		wlParent=new Label(shell, SWT.RIGHT);
-		wlParent.setText(BaseMessages.getString(PKG, "ClosureGeneratorDialog.ParentField.Label")); 
- 		props.setLook(wlParent);
-		fdlParent=new FormData();
-		fdlParent.left = new FormAttachment(0, 0);
-		fdlParent.right= new FormAttachment(middle, -margin);
-		fdlParent.top  = new FormAttachment(wStepname, margin);
-		wlParent.setLayoutData(fdlParent);
+    int middle = props.getMiddlePct();
+    int margin = Const.MARGIN;
 
-		wParent=new CCombo(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wParent);
-		wParent.addModifyListener(lsMod);
-		fdParent=new FormData();
-		fdParent.left = new FormAttachment(middle, 0);
-		fdParent.right= new FormAttachment(100, 0);
-		fdParent.top  = new FormAttachment(wStepname, margin);
-		wParent.setLayoutData(fdParent);
+    // Stepname line
+    //
+    wlStepname = new Label( shell, SWT.RIGHT );
+    wlStepname.setText( BaseMessages.getString( PKG, "ClosureGeneratorDialog.StepName" ) );
+    props.setLook( wlStepname );
+    fdlStepname = new FormData();
+    fdlStepname.left = new FormAttachment( 0, 0 );
+    fdlStepname.right = new FormAttachment( middle, -margin );
+    fdlStepname.top = new FormAttachment( 0, margin );
+    wlStepname.setLayoutData( fdlStepname );
+    wStepname = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wStepname.setText( stepname );
+    props.setLook( wStepname );
+    wStepname.addModifyListener( lsMod );
+    fdStepname = new FormData();
+    fdStepname.left = new FormAttachment( middle, 0 );
+    fdStepname.top = new FormAttachment( 0, margin );
+    fdStepname.right = new FormAttachment( 100, 0 );
+    wStepname.setLayoutData( fdStepname );
 
-		// Child ...
-		//
-		wlChild=new Label(shell, SWT.RIGHT);
-		wlChild.setText(BaseMessages.getString(PKG, "ClosureGeneratorDialog.ChildField.Label")); 
- 		props.setLook(wlChild);
-		fdlChild=new FormData();
-		fdlChild.left = new FormAttachment(0, 0);
-		fdlChild.right= new FormAttachment(middle, -margin);
-		fdlChild.top  = new FormAttachment(wParent, margin);
-		wlChild.setLayoutData(fdlChild);
+    // Parent ...
+    //
+    wlParent = new Label( shell, SWT.RIGHT );
+    wlParent.setText( BaseMessages.getString( PKG, "ClosureGeneratorDialog.ParentField.Label" ) );
+    props.setLook( wlParent );
+    fdlParent = new FormData();
+    fdlParent.left = new FormAttachment( 0, 0 );
+    fdlParent.right = new FormAttachment( middle, -margin );
+    fdlParent.top = new FormAttachment( wStepname, margin );
+    wlParent.setLayoutData( fdlParent );
 
-		wChild=new CCombo(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wChild);
-		wChild.addModifyListener(lsMod);
-		fdChild=new FormData();
-		fdChild.left = new FormAttachment(middle, 0);
-		fdChild.right= new FormAttachment(100, 0);
-		fdChild.top  = new FormAttachment(wParent, margin);
-		wChild.setLayoutData(fdChild);
+    wParent = new CCombo( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wParent );
+    wParent.addModifyListener( lsMod );
+    fdParent = new FormData();
+    fdParent.left = new FormAttachment( middle, 0 );
+    fdParent.right = new FormAttachment( 100, 0 );
+    fdParent.top = new FormAttachment( wStepname, margin );
+    wParent.setLayoutData( fdParent );
 
-		// Distance ...
-		//
-		wlDistance=new Label(shell, SWT.RIGHT);
-		wlDistance.setText(BaseMessages.getString(PKG, "ClosureGeneratorDialog.DistanceField.Label")); 
- 		props.setLook(wlDistance);
-		fdlDistance=new FormData();
-		fdlDistance.left = new FormAttachment(0, 0);
-		fdlDistance.right= new FormAttachment(middle, -margin);
-		fdlDistance.top  = new FormAttachment(wChild, margin);
-		wlDistance.setLayoutData(fdlDistance);
+    // Child ...
+    //
+    wlChild = new Label( shell, SWT.RIGHT );
+    wlChild.setText( BaseMessages.getString( PKG, "ClosureGeneratorDialog.ChildField.Label" ) );
+    props.setLook( wlChild );
+    fdlChild = new FormData();
+    fdlChild.left = new FormAttachment( 0, 0 );
+    fdlChild.right = new FormAttachment( middle, -margin );
+    fdlChild.top = new FormAttachment( wParent, margin );
+    wlChild.setLayoutData( fdlChild );
 
-		wDistance=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wDistance);
-		wDistance.addModifyListener(lsMod);
-		fdDistance=new FormData();
-		fdDistance.left = new FormAttachment(middle, 0);
-		fdDistance.right= new FormAttachment(100, 0);
-		fdDistance.top  = new FormAttachment(wChild, margin);
-		wDistance.setLayoutData(fdDistance);
+    wChild = new CCombo( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wChild );
+    wChild.addModifyListener( lsMod );
+    fdChild = new FormData();
+    fdChild.left = new FormAttachment( middle, 0 );
+    fdChild.right = new FormAttachment( 100, 0 );
+    fdChild.top = new FormAttachment( wParent, margin );
+    wChild.setLayoutData( fdChild );
 
-		// Root is zero(Integer)?
-		//
-		wlRootZero=new Label(shell, SWT.RIGHT);
-		wlRootZero.setText(BaseMessages.getString(PKG, "ClosureGeneratorDialog.RootZero.Label")); 
- 		props.setLook(wlRootZero);
-		fdlRootZero=new FormData();
-		fdlRootZero.left = new FormAttachment(0, 0);
-		fdlRootZero.right= new FormAttachment(middle, -margin);
-		fdlRootZero.top  = new FormAttachment(wDistance, margin);
-		wlRootZero.setLayoutData(fdlRootZero);
+    // Distance ...
+    //
+    wlDistance = new Label( shell, SWT.RIGHT );
+    wlDistance.setText( BaseMessages.getString( PKG, "ClosureGeneratorDialog.DistanceField.Label" ) );
+    props.setLook( wlDistance );
+    fdlDistance = new FormData();
+    fdlDistance.left = new FormAttachment( 0, 0 );
+    fdlDistance.right = new FormAttachment( middle, -margin );
+    fdlDistance.top = new FormAttachment( wChild, margin );
+    wlDistance.setLayoutData( fdlDistance );
 
-		wRootZero=new Button(shell, SWT.CHECK);
- 		props.setLook(wRootZero);
-		fdRootZero=new FormData();
-		fdRootZero.left = new FormAttachment(middle, 0);
-		fdRootZero.right= new FormAttachment(100, 0);
-		fdRootZero.top  = new FormAttachment(wDistance, margin);
-		wRootZero.setLayoutData(fdRootZero);
-		
-		
-        // Search the fields in the background
-        //
-        final Runnable runnable = new Runnable()
-        {
-            public void run()
-            {
-                StepMeta stepMeta = transMeta.findStep(stepname);
-                if (stepMeta!=null)
-                {
-                    try
-                    {
-                        inputFields = transMeta.getPrevStepFields(stepMeta);
-                        setComboBoxes();
-                    }
-                    catch(KettleException e)
-                    {
-                        logError(BaseMessages.getString(PKG, "ClosureGeneratorDialog.Log.UnableToFindInput"));
-                    }
-                }
-            }
-        };
-        new Thread(runnable).start();
+    wDistance = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wDistance );
+    wDistance.addModifyListener( lsMod );
+    fdDistance = new FormData();
+    fdDistance.left = new FormAttachment( middle, 0 );
+    fdDistance.right = new FormAttachment( 100, 0 );
+    fdDistance.top = new FormAttachment( wChild, margin );
+    wDistance.setLayoutData( fdDistance );
 
-		// Some buttons
-		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
-		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
+    // Root is zero(Integer)?
+    //
+    wlRootZero = new Label( shell, SWT.RIGHT );
+    wlRootZero.setText( BaseMessages.getString( PKG, "ClosureGeneratorDialog.RootZero.Label" ) );
+    props.setLook( wlRootZero );
+    fdlRootZero = new FormData();
+    fdlRootZero.left = new FormAttachment( 0, 0 );
+    fdlRootZero.right = new FormAttachment( middle, -margin );
+    fdlRootZero.top = new FormAttachment( wDistance, margin );
+    wlRootZero.setLayoutData( fdlRootZero );
 
-		setButtonPositions(new Button[] { wOK, wCancel, }, margin, null);
+    wRootZero = new Button( shell, SWT.CHECK );
+    props.setLook( wRootZero );
+    fdRootZero = new FormData();
+    fdRootZero.left = new FormAttachment( middle, 0 );
+    fdRootZero.right = new FormAttachment( 100, 0 );
+    fdRootZero.top = new FormAttachment( wDistance, margin );
+    wRootZero.setLayoutData( fdRootZero );
 
-		// Add listeners
-		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel();  } };
-		lsOK       = new Listener() { public void handleEvent(Event e) { ok();      } };
-        
-		wCancel.addListener  (SWT.Selection, lsCancel);
-		wOK.addListener      (SWT.Selection, lsOK    );
-        
-		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
-		
-		wStepname.addSelectionListener( lsDef );
-		wDistance.addSelectionListener( lsDef );
-		
-		// Detect X or ALT-F4 or something that kills this window...
-		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
-		
-		getData();
-		input.setChanged(changed);
+    // Search the fields in the background
+    //
+    final Runnable runnable = new Runnable() {
+      public void run() {
+        StepMeta stepMeta = transMeta.findStep( stepname );
+        if ( stepMeta != null ) {
+          try {
+            inputFields = transMeta.getPrevStepFields( stepMeta );
+            setComboBoxes();
+          } catch ( KettleException e ) {
+            logError( BaseMessages.getString( PKG, "ClosureGeneratorDialog.Log.UnableToFindInput" ) );
+          }
+        }
+      }
+    };
+    new Thread( runnable ).start();
 
-		// Set the shell size, based upon previous time...
-		setSize();
-		
-		shell.open();
-		while (!shell.isDisposed())
-		{
-				if (!display.readAndDispatch()) display.sleep();
-		}
-		return stepname;
-	}
-	
-	protected void setComboBoxes()
-    {
-        shell.getDisplay().syncExec(new Runnable()
-            {
-                public void run()
-                {
-                	if (inputFields!=null) {
-                		String[] fieldNames = inputFields.getFieldNames();
-                		wParent.setItems(fieldNames);
-                		wChild.setItems(fieldNames);
-                	}
-                }
-            }
-        );
+    // Some buttons
+    wOK = new Button( shell, SWT.PUSH );
+    wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
+    wCancel = new Button( shell, SWT.PUSH );
+    wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
+
+    setButtonPositions( new Button[] { wOK, wCancel, }, margin, null );
+
+    // Add listeners
+    lsCancel = new Listener() {
+      public void handleEvent( Event e ) {
+        cancel();
+      }
+    };
+    lsOK = new Listener() {
+      public void handleEvent( Event e ) {
+        ok();
+      }
+    };
+
+    wCancel.addListener( SWT.Selection, lsCancel );
+    wOK.addListener( SWT.Selection, lsOK );
+
+    lsDef = new SelectionAdapter() {
+      public void widgetDefaultSelected( SelectionEvent e ) {
+        ok();
+      }
+    };
+
+    wStepname.addSelectionListener( lsDef );
+    wDistance.addSelectionListener( lsDef );
+
+    // Detect X or ALT-F4 or something that kills this window...
+    shell.addShellListener( new ShellAdapter() {
+      public void shellClosed( ShellEvent e ) {
+        cancel();
+      }
+    } );
+
+    getData();
+    input.setChanged( changed );
+
+    // Set the shell size, based upon previous time...
+    setSize();
+
+    shell.open();
+    while ( !shell.isDisposed() ) {
+      if ( !display.readAndDispatch() ) {
+        display.sleep();
+      }
     }
+    return stepname;
+  }
 
+  protected void setComboBoxes() {
+    shell.getDisplay().syncExec( new Runnable() {
+      public void run() {
+        if ( inputFields != null ) {
+          String[] fieldNames = inputFields.getFieldNames();
+          wParent.setItems( fieldNames );
+          wChild.setItems( fieldNames );
+        }
+      }
+    } );
+  }
 
   /**
    * Copy information from the meta-data input to the dialog fields.
    */
   public void getData() {
-    if (input.getParentIdFieldName() != null)
-      wParent.setText(input.getParentIdFieldName());
-    if (input.getChildIdFieldName() != null)
-      wChild.setText(input.getChildIdFieldName());
-    if (input.getDistanceFieldName() != null)
-      wDistance.setText(input.getDistanceFieldName());
-    wRootZero.setSelection(input.isRootIdZero());
+    if ( input.getParentIdFieldName() != null ) {
+      wParent.setText( input.getParentIdFieldName() );
+    }
+    if ( input.getChildIdFieldName() != null ) {
+      wChild.setText( input.getChildIdFieldName() );
+    }
+    if ( input.getDistanceFieldName() != null ) {
+      wDistance.setText( input.getDistanceFieldName() );
+    }
+    wRootZero.setSelection( input.isRootIdZero() );
 
     wStepname.selectAll();
     wStepname.setFocus();
   }
-	
-	private void cancel()
-	{
-		stepname=null;
-		input.setChanged(changed);
-		dispose();
-	}
-	
-    private void getInfo(ClosureGeneratorMeta meta)
-    {
-    	meta.setParentIdFieldName(wParent.getText());
-    	meta.setChildIdFieldName(wChild.getText());
-    	meta.setDistanceFieldName(wDistance.getText());
-    	meta.setRootIdZero(wRootZero.getSelection());
-    }
-    
-	private void ok()
-	{
-		if (Const.isEmpty(wStepname.getText())) return;
 
-		stepname = wStepname.getText(); // return value
-        getInfo(input);
-        
-		dispose();
-	}	
+  private void cancel() {
+    stepname = null;
+    input.setChanged( changed );
+    dispose();
+  }
+
+  private void getInfo( ClosureGeneratorMeta meta ) {
+    meta.setParentIdFieldName( wParent.getText() );
+    meta.setChildIdFieldName( wChild.getText() );
+    meta.setDistanceFieldName( wDistance.getText() );
+    meta.setRootIdZero( wRootZero.getSelection() );
+  }
+
+  private void ok() {
+    if ( Const.isEmpty( wStepname.getText() ) ) {
+      return;
+    }
+
+    stepname = wStepname.getText(); // return value
+    getInfo( input );
+
+    dispose();
+  }
 }

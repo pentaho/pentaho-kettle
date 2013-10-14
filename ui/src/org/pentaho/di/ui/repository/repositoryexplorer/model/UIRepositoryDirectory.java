@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
@@ -44,44 +44,44 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
   private UIRepositoryDirectories kidDirectoryCache = null;
   private UIRepositoryObjects kidElementCache = null;
   private boolean expanded = false;
-  
+
   public UIRepositoryDirectory() {
     super();
     kidDirectoryCache = null;
     kidElementCache = null;
   }
 
-  public UIRepositoryDirectory(RepositoryDirectoryInterface rd, UIRepositoryDirectory uiParent, Repository rep) {
-    super(rd, rep);
+  public UIRepositoryDirectory( RepositoryDirectoryInterface rd, UIRepositoryDirectory uiParent, Repository rep ) {
+    super( rd, rep );
     this.uiParent = uiParent;
     this.rd = rd;
     kidDirectoryCache = null;
-    kidElementCache = null;    
+    kidElementCache = null;
   }
-  
-  public UIRepositoryDirectories getChildren(){
+
+  public UIRepositoryDirectories getChildren() {
     // We've been here before.. use the cache
-    if (kidDirectoryCache != null){
+    if ( kidDirectoryCache != null ) {
       return kidDirectoryCache;
     }
-    if(kidDirectoryCache == null){
+    if ( kidDirectoryCache == null ) {
       kidDirectoryCache = new UIRepositoryDirectories();
     }
-    if (rd.getChildren()==null){
+    if ( rd.getChildren() == null ) {
       return kidDirectoryCache;
     }
 
-    for (RepositoryDirectoryInterface child : rd.getChildren()) {
+    for ( RepositoryDirectoryInterface child : rd.getChildren() ) {
       try {
-        kidDirectoryCache.add(UIObjectRegistry.getInstance().constructUIRepositoryDirectory(child, this, rep));
-      } catch (UIObjectCreationException e) {
-        kidDirectoryCache.add(new UIRepositoryDirectory(child, this, rep));
+        kidDirectoryCache.add( UIObjectRegistry.getInstance().constructUIRepositoryDirectory( child, this, rep ) );
+      } catch ( UIObjectCreationException e ) {
+        kidDirectoryCache.add( new UIRepositoryDirectory( child, this, rep ) );
       }
     }
     return kidDirectoryCache;
   }
-  
-  public void setChildren(UIRepositoryDirectories children){
+
+  public void setChildren( UIRepositoryDirectories children ) {
     kidDirectoryCache = children;
   }
 
@@ -89,23 +89,22 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
   // TODO: We will need a way to reset this cache when a directory or element changes
   public UIRepositoryObjects getRepositoryObjects() throws KettleException {
     // We've been here before.. use the cache
-    
-    if (kidElementCache != null){
+
+    if ( kidElementCache != null ) {
       return kidElementCache;
     }
-    
-    if(kidElementCache == null){
-      kidElementCache = new UIRepositoryObjects()
-      {
+
+    if ( kidElementCache == null ) {
+      kidElementCache = new UIRepositoryObjects() {
         private static final long serialVersionUID = 6901479331535375165L;
 
-        public void onRemove(UIRepositoryObject child) {
+        public void onRemove( UIRepositoryObject child ) {
           List<? extends RepositoryElementMetaInterface> dirRepoObjects = getDirectory().getRepositoryObjects();
-          if (dirRepoObjects != null) {
+          if ( dirRepoObjects != null ) {
             Iterator<? extends RepositoryElementMetaInterface> iter = dirRepoObjects.iterator();
-            while (iter.hasNext()) {
+            while ( iter.hasNext() ) {
               RepositoryElementMetaInterface e = iter.next();
-              if (child.getObjectId().equals(e.getObjectId())) {
+              if ( child.getObjectId().equals( e.getObjectId() ) ) {
                 iter.remove();
                 return;
               }
@@ -114,48 +113,48 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
         }
       };
     }
-    for (UIRepositoryObject child : getChildren()) {
-      kidElementCache.add(child);
+    for ( UIRepositoryObject child : getChildren() ) {
+      kidElementCache.add( child );
     }
-    
+
     List<? extends RepositoryElementMetaInterface> jobsAndTransformations = getDirectory().getRepositoryObjects();
-    
-    if (jobsAndTransformations == null || jobsAndTransformations.size() == 0) {
-      jobsAndTransformations = rep.getJobAndTransformationObjects(new StringObjectId(getId()), false);
+
+    if ( jobsAndTransformations == null || jobsAndTransformations.size() == 0 ) {
+      jobsAndTransformations = rep.getJobAndTransformationObjects( new StringObjectId( getId() ), false );
     }
-    for (RepositoryElementMetaInterface child : jobsAndTransformations) {
-      if (child.getObjectType().equals(RepositoryObjectType.TRANSFORMATION)) {
-       	try {
-          kidElementCache.add(UIObjectRegistry.getInstance().constructUITransformation(child, this, rep));
-        } catch (UIObjectCreationException e) {
-          kidElementCache.add(new UITransformation(child, this, rep));
-        }
-    	} else if (child.getObjectType().equals(RepositoryObjectType.JOB)){
+    for ( RepositoryElementMetaInterface child : jobsAndTransformations ) {
+      if ( child.getObjectType().equals( RepositoryObjectType.TRANSFORMATION ) ) {
         try {
-    	    kidElementCache.add(UIObjectRegistry.getInstance().constructUIJob(child, this, rep));
-    	  } catch (UIObjectCreationException e) {
-    	    kidElementCache.add(new UIJob(child, this, rep));
-    	  }      
-    	}
+          kidElementCache.add( UIObjectRegistry.getInstance().constructUITransformation( child, this, rep ) );
+        } catch ( UIObjectCreationException e ) {
+          kidElementCache.add( new UITransformation( child, this, rep ) );
+        }
+      } else if ( child.getObjectType().equals( RepositoryObjectType.JOB ) ) {
+        try {
+          kidElementCache.add( UIObjectRegistry.getInstance().constructUIJob( child, this, rep ) );
+        } catch ( UIObjectCreationException e ) {
+          kidElementCache.add( new UIJob( child, this, rep ) );
+        }
+      }
     }
     return kidElementCache;
   }
 
-  public String toString(){
+  public String toString() {
     return getName();
   }
 
-  public void setName(String name)throws Exception{
-    if (getDirectory().getName().equalsIgnoreCase(name)){
+  public void setName( String name ) throws Exception {
+    if ( getDirectory().getName().equalsIgnoreCase( name ) ) {
       return;
     }
 
-    rep.renameRepositoryDirectory(getDirectory().getObjectId(), null, name);
+    rep.renameRepositoryDirectory( getDirectory().getObjectId(), null, name );
     // Update the object reference so the new name is displayed
-    obj = rep.findDirectory(getObjectId());
+    obj = rep.findDirectory( getObjectId() );
     refresh();
   }
-  
+
   public String getDescription() {
     return null;
   }
@@ -190,83 +189,83 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
   public String getFormatModifiedDate() {
     return null;
   }
-  
-  public RepositoryDirectory getDirectory(){
-    return (RepositoryDirectory)rd;
+
+  public RepositoryDirectory getDirectory() {
+    return (RepositoryDirectory) rd;
   }
-  
 
   @Override
   public String getImage() {
     return "images/treeClosed.png";
   }
-  
-  public void delete()throws Exception{
-    rep.deleteRepositoryDirectory(getDirectory());
-    uiParent.getChildren().remove(this);
-    if(uiParent.getRepositoryObjects().contains(this))
-      uiParent.getRepositoryObjects().remove(this);
+
+  public void delete() throws Exception {
+    rep.deleteRepositoryDirectory( getDirectory() );
+    uiParent.getChildren().remove( this );
+    if ( uiParent.getRepositoryObjects().contains( this ) ) {
+      uiParent.getRepositoryObjects().remove( this );
+    }
     uiParent.refresh();
   }
-  
-  public UIRepositoryDirectory createFolder(String name) throws Exception{
-    RepositoryDirectoryInterface dir = getRepository().createRepositoryDirectory(getDirectory(), name);
+
+  public UIRepositoryDirectory createFolder( String name ) throws Exception {
+    RepositoryDirectoryInterface dir = getRepository().createRepositoryDirectory( getDirectory(), name );
     UIRepositoryDirectory newDir = null;
     try {
-      newDir = UIObjectRegistry.getInstance().constructUIRepositoryDirectory(dir, this, rep);
-    }  catch(UIObjectCreationException uoe) {
-      newDir = new UIRepositoryDirectory(dir, this, rep);
+      newDir = UIObjectRegistry.getInstance().constructUIRepositoryDirectory( dir, this, rep );
+    } catch ( UIObjectCreationException uoe ) {
+      newDir = new UIRepositoryDirectory( dir, this, rep );
     }
     UIRepositoryDirectories directories = getChildren();
-    if(!contains(directories, newDir)) {
-      directories.add(newDir);
+    if ( !contains( directories, newDir ) ) {
+      directories.add( newDir );
     }
     kidElementCache = null; // rebuild the element cache for correct positioning.
     return newDir;
   }
 
   public void fireCollectionChanged() {
-    
-    firePropertyChange("children", null, getChildren());
+
+    firePropertyChange( "children", null, getChildren() );
 
     getChildren(); // prime cache before firing event (already primed from above getChildren call but to be consistent)
     kidDirectoryCache.fireCollectionChanged();
     try {
       getRepositoryObjects(); // prime cache before firing event
       kidElementCache.fireCollectionChanged();
-    } catch (KettleException ignored) {
+    } catch ( KettleException ignored ) {
     }
   }
 
   @Override
-  public void move(UIRepositoryDirectory newParentDir) throws Exception {
-    if(newParentDir != null) {
-      rep.renameRepositoryDirectory(obj.getObjectId(), newParentDir.getDirectory(), null);
+  public void move( UIRepositoryDirectory newParentDir ) throws Exception {
+    if ( newParentDir != null ) {
+      rep.renameRepositoryDirectory( obj.getObjectId(), newParentDir.getDirectory(), null );
       // Try to make sure the directories are updated properly
-      if (!newParentDir.equals(getParent())) {
-        getParent().getChildren().remove(this);
-        newParentDir.getChildren().add(this);
+      if ( !newParentDir.equals( getParent() ) ) {
+        getParent().getChildren().remove( this );
+        newParentDir.getChildren().add( this );
         getParent().refresh();
         newParentDir.refresh();
       }
     }
   }
-  
+
   protected UIRepositoryDirectory getParentDirectory() {
     return uiParent;
   }
-  
+
   protected UIRepositoryDirectory getRootDirectory() {
     UIRepositoryDirectory parent = uiParent, result = this;
 
-    while(parent != null) {
+    while ( parent != null ) {
       result = parent;
       parent = parent.getParentDirectory();
     }
-    
+
     return result;
   }
-  
+
   /**
    * Synchronize this folder with the back-end
    * 
@@ -276,44 +275,44 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     try {
       kidElementCache = null;
       kidDirectoryCache = null;
-      if(this == getRootDirectory()) {
-        RepositoryDirectoryInterface localRoot = rep.findDirectory(rd.getObjectId());
+      if ( this == getRootDirectory() ) {
+        RepositoryDirectoryInterface localRoot = rep.findDirectory( rd.getObjectId() );
         rd = localRoot;
-        //Rebuild caches
+        // Rebuild caches
         fireCollectionChanged();
       } else {
         getRootDirectory().refresh();
       }
-    } catch (Exception e) {
+    } catch ( Exception e ) {
       // TODO: Better error handling
       e.printStackTrace();
     }
   }
-  
+
   @Override
   public int getCategory() {
     return 10;
   }
-  
+
   public boolean isExpanded() {
     return expanded;
   }
-  
-  public void setExpanded(boolean expand) {
+
+  public void setExpanded( boolean expand ) {
     this.expanded = expand;
   }
-  
+
   public void toggleExpanded() {
-    setExpanded(!isExpanded());
-    firePropertyChange("expanded", null, this.expanded); 
+    setExpanded( !isExpanded() );
+    firePropertyChange( "expanded", null, this.expanded );
   }
-  
+
   public UIRepositoryDirectory getParent() {
     return uiParent;
   }
-  
+
   public String getPath() {
-    return ((RepositoryDirectory) rd).getPath();
+    return ( (RepositoryDirectory) rd ).getPath();
   }
 
   public boolean isVisible() {
@@ -321,31 +320,32 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
   }
 
   // begin PDI-3326 hack
-  
+
   @Override
   public int size() {
     return getChildren().size();
   }
 
   @Override
-  public UIRepositoryObject get(int index) {
-    return getChildren().get(index);
+  public UIRepositoryObject get( int index ) {
+    return getChildren().get( index );
   }
-  
+
   @Override
   public Iterator<UIRepositoryObject> iterator() {
     return getChildren().iterator();
   }
-  
-  private boolean contains(UIRepositoryDirectories directories, UIRepositoryDirectory searchDir) {
-    for(int i=0; i < directories.size(); i++) {
-      UIRepositoryObject dir = directories.get(i);
-      if(dir instanceof UIRepositoryDirectory) {
-        return dir.getName() != null && dir.getName().equals(searchDir.getName());
+
+  private boolean contains( UIRepositoryDirectories directories, UIRepositoryDirectory searchDir ) {
+    for ( int i = 0; i < directories.size(); i++ ) {
+      UIRepositoryObject dir = directories.get( i );
+      if ( dir instanceof UIRepositoryDirectory ) {
+        return dir.getName() != null && dir.getName().equals( searchDir.getName() );
       }
     }
     return false;
   }
+
   // end PDI-3326 hack
 
   // Must implement equals/hashcode to compare object ids since the cache of directories may be refreshed
@@ -355,26 +355,31 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     final int prime = 31;
     int result = 1;
     ObjectId id = getObjectId();
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + ( ( id == null ) ? 0 : id.hashCode() );
     return result;
   }
 
   @Override
-  public boolean equals(Object obj) {
-    if (this == obj)
+  public boolean equals( Object obj ) {
+    if ( this == obj ) {
       return true;
-    if (obj == null)
+    }
+    if ( obj == null ) {
       return false;
-    if (getClass() != obj.getClass())
+    }
+    if ( getClass() != obj.getClass() ) {
       return false;
+    }
     UIRepositoryDirectory other = (UIRepositoryDirectory) obj;
     ObjectId id = getObjectId();
     ObjectId otherId = other.getObjectId();
-    if (id == null) {
-      if (otherId != null)
+    if ( id == null ) {
+      if ( otherId != null ) {
         return false;
-    } else if (!id.equals(otherId))
+      }
+    } else if ( !id.equals( otherId ) ) {
       return false;
+    }
     return true;
   }
 }
