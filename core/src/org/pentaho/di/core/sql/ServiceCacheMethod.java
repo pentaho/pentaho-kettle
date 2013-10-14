@@ -24,7 +24,7 @@ package org.pentaho.di.core.sql;
 
 public enum ServiceCacheMethod {
 
-  None( "No caching" ), LocalMemory( "Cache in local memory" ), ;
+  None( "No caching" ), LocalMemory( "Cache in local memory" );
 
   private String description;
 

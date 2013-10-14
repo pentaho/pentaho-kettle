@@ -194,8 +194,7 @@ public class GuptaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
         } else {
           if ( ( length < 0 && precision < 0 ) || precision > 0 || length > 9 ) {
             retval += "DOUBLE PRECISION";
-          } else // Precision == 0 && length<=9
-          {
+          } else { // Precision == 0 && length<=9
             retval += "INTEGER";
           }
         }

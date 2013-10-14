@@ -191,8 +191,8 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface {
    */
   @Override
   public String getPath() {
-    if ( getParent() == null ) // Root!
-    {
+    // Root!
+    if ( getParent() == null ) {
       return DIRECTORY_SEPARATOR;
     } else {
       if ( getParent().getParent() == null ) {
@@ -305,13 +305,11 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface {
     // The root directory?
     if ( isRoot() && directoryPath.length == 1 && directoryPath[0].equalsIgnoreCase( DIRECTORY_SEPARATOR ) ) {
       return this;
-    } else
-    // This directory?
-    if ( directoryPath.length == 1 && directoryPath[0].equalsIgnoreCase( getName() ) ) {
+    } else if ( directoryPath.length == 1 && directoryPath[0].equalsIgnoreCase( getName() ) ) {
+      // This directory?
       return this;
-    } else
-    // A direct subdirectory?
-    if ( directoryPath.length >= 1 ) {
+    } else if ( directoryPath.length >= 1 ) {
+      // A direct subdirectory?
       RepositoryDirectory follow = this;
       for ( int i = 0; i < directoryPath.length; i++ ) {
         RepositoryDirectory directory = follow.findChild( directoryPath[i] );

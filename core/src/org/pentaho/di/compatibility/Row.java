@@ -79,8 +79,8 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
    * @param r
    *          The row to be copied.
    */
-  public Row( Row r ) // Copy values in row!
-  {
+  // Copy values in row!
+  public Row( Row r ) {
     this();
 
     for ( int i = 0; i < r.size(); i++ ) {
@@ -709,8 +709,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
    * 
    * @return an exact copy of this row
    */
-  public synchronized Row Clone() // Clone the row!
-  {
+  public synchronized Row Clone() {
     return new Row( this );
   }
 

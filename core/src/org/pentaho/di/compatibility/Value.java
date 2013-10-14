@@ -761,8 +761,7 @@ public class Value implements Cloneable, XMLInterface, Serializable {
   public void setType( int val_type ) {
     if ( value == null ) {
       newValue( val_type );
-    } else // Convert the value to the appropriate type...
-    {
+    } else { // Convert the value to the appropriate type...
       convertTo( val_type );
     }
   }
@@ -1032,8 +1031,7 @@ public class Value implements Cloneable, XMLInterface, Serializable {
         }
 
         int length = value.getLength();
-        if ( length > 16384 )
-         {
+        if ( length > 16384 ) {
           length = 16384; // otherwise we get OUT OF MEMORY errors for CLOBS.
         }
         Const.rightPad( ret, length );
@@ -1084,27 +1082,25 @@ public class Value implements Cloneable, XMLInterface, Serializable {
           int i;
           DecimalFormat form;
 
-          if ( value.getNumber() >= 0 )
-           {
+          if ( value.getNumber() >= 0 ) {
             fmt.append( ' ' ); // to compensate for minus sign.
           }
 
-          if ( value.getPrecision() < 0 ) // Default: two decimals
-          {
+          if ( value.getPrecision() < 0 ) { // Default: two decimals
+
             for ( i = 0; i < value.getLength(); i++ ) {
               fmt.append( '0' );
             }
             fmt.append( ".00" ); // for the .00
-          } else // Floating point format 00001234,56 --> (12,2)
-          {
-            for ( i = 0; i <= value.getLength(); i++ )
-             {
+          } else { // Floating point format 00001234,56 --> (12,2)
+
+            for ( i = 0; i <= value.getLength(); i++ ) {
               fmt.append( '0' ); // all zeroes.
             }
             int pos = value.getLength() - value.getPrecision() + 1 - ( value.getNumber() < 0 ? 1 : 0 );
             if ( pos >= 0 && pos < fmt.length() ) {
-              fmt.setCharAt( value.getLength() - value.getPrecision() + 1 - ( value.getNumber() < 0 ? 1 : 0 ), '.' ); // one
-                                                                                                                      // 'comma'
+              // one 'comma'
+              fmt.setCharAt( value.getLength() - value.getPrecision() + 1 - ( value.getNumber() < 0 ? 1 : 0 ), '.' );
             }
           }
           form = new DecimalFormat( fmt.toString() );
@@ -1203,14 +1199,12 @@ public class Value implements Cloneable, XMLInterface, Serializable {
           int i;
           DecimalFormat form;
 
-          if ( value.getInteger() >= 0 )
-           {
+          if ( value.getInteger() >= 0 ) {
             fmt.append( ' ' ); // to compensate for minus sign.
           }
 
           int len = getLength();
-          for ( i = 0; i < len; i++ )
-           {
+          for ( i = 0; i < len; i++ ) {
             fmt.append( '0' ); // all zeroes.
           }
 
@@ -1822,12 +1816,10 @@ public class Value implements Cloneable, XMLInterface, Serializable {
       }
 
       case VALUE_TYPE_BOOLEAN: {
-        if ( getBoolean() && v.getBoolean() || !getBoolean() && !v.getBoolean() )
-         {
+        if ( getBoolean() && v.getBoolean() || !getBoolean() && !v.getBoolean() ) {
           return 0; // true == true, false == false
         }
-        if ( getBoolean() && !v.getBoolean() )
-         {
+        if ( getBoolean() && !v.getBoolean() ) {
           return 1; // true > false
         }
         return -1; // false < true
@@ -2316,17 +2308,14 @@ public class Value implements Cloneable, XMLInterface, Serializable {
       }
 
       setValue( s );
-    } else
-    // big numbers
-    if ( isBigNumber() || v.isBigNumber() ) {
+    } else if ( isBigNumber() || v.isBigNumber() ) {
+      // big numbers
       setValue( ValueDataUtil.multiplyBigDecimals( getBigNumber(), v.getBigNumber(), null ) );
-    } else
-    // numbers
-    if ( isNumber() || v.isNumber() ) {
+    } else if ( isNumber() || v.isNumber() ) {
+      // numbers
       setValue( getNumber() * v.getNumber() );
-    } else
-    // integers
-    if ( isInteger() || v.isInteger() ) {
+    } else if ( isInteger() || v.isInteger() ) {
+      // integers
       setValue( getInteger() * v.getInteger() );
     } else {
       throw new KettleValueException( "Multiplication can only be done with numbers or a number and a string!" );
@@ -3429,8 +3418,7 @@ public class Value implements Cloneable, XMLInterface, Serializable {
 
   // implement the TRUNC function, version without arguments
   public Value trunc() throws KettleValueException {
-    if ( isNull() )
-     {
+    if ( isNull() ) {
       return this; // don't do anything, leave it at NULL!
     }
 
@@ -3464,8 +3452,7 @@ public class Value implements Cloneable, XMLInterface, Serializable {
 
   @SuppressWarnings( "fallthrough" )
   public Value trunc( int level ) throws KettleValueException {
-    if ( isNull() )
-     {
+    if ( isNull() ) {
       return this; // don't do anything, leave it at NULL!
     }
 

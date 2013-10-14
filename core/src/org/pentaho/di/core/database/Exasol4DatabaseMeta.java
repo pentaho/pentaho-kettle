@@ -24,7 +24,6 @@ package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -355,7 +354,7 @@ public class Exasol4DatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
    * @param tableName
    * @param idxFields
    * @return true if the index exists, false if it doesn't.
-   * @throws KettleException
+   * @throws KettleDatabaseException
    */
   @Override
   public boolean checkIndexExists( Database database, String schemaName, String tableName, String[] idx_fields )

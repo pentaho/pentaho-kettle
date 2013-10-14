@@ -186,8 +186,7 @@ public class IngresDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
             retval += "BIGINT PRIMARY KEY NOT NULL";
           }
         } else {
-          if ( precision == 0 ) // integer numbers
-          {
+          if ( precision == 0 ) { // integer numbers
             if ( length > 9 ) {
               retval += "BIGINT";
             } else {

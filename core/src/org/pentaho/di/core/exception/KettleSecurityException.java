@@ -31,8 +31,8 @@ package org.pentaho.di.core.exception;
  */
 public class KettleSecurityException extends KettleException {
   /**
-	 * 
-	 */
+   * 
+   */
   private static final long serialVersionUID = 6697156126695280683L;
 
   /**

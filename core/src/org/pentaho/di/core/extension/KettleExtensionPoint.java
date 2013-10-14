@@ -58,7 +58,7 @@ public enum KettleExtensionPoint {
       "StepAfterInitialize", "After a step is initialized" ),
 
   StepBeforeStart( "StepBeforeStart", "Right before a step is about to be started" ), StepFinished( "StepFinished",
-      "After a step has finished" ), ;
+      "After a step has finished" );
 
   public String id;
 

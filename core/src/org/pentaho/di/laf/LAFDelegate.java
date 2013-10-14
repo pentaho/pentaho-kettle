@@ -35,14 +35,15 @@ import java.util.Iterator;
 public class LAFDelegate<E extends Handler> {
 
   E handler;
-  Class<E> handlerClass, defaultHandlerClass = null;
+  Class<E> handlerClass = null;
+  Class<E> defaultHandlerClass = null;
 
   // Set of Listeners for a concrete handler - intended use... getListeners for a given class
   private HashSet<LAFChangeListener<E>> registry = new HashSet<LAFChangeListener<E>>();
 
   /**
-	 * 
-	 */
+   * 
+   */
   public LAFDelegate( Class<E> handler, Class<E> defaultHandler ) {
     handlerClass = handler;
     this.defaultHandlerClass = defaultHandler;

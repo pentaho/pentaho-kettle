@@ -188,8 +188,8 @@ public class CacheDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
               retval += ", " + precision;
             }
             retval += ")";
-          } else // Precision == 0 && length<=9
-          {
+          } else {
+            // Precision == 0 && length<=9
             retval += "INT";
           }
         }

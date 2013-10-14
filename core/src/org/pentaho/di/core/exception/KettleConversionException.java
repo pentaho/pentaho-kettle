@@ -33,8 +33,8 @@ public class KettleConversionException extends KettleException {
   private Object[] rowData;
 
   /**
-	 * 
-	 */
+   * 
+   */
   private static final long serialVersionUID = 1697154653111622296L;
 
   /**
