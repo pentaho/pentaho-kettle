@@ -331,9 +331,8 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
             } else {
               retval.append( "BIGINT" );
             }
-          }
-          // Floating point values...
-          else {
+          } else {
+            // Floating point values...
             if ( length > 15 ) {
               retval.append( "DECIMAL(" ).append( length );
               if ( precision > 0 ) {

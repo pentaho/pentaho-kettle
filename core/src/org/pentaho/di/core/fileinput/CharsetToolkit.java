@@ -233,9 +233,8 @@ public class CharsetToolkit {
           } else {
             i++;
           }
-        }
-        // a three-bytes sequence was encoutered
-        else if ( isThreeBytesSequence( b0 ) ) {
+        } else if ( isThreeBytesSequence( b0 ) ) {
+          // a three-bytes sequence was encoutered
           // there must be two continuation bytes of the form 10xxxxxx,
           // otherwise the following characteris is not a valid UTF-8 construct
           if ( !( isContinuationChar( b1 ) && isContinuationChar( b2 ) ) ) {
@@ -243,9 +242,8 @@ public class CharsetToolkit {
           } else {
             i += 2;
           }
-        }
-        // a four-bytes sequence was encoutered
-        else if ( isFourBytesSequence( b0 ) ) {
+        } else if ( isFourBytesSequence( b0 ) ) {
+          // a four-bytes sequence was encoutered
           // there must be three continuation bytes of the form 10xxxxxx,
           // otherwise the following characteris is not a valid UTF-8 construct
           if ( !( isContinuationChar( b1 ) && isContinuationChar( b2 ) && isContinuationChar( b3 ) ) ) {
@@ -253,9 +251,8 @@ public class CharsetToolkit {
           } else {
             i += 3;
           }
-        }
-        // a five-bytes sequence was encoutered
-        else if ( isFiveBytesSequence( b0 ) ) {
+        } else if ( isFiveBytesSequence( b0 ) ) {
+          // a five-bytes sequence was encoutered
           // there must be four continuation bytes of the form 10xxxxxx,
           // otherwise the following characteris is not a valid UTF-8 construct
           if ( !( isContinuationChar( b1 ) && isContinuationChar( b2 ) && isContinuationChar( b3 ) && isContinuationChar( b4 ) ) ) {
@@ -263,9 +260,8 @@ public class CharsetToolkit {
           } else {
             i += 4;
           }
-        }
-        // a six-bytes sequence was encoutered
-        else if ( isSixBytesSequence( b0 ) ) {
+        } else if ( isSixBytesSequence( b0 ) ) {
+          // a six-bytes sequence was encoutered
           // there must be five continuation bytes of the form 10xxxxxx,
           // otherwise the following characteris is not a valid UTF-8 construct
           if ( !( isContinuationChar( b1 ) && isContinuationChar( b2 ) && isContinuationChar( b3 )

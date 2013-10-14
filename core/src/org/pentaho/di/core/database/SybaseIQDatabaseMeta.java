@@ -183,8 +183,8 @@ public class SybaseIQDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
             } else {
               retval += "DOUBLE PRECISION NULL";
             }
-          } else // Precision == 0 && length<=9
-          {
+          } else {
+            // Precision == 0 && length<=9
             if ( length < 3 ) {
               retval += "TINYINT NULL";
             } else if ( length < 5 ) {

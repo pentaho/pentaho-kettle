@@ -872,7 +872,7 @@ public class ValueMetaBase implements ValueMetaInterface {
         decimalFormat.applyPattern( conversionMask );
       } else {
         switch ( type ) {
-          case TYPE_INTEGER: {
+          case TYPE_INTEGER:
             if ( length < 1 ) {
               decimalFormat.applyPattern( " ###############0;-###############0" ); // Same
                                                                                    // as
@@ -898,10 +898,9 @@ public class ValueMetaBase implements ValueMetaInterface {
               }
               decimalFormat.applyPattern( integerPattern.toString() );
             }
-          }
             break;
           case TYPE_BIGNUMBER:
-          case TYPE_NUMBER: {
+          case TYPE_NUMBER:
             if ( length < 1 ) {
               decimalFormat.applyPattern( " ##########0.0########;-#########0.0########" );
             } else {
@@ -910,14 +909,14 @@ public class ValueMetaBase implements ValueMetaInterface {
               // First do the format for positive numbers...
               //
               numberPattern.append( ' ' ); // to compensate for minus sign.
-              if ( precision < 0 ) // Default: two decimals
-              {
+              if ( precision < 0 ) {
+                // Default: two decimals
                 for ( int i = 0; i < length; i++ ) {
                   numberPattern.append( '0' );
                 }
                 numberPattern.append( ".00" ); // for the .00
-              } else // Floating point format 00001234,56 --> (12,2)
-              {
+              } else {
+                // Floating point format 00001234,56 --> (12,2)
                 for ( int i = 0; i <= length; i++ ) {
                   numberPattern.append( '0' ); // all zeroes.
                 }
@@ -940,7 +939,6 @@ public class ValueMetaBase implements ValueMetaInterface {
               //
               decimalFormat.applyPattern( numberPattern.toString() );
             }
-          }
             break;
           default:
             break;
@@ -1562,8 +1560,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   @Override
   public Double getNumber( Object object ) throws KettleValueException {
     try {
-      if ( object == null ) // NULL
-      {
+      if ( object == null ) {
         return null;
       }
       switch ( type ) {
@@ -1649,8 +1646,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   @Override
   public Long getInteger( Object object ) throws KettleValueException {
     try {
-      if ( object == null ) // NULL
-      {
+      if ( object == null ) {
         return null;
       }
       switch ( type ) {
@@ -1737,8 +1733,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   @Override
   public BigDecimal getBigNumber( Object object ) throws KettleValueException {
-    if ( object == null ) // NULL
-    {
+    if ( object == null ) {
       return null;
     }
     switch ( type ) {
@@ -1819,8 +1814,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   @Override
   public Boolean getBoolean( Object object ) throws KettleValueException {
-    if ( object == null ) // NULL
-    {
+    if ( object == null ) {
       return null;
     }
     switch ( type ) {
@@ -1892,8 +1886,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   @Override
   public Date getDate( Object object ) throws KettleValueException {
-    if ( object == null ) // NULL
-    {
+    if ( object == null ) {
       return null;
     }
     switch ( type ) {
@@ -1966,8 +1959,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   @Override
   public byte[] getBinary( Object object ) throws KettleValueException {
-    if ( object == null ) // NULL
-    {
+    if ( object == null ) {
       return null;
     }
     switch ( type ) {
@@ -2023,8 +2015,7 @@ public class ValueMetaBase implements ValueMetaInterface {
     }
 
     try {
-      if ( object == null ) // NULL
-      {
+      if ( object == null ) {
         return null;
       }
 
@@ -2318,8 +2309,8 @@ public class ValueMetaBase implements ValueMetaInterface {
       // Is the value NULL?
       outputStream.writeBoolean( object == null );
 
-      if ( object != null ) // otherwise there is no point
-      {
+      if ( object != null ) {
+        // otherwise there is no point
         switch ( storageType ) {
           case STORAGE_TYPE_NORMAL:
             // Handle Content -- only when not NULL
@@ -2565,7 +2556,7 @@ public class ValueMetaBase implements ValueMetaInterface {
       outputStream.writeInt( storageType );
 
       switch ( storageType ) {
-        case STORAGE_TYPE_INDEXED: {
+        case STORAGE_TYPE_INDEXED:
           // Save the indexed strings...
           if ( index == null ) {
             outputStream.writeInt( -1 ); // null
@@ -2606,10 +2597,9 @@ public class ValueMetaBase implements ValueMetaInterface {
               }
             }
           }
-        }
           break;
 
-        case STORAGE_TYPE_BINARY_STRING: {
+        case STORAGE_TYPE_BINARY_STRING:
           // Save the storage meta data...
           //
           outputStream.writeBoolean( storageMetadata != null );
@@ -2617,7 +2607,6 @@ public class ValueMetaBase implements ValueMetaInterface {
           if ( storageMetadata != null ) {
             storageMetadata.writeMeta( outputStream );
           }
-        }
           break;
 
         default:
@@ -2714,7 +2703,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
       // Read the data in the index
       switch ( storageType ) {
-        case STORAGE_TYPE_INDEXED: {
+        case STORAGE_TYPE_INDEXED:
           int indexSize = inputStream.readInt();
           if ( indexSize < 0 ) {
             index = null;
@@ -2749,16 +2738,14 @@ public class ValueMetaBase implements ValueMetaInterface {
               }
             }
           }
-        }
           break;
 
-        case STORAGE_TYPE_BINARY_STRING: {
+        case STORAGE_TYPE_BINARY_STRING:
           // In case we do have storage metadata defined, we read that back in as
           // well..
           if ( inputStream.readBoolean() ) {
             storageMetadata = new ValueMetaBase( inputStream );
           }
-        }
           break;
 
         default:
@@ -2837,7 +2824,7 @@ public class ValueMetaBase implements ValueMetaInterface {
     xml.append( XMLHandler.addTagValue( "storagetype", getStorageTypeCode( getStorageType() ) ) );
 
     switch ( storageType ) {
-      case STORAGE_TYPE_INDEXED: {
+      case STORAGE_TYPE_INDEXED:
         xml.append( XMLHandler.openTag( "index" ) );
 
         // Save the indexed strings...
@@ -2879,10 +2866,9 @@ public class ValueMetaBase implements ValueMetaInterface {
           }
         }
         xml.append( XMLHandler.closeTag( "index" ) );
-      }
         break;
 
-      case STORAGE_TYPE_BINARY_STRING: {
+      case STORAGE_TYPE_BINARY_STRING:
         // Save the storage meta data...
         //
         if ( storageMetadata != null ) {
@@ -2890,7 +2876,6 @@ public class ValueMetaBase implements ValueMetaInterface {
           xml.append( storageMetadata.getMetaXML() );
           xml.append( XMLHandler.closeTag( "storage-meta" ) );
         }
-      }
         break;
 
       default:
@@ -2928,7 +2913,7 @@ public class ValueMetaBase implements ValueMetaInterface {
     storageType = getStorageType( XMLHandler.getTagValue( node, "storagetype" ) );
 
     switch ( storageType ) {
-      case STORAGE_TYPE_INDEXED: {
+      case STORAGE_TYPE_INDEXED:
         Node indexNode = XMLHandler.getSubNode( node, "index" );
         int nrIndexes = XMLHandler.countNodes( indexNode, "value" );
         index = new Object[nrIndexes];
@@ -2967,10 +2952,9 @@ public class ValueMetaBase implements ValueMetaInterface {
             }
           }
         }
-      }
         break;
 
-      case STORAGE_TYPE_BINARY_STRING: {
+      case STORAGE_TYPE_BINARY_STRING:
         // Load the storage meta data...
         //
         Node storageMetaNode = XMLHandler.getSubNode( node, "storage-meta" );
@@ -2978,7 +2962,6 @@ public class ValueMetaBase implements ValueMetaInterface {
         if ( storageValueMetaNode != null ) {
           storageMetadata = new ValueMetaBase( storageValueMetaNode );
         }
-      }
         break;
 
       default:
@@ -3018,8 +3001,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
     String string;
 
-    if ( object != null ) // otherwise there is no point
-    {
+    if ( object != null ) {
       try {
         switch ( storageType ) {
           case STORAGE_TYPE_NORMAL:
@@ -3338,7 +3320,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
     int cmp = 0;
     switch ( getType() ) {
-      case TYPE_STRING: {
+      case TYPE_STRING:
         // if (isStorageBinaryString() && identicalFormat &&
         // storageMetadata.isSingleByteEncoding()) return
         // compareBinaryStrings((byte[])data1, (byte[])data2); TODO
@@ -3350,46 +3332,41 @@ public class ValueMetaBase implements ValueMetaInterface {
         } else {
           cmp = one.compareTo( two );
         }
-      }
         break;
 
-      case TYPE_INTEGER: {
+      case TYPE_INTEGER:
         // if (isStorageBinaryString() && identicalFormat) return
         // compareBinaryStrings((byte[])data1, (byte[])data2); TODO
-        long compare = getInteger( data1 ).longValue() - getInteger( data2 ).longValue();
-        if ( compare < 0 ) {
+        long icompare = getInteger( data1 ).longValue() - getInteger( data2 ).longValue();
+        if ( icompare < 0 ) {
           cmp = -1;
-        } else if ( compare > 0 ) {
+        } else if ( icompare > 0 ) {
           cmp = 1;
         } else {
           cmp = 0;
         }
-      }
         break;
 
-      case TYPE_NUMBER: {
+      case TYPE_NUMBER:
         cmp = Double.compare( getNumber( data1 ).doubleValue(), getNumber( data2 ).doubleValue() );
-      }
         break;
 
-      case TYPE_DATE: {
-        long compare = getDate( data1 ).getTime() - getDate( data2 ).getTime();
-        if ( compare < 0 ) {
+      case TYPE_DATE:
+        long lcompare = getDate( data1 ).getTime() - getDate( data2 ).getTime();
+        if ( lcompare < 0 ) {
           cmp = -1;
-        } else if ( compare > 0 ) {
+        } else if ( lcompare > 0 ) {
           cmp = 1;
         } else {
           cmp = 0;
         }
-      }
         break;
 
-      case TYPE_BIGNUMBER: {
+      case TYPE_BIGNUMBER:
         cmp = getBigNumber( data1 ).compareTo( getBigNumber( data2 ) );
-      }
         break;
 
-      case TYPE_BOOLEAN: {
+      case TYPE_BOOLEAN:
         if ( getBoolean( data1 ).booleanValue() == getBoolean( data2 ).booleanValue() ) {
           cmp = 0; // true == true, false == false
         } else if ( getBoolean( data1 ).booleanValue() && !getBoolean( data2 ).booleanValue() ) {
@@ -3397,10 +3374,9 @@ public class ValueMetaBase implements ValueMetaInterface {
         } else {
           cmp = -1; // false < true
         }
-      }
         break;
 
-      case TYPE_BINARY: {
+      case TYPE_BINARY:
         byte[] b1 = (byte[]) data1;
         byte[] b2 = (byte[]) data2;
 
@@ -3415,7 +3391,7 @@ public class ValueMetaBase implements ValueMetaInterface {
         }
 
         cmp = b1.length - b2.length;
-      }
+
         break;
       default:
         throw new KettleValueException( toString() + " : Comparing values can not be done with data type : "
@@ -3702,25 +3678,26 @@ public class ValueMetaBase implements ValueMetaInterface {
     }
 
     // Trimming
+    StringBuffer strpol;
     switch ( trim_type ) {
-      case ValueMetaInterface.TRIM_TYPE_LEFT: {
-        StringBuffer strpol = new StringBuffer( pol );
+      case ValueMetaInterface.TRIM_TYPE_LEFT:
+        strpol = new StringBuffer( pol );
         while ( strpol.length() > 0 && strpol.charAt( 0 ) == ' ' ) {
           strpol.deleteCharAt( 0 );
         }
         pol = strpol.toString();
-      }
+
         break;
-      case ValueMetaInterface.TRIM_TYPE_RIGHT: {
-        StringBuffer strpol = new StringBuffer( pol );
+      case ValueMetaInterface.TRIM_TYPE_RIGHT:
+        strpol = new StringBuffer( pol );
         while ( strpol.length() > 0 && strpol.charAt( strpol.length() - 1 ) == ' ' ) {
           strpol.deleteCharAt( strpol.length() - 1 );
         }
         pol = strpol.toString();
-      }
+
         break;
       case ValueMetaInterface.TRIM_TYPE_BOTH:
-        StringBuffer strpol = new StringBuffer( pol );
+        strpol = new StringBuffer( pol );
         while ( strpol.length() > 0 && strpol.charAt( 0 ) == ' ' ) {
           strpol.deleteCharAt( 0 );
         }
@@ -4436,10 +4413,10 @@ public class ValueMetaBase implements ValueMetaInterface {
             if ( precision == 0 && length == 38 ) {
               valtype = ValueMetaInterface.TYPE_INTEGER;
             }
-            if ( precision <= 0 && length <= 0 ) // undefined size: BIGNUMBER,
-                                                 // precision on Oracle can be 38, too
-                                                 // big for a Number type
-            {
+            if ( precision <= 0 && length <= 0 ) {
+              // undefined size: BIGNUMBER,
+              // precision on Oracle can be 38, too
+              // big for a Number type
               valtype = ValueMetaInterface.TYPE_BIGNUMBER;
               length = -1;
               precision = -1;

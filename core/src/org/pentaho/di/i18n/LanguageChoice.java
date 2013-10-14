@@ -43,8 +43,8 @@ public class LanguageChoice {
   private LanguageChoice() {
     try {
       loadSettings();
-    } catch ( IOException e ) // Can't load settings: set the default
-    {
+    } catch ( IOException e ) {
+      // Can't load settings: set the default
       defaultLocale = Const.DEFAULT_LOCALE;
       failoverLocale = Locale.US;
 

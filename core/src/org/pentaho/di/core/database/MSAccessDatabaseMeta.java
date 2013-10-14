@@ -247,8 +247,7 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
       case ValueMetaInterface.TYPE_BIGNUMBER:
         if ( fieldname.equalsIgnoreCase( tk ) || // Technical key
             fieldname.equalsIgnoreCase( pk ) // Primary key
-        ) //
-        {
+        ) {
           if ( use_autoinc ) {
             retval += "COUNTER PRIMARY KEY";
           } else {

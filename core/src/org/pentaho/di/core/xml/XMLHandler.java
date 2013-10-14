@@ -193,8 +193,8 @@ public class XMLHandler {
     children = n.getChildNodes();
     for ( int i = 0; i < children.getLength(); i++ ) {
       childnode = children.item( i );
-      if ( childnode.getNodeName().equalsIgnoreCase( tag ) ) // <file>
-      {
+      if ( childnode.getNodeName().equalsIgnoreCase( tag ) ) {
+        // <file>
         tags = childnode.getChildNodes();
         for ( int j = 0; j < tags.getLength(); j++ ) {
           tagnode = tags.item( j );
@@ -231,8 +231,8 @@ public class XMLHandler {
     children = n.getChildNodes();
     for ( int i = 0; i < children.getLength(); i++ ) {
       childnode = children.item( i );
-      if ( childnode.getNodeName().equalsIgnoreCase( tag ) ) // <file>
-      {
+      if ( childnode.getNodeName().equalsIgnoreCase( tag ) ) {
+        // <file>
         count++;
       }
     }
@@ -261,8 +261,8 @@ public class XMLHandler {
     children = n.getChildNodes();
     for ( int i = 0; i < children.getLength(); i++ ) {
       childnode = children.item( i );
-      if ( childnode.getNodeName().equalsIgnoreCase( tag ) ) // <file>
-      {
+      if ( childnode.getNodeName().equalsIgnoreCase( tag ) ) {
+        // <file>
         nodes.add( childnode );
       }
     }
@@ -294,8 +294,8 @@ public class XMLHandler {
     children = n.getChildNodes();
     for ( int i = 0; i < children.getLength(); i++ ) {
       childnode = children.item( i );
-      if ( childnode.getNodeName().equalsIgnoreCase( tag ) ) // <hop>
-      {
+      if ( childnode.getNodeName().equalsIgnoreCase( tag ) ) {
+        // <hop>
         tagnode = getSubNode( childnode, subtag );
         value = getNodeValue( tagnode );
         if ( value.equalsIgnoreCase( subtagvalue ) ) {
@@ -331,8 +331,8 @@ public class XMLHandler {
     children = n.getChildNodes();
     for ( int i = 0; i < children.getLength(); i++ ) {
       childnode = children.item( i );
-      if ( childnode.getNodeName().equalsIgnoreCase( tag ) ) // <hop>
-      {
+      if ( childnode.getNodeName().equalsIgnoreCase( tag ) ) {
+        // <hop>
         Node attribute = childnode.getAttributes().getNamedItem( attributeName );
 
         if ( attribute != null && attributeValue.equals( attribute.getTextContent() ) ) {
@@ -482,12 +482,11 @@ public class XMLHandler {
 
     // Find the child-nodes of this Node n:
     NodeList children = n.getChildNodes();
-    for ( int i = 0; i < children.getLength(); i++ ) // Try all children
-    {
+    for ( int i = 0; i < children.getLength(); i++ ) {
+      // Try all children
       Node childnode = children.item( i );
       String retval = childnode.getNodeValue();
-      if ( retval != null ) // We found the right value
-      {
+      if ( retval != null ) { // We found the right value
         return retval;
       }
     }

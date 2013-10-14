@@ -1503,8 +1503,8 @@ public class ValueDataUtil {
       } else if ( charNr == 2 ) {
         nextChar += ( nibble << 4 );
         charNr--;
-      } else // charNr == 1
-      {
+      } else {
+        // charNr == 1
         nextChar += nibble;
         chArray[j] = (char) nextChar;
         charNr = 4;
@@ -1596,8 +1596,8 @@ public class ValueDataUtil {
 
     while ( i >= 0 ) {
       String look = str.substring( i, i + clength );
-      if ( look.equalsIgnoreCase( code ) ) // Look for a match!
-      {
+      if ( look.equalsIgnoreCase( code ) ) {
+        // Look for a match!
         str.replace( i, i + clength, repl );
       }
       i--;

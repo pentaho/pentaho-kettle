@@ -1013,8 +1013,8 @@ public class Value implements Cloneable, XMLInterface, Serializable {
       return null;
     }
 
-    if ( value.getLength() <= 0 ) // No length specified!
-    {
+    if ( value.getLength() <= 0 ) {
+      // No length specified!
       if ( isNull() || value.getString() == null ) {
         retval = Const.NULL_STRING;
       } else {
@@ -2532,8 +2532,8 @@ public class Value implements Cloneable, XMLInterface, Serializable {
     if ( isNull() ) {
       setType( VALUE_TYPE_STRING );
     } else {
-      if ( getType() != VALUE_TYPE_STRING ) // also lpad other types!
-      {
+      if ( getType() != VALUE_TYPE_STRING ) {
+        // also lpad other types!
         setValue( getString() );
       }
 
@@ -2739,8 +2739,8 @@ public class Value implements Cloneable, XMLInterface, Serializable {
     if ( isNull() ) {
       setType( VALUE_TYPE_STRING );
     } else {
-      if ( getType() != VALUE_TYPE_STRING ) // also rpad other types!
-      {
+      if ( getType() != VALUE_TYPE_STRING ) {
+        // also rpad other types!
         setValue( getString() );
       }
       if ( getString() != null ) {
@@ -3680,8 +3680,8 @@ public class Value implements Cloneable, XMLInterface, Serializable {
       } else if ( charNr == 2 ) {
         nextChar += ( nibble << 4 );
         charNr--;
-      } else // charNr == 1
-      {
+      } else {
+        // charNr == 1
         nextChar += nibble;
         chArray[j] = (char) nextChar;
         charNr = 4;

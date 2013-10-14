@@ -59,18 +59,18 @@ public class MetricsRegistry {
     String channelId = logChannel.getLogChannelId();
     switch ( metric.getType() ) {
       case START:
-      case STOP: {
+      case STOP:
         Deque<MetricsSnapshotInterface> list = getSnapshotList( channelId );
         list.add( snapshot );
-      }
+
         break;
       case MIN:
       case MAX:
       case SUM:
-      case COUNT: {
+      case COUNT:
         Map<String, MetricsSnapshotInterface> map = getSnapshotMap( channelId );
         map.put( snapshot.getKey(), snapshot );
-      }
+
         break;
       default:
         break;

@@ -130,9 +130,8 @@ public class SqlCommentScrubber {
               // multi-line comment, then we have started a multi-line comment.
               if ( ( ch == '*' ) && ( !blkComment ) && ( !inString ) ) {
                 blkComment = true;
-              }
-              // Otherwise if we aren't already in a block comment, pass the chars through
-              else {
+              } else {
+                // Otherwise if we aren't already in a block comment, pass the chars through
                 if ( !blkComment ) {
                   queryWithoutComments.append( '/' );
                   queryWithoutComments.append( (char) ch );
