@@ -322,7 +322,7 @@ public class GetVariableDialog extends BaseStepDialog implements StepDialogInter
       // BaseMessages.getString(PKG, "GetVariableDialog.NumberRows.DialogTitle"), BaseMessages.getString(PKG,
       // "GetVariableDialog.NumberRows.DialogMessage"));
 
-      int previewSize = 1;// numberDialog.open();
+      int previewSize = 1; // numberDialog.open();
       if ( previewSize > 0 ) {
         TransPreviewProgressDialog progressDialog =
             new TransPreviewProgressDialog( shell, previewMeta, new String[] { wStepname.getText() },

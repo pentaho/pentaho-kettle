@@ -1071,7 +1071,7 @@ public class BaseStepDialog extends Dialog {
       //
       MessageDialog md =
           new MessageDialog( tableView.getShell(),
-              BaseMessages.getString( PKG, "BaseStepDialog.GetFieldsChoice.Title" ),// "Warning!"
+              BaseMessages.getString( PKG, "BaseStepDialog.GetFieldsChoice.Title" ), // "Warning!"
               null, BaseMessages.getString( PKG,
                   "BaseStepDialog.GetFieldsChoice.Message", "" + keys.size(), "" + row.size() ), //$NON-NLS-3$
               MessageDialog.WARNING, new String[] { BaseMessages.getString( PKG, "BaseStepDialog.AddNew" ),

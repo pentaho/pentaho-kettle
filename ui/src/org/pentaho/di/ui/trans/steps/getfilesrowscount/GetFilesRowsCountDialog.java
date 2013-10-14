@@ -823,7 +823,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
     // Whenever something changes, set the tooltip to the expanded version of the filename:
     wFilename.addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
-        wFilename.setToolTipText( "" );// StringUtil.environmentSubstitute( wFilename.getText() ) );
+        wFilename.setToolTipText( "" ); // StringUtil.environmentSubstitute( wFilename.getText() ) );
       }
     } );
 
@@ -835,7 +835,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
         {
           DirectoryDialog dialog = new DirectoryDialog( shell, SWT.OPEN );
           if ( wFilename.getText() != null ) {
-            String fpath = "";// StringUtil.environmentSubstitute(wFilename.getText());
+            String fpath = ""; // StringUtil.environmentSubstitute(wFilename.getText());
             dialog.setFilterPath( fpath );
           }
 
@@ -847,7 +847,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
           FileDialog dialog = new FileDialog( shell, SWT.OPEN );
           dialog.setFilterExtensions( new String[] { "*" } );
           if ( wFilename.getText() != null ) {
-            String fname = "";// StringUtil.environmentSubstitute(wFilename.getText());
+            String fname = ""; // StringUtil.environmentSubstitute(wFilename.getText());
             dialog.setFileName( fname );
           }
 

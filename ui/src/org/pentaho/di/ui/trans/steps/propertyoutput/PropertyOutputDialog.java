@@ -736,7 +736,7 @@ public class PropertyOutputDialog extends BaseStepDialog implements StepDialogIn
     getData();
     activeFilenameInField();
 
-    input.setChanged( changed );// backupChanged);
+    input.setChanged( changed ); // backupChanged);
 
     shell.open();
     while ( !shell.isDisposed() ) {

@@ -858,7 +858,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 
     getData();
     ActiveTruncate();
-    input.setChanged( changed );// backupChanged);
+    input.setChanged( changed ); // backupChanged);
 
     shell.open();
     while ( !shell.isDisposed() ) {

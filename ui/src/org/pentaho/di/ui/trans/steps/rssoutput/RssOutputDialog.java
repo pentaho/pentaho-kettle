@@ -1569,7 +1569,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
     setImage();
     activateGeoRSS();
 
-    input.setChanged( changed );// backupChanged);
+    input.setChanged( changed ); // backupChanged);
 
     shell.open();
     while ( !shell.isDisposed() ) {
