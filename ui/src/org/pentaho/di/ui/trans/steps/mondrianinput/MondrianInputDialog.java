@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.ui.trans.steps.mondrianinput;
 
@@ -65,402 +65,434 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
-public class MondrianInputDialog extends BaseStepDialog implements StepDialogInterface
-{
-	private static Class<?> PKG = MondrianInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+public class MondrianInputDialog extends BaseStepDialog implements StepDialogInterface {
+  private static Class<?> PKG = MondrianInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-	private CCombo       wConnection;
+  private CCombo wConnection;
 
-	private Label        wlSQL;
-	private StyledTextComp         wSQL;
-	private FormData     fdlSQL, fdSQL;
+  private Label wlSQL;
+  private StyledTextComp wSQL;
+  private FormData fdlSQL, fdSQL;
 
-	private Label        wlCatalog;
-	private TextVar      wCatalog;
-	private Button       wbbFilename; // Browse for a file
-	private FormData     fdlCatalog, fdCatalog;
- 
-	private MondrianInputMeta input;
-	
-	private Label        wlPosition;
-	private FormData     fdlPosition;
+  private Label wlCatalog;
+  private TextVar wCatalog;
+  private Button wbbFilename; // Browse for a file
+  private FormData fdlCatalog, fdCatalog;
 
-    private Label        wlVariables;
-    private Button       wVariables;
-    private FormData     fdlVariables, fdVariables;
+  private MondrianInputMeta input;
 
-	private TextVar wRole; 
+  private Label wlPosition;
+  private FormData fdlPosition;
 
-	public MondrianInputDialog(Shell parent, Object in, TransMeta transMeta, String sname)
-	{
-		super(parent, (BaseStepMeta)in, transMeta, sname);
-		input=(MondrianInputMeta)in;
-	}
+  private Label wlVariables;
+  private Button wVariables;
+  private FormData fdlVariables, fdVariables;
 
-	public String open()
-	{
-		Shell parent = getParent();
-		Display display = parent.getDisplay();
+  private TextVar wRole;
 
-		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
- 		props.setLook(shell);
-        setShellImage(shell, input);
+  public MondrianInputDialog( Shell parent, Object in, TransMeta transMeta, String sname ) {
+    super( parent, (BaseStepMeta) in, transMeta, sname );
+    input = (MondrianInputMeta) in;
+  }
 
-		ModifyListener lsMod = new ModifyListener() 
-		{
-			public void modifyText(ModifyEvent e) 
-			{
-				input.setChanged();
-			}
-		};
-		changed = input.hasChanged();
+  public String open() {
+    Shell parent = getParent();
+    Display display = parent.getDisplay();
 
-		FormLayout formLayout = new FormLayout ();
-		formLayout.marginWidth  = Const.FORM_MARGIN;
-		formLayout.marginHeight = Const.FORM_MARGIN;
+    shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
+    props.setLook( shell );
+    setShellImage( shell, input );
 
-		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "MondrianInputDialog.MondrianInput")); 
-		
-		int middle = props.getMiddlePct();
-		int margin = Const.MARGIN;
+    ModifyListener lsMod = new ModifyListener() {
+      public void modifyText( ModifyEvent e ) {
+        input.setChanged();
+      }
+    };
+    changed = input.hasChanged();
 
-        // Stepname line
-		//
-		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "MondrianInputDialog.StepName")); 
- 		props.setLook(wlStepname);
-		fdlStepname=new FormData();
-		fdlStepname.left = new FormAttachment(0, 0);
-		fdlStepname.right= new FormAttachment(middle, -margin);
-		fdlStepname.top  = new FormAttachment(0, margin);
-		wlStepname.setLayoutData(fdlStepname);
-		wStepname=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wStepname.setText(stepname);
- 		props.setLook(wStepname);
-		wStepname.addModifyListener(lsMod);
-		fdStepname=new FormData();
-		fdStepname.left = new FormAttachment(middle, 0);
-		fdStepname.top  = new FormAttachment(0, margin);
-		fdStepname.right= new FormAttachment(100, 0);
-		wStepname.setLayoutData(fdStepname);
+    FormLayout formLayout = new FormLayout();
+    formLayout.marginWidth = Const.FORM_MARGIN;
+    formLayout.marginHeight = Const.FORM_MARGIN;
 
-		// Connection line
-		//
-		wConnection = addConnectionLine(shell, wStepname, middle, margin);
-		if (input.getDatabaseMeta()==null && transMeta.nrDatabases()==1) wConnection.select(0);
-		wConnection.addModifyListener(lsMod);
+    shell.setLayout( formLayout );
+    shell.setText( BaseMessages.getString( PKG, "MondrianInputDialog.MondrianInput" ) );
 
-		// Some buttons
-		//
-		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
-        wPreview=new Button(shell, SWT.PUSH);
-        wPreview.setText(BaseMessages.getString(PKG, "System.Button.Preview")); 
-		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
+    int middle = props.getMiddlePct();
+    int margin = Const.MARGIN;
 
-		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, null);
-		
-		// Mondrian Role
-		Label wlRole = new Label(shell, SWT.RIGHT);
-		wlRole.setText(BaseMessages.getString(PKG, "MondrianInputDialog.Role")); 
- 		props.setLook(wlRole);
-		FormData fdlRole = new FormData();
-		fdlRole.left = new FormAttachment(0, 0);
-		fdlRole.right= new FormAttachment(middle, -margin);
-		fdlRole.bottom = new FormAttachment(wOK, -2*margin);
-		wlRole.setLayoutData(fdlRole);
-		wRole=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wRole);
-		wRole.addModifyListener(lsMod);
-		wRole.setToolTipText(BaseMessages.getString(PKG, "MondrianInputDialog.Role.Tooltip"));
-		FormData fdRole = new FormData();
-		fdRole.left = new FormAttachment(middle, 0);
-		fdRole.right= new FormAttachment(100, -margin);
-		fdRole.bottom = new FormAttachment(wOK, -2*margin);
-		wRole.setLayoutData(fdRole);		
-		
-		// Catalog location...
-		//
-		wbbFilename=new Button(shell, SWT.PUSH| SWT.CENTER);
-        props.setLook(wbbFilename);
-        wbbFilename.setText(BaseMessages.getString("System.Button.Browse"));
-        wbbFilename.setToolTipText(BaseMessages.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
-        FormData fdbFilename = new FormData();
-        fdbFilename.right= new FormAttachment(100, 0);
-        fdbFilename.bottom = new FormAttachment(wRole, -2*margin);
-		wbbFilename.setLayoutData(fdbFilename);
-		
-		wlCatalog=new Label(shell, SWT.RIGHT);
-		wlCatalog.setText(BaseMessages.getString(PKG, "MondrianInputDialog.Catalog")); 
- 		props.setLook(wlCatalog);
-		fdlCatalog=new FormData();
-		fdlCatalog.left = new FormAttachment(0, 0);
-		fdlCatalog.right= new FormAttachment(middle, -margin);
-		fdlCatalog.bottom = new FormAttachment(wRole, -2*margin);
-		wlCatalog.setLayoutData(fdlCatalog);
-		wCatalog=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wCatalog);
-		wCatalog.addModifyListener(lsMod);
-		fdCatalog=new FormData();
-		fdCatalog.left = new FormAttachment(middle, 0);
-		fdCatalog.right= new FormAttachment(wbbFilename, -margin);
-		fdCatalog.bottom = new FormAttachment(wRole, -2*margin);
-		wCatalog.setLayoutData(fdCatalog);
-		
-        // Replace variables in MDX?
-		//
-        wlVariables = new Label(shell, SWT.RIGHT);
-        wlVariables.setText(BaseMessages.getString(PKG, "MondrianInputDialog.ReplaceVariables")); 
-        props.setLook(wlVariables);
-        fdlVariables = new FormData();
-        fdlVariables.left = new FormAttachment(0, 0);
-        fdlVariables.right = new FormAttachment(middle, -margin);
-        fdlVariables.bottom = new FormAttachment(wCatalog, -margin);
-        wlVariables.setLayoutData(fdlVariables);
-        wVariables = new Button(shell, SWT.CHECK);
-        props.setLook(wVariables);
-        wVariables.setToolTipText(BaseMessages.getString(PKG, "MondrianInputDialog.ReplaceVariables.Tooltip")); 
-        fdVariables = new FormData();
-        fdVariables.left = new FormAttachment(middle, 0);
-        fdVariables.right = new FormAttachment(100, 0);
-        fdVariables.bottom = new FormAttachment(wCatalog, -margin);
-        wVariables.setLayoutData(fdVariables);
-        wVariables.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { setSQLToolTip(); } });
+    // Stepname line
+    //
+    wlStepname = new Label( shell, SWT.RIGHT );
+    wlStepname.setText( BaseMessages.getString( PKG, "MondrianInputDialog.StepName" ) );
+    props.setLook( wlStepname );
+    fdlStepname = new FormData();
+    fdlStepname.left = new FormAttachment( 0, 0 );
+    fdlStepname.right = new FormAttachment( middle, -margin );
+    fdlStepname.top = new FormAttachment( 0, margin );
+    wlStepname.setLayoutData( fdlStepname );
+    wStepname = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wStepname.setText( stepname );
+    props.setLook( wStepname );
+    wStepname.addModifyListener( lsMod );
+    fdStepname = new FormData();
+    fdStepname.left = new FormAttachment( middle, 0 );
+    fdStepname.top = new FormAttachment( 0, margin );
+    fdStepname.right = new FormAttachment( 100, 0 );
+    wStepname.setLayoutData( fdStepname );
 
-		
-		wlPosition=new Label(shell, SWT.NONE); 
-		props.setLook(wlPosition);
-		fdlPosition=new FormData();
-		fdlPosition.left  = new FormAttachment(0,0);
-		fdlPosition.right = new FormAttachment(100, 0);
-		fdlPosition.bottom = new FormAttachment(wVariables, -margin);
-		wlPosition.setLayoutData(fdlPosition);
+    // Connection line
+    //
+    wConnection = addConnectionLine( shell, wStepname, middle, margin );
+    if ( input.getDatabaseMeta() == null && transMeta.nrDatabases() == 1 ) {
+      wConnection.select( 0 );
+    }
+    wConnection.addModifyListener( lsMod );
 
-		// Table line...
-		//
-		wlSQL=new Label(shell, SWT.NONE);
-		wlSQL.setText(BaseMessages.getString(PKG, "MondrianInputDialog.SQL")); 
- 		props.setLook(wlSQL);
-		fdlSQL=new FormData();
-		fdlSQL.left = new FormAttachment(0, 0);
-		fdlSQL.top  = new FormAttachment(wConnection, margin*2);
-		wlSQL.setLayoutData(fdlSQL);
+    // Some buttons
+    //
+    wOK = new Button( shell, SWT.PUSH );
+    wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
+    wPreview = new Button( shell, SWT.PUSH );
+    wPreview.setText( BaseMessages.getString( PKG, "System.Button.Preview" ) );
+    wCancel = new Button( shell, SWT.PUSH );
+    wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
 
-		wSQL=new StyledTextComp(transMeta, shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
- 		props.setLook(wSQL, Props.WIDGET_STYLE_FIXED);
-		wSQL.addModifyListener(lsMod);
-		fdSQL=new FormData();
-		fdSQL.left  = new FormAttachment(0, 0);
-		fdSQL.top   = new FormAttachment(wlSQL, margin );
-		fdSQL.right = new FormAttachment(100, -2*margin);
-		fdSQL.bottom= new FormAttachment(wlPosition, -margin );
-		wSQL.setLayoutData(fdSQL);
-		
-		wSQL.addModifyListener(new ModifyListener()
-        {
-            public void modifyText(ModifyEvent arg0)
-            {
-                setSQLToolTip();
-                setPosition(); 
-            }
+    setButtonPositions( new Button[] { wOK, wPreview, wCancel }, margin, null );
+
+    // Mondrian Role
+    Label wlRole = new Label( shell, SWT.RIGHT );
+    wlRole.setText( BaseMessages.getString( PKG, "MondrianInputDialog.Role" ) );
+    props.setLook( wlRole );
+    FormData fdlRole = new FormData();
+    fdlRole.left = new FormAttachment( 0, 0 );
+    fdlRole.right = new FormAttachment( middle, -margin );
+    fdlRole.bottom = new FormAttachment( wOK, -2 * margin );
+    wlRole.setLayoutData( fdlRole );
+    wRole = new TextVar( transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wRole );
+    wRole.addModifyListener( lsMod );
+    wRole.setToolTipText( BaseMessages.getString( PKG, "MondrianInputDialog.Role.Tooltip" ) );
+    FormData fdRole = new FormData();
+    fdRole.left = new FormAttachment( middle, 0 );
+    fdRole.right = new FormAttachment( 100, -margin );
+    fdRole.bottom = new FormAttachment( wOK, -2 * margin );
+    wRole.setLayoutData( fdRole );
+
+    // Catalog location...
+    //
+    wbbFilename = new Button( shell, SWT.PUSH | SWT.CENTER );
+    props.setLook( wbbFilename );
+    wbbFilename.setText( BaseMessages.getString( "System.Button.Browse" ) );
+    wbbFilename.setToolTipText( BaseMessages.getString( "System.Tooltip.BrowseForFileOrDirAndAdd" ) );
+    FormData fdbFilename = new FormData();
+    fdbFilename.right = new FormAttachment( 100, 0 );
+    fdbFilename.bottom = new FormAttachment( wRole, -2 * margin );
+    wbbFilename.setLayoutData( fdbFilename );
+
+    wlCatalog = new Label( shell, SWT.RIGHT );
+    wlCatalog.setText( BaseMessages.getString( PKG, "MondrianInputDialog.Catalog" ) );
+    props.setLook( wlCatalog );
+    fdlCatalog = new FormData();
+    fdlCatalog.left = new FormAttachment( 0, 0 );
+    fdlCatalog.right = new FormAttachment( middle, -margin );
+    fdlCatalog.bottom = new FormAttachment( wRole, -2 * margin );
+    wlCatalog.setLayoutData( fdlCatalog );
+    wCatalog = new TextVar( transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wCatalog );
+    wCatalog.addModifyListener( lsMod );
+    fdCatalog = new FormData();
+    fdCatalog.left = new FormAttachment( middle, 0 );
+    fdCatalog.right = new FormAttachment( wbbFilename, -margin );
+    fdCatalog.bottom = new FormAttachment( wRole, -2 * margin );
+    wCatalog.setLayoutData( fdCatalog );
+
+    // Replace variables in MDX?
+    //
+    wlVariables = new Label( shell, SWT.RIGHT );
+    wlVariables.setText( BaseMessages.getString( PKG, "MondrianInputDialog.ReplaceVariables" ) );
+    props.setLook( wlVariables );
+    fdlVariables = new FormData();
+    fdlVariables.left = new FormAttachment( 0, 0 );
+    fdlVariables.right = new FormAttachment( middle, -margin );
+    fdlVariables.bottom = new FormAttachment( wCatalog, -margin );
+    wlVariables.setLayoutData( fdlVariables );
+    wVariables = new Button( shell, SWT.CHECK );
+    props.setLook( wVariables );
+    wVariables.setToolTipText( BaseMessages.getString( PKG, "MondrianInputDialog.ReplaceVariables.Tooltip" ) );
+    fdVariables = new FormData();
+    fdVariables.left = new FormAttachment( middle, 0 );
+    fdVariables.right = new FormAttachment( 100, 0 );
+    fdVariables.bottom = new FormAttachment( wCatalog, -margin );
+    wVariables.setLayoutData( fdVariables );
+    wVariables.addSelectionListener( new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent arg0 ) {
+        setSQLToolTip();
+      }
+    } );
+
+    wlPosition = new Label( shell, SWT.NONE );
+    props.setLook( wlPosition );
+    fdlPosition = new FormData();
+    fdlPosition.left = new FormAttachment( 0, 0 );
+    fdlPosition.right = new FormAttachment( 100, 0 );
+    fdlPosition.bottom = new FormAttachment( wVariables, -margin );
+    wlPosition.setLayoutData( fdlPosition );
+
+    // Table line...
+    //
+    wlSQL = new Label( shell, SWT.NONE );
+    wlSQL.setText( BaseMessages.getString( PKG, "MondrianInputDialog.SQL" ) );
+    props.setLook( wlSQL );
+    fdlSQL = new FormData();
+    fdlSQL.left = new FormAttachment( 0, 0 );
+    fdlSQL.top = new FormAttachment( wConnection, margin * 2 );
+    wlSQL.setLayoutData( fdlSQL );
+
+    wSQL = new StyledTextComp( transMeta, shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "" );
+    props.setLook( wSQL, Props.WIDGET_STYLE_FIXED );
+    wSQL.addModifyListener( lsMod );
+    fdSQL = new FormData();
+    fdSQL.left = new FormAttachment( 0, 0 );
+    fdSQL.top = new FormAttachment( wlSQL, margin );
+    fdSQL.right = new FormAttachment( 100, -2 * margin );
+    fdSQL.bottom = new FormAttachment( wlPosition, -margin );
+    wSQL.setLayoutData( fdSQL );
+
+    wSQL.addModifyListener( new ModifyListener() {
+      public void modifyText( ModifyEvent arg0 ) {
+        setSQLToolTip();
+        setPosition();
+      }
+    } );
+
+    wSQL.addKeyListener( new KeyAdapter() {
+      public void keyPressed( KeyEvent e ) {
+        setPosition();
+      }
+
+      public void keyReleased( KeyEvent e ) {
+        setPosition();
+      }
+    } );
+    wSQL.addFocusListener( new FocusAdapter() {
+      public void focusGained( FocusEvent e ) {
+        setPosition();
+      }
+
+      public void focusLost( FocusEvent e ) {
+        setPosition();
+      }
+    } );
+    wSQL.addMouseListener( new MouseAdapter() {
+      public void mouseDoubleClick( MouseEvent e ) {
+        setPosition();
+      }
+
+      public void mouseDown( MouseEvent e ) {
+        setPosition();
+      }
+
+      public void mouseUp( MouseEvent e ) {
+        setPosition();
+      }
+    } );
+
+    // Text Higlighting
+    wSQL.addLineStyleListener( new MDXValuesHighlight() );
+
+    // Add listeners
+    lsCancel = new Listener() {
+      public void handleEvent( Event e ) {
+        cancel();
+      }
+    };
+    lsPreview = new Listener() {
+      public void handleEvent( Event e ) {
+        preview();
+      }
+    };
+    lsOK = new Listener() {
+      public void handleEvent( Event e ) {
+        ok();
+      }
+    };
+
+    wCancel.addListener( SWT.Selection, lsCancel );
+    wPreview.addListener( SWT.Selection, lsPreview );
+    wOK.addListener( SWT.Selection, lsOK );
+
+    lsDef = new SelectionAdapter() {
+      public void widgetDefaultSelected( SelectionEvent e ) {
+        ok();
+      }
+    };
+
+    wStepname.addSelectionListener( lsDef );
+    wCatalog.addSelectionListener( lsDef );
+
+    if ( wbbFilename != null ) {
+      // Listen to the browse button next to the file name
+      wbbFilename.addSelectionListener( new SelectionAdapter() {
+        public void widgetSelected( SelectionEvent e ) {
+          FileDialog dialog = new FileDialog( shell, SWT.OPEN );
+          dialog.setFilterExtensions( new String[] { "*.xml", "*" } );
+          if ( wCatalog.getText() != null ) {
+            String fname = transMeta.environmentSubstitute( wCatalog.getText() );
+            dialog.setFileName( fname );
+          }
+
+          dialog.setFilterNames( new String[] { BaseMessages.getString( "System.FileType.XMLFiles" ),
+            BaseMessages.getString( "System.FileType.AllFiles" ) } );
+
+          if ( dialog.open() != null ) {
+            String str = dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName();
+            wCatalog.setText( str );
+          }
         }
-    );
+      } );
+    }
 
-	
-		wSQL.addKeyListener(new KeyAdapter(){
-			public void keyPressed(KeyEvent e) { setPosition(); }
-			public void keyReleased(KeyEvent e) { setPosition(); }
-			} 
-		);
-		wSQL.addFocusListener(new FocusAdapter(){
-			public void focusGained(FocusEvent e) { setPosition(); }
-			public void focusLost(FocusEvent e) { setPosition(); }
-			}
-		);
-		wSQL.addMouseListener(new MouseAdapter(){
-			public void mouseDoubleClick(MouseEvent e) { setPosition(); }
-			public void mouseDown(MouseEvent e) { setPosition(); }
-			public void mouseUp(MouseEvent e) { setPosition(); }
-			}
-		);
-		
-		
-		
-		// Text Higlighting
-		wSQL.addLineStyleListener(new MDXValuesHighlight());
+    // Detect X or ALT-F4 or something that kills this window...
+    shell.addShellListener( new ShellAdapter() {
+      public void shellClosed( ShellEvent e ) {
+        cancel();
+      }
+    } );
 
-		// Add listeners
-		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel();  } };
-        lsPreview  = new Listener() { public void handleEvent(Event e) { preview(); } };
-		lsOK       = new Listener() { public void handleEvent(Event e) { ok();      } };
-        
-		wCancel.addListener  (SWT.Selection, lsCancel);
-        wPreview.addListener (SWT.Selection, lsPreview);
-		wOK.addListener      (SWT.Selection, lsOK    );
+    getData();
+    input.setChanged( changed );
 
-		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
-		
-		wStepname.addSelectionListener( lsDef );
-		wCatalog.addSelectionListener( lsDef );
-		
-		if (wbbFilename!=null) {
-			// Listen to the browse button next to the file name
-			wbbFilename.addSelectionListener(
-				new SelectionAdapter()
-				{
-					public void widgetSelected(SelectionEvent e) 
-					{
-						FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-						dialog.setFilterExtensions(new String[] {"*.xml", "*"});
-						if (wCatalog.getText()!=null)
-						{
-							String fname = transMeta.environmentSubstitute(wCatalog.getText());
-							dialog.setFileName( fname );
-						}
-						
-						dialog.setFilterNames(new String[] {BaseMessages.getString("System.FileType.XMLFiles"), BaseMessages.getString("System.FileType.AllFiles")});
-						
-						if (dialog.open()!=null)
-						{
-							String str = dialog.getFilterPath()+System.getProperty("file.separator")+dialog.getFileName();
-							wCatalog.setText(str);
-						}
-					}
-				}
-			);
-		}
-		
-		// Detect X or ALT-F4 or something that kills this window...
-		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
-		
-		getData();
-		input.setChanged(changed);
+    // Set the shell size, based upon previous time...
+    setSize();
 
-		// Set the shell size, based upon previous time...
-		setSize();
-		
-		shell.open();
-		while (!shell.isDisposed())
-		{
-				if (!display.readAndDispatch()) display.sleep();
-		}
-		return stepname;
-	}
-	public void setPosition(){
-		
-		String scr = wSQL.getText();
-		int linenr = wSQL.getLineAtOffset(wSQL.getCaretOffset())+1;
-		int posnr  = wSQL.getCaretOffset();
-				
-		// Go back from position to last CR: how many positions?
-		int colnr=0;
-		while (posnr>0 && scr.charAt(posnr-1)!='\n' && scr.charAt(posnr-1)!='\r')
-		{
-			posnr--;
-			colnr++;
-		}
-		wlPosition.setText(BaseMessages.getString(PKG, "MondrianInputDialog.Position.Label",""+linenr,""+colnr));
+    shell.open();
+    while ( !shell.isDisposed() ) {
+      if ( !display.readAndDispatch() ) {
+        display.sleep();
+      }
+    }
+    return stepname;
+  }
 
-	}
+  public void setPosition() {
+
+    String scr = wSQL.getText();
+    int linenr = wSQL.getLineAtOffset( wSQL.getCaretOffset() ) + 1;
+    int posnr = wSQL.getCaretOffset();
+
+    // Go back from position to last CR: how many positions?
+    int colnr = 0;
+    while ( posnr > 0 && scr.charAt( posnr - 1 ) != '\n' && scr.charAt( posnr - 1 ) != '\r' ) {
+      posnr--;
+      colnr++;
+    }
+    wlPosition.setText( BaseMessages.getString( PKG, "MondrianInputDialog.Position.Label", "" + linenr, "" + colnr ) );
+
+  }
 
   protected void setSQLToolTip() {
-    if (wVariables.getSelection())
-      wSQL.setToolTipText(transMeta.environmentSubstitute(wSQL.getText()));
+    if ( wVariables.getSelection() ) {
+      wSQL.setToolTipText( transMeta.environmentSubstitute( wSQL.getText() ) );
+    }
   }
 
   /**
-  * Copy information from the meta-data input to the dialog fields.
-  */
+   * Copy information from the meta-data input to the dialog fields.
+   */
   public void getData() {
-    if (input.getSQL() != null)
-      wSQL.setText(input.getSQL());
-    if (input.getDatabaseMeta() != null)
-      wConnection.setText(input.getDatabaseMeta().getName());
-    if (input.getCatalog() != null)
-      wCatalog.setText(input.getCatalog());
-    if (input.getRole() != null)
-      wRole.setText(input.getRole());
-    wVariables.setSelection(input.isVariableReplacementActive());
+    if ( input.getSQL() != null ) {
+      wSQL.setText( input.getSQL() );
+    }
+    if ( input.getDatabaseMeta() != null ) {
+      wConnection.setText( input.getDatabaseMeta().getName() );
+    }
+    if ( input.getCatalog() != null ) {
+      wCatalog.setText( input.getCatalog() );
+    }
+    if ( input.getRole() != null ) {
+      wRole.setText( input.getRole() );
+    }
+    wVariables.setSelection( input.isVariableReplacementActive() );
 
     wStepname.selectAll();
     wStepname.setFocus();
   }
 
-	private void cancel()
-	{
-		stepname=null;
-		input.setChanged(changed);
-		dispose();
-	}
-	
-    private void getInfo(MondrianInputMeta meta)
-    {
-        meta.setSQL( wSQL.getText() );
-        meta.setDatabaseMeta( transMeta.findDatabase(wConnection.getText()) );
-        meta.setCatalog( wCatalog.getText() );
-        meta.setVariableReplacementActive(wVariables.getSelection());
-        meta.setRole(wRole.getText());
+  private void cancel() {
+    stepname = null;
+    input.setChanged( changed );
+    dispose();
+  }
+
+  private void getInfo( MondrianInputMeta meta ) {
+    meta.setSQL( wSQL.getText() );
+    meta.setDatabaseMeta( transMeta.findDatabase( wConnection.getText() ) );
+    meta.setCatalog( wCatalog.getText() );
+    meta.setVariableReplacementActive( wVariables.getSelection() );
+    meta.setRole( wRole.getText() );
+  }
+
+  private void ok() {
+    if ( Const.isEmpty( wStepname.getText() ) ) {
+      return;
     }
-    
-	private void ok()
-	{
-		if (Const.isEmpty(wStepname.getText())) return;
 
-		stepname = wStepname.getText(); // return value
-		// copy info to TextFileInputMeta class (input)
-        
-        getInfo(input);
-        
-		if (input.getDatabaseMeta()==null)
-		{
-			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(BaseMessages.getString(PKG, "MondrianInputDialog.SelectValidConnection")); 
-			mb.setText(BaseMessages.getString(PKG, "MondrianInputDialog.DialogCaptionError")); 
-			mb.open();
-			return;
-		}
-		
-		dispose();
-	}
-	
-    /**
-     * Preview the data generated by this step.
-     * This generates a transformation using this step & a dummy and previews it.
-     *
-     */
-    private void preview()
-    {
-        // Create the table input reader step...
-        MondrianInputMeta oneMeta = new MondrianInputMeta();
-        getInfo(oneMeta);
-        
-        TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
-        
-        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), BaseMessages.getString(PKG, "MondrianInputDialog.EnterPreviewSize"), BaseMessages.getString(PKG, "MondrianInputDialog.NumberOfRowsToPreview"));  
-        int previewSize = numberDialog.open();
-        if (previewSize>0)
-        {
-            TransPreviewProgressDialog progressDialog = new TransPreviewProgressDialog(shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
-            progressDialog.open();
+    stepname = wStepname.getText(); // return value
+    // copy info to TextFileInputMeta class (input)
 
-            Trans trans = progressDialog.getTrans();
-            String loggingText = progressDialog.getLoggingText();
+    getInfo( input );
 
-            if (!progressDialog.isCancelled())
-            {
-                if (trans.getResult()!=null && trans.getResult().getNrErrors()>0)
-                {
-                	EnterTextDialog etd = new EnterTextDialog(shell, BaseMessages.getString(PKG, "System.Dialog.PreviewError.Title"),  
-                			BaseMessages.getString(PKG, "System.Dialog.PreviewError.Message"), loggingText, true );
-                	etd.setReadOnly();
-                	etd.open();
-                }
-            }
-            
-            PreviewRowsDialog prd =new PreviewRowsDialog(shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta(wStepname.getText()), progressDialog.getPreviewRows(wStepname.getText()), loggingText);
-            prd.open();
+    if ( input.getDatabaseMeta() == null ) {
+      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
+      mb.setMessage( BaseMessages.getString( PKG, "MondrianInputDialog.SelectValidConnection" ) );
+      mb.setText( BaseMessages.getString( PKG, "MondrianInputDialog.DialogCaptionError" ) );
+      mb.open();
+      return;
+    }
+
+    dispose();
+  }
+
+  /**
+   * Preview the data generated by this step. This generates a transformation using this step & a dummy and previews it.
+   * 
+   */
+  private void preview() {
+    // Create the table input reader step...
+    MondrianInputMeta oneMeta = new MondrianInputMeta();
+    getInfo( oneMeta );
+
+    TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
+
+    EnterNumberDialog numberDialog =
+        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString( PKG,
+            "MondrianInputDialog.EnterPreviewSize" ), BaseMessages.getString( PKG,
+            "MondrianInputDialog.NumberOfRowsToPreview" ) );
+    int previewSize = numberDialog.open();
+    if ( previewSize > 0 ) {
+      TransPreviewProgressDialog progressDialog =
+          new TransPreviewProgressDialog( shell, previewMeta, new String[] { wStepname.getText() },
+              new int[] { previewSize } );
+      progressDialog.open();
+
+      Trans trans = progressDialog.getTrans();
+      String loggingText = progressDialog.getLoggingText();
+
+      if ( !progressDialog.isCancelled() ) {
+        if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
+          EnterTextDialog etd =
+              new EnterTextDialog( shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ),
+                  BaseMessages.getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+          etd.setReadOnly();
+          etd.open();
         }
+      }
+
+      PreviewRowsDialog prd =
+          new PreviewRowsDialog( shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog
+              .getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname.getText() ),
+              loggingText );
+      prd.open();
     }
+  }
 }

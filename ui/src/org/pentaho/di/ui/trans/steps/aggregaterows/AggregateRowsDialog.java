@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.ui.trans.steps.aggregaterows;
 
@@ -56,152 +56,166 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
-public class AggregateRowsDialog extends BaseStepDialog implements StepDialogInterface
-{
-	private static Class<?> PKG = AggregateRowsMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+public class AggregateRowsDialog extends BaseStepDialog implements StepDialogInterface {
+  private static Class<?> PKG = AggregateRowsMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-	private Label        wlFields;
-	private TableView    wFields;
-	private FormData     fdlFields, fdFields;
-	
-	private AggregateRowsMeta input;
-	
-	public AggregateRowsDialog(Shell parent, Object in, TransMeta tr, String sname)
-	{
-		super(parent, (BaseStepMeta)in, tr, sname);
-		input=(AggregateRowsMeta)in;
-	}
+  private Label wlFields;
+  private TableView wFields;
+  private FormData fdlFields, fdFields;
 
-	public String open()
-	{
-		Shell parent = getParent();
-		Display display = parent.getDisplay();
+  private AggregateRowsMeta input;
 
-        shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
- 		props.setLook(	shell);
-        setShellImage(shell, input);
+  public AggregateRowsDialog( Shell parent, Object in, TransMeta tr, String sname ) {
+    super( parent, (BaseStepMeta) in, tr, sname );
+    input = (AggregateRowsMeta) in;
+  }
 
-		ModifyListener lsMod = new ModifyListener() 
-		{
-			public void modifyText(ModifyEvent e) 
-			{
-				input.setChanged();
-			}
-		};
-		changed = input.hasChanged();
+  public String open() {
+    Shell parent = getParent();
+    Display display = parent.getDisplay();
 
-		FormLayout formLayout = new FormLayout ();
-		formLayout.marginWidth  = Const.FORM_MARGIN;
-		formLayout.marginHeight = Const.FORM_MARGIN;
+    shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
+    props.setLook( shell );
+    setShellImage( shell, input );
 
-		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "AggregateRowsDialog.Shell.Title")); 
-		
-		int middle = props.getMiddlePct();
-		int margin = Const.MARGIN;
+    ModifyListener lsMod = new ModifyListener() {
+      public void modifyText( ModifyEvent e ) {
+        input.setChanged();
+      }
+    };
+    changed = input.hasChanged();
 
-		// Stepname line
-		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "AggregateRowsDialog.Stepname.Label")); 
- 		props.setLook(wlStepname);
-		fdlStepname=new FormData();
-		fdlStepname.left = new FormAttachment(0, 0);
-		fdlStepname.right= new FormAttachment(middle, -margin);
-		fdlStepname.top  = new FormAttachment(0, margin);
-		wlStepname.setLayoutData(fdlStepname);
-		wStepname=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wStepname.setText(stepname);
- 		props.setLook(	wStepname);
-		wStepname.addModifyListener(lsMod);
-		fdStepname=new FormData();
-		fdStepname.left = new FormAttachment(middle, 0);
-		fdStepname.top  = new FormAttachment(0, margin);
-		fdStepname.right= new FormAttachment(100, 0);
-		wStepname.setLayoutData(fdStepname);
+    FormLayout formLayout = new FormLayout();
+    formLayout.marginWidth = Const.FORM_MARGIN;
+    formLayout.marginHeight = Const.FORM_MARGIN;
 
-		// Some buttons
-		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
-		wGet=new Button(shell, SWT.PUSH);
-		wGet.setText(BaseMessages.getString(PKG, "AggregateRowsDialog.GetButton.Label")); 
-		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
+    shell.setLayout( formLayout );
+    shell.setText( BaseMessages.getString( PKG, "AggregateRowsDialog.Shell.Title" ) );
 
-		setButtonPositions(new Button[] { wOK, wGet, wCancel }, margin, null);
+    int middle = props.getMiddlePct();
+    int margin = Const.MARGIN;
 
-		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText(BaseMessages.getString(PKG, "AggregateRowsDialog.Fields.Label")); 
- 		props.setLook(wlFields);
-		fdlFields=new FormData();
-		fdlFields.left = new FormAttachment(0, 0);
-		fdlFields.top  = new FormAttachment(wStepname, margin);
-		wlFields.setLayoutData(fdlFields);
-		
-		final int FieldsCols=3;
-		final int FieldsRows=input.getFieldName().length;
-		
-		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo(BaseMessages.getString(PKG, "AggregateRowsDialog.ColumnInfo.Name"),       ColumnInfo.COLUMN_TYPE_TEXT,   false); 
-		colinf[1]=new ColumnInfo(BaseMessages.getString(PKG, "AggregateRowsDialog.ColumnInfo.NewName"),   ColumnInfo.COLUMN_TYPE_TEXT,   false); 
-		colinf[2]=new ColumnInfo(BaseMessages.getString(PKG, "AggregateRowsDialog.ColumnInfo.AgrregateType"),  ColumnInfo.COLUMN_TYPE_CCOMBO, AggregateRowsMeta.aggregateTypeDesc); 
-		
-		wFields=new TableView(transMeta, shell, 
-							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
-							  colinf, 
-							  FieldsRows,  
-							  lsMod,
-							  props
-							  );
+    // Stepname line
+    wlStepname = new Label( shell, SWT.RIGHT );
+    wlStepname.setText( BaseMessages.getString( PKG, "AggregateRowsDialog.Stepname.Label" ) );
+    props.setLook( wlStepname );
+    fdlStepname = new FormData();
+    fdlStepname.left = new FormAttachment( 0, 0 );
+    fdlStepname.right = new FormAttachment( middle, -margin );
+    fdlStepname.top = new FormAttachment( 0, margin );
+    wlStepname.setLayoutData( fdlStepname );
+    wStepname = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wStepname.setText( stepname );
+    props.setLook( wStepname );
+    wStepname.addModifyListener( lsMod );
+    fdStepname = new FormData();
+    fdStepname.left = new FormAttachment( middle, 0 );
+    fdStepname.top = new FormAttachment( 0, margin );
+    fdStepname.right = new FormAttachment( 100, 0 );
+    wStepname.setLayoutData( fdStepname );
 
-		fdFields=new FormData();
-		fdFields.left  = new FormAttachment(0, 0);
-		fdFields.top   = new FormAttachment(wlFields, margin);
-		fdFields.right = new FormAttachment(100, 0);
-		fdFields.bottom= new FormAttachment(wOK, -2*margin);
-		wFields.setLayoutData(fdFields);
+    // Some buttons
+    wOK = new Button( shell, SWT.PUSH );
+    wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
+    wGet = new Button( shell, SWT.PUSH );
+    wGet.setText( BaseMessages.getString( PKG, "AggregateRowsDialog.GetButton.Label" ) );
+    wCancel = new Button( shell, SWT.PUSH );
+    wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
 
-		
-		// Add listeners
-		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
-		lsGet      = new Listener() { public void handleEvent(Event e) { get();    } };
-		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
-		
-		wCancel.addListener(SWT.Selection, lsCancel);
-		wGet.addListener   (SWT.Selection, lsGet   );
-		wOK.addListener    (SWT.Selection, lsOK    );
-		
-		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
-		
-		wStepname.addSelectionListener( lsDef );
-		
-		// Detect X or ALT-F4 or something that kills this window...
-		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
+    setButtonPositions( new Button[] { wOK, wGet, wCancel }, margin, null );
 
-		lsResize = new Listener() 
-		{
-			public void handleEvent(Event event) 
-			{
-				Point size = shell.getSize();
-				wFields.setSize(size.x-10, size.y-50);
-				wFields.table.setSize(size.x-10, size.y-50);
-				wFields.redraw();
-			}
-		};
-		shell.addListener(SWT.Resize, lsResize);
+    wlFields = new Label( shell, SWT.NONE );
+    wlFields.setText( BaseMessages.getString( PKG, "AggregateRowsDialog.Fields.Label" ) );
+    props.setLook( wlFields );
+    fdlFields = new FormData();
+    fdlFields.left = new FormAttachment( 0, 0 );
+    fdlFields.top = new FormAttachment( wStepname, margin );
+    wlFields.setLayoutData( fdlFields );
 
-		// Set the shell size, based upon previous time...
-		setSize();
-				
-		getData();
-		input.setChanged(changed);
-		
-		shell.open();
-		while (!shell.isDisposed())
-		{
-				if (!display.readAndDispatch()) display.sleep();
-		}
-		return stepname;
-	}
+    final int FieldsCols = 3;
+    final int FieldsRows = input.getFieldName().length;
+
+    ColumnInfo[] colinf = new ColumnInfo[FieldsCols];
+    colinf[0] =
+        new ColumnInfo( BaseMessages.getString( PKG, "AggregateRowsDialog.ColumnInfo.Name" ),
+            ColumnInfo.COLUMN_TYPE_TEXT, false );
+    colinf[1] =
+        new ColumnInfo( BaseMessages.getString( PKG, "AggregateRowsDialog.ColumnInfo.NewName" ),
+            ColumnInfo.COLUMN_TYPE_TEXT, false );
+    colinf[2] =
+        new ColumnInfo( BaseMessages.getString( PKG, "AggregateRowsDialog.ColumnInfo.AgrregateType" ),
+            ColumnInfo.COLUMN_TYPE_CCOMBO, AggregateRowsMeta.aggregateTypeDesc );
+
+    wFields =
+        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+
+    fdFields = new FormData();
+    fdFields.left = new FormAttachment( 0, 0 );
+    fdFields.top = new FormAttachment( wlFields, margin );
+    fdFields.right = new FormAttachment( 100, 0 );
+    fdFields.bottom = new FormAttachment( wOK, -2 * margin );
+    wFields.setLayoutData( fdFields );
+
+    // Add listeners
+    lsCancel = new Listener() {
+      public void handleEvent( Event e ) {
+        cancel();
+      }
+    };
+    lsGet = new Listener() {
+      public void handleEvent( Event e ) {
+        get();
+      }
+    };
+    lsOK = new Listener() {
+      public void handleEvent( Event e ) {
+        ok();
+      }
+    };
+
+    wCancel.addListener( SWT.Selection, lsCancel );
+    wGet.addListener( SWT.Selection, lsGet );
+    wOK.addListener( SWT.Selection, lsOK );
+
+    lsDef = new SelectionAdapter() {
+      public void widgetDefaultSelected( SelectionEvent e ) {
+        ok();
+      }
+    };
+
+    wStepname.addSelectionListener( lsDef );
+
+    // Detect X or ALT-F4 or something that kills this window...
+    shell.addShellListener( new ShellAdapter() {
+      public void shellClosed( ShellEvent e ) {
+        cancel();
+      }
+    } );
+
+    lsResize = new Listener() {
+      public void handleEvent( Event event ) {
+        Point size = shell.getSize();
+        wFields.setSize( size.x - 10, size.y - 50 );
+        wFields.table.setSize( size.x - 10, size.y - 50 );
+        wFields.redraw();
+      }
+    };
+    shell.addListener( SWT.Resize, lsResize );
+
+    // Set the shell size, based upon previous time...
+    setSize();
+
+    getData();
+    input.setChanged( changed );
+
+    shell.open();
+    while ( !shell.isDisposed() ) {
+      if ( !display.readAndDispatch() ) {
+        display.sleep();
+      }
+    }
+    return stepname;
+  }
 
   /**
    * Copy information from the meta-data input to the dialog fields.
@@ -209,76 +223,73 @@ public class AggregateRowsDialog extends BaseStepDialog implements StepDialogInt
   public void getData() {
     Table table = wFields.table;
     table.removeAll();
-    for (int i = 0; i < input.getFieldName().length; i++) {
-      TableItem ti = new TableItem(table, SWT.NONE);
-      ti.setText(0, "" + (i + 1)); 
-      if (input.getFieldName()[i] != null)
-        ti.setText(1, input.getFieldName()[i]);
-      if (input.getFieldNewName()[i] != null && !input.getFieldNewName()[i].equals(input.getFieldName()[i]))
-        ti.setText(2, input.getFieldNewName()[i]);
-      ti.setText(3, AggregateRowsMeta.aggregateTypeDesc[input.getAggregateType()[i]]);
+    for ( int i = 0; i < input.getFieldName().length; i++ ) {
+      TableItem ti = new TableItem( table, SWT.NONE );
+      ti.setText( 0, "" + ( i + 1 ) );
+      if ( input.getFieldName()[i] != null ) {
+        ti.setText( 1, input.getFieldName()[i] );
+      }
+      if ( input.getFieldNewName()[i] != null && !input.getFieldNewName()[i].equals( input.getFieldName()[i] ) ) {
+        ti.setText( 2, input.getFieldNewName()[i] );
+      }
+      ti.setText( 3, AggregateRowsMeta.aggregateTypeDesc[input.getAggregateType()[i]] );
     }
-    if (table.getItemCount() == 0) {
-      TableItem ti = new TableItem(table, SWT.NONE);
-      ti.setText(0, "001"); 
+    if ( table.getItemCount() == 0 ) {
+      TableItem ti = new TableItem( table, SWT.NONE );
+      ti.setText( 0, "001" );
     }
 
     wStepname.selectAll();
     wStepname.setFocus();
   }
-	
-	private void cancel()
-	{
-		stepname=null;
-		input.setChanged(changed);
-		dispose();
-	}
-	
-	private void ok()
-	{
-		if (Const.isEmpty(wStepname.getText())) return;
 
-		int i;
-		int nrfields = wFields.nrNonEmpty();
+  private void cancel() {
+    stepname = null;
+    input.setChanged( changed );
+    dispose();
+  }
 
-		stepname = wStepname.getText(); // return value
-		
-		input.allocate(nrfields);
-		
-		for (i=0;i<nrfields;i++)
-		{
-			TableItem item = wFields.getNonEmpty(i);
-			input.getFieldName()[i]      = item.getText(1);
-			input.getFieldNewName()[i]   = item.getText(2);
-			if (input.getFieldNewName()[i]==null || input.getFieldNewName()[i].length()==0)
-				input.getFieldNewName()[i] = input.getFieldName()[i];
-			input.getAggregateType()[i] = AggregateRowsMeta.getType(item.getText(3));
-		}
-		
-		dispose();
-	}
+  private void ok() {
+    if ( Const.isEmpty( wStepname.getText() ) ) {
+      return;
+    }
 
-	private void get()
-	{
-		try
-		{
-			RowMetaInterface r = transMeta.getPrevStepFields(stepname);
-			if (r!=null && r.size()>0)
-			{
-                BaseStepDialog.getFieldsFromPrevious(r, wFields, 1, new int[] { 1, 2 }, new int[] {}, -1, -1, null);
-			}
-			else
-			{
-				MessageBox mb;
-				mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
-				mb.setMessage(BaseMessages.getString(PKG, "AggregateRowsDialog.CouldNotRetrieveFields.DialogMessage",Const.CR));  
-				mb.setText(BaseMessages.getString(PKG, "AggregateRowsDialog.CouldNotRetrieveFields.DialogTitle")); 
-				mb.open();
-			}
-		}
-		catch(KettleException ke)
-		{
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "AggregateRowsDialog.GetFieldsFailed.DialogTitle"), BaseMessages.getString(PKG, "AggregateRowsDialog.GetFieldsFailed.DialogMessage"), ke);  
-		}
-	}
+    int i;
+    int nrfields = wFields.nrNonEmpty();
+
+    stepname = wStepname.getText(); // return value
+
+    input.allocate( nrfields );
+
+    for ( i = 0; i < nrfields; i++ ) {
+      TableItem item = wFields.getNonEmpty( i );
+      input.getFieldName()[i] = item.getText( 1 );
+      input.getFieldNewName()[i] = item.getText( 2 );
+      if ( input.getFieldNewName()[i] == null || input.getFieldNewName()[i].length() == 0 ) {
+        input.getFieldNewName()[i] = input.getFieldName()[i];
+      }
+      input.getAggregateType()[i] = AggregateRowsMeta.getType( item.getText( 3 ) );
+    }
+
+    dispose();
+  }
+
+  private void get() {
+    try {
+      RowMetaInterface r = transMeta.getPrevStepFields( stepname );
+      if ( r != null && r.size() > 0 ) {
+        BaseStepDialog.getFieldsFromPrevious( r, wFields, 1, new int[] { 1, 2 }, new int[] {}, -1, -1, null );
+      } else {
+        MessageBox mb;
+        mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
+        mb.setMessage( BaseMessages.getString( PKG, "AggregateRowsDialog.CouldNotRetrieveFields.DialogMessage",
+            Const.CR ) );
+        mb.setText( BaseMessages.getString( PKG, "AggregateRowsDialog.CouldNotRetrieveFields.DialogTitle" ) );
+        mb.open();
+      }
+    } catch ( KettleException ke ) {
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "AggregateRowsDialog.GetFieldsFailed.DialogTitle" ),
+          BaseMessages.getString( PKG, "AggregateRowsDialog.GetFieldsFailed.DialogMessage" ), ke );
+    }
+  }
 }

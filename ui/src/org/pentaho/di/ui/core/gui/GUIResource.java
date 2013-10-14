@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.ui.core.gui;
 
@@ -68,8 +68,8 @@ import org.pentaho.di.ui.util.ImageUtil;
  * 
  */
 public class GUIResource {
-  
-  private static LogChannelInterface log = new LogChannel("GUIResource");
+
+  private static LogChannelInterface log = new LogChannel( "GUIResource" );
 
   private static GUIResource guiResource;
 
@@ -121,7 +121,7 @@ public class GUIResource {
   private ManagedColor colorCreamPentaho;
 
   private ManagedColor colorLightBlue;
-  
+
   private ManagedColor colorCrystalTextPentaho;
 
   /* * * Fonts * * */
@@ -344,61 +344,61 @@ public class GUIResource {
   private ManagedFont fontBold;
 
   private Image imageSpoonHigh;
-  
+
   private Image imageHadoop;
-  
+
   private Image imageDropHere;
 
   /**
-   * GUIResource also contains the clipboard as it has to be allocated only
-   * once! I don't want to put it in a separate singleton just for this one
-   * member.
+   * GUIResource also contains the clipboard as it has to be allocated only once! I don't want to put it in a separate
+   * singleton just for this one member.
    */
   private static Clipboard clipboard;
 
-  private GUIResource(Display display) {
+  private GUIResource( Display display ) {
     this.display = display;
 
     getResources();
 
-    display.addListener(SWT.Dispose, new Listener() {
-      public void handleEvent(Event event) {
-        dispose(false);
+    display.addListener( SWT.Dispose, new Listener() {
+      public void handleEvent( Event event ) {
+        dispose( false );
       }
-    });
+    } );
 
     clipboard = null;
 
     // Reload images as required by changes in the plugins
-    PluginRegistry.getInstance().addPluginListener(StepPluginType.class, new PluginTypeListener() {
+    PluginRegistry.getInstance().addPluginListener( StepPluginType.class, new PluginTypeListener() {
       @Override
-      public void pluginAdded(Object serviceObject) {
+      public void pluginAdded( Object serviceObject ) {
         loadStepImages();
       }
 
       @Override
-      public void pluginRemoved(Object serviceObject) {
+      public void pluginRemoved( Object serviceObject ) {
         loadStepImages();
       }
 
       @Override
-      public void pluginChanged(Object serviceObject) {
+      public void pluginChanged( Object serviceObject ) {
       }
-    });
+    } );
   }
 
   public static final GUIResource getInstance() {
-    if (guiResource != null)
+    if ( guiResource != null ) {
       return guiResource;
-    guiResource = new GUIResource(PropsUI.getDisplay());
+    }
+    guiResource = new GUIResource( PropsUI.getDisplay() );
     return guiResource;
   }
 
   /**
-   * reloads all colors, fonts and images.  
+   * reloads all colors, fonts and images.
    */
   public void reload() {
-    dispose(true);
+    dispose( true );
     getResources();
   }
 
@@ -407,34 +407,34 @@ public class GUIResource {
     imageMap = new HashMap<String, Image>();
     colorMap = new HashMap<RGB, Color>();
 
-    colorBackground = new ManagedColor(display, props.getBackgroundRGB());
-    colorGraph = new ManagedColor(display, props.getGraphColorRGB());
-    colorTab = new ManagedColor(display, props.getTabColorRGB());
-    colorSuccessGreen = new ManagedColor(display, 0, 139, 0);
-    colorRed = new ManagedColor(display, 255, 0, 0);
-    colorGreen = new ManagedColor(display, 0, 255, 0);
-    colorBlue = new ManagedColor(display, 0, 0, 255);
-    colorYellow = new ManagedColor(display, 255, 255, 0);
-    colorMagenta = new ManagedColor(display, 255, 0, 255);
-    colorOrange = new ManagedColor(display, 255, 165, 0);
+    colorBackground = new ManagedColor( display, props.getBackgroundRGB() );
+    colorGraph = new ManagedColor( display, props.getGraphColorRGB() );
+    colorTab = new ManagedColor( display, props.getTabColorRGB() );
+    colorSuccessGreen = new ManagedColor( display, 0, 139, 0 );
+    colorRed = new ManagedColor( display, 255, 0, 0 );
+    colorGreen = new ManagedColor( display, 0, 255, 0 );
+    colorBlue = new ManagedColor( display, 0, 0, 255 );
+    colorYellow = new ManagedColor( display, 255, 255, 0 );
+    colorMagenta = new ManagedColor( display, 255, 0, 255 );
+    colorOrange = new ManagedColor( display, 255, 165, 0 );
 
-    colorBlueCustomGrid = new ManagedColor(display, 240, 248, 255);
+    colorBlueCustomGrid = new ManagedColor( display, 240, 248, 255 );
 
-    colorWhite = new ManagedColor(display, 255, 255, 255);
-    colorDemoGray = new ManagedColor(display, 240, 240, 240);
-    colorLightGray = new ManagedColor(display, 225, 225, 225);
-    colorGray = new ManagedColor(display, 215, 215, 215);
-    colorDarkGray = new ManagedColor(display, 100, 100, 100);
-    colorBlack = new ManagedColor(display, 0, 0, 0);
-    colorLightBlue = new ManagedColor(display, 135, 206, 250); // light sky blue
+    colorWhite = new ManagedColor( display, 255, 255, 255 );
+    colorDemoGray = new ManagedColor( display, 240, 240, 240 );
+    colorLightGray = new ManagedColor( display, 225, 225, 225 );
+    colorGray = new ManagedColor( display, 215, 215, 215 );
+    colorDarkGray = new ManagedColor( display, 100, 100, 100 );
+    colorBlack = new ManagedColor( display, 0, 0, 0 );
+    colorLightBlue = new ManagedColor( display, 135, 206, 250 ); // light sky blue
 
-    colorDirectory = new ManagedColor(display, 0, 0, 255);
+    colorDirectory = new ManagedColor( display, 0, 0, 255 );
     // colorPentaho = new ManagedColor(display, 239, 128, 51 ); // Orange
-    colorPentaho = new ManagedColor(display, 188, 198, 82);
-    colorLightPentaho = new ManagedColor(display, 238, 248, 152);
-    colorCreamPentaho = new ManagedColor(display, 248, 246, 231);
-    
-    colorCrystalTextPentaho = new ManagedColor(display, 61, 99, 128);
+    colorPentaho = new ManagedColor( display, 188, 198, 82 );
+    colorLightPentaho = new ManagedColor( display, 238, 248, 152 );
+    colorCreamPentaho = new ManagedColor( display, 248, 246, 231 );
+
+    colorCrystalTextPentaho = new ManagedColor( display, 61, 99, 128 );
 
     // Load all images from files...
     loadFonts();
@@ -443,7 +443,7 @@ public class GUIResource {
     loadJobEntryImages();
   }
 
-  private void dispose(boolean reload) {
+  private void dispose( boolean reload ) {
     // Colors
     colorBackground.dispose();
     colorGraph.dispose();
@@ -471,9 +471,9 @@ public class GUIResource {
     colorLightPentaho.dispose();
     colorCreamPentaho.dispose();
 
-    disposeColors(colorMap.values());
+    disposeColors( colorMap.values() );
 
-    if (!reload) // display shutdown, clean up our mess
+    if ( !reload ) // display shutdown, clean up our mess
     {
       // Fonts
       fontGraph.dispose();
@@ -564,57 +564,58 @@ public class GUIResource {
       imageHadoop.dispose();
       imageDropHere.dispose();
 
-      disposeImage(imageNoteSmall);
-      disposeImage(imageColor);
-      disposeImage(imageEditOptionButton);
-      disposeImage(imageResetOptionButton);
+      disposeImage( imageNoteSmall );
+      disposeImage( imageColor );
+      disposeImage( imageEditOptionButton );
+      disposeImage( imageResetOptionButton );
 
-      disposeImage(imageEditSmall);
-      disposeImage(imageExploreSolutionSmall);
+      disposeImage( imageEditSmall );
+      disposeImage( imageExploreSolutionSmall );
 
-      disposeImage(imageShowLog);
-      disposeImage(imageShowGrid);
-      disposeImage(imageShowHistory);
-      disposeImage(imageShowPerf);
+      disposeImage( imageShowLog );
+      disposeImage( imageShowGrid );
+      disposeImage( imageShowHistory );
+      disposeImage( imageShowPerf );
 
-      disposeImage(imageShowInactive);
-      disposeImage(imageHideInactive);
+      disposeImage( imageShowInactive );
+      disposeImage( imageHideInactive );
 
-      disposeImage(imageShowSelected);
-      disposeImage(imageShowAll);
+      disposeImage( imageShowSelected );
+      disposeImage( imageShowAll );
 
-      disposeImage(imageClosePanel);
-      disposeImage(imageMaximizePanel);
-      disposeImage(imageMinimizePanel);
+      disposeImage( imageClosePanel );
+      disposeImage( imageMaximizePanel );
+      disposeImage( imageMinimizePanel );
 
-      disposeImage(imageShowErrorLines);
+      disposeImage( imageShowErrorLines );
 
       // big images
-      disposeImages(imagesSteps.values());
+      disposeImages( imagesSteps.values() );
 
       // Small images
-      disposeImages(imagesStepsSmall.values());
+      disposeImages( imagesStepsSmall.values() );
 
-      // Dispose of the images in the map 
-      disposeImages(imageMap.values());
+      // Dispose of the images in the map
+      disposeImages( imageMap.values() );
     }
   }
 
-  private void disposeImages(Collection<Image> c) {
-    for (Image image : c) {
-      disposeImage(image);
+  private void disposeImages( Collection<Image> c ) {
+    for ( Image image : c ) {
+      disposeImage( image );
     }
   }
 
-  private void disposeColors(Collection<Color> colors) {
-    for (Color color : colors) {
+  private void disposeColors( Collection<Color> colors ) {
+    for ( Color color : colors ) {
       color.dispose();
     }
   }
 
-  private void disposeImage(Image image) {
-    if (image != null && !image.isDisposed())
+  private void disposeImage( Image image ) {
+    if ( image != null && !image.isDisposed() ) {
       image.dispose();
+    }
   }
 
   /**
@@ -622,263 +623,360 @@ public class GUIResource {
    * 
    */
   private void loadStepImages() {
-    //imagesSteps.clear();
-    //imagesStepsSmall.clear();
+    // imagesSteps.clear();
+    // imagesStepsSmall.clear();
 
     //
     // STEP IMAGES TO LOAD
     //
     PluginRegistry registry = PluginRegistry.getInstance();
 
-    List<PluginInterface> steps = registry.getPlugins(StepPluginType.class);
-    for (int i = 0; i < steps.size(); i++) {
-      if (imagesSteps.get(steps.get(i).getIds()[0]) != null) {
+    List<PluginInterface> steps = registry.getPlugins( StepPluginType.class );
+    for ( int i = 0; i < steps.size(); i++ ) {
+      if ( imagesSteps.get( steps.get( i ).getIds()[0] ) != null ) {
         continue;
       }
 
       Image image = null;
       Image small_image = null;
 
-      String filename = steps.get(i).getImageFile();
+      String filename = steps.get( i ).getImageFile();
       try {
-        ClassLoader classLoader = registry.getClassLoader(steps.get(i));
-        image = ImageUtil.getImage(display, classLoader, filename);
-      } catch (Exception e) {
-        log.logError("Unable to find required step image file or image format not supported (e.g. interlaced) ["
-            + filename + " : ", e);
-        image = new Image(display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
-        GC gc = new GC(image);
-        gc.drawRectangle(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
-        gc.drawLine(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
-        gc.drawLine(ConstUI.ICON_SIZE, 0, 0, ConstUI.ICON_SIZE);
+        ClassLoader classLoader = registry.getClassLoader( steps.get( i ) );
+        image = ImageUtil.getImage( display, classLoader, filename );
+      } catch ( Exception e ) {
+        log.logError( "Unable to find required step image file or image format not supported (e.g. interlaced) ["
+            + filename + " : ", e );
+        image = new Image( display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
+        GC gc = new GC( image );
+        gc.drawRectangle( 0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
+        gc.drawLine( 0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
+        gc.drawLine( ConstUI.ICON_SIZE, 0, 0, ConstUI.ICON_SIZE );
         gc.dispose();
       }
 
       // Calculate the smaller version of the image @ 16x16...
       // Perhaps we should make this configurable?
       //
-      if (image != null) {
+      if ( image != null ) {
         int xsize = image.getBounds().width;
         int ysize = image.getBounds().height;
-        small_image = new Image(display, 16, 16);
-        GC gc = new GC(small_image);
-        gc.drawImage(image, 0, 0, xsize, ysize, 0, 0, 16, 16);
+        small_image = new Image( display, 16, 16 );
+        GC gc = new GC( small_image );
+        gc.drawImage( image, 0, 0, xsize, ysize, 0, 0, 16, 16 );
         gc.dispose();
       }
 
-      imagesSteps.put(steps.get(i).getIds()[0], image);
-      imagesStepsSmall.put(steps.get(i).getIds()[0], small_image);
+      imagesSteps.put( steps.get( i ).getIds()[0], image );
+      imagesStepsSmall.put( steps.get( i ).getIds()[0], small_image );
     }
   }
 
   private void loadFonts() {
     PropsUI props = PropsUI.getInstance();
 
-    fontGraph = new ManagedFont(display, props.getGraphFont());
-    fontNote = new ManagedFont(display, props.getNoteFont());
-    fontFixed = new ManagedFont(display, props.getFixedFont());
+    fontGraph = new ManagedFont( display, props.getGraphFont() );
+    fontNote = new ManagedFont( display, props.getNoteFont() );
+    fontFixed = new ManagedFont( display, props.getFixedFont() );
 
     // Create a medium size version of the graph font
-    FontData mediumFontData = new FontData(props.getGraphFont().getName(), (int) Math.round(props.getGraphFont()
-        .getHeight() * 1.2), props.getGraphFont().getStyle());
-    fontMedium = new ManagedFont(display, mediumFontData);
+    FontData mediumFontData =
+        new FontData( props.getGraphFont().getName(), (int) Math.round( props.getGraphFont().getHeight() * 1.2 ), props
+            .getGraphFont().getStyle() );
+    fontMedium = new ManagedFont( display, mediumFontData );
 
     // Create a medium bold size version of the graph font
-    FontData mediumFontBoldData = new FontData(props.getGraphFont().getName(), (int) Math.round(props.getGraphFont()
-        .getHeight() * 1.2), props.getGraphFont().getStyle() | SWT.BOLD);
-    fontMediumBold = new ManagedFont(display, mediumFontBoldData);
+    FontData mediumFontBoldData =
+        new FontData( props.getGraphFont().getName(), (int) Math.round( props.getGraphFont().getHeight() * 1.2 ), props
+            .getGraphFont().getStyle()
+            | SWT.BOLD );
+    fontMediumBold = new ManagedFont( display, mediumFontBoldData );
 
     // Create a large version of the graph font
-    FontData largeFontData = new FontData(props.getGraphFont().getName(), props.getGraphFont().getHeight() * 3, props
-        .getGraphFont().getStyle());
-    fontLarge = new ManagedFont(display, largeFontData);
+    FontData largeFontData =
+        new FontData( props.getGraphFont().getName(), props.getGraphFont().getHeight() * 3, props.getGraphFont()
+            .getStyle() );
+    fontLarge = new ManagedFont( display, largeFontData );
 
     // Create a tiny version of the graph font
-    FontData tinyFontData = new FontData(props.getGraphFont().getName(), props.getGraphFont().getHeight() - 2, props
-        .getGraphFont().getStyle());
-    fontTiny = new ManagedFont(display, tinyFontData);
+    FontData tinyFontData =
+        new FontData( props.getGraphFont().getName(), props.getGraphFont().getHeight() - 2, props.getGraphFont()
+            .getStyle() );
+    fontTiny = new ManagedFont( display, tinyFontData );
 
     // Create a small version of the graph font
-    FontData smallFontData = new FontData(props.getGraphFont().getName(), props.getGraphFont().getHeight() - 1, props
-        .getGraphFont().getStyle());
-    fontSmall = new ManagedFont(display, smallFontData);
+    FontData smallFontData =
+        new FontData( props.getGraphFont().getName(), props.getGraphFont().getHeight() - 1, props.getGraphFont()
+            .getStyle() );
+    fontSmall = new ManagedFont( display, smallFontData );
 
     // Create a bold version of the default font to display shared objects
     // in the trees
     int extraHeigth = 0;
-    if (Const.isOSX())
+    if ( Const.isOSX() ) {
       extraHeigth = 3;
-    FontData boldFontData = new FontData(props.getDefaultFont().getName(), props.getDefaultFont().getHeight()
-        + extraHeigth, props.getDefaultFont().getStyle() | SWT.BOLD);
-    fontBold = new ManagedFont(display, boldFontData);
+    }
+    FontData boldFontData =
+        new FontData( props.getDefaultFont().getName(), props.getDefaultFont().getHeight() + extraHeigth, props
+            .getDefaultFont().getStyle()
+            | SWT.BOLD );
+    fontBold = new ManagedFont( display, boldFontData );
 
   }
 
   private void loadCommonImages() {
-    imageHop = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("HOP_image")); // "ui/images/HOP.png"
-    imageConnection = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("CNC_image")); // , "ui/images/CNC.png"
-    imageAdd = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Add_image")); // , "ui/images/Add.png"
+    imageHop = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "HOP_image" ) ); // "ui/images/HOP.png"
+    imageConnection = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "CNC_image" ) ); // ,
+                                                                                                               // "ui/images/CNC.png"
+    imageAdd = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Add_image" ) ); // ,
+                                                                                                        // "ui/images/Add.png"
 
-    imageDisabledHop = ImageUtil.makeImageTransparent(display, ImageUtil.getImageAsResource(display,
-        BasePropertyHandler.getProperty("Disabled_HOP_image")), new RGB(255, 255, 255));
+    imageDisabledHop =
+        ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
+            .getProperty( "Disabled_HOP_image" ) ), new RGB( 255, 255, 255 ) );
 
-    imageTable = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Table_image")); // , "ui/images/table.png"
-    imageSchema = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Schema_image")); // , "ui/images/schema.png"
-    imageSynonym = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Synonym_image")); // , "ui/images/synonym.png"
-    imageView = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("View_image")); // , "ui/images/view.png"
-    imageColor = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Color_image")); // , "ui/images/color.png.png"
-    imageNoteSmall = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Note_image")); //, "ui/images/noteSmall.png"
-    imageProcedure = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ProcedureSmall_image")); //, "ui/images/proc.png"
-    imageExploreDbSmall = ImageUtil.makeImageTransparent(display, ImageUtil.getImageAsResource(display,
-        BasePropertyHandler.getProperty("ExploreDbSmall_image")), new RGB(255, 255, 255));   //, "ui/images/exploreDbSmall.png"
+    imageTable = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Table_image" ) ); // ,
+                                                                                                            // "ui/images/table.png"
+    imageSchema = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Schema_image" ) ); // ,
+                                                                                                              // "ui/images/schema.png"
+    imageSynonym = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Synonym_image" ) ); // ,
+                                                                                                                // "ui/images/synonym.png"
+    imageView = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "View_image" ) ); // ,
+                                                                                                          // "ui/images/view.png"
+    imageColor = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Color_image" ) ); // ,
+                                                                                                            // "ui/images/color.png.png"
+    imageNoteSmall = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Note_image" ) ); // ,
+                                                                                                               // "ui/images/noteSmall.png"
+    imageProcedure = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ProcedureSmall_image" ) ); // ,
+                                                                                                                         // "ui/images/proc.png"
+    imageExploreDbSmall =
+        ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
+            .getProperty( "ExploreDbSmall_image" ) ), new RGB( 255, 255, 255 ) ); // , "ui/images/exploreDbSmall.png"
 
-    imageCluster = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Cluster_image")); // , "ui/images/cluster.png"
-    imageSlave = ImageUtil.makeImageTransparent(display,
-        ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Slave_image")), new RGB(255, 255, 255)); // , "ui/images/slave.png"
+    imageCluster = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Cluster_image" ) ); // ,
+                                                                                                                // "ui/images/cluster.png"
+    imageSlave =
+        ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
+            .getProperty( "Slave_image" ) ), new RGB( 255, 255, 255 ) ); // , "ui/images/slave.png"
 
-    imageKettleLogo = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Logo_lrg_image")); // , "ui/images/logo_kettle_lrg.png"
-    imageBanner = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Banner_bg_image")); // , "ui/images/bg_banner.png"
-    imageBol = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("BOL_image")); // , "ui/images/BOL.png"
-    imageCalendar = ImageUtil.makeImageTransparent(display,
-        ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Calendar_image")),
-        new RGB(255, 255, 255)); // , "ui/images/Calendar.png"
+    imageKettleLogo = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Logo_lrg_image" ) ); // ,
+                                                                                                                    // "ui/images/logo_kettle_lrg.png"
+    imageBanner = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Banner_bg_image" ) ); // ,
+                                                                                                                 // "ui/images/bg_banner.png"
+    imageBol = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "BOL_image" ) ); // ,
+                                                                                                        // "ui/images/BOL.png"
+    imageCalendar =
+        ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
+            .getProperty( "Calendar_image" ) ), new RGB( 255, 255, 255 ) ); // , "ui/images/Calendar.png"
 
-    imageCredits = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Credits_image")); // , "ui/images/credits.png"
-    imageStart = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("STR_image")); // , "ui/images/STR.png"
-    imageDummy = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("DUM_image")); // , "ui/images/DUM.png"
-    imageSpoon = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("spoon_image")); // , "ui/images/spoon.ico"
-    imageSpoonHigh = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("spoon_image_high")); // , "ui/images/spoon_highres.png"
+    imageCredits = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Credits_image" ) ); // ,
+                                                                                                                // "ui/images/credits.png"
+    imageStart = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "STR_image" ) ); // ,
+                                                                                                          // "ui/images/STR.png"
+    imageDummy = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "DUM_image" ) ); // ,
+                                                                                                          // "ui/images/DUM.png"
+    imageSpoon = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "spoon_image" ) ); // ,
+                                                                                                            // "ui/images/spoon.ico"
+    imageSpoonHigh = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "spoon_image_high" ) ); // ,
+                                                                                                                     // "ui/images/spoon_highres.png"
 
-    imageJob = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Chef_image")); // , "ui/images/chef.png"
-    imagePentaho = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("CorpLogo_image")); // , "ui/images/PentahoLogo.png"
-    imagePentahoSwirl = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("CorpSwirl_image")); // , "ui/images/pentaho-swirl.png"
-    imageVariable = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Variable_image")); // , "ui/images/variable.png"
-    imageEditOptionButton = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("EditOption_image")); // , "ui/images/edit_option.png"
-    imageResetOptionButton = ImageUtil
-        .getImageAsResource(display, BasePropertyHandler.getProperty("ResetOption_image")); // , "ui/images/reset_option.png"
+    imageJob = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Chef_image" ) ); // ,
+                                                                                                         // "ui/images/chef.png"
+    imagePentaho = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "CorpLogo_image" ) ); // ,
+                                                                                                                 // "ui/images/PentahoLogo.png"
+    imagePentahoSwirl = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "CorpSwirl_image" ) ); // ,
+                                                                                                                       // "ui/images/pentaho-swirl.png"
+    imageVariable = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Variable_image" ) ); // ,
+                                                                                                                  // "ui/images/variable.png"
+    imageEditOptionButton =
+        ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "EditOption_image" ) ); // ,
+                                                                                                        // "ui/images/edit_option.png"
+    imageResetOptionButton =
+        ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ResetOption_image" ) ); // ,
+                                                                                                         // "ui/images/reset_option.png"
 
-    imageEditSmall = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("EditSmall_image")); // , "ui/images/Edit.png"
-    imageExploreSolutionSmall = ImageUtil.getImageAsResource(display,
-        BasePropertyHandler.getProperty("ExploreSolutionSmall_image")); // , "ui/images/exploreSolution.png"
+    imageEditSmall = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "EditSmall_image" ) ); // ,
+                                                                                                                    // "ui/images/Edit.png"
+    imageExploreSolutionSmall =
+        ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ExploreSolutionSmall_image" ) ); // ,
+                                                                                                                  // "ui/images/exploreSolution.png"
 
-    imageShowLog = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ShowLog_image")); // , "ui/images/show-log.png"
-    imageShowGrid = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ShowGrid_image")); // , "ui/images/show-grid.png"
-    imageShowHistory = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ShowHistory_image")); // , "ui/images/show-history.png"
-    imageShowPerf = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ShowPerf_image")); // , "ui/images/show-perf.png"
+    imageShowLog = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ShowLog_image" ) ); // ,
+                                                                                                                // "ui/images/show-log.png"
+    imageShowGrid = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ShowGrid_image" ) ); // ,
+                                                                                                                  // "ui/images/show-grid.png"
+    imageShowHistory = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ShowHistory_image" ) ); // ,
+                                                                                                                        // "ui/images/show-history.png"
+    imageShowPerf = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ShowPerf_image" ) ); // ,
+                                                                                                                  // "ui/images/show-perf.png"
 
-    imageShowInactive = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ShowInactive_image")); // ui/images/show-inactive-selected.png
-    imageHideInactive = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("HideInactive_image")); // ui/images/show-inactive-selected.png
+    imageShowInactive = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ShowInactive_image" ) ); // ui/images/show-inactive-selected.png
+    imageHideInactive = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "HideInactive_image" ) ); // ui/images/show-inactive-selected.png
 
-    imageShowSelected= ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ShowSelected_image")); // ui/images/show-selected.png
-    imageShowAll= ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ShowAll_image")); // ui/images/show-all.png
+    imageShowSelected = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ShowSelected_image" ) ); // ui/images/show-selected.png
+    imageShowAll = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ShowAll_image" ) ); // ui/images/show-all.png
 
-    imageClosePanel = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ClosePanel_image")); // , "ui/images/show-perf.png"
-    imageMaximizePanel = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("MaximizePanel_image")); // , "ui/images/show-perf.png"
-    imageMinimizePanel = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("MinimizePanel_image")); // , "ui/images/show-perf.png"
+    imageClosePanel = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ClosePanel_image" ) ); // ,
+                                                                                                                      // "ui/images/show-perf.png"
+    imageMaximizePanel =
+        ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "MaximizePanel_image" ) ); // ,
+                                                                                                           // "ui/images/show-perf.png"
+    imageMinimizePanel =
+        ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "MinimizePanel_image" ) ); // ,
+                                                                                                           // "ui/images/show-perf.png"
 
-    imageShowErrorLines = ImageUtil
-        .getImageAsResource(display, BasePropertyHandler.getProperty("ShowErrorLines_image")); // , "ui/images/show-perf.png"
+    imageShowErrorLines =
+        ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ShowErrorLines_image" ) ); // ,
+                                                                                                            // "ui/images/show-perf.png"
 
-    imageShowResults = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ShowResults_image")); // , "ui/images/show-results.png
-    imageHideResults = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("HideResults_image")); // , "ui/images/hide-results.png
+    imageShowResults = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ShowResults_image" ) ); // ,
+                                                                                                                        // "ui/images/show-results.png
+    imageHideResults = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "HideResults_image" ) ); // ,
+                                                                                                                        // "ui/images/hide-results.png
 
-    imageDesignPanel = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("DesignPanel_image")); // , "ui/images/Design.png;
-    imageViewPanel = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ViewPanel_image")); // , "ui/images/View.png;
-    imageExpandAll = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ExpandAll_image")); // , "ui/images/ExpandAll.png;
-    imageCollapseAll = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("CollapseAll_image")); // , "ui/images/CollapseAll.png;
-    imageStepError = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("StepErrorLines_image")); // , "ui/images/show-error-lines.png;
-    imageCopyHop = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("CopyHop_image")); // , "ui/images/copy-hop.png;
-    imageErrorHop = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ErrorHop_image")); // , "ui/images/error-hop.png;
-    imageInfoHop = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("InfoHop_image")); // , "ui/images/info-hop.png;
-    imageWarning = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Warning_image")); // , "ui/images/warning.png;
-    imageVersionBrowser = ImageUtil
-        .getImageAsResource(display, BasePropertyHandler.getProperty("VersionBrowser_image")); // , "ui/images/version-history.png;
+    imageDesignPanel = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "DesignPanel_image" ) ); // ,
+                                                                                                                        // "ui/images/Design.png;
+    imageViewPanel = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ViewPanel_image" ) ); // ,
+                                                                                                                    // "ui/images/View.png;
+    imageExpandAll = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ExpandAll_image" ) ); // ,
+                                                                                                                    // "ui/images/ExpandAll.png;
+    imageCollapseAll = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "CollapseAll_image" ) ); // ,
+                                                                                                                        // "ui/images/CollapseAll.png;
+    imageStepError = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "StepErrorLines_image" ) ); // ,
+                                                                                                                         // "ui/images/show-error-lines.png;
+    imageCopyHop = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "CopyHop_image" ) ); // ,
+                                                                                                                // "ui/images/copy-hop.png;
+    imageErrorHop = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ErrorHop_image" ) ); // ,
+                                                                                                                  // "ui/images/error-hop.png;
+    imageInfoHop = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "InfoHop_image" ) ); // ,
+                                                                                                                // "ui/images/info-hop.png;
+    imageWarning = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Warning_image" ) ); // ,
+                                                                                                                // "ui/images/warning.png;
+    imageVersionBrowser =
+        ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "VersionBrowser_image" ) ); // ,
+                                                                                                            // "ui/images/version-history.png;
 
-    imageNew = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("New_image")); // , "ui/images/generic-new.png;
-    imageEdit = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Edit_image")); // , "ui/images/generic-edit.png;
-    imageDelete = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Delete_image")); // , "ui/images/generic-delete.png;
-    imageShowDeleted = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ShowDeleted_image")); // , "ui/images/show-deleted.png;
+    imageNew = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "New_image" ) ); // ,
+                                                                                                        // "ui/images/generic-new.png;
+    imageEdit = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Edit_image" ) ); // ,
+                                                                                                          // "ui/images/generic-edit.png;
+    imageDelete = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Delete_image" ) ); // ,
+                                                                                                              // "ui/images/generic-delete.png;
+    imageShowDeleted = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ShowDeleted_image" ) ); // ,
+                                                                                                                        // "ui/images/show-deleted.png;
 
-    imagePauseLog = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("PauseLog_image")); // , "ui/images/pause-log.png;
-    imageContinueLog = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ContinueLog_image")); // , "ui/images/continue-log.png;
+    imagePauseLog = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "PauseLog_image" ) ); // ,
+                                                                                                                  // "ui/images/pause-log.png;
+    imageContinueLog = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ContinueLog_image" ) ); // ,
+                                                                                                                        // "ui/images/continue-log.png;
 
-    imageImport = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Import_image")); // , "ui/images/import.png;
-    imageExport = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Export_image")); // , "ui/images/export.png;
+    imageImport = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Import_image" ) ); // ,
+                                                                                                              // "ui/images/import.png;
+    imageExport = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Export_image" ) ); // ,
+                                                                                                              // "ui/images/export.png;
 
-    imageHopInput = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("HopInput_image")); // , "ui/images/hop-input.png;
-    imageHopOutput = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("HopOutput_image")); // , "ui/images/hop-output.png;
-    imageHopTarget = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("HopTarget_image")); // , "ui/images/hop-target.png;
+    imageHopInput = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "HopInput_image" ) ); // ,
+                                                                                                                  // "ui/images/hop-input.png;
+    imageHopOutput = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "HopOutput_image" ) ); // ,
+                                                                                                                    // "ui/images/hop-output.png;
+    imageHopTarget = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "HopTarget_image" ) ); // ,
+                                                                                                                    // "ui/images/hop-target.png;
 
-    imageLocked = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Locked_image")); // , "ui/images/locked.png;
+    imageLocked = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Locked_image" ) ); // ,
+                                                                                                              // "ui/images/locked.png;
 
-    imageTrue = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("True_image")); // , "ui/images/true.png;
-    imageFalse = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("False_image")); // , "ui/images/false.png;
-    imageContextMenu = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ContextMenu_image")); // , "ui/images/context_menu.png;
+    imageTrue = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "True_image" ) ); // ,
+                                                                                                          // "ui/images/true.png;
+    imageFalse = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "False_image" ) ); // ,
+                                                                                                            // "ui/images/false.png;
+    imageContextMenu = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ContextMenu_image" ) ); // ,
+                                                                                                                        // "ui/images/context_menu.png;
 
-    imageParallelHop = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ParallelHop_image")); // , "ui/images/parallel-hop.png
-    imageUnconditionalHop = ImageUtil.getImageAsResource(display,
-        BasePropertyHandler.getProperty("UnconditionalHop_image")); // , "ui/images/unconditional-hop.png
-    imageBusy = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Busy_image")); // , "ui/images/busy.png
-    imageInject = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Inject_image")); // , "ui/images/inject.png
-    imageBalance = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("LoadBalance_image")); // , "ui/images/scales.png
-    imageCheckpoint = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("CheckeredFlag_image")); // , "ui/images/scales.png
-    imageGantt = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Gantt_image")); // , "ui/images/gantt.png
-    imageHelpWeb = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("HelpWeb_image")); // , "ui/images/help_web.png
-    imageHadoop = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Hadoop_image")); // , "ui/images/hadoop.png
-    imageDropHere = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("DropHere_image")); // , "ui/images/drop_here.png
-    
-    imageEmpty16x16 = new Image(display, 16, 16);
+    imageParallelHop = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ParallelHop_image" ) ); // ,
+                                                                                                                        // "ui/images/parallel-hop.png
+    imageUnconditionalHop =
+        ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "UnconditionalHop_image" ) ); // ,
+                                                                                                              // "ui/images/unconditional-hop.png
+    imageBusy = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Busy_image" ) ); // ,
+                                                                                                          // "ui/images/busy.png
+    imageInject = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Inject_image" ) ); // ,
+                                                                                                              // "ui/images/inject.png
+    imageBalance = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "LoadBalance_image" ) ); // ,
+                                                                                                                    // "ui/images/scales.png
+    imageCheckpoint = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "CheckeredFlag_image" ) ); // ,
+                                                                                                                         // "ui/images/scales.png
+    imageGantt = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Gantt_image" ) ); // ,
+                                                                                                            // "ui/images/gantt.png
+    imageHelpWeb = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "HelpWeb_image" ) ); // ,
+                                                                                                                // "ui/images/help_web.png
+    imageHadoop = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Hadoop_image" ) ); // ,
+                                                                                                              // "ui/images/hadoop.png
+    imageDropHere = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "DropHere_image" ) ); // ,
+                                                                                                                  // "ui/images/drop_here.png
 
-    imageStartSmall = new Image(display, 16, 16);
-    GC gc = new GC(imageStartSmall);
-    gc.drawImage(imageStart, 0, 0, 32, 32, 0, 0, 16, 16);
+    imageEmpty16x16 = new Image( display, 16, 16 );
+
+    imageStartSmall = new Image( display, 16, 16 );
+    GC gc = new GC( imageStartSmall );
+    gc.drawImage( imageStart, 0, 0, 32, 32, 0, 0, 16, 16 );
     gc.dispose();
-    imageDummySmall = new Image(display, 16, 16);
-    gc = new GC(imageDummySmall);
-    gc.drawImage(imageDummy, 0, 0, 32, 32, 0, 0, 16, 16);
+    imageDummySmall = new Image( display, 16, 16 );
+    gc = new GC( imageDummySmall );
+    gc.drawImage( imageDummy, 0, 0, 32, 32, 0, 0, 16, 16 );
     gc.dispose();
 
     // Makes transparent images "on the fly"
     //
-    imageTransGraph = ImageUtil.makeImageTransparent(display, ImageUtil.getImageAsResource(display,
-        BasePropertyHandler.getProperty("SpoonIcon_image")), new RGB(255, 255, 255)); // , "ui/images/spoongraph.png"
-    imageJobGraph = ImageUtil.makeImageTransparent(display,
-        ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ChefIcon_image")), // , "ui/images/chefgraph.png"
-        new RGB(255, 255, 255));
-    imageLogoSmall = ImageUtil.makeImageTransparent(display,
-        ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Logo_sml_image")),
-        new RGB(255, 255, 255)); // , "ui/images/kettle_logo_small.png"
-    imageArrow = ImageUtil.makeImageTransparent(display,
-        ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ArrowIcon_image")), // , "ui/images/arrow.png"
-        new RGB(255, 255, 255));
+    imageTransGraph =
+        ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
+            .getProperty( "SpoonIcon_image" ) ), new RGB( 255, 255, 255 ) ); // , "ui/images/spoongraph.png"
+    imageJobGraph =
+        ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
+            .getProperty( "ChefIcon_image" ) ), // , "ui/images/chefgraph.png"
+            new RGB( 255, 255, 255 ) );
+    imageLogoSmall =
+        ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
+            .getProperty( "Logo_sml_image" ) ), new RGB( 255, 255, 255 ) ); // , "ui/images/kettle_logo_small.png"
+    imageArrow =
+        ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
+            .getProperty( "ArrowIcon_image" ) ), // , "ui/images/arrow.png"
+            new RGB( 255, 255, 255 ) );
 
-    imageWizard = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Wizard_image")); // , "ui/images/wizard.png"
-    imageBanner = ImageUtil.makeImageTransparent(display,
-        ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Banner_bg_image")), // , "ui/images/bg_banner.png"
-        new RGB(255, 255, 255));
+    imageWizard = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Wizard_image" ) ); // ,
+                                                                                                              // "ui/images/wizard.png"
+    imageBanner =
+        ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
+            .getProperty( "Banner_bg_image" ) ), // , "ui/images/bg_banner.png"
+            new RGB( 255, 255, 255 ) );
 
-    imageUser = ImageUtil.makeImageTransparent(display,
-        ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("User_image")), // , "ui/images/user.png"
-        new RGB(255, 255, 255));
-    imageProfil = ImageUtil.makeImageTransparent(display,
-        ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Profil_image")), // , "ui/images/profil.png"
-        new RGB(255, 255, 255));
+    imageUser =
+        ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
+            .getProperty( "User_image" ) ), // , "ui/images/user.png"
+            new RGB( 255, 255, 255 ) );
+    imageProfil =
+        ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
+            .getProperty( "Profil_image" ) ), // , "ui/images/profil.png"
+            new RGB( 255, 255, 255 ) );
 
-    imageFolderConnections = ImageUtil.makeImageTransparent(display,
-        ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("FolderConnections_image")), // , "ui/images/folder_connection.png"
-        new RGB(255, 255, 255));
+    imageFolderConnections =
+        ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
+            .getProperty( "FolderConnections_image" ) ), // , "ui/images/folder_connection.png"
+            new RGB( 255, 255, 255 ) );
 
-    imageRegExSmall = ImageUtil.makeImageTransparent(display, ImageUtil.getImageAsResource(display,
-        BasePropertyHandler.getProperty("RegExSmall_image")), new RGB(255, 255, 255));
+    imageRegExSmall =
+        ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
+            .getProperty( "RegExSmall_image" ) ), new RGB( 255, 255, 255 ) );
 
-    imageSearchSmall = ImageUtil.makeImageTransparent(display, ImageUtil.getImageAsResource(display,
-        BasePropertyHandler.getProperty("SearchSmall_image")), new RGB(255, 255, 255));
-    imageKeySmall = ImageUtil.makeImageTransparent(display,
-        ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("KeySmall_image")),
-        new RGB(255, 255, 255));
+    imageSearchSmall =
+        ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
+            .getProperty( "SearchSmall_image" ) ), new RGB( 255, 255, 255 ) );
+    imageKeySmall =
+        ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
+            .getProperty( "KeySmall_image" ) ), new RGB( 255, 255, 255 ) );
 
-    imageColumnSmall = ImageUtil.makeImageTransparent(display, ImageUtil.getImageAsResource(display,
-        BasePropertyHandler.getProperty("ColumnSmall_image")), new RGB(255, 255, 255));
+    imageColumnSmall =
+        ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
+            .getProperty( "ColumnSmall_image" ) ), new RGB( 255, 255, 255 ) );
 
   }
 
@@ -895,11 +993,11 @@ public class GUIResource {
     // //
     PluginRegistry registry = PluginRegistry.getInstance();
 
-    List<PluginInterface> plugins = registry.getPlugins(JobEntryPluginType.class);
-    for (int i = 0; i < plugins.size(); i++) {
-      PluginInterface plugin = plugins.get(i);
+    List<PluginInterface> plugins = registry.getPlugins( JobEntryPluginType.class );
+    for ( int i = 0; i < plugins.size(); i++ ) {
+      PluginInterface plugin = plugins.get( i );
 
-      if ("SPECIAL".equals(plugin.getIds()[0])) {
+      if ( "SPECIAL".equals( plugin.getIds()[0] ) ) {
         continue;
       }
 
@@ -908,33 +1006,33 @@ public class GUIResource {
 
       String filename = plugin.getImageFile();
       try {
-        ClassLoader classLoader = registry.getClassLoader(plugin);
-        image = ImageUtil.getImage(display, classLoader, filename);
-      } catch (Exception e) {
-        log.logError("Unable to find required job entry image file [" + filename + "] for id [" + plugin.getIds()[0]
-            + "] : " + e.toString());
-        image = new Image(display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
-        GC gc = new GC(image);
-        gc.drawRectangle(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
-        gc.drawLine(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
-        gc.drawLine(ConstUI.ICON_SIZE, 0, 0, ConstUI.ICON_SIZE);
+        ClassLoader classLoader = registry.getClassLoader( plugin );
+        image = ImageUtil.getImage( display, classLoader, filename );
+      } catch ( Exception e ) {
+        log.logError( "Unable to find required job entry image file [" + filename + "] for id [" + plugin.getIds()[0]
+            + "] : " + e.toString() );
+        image = new Image( display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
+        GC gc = new GC( image );
+        gc.drawRectangle( 0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
+        gc.drawLine( 0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
+        gc.drawLine( ConstUI.ICON_SIZE, 0, 0, ConstUI.ICON_SIZE );
         gc.dispose();
       }
 
       // Calculate the smaller version of the image @ 16x16...
       // Perhaps we should make this configurable?
       //
-      if (image != null) {
+      if ( image != null ) {
         int xsize = image.getBounds().width;
         int ysize = image.getBounds().height;
-        small_image = new Image(display, 16, 16);
-        GC gc = new GC(small_image);
-        gc.drawImage(image, 0, 0, xsize, ysize, 0, 0, 16, 16);
+        small_image = new Image( display, 16, 16 );
+        GC gc = new GC( small_image );
+        gc.drawImage( image, 0, 0, xsize, ysize, 0, 0, 16, 16 );
         gc.dispose();
       }
 
-      imagesJobentries.put(plugin.getIds()[0], image);
-      imagesJobentriesSmall.put(plugin.getIds()[0], small_image);
+      imagesJobentries.put( plugin.getIds()[0], image );
+      imagesJobentriesSmall.put( plugin.getIds()[0], small_image );
     }
   }
 
@@ -1257,7 +1355,6 @@ public class GUIResource {
     return imagePentahoSwirl;
   }
 
-
   /**
    * @return Returns the imagesSteps.
    */
@@ -1288,9 +1385,9 @@ public class GUIResource {
 
   /**
    * @param imagesJobentries
-   *            The imagesJobentries to set.
+   *          The imagesJobentries to set.
    */
-  public void setImagesJobentries(Hashtable<String, Image> imagesJobentries) {
+  public void setImagesJobentries( Hashtable<String, Image> imagesJobentries ) {
     this.imagesJobentries = imagesJobentries;
   }
 
@@ -1303,9 +1400,9 @@ public class GUIResource {
 
   /**
    * @param imagesJobentriesSmall
-   *            The imagesJobentriesSmall to set.
+   *          The imagesJobentriesSmall to set.
    */
-  public void setImagesJobentriesSmall(Hashtable<String, Image> imagesJobentriesSmall) {
+  public void setImagesJobentriesSmall( Hashtable<String, Image> imagesJobentriesSmall ) {
     this.imagesJobentriesSmall = imagesJobentriesSmall;
   }
 
@@ -1318,9 +1415,9 @@ public class GUIResource {
 
   /**
    * @param imageChef
-   *            The imageChef to set.
+   *          The imageChef to set.
    */
-  public void setImageChef(Image imageChef) {
+  public void setImageChef( Image imageChef ) {
     this.imageJob = imageChef;
   }
 
@@ -1332,14 +1429,14 @@ public class GUIResource {
   }
 
   /**
-   * @return the tiny font 
+   * @return the tiny font
    */
   public Font getFontTiny() {
     return fontTiny.getFont();
   }
 
   /**
-   * @return the small font 
+   * @return the small font
    */
   public Font getFontSmall() {
     return fontSmall.getFont();
@@ -1349,29 +1446,30 @@ public class GUIResource {
    * @return Returns the clipboard.
    */
   public Clipboard getNewClipboard() {
-    if (clipboard != null) {
+    if ( clipboard != null ) {
       clipboard.dispose();
       clipboard = null;
     }
-    clipboard = new Clipboard(display);
+    clipboard = new Clipboard( display );
 
     return clipboard;
   }
 
-  public void toClipboard(String cliptext) {
-    if (cliptext == null)
+  public void toClipboard( String cliptext ) {
+    if ( cliptext == null ) {
       return;
+    }
 
     getNewClipboard();
     TextTransfer tran = TextTransfer.getInstance();
-    clipboard.setContents(new String[] { cliptext }, new Transfer[] { tran });
+    clipboard.setContents( new String[] { cliptext }, new Transfer[] { tran } );
   }
 
   public String fromClipboard() {
     getNewClipboard();
     TextTransfer tran = TextTransfer.getInstance();
 
-    return (String) clipboard.getContents(tran);
+    return (String) clipboard.getContents( tran );
   }
 
   public Font getFontBold() {
@@ -1430,9 +1528,9 @@ public class GUIResource {
 
   /**
    * @param imageArrow
-   *            the imageArrow to set
+   *          the imageArrow to set
    */
-  public void setImageArrow(Image imageArrow) {
+  public void setImageArrow( Image imageArrow ) {
     this.imageArrow = imageArrow;
   }
 
@@ -1445,9 +1543,9 @@ public class GUIResource {
 
   /**
    * @param imageDummySmall
-   *            the imageDummySmall to set
+   *          the imageDummySmall to set
    */
-  public void setImageDummySmall(Image imageDummySmall) {
+  public void setImageDummySmall( Image imageDummySmall ) {
     this.imageDummySmall = imageDummySmall;
   }
 
@@ -1460,9 +1558,9 @@ public class GUIResource {
 
   /**
    * @param imageStartSmall
-   *            the imageStartSmall to set
+   *          the imageStartSmall to set
    */
-  public void setImageStartSmall(Image imageStartSmall) {
+  public void setImageStartSmall( Image imageStartSmall ) {
     this.imageStartSmall = imageStartSmall;
   }
 
@@ -1482,9 +1580,9 @@ public class GUIResource {
 
   /**
    * @param imageBanner
-   *            the imageBanner to set
+   *          the imageBanner to set
    */
-  public void setImageBanner(Image imageBanner) {
+  public void setImageBanner( Image imageBanner ) {
     this.imageBanner = imageBanner;
   }
 
@@ -1497,9 +1595,9 @@ public class GUIResource {
 
   /**
    * @param imageKettleLogo
-   *            the imageKettleLogo to set
+   *          the imageKettleLogo to set
    */
-  public void setImageKettleLogo(Image imageKettleLogo) {
+  public void setImageKettleLogo( Image imageKettleLogo ) {
     this.imageKettleLogo = imageKettleLogo;
   }
 
@@ -1519,9 +1617,9 @@ public class GUIResource {
 
   /**
    * @param imageLogoSmall
-   *            the imageLogoSmall to set
+   *          the imageLogoSmall to set
    */
-  public void setImageLogoSmall(Image imageLogoSmall) {
+  public void setImageLogoSmall( Image imageLogoSmall ) {
     this.imageLogoSmall = imageLogoSmall;
   }
 
@@ -1538,7 +1636,7 @@ public class GUIResource {
   public Color getColorCreamPentaho() {
     return colorCreamPentaho.getColor();
   }
-  
+
   /**
    * @return the default color of text in the Pentaho Crystal theme
    */
@@ -1546,22 +1644,21 @@ public class GUIResource {
     return colorCrystalTextPentaho.getColor();
   }
 
-
-  public void drawPentahoGradient(Display display, GC gc, Rectangle rect, boolean vertical) {
-    if (!vertical) {
-      gc.setForeground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
-      gc.setBackground(GUIResource.getInstance().getColorPentaho());
-      gc.fillGradientRectangle(rect.x, rect.y, 2 * rect.width / 3, rect.height, vertical);
-      gc.setForeground(GUIResource.getInstance().getColorPentaho());
-      gc.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
-      gc.fillGradientRectangle(rect.x + 2 * rect.width / 3, rect.y, rect.width / 3 + 1, rect.height, vertical);
+  public void drawPentahoGradient( Display display, GC gc, Rectangle rect, boolean vertical ) {
+    if ( !vertical ) {
+      gc.setForeground( display.getSystemColor( SWT.COLOR_WIDGET_BACKGROUND ) );
+      gc.setBackground( GUIResource.getInstance().getColorPentaho() );
+      gc.fillGradientRectangle( rect.x, rect.y, 2 * rect.width / 3, rect.height, vertical );
+      gc.setForeground( GUIResource.getInstance().getColorPentaho() );
+      gc.setBackground( display.getSystemColor( SWT.COLOR_WIDGET_BACKGROUND ) );
+      gc.fillGradientRectangle( rect.x + 2 * rect.width / 3, rect.y, rect.width / 3 + 1, rect.height, vertical );
     } else {
-      gc.setForeground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
-      gc.setBackground(GUIResource.getInstance().getColorPentaho());
-      gc.fillGradientRectangle(rect.x, rect.y, rect.width, 2 * rect.height / 3, vertical);
-      gc.setForeground(GUIResource.getInstance().getColorPentaho());
-      gc.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
-      gc.fillGradientRectangle(rect.x, rect.y + 2 * rect.height / 3, rect.width, rect.height / 3 + 1, vertical);
+      gc.setForeground( display.getSystemColor( SWT.COLOR_WIDGET_BACKGROUND ) );
+      gc.setBackground( GUIResource.getInstance().getColorPentaho() );
+      gc.fillGradientRectangle( rect.x, rect.y, rect.width, 2 * rect.height / 3, vertical );
+      gc.setForeground( GUIResource.getInstance().getColorPentaho() );
+      gc.setBackground( display.getSystemColor( SWT.COLOR_WIDGET_BACKGROUND ) );
+      gc.fillGradientRectangle( rect.x, rect.y + 2 * rect.height / 3, rect.width, rect.height / 3 + 1, vertical );
     }
   }
 
@@ -1578,10 +1675,10 @@ public class GUIResource {
    * @param toggleState
    * @return
    */
-  public Object[] messageDialogWithToggle(Shell shell, String dialogTitle, Image image, String message,
-      int dialogImageType, String buttonLabels[], int defaultIndex, String toggleMessage, boolean toggleState) {
+  public Object[] messageDialogWithToggle( Shell shell, String dialogTitle, Image image, String message,
+      int dialogImageType, String[] buttonLabels, int defaultIndex, String toggleMessage, boolean toggleState ) {
     int imageType = 0;
-    switch (dialogImageType) {
+    switch ( dialogImageType ) {
       case Const.WARNING:
         imageType = MessageDialog.WARNING;
         break;
@@ -1589,46 +1686,33 @@ public class GUIResource {
         break;
     }
 
-    MessageDialogWithToggle md = new MessageDialogWithToggle(shell, dialogTitle, image, message, imageType,
-        buttonLabels, defaultIndex, toggleMessage, toggleState);
+    MessageDialogWithToggle md =
+        new MessageDialogWithToggle( shell, dialogTitle, image, message, imageType, buttonLabels, defaultIndex,
+            toggleMessage, toggleState );
     int idx = md.open();
-    return new Object[] { Integer.valueOf(idx), Boolean.valueOf(md.getToggleState()) };
+    return new Object[] { Integer.valueOf( idx ), Boolean.valueOf( md.getToggleState() ) };
   }
 
-  public static Point calculateControlPosition(Control control) {
+  public static Point calculateControlPosition( Control control ) {
     // Calculate the exact location...
     //
     Rectangle r = control.getBounds();
-    Point p = control.getParent().toDisplay(r.x, r.y);
+    Point p = control.getParent().toDisplay( r.x, r.y );
 
     return p;
 
     /*
-    Point location = control.getLocation();
-    
-    Composite parent = control.getParent();
-    while (parent!=null) {
-    	
-    	Composite newParent = parent.getParent();
-    	if (newParent!=null) {
-    		location.x+=parent.getLocation().x;
-    		location.y+=parent.getLocation().y;
-    	}
-    	else {
-    		if (parent instanceof Shell) {
-    			// Top level shell.
-    			Shell shell = (Shell)parent;
-    			Rectangle bounds = shell.getBounds();
-    			Rectangle clientArea = shell.getClientArea();
-    			location.x += bounds.width-clientArea.width;
-    			location.y += bounds.height-clientArea.height;
-    		}
-    	}
-    	parent = newParent;
-    }
-    
-    return location;
-    */
+     * Point location = control.getLocation();
+     * 
+     * Composite parent = control.getParent(); while (parent!=null) {
+     * 
+     * Composite newParent = parent.getParent(); if (newParent!=null) { location.x+=parent.getLocation().x;
+     * location.y+=parent.getLocation().y; } else { if (parent instanceof Shell) { // Top level shell. Shell shell =
+     * (Shell)parent; Rectangle bounds = shell.getBounds(); Rectangle clientArea = shell.getClientArea(); location.x +=
+     * bounds.width-clientArea.width; location.y += bounds.height-clientArea.height; } } parent = newParent; }
+     * 
+     * return location;
+     */
   }
 
   /**
@@ -1674,28 +1758,28 @@ public class GUIResource {
   }
 
   /**
-   * @return the "hide inactive" image 
+   * @return the "hide inactive" image
    */
   public Image getImageHideInactive() {
     return imageHideInactive;
   }
 
   /**
-   * @return the "show inactive" image 
+   * @return the "show inactive" image
    */
   public Image getImageShowInactive() {
     return imageShowInactive;
   }
 
   /**
-   * @return the "show selected" image 
+   * @return the "show selected" image
    */
   public Image getImageShowSelected() {
     return imageShowSelected;
   }
 
   /**
-   * @return the "show all" image 
+   * @return the "show all" image
    */
   public Image getImageShowAll() {
     return imageShowAll;
@@ -1834,35 +1918,34 @@ public class GUIResource {
   }
 
   /**
-   * Loads an image from a location once.  The second time, the image comes from a cache.
-   * Because of this, it's important to never dispose of the image you get from here. (easy!)
-   * The images are automatically disposed when the application ends.
+   * Loads an image from a location once. The second time, the image comes from a cache. Because of this, it's important
+   * to never dispose of the image you get from here. (easy!) The images are automatically disposed when the application
+   * ends.
    * 
    * @param location
    * @return
    */
-  public Image getImage(String location) {
-    Image image = imageMap.get(location);
-    if (image == null) {
-      image = ImageUtil.getImage(display, location);
-      imageMap.put(location, image);
+  public Image getImage( String location ) {
+    Image image = imageMap.get( location );
+    if ( image == null ) {
+      image = ImageUtil.getImage( display, location );
+      imageMap.put( location, image );
     }
     return image;
   }
 
-  public Color getColor(int red, int green, int blue) {
-    RGB rgb = new RGB(red, green, blue);
-    Color color = colorMap.get(rgb);
-    if (color == null) {
-      color = new Color(display, rgb);
-      colorMap.put(rgb, color);
+  public Color getColor( int red, int green, int blue ) {
+    RGB rgb = new RGB( red, green, blue );
+    Color color = colorMap.get( rgb );
+    if ( color == null ) {
+      color = new Color( display, rgb );
+      colorMap.put( rgb, color );
     }
     return color;
   }
 
   /**
-   * @return The image map used to cache images loaded from certain location
-   *         using getImage(String location);
+   * @return The image map used to cache images loaded from certain location using getImage(String location);
    */
   public Map<String, Image> getImageMap() {
     return imageMap;
@@ -1917,7 +2000,7 @@ public class GUIResource {
     return imageSpoonHigh;
   }
 
-  public void setImageSpoonHigh(Image imageSpoonHigh) {
+  public void setImageSpoonHigh( Image imageSpoonHigh ) {
     this.imageSpoonHigh = imageSpoonHigh;
   }
 
@@ -1936,8 +2019,8 @@ public class GUIResource {
   public Image getHadoop() {
     return imageHadoop;
   }
-  
-  public void setImageDropHere(Image imageDropHere) {
+
+  public void setImageDropHere( Image imageDropHere ) {
     this.imageDropHere = imageDropHere;
   }
 

@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.ui.spoon.trans;
 
@@ -84,43 +84,45 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
 
   private XulToolbar toolbar;
   private Composite transPreviewComposite;
-  
+
   protected Map<StepMeta, RowMetaInterface> previewMetaMap;
   protected Map<StepMeta, List<Object[]>> previewDataMap;
   protected Map<StepMeta, StringBuffer> previewLogMap;
   private Composite previewComposite;
-  
+
   private Text logText;
-  private TableView tableView; 
-  
-  public enum PreviewMode { FIRST, LAST, OFF, }
-  
+  private TableView tableView;
+
+  public enum PreviewMode {
+    FIRST, LAST, OFF,
+  }
+
   private PreviewMode previewMode;
-  
+
   private StepMeta selectedStep;
   protected StepMeta lastSelectedStep;
   private SwtRadio firstRadio;
   private SwtRadio lastRadio;
   private SwtRadio offRadio;
-  
+
   /**
    * @param spoon
    * @param transGraph
    */
-  public TransPreviewDelegate(Spoon spoon, TransGraph transGraph) {
-    super(spoon);
+  public TransPreviewDelegate( Spoon spoon, TransGraph transGraph ) {
+    super( spoon );
     this.transGraph = transGraph;
-    
+
     previewMetaMap = new HashMap<StepMeta, RowMetaInterface>();
     previewDataMap = new HashMap<StepMeta, List<Object[]>>();
     previewLogMap = new HashMap<StepMeta, StringBuffer>();
-    
+
     previewMode = PreviewMode.FIRST;
   }
 
   public void showPreviewView() {
 
-    if (transPreviewTab == null || transPreviewTab.isDisposed()) {
+    if ( transPreviewTab == null || transPreviewTab.isDisposed() ) {
       addTransPreview();
     } else {
       transPreviewTab.dispose();
@@ -137,84 +139,84 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
 
     // First, see if we need to add the extra view...
     //
-    if (transGraph.extraViewComposite == null || transGraph.extraViewComposite.isDisposed()) {
+    if ( transGraph.extraViewComposite == null || transGraph.extraViewComposite.isDisposed() ) {
       transGraph.addExtraView();
     } else {
-      if (transPreviewTab != null && !transPreviewTab.isDisposed()) {
+      if ( transPreviewTab != null && !transPreviewTab.isDisposed() ) {
         // just set this one active and get out...
         //
-        transGraph.extraViewTabFolder.setSelection(transPreviewTab);
+        transGraph.extraViewTabFolder.setSelection( transPreviewTab );
         return;
       }
     }
 
-    transPreviewTab = new CTabItem(transGraph.extraViewTabFolder, SWT.NONE);
-    transPreviewTab.setImage(GUIResource.getInstance().getImageTable());
-    transPreviewTab.setText(BaseMessages.getString(PKG, "Spoon.TransGraph.PreviewTab.Name"));
+    transPreviewTab = new CTabItem( transGraph.extraViewTabFolder, SWT.NONE );
+    transPreviewTab.setImage( GUIResource.getInstance().getImageTable() );
+    transPreviewTab.setText( BaseMessages.getString( PKG, "Spoon.TransGraph.PreviewTab.Name" ) );
 
-    transPreviewComposite = new Composite(transGraph.extraViewTabFolder, SWT.NONE);
-    transPreviewComposite.setLayout(new FormLayout());
+    transPreviewComposite = new Composite( transGraph.extraViewTabFolder, SWT.NONE );
+    transPreviewComposite.setLayout( new FormLayout() );
 
     addToolBar();
 
     Control toolbarControl = (Control) toolbar.getManagedObject();
 
-    toolbarControl.setLayoutData(new FormData());
+    toolbarControl.setLayoutData( new FormData() );
     FormData fd = new FormData();
-    fd.left = new FormAttachment(0, 0); // First one in the left top corner
-    fd.top = new FormAttachment(0, 0);
-    fd.right = new FormAttachment(100, 0);
-    toolbarControl.setLayoutData(fd);
+    fd.left = new FormAttachment( 0, 0 ); // First one in the left top corner
+    fd.top = new FormAttachment( 0, 0 );
+    fd.right = new FormAttachment( 100, 0 );
+    toolbarControl.setLayoutData( fd );
 
-    toolbarControl.setParent(transPreviewComposite);
+    toolbarControl.setParent( transPreviewComposite );
 
-    previewComposite = new Composite(transPreviewComposite, SWT.NONE);
-    previewComposite.setLayout(new FillLayout());
+    previewComposite = new Composite( transPreviewComposite, SWT.NONE );
+    previewComposite.setLayout( new FillLayout() );
     FormData fdPreview = new FormData();
-    fdPreview.left = new FormAttachment(0, 0);
-    fdPreview.right = new FormAttachment(100, 0);
-    fdPreview.top = new FormAttachment((Control)toolbar.getManagedObject(), 0);
-    fdPreview.bottom = new FormAttachment(100, 0);
-    previewComposite.setLayoutData(fdPreview);
-    
-    
-    transPreviewTab.setControl(transPreviewComposite);
+    fdPreview.left = new FormAttachment( 0, 0 );
+    fdPreview.right = new FormAttachment( 100, 0 );
+    fdPreview.top = new FormAttachment( (Control) toolbar.getManagedObject(), 0 );
+    fdPreview.bottom = new FormAttachment( 100, 0 );
+    previewComposite.setLayoutData( fdPreview );
 
-    transGraph.extraViewTabFolder.setSelection(transPreviewTab);
-    
-    transGraph.extraViewTabFolder.addSelectionListener(new SelectionAdapter() {
+    transPreviewTab.setControl( transPreviewComposite );
+
+    transGraph.extraViewTabFolder.setSelection( transPreviewTab );
+
+    transGraph.extraViewTabFolder.addSelectionListener( new SelectionAdapter() {
       @Override
-      public void widgetSelected(SelectionEvent e) {
+      public void widgetSelected( SelectionEvent e ) {
         refreshView();
       }
-    });
+    } );
   }
 
   private void addToolBar() {
 
     try {
       XulLoader loader = new KettleXulLoader();
-      loader.setSettingsManager(XulSpoonSettingsManager.getInstance());
-      ResourceBundle bundle = GlobalMessages.getBundle("org/pentaho/di/ui/spoon/messages/messages");
-      XulDomContainer xulDomContainer = loader.loadXul(XUL_FILE_TRANS_PREVIEW_TOOLBAR, bundle);
-      xulDomContainer.addEventHandler(this);
-      toolbar = (XulToolbar) xulDomContainer.getDocumentRoot().getElementById("nav-toolbar");
+      loader.setSettingsManager( XulSpoonSettingsManager.getInstance() );
+      ResourceBundle bundle = GlobalMessages.getBundle( "org/pentaho/di/ui/spoon/messages/messages" );
+      XulDomContainer xulDomContainer = loader.loadXul( XUL_FILE_TRANS_PREVIEW_TOOLBAR, bundle );
+      xulDomContainer.addEventHandler( this );
+      toolbar = (XulToolbar) xulDomContainer.getDocumentRoot().getElementById( "nav-toolbar" );
       ToolBar swtToolBar = (ToolBar) toolbar.getManagedObject();
-      swtToolBar.layout(true, true);
+      swtToolBar.layout( true, true );
       swtToolBar.pack();
-      
-      firstRadio = (SwtRadio) xulDomContainer.getDocumentRoot().getElementById("preview-first");
-      lastRadio = (SwtRadio) xulDomContainer.getDocumentRoot().getElementById("preview-last");
-      offRadio = (SwtRadio) xulDomContainer.getDocumentRoot().getElementById("preview-off");
-      
-      PropsUI.getInstance().setLook((Control)firstRadio.getManagedObject());
-      PropsUI.getInstance().setLook((Control)lastRadio.getManagedObject());
-      PropsUI.getInstance().setLook((Control)offRadio.getManagedObject());
-      
-    } catch (Throwable t) {
-      log.logError(toString(), Const.getStackTracker(t));
-      new ErrorDialog(transPreviewComposite.getShell(), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"),
-          BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_PREVIEW_TOOLBAR), new Exception(t));
+
+      firstRadio = (SwtRadio) xulDomContainer.getDocumentRoot().getElementById( "preview-first" );
+      lastRadio = (SwtRadio) xulDomContainer.getDocumentRoot().getElementById( "preview-last" );
+      offRadio = (SwtRadio) xulDomContainer.getDocumentRoot().getElementById( "preview-off" );
+
+      PropsUI.getInstance().setLook( (Control) firstRadio.getManagedObject() );
+      PropsUI.getInstance().setLook( (Control) lastRadio.getManagedObject() );
+      PropsUI.getInstance().setLook( (Control) offRadio.getManagedObject() );
+
+    } catch ( Throwable t ) {
+      log.logError( toString(), Const.getStackTracker( t ) );
+      new ErrorDialog( transPreviewComposite.getShell(), BaseMessages.getString( PKG,
+          "Spoon.Exception.ErrorReadingXULFile.Title" ), BaseMessages.getString( PKG,
+          "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_PREVIEW_TOOLBAR ), new Exception( t ) );
     }
   }
 
@@ -222,117 +224,119 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
    * This refresh is driven by outside influenced using listeners and so on.
    */
   public synchronized void refreshView() {
-    if (transGraph != null && transGraph.extraViewTabFolder != null) {
-      if (transGraph.extraViewTabFolder.getSelection() != transPreviewTab) {
+    if ( transGraph != null && transGraph.extraViewTabFolder != null ) {
+      if ( transGraph.extraViewTabFolder.getSelection() != transPreviewTab ) {
         return;
       }
     }
-    
-    if (previewComposite==null || previewComposite.isDisposed()) {
+
+    if ( previewComposite == null || previewComposite.isDisposed() ) {
       return;
     }
-    
+
     // Which step do we preview...
     //
     StepMeta stepMeta = selectedStep; // copy to prevent race conditions and so on.
-    if (stepMeta==null /* || selectedStep == lastSelectedStep */) {
+    if ( stepMeta == null /* || selectedStep == lastSelectedStep */) {
       return;
     } else {
       lastSelectedStep = selectedStep;
     }
-    
+
     // Do we have a log for this selected step?
     // This means the preview work is still running or it error-ed out.
     //
     boolean errorStep = false;
-    if (transGraph.trans!=null) {
-      List<StepInterface> steps = transGraph.trans.findBaseSteps(stepMeta.getName());
-      if (steps!=null && steps.size()>0) {
-        errorStep = steps.get(0).getErrors()>0;
+    if ( transGraph.trans != null ) {
+      List<StepInterface> steps = transGraph.trans.findBaseSteps( stepMeta.getName() );
+      if ( steps != null && steps.size() > 0 ) {
+        errorStep = steps.get( 0 ).getErrors() > 0;
       }
     }
-    
-    StringBuffer logText = previewLogMap.get(stepMeta);
-    if (errorStep && logText!=null && logText.length()>0) {
-      showLogText(stepMeta, logText.toString());
+
+    StringBuffer logText = previewLogMap.get( stepMeta );
+    if ( errorStep && logText != null && logText.length() > 0 ) {
+      showLogText( stepMeta, logText.toString() );
       return;
-    } 
-    
+    }
+
     // If the preview work is done we have row meta-data and data for each step.
     //
-    RowMetaInterface rowMeta = previewMetaMap.get(stepMeta);
-    if (rowMeta!=null) {
-      List<Object[]> rowData = previewDataMap.get(stepMeta);
-      
+    RowMetaInterface rowMeta = previewMetaMap.get( stepMeta );
+    if ( rowMeta != null ) {
+      List<Object[]> rowData = previewDataMap.get( stepMeta );
+
       try {
-        showPreviewGrid(transGraph.getManagedObject(), stepMeta, rowMeta, rowData);
-      } catch(Exception e) {
+        showPreviewGrid( transGraph.getManagedObject(), stepMeta, rowMeta, rowData );
+      } catch ( Exception e ) {
         e.printStackTrace();
-        logText.append( Const.getStackTracker(e) );
-        showLogText(stepMeta, logText.toString());
+        logText.append( Const.getStackTracker( e ) );
+        showLogText( stepMeta, logText.toString() );
       }
     }
   }
 
-  protected void showPreviewGrid(TransMeta transMeta, StepMeta stepMeta, RowMetaInterface rowMeta, List<Object[]> rowsData) throws KettleException {
+  protected void showPreviewGrid( TransMeta transMeta, StepMeta stepMeta, RowMetaInterface rowMeta,
+      List<Object[]> rowsData ) throws KettleException {
     clearPreviewComposite();
-    
+
     ColumnInfo[] columnInfo = new ColumnInfo[rowMeta.size()];
-    for (int i=0;i<columnInfo.length;i++) {
-      ValueMetaInterface valueMeta = rowMeta.getValueMeta(i);
-      columnInfo[i] = new ColumnInfo(valueMeta.getName(), ColumnInfo.COLUMN_TYPE_TEXT, false, true);
-      columnInfo[i].setValueMeta(valueMeta);
+    for ( int i = 0; i < columnInfo.length; i++ ) {
+      ValueMetaInterface valueMeta = rowMeta.getValueMeta( i );
+      columnInfo[i] = new ColumnInfo( valueMeta.getName(), ColumnInfo.COLUMN_TYPE_TEXT, false, true );
+      columnInfo[i].setValueMeta( valueMeta );
     }
-    
-    tableView = new TableView(transMeta, previewComposite, SWT.NONE, columnInfo, rowsData.size(), null, PropsUI.getInstance());
-    
+
+    tableView =
+        new TableView( transMeta, previewComposite, SWT.NONE, columnInfo, rowsData.size(), null, PropsUI.getInstance() );
+
     // Put data on it...
     //
-    for (int rowNr=0;rowNr<rowsData.size();rowNr++) {
-      Object[] rowData = rowsData.get(rowNr);
+    for ( int rowNr = 0; rowNr < rowsData.size(); rowNr++ ) {
+      Object[] rowData = rowsData.get( rowNr );
       TableItem item;
-      if (rowNr<tableView.table.getItemCount()) {
-        item = tableView.table.getItem(rowNr);
+      if ( rowNr < tableView.table.getItemCount() ) {
+        item = tableView.table.getItem( rowNr );
       } else {
-        item = new TableItem(tableView.table, SWT.NONE);
+        item = new TableItem( tableView.table, SWT.NONE );
       }
-      for (int colNr=0;colNr<rowMeta.size();colNr++) {
+      for ( int colNr = 0; colNr < rowMeta.size(); colNr++ ) {
         String string;
         try {
-          string = rowMeta.getString(rowData, colNr);
-        } catch(Exception e) {
-          string = "Conversion error: "+e.getMessage(); 
+          string = rowMeta.getString( rowData, colNr );
+        } catch ( Exception e ) {
+          string = "Conversion error: " + e.getMessage();
         }
-        if (string == null) {
-          item.setText(colNr+1, "<null>");
-          item.setForeground(colNr+1, GUIResource.getInstance().getColorBlue());
+        if ( string == null ) {
+          item.setText( colNr + 1, "<null>" );
+          item.setForeground( colNr + 1, GUIResource.getInstance().getColorBlue() );
         } else {
-          item.setText(colNr+1, string);
+          item.setText( colNr + 1, string );
         }
       }
     }
-    
+
     tableView.setRowNums();
-    tableView.setShowingConversionErrorsInline(true);
-    tableView.optWidth(true);
-    
-    previewComposite.layout(true, true);
+    tableView.setShowingConversionErrorsInline( true );
+    tableView.optWidth( true );
+
+    previewComposite.layout( true, true );
   }
 
-  protected void showLogText(StepMeta stepMeta, String loggingText) {
+  protected void showLogText( StepMeta stepMeta, String loggingText ) {
     clearPreviewComposite();
-    
-    logText = new Text(previewComposite, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
-    logText.setText(loggingText);
-    
-    previewComposite.layout(true, true);    
+
+    logText = new Text( previewComposite, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL );
+    logText.setText( loggingText );
+
+    previewComposite.layout( true, true );
   }
 
   private void clearPreviewComposite() {
     // First clear out the preview composite, then put in a text field showing the log text
     //
     //
-    for (Control control : previewComposite.getChildren()) {
+    for ( Control control : previewComposite.getChildren() ) {
       control.dispose();
     }
   }
@@ -375,7 +379,7 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
    * 
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setData(java.lang.Object)
    */
-  public void setData(Object data) {
+  public void setData( Object data ) {
     // TODO Auto-generated method stub
 
   }
@@ -385,7 +389,7 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
    * 
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setName(java.lang.String)
    */
-  public void setName(String name) {
+  public void setName( String name ) {
     // TODO Auto-generated method stub
 
   }
@@ -393,11 +397,9 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
   /*
    * (non-Javadoc)
    * 
-   * @see
-   * org.pentaho.ui.xul.impl.XulEventHandler#setXulDomContainer(org.pentaho.
-   * ui.xul.XulDomContainer)
+   * @see org.pentaho.ui.xul.impl.XulEventHandler#setXulDomContainer(org.pentaho. ui.xul.XulDomContainer)
    */
-  public void setXulDomContainer(XulDomContainer xulDomContainer) {
+  public void setXulDomContainer( XulDomContainer xulDomContainer ) {
     // TODO Auto-generated method stub
 
   }
@@ -406,107 +408,109 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
    * @return the active
    */
   public boolean isActive() {
-    return previewMode!=PreviewMode.OFF;
+    return previewMode != PreviewMode.OFF;
   }
 
-  public void setPreviewMode(PreviewMode previewMode) {
+  public void setPreviewMode( PreviewMode previewMode ) {
     this.previewMode = previewMode;
   }
 
-
-  public void capturePreviewData(final Trans trans, List<StepMeta> stepMetas) {
+  public void capturePreviewData( final Trans trans, List<StepMeta> stepMetas ) {
     final StringBuffer loggingText = new StringBuffer();
-    
+
     // First clean out previous preview data. Otherwise this method leaks memory like crazy.
     //
     previewLogMap.clear();
     previewMetaMap.clear();
     previewDataMap.clear();
-    
+
     try {
       final TransMeta transMeta = trans.getTransMeta();
-    
-      for (final StepMeta stepMeta : stepMetas) {
-        
-        final RowMetaInterface rowMeta = transMeta.getStepFields(stepMeta).clone();
-        previewMetaMap.put(stepMeta, rowMeta);
+
+      for ( final StepMeta stepMeta : stepMetas ) {
+
+        final RowMetaInterface rowMeta = transMeta.getStepFields( stepMeta ).clone();
+        previewMetaMap.put( stepMeta, rowMeta );
         final List<Object[]> rowsData;
-        if (previewMode==PreviewMode.LAST) {
+        if ( previewMode == PreviewMode.LAST ) {
           rowsData = new LinkedList<Object[]>();
         } else {
           rowsData = new ArrayList<Object[]>();
         }
 
-        previewDataMap.put(stepMeta, rowsData);
-        previewLogMap.put(stepMeta, loggingText);
-        
-        StepInterface step = trans.findRunThread(stepMeta.getName());
-        
-        if (step!=null) {
-          
-          switch(previewMode) {
+        previewDataMap.put( stepMeta, rowsData );
+        previewLogMap.put( stepMeta, loggingText );
+
+        StepInterface step = trans.findRunThread( stepMeta.getName() );
+
+        if ( step != null ) {
+
+          switch ( previewMode ) {
             case LAST:
-              step.addRowListener(new RowAdapter() {
+              step.addRowListener( new RowAdapter() {
                 @Override
-                public void rowWrittenEvent(RowMetaInterface rowMeta, Object[] row) throws KettleStepException {
-                    try {
-                      rowsData.add(rowMeta.cloneRow(row));
-                      if (rowsData.size()>PropsUI.getInstance().getDefaultPreviewSize()) {
-                        rowsData.remove(0);
-                      }
-                    } catch(Exception e) {
-                      throw new KettleStepException("Unable to clone row for metadata : "+rowMeta, e);
+                public void rowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
+                  try {
+                    rowsData.add( rowMeta.cloneRow( row ) );
+                    if ( rowsData.size() > PropsUI.getInstance().getDefaultPreviewSize() ) {
+                      rowsData.remove( 0 );
                     }
+                  } catch ( Exception e ) {
+                    throw new KettleStepException( "Unable to clone row for metadata : " + rowMeta, e );
                   }
-                });
+                }
+              } );
               break;
             default:
-              step.addRowListener(new RowAdapter() {
-                
+              step.addRowListener( new RowAdapter() {
+
                 @Override
-                public void rowWrittenEvent(RowMetaInterface rowMeta, Object[] row) throws KettleStepException {
-                  if (rowsData.size()<PropsUI.getInstance().getDefaultPreviewSize()) {
+                public void rowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
+                  if ( rowsData.size() < PropsUI.getInstance().getDefaultPreviewSize() ) {
                     try {
-                      rowsData.add(rowMeta.cloneRow(row));
-                    } catch(Exception e) {
-                      throw new KettleStepException("Unable to clone row for metadata : "+rowMeta, e);
+                      rowsData.add( rowMeta.cloneRow( row ) );
+                    } catch ( Exception e ) {
+                      throw new KettleStepException( "Unable to clone row for metadata : " + rowMeta, e );
                     }
                   }
                 }
-              });
+              } );
               break;
           }
         }
-          
+
       }
-    } catch(Exception e) {
-      loggingText.append(Const.getStackTracker(e));
+    } catch ( Exception e ) {
+      loggingText.append( Const.getStackTracker( e ) );
     }
 
     // In case there were errors during preview...
     //
-    trans.addTransListener(new TransAdapter() { @Override
-      public void transFinished(Trans trans) throws KettleException {
+    trans.addTransListener( new TransAdapter() {
+      @Override
+      public void transFinished( Trans trans ) throws KettleException {
         // Copy over the data from the previewDelegate...
         //
-        if (trans.getErrors()!=0) {
+        if ( trans.getErrors() != 0 ) {
           // capture logging and store it...
           //
-          for (StepMetaDataCombi combi : trans.getSteps()) {
-            if (combi.copy==0) {
-              StringBuffer logBuffer = KettleLogStore.getAppender().getBuffer(combi.step.getLogChannel().getLogChannelId(), false);
-              previewLogMap.put(combi.stepMeta, logBuffer);
+          for ( StepMetaDataCombi combi : trans.getSteps() ) {
+            if ( combi.copy == 0 ) {
+              StringBuffer logBuffer =
+                  KettleLogStore.getAppender().getBuffer( combi.step.getLogChannel().getLogChannelId(), false );
+              previewLogMap.put( combi.stepMeta, logBuffer );
             }
           }
         }
       }
-    });
+    } );
   }
 
-  public void addPreviewData(StepMeta stepMeta, RowMetaInterface rowMeta, List<Object[]> rowsData, StringBuffer buffer) {
-    previewLogMap.put(stepMeta, buffer);
-    previewMetaMap.put(stepMeta, rowMeta);
-    previewDataMap.put(stepMeta, rowsData);
+  public void
+    addPreviewData( StepMeta stepMeta, RowMetaInterface rowMeta, List<Object[]> rowsData, StringBuffer buffer ) {
+    previewLogMap.put( stepMeta, buffer );
+    previewMetaMap.put( stepMeta, rowMeta );
+    previewDataMap.put( stepMeta, rowsData );
   }
 
   /**
@@ -517,34 +521,35 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
   }
 
   /**
-   * @param selectedStep the selectedStep to set
+   * @param selectedStep
+   *          the selectedStep to set
    */
-  public void setSelectedStep(StepMeta selectedStep) {
+  public void setSelectedStep( StepMeta selectedStep ) {
     this.selectedStep = selectedStep;
   }
 
   public PreviewMode getPreviewMode() {
     return previewMode;
   }
-  
+
   public void first() {
-    previewMode=PreviewMode.FIRST;
-    firstRadio.setSelected(true);
-    lastRadio.setSelected(false);
-    offRadio.setSelected(false);
+    previewMode = PreviewMode.FIRST;
+    firstRadio.setSelected( true );
+    lastRadio.setSelected( false );
+    offRadio.setSelected( false );
   }
-  
+
   public void last() {
-    previewMode=PreviewMode.LAST;
-    firstRadio.setSelected(false);
-    lastRadio.setSelected(true);
-    offRadio.setSelected(false);
+    previewMode = PreviewMode.LAST;
+    firstRadio.setSelected( false );
+    lastRadio.setSelected( true );
+    offRadio.setSelected( false );
   }
-  
+
   public void off() {
-    previewMode=PreviewMode.OFF;
-    firstRadio.setSelected(false);
-    lastRadio.setSelected(false);
-    offRadio.setSelected(true);
+    previewMode = PreviewMode.OFF;
+    firstRadio.setSelected( false );
+    lastRadio.setSelected( false );
+    offRadio.setSelected( true );
   }
 }

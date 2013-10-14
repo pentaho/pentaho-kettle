@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.ui.trans.steps.prioritizestreams;
 
@@ -52,205 +52,216 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
+public class PrioritizeStreamsDialog extends BaseStepDialog implements StepDialogInterface {
+  private static Class<?> PKG = PrioritizeStreamsMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-public class PrioritizeStreamsDialog extends BaseStepDialog implements StepDialogInterface
-{
-	private static Class<?> PKG = PrioritizeStreamsMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
-	 
-	private String previousSteps[] ;
-	private PrioritizeStreamsMeta input;
+  private String[] previousSteps;
+  private PrioritizeStreamsMeta input;
 
-	private Label        wlFields;
-	private TableView    wFields;
-	private FormData     fdlFields, fdFields;
-	
-	public PrioritizeStreamsDialog(Shell parent, Object in, TransMeta tr, String sname)
-	{
-		super(parent, (BaseStepMeta)in, tr, sname);
-		input=(PrioritizeStreamsMeta)in;
-	}
+  private Label wlFields;
+  private TableView wFields;
+  private FormData fdlFields, fdFields;
 
-	public String open()
-	{
-		Shell parent = getParent();
-		Display display = parent.getDisplay();
+  public PrioritizeStreamsDialog( Shell parent, Object in, TransMeta tr, String sname ) {
+    super( parent, (BaseStepMeta) in, tr, sname );
+    input = (PrioritizeStreamsMeta) in;
+  }
 
-		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MIN | SWT.MAX);
- 		props.setLook(shell);
- 		setShellImage(shell, input);
-        
-		ModifyListener lsMod = new ModifyListener() 
-		{
-			public void modifyText(ModifyEvent e) 
-			{
-				input.setChanged();
-			}
-		};
-		changed = input.hasChanged();
+  public String open() {
+    Shell parent = getParent();
+    Display display = parent.getDisplay();
 
-		FormLayout formLayout = new FormLayout ();
-		formLayout.marginWidth  = Const.FORM_MARGIN;
-		formLayout.marginHeight = Const.FORM_MARGIN;
+    shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MIN | SWT.MAX );
+    props.setLook( shell );
+    setShellImage( shell, input );
 
-		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "PrioritizeStreamsDialog.Shell.Title")); 
-		
-		int middle = props.getMiddlePct();
-		int margin = Const.MARGIN;
+    ModifyListener lsMod = new ModifyListener() {
+      public void modifyText( ModifyEvent e ) {
+        input.setChanged();
+      }
+    };
+    changed = input.hasChanged();
 
-		// Stepname line
-		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "PrioritizeStreamsDialog.Stepname.Label")); 
- 		props.setLook(wlStepname);
-		fdlStepname=new FormData();
-		fdlStepname.left = new FormAttachment(0, 0);
-		fdlStepname.right= new FormAttachment(middle, -margin);
-		fdlStepname.top  = new FormAttachment(0, margin);
-		wlStepname.setLayoutData(fdlStepname);
-		wStepname=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wStepname.setText(stepname);
- 		props.setLook(wStepname);
-		wStepname.addModifyListener(lsMod);
-		fdStepname=new FormData();
-		fdStepname.left = new FormAttachment(middle, 0);
-		fdStepname.top  = new FormAttachment(0, margin);
-		fdStepname.right= new FormAttachment(100, 0);
-		wStepname.setLayoutData(fdStepname);
-		
-        // Get the previous steps...
-        previousSteps = transMeta.getPrevStepNames(stepname);
-        
-		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
-		wGet=new Button(shell, SWT.PUSH);
-		wGet.setText(BaseMessages.getString(PKG, "PrioritizeStreamsDialog.getPreviousSteps.Label"));
-		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
+    FormLayout formLayout = new FormLayout();
+    formLayout.marginWidth = Const.FORM_MARGIN;
+    formLayout.marginHeight = Const.FORM_MARGIN;
 
-		setButtonPositions(new Button[] { wOK, wGet, wCancel }, margin, null);
-        
-	
-        // Table with fields
-		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText(BaseMessages.getString(PKG, "PrioritizeStreamsDialog.Fields.Label"));
- 		props.setLook(wlFields);
-		fdlFields=new FormData();
-		fdlFields.left = new FormAttachment(0, 0);
-		fdlFields.top  = new FormAttachment(wStepname, margin);
-		wlFields.setLayoutData(fdlFields);
-		
-		final int FieldsCols=1;
-		final int FieldsRows=input.getStepName().length;
-		
-		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo(BaseMessages.getString(PKG, "PrioritizeStreamsDialog.Fieldname.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO,  previousSteps, false);
-		wFields=new TableView(transMeta, shell, 
-							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
-							  colinf, 
-							  FieldsRows,  
-							  lsMod,
-							  props
-							  );
+    shell.setLayout( formLayout );
+    shell.setText( BaseMessages.getString( PKG, "PrioritizeStreamsDialog.Shell.Title" ) );
 
-		fdFields=new FormData();
-		fdFields.left  = new FormAttachment(0, 0);
-		fdFields.top   = new FormAttachment(wlFields, margin);
-		fdFields.right = new FormAttachment(100, 0);
-		fdFields.bottom= new FormAttachment(wOK, -2*margin);
-		wFields.setLayoutData(fdFields);
+    int middle = props.getMiddlePct();
+    int margin = Const.MARGIN;
 
-		// Add listeners
-		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
-		lsGet      = new Listener() { public void handleEvent(Event e) { get();    } };
-		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
-		
-		
-		wCancel.addListener(SWT.Selection, lsCancel);
-		wOK.addListener    (SWT.Selection, lsOK    );
-		wGet.addListener   (SWT.Selection, lsGet   );
-		
-		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
-		
-		wStepname.addSelectionListener( lsDef );
-		
-		// Detect X or ALT-F4 or something that kills this window...
-		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
+    // Stepname line
+    wlStepname = new Label( shell, SWT.RIGHT );
+    wlStepname.setText( BaseMessages.getString( PKG, "PrioritizeStreamsDialog.Stepname.Label" ) );
+    props.setLook( wlStepname );
+    fdlStepname = new FormData();
+    fdlStepname.left = new FormAttachment( 0, 0 );
+    fdlStepname.right = new FormAttachment( middle, -margin );
+    fdlStepname.top = new FormAttachment( 0, margin );
+    wlStepname.setLayoutData( fdlStepname );
+    wStepname = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wStepname.setText( stepname );
+    props.setLook( wStepname );
+    wStepname.addModifyListener( lsMod );
+    fdStepname = new FormData();
+    fdStepname.left = new FormAttachment( middle, 0 );
+    fdStepname.top = new FormAttachment( 0, margin );
+    fdStepname.right = new FormAttachment( 100, 0 );
+    wStepname.setLayoutData( fdStepname );
 
+    // Get the previous steps...
+    previousSteps = transMeta.getPrevStepNames( stepname );
 
-		// Set the shell size, based upon previous time...
-		setSize();
-		
-		getData();
-		input.setChanged(changed);
-	
-		shell.open();
-		while (!shell.isDisposed())
-		{
-				if (!display.readAndDispatch()) display.sleep();
-		}
-		return stepname;
-	}
-	
-	private void get()
-	{
-		wFields.removeAll();
-		Table table = wFields.table;
+    wOK = new Button( shell, SWT.PUSH );
+    wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
+    wGet = new Button( shell, SWT.PUSH );
+    wGet.setText( BaseMessages.getString( PKG, "PrioritizeStreamsDialog.getPreviousSteps.Label" ) );
+    wCancel = new Button( shell, SWT.PUSH );
+    wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
 
-		for(int i=0;i<previousSteps.length;i++) {
-			TableItem ti = new TableItem(table, SWT.NONE);
-			ti.setText(0, ""+(i+1));
-			ti.setText(1,previousSteps[i]);
-		}
-		wFields.removeEmptyRows();
-        wFields.setRowNums();
-		wFields.optWidth(true);
-		
-	}
+    setButtonPositions( new Button[] { wOK, wGet, wCancel }, margin, null );
+
+    // Table with fields
+    wlFields = new Label( shell, SWT.NONE );
+    wlFields.setText( BaseMessages.getString( PKG, "PrioritizeStreamsDialog.Fields.Label" ) );
+    props.setLook( wlFields );
+    fdlFields = new FormData();
+    fdlFields.left = new FormAttachment( 0, 0 );
+    fdlFields.top = new FormAttachment( wStepname, margin );
+    wlFields.setLayoutData( fdlFields );
+
+    final int FieldsCols = 1;
+    final int FieldsRows = input.getStepName().length;
+
+    ColumnInfo[] colinf = new ColumnInfo[FieldsCols];
+    colinf[0] =
+        new ColumnInfo( BaseMessages.getString( PKG, "PrioritizeStreamsDialog.Fieldname.Column" ),
+            ColumnInfo.COLUMN_TYPE_CCOMBO, previousSteps, false );
+    wFields =
+        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+
+    fdFields = new FormData();
+    fdFields.left = new FormAttachment( 0, 0 );
+    fdFields.top = new FormAttachment( wlFields, margin );
+    fdFields.right = new FormAttachment( 100, 0 );
+    fdFields.bottom = new FormAttachment( wOK, -2 * margin );
+    wFields.setLayoutData( fdFields );
+
+    // Add listeners
+    lsCancel = new Listener() {
+      public void handleEvent( Event e ) {
+        cancel();
+      }
+    };
+    lsGet = new Listener() {
+      public void handleEvent( Event e ) {
+        get();
+      }
+    };
+    lsOK = new Listener() {
+      public void handleEvent( Event e ) {
+        ok();
+      }
+    };
+
+    wCancel.addListener( SWT.Selection, lsCancel );
+    wOK.addListener( SWT.Selection, lsOK );
+    wGet.addListener( SWT.Selection, lsGet );
+
+    lsDef = new SelectionAdapter() {
+      public void widgetDefaultSelected( SelectionEvent e ) {
+        ok();
+      }
+    };
+
+    wStepname.addSelectionListener( lsDef );
+
+    // Detect X or ALT-F4 or something that kills this window...
+    shell.addShellListener( new ShellAdapter() {
+      public void shellClosed( ShellEvent e ) {
+        cancel();
+      }
+    } );
+
+    // Set the shell size, based upon previous time...
+    setSize();
+
+    getData();
+    input.setChanged( changed );
+
+    shell.open();
+    while ( !shell.isDisposed() ) {
+      if ( !display.readAndDispatch() ) {
+        display.sleep();
+      }
+    }
+    return stepname;
+  }
+
+  private void get() {
+    wFields.removeAll();
+    Table table = wFields.table;
+
+    for ( int i = 0; i < previousSteps.length; i++ ) {
+      TableItem ti = new TableItem( table, SWT.NONE );
+      ti.setText( 0, "" + ( i + 1 ) );
+      ti.setText( 1, previousSteps[i] );
+    }
+    wFields.removeEmptyRows();
+    wFields.setRowNums();
+    wFields.optWidth( true );
+
+  }
 
   /**
    * Copy information from the meta-data input to the dialog fields.
    */
   public void getData() {
     Table table = wFields.table;
-    if (input.getStepName().length > 0)
+    if ( input.getStepName().length > 0 ) {
       table.removeAll();
-    for (int i = 0; i < input.getStepName().length; i++) {
-      TableItem ti = new TableItem(table, SWT.NONE);
-      ti.setText(0, "" + (i + 1));
-      if (input.getStepName()[i] != null)
-        ti.setText(1, input.getStepName()[i]);
+    }
+    for ( int i = 0; i < input.getStepName().length; i++ ) {
+      TableItem ti = new TableItem( table, SWT.NONE );
+      ti.setText( 0, "" + ( i + 1 ) );
+      if ( input.getStepName()[i] != null ) {
+        ti.setText( 1, input.getStepName()[i] );
+      }
     }
 
     wFields.removeEmptyRows();
     wFields.setRowNums();
-    wFields.optWidth(true);
+    wFields.optWidth( true );
 
     wStepname.selectAll();
     wStepname.setFocus();
   }
-	
-	private void cancel()
-	{
-		stepname=null;
-		input.setChanged(changed);
-		dispose();
-	}
-	
-	private void ok()
-	{
 
-		if (Const.isEmpty(wStepname.getText())) return;
-		stepname = wStepname.getText(); // return value
-		
-		int nrsteps = wFields.nrNonEmpty();
-		input.allocate(nrsteps);
-		for (int i=0;i<nrsteps;i++)
-		{
-			TableItem ti = wFields.getNonEmpty(i);
-			StepMeta tm=transMeta.findStep(ti.getText(1));
-			if(tm!=null) input.getStepName()[i] =tm.getName();
+  private void cancel() {
+    stepname = null;
+    input.setChanged( changed );
+    dispose();
+  }
 
-		}
-		dispose();
-	}
+  private void ok() {
+
+    if ( Const.isEmpty( wStepname.getText() ) ) {
+      return;
+    }
+    stepname = wStepname.getText(); // return value
+
+    int nrsteps = wFields.nrNonEmpty();
+    input.allocate( nrsteps );
+    for ( int i = 0; i < nrsteps; i++ ) {
+      TableItem ti = wFields.getNonEmpty( i );
+      StepMeta tm = transMeta.findStep( ti.getText( 1 ) );
+      if ( tm != null ) {
+        input.getStepName()[i] = tm.getName();
+      }
+
+    }
+    dispose();
+  }
 }

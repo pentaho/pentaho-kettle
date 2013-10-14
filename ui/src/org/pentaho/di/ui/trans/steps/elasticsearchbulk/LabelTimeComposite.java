@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.ui.trans.steps.elasticsearchbulk;
 
@@ -54,12 +54,12 @@ public class LabelTimeComposite extends Composite {
 
   private String lastValidValue = "";
 
-  public LabelTimeComposite(Composite composite, String labelText, String toolTipText) {
-    super(composite, SWT.NONE);
-    props.setLook(this);
+  public LabelTimeComposite( Composite composite, String labelText, String toolTipText ) {
+    super( composite, SWT.NONE );
+    props.setLook( this );
 
     int middle = props.getMiddlePct();
-    int threeQuarters = (middle + 100) / 2;
+    int threeQuarters = ( middle + 100 ) / 2;
     int margin = Const.MARGIN;
 
     FormLayout formLayout = new FormLayout();
@@ -68,95 +68,97 @@ public class LabelTimeComposite extends Composite {
     formLayout.marginTop = 0;
     formLayout.marginBottom = 0;
 
-    this.setLayout(formLayout);
+    this.setLayout( formLayout );
 
-    wText = new Text(this, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+    wText = new Text( this, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     FormData fdText = new FormData();
-    fdText.left = new FormAttachment(middle, margin);
-    fdText.right = new FormAttachment(threeQuarters, 0);
-    wText.setLayoutData(fdText);
-    wText.setToolTipText(toolTipText);
+    fdText.left = new FormAttachment( middle, margin );
+    fdText.right = new FormAttachment( threeQuarters, 0 );
+    wText.setLayoutData( fdText );
+    wText.setToolTipText( toolTipText );
 
-    wTimeUnit = new CCombo(this, SWT.SINGLE | SWT.DROP_DOWN | SWT.BORDER | SWT.LEFT);
+    wTimeUnit = new CCombo( this, SWT.SINGLE | SWT.DROP_DOWN | SWT.BORDER | SWT.LEFT );
     FormData fdCombo = new FormData();
-    fdCombo.left = new FormAttachment(threeQuarters, margin);
-    fdCombo.right = new FormAttachment(100, 0);
-    wTimeUnit.setEditable(false);
-    wTimeUnit.setLayoutData(fdCombo);
-    wTimeUnit.setItems(getTimeUnits());
-    wTimeUnit.setToolTipText(toolTipText);
+    fdCombo.left = new FormAttachment( threeQuarters, margin );
+    fdCombo.right = new FormAttachment( 100, 0 );
+    wTimeUnit.setEditable( false );
+    wTimeUnit.setLayoutData( fdCombo );
+    wTimeUnit.setItems( getTimeUnits() );
+    wTimeUnit.setToolTipText( toolTipText );
 
-    wLabel = new Label(this, SWT.RIGHT);
-    props.setLook(wLabel);
-    wLabel.setText(labelText);
+    wLabel = new Label( this, SWT.RIGHT );
+    props.setLook( wLabel );
+    wLabel.setText( labelText );
     FormData fdLabel = new FormData();
-    fdLabel.left = new FormAttachment(0, 0);
-    fdLabel.right = new FormAttachment(middle, 0);
-    fdLabel.top = new FormAttachment(wText, 0, SWT.CENTER);
-    wLabel.setLayoutData(fdLabel);
-    wLabel.setToolTipText(toolTipText);
+    fdLabel.left = new FormAttachment( 0, 0 );
+    fdLabel.right = new FormAttachment( middle, 0 );
+    fdLabel.top = new FormAttachment( wText, 0, SWT.CENTER );
+    wLabel.setLayoutData( fdLabel );
+    wLabel.setToolTipText( toolTipText );
 
-    wText.addModifyListener(new ModifyListener() {
-      public void modifyText(ModifyEvent e) {
-        if (!StringUtils.isNumeric(wText.getText())) {
-          wText.setText(lastValidValue);
-        } else lastValidValue = wText.getText();
+    wText.addModifyListener( new ModifyListener() {
+      public void modifyText( ModifyEvent e ) {
+        if ( !StringUtils.isNumeric( wText.getText() ) ) {
+          wText.setText( lastValidValue );
+        } else {
+          lastValidValue = wText.getText();
+        }
       }
-    });
+    } );
   }
 
   private String[] getTimeUnits() {
     ArrayList<String> timeUnits = new ArrayList<String>();
-    for (TimeUnit timeUnit : TimeUnit.values()) {
-      timeUnits.add(timeUnit.toString());
+    for ( TimeUnit timeUnit : TimeUnit.values() ) {
+      timeUnits.add( timeUnit.toString() );
     }
-    return timeUnits.toArray(new String[timeUnits.size()]);
+    return timeUnits.toArray( new String[timeUnits.size()] );
   }
 
   public TimeUnit getTimeUnit() {
-    return TimeUnit.valueOf(wTimeUnit.getItem(wTimeUnit.getSelectionIndex()));
+    return TimeUnit.valueOf( wTimeUnit.getItem( wTimeUnit.getSelectionIndex() ) );
   }
 
-  public void setTimeUnit(TimeUnit tu) {
-    for (int i = 0; i < wTimeUnit.getItemCount(); i++) {
-      if (tu.toString().equals(wTimeUnit.getItem(i))) {
-        wTimeUnit.select(i);
+  public void setTimeUnit( TimeUnit tu ) {
+    for ( int i = 0; i < wTimeUnit.getItemCount(); i++ ) {
+      if ( tu.toString().equals( wTimeUnit.getItem( i ) ) ) {
+        wTimeUnit.select( i );
         break;
       }
     }
   }
 
-  public void addModifyListener(ModifyListener lsMod) {
-    wText.addModifyListener(lsMod);
+  public void addModifyListener( ModifyListener lsMod ) {
+    wText.addModifyListener( lsMod );
   }
 
-  public void addSelectionListener(SelectionAdapter lsDef) {
-    wText.addSelectionListener(lsDef);
+  public void addSelectionListener( SelectionAdapter lsDef ) {
+    wText.addSelectionListener( lsDef );
   }
 
-  public void setText(String name) {
-    wText.setText(name);
+  public void setText( String name ) {
+    wText.setText( name );
   }
 
   public String getText() {
     return wText.getText();
   }
 
-  public void setEchoChar(char c) {
-    wText.setEchoChar(c);
+  public void setEchoChar( char c ) {
+    wText.setEchoChar( c );
   }
 
-  public void setEnabled(boolean flag) {
-    wText.setEnabled(flag);
-    wLabel.setEnabled(flag);
+  public void setEnabled( boolean flag ) {
+    wText.setEnabled( flag );
+    wLabel.setEnabled( flag );
   }
 
   public boolean setFocus() {
     return wText.setFocus();
   }
 
-  public void addTraverseListener(TraverseListener tl) {
-    wText.addTraverseListener(tl);
+  public void addTraverseListener( TraverseListener tl ) {
+    wText.addTraverseListener( tl );
   }
 
   public Text getTextWidget() {

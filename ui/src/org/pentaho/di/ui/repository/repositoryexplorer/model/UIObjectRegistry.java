@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
@@ -38,7 +38,7 @@ public class UIObjectRegistry {
   public static final Class<?> DEFAULT_UIDIR_CLASS = UIRepositoryDirectory.class;
   public static final Class<?> DEFAULT_DBCONN_CLASS = UIDatabaseConnection.class;
   private static UIObjectRegistry instance;
-  
+
   private Class<?> repositoryUserClass = DEFAULT_UIREPOSITORYUSER_CLASS;
   private Class<?> jobClass = DEFAULT_UIJOB_CLASS;
   private Class<?> transClass = DEFAULT_UITRANS_CLASS;
@@ -50,13 +50,13 @@ public class UIObjectRegistry {
   }
 
   public static UIObjectRegistry getInstance() {
-    if (instance == null) {
+    if ( instance == null ) {
       instance = new UIObjectRegistry();
     }
     return instance;
   }
 
-  public void registerUIRepositoryUserClass(Class<?> repositoryUserClass) {
+  public void registerUIRepositoryUserClass( Class<?> repositoryUserClass ) {
     this.repositoryUserClass = repositoryUserClass;
   }
 
@@ -64,7 +64,7 @@ public class UIObjectRegistry {
     return this.repositoryUserClass;
   }
 
-  public void registerUIJobClass(Class<?> jobClass) {
+  public void registerUIJobClass( Class<?> jobClass ) {
     this.jobClass = jobClass;
   }
 
@@ -72,7 +72,7 @@ public class UIObjectRegistry {
     return this.jobClass;
   }
 
-  public void registerUITransformationClass(Class<?> transClass) {
+  public void registerUITransformationClass( Class<?> transClass ) {
     this.transClass = transClass;
   }
 
@@ -80,7 +80,7 @@ public class UIObjectRegistry {
     return this.transClass;
   }
 
-  public void registerUIRepositoryDirectoryClass(Class<?> dirClass) {
+  public void registerUIRepositoryDirectoryClass( Class<?> dirClass ) {
     this.dirClass = dirClass;
   }
 
@@ -88,76 +88,84 @@ public class UIObjectRegistry {
     return this.dirClass;
   }
 
-  public void registerUIDatabaseConnectionClass(Class<?> dbConnClass) {
+  public void registerUIDatabaseConnectionClass( Class<?> dbConnClass ) {
     this.dbConnClass = dbConnClass;
   }
-  
+
   public Class<?> getRegisteredUIDatabaseConnectionClass() {
     return this.dbConnClass;
   }
-  
-  public IUIUser constructUIRepositoryUser(IUser user) throws UIObjectCreationException {
+
+  public IUIUser constructUIRepositoryUser( IUser user ) throws UIObjectCreationException {
     try {
-      Constructor<?> constructor = repositoryUserClass.getConstructor(IUser.class);
-      if (constructor != null) {
-        return (IUIUser) constructor.newInstance(user);
+      Constructor<?> constructor = repositoryUserClass.getConstructor( IUser.class );
+      if ( constructor != null ) {
+        return (IUIUser) constructor.newInstance( user );
       } else {
-        throw new UIObjectCreationException("Unable to get the constructor for " + repositoryUserClass);
+        throw new UIObjectCreationException( "Unable to get the constructor for " + repositoryUserClass );
       }
-    } catch (Exception e) {
-      throw new UIObjectCreationException("Unable to instantiate object for " + repositoryUserClass);
-    }
-  }
-  
-  public UIJob constructUIJob(RepositoryElementMetaInterface rc, UIRepositoryDirectory parent, Repository rep) throws UIObjectCreationException {
-    try {
-      Constructor<?> constructor = jobClass.getConstructor(RepositoryElementMetaInterface.class, UIRepositoryDirectory.class, Repository.class);
-      if (constructor != null) {
-        return (UIJob) constructor.newInstance(rc, parent, rep);
-      } else {
-        throw new UIObjectCreationException("Unable to get the constructor for " + jobClass);
-      }
-    } catch (Exception e) {
-      throw new UIObjectCreationException("Unable to instantiate object for " + jobClass);
-    }
-  }
-  
-  public UITransformation constructUITransformation(RepositoryElementMetaInterface rc, UIRepositoryDirectory parent, Repository rep) throws UIObjectCreationException {
-    try {
-      Constructor<?> constructor = transClass.getConstructor(RepositoryElementMetaInterface.class, UIRepositoryDirectory.class, Repository.class);
-      if (constructor != null) {
-        return (UITransformation) constructor.newInstance(rc, parent, rep);
-      } else {
-        throw new UIObjectCreationException("Unable to get the constructor for " + transClass);
-      }
-    } catch (Exception e) {
-      throw new UIObjectCreationException("Unable to instantiate object for " + transClass);
+    } catch ( Exception e ) {
+      throw new UIObjectCreationException( "Unable to instantiate object for " + repositoryUserClass );
     }
   }
 
-  public UIRepositoryDirectory constructUIRepositoryDirectory(RepositoryDirectoryInterface rd, UIRepositoryDirectory uiParent, Repository rep) throws UIObjectCreationException {
+  public UIJob constructUIJob( RepositoryElementMetaInterface rc, UIRepositoryDirectory parent, Repository rep )
+    throws UIObjectCreationException {
     try {
-      Constructor<?> constructor = dirClass.getConstructor(RepositoryDirectoryInterface.class, UIRepositoryDirectory.class, Repository.class);
-      if (constructor != null) {
-        return (UIRepositoryDirectory) constructor.newInstance(rd, uiParent, rep);
+      Constructor<?> constructor =
+          jobClass.getConstructor( RepositoryElementMetaInterface.class, UIRepositoryDirectory.class, Repository.class );
+      if ( constructor != null ) {
+        return (UIJob) constructor.newInstance( rc, parent, rep );
       } else {
-        throw new UIObjectCreationException("Unable to get the constructor for " + dirClass);
+        throw new UIObjectCreationException( "Unable to get the constructor for " + jobClass );
       }
-    } catch (Exception e) {
-      throw new UIObjectCreationException("Unable to instantiate object for " + dirClass);
+    } catch ( Exception e ) {
+      throw new UIObjectCreationException( "Unable to instantiate object for " + jobClass );
     }
   }
-  
-  public UIDatabaseConnection constructUIDatabaseConnection(DatabaseMeta dbmeta, Repository rep) throws UIObjectCreationException {
+
+  public UITransformation constructUITransformation( RepositoryElementMetaInterface rc, UIRepositoryDirectory parent,
+      Repository rep ) throws UIObjectCreationException {
     try {
-      Constructor<?> constructor = dbConnClass.getConstructor(DatabaseMeta.class, Repository.class);
-      if (constructor != null) {
-        return (UIDatabaseConnection) constructor.newInstance(dbmeta, rep);
+      Constructor<?> constructor =
+          transClass.getConstructor( RepositoryElementMetaInterface.class, UIRepositoryDirectory.class,
+              Repository.class );
+      if ( constructor != null ) {
+        return (UITransformation) constructor.newInstance( rc, parent, rep );
       } else {
-        throw new UIObjectCreationException("Unable to get the constructor for " + dbConnClass);
+        throw new UIObjectCreationException( "Unable to get the constructor for " + transClass );
       }
-    } catch (Exception e) {
-      throw new UIObjectCreationException("Unable to instantiate object for " + dbConnClass);
+    } catch ( Exception e ) {
+      throw new UIObjectCreationException( "Unable to instantiate object for " + transClass );
+    }
+  }
+
+  public UIRepositoryDirectory constructUIRepositoryDirectory( RepositoryDirectoryInterface rd,
+      UIRepositoryDirectory uiParent, Repository rep ) throws UIObjectCreationException {
+    try {
+      Constructor<?> constructor =
+          dirClass.getConstructor( RepositoryDirectoryInterface.class, UIRepositoryDirectory.class, Repository.class );
+      if ( constructor != null ) {
+        return (UIRepositoryDirectory) constructor.newInstance( rd, uiParent, rep );
+      } else {
+        throw new UIObjectCreationException( "Unable to get the constructor for " + dirClass );
+      }
+    } catch ( Exception e ) {
+      throw new UIObjectCreationException( "Unable to instantiate object for " + dirClass );
+    }
+  }
+
+  public UIDatabaseConnection constructUIDatabaseConnection( DatabaseMeta dbmeta, Repository rep )
+    throws UIObjectCreationException {
+    try {
+      Constructor<?> constructor = dbConnClass.getConstructor( DatabaseMeta.class, Repository.class );
+      if ( constructor != null ) {
+        return (UIDatabaseConnection) constructor.newInstance( dbmeta, rep );
+      } else {
+        throw new UIObjectCreationException( "Unable to get the constructor for " + dbConnClass );
+      }
+    } catch ( Exception e ) {
+      throw new UIObjectCreationException( "Unable to instantiate object for " + dbConnClass );
     }
   }
 }
