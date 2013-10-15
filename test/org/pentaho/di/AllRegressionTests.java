@@ -24,7 +24,6 @@ package org.pentaho.di;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import org.pentaho.di.compatibility.ValueBigNumberTest;
 import org.pentaho.di.compatibility.ValueBooleanTest;
 import org.pentaho.di.compatibility.ValueDateTest;
@@ -64,6 +63,7 @@ import org.pentaho.di.trans.steps.sort.SortRowsTest;
 import org.pentaho.di.trans.steps.tableinput.TableInputTest;
 import org.pentaho.di.trans.steps.tableoutput.TableOutputTest;
 import org.pentaho.di.trans.steps.valuemapper.ValueMapperTest;
+import org.pentaho.di.ui.dialog.TipsDialogTest;
 
 
 /**
@@ -127,6 +127,7 @@ public class AllRegressionTests
         suite.addTestSuite(GetXMLDataTest.class);
         suite.addTestSuite(CsvInput1Test.class);
         suite.addTestSuite(CsvInput2Test.class);
+        suite.addTestSuite(TipsDialogTest.class);
 
         // Temporarily disable this test, it never worked on Windows or Unix so
         // it doesn't make sense executing it for the moment.
