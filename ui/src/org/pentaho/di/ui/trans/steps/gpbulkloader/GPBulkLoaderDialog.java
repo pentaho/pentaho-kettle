@@ -82,7 +82,7 @@ import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 /**
  * Dialog class for the Greenplum bulk loader step. Created on 28mar2008, copied from Sven Boden's Oracle version
- * 
+ *
  * @author Luke Lonergan
  */
 public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInterface {
@@ -170,7 +170,7 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
   private static String[] encodings = { "", "US-ASCII", "ISO-8859-1", "UTF-8", "UTF-16BE", "UTF-16LE", "UTF-16" };
 
   private static final String[] ALL_FILETYPES = new String[] { BaseMessages.getString( PKG,
-      "GPBulkLoaderDialog.Filetype.All" ) };
+    "GPBulkLoaderDialog.Filetype.All" ) };
 
   private Map<String, Integer> inputFields;
 
@@ -549,22 +549,22 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
     int UpInsCols = 3;
     int UpInsRows = ( input.getFieldTable() != null ? input.getFieldTable().length : 1 );
 
-    ciReturn = new ColumnInfo[UpInsCols];
-    ciReturn[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "GPBulkLoaderDialog.ColumnInfo.TableField" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
-    ciReturn[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "GPBulkLoaderDialog.ColumnInfo.StreamField" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
-    ciReturn[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "GPBulkLoaderDialog.ColumnInfo.DateMask" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "",
-              BaseMessages.getString( PKG, "GPBulkLoaderDialog.DateMask.Label" ),
-              BaseMessages.getString( PKG, "GPBulkLoaderDialog.DateTimeMask.Label" ) }, true );
-    tableFieldColumns.add( ciReturn[0] );
+    ciReturn = new ColumnInfo[ UpInsCols ];
+    ciReturn[ 0 ] =
+      new ColumnInfo( BaseMessages.getString( PKG, "GPBulkLoaderDialog.ColumnInfo.TableField" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+    ciReturn[ 1 ] =
+      new ColumnInfo( BaseMessages.getString( PKG, "GPBulkLoaderDialog.ColumnInfo.StreamField" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+    ciReturn[ 2 ] =
+      new ColumnInfo( BaseMessages.getString( PKG, "GPBulkLoaderDialog.ColumnInfo.DateMask" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "",
+          BaseMessages.getString( PKG, "GPBulkLoaderDialog.DateMask.Label" ),
+            BaseMessages.getString( PKG, "GPBulkLoaderDialog.DateTimeMask.Label" ) }, true );
+    tableFieldColumns.add( ciReturn[ 0 ] );
     wReturn =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciReturn, UpInsRows, lsMod, props );
+      new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
+        ciReturn, UpInsRows, lsMod, props );
 
     wGetLU = new Button( shell, SWT.PUSH );
     wGetLU.setText( BaseMessages.getString( PKG, "GPBulkLoaderDialog.GetFields.Label" ) );
@@ -606,7 +606,7 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 
             // Remember these fields...
             for ( int i = 0; i < row.size(); i++ ) {
-              inputFields.put( row.getValueMeta( i ).getName(), Integer.valueOf( i ) );
+              inputFields.put( row.getValueMeta( i ).getName(), i );
             }
 
             setComboBoxes();
@@ -760,7 +760,7 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
       sourceFields = transMeta.getPrevStepFields( stepMeta );
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "GPBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString( PKG,
+        "GPBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString( PKG,
           "GPBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
       return;
     }
@@ -772,22 +772,22 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
       targetFields = stepMetaInterface.getRequiredFields( transMeta );
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "GPBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString( PKG,
+        "GPBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString( PKG,
           "GPBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
       return;
     }
 
-    String[] inputNames = new String[sourceFields.size()];
+    String[] inputNames = new String[ sourceFields.size() ];
     for ( int i = 0; i < sourceFields.size(); i++ ) {
       ValueMetaInterface value = sourceFields.getValueMeta( i );
-      inputNames[i] = value.getName() + EnterMappingDialog.STRING_ORIGIN_SEPARATOR + value.getOrigin() + ")";
+      inputNames[ i ] = value.getName() + EnterMappingDialog.STRING_ORIGIN_SEPARATOR + value.getOrigin() + ")";
     }
 
     // Create the existing mapping list...
     //
     List<SourceToTargetMapping> mappings = new ArrayList<SourceToTargetMapping>();
-    StringBuffer missingSourceFields = new StringBuffer();
-    StringBuffer missingTargetFields = new StringBuffer();
+    StringBuilder missingSourceFields = new StringBuilder();
+    StringBuilder missingTargetFields = new StringBuilder();
 
     int nrFields = wReturn.nrNonEmpty();
     for ( int i = 0; i < nrFields; i++ ) {
@@ -797,11 +797,11 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 
       int sourceIndex = sourceFields.indexOfValue( source );
       if ( sourceIndex < 0 ) {
-        missingSourceFields.append( Const.CR + "   " + source + " --> " + target );
+        missingSourceFields.append( Const.CR ).append( "   " ).append( source ).append( " --> " ).append( target );
       }
       int targetIndex = targetFields.indexOfValue( target );
       if ( targetIndex < 0 ) {
-        missingTargetFields.append( Const.CR + "   " + source + " --> " + target );
+        missingTargetFields.append( Const.CR ).append( "   " ).append( source ).append( " --> " ).append( target );
       }
       if ( sourceIndex < 0 || targetIndex < 0 ) {
         continue;
@@ -818,29 +818,29 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
       String message = "";
       if ( missingSourceFields.length() > 0 ) {
         message +=
-            BaseMessages.getString( PKG, "GPBulkLoaderDialog.DoMapping.SomeSourceFieldsNotFound", missingSourceFields
-                .toString() )
-                + Const.CR;
+          BaseMessages.getString( PKG, "GPBulkLoaderDialog.DoMapping.SomeSourceFieldsNotFound", missingSourceFields
+            .toString() )
+            + Const.CR;
       }
       if ( missingTargetFields.length() > 0 ) {
         message +=
-            BaseMessages.getString( PKG, "GPBulkLoaderDialog.DoMapping.SomeTargetFieldsNotFound", missingSourceFields
-                .toString() )
-                + Const.CR;
+          BaseMessages.getString( PKG, "GPBulkLoaderDialog.DoMapping.SomeTargetFieldsNotFound", missingSourceFields
+            .toString() )
+            + Const.CR;
       }
       message += Const.CR;
       message += BaseMessages.getString( PKG, "GPBulkLoaderDialog.DoMapping.SomeFieldsNotFoundContinue" ) + Const.CR;
       MessageDialog.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       boolean goOn =
-          MessageDialog.openConfirm( shell, BaseMessages.getString( PKG,
-              "GPBulkLoaderDialog.DoMapping.SomeFieldsNotFoundTitle" ), message );
+        MessageDialog.openConfirm( shell, BaseMessages.getString( PKG,
+          "GPBulkLoaderDialog.DoMapping.SomeFieldsNotFoundTitle" ), message );
       if ( !goOn ) {
         return;
       }
     }
     EnterMappingDialog d =
-        new EnterMappingDialog( GPBulkLoaderDialog.this.shell, sourceFields.getFieldNames(), targetFields
-            .getFieldNames(), mappings );
+      new EnterMappingDialog( GPBulkLoaderDialog.this.shell, sourceFields.getFieldNames(), targetFields
+        .getFieldNames(), mappings );
     mappings = d.open();
 
     // mappings == null if the user pressed cancel
@@ -864,38 +864,39 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
   private void setTableFieldCombo() {
     Runnable fieldLoader = new Runnable() {
       public void run() {
-        // clear
-        for ( int i = 0; i < tableFieldColumns.size(); i++ ) {
-          ColumnInfo colInfo = tableFieldColumns.get( i );
-          colInfo.setComboValues( new String[] {} );
-        }
-        if ( !Const.isEmpty( wTable.getText() ) ) {
-          DatabaseMeta ci = transMeta.findDatabase( wConnection.getText() );
-          if ( ci != null ) {
-            Database db = new Database( loggingObject, ci );
-            try {
-              db.connect();
+        if ( !wTable.isDisposed() && !wConnection.isDisposed() && !wSchema.isDisposed() ) {
+          final String tableName = wTable.getText(), connectionName = wConnection.getText(), schemaName =
+            wSchema.getText();
 
-              String schemaTable =
-                  ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( wSchema.getText() ), transMeta
-                      .environmentSubstitute( wTable.getText() ) );
-              RowMetaInterface r = db.getTableFields( schemaTable );
-              if ( null != r ) {
-                String[] fieldNames = r.getFieldNames();
-                if ( null != fieldNames ) {
-                  for ( int i = 0; i < tableFieldColumns.size(); i++ ) {
-                    ColumnInfo colInfo = tableFieldColumns.get( i );
-                    colInfo.setComboValues( fieldNames );
+          //clear
+          for ( ColumnInfo colInfo : tableFieldColumns ) {
+            colInfo.setComboValues( new String[] { } );
+          }
+          if ( !Const.isEmpty( tableName ) ) {
+            DatabaseMeta ci = transMeta.findDatabase( connectionName );
+            if ( ci != null ) {
+              Database db = new Database( loggingObject, ci );
+              try {
+                db.connect();
+
+                String schemaTable = ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ),
+                  transMeta.environmentSubstitute( tableName ) );
+                RowMetaInterface r = db.getTableFields( schemaTable );
+                if ( null != r ) {
+                  String[] fieldNames = r.getFieldNames();
+                  if ( null != fieldNames ) {
+                    for ( ColumnInfo colInfo : tableFieldColumns ) {
+                      colInfo.setComboValues( fieldNames );
+                    }
                   }
                 }
+              } catch ( Exception e ) {
+                for ( ColumnInfo colInfo : tableFieldColumns ) {
+                  colInfo.setComboValues( new String[] { } );
+                }
+                // ignore any errors here. drop downs will not be
+                // filled, but no problem for the user
               }
-            } catch ( Exception e ) {
-              for ( int i = 0; i < tableFieldColumns.size(); i++ ) {
-                ColumnInfo colInfo = tableFieldColumns.get( i );
-                colInfo.setComboValues( new String[] {} );
-              }
-              // ignore any errors here. drop downs will not be
-              // filled, but no problem for the user
             }
           }
         }
@@ -903,6 +904,7 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
     };
     shell.getDisplay().asyncExec( fieldLoader );
   }
+
 
   protected void setComboBoxes() {
     // Something was changed in the row.
@@ -915,10 +917,10 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
     Set<String> keySet = fields.keySet();
     List<String> entries = new ArrayList<String>( keySet );
 
-    String[] fieldNames = entries.toArray( new String[entries.size()] );
+    String[] fieldNames = entries.toArray( new String[ entries.size() ] );
     Const.sortStrings( fieldNames );
     // return fields
-    ciReturn[1].setComboValues( fieldNames );
+    ciReturn[ 1 ].setComboValues( fieldNames );
   }
 
   /**
@@ -934,13 +936,13 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
     if ( input.getFieldTable() != null ) {
       for ( int i = 0; i < input.getFieldTable().length; i++ ) {
         TableItem item = wReturn.table.getItem( i );
-        if ( input.getFieldTable()[i] != null ) {
-          item.setText( 1, input.getFieldTable()[i] );
+        if ( input.getFieldTable()[ i ] != null ) {
+          item.setText( 1, input.getFieldTable()[ i ] );
         }
-        if ( input.getFieldStream()[i] != null ) {
-          item.setText( 2, input.getFieldStream()[i] );
+        if ( input.getFieldStream()[ i ] != null ) {
+          item.setText( 2, input.getFieldStream()[ i ] );
         }
-        String dateMask = input.getDateMask()[i];
+        String dateMask = input.getDateMask()[ i ];
         if ( dateMask != null ) {
           if ( GPBulkLoaderMeta.DATE_MASK_DATE.equals( dateMask ) ) {
             item.setText( 3, BaseMessages.getString( PKG, "GPBulkLoaderDialog.DateMask.Label" ) );
@@ -1047,14 +1049,14 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
     }
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem item = wReturn.getNonEmpty( i );
-      inf.getFieldTable()[i] = item.getText( 1 );
-      inf.getFieldStream()[i] = item.getText( 2 );
+      inf.getFieldTable()[ i ] = item.getText( 1 );
+      inf.getFieldStream()[ i ] = item.getText( 2 );
       if ( BaseMessages.getString( PKG, "GPBulkLoaderDialog.DateMask.Label" ).equals( item.getText( 3 ) ) ) {
-        inf.getDateMask()[i] = GPBulkLoaderMeta.DATE_MASK_DATE;
+        inf.getDateMask()[ i ] = GPBulkLoaderMeta.DATE_MASK_DATE;
       } else if ( BaseMessages.getString( PKG, "GPBulkLoaderDialog.DateTimeMask.Label" ).equals( item.getText( 3 ) ) ) {
-        inf.getDateMask()[i] = GPBulkLoaderMeta.DATE_MASK_DATETIME;
+        inf.getDateMask()[ i ] = GPBulkLoaderMeta.DATE_MASK_DATETIME;
       } else {
-        inf.getDateMask()[i] = "";
+        inf.getDateMask()[ i ] = "";
       }
     }
 
@@ -1169,11 +1171,11 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
             return true;
           }
         };
-        BaseStepDialog.getFieldsFromPrevious( r, wReturn, 1, new int[] { 1, 2 }, new int[] {}, -1, -1, listener );
+        BaseStepDialog.getFieldsFromPrevious( r, wReturn, 1, new int[] { 1, 2 }, new int[] { }, -1, -1, listener );
       }
     } catch ( KettleException ke ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "GPBulkLoaderDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "GPBulkLoaderDialog.FailedToGetFields.DialogMessage" ), ke );
+        BaseMessages.getString( PKG, "GPBulkLoaderDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 
@@ -1185,14 +1187,15 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
       getInfo( info );
 
       String name = stepname; // new name might not yet be linked to other steps!
-      StepMeta stepMeta = new StepMeta( BaseMessages.getString( PKG, "GPBulkLoaderDialog.StepMeta.Title" ), name, info );
+      StepMeta stepMeta =
+        new StepMeta( BaseMessages.getString( PKG, "GPBulkLoaderDialog.StepMeta.Title" ), name, info );
       RowMetaInterface prev = transMeta.getPrevStepFields( stepname );
 
       SQLStatement sql = info.getSQLStatements( transMeta, stepMeta, prev, repository, metaStore );
       if ( !sql.hasError() ) {
         if ( sql.hasSQL() ) {
           SQLEditor sqledit =
-              new SQLEditor( transMeta, shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(), sql.getSQL() );
+            new SQLEditor( transMeta, shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(), sql.getSQL() );
           sqledit.open();
         } else {
           MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
@@ -1208,7 +1211,7 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
       }
     } catch ( KettleException ke ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "GPBulkLoaderDialog.CouldNotBuildSQL.DialogTitle" ),
-          BaseMessages.getString( PKG, "GPBulkLoaderDialog.CouldNotBuildSQL.DialogMessage" ), ke );
+        BaseMessages.getString( PKG, "GPBulkLoaderDialog.CouldNotBuildSQL.DialogMessage" ), ke );
     }
 
   }

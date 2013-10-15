@@ -371,23 +371,26 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface 
     int nrKeyCols = 4;
     int nrKeyRows = ( input.getKeyStream() != null ? input.getKeyStream().length : 1 );
 
-    ciKey = new ColumnInfo[nrKeyCols];
-    ciKey[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "UpdateDialog.ColumnInfo.TableField" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
-    ciKey[1] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "UpdateDialog.ColumnInfo.Comparator" ), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "=", "= ~NULL", "<>", "<", "<=", ">", ">=", "LIKE", "BETWEEN", "IS NULL", "IS NOT NULL" } ); //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$
-    ciKey[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "UpdateDialog.ColumnInfo.StreamField1" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
-    ciKey[3] =
-        new ColumnInfo( BaseMessages.getString( PKG, "UpdateDialog.ColumnInfo.StreamField2" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
-    tableFieldColumns.add( ciKey[0] );
+    ciKey = new ColumnInfo[ nrKeyCols ];
+    ciKey[ 0 ] =
+      new ColumnInfo( BaseMessages.getString( PKG, "UpdateDialog.ColumnInfo.TableField" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+    ciKey[ 1 ] =
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "UpdateDialog.ColumnInfo.Comparator" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+        new String[] { "=", "= ~NULL", "<>", "<", "<=", ">", ">=", "LIKE", "BETWEEN", "IS NULL",
+          "IS NOT NULL" } ); //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
+    //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$
+    ciKey[ 2 ] =
+      new ColumnInfo( BaseMessages.getString( PKG, "UpdateDialog.ColumnInfo.StreamField1" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+    ciKey[ 3 ] =
+      new ColumnInfo( BaseMessages.getString( PKG, "UpdateDialog.ColumnInfo.StreamField2" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+    tableFieldColumns.add( ciKey[ 0 ] );
     wKey =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciKey, nrKeyRows, lsMod, props );
+      new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
+        ciKey, nrKeyRows, lsMod, props );
 
     wGet = new Button( shell, SWT.PUSH );
     wGet.setText( BaseMessages.getString( PKG, "UpdateDialog.GetFields.Button" ) );
@@ -425,17 +428,17 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface 
     int UpInsCols = 2;
     int UpInsRows = ( input.getUpdateLookup() != null ? input.getUpdateLookup().length : 1 );
 
-    ciReturn = new ColumnInfo[UpInsCols];
-    ciReturn[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "UpdateDialog.ColumnInfo.TableField" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
-    ciReturn[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "UpdateDialog.ColumnInfo.StreamField" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
-    tableFieldColumns.add( ciReturn[0] );
+    ciReturn = new ColumnInfo[ UpInsCols ];
+    ciReturn[ 0 ] =
+      new ColumnInfo( BaseMessages.getString( PKG, "UpdateDialog.ColumnInfo.TableField" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+    ciReturn[ 1 ] =
+      new ColumnInfo( BaseMessages.getString( PKG, "UpdateDialog.ColumnInfo.StreamField" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+    tableFieldColumns.add( ciReturn[ 0 ] );
     wReturn =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciReturn, UpInsRows, lsMod, props );
+      new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
+        ciReturn, UpInsRows, lsMod, props );
 
     wGetLU = new Button( shell, SWT.PUSH );
     wGetLU.setText( BaseMessages.getString( PKG, "UpdateDialog.GetAndUpdateFields" ) );
@@ -464,7 +467,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface 
 
             // Remember these fields...
             for ( int i = 0; i < row.size(); i++ ) {
-              inputFields.put( row.getValueMeta( i ).getName(), Integer.valueOf( i ) );
+              inputFields.put( row.getValueMeta( i ).getName(), i );
             }
 
             setComboBoxes();
@@ -577,13 +580,13 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface 
     Set<String> keySet = fields.keySet();
     List<String> entries = new ArrayList<String>( keySet );
 
-    String[] fieldNames = entries.toArray( new String[entries.size()] );
+    String[] fieldNames = entries.toArray( new String[ entries.size() ] );
     Const.sortStrings( fieldNames );
     // Key fields
-    ciKey[2].setComboValues( fieldNames );
-    ciKey[3].setComboValues( fieldNames );
+    ciKey[ 2 ].setComboValues( fieldNames );
+    ciKey[ 3 ].setComboValues( fieldNames );
     // return fields
-    ciReturn[1].setComboValues( fieldNames );
+    ciReturn[ 1 ].setComboValues( fieldNames );
   }
 
   public void setFlags() {
@@ -599,45 +602,46 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface 
     //
     boolean enableBatch = wBatch.getSelection() && !transMeta.isUsingUniqueConnections();
     enableBatch =
-        enableBatch
-            && !( databaseMeta != null && databaseMeta.supportsErrorHandlingOnBatchUpdates() && hasErrorHandling );
+      enableBatch
+        && !( databaseMeta != null && databaseMeta.supportsErrorHandlingOnBatchUpdates() && hasErrorHandling );
   }
 
   private void setTableFieldCombo() {
     Runnable fieldLoader = new Runnable() {
       public void run() {
-        // clear
-        for ( int i = 0; i < tableFieldColumns.size(); i++ ) {
-          ColumnInfo colInfo = tableFieldColumns.get( i );
-          colInfo.setComboValues( new String[] {} );
-        }
-        if ( !Const.isEmpty( wTable.getText() ) ) {
-          DatabaseMeta ci = transMeta.findDatabase( wConnection.getText() );
-          if ( ci != null ) {
-            Database db = new Database( loggingObject, ci );
-            try {
-              db.connect();
+        if ( !wTable.isDisposed() && !wConnection.isDisposed() && !wSchema.isDisposed() ) {
+          final String tableName = wTable.getText(), connectionName = wConnection.getText(), schemaName =
+            wSchema.getText();
 
-              String schemaTable =
-                  ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( wSchema.getText() ), transMeta
-                      .environmentSubstitute( wTable.getText() ) );
-              RowMetaInterface r = db.getTableFields( schemaTable );
-              if ( null != r ) {
-                String[] fieldNames = r.getFieldNames();
-                if ( null != fieldNames ) {
-                  for ( int i = 0; i < tableFieldColumns.size(); i++ ) {
-                    ColumnInfo colInfo = tableFieldColumns.get( i );
-                    colInfo.setComboValues( fieldNames );
+          //clear
+          for ( ColumnInfo colInfo : tableFieldColumns ) {
+            colInfo.setComboValues( new String[] { } );
+          }
+          if ( !Const.isEmpty( tableName ) ) {
+            DatabaseMeta ci = transMeta.findDatabase( connectionName );
+            if ( ci != null ) {
+              Database db = new Database( loggingObject, ci );
+              try {
+                db.connect();
+
+                String schemaTable = ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ),
+                  transMeta.environmentSubstitute( tableName ) );
+                RowMetaInterface r = db.getTableFields( schemaTable );
+                if ( null != r ) {
+                  String[] fieldNames = r.getFieldNames();
+                  if ( null != fieldNames ) {
+                    for ( ColumnInfo colInfo : tableFieldColumns ) {
+                      colInfo.setComboValues( fieldNames );
+                    }
                   }
                 }
+              } catch ( Exception e ) {
+                for ( ColumnInfo colInfo : tableFieldColumns ) {
+                  colInfo.setComboValues( new String[] { } );
+                }
+                // ignore any errors here. drop downs will not be
+                // filled, but no problem for the user
               }
-            } catch ( Exception e ) {
-              for ( int i = 0; i < tableFieldColumns.size(); i++ ) {
-                ColumnInfo colInfo = tableFieldColumns.get( i );
-                colInfo.setComboValues( new String[] {} );
-              }
-              // ignore any errors here. drop downs will not be
-              // filled, but no problem for the user
             }
           }
         }
@@ -665,17 +669,17 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface 
     if ( input.getKeyStream() != null ) {
       for ( int i = 0; i < input.getKeyStream().length; i++ ) {
         TableItem item = wKey.table.getItem( i );
-        if ( input.getKeyLookup()[i] != null ) {
-          item.setText( 1, input.getKeyLookup()[i] );
+        if ( input.getKeyLookup()[ i ] != null ) {
+          item.setText( 1, input.getKeyLookup()[ i ] );
         }
-        if ( input.getKeyCondition()[i] != null ) {
-          item.setText( 2, input.getKeyCondition()[i] );
+        if ( input.getKeyCondition()[ i ] != null ) {
+          item.setText( 2, input.getKeyCondition()[ i ] );
         }
-        if ( input.getKeyStream()[i] != null ) {
-          item.setText( 3, input.getKeyStream()[i] );
+        if ( input.getKeyStream()[ i ] != null ) {
+          item.setText( 3, input.getKeyStream()[ i ] );
         }
-        if ( input.getKeyStream2()[i] != null ) {
-          item.setText( 4, input.getKeyStream2()[i] );
+        if ( input.getKeyStream2()[ i ] != null ) {
+          item.setText( 4, input.getKeyStream2()[ i ] );
         }
       }
     }
@@ -683,11 +687,11 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface 
     if ( input.getUpdateLookup() != null ) {
       for ( int i = 0; i < input.getUpdateLookup().length; i++ ) {
         TableItem item = wReturn.table.getItem( i );
-        if ( input.getUpdateLookup()[i] != null ) {
-          item.setText( 1, input.getUpdateLookup()[i] );
+        if ( input.getUpdateLookup()[ i ] != null ) {
+          item.setText( 1, input.getUpdateLookup()[ i ] );
         }
-        if ( input.getUpdateStream()[i] != null ) {
-          item.setText( 2, input.getUpdateStream()[i] );
+        if ( input.getUpdateStream()[ i ] != null ) {
+          item.setText( 2, input.getUpdateStream()[ i ] );
         }
       }
     }
@@ -737,10 +741,10 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface 
     }
     for ( int i = 0; i < nrkeys; i++ ) {
       TableItem item = wKey.getNonEmpty( i );
-      inf.getKeyLookup()[i] = item.getText( 1 );
-      inf.getKeyCondition()[i] = item.getText( 2 );
-      inf.getKeyStream()[i] = item.getText( 3 );
-      inf.getKeyStream2()[i] = item.getText( 4 );
+      inf.getKeyLookup()[ i ] = item.getText( 1 );
+      inf.getKeyCondition()[ i ] = item.getText( 2 );
+      inf.getKeyStream()[ i ] = item.getText( 3 );
+      inf.getKeyStream2()[ i ] = item.getText( 4 );
     }
 
     // Table ftable = wReturn.table;
@@ -748,8 +752,8 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface 
     logDebug( BaseMessages.getString( PKG, "UpdateDialog.Log.FoundFields", nrfields + "" ) );
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem item = wReturn.getNonEmpty( i );
-      inf.getUpdateLookup()[i] = item.getText( 1 );
-      inf.getUpdateStream()[i] = item.getText( 2 );
+      inf.getUpdateLookup()[ i ] = item.getText( 1 );
+      inf.getUpdateStream()[ i ] = item.getText( 2 );
     }
 
     inf.setSchemaName( wSchema.getText() );
@@ -819,11 +823,11 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface 
             return true;
           }
         };
-        BaseStepDialog.getFieldsFromPrevious( r, wKey, 1, new int[] { 1, 3 }, new int[] {}, -1, -1, listener );
+        BaseStepDialog.getFieldsFromPrevious( r, wKey, 1, new int[] { 1, 3 }, new int[] { }, -1, -1, listener );
       }
     } catch ( KettleException ke ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "UpdateDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-          .getString( PKG, "UpdateDialog.FailedToGetFields.DialogMessage" ), ke );
+        .getString( PKG, "UpdateDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 
@@ -831,11 +835,11 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface 
     try {
       RowMetaInterface r = transMeta.getPrevStepFields( stepname );
       if ( r != null && !r.isEmpty() ) {
-        BaseStepDialog.getFieldsFromPrevious( r, wReturn, 1, new int[] { 1, 2 }, new int[] {}, -1, -1, null );
+        BaseStepDialog.getFieldsFromPrevious( r, wReturn, 1, new int[] { 1, 2 }, new int[] { }, -1, -1, null );
       }
     } catch ( KettleException ke ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "UpdateDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-          .getString( PKG, "UpdateDialog.FailedToGetFields.DialogMessage" ), ke );
+        .getString( PKG, "UpdateDialog.FailedToGetFields.DialogMessage" ), ke );
     }
 
   }
@@ -855,7 +859,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface 
       if ( !sql.hasError() ) {
         if ( sql.hasSQL() ) {
           SQLEditor sqledit =
-              new SQLEditor( transMeta, shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(), sql.getSQL() );
+            new SQLEditor( transMeta, shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(), sql.getSQL() );
           sqledit.open();
         } else {
           MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
@@ -871,7 +875,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface 
       }
     } catch ( KettleException ke ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "UpdateDialog.CouldNotBuildSQL.DialogTitle" ), BaseMessages
-          .getString( PKG, "UpdateDialog.CouldNotBuildSQL.DialogMessage" ), ke );
+        .getString( PKG, "UpdateDialog.CouldNotBuildSQL.DialogMessage" ), ke );
     }
 
   }
@@ -887,12 +891,12 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface 
         if ( null != schemas && schemas.length > 0 ) {
           schemas = Const.sortStrings( schemas );
           EnterSelectionDialog dialog =
-              new EnterSelectionDialog( shell, schemas, BaseMessages.getString( PKG,
-                  "UpdateDialog.AvailableSchemas.Title", wConnection.getText() ), BaseMessages.getString( PKG,
-                  "UpdateDialog.AvailableSchemas.Message", wConnection.getText() ) );
+            new EnterSelectionDialog( shell, schemas, BaseMessages.getString( PKG,
+              "UpdateDialog.AvailableSchemas.Title", wConnection.getText() ), BaseMessages.getString( PKG,
+                "UpdateDialog.AvailableSchemas.Message", wConnection.getText() ) );
           String d = dialog.open();
           if ( d != null ) {
-            wSchema.setText( Const.NVL( d.toString(), "" ) );
+            wSchema.setText( Const.NVL( d, "" ) );
             setTableFieldCombo();
           }
 
@@ -904,12 +908,9 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface 
         }
       } catch ( Exception e ) {
         new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
-            PKG, "UpdateDialog.ErrorGettingSchemas" ), e );
+          PKG, "UpdateDialog.ErrorGettingSchemas" ), e );
       } finally {
-        if ( database != null ) {
-          database.disconnect();
-          database = null;
-        }
+        database.disconnect();
       }
     }
   }
