@@ -57,7 +57,7 @@ import org.w3c.dom.Node;
 public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryFilesExist.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-  private String filename;
+  private String filename; // TODO: looks like it is not used: consider deleting
 
   public String[] arguments;
 
@@ -166,7 +166,13 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
   public Result execute( Result previousResult, int nr ) {
     Result result = previousResult;
     result.setResult( false );
+    result.setNrErrors( 0 );
     int missingfiles = 0;
+    int nrErrors = 0;
+
+    // see PDI-10270 for details
+    boolean oldBehavior =
+        "Y".equalsIgnoreCase( getVariable( Const.KETTLE_COMPATIBILITY_SET_ERROR_ON_SPECIFIC_JOB_ENTRIES, "N" ) );
 
     if ( arguments != null ) {
       for ( int i = 0; i < arguments.length && !parentJob.isStopped(); i++ ) {
@@ -176,21 +182,21 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
           String realFilefoldername = environmentSubstitute( arguments[i] );
           file = KettleVFS.getFileObject( realFilefoldername, this );
 
-          if ( file.exists() && file.isReadable() ) {
+          if ( file.exists() && file.isReadable() ) // TODO: is it needed to check file for readability?
+          {
             if ( log.isDetailed() ) {
               logDetailed( BaseMessages.getString( PKG, "JobEntryFilesExist.File_Exists", realFilefoldername ) );
             }
           } else {
             missingfiles++;
-            result.setNrErrors( missingfiles );
             if ( log.isDetailed() ) {
               logDetailed( BaseMessages.getString( PKG, "JobEntryFilesExist.File_Does_Not_Exist", realFilefoldername ) );
             }
           }
 
         } catch ( Exception e ) {
+          nrErrors++;
           missingfiles++;
-          result.setNrErrors( missingfiles );
           logError( BaseMessages.getString( PKG, "JobEntryFilesExist.ERROR_0004_IO_Exception", e.toString() ), e );
         } finally {
           if ( file != null ) {
@@ -203,6 +209,12 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
         }
       }
 
+    }
+
+    result.setNrErrors( nrErrors );
+
+    if ( oldBehavior ) {
+      result.setNrErrors( missingfiles );
     }
 
     if ( missingfiles == 0 ) {
