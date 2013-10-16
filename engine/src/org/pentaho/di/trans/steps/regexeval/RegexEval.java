@@ -1,4 +1,4 @@
-/*! ******************************************************************************
+/*******************************************************************************
  *
  * Pentaho Data Integration
  *
@@ -141,7 +141,7 @@ public class RegexEval extends BaseStep implements StepInterface {
 
     // reserve room
     Object[] outputRow = RowDataUtil.allocateRowData( data.outputRowMeta.size() );
-    System.arraycopy( row, 0, outputRow, 0, data.outputRowMeta.size() );
+    System.arraycopy( row, 0, outputRow, 0, getInputRowMeta().size() );
 
     try {
       // Get the Field value
