@@ -81,10 +81,12 @@ public class HTTPProtocol {
         throws MalformedURLException, IOException, AuthenticationException {
         
         HttpClient httpClient = SlaveConnectionManager.getInstance().createHttpClient();
-        GetMethod getMethod = new GetMethod(urlAsString);        
-        httpClient.getParams().setAuthenticationPreemptive(true);
-        Credentials defaultcreds = new UsernamePasswordCredentials(username, password);
-        httpClient.getState().setCredentials(AuthScope.ANY, defaultcreds);
+        GetMethod getMethod = new GetMethod(urlAsString);
+        if (!Const.isEmpty(username)) {
+          httpClient.getParams().setAuthenticationPreemptive(true);
+          Credentials defaultcreds = new UsernamePasswordCredentials(username, password);
+          httpClient.getState().setCredentials(AuthScope.ANY, defaultcreds);
+        }        
         int statusCode = httpClient.executeMethod(getMethod);
         StringBuffer bodyBuffer = new StringBuffer();
         
