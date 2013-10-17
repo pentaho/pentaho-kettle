@@ -3834,7 +3834,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    * @see org.pentaho.di.core.logging.LoggingObjectInterface#getLogLevel()
    */
   public LogLevel getLogLevel() {
-    return log.getLogLevel();
+    return log != null ? log.getLogLevel() : null;
   }
 
   /**
