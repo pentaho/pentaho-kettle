@@ -177,9 +177,9 @@ public class TextFileOutput extends BaseStep implements StepInterface {
       }
     }
 
-    if ( r == null ) // no more input to be expected...
-    {
-      if ( false == bEndedLineWrote ) {
+    if ( r == null ) {
+      // no more input to be expected...
+      if ( !bEndedLineWrote && !first ) {
         // add tag to last line if needed
         writeEndedLine();
         bEndedLineWrote = true;
@@ -511,8 +511,8 @@ public class TextFileOutput extends BaseStep implements StepInterface {
           }
         }
         data.writer.write( data.binaryNewline );
-      } else if ( r != null ) // Just put all field names in the header/footer
-      {
+      } else if ( r != null ) {
+        // Just put all field names in the header/footer
         for ( int i = 0; i < r.size(); i++ ) {
           if ( i > 0 && data.binarySeparator.length > 0 ) {
             data.writer.write( data.binarySeparator );
@@ -978,12 +978,14 @@ public class TextFileOutput extends BaseStep implements StepInterface {
         }
       } else {
         if ( isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "TextFileOutput.Log.ParentFolderNotExist", parentfolder.getName() ) );
+          logDetailed( BaseMessages.getString( PKG,
+                  "TextFileOutput.Log.ParentFolderNotExist", parentfolder.getName() ) );
         }
         if ( meta.isCreateParentFolder() ) {
           parentfolder.createFolder();
           if ( isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "TextFileOutput.Log.ParentFolderCreated", parentfolder.getName() ) );
+            logDetailed( BaseMessages.getString( PKG,
+                    "TextFileOutput.Log.ParentFolderCreated", parentfolder.getName() ) );
           }
         } else {
           throw new KettleException( BaseMessages.getString( PKG, "TextFileOutput.Log.ParentFolderNotExistCreateIt",

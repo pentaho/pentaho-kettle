@@ -32,6 +32,7 @@
         <jarDirectory url="file://$MODULE_DIR$/test-lib" recursive="false" />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="Kettle Libs" level="project" />
   </component>
 </module>
 

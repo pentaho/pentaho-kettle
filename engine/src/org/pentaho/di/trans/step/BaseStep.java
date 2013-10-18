@@ -48,7 +48,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleRowException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
@@ -145,8 +145,6 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   private String stepname;
 
   protected LogChannelInterface log;
-
-  private LogLevel logLevel;
 
   private String containerObjectId;
 
@@ -414,8 +412,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
           + "] doesn't have a name.  A step should always have a name to identify it by." );
     }
 
-    log = new LogChannel( this, trans );
-    logLevel = log.getLogLevel();
+    log = KettleLogStore.getLogChannelInterfaceFactory().create( this, trans );
 
     first = true;
     clusteredPartitioningFirst = true;
@@ -3837,7 +3834,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    * @see org.pentaho.di.core.logging.LoggingObjectInterface#getLogLevel()
    */
   public LogLevel getLogLevel() {
-    return logLevel;
+    return log != null ? log.getLogLevel() : null;
   }
 
   /**
@@ -3847,7 +3844,6 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    *          the new log level
    */
   public void setLogLevel( LogLevel logLevel ) {
-    this.logLevel = logLevel;
     log.setLogLevel( logLevel );
   }
 

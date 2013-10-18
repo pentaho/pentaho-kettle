@@ -1245,6 +1245,38 @@
 	 </unzip> 
   	
    </target>
-
-
+	
+	<target name="test"
+            description="Runs unit tests for each Kettle module."
+            depends="install-antcontrib">
+          
+      <for list="${dev-project.list}" param="module" trim="true">
+        <sequential>
+          <ant antfile="build.xml" dir="@{module}" inheritall="false" >
+          	<target name="clean" />
+            <target name="init-tests" />
+            <target name="init-test-reports" />
+          	<target name="resolve" />
+            <target name="test" />
+          </ant>
+        </sequential>
+      </for>
+    </target>
+	
+	<target name="cobertura"
+            description="Runs Cobertura test coverage for each Kettle module."
+            depends="install-antcontrib">
+          
+      <for list="${dev-project.list}" param="module" trim="true">
+        <sequential>
+          <ant antfile="build.xml" dir="@{module}" inheritall="false" >
+          	<target name="clean" />
+          	<target name="init-tests" />
+          	<target name="init-test-reports" />
+            <target name="resolve" />
+            <target name="cobertura" />
+          </ant>
+        </sequential>
+      </for>
+    </target>
 </project>
