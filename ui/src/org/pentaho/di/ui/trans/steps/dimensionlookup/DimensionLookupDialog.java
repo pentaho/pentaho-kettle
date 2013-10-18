@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -93,12 +92,12 @@ import org.pentaho.di.ui.trans.step.TableItemInsertListener;
  */
 public class DimensionLookupDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = DimensionLookupMeta.class; // for
-                                                           // i18n
-                                                           // purposes,
-                                                           // needed
-                                                           // by
-                                                           // Translator2!!
-                                                           // $NON-NLS-1$
+  // i18n
+  // purposes,
+  // needed
+  // by
+  // Translator2!!
+  // $NON-NLS-1$
 
   private CTabFolder wTabFolder;
   private FormData fdTabFolder;
@@ -610,7 +609,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 
             // Remember these fields...
             for ( int i = 0; i < row.size(); i++ ) {
-              inputFields.put( row.getValueMeta( i ).getName(), Integer.valueOf( i ) );
+              inputFields.put( row.getValueMeta( i ).getName(), i );
             }
 
             setComboBoxes();
@@ -1122,10 +1121,9 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
           "DimensionLookupDialog.UpdateOrInsertFields.ColumnText.SteamFieldToCompare" ) );
       wUpIns.setColumnText( 3, BaseMessages.getString( PKG,
           "DimensionLookupDialog.UpdateOrInsertFields.ColumnTextTypeOfDimensionUpdate" ) );
-      wUpIns
-          .setColumnToolTip(
-              2,
-              BaseMessages.getString( PKG, "DimensionLookupDialog.UpdateOrInsertFields.ColumnToolTip" ) + Const.CR + "Punch Through: Kimball Type I" + Const.CR + "Update: Correct error in last version" ); //$NON-NLS-3$
+      wUpIns.setColumnToolTip( 2, BaseMessages.getString( PKG,
+          "DimensionLookupDialog.UpdateOrInsertFields.ColumnToolTip" )
+          + Const.CR + "Punch Through: Kimball Type I" + Const.CR + "Update: Correct error in last version" ); //$NON-NLS-3$
     } else {
       wUpIns.setColumnText( 2, BaseMessages.getString( PKG,
           "DimensionLookupDialog.UpdateOrInsertFields.ColumnText.NewNameOfOutputField" ) );
@@ -1220,7 +1218,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
     boolean enable = ( ci == null ) || ci.supportsAutoinc();
     wlAutoinc.setEnabled( enable );
     wAutoinc.setEnabled( enable );
-    if ( enable == false && wAutoinc.getSelection() == true ) {
+    if ( !enable && wAutoinc.getSelection() ) {
       wAutoinc.setSelection( false );
       wSeqButton.setSelection( false );
       wTableMax.setSelection( true );
@@ -1237,7 +1235,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
     wSeq.setEnabled( seq );
     wlSeqButton.setEnabled( seq );
     wSeqButton.setEnabled( seq );
-    if ( seq == false && wSeqButton.getSelection() == true ) {
+    if ( !seq && wSeqButton.getSelection() ) {
       wAutoinc.setSelection( false );
       wSeqButton.setSelection( false );
       wTableMax.setSelection( true );
@@ -1327,8 +1325,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
       wAutoinc.setSelection( input.isAutoIncrement() );
 
       wSeqButton.setSelection( input.getSequenceName() != null && input.getSequenceName().length() > 0 );
-      if ( input.isAutoIncrement() == false
-          && ( input.getSequenceName() == null || input.getSequenceName().length() <= 0 ) ) {
+      if ( !input.isAutoIncrement() && ( input.getSequenceName() == null || input.getSequenceName().length() <= 0 ) ) {
         wTableMax.setSelection( true );
       }
 
@@ -1345,8 +1342,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
         wAutoinc.setSelection( true );
       } else if ( ( DimensionLookupMeta.CREATION_METHOD_SEQUENCE.equals( techKeyCreation ) ) ) {
         wSeqButton.setSelection( true );
-      } else // the rest
-      {
+      } else { // the rest
         wTableMax.setSelection( true );
         input.setTechKeyCreation( DimensionLookupMeta.CREATION_METHOD_TABLEMAX );
       }
@@ -1447,16 +1443,15 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
     in.setTableName( wTable.getText() );
     in.setKeyField( wTk.getText() );
     in.setKeyRename( wTkRename.getText() );
-    if ( wAutoinc.getSelection() == true ) {
+    if ( wAutoinc.getSelection() ) {
       in.setTechKeyCreation( DimensionLookupMeta.CREATION_METHOD_AUTOINC );
       in.setAutoIncrement( true ); // for downwards compatibility
       in.setSequenceName( null );
-    } else if ( wSeqButton.getSelection() == true ) {
+    } else if ( wSeqButton.getSelection() ) {
       in.setTechKeyCreation( DimensionLookupMeta.CREATION_METHOD_SEQUENCE );
       in.setAutoIncrement( false );
       in.setSequenceName( wSeq.getText() );
-    } else // all the rest
-    {
+    } else { // all the rest
       in.setTechKeyCreation( DimensionLookupMeta.CREATION_METHOD_TABLEMAX );
       in.setAutoIncrement( false );
       in.setSequenceName( null );
@@ -1538,13 +1533,10 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
                 tableItem.setText( 3, BaseMessages.getString( PKG, "DimensionLookupDialog.TableItem.Insert.Label" ) );
 
                 int idx = wKey.indexOfString( v.getName(), 2 );
-                if ( idx < 0 && !v.getName().equalsIgnoreCase( wTk.getText() )
+                return idx < 0 && !v.getName().equalsIgnoreCase( wTk.getText() )
                     && !v.getName().equalsIgnoreCase( wVersion.getText() )
                     && !v.getName().equalsIgnoreCase( wFromdate.getText() )
-                    && !v.getName().equalsIgnoreCase( wTodate.getText() ) ) {
-                  return true;
-                }
-                return false;
+                    && !v.getName().equalsIgnoreCase( wTodate.getText() );
               }
             } );
       }
@@ -1554,51 +1546,44 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
     }
   }
 
-  private AtomicBoolean busyWithFields = new AtomicBoolean( false );
-
   // Set table "dimension field" and "technical key" drop downs
   private void setTableFieldCombo() {
 
     Runnable fieldLoader = new Runnable() {
       public void run() {
+        if ( !wTable.isDisposed() && !wConnection.isDisposed() && !wSchema.isDisposed() ) {
+          final String tableName = wTable.getText(), connectionName = wConnection.getText(), schemaName =
+              wSchema.getText();
 
-        if ( busyWithFields.get() ) {
-          return;
-        }
-        busyWithFields.set( true );
-        try {
           // clear
-          for ( int i = 0; i < tableFieldColumns.size(); i++ ) {
-            ColumnInfo colInfo = tableFieldColumns.get( i );
+          for ( ColumnInfo colInfo : tableFieldColumns ) {
             colInfo.setComboValues( new String[] {} );
           }
           // Ensure other table field dropdowns are refreshed fields when they
           // next get focus
           gotTableFields = false;
-          if ( !Const.isEmpty( wTable.getText() ) ) {
-            DatabaseMeta ci = transMeta.findDatabase( wConnection.getText() );
+          if ( !Const.isEmpty( tableName ) ) {
+            DatabaseMeta ci = transMeta.findDatabase( connectionName );
             if ( ci != null ) {
               Database db = new Database( loggingObject, ci );
               try {
                 db.connect();
 
                 String schemaTable =
-                    ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( wSchema.getText() ), transMeta
-                        .environmentSubstitute( wTable.getText() ) );
+                    ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
+                        .environmentSubstitute( tableName ) );
                 RowMetaInterface r = db.getTableFields( schemaTable );
                 if ( null != r ) {
                   String[] fieldNames = r.getFieldNames();
                   if ( null != fieldNames ) {
-                    for ( int i = 0; i < tableFieldColumns.size(); i++ ) {
-                      ColumnInfo colInfo = tableFieldColumns.get( i );
+                    for ( ColumnInfo colInfo : tableFieldColumns ) {
                       colInfo.setComboValues( fieldNames );
                     }
                     wTk.setItems( fieldNames );
                   }
                 }
               } catch ( Exception e ) {
-                for ( int i = 0; i < tableFieldColumns.size(); i++ ) {
-                  ColumnInfo colInfo = tableFieldColumns.get( i );
+                for ( ColumnInfo colInfo : tableFieldColumns ) {
                   colInfo.setComboValues( new String[] {} );
                 }
                 // ignore any errors here. drop downs will not be
@@ -1606,8 +1591,6 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
               }
             }
           }
-        } finally {
-          busyWithFields.set( false );
         }
       }
     };
@@ -1632,13 +1615,10 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
               new TableItemInsertListener() {
                 public boolean tableItemInserted( TableItem tableItem, ValueMetaInterface v ) {
                   int idx = wKey.indexOfString( v.getName(), 2 );
-                  if ( idx < 0 && !v.getName().equalsIgnoreCase( wTk.getText() )
+                  return idx < 0 && !v.getName().equalsIgnoreCase( wTk.getText() )
                       && !v.getName().equalsIgnoreCase( wVersion.getText() )
                       && !v.getName().equalsIgnoreCase( wFromdate.getText() )
-                      && !v.getName().equalsIgnoreCase( wTodate.getText() ) ) {
-                    return true;
-                  }
-                  return false;
+                      && !v.getName().equalsIgnoreCase( wTodate.getText() );
                 }
               } );
         }
@@ -1744,13 +1724,10 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
             new TableItemInsertListener() {
               public boolean tableItemInserted( TableItem tableItem, ValueMetaInterface v ) {
                 int idx = wKey.indexOfString( v.getName(), 2 );
-                if ( idx < 0 && !v.getName().equalsIgnoreCase( wTk.getText() )
+                return idx < 0 && !v.getName().equalsIgnoreCase( wTk.getText() )
                     && !v.getName().equalsIgnoreCase( wVersion.getText() )
                     && !v.getName().equalsIgnoreCase( wFromdate.getText() )
-                    && !v.getName().equalsIgnoreCase( wTodate.getText() ) ) {
-                  return true;
-                }
-                return false;
+                    && !v.getName().equalsIgnoreCase( wTodate.getText() );
               }
             } );
 
@@ -1793,7 +1770,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
       getInfo( info );
 
       String name = stepname; // new name might not yet be linked to other
-                              // steps!
+      // steps!
       StepMeta stepinfo =
           new StepMeta( BaseMessages.getString( PKG, "DimensionLookupDialog.Stepinfo.Title" ), name, info );
       RowMetaInterface prev = transMeta.getPrevStepFields( stepname );
@@ -1854,7 +1831,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
                   "DimensionLookupDialog.AvailableSchemas.Message", wConnection.getText() ) );
           String d = dialog.open();
           if ( d != null ) {
-            wSchema.setText( Const.NVL( d.toString(), "" ) );
+            wSchema.setText( Const.NVL( d, "" ) );
             setTableFieldCombo();
           }
 
@@ -1868,10 +1845,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
         new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
             PKG, "DimensionLookupDialog.ErrorGettingSchemas" ), e );
       } finally {
-        if ( database != null ) {
-          database.disconnect();
-          database = null;
-        }
+        database.disconnect();
       }
     }
   }
