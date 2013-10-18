@@ -479,22 +479,22 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
     int UpInsCols = 3;
     int UpInsRows = ( input.getFieldTable() != null ? input.getFieldTable().length : 1 );
 
-    ciReturn = new ColumnInfo[ UpInsCols ];
-    ciReturn[ 0 ] =
-      new ColumnInfo( BaseMessages.getString( PKG, "MySQLBulkLoaderDialog.ColumnInfo.TableField" ),
-        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
-    ciReturn[ 1 ] =
-      new ColumnInfo( BaseMessages.getString( PKG, "MySQLBulkLoaderDialog.ColumnInfo.StreamField" ),
-        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
-    ciReturn[ 2 ] =
-      new ColumnInfo( BaseMessages.getString( PKG, "MySQLBulkLoaderDialog.ColumnInfo.FormatOK" ),
-        ColumnInfo.COLUMN_TYPE_CCOMBO, MySQLBulkLoaderMeta.getFieldFormatTypeDescriptions(), true ); // $NON-NLS-1$
+    ciReturn = new ColumnInfo[UpInsCols];
+    ciReturn[0] =
+        new ColumnInfo( BaseMessages.getString( PKG, "MySQLBulkLoaderDialog.ColumnInfo.TableField" ),
+            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+    ciReturn[1] =
+        new ColumnInfo( BaseMessages.getString( PKG, "MySQLBulkLoaderDialog.ColumnInfo.StreamField" ),
+            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+    ciReturn[2] =
+        new ColumnInfo( BaseMessages.getString( PKG, "MySQLBulkLoaderDialog.ColumnInfo.FormatOK" ),
+            ColumnInfo.COLUMN_TYPE_CCOMBO, MySQLBulkLoaderMeta.getFieldFormatTypeDescriptions(), true ); // $NON-NLS-1$
     // $NON-NLS-3$
 
-    tableFieldColumns.add( ciReturn[ 0 ] );
+    tableFieldColumns.add( ciReturn[0] );
     wReturn =
-      new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-        ciReturn, UpInsRows, lsMod, props );
+        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
+            ciReturn, UpInsRows, lsMod, props );
 
     wGetLU = new Button( shell, SWT.PUSH );
     wGetLU.setText( BaseMessages.getString( PKG, "MySQLBulkLoaderDialog.GetFields.Label" ) );
@@ -634,7 +634,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
       sourceFields = transMeta.getPrevStepFields( stepMeta );
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG,
-        "MySQLBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString( PKG,
+          "MySQLBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString( PKG,
           "MySQLBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
       return;
     }
@@ -646,15 +646,15 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
       targetFields = stepMetaInterface.getRequiredFields( transMeta );
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG,
-        "MySQLBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString( PKG,
+          "MySQLBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString( PKG,
           "MySQLBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
       return;
     }
 
-    String[] inputNames = new String[ sourceFields.size() ];
+    String[] inputNames = new String[sourceFields.size()];
     for ( int i = 0; i < sourceFields.size(); i++ ) {
       ValueMetaInterface value = sourceFields.getValueMeta( i );
-      inputNames[ i ] = value.getName() + EnterMappingDialog.STRING_ORIGIN_SEPARATOR + value.getOrigin() + ")";
+      inputNames[i] = value.getName() + EnterMappingDialog.STRING_ORIGIN_SEPARATOR + value.getOrigin() + ")";
     }
 
     // Create the existing mapping list...
@@ -692,29 +692,29 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
       String message = "";
       if ( missingSourceFields.length() > 0 ) {
         message +=
-          BaseMessages.getString( PKG, "MySQLBulkLoaderDialog.DoMapping.SomeSourceFieldsNotFound",
-            missingSourceFields.toString() )
-            + Const.CR;
+            BaseMessages.getString( PKG, "MySQLBulkLoaderDialog.DoMapping.SomeSourceFieldsNotFound",
+                missingSourceFields.toString() )
+                + Const.CR;
       }
       if ( missingTargetFields.length() > 0 ) {
         message +=
-          BaseMessages.getString( PKG, "MySQLBulkLoaderDialog.DoMapping.SomeTargetFieldsNotFound",
-            missingSourceFields.toString() )
-            + Const.CR;
+            BaseMessages.getString( PKG, "MySQLBulkLoaderDialog.DoMapping.SomeTargetFieldsNotFound",
+                missingSourceFields.toString() )
+                + Const.CR;
       }
       message += Const.CR;
       message += BaseMessages.getString( PKG, "MySQLBulkLoaderDialog.DoMapping.SomeFieldsNotFoundContinue" ) + Const.CR;
       MessageDialog.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       boolean goOn =
-        MessageDialog.openConfirm( shell, BaseMessages.getString( PKG,
-          "MySQLBulkLoaderDialog.DoMapping.SomeFieldsNotFoundTitle" ), message );
+          MessageDialog.openConfirm( shell, BaseMessages.getString( PKG,
+              "MySQLBulkLoaderDialog.DoMapping.SomeFieldsNotFoundTitle" ), message );
       if ( !goOn ) {
         return;
       }
     }
     EnterMappingDialog d =
-      new EnterMappingDialog( MySQLBulkLoaderDialog.this.shell, sourceFields.getFieldNames(), targetFields
-        .getFieldNames(), mappings );
+        new EnterMappingDialog( MySQLBulkLoaderDialog.this.shell, sourceFields.getFieldNames(), targetFields
+            .getFieldNames(), mappings );
     mappings = d.open();
 
     // mappings == null if the user pressed cancel
@@ -729,7 +729,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
         TableItem item = wReturn.table.getItem( i );
         item.setText( 2, sourceFields.getValueMeta( mapping.getSourcePosition() ).getName() );
         item.setText( 1, targetFields.getValueMeta( mapping.getTargetPosition() ).getName() );
-        item.setText( 3, MySQLBulkLoaderMeta.getFieldFormatTypeDescription( input.getFieldFormatType()[ i ] ) );
+        item.setText( 3, MySQLBulkLoaderMeta.getFieldFormatTypeDescription( input.getFieldFormatType()[i] ) );
       }
       wReturn.setRowNums();
       wReturn.optWidth( true );
@@ -756,13 +756,13 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
     if ( input.getFieldTable() != null ) {
       for ( int i = 0; i < input.getFieldTable().length; i++ ) {
         TableItem item = wReturn.table.getItem( i );
-        if ( input.getFieldTable()[ i ] != null ) {
-          item.setText( 1, input.getFieldTable()[ i ] );
+        if ( input.getFieldTable()[i] != null ) {
+          item.setText( 1, input.getFieldTable()[i] );
         }
-        if ( input.getFieldStream()[ i ] != null ) {
-          item.setText( 2, input.getFieldStream()[ i ] );
+        if ( input.getFieldStream()[i] != null ) {
+          item.setText( 2, input.getFieldStream()[i] );
         }
-        item.setText( 3, MySQLBulkLoaderMeta.getFieldFormatTypeDescription( input.getFieldFormatType()[ i ] ) );
+        item.setText( 3, MySQLBulkLoaderMeta.getFieldFormatTypeDescription( input.getFieldFormatType()[i] ) );
       }
     }
 
@@ -801,10 +801,10 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
     Set<String> keySet = fields.keySet();
     List<String> entries = new ArrayList<String>( keySet );
 
-    String[] fieldNames = entries.toArray( new String[ entries.size() ] );
+    String[] fieldNames = entries.toArray( new String[entries.size()] );
     Const.sortStrings( fieldNames );
     // return fields
-    ciReturn[ 1 ].setComboValues( fieldNames );
+    ciReturn[1].setComboValues( fieldNames );
   }
 
   private void cancel() {
@@ -832,9 +832,9 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
     }
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem item = wReturn.getNonEmpty( i );
-      inf.getFieldTable()[ i ] = item.getText( 1 );
-      inf.getFieldStream()[ i ] = item.getText( 2 );
-      inf.getFieldFormatType()[ i ] = MySQLBulkLoaderMeta.getFieldFormatType( item.getText( 3 ) );
+      inf.getFieldTable()[i] = item.getText( 1 );
+      inf.getFieldStream()[i] = item.getText( 2 );
+      inf.getFieldFormatType()[i] = MySQLBulkLoaderMeta.getFieldFormatType( item.getText( 3 ) );
     }
 
     inf.setSchemaName( wSchema.getText() );
@@ -906,11 +906,11 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
             return true;
           }
         };
-        BaseStepDialog.getFieldsFromPrevious( r, wReturn, 1, new int[] { 1, 2 }, new int[] { }, -1, -1, listener );
+        BaseStepDialog.getFieldsFromPrevious( r, wReturn, 1, new int[] { 1, 2 }, new int[] {}, -1, -1, listener );
       }
     } catch ( KettleException ke ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "MySQLBulkLoaderDialog.FailedToGetFields.DialogTitle" ),
-        BaseMessages.getString( PKG, "MySQLBulkLoaderDialog.FailedToGetFields.DialogMessage" ), ke );
+          BaseMessages.getString( PKG, "MySQLBulkLoaderDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 
@@ -923,14 +923,14 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 
       String name = stepname; // new name might not yet be linked to other steps!
       StepMeta stepMeta =
-        new StepMeta( BaseMessages.getString( PKG, "MySQLBulkLoaderDialog.StepMeta.Title" ), name, info );
+          new StepMeta( BaseMessages.getString( PKG, "MySQLBulkLoaderDialog.StepMeta.Title" ), name, info );
       RowMetaInterface prev = transMeta.getPrevStepFields( stepname );
 
       SQLStatement sql = info.getSQLStatements( transMeta, stepMeta, prev, repository, metaStore );
       if ( !sql.hasError() ) {
         if ( sql.hasSQL() ) {
           SQLEditor sqledit =
-            new SQLEditor( transMeta, shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(), sql.getSQL() );
+              new SQLEditor( transMeta, shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(), sql.getSQL() );
           sqledit.open();
         } else {
           MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
@@ -946,7 +946,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
       }
     } catch ( KettleException ke ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "MySQLBulkLoaderDialog.CouldNotBuildSQL.DialogTitle" ),
-        BaseMessages.getString( PKG, "MySQLBulkLoaderDialog.CouldNotBuildSQL.DialogMessage" ), ke );
+          BaseMessages.getString( PKG, "MySQLBulkLoaderDialog.CouldNotBuildSQL.DialogMessage" ), ke );
     }
 
   }
@@ -956,11 +956,11 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
       public void run() {
         if ( !wTable.isDisposed() && !wConnection.isDisposed() && !wSchema.isDisposed() ) {
           final String tableName = wTable.getText(), connectionName = wConnection.getText(), schemaName =
-            wSchema.getText();
+              wSchema.getText();
 
-          //clear
+          // clear
           for ( ColumnInfo colInfo : tableFieldColumns ) {
-            colInfo.setComboValues( new String[] { } );
+            colInfo.setComboValues( new String[] {} );
           }
           if ( !Const.isEmpty( tableName ) ) {
             DatabaseMeta ci = transMeta.findDatabase( connectionName );
@@ -969,8 +969,9 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
               try {
                 db.connect();
 
-                String schemaTable = ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ),
-                  transMeta.environmentSubstitute( tableName ) );
+                String schemaTable =
+                    ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
+                        .environmentSubstitute( tableName ) );
                 RowMetaInterface r = db.getTableFields( schemaTable );
                 if ( null != r ) {
                   String[] fieldNames = r.getFieldNames();
@@ -982,7 +983,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
                 }
               } catch ( Exception e ) {
                 for ( ColumnInfo colInfo : tableFieldColumns ) {
-                  colInfo.setComboValues( new String[] { } );
+                  colInfo.setComboValues( new String[] {} );
                 }
                 // ignore any errors here. drop downs will not be
                 // filled, but no problem for the user

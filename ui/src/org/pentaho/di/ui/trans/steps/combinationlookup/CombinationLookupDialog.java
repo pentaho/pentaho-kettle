@@ -331,17 +331,17 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
     int nrKeyCols = 2;
     int nrKeyRows = ( input.getKeyField() != null ? input.getKeyField().length : 1 );
 
-    ciKey = new ColumnInfo[ nrKeyCols ];
-    ciKey[ 0 ] =
-      new ColumnInfo( BaseMessages.getString( PKG, "CombinationLookupDialog.ColumnInfo.DimensionField" ),
-        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
-    ciKey[ 1 ] =
-      new ColumnInfo( BaseMessages.getString( PKG, "CombinationLookupDialog.ColumnInfo.FieldInStream" ),
-        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
-    tableFieldColumns.add( ciKey[ 0 ] );
+    ciKey = new ColumnInfo[nrKeyCols];
+    ciKey[0] =
+        new ColumnInfo( BaseMessages.getString( PKG, "CombinationLookupDialog.ColumnInfo.DimensionField" ),
+            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+    ciKey[1] =
+        new ColumnInfo( BaseMessages.getString( PKG, "CombinationLookupDialog.ColumnInfo.FieldInStream" ),
+            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+    tableFieldColumns.add( ciKey[0] );
     wKey =
-      new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-        ciKey, nrKeyRows, lsMod, props );
+        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
+            ciKey, nrKeyRows, lsMod, props );
 
     // THE BUTTONS
     wOK = new Button( shell, SWT.PUSH );
@@ -645,10 +645,10 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
     Set<String> keySet = fields.keySet();
     List<String> entries = new ArrayList<String>( keySet );
 
-    String[] fieldNames = entries.toArray( new String[ entries.size() ] );
+    String[] fieldNames = entries.toArray( new String[entries.size()] );
     Const.sortStrings( fieldNames );
     // Key fields
-    ciKey[ 1 ].setComboValues( fieldNames );
+    ciKey[1].setComboValues( fieldNames );
   }
 
   public void enableFields() {
@@ -662,11 +662,11 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
       public void run() {
         if ( !wTable.isDisposed() && !wConnection.isDisposed() && !wSchema.isDisposed() ) {
           final String tableName = wTable.getText(), connectionName = wConnection.getText(), schemaName =
-            wSchema.getText();
+              wSchema.getText();
 
-          //clear
+          // clear
           for ( ColumnInfo colInfo : tableFieldColumns ) {
-            colInfo.setComboValues( new String[] { } );
+            colInfo.setComboValues( new String[] {} );
           }
           if ( !Const.isEmpty( tableName ) ) {
             DatabaseMeta ci = transMeta.findDatabase( connectionName );
@@ -675,8 +675,9 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
               try {
                 db.connect();
 
-                String schemaTable = ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ),
-                  transMeta.environmentSubstitute( tableName ) );
+                String schemaTable =
+                    ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
+                        .environmentSubstitute( tableName ) );
                 RowMetaInterface r = db.getTableFields( schemaTable );
                 if ( null != r ) {
                   String[] fieldNames = r.getFieldNames();
@@ -688,7 +689,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
                 }
               } catch ( Exception e ) {
                 for ( ColumnInfo colInfo : tableFieldColumns ) {
-                  colInfo.setComboValues( new String[] { } );
+                  colInfo.setComboValues( new String[] {} );
                 }
                 // ignore any errors here. drop downs will not be
                 // filled, but no problem for the user
@@ -738,11 +739,11 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
     if ( input.getKeyField() != null ) {
       for ( int i = 0; i < input.getKeyField().length; i++ ) {
         TableItem item = wKey.table.getItem( i );
-        if ( input.getKeyLookup()[ i ] != null ) {
-          item.setText( 1, input.getKeyLookup()[ i ] );
+        if ( input.getKeyLookup()[i] != null ) {
+          item.setText( 1, input.getKeyLookup()[i] );
         }
-        if ( input.getKeyField()[ i ] != null ) {
-          item.setText( 2, input.getKeyField()[ i ] );
+        if ( input.getKeyField()[i] != null ) {
+          item.setText( 2, input.getKeyField()[i] );
         }
       }
     }
@@ -765,8 +766,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
       wAutoinc.setSelection( input.isUseAutoinc() );
 
       wSeqButton.setSelection( input.getSequenceFrom() != null && input.getSequenceFrom().length() > 0 );
-      if ( !input.isUseAutoinc() && ( input.getSequenceFrom() == null
-        || input.getSequenceFrom().length() <= 0 ) ) {
+      if ( !input.isUseAutoinc() && ( input.getSequenceFrom() == null || input.getSequenceFrom().length() <= 0 ) ) {
         wTableMax.setSelection( true );
       }
 
@@ -861,8 +861,8 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
     logDebug( BaseMessages.getString( PKG, "CombinationLookupDialog.Log.SomeKeysFound", String.valueOf( nrkeys ) ) );
     for ( int i = 0; i < nrkeys; i++ ) {
       TableItem item = wKey.getNonEmpty( i );
-      in.getKeyLookup()[ i ] = item.getText( 1 );
-      in.getKeyField()[ i ] = item.getText( 2 );
+      in.getKeyLookup()[i] = item.getText( 1 );
+      in.getKeyField()[i] = item.getText( 2 );
     }
 
     in.setUseAutoinc( wAutoinc.getSelection() && wAutoinc.isEnabled() );
@@ -905,9 +905,9 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
         if ( null != schemas && schemas.length > 0 ) {
           schemas = Const.sortStrings( schemas );
           EnterSelectionDialog dialog =
-            new EnterSelectionDialog( shell, schemas, BaseMessages.getString( PKG,
-              "CombinationLookupDialog.AvailableSchemas.Title", wConnection.getText() ), BaseMessages.getString(
-                PKG, "CombinationLookupDialog.AvailableSchemas.Message", wConnection.getText() ) );
+              new EnterSelectionDialog( shell, schemas, BaseMessages.getString( PKG,
+                  "CombinationLookupDialog.AvailableSchemas.Title", wConnection.getText() ), BaseMessages.getString(
+                  PKG, "CombinationLookupDialog.AvailableSchemas.Message", wConnection.getText() ) );
           String d = dialog.open();
           if ( d != null ) {
             wSchema.setText( Const.NVL( d, "" ) );
@@ -922,7 +922,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
         }
       } catch ( Exception e ) {
         new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
-          PKG, "CombinationLookupDialog.ErrorGettingSchemas" ), e );
+            PKG, "CombinationLookupDialog.ErrorGettingSchemas" ), e );
       } finally {
         database.disconnect();
       }
@@ -959,17 +959,17 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
     try {
       RowMetaInterface r = transMeta.getPrevStepFields( stepname );
       if ( r != null && !r.isEmpty() ) {
-        BaseStepDialog.getFieldsFromPrevious( r, wKey, 1, new int[] { 1, 2 }, new int[] { }, -1, -1,
-          new TableItemInsertListener() {
-            public boolean tableItemInserted( TableItem tableItem, ValueMetaInterface v ) {
-              tableItem.setText( 3, "N" );
-              return true;
-            }
-          } );
+        BaseStepDialog.getFieldsFromPrevious( r, wKey, 1, new int[] { 1, 2 }, new int[] {}, -1, -1,
+            new TableItemInsertListener() {
+              public boolean tableItemInserted( TableItem tableItem, ValueMetaInterface v ) {
+                tableItem.setText( 3, "N" );
+                return true;
+              }
+            } );
       }
     } catch ( KettleException ke ) {
       new ErrorDialog( shell, BaseMessages
-        .getString( PKG, "CombinationLookupDialog.UnableToGetFieldsError.DialogTitle" ), BaseMessages.getString( PKG,
+          .getString( PKG, "CombinationLookupDialog.UnableToGetFieldsError.DialogTitle" ), BaseMessages.getString( PKG,
           "CombinationLookupDialog.UnableToGetFieldsError.DialogMessage" ), ke );
     }
   }
@@ -984,14 +984,14 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
       getInfo( info );
       String name = stepname; // new name might not yet be linked to other steps!
       StepMeta stepMeta =
-        new StepMeta( BaseMessages.getString( PKG, "CombinationLookupDialog.StepMeta.Title" ), name, info );
+          new StepMeta( BaseMessages.getString( PKG, "CombinationLookupDialog.StepMeta.Title" ), name, info );
       RowMetaInterface prev = transMeta.getPrevStepFields( stepname );
 
       SQLStatement sql = info.getSQLStatements( transMeta, stepMeta, prev, repository, metaStore );
       if ( !sql.hasError() ) {
         if ( sql.hasSQL() ) {
           SQLEditor sqledit =
-            new SQLEditor( transMeta, shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(), sql.getSQL() );
+              new SQLEditor( transMeta, shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(), sql.getSQL() );
           sqledit.open();
         } else {
           MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
@@ -1007,7 +1007,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
       }
     } catch ( KettleException ke ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "CombinationLookupDialog.UnableToCreateSQL.DialogTitle" ),
-        BaseMessages.getString( PKG, "CombinationLookupDialog.UnableToCreateSQL.DialogMessage" ), ke );
+          BaseMessages.getString( PKG, "CombinationLookupDialog.UnableToCreateSQL.DialogMessage" ), ke );
     }
   }
 }

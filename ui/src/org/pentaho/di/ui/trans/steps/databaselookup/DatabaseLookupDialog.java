@@ -343,25 +343,25 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
     int nrKeyCols = 4;
     int nrKeyRows = ( input.getStreamKeyField1() != null ? input.getStreamKeyField1().length : 1 );
 
-    ColumnInfo[] ciKey = new ColumnInfo[ nrKeyCols ];
-    ciKey[ 0 ] =
-      new ColumnInfo( BaseMessages.getString( PKG, "DatabaseLookupDialog.ColumnInfo.Tablefield" ),
-        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
-    ciKey[ 1 ] =
-      new ColumnInfo( BaseMessages.getString( PKG, "DatabaseLookupDialog.ColumnInfo.Comparator" ),
-        ColumnInfo.COLUMN_TYPE_CCOMBO, DatabaseLookupMeta.conditionStrings );
-    ciKey[ 2 ] =
-      new ColumnInfo( BaseMessages.getString( PKG, "DatabaseLookupDialog.ColumnInfo.Field1" ),
-        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
-    ciKey[ 3 ] =
-      new ColumnInfo( BaseMessages.getString( PKG, "DatabaseLookupDialog.ColumnInfo.Field2" ),
-        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
-    tableFieldColumns.add( ciKey[ 0 ] );
-    fieldColumns.add( ciKey[ 2 ] );
-    fieldColumns.add( ciKey[ 3 ] );
+    ColumnInfo[] ciKey = new ColumnInfo[nrKeyCols];
+    ciKey[0] =
+        new ColumnInfo( BaseMessages.getString( PKG, "DatabaseLookupDialog.ColumnInfo.Tablefield" ),
+            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+    ciKey[1] =
+        new ColumnInfo( BaseMessages.getString( PKG, "DatabaseLookupDialog.ColumnInfo.Comparator" ),
+            ColumnInfo.COLUMN_TYPE_CCOMBO, DatabaseLookupMeta.conditionStrings );
+    ciKey[2] =
+        new ColumnInfo( BaseMessages.getString( PKG, "DatabaseLookupDialog.ColumnInfo.Field1" ),
+            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+    ciKey[3] =
+        new ColumnInfo( BaseMessages.getString( PKG, "DatabaseLookupDialog.ColumnInfo.Field2" ),
+            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+    tableFieldColumns.add( ciKey[0] );
+    fieldColumns.add( ciKey[2] );
+    fieldColumns.add( ciKey[3] );
     wKey =
-      new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-        ciKey, nrKeyRows, lsMod, props );
+        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
+            ciKey, nrKeyRows, lsMod, props );
 
     fdKey = new FormData();
     fdKey.left = new FormAttachment( 0, 0 );
@@ -456,24 +456,24 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
     int UpInsCols = 4;
     int UpInsRows = ( input.getReturnValueField() != null ? input.getReturnValueField().length : 1 );
 
-    ColumnInfo[] ciReturn = new ColumnInfo[ UpInsCols ];
-    ciReturn[ 0 ] =
-      new ColumnInfo( BaseMessages.getString( PKG, "DatabaseLookupDialog.ColumnInfo.Field" ),
-        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { }, false );
-    ciReturn[ 1 ] =
-      new ColumnInfo( BaseMessages.getString( PKG, "DatabaseLookupDialog.ColumnInfo.Newname" ),
-        ColumnInfo.COLUMN_TYPE_TEXT, false );
-    ciReturn[ 2 ] =
-      new ColumnInfo( BaseMessages.getString( PKG, "DatabaseLookupDialog.ColumnInfo.Default" ),
-        ColumnInfo.COLUMN_TYPE_TEXT, false );
-    ciReturn[ 3 ] =
-      new ColumnInfo( BaseMessages.getString( PKG, "DatabaseLookupDialog.ColumnInfo.Type" ),
-        ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() );
-    tableFieldColumns.add( ciReturn[ 0 ] );
+    ColumnInfo[] ciReturn = new ColumnInfo[UpInsCols];
+    ciReturn[0] =
+        new ColumnInfo( BaseMessages.getString( PKG, "DatabaseLookupDialog.ColumnInfo.Field" ),
+            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {}, false );
+    ciReturn[1] =
+        new ColumnInfo( BaseMessages.getString( PKG, "DatabaseLookupDialog.ColumnInfo.Newname" ),
+            ColumnInfo.COLUMN_TYPE_TEXT, false );
+    ciReturn[2] =
+        new ColumnInfo( BaseMessages.getString( PKG, "DatabaseLookupDialog.ColumnInfo.Default" ),
+            ColumnInfo.COLUMN_TYPE_TEXT, false );
+    ciReturn[3] =
+        new ColumnInfo( BaseMessages.getString( PKG, "DatabaseLookupDialog.ColumnInfo.Type" ),
+            ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() );
+    tableFieldColumns.add( ciReturn[0] );
 
     wReturn =
-      new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-        ciReturn, UpInsRows, lsMod, props );
+        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
+            ciReturn, UpInsRows, lsMod, props );
 
     fdReturn = new FormData();
     fdReturn.left = new FormAttachment( 0, 0 );
@@ -579,7 +579,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
       public void run() {
         if ( !wTable.isDisposed() && !wConnection.isDisposed() && !wSchema.isDisposed() ) {
           final String tableName = wTable.getText(), connectionName = wConnection.getText(), schemaName =
-            wSchema.getText();
+              wSchema.getText();
           if ( !Const.isEmpty( tableName ) ) {
             DatabaseMeta ci = transMeta.findDatabase( connectionName );
             if ( ci != null ) {
@@ -600,7 +600,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
                 }
               } catch ( Exception e ) {
                 for ( ColumnInfo colInfo : tableFieldColumns ) {
-                  colInfo.setComboValues( new String[] { } );
+                  colInfo.setComboValues( new String[] {} );
                 }
                 // ignore any errors here. drop downs will not be
                 // filled, but no problem for the user
@@ -638,17 +638,17 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
     if ( input.getStreamKeyField1() != null ) {
       for ( int i = 0; i < input.getStreamKeyField1().length; i++ ) {
         TableItem item = wKey.table.getItem( i );
-        if ( input.getTableKeyField()[ i ] != null ) {
-          item.setText( 1, input.getTableKeyField()[ i ] );
+        if ( input.getTableKeyField()[i] != null ) {
+          item.setText( 1, input.getTableKeyField()[i] );
         }
-        if ( input.getKeyCondition()[ i ] != null ) {
-          item.setText( 2, input.getKeyCondition()[ i ] );
+        if ( input.getKeyCondition()[i] != null ) {
+          item.setText( 2, input.getKeyCondition()[i] );
         }
-        if ( input.getStreamKeyField1()[ i ] != null ) {
-          item.setText( 3, input.getStreamKeyField1()[ i ] );
+        if ( input.getStreamKeyField1()[i] != null ) {
+          item.setText( 3, input.getStreamKeyField1()[i] );
         }
-        if ( input.getStreamKeyField2()[ i ] != null ) {
-          item.setText( 4, input.getStreamKeyField2()[ i ] );
+        if ( input.getStreamKeyField2()[i] != null ) {
+          item.setText( 4, input.getStreamKeyField2()[i] );
         }
       }
     }
@@ -656,18 +656,18 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
     if ( input.getReturnValueField() != null ) {
       for ( int i = 0; i < input.getReturnValueField().length; i++ ) {
         TableItem item = wReturn.table.getItem( i );
-        if ( input.getReturnValueField()[ i ] != null ) {
-          item.setText( 1, input.getReturnValueField()[ i ] );
+        if ( input.getReturnValueField()[i] != null ) {
+          item.setText( 1, input.getReturnValueField()[i] );
         }
-        if ( input.getReturnValueNewName()[ i ] != null
-          && !input.getReturnValueNewName()[ i ].equals( input.getReturnValueField()[ i ] ) ) {
-          item.setText( 2, input.getReturnValueNewName()[ i ] );
+        if ( input.getReturnValueNewName()[i] != null
+            && !input.getReturnValueNewName()[i].equals( input.getReturnValueField()[i] ) ) {
+          item.setText( 2, input.getReturnValueNewName()[i] );
         }
 
-        if ( input.getReturnValueDefault()[ i ] != null ) {
-          item.setText( 3, input.getReturnValueDefault()[ i ] );
+        if ( input.getReturnValueDefault()[i] != null ) {
+          item.setText( 3, input.getReturnValueDefault()[i] );
         }
-        item.setText( 4, ValueMeta.getTypeDesc( input.getReturnValueDefaultType()[ i ] ) );
+        item.setText( 4, ValueMeta.getTypeDesc( input.getReturnValueDefaultType()[i] ) );
       }
     }
 
@@ -722,26 +722,26 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
     logDebug( BaseMessages.getString( PKG, "DatabaseLookupDialog.Log.FoundKeys", String.valueOf( nrkeys ) ) );
     for ( int i = 0; i < nrkeys; i++ ) {
       TableItem item = wKey.getNonEmpty( i );
-      input.getTableKeyField()[ i ] = item.getText( 1 );
-      input.getKeyCondition()[ i ] = item.getText( 2 );
-      input.getStreamKeyField1()[ i ] = item.getText( 3 );
-      input.getStreamKeyField2()[ i ] = item.getText( 4 );
+      input.getTableKeyField()[i] = item.getText( 1 );
+      input.getKeyCondition()[i] = item.getText( 2 );
+      input.getStreamKeyField1()[i] = item.getText( 3 );
+      input.getStreamKeyField2()[i] = item.getText( 4 );
     }
 
     logDebug( BaseMessages.getString( PKG, "DatabaseLookupDialog.Log.FoundFields", String.valueOf( nrfields ) ) );
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem item = wReturn.getNonEmpty( i );
-      input.getReturnValueField()[ i ] = item.getText( 1 );
-      input.getReturnValueNewName()[ i ] = item.getText( 2 );
-      if ( input.getReturnValueNewName()[ i ] == null || input.getReturnValueNewName()[ i ].length() == 0 ) {
-        input.getReturnValueNewName()[ i ] = input.getReturnValueField()[ i ];
+      input.getReturnValueField()[i] = item.getText( 1 );
+      input.getReturnValueNewName()[i] = item.getText( 2 );
+      if ( input.getReturnValueNewName()[i] == null || input.getReturnValueNewName()[i].length() == 0 ) {
+        input.getReturnValueNewName()[i] = input.getReturnValueField()[i];
       }
 
-      input.getReturnValueDefault()[ i ] = item.getText( 3 );
-      input.getReturnValueDefaultType()[ i ] = ValueMeta.getType( item.getText( 4 ) );
+      input.getReturnValueDefault()[i] = item.getText( 3 );
+      input.getReturnValueDefaultType()[i] = ValueMeta.getType( item.getText( 4 ) );
 
-      if ( input.getReturnValueDefaultType()[ i ] < 0 ) {
-        input.getReturnValueDefaultType()[ i ] = ValueMetaInterface.TYPE_STRING;
+      if ( input.getReturnValueDefaultType()[i] < 0 ) {
+        input.getReturnValueDefaultType()[i] = ValueMetaInterface.TYPE_STRING;
       }
     }
 
@@ -802,11 +802,11 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
             return true;
           }
         };
-        BaseStepDialog.getFieldsFromPrevious( r, wKey, 1, new int[] { 1, 3 }, new int[] { }, -1, -1, listener );
+        BaseStepDialog.getFieldsFromPrevious( r, wKey, 1, new int[] { 1, 3 }, new int[] {}, -1, -1, listener );
       }
     } catch ( KettleException ke ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "DatabaseLookupDialog.GetFieldsFailed.DialogTitle" ),
-        BaseMessages.getString( PKG, "DatabaseLookupDialog.GetFieldsFailed.DialogMessage" ), ke );
+          BaseMessages.getString( PKG, "DatabaseLookupDialog.GetFieldsFailed.DialogMessage" ), ke );
     }
 
   }
@@ -821,12 +821,12 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 
         if ( !Const.isEmpty( wTable.getText() ) ) {
           String schemaTable =
-            ci.getQuotedSchemaTableCombination( db.environmentSubstitute( wSchema.getText() ), db
-              .environmentSubstitute( wTable.getText() ) );
+              ci.getQuotedSchemaTableCombination( db.environmentSubstitute( wSchema.getText() ), db
+                  .environmentSubstitute( wTable.getText() ) );
           RowMetaInterface r = db.getTableFields( schemaTable );
           if ( r != null && !r.isEmpty() ) {
             logDebug( BaseMessages.getString( PKG, "DatabaseLookupDialog.Log.FoundTableFields" ) + schemaTable
-              + " --> " + r.toStringMeta() );
+                + " --> " + r.toStringMeta() );
             BaseStepDialog.getFieldsFromPrevious( r, wReturn, 1, new int[] { 1, 2 }, new int[] { 4 }, -1, -1, null );
           } else {
             MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
@@ -838,7 +838,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
       } catch ( KettleException e ) {
         MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
         mb.setMessage( BaseMessages.getString( PKG, "DatabaseLookupDialog.ErrorOccurred.DialogMessage" ) + Const.CR
-          + e.getMessage() );
+            + e.getMessage() );
         mb.setText( BaseMessages.getString( PKG, "DatabaseLookupDialog.ErrorOccurred.DialogTitle" ) );
         mb.open();
       }
@@ -861,9 +861,9 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
         if ( null != schemas && schemas.length > 0 ) {
           schemas = Const.sortStrings( schemas );
           EnterSelectionDialog dialog =
-            new EnterSelectionDialog( shell, schemas, BaseMessages.getString( PKG,
-              "DatabaseLookupDialog.AvailableSchemas.Title", wConnection.getText() ), BaseMessages.getString( PKG,
-                "DatabaseLookupDialog.AvailableSchemas.Message", wConnection.getText() ) );
+              new EnterSelectionDialog( shell, schemas, BaseMessages.getString( PKG,
+                  "DatabaseLookupDialog.AvailableSchemas.Title", wConnection.getText() ), BaseMessages.getString( PKG,
+                  "DatabaseLookupDialog.AvailableSchemas.Message", wConnection.getText() ) );
           String d = dialog.open();
           if ( d != null ) {
             wSchema.setText( Const.NVL( d, "" ) );
@@ -878,7 +878,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
         }
       } catch ( Exception e ) {
         new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
-          PKG, "DatabaseLookupDialog.ErrorGettingSchemas" ), e );
+            PKG, "DatabaseLookupDialog.ErrorGettingSchemas" ), e );
       } finally {
         database.disconnect();
       }
