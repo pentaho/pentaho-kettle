@@ -31,7 +31,6 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -48,6 +47,7 @@ import org.pentaho.di.core.logging.LogChannelFileWriter;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
+import org.pentaho.di.core.util.FileUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -578,7 +578,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         return result;
       }
       // create parent folder?
-      if ( !createParentFolder( realLogFilename ) ) {
+      if ( !FileUtil.createParentFolder( PKG, realLogFilename, createParentFolder, this.getLogChannel(), this ) ) {
         result.setNrErrors( 1 );
         result.setResult( false );
         return result;
@@ -918,6 +918,9 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
           transExecutionConfiguration.setRemoteServer( remoteSlaveServer );
           transExecutionConfiguration.setLogLevel( transLogLevel );
           transExecutionConfiguration.setRepository( rep );
+          transExecutionConfiguration.setLogFileName( realLogFilename );
+          transExecutionConfiguration.setSetAppendLogfile( setAppendLogfile );
+          transExecutionConfiguration.setSetLogfile( setLogfile );
 
           Map<String, String> params = transExecutionConfiguration.getParams();
           for ( String param : transMeta.listParameters() ) {
@@ -997,7 +1000,6 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
           // Create the transformation from meta-data
           //
           trans = new Trans( transMeta, this );
-          trans.setLogLevel( transLogLevel );
 
           // Pass the socket repository as early as possible...
           //
@@ -1011,6 +1013,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
           //
           trans.setParentJob( parentJob );
           trans.setParentVariableSpace( parentJob );
+          trans.setLogLevel( transLogLevel );
           trans.setPreviousResult( previousResult );
           trans.setArguments( arguments );
 
@@ -1118,53 +1121,6 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     }
 
     return result;
-  }
-
-  private boolean createParentFolder( String filename ) {
-    // Check for parent folder
-    FileObject parentfolder = null;
-    boolean resultat = true;
-    try {
-      // Get parent folder
-      parentfolder = KettleVFS.getFileObject( filename, this ).getParent();
-      if ( !parentfolder.exists() ) {
-        if ( createParentFolder ) {
-          if ( isDebug() ) {
-            logDebug( BaseMessages.getString( PKG, "JobTrans.Log.ParentLogFolderNotExist", parentfolder.getName()
-              .toString() ) );
-          }
-          parentfolder.createFolder();
-          if ( isDebug() ) {
-            logDebug( BaseMessages.getString( PKG, "JobTrans.Log.ParentLogFolderCreated", parentfolder.getName()
-              .toString() ) );
-          }
-        } else {
-          logError( BaseMessages.getString( PKG, "JobTrans.Log.ParentLogFolderNotExist", parentfolder.getName()
-              .toString() ) );
-          resultat = false;
-        }
-      } else {
-        if ( isDebug() ) {
-          logDebug( BaseMessages.getString( PKG, "JobTrans.Log.ParentLogFolderExists", parentfolder.getName()
-            .toString() ) );
-        }
-      }
-    } catch ( Exception e ) {
-      resultat = false;
-      logError( BaseMessages.getString( PKG, "JobTrans.Error.ChekingParentLogFolderTitle" ), BaseMessages.getString(
-          PKG, "JobTrans.Error.ChekingParentLogFolder", parentfolder.getName().toString() ), e );
-    } finally {
-      if ( parentfolder != null ) {
-        try {
-          parentfolder.close();
-          parentfolder = null;
-        } catch ( Exception ex ) {
-          // Ignore
-        }
-      }
-    }
-
-    return resultat;
   }
 
   @Deprecated

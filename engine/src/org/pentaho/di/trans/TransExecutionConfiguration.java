@@ -81,6 +81,10 @@ public class TransExecutionConfiguration implements Cloneable {
 
   private boolean gatheringMetrics;
   private boolean showingSubComponents;
+  private boolean setLogfile;
+  private boolean setAppendLogfile;
+  private String logFileName;
+  private boolean createParentFolder;
 
   public TransExecutionConfiguration() {
     executingLocally = true;
@@ -501,6 +505,10 @@ public class TransExecutionConfiguration implements Cloneable {
     xml.append( "    " ).append( XMLHandler.addTagValue( "replay_date", replayDate ) );
     xml.append( "    " ).append( XMLHandler.addTagValue( "safe_mode", safeModeEnabled ) );
     xml.append( "    " ).append( XMLHandler.addTagValue( "log_level", logLevel.getCode() ) );
+    xml.append( "    " ).append( XMLHandler.addTagValue( "log_file", setLogfile ) );
+    xml.append( "    " ).append( XMLHandler.addTagValue( "log_filename", logFileName ) );
+    xml.append( "    " ).append( XMLHandler.addTagValue( "log_file_append", setAppendLogfile ) );
+    xml.append( "    " ).append( XMLHandler.addTagValue( "create_parent_folder", createParentFolder ) );
     xml.append( "    " ).append( XMLHandler.addTagValue( "clear_log", clearingLog ) );
     xml.append( "    " ).append( XMLHandler.addTagValue( "gather_metrics", gatheringMetrics ) );
     xml.append( "    " ).append( XMLHandler.addTagValue( "show_subcomponents", showingSubComponents ) );
@@ -592,6 +600,10 @@ public class TransExecutionConfiguration implements Cloneable {
     replayDate = XMLHandler.stringToDate( XMLHandler.getTagValue( trecNode, "replay_date" ) );
     safeModeEnabled = "Y".equalsIgnoreCase( XMLHandler.getTagValue( trecNode, "safe_mode" ) );
     logLevel = LogLevel.getLogLevelForCode( XMLHandler.getTagValue( trecNode, "log_level" ) );
+    setLogfile = "Y".equalsIgnoreCase( XMLHandler.getTagValue( trecNode, "log_file" ) );
+    logFileName = XMLHandler.getTagValue( trecNode, "log_filename" );
+    setAppendLogfile = "Y".equalsIgnoreCase( XMLHandler.getTagValue( trecNode, "log_file_append" ) );
+    createParentFolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue( trecNode, "create_parent_folder" ) );
     clearingLog = "Y".equalsIgnoreCase( XMLHandler.getTagValue( trecNode, "clear_log" ) );
     gatheringMetrics = "Y".equalsIgnoreCase( XMLHandler.getTagValue( trecNode, "gather_metrics" ) );
     showingSubComponents = "Y".equalsIgnoreCase( XMLHandler.getTagValue( trecNode, "show_subcomponents" ) );
@@ -760,5 +772,37 @@ public class TransExecutionConfiguration implements Cloneable {
    */
   public void setShowingSubComponents( boolean showingSubComponents ) {
     this.showingSubComponents = showingSubComponents;
+  }
+
+  public boolean isSetLogfile() {
+    return setLogfile;
+  }
+
+  public void setSetLogfile( boolean setLogfile ) {
+    this.setLogfile = setLogfile;
+  }
+
+  public boolean isSetAppendLogfile() {
+    return setAppendLogfile;
+  }
+
+  public void setSetAppendLogfile( boolean setAppendLogfile ) {
+    this.setAppendLogfile = setAppendLogfile;
+  }
+
+  public String getLogFileName() {
+    return logFileName;
+  }
+
+  public void setLogFileName( String fileName ) {
+    this.logFileName = fileName;
+  }
+
+  public boolean isCreateParentFolder() {
+    return createParentFolder;
+  }
+
+  public void setCreateParentFolder( boolean createParentFolder ) {
+    this.createParentFolder = createParentFolder;
   }
 }
