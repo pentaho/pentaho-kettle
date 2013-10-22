@@ -72,7 +72,7 @@ public class Const {
   /**
    * Version number
    */
-  public static final String VERSION = "5.0.0-GA";
+  public static final String VERSION = "5.0.1";
 
   /**
    * Copyright year
