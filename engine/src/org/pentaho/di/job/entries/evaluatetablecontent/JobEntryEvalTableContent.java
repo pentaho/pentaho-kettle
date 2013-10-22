@@ -290,9 +290,14 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
   public Result execute( Result previousResult, int nr ) {
     Result result = previousResult;
     result.setResult( false );
-    result.setNrErrors( 1 );
+
+    // see PDI-10270, PDI-10644 for details
+    boolean oldBehavior =
+        "Y".equalsIgnoreCase( getVariable( Const.KETTLE_COMPATIBILITY_SET_ERROR_ON_SPECIFIC_JOB_ENTRIES, "N" ) );
+
     String countSQLStatement = null;
     long rowsCount = 0;
+    long errCount = 0;
 
     boolean successOK = false;
 
@@ -319,6 +324,7 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
           if ( !Const.isEmpty( realCustomSQL ) ) {
             countSQLStatement = realCustomSQL;
           } else {
+            errCount++;
             logError( BaseMessages.getString( PKG, "JobEntryEvalTableContent.Error.NoCustomSQL" ) );
           }
 
@@ -334,6 +340,7 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
               countSQLStatement = selectCount + db.getDatabaseMeta().quoteField( realTablename );
             }
           } else {
+            errCount++;
             logError( BaseMessages.getString( PKG, "JobEntryEvalTableContent.Error.NoTableName" ) );
           }
         }
@@ -403,8 +410,13 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
             default:
               break;
           }
+
+          if ( !successOK && oldBehavior ) {
+            errCount++;
+          }
         } // end if countSQLStatement!=null
       } catch ( KettleException dbe ) {
+        errCount++;
         logError( BaseMessages.getString( PKG, "JobEntryEvalTableContent.Error.RunningEntry", dbe.getMessage() ) );
       } finally {
         if ( db != null ) {
@@ -412,14 +424,14 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
         }
       }
     } else {
+      errCount++;
       logError( BaseMessages.getString( PKG, "JobEntryEvalTableContent.NoDbConnection" ) );
     }
 
-    if ( successOK ) {
-      result.setResult( true );
-      result.setNrErrors( 0 );
-    }
+    result.setResult( successOK );
     result.setNrLinesRead( rowsCount );
+    result.setNrErrors( errCount );
+
     return result;
   }
 
