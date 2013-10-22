@@ -179,7 +179,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
 
     if ( r == null ) {
       // no more input to be expected...
-      if ( !bEndedLineWrote && !first ) {
+      if ( !bEndedLineWrote && data.writer != null ) {
         // add tag to last line if needed
         writeEndedLine();
         bEndedLineWrote = true;
