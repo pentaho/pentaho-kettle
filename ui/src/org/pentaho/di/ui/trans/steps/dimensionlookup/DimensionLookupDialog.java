@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -1499,48 +1498,44 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
     }
   }
 
-  private AtomicBoolean busyWithFields = new AtomicBoolean(false);
-
   // Set table "dimension field" and "technical key" drop downs
   private void setTableFieldCombo() {
 
     Runnable fieldLoader = new Runnable() {
       public void run() {
+        if ( !wTable.isDisposed() && !wConnection.isDisposed() && !wSchema.isDisposed() ) {
+          final String tableName = wTable.getText(), connectionName = wConnection.getText(), schemaName =
+              wSchema.getText();
 
-        if (busyWithFields.get())
-          return;
-        busyWithFields.set(true);
-        try {
           // clear
-          for (int i = 0; i < tableFieldColumns.size(); i++) {
-            ColumnInfo colInfo = tableFieldColumns.get(i);
+          for ( ColumnInfo colInfo : tableFieldColumns ) {
             colInfo.setComboValues(new String[] {});
           }
           // Ensure other table field dropdowns are refreshed fields when they
           // next get focus
           gotTableFields = false;
-          if (!Const.isEmpty(wTable.getText())) {
-            DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
+          if ( !Const.isEmpty( tableName ) ) {
+            DatabaseMeta ci = transMeta.findDatabase( connectionName );
             if (ci != null) {
               Database db = new Database(loggingObject, ci);
               try {
                 db.connect();
 
-                String schemaTable = ci.getQuotedSchemaTableCombination(transMeta.environmentSubstitute(wSchema.getText()), transMeta.environmentSubstitute(wTable.getText()));
+                String schemaTable =
+                    ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
+                        .environmentSubstitute( tableName ) );
                 RowMetaInterface r = db.getTableFields(schemaTable);
                 if (null != r) {
                   String[] fieldNames = r.getFieldNames();
                   if (null != fieldNames) {
-                    for (int i = 0; i < tableFieldColumns.size(); i++) {
-                      ColumnInfo colInfo = tableFieldColumns.get(i);
+                    for ( ColumnInfo colInfo : tableFieldColumns ) {
                       colInfo.setComboValues(fieldNames);
                     }
                     wTk.setItems(fieldNames);
                   }
                 }
               } catch (Exception e) {
-                for (int i = 0; i < tableFieldColumns.size(); i++) {
-                  ColumnInfo colInfo = tableFieldColumns.get(i);
+                for ( ColumnInfo colInfo : tableFieldColumns ) {
                   colInfo.setComboValues(new String[] {});
                 }
                 // ignore any errors here. drop downs will not be
@@ -1548,8 +1543,6 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
               }
             }
           }
-        } finally {
-          busyWithFields.set(false);
         }
       }
     };
