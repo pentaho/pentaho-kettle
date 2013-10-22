@@ -430,6 +430,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       result.setNrErrors( 1L );
       result.setResult( false );
       addErrors( 1 ); // This can be before actual execution
+      
+      emergencyWriteJobTracker(result);     
+            
       active.set( false );
       finished.set( true );
       stopped.set( false );
@@ -442,8 +445,20 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         result.setNrErrors( 1 );
         result.setResult( false );
         log.logError( BaseMessages.getString( PKG, "Job.Log.ErrorExecJob", e.getMessage() ), e );
+        
+        emergencyWriteJobTracker(result);
       }
     }
+  }
+  
+  private void emergencyWriteJobTracker(Result res){
+    JobEntryResult jerFinalResult = new JobEntryResult(res, 
+        this.getLogChannelId(), 
+        BaseMessages.getString( PKG, "Job.Comment.JobFinished" ), 
+        null, null, 0, null );
+    JobTracker finalTrack = new JobTracker(this.getJobMeta(), jerFinalResult);
+    //jobTracker is up to date too.
+    this.jobTracker.addJobTracker( finalTrack );    
   }
 
   /**
@@ -1047,12 +1062,15 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         // log record...
         //
         addJobListener( new JobAdapter() {
-          public void jobFinished( Job job ) {
+          public void jobFinished( Job job ) throws KettleException {
             try {
               endProcessing();
-            } catch ( Exception e ) {
+            } catch ( KettleJobException e ) {
               log.logError( BaseMessages.getString( PKG, "Job.Exception.UnableToWriteToLoggingTable", jobLogTable
                   .toString() ), e );
+              //do not skip exception here
+              //job is failed in case log database record is failed!
+              throw new KettleException(e);
             }
           }
         } );

@@ -1154,7 +1154,7 @@ TYPICAL TARGET SEQUENCE
     <javac destdir="${classes.dir}"
            debug="${javac.debug}"
            deprecation="${javac.deprecation}"
-           fork="true"
+           fork="false"
            memorymaximumsize="${javac.maxmemory}"
            source="${javac.source}"
            target="${javac.target}">
