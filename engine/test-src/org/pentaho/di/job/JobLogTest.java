@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.Assert;
@@ -61,8 +62,8 @@ public class JobLogTest {
     PKG = PKG+"/";
         
     File file = File.createTempFile(JobLogTest.class.getSimpleName(), "");
-      file.deleteOnExit();
-      TMP = file.getCanonicalPath();    
+    file.deleteOnExit();
+    TMP = file.getCanonicalPath();    
     
     databaseMeta = new DatabaseMeta(NAME, "H2", "JDBC", null, TMP, null, USER, USER);
     logDataBase = new Database(log, databaseMeta);
@@ -74,8 +75,7 @@ public class JobLogTest {
     logDataBase.execStatements(sql);
     logDataBase.commit(true);
     
-    logDataBase.disconnect();
-    
+    logDataBase.disconnect();    
   }
 
   @AfterClass
@@ -391,7 +391,7 @@ public class JobLogTest {
     return jobMeta;
   }
   
-  private String getCanonicalPath(String resource) throws URISyntaxException, IOException{
+  public static String getCanonicalPath(String resource) throws URISyntaxException, IOException{
     URL url = JobLogTest.class.getClassLoader().getResource(PKG+resource);
     File file = new File (url.toURI());
     return file.getCanonicalPath();
@@ -407,5 +407,13 @@ public class JobLogTest {
         read =br.readLine();
     }
     return sb.toString();
+  }
+  
+  public static List<String> getJobDefaultRunParameters(){
+    List<String> list = new ArrayList<String>();
+    list.add( "-param:junit.name="+TMP );
+    list.add( "-param:junit.user="+USER );
+    list.add( "-param:junit.password="+USER );    
+    return list;
   }
 }
