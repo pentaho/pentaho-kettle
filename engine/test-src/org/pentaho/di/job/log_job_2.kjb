@@ -28,22 +28,6 @@
         </parameter>
     </parameters>
   <connection>
-    <name>gcbc_aggs</name>
-    <server>localhost</server>
-    <type>ORACLE</type>
-    <access>Native</access>
-    <database>XE</database>
-    <port>1521</port>
-    <username>gcbc_aggs</username>
-    <password>Encrypted 2be98afc86aa7f2e4bb18bd63c99dbdde</password>
-    <servername/>
-    <data_tablespace/>
-    <index_tablespace/>
-    <attributes>
-      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
-    </attributes>
-  </connection>
-  <connection>
     <name>log</name>
     <server/>
     <type>H2</type>
@@ -59,6 +43,7 @@
       <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
       <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
       <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>-1</attribute></attribute>
       <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
       <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>N</attribute></attribute>
       <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>

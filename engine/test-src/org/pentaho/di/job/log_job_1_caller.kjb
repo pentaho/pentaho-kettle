@@ -32,22 +32,6 @@
             <description/>
         </parameter>
     </parameters>
-  <connection>
-    <name>gcbc_aggs</name>
-    <server>localhost</server>
-    <type>ORACLE</type>
-    <access>Native</access>
-    <database>XE</database>
-    <port>1521</port>
-    <username>gcbc_aggs</username>
-    <password>Encrypted 2be98afc86aa7f2e4bb18bd63c99dbdde</password>
-    <servername/>
-    <data_tablespace/>
-    <index_tablespace/>
-    <attributes>
-      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
-    </attributes>
-  </connection>
     <slaveservers>
     </slaveservers>
 <job-log-table><connection/>
