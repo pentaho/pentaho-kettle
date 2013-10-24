@@ -293,12 +293,10 @@ public class FuzzyMatch extends BaseStep implements StepInterface {
 
     Iterator<Object[]> it = data.look.iterator();
 
-    String lookupValueMF = null;
-
     Object o = row[data.indexOfMainField];
     String lookupvalue = (String) o;
 
-    lookupValueMF = ( new Metaphone() ).metaphone( lookupvalue );
+    String lookupValueMF = getEncodedMF( lookupvalue, meta.getAlgorithmType() );
 
     while ( it.hasNext() ) {
       // Get cached row data
@@ -306,23 +304,7 @@ public class FuzzyMatch extends BaseStep implements StepInterface {
       // Key value is the first value
       String cacheValue = (String) cachedData[0];
 
-      String cacheValueMF = "";
-      switch ( meta.getAlgorithmType() ) {
-        case FuzzyMatchMeta.OPERATION_TYPE_METAPHONE:
-          cacheValueMF = ( new Metaphone() ).metaphone( cacheValue );
-          break;
-        case FuzzyMatchMeta.OPERATION_TYPE_DOUBLE_METAPHONE:
-          cacheValueMF = ( ( new DoubleMetaphone() ).doubleMetaphone( cacheValue ) );
-          break;
-        case FuzzyMatchMeta.OPERATION_TYPE_SOUNDEX:
-          cacheValueMF = ( new Soundex() ).encode( cacheValue );
-          break;
-        case FuzzyMatchMeta.OPERATION_TYPE_REFINED_SOUNDEX:
-          cacheValueMF = ( new RefinedSoundex() ).encode( cacheValue );
-          break;
-        default:
-          break;
-      }
+      String cacheValueMF = getEncodedMF( cacheValue, meta.getAlgorithmType() );
 
       if ( lookupValueMF.equals( cacheValueMF ) ) {
 
@@ -346,6 +328,27 @@ public class FuzzyMatch extends BaseStep implements StepInterface {
     }
 
     return rowData;
+  }
+
+  private String getEncodedMF( String value, Integer algorithmType ) {
+    String encodedValueMF = "";
+    switch ( algorithmType ) {
+      case FuzzyMatchMeta.OPERATION_TYPE_METAPHONE:
+        encodedValueMF = ( new Metaphone() ).metaphone( value );
+        break;
+      case FuzzyMatchMeta.OPERATION_TYPE_DOUBLE_METAPHONE:
+        encodedValueMF = ( ( new DoubleMetaphone() ).doubleMetaphone( value ) );
+        break;
+      case FuzzyMatchMeta.OPERATION_TYPE_SOUNDEX:
+        encodedValueMF = ( new Soundex() ).encode( value );
+        break;
+      case FuzzyMatchMeta.OPERATION_TYPE_REFINED_SOUNDEX:
+        encodedValueMF = ( new RefinedSoundex() ).encode( value );
+        break;
+      default:
+        break;
+    }
+    return encodedValueMF;
   }
 
   private Object[] doSimilarity( Object[] row ) {
