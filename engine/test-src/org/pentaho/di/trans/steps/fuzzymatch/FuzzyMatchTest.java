@@ -29,6 +29,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -54,8 +55,8 @@ public class FuzzyMatchTest {
   private Object[] row = new Object[] { "Catrine" };
   private Object[] row2 = new Object[] { "John" };
   private Object[] row3 = new Object[] { "Catriny" };
-  private List<Object[]> rows = new ArrayList<>();
-  private List<Object[]> lookupRows = new ArrayList<>();
+  private List<Object[]> rows = new ArrayList<Object[]>();
+  private List<Object[]> lookupRows = new ArrayList<Object[]>();
   {
     rows.add( row );
     lookupRows.add( row2 );
@@ -78,7 +79,8 @@ public class FuzzyMatchTest {
 
   @Before
   public void setUp() throws Exception {
-    mockHelper = new StepMockHelper<>( "Fuzzy Match", FuzzyMatchMeta.class, FuzzyMatchData.class );
+    mockHelper =
+        new StepMockHelper<FuzzyMatchMeta, FuzzyMatchData>( "Fuzzy Match", FuzzyMatchMeta.class, FuzzyMatchData.class );
     when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
         mockHelper.logChannelInterface );
     when( mockHelper.trans.isRunning() ).thenReturn( true );
