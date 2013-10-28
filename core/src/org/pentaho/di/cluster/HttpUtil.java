@@ -24,12 +24,19 @@ package org.pentaho.di.cluster;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.Credentials;
@@ -71,17 +78,7 @@ public class HttpUtil {
       }
 
       // the response
-      //
-      inputStream = method.getResponseBodyAsStream();
-      bufferedInputStream = new BufferedInputStream( inputStream, 1000 );
-
-      StringBuffer bodyBuffer = new StringBuffer();
-      int c;
-      while ( ( c = bufferedInputStream.read() ) != -1 ) {
-        bodyBuffer.append( (char) c );
-      }
-
-      String body = bodyBuffer.toString();
+      String body = method.getResponseBodyAsString();
 
       return body;
     } finally {
@@ -97,7 +94,18 @@ public class HttpUtil {
     }
 
   }
-
+  
+  /**
+   * Returns http GET request string using specified parameters.
+   * 
+   * @param space
+   * @param hostname
+   * @param port
+   * @param webAppName
+   * @param serviceAndArguments
+   * @return
+   * @throws UnsupportedEncodingException
+   */
   public static String constructUrl( VariableSpace space, String hostname, String port, String webAppName,
       String serviceAndArguments ) throws UnsupportedEncodingException {
     String realHostname = space.environmentSubstitute( hostname );
@@ -154,8 +162,8 @@ public class HttpUtil {
   }
 
   /**
-   * b64 decode, unzip and extract text using {@link Const#XML_ENCODING} 
-   * charset value.
+   * Base 64 decode, unzip and extract text using {@link Const#XML_ENCODING} 
+   * predefined charset value for byte-wise multi-byte character handling. 
    * 
    * @param loggingString64 base64 zip archive string representation
    * @return text from zip archive
@@ -167,16 +175,16 @@ public class HttpUtil {
     }
     StringWriter writer = new StringWriter();
     //base 64 decode
-    byte[] bytes = Base64.decodeBase64( loggingString64.getBytes() );
+    byte[] bytes64 = Base64.decodeBase64( loggingString64.getBytes() );
     //unzip to string encoding-wise
-    ByteArrayInputStream zip = new ByteArrayInputStream( bytes );
+    ByteArrayInputStream zip = new ByteArrayInputStream( bytes64 );
     
     GZIPInputStream unzip = null;
     InputStreamReader reader = null;
     BufferedInputStream in = null;
     try {
       unzip = new GZIPInputStream( zip, HttpUtil.ZIP_BUFFER_SIZE );
-      in = new BufferedInputStream(unzip);
+      in = new BufferedInputStream(unzip, HttpUtil.ZIP_BUFFER_SIZE );
       //PDI-4325 originally used xml encoding in servlet
       reader = new InputStreamReader(in, Const.XML_ENCODING);
       writer = new StringWriter();
@@ -191,22 +199,35 @@ public class HttpUtil {
       if (reader!=null){
         try{
           reader.close();
-        } catch (IOException e){         
+        } catch (IOException e){
+          //Suppress
         }
       }
       if (in!=null){
         try{
           in.close();
-        } catch (IOException e){         
+        } catch (IOException e){
+          //Suppress
         }
       }
       if (unzip!=null){
         try{
           unzip.close();
-        } catch (IOException e){         
+        } catch (IOException e){
+          //Suppress
         }
       }
     }
     return writer.toString();
   }
+  
+  public static String encodeBase64ZippedString(String in) throws IOException {
+    Charset charset = Charset.forName(Const.XML_ENCODING);
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    GZIPOutputStream gzos = new GZIPOutputStream( baos );
+    gzos.write( in.getBytes( charset ) );
+    gzos.close();
+    
+    return new String( Base64.encodeBase64( baos.toByteArray() ) );
+  }  
 }
