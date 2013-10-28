@@ -332,8 +332,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
         if ( lazyConversionActive ) {
           valueMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_BINARY_STRING );
         }
-        valueMeta.setStringEncoding( Const.isEmpty( encoding ) ? encoding : encoding.trim().startsWith(
-            StringUtil.UNIX_OPEN ) ? space.getVariable( encoding, encoding ) : space.environmentSubstitute( encoding ) );
+        valueMeta.setStringEncoding( space.environmentSubstitute( encoding ) );
 
         // In case we want to convert Strings...
         // Using a copy of the valueMeta object means that the inner and outer representation format is the same.
