@@ -74,7 +74,7 @@ public class CsvInputFileEncodingTransformTest extends CsvInput3Test {
   @Test
   public void testCSVInput1() throws Exception {
     Map<String, String> vars = new HashMap<String, String>();
-    vars.put( "${P_ENCODING}", "UTF-8" );
+    vars.put( "P_ENCODING", "UTF-8" );
     transMeta.injectVariables( vars );
 
     ( (CsvInputMeta) csvInputStep.getStepMetaInterface() ).setEncoding( "${P_ENCODING}" );
@@ -89,13 +89,31 @@ public class CsvInputFileEncodingTransformTest extends CsvInput3Test {
    *           Upon any exception
    */
   @Test
+  public void testCSVSpecSymbolInput() throws Exception {
+    Map<String, String> vars = new HashMap<String, String>();
+    vars.put( "${P_ENCODING}", "UTF-8" );
+    transMeta.injectVariables( vars );
+
+    ( (CsvInputMeta) csvInputStep.getStepMetaInterface() ).setEncoding( "${${P_ENCODING}}" );
+
+    createAndTestTrans( registry, transMeta, injectorStep, csvInputStep, fileName, createTextFileInputFields().length );
+  }
+
+  /**
+   * Test case for PDI 10242, that test the whole transformation run -- not just init step
+   * 
+   * @throws Exception
+   *           Upon any exception
+   */
+  @Test
   public void testCSVException() throws Exception {
     try {
       ( (CsvInputMeta) csvInputStep.getStepMetaInterface() ).setEncoding( "${P_ENCODING}" );
-      createAndTestTrans( registry, transMeta, injectorStep, csvInputStep, fileName, createTextFileInputFields().length );
+      createAndTestTrans( registry, transMeta, injectorStep, csvInputStep, fileName,
+          createTextFileInputFields().length );
       fail();
     } catch ( Exception ex ) {
-
+      System.out.println( "Expected exception" );
     }
   }
 
