@@ -1056,24 +1056,27 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
             //
             trans.execute( args );
 
-            // Wait until we're done with it...
-            //
+            // Wait until we're done with it...            
+            //TODO is it possible to implement Observer pattern to avoid Thread.sleep here?
             while ( !trans.isFinished() && !parentJob.isStopped() && trans.getErrors() == 0 ) {
               try {
                 Thread.sleep( 0, 500 );
               } catch ( InterruptedException e ) {
               }
             }
-
+            trans.waitUntilFinished();
+            
             if ( parentJob.isStopped() || trans.getErrors() != 0 ) {
               trans.stopAll();
-              trans.waitUntilFinished();
+              //trans.waitUntilFinished();
               result.setNrErrors( 1 );
             }
             Result newResult = trans.getResult();
 
             result.clear(); // clear only the numbers, NOT the files or rows.
             result.add( newResult );
+            
+            System.out.println("Errors: "+result.getNrErrors());
 
             // Set the result rows too, if any ...
             if ( !Const.isEmpty( newResult.getRows() ) ) {
