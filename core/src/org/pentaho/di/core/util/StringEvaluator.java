@@ -63,10 +63,6 @@ public class StringEvaluator {
   private static final String[] DEFAULT_NUMBER_FORMATS = new String[] { "#,###,###.#", "#.#", " #.#", "#", "#.0",
     "#.00", "#.000", "#.0000", "#.00000", "#.000000", " #.0#", };
 
-  static {
-
-  }
-
   public StringEvaluator() {
     this( true );
   }

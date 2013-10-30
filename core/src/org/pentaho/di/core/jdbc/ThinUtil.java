@@ -189,6 +189,7 @@ public class ThinUtil {
           return value;
         }
       } catch ( NumberFormatException e ) {
+        // ignore - will return null below
       }
     }
     return null;
@@ -209,6 +210,7 @@ public class ThinUtil {
         return value;
       }
     } catch ( NumberFormatException e ) {
+      // ignore - will return null below
     }
     return null;
   }
@@ -224,6 +226,7 @@ public class ThinUtil {
         return value;
       }
     } catch ( NumberFormatException e ) {
+      // ignore - will return null below
     }
     return null;
   }
