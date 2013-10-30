@@ -63,6 +63,8 @@ import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.map.DatabaseConnectionMap;
+import org.pentaho.di.core.database.util.DatabaseLogExceptionFactory;
+import org.pentaho.di.core.database.util.LogExceptionBehaviourInterface;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseBatchException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -229,6 +231,12 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     }
   }
 
+  /**
+   * This implementation is NullPointerException subject, and
+   * may not follow fundamental equals contract.
+   * 
+   * Databases equality is based on {@link DatabaseMeta} equality.
+   */
   @Override
   public boolean equals( Object obj ) {
     Database other = (Database) obj;
@@ -3176,48 +3184,51 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
       }
     } catch ( Exception e ) {
-      throw new KettleDatabaseException( "Unable to write log record to log table "
-          + environmentSubstitute( logTable.getActualTableName() ), e );
+      DatabaseLogExceptionFactory.getExceptionStrategy(variables)
+      .registerException(log, e, PKG, "DatabaseMeta.Error.WriteLogTable",
+          environmentSubstitute( logTable.getActualTableName() ));
     }
   }
 
   public void cleanupLogRecords( LogTableCoreInterface logTable ) throws KettleException {
-    try {
-      double timeout = Const.toDouble( Const.trim( environmentSubstitute( logTable.getTimeoutInDays() ) ), 0.0 );
-      if ( timeout > 0.000001 ) {
-        // The timeout has to be at least a few seconds, otherwise we don't
-        // bother
-        //
-        String schemaTable =
-            databaseMeta.getQuotedSchemaTableCombination( environmentSubstitute( logTable.getActualSchemaName() ),
-                environmentSubstitute( logTable.getActualTableName() ) );
-
-        // The log date field
-        //
-        LogTableField logField = logTable.getLogDateField();
-        if ( logField != null ) {
-          String sql =
-              "DELETE FROM " + schemaTable + " WHERE " + databaseMeta.quoteField( logField.getFieldName() ) + " < ?"; // $NON-NLS$1
-
-          // Now calculate the date...
-          //
-          long now = System.currentTimeMillis();
-          long limit = now - Math.round( timeout * 24 * 60 * 60 * 1000 );
-          RowMetaAndData row = new RowMetaAndData();
-          row.addValue( logField.getFieldName(), ValueMetaInterface.TYPE_DATE, new Date( limit ) );
-
-          execStatement( sql, row.getRowMeta(), row.getData() );
-
-        } else {
-          throw new KettleException( BaseMessages.getString( PKG,
-              "Database.Exception.LogTimeoutDefinedOnTableWithoutLogField", environmentSubstitute( logTable
-                  .getActualTableName() ) ) );
-        }
-      }
-    } catch ( Exception e ) {
-      throw new KettleDatabaseException( BaseMessages.getString( PKG,
-          "Database.Exception.UnableToCleanUpOlderRecordsFromLogTable", environmentSubstitute( logTable
-              .getActualTableName() ) ), e );
+    double timeout = Const.toDouble( Const.trim( environmentSubstitute( logTable.getTimeoutInDays() ) ), 0.0 );
+    if ( timeout < 0.000001 ){
+      // The timeout has to be at least a few seconds, otherwise we don't
+      // bother
+      return;
+    }
+    
+    String schemaTable =
+        databaseMeta.getQuotedSchemaTableCombination( environmentSubstitute( logTable.getActualSchemaName() ),
+            environmentSubstitute( logTable.getActualTableName() ) );
+    
+    if (schemaTable.isEmpty()){
+      //we can't process without table name
+      DatabaseLogExceptionFactory.getExceptionStrategy(variables)
+      .registerException(log, PKG, "DatabaseMeta.Error.LogTableNameNotFound" );      
+    }
+    
+    LogTableField logField = logTable.getLogDateField();
+    if ( logField == null ){
+      //can't stand without logField
+      DatabaseLogExceptionFactory.getExceptionStrategy(variables)
+      .registerException(log, PKG, "Database.Exception.LogTimeoutDefinedOnTableWithoutLogField" );
+    }
+    
+    String sql =
+        "DELETE FROM " + schemaTable + " WHERE " + databaseMeta.quoteField( logField.getFieldName() ) + " < ?"; // $NON-NLS$1
+    long now = System.currentTimeMillis();
+    long limit = now - Math.round( timeout * 24 * 60 * 60 * 1000 );
+    RowMetaAndData row = new RowMetaAndData();
+    row.addValue( logField.getFieldName(), ValueMetaInterface.TYPE_DATE, new Date( limit ) );
+    
+    try{
+      //fire database
+      execStatement( sql, row.getRowMeta(), row.getData() );      
+    } catch (Exception e){
+      DatabaseLogExceptionFactory.getExceptionStrategy(variables)
+      .registerException(log, PKG, "Database.Exception.UnableToCleanUpOlderRecordsFromLogTable", 
+          environmentSubstitute( logTable.getActualTableName() ) );    
     }
   }
 
@@ -3254,8 +3265,9 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       }
       pstmt.close();
       pstmt = null;
-    } catch ( SQLException ex ) {
-      throw new KettleDatabaseException( "Unable to obtain last logdate from table " + logtable, ex );
+    } catch ( SQLException e ) {
+      DatabaseLogExceptionFactory.getExceptionStrategy(variables)
+      .registerException(log, e, PKG, "DatabaseMeta.Error.UnableToObtainLastLogDate",logtable );
     }
 
     return row;
