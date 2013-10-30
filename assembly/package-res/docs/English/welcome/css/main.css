@@ -54,7 +54,7 @@ h2.large {
 	margin-bottom: 50px;
 }
 
-.header-container p {
+.header-container > div.headerContents {
 	width: 380px;
 	font-size: 16px;
 	float: left;
@@ -502,6 +502,7 @@ hr {
 	height: 0px;
 	width: 100%;
 	margin: 40px 0px 30px;
+	clear: both;
 }
 
 #content-engage hr {
@@ -652,9 +653,11 @@ hr {
 .buttonizeButtons {
 	border: none;
 	width: 402px;
+	height: 44px;
 	border-radius: 0px 0px 0px 0px;
-	margin: 15px auto -33px;
+	margin: 15px auto -32px;
 	overflow: hidden;
+	border-bottom: 1px solid #f6f7f8;
 }
 
 .buttonizeButtons1 {
@@ -662,15 +665,15 @@ hr {
 }
 
 .buttonizeButtons2 {
-	width: 402px;
+	width: 404px;
 }
 
 .buttonizeButtons3 {
-	width: 605px;
+	width: 606px;
 }
 
 .buttonizeButtons4 {
-	width: 804px;
+	width: 805px;
 }
 
 .buttonizeButton{
@@ -708,12 +711,13 @@ hr {
 .buttonizeButton.selected {
 	background-color: #fff;
 	background-image: url(../img/bg-header-item.png);
-	background-position: 0px -75px;
+	background-position: 0px -77px;
 	background-repeat: repeat-x;
 	color: #005ca7;
 	border-bottom: 1px solid #f5f5f5;
 	z-index: 1000;
 	height: 31px;
+	border-right: 1px solid #ddd !important;
 }
 
 .buttonizeButton.selected:after {
