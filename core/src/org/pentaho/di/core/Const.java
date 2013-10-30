@@ -2121,8 +2121,8 @@ public class Const {
     try {
       stringWriter.close();
     } catch ( IOException ioe ) {
-
-    } // is this really required?
+      // is this really required?
+    }
     return string;
   }
 

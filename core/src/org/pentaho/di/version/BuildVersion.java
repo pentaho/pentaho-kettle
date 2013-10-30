@@ -31,6 +31,7 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleVersionException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.xml.XMLHandler;
 
@@ -119,8 +120,18 @@ public class BuildVersion {
    * @param buildDate
    *          the buildDate to set
    */
-  public void setBuildDate( String buildDate ) {
+  public void setBuildDate( String buildDate ) throws KettleVersionException {
+    // don't let them set a bogus date...
+    String tempDate = this.buildDate;
     this.buildDate = buildDate;
+    Date testDate = getBuildDateAsLocalDate();
+    if ( testDate == null ) {
+      // reset it to the old date...
+      this.buildDate = tempDate;
+      throw new KettleVersionException( "Error:  Invalid date being set as build date" ); // this should be
+                                                                                          // localizable... next
+      // pass....
+    }
   }
 
   /**

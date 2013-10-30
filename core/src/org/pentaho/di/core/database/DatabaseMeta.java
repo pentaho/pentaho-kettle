@@ -1051,12 +1051,10 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   public String getURL( String partitionId ) throws KettleDatabaseException {
     // First see if we're not doing any JNDI...
     //
-    if ( getAccessType() == TYPE_ACCESS_JNDI ) {
-      // We can't really determine the URL here.
-      //
-      //
-    }
-
+    /*
+     * This doesn't make much sense here - we check but do nothing? if ( getAccessType() == TYPE_ACCESS_JNDI ) { // We
+     * can't really determine the URL here. // // }
+     */
     String baseUrl;
     String hostname;
     String port;
@@ -1112,10 +1110,11 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
           }
         }
       }
-    } else {
-      // We need to put all these options in a Properties file later (Oracle & Co.)
-      // This happens at connect time...
     }
+    // else {
+    // We need to put all these options in a Properties file later (Oracle & Co.)
+    // This happens at connect time...
+    // }
 
     return url.toString();
   }
