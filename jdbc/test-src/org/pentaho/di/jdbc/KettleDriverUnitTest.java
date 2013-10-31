@@ -7,6 +7,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverPropertyInfo;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
@@ -28,6 +30,11 @@ public class KettleDriverUnitTest {
   public void testAcceptsURL() {
     KettleDriver driver = new KettleDriver();
     try {
+      assertFalse( driver.acceptsURL( null ) );
+    } catch ( SQLException e ) {
+      fail( "NULL URL threw a SQL exception." );
+    }
+    try {
       assertFalse( driver.acceptsURL( "invalidurl" ) );
     } catch ( SQLException e ) {
       fail( "Invalid URL threw a SQL exception." );
@@ -40,9 +47,22 @@ public class KettleDriverUnitTest {
 
   }
 
-  /*
-   * @Test public void testConnect() { fail( "Not yet implemented" ); }
-   */
+  @Test
+  public void testConnect() {
+    KettleDriver driver = new KettleDriver();
+    Connection connect = null;
+    try {
+      connect = driver.connect( validURL, validInfo );
+      assertNotNull( connect );
+      DatabaseMetaData connectMeta = connect.getMetaData();
+      assertTrue( connectMeta instanceof JDBCKettleMetaData ); // better be one of ours...
+      assertEquals( connectMeta.getURL(), validURL );
+
+    } catch ( SQLException e ) {
+      fail( "Valid connection threw SQL exception : " + e.getMessage() );
+    }
+
+  }
 
   @Test
   public void testParseURL() {
