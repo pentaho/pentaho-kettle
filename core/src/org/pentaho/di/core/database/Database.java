@@ -64,7 +64,6 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.map.DatabaseConnectionMap;
 import org.pentaho.di.core.database.util.DatabaseLogExceptionFactory;
-import org.pentaho.di.core.database.util.LogExceptionBehaviourInterface;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseBatchException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -749,6 +748,16 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         throw new KettleDatabaseException( "Error comitting connection", e );
       }
     }
+  }
+  
+  public void commitLog ( LogTableCoreInterface logTable ) throws KettleDatabaseException {
+    this.commitLog( false, logTable );
+  }
+  
+  //TODO implement here
+  public void commitLog ( boolean force, LogTableCoreInterface logTable ) throws KettleDatabaseException {
+    
+  
   }
 
   public void rollback() throws KettleDatabaseException {
@@ -3137,7 +3146,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   public void writeLogRecord( LogTableCoreInterface logTable, LogStatus status, Object subject, Object parent )
-    throws KettleException {
+    throws KettleDatabaseException {
     try {
       RowMetaAndData logRecord = logTable.getLogRecord( status, subject, parent );
       if ( logRecord == null ) {
@@ -3184,13 +3193,13 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
       }
     } catch ( Exception e ) {
-      DatabaseLogExceptionFactory.getExceptionStrategy(variables)
+      DatabaseLogExceptionFactory.getExceptionStrategy(variables, logTable)
       .registerException(log, e, PKG, "DatabaseMeta.Error.WriteLogTable",
           environmentSubstitute( logTable.getActualTableName() ));
     }
   }
 
-  public void cleanupLogRecords( LogTableCoreInterface logTable ) throws KettleException {
+  public void cleanupLogRecords( LogTableCoreInterface logTable ) throws KettleDatabaseException {
     double timeout = Const.toDouble( Const.trim( environmentSubstitute( logTable.getTimeoutInDays() ) ), 0.0 );
     if ( timeout < 0.000001 ){
       // The timeout has to be at least a few seconds, otherwise we don't
@@ -3204,14 +3213,14 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     
     if (schemaTable.isEmpty()){
       //we can't process without table name
-      DatabaseLogExceptionFactory.getExceptionStrategy(variables)
+      DatabaseLogExceptionFactory.getExceptionStrategy(variables, logTable)
       .registerException(log, PKG, "DatabaseMeta.Error.LogTableNameNotFound" );      
     }
     
     LogTableField logField = logTable.getLogDateField();
     if ( logField == null ){
       //can't stand without logField
-      DatabaseLogExceptionFactory.getExceptionStrategy(variables)
+      DatabaseLogExceptionFactory.getExceptionStrategy(variables, logTable)
       .registerException(log, PKG, "Database.Exception.LogTimeoutDefinedOnTableWithoutLogField" );
     }
     
@@ -3226,7 +3235,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       //fire database
       execStatement( sql, row.getRowMeta(), row.getData() );      
     } catch (Exception e){
-      DatabaseLogExceptionFactory.getExceptionStrategy(variables)
+      DatabaseLogExceptionFactory.getExceptionStrategy(variables, logTable)
       .registerException(log, PKG, "Database.Exception.UnableToCleanUpOlderRecordsFromLogTable", 
           environmentSubstitute( logTable.getActualTableName() ) );    
     }
@@ -3265,9 +3274,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       }
       pstmt.close();
       pstmt = null;
-    } catch ( SQLException e ) {
-      DatabaseLogExceptionFactory.getExceptionStrategy(variables)
-      .registerException(log, e, PKG, "DatabaseMeta.Error.UnableToObtainLastLogDate",logtable );
+    } catch ( SQLException ex ) {
+      throw new KettleDatabaseException( "Unable to obtain last logdate from table " + logtable, ex );
     }
 
     return row;

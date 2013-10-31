@@ -1092,6 +1092,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       } catch (KettleException e){
         //listeners produces errors
         log.logError( BaseMessages.getString( PKG, "Trans.FinishListeners.Exception" ) );
+        //we will not pass this exception up to prepareExecuton() entry point.
       } finally {
         // Flag the transformation as finished even if exception was thrown
         setFinished( true );
@@ -1171,6 +1172,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             nrOfFinishedSteps++;
 
             if ( nrOfFinishedSteps >= steps.size() ) {
+              // Set the finished flag
+              //
+              setFinished( true );
+
               // Grab the performance statistics one last time (if enabled)
               //
               addStepPerformanceSnapShot();
@@ -1182,10 +1187,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                 log.logError( getName() + " : "
                     + BaseMessages.getString( PKG, "Trans.Log.UnexpectedErrorAtTransformationEnd" ), e );
               }
-              
-              // Set the finished flag
-              // PDI 9790 transaction finish listeners calls is a part of transaction
-              setFinished( true );
             }
 
             // If a step fails with an error, we want to kill/stop the others
@@ -1258,7 +1259,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         if ( transMeta.isCapturingStepPerformanceSnapShots() && stepPerformanceSnapShotTimer != null ) {
           stepPerformanceSnapShotTimer.cancel();
         }
-        
+
         setFinished( true );
         running = false; // no longer running
 
@@ -1403,7 +1404,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   /**
    * Fires the finish-event listeners (if any are registered).
    * Make attempt to fire all registered listeners if possible.
-   * Transaction is not ended before all listeners is done processing.
    * 
    * @throws KettleException
    *           if any errors occur during notification
@@ -2369,10 +2369,14 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       // Also time-out the log records in here...
       //
       db.cleanupLogRecords( channelLogTable );
-    } catch ( Exception e ) {
-      // PDI-9790 error write log record to log table is transformation error
+    } catch (KettleDatabaseException e){
+      // PDI-9790 if it is KDE - is probably log table exception
+      // and a subject of throw exception strategy.
       errors.incrementAndGet();
-      // end PDI-9790
+      throw new KettleException( BaseMessages.getString( PKG,
+          "Trans.Exception.UnableToWriteLogChannelInformationToLogTable" ), e );
+    } catch ( Exception e ) {
+      //backward-compatibility for any kind of non KDE if they were here.
       throw new KettleException( BaseMessages.getString( PKG,
           "Trans.Exception.UnableToWriteLogChannelInformationToLogTable" ), e );
     } finally {
@@ -2403,9 +2407,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       }
 
     } catch ( Exception e ) {
-      // PDI-9790 error write step log info to log table is transformation error
-      errors.incrementAndGet();
-      // end PDI-9790
       throw new KettleException(
           BaseMessages.getString( PKG, "Trans.Exception.UnableToWriteStepInformationToLogTable" ), e );
     } finally {
@@ -2478,9 +2479,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       //
       db.cleanupLogRecords( metricsLogTable );
     } catch ( Exception e ) {
-      // PDI-9790 error write to metrics log table is transformation error
-      errors.incrementAndGet();
-      // end PDI-9790
       throw new KettleException( BaseMessages.getString( PKG,
           "Trans.Exception.UnableToWriteMetricsInformationToLogTable" ), e );
     } finally {
@@ -2611,10 +2609,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         if ( !ldb.isAutoCommit() ) {
           ldb.commit( true );
         }
-      } catch ( Exception e ) {
+      } catch (KettleDatabaseException e){
         // PDI-9790 error write to log db is transaction error
         errors.incrementAndGet();
-        //end PDI-9790        
+        //end PDI-9790
+      } catch ( Exception e ) {        
         throw new KettleException( BaseMessages.getString( PKG, "Trans.Exception.ErrorWritingLogRecordToTable",
             transMeta.getTransLogTable().getActualTableName() ), e );
       } finally {

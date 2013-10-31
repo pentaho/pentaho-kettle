@@ -24,27 +24,50 @@ package org.pentaho.di.core.database.util;
 
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LogTableCoreInterface;
+import org.pentaho.di.core.logging.LogTableType;
+import org.pentaho.di.core.logging.LogTableTypeInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 
 public class DatabaseLogExceptionFactory {
 
-  public static final String KETTLE_GLOBAL_PROP_NAME = "KETTLE_LOG_EXCEPTION_FAILOVER";
+  public static final String KETTLE_GLOBAL_PROP_NAME = "KETTLE_LOG_DATABASE_EXCEPTION_FAILOVER";
 
   private static final LogExceptionBehaviourInterface throwable = new ThrowableBehaviour();
   private static final LogExceptionBehaviourInterface supressable = new SuppressBehaviour();
 
   /**
-   * Depends on if environment variable 'KETTLE_LOG_EXCEPTION_FAILOVER' we can suppress or throw exception up.
+   * Depends on if environment variables we can suppress or throw exception up.
    * 
    * @return
-   */
-  public static LogExceptionBehaviourInterface getExceptionStrategy( VariableSpace variables ) {
+   */  
+  public static LogExceptionBehaviourInterface getExceptionStrategy( VariableSpace variables, LogTableCoreInterface table ) {   
     // what is environment says?
     String val = variables.getVariable( KETTLE_GLOBAL_PROP_NAME );
-    if (val==null || val.isEmpty()){
-      return supressable;
+    
+    // with a small penalty for backward compatibility
+    if ( ! (table instanceof LogTableTypeInterface) ){
+      return getWithoutType(val);
+    } 
+
+    LogTableTypeInterface link = LogTableTypeInterface.class.cast( table );
+    LogTableType type = link.getLogTableTypeEnum();
+    String valSp = variables.getVariable( type.getExceptionParamName() );
+    if (valSp==null || valSp.isEmpty()){
+      //we don't have any specific override for this
+      return getDefault();  
+    } else {
+      //specific value overrides global
+      return getWithoutType(valSp);
     }
+  }
+  
+  private static LogExceptionBehaviourInterface getDefault(){
+    return supressable;
+  }
+  
+  private static LogExceptionBehaviourInterface getWithoutType(String val){
     return Boolean.valueOf( val ) ? throwable : supressable;
   }
 
@@ -75,13 +98,13 @@ public class DatabaseLogExceptionFactory {
 
     @Override
     public void registerException(LogChannelInterface log, Class<?> packageClass, String key, String... parameters ) {
-      log.logError( BaseMessages.getString( packageClass, key ) );
+      log.logError( BaseMessages.getString( packageClass, key, parameters ) );
     }
 
     @Override
     public void registerException(LogChannelInterface log, Exception e, Class<?> packageClass, String key, String... parameters )
       throws KettleDatabaseException {
-      log.logError( BaseMessages.getString( packageClass, key, e.getMessage(), e ) );
+      log.logError( BaseMessages.getString( packageClass, key, parameters ), e );
     }
   }
 }

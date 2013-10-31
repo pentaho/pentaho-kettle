@@ -52,7 +52,7 @@ import org.w3c.dom.Node;
  * @author matt
  * 
  */
-public class JobEntryLogTable extends BaseLogTable implements Cloneable, LogTableInterface {
+public class JobEntryLogTable extends BaseLogTable implements Cloneable, LogTableInterface, LogTableTypeInterface {
 
   private static Class<?> PKG = JobEntryLogTable.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
@@ -345,5 +345,10 @@ public class JobEntryLogTable extends BaseLogTable implements Cloneable, LogTabl
     }
 
     return indexes;
+  }
+
+  @Override
+  public LogTableType getLogTableTypeEnum() {
+    return LogTableType.JOB_ENTRY_LOG_TABLE;
   }
 }
