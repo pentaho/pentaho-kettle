@@ -23,8 +23,13 @@
 package org.pentaho.di.trans.steps.mailinput;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
+import java.util.List;
 
+import javax.mail.Header;
 import javax.mail.Message;
 
 import org.apache.commons.collections.iterators.ArrayIterator;
@@ -290,6 +295,12 @@ public class MailInput extends BaseStep implements StepInterface {
               break;
             case MailInputField.COLUMN_HEADER:
               String name = meta.getInputFields()[i].getName();
+              String[] arr = { name };
+              Enumeration<Header> en = message.getMatchingHeaders( arr );
+              //since we are using only one value this will be one header
+              String val = en.nextElement().getValue();
+              
+              //TODO try catch this? folding folders?
               String[] headerValues = message.getHeader( name );
               r[index] = StringUtils.join( headerValues, ";" );
               break;
