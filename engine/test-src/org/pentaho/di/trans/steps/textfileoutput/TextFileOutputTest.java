@@ -131,8 +131,8 @@ public class TextFileOutputTest {
     contents.add( END_LINE );
     contents.add( null );
     contents.add( null );
-    contents.add( null );
-    contents.add( null );
+    contents.add( END_LINE );
+    contents.add( END_LINE );
     contents.add( RESULT_ROWS );
     contents.add( RESULT_ROWS );
     contents.add( RESULT_ROWS + END_LINE );
@@ -147,8 +147,8 @@ public class TextFileOutputTest {
     contents.add( TEST_PREVIOUS_DATA + END_LINE );
     contents.add( TEST_PREVIOUS_DATA );
     contents.add( TEST_PREVIOUS_DATA );
-    contents.add( TEST_PREVIOUS_DATA );
-    contents.add( TEST_PREVIOUS_DATA );
+    contents.add( END_LINE  );
+    contents.add( TEST_PREVIOUS_DATA + END_LINE  );
     contents.add( RESULT_ROWS );
     contents.add( TEST_PREVIOUS_DATA + RESULT_ROWS );
     contents.add( RESULT_ROWS + END_LINE );
