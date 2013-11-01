@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
@@ -90,6 +92,8 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   };
 
   private DatabaseInterface databaseInterface;
+  
+  private static final ReadWriteLock databaseInterfacesMapLock = new ReentrantReadWriteLock();
 
   private static Map<String, DatabaseInterface> allDatabaseInterfaces;
 
@@ -1306,20 +1310,13 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    * next call to getDatabaseInterfacesMap() will reload the map.
    */
   public static final void clearDatabaseInterfacesMap() {
+    databaseInterfacesMapLock.writeLock().lock();
     allDatabaseInterfaces = null;
+    databaseInterfacesMapLock.writeLock().unlock();
   }
 
-  public static final Map<String, DatabaseInterface> getDatabaseInterfacesMap() {
-    if ( allDatabaseInterfaces != null ) {
-      return allDatabaseInterfaces;
-    }
-
+  private static final Map<String, DatabaseInterface> createDatabaseInterfacesMap() {
     LogChannelInterface log = LogChannel.GENERAL;
-
-    // If multiple threads call this method at the same time, there may be extra work done until
-    // the allDatabaseInterfaces is finally set. Before we were not using a local map to populate,
-    // and parallel threads were getting an incomplete list, causing null pointers.
-
     PluginRegistry registry = PluginRegistry.getInstance();
 
     List<PluginInterface> plugins = registry.getPlugins( DatabasePluginType.class );
@@ -1342,8 +1339,30 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
         log.logError( "Error loading plugin: " + plugin, e );
       }
     }
-    allDatabaseInterfaces = tmpAllDatabaseInterfaces;
-    return allDatabaseInterfaces;
+    return Collections.unmodifiableMap( tmpAllDatabaseInterfaces );
+  }
+
+  public static final Map<String, DatabaseInterface> getDatabaseInterfacesMap() {
+    // Acquire read lock
+    databaseInterfacesMapLock.readLock().lock();
+    try {
+      if ( allDatabaseInterfaces == null ) {
+        // Upgrade lock to write and load database map (Must release read to acquire write)
+        databaseInterfacesMapLock.readLock().unlock();
+        try {
+          databaseInterfacesMapLock.writeLock().lock();
+          allDatabaseInterfaces = createDatabaseInterfacesMap();
+        } finally {
+          // Downgrade the lock to read
+          databaseInterfacesMapLock.readLock().lock();
+          databaseInterfacesMapLock.writeLock().unlock();
+        }
+      }
+      return allDatabaseInterfaces;
+    } finally {
+      // Release read lock
+      databaseInterfacesMapLock.readLock().unlock();
+    }
   }
 
   public static final int[] getAccessTypeList( String dbTypeDesc ) {
