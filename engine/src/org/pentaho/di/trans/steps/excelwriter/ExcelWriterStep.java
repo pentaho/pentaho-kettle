@@ -749,12 +749,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
 
       // handle write protection
       if ( meta.isSheetProtected() ) {
-        // Write protect Sheet by setting password
-        // works only for xls output at the moment
-        if ( data.wb instanceof HSSFWorkbook ) {
-          ( (HSSFWorkbook) data.wb ).writeProtectWorkbook( data.realPassword, Const.isEmpty( meta.getProtectedBy() )
-              ? "Kettle PDI" : data.realProtectedBy );
-        }
+        protectSheet( data.sheet, data.realPassword );
       }
 
       // starting cell support
@@ -923,6 +918,18 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
     clearWorkbookMem();
 
     super.dispose( smi, sdi );
+  }
+
+  /**
+   * Write protect Sheet by setting password
+   * works only for xls output at the moment
+   */
+  protected void protectSheet( Sheet sheet, String password ) {
+    if ( sheet instanceof HSSFSheet ) {
+      // Write protect Sheet by setting password
+      // works only for xls output at the moment
+      sheet.protectSheet( password );
+    }
   }
 
 }
