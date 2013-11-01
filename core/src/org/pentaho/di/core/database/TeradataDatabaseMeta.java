@@ -23,7 +23,6 @@
 package org.pentaho.di.core.database;
 
 import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -267,7 +266,8 @@ public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 
   @Override
   public String getExtraOptionsHelpText() {
-    return "http://www.info.ncr.com/eTeradata-BrowseBy-Results.cfm?pl=&PID=&title=%25&release=&kword=CJDBC&sbrn=7&nm=Teradata+Tools+and+Utilities+-+Java+Database+Connectivity+(JDBC)";
+    return "http://www.info.ncr.com/eTeradata-BrowseBy-Results.cfm?pl=&PID=&title=%25&release="
+        + "&kword=CJDBC&sbrn=7&nm=Teradata+Tools+and+Utilities+-+Java+Database+Connectivity+(JDBC)";
   }
 
   @Override
@@ -278,6 +278,57 @@ public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
   @Override
   public int getDefaultDatabasePort() {
     return 1025;
+  }
+
+  /**
+   * @return an array of reserved words for the database type...
+   */
+  @Override
+  public String[] getReservedWords() {
+    return new String[] { "ABORT", "ABORTSESSION", "ABS", "ACCESS_LOCK", "ACCOUNT", "ACOS", "ACOSH", "ADD",
+      "ADD_MONTHS", "ADMIN", "AFTER", "AGGREGATE", "ALL", "ALTER", "AMP", "AND", "ANSIDATE", "ANY", "ARGLPAREN", "AS",
+      "ASC", "ASIN", "ASINH", "AT", "ATAN", "ATAN2", "ATANH", "ATOMIC", "AUTHORIZATION", "AVE", "AVERAGE", "AVG",
+      "BEFORE", "BEGIN", "BETWEEN", "BIGINT", "BINARY", "BLOB", "BOTH", "BT", "BUT", "BY", "BYTE", "BYTEINT", "BYTES",
+      "CALL", "CASE", "CASE_N", "CASESPECIFIC", "CAST", "CD", "CHAR", "CHAR_LENGTH", "CHAR2HEXINT", "CHARACTER",
+      "CHARACTER_LENGTH", "CHARACTERS", "CHARS", "CHECK", "CHECKPOINT", "CLASS", "CLOB", "CLOSE", "CLUSTER", "CM",
+      "COALESCE", "COLLATION", "COLLECT", "COLUMN", "COMMENT", "COMMIT", "COMPRESS", "CONSTRAINT", "CONSTRUCTOR",
+      "CONSUME", "CONTAINS", "CONTINUE", "CONVERT_TABLE_HEADER", "CORR", "COS", "COSH", "COUNT", "COVAR_POP",
+      "COVAR_SAMP", "CREATE", "CROSS", "CS", "CSUM", "CT", "CUBE", "CURRENT", "CURRENT_DATE", "CURRENT_TIME",
+      "CURRENT_TIMESTAMP", "CURSOR", "CV", "CYCLE", "DATABASE", "DATABLOCKSIZE", "DATE", "DATEFORM", "DAY",
+      "DEALLOCATE", "DEC", "DECIMAL", "DECLARE", "DEFAULT", "DEFERRED", "DEGREES", "DEL", "DELETE", "DESC",
+      "DETERMINISTIC", "DIAGNOSTIC", "DISABLED", "DISTINCT", "DO", "DOMAIN", "DOUBLE", "DROP", "DUAL", "DUMP",
+      "DYNAMIC", "EACH", "ECHO", "ELSE", "ELSEIF", "ENABLED", "END", "EQ", "EQUALS", "ERROR", "ERRORFILES",
+      "ERRORTABLES", "ESCAPE", "ET", "EXCEPT", "EXEC", "EXECUTE", "EXISTS", "EXIT", "EXP", "EXPLAIN", "EXTERNAL",
+      "EXTRACT", "FALLBACK", "FASTEXPORT", "FETCH", "FIRST", "FLOAT", "FOR", "FOREIGN", "FORMAT", "FOUND", "FREESPACE",
+      "FROM", "FULL", "FUNCTION", "GE", "GENERATED", "GIVE", "GRANT", "GRAPHIC", "GROUP", "GROUPING", "GT", "HANDLER",
+      "HASH", "HASHAMP", "HASHBAKAMP", "HASHBUCKET", "HASHROW", "HAVING", "HELP", "HOUR", "IDENTITY", "IF",
+      "IMMEDIATE", "IN", "INCONSISTENT", "INDEX", "INITIATE", "INNER", "INOUT", "INPUT", "INS", "INSERT", "INSTANCE",
+      "INSTEAD", "INT", "INTEGER", "INTEGERDATE", "INTERSECT", "INTERVAL", "INTO", "IS", "ITERATE", "JAR", "JOIN",
+      "JOURNAL", "KEY", "KURTOSIS", "LANGUAGE", "LARGE", "LE", "LEADING", "LEAVE", "LEFT", "LIKE", "LIMIT", "LN",
+      "LOADING", "LOCAL", "LOCATOR", "LOCK", "LOCKING", "LOG", "LOGGING", "LOGON", "LONG", "LOOP", "LOWER", "LT",
+      "MACRO", "MAP", "MAVG", "MAX", "MAXIMUM", "MCHARACTERS", "MDIFF", "MERGE", "METHOD", "MIN", "MINDEX", "MINIMUM",
+      "MINUS", "MINUTE", "MLINREG", "MLOAD", "MOD", "MODE", "MODIFIES", "MODIFY", "MONITOR", "MONRESOURCE",
+      "MONSESSION", "MONTH", "MSUBSTR", "MSUM", "MULTISET", "NAMED", "NATURAL", "NE", "NEW", "NEW_TABLE", "NEXT", "NO",
+      "NONE", "NOT", "NOWAIT", "NULL", "NULLIF", "NULLIFZERO", "NUMERIC", "OBJECT", "OBJECTS", "OCTET_LENGTH", "OF",
+      "OFF", "OLD", "OLD_TABLE", "ON", "ONLY", "OPEN", "OPTION", "OR", "ORDER", "ORDERING", "OUT", "OUTER", "OUTPUT",
+      "OVER", "OVERLAPS", "OVERRIDE", "PARAMETER", "PASSWORD", "PERCENT", "PERCENT_RANK", "PERM", "PERMANENT",
+      "POSITION", "PRECISION", "PREPARE", "PRESERVE", "PRIMARY", "PRIVILEGES", "PROCEDURE", "PROFILE", "PROTECTION",
+      "PUBLIC", "QUALIFIED", "QUALIFY", "QUANTILE", "QUEUE", "RADIANS", "RANDOM", "RANGE_N", "RANK", "READS", "REAL",
+      "RECURSIVE", "REFERENCES", "REFERENCING", "REGR_AVGX", "REGR_AVGY", "REGR_COUNT", "REGR_INTERCEPT", "REGR_R2",
+      "REGR_SLOPE", "REGR_SXX", "REGR_SXY", "REGR_SYY", "RELATIVE", "RELEASE", "RENAME", "REPEAT", "REPLACE",
+      "REPLCONTROL", "REPLICATION", "REQUEST", "RESTART", "RESTORE", "RESULT", "RESUME", "RET", "RETRIEVE", "RETURN",
+      "RETURNS", "REVALIDATE", "REVOKE", "RIGHT", "RIGHTS", "ROLE", "ROLLBACK", "ROLLFORWARD", "ROLLUP", "ROW",
+      "ROW_NUMBER", "ROWID", "ROWS", "SAMPLE", "SAMPLEID", "SCROLL", "SECOND", "SEL", "SELECT", "SESSION", "SET",
+      "SETRESRATE", "SETS", "SETSESSRATE", "SHOW", "SIN", "SINH", "SKEW", "SMALLINT", "SOME", "SOUNDEX", "SPECIFIC",
+      "SPOOL", "SQL", "SQLEXCEPTION", "SQLTEXT", "SQLWARNING", "SQRT", "SS", "START", "STARTUP", "STATEMENT",
+      "STATISTICS", "STDDEV_POP", "STDDEV_SAMP", "STEPINFO", "STRING_CS", "SUBSCRIBER", "SUBSTR", "SUBSTRING", "SUM",
+      "SUMMARY", "SUSPEND", "TABLE", "TAN", "TANH", "TBL_CS", "TEMPORARY", "TERMINATE", "THEN", "THRESHOLD", "TIME",
+      "TIMESTAMP", "TIMEZONE_HOUR", "TIMEZONE_MINUTE", "TITLE", "TO", "TOP", "TRACE", "TRAILING", "TRANSACTION",
+      "TRANSFORM", "TRANSLATE", "TRANSLATE_CHK", "TRIGGER", "TRIM", "TRUE", "TYPE", "UC", "UDTCASTAS", "UDTCASTLPAREN",
+      "UDTMETHOD", "UDTTYPE", "UDTUSAGE", "UESCAPE", "UNDEFINED", "UNDO", "UNION", "UNIQUE", "UNTIL", "UPD", "UPDATE",
+      "UPPER", "UPPERCASE", "USER", "USING", "VALUE", "VALUES", "VAR_POP", "VAR_SAMP", "VARBYTE", "VARCHAR",
+      "VARGRAPHIC", "VARYING", "VIEW", "VOLATILE", "WHEN", "WHERE", "WHILE", "WIDTH_BUCKET", "WITH", "WITHOUT", "WORK",
+      "YEAR", "ZEROIFNULL", "ZONE" };
   }
 
   /**
