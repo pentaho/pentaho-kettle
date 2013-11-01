@@ -56,7 +56,7 @@ public class DatabaseLogExceptionFactory {
     String valSp = variables.getVariable( type.getExceptionParamName() );
     if (valSp==null || valSp.isEmpty()){
       //we don't have any specific override for this
-      return getDefault();  
+      return getWithoutType(val);  
     } else {
       //specific value overrides global
       return getWithoutType(valSp);

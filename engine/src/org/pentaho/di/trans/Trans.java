@@ -2202,7 +2202,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           // Pass in a commit to release transaction locks and to allow a user to actually see the log record.
           //
           if ( !transLogTableDatabaseConnection.isAutoCommit() ) {
-            transLogTableDatabaseConnection.commit( true );
+            transLogTableDatabaseConnection.commitLog( true, transLogTable );
           }
 
           // If we need to do periodic logging, make sure to install a timer for this...
@@ -2369,14 +2369,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       // Also time-out the log records in here...
       //
       db.cleanupLogRecords( channelLogTable );
-    } catch (KettleDatabaseException e){
-      // PDI-9790 if it is KDE - is probably log table exception
-      // and a subject of throw exception strategy.
-      errors.incrementAndGet();
-      throw new KettleException( BaseMessages.getString( PKG,
-          "Trans.Exception.UnableToWriteLogChannelInformationToLogTable" ), e );
     } catch ( Exception e ) {
-      //backward-compatibility for any kind of non KDE if they were here.
       throw new KettleException( BaseMessages.getString( PKG,
           "Trans.Exception.UnableToWriteLogChannelInformationToLogTable" ), e );
     } finally {
@@ -2607,10 +2600,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         // Commit the operations to prevent locking issues
         //
         if ( !ldb.isAutoCommit() ) {
-          ldb.commit( true );
+          ldb.commitLog( true, transMeta.getTransLogTable() );
         }
       } catch (KettleDatabaseException e){
         // PDI-9790 error write to log db is transaction error
+        log.logError(BaseMessages.getString( PKG, "Database.Error.WriteLogTable", logTable ), e);
         errors.incrementAndGet();
         //end PDI-9790
       } catch ( Exception e ) {        

@@ -1026,7 +1026,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
         ldb.writeLogRecord( jobMeta.getJobLogTable(), LogStatus.START, this, null );
         if ( !ldb.isAutoCommit() ) {
-          ldb.commit( true );
+          ldb.commitLog( true,  jobMeta.getJobLogTable());
         }
         ldb.disconnect();
 
@@ -1172,7 +1172,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
           throw new KettleJobException( "Unable to end processing by writing log record to table " + tableName, dbe );
         } finally {
           if ( !ldb.isAutoCommit() ) {
-            ldb.commit( true );
+            ldb.commitLog( true, jobMeta.getJobLogTable() );
           }
           ldb.disconnect();
         }
@@ -1254,7 +1254,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
           e );
     } finally {
       if ( !db.isAutoCommit() ) {
-        db.commit( true );
+        db.commitLog( true,  jobEntryLogTable);
       }
       db.disconnect();
     }

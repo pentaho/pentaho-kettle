@@ -750,14 +750,46 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     }
   }
   
+  @Deprecated
   public void commitLog ( LogTableCoreInterface logTable ) throws KettleDatabaseException {
     this.commitLog( false, logTable );
   }
-  
-  //TODO implement here
-  public void commitLog ( boolean force, LogTableCoreInterface logTable ) throws KettleDatabaseException {
     
+  //copy of commit functionality, but with ability to throw/supress exception
+  @Deprecated
+  public void commitLog ( boolean force, LogTableCoreInterface logTable ) throws KettleDatabaseException {
+    try {
+      commitInternal( force );
+    } catch (Exception e){
+      DatabaseLogExceptionFactory.getExceptionStrategy( variables, logTable )
+      .registerException( log, e, PKG, "Database.Error.UnableToCommitToLogTable", 
+          logTable.getActualTableName() );      
+    }
+  }
   
+  /**
+   * this is a copy of {@link #commit(boolean)} - but delegates exception handling to caller.
+   * 
+   * @param force
+   * @throws KettleDatabaseException
+   * @throws SQLException
+   */
+  @Deprecated
+  private void commitInternal( boolean force ) throws KettleDatabaseException, SQLException{
+    if ( !Const.isEmpty( connectionGroup ) && !force ) {
+      return;
+    }
+    if ( getDatabaseMetaData().supportsTransactions() ) {
+      if ( log.isDebug() ) {
+        log.logDebug( "Commit on database connection [" + toString() + "]" );
+      }
+      connection.commit();
+      nrExecutedCommits++;
+    } else {
+      if ( log.isDetailed() ) {
+        log.logDetailed( "No commit possible on database connection [" + toString() + "]" );
+      }
+    }
   }
 
   public void rollback() throws KettleDatabaseException {
@@ -3194,7 +3226,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       }
     } catch ( Exception e ) {
       DatabaseLogExceptionFactory.getExceptionStrategy(variables, logTable)
-      .registerException(log, e, PKG, "DatabaseMeta.Error.WriteLogTable",
+      .registerException(log, e, PKG, "Database.Error.WriteLogTable",
           environmentSubstitute( logTable.getActualTableName() ));
     }
   }
