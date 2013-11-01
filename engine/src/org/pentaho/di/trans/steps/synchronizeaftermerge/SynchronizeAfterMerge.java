@@ -144,7 +144,8 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
         data.db.setValues( data.insertRowMeta, insertRowData, data.insertStatement );
         data.db.insertRow( data.insertStatement, data.batchMode );
         performInsert = true;
-        incrementLinesOutput();
+        //hide it here as the actual number of output rows is calculated when they are committed 
+        // incrementLinesOutput();
         if ( log.isRowLevel() ) {
           logRowlevel( "Written row: " + data.insertRowMeta.getString( insertRowData ) );
         }
@@ -278,8 +279,8 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
             performUpdate = true;
             incrementLinesUpdated();
 
-          } // end if operation update
-          else {
+          } else {
+         // end if operation update
             incrementLinesSkipped();
             lineSkipped = true;
           }
@@ -327,8 +328,8 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
           data.db.insertRow( data.deleteStatement, data.batchMode );
           performDelete = true;
           incrementLinesUpdated();
-        } // endif operation delete
-        else {
+        }  else {
+          // endif operation delete
           incrementLinesSkipped();
           lineSkipped = true;
         }
@@ -668,8 +669,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
     data = (SynchronizeAfterMergeData) sdi;
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
       setOutputDone();
       return false;
     }
@@ -752,8 +752,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
       // Insert the update fields: just names. Type doesn't matter!
       for ( int i = 0; i < meta.getUpdateLookup().length; i++ ) {
         ValueMetaInterface insValue = data.insertRowMeta.searchValueMeta( meta.getUpdateLookup()[i] );
-        if ( insValue == null ) // Don't add twice!
-        {
+        if ( insValue == null ) { // Don't add twice!
           // we already checked that this value exists so it's probably safe to ignore lookup failure...
           ValueMetaInterface insertValue = data.inputRowMeta.searchValueMeta( meta.getUpdateStream()[i] ).clone();
           insertValue.setName( meta.getUpdateLookup()[i] );
@@ -769,8 +768,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
       data.valuenrs = new int[meta.getUpdateLookup().length];
       for ( int i = 0; i < meta.getUpdateLookup().length; i++ ) {
         data.valuenrs[i] = data.inputRowMeta.indexOfValue( meta.getUpdateStream()[i] );
-        if ( data.valuenrs[i] < 0 ) // couldn't find field!
-        {
+        if ( data.valuenrs[i] < 0 ) { // couldn't find field!
           throw new KettleStepException( BaseMessages.getString( PKG, "SynchronizeAfterMerge.Exception.FieldRequired",
               meta.getUpdateStream()[i] ) );
         }
@@ -835,7 +833,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
         }
       }
 
-    }// end if first
+    } // end if first
 
     try {
       lookupValues( r ); // add new values to the row in rowset[0].
