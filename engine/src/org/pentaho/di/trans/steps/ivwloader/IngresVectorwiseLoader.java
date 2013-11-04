@@ -24,10 +24,12 @@ package org.pentaho.di.trans.steps.ivwloader;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.LineNumberReader;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-
+import java.util.Scanner;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
@@ -63,6 +65,8 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
 
   private IngresVectorwiseLoaderMeta meta;
   private IngresVectorwiseLoaderData data;
+  public VWloadMonitor vwLoadMonitor;
+  public Thread vwLoadMonitorThread;
 
   public IngresVectorwiseLoader( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
       TransMeta transMeta, Trans trans ) {
@@ -126,7 +130,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
 
         // any error message?
         //
-        data.errorLogger = new StreamLogger( log, data.sqlProcess.getErrorStream(), "ERR_SQL" );
+        data.errorLogger = new StreamLogger( log, data.sqlProcess.getErrorStream(), "ERR_SQL", true );
 
         // any output?
         data.outputLogger = new StreamLogger( log, data.sqlProcess.getInputStream(), "OUT_SQL" );
@@ -137,7 +141,12 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
 
         // kick them off
         new Thread( data.errorLogger ).start();
-        new Thread( data.outputLogger ).start();
+        Thread outputLoggerThread = new Thread( data.outputLogger );
+        outputLoggerThread.start();
+
+        vwLoadMonitor = new VWloadMonitor( data.sqlProcess, data.outputLogger, outputLoggerThread );
+        vwLoadMonitorThread = new Thread( vwLoadMonitor );
+        vwLoadMonitorThread.start();
 
       } catch ( Exception ex ) {
         throw new KettleException( "Error while executing psql : " + cmd, ex );
@@ -348,7 +357,9 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
           sb.append( " -l " ).append( errorFile );
         }
         if ( maxNrErrors > 0 ) {
-          sb.append( " -x " ).append( maxNrErrors );
+          // need multiplication for two because every wrong rows
+          // provide 2 errors that is not evident
+          sb.append( " -x " ).append( maxNrErrors * 2 );
         }
         sb.append( " " ).append( databaseName );
         sb.append( " " ).append( fifoFile );
@@ -379,8 +390,8 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
 
     try {
       Object[] r = getRow(); // Get row from input rowset & set row busy!
-      if ( r == null ) // no more input to be expected...
-      {
+      // no more input to be expected...
+      if ( r == null ) {
         setOutputDone();
         // only close output after the first row was processed
         // to prevent error (NPE) on empty rows set
@@ -503,10 +514,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
         ValueMetaInterface valueMeta = rowMeta.getValueMeta( index );
         Object valueData = r[index];
 
-        if ( valueData == null ) {
-          // Don't output anything for null
-          //
-        } else {
+        if ( valueData != null ) {
           if ( valueMeta.isStorageBinaryString() ) {
             byte[] value = valueMeta.getBinaryString( valueData );
             write( value );
@@ -645,7 +653,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
 
   public boolean checkSqlProcessRunning( Process sqlProcess ) {
     try {
-      int exitValue = data.sqlProcess.exitValue();
+      int exitValue = sqlProcess.exitValue();
       logError( "SQL process exit code: " + exitValue );
       return false;
     }
@@ -739,6 +747,67 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
       if ( ex != null ) {
         throw ex;
       }
+    }
+  }
+
+  public class VWloadMonitor implements Runnable {
+    private Process vwloadProcess;
+    private StreamLogger outputLogger;
+    private Thread outputLoggerThread;
+
+    VWloadMonitor( Process loadProcess, StreamLogger outputLogger, Thread outputLoggerThread ) {
+      this.vwloadProcess = loadProcess;
+      this.outputLogger = outputLogger;
+      this.outputLoggerThread = outputLoggerThread;
+    }
+
+    public void run() {
+      try {
+        int resultCode = vwloadProcess.waitFor();
+        Long[] results = tryToParseVWloadResultMessage();
+        if ( results != null ) {
+          setLinesOutput( results[1] );
+          setLinesRejected( results[2] );
+        }
+        boolean errorResult =
+            ( resultCode != 0 ) || ( results != null && ( !meta.isContinueOnError() && !meta.isUsingVwload() ) );
+        if ( errorResult ) {
+          setLinesOutput( 0L );
+          logError( "Bulk loader finish unsuccessfully" );
+          setErrors( 1L );
+        } else {
+          setErrors( 0L );
+        }
+      } catch ( Exception ex ) {
+        setErrors( 1L );
+        logError( "Unexpected error encountered while monitoring bulk load process", ex );
+      }
+    }
+
+    private Long[] tryToParseVWloadResultMessage() throws InterruptedException, IOException {
+      outputLoggerThread.join();
+      Long[] result = new Long[3];
+      if ( meta.isUsingVwload() ) {
+        String lastLine = outputLogger.getLastLine();
+        Scanner sc = new Scanner( lastLine );
+        sc = sc.useDelimiter( "\\D+" );
+        int i = 0;
+        while ( sc.hasNext() ) {
+          result[i++] = sc.nextBigInteger().longValue();
+        }
+      } else {
+        File errorFile = new File( meta.getErrorFileName() );
+        if ( !errorFile.exists() ) {
+          return null;
+        } else {
+          LineNumberReader lnr = new LineNumberReader( new FileReader( errorFile ) );
+          lnr.skip( Long.MAX_VALUE );
+          Integer errors = lnr.getLineNumber();
+          result[1] = ( getLinesOutput() - errors );
+          result[2] = Long.valueOf( errors );
+        }
+      }
+      return result;
     }
   }
 
