@@ -31,6 +31,7 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullV
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -870,6 +871,14 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
     return this.socksProxyPort;
   }
 
+  protected FTPClient initFTPClient() {
+    return new FTPClient();
+  }
+
+  protected InetAddress getInetAddress( String realServername ) throws UnknownHostException {
+    return InetAddress.getByName( realServername );
+  }
+
   public Result execute( Result previousResult, int nr ) {
     log.logBasic( BaseMessages.getString( PKG, "JobEntryFTP.Started", serverName ) );
 
@@ -900,10 +909,10 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 
     try {
       // Create ftp client to host:port ...
-      ftpclient = new FTPClient();
+      ftpclient = initFTPClient();
       String realServername = environmentSubstitute( serverName );
       String realServerPort = environmentSubstitute( port );
-      ftpclient.setRemoteAddr( InetAddress.getByName( realServername ) );
+      ftpclient.setRemoteAddr( getInetAddress(realServername ) );
       if ( !Const.isEmpty( realServerPort ) ) {
         ftpclient.setRemotePort( Const.toInt( realServerPort, 21 ) );
       }
@@ -921,7 +930,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
           ftpclient.setRemotePort( port );
         }
       } else {
-        ftpclient.setRemoteAddr( InetAddress.getByName( realServername ) );
+        ftpclient.setRemoteAddr( getInetAddress(realServername ) );
 
         if ( isDetailed() ) {
           logDetailed( BaseMessages.getString( PKG, "JobEntryFTP.OpenedConnectionTo", realServername ) );
