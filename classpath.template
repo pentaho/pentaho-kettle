@@ -4,7 +4,6 @@
   <classpathentry kind="src" path="core/test-src"/>
   <classpathentry kind="src" path="dbdialog/src"/>
   <classpathentry kind="src" path="dbdialog/test-src"/>
-  <classpathentry kind="src" path="jdbc/src"/>
   <classpathentry kind="src" path="engine/src"/>
   <classpathentry kind="src" path="engine/test-src"/>
   <classpathentry kind="src" path="ui/src"/>
