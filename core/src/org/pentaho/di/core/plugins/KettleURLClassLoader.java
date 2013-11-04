@@ -81,8 +81,10 @@ public class KettleURLClassLoader extends URLClassLoader {
         return clz;
       }
     } catch ( ClassNotFoundException e ) {
+      // ignore
 
     } catch ( NoClassDefFoundError e ) {
+      // ignore
 
     }
 

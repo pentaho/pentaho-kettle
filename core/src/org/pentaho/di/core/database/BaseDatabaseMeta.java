@@ -2146,9 +2146,10 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
         newName.append( c );
       } else if ( c == ' ' ) {
         newName.append( '_' );
-      } else {
-        // swallow this character
       }
+      // else {
+      // swallow this character
+      // }
     }
     fieldname = newName.toString();
 

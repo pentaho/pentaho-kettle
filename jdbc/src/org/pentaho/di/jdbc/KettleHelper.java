@@ -50,16 +50,26 @@ public class KettleHelper {
 
   public static ColInfo[] convert( RowMeta rm, String columnStr ) {
 
+    // need valid row meta in order to process.
+    if ( rm == null ) {
+      // should log this...
+      return null;
+    }
+
+    // if no columns, shouldn't be here...
+    if ( columnStr == null ) {
+      // should log this...
+      return null;
+    }
     StringTokenizer st = new StringTokenizer( columnStr, "," );
     ColInfo[] r = new ColInfo[st.countTokens()];
     int i = 0;
     while ( st.hasMoreTokens() ) {
       ColInfo c = new ColInfo();
       String tmpStr = st.nextToken();
-      int index = tmpStr.indexOf( "as" );
+      int index = tmpStr.indexOf( " as " );
       if ( index != -1 ) {
-        String name = tmpStr.substring( index + 2 );
-
+        String name = tmpStr.substring( index + 4 );
         String realName = tmpStr.substring( 0, index );
         realName = realName.trim();
         int kindex = realName.lastIndexOf( "." );
@@ -73,10 +83,12 @@ public class KettleHelper {
         // c.setRealName(realName);
         // c.setRealName(Sanitizer.doFilter(name));
         // c.setName(Sanitizer.doFilter(name));
-        c.setRealName( Sanitizer.doFilter( name ) );
+        c.setRealName( Sanitizer.doFilter( realName ) );
         c.setName( Sanitizer.doFilter( name ) );
         ValueMetaInterface v = rm.searchValueMeta( realName );
-        c.setJdbcType( translateType( v.getType() ) );
+        if ( v != null ) {
+          c.setJdbcType( translateType( v.getType() ) );
+        }
       } else {
         tmpStr = tmpStr.trim();
         // System.out.println("before deleting for tmpStr="+tmpStr);

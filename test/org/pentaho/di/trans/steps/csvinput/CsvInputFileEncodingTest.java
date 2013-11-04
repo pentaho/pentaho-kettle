@@ -55,6 +55,7 @@ public class CsvInputFileEncodingTest extends CsvInputBase {
 
     Map<String, String> vars = new HashMap<String, String>();
     vars.put( "${P_ENCODING}", "UTF-8" );
+    vars.put( "P_ENCODING", "UTF-8" );
     transMeta.injectVariables( vars );
 
     StepMeta csvStepMeta = createCsvInputStep( transMeta, PluginRegistry.getInstance(), "\"", false );
@@ -80,6 +81,19 @@ public class CsvInputFileEncodingTest extends CsvInputBase {
   public void testCSVVariableEncodingInit() throws Exception {
 
     csvInpMeta.setEncoding( "${P_ENCODING}" );
+    assertTrue( csvInput.init( csvInpMeta, new CsvInputData() ) );
+  }
+
+  /**
+   * testing the fix
+   * 
+   * @throws Exception
+   */
+
+  @Test
+  public void testCSVVariableEncodingSpecSybmbolsInit() throws Exception {
+
+    csvInpMeta.setEncoding( "${${P_ENCODING}}" );
     assertTrue( csvInput.init( csvInpMeta, new CsvInputData() ) );
   }
 

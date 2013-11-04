@@ -115,6 +115,7 @@ public class KettleClientEnvironment {
       //
       createDefaultKettleProperties( directory );
     } catch ( Exception e ) {
+      // ignore - should likely propagate the error
 
     }
   }
