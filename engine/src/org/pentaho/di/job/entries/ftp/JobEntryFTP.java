@@ -1173,7 +1173,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
     downloadFile( FTPClient ftpclient, String filename, String realMoveToFolder, Job parentJob, Result result )
       throws Exception {
     String localFilename = filename;
-    targetFilename = returnTargetFilename( localFilename );
+    targetFilename = KettleVFS.getFilename( KettleVFS.getFileObject( returnTargetFilename( localFilename ) ) );
 
     if ( ( !onlyGettingNewFiles ) || ( onlyGettingNewFiles && needsDownload( targetFilename ) ) ) {
       if ( isDetailed() ) {

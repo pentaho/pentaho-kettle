@@ -102,4 +102,26 @@ public class JobEntryFTPTest {
     assertTrue( "There should be errors", 0 != result.getNrErrors() );
   }
 
+  @Test
+  public void testProtocolVariableExistingTargetDir() throws Exception {
+    entry.setTargetDirectory( "${Internal.Job.Filename.Directory}" );
+    entry.setVariable( "Internal.Job.Filename.Directory", "file://" + existingDir );
+
+    Result result = entry.execute( new Result(), 0 );
+
+    assertTrue( "For existing folder should be true", result.getResult() );
+    assertEquals( "There should be no errors", 0, result.getNrErrors() );
+  }
+
+  @Test
+  public void testPtotocolVariableNonExistingTargetDir() throws Exception {
+    entry.setTargetDirectory( "${Internal.Job.Filename.Directory}/Worg" );
+    entry.setVariable( "Internal.Job.Filename.Directory", "file://" + existingDir + File.separator + "sub" );
+
+    Result result = entry.execute( new Result(), 0 );
+
+    assertFalse( "For non existing folder should be false", result.getResult() );
+    assertTrue( "There should be errors", 0 != result.getNrErrors() );
+  }
+
 }
