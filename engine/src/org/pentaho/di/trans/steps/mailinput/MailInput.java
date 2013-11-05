@@ -61,7 +61,7 @@ public class MailInput extends BaseStep implements StepInterface {
   private MailInputMeta meta;
   private MailInputData data;
 
-  private TestClass instance = new TestClass();
+  private MessageParser instance = new MessageParser();
 
   public MailInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
@@ -232,7 +232,7 @@ public class MailInput extends BaseStep implements StepInterface {
       }
 
       try {
-        instance.incaps( r, message );
+        instance.parseToArray( r, message );
       } catch ( Exception e ) {
         String msg = e.getMessage();
         if ( meta.isStopOnError() ) {
@@ -495,9 +495,13 @@ public class MailInput extends BaseStep implements StepInterface {
     return null;
   }
 
-  class TestClass {
+  /**
+   * Extracted message parse algorithm to be able to unit test separately
+   *  
+   */
+  class MessageParser {
 
-    Object[] incaps( Object[] r, Message message ) throws Exception {
+    Object[] parseToArray( Object[] r, Message message ) throws Exception {
 
       // Execute for each Input field...
       for ( int i = 0; i < data.nrFields; i++ ) {
