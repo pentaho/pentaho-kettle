@@ -100,18 +100,11 @@ public class ChannelLogTable extends BaseLogTable implements Cloneable, LogTable
     return retval.toString();
   }
 
-  public void loadXML( Node jobnode, List<DatabaseMeta> databases, List<StepMeta> steps ) {
-
-    Node node = XMLHandler.getSubNode( jobnode, XML_TAG );
-    if ( node == null ) {
-      return;
-    }
-
+  public void loadXML( Node node, List<DatabaseMeta> databases, List<StepMeta> steps ) {
     connectionName = XMLHandler.getTagValue( node, "connection" );
     schemaName = XMLHandler.getTagValue( node, "schema" );
     tableName = XMLHandler.getTagValue( node, "table" );
     timeoutInDays = XMLHandler.getTagValue( node, "timeout_days" );
-
     super.loadFieldsXML( node );
   }
 

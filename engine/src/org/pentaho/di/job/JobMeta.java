@@ -1351,7 +1351,10 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
         jobLogTable.loadXML( jobLogNode, databases, null );
       }
 
-      channelLogTable.loadXML( jobnode, databases, null );
+      Node channelLogTableNode = XMLHandler.getSubNode( jobnode, ChannelLogTable.XML_TAG );
+      if ( channelLogTableNode != null ) {
+        channelLogTable.loadXML( channelLogTableNode, databases, null );
+      }
       jobEntryLogTable.loadXML( jobnode, databases, null );
 
       for ( LogTableInterface extraLogTable : extraLogTables ) {
