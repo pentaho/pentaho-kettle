@@ -46,11 +46,12 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
 import org.pentaho.di.cluster.HttpUtil;
 import org.pentaho.di.cluster.SlaveConnectionManager;
 import org.pentaho.di.core.Const;
@@ -79,7 +80,7 @@ public class ThinResultSet implements ResultSet {
 
   private String serviceName;
 
-  private GetMethod method;
+  private PostMethod method;
 
   private String serviceTransName;
 
@@ -113,17 +114,15 @@ public class ThinResultSet implements ResultSet {
         HttpUtil.addProxy( client, new Variables(), connection.getHostname(), connection.getProxyHostname(), connection
             .getProxyPort(), connection.getNonProxyHosts() );
 
-        method = new GetMethod( urlString );
+        method = new PostMethod( urlString );
 
         method.setDoAuthentication( true );
-        method.addRequestHeader( new Header( "Content-Type", "binary/jdbc" ) );
         method.addRequestHeader( new Header( "SQL", ThinUtil.stripNewlines( sql ) ) );
         method.addRequestHeader( new Header( "MaxRows", Integer.toString( statement.getMaxRows() ) ) );
         method.getParams().setParameter( "http.socket.timeout", new Integer( 0 ) );
 
-        for ( String arg : connection.getArguments().keySet() ) {
-          String value = connection.getArguments().get( arg );
-          method.addRequestHeader( new Header( arg, value ) );
+        for ( Entry<String, String> arg : connection.getArguments().entrySet() ) {
+          method.addParameter( arg.getKey(), arg.getValue() );
         }
 
         int result = client.executeMethod( method );
