@@ -300,13 +300,138 @@ public class ParseMailInputTest {
     Object[] r = RowDataUtil.allocateRowData( data.nrFields );
     underTest.parseToArray( r, message );  
     
-    //expect, that from is concatenated with ';'
+    //is concatenated with ';'
     String expected = StringUtils.join(new String[]{ REP1, REP2 }, ";");
     Assert.assertEquals("Message ReplayTo is correct", expected , String.class.cast( r[0] ) );  
   }
   
-  //TODO same for AllRecipients, Description,
-  //ReceivedDate, SentDate, ContentType, Size
+  /**
+   * Test message recipients can be parsed
+   * @throws Exception
+   */
+  @Test
+  public void testMessageRecipientsIsParsed() throws Exception{
+    int[] fields = { MailInputField.COLUMN_RECIPIENTS };
+    MailInputField[] farr = this.getDefaultInputFields( fields );    
+    this.mockMailInputMeta( farr );    
+    try {
+      mailInput.processRow( meta, data );
+    } catch (KettleException e){
+      //don't worry about it
+    }
+    MessageParser underTest = mailInput.new MessageParser();
+    Object[] r = RowDataUtil.allocateRowData( data.nrFields );
+    underTest.parseToArray( r, message );  
+    
+    //is concatenated with ';'
+    String expected = StringUtils.join(new String[]{ REC1, REC2 }, ";");
+    Assert.assertEquals("Message Recipients is correct", expected , String.class.cast( r[0] ) );
+  }
+  
+  /**
+   * Test message description is correct
+   * @throws Exception
+   */
+  @Test
+  public void testMessageDescriptionIsParsed() throws Exception{
+    int[] fields = { MailInputField.COLUMN_DESCRIPTION };
+    MailInputField[] farr = this.getDefaultInputFields( fields );    
+    this.mockMailInputMeta( farr );    
+    try {
+      mailInput.processRow( meta, data );
+    } catch (KettleException e){
+      //don't worry about it
+    }
+    MessageParser underTest = mailInput.new MessageParser();
+    Object[] r = RowDataUtil.allocateRowData( data.nrFields );
+    underTest.parseToArray( r, message );  
+    
+    Assert.assertEquals("Message Description is correct", DESC , String.class.cast( r[0] ) ); 
+  }
+  
+  /**
+   * Test message received date is correct
+   * @throws Exception
+   */
+  @Test
+  public void testMessageRecivedDateIsParsed() throws Exception{
+    int[] fields = { MailInputField.COLUMN_RECEIVED_DATE };
+    MailInputField[] farr = this.getDefaultInputFields( fields );    
+    this.mockMailInputMeta( farr );    
+    try {
+      mailInput.processRow( meta, data );
+    } catch (KettleException e){
+      //don't worry about it
+    }
+    MessageParser underTest = mailInput.new MessageParser();
+    Object[] r = RowDataUtil.allocateRowData( data.nrFields );
+    underTest.parseToArray( r, message );  
+
+    Assert.assertEquals("Message Recived date is correct", DATE1 , Date.class.cast( r[0] ) ); 
+  }
+  
+  /**
+   * Test message sent date is correct
+   * @throws Exception
+   */
+  @Test
+  public void testMessageSentDateIsParsed() throws Exception{
+    int[] fields = { MailInputField.COLUMN_SENT_DATE };
+    MailInputField[] farr = this.getDefaultInputFields( fields );    
+    this.mockMailInputMeta( farr );    
+    try {
+      mailInput.processRow( meta, data );
+    } catch (KettleException e){
+      //don't worry about it
+    }
+    MessageParser underTest = mailInput.new MessageParser();
+    Object[] r = RowDataUtil.allocateRowData( data.nrFields );
+    underTest.parseToArray( r, message );  
+
+    Assert.assertEquals("Message Sent date is correct", DATE2 , Date.class.cast( r[0] ) ); 
+  }
+  
+  /**
+   * Message content type is correct
+   * @throws Exception
+   */
+  @Test
+  public void testMessageContentTypeIsParsed() throws Exception{
+    int[] fields = { MailInputField.COLUMN_CONTENT_TYPE };
+    MailInputField[] farr = this.getDefaultInputFields( fields );    
+    this.mockMailInputMeta( farr );    
+    try {
+      mailInput.processRow( meta, data );
+    } catch (KettleException e){
+      //don't worry about it
+    }
+    MessageParser underTest = mailInput.new MessageParser();
+    Object[] r = RowDataUtil.allocateRowData( data.nrFields );
+    underTest.parseToArray( r, message );  
+
+    Assert.assertEquals("Message Content type is correct", CNTNT_TYPE_EMAIL , String.class.cast( r[0] ) ); 
+  }
+  
+  /**
+   * Test message size is correct
+   * @throws Exception
+   */
+  @Test
+  public void testMessageSizeIsParsed() throws Exception{
+    int[] fields = { MailInputField.COLUMN_SIZE };
+    MailInputField[] farr = this.getDefaultInputFields( fields );    
+    this.mockMailInputMeta( farr );    
+    try {
+      mailInput.processRow( meta, data );
+    } catch (KettleException e){
+      //don't worry about it
+    }
+    MessageParser underTest = mailInput.new MessageParser();
+    Object[] r = RowDataUtil.allocateRowData( data.nrFields );
+    underTest.parseToArray( r, message );  
+
+    Assert.assertEquals("Message Size is correct", new Long (CNTNT_SIZE) , Long.class.cast( r[0] ) ); 
+  }
   
   /**
    * Test that message body can be parsed correctly
@@ -329,7 +454,68 @@ public class ParseMailInputTest {
     Assert.assertEquals("Message Body is correct", MSG_BODY , String.class.cast( r[0] ) );
   }
   
-  //TODO same for FolderName, AttachedFilesCount, MessageBodyContentType  
+  /**
+   * Test that message folder name can be parsed correctly
+   * @throws Exception
+   */
+  @Test
+  public void testMessageFolderNameIsParsed() throws Exception {
+    int[] fields = { MailInputField.COLUMN_FOLDER_NAME };
+    MailInputField[] farr = this.getDefaultInputFields( fields );    
+    this.mockMailInputMeta( farr );    
+    try {
+      mailInput.processRow( meta, data );
+    } catch (KettleException e){
+      //don't worry about it
+    }
+    MessageParser underTest = mailInput.new MessageParser();
+    Object[] r = RowDataUtil.allocateRowData( data.nrFields );
+    underTest.parseToArray( r, message );  
+
+    Assert.assertEquals("Message Folder Name is correct", FLD_NAME , String.class.cast( r[0] ) );
+  }
+  
+  /**
+   * Test that message folder name can be parsed correctly
+   * @throws Exception
+   */
+  @Test
+  public void testMessageAttachedFilesCountNameIsParsed() throws Exception {
+    int[] fields = { MailInputField.COLUMN_ATTACHED_FILES_COUNT };
+    MailInputField[] farr = this.getDefaultInputFields( fields );    
+    this.mockMailInputMeta( farr );    
+    try {
+      mailInput.processRow( meta, data );
+    } catch (KettleException e){
+      //don't worry about it
+    }
+    MessageParser underTest = mailInput.new MessageParser();
+    Object[] r = RowDataUtil.allocateRowData( data.nrFields );
+    underTest.parseToArray( r, message );  
+
+    Assert.assertEquals("Message Attached files count is correct", new Long(ATTCH_COUNT) , Long.class.cast( r[0] ) );
+  }
+  
+  /**
+   * Test that message body content type can be parsed correctly
+   * @throws Exception
+   */
+  @Test
+  public void testMessageBodyContentTypeIsParsed() throws Exception {
+    int[] fields = { MailInputField.COLUMN_BODY_CONTENT_TYPE };
+    MailInputField[] farr = this.getDefaultInputFields( fields );    
+    this.mockMailInputMeta( farr );    
+    try {
+      mailInput.processRow( meta, data );
+    } catch (KettleException e){
+      //don't worry about it
+    }
+    MessageParser underTest = mailInput.new MessageParser();
+    Object[] r = RowDataUtil.allocateRowData( data.nrFields );
+    underTest.parseToArray( r, message );  
+
+    Assert.assertEquals("Message body content type is correct", CNTNT_TYPE , String.class.cast( r[0] ) );
+  }
   
   private void mockMailInputMeta(MailInputField[] arr){
     data.nrFields = arr.length;
