@@ -230,7 +230,7 @@ public class MetricsLogTable extends BaseLogTable implements Cloneable, LogTable
   }
 
   public String getLogTableCode() {
-    return "CHANNEL";
+    return "METRICS";
   }
 
   public String getLogTableType() {
