@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.Const;
@@ -383,8 +384,8 @@ public class SqlTransExecutor {
       }
       parameters.putAll(conditionParameters); // overwrite the defaults for this query
       
-      for (String name : conditionParameters.keySet()) {
-        serviceTransMeta.setParameterValue(name, conditionParameters.get(name));
+      for (Entry<String, String> parameter : parameters.entrySet()) {
+        serviceTransMeta.setParameterValue(parameter.getKey(), parameter.getValue());
       }
       
       // Activate parameters determined through the field-variable mapping
