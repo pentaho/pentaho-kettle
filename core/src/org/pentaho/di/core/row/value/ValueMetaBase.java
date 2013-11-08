@@ -36,6 +36,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -3393,9 +3394,16 @@ public class ValueMetaBase implements ValueMetaInterface {
         cmp = b1.length - b2.length;
 
         break;
+
+      case TYPE_TIMESTAMP:
+        Timestamp timestamp1 = (Timestamp)data1;
+        Timestamp timestamp2 = (Timestamp)data2;
+        cmp = timestamp1.compareTo(timestamp2);
+        break;
+
       default:
         throw new KettleValueException( toString() + " : Comparing values can not be done with data type : "
-            + getType() );
+            + getType() + "(" + data1.getClass().getName()+ ", " +data2.getClass().getName() +")");
     }
 
     if ( isSortedDescending() ) {
