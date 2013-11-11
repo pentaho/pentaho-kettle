@@ -749,26 +749,37 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       }
     }
   }
-  
+
+  /**
+   * This methods may be removed in future.
+   * @param logTable
+   * @throws KettleDatabaseException
+   */
   @Deprecated
   public void commitLog ( LogTableCoreInterface logTable ) throws KettleDatabaseException {
     this.commitLog( false, logTable );
   }
-    
-  //copy of commit functionality, but with ability to throw/supress exception
+
+  /**
+   * This methods may be removed in future.
+   * @param force
+   * @param logTable
+   * @throws KettleDatabaseException
+   */
   @Deprecated
   public void commitLog ( boolean force, LogTableCoreInterface logTable ) throws KettleDatabaseException {
     try {
       commitInternal( force );
     } catch (Exception e){
-      DatabaseLogExceptionFactory.getExceptionStrategy( variables, logTable )
+      DatabaseLogExceptionFactory.getExceptionStrategy( logTable )
       .registerException( log, e, PKG, "Database.Error.UnableToCommitToLogTable", 
           logTable.getActualTableName() );      
     }
   }
-  
+
   /**
    * this is a copy of {@link #commit(boolean)} - but delegates exception handling to caller.
+   * Can be possibly be removed in future.
    * 
    * @param force
    * @throws KettleDatabaseException
@@ -3225,7 +3236,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
       }
     } catch ( Exception e ) {
-      DatabaseLogExceptionFactory.getExceptionStrategy(variables, logTable)
+      DatabaseLogExceptionFactory.getExceptionStrategy( logTable )
       .registerException(log, e, PKG, "Database.Error.WriteLogTable",
           environmentSubstitute( logTable.getActualTableName() ));
     }
@@ -3245,14 +3256,14 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     
     if (schemaTable.isEmpty()){
       //we can't process without table name
-      DatabaseLogExceptionFactory.getExceptionStrategy(variables, logTable)
+      DatabaseLogExceptionFactory.getExceptionStrategy( logTable )
       .registerException(log, PKG, "DatabaseMeta.Error.LogTableNameNotFound" );      
     }
     
     LogTableField logField = logTable.getLogDateField();
     if ( logField == null ){
       //can't stand without logField
-      DatabaseLogExceptionFactory.getExceptionStrategy(variables, logTable)
+      DatabaseLogExceptionFactory.getExceptionStrategy( logTable )
       .registerException(log, PKG, "Database.Exception.LogTimeoutDefinedOnTableWithoutLogField" );
     }
     
@@ -3267,7 +3278,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       //fire database
       execStatement( sql, row.getRowMeta(), row.getData() );      
     } catch (Exception e){
-      DatabaseLogExceptionFactory.getExceptionStrategy(variables, logTable)
+      DatabaseLogExceptionFactory.getExceptionStrategy( logTable )
       .registerException(log, PKG, "Database.Exception.UnableToCleanUpOlderRecordsFromLogTable", 
           environmentSubstitute( logTable.getActualTableName() ) );    
     }

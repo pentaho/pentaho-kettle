@@ -22,53 +22,49 @@
 
 package org.pentaho.di.core.database.util;
 
+import org.pentaho.di.compatibility.ValueString;
+import org.pentaho.di.core.KettleVariablesList;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogTableCoreInterface;
-import org.pentaho.di.core.logging.LogTableType;
 import org.pentaho.di.core.logging.LogTableTypeInterface;
-import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 
 public class DatabaseLogExceptionFactory {
 
-  public static final String KETTLE_GLOBAL_PROP_NAME = "KETTLE_LOG_DATABASE_EXCEPTION_FAILOVER";
+  public static final String KETTLE_GLOBAL_PROP_NAME = "KETTLE_FAIL_ON_LOGGING_ERROR";
 
   private static final LogExceptionBehaviourInterface throwable = new ThrowableBehaviour();
   private static final LogExceptionBehaviourInterface supressable = new SuppressBehaviour();
 
   /**
-   * Depends on if environment variables we can suppress or throw exception up.
+   * <p>Returns throw exception strategy depends on defined behavior. Default is suppress exception.</p>
    * 
+   * <p>This behavior can be overridden with 
+   * 'kettle.properties' key-value using 'Edit Kettle.properties file' in Spoon or other.</p>
+   * 
+   * <p>Following this strategy - <code>System.getProperty(String key)</code> call will be used
+   * to check if key-value pair is defined. If not found default behavior will be used. 
+   *  If not found and value is TRUE/Y - throwable behavior will be used.</p>
+   *  
+   * @param variables local variables
+   * @param table logging table that participated in exception. Must be instance of
+   *  {@link LogTableTypeInterface}, otherwise default suppress exception behavior will
+   *  be used.
    * @return
-   */  
-  public static LogExceptionBehaviourInterface getExceptionStrategy( VariableSpace variables, LogTableCoreInterface table ) {   
-    // what is environment says?
-    String val = variables.getVariable( KETTLE_GLOBAL_PROP_NAME );
-    
+   * @see {@link org.pentaho.di.core.Const#KETTLE_VARIABLES_FILE}
+   * @see {@link KettleVariablesList}
+   */
+  public static LogExceptionBehaviourInterface getExceptionStrategy( LogTableCoreInterface table ) {    
+    String val = System.getProperty( KETTLE_GLOBAL_PROP_NAME );
+   
     // with a small penalty for backward compatibility
-    if ( ! (table instanceof LogTableTypeInterface) ){
-      return getWithoutType(val);
-    } 
-
-    LogTableTypeInterface link = LogTableTypeInterface.class.cast( table );
-    LogTableType type = link.getLogTableTypeEnum();
-    String valSp = variables.getVariable( type.getExceptionParamName() );
-    if (valSp==null || valSp.isEmpty()){
-      //we don't have any specific override for this
-      return getWithoutType(val);  
-    } else {
-      //specific value overrides global
-      return getWithoutType(valSp);
+    if ( val==null || ! (table instanceof LogTableTypeInterface) ){
+      //same as before
+      return supressable;
     }
-  }
-  
-  private static LogExceptionBehaviourInterface getDefault(){
-    return supressable;
-  }
-  
-  private static LogExceptionBehaviourInterface getWithoutType(String val){
-    return Boolean.valueOf( val ) ? throwable : supressable;
+    ValueString sVal = new ValueString(val);
+    return sVal.getBoolean()?throwable:supressable;
   }
 
   /**

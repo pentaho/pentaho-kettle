@@ -73,6 +73,28 @@
   </info>
   <notepads>
   </notepads>
+  <connection>
+    <name>_Support_PostgreSQL</name>
+    <server>localhost</server>
+    <type>POSTGRESQL</type>
+    <access>Native</access>
+    <database>test</database>
+    <port>5432</port>
+    <username>postgres</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce218cc1a0d3</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>5432</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>N</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
   <order>
   <hop> <from>Generate Rows</from><to>Delay row</to><enabled>Y</enabled> </hop>
   <hop> <from>Delay row</from><to>Add sequence</to><enabled>Y</enabled> </hop>
@@ -141,7 +163,7 @@
            </partitioning>
     <fields>
     </fields>
-    <limit>2</limit>
+    <limit>15</limit>
     <never_ending>N</never_ending>
     <interval_in_ms/>
     <row_time_field/>
