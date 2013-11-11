@@ -516,6 +516,12 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
     return false;
   }
 
+  @Override
+  public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
+    super.dispose( smi, sdi );
+    ((MemoryGroupByData) sdi).clear();
+  }
+
   public void batchComplete() throws KettleException {
     // Empty the hash table
     //
