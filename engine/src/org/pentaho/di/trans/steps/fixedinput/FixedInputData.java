@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.fixedinput;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -37,6 +38,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
  */
 public class FixedInputData extends BaseStepData implements StepDataInterface {
 
+  public FileInputStream fis;
   public FileChannel fc;
   public ByteBuffer bb;
   public RowMetaInterface outputRowMeta;
@@ -60,9 +62,6 @@ public class FixedInputData extends BaseStepData implements StepDataInterface {
   public long rowsToRead;
   private int loadPoint;
 
-  /**
-	 * 
-	 */
   public FixedInputData() {
     super();
     byteBuffer = new byte[] {};
