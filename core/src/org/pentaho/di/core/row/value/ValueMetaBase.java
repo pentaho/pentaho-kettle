@@ -681,6 +681,18 @@ public class ValueMetaBase implements ValueMetaInterface {
     }
 
     try {
+      //PDI 5595 need to add ISO 8601 support for java 1.6 
+      String df = ( getDateFormat() != null ) ? getDateFormat().toPattern() : null;
+      if ( df != null ) {
+        if ( getQuotesBeforeSymbol( df, "Z" ) % 2 == 0 ) {
+          if ( string.contains( "Z" ) ) {
+            string = string.replace( "Z", "-0000" );
+          } else if ( string.matches( ".*[\\+|\\-]\\d\\d:\\d\\d" ) ) {
+            int lPos = string.lastIndexOf( ":" );
+            string = string.substring( 0, lPos ) + string.substring( lPos + 1 );
+          }
+        }
+      }
       return getDateFormat().parse( string );
     } catch ( ParseException e ) {
       String dateFormat = ( getDateFormat() != null ) ? getDateFormat().toPattern() : "null";
@@ -4775,4 +4787,19 @@ public class ValueMetaBase implements ValueMetaInterface {
     return null; // No default suggestions...
   }
 
+  protected int getQuotesBeforeSymbol( String df, String symbols ) {
+    int quotes = 0;
+    int stopPos = df.indexOf( symbols );
+    if ( stopPos > 0 ) {
+      int curPos = -1;
+      do {
+        curPos = df.indexOf( "'", curPos + 1 );
+        if ( curPos >= 0 && curPos < stopPos ) {
+          quotes++;
+        }
+      }
+      while( curPos >= 0 && curPos < stopPos );
+    }
+    return quotes;
+  }
 }
