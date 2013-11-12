@@ -186,6 +186,12 @@ public class ValueMetaTimestamp extends ValueMetaDate {
     }
   }
 
+  public int compare( Object data1, Object data2 ) throws KettleValueException {
+    Timestamp timestamp1 = getTimestamp( data1 );
+    Timestamp timestamp2 = getTimestamp( data2 );
+    return timestamp1.compareTo( timestamp2 );
+  }
+
   protected Timestamp convertBigNumberToTimestamp( BigDecimal bd ) {
     if ( bd == null ) {
       return null;

@@ -71,8 +71,11 @@ public class RowGenerator extends BaseStep implements StepInterface {
     data = (RowGeneratorData) stepDataInterface;
   }
 
-  public static final RowMetaAndData
-    buildRow( RowGeneratorMeta meta, List<CheckResultInterface> remarks, String origin ) throws KettlePluginException {
+  public static final RowMetaAndData buildRow(
+    RowGeneratorMeta meta,
+    List<CheckResultInterface> remarks,
+    String origin
+  ) throws KettlePluginException {
     RowMetaInterface rowMeta = new RowMeta();
     Object[] rowData = RowDataUtil.allocateRowData( meta.getFieldName().length + 2 );
     int index = 0;
@@ -151,6 +154,13 @@ public class RowGenerator extends BaseStep implements StepInterface {
                 case ValueMetaInterface.TYPE_BIGNUMBER: {
                   String message =
                       BaseMessages.getString( PKG, "RowGenerator.BuildRow.Error.Parsing.BigNumber",
+                          valueMeta.getName(), stringValue, e.toString() );
+                  remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, message, null ) );
+                }
+                  break;
+                case ValueMetaInterface.TYPE_TIMESTAMP: {
+                  String message =
+                      BaseMessages.getString( PKG, "RowGenerator.BuildRow.Error.Parsing.Timestamp",
                           valueMeta.getName(), stringValue, e.toString() );
                   remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, message, null ) );
                 }
@@ -247,8 +257,7 @@ public class RowGenerator extends BaseStep implements StepInterface {
         data.rowsWritten = 0L;
         data.delay = Const.toLong( environmentSubstitute( meta.getIntervalInMs() ), -1L );
 
-        if ( data.rowLimit < 0L ) // Unable to parse
-        {
+        if ( data.rowLimit < 0L ) { // Unable to parse
           logError( BaseMessages.getString( PKG, "RowGenerator.Wrong.RowLimit.Number" ) );
           return false; // fail
         }

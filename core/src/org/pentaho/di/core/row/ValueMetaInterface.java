@@ -211,7 +211,8 @@ public interface ValueMetaInterface extends Cloneable {
   /** Indicating that the string content should be RIGHT trimmed if conversion is to occur to another data type */
   public static final int TRIM_TYPE_RIGHT = 2;
 
-  /** Indicating that the string content should be LEFT AND RIGHT trimmed if conversion is to occur to another data type */
+  /** Indicating that the string content should be LEFT AND RIGHT trimmed if conversion is to occur to 
+   * another data type */
   public static final int TRIM_TYPE_BOTH = 3;
 
   /** Default integer length for hardcoded metadata integers */
