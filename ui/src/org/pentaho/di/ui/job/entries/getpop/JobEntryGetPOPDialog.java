@@ -1024,7 +1024,8 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     wlListmails.setLayoutData( fdlListmails );
     wListmails = new CCombo( wPOP3Settings, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER );
     wListmails.add( BaseMessages.getString( PKG, "JobGetPOP.RetrieveAllMails.Label" ) );
-    wListmails.add( BaseMessages.getString( PKG, "JobGetPOP.RetrieveUnreadMails.Label" ) );
+    //[PDI-7241] POP3 does not support retrive unread
+    //wListmails.add( BaseMessages.getString( PKG, "JobGetPOP.RetrieveUnreadMails.Label" ) );
     wListmails.add( BaseMessages.getString( PKG, "JobGetPOP.RetrieveFirstMails.Label" ) );
     wListmails.select( 0 ); // +1: starts at -1
 
@@ -2032,7 +2033,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 
   public void chooseListMails() {
     boolean ok =
-        ( wProtocol.getText().equals( MailConnectionMeta.PROTOCOL_STRING_POP3 ) && wListmails.getSelectionIndex() == 2 );
+        ( wProtocol.getText().equals( MailConnectionMeta.PROTOCOL_STRING_POP3 ) && wListmails.getSelectionIndex() == 1 );
     wlFirstmails.setEnabled( ok );
     wFirstmails.setEnabled( ok );
   }
@@ -2082,8 +2083,15 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     if ( jobEntry.getAttachmentWildcard() != null ) {
       wAttachmentWildcard.setText( jobEntry.getAttachmentWildcard() );
     }
-    if ( jobEntry.getRetrievemails() >= 0 ) {
-      wListmails.select( jobEntry.getRetrievemails() );
+    //[PDI-7241] fix: since one list item was removed - 
+    //existing-saved jobs may start point to non existing option 
+    int i = jobEntry.getRetrievemails();
+    if ( i >= 0 ) {
+      if ( i > 1 ){
+        wListmails.select( i - 1 );
+      } else {
+        wListmails.select( i );
+      }
     } else {
       wListmails.select( 0 ); // Retrieve All Mails
     }
