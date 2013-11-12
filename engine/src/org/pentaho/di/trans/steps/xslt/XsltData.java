@@ -63,9 +63,6 @@ public class XsltData extends BaseStepData implements StepDataInterface {
   public boolean setOutputProperties;
   public boolean xslIsAfile;
 
-  /**
-	 * 
-	 */
   public XsltData() {
     super();
     fieldposition = -1;
