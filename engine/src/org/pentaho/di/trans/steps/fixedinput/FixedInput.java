@@ -23,7 +23,9 @@
 package org.pentaho.di.trans.steps.fixedinput;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.ByteBuffer;
 
 import org.apache.commons.io.FileUtils;
@@ -86,8 +88,7 @@ public class FixedInput extends BaseStep implements StepInterface {
     }
 
     Object[] outputRowData = readOneRow( true );
-    if ( outputRowData == null ) // no more input to be expected...
-    {
+    if ( outputRowData == null ) { // no more input to be expected...
       setOutputDone();
       return false;
     }
@@ -235,6 +236,10 @@ public class FixedInput extends BaseStep implements StepInterface {
 
   }
 
+  private FileInputStream getFileInputStream( URL url ) throws FileNotFoundException {
+    return new FileInputStream( FileUtils.toFile( url ) );
+  }
+
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (FixedInputMeta) smi;
     data = (FixedInputData) sdi;
@@ -251,18 +256,13 @@ public class FixedInput extends BaseStep implements StepInterface {
         }
 
         FileObject fileObject = KettleVFS.getFileObject( data.filename, getTransMeta() );
-        FileInputStream fileInputStream = null;
         try {
-          fileInputStream = new FileInputStream( FileUtils.toFile( fileObject.getURL() ) );
-          data.fc = fileInputStream.getChannel();
+          data.fis = getFileInputStream( fileObject.getURL() );
+          data.fc = data.fis.getChannel();
           data.bb = ByteBuffer.allocateDirect( data.preferredBufferSize );
         } catch ( IOException e ) {
           logError( e.toString() );
           return false;
-        } finally {
-          if ( fileInputStream != null ) {
-            fileInputStream.close();
-          }
         }
 
         // Add filename to result filenames ?
@@ -290,9 +290,8 @@ public class FixedInput extends BaseStep implements StepInterface {
           int totalLineWidth = data.lineWidth + meta.getLineSeparatorLength(); // including line separator bytes
           long nrRows = data.fileSize / totalLineWidth; // 100.000 / 100 = 1000 rows
           long rowsToSkip = Math.round( data.stepNumber * nrRows / (double) data.totalNumberOfSteps ); // 0, 333, 667
-          long nextRowsToSkip = Math.round( ( data.stepNumber + 1 ) * nrRows / (double) data.totalNumberOfSteps ); // 333,
-                                                                                                                   // 667,
-                                                                                                                   // 1000
+          long nextRowsToSkip = Math.round( ( data.stepNumber + 1 )
+              * nrRows / (double) data.totalNumberOfSteps ); // 333, 667, 1000
           data.rowsToRead = nextRowsToSkip - rowsToSkip;
           long bytesToSkip = rowsToSkip * totalLineWidth;
 
@@ -316,6 +315,9 @@ public class FixedInput extends BaseStep implements StepInterface {
     try {
       if ( data.fc != null ) {
         data.fc.close();
+      }
+      if ( data.fis != null ) {
+        data.fis.close();
       }
     } catch ( IOException e ) {
       logError( "Unable to close file channel for file '" + meta.getFilename() + "' : " + e.toString() );
