@@ -686,7 +686,7 @@ public class ValueMetaBase implements ValueMetaInterface {
       if ( df != null ) {
         if ( getQuotesBeforeSymbol( df, "Z" ) % 2 == 0 ) {
           if ( string.contains( "Z" ) ) {
-            string = string.replace( "Z", "-0000" );
+            string = string.replace( "Z", "UTC" );
           } else if ( string.matches( ".*[\\+|\\-]\\d\\d:\\d\\d" ) ) {
             int lPos = string.lastIndexOf( ":" );
             string = string.substring( 0, lPos ) + string.substring( lPos + 1 );
