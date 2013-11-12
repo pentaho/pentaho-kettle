@@ -32,8 +32,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -120,7 +120,7 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
         {
             retval.allocate(calculation.length);
             for (int i=0;i<calculation.length;i++)  {
-            	retval.getCalculation()[i] = (CalculatorMetaFunction) calculation[i].clone();
+          retval.getCalculation()[i] = (CalculatorMetaFunction) calculation[i].clone();
             }
         }
         else
@@ -160,10 +160,8 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
         for (int i=0;i<calculation.length;i++)
         {
             CalculatorMetaFunction fn = calculation[i];
-            if (!fn.isRemovedFromResult())
-            {
-                if (!Const.isEmpty( fn.getFieldName()) ) // It's a new field!
-                {
+            if (!fn.isRemovedFromResult()) {
+        if ( !Const.isEmpty( fn.getFieldName() ) ) { // It's a new field!
                     ValueMetaInterface v = getValueMeta(fn, origin);
                     row.addValueMeta(v);
                 }
@@ -171,17 +169,13 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
         }
     }
 
-    private ValueMetaInterface getValueMeta(CalculatorMetaFunction fn, String origin)
-    {
-        ValueMetaInterface v = new ValueMeta(fn.getFieldName(), fn.getValueType());
-        
+    private ValueMetaInterface getValueMeta(CalculatorMetaFunction fn, String origin) {
+    ValueMetaInterface v = null;
         // What if the user didn't specify a data type?
         // In that case we look for the default data type
         // 
-        if (fn.getValueType()==ValueMetaInterface.TYPE_NONE)
-        {
-            int defaultResultType = ValueMetaInterface.TYPE_NONE;
-            
+    int defaultResultType = fn.getValueType();
+    if ( defaultResultType == ValueMetaInterface.TYPE_NONE ) {
             switch(fn.getCalcType())
             {
             case CalculatorMetaFunction.CALC_NONE:  
@@ -420,9 +414,12 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
                 break;
             }
             
-            v = new ValueMeta(fn.getFieldName(), defaultResultType);
         }
-
+    try {
+      v = ValueMetaFactory.createValueMeta( fn.getFieldName(), defaultResultType );
+    } catch ( Exception ex ) {
+      return null;
+    }
         v.setLength(fn.getValueLength());
         v.setPrecision(fn.getValuePrecision());
         v.setOrigin(origin);
@@ -442,8 +439,7 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
         for (int i=0;i<calculation.length;i++)
         {
             CalculatorMetaFunction fn = calculation[i];
-            if (!Const.isEmpty(fn.getFieldName())) // It's a new field!
-            {
+      if ( !Const.isEmpty( fn.getFieldName() ) ) { // It's a new field!
                 ValueMetaInterface v = getValueMeta(fn, null);
                 rowMeta.addValueMeta(v);
             }

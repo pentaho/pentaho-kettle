@@ -501,8 +501,9 @@ public class ValueDataUtil {
     return a.multiply(b, mc);
   }
 
-  protected static Object multiplyString(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB)
-      throws KettleValueException {
+  protected static Object multiplyString(
+    ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB
+  ) throws KettleValueException {
     StringBuffer s;
     String append = "";
     int n;
