@@ -32,8 +32,8 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueDataUtil;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -76,8 +76,7 @@ public class Calculator extends BaseStep implements StepInterface
 		data=(CalculatorData)sdi;
 
 		Object[] r=getRow();    // get row, set busy!
-		if (r==null)  // no more input to be expected...
-		{
+    if ( r == null ) { // no more input to be expected...
 			setOutputDone();
 			return false;
 		}
@@ -111,9 +110,9 @@ public class Calculator extends BaseStep implements StepInterface
                         throw new KettleStepException(BaseMessages.getString(PKG, "Calculator.Error.UnableFindField",function.getFieldName(),""+(i+1)));
                     }
                 }
-                else
-                {
-                    throw new KettleStepException(BaseMessages.getString(PKG, "Calculator.Error.NoNameField",""+(i+1)));
+          throw new KettleStepException(
+            BaseMessages.getString( PKG, "Calculator.Error.NoNameField", "" + ( i + 1 ) )
+          );
                 }
 
                 if (!Const.isEmpty(function.getFieldA())) 
@@ -777,14 +776,23 @@ public class Calculator extends BaseStep implements StepInterface
                 // 
                 if (calcData[index]!=null)
                 {
-                	if (targetMeta.getType()!=resultType) 
-                    {
-                        ValueMetaInterface resultMeta = new ValueMeta("result", resultType);  // $NON-NLS-1$
+            ValueMetaInterface resultMeta = null;
+            try {
+              resultMeta = ValueMetaFactory.createValueMeta( "result", resultType );
+            } catch ( Exception exception ) {
+              throw new KettleValueException( "Error creating value" );
+            }
                         resultMeta.setConversionMask(fn.getConversionMask());
                         resultMeta.setGroupingSymbol(fn.getGroupingSymbol());
                         resultMeta.setDecimalSymbol(fn.getDecimalSymbol());
                         resultMeta.setCurrencySymbol(fn.getCurrencySymbol());
-                        calcData[index] = targetMeta.convertData(resultMeta, calcData[index]);
+            try {
+              calcData[index] = targetMeta.convertData( resultMeta, calcData[index] );
+            } catch ( Exception ex ) {
+              throw new KettleValueException(
+                "resultType: " + resultType + "; targetMeta: " + targetMeta.getType(), ex
+              );
+            }
                     }
                 }
             }
