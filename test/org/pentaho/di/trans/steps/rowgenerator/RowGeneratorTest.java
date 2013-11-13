@@ -160,7 +160,7 @@ public class RowGeneratorTest extends TestCase {
     String[] fieldName = { "string", "boolean", "integer", "timestamp" };
     String[] type = { "String", "Boolean", "Integer", "Timestamp" };
     String[] value = { "string_value", "true", "20", "1970-01-01 00:00:00.000" };
-    String[] field = { "", "", "", "" };
+    String[] fieldFormat = { "", "", "", "" };
     String[] group = { "", "", "", "" };
     String[] decimal = { "", "", "", "" };
     String[] currency = { "", "", "", "" };
