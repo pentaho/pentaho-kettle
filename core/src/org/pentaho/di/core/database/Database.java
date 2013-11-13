@@ -1177,6 +1177,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
             debug = "insertRow normal commit";
             commit();
           }
+          written = 0;
           rowsAreSafe = true;
         }
       }
