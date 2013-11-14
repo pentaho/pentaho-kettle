@@ -278,4 +278,10 @@
 		<default-value></default-value>
 	</kettle-variable>
 	
+	<kettle-variable>
+		<description>Is job/transformation will be failed in case of a logging error</description>
+		<variable>KETTLE_FAIL_ON_LOGGING_ERROR</variable>
+		<default-value>false</default-value>
+	</kettle-variable>
+	
 </kettle-variables>

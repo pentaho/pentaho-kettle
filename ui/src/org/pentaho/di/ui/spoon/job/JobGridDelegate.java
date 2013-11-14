@@ -168,7 +168,7 @@ public class JobGridDelegate extends SpoonDelegate {
         }
       }
     };
-    tim.schedule( timtask, 10L, 10L ); // refresh every 2 seconds...
+    tim.schedule( timtask, 10L, 2000L ); // refresh every 2 seconds...
 
     jobGraph.jobLogDelegate.getJobLogTab().addDisposeListener( new DisposeListener() {
       public void widgetDisposed( DisposeEvent disposeEvent ) {
