@@ -50,7 +50,7 @@ import org.w3c.dom.Node;
  * @author matt
  * 
  */
-public class TransLogTable extends BaseLogTable implements Cloneable, LogTableInterface {
+public class TransLogTable extends BaseLogTable implements Cloneable, LogTableInterface, LogTableTypeInterface {
 
   private static Class<?> PKG = TransLogTable.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
@@ -548,5 +548,10 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
     indexes.add( lookupIndex );
 
     return indexes;
+  }
+
+  @Override
+  public LogTableType getLogTableTypeEnum() {
+    return LogTableType.TRANS_LOG_TABLE;
   }
 }
