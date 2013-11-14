@@ -86,6 +86,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.entries.getpop.SelectFolderDialog;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.reporting.libraries.base.util.StringUtils;
 
 public class MailInputDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = MailInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
@@ -568,7 +569,8 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     wlListmails.setLayoutData( fdlListmails );
     wListmails = new CCombo( wPOP3Settings, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER );
     wListmails.add( BaseMessages.getString( PKG, "MailInput.RetrieveAllMails.Label" ) );
-    wListmails.add( BaseMessages.getString( PKG, "MailInput.RetrieveUnreadMails.Label" ) );
+    //[PDI-7241] pop3 does not support this option
+    //wListmails.add( BaseMessages.getString( PKG, "MailInput.RetrieveUnreadMails.Label" ) );
     wListmails.add( BaseMessages.getString( PKG, "MailInput.RetrieveFirstMails.Label" ) );
     wListmails.select( 0 ); // +1: starts at -1
 
@@ -1347,17 +1349,29 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
       wPort.setText( input.getPort() );
     }
 
+    wProtocol.setText( input.getProtocol() );
+    
     if ( input.getRetrievemails() >= 0 ) {
       wListmails.select( input.getRetrievemails() );
     } else {
       wListmails.select( 0 ); // Retrieve All Mails
     }
 
+    // [PDI-7241] POP3 does not support retrieve email flags.
+    // if anyone already used 'unread' for POP3 in transformation or 'retrieve... first'
+    // we need to do additional check since that option was removed from list.
+    if ( StringUtils.equals( input.getProtocol(), MailConnectionMeta.PROTOCOL_STRING_POP3 ) ){
+      int i = input.getRetrievemails();
+      if (i>0){
+        // one position was removed
+        wListmails.select( i-1 );
+      }
+    }
+
     if ( input.getFirstMails() != null ) {
       wFirstmails.setText( input.getFirstMails() );
     }
 
-    wProtocol.setText( input.getProtocol() );
     wIMAPListmails.setText( MailConnectionMeta.getValueImapListDesc( input.getValueImapList() ) );
     if ( input.getFirstIMAPMails() != null ) {
       wIMAPFirstmails.setText( input.getFirstIMAPMails() );
@@ -1653,7 +1667,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 
   public void chooseListMails() {
     boolean ok =
-        ( wProtocol.getText().equals( MailConnectionMeta.PROTOCOL_STRING_POP3 ) && wListmails.getSelectionIndex() == 2 );
+        ( wProtocol.getText().equals( MailConnectionMeta.PROTOCOL_STRING_POP3 ) && wListmails.getSelectionIndex() == 1 );
     wlFirstmails.setEnabled( ok );
     wFirstmails.setEnabled( ok );
   }
