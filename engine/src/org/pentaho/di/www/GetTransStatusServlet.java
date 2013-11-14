@@ -22,19 +22,17 @@
 
 package org.pentaho.di.www;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URLEncoder;
-import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.codec.binary.Base64;
 import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.Encoder;
+import org.pentaho.di.cluster.HttpUtil;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.Point;
@@ -132,13 +130,7 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
 
         // The log can be quite large at times, we are going to put a base64 encoding around a compressed stream
         // of bytes to handle this one.
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        GZIPOutputStream gzos = new GZIPOutputStream(baos);
-        gzos.write(logText.getBytes());
-        gzos.close();
-
-        String loggingString = new String(Base64.encodeBase64(baos.toByteArray()));
+        String loggingString = HttpUtil.encodeBase64ZippedString( logText );
         transStatus.setLoggingString(loggingString);
 
         // Also set the result object...

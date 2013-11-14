@@ -58,7 +58,7 @@ public class XMLTransfer extends ByteArrayTransfer
 
         try
         {
-            byte[] buffer = Base64.encodeBase64(((DragAndDropContainer) object).getXML().getBytes());
+            byte[] buffer = Base64.encodeBase64(((DragAndDropContainer) object).getXML().getBytes( Const.XML_ENCODING ));
 
             super.javaToNative(buffer, transferData);
         }
