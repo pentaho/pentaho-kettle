@@ -649,16 +649,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseStatus", Integer.toString(result))); 
 
       // the response
-      //
-      inputStream = method.getResponseBodyAsStream();
-      bufferedInputStream = new BufferedInputStream(inputStream, 1000);
-
-      StringBuffer bodyBuffer = new StringBuffer();
-      int c;
-      while ((c = bufferedInputStream.read()) != -1)
-        bodyBuffer.append((char) c);
-
-      String body = bodyBuffer.toString();
+      String body = method.getResponseBodyAsString();
 
       if (log.isDetailed())
         log.logDetailed(BaseMessages.getString(PKG,
