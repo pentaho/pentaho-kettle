@@ -1087,12 +1087,16 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       }
 
       // Just for safety, fire the trans finished listeners...
-      //
-      fireTransFinishedListeners();
-
-      // Flag the transformation as finished
-      //
-      finished.set( true );
+      try {
+        fireTransFinishedListeners();
+      } catch (KettleException e){
+        //listeners produces errors
+        log.logError( BaseMessages.getString( PKG, "Trans.FinishListeners.Exception" ) );
+        //we will not pass this exception up to prepareExecuton() entry point.
+      } finally {
+        // Flag the transformation as finished even if exception was thrown
+        setFinished( true );
+      }
 
       // Pass along the log during preview. Otherwise it becomes hard to see
       // what went wrong.
@@ -1170,7 +1174,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             if ( nrOfFinishedSteps >= steps.size() ) {
               // Set the finished flag
               //
-              finished.set( true );
+              setFinished( true );
 
               // Grab the performance statistics one last time (if enabled)
               //
@@ -1234,7 +1238,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     // Now start a thread to monitor the running transformation...
     //
-    finished.set( false );
+    setFinished( false );
     paused.set( false );
     stopped.set( false );
 
@@ -1256,7 +1260,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           stepPerformanceSnapShotTimer.cancel();
         }
 
-        finished.set( true );
+        setFinished( true );
         running = false; // no longer running
 
         log.snap( Metrics.METRIC_TRANSFORMATION_EXECUTION_STOP );
@@ -1280,13 +1284,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         if ( transMeta.isUsingUniqueConnections() ) {
           trans.closeUniqueDatabaseConnections( getResult() );
         }
-
-        // Signal for the the waitUntilFinished blocker...
-        //
-        transFinishedBlockingQueue.add( new Object() );
       }
     };
-    // This should always be done first so that the other listeners ahve a clean slate to start from (finished set and
+    // This should always be done first so that the other listeners achieve a clean state to start from (setFinished and
     // so on)
     //
     transListeners.add( 0, transListener );
@@ -1403,14 +1403,29 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
   /**
    * Fires the finish-event listeners (if any are registered).
+   * Make attempt to fire all registered listeners if possible.
    * 
    * @throws KettleException
    *           if any errors occur during notification
    */
   protected void fireTransFinishedListeners() throws KettleException {
-
+    if (transListeners.size()==0){
+      return;
+    }    
+    //prevent Exception from one listener to block others execution
+    List<KettleException> badGuys = new ArrayList<KettleException>(transListeners.size());
     for ( TransListener transListener : transListeners ) {
-      transListener.transFinished( this );
+      try{
+        transListener.transFinished( this );
+      } catch (KettleException e) {
+        badGuys.add( e );
+      }
+    }
+    // Signal for the the waitUntilFinished blocker...
+    transFinishedBlockingQueue.add( new Object() );
+    if (!badGuys.isEmpty()){
+      //FIFO
+      throw new KettleException(badGuys.get( 0 ));
     }
   }
 
@@ -1584,6 +1599,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   public boolean isFinished() {
     return finished.get();
   }
+  
+  private void setFinished(boolean newValue){
+    finished.set( newValue );
+  }
 
   /**
    * Attempts to stops all running steps and subtransformations. If all steps have finished, the transformation is
@@ -1621,7 +1640,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     }
 
     if ( nrStepsFinished == steps.size() ) {
-      finished.set( true );
+      setFinished( true );
     }
   }
 
@@ -2183,7 +2202,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           // Pass in a commit to release transaction locks and to allow a user to actually see the log record.
           //
           if ( !transLogTableDatabaseConnection.isAutoCommit() ) {
-            transLogTableDatabaseConnection.commit( true );
+            transLogTableDatabaseConnection.commitLog( true, transLogTable );
           }
 
           // If we need to do periodic logging, make sure to install a timer for this...
@@ -2581,9 +2600,14 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         // Commit the operations to prevent locking issues
         //
         if ( !ldb.isAutoCommit() ) {
-          ldb.commit( true );
+          ldb.commitLog( true, transMeta.getTransLogTable() );
         }
-      } catch ( Exception e ) {
+      } catch (KettleDatabaseException e){
+        // PDI-9790 error write to log db is transaction error
+        log.logError(BaseMessages.getString( PKG, "Database.Error.WriteLogTable", logTable ), e);
+        errors.incrementAndGet();
+        //end PDI-9790
+      } catch ( Exception e ) {        
         throw new KettleException( BaseMessages.getString( PKG, "Trans.Exception.ErrorWritingLogRecordToTable",
             transMeta.getTransLogTable().getActualTableName() ), e );
       } finally {
@@ -5150,7 +5174,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   public void clearError() {
     stopped.set( false );
     errors.set( 0 );
-    finished.set( false );
+    setFinished( false );
     for ( StepMetaDataCombi combi : steps ) {
       StepInterface step = combi.step;
       for ( RowSet rowSet : step.getInputRowSets() ) {
