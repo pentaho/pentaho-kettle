@@ -179,7 +179,12 @@ public class TextFileOutput extends BaseStep implements StepInterface {
 
     if ( r == null ) {
       // no more input to be expected...
-      if ( !bEndedLineWrote && !first ) {
+      if ( !bEndedLineWrote && meta.getEndedLine() != null ) {
+        if ( data.writer == null ) {
+          openNewFile( meta.getFileName() );
+          data.oneFileOpened = true;
+          initBinaryDataFields();
+        }
         // add tag to last line if needed
         writeEndedLine();
         bEndedLineWrote = true;

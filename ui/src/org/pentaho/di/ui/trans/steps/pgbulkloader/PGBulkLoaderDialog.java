@@ -469,7 +469,7 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 
             // Remember these fields...
             for ( int i = 0; i < row.size(); i++ ) {
-              inputFields.put( row.getValueMeta( i ).getName(), Integer.valueOf( i ) );
+              inputFields.put( row.getValueMeta( i ).getName(), i );
             }
 
             setComboBoxes();
@@ -700,8 +700,8 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
     // Create the existing mapping list...
     //
     List<SourceToTargetMapping> mappings = new ArrayList<SourceToTargetMapping>();
-    StringBuffer missingSourceFields = new StringBuffer();
-    StringBuffer missingTargetFields = new StringBuffer();
+    StringBuilder missingSourceFields = new StringBuilder();
+    StringBuilder missingTargetFields = new StringBuilder();
 
     int nrFields = wReturn.nrNonEmpty();
     for ( int i = 0; i < nrFields; i++ ) {
@@ -711,11 +711,11 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 
       int sourceIndex = sourceFields.indexOfValue( source );
       if ( sourceIndex < 0 ) {
-        missingSourceFields.append( Const.CR + "   " + source + " --> " + target );
+        missingSourceFields.append( Const.CR ).append( "   " ).append( source ).append( " --> " ).append( target );
       }
       int targetIndex = targetFields.indexOfValue( target );
       if ( targetIndex < 0 ) {
-        missingTargetFields.append( Const.CR + "   " + source + " --> " + target );
+        missingTargetFields.append( Const.CR ).append( "   " ).append( source ).append( " --> " ).append( target );
       }
       if ( sourceIndex < 0 || targetIndex < 0 ) {
         continue;
@@ -933,38 +933,40 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
   private void setTableFieldCombo() {
     Runnable fieldLoader = new Runnable() {
       public void run() {
-        // clear
-        for ( int i = 0; i < tableFieldColumns.size(); i++ ) {
-          ColumnInfo colInfo = tableFieldColumns.get( i );
-          colInfo.setComboValues( new String[] {} );
-        }
-        if ( !Const.isEmpty( wTable.getText() ) ) {
-          DatabaseMeta ci = transMeta.findDatabase( wConnection.getText() );
-          if ( ci != null ) {
-            Database db = new Database( loggingObject, ci );
-            try {
-              db.connect();
+        if ( !wTable.isDisposed() && !wConnection.isDisposed() && !wSchema.isDisposed() ) {
+          final String tableName = wTable.getText(), connectionName = wConnection.getText(), schemaName =
+              wSchema.getText();
 
-              String schemaTable =
-                  ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( wSchema.getText() ), transMeta
-                      .environmentSubstitute( wTable.getText() ) );
-              RowMetaInterface r = db.getTableFields( schemaTable );
-              if ( null != r ) {
-                String[] fieldNames = r.getFieldNames();
-                if ( null != fieldNames ) {
-                  for ( int i = 0; i < tableFieldColumns.size(); i++ ) {
-                    ColumnInfo colInfo = tableFieldColumns.get( i );
-                    colInfo.setComboValues( fieldNames );
+          // clear
+          for ( ColumnInfo colInfo : tableFieldColumns ) {
+            colInfo.setComboValues( new String[] {} );
+          }
+          if ( !Const.isEmpty( tableName ) ) {
+            DatabaseMeta ci = transMeta.findDatabase( connectionName );
+            if ( ci != null ) {
+              Database db = new Database( loggingObject, ci );
+              try {
+                db.connect();
+
+                String schemaTable =
+                    ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
+                        .environmentSubstitute( tableName ) );
+                RowMetaInterface r = db.getTableFields( schemaTable );
+                if ( null != r ) {
+                  String[] fieldNames = r.getFieldNames();
+                  if ( null != fieldNames ) {
+                    for ( ColumnInfo colInfo : tableFieldColumns ) {
+                      colInfo.setComboValues( fieldNames );
+                    }
                   }
                 }
+              } catch ( Exception e ) {
+                for ( ColumnInfo colInfo : tableFieldColumns ) {
+                  colInfo.setComboValues( new String[] {} );
+                }
+                // ignore any errors here. drop downs will not be
+                // filled, but no problem for the user
               }
-            } catch ( Exception e ) {
-              for ( int i = 0; i < tableFieldColumns.size(); i++ ) {
-                ColumnInfo colInfo = tableFieldColumns.get( i );
-                colInfo.setComboValues( new String[] {} );
-              }
-              // ignore any errors here. drop downs will not be
-              // filled, but no problem for the user
             }
           }
         }

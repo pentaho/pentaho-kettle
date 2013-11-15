@@ -12,7 +12,6 @@
     <dependency org="${ivy.artifact.group}" name="kettle-core"     rev="${project.revision}" changing="true"/>
     <dependency org="${ivy.artifact.group}" name="kettle-engine"   rev="${project.revision}" changing="true"/>
     <dependency org="${ivy.artifact.group}" name="kettle-dbdialog" rev="${project.revision}" changing="true"/>
-    <dependency org="${ivy.artifact.group}" name="kettle-jdbc"     rev="${project.revision}" changing="true"/>
     <dependency org="${ivy.artifact.group}" name="kettle-ui-swt"   rev="${project.revision}" changing="true"/>
     
     <dependency org="pentaho"               name="pentaho-application-launcher"        rev="${dependency.launcher.revision}" />

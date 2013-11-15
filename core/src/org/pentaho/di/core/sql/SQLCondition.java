@@ -75,8 +75,11 @@ public class SQLCondition {
     // depending on the number of pieces we found.
     //
     condition = splitConditionByOperator( conditionClause, null, Condition.OPERATOR_NONE );
-    for ( int i = 0; i < 20 && condition.simplify(); i++ ) {
+    for ( int i = 0; i < 20; i++ ) {
       // Simplify
+      if ( !condition.simplify() ) {
+        break;
+      }
     }
   }
 

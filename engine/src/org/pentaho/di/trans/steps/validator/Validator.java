@@ -255,10 +255,9 @@ public class Validator extends BaseStep implements StepInterface {
             new KettleValidatorException( this, field, KettleValidatorException.ERROR_NULL_VALUE_NOT_ALLOWED,
                 BaseMessages.getString( PKG, "Validator.Exception.NullNotAllowed", field.getFieldName(), inputRowMeta
                     .getString( r ) ), field.getFieldName() );
-        if ( meta.isValidatingAll() ) {
-          exceptions.add( exception );
-        } else {
-          throw exception;
+        exceptions.add( exception );
+        if ( !meta.isValidatingAll() ) {
+          return exceptions;
         }
       }
 
@@ -267,10 +266,9 @@ public class Validator extends BaseStep implements StepInterface {
             new KettleValidatorException( this, field, KettleValidatorException.ERROR_ONLY_NULL_VALUE_ALLOWED,
                 BaseMessages.getString( PKG, "Validator.Exception.OnlyNullAllowed", field.getFieldName(), inputRowMeta
                     .getString( r ) ), field.getFieldName() );
-        if ( meta.isValidatingAll() ) {
-          exceptions.add( exception );
-        } else {
-          throw exception;
+        exceptions.add( exception );
+        if ( !meta.isValidatingAll() ) {
+          return exceptions;
         }
       }
 
@@ -285,10 +283,9 @@ public class Validator extends BaseStep implements StepInterface {
               new KettleValidatorException( this, field, KettleValidatorException.ERROR_UNEXPECTED_DATA_TYPE,
                   BaseMessages.getString( PKG, "Validator.Exception.UnexpectedDataType", field.getFieldName(),
                       valueMeta.toStringMeta(), validatorMeta.toStringMeta() ), field.getFieldName() );
-          if ( meta.isValidatingAll() ) {
-            exceptions.add( exception );
-          } else {
-            throw exception;
+          exceptions.add( exception );
+          if ( !meta.isValidatingAll() ) {
+            return exceptions;
           }
         }
       }
@@ -315,10 +312,9 @@ public class Validator extends BaseStep implements StepInterface {
                     BaseMessages.getString( PKG, "Validator.Exception.ShorterThanMininumLength", field.getFieldName(),
                         valueMeta.getString( valueData ), Integer.toString( stringValue.length() ), field
                             .getMinimumLength() ), field.getFieldName() );
-            if ( meta.isValidatingAll() ) {
-              exceptions.add( exception );
-            } else {
-              throw exception;
+            exceptions.add( exception );
+            if ( !meta.isValidatingAll() ) {
+              return exceptions;
             }
           }
 
@@ -331,10 +327,9 @@ public class Validator extends BaseStep implements StepInterface {
                     BaseMessages.getString( PKG, "Validator.Exception.LongerThanMaximumLength", field.getFieldName(),
                         valueMeta.getString( valueData ), Integer.toString( stringValue.length() ), field
                             .getMaximumLength() ), field.getFieldName() );
-            if ( meta.isValidatingAll() ) {
-              exceptions.add( exception );
-            } else {
-              throw exception;
+            exceptions.add( exception );
+            if ( !meta.isValidatingAll() ) {
+              return exceptions;
             }
           }
 
@@ -346,10 +341,9 @@ public class Validator extends BaseStep implements StepInterface {
                     BaseMessages.getString( PKG, "Validator.Exception.LowerThanMinimumValue", field.getFieldName(),
                         valueMeta.getString( valueData ), data.constantsMeta[i].getString( data.minimumValue[i] ) ),
                     field.getFieldName() );
-            if ( meta.isValidatingAll() ) {
-              exceptions.add( exception );
-            } else {
-              throw exception;
+            exceptions.add( exception );
+            if ( !meta.isValidatingAll() ) {
+              return exceptions;
             }
           }
 
@@ -361,10 +355,9 @@ public class Validator extends BaseStep implements StepInterface {
                     BaseMessages.getString( PKG, "Validator.Exception.HigherThanMaximumValue", field.getFieldName(),
                         valueMeta.getString( valueData ), data.constantsMeta[i].getString( data.maximumValue[i] ) ),
                     field.getFieldName() );
-            if ( meta.isValidatingAll() ) {
-              exceptions.add( exception );
-            } else {
-              throw exception;
+            exceptions.add( exception );
+            if ( !meta.isValidatingAll() ) {
+              return exceptions;
             }
           }
 
@@ -383,10 +376,9 @@ public class Validator extends BaseStep implements StepInterface {
                   new KettleValidatorException( this, field, KettleValidatorException.ERROR_VALUE_NOT_IN_LIST,
                       BaseMessages.getString( PKG, "Validator.Exception.NotInList", field.getFieldName(), valueMeta
                           .getString( valueData ) ), field.getFieldName() );
-              if ( meta.isValidatingAll() ) {
-                exceptions.add( exception );
-              } else {
-                throw exception;
+              exceptions.add( exception );
+              if ( !meta.isValidatingAll() ) {
+                return exceptions;
               }
             }
           }
@@ -398,10 +390,9 @@ public class Validator extends BaseStep implements StepInterface {
                   new KettleValidatorException( this, field, KettleValidatorException.ERROR_NON_NUMERIC_DATA,
                       BaseMessages.getString( PKG, "Validator.Exception.NonNumericDataNotAllowed",
                           field.getFieldName(), valueMeta.toStringMeta() ), field.getFieldName() );
-              if ( meta.isValidatingAll() ) {
-                exceptions.add( exception );
-              } else {
-                throw exception;
+              exceptions.add( exception );
+              if ( !meta.isValidatingAll() ) {
+                return exceptions;
               }
             }
           }
@@ -413,10 +404,9 @@ public class Validator extends BaseStep implements StepInterface {
                 new KettleValidatorException( this, field, KettleValidatorException.ERROR_DOES_NOT_START_WITH_STRING,
                     BaseMessages.getString( PKG, "Validator.Exception.DoesNotStartWithString", field.getFieldName(),
                         valueMeta.getString( valueData ), field.getStartString() ), field.getFieldName() );
-            if ( meta.isValidatingAll() ) {
-              exceptions.add( exception );
-            } else {
-              throw exception;
+            exceptions.add( exception );
+            if ( !meta.isValidatingAll() ) {
+              return exceptions;
             }
           }
 
@@ -427,10 +417,9 @@ public class Validator extends BaseStep implements StepInterface {
                 new KettleValidatorException( this, field, KettleValidatorException.ERROR_DOES_NOT_END_WITH_STRING,
                     BaseMessages.getString( PKG, "Validator.Exception.DoesNotStartWithString", field.getFieldName(),
                         valueMeta.getString( valueData ), field.getEndString() ), field.getFieldName() );
-            if ( meta.isValidatingAll() ) {
-              exceptions.add( exception );
-            } else {
-              throw exception;
+            exceptions.add( exception );
+            if ( !meta.isValidatingAll() ) {
+              return exceptions;
             }
           }
 
@@ -442,10 +431,9 @@ public class Validator extends BaseStep implements StepInterface {
                 new KettleValidatorException( this, field, KettleValidatorException.ERROR_STARTS_WITH_STRING,
                     BaseMessages.getString( PKG, "Validator.Exception.StartsWithString", field.getFieldName(),
                         valueMeta.getString( valueData ), field.getStartStringNotAllowed() ), field.getFieldName() );
-            if ( meta.isValidatingAll() ) {
-              exceptions.add( exception );
-            } else {
-              throw exception;
+            exceptions.add( exception );
+            if ( !meta.isValidatingAll() ) {
+              return exceptions;
             }
           }
 
@@ -456,10 +444,9 @@ public class Validator extends BaseStep implements StepInterface {
                 new KettleValidatorException( this, field, KettleValidatorException.ERROR_ENDS_WITH_STRING,
                     BaseMessages.getString( PKG, "Validator.Exception.EndsWithString", field.getFieldName(), valueMeta
                         .getString( valueData ), field.getEndStringNotAllowed() ), field.getFieldName() );
-            if ( meta.isValidatingAll() ) {
-              exceptions.add( exception );
-            } else {
-              throw exception;
+            exceptions.add( exception );
+            if ( !meta.isValidatingAll() ) {
+              return exceptions;
             }
           }
 
@@ -473,10 +460,9 @@ public class Validator extends BaseStep implements StepInterface {
                       KettleValidatorException.ERROR_MATCHING_REGULAR_EXPRESSION_EXPECTED, BaseMessages.getString( PKG,
                           "Validator.Exception.MatchingRegExpExpected", field.getFieldName(), valueMeta
                               .getString( valueData ), field.getRegularExpression() ), field.getFieldName() );
-              if ( meta.isValidatingAll() ) {
-                exceptions.add( exception );
-              } else {
-                throw exception;
+              exceptions.add( exception );
+              if ( !meta.isValidatingAll() ) {
+                return exceptions;
               }
             }
           }
@@ -491,14 +477,12 @@ public class Validator extends BaseStep implements StepInterface {
                       KettleValidatorException.ERROR_MATCHING_REGULAR_EXPRESSION_NOT_ALLOWED, BaseMessages.getString(
                           PKG, "Validator.Exception.MatchingRegExpNotAllowed", field.getFieldName(), valueMeta
                               .getString( valueData ), field.getRegularExpressionNotAllowed() ), field.getFieldName() );
-              if ( meta.isValidatingAll() ) {
-                exceptions.add( exception );
-              } else {
-                throw exception;
+              exceptions.add( exception );
+              if ( !meta.isValidatingAll() ) {
+                return exceptions;
               }
             }
           }
-
         }
       }
     }

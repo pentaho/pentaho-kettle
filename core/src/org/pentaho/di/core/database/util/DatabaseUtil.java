@@ -98,6 +98,7 @@ public class DatabaseUtil implements DataSourceProviderInterface {
         return rtn;
       }
     } catch ( NamingException ignored ) {
+      // ignore
     }
     try {
       // Tomcat
@@ -108,6 +109,7 @@ public class DatabaseUtil implements DataSourceProviderInterface {
         return rtn;
       }
     } catch ( NamingException ignored ) {
+      // ignore
     }
     try {
       // Others?
@@ -118,6 +120,7 @@ public class DatabaseUtil implements DataSourceProviderInterface {
         return rtn;
       }
     } catch ( NamingException ignored ) {
+      // ignore
     }
     if ( firstNe != null ) {
       throw firstNe;

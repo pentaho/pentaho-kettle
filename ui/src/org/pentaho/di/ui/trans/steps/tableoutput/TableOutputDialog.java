@@ -61,7 +61,6 @@ import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.SourceToTargetMapping;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMeta;
@@ -782,7 +781,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 
             // Remember these fields...
             for ( int i = 0; i < row.size(); i++ ) {
-              inputFields.put( row.getValueMeta( i ).getName(), Integer.valueOf( i ) );
+              inputFields.put( row.getValueMeta( i ).getName(), i );
             }
 
             setComboBoxes();
@@ -953,8 +952,8 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
     // Create the existing mapping list...
     //
     List<SourceToTargetMapping> mappings = new ArrayList<SourceToTargetMapping>();
-    StringBuffer missingSourceFields = new StringBuffer();
-    StringBuffer missingTargetFields = new StringBuffer();
+    StringBuilder missingSourceFields = new StringBuilder();
+    StringBuilder missingTargetFields = new StringBuilder();
 
     int nrFields = wFields.nrNonEmpty();
     for ( int i = 0; i < nrFields; i++ ) {
@@ -964,11 +963,11 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 
       int sourceIndex = sourceFields.indexOfValue( source );
       if ( sourceIndex < 0 ) {
-        missingSourceFields.append( Const.CR + "   " + source + " --> " + target );
+        missingSourceFields.append( Const.CR ).append( "   " ).append( source ).append( " --> " ).append( target );
       }
       int targetIndex = targetFields.indexOfValue( target );
       if ( targetIndex < 0 ) {
-        missingTargetFields.append( Const.CR + "   " + source + " --> " + target );
+        missingTargetFields.append( Const.CR ).append( "   " ).append( source ).append( " --> " ).append( target );
       }
       if ( sourceIndex < 0 || targetIndex < 0 ) {
         continue;
@@ -1044,7 +1043,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
                   "TableOutputDialog.AvailableSchemas.Message", wConnection.getText() ) );
           String d = dialog.open();
           if ( d != null ) {
-            wSchema.setText( Const.NVL( d.toString(), "" ) );
+            wSchema.setText( Const.NVL( d, "" ) );
             setTableFieldCombo();
           }
 
@@ -1058,71 +1057,54 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
             PKG, "TableOutputDialog.ErrorGettingSchemas" ), e );
       } finally {
-        if ( database != null ) {
-          database.disconnect();
-          database = null;
-        }
+        database.disconnect();
       }
     }
   }
 
   private void setTableFieldCombo() {
-    // define a reusable Runnable to clear out the table fields
-    final Runnable clearTableFields = new Runnable() {
+    Runnable fieldLoader = new Runnable() {
       public void run() {
-        for ( int i = 0; i < tableFieldColumns.size(); i++ ) {
-          ColumnInfo colInfo = tableFieldColumns.get( i );
-          colInfo.setComboValues( new String[] {} );
+        if ( !wTable.isDisposed() && !wConnection.isDisposed() && !wSchema.isDisposed() ) {
+          final String tableName = wTable.getText(), connectionName = wConnection.getText(), schemaName =
+              wSchema.getText();
+
+          // clear
+          for ( ColumnInfo colInfo : tableFieldColumns ) {
+            colInfo.setComboValues( new String[] {} );
+          }
+          if ( !Const.isEmpty( tableName ) ) {
+            DatabaseMeta ci = transMeta.findDatabase( connectionName );
+            if ( ci != null ) {
+              Database db = new Database( loggingObject, ci );
+              try {
+                db.connect();
+
+                String schemaTable =
+                    ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
+                        .environmentSubstitute( tableName ) );
+                RowMetaInterface r = db.getTableFields( schemaTable );
+                if ( null != r ) {
+                  String[] fieldNames = r.getFieldNames();
+                  if ( null != fieldNames ) {
+                    for ( ColumnInfo colInfo : tableFieldColumns ) {
+                      colInfo.setComboValues( fieldNames );
+                    }
+                  }
+                }
+              } catch ( Exception e ) {
+                for ( ColumnInfo colInfo : tableFieldColumns ) {
+                  colInfo.setComboValues( new String[] {} );
+                }
+                // ignore any errors here. drop downs will not be
+                // filled, but no problem for the user
+              }
+            }
+          }
         }
       }
     };
-
-    // clear out the fields
-    shell.getDisplay().asyncExec( clearTableFields );
-
-    if ( !Const.isEmpty( wTable.getText() ) ) {
-      final DatabaseMeta ci = transMeta.findDatabase( wConnection.getText() );
-
-      if ( ci != null ) {
-        final Database db = new Database( loggingObject, ci );
-
-        // RCF 04.21.2010 - create a new thread to get the database connection in, this way it does not block the UI
-        // thread if the DB is unreachable
-        new Thread( new Runnable() {
-          public void run() {
-            try {
-              db.connect();
-
-              // now that we have the db, we need to modify stuff in the UI. we do this in the UI thread with asyncExec.
-              shell.getDisplay().asyncExec( new Runnable() {
-                public void run() {
-                  String schemaTable =
-                      ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( wSchema.getText() ),
-                          transMeta.environmentSubstitute( wTable.getText() ) );
-                  RowMetaInterface r;
-                  try {
-                    r = db.getTableFields( schemaTable );
-                    if ( null != r ) {
-                      final String[] fieldNames = r.getFieldNames();
-                      if ( null != fieldNames ) {
-                        for ( int i = 0; i < tableFieldColumns.size(); i++ ) {
-                          ColumnInfo colInfo = tableFieldColumns.get( i );
-                          colInfo.setComboValues( fieldNames );
-                        }
-                      }
-                    }
-                  } catch ( KettleDatabaseException e ) {
-                    shell.getDisplay().asyncExec( clearTableFields );
-                  }
-                }
-              } );
-            } catch ( Exception e ) {
-              shell.getDisplay().asyncExec( clearTableFields );
-            }
-          }
-        } ).start();
-      }
-    }
+    shell.getDisplay().asyncExec( fieldLoader );
   }
 
   protected void setComboBoxes() {

@@ -320,6 +320,7 @@ public class ValueDataUtil {
       md5Hash = md5HashBuff.toString();
 
     } catch ( Exception e ) {
+      // ignore - should likely log the exception
     } finally {
       try {
         if ( in != null ) {
@@ -343,12 +344,15 @@ public class ValueDataUtil {
       // Computer CRC32 checksum
       cis = new CheckedInputStream( ( (LocalFile) file ).getInputStream(), new CRC32() );
       byte[] buf = new byte[128];
-      while ( cis.read( buf ) >= 0 ) {
-      }
+      int readSize = 0;
+      do {
+        readSize = cis.read( buf );
+      } while ( readSize >= 0 );
 
       checksum = cis.getChecksum().getValue();
 
     } catch ( Exception e ) {
+      // ignore - should likely log the exception
     } finally {
       if ( file != null ) {
         try {
@@ -373,8 +377,10 @@ public class ValueDataUtil {
       cis = new CheckedInputStream( ( (LocalFile) file ).getInputStream(), new Adler32() );
 
       byte[] buf = new byte[128];
-      while ( cis.read( buf ) >= 0 ) {
-      }
+      int readSize = 0;
+      do {
+        readSize = cis.read( buf );
+      } while ( readSize >= 0 );
       checksum = cis.getChecksum().getValue();
 
     } catch ( Exception e ) {
@@ -1671,6 +1677,7 @@ public class ValueDataUtil {
       file = KettleVFS.getFileObject( filename );
       return XMLCheck.isXMLFileWellFormed( file );
     } catch ( Exception e ) {
+      // ignore - we'll return false although would be nice to log it.
     } finally {
       if ( file != null ) {
         try {
@@ -1699,6 +1706,7 @@ public class ValueDataUtil {
     try {
       return XMLCheck.isXMLWellFormed( new ByteArrayInputStream( metaA.getBinary( dataA ) ) );
     } catch ( Exception e ) {
+      // ignore - we'll return false below
     }
     return false;
   }

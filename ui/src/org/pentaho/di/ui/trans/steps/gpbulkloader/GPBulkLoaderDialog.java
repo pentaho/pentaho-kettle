@@ -606,7 +606,7 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 
             // Remember these fields...
             for ( int i = 0; i < row.size(); i++ ) {
-              inputFields.put( row.getValueMeta( i ).getName(), Integer.valueOf( i ) );
+              inputFields.put( row.getValueMeta( i ).getName(), i );
             }
 
             setComboBoxes();
@@ -760,8 +760,8 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
       sourceFields = transMeta.getPrevStepFields( stepMeta );
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "GPBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString( PKG,
-          "GPBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
+         "GPBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString( PKG,
+           "GPBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
       return;
     }
     // refresh data
@@ -772,8 +772,8 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
       targetFields = stepMetaInterface.getRequiredFields( transMeta );
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "GPBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString( PKG,
-          "GPBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
+         "GPBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString( PKG,
+           "GPBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
       return;
     }
 
@@ -786,8 +786,8 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
     // Create the existing mapping list...
     //
     List<SourceToTargetMapping> mappings = new ArrayList<SourceToTargetMapping>();
-    StringBuffer missingSourceFields = new StringBuffer();
-    StringBuffer missingTargetFields = new StringBuffer();
+    StringBuilder missingSourceFields = new StringBuilder();
+    StringBuilder missingTargetFields = new StringBuilder();
 
     int nrFields = wReturn.nrNonEmpty();
     for ( int i = 0; i < nrFields; i++ ) {
@@ -797,11 +797,11 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 
       int sourceIndex = sourceFields.indexOfValue( source );
       if ( sourceIndex < 0 ) {
-        missingSourceFields.append( Const.CR + "   " + source + " --> " + target );
+        missingSourceFields.append( Const.CR ).append( "   " ).append( source ).append( " --> " ).append( target );
       }
       int targetIndex = targetFields.indexOfValue( target );
       if ( targetIndex < 0 ) {
-        missingTargetFields.append( Const.CR + "   " + source + " --> " + target );
+        missingTargetFields.append( Const.CR ).append( "   " ).append( source ).append( " --> " ).append( target );
       }
       if ( sourceIndex < 0 || targetIndex < 0 ) {
         continue;
@@ -864,38 +864,40 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
   private void setTableFieldCombo() {
     Runnable fieldLoader = new Runnable() {
       public void run() {
-        // clear
-        for ( int i = 0; i < tableFieldColumns.size(); i++ ) {
-          ColumnInfo colInfo = tableFieldColumns.get( i );
-          colInfo.setComboValues( new String[] {} );
-        }
-        if ( !Const.isEmpty( wTable.getText() ) ) {
-          DatabaseMeta ci = transMeta.findDatabase( wConnection.getText() );
-          if ( ci != null ) {
-            Database db = new Database( loggingObject, ci );
-            try {
-              db.connect();
+        if ( !wTable.isDisposed() && !wConnection.isDisposed() && !wSchema.isDisposed() ) {
+          final String tableName = wTable.getText(), connectionName = wConnection.getText(), schemaName =
+              wSchema.getText();
 
-              String schemaTable =
-                  ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( wSchema.getText() ), transMeta
-                      .environmentSubstitute( wTable.getText() ) );
-              RowMetaInterface r = db.getTableFields( schemaTable );
-              if ( null != r ) {
-                String[] fieldNames = r.getFieldNames();
-                if ( null != fieldNames ) {
-                  for ( int i = 0; i < tableFieldColumns.size(); i++ ) {
-                    ColumnInfo colInfo = tableFieldColumns.get( i );
-                    colInfo.setComboValues( fieldNames );
+          // clear
+          for ( ColumnInfo colInfo : tableFieldColumns ) {
+            colInfo.setComboValues( new String[] {} );
+          }
+          if ( !Const.isEmpty( tableName ) ) {
+            DatabaseMeta ci = transMeta.findDatabase( connectionName );
+            if ( ci != null ) {
+              Database db = new Database( loggingObject, ci );
+              try {
+                db.connect();
+
+                String schemaTable =
+                    ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
+                        .environmentSubstitute( tableName ) );
+                RowMetaInterface r = db.getTableFields( schemaTable );
+                if ( null != r ) {
+                  String[] fieldNames = r.getFieldNames();
+                  if ( null != fieldNames ) {
+                    for ( ColumnInfo colInfo : tableFieldColumns ) {
+                      colInfo.setComboValues( fieldNames );
+                    }
                   }
                 }
+              } catch ( Exception e ) {
+                for ( ColumnInfo colInfo : tableFieldColumns ) {
+                  colInfo.setComboValues( new String[] {} );
+                }
+                // ignore any errors here. drop downs will not be
+                // filled, but no problem for the user
               }
-            } catch ( Exception e ) {
-              for ( int i = 0; i < tableFieldColumns.size(); i++ ) {
-                ColumnInfo colInfo = tableFieldColumns.get( i );
-                colInfo.setComboValues( new String[] {} );
-              }
-              // ignore any errors here. drop downs will not be
-              // filled, but no problem for the user
             }
           }
         }
@@ -1005,17 +1007,13 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
     }
 
     String action = input.getLoadAction();
-    if ( GPBulkLoaderMeta.ACTION_APPEND.equals( action ) ) {
+    if ( GPBulkLoaderMeta.ACTION_INSERT.equals( action ) ) {
       wLoadAction.select( 0 );
-    } else if ( GPBulkLoaderMeta.ACTION_INSERT.equals( action ) ) {
-      wLoadAction.select( 1 );
-    } else if ( GPBulkLoaderMeta.ACTION_REPLACE.equals( action ) ) {
-      wLoadAction.select( 2 );
     } else if ( GPBulkLoaderMeta.ACTION_TRUNCATE.equals( action ) ) {
-      wLoadAction.select( 3 );
+      wLoadAction.select( 1 );
     } else {
       if ( log.isDebug() ) {
-        logDebug( "Internal error: load_action set to default 'append'" );
+        logDebug( "Internal error: load_action set to default 'insert'" );
       }
       wLoadAction.select( 0 );
     }
@@ -1185,7 +1183,8 @@ public class GPBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
       getInfo( info );
 
       String name = stepname; // new name might not yet be linked to other steps!
-      StepMeta stepMeta = new StepMeta( BaseMessages.getString( PKG, "GPBulkLoaderDialog.StepMeta.Title" ), name, info );
+      StepMeta stepMeta = new StepMeta( BaseMessages.getString( PKG,
+              "GPBulkLoaderDialog.StepMeta.Title" ), name, info );
       RowMetaInterface prev = transMeta.getPrevStepFields( stepname );
 
       SQLStatement sql = info.getSQLStatements( transMeta, stepMeta, prev, repository, metaStore );

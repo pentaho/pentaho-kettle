@@ -1412,11 +1412,10 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         stmt.close();
       }
       String upperSql = sql.toUpperCase();
-      if ( resultSet ) {
-        // the result is a resultset, but we don't do anything with it!
+      if ( !resultSet ) {
+        // if the result is a resultset, we don't do anything with it!
         // You should have called something else!
         // log.logDetailed("What to do with ResultSet??? (count="+count+")");
-      } else {
         if ( count > 0 ) {
           if ( upperSql.startsWith( "INSERT" ) ) {
             result.setNrLinesOutput( count );
@@ -3908,6 +3907,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
           try {
             rs.close();
           } catch ( Exception e ) {
+            // ignore the error.
           }
         }
       }

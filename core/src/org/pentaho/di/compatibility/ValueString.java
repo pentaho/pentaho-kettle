@@ -85,6 +85,7 @@ public class ValueString implements ValueInterface, Cloneable {
       try {
         return LOCAL_SIMPLE_DATE_PARSER.get().parse( string );
       } catch ( ParseException e ) {
+        return null;
       }
     }
     return null;

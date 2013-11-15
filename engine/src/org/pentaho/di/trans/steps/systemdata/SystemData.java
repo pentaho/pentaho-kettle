@@ -26,7 +26,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
@@ -310,13 +309,13 @@ public class SystemData extends BaseStep implements StepInterface {
           row[index] = cal.getTime();
           break;
         case SystemDataMeta.TYPE_SYSTEM_INFO_PREV_WEEK_OPEN_END:
-          cal = Calendar.getInstance();
+          cal = Calendar.getInstance( Locale.ROOT );
           cal.set( Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek() );
           cal.set( Calendar.HOUR_OF_DAY, 0 );
           cal.set( Calendar.MINUTE, 0 );
           cal.set( Calendar.SECOND, 0 );
           cal.set( Calendar.MILLISECOND, -1 );
-          cal.add( Calendar.DAY_OF_WEEK, -2 );
+          cal.add( Calendar.DAY_OF_WEEK, -1 );
           row[index] = cal.getTime();
           break;
         case SystemDataMeta.TYPE_SYSTEM_INFO_PREV_WEEK_START_US:
@@ -358,14 +357,14 @@ public class SystemData extends BaseStep implements StepInterface {
           row[index] = cal.getTime();
           break;
         case SystemDataMeta.TYPE_SYSTEM_INFO_THIS_WEEK_OPEN_END:
-          cal = Calendar.getInstance();
+          cal = Calendar.getInstance( Locale.ROOT );
           cal.add( Calendar.WEEK_OF_YEAR, 1 );
           cal.set( Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek() );
           cal.set( Calendar.HOUR_OF_DAY, 0 );
           cal.set( Calendar.MINUTE, 0 );
           cal.set( Calendar.SECOND, 0 );
           cal.set( Calendar.MILLISECOND, -1 );
-          cal.add( Calendar.DAY_OF_WEEK, -2 );
+          cal.add( Calendar.DAY_OF_WEEK, -1 );
           row[index] = cal.getTime();
           break;
         case SystemDataMeta.TYPE_SYSTEM_INFO_THIS_WEEK_START_US:
@@ -408,14 +407,14 @@ public class SystemData extends BaseStep implements StepInterface {
           row[index] = cal.getTime();
           break;
         case SystemDataMeta.TYPE_SYSTEM_INFO_NEXT_WEEK_OPEN_END:
-          cal = Calendar.getInstance();
+          cal = Calendar.getInstance( Locale.ROOT );
           cal.add( Calendar.WEEK_OF_YEAR, 2 );
           cal.set( Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek() );
           cal.set( Calendar.HOUR_OF_DAY, 0 );
           cal.set( Calendar.MINUTE, 0 );
           cal.set( Calendar.SECOND, 0 );
           cal.set( Calendar.MILLISECOND, -1 );
-          cal.add( Calendar.DAY_OF_WEEK, -2 );
+          cal.add( Calendar.DAY_OF_WEEK, -1 );
           row[index] = cal.getTime();
           break;
         case SystemDataMeta.TYPE_SYSTEM_INFO_NEXT_WEEK_START_US:
@@ -737,8 +736,8 @@ public class SystemData extends BaseStep implements StepInterface {
 
     putRow( data.outputRowMeta, row );
 
-    if ( !data.readsRows ) // Just one row and then stop!
-    {
+    if ( !data.readsRows ) {
+      // Just one row and then stop!
       setOutputDone();
       return false;
     }

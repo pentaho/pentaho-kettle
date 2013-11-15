@@ -86,7 +86,7 @@ import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = SynchronizeAfterMergeMeta.class; // for i18n purposes, needed by Translator2!!
-                                                                 // $NON-NLS-1$
+  // $NON-NLS-1$
 
   private CCombo wConnection;
 
@@ -208,6 +208,11 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
         setTableFieldCombo();
+      }
+    };
+    SelectionListener lsSimpleSelection = new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent e ) {
+        input.setChanged();
       }
     };
     changed = input.hasChanged();
@@ -350,6 +355,7 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
     wlBatch.setLayoutData( fdlBatch );
     wBatch = new Button( wGeneralComp, SWT.CHECK );
     wBatch.setToolTipText( BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.Batch.Tooltip" ) );
+    wBatch.addSelectionListener( lsSimpleSelection );
     props.setLook( wBatch );
     fdBatch = new FormData();
     fdBatch.left = new FormAttachment( middle, 0 );
@@ -428,8 +434,8 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
         new ColumnInfo( BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.ColumnInfo.TableField" ),
             ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     ciKey[1] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.ColumnInfo.Comparator" ), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "=", "<>", "<", "<=", //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+        new ColumnInfo( BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.ColumnInfo.Comparator" ),
+            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "=", "<>", "<", "<=", //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
               ">", ">=", "LIKE", "BETWEEN", "IS NULL", "IS NOT NULL" } ); //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
     ciKey[2] =
         new ColumnInfo( BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.ColumnInfo.StreamField1" ),
@@ -534,7 +540,7 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
 
             // Remember these fields...
             for ( int i = 0; i < row.size(); i++ ) {
-              inputFields.put( row.getValueMeta( i ).getName(), Integer.valueOf( i ) );
+              inputFields.put( row.getValueMeta( i ).getName(), i );
             }
 
             setComboBoxes();
@@ -718,6 +724,7 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
     wlPerformLookup.setLayoutData( fdlPerformLookup );
     wPerformLookup = new Button( wOperationOrder, SWT.CHECK );
     wPerformLookup.setToolTipText( BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.PerformLookup.Tooltip" ) );
+    wPerformLookup.addSelectionListener( lsSimpleSelection );
     props.setLook( wPerformLookup );
     fdPerformLookup = new FormData();
     fdPerformLookup.left = new FormAttachment( middle, 0 );
@@ -852,8 +859,8 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
     // Create the existing mapping list...
     //
     List<SourceToTargetMapping> mappings = new ArrayList<SourceToTargetMapping>();
-    StringBuffer missingSourceFields = new StringBuffer();
-    StringBuffer missingTargetFields = new StringBuffer();
+    StringBuilder missingSourceFields = new StringBuilder();
+    StringBuilder missingTargetFields = new StringBuilder();
 
     int nrFields = wReturn.nrNonEmpty();
     for ( int i = 0; i < nrFields; i++ ) {
@@ -863,11 +870,11 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
 
       int sourceIndex = sourceFields.indexOfValue( source );
       if ( sourceIndex < 0 ) {
-        missingSourceFields.append( Const.CR + "   " + source + " --> " + target );
+        missingSourceFields.append( Const.CR ).append( "   " ).append( source ).append( " --> " ).append( target );
       }
       int targetIndex = targetFields.indexOfValue( target );
       if ( targetIndex < 0 ) {
-        missingTargetFields.append( Const.CR + "   " + source + " --> " + target );
+        missingTargetFields.append( Const.CR ).append( "   " ).append( source ).append( " --> " ).append( target );
       }
       if ( sourceIndex < 0 || targetIndex < 0 ) {
         continue;
@@ -931,39 +938,41 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
   private void setTableFieldCombo() {
     Runnable fieldLoader = new Runnable() {
       public void run() {
-        // clear
-        for ( int i = 0; i < tableFieldColumns.size(); i++ ) {
-          ColumnInfo colInfo = tableFieldColumns.get( i );
-          colInfo.setComboValues( new String[] {} );
-        }
-        if ( !Const.isEmpty( wTable.getText() ) ) {
-          DatabaseMeta ci = transMeta.findDatabase( wConnection.getText() );
-          if ( ci != null ) {
-            Database db = new Database( loggingObject, ci );
-            db.shareVariablesWith( transMeta );
-            try {
-              db.connect();
+        if ( !wTable.isDisposed() && !wConnection.isDisposed() && !wSchema.isDisposed() ) {
+          final String tableName = wTable.getText(), connectionName = wConnection.getText(), schemaName =
+              wSchema.getText();
 
-              String schemaTable =
-                  ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( wSchema.getText() ), transMeta
-                      .environmentSubstitute( wTable.getText() ) );
-              RowMetaInterface r = db.getTableFields( schemaTable );
-              if ( null != r ) {
-                String[] fieldNames = r.getFieldNames();
-                if ( null != fieldNames ) {
-                  for ( int i = 0; i < tableFieldColumns.size(); i++ ) {
-                    ColumnInfo colInfo = tableFieldColumns.get( i );
-                    colInfo.setComboValues( fieldNames );
+          // clear
+          for ( ColumnInfo colInfo : tableFieldColumns ) {
+            colInfo.setComboValues( new String[] {} );
+          }
+          if ( !Const.isEmpty( tableName ) ) {
+            DatabaseMeta ci = transMeta.findDatabase( connectionName );
+            if ( ci != null ) {
+              Database db = new Database( loggingObject, ci );
+              db.shareVariablesWith( transMeta );
+              try {
+                db.connect();
+
+                String schemaTable =
+                    ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
+                        .environmentSubstitute( tableName ) );
+                RowMetaInterface r = db.getTableFields( schemaTable );
+                if ( null != r ) {
+                  String[] fieldNames = r.getFieldNames();
+                  if ( null != fieldNames ) {
+                    for ( ColumnInfo colInfo : tableFieldColumns ) {
+                      colInfo.setComboValues( fieldNames );
+                    }
                   }
                 }
+              } catch ( Exception e ) {
+                for ( ColumnInfo colInfo : tableFieldColumns ) {
+                  colInfo.setComboValues( new String[] {} );
+                }
+                // ignore any errors here. drop downs will not be
+                // filled, but no problem for the user
               }
-            } catch ( Exception e ) {
-              for ( int i = 0; i < tableFieldColumns.size(); i++ ) {
-                ColumnInfo colInfo = tableFieldColumns.get( i );
-                colInfo.setComboValues( new String[] {} );
-              }
-              // ignore any errors here. drop downs will not be
-              // filled, but no problem for the user
             }
           }
         }
@@ -1081,7 +1090,7 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
         if ( input.getUpdateStream()[i] != null ) {
           item.setText( 2, input.getUpdateStream()[i] );
         }
-        if ( input.getUpdate()[i] == null || input.getUpdate()[i].booleanValue() ) {
+        if ( input.getUpdate()[i] == null || input.getUpdate()[i] ) {
           item.setText( 3, "Y" );
         } else {
           item.setText( 3, "N" );
@@ -1154,7 +1163,7 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
       TableItem item = wReturn.getNonEmpty( i );
       inf.getUpdateLookup()[i] = item.getText( 1 );
       inf.getUpdateStream()[i] = item.getText( 2 );
-      inf.getUpdate()[i] = Boolean.valueOf( "Y".equals( item.getText( 3 ) ) );
+      inf.getUpdate()[i] = "Y".equals( item.getText( 3 ) );
     }
 
     inf.setSchemaName( wSchema.getText() );
@@ -1303,7 +1312,7 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
                   .getString( PKG, "SynchronizeAfterMergeDialog.AvailableSchemas.Message", wConnection.getText() ) );
           String d = dialog.open();
           if ( d != null ) {
-            wSchema.setText( Const.NVL( d.toString(), "" ) );
+            wSchema.setText( Const.NVL( d, "" ) );
             setTableFieldCombo();
           }
 
@@ -1317,10 +1326,7 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
         new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
             PKG, "SynchronizeAfterMergeDialog.ErrorGettingSchemas" ), e );
       } finally {
-        if ( database != null ) {
-          database.disconnect();
-          database = null;
-        }
+        database.disconnect();
       }
     }
   }

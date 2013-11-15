@@ -625,10 +625,7 @@ public class Script extends BaseStep implements StepInterface {
         stopAll();
       }
 
-      if ( data.cx != null ) {
-        // Context.exit(); TODO AKRETION not sure
-        setOutputDone();
-      }
+      setOutputDone();
       return false;
     }
 

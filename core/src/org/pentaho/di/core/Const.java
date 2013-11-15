@@ -72,7 +72,7 @@ public class Const {
   /**
    * Version number
    */
-  public static final String VERSION = "5.0.0-GA";
+  public static final String VERSION = "5.1-SNAPSHOT";
 
   /**
    * Copyright year
@@ -2121,8 +2121,8 @@ public class Const {
     try {
       stringWriter.close();
     } catch ( IOException ioe ) {
-
-    } // is this really required?
+      // is this really required?
+    }
     return string;
   }
 

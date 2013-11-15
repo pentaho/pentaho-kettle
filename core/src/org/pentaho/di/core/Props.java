@@ -294,6 +294,7 @@ public class Props implements Cloneable {
       try {
         dir.mkdirs();
       } catch ( Exception e ) {
+        // ignore - should likely report failure to create directory
       }
     }
 

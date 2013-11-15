@@ -545,7 +545,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 
             // Remember these fields...
             for ( int i = 0; i < row.size(); i++ ) {
-              inputFields.put( row.getValueMeta( i ).getName(), Integer.valueOf( i ) );
+              inputFields.put( row.getValueMeta( i ).getName(), i );
             }
 
             setComboBoxes();
@@ -660,38 +660,40 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
   private void setTableFieldCombo() {
     Runnable fieldLoader = new Runnable() {
       public void run() {
-        // clear
-        for ( int i = 0; i < tableFieldColumns.size(); i++ ) {
-          ColumnInfo colInfo = tableFieldColumns.get( i );
-          colInfo.setComboValues( new String[] {} );
-        }
-        if ( !wTable.isDisposed() && !Const.isEmpty( wTable.getText() ) ) {
-          DatabaseMeta ci = transMeta.findDatabase( wConnection.getText() );
-          if ( ci != null ) {
-            Database db = new Database( loggingObject, ci );
-            try {
-              db.connect();
+        if ( !wTable.isDisposed() && !wConnection.isDisposed() && !wSchema.isDisposed() ) {
+          final String tableName = wTable.getText(), connectionName = wConnection.getText(), schemaName =
+              wSchema.getText();
 
-              String schemaTable =
-                  ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( wSchema.getText() ), transMeta
-                      .environmentSubstitute( wTable.getText() ) );
-              RowMetaInterface r = db.getTableFields( schemaTable );
-              if ( null != r ) {
-                String[] fieldNames = r.getFieldNames();
-                if ( null != fieldNames ) {
-                  for ( int i = 0; i < tableFieldColumns.size(); i++ ) {
-                    ColumnInfo colInfo = tableFieldColumns.get( i );
-                    colInfo.setComboValues( fieldNames );
+          // clear
+          for ( ColumnInfo colInfo : tableFieldColumns ) {
+            colInfo.setComboValues( new String[] {} );
+          }
+          if ( !Const.isEmpty( tableName ) ) {
+            DatabaseMeta ci = transMeta.findDatabase( connectionName );
+            if ( ci != null ) {
+              Database db = new Database( loggingObject, ci );
+              try {
+                db.connect();
+
+                String schemaTable =
+                    ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
+                        .environmentSubstitute( tableName ) );
+                RowMetaInterface r = db.getTableFields( schemaTable );
+                if ( null != r ) {
+                  String[] fieldNames = r.getFieldNames();
+                  if ( null != fieldNames ) {
+                    for ( ColumnInfo colInfo : tableFieldColumns ) {
+                      colInfo.setComboValues( fieldNames );
+                    }
                   }
                 }
+              } catch ( Exception e ) {
+                for ( ColumnInfo colInfo : tableFieldColumns ) {
+                  colInfo.setComboValues( new String[] {} );
+                }
+                // ignore any errors here. drop downs will not be
+                // filled, but no problem for the user
               }
-            } catch ( Exception e ) {
-              for ( int i = 0; i < tableFieldColumns.size(); i++ ) {
-                ColumnInfo colInfo = tableFieldColumns.get( i );
-                colInfo.setComboValues( new String[] {} );
-              }
-              // ignore any errors here. drop downs will not be
-              // filled, but no problem for the user
             }
           }
         }
@@ -704,7 +706,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
     boolean enable = ( ci == null ) || ci.supportsAutoinc();
     wlAutoinc.setEnabled( enable );
     wAutoinc.setEnabled( enable );
-    if ( enable == false && wAutoinc.getSelection() == true ) {
+    if ( !enable && wAutoinc.getSelection() ) {
       wAutoinc.setSelection( false );
       wSeqButton.setSelection( false );
       wTableMax.setSelection( true );
@@ -721,7 +723,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
     wSeq.setEnabled( seq );
     wlSeqButton.setEnabled( seq );
     wSeqButton.setEnabled( seq );
-    if ( seq == false && wSeqButton.getSelection() == true ) {
+    if ( !seq && wSeqButton.getSelection() ) {
       wAutoinc.setSelection( false );
       wSeqButton.setSelection( false );
       wTableMax.setSelection( true );
@@ -764,7 +766,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
       wAutoinc.setSelection( input.isUseAutoinc() );
 
       wSeqButton.setSelection( input.getSequenceFrom() != null && input.getSequenceFrom().length() > 0 );
-      if ( input.isUseAutoinc() == false && ( input.getSequenceFrom() == null || input.getSequenceFrom().length() <= 0 ) ) {
+      if ( !input.isUseAutoinc() && ( input.getSequenceFrom() == null || input.getSequenceFrom().length() <= 0 ) ) {
         wTableMax.setSelection( true );
       }
 
@@ -781,8 +783,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
         wAutoinc.setSelection( true );
       } else if ( ( CombinationLookupMeta.CREATION_METHOD_SEQUENCE.equals( techKeyCreation ) ) ) {
         wSeqButton.setSelection( true );
-      } else // the rest
-      {
+      } else { // the rest
         wTableMax.setSelection( true );
         input.setTechKeyCreation( CombinationLookupMeta.CREATION_METHOD_TABLEMAX );
       }
@@ -871,16 +872,15 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
     in.setSchemaName( wSchema.getText() );
     in.setTablename( wTable.getText() );
     in.setTechnicalKeyField( wTk.getText() );
-    if ( wAutoinc.getSelection() == true ) {
+    if ( wAutoinc.getSelection() ) {
       in.setTechKeyCreation( CombinationLookupMeta.CREATION_METHOD_AUTOINC );
       in.setUseAutoinc( true ); // for downwards compatibility
       in.setSequenceFrom( null );
-    } else if ( wSeqButton.getSelection() == true ) {
+    } else if ( wSeqButton.getSelection() ) {
       in.setTechKeyCreation( CombinationLookupMeta.CREATION_METHOD_SEQUENCE );
       in.setUseAutoinc( false );
       in.setSequenceFrom( wSeq.getText() );
-    } else // all the rest
-    {
+    } else { // all the rest
       in.setTechKeyCreation( CombinationLookupMeta.CREATION_METHOD_TABLEMAX );
       in.setUseAutoinc( false );
       in.setSequenceFrom( null );
@@ -910,7 +910,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
                   PKG, "CombinationLookupDialog.AvailableSchemas.Message", wConnection.getText() ) );
           String d = dialog.open();
           if ( d != null ) {
-            wSchema.setText( Const.NVL( d.toString(), "" ) );
+            wSchema.setText( Const.NVL( d, "" ) );
             setTableFieldCombo();
           }
 
@@ -924,10 +924,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
         new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
             PKG, "CombinationLookupDialog.ErrorGettingSchemas" ), e );
       } finally {
-        if ( database != null ) {
-          database.disconnect();
-          database = null;
-        }
+        database.disconnect();
       }
     }
   }

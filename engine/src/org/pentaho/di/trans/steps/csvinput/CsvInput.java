@@ -139,8 +139,8 @@ public class CsvInput extends BaseStep implements StepInterface {
 
     try {
       Object[] outputRowData = readOneRow( true ); // get row, set busy!
-      if ( outputRowData == null ) // no more input to be expected...
-      {
+   // no more input to be expected...
+      if ( outputRowData == null ) {
         if ( openNextFile() ) {
           return true; // try again on the next loop...
         } else {
@@ -509,7 +509,7 @@ public class CsvInput extends BaseStep implements StepInterface {
           // If the flag is enable we skip newline checking except for the last field in the row.
           // In that one we can't support newlines without enclosure (handled below).
           //
-          ( !meta.isNewlinePossibleInFields() || outputIndex == meta.getInputFields().length - 1 )
+            ( !meta.isNewlinePossibleInFields() || outputIndex == meta.getInputFields().length - 1 )
               && ( data.crLfMatcher.isReturn( data.byteBuffer, data.endBuffer ) || data.crLfMatcher.isLineFeed(
                   data.byteBuffer, data.endBuffer ) ) ) {
 
@@ -556,15 +556,14 @@ public class CsvInput extends BaseStep implements StepInterface {
 
             newLineFound = true;
             delimiterFound = true;
-          }
-          // Perhaps we need to skip over an enclosed part?
-          // We always expect exactly one enclosure character
-          // If we find the enclosure doubled, we consider it escaped.
-          // --> "" is converted to " later on.
-          //
-          else if ( data.enclosure != null
+          } else if ( data.enclosure != null
               && data.enclosureMatcher.matchesPattern( data.byteBuffer, data.endBuffer, data.enclosure ) ) {
 
+            // Perhaps we need to skip over an enclosed part?
+            // We always expect exactly one enclosure character
+            // If we find the enclosure doubled, we consider it escaped.
+            // --> "" is converted to " later on.
+            //
             enclosureFound = true;
             boolean keepGoing;
             do {
@@ -599,9 +598,7 @@ public class CsvInput extends BaseStep implements StepInterface {
               endOfBuffer = true;
               break;
             }
-          }
-
-          else {
+          } else {
 
             data.endBuffer++;
             data.totalBytesRead++;
@@ -796,6 +793,8 @@ public class CsvInput extends BaseStep implements StepInterface {
     data = (CsvInputData) sdi;
 
     if ( super.init( smi, sdi ) ) {
+      // PDI-10242 see if a variable is used as encoding value
+      String realEncoding = environmentSubstitute( meta.getEncoding() );
       data.preferredBufferSize = Integer.parseInt( environmentSubstitute( meta.getBufferSize() ) );
 
       // If the step doesn't have any previous steps, we just get the filename.
@@ -817,18 +816,17 @@ public class CsvInput extends BaseStep implements StepInterface {
 
       data.totalBytesRead = 0L;
 
-      data.encodingType = EncodingType.guessEncodingType( meta.getEncoding() );
+      data.encodingType = EncodingType.guessEncodingType( realEncoding );
 
       // PDI-2489 - set the delimiter byte value to the code point of the
       // character as represented in the input file's encoding
       try {
-        data.delimiter = data.encodingType.getBytes( environmentSubstitute( meta.getDelimiter() ), meta.getEncoding() );
+        data.delimiter = data.encodingType.getBytes( environmentSubstitute( meta.getDelimiter() ), realEncoding );
 
         if ( Const.isEmpty( meta.getEnclosure() ) ) {
           data.enclosure = null;
         } else {
-          data.enclosure =
-              data.encodingType.getBytes( environmentSubstitute( meta.getEnclosure() ), meta.getEncoding() );
+          data.enclosure = data.encodingType.getBytes( environmentSubstitute( meta.getEnclosure() ), realEncoding );
         }
 
       } catch ( UnsupportedEncodingException e ) {
@@ -989,8 +987,7 @@ public class CsvInput extends BaseStep implements StepInterface {
                 len_esc > 0 && p + len_esc < length && line.substring( p, p + len_esc ).equals( escapeCharacter );
 
             // Is it really an enclosure? See if it's not repeated twice or escaped!
-            if ( ( is_enclosure || is_escape ) && p < length - 1 ) // Is
-            {
+            if ( ( is_enclosure || is_escape ) && p < length - 1 ) { // Is
               String strnext = line.substring( p + len_encl, p + 2 * len_encl );
               if ( strnext.equals( enclosure ) ) {
                 p++;

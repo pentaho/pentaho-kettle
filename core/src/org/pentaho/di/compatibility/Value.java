@@ -3421,13 +3421,15 @@ public class Value implements Cloneable, XMLInterface, Serializable {
     if ( isNull() ) {
       return this; // don't do anything, leave it at NULL!
     }
+    if ( isInteger() ) {
+      // Nothing
+      return this;
+    }
 
     if ( isBigNumber() ) {
       getBigNumber().setScale( 0, BigDecimal.ROUND_FLOOR );
     } else if ( isNumber() ) {
       setValue( Math.floor( getNumber() ) );
-    } else if ( isInteger() ) {
-      // Nothing
     } else if ( isDate() ) {
       Calendar cal = Calendar.getInstance();
       cal.setTime( getDate() );
@@ -3456,13 +3458,14 @@ public class Value implements Cloneable, XMLInterface, Serializable {
       return this; // don't do anything, leave it at NULL!
     }
 
+    if ( isInteger() ) {
+      return this; // nothing to do.
+    }
     if ( isBigNumber() ) {
       getBigNumber().setScale( level, BigDecimal.ROUND_FLOOR );
     } else if ( isNumber() ) {
       double pow = Math.pow( 10, level );
       setValue( Math.floor( getNumber() * pow ) / pow );
-    } else if ( isInteger() ) {
-      // Nothing!
     } else if ( isDate() ) {
       Calendar cal = Calendar.getInstance();
       cal.setTime( getDate() );

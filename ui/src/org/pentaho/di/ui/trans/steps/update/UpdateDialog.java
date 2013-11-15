@@ -376,8 +376,10 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface 
         new ColumnInfo( BaseMessages.getString( PKG, "UpdateDialog.ColumnInfo.TableField" ),
             ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     ciKey[1] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "UpdateDialog.ColumnInfo.Comparator" ), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "=", "= ~NULL", "<>", "<", "<=", ">", ">=", "LIKE", "BETWEEN", "IS NULL", "IS NOT NULL" } ); //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$
+        new ColumnInfo( BaseMessages.getString( PKG, "UpdateDialog.ColumnInfo.Comparator" ),
+            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "=", "= ~NULL", "<>", "<", "<=", ">", ">=", "LIKE",
+              "BETWEEN", "IS NULL", "IS NOT NULL" } ); //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
+    //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$
     ciKey[2] =
         new ColumnInfo( BaseMessages.getString( PKG, "UpdateDialog.ColumnInfo.StreamField1" ),
             ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
@@ -464,7 +466,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface 
 
             // Remember these fields...
             for ( int i = 0; i < row.size(); i++ ) {
-              inputFields.put( row.getValueMeta( i ).getName(), Integer.valueOf( i ) );
+              inputFields.put( row.getValueMeta( i ).getName(), i );
             }
 
             setComboBoxes();
@@ -606,38 +608,40 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface 
   private void setTableFieldCombo() {
     Runnable fieldLoader = new Runnable() {
       public void run() {
-        // clear
-        for ( int i = 0; i < tableFieldColumns.size(); i++ ) {
-          ColumnInfo colInfo = tableFieldColumns.get( i );
-          colInfo.setComboValues( new String[] {} );
-        }
-        if ( !Const.isEmpty( wTable.getText() ) ) {
-          DatabaseMeta ci = transMeta.findDatabase( wConnection.getText() );
-          if ( ci != null ) {
-            Database db = new Database( loggingObject, ci );
-            try {
-              db.connect();
+        if ( !wTable.isDisposed() && !wConnection.isDisposed() && !wSchema.isDisposed() ) {
+          final String tableName = wTable.getText(), connectionName = wConnection.getText(), schemaName =
+              wSchema.getText();
 
-              String schemaTable =
-                  ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( wSchema.getText() ), transMeta
-                      .environmentSubstitute( wTable.getText() ) );
-              RowMetaInterface r = db.getTableFields( schemaTable );
-              if ( null != r ) {
-                String[] fieldNames = r.getFieldNames();
-                if ( null != fieldNames ) {
-                  for ( int i = 0; i < tableFieldColumns.size(); i++ ) {
-                    ColumnInfo colInfo = tableFieldColumns.get( i );
-                    colInfo.setComboValues( fieldNames );
+          // clear
+          for ( ColumnInfo colInfo : tableFieldColumns ) {
+            colInfo.setComboValues( new String[] {} );
+          }
+          if ( !Const.isEmpty( tableName ) ) {
+            DatabaseMeta ci = transMeta.findDatabase( connectionName );
+            if ( ci != null ) {
+              Database db = new Database( loggingObject, ci );
+              try {
+                db.connect();
+
+                String schemaTable =
+                    ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
+                        .environmentSubstitute( tableName ) );
+                RowMetaInterface r = db.getTableFields( schemaTable );
+                if ( null != r ) {
+                  String[] fieldNames = r.getFieldNames();
+                  if ( null != fieldNames ) {
+                    for ( ColumnInfo colInfo : tableFieldColumns ) {
+                      colInfo.setComboValues( fieldNames );
+                    }
                   }
                 }
+              } catch ( Exception e ) {
+                for ( ColumnInfo colInfo : tableFieldColumns ) {
+                  colInfo.setComboValues( new String[] {} );
+                }
+                // ignore any errors here. drop downs will not be
+                // filled, but no problem for the user
               }
-            } catch ( Exception e ) {
-              for ( int i = 0; i < tableFieldColumns.size(); i++ ) {
-                ColumnInfo colInfo = tableFieldColumns.get( i );
-                colInfo.setComboValues( new String[] {} );
-              }
-              // ignore any errors here. drop downs will not be
-              // filled, but no problem for the user
             }
           }
         }
@@ -892,7 +896,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface 
                   "UpdateDialog.AvailableSchemas.Message", wConnection.getText() ) );
           String d = dialog.open();
           if ( d != null ) {
-            wSchema.setText( Const.NVL( d.toString(), "" ) );
+            wSchema.setText( Const.NVL( d, "" ) );
             setTableFieldCombo();
           }
 
@@ -906,10 +910,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface 
         new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
             PKG, "UpdateDialog.ErrorGettingSchemas" ), e );
       } finally {
-        if ( database != null ) {
-          database.disconnect();
-          database = null;
-        }
+        database.disconnect();
       }
     }
   }

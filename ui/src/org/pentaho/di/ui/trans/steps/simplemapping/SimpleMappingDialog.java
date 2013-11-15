@@ -1065,8 +1065,8 @@ public class SimpleMappingDialog extends BaseStepDialog implements StepDialogInt
 
     for ( MappingValueRename valueRename : definition.getValueRenames() ) {
       TableItem tableItem = new TableItem( wFieldMappings.table, SWT.NONE );
-      tableItem.setText( 1, valueRename.getSourceValueName() );
-      tableItem.setText( 2, valueRename.getTargetValueName() );
+      tableItem.setText( 1, Const.NVL( valueRename.getSourceValueName(), "" ) );
+      tableItem.setText( 2, Const.NVL( valueRename.getTargetValueName(), "" ) );
     }
     wFieldMappings.removeEmptyRows();
     wFieldMappings.setRowNums();
