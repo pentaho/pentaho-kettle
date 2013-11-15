@@ -113,11 +113,9 @@
     <!--  for testing -->
     <dependency org="com.h2database"      name="h2"            rev="1.2.131" conf="test->default" transitive="false"/>
     <dependency org="oro"                 name="oro"           rev="2.0.8"   conf="test->default" transitive="false"/>
-    <dependency org="jaxen"               name="jaxen"         rev="1.1.1"     conf="test->default" transitive="false"/>
+    <dependency org="jaxen"               name="jaxen"         rev="1.1.1"   conf="test->default" transitive="false"/>
     <dependency org="junit"               name="junit"         rev="4.7"     conf="test->default" transitive="false"/>
-    <dependency org="org.mockito"         name="mockito-all"         rev="1.8.4"            transitive="false" conf="test->default"/>
+    <dependency org="org.mockito"         name="mockito-all"   rev="1.8.4"   conf="test->default" transitive="false" />
     
-    <!-- excludes -->
-    <exclude org="pentaho-kettle" module="kettle-db"/>
   </dependencies>
 </ivy-module>

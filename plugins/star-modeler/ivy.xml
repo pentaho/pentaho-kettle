@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="pentaho-kettle" module="star-modeler" revision="${dependency.kettle.revision}" status="integration" publication="20130405165022"/>
+  <info organisation="pentaho-kettle" module="${ivy.artifact.id}" revision="${dependency.kettle.revision}" status="integration" publication="20130405165027"/>
 
   <configurations>
     <conf name="default"/>
     <conf name="dev"/>
     <conf name="test" visibility="private"/>
     <conf name="source"/>
+    <conf name="zip"/>
   </configurations>
 
   <publications>
-    <artifact name="star-modeler" type="jar" conf="default"/>
+    <artifact name="${ivy.artifact.id}" type="jar" conf="dev"/>
+    <artifact name="${ivy.artifact.id}" type="zip" conf="zip" />
+    <artifact name="${ivy.artifact.id}" m:classifier="sources" type="source" ext="jar" conf="source"/>
+    <artifact name="${ivy.artifact.id}" m:classifier="sources" type="source" ext="zip" conf="source"/>
   </publications>
 
   <dependencies defaultconf="dev->default">
@@ -20,7 +24,7 @@
     <dependency org="commons-vfs" name="commons-vfs" rev="20100924-pentaho" transitive="false"/>
     <dependency org="pentaho" name="pentaho-xul-core" rev="${dependency.kettle.revision}" changing="true"/>
     <dependency org="pentaho" name="pentaho-xul-swt" rev="${dependency.kettle.revision}" changing="true"/>
-    <dependency org="pentaho" name="pentaho-metadata" rev="${dependency.kettle.revision}" changing="true" transitive="false"/>
+    <dependency org="pentaho" name="pentaho-metadata" rev="${dependency.metadata.revision}" changing="true"/>
     
     <dependency org="junit" name="junit" rev="4.7" conf="test->default"/>
             
