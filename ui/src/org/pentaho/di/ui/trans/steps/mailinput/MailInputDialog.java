@@ -1349,23 +1349,17 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
       wPort.setText( input.getPort() );
     }
 
-    wProtocol.setText( input.getProtocol() );
-    
-    if ( input.getRetrievemails() >= 0 ) {
-      wListmails.select( input.getRetrievemails() );
-    } else {
-      wListmails.select( 0 ); // Retrieve All Mails
-    }
-
+    String protocol = input.getProtocol();
+    boolean isPop3 = StringUtils.equals( protocol, MailConnectionMeta.PROTOCOL_STRING_POP3 );
+    wProtocol.setText( protocol );
+    int i = input.getRetrievemails();
     // [PDI-7241] POP3 does not support retrieve email flags.
     // if anyone already used 'unread' for POP3 in transformation or 'retrieve... first'
-    // we need to do additional check since that option was removed from list.
-    if ( StringUtils.equals( input.getProtocol(), MailConnectionMeta.PROTOCOL_STRING_POP3 ) ){
-      int i = input.getRetrievemails();
-      if (i>0){
-        // one position was removed
-        wListmails.select( i-1 );
-      }
+    // now they realize that all this time it was 'retrieve all mails'.
+    if ( i >= 0 ) {
+      wListmails.select( isPop3 ? ( i - 1 ) : i );
+    } else {
+      wListmails.select( 0 ); // Retrieve All Mails
     }
 
     if ( input.getFirstMails() != null ) {
