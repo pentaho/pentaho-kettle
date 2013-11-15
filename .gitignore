@@ -5,6 +5,7 @@ lib/
 libswt/
 test-lib/
 dev-lib/
+cobertura/
 eclipse-bin/
 override.properties
 testdata.log
