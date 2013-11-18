@@ -607,6 +607,13 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
     return username;
   }
 
+  /**
+   * <li>0 = retrieve all
+   * <li>2 = retrieve unread
+   * 
+   * @param nr
+   * @see {@link #setValueImapList(int)}
+   */
   public void setRetrievemails( int nr ) {
     retrievemails = nr;
   }

@@ -652,6 +652,13 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     this.filenamepattern = filenamepattern;
   }
 
+  /**
+   * <li>0 = retrieve all
+   * <li>2 = retrieve unread
+   * 
+   * @param nr
+   * @see {@link #setValueImapList(int)}
+   */
   public void setRetrievemails( int nr ) {
     retrievemails = nr;
   }

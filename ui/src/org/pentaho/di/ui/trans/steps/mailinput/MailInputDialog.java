@@ -28,6 +28,7 @@ import java.util.Calendar;
 
 import javax.mail.Folder;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
@@ -568,7 +569,8 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     wlListmails.setLayoutData( fdlListmails );
     wListmails = new CCombo( wPOP3Settings, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER );
     wListmails.add( BaseMessages.getString( PKG, "MailInput.RetrieveAllMails.Label" ) );
-    wListmails.add( BaseMessages.getString( PKG, "MailInput.RetrieveUnreadMails.Label" ) );
+    //[PDI-7241] pop3 does not support retrive unread option
+    //wListmails.add( BaseMessages.getString( PKG, "MailInput.RetrieveUnreadMails.Label" ) );
     wListmails.add( BaseMessages.getString( PKG, "MailInput.RetrieveFirstMails.Label" ) );
     wListmails.select( 0 ); // +1: starts at -1
 
@@ -1346,18 +1348,26 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     if ( input.getPort() != null ) {
       wPort.setText( input.getPort() );
     }
+    
+    String protocol = input.getProtocol();
 
-    if ( input.getRetrievemails() >= 0 ) {
-      wListmails.select( input.getRetrievemails() );
+    boolean isPop3 = StringUtils.equals( protocol, MailConnectionMeta.PROTOCOL_STRING_POP3 );
+    wProtocol.setText( protocol );
+    int iRet = input.getRetrievemails();
+    
+    // [PDI-7241] POP3 does not support retrieve email flags.
+    // if anyone already used 'unread' for POP3 in transformation or 'retrieve... first'
+    // now they realize that all this time it was 'retrieve all mails'.
+    if ( iRet > 0 ) {
+      if ( isPop3 ) {
+        wListmails.select( iRet - 1 );
+      } else {
+        wListmails.select( iRet );
+      }
     } else {
       wListmails.select( 0 ); // Retrieve All Mails
     }
 
-    if ( input.getFirstMails() != null ) {
-      wFirstmails.setText( input.getFirstMails() );
-    }
-
-    wProtocol.setText( input.getProtocol() );
     wIMAPListmails.setText( MailConnectionMeta.getValueImapListDesc( input.getValueImapList() ) );
     if ( input.getFirstIMAPMails() != null ) {
       wIMAPFirstmails.setText( input.getFirstIMAPMails() );
@@ -1455,7 +1465,12 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     in.setPassword( wPassword.getText() );
     in.setUseSSL( wUseSSL.getSelection() );
     in.setPort( wPort.getText() );
-    in.setRetrievemails( wListmails.getSelectionIndex() );
+    
+    //[PDI-7241] Option 'retrieve unread' is removed and there is only 2 options.
+    //for backward compatibility: 0 is 'retrieve all', 1 is 'retrieve first...'
+    int actualIndex = wListmails.getSelectionIndex();
+    in.setRetrievemails( actualIndex > 0 ? 2 : 0 );
+    
     in.setFirstMails( wFirstmails.getText() );
     in.setProtocol( wProtocol.getText() );
     in.setValueImapList( MailConnectionMeta.getValueImapListByDesc( wIMAPListmails.getText() ) );
@@ -1653,7 +1668,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 
   public void chooseListMails() {
     boolean ok =
-        ( wProtocol.getText().equals( MailConnectionMeta.PROTOCOL_STRING_POP3 ) && wListmails.getSelectionIndex() == 2 );
+        ( wProtocol.getText().equals( MailConnectionMeta.PROTOCOL_STRING_POP3 ) && wListmails.getSelectionIndex() == 1 );
     wlFirstmails.setEnabled( ok );
     wFirstmails.setEnabled( ok );
   }
