@@ -33,8 +33,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannelFileWriter;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
+import org.pentaho.di.core.util.FileUtil;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
@@ -81,6 +85,9 @@ public class AddTransServlet extends BaseHttpServlet implements CarteServletInte
 
     response.setStatus(HttpServletResponse.SC_OK);
 
+    String realLogFilename = null;
+    TransExecutionConfiguration transExecutionConfiguration = null;
+
     try {
       // First read the complete transformation in memory from the request
       //
@@ -94,7 +101,7 @@ public class AddTransServlet extends BaseHttpServlet implements CarteServletInte
       //
       TransConfiguration transConfiguration = TransConfiguration.fromXML(xml.toString());
       TransMeta transMeta = transConfiguration.getTransMeta();
-      TransExecutionConfiguration transExecutionConfiguration = transConfiguration.getTransExecutionConfiguration();
+      transExecutionConfiguration = transConfiguration.getTransExecutionConfiguration();
       transMeta.setLogLevel(transExecutionConfiguration.getLogLevel());
       if (log.isDetailed()) {
         logDetailed("Logging level set to " + log.getLogLevel().getDescription());
@@ -111,18 +118,43 @@ public class AddTransServlet extends BaseHttpServlet implements CarteServletInte
 
       // If there was a repository, we know about it at this point in time.
       //
-      TransExecutionConfiguration executionConfiguration = transConfiguration.getTransExecutionConfiguration();
-      final Repository repository = transConfiguration.getTransExecutionConfiguration().getRepository();
+      final Repository repository = transExecutionConfiguration.getRepository();
       
       String carteObjectId = UUID.randomUUID().toString();
       SimpleLoggingObject servletLoggingObject = new SimpleLoggingObject(CONTEXT_PATH, LoggingObjectType.CARTE, null);
       servletLoggingObject.setContainerObjectId(carteObjectId);
-      servletLoggingObject.setLogLevel(executionConfiguration.getLogLevel());
+      servletLoggingObject.setLogLevel( transExecutionConfiguration.getLogLevel() );
 
       // Create the transformation and store in the list...
       //
       final Trans trans = new Trans(transMeta, servletLoggingObject);
       
+      if ( transExecutionConfiguration.isSetLogfile() ) {
+        realLogFilename = transExecutionConfiguration.getLogFileName();
+        final LogChannelFileWriter logChannelFileWriter;
+        try {
+          FileUtil.createParentFolder( AddTransServlet.class, realLogFilename, transExecutionConfiguration
+              .isCreateParentFolder(), trans.getLogChannel(), trans );
+          logChannelFileWriter =
+              new LogChannelFileWriter( servletLoggingObject.getLogChannelId(), KettleVFS
+                  .getFileObject( realLogFilename ), transExecutionConfiguration.isSetAppendLogfile() );
+          logChannelFileWriter.startLogging();
+
+          trans.addTransListener( new TransAdapter() {
+            @Override
+            public void transFinished( Trans trans ) throws KettleException {
+              if ( logChannelFileWriter != null ) {
+                logChannelFileWriter.stopLogging();
+              }
+            }
+          } );
+
+        } catch ( KettleException e ) {
+          logError( Const.getStackTracker( e ) );
+        }
+
+      }
+
       trans.setRepository(repository);
       trans.setSocketRepository(getSocketRepository());
 
