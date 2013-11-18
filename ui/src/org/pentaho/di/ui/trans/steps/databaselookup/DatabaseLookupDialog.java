@@ -580,35 +580,28 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		Runnable fieldLoader = new Runnable() {
 			public void run() {
 			  if(!wTable.isDisposed() && !wConnection.isDisposed() && !wSchema.isDisposed()) {
-			  
-  				if (!Const.isEmpty(wTable.getText())) {
-  					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
+          final String tableName = wTable.getText(), connectionName = wConnection.getText(), schemaName =
+              wSchema.getText();
+          if ( !Const.isEmpty( tableName ) ) {
+            DatabaseMeta ci = transMeta.findDatabase( connectionName );
   					if (ci != null) {
   						Database db = new Database(loggingObject, ci);
   						db.shareVariablesWith(transMeta);
   						try {
   							db.connect();
   
-  							String schemaTable = ci
-  									.getQuotedSchemaTableCombination(wSchema
-  											.getText(), wTable.getText());
+                String schemaTable = ci.getQuotedSchemaTableCombination( schemaName, tableName );
                               RowMetaInterface r = db.getTableFields(schemaTable);
   							if (null != r) {
   								String[] fieldNames = r.getFieldNames();
   								if (null != fieldNames) {
-  									for (int i = 0; i < tableFieldColumns.size(); i++) 
-                                      {
-  										ColumnInfo colInfo = tableFieldColumns.get(i);
+                    for ( ColumnInfo colInfo : tableFieldColumns ) {
   										colInfo.setComboValues(fieldNames);
   									}
   								}
   							}
-  						} 
-                          catch (Exception e) 
-                          {
-  							for (int i = 0; i < tableFieldColumns.size(); i++) 
-                              {
-  								ColumnInfo colInfo = tableFieldColumns.get(i);
+              } catch ( Exception e ) {
+                for ( ColumnInfo colInfo : tableFieldColumns ) {
   								colInfo.setComboValues(new String[] {});
   							}
   							// ignore any errors here. drop downs will not be

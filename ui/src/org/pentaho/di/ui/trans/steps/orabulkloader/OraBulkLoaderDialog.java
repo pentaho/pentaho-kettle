@@ -1222,50 +1222,48 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
         ciReturn[1].setComboValues(fieldNames);
         
     }
+
 	private void setTableFieldCombo(){
 		Runnable fieldLoader = new Runnable() {
 			public void run() {
-			  if(wTable == null || wTable.isDisposed()) {
-          return;
-        }
-        String table = wTable.getText();
+        if ( !wTable.isDisposed() && !wConnection.isDisposed() && !wSchema.isDisposed() ) {
+          final String tableName = wTable.getText(), connectionName = wConnection.getText(), schemaName =
+              wSchema.getText();
 			  
 				//clear
-				for (int i = 0; i < tableFieldColumns.size(); i++) {
-					ColumnInfo colInfo = tableFieldColumns.get(i);
-					colInfo.setComboValues(new String[] {});
-				}
-				
-				if (!Const.isEmpty(table)) {
-					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
-					if (ci != null) {
-						Database db = new Database(loggingObject, ci);
-						try {
-							db.connect();
-
-							String schemaTable = ci	.getQuotedSchemaTableCombination(transMeta.environmentSubstitute(wSchema
-											.getText()), transMeta.environmentSubstitute(table));
-							RowMetaInterface r = db.getTableFields(schemaTable);
-							if (null != r) {
-								String[] fieldNames = r.getFieldNames();
-								if (null != fieldNames) {
-									for (int i = 0; i < tableFieldColumns.size(); i++) {
-										ColumnInfo colInfo = tableFieldColumns.get(i);
-										colInfo.setComboValues(fieldNames);
-									}
-								}
-							}
-						} catch (Exception e) {
-							for (int i = 0; i < tableFieldColumns.size(); i++) {
-								ColumnInfo colInfo = tableFieldColumns	.get(i);
-								colInfo.setComboValues(new String[] {});
-							}
-							// ignore any errors here. drop downs will not be
-							// filled, but no problem for the user
-						}
-					}
-				}
-		  }
+          for ( ColumnInfo colInfo : tableFieldColumns ) {
+					  colInfo.setComboValues(new String[] {});
+				  }
+          if ( !Const.isEmpty( tableName ) ) {
+            DatabaseMeta ci = transMeta.findDatabase( connectionName );
+            if (ci != null) {
+              Database db = new Database(loggingObject, ci);
+              try {
+                db.connect();
+  
+                  String schemaTable =
+                      ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
+                          .environmentSubstitute( tableName ) );
+                RowMetaInterface r = db.getTableFields(schemaTable);
+                if (null != r) {
+                  String[] fieldNames = r.getFieldNames();
+                  if (null != fieldNames) {
+                      for ( ColumnInfo colInfo : tableFieldColumns ) {
+                      colInfo.setComboValues(fieldNames);
+                    }
+                  }
+                }
+              } catch (Exception e) {
+                  for ( ColumnInfo colInfo : tableFieldColumns ) {
+                  colInfo.setComboValues(new String[] {});
+                }
+                // ignore any errors here. drop downs will not be
+                // filled, but no problem for the user
+              }
+            }
+  				}
+	  	  }
+      }
 		};
 		shell.getDisplay().asyncExec(fieldLoader);
 	}

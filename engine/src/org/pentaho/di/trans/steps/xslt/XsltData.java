@@ -40,85 +40,85 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author Samatar
  * @since 24-jan-2005
- *
+ * 
  */
-public class XsltData extends BaseStepData implements StepDataInterface
-{
+public class XsltData extends BaseStepData implements StepDataInterface {
 
-	public RowMetaInterface outputRowMeta;
-	public int fieldposition;
-	public int fielxslfiledposition;
-	public String xslfilename;
-	
-	public int fields_used[];
-	
-	public TransformerFactory factory;
-	public HashMap<String, Transformer> transformers;
-	
-	public int nrParams;
-	public int indexOfParams[];
-	public String nameOfParams[];
-	public boolean useParameters;
-	
-	public Properties outputProperties;
-	public boolean setOutputProperties;
-	public boolean xslIsAfile;
-	
-	/**
-	 * 
-	 */
-	public XsltData()
-	{
-		super();
-		fieldposition=-1;
-		fielxslfiledposition=-1;
-		xslfilename=null;
-		transformers= new HashMap<String, Transformer>();
-		useParameters=false;
-		nrParams=0;
-		setOutputProperties=false;
-	}
-	
-	public Transformer getTemplate(String xslFilename, boolean isAfile) throws Exception {
-		Transformer template = 	transformers.get(xslFilename);
-		if(template!=null) {
-			template.clearParameters();
-			return template;
-		}
-		
-		return createNewTemplate(xslFilename, isAfile);
-	}
-	
-	private Transformer createNewTemplate(String xslSource, boolean isAfile) throws Exception{
-	  	FileObject file= null;
-	  	InputStream xslInputStream=null;
-	  	Transformer transformer=null;
-		try {
-			if(isAfile) {
-				file=KettleVFS.getFileObject(xslSource);
-		  		xslInputStream = KettleVFS.getInputStream(file);
-			}else {
-				xslInputStream = new ByteArrayInputStream(xslSource.getBytes("UTF-8")); 
-			}
-	      	
-	  		// Use the factory to create a template containing the xsl source
-			transformer = factory.newTransformer(new StreamSource(xslInputStream ));
-	  		// Add transformer to cache
-			transformers.put(xslSource, transformer);
-	  		
-	  		return transformer;
-	  	}finally {
-	  		try {
-	  			if(file!=null) file.close();
-	  			if(xslInputStream!=null) xslInputStream.close();
-	  		}catch(Exception e){ /* Ignore */ }
-	  	}
-	}
+  public RowMetaInterface outputRowMeta;
+  public int fieldposition;
+  public int fielxslfiledposition;
+  public String xslfilename;
 
-	public void dispose() {
-		transformers=null;
-		factory=null;
-		outputRowMeta=null;
-		outputProperties=null;
-	}
+  public int[] fields_used;
+
+  public TransformerFactory factory;
+  public HashMap<String, Transformer> transformers;
+
+  public int nrParams;
+  public int[] indexOfParams;
+  public String[] nameOfParams;
+  public boolean useParameters;
+
+  public Properties outputProperties;
+  public boolean setOutputProperties;
+  public boolean xslIsAfile;
+
+  public XsltData() {
+    super();
+    fieldposition = -1;
+    fielxslfiledposition = -1;
+    xslfilename = null;
+    transformers = new HashMap<String, Transformer>();
+    useParameters = false;
+    nrParams = 0;
+    setOutputProperties = false;
+  }
+
+  public Transformer getTemplate( String xslFilename, boolean isAfile ) throws Exception {
+    Transformer template = transformers.get( xslFilename );
+    if ( template != null ) {
+      template.clearParameters();
+      return template;
+    }
+
+    return createNewTemplate( xslFilename, isAfile );
+  }
+
+  private Transformer createNewTemplate( String xslSource, boolean isAfile ) throws Exception {
+    FileObject file = null;
+    InputStream xslInputStream = null;
+    Transformer transformer = null;
+    try {
+      if ( isAfile ) {
+        file = KettleVFS.getFileObject( xslSource );
+        xslInputStream = KettleVFS.getInputStream( file );
+      } else {
+        xslInputStream = new ByteArrayInputStream( xslSource.getBytes( "UTF-8" ) );
+      }
+
+      // Use the factory to create a template containing the xsl source
+      transformer = factory.newTransformer( new StreamSource( xslInputStream ) );
+      // Add transformer to cache
+      transformers.put( xslSource, transformer );
+
+      return transformer;
+    } finally {
+      try {
+        if ( file != null ) {
+          file.close();
+        }
+        if ( xslInputStream != null ) {
+          xslInputStream.close();
+        }
+      } catch ( Exception e ) { /* Ignore */
+      }
+    }
+  }
+
+  public void dispose() {
+    transformers = null;
+    factory = null;
+    outputRowMeta = null;
+    outputProperties = null;
+  }
 }
