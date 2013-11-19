@@ -25,10 +25,10 @@
   <property name="pdi.plugins.dir"
             value="${assembly.stage.pdi-client.dir}/plugins"
             description="The staging area for plugins"/>
-	
-  <property name="ivy.default.ivy.user.dir" value="${user.home}/.ivy2" />
-  <property name="ivy.local.default.root" value="${ivy.default.ivy.user.dir}/local" />
-	
+
+  <property name="ivy.default.ivy.user.dir" value="${user.home}/.ivy2"/>
+  <property name="ivy.local.default.root" value="${ivy.default.ivy.user.dir}/local"/>
+
 
   <!-- Look for user-override properties file first -->
   <property file="override.properties"/>
@@ -39,8 +39,8 @@
   <import file="build-res/subfloor.xml"/>
 
 
-  <!-- - - - - - - - - - - - - - - - - - 
-             Macro for making resolving ivy a 1 liner.  Tasks using this must depend on install-ivy.                      
+  <!-- - - - - - - - - - - - - - - - - -
+             Macro for making resolving ivy a 1 liner.  Tasks using this must depend on install-ivy.
   - - - - - - - - - - - - - - - - - -->
   <macrodef name="ivy-resolve">
     <attribute name="ivyfile" default="${ivyfile}"/>
@@ -55,231 +55,240 @@
 
   <target name="iterate-target">
     <for list="${subproject.list}" param="subproject" trim="true">
-	  <sequential>
-	  	<echo message="${subproject.basedir}"/>
-	    <ant antfile="build.xml" dir="${subproject.basedir}/@{subproject}" inheritall="false">
+      <sequential>
+        <echo message="${subproject.basedir}"/>
+        <ant antfile="build.xml" dir="${subproject.basedir}/@{subproject}" inheritall="false">
           <target name="${target.name}"/>
         </ant>
-	  </sequential>
-	</for>
+      </sequential>
+    </for>
   </target>
-	
+
   <target name="call-for-all">
-	<ant>
-	  <property name="subproject.list" value="${module.list}"/>
-	  <property name="subproject.basedir" value="."/>
-	  <target name="iterate-target"/>
-	</ant>
-	<ant>
-	  <property name="subproject.list" value="${plugin.list}"/>
-	  <property name="subproject.basedir" value="plugins"/>
-	  <target name="iterate-target"/>
-	</ant>
+    <ant>
+      <property name="subproject.list" value="${module.list}"/>
+      <property name="subproject.basedir" value="."/>
+      <target name="iterate-target"/>
+    </ant>
+    <ant>
+      <property name="subproject.list" value="${plugin.list}"/>
+      <property name="subproject.basedir" value="plugins"/>
+      <target name="iterate-target"/>
+    </ant>
   </target>
-	
-	<target name="build" depends="build-publish-modules,build-publish-plugins" />
-	
-	<target name="clean" depends="install-antcontrib,subfloor.clean">
-      <antcall target="call-for-all">
-		<param name="target.name" value="clean"/>
-      </antcall>
-    </target>
-	
-	<target name="clean-jars" depends="install-antcontrib,subfloor.clean-jars">
-	  <antcall target="call-for-all">
-		<param name="target.name" value="clean-jars"/>
-      </antcall>
-    </target>
-	
-	<target name="compile" depends="install-antcontrib">
-	  <echo message="The compile target is not supported at the root level. Please see README.txt for instructions on build and compilation"/>
-    </target>
-	
-	<target name="compile-tests" depends="install-antcontrib">
-	  <antcall target="call-for-all">
-	    <param name="target.name" value="compile-tests"/>
-	  </antcall>
-    </target>
-	
-	<target name="build-modules"
-            description="Builds each Kettle plugin (in the source tree)"
-            depends="install-antcontrib">
-      <for list="${module.list}" param="module" trim="true">
-        <sequential>
-          <ant antfile="build.xml" dir="@{module}" inheritall="false">
-            <target name="resolve"/>
-            <target name="dist"/>
-          </ant>
-        </sequential>
-      </for>
-    </target>
-  
-	<target name="build-publish-modules"
-	        description="Builds each Kettle module and publishes the artifacts."
-	        depends="install-antcontrib">
 
-      <for list="${module.list}" param="module" trim="true">
-        <sequential>
-          <if>
-            <equals arg1="${modules.publish-local}" arg2="true"/>
-            <then>
-              <ant antfile="build.xml" dir="@{module}" inheritall="false">
-                <target name="resolve"/>
-                <target name="publish-local"/>
-              </ant>
-            </then>
-            <else>
-              <ant antfile="build.xml" dir="@{module}" inheritall="false">
-                <target name="resolve"/>
-                <target name="publish"/>
-              </ant>
-            </else>
-          </if>
-        </sequential>
-      </for>
-    </target>
-	
-	<target name="build-plugins"
-	          description="Builds each Kettle plugin (in the source tree)"
-	          depends="install-antcontrib">
-	  <for list="${plugin.list}" param="plugin" trim="true">
-	    <sequential>
-	      <ant antfile="build.xml" dir="plugins/@{plugin}" inheritall="false">
-	        <target name="resolve"/>
-	        <target name="package"/>
-	      </ant>
-	    </sequential>
-	  </for>
-	</target>
+  <target name="build" depends="build-publish-modules,build-publish-plugins"/>
 
-	<target name="build-publish-plugins"
-              description="Builds each Kettle module and publishes the artifacts."
-              depends="install-antcontrib">
+  <target name="clean" depends="install-antcontrib,subfloor.clean">
+    <antcall target="call-for-all">
+      <param name="target.name" value="clean"/>
+    </antcall>
+  </target>
 
-      <for list="${plugin.list}" param="plugin" trim="true">
-        <sequential>
-          <if>
-            <equals arg1="${plugins.publish-local}" arg2="true"/>
-            <then>
-              <ant antfile="build.xml" dir="plugins/@{plugin}" inheritall="false">
-                <target name="resolve"/>
-              	<target name="package"/>
-                <target name="publish-local"/>
-              </ant>
-            </then>
-            <else>
-              <ant antfile="build.xml" dir="plugins/@{plugin}" inheritall="false">
-                <target name="resolve"/>
-              	<target name="package"/>
-                <target name="publish"/>
-              </ant>
-            </else>
-          </if>
-        </sequential>
-      </for>
-    </target>
-	
-	<!-- Distribution task for Kettle. This provides the "old" functionality of having a "dist" folder
-	     under Kettle root containing a runnable instance of what is now the assembly. Thus the
-	     approach is to perform an assembly, then move the assembly's staging area to "dist" -->
-	<target name="dist" depends="build">
-		<ant antfile="assembly/build.xml" inheritall="false">
-		  <target name="clean-all"/>
-		  <target name="assemble-full"/>
-		</ant>
-		<move todir="${distrib}">
-		  <fileset dir="${assembly.stage.pdi-client.dir}" />
-		</move>
-	</target>
-	
-	<target name="test" depends="install-antcontrib">
-	  <for list="${module.list}" param="module" trim="true">
-        <sequential>
-          <ant antfile="build.xml" dir="@{module}" inheritall="false">
-          	<target name="resolve"/>
-            <target name="test"/>
-          </ant>
-        </sequential>
-      </for>
-	  <for list="${plugin.list}" param="plugin" trim="true">
-	    <sequential>
-	      <ant antfile="build.xml" dir="plugins/@{plugin}" inheritall="false">
-	        <target name="resolve"/>
-	        <target name="test"/>
-	      </ant>
-	    </sequential>
-	  </for>
-    </target>
-	
+  <target name="clean-jars" depends="install-antcontrib,subfloor.clean-jars">
+    <antcall target="call-for-all">
+      <param name="target.name" value="clean-jars"/>
+    </antcall>
+  </target>
+
+  <target name="compile" depends="install-antcontrib">
+    <echo
+        message="The compile target is not supported at the root level. Please see README.txt for instructions on build and compilation"/>
+  </target>
+
+  <target name="compile-tests" depends="install-antcontrib">
+    <antcall target="call-for-all">
+      <param name="target.name" value="compile-tests"/>
+    </antcall>
+  </target>
+
+  <target name="build-modules"
+          description="Builds each Kettle plugin (in the source tree)"
+          depends="install-antcontrib">
+    <for list="${module.list}" param="module" trim="true">
+      <sequential>
+        <ant antfile="build.xml" dir="@{module}" inheritall="false">
+          <target name="resolve"/>
+          <target name="dist"/>
+        </ant>
+      </sequential>
+    </for>
+  </target>
+
+  <target name="build-publish-modules"
+          description="Builds each Kettle module and publishes the artifacts."
+          depends="install-antcontrib">
+
+    <for list="${module.list}" param="module" trim="true">
+      <sequential>
+        <if>
+          <equals arg1="${modules.publish-local}" arg2="true"/>
+          <then>
+            <ant antfile="build.xml" dir="@{module}" inheritall="false">
+              <target name="resolve"/>
+              <target name="publish-local"/>
+            </ant>
+          </then>
+          <else>
+            <ant antfile="build.xml" dir="@{module}" inheritall="false">
+              <target name="resolve"/>
+              <target name="publish"/>
+            </ant>
+          </else>
+        </if>
+      </sequential>
+    </for>
+  </target>
+
+  <target name="build-plugins"
+          description="Builds each Kettle plugin (in the source tree)"
+          depends="install-antcontrib">
+    <for list="${plugin.list}" param="plugin" trim="true">
+      <sequential>
+        <ant antfile="build.xml" dir="plugins/@{plugin}" inheritall="false">
+          <target name="resolve"/>
+          <target name="package"/>
+        </ant>
+      </sequential>
+    </for>
+  </target>
+
+  <target name="build-publish-plugins"
+          description="Builds each Kettle module and publishes the artifacts."
+          depends="install-antcontrib">
+
+    <for list="${plugin.list}" param="plugin" trim="true">
+      <sequential>
+        <if>
+          <equals arg1="${plugins.publish-local}" arg2="true"/>
+          <then>
+            <ant antfile="build.xml" dir="plugins/@{plugin}" inheritall="false">
+              <target name="resolve"/>
+              <target name="package"/>
+              <target name="publish-local"/>
+            </ant>
+          </then>
+          <else>
+            <ant antfile="build.xml" dir="plugins/@{plugin}" inheritall="false">
+              <target name="resolve"/>
+              <target name="package"/>
+              <target name="publish"/>
+            </ant>
+          </else>
+        </if>
+      </sequential>
+    </for>
+  </target>
+
+  <!-- Distribution task for Kettle. This provides the "old" functionality of having a "dist" folder
+       under Kettle root containing a runnable instance of what is now the assembly. Thus the
+       approach is to perform an assembly, then move the assembly's staging area to "dist" -->
+  <target name="dist" depends="build">
+    <ant antfile="assembly/build.xml" inheritall="false">
+      <target name="clean-all"/>
+      <target name="assemble-full"/>
+    </ant>
+    <move todir="${distrib}">
+      <fileset dir="${assembly.stage.pdi-client.dir}"/>
+    </move>
+  </target>
+
+  <target name="test" depends="install-antcontrib">
+    <for list="${module.list}" param="module" trim="true">
+      <sequential>
+        <ant antfile="build.xml" dir="@{module}" inheritall="false">
+          <target name="resolve"/>
+          <target name="test"/>
+        </ant>
+      </sequential>
+    </for>
+    <for list="${plugin.list}" param="plugin" trim="true">
+      <sequential>
+        <ant antfile="build.xml" dir="plugins/@{plugin}" inheritall="false">
+          <target name="resolve"/>
+          <target name="test"/>
+        </ant>
+      </sequential>
+    </for>
+  </target>
+
   <!--=======================================================================
         create-dot-classpath
- 
+
         Creates the Eclipse .classpath file from the resolved
         classpath from Ant.
       ====================================================================-->
-  <target name="create-dot-classpath" depends="install-pentaho-ant-tasks,init,update-launch-config">
-  	<!-- call the assembly's resolve then create-dot-classpath -->
-  	<ant antfile="build.xml" dir="${assembly.dir}" inheritall="false">
-  	  <target name="resolve"/>
-  	</ant>
-  	<copy file="classpath.template" tofile=".classpath" overwrite="true"/>
-  	<switch value="${os.classifier}">
-  	  <case value="win">
-  	    <property name="platform" value="win"/>
-  	    <switch value="${os.arch}">
-  	      <case value="x86">
-  	        <property name="arch" value="32"/>
-  	      </case>
-  	      <default>
-  	        <property name="arch" value="64"/>
-  	      </default>
-  	    </switch>
-  	  </case>
-  	  <case value="linux">
-  	    <property name="platform" value="linux"/>
-  	    <switch value="${os.arch}">
-  	      <case value="x86">
-  	        <property name="arch" value="/x86"/>
-  	      </case>
-  	      <default>
-  	        <property name="arch" value="/x86_64"/>
-  	      </default>
-  	    </switch>
-  	  </case>
-  	  <case value="mac">
-  	    <property name="platform" value="osx"/>
-  	    <switch value="${os.arch}">
-  	      <case value="x86">
-  	        <property name="arch" value=""/>
-  	      </case>
-  	      <default>
-  	        <property name="arch" value="64"/>
-  	      </default>
-  	    </switch>
-  	  </case>
-  	</switch>
-  	<echo message="Including swt.jar at ${libswt}/${platform}${arch}/swt.jar"/>
+  <target name="create-dot-classpath" depends="install-pentaho-ant-tasks,init,update-launch-config,unzip-swtlibs">
+    <!-- call the assembly's resolve then create-dot-classpath -->
+    <ant antfile="build.xml" dir="${assembly.dir}" inheritall="false">
+      <target name="resolve"/>
+    </ant>
+    <copy file="classpath.template" tofile=".classpath" overwrite="true"/>
+    <switch value="${os.classifier}">
+      <case value="win">
+        <property name="platform" value="win"/>
+        <switch value="${os.arch}">
+          <case value="x86">
+            <property name="arch" value="32"/>
+          </case>
+          <default>
+            <property name="arch" value="64"/>
+          </default>
+        </switch>
+      </case>
+      <case value="linux">
+        <property name="platform" value="linux"/>
+        <switch value="${os.arch}">
+          <case value="x86">
+            <property name="arch" value="/x86"/>
+          </case>
+          <default>
+            <property name="arch" value="/x86_64"/>
+          </default>
+        </switch>
+      </case>
+      <case value="mac">
+        <property name="platform" value="osx"/>
+        <switch value="${os.arch}">
+          <case value="x86">
+            <property name="arch" value=""/>
+          </case>
+          <default>
+            <property name="arch" value="64"/>
+          </default>
+        </switch>
+      </case>
+    </switch>
+    <echo message="Including swt.jar at ${devlib.dir}/${libswt}/${platform}${arch}/swt.jar"/>
 
-  	<dot-classpath>
-  	  <classpath>
-  	    <fileset dir="${lib.dir}">
-  	      <include name="*.jar"/>
-  	      <exclude name="swt-linux*.jar"/>
-  	      <exclude name="kettle-*.jar"/>
-  	    </fileset>
-  	    <fileset dir="${testlib.dir}">
-  	      <include name="*.jar"/>
-  	    </fileset>
-  	    <fileset dir="${libswt}">
-  	      <include name="${platform}${arch}/swt.jar"/>
-  	    </fileset>
-  	  </classpath>
-  	</dot-classpath>
+    <dot-classpath>
+      <classpath>
+        <fileset dir="${lib.dir}">
+          <include name="*.jar"/>
+          <exclude name="swt-linux*.jar"/>
+          <exclude name="kettle-*.jar"/>
+        </fileset>
+        <fileset dir="${testlib.dir}">
+          <include name="*.jar"/>
+        </fileset>
+        <fileset dir="${devlib.dir}/${libswt}">
+          <include name="${platform}${arch}/swt.jar"/>
+        </fileset>
+      </classpath>
+    </dot-classpath>
   </target>
-	
-	<!--=======================================================================
+
+  <target name="unzip-swtlibs">
+    <unzip dest="${devlib.dir}" overwrite="true">
+      <fileset dir="${lib.dir}">
+        <include name="swtlibs*.zip"/>
+      </fileset>
+    </unzip>
+  </target>
+
+  <!--=======================================================================
           update-launch-config
-   
+
           Creates an Eclipse launch configuration from a template using the
           project directory name as the project name, location, etc.
         ====================================================================-->
@@ -302,51 +311,51 @@
       </else>
     </if>
   </target>
-	
+
 
   <!--=======================================================================
       cobertura.instrument-classes
-      
+
       Instruments the application classes used by Cobertura during cobertura.test-instrumented
       ====================================================================-->
   <target name="cobertura.instrument-classes" depends="cobertura.clean-instrumented-classes,install-cobertura,compile">
     <cobertura-instrument todir="${instrumented.classes.dir}" datafile="${cobertura.data.dir}/cobertura.ser">
-      <ignore regex="org.apache.log4j.*" />
-        <!--
-          Instrument all the application classes, but
-          don't instrument the test classes.
-        -->
-    	<fileset dir="core/bin/classes" includes="**/*.class" />
-    	<fileset dir="engine/bin/classes" includes="**/*.class" />    	
-    	<fileset dir="dbdialog/bin/classes" includes="**/*.class" />
-    	<fileset dir="ui/bin/classes" includes="**/*.class" />
-      
+      <ignore regex="org.apache.log4j.*"/>
+      <!--
+        Instrument all the application classes, but
+        don't instrument the test classes.
+      -->
+      <fileset dir="core/bin/classes" includes="**/*.class"/>
+      <fileset dir="engine/bin/classes" includes="**/*.class"/>
+      <fileset dir="dbdialog/bin/classes" includes="**/*.class"/>
+      <fileset dir="ui/bin/classes" includes="**/*.class"/>
+
     </cobertura-instrument>
   </target>
-	
+
   <target name="cobertura.test-instrumented"
           depends="init-test-reports,install-cobertura,build-modules,cobertura.instrument-classes">
-    <mkdir dir="${instrumented.classes.dir}" />
+    <mkdir dir="${instrumented.classes.dir}"/>
     <path id="cobertura.classpath">
       <fileset dir="${subfloor.resources.dir}/cobertura-${cobertura.version}">
-        <include name="*.jar" />
+        <include name="*.jar"/>
       </fileset>
     </path>
-  	<!-- call build-path-dirs looking for all subprojects' class directories -->
-  	<antcallback target="build-path-dirs" return="build-path-dirs.return">
+    <!-- call build-path-dirs looking for all subprojects' class directories -->
+    <antcallback target="build-path-dirs" return="build-path-dirs.return">
       <param name="subproject.list" value="${module.list}"/>
       <param name="build-path-dirs.basedir" value="bin/${classes}"/>
     </antcallback>
-  	<var name="module-src-class-dirs" value="${build-path-dirs.return}"/>
-  	
-  	<!-- call build-path-dirs looking for all subprojects' class directories -->
+    <var name="module-src-class-dirs" value="${build-path-dirs.return}"/>
+
+    <!-- call build-path-dirs looking for all subprojects' class directories -->
     <antcallback target="build-path-dirs" return="build-path-dirs.return">
       <param name="subproject.list" value="${module.list}"/>
       <param name="build-path-dirs.basedir" value="bin/test/${classes}"/>
     </antcallback>
-  	<var name="module-test-class-dirs" value="${build-path-dirs.return}"/>
-  	
-  	<!-- Build a module classpath pointing at all class directories. -->
+    <var name="module-test-class-dirs" value="${build-path-dirs.return}"/>
+
+    <!-- Build a module classpath pointing at all class directories. -->
     <path id="module-src.classpath">
       <pathelement path="${module-src-class-dirs}"/>
       <pathelement path="${module-test-class-dirs}"/>
@@ -355,86 +364,86 @@
       <pathelement location="dbdialog/bin/test/classes"/>
       <pathelement location="ui/bin/test/classes"/>
     </path>
-  	
-  	<junit fork="yes"
+
+    <junit fork="yes"
            forkmode="${junit.forkmode}"
            dir="${junit.base.dir}"
            maxmemory="${junit.maxmemory}"
            failureProperty="test.failed"
            haltonerror="${junit.haltonerror}"
            haltonfailure="${junit.haltonfailure}">
-      <sysproperty key="java.awt.headless" value="${headless.unittest}" />
+      <sysproperty key="java.awt.headless" value="${headless.unittest}"/>
 
       <!-- Specify the name of the coverage data file to use. -->
-      <sysproperty key="net.sourceforge.cobertura.datafile" file="${cobertura.data.dir}/cobertura.ser" />
+      <sysproperty key="net.sourceforge.cobertura.datafile" file="${cobertura.data.dir}/cobertura.ser"/>
 
       <syspropertyset>
-        <propertyref prefix="junit.sysprop." />
+        <propertyref prefix="junit.sysprop."/>
         <mapper type="glob" from="junit.sysprop.*" to="*"/>
       </syspropertyset>
-      
+
       <!--
         Note the classpath order: instrumented classes are before the
         original (uninstrumented) classes.  This is important.
       -->
-      <classpath location="${instrumented.classes.dir}" />
-      <classpath refid="module-src.classpath" />
-      <classpath refid="test.classpath" />
-      <classpath refid="cobertura.classpath" />
-      
-      <formatter type="xml" />
-      <test name="${testcase}" todir="${testreports.xml.dir}" if="testcase" />
+      <classpath location="${instrumented.classes.dir}"/>
+      <classpath refid="module-src.classpath"/>
+      <classpath refid="test.classpath"/>
+      <classpath refid="cobertura.classpath"/>
+
+      <formatter type="xml"/>
+      <test name="${testcase}" todir="${testreports.xml.dir}" if="testcase"/>
       <batchtest todir="${testreports.xml.dir}" unless="testcase">
         <fileset dir="core/test-src" includes="**/*Test.java"/>
-      	<fileset dir="engine/test-src" includes="**/*Test.java"/>
-      	<fileset dir="dbdialog/test-src" includes="**/*Test.java"/>
-      	<fileset dir="ui/test-src" includes="**/*Test.java"/>
+        <fileset dir="engine/test-src" includes="**/*Test.java"/>
+        <fileset dir="dbdialog/test-src" includes="**/*Test.java"/>
+        <fileset dir="ui/test-src" includes="**/*Test.java"/>
       </batchtest>
     </junit>
 
     <junitreport todir="${testreports.html.dir}">
       <fileset dir="${testreports.xml.dir}">
-        <include name="TEST-*.xml" />
+        <include name="TEST-*.xml"/>
       </fileset>
-      <report format="frames" todir="${testreports.html.dir}" />
+      <report format="frames" todir="${testreports.html.dir}"/>
     </junitreport>
   </target>
-	
+
   <!--=======================================================================
       cobertura.xml-report
-      
+
       Produces machine-readable xml Cobertura coverage report from results of instrumented tests
       ====================================================================-->
   <target name="cobertura.xml-report" depends="cobertura.test-instrumented">
-  	      
+
     <cobertura-report destdir="${coberturareports.xml.dir}" datafile="${cobertura.data.dir}/cobertura.ser" format="xml">
-	  <fileset dir="core/src" includes="**/*.java"/>
-	  <fileset dir="engine/src" includes="**/*.java"/>
+      <fileset dir="core/src" includes="**/*.java"/>
+      <fileset dir="engine/src" includes="**/*.java"/>
       <fileset dir="dbdialog/src" includes="**/*.java"/>
-	  <fileset dir="ui/src" includes="**/*.java"/>
+      <fileset dir="ui/src" includes="**/*.java"/>
     </cobertura-report>
   </target>
-			
+
 
   <!--=======================================================================
       cobertura.html-report
-      
+
       Produces human-readable html Cobertura coverage report from results of instrumented tests
       ====================================================================-->
   <target name="cobertura.html-report" depends="cobertura.test-instrumented">
     <cobertura-report destdir="${coberturareports.html.dir}"
                       datafile="${cobertura.data.dir}/cobertura.ser"
                       format="html">
-    	<fileset dir="core/src" includes="**/*.java"/>
-    	<fileset dir="engine/src" includes="**/*.java"/>
-    	<fileset dir="dbdialog/src" includes="**/*.java"/>
-    	<fileset dir="ui/src" includes="**/*.java"/>
+      <fileset dir="core/src" includes="**/*.java"/>
+      <fileset dir="engine/src" includes="**/*.java"/>
+      <fileset dir="dbdialog/src" includes="**/*.java"/>
+      <fileset dir="ui/src" includes="**/*.java"/>
     </cobertura-report>
   </target>
 
   <target name="build-path" depends="install-antcontrib">
-	<var name="build-path.return" value=""/>
-	 <for list="${subproject.list}" param="subproject" trim="true">
+    <var name="build-path.return" value=""/>
+    <for list="${subproject.list}" param="subproject" trim="true">
       <sequential>
         <path id="@{subproject}.path">
           <fileset dir="@{subproject}/${build-path.basedir}">
@@ -445,10 +454,10 @@
       </sequential>
     </for>
   </target>
-	
+
   <target name="build-path-dirs" depends="install-antcontrib">
     <var name="build-path-dirs.return" value=""/>
-     <for list="${subproject.list}" param="subproject" trim="true">
+    <for list="${subproject.list}" param="subproject" trim="true">
       <sequential>
         <path id="@{subproject}.path">
           <pathelement location="@{subproject}/${build-path-dirs.basedir}"/>
@@ -456,12 +465,12 @@
         <var name="build-path-dirs.return" value="${build-path-dirs.return}:${toString:@{subproject}.path}"/>
       </sequential>
     </for>
-  	<echo message="build-path-dirs.return = ${build-path-dirs.return}"/>
+    <echo message="build-path-dirs.return = ${build-path-dirs.return}"/>
   </target>
-		
+
   <!--
     BEFORE USING : Please download JarBundler version 1.9 and unzip it in tools/libant/
-    http://informagen.com/JarBundler/   
+    http://informagen.com/JarBundler/
   -->
 
   <target name="macapplication" depends="dist" description="Build OS X executable">
@@ -521,7 +530,7 @@
       <arg value="${macdistrib}/${impl.productID}-${version}.dmg"/>
     </exec>
   </target>
-	
+
   <!--
        ==========================
           Compile the test code
@@ -551,7 +560,7 @@
     </javac>
   </target>
 
-	
+
   <target name="tests-all"
           depends="tests-clean, tests-stage, tests-core, tests-trans, tests-run, tests-blackbox"/>
 
@@ -579,8 +588,8 @@
       </fileset>
     </copy>
   </target>
-	
-	<!--
+
+  <!--
          ===========================================
             tests : junit core tests
          ============================================
@@ -798,7 +807,7 @@
       <report format="frames" todir="${testreports.html.dir}"/>
     </junitreport>
   </target>
-  
+
   <!--
 	  ===========================================
 	     tests : junit black box tests
