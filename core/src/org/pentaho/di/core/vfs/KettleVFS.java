@@ -102,6 +102,10 @@ public class KettleVFS {
     return getFileObject( vfsFilename, space, null );
   }
 
+  public static FileObject getFileObject( String vfsFilename, FileSystemOptions fsOptions ) throws KettleFileException {
+    return getFileObject( vfsFilename, defaultVariableSpace, fsOptions );
+  }
+
   public static FileObject getFileObject( String vfsFilename, VariableSpace space, FileSystemOptions fsOptions )
     throws KettleFileException {
     try {
@@ -296,6 +300,15 @@ public class KettleVFS {
     throws KettleFileException {
     try {
       FileObject fileObject = getFileObject( vfsFilename, space );
+      return getOutputStream( fileObject, append );
+    } catch ( IOException e ) {
+      throw new KettleFileException( e );
+    }
+  }
+
+  public static OutputStream getOutputStream( String vfsFilename, VariableSpace space, FileSystemOptions fsOptions,  boolean append ) throws KettleFileException {
+    try {
+      FileObject fileObject = getFileObject( vfsFilename, space, fsOptions );
       return getOutputStream( fileObject, append );
     } catch ( IOException e ) {
       throw new KettleFileException( e );

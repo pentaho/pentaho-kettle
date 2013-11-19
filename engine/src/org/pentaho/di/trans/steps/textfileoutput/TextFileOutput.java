@@ -47,6 +47,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.StreamLogger;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -616,9 +617,9 @@ public class TextFileOutput extends BaseStep implements StepInterface {
             }
 
             if ( checkPreviouslyOpened( filename ) ) {
-              data.fos = KettleVFS.getOutputStream( filename, getTransMeta(), true );
+              data.fos = getOutputStream( filename, getTransMeta(), true );
             } else {
-              data.fos = KettleVFS.getOutputStream( filename, getTransMeta(), meta.isFileAppended() );
+              data.fos = getOutputStream( filename, getTransMeta(), meta.isFileAppended() );
             }
             data.zip = new ZipOutputStream( data.fos );
             // The filename has the ZIP extension and refers to the top-level filename. Thus we
@@ -633,9 +634,9 @@ public class TextFileOutput extends BaseStep implements StepInterface {
               logDetailed( "Opening output stream in gzipped mode" );
             }
             if ( checkPreviouslyOpened( filename ) ) {
-              data.fos = KettleVFS.getOutputStream( filename, getTransMeta(), true );
+              data.fos = getOutputStream( filename, getTransMeta(), true );
             } else {
-              data.fos = KettleVFS.getOutputStream( filename, getTransMeta(), meta.isFileAppended() );
+              data.fos = getOutputStream( filename, getTransMeta(), meta.isFileAppended() );
             }
             data.gzip = new GZIPOutputStream( data.fos );
             outputStream = data.gzip;
@@ -647,9 +648,9 @@ public class TextFileOutput extends BaseStep implements StepInterface {
             logDetailed( "Opening output stream in nocompress mode" );
           }
           if ( checkPreviouslyOpened( filename ) ) {
-            data.fos = KettleVFS.getOutputStream( filename, getTransMeta(), true );
+            data.fos = getOutputStream( filename, getTransMeta(), true );
           } else {
-            data.fos = KettleVFS.getOutputStream( filename, getTransMeta(), meta.isFileAppended() );
+            data.fos = getOutputStream( filename, getTransMeta(), meta.isFileAppended() );
           }
           outputStream = data.fos;
         }
@@ -679,7 +680,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     if ( meta.isAddToResultFiles() ) {
       // Add this to the result file names...
       ResultFile resultFile =
-          new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( filename, getTransMeta() ),
+          new ResultFile( ResultFile.FILE_TYPE_GENERAL, getFileObject( filename, getTransMeta() ),
               getTransMeta().getName(), getStepname() );
       if ( resultFile != null ) {
         resultFile.setComment( BaseMessages.getString( PKG, "TextFileOutput.AddResultFile" ) );
@@ -976,7 +977,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     FileObject parentfolder = null;
     try {
       // Get parent folder
-      parentfolder = KettleVFS.getFileObject( filename ).getParent();
+      parentfolder = getFileObject( filename ).getParent();
       if ( parentfolder.exists() ) {
         if ( isDetailed() ) {
           logDetailed( BaseMessages.getString( PKG, "TextFileOutput.Log.ParentFolderExist", parentfolder.getName() ) );
@@ -1007,4 +1008,19 @@ public class TextFileOutput extends BaseStep implements StepInterface {
       }
     }
   }
+
+  protected FileObject getFileObject( String vfsFilename) throws KettleFileException {
+    return KettleVFS.getFileObject( vfsFilename );
+  }
+
+  protected FileObject getFileObject( String vfsFilename, VariableSpace space ) throws KettleFileException {
+    return KettleVFS.getFileObject( vfsFilename, space );
+  }
+
+  protected OutputStream getOutputStream( String vfsFilename, VariableSpace space, boolean append )
+    throws KettleFileException {
+    return KettleVFS.getOutputStream( vfsFilename, space, append );
+  }
+
+
 }
