@@ -5,19 +5,23 @@
     <conf name="default" />
     <conf name="test" visibility="private" />
   </configurations>
-  
+
   <dependencies defaultconf="default->default">
     <!-- Kettle module dependencies-->
     <dependency org="${ivy.artifact.group}" name="kettle-core"     rev="${project.revision}" changing="true"/>
     <dependency org="${ivy.artifact.group}" name="kettle-engine"   rev="${project.revision}" changing="true"/>
     <dependency org="${ivy.artifact.group}" name="kettle-dbdialog" rev="${project.revision}" changing="true"/>
     <dependency org="${ivy.artifact.group}" name="kettle-ui-swt"   rev="${project.revision}" changing="true"/>
-    
+
     <!-- Common (Unit, Integration) test dependencies -->
     <dependency org="junit"                    name="junit"                rev="4.7"    transitive="false" conf="test->default"/>
     <dependency org="org.mockito"              name="mockito-all"          rev="1.8.4"  transitive="false" conf="test->default"/>
     <dependency org="org.mortbay.jetty"        name="jetty-servlet-tester" rev="6.1.21" transitive="false" conf="test->default"/>
-    <dependency org="net.sourceforge.nekohtml" name="nekohtml"             rev="1.9.7"  transitive="false" conf="test->default"/>    
-    
+    <dependency org="net.sourceforge.nekohtml" name="nekohtml"             rev="1.9.7"  transitive="false" conf="test->default"/>
+
+    <!-- The OS-specific libraries are bundled together, unzip them all for assembly -->
+    <dependency org="org.eclipse" name="swtlibs" rev="3.7" transitive="false">
+      <artifact name="swtlibs" type="zip"/>
+    </dependency>
   </dependencies>
 </ivy-module>
