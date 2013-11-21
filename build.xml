@@ -605,13 +605,6 @@
 
       <formatter type="xml"/>
       <!-- Removed while PDI-10166 is open <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.KettleEnvironmentTest" haltonerror="false" />-->
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.compatibility.ValueBigNumberTest" haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.compatibility.ValueBooleanTest" haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.compatibility.ValueDateTest" haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.compatibility.ValueIntegerTest" haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.compatibility.ValueNumberTest" haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.compatibility.ValueStringTest" haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.compatibility.ValueTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.DatabaseTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.SelectCountTests" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.SQLStatementParserTest"
@@ -622,16 +615,7 @@
             haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.VerticaDatabaseMetaTest"
             haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.encryption.EncrTest" haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.row.RowDataUtilTest" haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.row.RowTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.row.ValueDataUtilTest" haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.row.ValueMetaTest" haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.ConstTest" haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.CountersTest" haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.CounterTest" haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.RowSetTest" haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.BlockingBatchingRowSetTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.DatabaseConfigurationImportRuleTest"
             haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.JobHasANoteImportRuleTest"
@@ -657,11 +641,6 @@
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.repository.RepositoryImportExporterApiTest"
             haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.repository.RepositoryUnitTest" haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.sql.IifFunctionTest" haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.sql.SQLConditionTest" haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.sql.SQLFieldsTest" haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.sql.SQLFieldTest" haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.sql.SQLTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.sql.SqlTransMetaTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.sql.TransDataServletTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.logging.MetricsTest" haltonerror="false"/>
@@ -669,7 +648,6 @@
             haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.plugins.PluginRegistryTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.util.StringEvaluatorTest" haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.util.StringUtilTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.vfs.VfsCoreTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.resource.NameResourceTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.resource.ResourceDependencyTest" haltonerror="false"/>
