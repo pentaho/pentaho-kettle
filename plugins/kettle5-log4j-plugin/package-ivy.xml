@@ -8,7 +8,6 @@
   <publications>
     <artifact name="${ivy.artifact.id}" type="zip" />
     <artifact name="${ivy.artifact.id}" type="jar" />
-    <artifact name="${ivy.artifact.id}" m:classifier="sources" type="source" ext="jar"/>
   </publications>
 
   <dependencies defaultconf="default->default">

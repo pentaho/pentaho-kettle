@@ -13,7 +13,6 @@
   <publications>
     <artifact name="${ivy.artifact.id}" type="jar" conf="default"/>
     <artifact name="${ivy.artifact.id}" type="zip" conf="zip" />
-    <artifact name="${ivy.artifact.id}" m:classifier="sources" type="source" ext="jar" conf="source"/>
   </publications>
  
   <dependencies defaultconf="dev->default">
