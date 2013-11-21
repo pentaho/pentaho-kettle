@@ -217,10 +217,13 @@
         Creates the Eclipse .classpath file from the resolved
         classpath from Ant.
       ====================================================================-->
-  <target name="create-dot-classpath" depends="install-pentaho-ant-tasks,init,update-launch-config">
+  <target name="create-dot-classpath" depends="install-pentaho-ant-tasks,resolve-init,init,resolve,update-launch-config">
   	<!-- call the assembly's resolve then create-dot-classpath -->
   	<ant antfile="build.xml" dir="${assembly.dir}" inheritall="false">
   	  <target name="resolve"/>
+  	  <target name="resolve-swtlibs"/>
+  	  <property name="approot.stage.dir" value="${basedir}"/>
+  	  <target name="unzip-swtlibs"/>
   	</ant>
   	<copy file="classpath.template" tofile=".classpath" overwrite="true"/>
   	<switch value="${os.classifier}">
