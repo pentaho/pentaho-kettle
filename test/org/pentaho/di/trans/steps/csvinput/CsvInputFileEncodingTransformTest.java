@@ -94,7 +94,7 @@ public class CsvInputFileEncodingTransformTest extends CsvInput3Test {
     vars.put( "${P_ENCODING}", "UTF-8" );
     transMeta.injectVariables( vars );
 
-    ( (CsvInputMeta) csvInputStep.getStepMetaInterface() ).setEncoding( "${${P_ENCODING}}" );
+    ( (CsvInputMeta) csvInputStep.getStepMetaInterface() ).setEncoding( "%%${P_ENCODING}%%" );
 
     createAndTestTrans( registry, transMeta, injectorStep, csvInputStep, fileName, createTextFileInputFields().length );
   }

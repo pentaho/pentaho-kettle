@@ -93,7 +93,7 @@ public class CsvInputFileEncodingTest extends CsvInputBase {
   @Test
   public void testCSVVariableEncodingSpecSybmbolsInit() throws Exception {
 
-    csvInpMeta.setEncoding( "${${P_ENCODING}}" );
+    csvInpMeta.setEncoding( "%%${P_ENCODING}%%" );
     assertTrue( csvInput.init( csvInpMeta, new CsvInputData() ) );
   }
 
