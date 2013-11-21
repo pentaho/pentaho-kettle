@@ -34,7 +34,7 @@
 
   <target name="resolve-all" depends="init,resolve,resolve-swtlibs,resolve-launcher,resolve-plugins"/>
 	
-  <target name="assemble" depends="subfloor-pkg.assemble" description="copy jar files to distribution directory" >
+  <target name="assemble" depends="resolve-swtlibs,subfloor-pkg.assemble" description="copy jar files to distribution directory" >
   	<echo>Construct the distribution package...</echo>
     <!-- make JavaApplicationStub executable for OSX -->
     <chmod file="${approot.stage.dir}/Data Integration.app/Contents/MacOS/JavaApplicationStub" perm="ugo+rx"/>
@@ -44,12 +44,7 @@
   		<fileset dir="${approot.stage.dir}/lib" includes="swt*.jar" />
   	</delete>
   	
-    <!-- Unzip the libswt package into the libswt folder of the distribution -->
-    <unzip dest="${approot.stage.dir}" overwrite="true">
-      <fileset dir="${swtlib.dir}">
-        <include name="**/*.zip"/>
-      </fileset>
-    </unzip>
+    <antcall target="unzip-swtlibs"/>
     
     <!-- Insert launcher revision number into batch files -->
     <replace dir="${approot.stage.dir}">
@@ -169,5 +164,13 @@
     <ivy:resolve file="${ivyfile}" conf="plugins" />
     <ivy:retrieve conf="plugins" pattern="${plugins.dir}/[module]-[revision](-[classifier]).[ext]" />
   </target>
-  
+
+  <target name="unzip-swtlibs">
+	<!-- Unzip the libswt package into the libswt folder of the distribution -->
+    <unzip dest="${approot.stage.dir}" overwrite="true">
+      <fileset dir="${swtlib.dir}">
+        <include name="**/*.zip"/>
+      </fileset>
+    </unzip>
+  </target>  
 </project>
