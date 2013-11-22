@@ -62,7 +62,7 @@ import org.w3c.dom.Node;
  * Meta data for the Excel step.
  */
 public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = ExcelInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ExcelInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final String[] RequiredFilesDesc = new String[] { BaseMessages.getString( PKG, "System.Combo.No" ),
     BaseMessages.getString( PKG, "System.Combo.Yes" ) };
@@ -1168,14 +1168,16 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "bad_line_files_ext", warningFilesExtension );
       rep.saveStepAttribute( id_transformation, id_step, "error_line_files_dest_dir", errorFilesDestinationDirectory );
       rep.saveStepAttribute( id_transformation, id_step, "error_line_files_ext", errorFilesExtension );
-      rep.saveStepAttribute( id_transformation, id_step, "line_number_files_dest_dir",
-          lineNumberFilesDestinationDirectory );
+      rep.saveStepAttribute(
+          id_transformation, id_step, "line_number_files_dest_dir", lineNumberFilesDestinationDirectory );
       rep.saveStepAttribute( id_transformation, id_step, "line_number_files_ext", lineNumberFilesExtension );
 
       rep.saveStepAttribute( id_transformation, id_step, "shortFileFieldName", shortFileFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "pathFieldName", pathFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "hiddenFieldName", hiddenFieldName );
-      rep.saveStepAttribute( id_transformation, id_step, "lastModificationTimeFieldName", lastModificationTimeFieldName );
+      rep
+          .saveStepAttribute(
+              id_transformation, id_step, "lastModificationTimeFieldName", lastModificationTimeFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "uriNameFieldName", uriNameFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "rootUriNameFieldName", rootUriNameFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "extensionFieldName", extensionFieldName );
@@ -1224,13 +1226,13 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String[] getFilePaths( VariableSpace space ) {
-    return FileInputList.createFilePathList( space, fileName, fileMask, excludeFileMask, fileRequired,
-        includeSubFolderBoolean() );
+    return FileInputList.createFilePathList(
+        space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean() );
   }
 
   public FileInputList getFileList( VariableSpace space ) {
-    return FileInputList.createFileList( space, fileName, fileMask, excludeFileMask, fileRequired,
-        includeSubFolderBoolean() );
+    return FileInputList.createFileList(
+        space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean() );
   }
 
   private boolean[] includeSubFolderBoolean() {
@@ -1266,19 +1268,19 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
     if ( input.length > 0 ) {
       if ( !isAcceptingFilenames() ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "ExcelInputMeta.CheckResult.NoInputError" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "ExcelInputMeta.CheckResult.NoInputError" ), stepMeta );
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "ExcelInputMeta.CheckResult.AcceptFilenamesOk" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "ExcelInputMeta.CheckResult.AcceptFilenamesOk" ), stepMeta );
         remarks.add( cr );
       }
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "ExcelInputMeta.CheckResult.NoInputOk" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "ExcelInputMeta.CheckResult.NoInputOk" ), stepMeta );
       remarks.add( cr );
     }
 
@@ -1286,14 +1288,14 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
     if ( fileList.nrOfFiles() == 0 ) {
       if ( !isAcceptingFilenames() ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "ExcelInputMeta.CheckResult.ExpectedFilesError" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "ExcelInputMeta.CheckResult.ExpectedFilesError" ), stepMeta );
         remarks.add( cr );
       }
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "ExcelInputMeta.CheckResult.ExpectedFilesOk", "" + fileList.nrOfFiles() ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "ExcelInputMeta.CheckResult.ExpectedFilesOk", "" + fileList.nrOfFiles() ), stepMeta );
       remarks.add( cr );
     }
   }

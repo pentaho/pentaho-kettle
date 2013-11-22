@@ -95,12 +95,12 @@ public class ExcelInputMetaInjection implements StepMetaInjectionInterface {
     //
     {
       StepInjectionMetaEntry filesEntry =
-          new StepInjectionMetaEntry( Entry.FILENAME_LINES.name(), ValueMetaInterface.TYPE_NONE,
-              Entry.FILENAME_LINES.description );
+          new StepInjectionMetaEntry(
+              Entry.FILENAME_LINES.name(), ValueMetaInterface.TYPE_NONE, Entry.FILENAME_LINES.description );
       all.add( filesEntry );
       StepInjectionMetaEntry fileEntry =
-          new StepInjectionMetaEntry( Entry.FILENAME_LINE.name(), ValueMetaInterface.TYPE_NONE,
-              Entry.FILENAME_LINE.description );
+          new StepInjectionMetaEntry(
+              Entry.FILENAME_LINE.name(), ValueMetaInterface.TYPE_NONE, Entry.FILENAME_LINE.description );
       filesEntry.getDetails().add( fileEntry );
 
       Entry[] fieldsEntries =
@@ -310,30 +310,34 @@ public class ExcelInputMetaInjection implements StepMetaInjectionInterface {
 
   private enum Entry {
 
-    FIELDS( ValueMetaInterface.TYPE_NONE, "All the fields on the spreadsheets" ), FIELD( ValueMetaInterface.TYPE_NONE,
-        "One field" ),
+    FIELDS( ValueMetaInterface.TYPE_NONE, "All the fields on the spreadsheets" ), FIELD(
+        ValueMetaInterface.TYPE_NONE, "One field" ),
 
-    NAME( FIELD, ValueMetaInterface.TYPE_STRING, "Field name" ), TYPE( FIELD, ValueMetaInterface.TYPE_STRING,
-        "Field data type" ), LENGTH( FIELD, ValueMetaInterface.TYPE_STRING, "Field length" ), PRECISION( FIELD,
-        ValueMetaInterface.TYPE_STRING, "Field precision" ), TRIM_TYPE( FIELD, ValueMetaInterface.TYPE_STRING,
-        "Field trim type (none, left, right, both)" ), FORMAT( FIELD, ValueMetaInterface.TYPE_STRING,
-        "Field conversion format" ), CURRENCY( FIELD, ValueMetaInterface.TYPE_STRING, "Field currency symbol" ), DECIMAL(
-        FIELD, ValueMetaInterface.TYPE_STRING, "Field decimal symbol" ), GROUP( FIELD, ValueMetaInterface.TYPE_STRING,
-        "Field group symbol" ), REPEAT( FIELD, ValueMetaInterface.TYPE_STRING, "Field repeat (Y/N)" ),
+    NAME( FIELD, ValueMetaInterface.TYPE_STRING, "Field name" ), TYPE(
+        FIELD, ValueMetaInterface.TYPE_STRING, "Field data type" ), LENGTH(
+        FIELD, ValueMetaInterface.TYPE_STRING, "Field length" ), PRECISION(
+        FIELD, ValueMetaInterface.TYPE_STRING, "Field precision" ), TRIM_TYPE(
+        FIELD, ValueMetaInterface.TYPE_STRING, "Field trim type (none, left, right, both)" ), FORMAT(
+        FIELD, ValueMetaInterface.TYPE_STRING, "Field conversion format" ), CURRENCY(
+        FIELD, ValueMetaInterface.TYPE_STRING, "Field currency symbol" ), DECIMAL(
+        FIELD, ValueMetaInterface.TYPE_STRING, "Field decimal symbol" ), GROUP(
+        FIELD, ValueMetaInterface.TYPE_STRING, "Field group symbol" ), REPEAT(
+        FIELD, ValueMetaInterface.TYPE_STRING, "Field repeat (Y/N)" ),
 
     FILENAME_LINES( ValueMetaInterface.TYPE_NONE, "The list of file definitions" ), FILENAME_LINE(
-        ValueMetaInterface.TYPE_NONE, "One file definition line" ), FILENAME( ValueMetaInterface.TYPE_STRING,
-        "The filename or directory" ), FILEMASK( ValueMetaInterface.TYPE_STRING, "The file mask (regex)" ), EXCLUDE_FILEMASK(
+        ValueMetaInterface.TYPE_NONE, "One file definition line" ), FILENAME(
+        ValueMetaInterface.TYPE_STRING, "The filename or directory" ), FILEMASK(
+        ValueMetaInterface.TYPE_STRING, "The file mask (regex)" ), EXCLUDE_FILEMASK(
         ValueMetaInterface.TYPE_STRING, "The mask for the files to exclude (regex)" ), FILE_REQUIRED(
         ValueMetaInterface.TYPE_STRING, "Is this a required file (Y/N)" ), INCLUDE_SUBFOLDERS(
         ValueMetaInterface.TYPE_STRING, "Include sub-folders when searching files? (Y/N)" ),
 
-    SHEETS( ValueMetaInterface.TYPE_NONE, "All the sheets in the spreadsheets" ), SHEET( ValueMetaInterface.TYPE_NONE,
-        "One sheet in the spreadsheet" ),
+    SHEETS( ValueMetaInterface.TYPE_NONE, "All the sheets in the spreadsheets" ), SHEET(
+        ValueMetaInterface.TYPE_NONE, "One sheet in the spreadsheet" ),
 
-    SHEET_NAME( SHEET, ValueMetaInterface.TYPE_STRING, "Sheet name" ), SHEET_START_ROW( SHEET,
-        ValueMetaInterface.TYPE_STRING, "Sheet start row" ), SHEET_START_COL( SHEET, ValueMetaInterface.TYPE_STRING,
-        "Sheet start col" ), ;
+    SHEET_NAME( SHEET, ValueMetaInterface.TYPE_STRING, "Sheet name" ), SHEET_START_ROW(
+        SHEET, ValueMetaInterface.TYPE_STRING, "Sheet start row" ), SHEET_START_COL(
+        SHEET, ValueMetaInterface.TYPE_STRING, "Sheet start col" ), ;
 
     private int valueType;
     private String description;

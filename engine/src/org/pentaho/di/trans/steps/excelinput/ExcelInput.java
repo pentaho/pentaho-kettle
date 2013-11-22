@@ -64,7 +64,7 @@ import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerMissingFiles;
  * @since 19-NOV-2003
  */
 public class ExcelInput extends BaseStep implements StepInterface {
-  private static Class<?> PKG = ExcelInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ExcelInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private ExcelInputMeta meta;
 
@@ -347,8 +347,8 @@ public class ExcelInput extends BaseStep implements StepInterface {
       }
         break;
       default:
-        throw new KettleException( BaseMessages.getString( PKG, "ExcelInput.Exception.UnsupportedType", cell.getType()
-            .getDescription(), cell.getContents() ) );
+        throw new KettleException( BaseMessages.getString( PKG, "ExcelInput.Exception.UnsupportedType", cell
+            .getType().getDescription(), cell.getContents() ) );
     }
   }
 
@@ -385,8 +385,8 @@ public class ExcelInput extends BaseStep implements StepInterface {
           try {
             data.files.addFile( KettleVFS.getFileObject( fileValue, getTransMeta() ) );
           } catch ( KettleFileException e ) {
-            throw new KettleException( BaseMessages.getString( PKG, "ExcelInput.Exception.CanNotCreateFileObject",
-                fileValue ), e );
+            throw new KettleException( BaseMessages.getString(
+                PKG, "ExcelInput.Exception.CanNotCreateFileObject", fileValue ), e );
 
           }
 
@@ -463,8 +463,8 @@ public class ExcelInput extends BaseStep implements StepInterface {
     if ( nonExistantFiles.size() != 0 ) {
       String message = FileInputList.getRequiredFilesDescription( nonExistantFiles );
       if ( log.isBasic() ) {
-        logBasic( BaseMessages.getString( PKG, "ExcelInput.Log.RequiredFilesTitle" ), BaseMessages.getString( PKG,
-            "ExcelInput.Warning.MissingFiles", message ) );
+        logBasic( BaseMessages.getString( PKG, "ExcelInput.Log.RequiredFilesTitle" ), BaseMessages.getString(
+            PKG, "ExcelInput.Warning.MissingFiles", message ) );
       }
 
       if ( meta.isErrorIgnored() ) {
@@ -481,8 +481,8 @@ public class ExcelInput extends BaseStep implements StepInterface {
     if ( nonAccessibleFiles.size() != 0 ) {
       String message = FileInputList.getRequiredFilesDescription( nonAccessibleFiles );
       if ( log.isBasic() ) {
-        logBasic( BaseMessages.getString( PKG, "ExcelInput.Log.RequiredFilesTitle" ), BaseMessages.getString( PKG,
-            "ExcelInput.Log.RequiredFilesMsgNotAccessible", message ) );
+        logBasic( BaseMessages.getString( PKG, "ExcelInput.Log.RequiredFilesTitle" ), BaseMessages.getString(
+            PKG, "ExcelInput.Log.RequiredFilesMsgNotAccessible", message ) );
       }
 
       if ( meta.isErrorIgnored() ) {
@@ -490,8 +490,8 @@ public class ExcelInput extends BaseStep implements StepInterface {
           data.errorHandler.handleNonAccessibleFile( fileObject );
         }
       } else {
-        throw new KettleException( BaseMessages.getString( PKG, "ExcelInput.Exception.RequiredFilesNotAccessible",
-            message ) );
+        throw new KettleException( BaseMessages.getString(
+            PKG, "ExcelInput.Exception.RequiredFilesNotAccessible", message ) );
       }
 
     }
@@ -609,8 +609,8 @@ public class ExcelInput extends BaseStep implements StepInterface {
             ExcelInputRow excelInputRow = new ExcelInputRow( sheet.getName(), lineNr, line );
             Object[] r = fillRow( data.colnr, excelInputRow );
             if ( log.isRowLevel() ) {
-              logRowlevel( BaseMessages.getString( PKG, "ExcelInput.Log.ConvertedLinToRow", "" + lineNr,
-                  data.outputRowMeta.getString( r ) ) );
+              logRowlevel( BaseMessages.getString(
+                  PKG, "ExcelInput.Log.ConvertedLinToRow", "" + lineNr, data.outputRowMeta.getString( r ) ) );
             }
 
             boolean isEmpty = isLineEmpty( line );
@@ -705,9 +705,9 @@ public class ExcelInput extends BaseStep implements StepInterface {
     List<FileErrorHandler> errorHandlers = new ArrayList<FileErrorHandler>( 2 );
 
     if ( meta.getLineNumberFilesDestinationDirectory() != null ) {
-      errorHandlers.add( new FileErrorHandlerContentLineNumber( getTrans().getCurrentDate(),
-          environmentSubstitute( meta.getLineNumberFilesDestinationDirectory() ), meta.getLineNumberFilesExtension(),
-          "Latin1", this ) );
+      errorHandlers.add( new FileErrorHandlerContentLineNumber(
+          getTrans().getCurrentDate(), environmentSubstitute( meta.getLineNumberFilesDestinationDirectory() ), meta
+              .getLineNumberFilesExtension(), "Latin1", this ) );
     }
     if ( meta.getErrorFilesDestinationDirectory() != null ) {
       errorHandlers.add( new FileErrorHandlerMissingFiles( getTrans().getCurrentDate(), environmentSubstitute( meta
@@ -722,8 +722,9 @@ public class ExcelInput extends BaseStep implements StepInterface {
       data.filePlayList = FilePlayListAll.INSTANCE;
     } else {
       data.filePlayList =
-          new FilePlayListReplay( replayDate, environmentSubstitute( meta.getLineNumberFilesDestinationDirectory() ),
-              meta.getLineNumberFilesExtension(), environmentSubstitute( meta.getErrorFilesDestinationDirectory() ),
+          new FilePlayListReplay(
+              replayDate, environmentSubstitute( meta.getLineNumberFilesDestinationDirectory() ), meta
+                  .getLineNumberFilesExtension(), environmentSubstitute( meta.getErrorFilesDestinationDirectory() ),
               meta.getErrorFilesExtension(), "Latin1" );
     }
   }

@@ -39,7 +39,7 @@ import org.pentaho.di.i18n.BaseMessages;
 
 public class KettleCellValueException extends KettleException {
 
-  private static Class<?> PKG = ExcelInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ExcelInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private static final long serialVersionUID = 1L;
 
@@ -76,9 +76,9 @@ public class KettleCellValueException extends KettleException {
   @Override
   public String getMessage() {
     String msgText =
-        BaseMessages.getString( PKG, "KettleCellValueException.CannotConvertFieldFromCell",
-            Integer.toString( sheetnr ), Integer.toString( rownr ), Integer.toString( colnr ), fieldName, super
-                .getMessage() );
+        BaseMessages.getString(
+            PKG, "KettleCellValueException.CannotConvertFieldFromCell", Integer.toString( sheetnr ), Integer
+                .toString( rownr ), Integer.toString( colnr ), fieldName, super.getMessage() );
     return msgText;
   }
 
