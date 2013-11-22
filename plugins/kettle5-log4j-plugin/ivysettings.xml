@@ -2,7 +2,7 @@
 <ivysettings>
   <properties environment="env" />
   <property name="ivy.local.default.root" value="${ivy.default.ivy.user.dir}/local" override="true" />
-  <property name="ivy.local.default.artifact.pattern" value="[organisation]/[module]/[revision]/[type]s/[artifact]-[revision].[ext]"
+  <property name="ivy.local.default.artifact.pattern" value="[organisation]/[module]/[revision]/[type]s/[artifact]-[revision](-[classifier]).[ext]"
     override="false" />
 
   <settings defaultResolver="pentaho-chained-resolver" />

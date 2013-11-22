@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.xslt;
 
+import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Properties;
@@ -34,6 +35,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileType;
+import org.apache.xml.utils.DefaultErrorHandler;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -74,8 +76,7 @@ public class Xslt extends BaseStep implements StepInterface {
 
     Object[] row = getRow();
 
-    if ( row == null ) // no more input to be expected...
-    {
+    if ( row == null ) { // no more input to be expected...
       setOutputDone();
       return false;
     }
@@ -187,7 +188,8 @@ public class Xslt extends BaseStep implements StepInterface {
           }
           data.indexOfParams[i] = getInputRowMeta().indexOfValue( field );
           if ( data.indexOfParams[i] < 0 ) {
-            throw new KettleStepException( BaseMessages.getString( PKG, "Xslt.Exception.ParameterFieldNotFound", name ) );
+            throw new KettleStepException(
+                BaseMessages.getString( PKG, "Xslt.Exception.ParameterFieldNotFound", name ) );
           }
           data.nameOfParams[i] = name;
         }
@@ -200,7 +202,7 @@ public class Xslt extends BaseStep implements StepInterface {
         // Set the TransformerFactory to the SAXON implementation.
         data.factory = new net.sf.saxon.TransformerFactoryImpl();
       }
-    }// end if first
+    } // end if first
 
     // Get the field value
     String xmlValue = getInputRowMeta().getString( row, data.fieldposition );
@@ -260,20 +262,18 @@ public class Xslt extends BaseStep implements StepInterface {
       putRow( data.outputRowMeta, outputRowData ); // copy row to output rowset(s);
 
     } catch ( Exception e ) {
-
-      boolean sendToErrorRow = false;
-      String errorMessage = null;
+      String errorMessage = e.getMessage();
+      StringWriter sw = new StringWriter();
+      PrintWriter pw = new PrintWriter( sw );
+      DefaultErrorHandler.printLocation( pw, e );
+      pw.close();
+      errorMessage = sw.toString() + "\n" + errorMessage;
 
       if ( getStepMeta().isDoingErrorHandling() ) {
-        sendToErrorRow = true;
-        errorMessage = e.getMessage();
-      }
-
-      if ( sendToErrorRow ) {
         // Simply add this row to the error row
         putError( getInputRowMeta(), row, 1, errorMessage, meta.getResultfieldname(), "XSLT01" );
       } else {
-        logError( BaseMessages.getString( PKG, "Xslt.ErrorProcesing" + " : " + e.getMessage() ) );
+        logError( BaseMessages.getString( PKG, "Xslt.ErrorProcesing" + " : " + errorMessage ) );
         throw new KettleStepException( BaseMessages.getString( PKG, "Xslt.ErrorProcesing" ), e );
       }
     }

@@ -133,7 +133,7 @@ public class StringUtil {
     // search for opening string
     int i = rest.indexOf( open );
     while ( i > -1 ) {
-      int j = rest.lastIndexOf( close ); // rest.indexOf( close, i + open.length() );
+      int j = rest.indexOf( close, i + open.length() );
       // search for closing string
       if ( j > -1 ) {
         String varName = rest.substring( i + open.length(), j );
