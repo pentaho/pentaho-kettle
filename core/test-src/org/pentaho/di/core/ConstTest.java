@@ -60,7 +60,7 @@ public class ConstTest extends TestCase
 	    
 	    // Here the original code failed as it saw the "o umlaut" as non-ASCII, and would
 	    // assume it needed to start a new word here.
-	    assertEquals("Können", Const.initCap("können"));
+	    assertEquals("K\u00F6nnen", Const.initCap("k\u00F6nnen"));
 	}	
 
 
