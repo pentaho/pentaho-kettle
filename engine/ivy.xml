@@ -115,8 +115,7 @@
     <dependency org="oro"                 name="oro"           rev="2.0.8"   conf="test->default" transitive="false"/>
     <dependency org="jaxen"               name="jaxen"         rev="1.1.1"     conf="test->default" transitive="false"/>
     <dependency org="junit"               name="junit"         rev="4.7"     conf="test->default" transitive="false"/>
+    <dependency org="org.mockito"         name="mockito-all"   rev="1.8.4"   conf="test->default" transitive="false" />
     
-    <!-- excludes -->
-    <exclude org="pentaho-kettle" module="kettle-db"/>
   </dependencies>
 </ivy-module>

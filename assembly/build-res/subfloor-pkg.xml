@@ -97,7 +97,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <copy todir="${approot.stage.dir}" overwrite="true">
       <fileset dir="${package.resdir}" />
     </copy>
-    <chmod perm="a+x" dir="${stage.dir}" includes="**/*.sh" />
+    <chmod perm="a+x" dir="${approot.stage.dir}" includes="**/*.sh" />
   </target>
 
   <target name="assemble.copy-libs">

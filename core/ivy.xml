@@ -39,8 +39,10 @@
     <dependency org="ognl"                name="ognl"                rev="2.6.9"            transitive="false"/>
     <dependency org="net.sf.scannotation" name="scannotation"        rev="1.0.2"            transitive="false"/>
     <dependency org="secondstring"        name="secondstring"        rev="20060615"         transitive="false"/>
-    <dependency org="org.owasp.esapi"      name="esapi"                 rev="2.0.1"         transitive="false"/>
+    <dependency org="org.owasp.esapi"     name="esapi"               rev="2.0.1"            transitive="false"/>
+    <dependency org="javassist"           name="javassist"           rev="3.12.1.GA"        transitive="false" conf="runtime->default"/>
     
-    <dependency org="junit"               name="junit"               rev="4.7"              transitive="false" conf="test->default"/>          
+    <dependency org="junit"               name="junit"               rev="4.7"              transitive="false" conf="test->default"/>  
+    <dependency org="org.mockito"         name="mockito-all"         rev="1.8.4"            transitive="false" conf="test->default"/>        
   </dependencies>
 </ivy-module>
