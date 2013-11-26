@@ -43,40 +43,39 @@ public class HttpUtilTest {
       + "\u30eb(\u256f\u00b0\u25a1\u00b0)\u256f\u253b\u2501\u2501\u253b\u30aa\u30d5";
 
   /**
-   * [PDI-4325]
-   * Test that we can decode/encode Strings without loss of data.
+   * [PDI-4325] Test that we can decode/encode Strings without loss of data.
    * 
-   * @throws IOException 
-   * @throws NoSuchAlgorithmException 
+   * @throws IOException
+   * @throws NoSuchAlgorithmException
    */
   @Test
   public final void testDecodeBase64ZippedString() throws IOException, NoSuchAlgorithmException {
     String enc64 = this.canonicalBase64Encode( STANDART );
-    //decode string
+    // decode string
     String decoded = HttpUtil.decodeBase64ZippedString( enc64 );
 
-    Assert.assertEquals( "Strings are the same after transformation", STANDART,  decoded );
+    Assert.assertEquals( "Strings are the same after transformation", STANDART, decoded );
   }
 
   /**
-   * Test that we can encode and decode String using 
-   * only static class-under-test methods.
+   * Test that we can encode and decode String using only static class-under-test methods.
    * 
    * 
-   * @throws IOException 
+   * @throws IOException
    */
   public void testEncodeBase64ZippedString() throws IOException {
     String enc64 = HttpUtil.encodeBase64ZippedString( STANDART );
     String decoded = HttpUtil.decodeBase64ZippedString( enc64 );
 
-    Assert.assertEquals( "Strings are the same after transformation", STANDART,  decoded );
+    Assert.assertEquals( "Strings are the same after transformation", STANDART, decoded );
   }
 
   /**
    * https://www.securecoding.cert.org/confluence/display/java/IDS12-J.+Perform+lossless+conversion+
    * of+String+data+between+differing+character+encodings
    * 
-   * @param in string to encode
+   * @param in
+   *          string to encode
    * @return
    * @throws IOException
    */
