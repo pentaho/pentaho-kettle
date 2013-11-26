@@ -63,8 +63,8 @@ public class ColumnExists extends BaseStep implements StepInterface {
     String errorMessage = null;
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    // if no more input to be expected set done
+    if ( r == null ) {
       setOutputDone();
       return false;
     }
@@ -120,7 +120,8 @@ public class ColumnExists extends BaseStep implements StepInterface {
         }
       }
 
-    }// End If first
+      // End If first
+    }
 
     try {
       // get tablename

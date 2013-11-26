@@ -178,20 +178,20 @@ public class Carte {
     A.allocate( 3 );
     A.setRowLimit( "100000000" );
 
-    A.getFieldName()[0] = "ID";
-    A.getFieldType()[0] = ValueMeta.getTypeDesc( ValueMetaInterface.TYPE_INTEGER );
-    A.getFieldLength()[0] = 7;
-    A.getValue()[0] = "1234";
+    ( A.getFieldName() )[0] = "ID";
+    ( A.getFieldType() )[0] = ValueMeta.getTypeDesc( ValueMetaInterface.TYPE_INTEGER );
+    ( A.getFieldLength() )[0] = 7;
+    ( A.getValue() )[0] = "1234";
 
-    A.getFieldName()[1] = "Name";
-    A.getFieldType()[1] = ValueMeta.getTypeDesc( ValueMetaInterface.TYPE_STRING );
-    A.getFieldLength()[1] = 35;
-    A.getValue()[1] = "Some name";
+    ( A.getFieldName() )[1] = "Name";
+    ( A.getFieldType() )[1] = ValueMeta.getTypeDesc( ValueMetaInterface.TYPE_STRING );
+    ( A.getFieldLength() )[1] = 35;
+    ( A.getValue() )[1] = "Some name";
 
-    A.getFieldName()[2] = "Last updated";
-    A.getFieldType()[2] = ValueMeta.getTypeDesc( ValueMetaInterface.TYPE_DATE );
-    A.getFieldFormat()[2] = "yyyy/MM/dd";
-    A.getValue()[2] = "2006/11/13";
+    ( A.getFieldName() )[2] = "Last updated";
+    ( A.getFieldType() )[2] = ValueMeta.getTypeDesc( ValueMetaInterface.TYPE_DATE );
+    ( A.getFieldFormat() )[2] = "yyyy/MM/dd";
+    ( A.getValue() )[2] = "2006/11/13";
 
     TransMeta transMeta = TransPreviewFactory.generatePreviewTransformation( null, A, "A" );
     transMeta.setName( "Row generator test" );

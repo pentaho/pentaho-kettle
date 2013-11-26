@@ -123,6 +123,7 @@ public class BlockUntilStepsFinish extends BaseStep implements StepInterface {
         try {
           Thread.sleep( 200 );
         } catch ( Exception e ) {
+          // ignore
         }
       }
     }

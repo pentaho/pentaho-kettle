@@ -56,8 +56,8 @@ public class CloneRow extends BaseStep implements StepInterface {
 
     Object[] r = getRow(); // get row, set busy!
 
-    if ( r == null ) // no more input to be expected...
-    {
+    // if no more input to be expected set done.
+    if ( r == null ) {
       setOutputDone();
       return false;
     }

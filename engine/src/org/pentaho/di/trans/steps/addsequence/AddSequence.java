@@ -106,8 +106,8 @@ public class AddSequence extends BaseStep implements StepInterface {
     data = (AddSequenceData) sdi;
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) {
+      // no more input to be expected...
       setOutputDone();
       return false;
     }

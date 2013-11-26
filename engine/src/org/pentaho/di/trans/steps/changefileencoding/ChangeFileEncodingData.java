@@ -42,9 +42,6 @@ public class ChangeFileEncodingData extends BaseStepData implements StepDataInte
 
   public RowMetaInterface inputRowMeta;
 
-  /**
-	 * 
-	 */
   public ChangeFileEncodingData() {
     super();
     indexOfFileename = -1;

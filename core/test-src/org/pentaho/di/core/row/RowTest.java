@@ -58,11 +58,11 @@ public class RowTest extends TestCase {
   }
 
   public void testIndexedStringConversion() throws Exception {
-    String colors[] = new String[] { "Green", "Red", "Blue", "Yellow", null, };
+    String[] colors = new String[] { "Green", "Red", "Blue", "Yellow", null, };
 
     // create some timezone friendly dates
     SimpleDateFormat fmt = new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss.SSS" );
-    Date dates[] =
+    Date[] dates =
         new Date[] { fmt.parse( "2007/05/07 13:04:13.203" ), null, fmt.parse( "2007/05/05 05:15:49.349" ),
           fmt.parse( "2007/05/05 19:08:44.736" ), };
 

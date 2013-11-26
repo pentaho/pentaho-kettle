@@ -71,8 +71,8 @@ public class Abort extends BaseStep implements StepInterface {
     meta = (AbortMeta) smi;
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    // no more input to be expected...
+    if ( r == null ) {
       setOutputDone();
       return false;
     } else {

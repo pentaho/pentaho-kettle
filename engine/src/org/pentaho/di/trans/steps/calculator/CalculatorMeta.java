@@ -107,7 +107,7 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface {
     if ( calculation != null ) {
       retval.allocate( calculation.length );
       for ( int i = 0; i < calculation.length; i++ ) {
-          retval.getCalculation()[i] = (CalculatorMetaFunction) calculation[i].clone();
+        ( retval.getCalculation() )[i] = (CalculatorMetaFunction) calculation[i].clone();
       }
     } else {
       retval.allocate( 0 );

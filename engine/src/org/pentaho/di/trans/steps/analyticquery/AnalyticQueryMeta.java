@@ -65,9 +65,8 @@ public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
   { "LEAD", "LAG", };
 
   public static final String[] typeGroupLongDesc = {
-
-  BaseMessages.getString( PKG, "AnalyticQueryMeta.TypeGroupLongDesc.LEAD" ),
-    BaseMessages.getString( PKG, "AnalyticQueryMeta.TypeGroupLongDesc.LAG" ), };
+    BaseMessages.getString( PKG, "AnalyticQueryMeta.TypeGroupLongDesc.LEAD" ),
+    BaseMessages.getString( PKG, "AnalyticQueryMeta.TypeGroupLongDesc.LAG" ) };
 
   /** Fields to partition by ie, CUSTOMER, PRODUCT */
   private String[] groupField;

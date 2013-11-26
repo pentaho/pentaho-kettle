@@ -56,9 +56,7 @@ public class ChangedFlag implements ChangedFlagInterface {
       clearChanged();
     }
     for ( int i = lobs.length - 1; i >= 0; i-- ) {
-      {
-        lobs[i].update( this, arg );
-      }
+      lobs[i].update( this, arg );
     }
   }
 

@@ -81,8 +81,8 @@ public class AccessInputData extends BaseStepData implements StepDataInterface {
   public int nrFields;
 
   /**
-	 * 
-	 */
+  * 
+  */
   public AccessInputData() {
     super();
     isTableSystem = false;

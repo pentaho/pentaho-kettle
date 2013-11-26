@@ -222,8 +222,8 @@ public class AccessInput extends BaseStep implements StepInterface {
   private boolean openNextFile() {
     try {
       if ( !meta.isFileField() ) {
-        if ( data.filenr >= data.files.nrOfFiles() ) // finished processing!
-        {
+        // finished processing!
+        if ( data.filenr >= data.files.nrOfFiles() ) {
           if ( log.isDetailed() ) {
             logDetailed( BaseMessages.getString( PKG, "AccessInput.Log.FinishedProcessing" ) );
           }
@@ -472,7 +472,8 @@ public class AccessInput extends BaseStep implements StepInterface {
       data.daf = null;
 
     } catch ( Exception e ) {
-    } // ignore this
+      // ignore this
+    }
     super.dispose( smi, sdi );
   }
 

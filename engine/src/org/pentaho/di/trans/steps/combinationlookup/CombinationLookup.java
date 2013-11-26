@@ -326,8 +326,8 @@ public class CombinationLookup extends BaseStep implements StepInterface {
 
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    // if no more input to be expected set done
+    if ( r == null ) {
       setOutputDone();
       return false;
     }
@@ -349,8 +349,8 @@ public class CombinationLookup extends BaseStep implements StepInterface {
 
       for ( int i = 0; i < meta.getKeyField().length; i++ ) {
         data.keynrs[i] = getInputRowMeta().indexOfValue( meta.getKeyField()[i] );
-        if ( data.keynrs[i] < 0 ) // couldn't find field!
-        {
+        if ( data.keynrs[i] < 0 ) {
+          // couldn't find field!
           throw new KettleStepException( BaseMessages.getString( PKG, "CombinationLookup.Exception.FieldNotFound", meta
               .getKeyField()[i] ) );
         }
@@ -499,8 +499,8 @@ public class CombinationLookup extends BaseStep implements StepInterface {
         sql += "INSERT INTO " + data.schemaTable + ( "( " );
         boolean comma = false;
 
-        if ( !isAutoIncrement() ) // NO AUTOINCREMENT
-        {
+        if ( !isAutoIncrement() ) {
+          // NO AUTOINCREMENT
           sql += databaseMeta.quoteField( meta.getTechnicalKeyField() );
           data.insertRowMeta
               .addValueMeta( new ValueMeta( meta.getTechnicalKeyField(), ValueMetaInterface.TYPE_INTEGER ) );

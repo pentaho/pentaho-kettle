@@ -62,16 +62,16 @@ public class AggregateRows extends BaseStep implements StepInterface {
         data.counts[i]++; // only count non-zero values!
         switch ( meta.getAggregateType()[i] ) {
           case AggregateRowsMeta.TYPE_AGGREGATE_SUM:
-          case AggregateRowsMeta.TYPE_AGGREGATE_AVERAGE: {
+          case AggregateRowsMeta.TYPE_AGGREGATE_AVERAGE:
             Double number = valueMeta.getNumber( valueData );
             if ( data.values[i] == null ) {
               data.values[i] = number;
             } else {
               data.values[i] = new Double( ( (Double) data.values[i] ).doubleValue() + number.doubleValue() );
             }
-          }
+
             break;
-          case AggregateRowsMeta.TYPE_AGGREGATE_MIN: {
+          case AggregateRowsMeta.TYPE_AGGREGATE_MIN:
             if ( data.values[i] == null ) {
               data.values[i] = valueData;
             } else {
@@ -79,9 +79,9 @@ public class AggregateRows extends BaseStep implements StepInterface {
                 data.values[i] = valueData;
               }
             }
-          }
+
             break;
-          case AggregateRowsMeta.TYPE_AGGREGATE_MAX: {
+          case AggregateRowsMeta.TYPE_AGGREGATE_MAX:
             if ( data.values[i] == null ) {
               data.values[i] = valueData;
             } else {
@@ -89,7 +89,7 @@ public class AggregateRows extends BaseStep implements StepInterface {
                 data.values[i] = valueData;
               }
             }
-          }
+
             break;
           case AggregateRowsMeta.TYPE_AGGREGATE_NONE:
           case AggregateRowsMeta.TYPE_AGGREGATE_FIRST:
@@ -156,8 +156,8 @@ public class AggregateRows extends BaseStep implements StepInterface {
     data = (AggregateRowsData) sdi;
 
     Object[] r = getRow(); // get row, set busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) {
+      // no more input to be expected...
       Object[] agg = buildAggregate(); // build a resume
       putRow( data.outputRowMeta, agg );
       setOutputDone();

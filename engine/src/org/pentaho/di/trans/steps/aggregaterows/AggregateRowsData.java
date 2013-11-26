@@ -38,9 +38,6 @@ public class AggregateRowsData extends BaseStepData implements StepDataInterface
   public long[] counts;
   public RowMetaInterface outputRowMeta;
 
-  /**
-	 * 
-	 */
   public AggregateRowsData() {
     super();
   }

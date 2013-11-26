@@ -193,8 +193,8 @@ public class BlockingStep extends BaseStep implements StepInterface {
           logError( Const.getStackTracker( e ) );
           setErrors( 1 );
           stopAll();
-        } catch ( KettleFileException fe ) // empty file or EOF mostly
-        {
+        } catch ( KettleFileException fe ) {
+          // empty file or EOF mostly
           try {
             di.close();
             fi.close();
@@ -263,8 +263,8 @@ public class BlockingStep extends BaseStep implements StepInterface {
     }
 
     if ( !meta.isPassAllRows() ) {
-      if ( r == null ) // no more input to be expected...
-      {
+      if ( r == null ) {
+        // no more input to be expected...
         if ( lastRow != null ) {
           putRow( data.outputRowMeta, lastRow );
         }
@@ -282,8 +282,8 @@ public class BlockingStep extends BaseStep implements StepInterface {
         return false;
       }
 
-      if ( r == null ) // no more input to be expected...
-      {
+      if ( r == null ) {
+        // no more input to be expected...
         // Now we can start the output!
         r = getBuffer();
         while ( r != null && !isStopped() ) {
