@@ -30,6 +30,7 @@ import java.util.regex.Pattern;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -459,7 +460,7 @@ public class Validator extends BaseStep implements StepInterface {
                   new KettleValidatorException( this, field,
                       KettleValidatorException.ERROR_MATCHING_REGULAR_EXPRESSION_EXPECTED, BaseMessages.getString( PKG,
                           "Validator.Exception.MatchingRegExpExpected", field.getFieldName(), valueMeta
-                              .getString( valueData ), field.getRegularExpression() ), field.getFieldName() );
+                              .getString( valueData ), data.regularExpression[i] ), field.getFieldName() );
               exceptions.add( exception );
               if ( !meta.isValidatingAll() ) {
                 return exceptions;
@@ -476,7 +477,7 @@ public class Validator extends BaseStep implements StepInterface {
                   new KettleValidatorException( this, field,
                       KettleValidatorException.ERROR_MATCHING_REGULAR_EXPRESSION_NOT_ALLOWED, BaseMessages.getString(
                           PKG, "Validator.Exception.MatchingRegExpNotAllowed", field.getFieldName(), valueMeta
-                              .getString( valueData ), field.getRegularExpressionNotAllowed() ), field.getFieldName() );
+                              .getString( valueData ), data.regularExpressionNotAllowed[i] ), field.getFieldName() );
               exceptions.add( exception );
               if ( !meta.isValidatingAll() ) {
                 return exceptions;
@@ -533,7 +534,7 @@ public class Validator extends BaseStep implements StepInterface {
 
         Validation field = meta.getValidations().get( i );
         try {
-          data.constantsMeta[i] = ValueMetaFactory.createValueMeta( field.getFieldName(), field.getDataType() );
+          data.constantsMeta[i] = createValueMeta( field.getFieldName(), field.getDataType() );
           data.constantsMeta[i].setConversionMask( field.getConversionMask() );
           data.constantsMeta[i].setDecimalSymbol( field.getDecimalSymbol() );
           data.constantsMeta[i].setGroupingSymbol( field.getGroupingSymbol() );
@@ -555,7 +556,7 @@ public class Validator extends BaseStep implements StepInterface {
               environmentSubstitute( Const.NVL( field.getRegularExpressionNotAllowed(), "" ) );
 
           ValueMetaInterface stringMeta =
-              ValueMetaFactory.cloneValueMeta( data.constantsMeta[i], ValueMetaInterface.TYPE_STRING );
+              cloneValueMeta( data.constantsMeta[i], ValueMetaInterface.TYPE_STRING );
           data.minimumValue[i] =
               Const.isEmpty( data.minimumValueAsString[i] ) ? null : data.constantsMeta[i].convertData( stringMeta,
                   data.minimumValueAsString[i] );
@@ -594,10 +595,10 @@ public class Validator extends BaseStep implements StepInterface {
         }
 
         if ( !Const.isEmpty( data.regularExpression[i] ) ) {
-          data.patternExpected[i] = Pattern.compile( field.getRegularExpression() );
+          data.patternExpected[i] = Pattern.compile( data.regularExpression[i] );
         }
         if ( !Const.isEmpty( data.regularExpressionNotAllowed[i] ) ) {
-          data.patternDisallowed[i] = Pattern.compile( field.getRegularExpressionNotAllowed() );
+          data.patternDisallowed[i] = Pattern.compile( data.regularExpressionNotAllowed[i] );
         }
 
       }
@@ -605,6 +606,14 @@ public class Validator extends BaseStep implements StepInterface {
       return true;
     }
     return false;
+  }
+
+  protected ValueMetaInterface createValueMeta( String name, int type ) throws KettlePluginException {
+      return ValueMetaFactory.createValueMeta( name, type );
+  }
+
+  protected ValueMetaInterface cloneValueMeta( ValueMetaInterface valueMeta, int type ) throws KettlePluginException {
+    return ValueMetaFactory.cloneValueMeta( valueMeta, type );
   }
 
 }
