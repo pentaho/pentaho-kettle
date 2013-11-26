@@ -32,12 +32,14 @@ import org.junit.Test;
  */
 public class ConstTest extends TestCase {
   protected boolean isArraySorted( String[] arr ) {
-    if ( arr.length < 2 )
+    if ( arr.length < 2 ) {
       return true;
+    }
 
     for ( int idx = 0; idx < arr.length - 1; idx++ ) {
-      if ( arr[idx].compareTo( arr[idx + 1] ) > 0 )
+      if ( arr[idx].compareTo( arr[idx + 1] ) > 0 ) {
         return false;
+      }
     }
 
     return true;
@@ -65,11 +67,11 @@ public class ConstTest extends TestCase {
    */
   @Test
   public void testSortStrings() {
-    String arr1[] = { "Red", "Blue", "Black", "Black", "Green" };
-    String arr2[] = { "aaa", "zzz", "yyy", "sss", "ttt", "t" };
-    String arr3[] = { "A", "B", "C", "D" };
+    String[] arr1 = { "Red", "Blue", "Black", "Black", "Green" };
+    String[] arr2 = { "aaa", "zzz", "yyy", "sss", "ttt", "t" };
+    String[] arr3 = { "A", "B", "C", "D" };
 
-    String results[] = Const.sortStrings( arr1 );
+    String[] results = Const.sortStrings( arr1 );
     assertTrue( isArraySorted( arr1 ) );
     assertTrue( isArraySorted( results ) );
 
@@ -185,7 +187,7 @@ public class ConstTest extends TestCase {
     assertEquals( 0, Const.splitString( "", ";" ).length );
     assertEquals( 0, Const.splitString( null, ";" ).length );
 
-    String a[] = Const.splitString( ";", ";" );
+    String[] a = Const.splitString( ";", ";" );
     assertEquals( 1, a.length );
     assertEquals( "", a[0] );
 
@@ -224,7 +226,7 @@ public class ConstTest extends TestCase {
     assertEquals( 0, Const.splitString( "", ';' ).length );
     assertEquals( 0, Const.splitString( null, ';' ).length );
 
-    String a[] = Const.splitString( ";", ';' );
+    String[] a = Const.splitString( ";", ';' );
     assertEquals( 1, a.length );
     assertEquals( "", a[0] );
 
@@ -358,7 +360,7 @@ public class ConstTest extends TestCase {
    */
   @Test
   public void testSplitPath() {
-    String a[] = Const.splitPath( "", "/" );
+    String[] a = Const.splitPath( "", "/" );
     assertEquals( 0, a.length );
 
     a = Const.splitPath( null, "/" );

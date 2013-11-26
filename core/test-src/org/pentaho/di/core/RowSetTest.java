@@ -38,7 +38,7 @@ public class RowSetTest extends TestCase {
   public RowMetaInterface createRowMetaInterface() {
     RowMetaInterface rm = new RowMeta();
 
-    ValueMetaInterface valuesMeta[] = { new ValueMeta( "ROWNR", ValueMeta.TYPE_INTEGER ), };
+    ValueMetaInterface[] valuesMeta = { new ValueMeta( "ROWNR", ValueMeta.TYPE_INTEGER ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );

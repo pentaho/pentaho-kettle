@@ -63,25 +63,25 @@ public class ValueMetaTest extends TestCase {
     val1.setStringEncoding( "UTF8" );
 
     // No truncating or padding!!!
-    byte b1[] = val1.getBinary( "PDI123" );
+    byte[] b1 = val1.getBinary( "PDI123" );
     assertTrue( byteCompare( b1, new byte[] { 'P', 'D', 'I', '1', '2', '3' } ) );
 
-    byte b2[] = val1.getBinary( "PDI" );
+    byte[] b2 = val1.getBinary( "PDI" );
     assertTrue( byteCompare( b2, new byte[] { 'P', 'D', 'I' } ) );
 
-    byte b3[] = val1.getBinary( "PDI123456" );
+    byte[] b3 = val1.getBinary( "PDI123456" );
     assertTrue( byteCompare( b3, new byte[] { 'P', 'D', 'I', '1', '2', '3', '4', '5', '6' } ) );
 
     ValueMeta val2 = new ValueMeta( "STR2", ValueMetaInterface.TYPE_STRING );
     val2.setLength( 1 );
 
-    byte b4[] = val2.getBinary( "PDI123" );
+    byte[] b4 = val2.getBinary( "PDI123" );
     assertTrue( byteCompare( b4, new byte[] { 'P', 'D', 'I', '1', '2', '3' } ) );
 
-    byte b5[] = val2.getBinary( "PDI" );
+    byte[] b5 = val2.getBinary( "PDI" );
     assertTrue( byteCompare( b5, new byte[] { 'P', 'D', 'I' } ) );
 
-    byte b6[] = val2.getBinary( "PDI123456" );
+    byte[] b6 = val2.getBinary( "PDI123456" );
     assertTrue( byteCompare( b6, new byte[] { 'P', 'D', 'I', '1', '2', '3', '4', '5', '6' } ) );
   }
 
