@@ -75,8 +75,9 @@ public class BatchFolderIterator implements Iterator<Message> {
     return null;
   }
 
+  // TODO:search
   @Override
-  public boolean hasNext() {// TODO:search
+  public boolean hasNext() {
     return buffIndex < Math.min( messages.length, end ) || getNextBatch();
   }
 

@@ -408,8 +408,8 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface {
       Repository repository, IMetaStore metaStore ) {
     SQLStatement retval = new SQLStatement( stepMeta.getName(), database, null ); // default: nothing to do!
 
-    if ( useDatabase ) // Otherwise, don't bother!
-    {
+    if ( useDatabase ) {
+      // Otherwise, don't bother!
       if ( database != null ) {
         Database db = new Database( loggingObject, database );
         db.shareVariablesWith( transMeta );

@@ -265,8 +265,7 @@ public class CellSetFormatter {
       for ( int z = 0; z < matrix.getMatrixHeight(); z++ ) {
         final AbstractBaseCell headerCell = matrix.get( x, z );
 
-        if ( headerCell instanceof MemberCell && ( (MemberCell) headerCell ).getUniqueName() != null ) {
-        } else {
+        if ( !( headerCell instanceof MemberCell && ( (MemberCell) headerCell ).getUniqueName() != null ) ) {
           cellInfo.setParentColMember( (MemberCell) matrix.get( x, z - 1 ) );
           break;
         }
@@ -274,9 +273,7 @@ public class CellSetFormatter {
 
       for ( int z = 0; z < matrix.getMatrixWidth(); z++ ) {
         final AbstractBaseCell headerCell = matrix.get( z, y );
-        if ( headerCell instanceof MemberCell && ( (MemberCell) headerCell ).getUniqueName() != null ) {
-
-        } else {
+        if ( !( headerCell instanceof MemberCell && ( (MemberCell) headerCell ).getUniqueName() != null ) ) {
           cellInfo.setParentRowMember( (MemberCell) matrix.get( z - 1, y ) );
           break;
         }

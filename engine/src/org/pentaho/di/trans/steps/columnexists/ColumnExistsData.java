@@ -40,9 +40,6 @@ public class ColumnExistsData extends BaseStepData implements StepDataInterface 
   public String schemaname;
   public RowMetaInterface outputRowMeta;
 
-  /**
-	 * 
-	 */
   public ColumnExistsData() {
     super();
     indexOfTablename = -1;

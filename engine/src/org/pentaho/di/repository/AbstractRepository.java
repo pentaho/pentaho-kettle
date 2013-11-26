@@ -130,10 +130,9 @@ public abstract class AbstractRepository implements Repository {
   }
 
   @Override
-  public void
-    save( RepositoryElementInterface repositoryElement, String versionComment, ProgressMonitorListener monitor )
-      throws KettleException {
-    save( repositoryElement, versionComment, monitor, false );
+  public void save( RepositoryElementInterface repoElement, String versionComment, ProgressMonitorListener monitor )
+    throws KettleException {
+    save( repoElement, versionComment, monitor, false );
   }
 
   @Override

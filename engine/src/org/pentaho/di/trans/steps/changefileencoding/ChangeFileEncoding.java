@@ -67,8 +67,8 @@ public class ChangeFileEncoding extends BaseStep implements StepInterface {
     data = (ChangeFileEncodingData) sdi;
 
     Object[] outputRow = getRow(); // Get row from input rowset & set row busy!
-    if ( outputRow == null ) // no more input to be expected...
-    {
+    if ( outputRow == null ) {
+      // no more input to be expected...
       setOutputDone();
       return false;
     }
@@ -121,7 +121,8 @@ public class ChangeFileEncoding extends BaseStep implements StepInterface {
         throw new KettleException( BaseMessages.getString( PKG, "ChangeFileEncoding.Exception.TargetEncodingEmpty" ) );
       }
 
-    }// End If first
+      // End If first
+    }
 
     try {
       // get source filename
@@ -280,6 +281,7 @@ public class ChangeFileEncoding extends BaseStep implements StepInterface {
       try {
         data.sourceFile.close();
       } catch ( Exception e ) {
+        // ignore
       }
 
     }

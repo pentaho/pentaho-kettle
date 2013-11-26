@@ -75,19 +75,17 @@ public class AccessInputMetaInjection implements StepMetaInjectionInterface {
 
     // Add the fields...
     //
-    {
-      StepInjectionMetaEntry fieldsEntry =
-          new StepInjectionMetaEntry( Entry.FIELDS.name(), Entry.FIELDS.getValueType(), Entry.FIELDS.getDescription() );
-      all.add( fieldsEntry );
-      StepInjectionMetaEntry fieldEntry =
-          new StepInjectionMetaEntry( Entry.FIELD.name(), Entry.FIELD.getValueType(), Entry.FIELD.getDescription() );
-      fieldsEntry.getDetails().add( fieldEntry );
-      for ( Entry entry : Entry.values() ) {
-        if ( entry.getParent() == Entry.FIELD ) {
-          StepInjectionMetaEntry metaEntry =
-              new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
-          fieldEntry.getDetails().add( metaEntry );
-        }
+    StepInjectionMetaEntry fieldsEntry =
+        new StepInjectionMetaEntry( Entry.FIELDS.name(), Entry.FIELDS.getValueType(), Entry.FIELDS.getDescription() );
+    all.add( fieldsEntry );
+    StepInjectionMetaEntry fieldEntry =
+        new StepInjectionMetaEntry( Entry.FIELD.name(), Entry.FIELD.getValueType(), Entry.FIELD.getDescription() );
+    fieldsEntry.getDetails().add( fieldEntry );
+    for ( Entry entry : Entry.values() ) {
+      if ( entry.getParent() == Entry.FIELD ) {
+        StepInjectionMetaEntry metaEntry =
+            new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
+        fieldEntry.getDetails().add( metaEntry );
       }
     }
 
@@ -118,7 +116,7 @@ public class AccessInputMetaInjection implements StepMetaInjectionInterface {
 
       String lookValue = (String) lookFields.getValue();
       switch ( fieldsEntry ) {
-        case FILENAME_LINES: {
+        case FILENAME_LINES:
           for ( StepInjectionMetaEntry lookField : lookFields.getDetails() ) {
             Entry fieldEntry = Entry.findEntry( lookField.getKey() );
             if ( fieldEntry == Entry.FILENAME_LINE ) {
@@ -153,10 +151,10 @@ public class AccessInputMetaInjection implements StepMetaInjectionInterface {
               fileLines.add( fileLine );
             }
           }
-        }
+
           break;
 
-        case FIELDS: {
+        case FIELDS:
           for ( StepInjectionMetaEntry lookField : lookFields.getDetails() ) {
             Entry fieldEntry = Entry.findEntry( lookField.getKey() );
             if ( fieldEntry == Entry.FIELD ) {
@@ -210,7 +208,7 @@ public class AccessInputMetaInjection implements StepMetaInjectionInterface {
               fields.add( field );
             }
           }
-        }
+
           break;
 
         case INCLUDE_FILENAME:
@@ -285,12 +283,12 @@ public class AccessInputMetaInjection implements StepMetaInjectionInterface {
       meta.allocateFiles( fileLines.size() );
       for ( int i = 0; i < fileLines.size(); i++ ) {
         FileLine fileLine = fileLines.get( i );
-        meta.getFileName()[i] = fileLine.filename;
-        meta.getFileMask()[i] = fileLine.includeMask;
-        meta.getExludeFileMask()[i] = fileLine.excludeMask;
-        meta.getExludeFileMask()[i] = fileLine.excludeMask;
-        meta.getFileRequired()[i] = fileLine.required;
-        meta.getIncludeSubFolders()[i] = fileLine.includeSubfolders;
+        ( meta.getFileName() )[i] = fileLine.filename;
+        ( meta.getFileMask() )[i] = fileLine.includeMask;
+        ( meta.getExludeFileMask() )[i] = fileLine.excludeMask;
+        ( meta.getExludeFileMask() )[i] = fileLine.excludeMask;
+        ( meta.getFileRequired() )[i] = fileLine.required;
+        ( meta.getIncludeSubFolders() )[i] = fileLine.includeSubfolders;
       }
     }
   }
@@ -345,7 +343,7 @@ public class AccessInputMetaInjection implements StepMetaInjectionInterface {
         ValueMetaInterface.TYPE_STRING, "The last modification time output fieldname" ), FILE_URI_FIELDNAME(
         ValueMetaInterface.TYPE_STRING, "The URI output fieldname" ), FILE_EXTENSION_FIELDNAME(
         ValueMetaInterface.TYPE_STRING, "The extension output fieldname" ), FILE_SIZE_FIELDNAME(
-        ValueMetaInterface.TYPE_STRING, "The file size output fieldname" ), ;
+        ValueMetaInterface.TYPE_STRING, "The file size output fieldname" );
 
     private int valueType;
     private String description;

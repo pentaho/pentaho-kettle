@@ -369,7 +369,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
     return variables.environmentSubstitute( aString );
   }
 
-  public String[] environmentSubstitute( String aString[] ) {
+  public String[] environmentSubstitute( String[] aString ) {
     return variables.environmentSubstitute( aString );
   }
 

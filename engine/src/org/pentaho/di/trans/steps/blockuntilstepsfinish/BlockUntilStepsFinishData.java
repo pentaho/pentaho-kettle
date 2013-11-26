@@ -36,8 +36,8 @@ import org.pentaho.di.trans.step.StepInterface;
 public class BlockUntilStepsFinishData extends BaseStepData implements StepDataInterface {
 
   /**
-	 * 
-	 */
+   * 
+  */
   boolean continueLoop;
   public ConcurrentHashMap<Integer, StepInterface> stepInterfaces;
 

@@ -154,7 +154,7 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
    */
   private void setupData() throws KettleStepException {
     data.nextBufferRowIdx = 0;
-    data.inputRowMeta = getInputRowMeta().clone();// only available after first getRow();
+    data.inputRowMeta = getInputRowMeta().clone(); // only available after first getRow();
     data.inputRowBuffer = new Object[batchSize][];
     data.outputRowMeta = data.inputRowMeta.clone();
     meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
@@ -209,7 +209,7 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
       requestBuilder.setOpType( this.opType );
 
       if ( idFieldIndex != null ) {
-        requestBuilder.setId( "" + row[idFieldIndex] );// "" just in case field isn't string
+        requestBuilder.setId( "" + row[idFieldIndex] ); // "" just in case field isn't string
       }
 
       if ( isJsonInsert ) {
@@ -354,7 +354,7 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
     if ( response != null ) {
       responseOk = handleResponse( response );
       requestsBuffer.clear();
-    } else {// have to assume all failed
+    } else { // have to assume all failed
       numberOfErrors += currentRequest.numberOfActions();
       setErrors( numberOfErrors );
     }
@@ -470,7 +470,7 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
   private void initClient() {
 
     ImmutableSettings.Builder settingsBuilder = ImmutableSettings.settingsBuilder();
-    settingsBuilder.put( ImmutableSettings.Builder.EMPTY_SETTINGS );// keep default classloader
+    settingsBuilder.put( ImmutableSettings.Builder.EMPTY_SETTINGS ); // keep default classloader
     settingsBuilder.put( meta.getSettings() );
     Settings settings = settingsBuilder.build();
 
@@ -485,7 +485,7 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
     } else {
       NodeBuilder nodeBuilder = NodeBuilder.nodeBuilder();
       nodeBuilder.settings( settings );
-      node = nodeBuilder.client( true ).node();// this node will not hold data
+      node = nodeBuilder.client( true ).node(); // this node will not hold data
       client = node.client();
       node.start();
     }

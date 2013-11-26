@@ -36,9 +36,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
  */
 public class CheckSumData extends BaseStepData implements StepDataInterface {
 
-  /**
-	 * 
-	 */
   public int[] fieldnrs;
 
   public int fieldnr;

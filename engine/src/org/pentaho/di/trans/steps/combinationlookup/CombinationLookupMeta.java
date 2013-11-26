@@ -849,8 +849,8 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
                 retval.setError( BaseMessages
                     .getString( PKG, "CombinationLookupMeta.ReturnValue.NotHashFieldSpecified" ) );
               }
-            } else // index on all key fields...
-            {
+            } else {
+              // index on all key fields...
               if ( !Const.isEmpty( keyLookup ) ) {
                 int nrfields = keyLookup.length;
                 int maxFields = databaseMeta.getMaxColumnsInIndex();

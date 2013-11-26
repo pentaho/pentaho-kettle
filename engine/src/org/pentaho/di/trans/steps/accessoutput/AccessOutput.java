@@ -67,8 +67,8 @@ public class AccessOutput extends BaseStep implements StepInterface {
     data = (AccessOutputData) sdi;
 
     Object[] r = getRow(); // this also waits for a previous step to be finished.
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) {
+      // no more input to be expected...
       setOutputDone();
       return false;
     }
@@ -106,8 +106,8 @@ public class AccessOutput extends BaseStep implements StepInterface {
   }
 
   private boolean writeToTable( Object[] rowData ) throws KettleValueException {
-    if ( rowData == null ) // Stop: last line or error encountered
-    {
+    if ( rowData == null ) {
+      // Stop: last line or error encountered
       if ( log.isDetailed() ) {
         logDetailed( "Last line inserted: stop" );
       }
