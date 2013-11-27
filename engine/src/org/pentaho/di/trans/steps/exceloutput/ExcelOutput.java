@@ -278,7 +278,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
    *          the field information (if any, otherwise : null)
    * @param column
    *          the excel column for getting the template format
-   * @return
+   * @return <code>true</code> if write succeeded
    */
   private boolean writeField( Object v, ValueMetaInterface vMeta, ExcelField excelField, int column ) {
     return writeField( v, vMeta, excelField, column, false );
@@ -297,7 +297,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
    *          the excel column for getting the template format
    * @param isHeader
    *          true if this is part of the header/footer
-   * @return
+   * @return <code>true</code> if write succeeded
    */
   private boolean writeField( Object v, ValueMetaInterface vMeta, ExcelField excelField, int column,
     boolean isHeader ) {
@@ -343,7 +343,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
         }
       } else {
         switch ( vMeta.getType() ) {
-          case ValueMetaInterface.TYPE_DATE:
+          case ValueMetaInterface.TYPE_DATE: {
             if ( v != null && vMeta.getDate( v ) != null ) {
               if ( cellFormat == null ) {
                 if ( excelField != null && excelField.getFormat() != null ) {
@@ -375,10 +375,10 @@ public class ExcelOutput extends BaseStep implements StepInterface {
               data.sheet.addCell( new Label( data.positionX, data.positionY, "" ) );
             }
             break;
-
+          }
           case ValueMetaInterface.TYPE_STRING:
           case ValueMetaInterface.TYPE_BOOLEAN:
-          case ValueMetaInterface.TYPE_BINARY:
+          case ValueMetaInterface.TYPE_BINARY: {
             if ( cellFormat == null ) {
               cellFormat = new WritableCellFormat( data.writableFont );
               if ( data.rowFontBackgoundColour != null ) {
@@ -393,10 +393,10 @@ public class ExcelOutput extends BaseStep implements StepInterface {
               data.sheet.addCell( new Label( data.positionX, data.positionY, "" ) );
             }
             break;
-
+          }
           case ValueMetaInterface.TYPE_NUMBER:
           case ValueMetaInterface.TYPE_BIGNUMBER:
-          case ValueMetaInterface.TYPE_INTEGER:
+          case ValueMetaInterface.TYPE_INTEGER: {
             if ( v != null ) {
               if ( cellFormat == null ) {
                 String format;
@@ -425,9 +425,10 @@ public class ExcelOutput extends BaseStep implements StepInterface {
               data.sheet.addCell( new Label( data.positionX, data.positionY, "" ) );
             }
             break;
-
-          default:
+          }
+          default: {
             break;
+          }
         }
       }
     } catch ( Exception e ) {
@@ -503,9 +504,6 @@ public class ExcelOutput extends BaseStep implements StepInterface {
         if ( meta.isAppend() && fle.exists() ) {
           Workbook workbook = Workbook.getWorkbook( fle );
           data.workbook = Workbook.createWorkbook( fle, workbook );
-          if ( workbook != null ) {
-            workbook.close();
-          }
 
           if ( data.workbook.getSheet( data.realSheetname ) != null ) {
             // get available sheets
@@ -534,16 +532,13 @@ public class ExcelOutput extends BaseStep implements StepInterface {
           }
         }
       } else {
-
-        FileObject fo =
-          KettleVFS.getFileObject( environmentSubstitute( meta.getTemplateFileName() ), getTransMeta() );
+        FileObject fo = KettleVFS.getFileObject( environmentSubstitute( meta.getTemplateFileName() ), getTransMeta() );
         // create the openFile from the template
 
         Workbook tmpWorkbook = Workbook.getWorkbook( KettleVFS.getInputStream( fo ), data.ws );
         data.outputStream = KettleVFS.getOutputStream( data.file, false );
         data.workbook = Workbook.createWorkbook( data.outputStream, tmpWorkbook );
 
-        tmpWorkbook.close();
         fo.close();
         // use only the first sheet as template
         data.sheet = data.workbook.getSheet( 0 );
@@ -795,14 +790,12 @@ public class ExcelOutput extends BaseStep implements StepInterface {
         KettleVFS.getInputStream( imageFile ).read( imageData );
 
         data.headerImage = new WritableImage( 0, 0, data.headerImageWidth, data.headerImageHeight, imageData );
-        imageData = null;
       } catch ( Exception e ) {
         throw new KettleException( e );
       } finally {
         if ( imageFile != null ) {
           try {
             imageFile.close();
-            imageFile = null;
           } catch ( Exception e ) {
             // Ignore;
           }
@@ -830,6 +823,5 @@ public class ExcelOutput extends BaseStep implements StepInterface {
     if ( meta.getRowBackGroundColor() != ExcelOutputMeta.FONT_COLOR_NONE ) {
       data.rowFontBackgoundColour = ExcelFontMap.getColour( meta.getRowBackGroundColor(), null );
     }
-
   }
 }
