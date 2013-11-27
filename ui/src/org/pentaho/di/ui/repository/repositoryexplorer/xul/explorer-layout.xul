@@ -102,7 +102,7 @@
   												<treecol id="type-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.Type}"
   													pen:binding="type" />
   												<treecol id="date-mod-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.DateModified}"
-  													pen:binding="formatModifiedDate" />
+  													pen:binding="formatModifiedDate" pen:comparatorbinding="dateComparator"/>
   											</treecols>
   											<treechildren />
   										</tree>
