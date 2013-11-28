@@ -40,6 +40,7 @@ import org.pentaho.di.trans.steps.csvinput.CsvInput2Test;
 import org.pentaho.di.trans.steps.detectlastrow.DetectLastRowStepTest;
 import org.pentaho.di.trans.steps.filterrows.FilterRowsTest;
 import org.pentaho.di.trans.steps.getxmldata.GetXMLDataTest;
+import org.pentaho.di.trans.steps.gpload.GPLoadTest;
 import org.pentaho.di.trans.steps.injector.InjectorTest;
 import org.pentaho.di.trans.steps.nullif.NullIfTest;
 import org.pentaho.di.trans.steps.regexeval.RegexEvalTest;
@@ -55,7 +56,7 @@ import org.pentaho.di.ui.dialog.TipsDialogTest;
 
 /**
  * Regression tests for the PDI framework.
- *
+ * 
  * @author sboden
  */
 public class AllRegressionTests {
@@ -96,7 +97,8 @@ public class AllRegressionTests {
     suite.addTestSuite( GetXMLDataTest.class );
     suite.addTestSuite( CsvInput1Test.class );
     suite.addTestSuite( CsvInput2Test.class );
-    suite.addTestSuite( TipsDialogTest.class );
+    suite.addTest( new JUnit4TestAdapter( GPLoadTest.class ) );
+    suite.addTest( new JUnit4TestAdapter( TipsDialogTest.class ) );
 
     // Temporarily disable this test, it never worked on Windows or Unix so
     // it doesn't make sense executing it for the moment.

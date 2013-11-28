@@ -546,6 +546,7 @@
 
       <classpath id="cp-kettle-test">
         <fileset dir="${dist.dir}/${lib.dir}" includes="**/*.jar"/>
+        <fileset dir="${dist.dir}/plugins/kettle-gpload-plugin/" includes="*.jar"/>
         <fileset dir="${testlibext}" includes="*.jar"/>
         <fileset dir="${dist.dir}/${libswt}" includes="*.jar *.zip"/>
         <fileset dir="${dist.dir}/${libswt}/win32/" includes="*.jar *.zip"/>
@@ -674,6 +675,7 @@
            jvm="java" maxmemory="512M" showoutput="yes">
       <classpath>
         <fileset dir="${dist.dir}/${lib.dir}" includes="kettle-core*.jar,kettle-engine*.jar"/>
+        <fileset dir="${dist.dir}/plugins/kettle-gpload-plugin/" includes="*.jar"/>
         <fileset dir="test/libext/" includes="*.jar"/>
         <pathelement path="${testClasses}"/>
 
@@ -771,6 +773,8 @@
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.xslt.XsltTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.SequenceMetaTests" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.terafast.FastloadControlBuilderTest"
+            haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.gpload.GPLoadTest"
             haltonerror="false"/>
     </junit>
     <junitreport todir="${testreports.html.dir}">
