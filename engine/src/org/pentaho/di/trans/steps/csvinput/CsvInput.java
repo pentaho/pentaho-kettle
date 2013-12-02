@@ -831,6 +831,8 @@ public class CsvInput extends BaseStep implements StepInterface
 		data=(CsvInputData)sdi;
 		
 		if (super.init(smi, sdi)) {
+      // PDI-10242 see if a variable is used as encoding value
+      String realEncoding = environmentSubstitute( meta.getEncoding() );
 			data.preferredBufferSize = Integer.parseInt(environmentSubstitute(meta.getBufferSize()));
 			
 			// If the step doesn't have any previous steps, we just get the filename.
@@ -853,17 +855,17 @@ public class CsvInput extends BaseStep implements StepInterface
 			
 			data.totalBytesRead=0L;
 			
-			data.encodingType = EncodingType.guessEncodingType(meta.getEncoding());
+      data.encodingType = EncodingType.guessEncodingType( realEncoding );
 							
             // PDI-2489 - set the delimiter byte value to the code point of the
             // character as represented in the input file's encoding
             try {
-              data.delimiter = data.encodingType.getBytes( environmentSubstitute(meta.getDelimiter()), meta.getEncoding());
+        data.delimiter = data.encodingType.getBytes( environmentSubstitute( meta.getDelimiter() ), realEncoding );
 
   			  if( Const.isEmpty(meta.getEnclosure()) ) {
   				data.enclosure = null;
   			  } else {
-  				data.enclosure = data.encodingType.getBytes( environmentSubstitute(meta.getEnclosure()), meta.getEncoding() );
+          data.enclosure = data.encodingType.getBytes( environmentSubstitute( meta.getEnclosure() ), realEncoding );
   			  }
   			  
             } catch (UnsupportedEncodingException e) {
