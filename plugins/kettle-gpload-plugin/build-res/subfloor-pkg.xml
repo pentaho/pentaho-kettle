@@ -116,10 +116,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <zipfileset dir="${stage.dir}" filemode="755">
         <include name="**/*.sh" />
         <include name="**/JavaApplicationStub" />
+        <include name="**/*.command" />
       </zipfileset>
       <zipfileset dir="${stage.dir}">
         <exclude name="**/*.sh" />
         <exclude name="**/JavaApplicationStub" />
+        <exclude name="**/*.command" />
       </zipfileset>
     </zip>
   </target>
