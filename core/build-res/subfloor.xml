@@ -27,9 +27,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <!--===========================================================================
     == SUBFLOOR ==
     
-    $Rev: 113 $
-    $Date: 2010-09-03 15:02:57 -0400 (Fri, 03 Sep 2010) $
-    Project Home: http://code.google.com/p/subfloor/
+    $Date: Wed Nov  6 16:13:57 UTC 2013 $
+    Project Home: https://github.com/pentaho/subfloor/
     
     This file contains the default implementation of the ant tasks to 
     perform a build. This file should be included by the build.xml file 
@@ -180,6 +179,11 @@ TYPICAL TARGET SEQUENCE
   <property name="ivy.url"
             value="http://repo2.maven.org/maven2/org/apache/ivy/ivy/2.2.0/ivy-2.2.0.jar"
             description="The URL to the current release of Apache IVY" />
+	
+  <!-- Enunciate properties -->
+  <property name="enunciate.home" value="${basedir}/enunciate" />
+  <property name="enunciate.bin.dir" value="${bin.dir}/enunciate" />
+
 
   <!-- Test properties -->
   <property name="junit.base.dir" value="${basedir}" description="Directory in which the junit test VM will be invoked" />
@@ -698,6 +702,11 @@ TYPICAL TARGET SEQUENCE
   <target name="resolve-test" depends="resolve-init">
     <ivy:resolve file="${ivyfile}" conf="test" />
     <ivy:retrieve conf="test" pattern="${testlib.dir}/[module]-[revision](-[classifier]).[ext]" symlink="${ivy.use.symlinks.internal}" />
+  </target>
+
+  <target name="resolve-enunciate" depends="resolve-init">
+    <ivy:resolve file="${ivyfile}" conf="enunciate" />
+    <ivy:retrieve conf="enunciate" pattern="${basedir}/enunciate/lib/[module]-[revision](-[classifier]).[ext]" />
   </target>
 
   <target name="resolve-codegen" depends="resolve-init">
@@ -1489,6 +1498,46 @@ TYPICAL TARGET SEQUENCE
     </javadoc>
   </target>
 
+  	
+  <!--=======================================================================
+	enunciate
+        
+	Generates enunciate documentation for the resoruce 
+	classes comprising the BIServer REST api
+  ====================================================================-->
+  <target name="enunciate" depends="resolve-enunciate">
+    <path id="enunciate.classpath">
+      <fileset dir="${lib.dir}">
+        <include name="*.jar" />
+      	<exclude name="saxon*.jar" />
+      </fileset>
+      <dirset dir="${classes.dir}" />
+      <fileset dir="${dist.dir}">
+        <include name="*.jar" />
+      </fileset>
+      <fileset dir="${enunciate.home}/lib">
+        <include name="*.jar" />
+      </fileset>
+    </path>
+
+    <taskdef name="enunciate" classname="org.codehaus.enunciate.main.EnunciateTask">
+      <classpath refid="enunciate.classpath" />
+    </taskdef>
+
+    <enunciate dir="${basedir}/src" 
+               configFile="${basedir}/enunciate.xml" 
+               generateDir="${enunciate.bin.dir}/generate" 
+               compileDir="${enunciate.bin.dir}/compile" 
+               buildDir="${enunciate.bin.dir}/build" 
+               packageDir="${enunciate.bin.dir}/package" 
+               verbose="true">
+      <include name="**/*.java" />
+      <!-- have to exclude class that contains jersey multipart endpoint until http://jira.codehaus.org/browse/ENUNCIATE-537 is fixed -->
+      
+      <classpath refid="enunciate.classpath" />
+      <export artifactId="docs" destination="${dist.dir}/${enunciate.packagename}.zip" />
+    </enunciate>
+  </target>
 
   <!--=======================================================================
       dist-javadoc
