@@ -52,12 +52,12 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Retrieves values from a database by calling database stored procedures or functions
- *
+ * 
  * @author Matt
  * @since 26-apr-2003
  */
 public class HTTP extends BaseStep implements StepInterface {
-  private static Class<?> PKG = HTTPMeta.class; // for i18n purposes, needed by Translator2!!
+  private static Class<?> PKG = HTTPMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
   private HTTPMeta meta;
   private HTTPData data;
@@ -76,7 +76,7 @@ public class HTTP extends BaseStep implements StepInterface {
         if ( data.argnrs[i] < 0 ) {
           logError( BaseMessages.getString( PKG, "HTTP.Log.ErrorFindingField" ) + meta.getArgumentField()[i] + "]" );
           throw new KettleStepException( BaseMessages.getString( PKG, "HTTP.Exception.CouldnotFindField", meta
-            .getArgumentField()[i] ) );
+              .getArgumentField()[i] ) );
         }
       }
     }
@@ -118,11 +118,12 @@ public class HTTP extends BaseStep implements StepInterface {
       // Add Custom HTTP headers
       if ( data.useHeaderParameters ) {
         for ( int i = 0; i < data.header_parameters_nrs.length; i++ ) {
-          method.addRequestHeader( data.headerParameters[i].getName(), data.inputRowMeta.getString(
-            rowData, data.header_parameters_nrs[i] ) );
+          method.addRequestHeader( data.headerParameters[i].getName(), data.inputRowMeta.getString( rowData,
+              data.header_parameters_nrs[i] ) );
           if ( isDebug() ) {
-            log.logDebug( BaseMessages.getString( PKG, "HTTPDialog.Log.HeaderValue", data.headerParameters[i]
-              .getName(), data.inputRowMeta.getString( rowData, data.header_parameters_nrs[i] ) ) );
+            log.logDebug( BaseMessages.getString( PKG, "HTTPDialog.Log.HeaderValue",
+                data.headerParameters[i].getName(), data.inputRowMeta
+                    .getString( rowData, data.header_parameters_nrs[i] ) ) );
           }
         }
       }
@@ -153,50 +154,53 @@ public class HTTP extends BaseStep implements StepInterface {
         }
 
         if ( statusCode != -1 ) {
-          // if the response is not 401: HTTP Authentication required
-          if ( statusCode != 401 ) {
-            // guess encoding
-            //
-            String encoding = meta.getEncoding();
+          if ( statusCode == 204 ) {
+            body = "";
+          } else {
+            // if the response is not 401: HTTP Authentication required
+            if ( statusCode != 401 ) {
+              // guess encoding
+              //
+              String encoding = meta.getEncoding();
 
-            // Try to determine the encoding from the Content-Type value
-            //
-            if ( Const.isEmpty( encoding ) ) {
-              String contentType = method.getResponseHeader( "Content-Type" ).getValue();
-              if ( contentType != null && contentType.contains( "charset" ) ) {
-                encoding = contentType.replaceFirst( "^.*;\\s*charset\\s*=\\s*", "" ).replace( "\"", "" ).trim();
+              // Try to determine the encoding from the Content-Type value
+              //
+              if ( Const.isEmpty( encoding ) ) {
+                String contentType = method.getResponseHeader( "Content-Type" ).getValue();
+                if ( contentType != null && contentType.contains( "charset" ) ) {
+                  encoding = contentType.replaceFirst( "^.*;\\s*charset\\s*=\\s*", "" ).replace( "\"", "" ).trim();
+                }
               }
+
+              if ( isDebug() ) {
+                log.logDebug( toString(), BaseMessages.getString( PKG, "HTTP.Log.ResponseHeaderEncoding", encoding ) );
+              }
+
+              // the response
+              if ( !Const.isEmpty( encoding ) ) {
+                inputStreamReader = new InputStreamReader( method.getResponseBodyAsStream(), encoding );
+              } else {
+                inputStreamReader = new InputStreamReader( method.getResponseBodyAsStream() );
+              }
+              StringBuffer bodyBuffer = new StringBuffer();
+
+              int c;
+              while ( ( c = inputStreamReader.read() ) != -1 ) {
+                bodyBuffer.append( (char) c );
+              }
+
+              inputStreamReader.close();
+
+              body = bodyBuffer.toString();
+              if ( isDebug() ) {
+                logDebug( "Response body: " + body );
+              }
+
+            } else { // the status is a 401
+              throw new KettleStepException( BaseMessages
+                  .getString( PKG, "HTTP.Exception.Authentication", data.realUrl ) );
+
             }
-
-            if ( isDebug() ) {
-              log
-                .logDebug( toString(), BaseMessages.getString( PKG, "HTTP.Log.ResponseHeaderEncoding", encoding ) );
-            }
-
-            // the response
-            if ( !Const.isEmpty( encoding ) ) {
-              inputStreamReader = new InputStreamReader( method.getResponseBodyAsStream(), encoding );
-            } else {
-              inputStreamReader = new InputStreamReader( method.getResponseBodyAsStream() );
-            }
-            StringBuffer bodyBuffer = new StringBuffer();
-
-            int c;
-            while ( ( c = inputStreamReader.read() ) != -1 ) {
-              bodyBuffer.append( (char) c );
-            }
-
-            inputStreamReader.close();
-
-            body = bodyBuffer.toString();
-            if ( isDebug() ) {
-              logDebug( "Response body: " + body );
-            }
-
-          } else { // the status is a 401
-            throw new KettleStepException( BaseMessages.getString(
-              PKG, "HTTP.Exception.Authentication", data.realUrl ) );
-
           }
         }
 
@@ -268,9 +272,7 @@ public class HTTP extends BaseStep implements StepInterface {
     data = (HTTPData) sdi;
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) {
-      // no more input to be expected...
-
+    if ( r == null ) { // no more input to be expected...
       setOutputDone();
       return false;
     }
@@ -293,8 +295,8 @@ public class HTTP extends BaseStep implements StepInterface {
           if ( data.indexOfUrlField < 0 ) {
             // The field is unreachable !
             logError( BaseMessages.getString( PKG, "HTTP.Log.ErrorFindingField", realUrlfieldName ) );
-            throw new KettleException( BaseMessages.getString(
-              PKG, "HTTP.Exception.ErrorFindingField", realUrlfieldName ) );
+            throw new KettleException( BaseMessages.getString( PKG, "HTTP.Exception.ErrorFindingField",
+                realUrlfieldName ) );
           }
         }
       } else {
@@ -314,16 +316,16 @@ public class HTTP extends BaseStep implements StepInterface {
       for ( int i = 0; i < nrHeaders; i++ ) {
         int fieldIndex = data.inputRowMeta.indexOfValue( meta.getHeaderField()[i] );
         if ( fieldIndex < 0 ) {
-          logError( BaseMessages.getString( PKG, "HTTP.Exception.ErrorFindingField" )
-            + meta.getHeaderField()[i] + "]" );
+          logError( BaseMessages.getString( PKG,
+                  "HTTP.Exception.ErrorFindingField" ) + meta.getHeaderField()[i] + "]" );
           throw new KettleStepException( BaseMessages.getString( PKG, "HTTP.Exception.ErrorFindingField", meta
-            .getHeaderField()[i] ) );
+              .getHeaderField()[i] ) );
         }
 
         data.header_parameters_nrs[i] = fieldIndex;
         data.headerParameters[i] =
-          new NameValuePair( environmentSubstitute( meta.getHeaderParameter()[i] ), data.outputRowMeta
-            .getString( r, data.header_parameters_nrs[i] ) );
+            new NameValuePair( environmentSubstitute( meta.getHeaderParameter()[i] ), data.outputRowMeta.getString( r,
+                data.header_parameters_nrs[i] ) );
       }
 
     } // end if first
