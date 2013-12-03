@@ -20,21 +20,73 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.core.version;
+package org.pentaho.di.version;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
+import org.junit.Before;
 import org.junit.Test;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.version.BuildVersion;
+import org.pentaho.di.version.EnvironmentVariableGetter;
+import org.pentaho.di.version.ManifestGetter;
 
 public class BuildVersionUnitTest {
+  private EnvironmentVariableGetter mockEnvironmentVariableGetter;
+  private ManifestGetter mockManifestGetter;
+
+  private void setNewMocks() {
+    mockEnvironmentVariableGetter = mock( EnvironmentVariableGetter.class );
+    mockManifestGetter = mock( ManifestGetter.class );
+    BuildVersion.environmentVariableGetter = mockEnvironmentVariableGetter;
+    BuildVersion.manifestGetter = mockManifestGetter;
+  }
+
+  @Before
+  public void setup() {
+    // This is to clear state between each run, init mocks
+    setNewMocks();
+    BuildVersion.refreshInstance();
+    setNewMocks();
+  }
+
+  private void initManifestGetter( String version, String revision, String date, String user ) {
+    Manifest manifest = mock( Manifest.class );
+    try {
+      when( mockManifestGetter.getManifest() ).thenReturn( manifest );
+    } catch ( Exception e ) {
+      // wont happen
+    }
+    Attributes attributes = mock( Attributes.class );
+    when( manifest.getMainAttributes() ).thenReturn( attributes );
+    when( manifest.getMainAttributes().getValue( Attributes.Name.IMPLEMENTATION_VERSION ) ).thenReturn( version );
+    when( manifest.getMainAttributes().getValue( Attributes.Name.SPECIFICATION_VERSION ) ).thenReturn( revision );
+    when( manifest.getMainAttributes().getValue( "Compile-Timestamp" ) ).thenReturn( date );
+    when( manifest.getMainAttributes().getValue( "Compile-User" ) ).thenReturn( user );
+  }
+
+  private void initEnvironmentVariableGetter( String version, String revision, String date, String user ) {
+    try {
+      when( mockEnvironmentVariableGetter.getEnvVarible( BuildVersion.KETTLE_BUILD_VERSION ) ).thenReturn( version );
+      when( mockEnvironmentVariableGetter.getEnvVarible( BuildVersion.KETTLE_BUILD_REVISION ) ).thenReturn( revision );
+      when( mockEnvironmentVariableGetter.getEnvVarible( BuildVersion.KETTLE_BUILD_DATE ) ).thenReturn( date );
+      when( mockEnvironmentVariableGetter.getEnvVarible( BuildVersion.KETTLE_BUILD_USER ) ).thenReturn( user );
+    } catch ( Exception e ) {
+      // wont happen
+    }
+  }
 
   @Test
   public void testGetInstance() {
+    initManifestGetter( "version", null, null, null );
+    BuildVersion.refreshInstance();
     BuildVersion version = BuildVersion.getInstance();
     if ( version == null || version.getVersion().isEmpty() ) {
       fail( "Unable to retrieve BuildVersion" );
@@ -47,6 +99,8 @@ public class BuildVersionUnitTest {
 
   @Test
   public void testGetBuildDate() {
+    initManifestGetter( null, null, new Date().toString(), null );
+    BuildVersion.refreshInstance();
     BuildVersion version = BuildVersion.getInstance();
     String buildDate = version.getBuildDate();
     if ( buildDate == null || buildDate.isEmpty() ) {
@@ -57,6 +111,9 @@ public class BuildVersionUnitTest {
 
   @Test
   public void testGetBuildDateAsLocalDate() {
+    SimpleDateFormat sdf = new SimpleDateFormat( BuildVersion.JAR_BUILD_DATE_FORMAT );
+    initManifestGetter( null, null, sdf.format( new Date() ), null );
+    BuildVersion.refreshInstance();
     BuildVersion version = BuildVersion.getInstance();
     Date buildDate = version.getBuildDateAsLocalDate();
     if ( buildDate == null ) {
@@ -71,7 +128,6 @@ public class BuildVersionUnitTest {
   public void testSetBuildDate() {
     BuildVersion version = BuildVersion.getInstance();
     // since this is a singleton, preserve the initial
-    String originalDate = version.getBuildDate();
     try {
       version.setBuildDate( buildDateTestString );
     } catch ( Exception ex ) {
@@ -108,19 +164,13 @@ public class BuildVersionUnitTest {
     if ( stillGood == null || !stillGood.equals( buildDateTestString ) ) {
       fail( "Failed setting date to invalid date - but left date as invalid." );
     }
-    // set it back to the original
-    try {
-      version.setBuildDate( originalDate );
-    } catch ( Exception ex ) {
-      fail( "Error setting date back to original..." );
-    }
   }
 
   @Test
   public void testGetVersion() {
     BuildVersion version = BuildVersion.getInstance();
     String buildversion = version.getVersion();
-    if ( buildversion != Const.VERSION ) {
+    if ( buildversion != BuildVersion.getInstance().getVersion() ) {
       fail( "Unexpected version number found." );
     }
   }
@@ -130,22 +180,20 @@ public class BuildVersionUnitTest {
   @Test
   public void testSetVersion() {
     BuildVersion version = BuildVersion.getInstance();
-    String origVersion = version.getVersion();
     version.setVersion( testVersionString );
     String newVersion = version.getVersion();
     if ( newVersion == null || !newVersion.equals( testVersionString ) ) {
       fail( "Unable to set version" );
     }
-    // put it back to where it was
-    version.setVersion( origVersion );
-
   }
 
   @Test
   public void testGetRevision() {
+    initEnvironmentVariableGetter( "version", "revision", new Date().toString(), "user" );
+    BuildVersion.refreshInstance();
     BuildVersion version = BuildVersion.getInstance();
     String revision = version.getRevision();
-    if ( revision == null || !revision.isEmpty() ) {
+    if ( !"revision".equals( revision ) ) {
       fail( "Unexpected revsision found : " + revision );
     }
   }
@@ -155,21 +203,20 @@ public class BuildVersionUnitTest {
   @Test
   public void testSetRevision() {
     BuildVersion version = BuildVersion.getInstance();
-    String revision = version.getRevision();
     version.setRevision( testRevisionString );
     String newRevision = version.getRevision();
     if ( newRevision == null || !newRevision.equals( testRevisionString ) ) {
       fail( "Error setting revision." );
     }
-    // restore it since it's a singleton
-    version.setRevision( revision );
   }
 
   @Test
   public void testGetBuildUser() {
+    initManifestGetter( null, null, null, testUserString );
+    BuildVersion.refreshInstance();
     BuildVersion version = BuildVersion.getInstance();
     String buser = version.getBuildUser();
-    if ( buser == null | !buser.isEmpty() ) {
+    if ( buser == null || buser.isEmpty() ) {
       fail( "Unable to retrieve user." );
     }
   }
@@ -179,15 +226,38 @@ public class BuildVersionUnitTest {
   @Test
   public void testSetBuildUser() {
     BuildVersion version = BuildVersion.getInstance();
-    String buser = version.getBuildUser();
     version.setBuildUser( testUserString );
     String newUser = version.getBuildUser();
     if ( newUser == null || !newUser.equals( testUserString ) ) {
       fail( "Error setting build user" );
     }
-    // reset the singleton
-    version.setBuildUser( buser );
-
   }
 
+  @Test
+  public void testInitFromManifest() {
+    String version = "manversion";
+    String revision = "manrevision";
+    String date = "mandate";
+    String user = "manuser";
+    initManifestGetter( version, revision, date, user );
+    BuildVersion.refreshInstance();
+    assertEquals( version, BuildVersion.getInstance().getVersion() );
+    assertEquals( revision, BuildVersion.getInstance().getRevision() );
+    assertEquals( date, BuildVersion.getInstance().getBuildDate() );
+    assertEquals( user, BuildVersion.getInstance().getBuildUser() );
+  }
+
+  @Test
+  public void testInitFromEnv() {
+    String version = "envversion";
+    String revision = "envrevision";
+    String date = "envdate";
+    String user = "envuser";
+    initEnvironmentVariableGetter( version, revision, date, user );
+    BuildVersion.refreshInstance();
+    assertEquals( version, BuildVersion.getInstance().getVersion() );
+    assertEquals( revision, BuildVersion.getInstance().getRevision() );
+    assertEquals( date, BuildVersion.getInstance().getBuildDate() );
+    assertEquals( user, BuildVersion.getInstance().getBuildUser() );
+  }
 }
