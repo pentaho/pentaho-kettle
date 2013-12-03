@@ -40,6 +40,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.version.BuildVersion;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -312,7 +313,7 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
 
   @Override
   public String getDatabaseProductVersion() throws SQLException {
-    return Const.VERSION;
+    return BuildVersion.getInstance().getVersion();
   }
 
   @Override

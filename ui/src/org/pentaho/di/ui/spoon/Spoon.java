@@ -5592,7 +5592,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     messageBuilder.append( BaseMessages.getString( PKG, "System.ProductInfo" ) );
     messageBuilder.append( releaseText );
     messageBuilder.append( " - " );
-    messageBuilder.append( Const.VERSION );
+    messageBuilder.append( BuildVersion.getInstance().getVersion() );
     messageBuilder.append( Const.CR );
     messageBuilder.append( Const.CR );
     messageBuilder.append( Const.CR );
@@ -7545,7 +7545,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       MessageBox dialog = new MessageBox( shell, SWT.ICON_WARNING );
       dialog.setText( BaseMessages.getString( PKG, "Spoon.Warning.DevelopmentRelease.Title" ) );
       dialog.setMessage( BaseMessages.getString( PKG, "Spoon.Warning.DevelopmentRelease.Message", Const.CR,
-          Const.VERSION ) );
+          BuildVersion.getInstance().getVersion() ) );
       dialog.open();
     }
   }
