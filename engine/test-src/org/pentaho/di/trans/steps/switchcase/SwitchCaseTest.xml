@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<step>
+	<name>Switch &#x2f; Case</name>
+	<type>SwitchCase</type>
+	<description />
+	<distribute>Y</distribute>
+	<custom_distribution />
+	<copies>1</copies>
+	<partitioning>
+		<method>none</method>
+		<schema_name />
+	</partitioning>
+	<fieldname>num</fieldname>
+	<use_contains>N</use_contains>
+	<case_value_type>Integer</case_value_type>
+	<case_value_format />
+	<case_value_decimal />
+	<case_value_group />
+	<default_target_step>def_1</default_target_step>
+	<cases>
+		<case>
+			<value>1</value>
+			<target_step>f1</target_step>
+		</case>
+		<case>
+			<value>1</value>
+			<target_step>f1 Copy</target_step>
+		</case>
+		<case>
+			<value>2</value>
+			<target_step>f2</target_step>
+		</case>
+		<case>
+			<value />
+			<target_step>null_1_copy</target_step>
+		</case>
+		<case>
+			<value />
+			<target_step>null_1</target_step>
+		</case>
+	</cases>
+</step>
