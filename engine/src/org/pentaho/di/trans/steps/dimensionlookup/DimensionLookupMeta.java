@@ -708,13 +708,8 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
         // Get the rows from the table...
         if ( databaseMeta != null ) {
           db = new Database( loggingObject, databaseMeta );
-          // First try without connecting to the database... (can be S L O W)
-          String schemaTable = databaseMeta.getQuotedSchemaTableCombination( schemaName, tableName );
-          RowMetaInterface extraFields = db.getTableFields( schemaTable );
-          if ( extraFields == null ) { // now we need to connect
-            db.connect();
-            extraFields = db.getTableFields( schemaTable );
-          }
+
+          RowMetaInterface extraFields = getDatabaseTableFields( db, schemaName, tableName );
 
           for ( int i = 0; i < fieldLookup.length; i++ ) {
             v = extraFields.searchValueMeta( fieldLookup[i] );
@@ -1850,5 +1845,17 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
    */
   public void setUseBatchUpdate( boolean useBatchUpdate ) {
     this.useBatchUpdate = useBatchUpdate;
+  }
+
+  protected RowMetaInterface getDatabaseTableFields( Database db, String schemaName, String tableName) throws KettleDatabaseException {
+    // First try without connecting to the database... (can be S L O W)
+    String schemaTable = databaseMeta.getQuotedSchemaTableCombination( schemaName, tableName );
+    RowMetaInterface extraFields = db.getTableFields( schemaTable );
+    if ( extraFields == null ) // now we need to connect
+    {
+      db.connect();
+      extraFields = db.getTableFields( schemaTable );
+    }
+    return extraFields;
   }
 }
