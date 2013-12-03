@@ -58,6 +58,7 @@ import org.pentaho.ui.xul.components.XulCheckbox;
 import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.components.XulMessageBox;
 import org.pentaho.ui.xul.components.XulTextbox;
+import org.pentaho.ui.xul.components.XulTreeCell;
 import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulListbox;
@@ -1148,8 +1149,21 @@ public class DataHandler extends AbstractXulEventHandler {
     // Empty doesn't clear the option, we have mercy.
 
     if ( serverInstanceBox != null ) {
-      if ( serverInstanceBox.getValue().trim().length() > 0 ) {
-        meta.setSQLServerInstance( serverInstanceBox.getValue() );
+      meta.setSQLServerInstance( serverInstanceBox.getValue() );
+      if ( optionsParameterTree != null && optionsParameterTree.getRootChildren() != null ) {
+        for ( int i = 0; i < optionsParameterTree.getRootChildren().getItemCount(); i++ ) {
+          XulTreeItem potRow = optionsParameterTree.getRootChildren().getItem( i );
+          if ( potRow != null && potRow.getRow() != null ) {
+            XulTreeCell cell = potRow.getRow().getCell( 0 );
+            XulTreeCell cell2 = potRow.getRow().getCell( 1 );
+            if ( cell != null && cell.getLabel() != null && cell.getLabel().equals( "instance" ) ) {
+              cell2.setLabel( serverInstanceBox.getValue() );
+              if ( serverInstanceBox.getValue().trim().length() == 0 ) {
+                cell.setLabel( "" );
+              }
+            }
+          }
+        }
       }
     }
 
