@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.switchcase;
 
 import java.util.List;
+import java.util.Set;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowSet;
@@ -71,69 +72,9 @@ public class SwitchCase extends BaseStep implements StepInterface {
 
     if ( first ) {
       first = false;
-
-      data.outputRowMeta = getInputRowMeta().clone();
-      meta.getFields( getInputRowMeta(), getStepname(), null, null, this, repository, metaStore );
-
-      data.fieldIndex = getInputRowMeta().indexOfValue( meta.getFieldname() );
-      if ( data.fieldIndex < 0 ) {
-        throw new KettleException( BaseMessages.getString( PKG, "SwitchCase.Exception.UnableToFindFieldName", meta
-            .getFieldname() ) );
-      }
-
-      data.inputValueMeta = getInputRowMeta().getValueMeta( data.fieldIndex );
-
-      try {
-        StepIOMetaInterface ioMeta = meta.getStepIOMeta();
-
-        // There is one case target for each target stream.
-        // The ioMeta object has one more target stream for the default target though.
-        //
-        List<StreamInterface> targetStreams = ioMeta.getTargetStreams();
-        for ( int i = 0; i < targetStreams.size(); i++ ) {
-          SwitchCaseTarget target = (SwitchCaseTarget) targetStreams.get( i ).getSubject();
-          if ( target == null ) {
-            break; // Skip over default option
-          }
-          if ( target.caseTargetStep == null ) {
-            throw new KettleException( BaseMessages.getString( PKG, "SwitchCase.Log.NoTargetStepSpecifiedForValue",
-                target.caseValue ) );
-          } else {
-            RowSet rowSet = findOutputRowSet( target.caseTargetStep.getName() );
-            if ( rowSet != null ) {
-              try {
-                Object value =
-                    data.valueMeta.convertDataFromString( target.caseValue, data.stringValueMeta, null, null,
-                        ValueMeta.TRIM_TYPE_NONE );
-
-                // If we have a value and a rowset, we can store the combination in the map
-                //
-                if ( data.valueMeta.isNull( value ) ) {
-                  data.nullRowSet = rowSet;
-                } else {
-                  data.outputMap.put( value, rowSet );
-                }
-
-              } catch ( Exception e ) {
-                throw new KettleException( BaseMessages.getString( PKG, "SwitchCase.Log.UnableToConvertValue",
-                    target.caseValue ), e );
-              }
-            } else {
-              throw new KettleException( BaseMessages.getString( PKG, "SwitchCase.Log.UnableToFindTargetRowSetForStep",
-                  target.caseTargetStep ) );
-            }
-          }
-        }
-
-        if ( meta.getDefaultTargetStep() != null ) {
-          data.defaultRowSet = findOutputRowSet( meta.getDefaultTargetStep().getName() );
-        } else {
-          data.defaultRowSet = null;
-        }
-      } catch ( Exception e ) {
-        throw new KettleException( e );
-      }
-
+      
+      //map input to output streams
+      createOutputValueMapping();
     }
 
     // We already know the target values, but we need to make sure that the input data type is the same as the specified
@@ -142,24 +83,18 @@ public class SwitchCase extends BaseStep implements StepInterface {
     //
     Object lookupData = data.valueMeta.convertData( data.inputValueMeta, r[data.fieldIndex] );
 
-    // Determine the output rowset to use...
-    //
-    RowSet rowSet = null;
-    if ( lookupData == null ) {
-      rowSet = data.nullRowSet;
-    } else {
-      rowSet = data.outputMap.get( lookupData );
-    }
-
+    // Determine the output set of rowset to use...
+    Set<RowSet> rowSetSet = null;
+    rowSetSet = ( lookupData == null ) ? data.nullRowSetSet : data.outputMap.get( lookupData );
+ 
     // If the rowset is still not found (unspecified key value, we drop down to the default option
     // For now: send it to the default step...
-    //
-    if ( rowSet == null ) {
-      if ( data.defaultRowSet != null ) {
-        putRowTo( data.outputRowMeta, r, data.defaultRowSet );
-      }
-    } else {
-      putRowTo( data.outputRowMeta, r, rowSet );
+    if ( rowSetSet == null ){
+      rowSetSet = data.defaultRowSetSet;
+    }
+
+    for ( RowSet rowSet : rowSetSet ) {
+      putRowTo(data.outputRowMeta, r, rowSet );
     }
 
     if ( checkFeedback( getLinesRead() ) ) {
@@ -178,27 +113,102 @@ public class SwitchCase extends BaseStep implements StepInterface {
     meta = (SwitchCaseMeta) smi;
     data = (SwitchCaseData) sdi;
 
-    if ( super.init( smi, sdi ) ) {
-      data.outputMap = meta.isContains() ? new ContainsKeyToRowSetMap() : new KeyToRowSetMap();
-
-      if ( Const.isEmpty( meta.getFieldname() ) ) {
-        logError( BaseMessages.getString( PKG, "SwitchCase.Log.NoFieldSpecifiedToSwitchWith" ) );
-        return false;
-      }
-
-      try {
-        data.valueMeta = ValueMetaFactory.createValueMeta( meta.getFieldname(), meta.getCaseValueType() );
-        data.valueMeta.setConversionMask( meta.getCaseValueFormat() );
-        data.valueMeta.setGroupingSymbol( meta.getCaseValueGroup() );
-        data.valueMeta.setDecimalSymbol( meta.getCaseValueDecimal() );
-        data.stringValueMeta = ValueMetaFactory.cloneValueMeta( data.valueMeta, ValueMetaInterface.TYPE_STRING );
-      } catch ( Exception e ) {
-        logError( BaseMessages.getString( PKG, "SwitchCase.Log.UnexpectedError", e ) );
-      }
-
-      return true;
+    if ( !super.init( smi, sdi ) ) {
+      return false;
     }
-    return false;
-  }
+    data.outputMap = meta.isContains() ? new ContainsKeyToRowSetMap() : new KeyToRowSetMap();
 
+    if ( Const.isEmpty( meta.getFieldname() ) ) {
+      logError( BaseMessages.getString( PKG, "SwitchCase.Log.NoFieldSpecifiedToSwitchWith" ) );
+      return false;
+    }
+
+    try {
+      data.valueMeta = ValueMetaFactory.createValueMeta( meta.getFieldname(), meta.getCaseValueType() );
+      data.valueMeta.setConversionMask( meta.getCaseValueFormat() );
+      data.valueMeta.setGroupingSymbol( meta.getCaseValueGroup() );
+      data.valueMeta.setDecimalSymbol( meta.getCaseValueDecimal() );
+      data.stringValueMeta = ValueMetaFactory.cloneValueMeta( data.valueMeta, ValueMetaInterface.TYPE_STRING );
+    } catch ( Exception e ) {
+      logError( BaseMessages.getString( PKG, "SwitchCase.Log.UnexpectedError", e ) );
+    }
+
+    return true;
+  }  
+
+  /**
+   * This will prepare step for execution:
+   * <ol>
+   * <li>will copy input row meta info, fields info, etc. step related info
+   * <li>will get step IO meta info and discover target streams for target output steps
+   * <li>for every target output find output rowset and expected value.
+   * <li>for every discovered output rowset put it as a key-value: 'expected value'-'output rowSet'.
+   * If expected value is null - put output rowset to special 'null set' (avoid usage of null as a map keys)
+   * <li>Discover default row set. We expect only one default rowset, even if technically can have many.   * 
+   * </ol>
+   * @throws KettleException if something goes wrong during step preparation.
+   */
+  void createOutputValueMapping() throws KettleException{
+    data.outputRowMeta = getInputRowMeta().clone();
+    meta.getFields( getInputRowMeta(), getStepname(), null, null, this, repository, metaStore );
+
+    data.fieldIndex = getInputRowMeta().indexOfValue( meta.getFieldname() );
+    if ( data.fieldIndex < 0 ) {
+      throw new KettleException( BaseMessages.getString( PKG, "SwitchCase.Exception.UnableToFindFieldName", meta
+          .getFieldname() ) );
+    }
+
+    data.inputValueMeta = getInputRowMeta().getValueMeta( data.fieldIndex );
+
+    try {
+      StepIOMetaInterface ioMeta = meta.getStepIOMeta();
+
+      // There is one or many case target for each target stream.
+      // The ioMeta object has one more target stream for the default target though.
+      //
+      List<StreamInterface> targetStreams = ioMeta.getTargetStreams();
+      for ( int i = 0; i < targetStreams.size(); i++ ) {
+        SwitchCaseTarget target = (SwitchCaseTarget) targetStreams.get( i ).getSubject();
+        if ( target == null ) {
+          break; // Skip over default option
+        }
+        if ( target.caseTargetStep == null ) {
+          throw new KettleException( BaseMessages.getString( PKG, "SwitchCase.Log.NoTargetStepSpecifiedForValue",
+              target.caseValue ) );
+        }
+        
+        RowSet rowSet = findOutputRowSet( target.caseTargetStep.getName() );
+        if ( rowSet == null ) {
+          throw new KettleException( BaseMessages.getString( PKG, "SwitchCase.Log.UnableToFindTargetRowSetForStep",
+              target.caseTargetStep ) );
+        }
+        
+        try {
+          Object value =
+              data.valueMeta.convertDataFromString( target.caseValue, data.stringValueMeta, null, null,
+                  ValueMeta.TRIM_TYPE_NONE );
+
+          // If we have a value and a rowset, we can store the combination in the map
+          //
+          if ( data.valueMeta.isNull( value ) ) {
+            data.nullRowSetSet.add( rowSet );
+          } else {
+            data.outputMap.put( value, rowSet );
+          }
+        } catch ( Exception e ) {
+          throw new KettleException( BaseMessages.getString( PKG, "SwitchCase.Log.UnableToConvertValue",
+              target.caseValue ), e );
+        }
+      }
+
+      if ( meta.getDefaultTargetStep() != null ) {
+        RowSet rowSet = findOutputRowSet( meta.getDefaultTargetStep().getName() );
+        if ( rowSet != null ){
+          data.defaultRowSetSet.add( rowSet );
+        }
+      }
+    } catch ( Exception e ) {
+      throw new KettleException( e );
+    }
+  }
 }
