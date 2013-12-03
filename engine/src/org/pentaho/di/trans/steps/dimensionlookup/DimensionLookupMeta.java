@@ -690,6 +690,14 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
       valueMeta.setTrimType( ValueMetaInterface.TRIM_TYPE_NONE );
     }
 
+    // technical key can't be null
+    if ( Const.isEmpty( keyField ) ) {
+      String message =
+        BaseMessages.getString( PKG, "DimensionLookupMeta.Error.NoTechnicalKeySpecified" );
+      logError( message );
+      throw new KettleStepException( message );
+    }
+
     ValueMetaInterface v = new ValueMeta( keyField, ValueMetaInterface.TYPE_INTEGER );
     if ( keyRename != null && keyRename.length() > 0 ) {
       v.setName( keyRename );
@@ -1847,12 +1855,11 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     this.useBatchUpdate = useBatchUpdate;
   }
 
-  protected RowMetaInterface getDatabaseTableFields( Database db, String schemaName, String tableName) throws KettleDatabaseException {
+  protected RowMetaInterface getDatabaseTableFields( Database db, String schemaName, String tableName ) throws KettleDatabaseException {
     // First try without connecting to the database... (can be S L O W)
     String schemaTable = databaseMeta.getQuotedSchemaTableCombination( schemaName, tableName );
     RowMetaInterface extraFields = db.getTableFields( schemaTable );
-    if ( extraFields == null ) // now we need to connect
-    {
+    if ( extraFields == null ) { // now we need to connect
       db.connect();
       extraFields = db.getTableFields( schemaTable );
     }
