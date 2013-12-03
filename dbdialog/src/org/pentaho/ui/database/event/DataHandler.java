@@ -1149,7 +1149,6 @@ public class DataHandler extends AbstractXulEventHandler {
     // Empty doesn't clear the option, we have mercy.
 
     if ( serverInstanceBox != null ) {
-   //   if ( serverInstanceBox.getValue().trim().length() > 0 ) {
       meta.setSQLServerInstance( serverInstanceBox.getValue() );
       if ( optionsParameterTree != null && optionsParameterTree.getRootChildren() != null ) {
         for ( int i = 0; i < optionsParameterTree.getRootChildren().getItemCount(); i++ ) {
@@ -1166,7 +1165,6 @@ public class DataHandler extends AbstractXulEventHandler {
           }
         }
       }
-//      }
     }
 
     // SQL Server double decimal separator
