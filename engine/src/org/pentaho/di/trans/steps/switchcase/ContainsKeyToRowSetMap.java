@@ -38,7 +38,7 @@ public class ContainsKeyToRowSetMap extends KeyToRowSetMap {
     String valueStr = (String) value;
     for ( String key : list ) {
       if ( valueStr.contains( key ) ) {
-        return get( key );
+        return super.get( key );
       }
     }
     return null;
@@ -48,8 +48,8 @@ public class ContainsKeyToRowSetMap extends KeyToRowSetMap {
     super.put( key, rowSet );
     list.add( (String) key );
   }
-  
-  public boolean containsKey(Object key) {
+
+  public boolean containsKey( Object key ) {
     String keyStr = (String) key;
     for ( String value : list ) {
       if ( keyStr.contains( value ) ) {
