@@ -71,6 +71,14 @@ public class Const {
   private static Class<?> PKG = Const.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
   /**
+   * Version number
+   * 
+   * @deprecated Use {@link BuildVersion#getVersion()} instead
+   */
+  @Deprecated
+  public static final String VERSION = BuildVersion.getInstance().getVersion();
+ 
+  /**
    * Copyright year
    */
   public static final String COPYRIGHT_YEAR = "2013";
