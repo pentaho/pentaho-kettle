@@ -479,7 +479,7 @@ public class InsertUpdate extends BaseStep implements StepInterface {
         } else {
           data.db.connect( getPartitionID() );
         }
-        data.db.setCommit( meta.getCommitSize() );
+        data.db.setCommit(  meta.getCommitSize( this ) );
 
         return true;
       } catch ( KettleException ke ) {

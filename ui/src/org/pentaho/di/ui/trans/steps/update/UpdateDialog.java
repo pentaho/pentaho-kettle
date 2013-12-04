@@ -665,7 +665,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface 
       logDebug( BaseMessages.getString( PKG, "UpdateDialog.Log.GettingKeyInfo" ) );
     }
 
-    wCommit.setText( "" + input.getCommitSize() );
+    wCommit.setText( input.getCommitSize() );
     wBatch.setSelection( input.useBatchUpdate() );
     wSkipLookup.setSelection( input.isSkipLookup() );
     wErrorIgnored.setSelection( input.isErrorIgnored() );
@@ -739,7 +739,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface 
 
     inf.allocate( nrkeys, nrfields );
 
-    inf.setCommitSize( Const.toInt( wCommit.getText(), 0 ) );
+    inf.setCommitSize(  wCommit.getText() );
     inf.setUseBatchUpdate( wBatch.getSelection() );
     inf.setSkipLookup( wSkipLookup.getSelection() );
 
