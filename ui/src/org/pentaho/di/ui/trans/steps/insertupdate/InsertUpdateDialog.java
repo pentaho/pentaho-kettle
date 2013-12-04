@@ -653,7 +653,7 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
       logDebug( BaseMessages.getString( PKG, "InsertUpdateDialog.Log.GettingKeyInfo" ) );
     }
 
-    wCommit.setText( "" + input.getCommitSize() );
+    wCommit.setText( input.getCommitSize() );
     wUpdateBypassed.setSelection( input.isUpdateBypassed() );
 
     if ( input.getKeyStream() != null ) {
@@ -725,7 +725,7 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
 
     inf.allocate( nrkeys, nrfields );
 
-    inf.setCommitSize( Const.toInt( wCommit.getText(), 0 ) );
+    inf.setCommitSize( wCommit.getText() );
     inf.setUpdateBypassed( wUpdateBypassed.getSelection() );
 
     if ( log.isDebug() ) {

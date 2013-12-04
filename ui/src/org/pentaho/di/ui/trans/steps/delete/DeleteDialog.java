@@ -422,7 +422,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface 
       logDebug( BaseMessages.getString( PKG, "DeleteDialog.Log.GettingKeyInfo" ) );
     }
 
-    wCommit.setText( "" + input.getCommitSize() );
+    wCommit.setText( input.getCommitSize() );
 
     if ( input.getKeyStream() != null ) {
       for ( int i = 0; i < input.getKeyStream().length; i++ ) {
@@ -518,7 +518,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface 
 
     inf.allocate( nrkeys );
 
-    inf.setCommitSize( Const.toInt( wCommit.getText(), 0 ) );
+    inf.setCommitSize( wCommit.getText() );
 
     if ( log.isDebug() ) {
       logDebug( BaseMessages.getString( PKG, "DeleteDialog.Log.FoundKeys", String.valueOf( nrkeys ) ) );

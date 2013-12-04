@@ -89,7 +89,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface {
   private String[] updateStream;
 
   /** Commit size for inserts/updates */
-  private int commitSize;
+  private String commitSize;
 
   /** update errors are ignored if this flag is set to true */
   private boolean errorIgnored;
@@ -110,15 +110,19 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface {
   /**
    * @return Returns the commitSize.
    */
-  public int getCommitSize() {
+  public String getCommitSize() {
     return commitSize;
   }
 
+  public int getCommitSize(VariableSpace vs) {
+    return Integer.parseInt( vs.environmentSubstitute( commitSize ) );
+  }
+  
   /**
    * @param commitSize
    *          The commitSize to set.
    */
-  public void setCommitSize( int commitSize ) {
+  public void setCommitSize( String commitSize ) {
     this.commitSize = commitSize;
   }
 
@@ -331,7 +335,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface {
       String con = XMLHandler.getTagValue( stepnode, "connection" );
       databaseMeta = DatabaseMeta.findDatabase( databases, con );
       csize = XMLHandler.getTagValue( stepnode, "commit" );
-      commitSize = Const.toInt( csize, 0 );
+      commitSize = ( csize == null ) ? "0" : csize;
       useBatchUpdate = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "use_batch" ) );
       skipLookup = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "skip_lookup" ) );
       errorIgnored = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "error_ignored" ) );
@@ -377,7 +381,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface {
     keyStream = null;
     updateLookup = null;
     databaseMeta = null;
-    commitSize = 100;
+    commitSize = "100";
     schemaName = "";
     tableName = BaseMessages.getString( PKG, "UpdateMeta.DefaultTableName" );
 
@@ -439,7 +443,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface {
     try {
       databaseMeta = rep.loadDatabaseMetaFromStepAttribute( id_step, "id_connection", databases );
       skipLookup = rep.getStepAttributeBoolean( id_step, "skip_lookup" );
-      commitSize = (int) rep.getStepAttributeInteger( id_step, "commit" );
+      commitSize = rep.getStepAttributeString( id_step, "commit" );
       useBatchUpdate = rep.getStepAttributeBoolean( id_step, "use_batch" );
       schemaName = rep.getStepAttributeString( id_step, "schema" );
       tableName = rep.getStepAttributeString( id_step, "table" );
