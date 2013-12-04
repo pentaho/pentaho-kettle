@@ -56,6 +56,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.laf.BasePropertyHandler;
+import org.pentaho.di.version.BuildVersion;
 
 /**
  * This class is used to define a number of default values for various settings throughout Kettle.
@@ -72,7 +73,7 @@ public class Const
   /**
    * Version number
    */
-  public static final String VERSION = "4.4.2";
+  public static final String VERSION = BuildVersion.getInstance().getVersion();
   
   /**
    * Copyright year 
@@ -2513,7 +2514,8 @@ public class Const
 	public static String getKettlePropertiesFileHeader() {
 		StringBuilder out = new StringBuilder();
 		
-		out.append(BaseMessages.getString(PKG, "Props.Kettle.Properties.Sample.Line01", VERSION)+CR);
+		out.append(BaseMessages.getString(PKG, "Props.Kettle.Properties.Sample.Line01", 
+		    BuildVersion.getInstance().getVersion())+CR);
 		out.append(BaseMessages.getString(PKG, "Props.Kettle.Properties.Sample.Line02")+CR);
 		out.append(BaseMessages.getString(PKG, "Props.Kettle.Properties.Sample.Line03")+CR);
 		out.append(BaseMessages.getString(PKG, "Props.Kettle.Properties.Sample.Line04")+CR);

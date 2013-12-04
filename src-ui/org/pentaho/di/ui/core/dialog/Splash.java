@@ -51,6 +51,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.util.ImageUtil;
+import org.pentaho.di.version.BuildVersion;
 
 /**
  * Displays the Kettle splash screen
@@ -113,7 +114,7 @@ public class Splash {
     
     canvas.addPaintListener(new PaintListener() {
       public void paintControl(PaintEvent e) {
-        String versionText = BaseMessages.getString(PKG, "SplashDialog.Version") + " " + Const.VERSION; //$NON-NLS-1$ //$NON-NLS-2$
+        String versionText = BaseMessages.getString(PKG, "SplashDialog.Version") + " " + BuildVersion.getInstance().getVersion(); //$NON-NLS-1$ //$NON-NLS-2$
         
         StringBuilder sb = new StringBuilder();
         String line = null;

@@ -53,7 +53,7 @@ public class Variables implements VariableSpace
         initialized = false;
         
         // The Kettle version
-        properties.put(Const.INTERNAL_VARIABLE_KETTLE_VERSION, Const.VERSION);
+        properties.put(Const.INTERNAL_VARIABLE_KETTLE_VERSION, BuildVersion.getInstance().getVersion() );
 
         // The Kettle build version
         properties.put(Const.INTERNAL_VARIABLE_KETTLE_BUILD_VERSION, BuildVersion.getInstance().getRevision() );
