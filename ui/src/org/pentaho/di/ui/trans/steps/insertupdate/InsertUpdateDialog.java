@@ -102,7 +102,7 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
   private FormData fdlReturn, fdReturn;
 
   private Label wlCommit;
-  private Text wCommit;
+  private TextVar wCommit;
   private FormData fdlCommit, fdCommit;
 
   private Label wlUpdateBypassed;
@@ -262,7 +262,7 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
     fdlCommit.top = new FormAttachment( wTable, margin );
     fdlCommit.right = new FormAttachment( middle, -margin );
     wlCommit.setLayoutData( fdlCommit );
-    wCommit = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wCommit = new TextVar( transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wCommit );
     wCommit.addModifyListener( lsMod );
     fdCommit = new FormData();
