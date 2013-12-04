@@ -36,6 +36,7 @@ import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.StreamLogger;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.version.BuildVersion;
 
 
 
@@ -71,7 +72,7 @@ public class JarfileGenerator
             // The manifest file
             String strManifest = "";
             strManifest += "Manifest-Version: 1.0"+Const.CR;
-            strManifest += "Created-By: Kettle version "+Const.VERSION+Const.CR;
+            strManifest += "Created-By: Kettle version "+BuildVersion.getInstance().getVersion()+Const.CR;
             strManifest += Attributes.Name.MAIN_CLASS.toString()+": " + (JarPan.class.getName()) + Const.CR;
             
             // Create a new manifest file in the root.
