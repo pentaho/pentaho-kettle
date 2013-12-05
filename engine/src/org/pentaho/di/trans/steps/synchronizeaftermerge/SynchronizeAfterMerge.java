@@ -132,7 +132,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
         // For PG & GP, we add a savepoint before the row.
         // Then revert to the savepoint afterwards... (not a transaction, so hopefully still fast)
         //
-        if ( data.specialErrorHandling ) {
+        if ( data.specialErrorHandling && data.supportsSavepoints ) {
           data.savepoint = data.db.setSavepoint();
         }
 
@@ -257,7 +257,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
             // For PG & GP, we add a savepoint before the row.
             // Then revert to the savepoint afterwards... (not a transaction, so hopefully still fast)
             //
-            if ( data.specialErrorHandling ) {
+            if ( data.specialErrorHandling && data.supportsSavepoints ) {
               data.savepoint = data.db.setSavepoint();
             }
             data.db.setValues( data.updateParameterRowMeta, updateRow, data.updateStatement );
@@ -305,7 +305,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
           // For PG & GP, we add a savepoint before the row.
           // Then revert to the savepoint afterwards... (not a transaction, so hopefully still fast)
           //
-          if ( data.specialErrorHandling ) {
+          if ( data.specialErrorHandling && data.supportsSavepoints ) {
             data.savepoint = data.db.setSavepoint();
           }
           data.db.setValues( data.deleteParameterRowMeta, deleteRow, data.deleteStatement );
@@ -343,7 +343,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
 
         // Release the savepoint if needed
         //
-        if ( data.specialErrorHandling ) {
+        if ( data.specialErrorHandling && data.supportsSavepoints ) {
           if ( data.releaseSavepoint ) {
             data.db.releaseSavepoint( data.savepoint );
           }
@@ -434,10 +434,13 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
           logRowlevel( "Written row to error handling : " + getInputRowMeta().getString( row ) );
         }
 
-        if ( data.specialErrorHandling ) {
-          data.db.rollback( data.savepoint );
-          if ( data.releaseSavepoint ) {
-            data.db.releaseSavepoint( data.savepoint );
+        if ( data.specialErrorHandling && data.supportsSavepoints ) {
+          if ( data.savepoint != null || !data.lookupFailure ) {
+            //do this when savepoint was set, and this is not lookup failure PDI-10878 
+            data.db.rollback( data.savepoint );
+            if ( data.releaseSavepoint ) {
+              data.db.releaseSavepoint( data.savepoint );
+            }
           }
         }
         sendToErrorRow = true;
@@ -852,6 +855,8 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
         //
         data.specialErrorHandling =
             getStepMeta().isDoingErrorHandling() && meta.getDatabaseMeta().supportsErrorHandlingOnBatchUpdates();
+
+        data.supportsSavepoints = meta.getDatabaseMeta().getDatabaseInterface().useSafePoints();
 
         if ( data.batchMode && data.specialErrorHandling ) {
           data.batchMode = false;
