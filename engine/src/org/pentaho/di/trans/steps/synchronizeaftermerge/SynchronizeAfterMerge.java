@@ -890,7 +890,8 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
         // Batch updates are not supported on PostgreSQL (and look-a-likes) together with error handling (PDI-366)
         //
         data.specialErrorHandling =
-          getStepMeta().isDoingErrorHandling() && meta.getDatabaseMeta().supportsErrorHandlingOnBatchUpdates();
+            getStepMeta().isDoingErrorHandling() && meta.getDatabaseMeta().supportsErrorHandlingOnBatchUpdates()
+                && meta.getDatabaseMeta().getDatabaseInterface().useSafePoints();
 
         if ( data.batchMode && data.specialErrorHandling ) {
           data.batchMode = false;
