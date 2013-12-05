@@ -577,9 +577,17 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
         int partitionNr = stepcopy;
         String partitionNrString = new DecimalFormat( "000" ).format( partitionNr );
         setVariable( Const.INTERNAL_VARIABLE_STEP_PARTITION_NR, partitionNrString );
-        String partitionID =
-            stepMeta.getStepPartitioningMeta().getPartitionSchema().getPartitionIDs().get( partitionNr );
-        setVariable( Const.INTERNAL_VARIABLE_STEP_PARTITION_ID, partitionID );
+
+        final List<String> partitionIDList = stepMeta.getStepPartitioningMeta().getPartitionSchema().getPartitionIDs();
+        if (partitionIDList.size() > 0) {
+          String partitionID = partitionIDList.get( partitionNr );
+          setVariable( Const.INTERNAL_VARIABLE_STEP_PARTITION_ID, partitionID );
+        } else {
+          if ( log.isDetailed() ) {
+            logDetailed( "Unable to retrieve a partition id from the partition schema: " +
+                    stepMeta.getStepPartitioningMeta().getPartitionSchema().getName());
+          }
+        }
       }
     } else if ( !Const.isEmpty( partitionID ) ) {
       setVariable( Const.INTERNAL_VARIABLE_STEP_PARTITION_ID, partitionID );
