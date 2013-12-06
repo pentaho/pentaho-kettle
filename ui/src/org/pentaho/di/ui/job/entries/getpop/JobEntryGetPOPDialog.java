@@ -28,6 +28,7 @@ import java.util.Calendar;
 
 import javax.mail.Folder;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
@@ -1024,7 +1025,8 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     wlListmails.setLayoutData( fdlListmails );
     wListmails = new CCombo( wPOP3Settings, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER );
     wListmails.add( BaseMessages.getString( PKG, "JobGetPOP.RetrieveAllMails.Label" ) );
-    wListmails.add( BaseMessages.getString( PKG, "JobGetPOP.RetrieveUnreadMails.Label" ) );
+    //PDI-7241 POP3 does not support retrive unread
+    //wListmails.add( BaseMessages.getString( PKG, "JobGetPOP.RetrieveUnreadMails.Label" ) );
     wListmails.add( BaseMessages.getString( PKG, "JobGetPOP.RetrieveFirstMails.Label" ) );
     wListmails.select( 0 ); // +1: starts at -1
 
@@ -2032,7 +2034,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 
   public void chooseListMails() {
     boolean ok =
-        ( wProtocol.getText().equals( MailConnectionMeta.PROTOCOL_STRING_POP3 ) && wListmails.getSelectionIndex() == 2 );
+        ( wProtocol.getText().equals( MailConnectionMeta.PROTOCOL_STRING_POP3 ) && wListmails.getSelectionIndex() == 1 );
     wlFirstmails.setEnabled( ok );
     wFirstmails.setEnabled( ok );
   }
@@ -2082,8 +2084,18 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     if ( jobEntry.getAttachmentWildcard() != null ) {
       wAttachmentWildcard.setText( jobEntry.getAttachmentWildcard() );
     }
-    if ( jobEntry.getRetrievemails() >= 0 ) {
-      wListmails.select( jobEntry.getRetrievemails() );
+    
+    String protocol = jobEntry.getProtocol();
+    boolean isPop3 = StringUtils.equals( protocol, MailConnectionMeta.PROTOCOL_STRING_POP3 );
+    wProtocol.setText( protocol );
+    int i = jobEntry.getRetrievemails();
+
+    if ( i > 0 ) {      
+      if ( isPop3 ) {     
+        wListmails.select( i - 1 );
+      } else {
+        wListmails.select( i );
+      }
     } else {
       wListmails.select( 0 ); // Retrieve All Mails
     }
@@ -2093,7 +2105,6 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     }
 
     wDelete.setSelection( jobEntry.getDelete() );
-    wProtocol.setText( jobEntry.getProtocol() );
     wIMAPListmails.setText( MailConnectionMeta.getValueImapListDesc( jobEntry.getValueImapList() ) );
     if ( jobEntry.getIMAPFolder() != null ) {
       wIMAPFolder.setText( jobEntry.getIMAPFolder() );
@@ -2169,7 +2180,12 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     jobEntry.setPort( wPort.getText() );
     jobEntry.setOutputDirectory( wOutputDirectory.getText() );
     jobEntry.setFilenamePattern( wFilenamePattern.getText() );
-    jobEntry.setRetrievemails( wListmails.getSelectionIndex() );
+    
+    //[PDI-7241] Option 'retrieve unread' is removed and there is only 2 options.
+    //for backward compatibility: 0 is 'retrieve all', 1 is 'retrieve first...'
+    int actualIndex = wListmails.getSelectionIndex();
+    jobEntry.setRetrievemails( actualIndex > 0 ? 2 : 0 );
+    
     jobEntry.setFirstMails( wFirstmails.getText() );
     jobEntry.setDelete( wDelete.getSelection() );
     jobEntry.setProtocol( wProtocol.getText() );
