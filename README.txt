@@ -60,25 +60,29 @@ OK, I have the new project structure checked out. So now what can I do?
     
     ant clean-all resolve create-dot-classpath
     
-    If you are using Ant, the default Ant target will build Spoon which can then be run from 
-    the project's dist/ folder.
+    These targets will resolve and retrieve the dependencies (third-party and Pentaho JARs, e.g.) and
+    update your Eclipse classpath.
+    
+    The default Ant target will build and locally publish the Kettle modules and core plugins. If you are
+    using Ant to build a local distribution, run the "dist" target. This will perform the build, then 
+    it will create a local distribution of Kettle, and Spoon can then be run from the project's dist/ folder.
      
      Linux example:
         
-         ant
+         ant dist
          cd dist
          sh spoon.sh     
          
-     If you are using Eclipse, you may notice that there is no .classpath file in the 
-     repository. With the use of Ivy, it is no longer necessary to edit the .classpath file 
+     If you are using Eclipse, you may notice upon initial checkout that there is no .classpath file 
+     in the repository. With the use of Ivy, it is no longer necessary to edit the .classpath file 
      and check it into version control. There is a file called classpath.template in the root 
      folder in which contains references to Kettle source code and output folders. You can 
      generate a full .classpath file (including Kettle's dependencies) with the 
-     "create-dot-classpath" Ant target. 
+     "resolve create-dot-classpath" Ant targets. 
      
      Linux example:
      
-         /workspace/Kettle-trunk/ant create-dot-classpath
+         /workspace/Kettle-trunk/ant resolve create-dot-classpath
          
      The Ant target will will copy classpath.template to .classpath, resolve the dependencies 
      into the lib/ folder, and generate the .classpath file.
@@ -101,9 +105,10 @@ How do I set up Run and Debug configurations in Eclipse?
 Let's say I just want to add a new property to a step using Eclipse as my IDE.  What do I have to do?
 
      - Check out the project and set it up as an Eclipse Java project.
-     - Run the create-dot-classpath Ant target
+     - Run "ant clean-all resolve create-dot-classpath"
      - Refresh the Eclipse project to synch the workspace with the file system.
      - Make the appropriate code changes in the step meta and the step dialog.
+     - Run the default Ant target
      - Changes can be verified by running the <project>.launch file where <project>
        is the name of the Eclipse project.
      
@@ -111,16 +116,11 @@ Let's say I just want to add a new property to a step using Eclipse as my IDE.  
      
 If I want to build the project with Ant should I always use the default target?
 
-     The default target should be run first after checking out the project, but if no changes have
-     been made that would affect the dependencies, you can run the "dist-nodeps" which skips the 
-     resolution task(s).
+     To simply build/compile the code, use the default target. To get a full Kettle distribution, use 
+     the "dist" Ant target. To build the distribution (or any module or plugin) from a clean workspace, 
+     run the following Ant targets from the root directory of the desired artifact:
      
-     Consider the previous scenario with adding a new property to a step.  You checked out the project 
-     and ran the default Ant target.  You change only the steps meta, dialog and execution java source.  
-     You likely do not need to clean the project and resolve the dependencies again.  
-     
-     Also, running the Ant "compile" target in the project's root folder will compile changed source
-     code for all the modules.
+     ant clean-all resolve dist
      
 
 
@@ -129,7 +129,7 @@ My code changes were just in the engine module.  Can I run Ant from there?
      You can use the build file located in the engine folder, e.g., 
      
          Kettle>cd engine
-         Kettle>ant compile
+         Kettle>ant clean-all resolve dist
      
 
 I get compile errors!  Cannot find symbols and packages that don't exist!
@@ -150,9 +150,7 @@ That seems redundant.
 
 I ran Spoon from the project's dist folder.  Why can't I see my changes I just compiled?
 
-     You need to do a an "ant dist" at the project level.  In the scenario of adding a new
-     property to a step we do not need to resolve dependencies so the dist-nodeps target is 
-     even quicker:
+     You need to do a an "ant dist" at the project level.
      
          Here is an example of compiling engine source and then "disting" the project:
      
@@ -162,7 +160,7 @@ I ran Spoon from the project's dist folder.  Why can't I see my changes I just c
              No compile errors!  
              
          Kettle/engine>cd ..
-         Kettle>ant dist-nodeps
+         Kettle>ant dist
          
              No errors!
              
@@ -175,9 +173,12 @@ I ran Spoon from the project's dist folder.  Why can't I see my changes I just c
 If I needed to change something in DB, like the default port for PostgreSQL, do I need to check out all
 of Kettle and build it?
 
-     No you don't. In this example you can check out only the "core" module.  Run the module's 
-     default Ant target. If you are using Eclipse, run the "create-dot-classpath" Ant target and refresh
-     the project in Eclipse. Then make your code change in PostgreSQLDatabaseMeta and run the "dist" ant target.  
+     You will get a full working copy of Kettle when you checkout a branch from the Git project. However you
+     do not need to build all of Kettle if your changes are isolated to a particular module or plugin. In this 
+     example you can go into the "core" folder and run the following Ant target set:
+     
+     clean-all resolve dist
+     
      A kettle-core JAR will be built and placed in the project's dist/ folder.
      
      To test out your changes you can grab a Kettle build from CI:
@@ -254,8 +255,7 @@ What is that "assembly" folder?
         
 What is "package-res" in assembly?
 
-     If you take a look in "package-res" you will see a folder structure that 
-     once was under the root of the Kettle project.  These folders are packaged up 
-     into the distributable product.
+     If you take a look in "package-res" you will see a folder structure that once was under the root of the Kettle 
+     project.  These folders are packaged up into the distributable product.
      
      Changes to shell scripts, launcher, images, and docs are made here.     

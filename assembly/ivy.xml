@@ -18,8 +18,29 @@
     <dependency org="${ivy.artifact.group}" name="kettle-core"          rev="${project.revision}" changing="true"/>
     <dependency org="${ivy.artifact.group}" name="kettle-engine"        rev="${project.revision}" changing="true"/>
     <dependency org="${ivy.artifact.group}" name="kettle-dbdialog"      rev="${project.revision}" changing="true"/>
-    <dependency org="${ivy.artifact.group}" name="kettle-jdbc"          rev="${project.revision}" changing="true"/>
-    <dependency org="${ivy.artifact.group}" name="kettle-ui-swt"        rev="${project.revision}" changing="true"/>
+    <dependency org="${ivy.artifact.group}" name="kettle-ui-swt"        rev="${project.revision}" changing="true">
+      <exclude name="swt-linux-x86_64"/>
+    </dependency>
+    
+    <!-- Kettle plugin dependencies-->
+    <dependency org="${ivy.artifact.group}" name="market" rev="${project.revision}" changing="true" conf="plugins->default">
+        <artifact name="market" type="zip"/>
+    </dependency>
+    <dependency org="${ivy.artifact.group}" name="kettle-gpload-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+        <artifact name="kettle-gpload-plugin" type="zip"/>
+    </dependency>
+    <dependency org="${ivy.artifact.group}" name="kettle-hl7-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+        <artifact name="kettle-hl7-plugin" type="zip"/>
+    </dependency>
+    <dependency org="${ivy.artifact.group}" name="kettle-openerp-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+        <artifact name="kettle-openerp-plugin" type="zip"/>
+    </dependency>
+    <dependency org="${ivy.artifact.group}" name="kettle-palo-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+        <artifact name="kettle-palo-plugin" type="zip"/>
+    </dependency>
+    <dependency org="${ivy.artifact.group}" name="kettle5-log4j-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+        <artifact name="kettle5-log4j-plugin" type="zip"/>
+    </dependency>
     
     <!-- Pentaho dependencies (non-Kettle), launcher, shim, etc. -->
     <dependency org="pentaho"               name="pentaho-application-launcher"  rev="${dependency.launcher.revision}" conf="launcher->default"/>
@@ -61,7 +82,6 @@
     <dependency org="com.h2database"       name="h2"                    rev="1.2.131"       transitive="false"/>
     <dependency org="hsqldb"               name="hsqldb"                rev="1.8.0.7"       transitive="false"/>
     <dependency org="infobright"           name="infobright-core"       rev="3.4"           transitive="false"/>
-    <dependency org="javassist"            name="javassist"             rev="3.12.1.GA"        transitive="false"/>
     <dependency org="org.firebirdsql.jdbc" name="jaybird"               rev="2.1.6"         transitive="false"/>
     <dependency org="net.sf.jt400"         name="jt400"                 rev="6.1"           transitive="false"/>  
     <dependency org="jtds"                 name="jtds"                  rev="1.2.5"         transitive="false"/>

@@ -7,68 +7,19 @@
   </configurations>
   
   <dependencies defaultconf="default->default">
-  
     <!-- Kettle module dependencies-->
     <dependency org="${ivy.artifact.group}" name="kettle-core"     rev="${project.revision}" changing="true"/>
     <dependency org="${ivy.artifact.group}" name="kettle-engine"   rev="${project.revision}" changing="true"/>
     <dependency org="${ivy.artifact.group}" name="kettle-dbdialog" rev="${project.revision}" changing="true"/>
-    <dependency org="${ivy.artifact.group}" name="kettle-jdbc"     rev="${project.revision}" changing="true"/>
-    <dependency org="${ivy.artifact.group}" name="kettle-ui-swt"   rev="${project.revision}" changing="true"/>
-    
-    <dependency org="pentaho"               name="pentaho-application-launcher"        rev="${dependency.launcher.revision}" />
-    
-    <!-- The OS-specific libraries are bundled together, unzip them all for assembly -->
-    <dependency org="org.eclipse"          name="swtlibs"          rev="3.7" transitive="false">
-      <artifact name="swtlibs" type="zip"/>
+    <dependency org="${ivy.artifact.group}" name="kettle-ui-swt"   rev="${project.revision}" changing="true">
+      <exclude name="swt-linux-x86_64"/>
     </dependency>
     
-    <!--  Kettle plugin dependencies -->
-    <dependency org="ca.uhn.hapi"                name="hapi"                 rev="1.1"      transitive="false"/>
-    <dependency org="ca.uhn.hapi"                name="hapi-base"            rev="1.1"      transitive="false"/>
-    <dependency org="ca.uhn.hapi"                name="hapi-examples"        rev="1.1"      transitive="false"/>
-    <dependency org="ca.uhn.hapi"                name="hapi-structures-v21"  rev="1.1"      transitive="false"/>
-    <dependency org="ca.uhn.hapi"                name="hapi-structures-v22"  rev="1.1"      transitive="false"/>
-    <dependency org="ca.uhn.hapi"                name="hapi-structures-v23"  rev="1.1"      transitive="false"/>
-    <dependency org="ca.uhn.hapi"                name="hapi-structures-v231" rev="1.1"      transitive="false"/>
-    <dependency org="ca.uhn.hapi"                name="hapi-structures-v24"  rev="1.1"      transitive="false"/>
-    <dependency org="ca.uhn.hapi"                name="hapi-structures-v25"  rev="1.1"      transitive="false"/>
-    <dependency org="ca.uhn.hapi"                name="hapi-structures-v251" rev="1.1"      transitive="false"/>
-    <dependency org="ca.uhn.hapi"                name="hapi-structures-v26"  rev="1.1"      transitive="false"/>
-    <dependency org="org.apache.xmlrpc"          name="xmlrpc-client"        rev="3.1.3"    transitive="false"/>
-    <dependency org="org.apache.xmlrpc"          name="xmlrpc-common"        rev="3.1.3"    transitive="false"/>
-    <dependency org="org.apache.ws.commons.util" name="ws-commons-util"      rev="1.0.2"    transitive="false"/>
-    <dependency org="com.debortoliwines.openerp" name="openerp-java-api"     rev="1.3.0"    transitive="false"/>
-    <dependency org="pentaho"                    name="pentaho-palo-core"    rev="${dependency.pdi-palo-plugin.revision}" transitive="false"/>
-    <dependency org="pentaho"                    name="pentaho-metadata"     rev="${dependency.pentaho-metadata.revision}" changing="true" />
-    <!-- Third-party JDBC dependencies -->
-    <dependency org="org.apache.derby"     name="derby"                 rev="10.2.1.6"      transitive="false"/>
-    <dependency org="org.apache.derby"     name="derbyclient"           rev="10.2.1.6"      transitive="false"/>
-    <dependency org="com.h2database"       name="h2"                    rev="1.2.131"       transitive="false"/>
-    <dependency org="hsqldb"               name="hsqldb"                rev="1.8.0.7"       transitive="false"/>
-    <dependency org="infobright"           name="infobright-core"       rev="3.4"           transitive="false"/>
-    <dependency org="javassist"            name="javassist"             rev="3.12.1.GA"        transitive="false"/>
-    <dependency org="org.firebirdsql.jdbc" name="jaybird"               rev="2.1.6"         transitive="false"/>
-    <dependency org="net.sf.jt400"         name="jt400"                 rev="6.1"           transitive="false"/>  
-    <dependency org="jtds"                 name="jtds"                  rev="1.2.5"         transitive="false"/>
-    <dependency org="luciddb"              name="LucidDbClient-minimal" rev="0.9.4"         transitive="false"/>
-    <dependency org="monetdb"              name="monetdb-jdbc"          rev="2.8"           transitive="false"/>
-    <dependency org="postgresql"           name="postgresql"            rev="9.1-902.jdbc4" transitive="false"/>
-    <dependency org="com.sap"              name="sapdbc"                rev="7.4.4"         transitive="false"/>
-    <dependency org="org.xerial"           name="sqlite-jdbc"           rev="3.7.2"         transitive="false"/>
-    <dependency org="jaxen"                name="jaxen"                 rev="1.1.1"         transitive="false"/>
-    
-    <!-- Other third-party dependencies -->
-    <dependency org="asm"                  name="asm"                   rev="3.2"           transitive="false"/>
-    <dependency org="net.sf.saxon"         name="saxon-dom"             rev="9.1.0.8"       transitive="false"/>
-    
-    <!-- Test dependencies -->
-    <dependency org="junit"                    name="junit"                rev="4.7"    transitive="false" conf="test->default"/>          
+    <!-- Common (Unit, Integration) test dependencies -->
+    <dependency org="junit"                    name="junit"                rev="4.7"    transitive="false" conf="test->default"/>
+    <dependency org="org.mockito"              name="mockito-all"          rev="1.8.4"  transitive="false" conf="test->default"/>
     <dependency org="org.mortbay.jetty"        name="jetty-servlet-tester" rev="6.1.21" transitive="false" conf="test->default"/>
     <dependency org="net.sourceforge.nekohtml" name="nekohtml"             rev="1.9.7"  transitive="false" conf="test->default"/>    
-    <dependency org="org.mockito"              name="mockito-all"          rev="1.8.4"  transitive="false" conf="test->default"/>
     
-    <!-- Exclude JUnit from all configurations except test -->
-    <exclude org="junit" conf="default"/>
-                         
   </dependencies>
 </ivy-module>
