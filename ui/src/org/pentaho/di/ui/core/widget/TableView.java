@@ -102,7 +102,7 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 
 /**
  * Widget to display or modify data, displayed in a Table format.
- * 
+ *
  * @author Matt
  * @since 27-05-2003
  */
@@ -558,7 +558,7 @@ public class TableView extends Composite {
 
         /*
          * left = e.keyCode == SWT.ARROW_LEFT && last_carret_position==0;
-         * 
+         *
          * if (text!=null && !text.isDisposed()) right = e.keyCode == SWT.ARROW_RIGHT &&
          * last_carret_position==text.getText().length();
          */
@@ -1340,7 +1340,7 @@ public class TableView extends Composite {
 
   /**
    * Inform the content listener that content changed.
-   * 
+   *
    * @param rownr
    * @param colnr
    * @param textData
@@ -1665,7 +1665,7 @@ public class TableView extends Composite {
    * Example: ----------------------------------------------------------------- Field in stream;Dimension field
    * TIME;TIME DATA_TYPE;DATA_TYPE MAP_TYPE;MAP_TYPE RESOLUTION;RESOLUTION START_TIME;START_TIME
    * -----------------------------------------------------------------
-   * 
+   *
    * !! Paste at the end of the table! --> Create new table item for every line
    */
 
@@ -2447,7 +2447,7 @@ public class TableView extends Composite {
   /**
    * Count non-empty rows in the table... IMPORTANT: always call this method before calling getNonEmpty(int selnr): for
    * performance reasons we cache the row indexes.
-   * 
+   *
    * @return the number of rows/table-items that are not empty
    */
   public int nrNonEmpty() {
@@ -2466,7 +2466,7 @@ public class TableView extends Composite {
   /**
    * Return the row/table-item on the specified index. IMPORTANT: the indexes of the non-empty rows are populated with a
    * call to nrNonEmpty(). Make sure to call that first.
-   * 
+   *
    * @param index
    *          the index of the non-empty row/table-item
    * @return the requested non-empty row/table-item
@@ -2923,7 +2923,7 @@ public class TableView extends Composite {
 
   /**
    * Get all the strings from a certain column as an array
-   * 
+   *
    * @param colnr
    *          The column to return
    * @return the column values as a string array.
@@ -3103,5 +3103,14 @@ public class TableView extends Composite {
    */
   public void setShowingConversionErrorsInline( boolean showingConversionErrorsInline ) {
     this.showingConversionErrorsInline = showingConversionErrorsInline;
+  }
+
+  /**
+   * Returns copy of columns array in order to prevent unintented modifications.
+   *
+   * @return columns array
+   */
+  public ColumnInfo[] getColumns() {
+    return Arrays.copyOf( columns, columns.length );
   }
 }
