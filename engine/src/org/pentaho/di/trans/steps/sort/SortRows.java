@@ -383,7 +383,7 @@ public class SortRows extends BaseStep implements StepInterface {
     if ( first ) {
       if ( r == null ) {
         this.setOutputDone();
-        return true;
+        return false;
       }
 
       data.groupnrs = new int[meta.getGroupFields().size()];
