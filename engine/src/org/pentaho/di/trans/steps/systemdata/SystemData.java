@@ -251,7 +251,7 @@ public class SystemData extends BaseStep implements StepInterface
           }
 				break;
             case SystemDataMeta.TYPE_SYSTEM_INFO_KETTLE_VERSION:
-                row[index] = Const.VERSION;
+                row[index] = BuildVersion.getInstance().getVersion();
                 break;
             case SystemDataMeta.TYPE_SYSTEM_INFO_KETTLE_BUILD_VERSION:
                 row[index] = BuildVersion.getInstance().getVersion();

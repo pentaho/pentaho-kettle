@@ -147,7 +147,7 @@ public class EnvUtil
         // Add a bunch of internal variables
         
         // The Kettle version
-        prop.put(Const.INTERNAL_VARIABLE_KETTLE_VERSION, Const.VERSION);
+        prop.put(Const.INTERNAL_VARIABLE_KETTLE_VERSION, BuildVersion.getInstance().getVersion());
 
         // The Kettle build version
         prop.put(Const.INTERNAL_VARIABLE_KETTLE_BUILD_VERSION, BuildVersion.getInstance().getVersion());
