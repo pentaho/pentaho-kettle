@@ -23,7 +23,6 @@
 package org.pentaho.di.trans.steps.symmetriccrypto.symmetricalgorithm;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.i18n.BaseMessages;
 
 /**
@@ -70,7 +69,7 @@ public class SymmetricCryptoMeta {
    *          the type of DatabaseInterface to look for (description)
    * @return The requested DatabaseInterface
    * 
-   * @throws KettleDatabaseException
+   * @throws CryptoException
    *           when the type could not be found or referenced.
    */
   public static final SymmetricCryptoInterface getSymmetricCryptoInterface( String cryptoname ) throws CryptoException {
@@ -85,7 +84,7 @@ public class SymmetricCryptoMeta {
    *          the type of DatabaseInterface to look for (description)
    * @return The requested DatabaseInterface
    * 
-   * @throws KettleDatabaseException
+   * @throws CryptoException
    *           when the type could not be found or referenced.
    */
   private static final synchronized SymmetricCryptoInterface findSymmetricCryptoInterface( String cryptograhname )

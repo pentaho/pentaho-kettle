@@ -22,7 +22,6 @@
 
 package org.pentaho.di.trans;
 
-import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -197,7 +196,7 @@ public interface Partitioner {
    *          the ID of the transformation
    * @param id_step
    *          the ID of the step
-   * @throws KettleDatabaseException
+   * @throws KettleException
    *           In case anything goes wrong
    */
   public void saveRep( Repository rep, ObjectId id_transformation, ObjectId id_step ) throws KettleException;

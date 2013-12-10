@@ -46,7 +46,6 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleDependencyException;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleSecurityException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.logging.LogChannel;
@@ -174,8 +173,6 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
   /**
    * Connect to the repository.
    * 
-   * @throws KettleSecurityException
-   *           in case the supplied user or password is not valid
    * @throws KettleException
    *           in case there is a general unexpected error or if we're already connected
    */
@@ -186,8 +183,6 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
   /**
    * Connect to the repository.
    * 
-   * @throws KettleSecurityException
-   *           in case the supplied user or password is not valid
    * @throws KettleException
    *           in case there is a general unexpected error or if we're already connected
    */

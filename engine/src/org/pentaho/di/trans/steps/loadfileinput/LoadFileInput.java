@@ -23,7 +23,6 @@
 package org.pentaho.di.trans.steps.loadfileinput;
 
 import java.io.BufferedInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Date;
@@ -269,7 +268,7 @@ public class LoadFileInput extends BaseStep implements StepInterface {
    * @param charSetName
    *          the character set of the string (UTF-8, ISO8859-1, etc)
    * @return The content of the file as a String
-   * @throws IOException
+   * @throws KettleException
    */
   public static String getTextFileContent( String vfsFilename, String encoding ) throws KettleException {
     InputStream inputStream = null;

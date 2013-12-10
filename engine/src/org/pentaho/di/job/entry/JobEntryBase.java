@@ -38,7 +38,6 @@ import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.attributes.AttributesUtil;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleNotUsedException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.DefaultLogLevel;
@@ -490,7 +489,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    *          the repository object
    * @param id_job
    *          the id_job
-   * @throws KettleNotUsedException
+   * @throws KettleException
    *           if any errors occur during the save
    */
   @Deprecated

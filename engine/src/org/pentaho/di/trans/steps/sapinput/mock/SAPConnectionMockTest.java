@@ -27,7 +27,6 @@ import java.util.Vector;
 
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.SAPR3DatabaseMeta;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPConnection;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPException;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPField;
@@ -41,7 +40,7 @@ public class SAPConnectionMockTest {
   /**
    * How to use a SAPConnection
    * 
-   * @throws KettleException
+   * @throws SAPException
    */
   public static void main( String[] args ) throws SAPException {
 

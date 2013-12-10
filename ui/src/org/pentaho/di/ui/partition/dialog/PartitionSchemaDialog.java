@@ -44,7 +44,6 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.PartitionDatabaseMeta;
@@ -63,9 +62,9 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * 
- * Dialog that allows you to edit the settings of the cluster schema
+ * Dialog that allows you to edit the settings of the partition schema
  * 
- * @see ClusterSchema
+ * @see PartitionSchema
  * @author Matt
  * @since 17-11-2006
  * 

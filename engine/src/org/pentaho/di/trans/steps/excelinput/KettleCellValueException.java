@@ -23,14 +23,12 @@
 package org.pentaho.di.trans.steps.excelinput;
 
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.i18n.BaseMessages;
 
 /**
- * Extended {@link KettleValueException} that allows passing extra context info up the chain (sheet, row, and column
- * IDs).
+ * Extended {@link KettleException} to allow passing of extra context info up the chain (sheet, row, and column IDs).
  * 
- * If we were really obssessive, we'd cache both the names and indexes of all the items, including the input file. But
+ * If we were really obsessive, we'd cache both the names and indexes of all the items, including the input file. But
  * this will do for a start.
  * 
  * @author timh
