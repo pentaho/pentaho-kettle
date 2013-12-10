@@ -194,70 +194,57 @@ public class FastSimpleGenericEdifactDirectXMLParser extends Parser {
       // C:\\workspace-sts\\Kettle trunk -
       // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:81:6:
       // ( una )? ( segment )*
-      {
-        // C:\\workspace-sts\\Kettle trunk -
-        // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:81:6:
-        // ( una )?
-        int alt1 = 2;
-        int LA1_0 = input.LA( 1 );
 
-        if ( ( ( LA1_0 >= 10 && LA1_0 <= 11 ) ) ) {
-          alt1 = 1;
-        }
-        switch ( alt1 ) {
-          case 1:
+      // C:\\workspace-sts\\Kettle trunk -
+      // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:81:6:
+      // ( una )?
+      int alt1 = 2;
+      int LA1_0 = input.LA( 1 );
+      if ( ( ( LA1_0 >= 10 && LA1_0 <= 11 ) ) ) {
+        alt1 = 1;
+      }
+      switch ( alt1 ) {
+        case 1:
           // C:\\workspace-sts\\Kettle trunk -
           // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:81:6:
           // una
-          {
-            pushFollow( FOLLOW_una_in_edifact64 );
-            una();
 
-            state._fsp--;
+          pushFollow( FOLLOW_una_in_edifact64 );
+          una();
+          state._fsp--;
+          break;
 
-          }
-            break;
+      }
+      buf = new StringBuilder( 8192 );
+      buf.append( XML_HEAD );
+      buf.append( TAG_EDIFACT );
+      // C:\\workspace-sts\\Kettle trunk -
+      // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:83:4:
+      // ( segment )*
+      loop2: do {
+        int alt2 = 2;
+        int LA2_0 = input.LA( 1 );
 
+        if ( ( LA2_0 == TEXT_DATA ) ) {
+          alt2 = 1;
         }
 
-        buf = new StringBuilder( 8192 );
-        buf.append( XML_HEAD );
-        buf.append( TAG_EDIFACT );
-
-        // C:\\workspace-sts\\Kettle trunk -
-        // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:83:4:
-        // ( segment )*
-        loop2: do {
-          int alt2 = 2;
-          int LA2_0 = input.LA( 1 );
-
-          if ( ( LA2_0 == TEXT_DATA ) ) {
-            alt2 = 1;
-          }
-
-          switch ( alt2 ) {
-            case 1:
+        switch ( alt2 ) {
+          case 1:
             // C:\\workspace-sts\\Kettle trunk -
             // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:83:4:
             // segment
-            {
-              pushFollow( FOLLOW_segment_in_edifact76 );
-              segment();
 
-              state._fsp--;
+            pushFollow( FOLLOW_segment_in_edifact76 );
+            segment();
+            state._fsp--;
+            break;
 
-            }
-              break;
-
-            default:
-              break loop2;
-          }
-        } while ( true );
-
-        buf.append( TAG_EDIFACT_END );
-
-      }
-
+          default:
+            break loop2;
+        }
+      } while ( true );
+      buf.append( TAG_EDIFACT_END );
       retval.stop = input.LT( -1 );
 
       // System.out.println(buf.toString());
@@ -265,8 +252,6 @@ public class FastSimpleGenericEdifactDirectXMLParser extends Parser {
     } catch ( RecognitionException e ) {
       // do not try to recover from parse errors, propagate the error instead
       throw e;
-    } finally {
-      // do for sure before leaving
     }
     return retval;
   }
@@ -300,29 +285,21 @@ public class FastSimpleGenericEdifactDirectXMLParser extends Parser {
       // ( 'UNA:+.? \\'' | 'UNA:+,? \\'' )
       // C:\\workspace-sts\\Kettle trunk -
       // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:
-      {
-        if ( ( input.LA( 1 ) >= 10 && input.LA( 1 ) <= 11 ) ) {
-          input.consume();
-          state.errorRecovery = false;
-        } else {
-          MismatchedSetException mse = new MismatchedSetException( null, input );
-          throw mse;
-        }
 
+      if ( ( input.LA( 1 ) >= 10 && input.LA( 1 ) <= 11 ) ) {
+        input.consume();
+        state.errorRecovery = false;
+      } else {
+        MismatchedSetException mse = new MismatchedSetException( null, input );
+        throw mse;
       }
-
       retval.stop = input.LT( -1 );
 
-    }
-
-    // do not try to recover from parse errors, propagate the error instead
-    catch ( RecognitionException e ) {
+    } catch ( RecognitionException e ) {
+      // do not try to recover from parse errors, propagate the error instead
       throw e;
     }
 
-    finally {
-      // do for sure before leaving
-    }
     return retval;
   }
 
@@ -358,95 +335,76 @@ public class FastSimpleGenericEdifactDirectXMLParser extends Parser {
       // C:\\workspace-sts\\Kettle trunk -
       // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:91:13:
       // tag ( data_element )* SEGMENT_TERMINATOR ( ' ' | '\\n' | '\\r' | '\\t' )*
-      {
-        pushFollow( FOLLOW_tag_in_segment107 );
-        tag1 = tag();
 
-        state._fsp--;
+      pushFollow( FOLLOW_tag_in_segment107 );
+      tag1 = tag();
+      state._fsp--;
+      buf.append( "\t<" + ( tag1 != null ? tag1.name : null ) + ">\n" );
+      appendIndexes();
+      // C:\\workspace-sts\\Kettle trunk -
+      // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:92:4:
+      // ( data_element )*
+      loop3: do {
+        int alt3 = 2;
+        int LA3_0 = input.LA( 1 );
 
-        buf.append( "\t<" + ( tag1 != null ? tag1.name : null ) + ">\n" );
-        appendIndexes();
+        if ( ( LA3_0 == ELEMENT_SEPARATOR ) ) {
+          alt3 = 1;
+        }
 
-        // C:\\workspace-sts\\Kettle trunk -
-        // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:92:4:
-        // ( data_element )*
-        loop3: do {
-          int alt3 = 2;
-          int LA3_0 = input.LA( 1 );
-
-          if ( ( LA3_0 == ELEMENT_SEPARATOR ) ) {
-            alt3 = 1;
-          }
-
-          switch ( alt3 ) {
-            case 1:
+        switch ( alt3 ) {
+          case 1:
             // C:\\workspace-sts\\Kettle trunk -
             // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:92:4:
             // data_element
-            {
-              pushFollow( FOLLOW_data_element_in_segment114 );
-              data_element();
 
-              state._fsp--;
+            pushFollow( FOLLOW_data_element_in_segment114 );
+            data_element();
+            state._fsp--;
+            break;
 
-            }
-              break;
+          default:
+            break loop3;
+        }
+      } while ( true );
+      match( input, SEGMENT_TERMINATOR, FOLLOW_SEGMENT_TERMINATOR_in_segment117 );
+      // C:\\workspace-sts\\Kettle trunk -
+      // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:92:37:
+      // ( ' ' | '\\n' | '\\r' | '\\t' )*
+      loop4: do {
+        int alt4 = 2;
+        int LA4_0 = input.LA( 1 );
 
-            default:
-              break loop3;
-          }
-        } while ( true );
+        if ( ( LA4_0 == 9 || ( LA4_0 >= 12 && LA4_0 <= 14 ) ) ) {
+          alt4 = 1;
+        }
 
-        match( input, SEGMENT_TERMINATOR, FOLLOW_SEGMENT_TERMINATOR_in_segment117 );
-
-        // C:\\workspace-sts\\Kettle trunk -
-        // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:92:37:
-        // ( ' ' | '\\n' | '\\r' | '\\t' )*
-        loop4: do {
-          int alt4 = 2;
-          int LA4_0 = input.LA( 1 );
-
-          if ( ( LA4_0 == 9 || ( LA4_0 >= 12 && LA4_0 <= 14 ) ) ) {
-            alt4 = 1;
-          }
-
-          switch ( alt4 ) {
-            case 1:
+        switch ( alt4 ) {
+          case 1:
             // C:\\workspace-sts\\Kettle trunk -
             // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:
-            {
-              if ( input.LA( 1 ) == 9 || ( input.LA( 1 ) >= 12 && input.LA( 1 ) <= 14 ) ) {
-                input.consume();
-                state.errorRecovery = false;
-              } else {
-                MismatchedSetException mse = new MismatchedSetException( null, input );
-                throw mse;
-              }
 
+            if ( input.LA( 1 ) == 9 || ( input.LA( 1 ) >= 12 && input.LA( 1 ) <= 14 ) ) {
+              input.consume();
+              state.errorRecovery = false;
+            } else {
+              MismatchedSetException mse = new MismatchedSetException( null, input );
+              throw mse;
             }
-              break;
+            break;
 
-            default:
-              break loop4;
-          }
-        } while ( true );
-
-        buf.append( "\t</" + ( tag1 != null ? tag1.name : null ) + ">\n" );
-
-      }
-
+          default:
+            break loop4;
+        }
+      } while ( true );
+      buf.append( "\t</" + ( tag1 != null ? tag1.name : null ) + ">\n" );
       retval.stop = input.LT( -1 );
 
-    }
-
-    // do not try to recover from parse errors, propagate the error instead
-    catch ( RecognitionException e ) {
+    } catch ( RecognitionException e ) {
+      // do not try to recover from parse errors, propagate the error instead
       throw e;
     }
 
-    finally {
-      // do for sure before leaving
-    }
     return retval;
   }
 
@@ -480,30 +438,18 @@ public class FastSimpleGenericEdifactDirectXMLParser extends Parser {
       // C:\\workspace-sts\\Kettle trunk -
       // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:96:17:
       // ss data_element_payload
-      {
-        pushFollow( FOLLOW_ss_in_data_element143 );
-        ss();
 
-        state._fsp--;
-
-        pushFollow( FOLLOW_data_element_payload_in_data_element145 );
-        data_element_payload();
-
-        state._fsp--;
-
-      }
-
+      pushFollow( FOLLOW_ss_in_data_element143 );
+      ss();
+      state._fsp--;
+      pushFollow( FOLLOW_data_element_payload_in_data_element145 );
+      data_element_payload();
+      state._fsp--;
       retval.stop = input.LT( -1 );
 
-    }
-
-    // do not try to recover from parse errors, propagate the error instead
-    catch ( RecognitionException e ) {
+    } catch ( RecognitionException e ) {
+      // do not try to recover from parse errors, propagate the error instead
       throw e;
-    }
-
-    finally {
-      // do for sure before leaving
     }
     return retval;
   }
@@ -539,71 +485,53 @@ public class FastSimpleGenericEdifactDirectXMLParser extends Parser {
       // C:\\workspace-sts\\Kettle trunk -
       // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:98:24:
       // ( composite_data_item ds )* composite_data_item
-      {
-        buf.append( TAG_ELEMENT );
 
-        // C:\\workspace-sts\\Kettle trunk -
-        // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:99:4:
-        // ( composite_data_item ds )*
-        loop5: do {
-          int alt5 = 2;
-          int LA5_0 = input.LA( 1 );
+      buf.append( TAG_ELEMENT );
+      // C:\\workspace-sts\\Kettle trunk -
+      // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:99:4:
+      // ( composite_data_item ds )*
+      loop5: do {
+        int alt5 = 2;
+        int LA5_0 = input.LA( 1 );
 
-          if ( ( LA5_0 == TEXT_DATA ) ) {
-            int LA5_1 = input.LA( 2 );
+        if ( ( LA5_0 == TEXT_DATA ) ) {
+          int LA5_1 = input.LA( 2 );
 
-            if ( ( LA5_1 == COMPLEX_ELEMENT_ITEM_SEPARATOR ) ) {
-              alt5 = 1;
-            }
-
-          } else if ( ( LA5_0 == COMPLEX_ELEMENT_ITEM_SEPARATOR ) ) {
+          if ( ( LA5_1 == COMPLEX_ELEMENT_ITEM_SEPARATOR ) ) {
             alt5 = 1;
           }
 
-          switch ( alt5 ) {
-            case 1:
+        } else if ( ( LA5_0 == COMPLEX_ELEMENT_ITEM_SEPARATOR ) ) {
+          alt5 = 1;
+        }
+
+        switch ( alt5 ) {
+          case 1:
             // C:\\workspace-sts\\Kettle trunk -
             // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:99:5:
             // composite_data_item ds
-            {
-              pushFollow( FOLLOW_composite_data_item_in_data_element_payload160 );
-              composite_data_item();
 
-              state._fsp--;
+            pushFollow( FOLLOW_composite_data_item_in_data_element_payload160 );
+            composite_data_item();
+            state._fsp--;
+            pushFollow( FOLLOW_ds_in_data_element_payload162 );
+            ds();
+            state._fsp--;
+            break;
 
-              pushFollow( FOLLOW_ds_in_data_element_payload162 );
-              ds();
-
-              state._fsp--;
-
-            }
-              break;
-
-            default:
-              break loop5;
-          }
-        } while ( true );
-
-        pushFollow( FOLLOW_composite_data_item_in_data_element_payload166 );
-        composite_data_item();
-
-        state._fsp--;
-
-        buf.append( TAG_ELEMENT_END );
-
-      }
-
+          default:
+            break loop5;
+        }
+      } while ( true );
+      pushFollow( FOLLOW_composite_data_item_in_data_element_payload166 );
+      composite_data_item();
+      state._fsp--;
+      buf.append( TAG_ELEMENT_END );
       retval.stop = input.LT( -1 );
 
-    }
-
-    // do not try to recover from parse errors, propagate the error instead
-    catch ( RecognitionException e ) {
+    } catch ( RecognitionException e ) {
+      // do not try to recover from parse errors, propagate the error instead
       throw e;
-    }
-
-    finally {
-      // do for sure before leaving
     }
     return retval;
   }
@@ -641,30 +569,19 @@ public class FastSimpleGenericEdifactDirectXMLParser extends Parser {
       // C:\\workspace-sts\\Kettle trunk -
       // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:102:23:
       // composite_data_item_val
-      {
-        pushFollow( FOLLOW_composite_data_item_val_in_composite_data_item180 );
-        composite_data_item_val2 = composite_data_item_val();
 
-        state._fsp--;
-
-        buf.append( TAG_VALUE );
-        buf.append( sanitizeText( ( composite_data_item_val2 != null ? input.toString(
-            composite_data_item_val2.start, composite_data_item_val2.stop ) : null ) ) );
-        buf.append( TAG_VALUE_END );
-
-      }
-
+      pushFollow( FOLLOW_composite_data_item_val_in_composite_data_item180 );
+      composite_data_item_val2 = composite_data_item_val();
+      state._fsp--;
+      buf.append( TAG_VALUE );
+      buf.append( sanitizeText( ( composite_data_item_val2 != null ? input.toString(
+          composite_data_item_val2.start, composite_data_item_val2.stop ) : null ) ) );
+      buf.append( TAG_VALUE_END );
       retval.stop = input.LT( -1 );
 
-    }
-
-    // do not try to recover from parse errors, propagate the error instead
-    catch ( RecognitionException e ) {
+    } catch ( RecognitionException e ) {
+      // do not try to recover from parse errors, propagate the error instead
       throw e;
-    }
-
-    finally {
-      // do for sure before leaving
     }
     return retval;
   }
@@ -712,36 +629,25 @@ public class FastSimpleGenericEdifactDirectXMLParser extends Parser {
       }
       switch ( alt6 ) {
         case 1:
-        // C:\\workspace-sts\\Kettle trunk -
-        // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:105:27:
-        // txt
-        {
+          // C:\\workspace-sts\\Kettle trunk -
+          // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:105:27:
+          // txt
+
           pushFollow( FOLLOW_txt_in_composite_data_item_val193 );
           txt();
-
           state._fsp--;
-
-        }
           break;
         case 2:
-        // C:\\workspace-sts\\Kettle trunk -
-        // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:105:31:
-        {
-        }
+          // C:\\workspace-sts\\Kettle trunk -
+          // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:105:31:
           break;
 
       }
       retval.stop = input.LT( -1 );
 
-    }
-
-    // do not try to recover from parse errors, propagate the error instead
-    catch ( RecognitionException e ) {
+    } catch ( RecognitionException e ) {
+      // do not try to recover from parse errors, propagate the error instead
       throw e;
-    }
-
-    finally {
-      // do for sure before leaving
     }
     return retval;
   }
@@ -782,69 +688,50 @@ public class FastSimpleGenericEdifactDirectXMLParser extends Parser {
       // C:\\workspace-sts\\Kettle trunk -
       // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:108:43:
       // tag_name ( ds i+= tag_index_id )*
-      {
-        pushFollow( FOLLOW_tag_name_in_tag208 );
-        tag_name3 = tag_name();
 
-        state._fsp--;
+      pushFollow( FOLLOW_tag_name_in_tag208 );
+      tag_name3 = tag_name();
+      state._fsp--;
+      tagIndexes.clear();
+      // C:\\workspace-sts\\Kettle trunk -
+      // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:108:74:
+      // ( ds i+= tag_index_id )*
+      loop7: do {
+        int alt7 = 2;
+        int LA7_0 = input.LA( 1 );
 
-        tagIndexes.clear();
+        if ( ( LA7_0 == COMPLEX_ELEMENT_ITEM_SEPARATOR ) ) {
+          alt7 = 1;
+        }
 
-        // C:\\workspace-sts\\Kettle trunk -
-        // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:108:74:
-        // ( ds i+= tag_index_id )*
-        loop7: do {
-          int alt7 = 2;
-          int LA7_0 = input.LA( 1 );
-
-          if ( ( LA7_0 == COMPLEX_ELEMENT_ITEM_SEPARATOR ) ) {
-            alt7 = 1;
-          }
-
-          switch ( alt7 ) {
-            case 1:
+        switch ( alt7 ) {
+          case 1:
             // C:\\workspace-sts\\Kettle trunk -
             // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:108:75:
             // ds i+= tag_index_id
-            {
-              pushFollow( FOLLOW_ds_in_tag213 );
-              ds();
 
-              state._fsp--;
-
-              pushFollow( FOLLOW_tag_index_id_in_tag217 );
-              i = tag_index_id();
-
-              state._fsp--;
-
-              if ( list_i == null ) {
-                list_i = new ArrayList<Object>();
-              }
-              list_i.add( i.getTemplate() );
-
+            pushFollow( FOLLOW_ds_in_tag213 );
+            ds();
+            state._fsp--;
+            pushFollow( FOLLOW_tag_index_id_in_tag217 );
+            i = tag_index_id();
+            state._fsp--;
+            if ( list_i == null ) {
+              list_i = new ArrayList<Object>();
             }
-              break;
+            list_i.add( i.getTemplate() );
+            break;
 
-            default:
-              break loop7;
-          }
-        } while ( true );
-
-        retval.name = ( tag_name3 != null ? input.toString( tag_name3.start, tag_name3.stop ) : null ).trim();
-
-      }
-
+          default:
+            break loop7;
+        }
+      } while ( true );
+      retval.name = ( tag_name3 != null ? input.toString( tag_name3.start, tag_name3.stop ) : null ).trim();
       retval.stop = input.LT( -1 );
 
-    }
-
-    // do not try to recover from parse errors, propagate the error instead
-    catch ( RecognitionException e ) {
+    } catch ( RecognitionException e ) {
+      // do not try to recover from parse errors, propagate the error instead
       throw e;
-    }
-
-    finally {
-      // do for sure before leaving
     }
     return retval;
   }
@@ -879,25 +766,15 @@ public class FastSimpleGenericEdifactDirectXMLParser extends Parser {
       // C:\\workspace-sts\\Kettle trunk -
       // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:112:13:
       // txt
-      {
-        pushFollow( FOLLOW_txt_in_tag_name239 );
-        txt();
 
-        state._fsp--;
-
-      }
-
+      pushFollow( FOLLOW_txt_in_tag_name239 );
+      txt();
+      state._fsp--;
       retval.stop = input.LT( -1 );
 
-    }
-
-    // do not try to recover from parse errors, propagate the error instead
-    catch ( RecognitionException e ) {
+    } catch ( RecognitionException e ) {
+      // do not try to recover from parse errors, propagate the error instead
       throw e;
-    }
-
-    finally {
-      // do for sure before leaving
     }
     return retval;
   }
@@ -934,28 +811,17 @@ public class FastSimpleGenericEdifactDirectXMLParser extends Parser {
       // C:\\workspace-sts\\Kettle trunk -
       // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:115:17:
       // tag_index_id_val
-      {
-        pushFollow( FOLLOW_tag_index_id_val_in_tag_index_id249 );
-        tag_index_id_val4 = tag_index_id_val();
 
-        state._fsp--;
-
-        tagIndexes.add( ( tag_index_id_val4 != null
-            ? input.toString( tag_index_id_val4.start, tag_index_id_val4.stop ) : null ) );
-
-      }
-
+      pushFollow( FOLLOW_tag_index_id_val_in_tag_index_id249 );
+      tag_index_id_val4 = tag_index_id_val();
+      state._fsp--;
+      tagIndexes.add( ( tag_index_id_val4 != null
+          ? input.toString( tag_index_id_val4.start, tag_index_id_val4.stop ) : null ) );
       retval.stop = input.LT( -1 );
 
-    }
-
-    // do not try to recover from parse errors, propagate the error instead
-    catch ( RecognitionException e ) {
+    } catch ( RecognitionException e ) {
+      // do not try to recover from parse errors, propagate the error instead
       throw e;
-    }
-
-    finally {
-      // do for sure before leaving
     }
     return retval;
   }
@@ -1003,36 +869,25 @@ public class FastSimpleGenericEdifactDirectXMLParser extends Parser {
       }
       switch ( alt8 ) {
         case 1:
-        // C:\\workspace-sts\\Kettle trunk -
-        // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:116:20:
-        // txt
-        {
+          // C:\\workspace-sts\\Kettle trunk -
+          // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:116:20:
+          // txt
+
           pushFollow( FOLLOW_txt_in_tag_index_id_val258 );
           txt();
-
           state._fsp--;
-
-        }
           break;
         case 2:
-        // C:\\workspace-sts\\Kettle trunk -
-        // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:116:24:
-        {
-        }
+          // C:\\workspace-sts\\Kettle trunk -
+          // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:116:24:
           break;
 
       }
       retval.stop = input.LT( -1 );
 
-    }
-
-    // do not try to recover from parse errors, propagate the error instead
-    catch ( RecognitionException e ) {
+    } catch ( RecognitionException e ) {
+      // do not try to recover from parse errors, propagate the error instead
       throw e;
-    }
-
-    finally {
-      // do for sure before leaving
     }
     return retval;
   }
@@ -1066,22 +921,13 @@ public class FastSimpleGenericEdifactDirectXMLParser extends Parser {
       // C:\\workspace-sts\\Kettle trunk -
       // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:119:8:
       // COMPLEX_ELEMENT_ITEM_SEPARATOR
-      {
-        match( input, COMPLEX_ELEMENT_ITEM_SEPARATOR, FOLLOW_COMPLEX_ELEMENT_ITEM_SEPARATOR_in_ds271 );
 
-      }
-
+      match( input, COMPLEX_ELEMENT_ITEM_SEPARATOR, FOLLOW_COMPLEX_ELEMENT_ITEM_SEPARATOR_in_ds271 );
       retval.stop = input.LT( -1 );
 
-    }
-
-    // do not try to recover from parse errors, propagate the error instead
-    catch ( RecognitionException e ) {
+    } catch ( RecognitionException e ) {
+      // do not try to recover from parse errors, propagate the error instead
       throw e;
-    }
-
-    finally {
-      // do for sure before leaving
     }
     return retval;
   }
@@ -1115,22 +961,13 @@ public class FastSimpleGenericEdifactDirectXMLParser extends Parser {
       // C:\\workspace-sts\\Kettle trunk -
       // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:120:8:
       // ELEMENT_SEPARATOR
-      {
-        match( input, ELEMENT_SEPARATOR, FOLLOW_ELEMENT_SEPARATOR_in_ss280 );
 
-      }
-
+      match( input, ELEMENT_SEPARATOR, FOLLOW_ELEMENT_SEPARATOR_in_ss280 );
       retval.stop = input.LT( -1 );
 
-    }
-
-    // do not try to recover from parse errors, propagate the error instead
-    catch ( RecognitionException e ) {
+    } catch ( RecognitionException e ) {
+      // do not try to recover from parse errors, propagate the error instead
       throw e;
-    }
-
-    finally {
-      // do for sure before leaving
     }
     return retval;
   }
@@ -1165,22 +1002,13 @@ public class FastSimpleGenericEdifactDirectXMLParser extends Parser {
       // C:\\workspace-sts\\Kettle trunk -
       // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:121:9:
       // TEXT_DATA
-      {
-        match( input, TEXT_DATA, FOLLOW_TEXT_DATA_in_txt289 );
 
-      }
-
+      match( input, TEXT_DATA, FOLLOW_TEXT_DATA_in_txt289 );
       retval.stop = input.LT( -1 );
 
-    }
-
-    // do not try to recover from parse errors, propagate the error instead
-    catch ( RecognitionException e ) {
+    } catch ( RecognitionException e ) {
+      // do not try to recover from parse errors, propagate the error instead
       throw e;
-    }
-
-    finally {
-      // do for sure before leaving
     }
     return retval;
   }
