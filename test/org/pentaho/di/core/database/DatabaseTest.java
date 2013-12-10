@@ -27,13 +27,12 @@ import static org.mockito.Mockito.when;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-
 import junit.framework.TestCase;
-
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -43,19 +42,38 @@ import org.pentaho.di.trans.TransMeta;
 /**
  * Try to test database functionality using a hypersonic database. This is just a small fraction of the functionality,
  * but could already trap a few problems.
- *
+ * 
  * @author Sven Boden
  */
 public class DatabaseTest extends TestCase {
   public static final String[] databasesXML = {
-    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-      + "<connection>" + "<name>db</name>" + "<server>127.0.0.1</server>" + "<type>H2</type>"
-      + "<access>Native</access>" + "<database>mem:db</database>" + "<port></port>" + "<username>sa</username>"
-      + "<password></password>" + "</connection>", };
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + "<connection>" + "<name>db</name>" + "<server>127.0.0.1</server>"
+        + "<type>H2</type>" + "<access>Native</access>" + "<database>mem:db</database>" + "<port></port>"
+        + "<username>sa</username>" + "<password></password>" + "</connection>",
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + "  <connection>\n" + "    <name>db_pool</name>\n"
+        + "    <server>127.0.0.1</server>\n" + "    <type>H2</type>\n" + "    <access>Native</access>\n"
+        + "    <database>mem:db</database>\n" + "    <port></port>\n" + "    <username>sa</username>\n"
+        + "    <password></password>\n" + "    <attributes>\n"
+        + "      <attribute><code>INITIAL_POOL_SIZE</code><attribute>5</attribute></attribute>\n"
+        + "      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>\n"
+        + "      <attribute><code>MAXIMUM_POOL_SIZE</code><attribute>10</attribute></attribute>\n"
+        + "      <attribute><code>USE_POOLING</code><attribute>Y</attribute></attribute>\n" + "    </attributes>\n"
+        + "  </connection>" };
 
   public Database setupDatabase() throws Exception {
     Database database = null;
 
+    TransMeta transMeta = getTransMeta();
+
+    DatabaseMeta dbInfo = transMeta.findDatabase( "db" );
+
+    database = new Database( transMeta, dbInfo );
+    database.connect();
+
+    return database;
+  }
+
+  private TransMeta getTransMeta() throws KettleException {
     KettleEnvironment.init();
 
     //
@@ -69,13 +87,22 @@ public class DatabaseTest extends TestCase {
       DatabaseMeta databaseMeta = new DatabaseMeta( databasesXML[i] );
       transMeta.addDatabase( databaseMeta );
     }
+    return transMeta;
+  }
 
-    DatabaseMeta dbInfo = transMeta.findDatabase( "db" );
-
+  public Database setupPoolingDatabaseWOConnect() throws Exception {
+    Database database = null;
+    TransMeta transMeta = getTransMeta();
+    DatabaseMeta dbInfo = transMeta.findDatabase( "db_pool" );
     database = new Database( transMeta, dbInfo );
-    database.connect();
-
     return database;
+  }
+
+  public void testDatabasePoolingCommit() throws Exception {
+    Database db = setupPoolingDatabaseWOConnect();
+    db.connect();
+    assertTrue( db.isAutoCommit() == db.getConnection().getAutoCommit() );
+    db.disconnect();
   }
 
   public void testDatabaseCasing() throws Exception {
@@ -85,7 +112,7 @@ public class DatabaseTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-    { new ValueMeta( "ID", ValueMeta.TYPE_INTEGER ), new ValueMeta( "DLR_CD", ValueMeta.TYPE_INTEGER ), };
+        { new ValueMeta( "ID", ValueMeta.TYPE_INTEGER ), new ValueMeta( "DLR_CD", ValueMeta.TYPE_INTEGER ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       valuesMeta[i].setLength( 8 );
@@ -113,19 +140,7 @@ public class DatabaseTest extends TestCase {
   public void testQuoting() throws Exception {
     Database database = null;
 
-    KettleEnvironment.init();
-
-    //
-    // Create a new transformation...
-    //
-    TransMeta transMeta = new TransMeta();
-    transMeta.setName( "transname" );
-
-    // Add the database connections
-    for ( int i = 0; i < databasesXML.length; i++ ) {
-      DatabaseMeta databaseMeta = new DatabaseMeta( databasesXML[i] );
-      transMeta.addDatabase( databaseMeta );
-    }
+    TransMeta transMeta = getTransMeta();
 
     DatabaseMeta dbInfo = transMeta.findDatabase( "db" );
 
